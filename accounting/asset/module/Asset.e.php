@@ -46,16 +46,16 @@ class Asset extends AssetElement {
 			})
 			->setCallback('accountLabel.check', function(?string $accountLabel): bool {
 
-				return \account\ClassLib::isFromClass($accountLabel, \Setting::get('account\assetClass'))
-					or \account\ClassLib::isFromClass($accountLabel, \Setting::get('account\grantAssetClass'));
+				return \account\ClassLib::isFromClass($accountLabel, \account\AccountSetting::ASSET_CLASS)
+					or \account\ClassLib::isFromClass($accountLabel, \account\AccountSetting::GRANT_ASSET_CLASS);
 
 			})
 			->setCallback('account.check', function(?\account\Account $eAccount): bool {
 
 				$eAccount = \account\AccountLib::getById($eAccount['id']);
 
-				return (\account\ClassLib::isFromClass($eAccount['class'], \Setting::get('account\assetClass'))
-					or \account\ClassLib::isFromClass($eAccount['class'], \Setting::get('account\grantAssetClass')));
+				return (\account\ClassLib::isFromClass($eAccount['class'], \account\AccountSetting::ASSET_CLASS)
+					or \account\ClassLib::isFromClass($eAccount['class'], \account\AccountSetting::GRANT_ASSET_CLASS));
 
 			})
 			->setCallback('account.consistency', function(?\account\Account $eAccount): bool {
@@ -70,11 +70,11 @@ class Asset extends AssetElement {
 
 				$this->expects(['accountLabel']);
 
-				if(\account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\grantAssetClass'))) {
+				if(\account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS)) {
 					return $type === NULL or in_array($type, [Asset::WITHOUT, Asset::GRANT_RECOVERY]);
 				}
 
-				if(\account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\assetClass'))) {
+				if(\account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::ASSET_CLASS)) {
 					return in_array($type, [Asset::LINEAR, Asset::WITHOUT, Asset::DEGRESSIVE]);
 				}
 
@@ -93,7 +93,7 @@ class Asset extends AssetElement {
 
 				return ($eAsset['type'] === NULL or $eAsset['type'] === Asset::GRANT_RECOVERY)
 					and $eAsset['asset']->empty()
-					and \account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\assetClass'));
+					and \account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::ASSET_CLASS);
 
 			})
 			->setCallback('asset.check', function(?Asset $eAsset): bool {
@@ -108,7 +108,7 @@ class Asset extends AssetElement {
 
 				return (in_array($eAsset['type'], [Asset::LINEAR, Asset::DEGRESSIVE]))
 					and $eAsset['grant']->empty()
-					and \account\ClassLib::isFromClass($this['accountLabel'], \Setting::get('account\grantAssetClass'));
+					and \account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS);
 
 			})
 			;

@@ -91,22 +91,19 @@ class ActionLib extends ActionCrud {
 
 	public static function getMainByFarm(Farm $eFarm): \Collection {
 
-		try {
-			return \Setting::get('farm\mainActions');
+		if(FarmSetting::$mainActions !== NULL) {
+			return FarmSetting::$mainActions;
 		}
-		catch(\Exception) {
 
-			$cAction = Action::model()
-				->select(['id', 'fqn', 'color', 'categories'])
-				->whereFarm($eFarm)
-				->whereFqn('IN', [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE])
-				->getCollection(index: 'fqn');
+		$cAction = Action::model()
+			->select(['id', 'fqn', 'color', 'categories'])
+			->whereFarm($eFarm)
+			->whereFqn('IN', [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE])
+			->getCollection(index: 'fqn');
 
-			\Setting::set('farm\mainActions', $cAction);
+		FarmSetting::$mainActions = $cAction;
 
-			return $cAction;
-
-		}
+		return $cAction;
 
 	}
 

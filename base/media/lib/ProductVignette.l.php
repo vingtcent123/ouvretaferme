@@ -20,7 +20,7 @@ class ProductVignetteLib extends MediaLib {
 		}
 
 		if(
-			\Privilege::can('selling\admin') === FALSE and
+			\selling\SellingSetting::getPrivilege('admin') === FALSE and
 			$eProduct->canWrite() === FALSE
 		) {
 			throw new \NotAllowedAction();

@@ -1,13 +1,9 @@
 <?php
-Feature::register('session', [
+namespace session;
 
-	'admin' => FALSE,
+class SessionSetting extends \Settings {
 
-]);
+	const SPLIT = 1;
 
-Setting::register('session', [
-
-	'split' => 1,
-
-]);
+}
 ?>

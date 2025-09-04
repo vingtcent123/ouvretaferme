@@ -16,10 +16,10 @@ class VatLib {
 
 		}
 
-		// Calcul de la TVA déductible (vatBuyClassPrefix / 4456)
+		// Calcul de la TVA déductible (VAT_BUY_CLASS_PREFIX / 4456)
 		$search = new \Search([
 			'financialYear' => $eFinancialYear,
-			'accountLabel' => \Setting::get('account\vatBuyClassPrefix'),
+			'accountLabel' => \account\AccountSetting::VAT_BUY_CLASS_PREFIX,
 		]);
 
 		$deductibleVatAmount = OperationLib::applySearch($search)
@@ -30,7 +30,7 @@ class VatLib {
 
 		if($deductibleVatAmount !== 0.0) {
 
-			$eAccount = \account\AccountLib::getByClass(\Setting::get('account\vatBuyClassPrefix'));
+			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::VAT_BUY_CLASS_PREFIX);
 
 			// Opération d'équilibrage
 			$eOperationReverse = new Operation([
@@ -41,7 +41,7 @@ class VatLib {
 				'documentDate' => new \Sql('NOW()'),
 				'thirdParty' => $eThirdPartyVat,
 				'date' => $eFinancialYear['endDate'],
-				'description' => new \account\VatUi()->getVatLabel(\Setting::get('account\vatBuyClassPrefix')),
+				'description' => new \account\VatUi()->getVatLabel(\account\AccountSetting::VAT_BUY_CLASS_PREFIX),
 				'type' => $deductibleVatAmount >= 0 ? OperationElement::DEBIT : OperationElement::CREDIT,
 				'financialYear' => $eFinancialYear,
 			]);
@@ -50,10 +50,10 @@ class VatLib {
 
 		}
 
-		// Calcul de la TVA collectée (vatSellClassPrefix / 4457)
+		// Calcul de la TVA collectée (VAT_SELL_CLASS_PREFIX / 4457)
 		$search = new \Search([
 			'financialYear' => $eFinancialYear,
-			'accountLabel' => \Setting::get('account\vatSellClassPrefix'),
+			'accountLabel' => \account\AccountSetting::VAT_SELL_CLASS_PREFIX,
 		]);
 
 		$collectedVatAmount = OperationLib::applySearch($search)
@@ -64,7 +64,7 @@ class VatLib {
 
 		if($collectedVatAmount !== 0.0) {
 
-			$eAccount = \account\AccountLib::getByClass(\Setting::get('account\collectedVatClass'));
+			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::COLLECTED_VAT_CLASS);
 
 			$eOperationReverse = new Operation([
 				'accountLabel' => \account\ClassLib::pad($eAccount['class']),
@@ -74,7 +74,7 @@ class VatLib {
 				'documentDate' => new \Sql('NOW()'),
 				'thirdParty' => $eThirdPartyVat,
 				'date' => $eFinancialYear['endDate'],
-				'description' => new \account\VatUi()->getVatLabel(\Setting::get('account\collectedVatClass')),
+				'description' => new \account\VatUi()->getVatLabel(\account\AccountSetting::COLLECTED_VAT_CLASS),
 				'type' => $deductibleVatAmount >= 0 ? OperationElement::CREDIT : OperationElement::DEBIT,
 				'financialYear' => $eFinancialYear,
 				'journalCode' => Operation::OD,
@@ -88,8 +88,8 @@ class VatLib {
 
 		if($balance !== 0.0) {
 
-			// Constatation du solde net dans le bilan sur 44551 / payableVatClass si la TVA est à décaisser, sur 44567 / carriedVatClass pour un crédit de TVA
-			$class = ($collectedVatAmount > $deductibleVatAmount ? \Setting::get('account\payableVatClass') : \Setting::get('account\carriedVatClass'));
+			// Constatation du solde net dans le bilan sur 44551 / PAYABLE_VAT_CLASS si la TVA est à décaisser, sur 44567 / CARRIED_VAT_CLASS pour un crédit de TVA
+			$class = ($collectedVatAmount > $deductibleVatAmount ? \account\AccountSetting::PAYABLE_VAT_CLASS : \account\AccountSetting::CARRIED_VAT_CLASS);
 			$type = ($collectedVatAmount > $deductibleVatAmount ? OperationElement::CREDIT : OperationElement::DEBIT);
 			$eAccount = \account\AccountLib::getByClass($class);
 

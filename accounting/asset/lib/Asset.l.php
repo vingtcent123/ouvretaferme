@@ -9,32 +9,26 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isTangibleAsset(string $account): bool {
 
-		foreach(\Setting::get('account\tangibleAssetsClasses') as $tangibleAssetsClass) {
-			if(\account\ClassLib::isFromClass($account, $tangibleAssetsClass) === TRUE) {
-				return TRUE;
-			};
-		}
-
-		return FALSE;
+		return \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_ASSETS_CLASS);
 
 	}
 
 	public static function isIntangibleAsset(string $account): bool {
 
-		return \account\ClassLib::isFromClass($account, \Setting::get('account\intangibleAssetsClass'));
+		return \account\ClassLib::isFromClass($account, \account\AccountSetting::INTANGIBLE_ASSETS_CLASS);
 
 	}
 
 	public static function isGrantAsset(string $account): bool {
 
-		return \account\ClassLib::isFromClass($account, \Setting::get('account\grantAssetClass'));
+		return \account\ClassLib::isFromClass($account, \account\AccountSetting::GRANT_ASSET_CLASS);
 
 	}
 
 	public static function depreciationClassByAssetClass(string $class): string {
 
 		if(self::isGrantAsset($class) === TRUE) {
-			return \Setting::get('account\grantDepreciationClass');
+			return \account\AccountSetting::GRANT_DEPRECIATION_CLASS;
 		}
 
 		return mb_substr($class, 0, 1).'8'.mb_substr($class, 1);
@@ -53,7 +47,7 @@ class AssetLib extends \asset\AssetCrud {
 			->select(Asset::getSelection())
 			->whereIsGrant(TRUE)
 			->whereAsset(NULL)
-			->whereAccountLabel('LIKE', \Setting::get('account\grantAssetClass').'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%')
 			->getCollection();
 	}
 
@@ -64,7 +58,7 @@ class AssetLib extends \asset\AssetCrud {
 			->whereType('IN', [Asset::LINEAR, Asset::DEGRESSIVE])
 			->whereIsGrant(FALSE)
 			->whereGrant(NULL)
-			->whereAccountLabel('LIKE', \Setting::get('account\assetClass').'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_CLASS.'%')
 			->getCollection();
 	}
 
@@ -75,8 +69,8 @@ class AssetLib extends \asset\AssetCrud {
 			->whereAcquisitionDate('>=', $eFinancialYear['startDate'])
 			->whereAcquisitionDate('<=', $eFinancialYear['endDate'])
 			->whereAccountLabel('LIKE', match($type) {
-				'asset' => \Setting::get('account\assetClass').'%',
-				'subvention' => \Setting::get('account\grantAssetClass').'%',
+				'asset' => \account\AccountSetting::ASSET_CLASS.'%',
+				'subvention' => \account\AccountSetting::GRANT_ASSET_CLASS.'%',
 			})
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
@@ -89,7 +83,7 @@ class AssetLib extends \asset\AssetCrud {
       ->select(Asset::getSelection())
       ->whereStartDate('<=', $eFinancialYear['endDate'])
       ->whereEndDate('>=', $eFinancialYear['startDate'])
-			->whereAccountLabel('LIKE', \Setting::get('account\grantAssetClass').'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%')
 			->whereIsGrant(TRUE)
 			->whereStatus(Asset::ONGOING)
       ->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
@@ -105,7 +99,7 @@ class AssetLib extends \asset\AssetCrud {
 			)
 			->whereStartDate('<=', $eFinancialYear['endDate'])
 			->whereEndDate('>=', $eFinancialYear['startDate'])
-			->whereAccountLabel('LIKE', \Setting::get('account\assetClass').'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_CLASS.'%')
 			->whereIsGrant(FALSE)
 			->whereStatus($status, if: $status !== NULL)
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
@@ -119,8 +113,8 @@ class AssetLib extends \asset\AssetCrud {
 
 		// Ni une immo, ni une sub
 		if(
-			\account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\assetClass')) === FALSE
-			and	\account\ClassLib::isFromClass($eOperation['accountLabel'], \Setting::get('account\grantAssetClass')) === FALSE
+			\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::ASSET_CLASS) === FALSE
+			and	\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS) === FALSE
 		) {
 			return NULL;
 		}
@@ -203,8 +197,8 @@ class AssetLib extends \asset\AssetCrud {
 		// Toutes les subventions possibles
 		$cAssetGrant = \asset\AssetLib::getGrantsWithAmortizedAssets();
 
-		$eAccountGrantsInIncomeStatement = \account\AccountLib::getByClass(\Setting::get('account\grantsInIncomeStatement'));
-		$eAccountDepreciation = \account\AccountLib::getByClass(\Setting::get('account\grantDepreciationClass'));
+		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANTS_IN_INCOME_STATEMENT;
+		$eAccountDepreciation = \account\AccountLib::getByClass(\account\AccountSetting::GRANT_DEPRECIATION_CLASS);
 
 		foreach($grantsToRecognize as $grantId) {
 
@@ -232,8 +226,8 @@ class AssetLib extends \asset\AssetCrud {
 
 		$cAsset = self::getGrantsByFinancialYear($eFinancialYear);
 
-		$eAccountGrantsInIncomeStatement = \account\AccountLib::getByClass(\Setting::get('account\grantsInIncomeStatement'));
-		$eAccountDepreciation = \account\AccountLib::getByClass(\Setting::get('account\grantDepreciationClass'));
+		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANTS_IN_INCOME_STATEMENT;
+		$eAccountDepreciation = \account\AccountLib::getByClass(\account\AccountSetting::GRANT_DEPRECIATION_CLASS);
 
 		foreach($cAsset as $eAsset) {
 
@@ -356,9 +350,9 @@ class AssetLib extends \asset\AssetCrud {
 
 		// Dotation aux amortissements
 		if(self::isIntangibleAsset($eAsset['accountLabel'])) {
-			$depreciationChargeClass = \Setting::get('account\intangibleAssetsDepreciationChargeClass');
+			$depreciationChargeClass = \account\AccountSetting::INTANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS;
 		} else {
-			$depreciationChargeClass = \Setting::get('account\tangibleAssetsDepreciationChargeClass');
+			$depreciationChargeClass = \account\AccountSetting::TANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS;
 		}
 
 		$eAccountDepreciationCharge = \account\AccountLib::getByClass($depreciationChargeClass);
@@ -432,7 +426,7 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isDepreciable(Asset $eAsset): bool {
 
-		return substr($eAsset['accountLabel'], 0, mb_strlen(\Setting::get('account\nonDepreciableAssetClass'))) !== \Setting::get('account\nonDepreciableAssetClass');
+		return substr($eAsset['accountLabel'], 0, mb_strlen(\account\AccountSetting::NON_DEPRECIABLE_ASSET_CLASS)) !== \account\AccountSetting::NON_DEPRECIABLE_ASSET_CLASS;
 
 	}
 
@@ -554,7 +548,7 @@ class AssetLib extends \asset\AssetCrud {
 		}
 
 		// Sortir l'actif (charge exc. de la VNC 675) : perte de l'actif
-		$eAccountDisposal = \account\AccountLib::getByClass(\Setting::get('account\disposalAssetValueClass'));
+		$eAccountDisposal = \account\AccountLib::getByClass(\account\AccountSetting::DISPOSAL_ASSET_VALUE_CLASS);
 		$values = [
 			'account' => $eAccountDisposal['id'],
 			'accountLabel' => \account\ClassLib::pad($eAccountDisposal['class']),
@@ -570,7 +564,7 @@ class AssetLib extends \asset\AssetCrud {
 		if($eAsset['status'] === AssetElement::SOLD) {
 
 			// b. Création de l'écriture de la vente 775
-			$eAccountProduct = \account\AccountLib::getByClass(\Setting::get('account\productAssetValueClass'));
+			$eAccountProduct = \account\AccountSetting::PRODUCT_ASSET_VALUE_CLASS;
 			$values = [
 				'account' => $eAccountProduct['id'],
 				'accountLabel' => \account\ClassLib::pad($eAccountProduct['class']),
@@ -585,13 +579,13 @@ class AssetLib extends \asset\AssetCrud {
 			// c. Créer l'écriture débit compte banque (512) OU le débit créance sur cession (462)
 			if($createReceivable === TRUE) {
 
-				$receivablesOnAssetDisposalClass = \Setting::get('account\receivablesOnAssetDisposalClass');
+				$receivablesOnAssetDisposalClass = \account\AccountSetting::RECEIVABLES_ON_ASSET_DISPOSAL_CLASS;
 				$debitAccountLabel = \account\ClassLib::pad($receivablesOnAssetDisposalClass);
 				$eAccountDebit = \account\AccountLib::getByClass($receivablesOnAssetDisposalClass);
 
 			} else {
 
-				$bankClass = \Setting::get('account\bankAccountClass');
+				$bankClass = \account\AccountSetting::BANK_ACCOUNT_CLASS;
 				$debitAccountLabel = \account\ClassLib::pad($bankClass);
 				$eAccountDebit = \account\AccountLib::getByClass($bankClass);
 

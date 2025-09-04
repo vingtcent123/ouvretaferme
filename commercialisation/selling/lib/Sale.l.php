@@ -59,8 +59,8 @@ class SaleLib extends SaleCrud {
 	public static function getExample(\farm\Farm $eFarm, string $type, \shop\Shop $eShop = new \shop\Shop()): Sale {
 
 		$id = match($type) {
-			Customer::PRO => \Setting::get('selling\exampleSalePro'),
-			Customer::PRIVATE => \Setting::get('selling\exampleSalePrivate')
+			Customer::PRO => SellingSetting::EXAMPLE_SALE_PRO,
+			Customer::PRIVATE => SellingSetting::EXAMPLE_SALE_PRIVATE,
 		};
 
 		$eSale = \selling\SaleLib::getById($id);
@@ -621,7 +621,7 @@ class SaleLib extends SaleCrud {
 		$cSale = Sale::model()
 			->select('id', 'compositionEndAt', 'deliveredAt')
 			->whereCompositionOf($e['compositionOf'])
-			->where('compositionEndAt IS NULL OR compositionEndAt >= CURDATE() - INTERVAL '.(\Setting::get('compositionLocked') + 1).' DAY')
+			->where('compositionEndAt IS NULL OR compositionEndAt >= CURDATE() - INTERVAL '.(SellingSetting::COMPOSITION_LOCKED + 1).' DAY')
 			->sort(new \Sql('deliveredAt ASC'))
 			->getCollection();
 
@@ -1248,7 +1248,7 @@ class SaleLib extends SaleCrud {
 		if($e['shippingVatFixed'] === FALSE) {
 
 			$newValues += [
-				'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : \Setting::get('defaultVatRate'),
+				'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : SellingSetting::DEFAULT_VAT_RATE,
 			];
 
 		}
@@ -1307,7 +1307,7 @@ class SaleLib extends SaleCrud {
 				$eConfiguration = \selling\ConfigurationLib::getByFarm($e['farm']);
 
 				if($eConfiguration['defaultVatShipping'] !== NULL) {
-					$newValues['shippingVatRate'] = \Setting::get('selling\vatRates')[$eConfiguration['defaultVatShipping']];
+					$newValues['shippingVatRate'] = SellingSetting::VAT_RATES[$eConfiguration['defaultVatShipping']];
 				}
 
 				$shippingVatRate = $newValues['shippingVatRate'];
@@ -1378,7 +1378,7 @@ class SaleLib extends SaleCrud {
 
 		// A filtrer selon les pays le cas échéant
 
-		return \Setting::get('selling\vatRates');
+		return SellingSetting::VAT_RATES;
 
 	}
 

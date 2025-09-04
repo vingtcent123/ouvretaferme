@@ -33,7 +33,7 @@ new Page()
 			throw new NotExpectedAction('Cannot generate PDF of unknown association history');
 		}
 
-		$data->eFarmOtf = \farm\FarmLib::getById(Setting::get('association\farm'));
+		$data->eFarmOtf = \farm\FarmLib::getById(\association\AssociationSetting::FARM);
 
 		throw new ViewAction($data);
 

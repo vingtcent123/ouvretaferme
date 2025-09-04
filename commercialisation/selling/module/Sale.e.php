@@ -374,7 +374,7 @@ class Sale extends SaleElement {
 	}
 
 	public static function testWriteComposition(string $date): bool {
-		return $date >= date('Y-m-d', strtotime('NOW - '.\Setting::get('compositionLocked').' DAYS'));
+		return $date >= date('Y-m-d', strtotime('NOW - '.SellingSetting::COMPOSITION_LOCKED.' DAYS'));
 	}
 
 	public function acceptCreateItems(): bool {
@@ -1128,7 +1128,7 @@ class Sale extends SaleElement {
 			->setCallback('shippingVatRate.check', function(?float $vat): bool {
 				return (
 					$vat === NULL or
-					in_array($vat, \Setting::get('selling\vatRates'))
+					in_array($vat, SellingSetting::VAT_RATES)
 				);
 			})
 			->setCallback('orderFormValidUntil.check', function(?string &$date): bool {

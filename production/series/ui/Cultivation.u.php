@@ -659,7 +659,7 @@ class CultivationUi {
 							$h .= '<div class="series-item series-item-forecast">';
 								$h .= '<div class="series-item-forecast-series series-item-forecast-series-gap" style="grid-column: span 3">';
 									$h .= SeriesUi::link($eSeries);
-									$h .= \sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+									$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
 									if($area === NULL) {
 										$h .= '  <a href="/series/series:update?id='.$eSeries['id'].'" class="series-item-forecast-missing">'.\Asset::icon('exclamation-triangle-fill').' '.s("Définir l'objectif de surface").'</a>';
 									}
@@ -937,7 +937,7 @@ class CultivationUi {
 
 								$h .= '<div class="series-item-seeds-series">';
 									$h .= SeriesUi::link($eSeries);
-									$h .= \sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+									$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
 								$h  .= '</div>';
 								$h .= '<div>';
 
@@ -1351,7 +1351,7 @@ class CultivationUi {
 		$h = '<'.$tag.' href="/serie/'.$eSeries['id'].'" class="series-item-planning-details-name">'.SeriesUi::name($eSeries).'</'.$tag.'> ';
 
 		if($eCultivation->notEmpty()) {
-			$h .= \sequence\CropUi::start($eCultivation, \Setting::get('farm\mainActions'));
+			$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
 		}
 
 		if($eSeries->isClosed()) {

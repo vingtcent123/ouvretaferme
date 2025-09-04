@@ -249,13 +249,13 @@ class ThirdPartyUi {
 		switch($property) {
 
 			case 'clientAccountLabel':
-				$d->after = \util\FormUi::info(s("Le compte client commence toujours par {accountPrefix}", ['accountPrefix' => \Setting::get('account\thirdAccountClientReceivableClass')]));
-				$d->placeholder = \Setting::get('account\thirdAccountClientReceivableClass');
+				$d->after = \util\FormUi::info(s("Le compte client commence toujours par {accountPrefix}", ['accountPrefix' => AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS]));
+				$d->placeholder = AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS;
 				break;
 
 			case 'supplierAccountLabel':
-				$d->after = \util\FormUi::info(s("Le compte fournisseur commence toujours par {accountPrefix}", ['accountPrefix' => \Setting::get('account\thirdAccountSupplierDebtClass')]));
-				$d->placeholder = \Setting::get('account\thirdAccountSupplierDebtClass');
+				$d->after = \util\FormUi::info(s("Le compte fournisseur commence toujours par {accountPrefix}", ['accountPrefix' => AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]));
+				$d->placeholder = AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS;
 				break;
 
 			case 'name':

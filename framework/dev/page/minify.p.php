@@ -54,7 +54,7 @@ new Page()
 
 		}
 
-		$realDirectory = Setting::get('dev\minifyDirectory').'/'.LIME_APP.'/'.$version;
+		$realDirectory = \dev\DevSetting::MINIFY_DIRECTORY.'/'.LIME_APP.'/'.$version;
 		$realFilename = $realDirectory.'/'.$filename;
 
 		if(file_exists($realFilename) === FALSE) {

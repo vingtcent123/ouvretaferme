@@ -1,11 +1,10 @@
 <?php
-(new Page(function($data) {
+new Page(function($data) {
 
-		Feature::check('user\ban');
+	\user\UserSetting::checkFeature(\user\UserSetting::$featureBan);
+	\user\UserSetting::checkPrivilege('ban');
 
-		Privilege::check('user\ban');
-
-	}))
+	})
 	/**
 	 * Display all bans (ended or active).
 	 */

@@ -7,7 +7,7 @@ class CryptLib {
 
 	public static function encrypt(string $data, string $secret): string {
 
-		$passphrase = \Setting::get('main\crypt')[$secret] ?? throw new \Exception('Missing secret');
+		$passphrase = MainSetting::$crypt[$secret] ?? throw new \Exception('Missing secret');
 
 		$ivLength = openssl_cipher_iv_length(self::METHOD);
 		$iv = openssl_random_pseudo_bytes($ivLength);
@@ -18,7 +18,7 @@ class CryptLib {
 
 	public static function decrypt(string $data, string $secret): ?string {
 
-		$passphrase = \Setting::get('main\crypt')[$secret] ?? throw new \Exception('Missing secret');
+		$passphrase = MainSetting::$crypt[$secret] ?? throw new \Exception('Missing secret');
 		$decodedData = base64_decode($data);
 
 		$ivLength = openssl_cipher_iv_length(self::METHOD);

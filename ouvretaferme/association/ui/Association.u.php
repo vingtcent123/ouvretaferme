@@ -51,7 +51,7 @@ class AssociationUi {
 		$h .= '</div>';
 
 
-		$h .= '<a class="btn btn-outline-primary" href="'.\Setting::get('association\url').'">'.s("Consulter le site de l'association").'</a>';
+		$h .= '<a class="btn btn-outline-primary" href="'.AssociationSetting::URL.'">'.s("Consulter le site de l'association").'</a>';
 
 
 		return $h;
@@ -66,7 +66,7 @@ class AssociationUi {
 
 			$h .= '<p>'.s("Ouvretaferme est un logiciel mis à disposition gratuitement pour les producteurs et les productrices en agriculture biologique et développé entièrement bénévolement. Vos dons sont précieux pour le maintenir et le faire vivre.").'</p>';
 
-			$h .= '<a target="_blank" class="btn btn-outline-primary" href="'.\Setting::get('association\url').'/nous-soutenir">'.s("Lire plus d'informations sur l'association").' '.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a target="_blank" class="btn btn-outline-primary" href="'.AssociationSetting::URL.'/nous-soutenir">'.s("Lire plus d'informations sur l'association").' '.\Asset::icon('box-arrow-up-right').'</a>';
 
 		$h .= '</div>';
 
@@ -220,7 +220,7 @@ Cordialement,
 
 					} else {
 
-						if($eHistory['amount'] > \Setting::get('association\membershipFee')) {
+						if($eHistory['amount'] > AssociationSetting::MEMBERSHIP_FEE) {
 
 							$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement et votre soutien !");
 

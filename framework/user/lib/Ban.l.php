@@ -200,10 +200,10 @@ class BanLib extends BanCrud {
 		$cBan = Ban::model()
 			->sort(['since' => SORT_DESC])
 			->option('count')
-			->getCollection($page * \Setting::get('user\maxByPage'), \Setting::get('user\maxByPage'));
+			->getCollection($page * UserSetting::MAX_BY_PAGE, UserSetting::MAX_BY_PAGE);
 
 		$nBan = Ban::model()->found();
-		$nPage = ceil($nBan / \Setting::get('user\maxByPage'));
+		$nPage = ceil($nBan / UserSetting::MAX_BY_PAGE);
 
 		return [
 			$cBan,

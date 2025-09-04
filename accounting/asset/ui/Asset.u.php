@@ -440,7 +440,7 @@ Class AssetUi {
 						$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).'</td>';
 						$h .= '<td>'.s("Débit {accountDebit} / Crédit {accountCredit}", [
 							'accountDebit' => encode($eAsset['account']['class']),
-							'accountCredit' => \Setting::get('account\grantsInIncomeStatement'),
+							'accountCredit' => \account\AccountSetting::GRANTS_IN_INCOME_STATEMENT,
 						]).'</td>';
 						$h .= '<td class="text-center">';
 							$h .= $form->checkbox('grantsToRecognize[]', $eAsset['id']);

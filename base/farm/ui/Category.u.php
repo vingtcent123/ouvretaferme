@@ -98,7 +98,7 @@ class CategoryUi {
 				$h .= s("Catégories");
 			$h .= '</h1>';
 
-			if($cCategory->count() < \Setting::get('farm\categoriesLimit')) {
+			if($cCategory->count() < FarmSetting::CATEGORIES_LIMIT) {
 
 				$h .= '<div>';
 					$h .= '<a href="/farm/category:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle catégorie").'</a>';
@@ -115,7 +115,7 @@ class CategoryUi {
 	public function getManage(\farm\Farm $eFarm, \Collection $cCategory): string {
 
 		$h = '<p class="util-info">';
-			$h .= p("Vous avez actuellement configuré {value} catégorie sur {max} possibles.", "Vous avez actuellement configuré {value} catégories sur {max} possibles.", $cCategory->count(), ['max' => \Setting::get('farm\categoriesLimit')]);
+			$h .= p("Vous avez actuellement configuré {value} catégorie sur {max} possibles.", "Vous avez actuellement configuré {value} catégories sur {max} possibles.", $cCategory->count(), ['max' => FarmSetting::CATEGORIES_LIMIT]);
 		$h .= '</p>';
 
 		$h .= '<br/>';

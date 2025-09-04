@@ -72,7 +72,7 @@ class CleanLib {
 
 	protected static function searchValid(): bool {
 
-		$images = \Setting::get('media\images');
+		$images = MediaSetting::$images;
 
 		foreach($images as $image) {
 
@@ -117,7 +117,7 @@ class CleanLib {
 		foreach($cMedia as $eMedia) {
 
 			$url = $eMedia['type'].'/'.$eMedia['hash'].'.'.MediaUi::getExtension($eMedia['hash']);
-			$settings = \Setting::get($eMedia['type']);
+			$settings = MediaSetting::$types[$eMedia['type']];
 
 			if(isset($settings['imageFormat'])) {
 
@@ -130,13 +130,13 @@ class CleanLib {
 						$formatString = implode('x', $format);
 					}
 					$pathFormat = $eMedia['type'].'/'.$formatString.'/'.$eMedia['hash'].'.'.MediaUi::getExtension($eMedia['hash']);
-					\Setting::get('media\mediaDriver')->delete($pathFormat);
+					MediaSetting::$mediaDriver->delete($pathFormat);
 				}
 
 			}
 
-			\Setting::get('media\mediaDriver')->delete($url);
-			\Setting::get('media\mediaDriver')->delete($url.'.txt');
+			MediaSetting::$mediaDriver->delete($url);
+			MediaSetting::$mediaDriver->delete($url.'.txt');
 
 			Media::model()->delete($eMedia);
 

@@ -28,7 +28,7 @@ class BanUi {
 				s("Note : l'adresse IP de cet utilisateur n'a pas pu être déterminée. Il n'est donc pas possible d'ajouter un bannissement par IP.").
 				'</p>';
 
-		} elseif($nUserOnIp < \Setting::get('user\maxBanOnSameIp')) {
+		} elseif($nUserOnIp < UserSetting::MAX_BAN_ON_SAME_IP) {
 
 			$type .= $form->checkbox('type[]', 'ip', ['callbackLabel' => fn($input) => $input.' '.s("Adresse IP").' '.p("({value} personne connectée)", "({value} personnes connectées)", $nUserOnIp)]);
 
@@ -36,7 +36,7 @@ class BanUi {
 
 			$type .= '<p class="util-warning">'.p("Note : le bannissement par adresse IP n'est pas possible quand plus de {value} personne est connectée sur cette même adresse.",
 					"Note : le bannissement par adresse IP n'est pas possible quand plus de {value} personnes sont connectées sur cette même adresse.",
-					Setting::get('user\maxBanOnSameIp')
+					UserSetting::MAX_BAN_ON_SAME_IP
 				).'</p>';
 
 		}

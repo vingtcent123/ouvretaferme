@@ -44,8 +44,8 @@ class UserModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'firstName' => ['text8', 'min' => 1, 'max' => \Setting::get('user\nameSizeMax'), 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
-			'lastName' => ['text8', 'min' => 1, 'max' => \Setting::get('user\nameSizeMax'), 'collate' => 'general', 'cast' => 'string'],
+			'firstName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
+			'lastName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'cast' => 'string'],
 			'email' => ['email', 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'birthdate' => ['date', 'min' => toDate('NOW - 100 YEARS'), 'max' => toDate('NOW - 10 YEARS'), 'null' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],

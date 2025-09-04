@@ -1,16 +1,14 @@
 <?php
-Privilege::register('selling', [
-	'admin' => FALSE,
-]);
+namespace selling;
 
-Setting::register('selling', [
+class SellingSetting extends \Settings {
 
-	'unitDefaultId' => 1,
+	const UNIT_DEFAULT_ID = 1;
 
-	'exampleSalePro' => 1736,
-	'exampleSalePrivate' => 3133,
+	const EXAMPLE_SALE_PRO = 1736;
+	const EXAMPLE_SALE_PRIVATE = 3133;
 
-	'vatRates' => [
+	const VAT_RATES = [
 
 		// France
 		0 => 0,
@@ -19,14 +17,18 @@ Setting::register('selling', [
 		3 => 10,
 		4 => 20
 
-	],
+	];
 
-	'defaultVatRate' => 20,
+	const DEFAULT_VAT_RATE = 20;
 
-	'documentExpires' => 15, // Délai d'expiration des documents avant suppression de la base de données (en mois)
-	'compositionLocked' => 30, // Nombre de jours qui permet de créer, modifier ou supprimer une composition dans le passé
+	const DOCUMENT_EXPIRES = 15; // Délai d'expiration des documents avant suppression de la base de données (en mois)
+	const COMPOSITION_LOCKED = 30; // Nombre de jours qui permet de créer, modifier ou supprimer une composition dans le passé
 
-	'remoteKey' => fn() => throw new Exception('Undefined remote key')
+	public static $remoteKey;
+}
 
-]);
+SellingSetting::setPrivilege('admin', FALSE);
+
+SellingSetting::$remoteKey = fn() => throw new \Exception('Undefined remote key');
+
 ?>

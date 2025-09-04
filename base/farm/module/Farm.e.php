@@ -40,7 +40,7 @@ class Farm extends FarmElement {
 
 		$this->expects(['seasonFirst']);
 
-		return $this['seasonFirst'] - \Setting::get('farm\calendarLimit');
+		return $this['seasonFirst'] - FarmSetting::CALENDAR_LIMIT;
 
 	}
 
@@ -48,7 +48,7 @@ class Farm extends FarmElement {
 
 		$this->expects(['seasonLast']);
 
-		return $this['seasonLast'] + \Setting::get('farm\calendarLimit');
+		return $this['seasonLast'] + FarmSetting::CALENDAR_LIMIT;
 
 	}
 
@@ -98,7 +98,7 @@ class Farm extends FarmElement {
 	public function hasAccounting(): bool {
 		return (
 			!OTF_DEMO and
-			(FEATURE_ACCOUNTING or ($this->exists() and in_array($this['id'], \Setting::get('company\accountingBetaTesterFarms'))))
+			(FEATURE_ACCOUNTING or ($this->exists() and in_array($this['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS)))
 		); // Jardins de Tallende
 	}
 
@@ -319,7 +319,7 @@ class Farm extends FarmElement {
 	public function saveFeaturesAsSettings(): void {
 
 		foreach(['featureTime'] as $feature) {
-			\Setting::set('farm\\'.$feature, $this[$feature]);
+			FarmSetting::${$feature} = $this[$feature];
 		}
 
 	}

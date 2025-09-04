@@ -41,7 +41,7 @@ class CsvLib {
 	 */
 	public function load(string $lang): array {
 
-		$pathCsv = $this->package->getPath().'/'.\Setting::get('directoryImport').'/'.$lang.'.csv';
+		$pathCsv = $this->package->getPath().'/'.LanguageSetting::DIRECTORY_IMPORT.'/'.$lang.'.csv';
 
 		if(is_file($pathCsv) === FALSE) {
 			return [];
@@ -264,7 +264,7 @@ class CsvLib {
 	 */
 	public function save(string $lang, string $csv) {
 
-		$directoryCsv = $this->package->getPath().'/'.\Setting::get('directoryExport').'/';
+		$directoryCsv = $this->package->getPath().'/'.LanguageSetting::DIRECTORY_EXPORT.'/';
 
 		if(is_dir($directoryCsv) === FALSE) {
 			mkdir($directoryCsv, 0755, TRUE);

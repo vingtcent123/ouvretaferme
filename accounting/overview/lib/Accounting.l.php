@@ -14,8 +14,8 @@ Class AccountingLib {
 		}
 
 		// cash
-		if(str_starts_with($balance['accountLabel'], \Setting::get('account\cashAccountClass')) === TRUE) {
-			$number = (int)rtrim(mb_substr($balance['accountLabel'], strlen(\Setting::get('account\cashAccountClass'))), '0');
+		if(str_starts_with($balance['accountLabel'], \account\AccountSetting::CASH_ACCOUNT_CLASS) === TRUE) {
+			$number = (int)rtrim(mb_substr($balance['accountLabel'], strlen(\account\AccountSetting::CASH_ACCOUNT_CLASS)), '0');
 			return s("{name} {number}", ['name' => new \bank\BankUi()->cashLabel(), 'number' => $number + 1]);
 		}
 
@@ -54,7 +54,7 @@ Class AccountingLib {
 			return [];
 		}
 
-		$categories = \Setting::get('account\summaryAccountingBalanceCategories');
+		$categories = \account\AccountSetting::$summaryAccountingBalanceCategories;
 		$emptyBalance = [
 			'startCredit' => 0,
 			'startDebit' => 0,

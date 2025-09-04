@@ -982,7 +982,7 @@ class SaleUi {
 			default :
 				return '<span class="sale-preparation-status-'.Sale::CONFIRMED.'">'.s("Confirmé").'</span>';
 
-		};
+		}
 
 	}
 
@@ -2151,7 +2151,7 @@ class SaleUi {
 		$vatRates = [];
 
 		foreach($vat as $key => $text) {
-			$vatRates[(string)\Setting::get('selling\vatRates')[$key]] = $text;
+			$vatRates[(string)SellingSetting::VAT_RATES[$key]] = $text;
 		}
 
 		return $vatRates;
@@ -2310,11 +2310,11 @@ class SaleUi {
 					$values = [];
 
 					foreach(SaleUi::getVat($e['farm']) as $position => $text) {
-						$rate = \Setting::get('selling\vatRates')[$position];
+						$rate = SellingSetting::VAT_RATES[$position];
 						$values[(string)$rate] = s("Personnalisé - {value}", $text);
 					}
 
-					$defaultVatRate = $e['farm']->getSelling('defaultVatShipping') ? \Setting::get('selling\vatRates')[$e['farm']->getSelling('defaultVatShipping')] : NULL;
+					$defaultVatRate = $e['farm']->getSelling('defaultVatShipping') ? SellingSetting::VAT_RATES[$e['farm']->getSelling('defaultVatShipping')] : NULL;
 					$calculatedVatRate = ($e['shippingVatFixed'] ? NULL : $e['shippingVatRate']) ?? $defaultVatRate;
 
 					return $form->select('shippingVatRate', $values, $e['shippingVatFixed'] ? $e['shippingVatRate'] : NULL, [

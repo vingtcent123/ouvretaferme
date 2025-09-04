@@ -1,12 +1,14 @@
 <?php
-Setting::register('editor', [
+namespace editor;
 
-	'captionLimit' => 130,
+class EditorSetting extends \Settings {
 
-	'mediaTitleLimit' => 80,
+	const CAPTION_LIMIT = 130;
 
-	'quoteBorder' => ['solid-grey', 'solid-primary', 'solid-text', 'dashed-grey', 'dashed-primary', 'dashed-text'],
-	'quoteBackground' => ['primary']
+	const MEDIA_TITLE_LIMIT = 80;
 
-]);
+	const QUOTE_BORDER = ['solid-grey', 'solid-primary', 'solid-text', 'dashed-grey', 'dashed-primary', 'dashed-text'];
+	const QUOTE_BACKGROUND = ['primary'];
+
+}
 ?>

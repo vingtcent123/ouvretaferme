@@ -15,7 +15,7 @@ class ImageLib {
 	 */
 	public static function checkType(string $type): bool {
 
-		return in_array($type, \Setting::get('storage\images'));
+		return in_array($type, StorageSetting::$images);
 
 	}
 
@@ -28,7 +28,7 @@ class ImageLib {
 	 */
 	public static function isImage(string $filename): bool {
 
-		if(in_array(exif_imagetype($filename), \Setting::get('imagesInputType')) === FALSE) {
+		if(in_array(exif_imagetype($filename), StorageSetting::IMAGES_INPUT_TYPE) === FALSE) {
 			return FALSE;
 		}
 
@@ -229,7 +229,7 @@ class ImageLib {
 		$widthOriginal = $resource->getImageWidth();
 		$heightOriginal = $resource->getImageHeight();
 
-		$sizePreview = last(\Setting::get($type)['imageFormat']);
+		$sizePreview = last(StorageSetting::$types[$type]['imageFormat']);
 
 		if(is_array($sizePreview)) {
 			list($widthPreview, $heightPreview) = $sizePreview;
@@ -271,10 +271,10 @@ class ImageLib {
 	 */
 	public static function getCompression(string $type, int $fileType, ?string $format = NULL) {
 
-		$settings = \Setting::get($type);
+		$settings = StorageSetting::$types[$type];
 
 		if($format === NULL) {
-			return \Setting::get('storage\defaultQuality')[$fileType];
+			return StorageSetting::DEFAULT_QUALITY[$fileType];
 		}
 
 		if(isset($settings['imageQuality'][$format])) {
@@ -282,14 +282,14 @@ class ImageLib {
 			$qualityByFormat = $settings['imageQuality'][$format];
 
 			if(is_array($qualityByFormat)) {
-				return $qualityByFormat[$fileType] ?? \Setting::get('storage\defaultQuality')[$fileType];
+				return $qualityByFormat[$fileType] ?? StorageSetting::DEFAULT_QUALITY[$fileType];
 			} else if(is_int($qualityByFormat)) {
 				return $qualityByFormat;
 			}
 
 		}
 
-		return \Setting::get('storage\defaultQuality')[$fileType];
+		return StorageSetting::DEFAULT_QUALITY[$fileType];
 
 	}
 

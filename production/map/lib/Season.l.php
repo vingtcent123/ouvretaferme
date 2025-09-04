@@ -7,7 +7,7 @@ class SeasonLib {
 
 		$season = (int)$season;
 
-		if($season < date('Y') - 100 or $season > date('Y') + 100) {
+		if($season < (int)date('Y') - 100 or $season > (int)date('Y') + 100) {
 			throw new \NotExpectedAction('Invalid season');
 		}
 
@@ -19,7 +19,7 @@ class SeasonLib {
 
 	public static function setOnline($season): void {
 
-		\Setting::set('main\onlineSeason', $season);
+		\main\MainSetting::$onlineSeason = $season;
 
 	}
 

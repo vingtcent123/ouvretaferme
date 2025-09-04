@@ -75,7 +75,7 @@ new Page()
 	 */
 	->post('doLoginExternal', function($data) {
 
-		Privilege::check('user\admin');
+		\user\UserSetting::checkPrivilege('admin');
 
 		$eUser = \user\UserLib::getById(
 				POST('user', '?int'),

@@ -22,7 +22,7 @@ class DropLib {
 		);
 
 		return (
-			$loggedSince < \Setting::get('closeTimeLimit') * 60
+			$loggedSince < UserSetting::CLOSE_TIME_LIMIT * 60
 		);
 
 	}
@@ -38,7 +38,7 @@ class DropLib {
 		if($eUser['deletedAt']) {
 			$eUser['deletedAt'] = NULL;
 		} else {
-			$eUser['deletedAt'] = User::model()->now('datetime', \Setting::get('closeTimeout').' DAY');
+			$eUser['deletedAt'] = User::model()->now('datetime', UserSetting::CLOSE_TIMEOUT.' DAY');
 		}
 
 		$affected = User::model()

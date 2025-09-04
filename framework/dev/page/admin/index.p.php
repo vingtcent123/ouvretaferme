@@ -1,5 +1,5 @@
 <?php
-(new Page(fn() => Privilege::check('dev\admin')))
+new Page(fn() => \dev\DevSetting::getPrivilege('admin'))
 	->get('index', function($data) {
 
 		$data->page = GET('page', 'int');

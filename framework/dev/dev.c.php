@@ -1,62 +1,30 @@
 <?php
-Feature::register('dev', [
+namespace dev;
 
-	// Compile version number for CSS / JS files
-	'compileCodeVersion' => TRUE,
+class DevSetting extends \Settings {
 
-	// Compile JS/CSS minify files
-	'compileCodeMinify' => TRUE,
-
-	// Compile Image version number
-	'compileImageVersion' => TRUE,
-
-]);
-
-Privilege::register('dev', [
-
-	// Enable or disable access to monitoring admin pages
-	'admin' => FALSE,
-
-]);
-
-Setting::register('dev', [
-
-	'minify' => FALSE,
-	'minifyDirectory' => LIME_DIRECTORY.'/.min',
-
-	// Url of monitoring site
-	'monitoringUrl' => [
-		'prod' => '',
-		'dev' => '',
-	],
+	public static bool $minify = FALSE;
+	const MINIFY_DIRECTORY = LIME_DIRECTORY.'/.min';
 
 	// Path to PHP
-	'php' => 'php',
-
+	const PHP = 'php';
 	// Lifetime in seconds of permanent crons
 	// May be 300/600/900/1200/1800/3600/7200/10800/14400/21600/28800/43200/86400
-	'cronPermanentLifetime' => 3600,
-
-	'cronSaveDirectory' => '/conf/crontab',
+	const CRON_PERMANENT_LIFETIME = 3600;
+	const CRON_SAVE_DIRECTORY = '/conf/crontab';
 
 	// Number of errors saved by page
-	'errorSaveMax' => 10,
-	'errorKeep' => 30,
+	const ERROR_SAVE_MAX = 10;
+	const ERROR_KEEP = 30;
 
 	// Nginx log
-	'errorNginxInterval' => 5, // check for nginx's logs (in minutes)
-	'errorNginxPath' => "/var/log/nginx",
-	'errorNginxFilePattern' => "error.%Y.%m.%d-%H",
-	'errorNginxActiveFile' => "error",
-	'errorNginxReportAll' => TRUE, // if set to false, only errors regarding a file will be reported
-	'errorNginxMaxLogSize' => 5, // if log file is above this size (in Mb), do not parse it to get errors
-
-	/**
-	 * Defines strings that should not be reported from the nginx error logs
-	 *
-	 * (!) strings are case insensitive
-	 */
-	'errorNginxFilters' => [
+	const ERROR_NGINX_INTERVAL = 5; // check for nginx's logs (in minutes)
+	const ERROR_NGINX_PATH = '/var/log/nginx';
+	const ERROR_NGINX_FILE_PATTERN = 'error.%Y.%m.%d-%H';
+	const ERROR_NGINX_ACTIVE_FILE = 'error';
+	const ERROR_NGINX_REPORT_ALL = TRUE; // if set to false, only errors regarding a file will be reported
+	const ERROR_NGINX_MAX_LOG_SIZE = 5; // if log file is above this size (in Mb), do not parse it to get errors
+	const ERROR_NGINX_FILTER = [
 		'word' => [
 			'No such file or directory',
 			'client intended to send too large body',
@@ -67,7 +35,15 @@ Setting::register('dev', [
 		'regex' => [
 			'/directory index of (.*) is forbidden/i'
 		]
-	],
+	];
 
-]);
+	// Compile version number for CSS / JS files
+	public static bool $featureCompileCodeVersion = TRUE;
+	// Compile Image version number
+	public static bool $featureCompileImageVersion = TRUE;
+}
+
+// Enable or disable access to monitoring admin pages
+DevSetting::setPrivilege('admin', FALSE);
+
 ?>

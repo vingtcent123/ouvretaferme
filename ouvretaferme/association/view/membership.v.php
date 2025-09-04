@@ -44,7 +44,7 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 	} else {
 
 		if(
-			date('m-d') >= Setting::get('association\canJoinForNextYearFrom') and
+			date('m-d') >= \association\AssociationSetting::CAN_JOIN_FOR_NEXT_YEAR_FROM and
 			$data->hasJoinedForNextYear === FALSE
 		) {
 

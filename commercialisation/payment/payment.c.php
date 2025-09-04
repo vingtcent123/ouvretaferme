@@ -1,9 +1,11 @@
 <?php
-Privilege::register('payment', [
-	'admin' => FALSE,
-	'access' => FALSE,
-]);
+namespace payment;
 
-Setting::register('payment', [
-]);
+class PaymentSetting extends \Settings {
+
+}
+
+PaymentSetting::setPrivilege('admin', FALSE);
+PaymentSetting::setPrivilege('access', FALSE);
+
 ?>

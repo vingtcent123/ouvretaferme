@@ -5,7 +5,7 @@ class Pdf extends PdfElement {
 
 	public static function getSelection(): array {
 		return parent::getSelection() + [
-			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.\Setting::get('selling\documentExpires').' MONTH)')
+			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.SellingSetting::DOCUMENT_EXPIRES.' MONTH)')
 		];
 	}
 

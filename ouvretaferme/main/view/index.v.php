@@ -170,8 +170,8 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo '<div class="home-story-wrapper">';
 		echo '<div class="home-story">';
 			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.").'</p>';
-			echo '<a href="'.\Setting::get('association\url').'" target="_blank" class="btn btn-secondary">'.S("Découvrir l'association").'</a> ';
-			echo '<a href="'.\Setting::get('association\url').'/nous-soutenir" target="_blank" class="btn btn-outline-secondary">'.S("Nous soutenir").'</a>';
+			echo '<a href="'.\association\AssociationSetting::URL.'" target="_blank" class="btn btn-secondary">'.S("Découvrir l'association").'</a> ';
+			echo '<a href="'.\association\AssociationSetting::URL.'/nous-soutenir" target="_blank" class="btn btn-outline-secondary">'.S("Nous soutenir").'</a>';
 		echo '</div>';
 		echo Asset::image('main', 'cube.png');
 	echo '</div>';
@@ -195,7 +195,7 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 
 	}
 
-	if(Privilege::can('farm\access')) {
+	if(\farm\FarmSetting::getPrivilege('access')) {
 
 		echo new \main\HomeUi()->getFarms($data->cFarmUser);
 
@@ -370,7 +370,7 @@ new AdaptativeView('/presentation/formations', function($data, MainTemplate $t) 
 	$t->header = '<h4 class="home-domain">'.Lime::getDomain().'</h4>';
 	$t->header .= '<h1>'.s("Journée de formation le 29 janvier 2025 <br/>Puy-de-Dôme (63)").'</h1>';
 
-	if(currentDate() <= Setting::get('main\limitTraining')) {
+	if(currentDate() <= \main\MainSetting::LIMIT_TRAINING) {
 
 		echo '<div class="home-presentation">';
 

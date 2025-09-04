@@ -164,9 +164,9 @@ class VatDeclarationUi {
 						}
 
 						$account = encode($eOperation['accountLabel']);
-						if(mb_substr($account, 0, mb_strlen(\Setting::get('account\vatBuyClassPrefix'))) === \Setting::get('account\vatBuyClassPrefix')) {
+						if(mb_substr($account, 0, mb_strlen(\account\AccountSetting::VAT_BUY_CLASS_PREFIX)) === \account\AccountSetting::VAT_BUY_CLASS_PREFIX) {
 							$type = s("Déductible");
-						} else if(mb_substr($account, 0, mb_strlen(\Setting::get('account\vatSellClassPrefix'))) === \Setting::get('account\vatSellClassPrefix')) {
+						} else if(mb_substr($account, 0, mb_strlen(\account\AccountSetting::VAT_SELL_CLASS_PREFIX)) === \account\AccountSetting::VAT_SELL_CLASS_PREFIX) {
 							$type = s("Collectée");
 						} else {
 							$type = '-';

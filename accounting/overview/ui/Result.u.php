@@ -34,8 +34,8 @@ Class ResultUi {
 		
 				$h .= '<tbody>';
 		
-					$h .= $this->getByClass(\Setting::get('account\productAccountClass'), $result, $cAccount);
-					$h .= $this->getByClass(\Setting::get('account\chargeAccountClass'), $result, $cAccount);
+					$h .= $this->getByClass(\account\AccountSetting::PRODUCT_ACCOUNT_CLASS, $result, $cAccount);
+					$h .= $this->getByClass(\account\AccountSetting::CHARGE_ACCOUNT_CLASS, $result, $cAccount);
 					$h .= $this->getTotalLine(array_sum(array_column($result, 'credit')) - array_sum(array_column($result, 'debit')));
 		
 				$h .= '</tbody>';
@@ -97,8 +97,8 @@ Class ResultUi {
 		$h = '<tr class="row-highlight row-bold">';
 		$h .= '<td></td>';
 		$h .= '<td class="text-end">'.match($class) {
-				\Setting::get('account\chargeAccountClass') => s("Total Charges"),
-				\Setting::get('account\productAccountClass') => s("Total Produits")
+				\account\AccountSetting::CHARGE_ACCOUNT_CLASS => s("Total Charges"),
+				\account\AccountSetting::PRODUCT_ACCOUNT_CLASS => s("Total Produits")
 			}.'</td>';
 		$h .= '<td class="text-end">'.number_format(abs($credit - $debit), thousands_separator: ' ').'</td>';
 		$h .= '</tr>';

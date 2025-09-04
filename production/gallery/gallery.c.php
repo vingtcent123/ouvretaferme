@@ -1,9 +1,10 @@
 <?php
-Privilege::register('gallery', [
-	'admin' => FALSE,
-]);
+namespace gallery;
 
-Setting::register('gallery', [
+class GallerySetting extends \Settings {
 
-]);
+}
+
+GallerySetting::setPrivilege('admin', FALSE);
+
 ?>

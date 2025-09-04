@@ -229,6 +229,9 @@ class Package {
 			case 'conf' :
 				return self::getElement('conf/'.$file.'.c.php', $package);
 
+			case 'setting' :
+				return self::getElement($file.'.c.php', $package);
+
 			case 'module' :
 				return self::getElement('module/'.$file.'.m.php', $package);
 
@@ -381,7 +384,7 @@ trait Notifiable {
 
 					$output[] = $class::$event(...$data);
 
-				} catch(DisabledFeature $e) {
+				} catch(Error $e) {
 
 				} catch(ObserverOutput $e) {
 					return $e->getOutput();
@@ -425,322 +428,43 @@ class ObserverOutput extends Exception {
 
 }
 
-/**
- * Handle packages settings
- */
-class Setting {
+class Settings {
 
-	/**
-	 * Registered settings
-	 *
-	 * @var array
-	 */
-	private static $settings = [];
+	private static array $privileges = [];
 
-	/**
-	 * Register a list of settings for a package
-	 *
-	 * @param string $package Package name
-	 * @param array $settings Settings list
-	 */
-	public static function register(string $package, array $settings): void {
-
-		if(isset(self::$settings[$package]) === FALSE) {
-			self::$settings[$package] = [];
-		}
-
-		self::$settings[$package] += $settings;
-
+	public static function setPrivilege(string $privilege, mixed $value): void {
+		self::$privileges[$privilege] = $value;
 	}
 
-	/**
-	 * Copy settings of a package to another one
-	 *
-	 */
-	public static function copy(string $from, string $to): void {
-		self::$settings[$to] = self::$settings[$from];
+	public static function getPrivilege(string $privilege): mixed {
+		if(array_key_exists($privilege, self::$privileges) === FALSE) {
+			throw new Exception('Privilege '.$privilege.' does not exist');
+		}
+		return self::$privileges[$privilege];
 	}
 
-	/**
-	 * Change status of a setting
-	 *
-	 * @param string $setting Setting name [namespace]\[constant] (ie: user\package)
-	 * @param mixed $value New value
-	 */
-	public static function set(string $setting, $value): void {
+	public static function checkPrivilege(string $privilege): void {
 
-		if(strpos($setting, '\\') === FALSE) {
-			$package = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']);
-			$name = $setting;
-		} else {
-			list($package, $name) = explode('\\', $setting, 2);
-		}
-
-		self::$settings[$package][$name] = $value;
-
-	}
-
-	/**
-	 * Adds data to an existing setting
-	 *
-	 * @param string $setting Setting name [namespace]\[constant] (ie: user\package)
-	 * @param array $valueAdded
-	 */
-	public static function add(string $setting, array $valueAdded): void {
-
-		if(strpos($setting, '\\') === FALSE) {
-			$package = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']);
-			$name = $setting;
-		} else {
-			list($package, $name) = explode('\\', $setting, 2);
-		}
-
-		self::$settings[$package][$name] += $valueAdded;
-
-	}
-
-	/**
-	 * Return the value of the given setting
-	 *
-	 * @param string $setting
-	 * @return bool
-	 */
-	public static function get(string $setting): mixed {
-
-		if(strpos($setting, '\\') === FALSE) {
-			$package = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']);
-			$name = $setting;
-		} else {
-			list($package, $name) = explode('\\', $setting, 2);
-		}
-
-		if(LIME_ENV !== 'dev' and \Package::exists($package) === FALSE) {
-			return FALSE;
-		}
-
-		Package::loadConf($package);
-
-		if(array_key_exists($name, self::$settings[$package]) === FALSE) {
-			throw new Exception('Setting '.$package.'\\'.$name.' does not exist');
-		}
-
-		if(is_closure(self::$settings[$package][$name])) {
-			$callable = self::$settings[$package][$name];
-			self::$settings[$package][$name] = $callable();
-		}
-
-		return self::$settings[$package][$name];
-
-	}
-
-}
-
-/**
- * Handle privileges
- */
-class Privilege {
-
-	/**
-	 * Registered privileges
-	 *
-	 * @var array
-	 */
-	private static $privileges = [];
-
-	/**
-	 * Register a list of privileges for a package
-	 *
-	 * @param string $package Package name
-	 * @param array $privileges Privileges list
-	 * @param array $override Override existing privileges
-	 */
-	public static function register(string $package, array $privileges, bool $override = FALSE): void {
-
-		if(isset(self::$privileges[$package]) === FALSE) {
-			self::$privileges[$package] = [];
-		}
-
-		if($override) {
-			self::$privileges[$package] = $privileges + self::$privileges[$package];
-		} else {
-			self::$privileges[$package] += $privileges;
-		}
-
-	}
-
-	/**
-	 * Checks if a privilege is registered
-	 *
-	 * @param string $privilege
-	 * @param ...$values
-	 * @return bool
-	 */
-	public static function can(string $privilege, ...$values): bool {
-
-		if(strpos($privilege, '\\') === FALSE) {
-			$package = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']);
-			$name = $privilege;
-		} else {
-			list($package, $name) = explode('\\', $privilege, 2);
-		}
-
-		Package::loadConf($package);
-
-		if(isset(self::$privileges[$package][$name]) === FALSE) {
-			throw new Exception('Privilege '.$package.'\\'.$name.' does not exist');
-		}
-
-		if(is_closure(self::$privileges[$package][$name])) {
-			$callable = self::$privileges[$package][$name];
-			self::$privileges[$package][$name] = $callable(...$values);
-		}
-
-		return self::$privileges[$package][$name];
-
-	}
-
-
-	/**
-	 * Throws a DisabledPage exception if the given privilege is not registered
-	 *
-	 * @param string $privilege Privilege name (ie : paper\admin)
-	 * @throws DisabledPage If privilege is not registered
-	 */
-	public static function check(string $privilege): void {
-
-		if(strpos($privilege, '\\') === FALSE) {
-			$privilege = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']).'\\'.$privilege;
-		}
-
-		// Check class privilege
-		if(self::can($privilege) === FALSE) {
+		$can = self::getPrivilege($privilege);
+		if($can === FALSE) {
 			throw new DisabledPage('Privilege '.$privilege);
 		}
 
 	}
 
 	/**
-	 * Change status of a privilege
-	 *
-	 * @param string $privilege Privilege name [namespace]\[constant] (ie: user\admin)
-	 * @param bool $status New status
-	 */
-	public static function set(string $privilege, bool $status): void {
-
-		if(strpos($privilege, '\\') === FALSE) {
-			$package = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']);
-			$name = $privilege;
-		} else {
-			list($package, $name) = explode('\\', $privilege, 2);
-		}
-
-		self::$privileges[$package][$name] = (bool)$status;
-
-	}
-
-}
-
-/**
- * Handle packages features
- */
-class Feature {
-
-	/**
-	 * Registered features
-	 *
-	 * @var array
-	 */
-	private static $features = [];
-
-
-	/**
-	 * Register a list of features for a package
-	 *
-	 * @param string $package Package name
-	 * @param array $features
-	 */
-	public static function register(string $package, array $features): void {
-
-		if(isset(self::$features[$package]) === FALSE) {
-			self::$features[$package] = [];
-		}
-
-		self::$features[$package] += $features;
-
-	}
-
-	/**
-	 * Change status of a feature
-	 *
-	 * @param string $feature Feature name [namespace]\[constant] (ie: user\package)
-	 * @param bool $status New status
-	 */
-	public static function set(string $feature, bool $status): void {
-
-		if(strpos($feature, '\\') === FALSE) {
-			$package = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']);
-			$name = $feature;
-		} else {
-			list($package, $name) = explode('\\', $feature, 2);
-		}
-
-		self::$features[$package][$name] = (bool)$status;
-	}
-
-
-	/**
-	 * Return status of a feature
-	 *
-	 * @param string $feature Feature name [namespace]\[constant] (ie: user\package)
-	 * @param ...$values
-	 */
-	public static function get(string $feature, ...$values): mixed {
-
-		if(strpos($feature, '\\') === FALSE) {
-			$package = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']);
-			$name = $feature;
-		} else {
-			list($package, $name) = explode('\\', $feature, 2);
-		}
-
-		if(LIME_ENV !== 'dev' and \Package::exists($package) === FALSE) {
-			return FALSE;
-		}
-
-		Package::loadConf($package);
-
-		if(isset(self::$features[$package][$name]) === FALSE) {
-			throw new Exception('Feature '.$package.'\\'.$name.' does not exist');
-		}
-
-		if(is_closure(self::$features[$package][$name])) {
-			$callable = self::$features[$package][$name];
-			self::$features[$package][$name] = $callable(...$values);
-		}
-
-		return self::$features[$package][$name];
-
-	}
-
-
-	/**
 	 * Throws a DisabledPage exception if the given feature is disabled
 	 *
-	 * @param string $feature Feature name (ie : user\admin)
 	 * @throws DisabledPage If feature is disabled
 	 */
-	public static function check(string $feature): void {
-
-		if(strpos($feature, '\\') === FALSE) {
-			$feature = Package::getPackageFromPath(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file']).'\\'.$feature;
-		}
+	public static function checkFeature(bool $feature): void {
 
 		// Check class feature
-		if(self::get($feature) === FALSE) {
-			throw new DisabledPage('Feature '.$feature);
+		if($feature === FALSE) {
+			throw new DisabledPage('Feature disabled');
 		}
 
 	}
-
 }
+
 ?>

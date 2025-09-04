@@ -69,7 +69,7 @@ class BrevoLib {
 		$data = json_encode($object);
 
 		$header = [
-			'api-key: '.\Setting::get('mail\brevoApiKey'),
+			'api-key: '.MailSetting::$brevoApiKey,
 			'accept: application/json',
 			'Content-Type: application/json',
 			'Content-Length: '.strlen($data)

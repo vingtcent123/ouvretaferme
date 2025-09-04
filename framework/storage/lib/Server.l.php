@@ -25,7 +25,7 @@ class ServerLib {
 		}
 
 		$path = 'tmp/'.$basename;
-		\Setting::get('media\mediaDriver')->sendBinary($data, $path);
+		\media\MediaSetting::$mediaDriver->sendBinary($data, $path);
 
 		return $path;
 
@@ -41,8 +41,8 @@ class ServerLib {
 	 */
 	public static function reput(string $type, string $basename, ?callable $callback = NULL): array {
 
-		$resource = \Setting::get('media\mediaDriver')->getFileResource($basename);
-		$metadata = \Setting::get('media\mediaDriver')->getMetadata($basename);
+		$resource = \media\MediaSetting::$mediaDriver->getFileResource($basename);
+		$metadata = \media\MediaSetting::$mediaDriver->getMetadata($basename);
 
 		// Save original file
 		self::buildImage($type, NULL, $resource, $basename, self::getTypeFromResource($resource));
@@ -56,7 +56,7 @@ class ServerLib {
 	 */
 	public static function rotate(string $type, string $basename, int $angle): array {
 
-		$resource = \Setting::get('media\mediaDriver')->getFileResource($basename);
+		$resource = \media\MediaSetting::$mediaDriver->getFileResource($basename);
 		$typeSource = self::getTypeFromResource($resource);
 
 		if($typeSource !== IMAGETYPE_JPEG and $typeSource !== IMAGETYPE_PNG) {
@@ -65,7 +65,7 @@ class ServerLib {
 
 		$resource->rotateImage('white', $angle);
 
-		$metadata = \Setting::get('media\mediaDriver')->getMetadata($basename);
+		$metadata = \media\MediaSetting::$mediaDriver->getMetadata($basename);
 		$metadata['crop'] = ['top' => 0, 'left' => 0, 'width' => 100, 'height' => 100];
 
 		self::buildImage($type, NULL, $resource, $basename, $typeSource);
@@ -105,7 +105,7 @@ class ServerLib {
 	public static function putImage(string $type, string $basename, \Imagick $resource, ?callable $callback = NULL): array {
 
 		$typeSource = self::getTypeFromResource($resource);
-		$typeDestination = \Setting::get($type)['imageOutputType'] ?? NULL;
+		$typeDestination = StorageSetting::$types[$type]['imageOutputType'] ?? NULL;
 
 		if(is_array($typeDestination)) {
 			if(in_array($typeSource, $typeDestination)) {
@@ -130,12 +130,12 @@ class ServerLib {
 		if($typeDestination !== IMAGETYPE_GIF) {
 
 			// We resize the original file
-			$maxSize = \Setting::get($type)['imageMaxLength'];
+			$maxSize = StorageSetting::$types[$type]['imageMaxLength'];
 
 			if($maxSize !== NULL) {
 
-				$minPixels = \Setting::get($type)['imageMinPixels'] ?? NULL;
-				ImageLib::resize($maxSize, $resource, \Setting::get($type)['imageFormatConstraint'] ?? NULL, $minPixels);
+				$minPixels = StorageSetting::$types[$type]['imageMinPixels'] ?? NULL;
+				ImageLib::resize($maxSize, $resource, StorageSetting::$types[$type]['imageFormatConstraint'] ?? NULL, $minPixels);
 
 			}
 
@@ -201,14 +201,14 @@ class ServerLib {
 		if($elementsFrom['type'] === $elementsTo['type']) {
 
 			// All formats (+ original)
-			$formats = \Setting::get($elementsTo['type'])['imageFormat'];
+			$formats = StorageSetting::$types[$elementsTo['type']]['imageFormat'];
 			$formats[] = NULL;
 
 			foreach($formats as $format) {
 
 				$from = self::getPath($elementsFrom['type'], $format, $elementsFrom['hash'].'.'.$elementsFrom['extension']);
 				$to = self::getPath($elementsTo['type'], $format, $elementsTo['hash'].'.'.$elementsTo['extension']);
-				\Setting::get('media\mediaDriver')->copy($from, $to);
+				\media\MediaSetting::$mediaDriver->copy($from, $to);
 
 			}
 
@@ -216,8 +216,8 @@ class ServerLib {
 
 		} else {
 
-			$metadata = \Setting::get('media\mediaDriver')->getMetadata($basenameFrom);
-			$resource = \Setting::get('media\mediaDriver')->getFileResource($basenameFrom);
+			$metadata = \media\MediaSetting::$mediaDriver->getMetadata($basenameFrom);
+			$resource = \media\MediaSetting::$mediaDriver->getFileResource($basenameFrom);
 
 			$typeSource = self::getTypeFromResource($resource);
 
@@ -245,11 +245,11 @@ class ServerLib {
 		}
 
 		// Save required formats
-		$formats = array_reverse(\Setting::get($type)['imageFormat'], TRUE);
-		$resizeReference = \Setting::get($type)['imageResizeReference'] ?? [];
+		$formats = array_reverse(StorageSetting::$types[$type]['imageFormat'], TRUE);
+		$resizeReference = StorageSetting::$types[$type]['imageResizeReference'] ?? [];
 
 		$typeSource = self::getTypeFromResource($resource);
-		$typeDestination = \Setting::get($type)['imageOutputType'];
+		$typeDestination = StorageSetting::$types[$type]['imageOutputType'];
 
 		if(is_array($typeDestination)) {
 			if(in_array($typeSource, $typeDestination)) {
@@ -278,8 +278,8 @@ class ServerLib {
 					$resizeFactor = min($resourceWidth / $format[0], $resourceHeight / $format[1]);
 				}
 
-				if($resizeFactor >= \Setting::get('imageResizeRequiredFactor')) {
-					ImageLib::resize($format, $resourceDestination, \Setting::get($type)['imageFormatConstraint'] ?? NULL);
+				if($resizeFactor >= StorageSetting::IMAGE_RESIZE_REQUIRED_FACTOR) {
+					ImageLib::resize($format, $resourceDestination, StorageSetting::$types[$type]['imageFormatConstraint'] ?? NULL);
 				}
 
 				self::buildImage($type, $name, $resourceDestination, $fileDestination, $typeDestination);
@@ -311,7 +311,7 @@ class ServerLib {
 			->insert($eBuffer);
 
 		// Saves metadata file
-		\Setting::get('media\mediaDriver')->saveMetadata($basename, $metadata);
+		\media\MediaSetting::$mediaDriver->saveMetadata($basename, $metadata);
 
 		return $metadata;
 
@@ -372,7 +372,7 @@ class ServerLib {
 
 		}
 
-		\Setting::get('media\mediaDriver')->sendResource($resource, $filePath);
+		\media\MediaSetting::$mediaDriver->sendResource($resource, $filePath);
 
 	}
 
@@ -451,8 +451,8 @@ class ServerLib {
 
 	private static function copyMetadata(string $type, string $basenameFrom, string $basenameTo): void {
 
-		$metadataFrom = \Setting::get('media\mediaDriver')->getMetadata($basenameFrom);
-		\Setting::get('media\mediaDriver')->saveMetadata($basenameTo, $metadataFrom);
+		$metadataFrom = \media\MediaSetting::$mediaDriver->getMetadata($basenameFrom);
+		\media\MediaSetting::$mediaDriver->saveMetadata($basenameTo, $metadataFrom);
 
 	}
 

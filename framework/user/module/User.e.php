@@ -38,6 +38,18 @@ class User extends UserElement {
 
 	}
 
+	public function isAdmin(): bool {
+		return $this->isRole('admin');
+	}
+
+	public function isFarmer(): bool {
+		return $this->isRole('admin') or $this->isRole('farmer');
+	}
+
+	public function isCustomer(): bool {
+		return $this->isRole('admin') or $this->isRole('farmer') or $this->isRole('customer');
+	}
+
 	public function active(): bool {
 		return ($this['status'] === User::ACTIVE);
 	}
@@ -113,8 +125,8 @@ class User extends UserElement {
 					Role::model()
 						->select('fqn')
 						->get($eRole) and (
-						in_array($eRole['fqn'], \Setting::get('user\signUpRoles')) or // Allowed role
-						\Privilege::can('user\privilege') // Admin guy
+						in_array($eRole['fqn'], UserSetting::$signUpRoles) or // Allowed role
+						UserSetting::getPrivilege('privilege') // Admin guy
 					)
 				);
 
@@ -204,7 +216,7 @@ class User extends UserElement {
 				}
 
 				// Block emails that can be used with IMAP auth
-				foreach(\Setting::get('user\auth') as $key => $params) {
+				foreach(UserSetting::AUTH as $key => $params) {
 
 					if($key === \user\UserAuth::IMAP) {
 

@@ -976,7 +976,7 @@ class FlowUi {
 
 			$d->values = [];
 
-			$lastSeason = $eFlow['sequence']['perennialLifetime'] ?? \Setting::get('maxSeasonStop');
+			$lastSeason = $eFlow['sequence']['perennialLifetime'] ?? SequenceSetting::MAX_SEASON_STOP;
 
 			for($season = 1; $season <= $lastSeason; $season++) {
 				$d->values[$season] = s("Saison {value}", $season);

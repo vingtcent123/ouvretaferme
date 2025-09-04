@@ -70,7 +70,7 @@ class DesignUi {
 	public static function getFont(string $label): ?array {
 
 		$font = array_filter(
-			\Setting::get('website\customFonts'), fn($font) => $font['value'] === $label
+			WebsiteSetting::CUSTOM_FONTS, fn($font) => $font['value'] === $label
 		);
 
 		return $font ? first($font) : NULL;
@@ -80,7 +80,7 @@ class DesignUi {
 	public static function getTitleFont(string $label): ?array {
 
 		$font = array_filter(
-			\Setting::get('website\customTitleFonts'), fn($font) => $font['value'] === $label
+			WebsiteSetting::CUSTOM_TITLE_FONTS, fn($font) => $font['value'] === $label
 		);
 
 		return $font ? first($font) : NULL;

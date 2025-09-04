@@ -1,11 +1,13 @@
 <?php
-Privilege::register('map', [
-	'admin' => FALSE,
-]);
+namespace map;
 
-Setting::register('map', [
+class MapSetting extends \Settings {
 
-	'mapboxToken' => fn() => throw new Exception('Missing mapbox token'),
+	public static $mapboxToken = NULL;
 
-]);
+}
+
+MapSetting::setPrivilege('admin', FALSE);
+
+MapSetting::$mapboxToken = fn() => throw new \Exception('Missing mapbox token');
 ?>

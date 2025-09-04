@@ -419,7 +419,7 @@ class ModuleLib {
 			$type = NULL;
 
 		} else if($property === 'id') {
-			$max = Filter::MAX_INT32;
+			$max = \Filter::MAX_INT32;
 			$split[2] = 'floor(($id - 1) / floor('.$max.' / $number))';
 			$type = 'int';
 		} else {
@@ -614,12 +614,9 @@ class ModuleLib {
 
 				if(preg_match("/SETTING\((.*)\)/si", $number, $result)) {
 
-					$setting = $result[1];
-					if(str_contains($setting, '\\') === FALSE) {
-						$setting = $element['package'].'\\'.$setting;
-					}
+					$setting = new \ReflectionClass('\\'.$package.'\\'.ucfirst($package).'Setting');
+					$number = $setting->getConstant($result[1]);
 
-					$number = \Setting::get($setting);
 				} else {
 					$number = (int)$number;
 				}
@@ -1183,13 +1180,8 @@ class ModuleLib {
 				$value = 'NULL';
 			} else if(preg_match("/SETTING\((.*)\)/si", $value, $result)) {
 
-				if(str_contains($result[1], '\\') === FALSE) {
-					$setting = $element['package'].'\\'.$result[1];
-				} else {
-					$setting = $result[1];
-				}
-
-				$value = '\Setting::get(\''.$setting.'\')';
+				$setting = new \ReflectionClass('\\'.$element['package'].'\\'.ucfirst($element['package']).'Setting');
+				$value = $setting->getConstant($result[1]);
 
 			} else if(preg_match("/PHP\((.*)\)/si", $value, $result)) {
 				$value = $result[1];

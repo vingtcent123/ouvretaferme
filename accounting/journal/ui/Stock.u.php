@@ -275,7 +275,7 @@ class StockUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['class' => array_keys(\Setting::get('account\stockVariationClasses'))]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['class' => array_keys(\account\AccountSetting::STOCK_VARIATION_CLASSES)]);
 				break;
 
 			case 'accountLabel':
@@ -293,7 +293,7 @@ class StockUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['class' => \Setting::get('account\stockVariationClasses')]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['class' => \account\AccountSetting::STOCK_VARIATION_CLASSES]);
 				break;
 
 			case 'variationAccountLabel':

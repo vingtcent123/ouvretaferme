@@ -353,7 +353,7 @@ Class VatUi {
 
 						$eOperationInitial = $eOperation['operation'];
 						if(
-							str_starts_with($eOperation['accountLabel'], \Setting::get('account\vatBuyClassPrefix'))
+							str_starts_with($eOperation['accountLabel'], \account\AccountSetting::VAT_BUY_CLASS_PREFIX)
 						and $eOperationInitial['type'] === OperationElement::CREDIT) {
 							$multiplyer = -1;
 						} else {

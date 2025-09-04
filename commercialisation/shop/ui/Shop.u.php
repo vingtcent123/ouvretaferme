@@ -463,7 +463,7 @@ class ShopUi {
 				if($eShop['hasPayment']) {
 					$h .= ' '.s("Le contenu des e-mails envoyés dépend aussi du moyen de paiement sélectionné par le client, si vous avez activé différentes moyens de paiement sur votre boutique.");
 				}
-			'</p>';
+				$h .= '</p>';
 			if($eShop['hasPayment']) {
 				$h .= $form->open(attributes: ['action' => '/shop/configuration:update', 'method' => 'get']);
 					$h .= $form->hidden('id', $eShop['id']);
@@ -851,9 +851,9 @@ class ShopUi {
 	public static function domain(bool $showProtocol = TRUE): string {
 
 		return $showProtocol ? match(LIME_ENV) {
-			'dev' => 'http://'.\Setting::get('shop\domain'),
-			'prod' => SERVER('REQUEST_SCHEME', default: 'https').'://'.\Setting::get('shop\domain')
-		} : \Setting::get('shop\domain');
+			'dev' => 'http://'.ShopSetting::$domain,
+			'prod' => SERVER('REQUEST_SCHEME', default: 'https').'://'.ShopSetting::$domain
+		} : ShopSetting::$domain;
 
 	}
 
@@ -1330,7 +1330,7 @@ class ShopUi {
 			case 'customFont':
 				$d->field = 'select';
 				$d->placeholder = s("Par défaut");
-				$d->values = \Setting::get('website\customFonts');
+				$d->values = \website\WebsiteSetting::CUSTOM_FONTS;
 				break;
 
 			case 'customBackground':
@@ -1344,7 +1344,7 @@ class ShopUi {
 			case 'customTitleFont':
 				$d->field = 'select';
 				$d->placeholder = s("Par défaut");
-				$d->values = \Setting::get('website\customTitleFonts');
+				$d->values = \website\WebsiteSetting::CUSTOM_TITLE_FONTS;
 				break;
 
 			case 'embedUrl':

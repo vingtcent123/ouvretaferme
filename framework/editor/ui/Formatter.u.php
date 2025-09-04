@@ -171,7 +171,7 @@ abstract class FormatterUi {
 
 							$imageNode = $this->dom->createElement('img');
 							$imageNode->setAttribute('src', $url);
-							$imageNode->setAttribute('style', 'max-width: 100%; max-height: '.\Setting::get('mail\maxWidth').'px; width: auto; height: auto');
+							$imageNode->setAttribute('style', 'max-width: 100%; max-height: '.\mail\MailSetting::MAX_WIDTH.'px; width: auto; height: auto');
 
 							$newNode = $this->dom->createElement('p');
 							$newNode->appendChild($imageNode);
@@ -326,8 +326,8 @@ abstract class FormatterUi {
 					$childNode->setAttribute('style', 'display: block');
 				} else {
 
-					if(mb_strlen($childNode->firstChild->nodeValue) > \Setting::get('editor\captionLimit')) {
-						$childNode->firstChild->nodeValue = mb_substr($childNode->firstChild->nodeValue, 0, \Setting::get('editor\captionLimit')).'...';
+					if(mb_strlen($childNode->firstChild->nodeValue) > EditorSetting::CAPTION_LIMIT) {
+						$childNode->firstChild->nodeValue = mb_substr($childNode->firstChild->nodeValue, 0, EditorSetting::CAPTION_LIMIT).'...';
 					}
 
 				}
@@ -692,7 +692,7 @@ abstract class FormatterUi {
 
 	protected function buildDownload(\DOMNode $node): string {
 
-		if(\Privilege::can('editor\admin')) {
+		if(EditorSetting::getPrivilege('admin')) {
 
 			$url = preg_replace('/\/photo\/([0-9]{3,4})\//', '/photo/', $node->getAttribute('url'));
 			return '<div><input onclick="this.select(); document.execCommand(&quot;copy&quot;);" value="'.$node->getAttribute('xyz').'" class="form-control"/>&nbsp;/&nbsp;<a href="'.$url.'?&amp;download=1" target="_blank">'.\Asset::icon('download').' '.s("Télécharger").'</a>&nbsp;/&nbsp;</div>';
@@ -746,7 +746,6 @@ abstract class FormatterUi {
 	public static function getQuoteIcons(): array {
 		return [
 			'quote' => 'quote',
-			'chat' => 'chat',
 			'localization' => 'geo-alt',
 			'calendar' => 'calendar3',
 			'gooddeal' => 'lightbulb',

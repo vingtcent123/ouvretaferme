@@ -1,16 +1,14 @@
 <?php
-Privilege::register('series', [
+namespace series;
 
-	'admin' => FALSE,
+class SeriesSetting extends \Settings {
 
-]);
+	const MISSING_WEEKS = 8;
+	const DUPLICATE_LIMIT = 10;
+	const DUPLICATE_INTERVAL = ['min' => -52, 'max' => 52];
 
-Setting::register('series', [
+}
 
-	'missingWeeks' => 8,
+SeriesSetting::setPrivilege('admin', FALSE);
 
-	'duplicateLimit' => 10,
-	'duplicateInterval' => ['min' => -52, 'max' => 52],
-
-]);
 ?>

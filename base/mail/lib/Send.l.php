@@ -143,7 +143,7 @@ class SendLib {
 			// /!\ Do not touch
 			if(LIME_ENV === 'dev') {
 
-				if(in_array($this->to, \Setting::get('mail\devSendOnly')) === FALSE) {
+				if(in_array($this->to, MailSetting::$devSendOnly) === FALSE) {
 					return $this;
 				}
 
@@ -158,8 +158,8 @@ class SendLib {
 				'html' => $this->bodyHtml,
 				'text' => $this->bodyText,
 				'subject' => $this->subject,
-				'fromEmail' => $this->fromEmail ?? \Setting::get('mail\emailFrom'),
-				'fromName' => $this->fromName ?? \Setting::get('mail\emailName'),
+				'fromEmail' => $this->fromEmail ?? MailSetting::EMAIL_FROM,
+				'fromName' => $this->fromName ?? MailSetting::$emailName,
 				'to' => $this->to,
 				'bcc' => $this->bcc,
 				'replyTo' => $this->replyTo,

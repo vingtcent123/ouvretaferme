@@ -39,7 +39,7 @@ class NewsLib extends NewsCrud {
 			->select(News::getSelection())
 			->whereStatus(News::READY)
 			->where('NOW() >= publishedAt')
-			->whereFarm(\Setting::get('blogFarm'))
+			->whereFarm(WebsiteSetting::BLOG_FARM)
 			->sort(['publishedAt' => SORT_DESC])
 			->getCollection(0, 5);
 

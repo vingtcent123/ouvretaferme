@@ -31,7 +31,7 @@ class DesignUi {
 
 		$eFarm->expects(['emailBanner', 'emailFooter']);
 
-		$html = '<div style="max-width: '.\Setting::get('mail\maxWidth').'px">';
+		$html = '<div style="max-width: '.MailSetting::MAX_WIDTH.'px">';
 			$html .= self::getBanner($eFarm);
 			$html .= $content;
 			$html .= self::getFooter($eFarm);

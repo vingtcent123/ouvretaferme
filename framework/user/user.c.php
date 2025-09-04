@@ -1,48 +1,42 @@
 <?php
-Feature::register('user', [
+namespace user;
 
-	// Enable/disable signup
-	'signUp' => TRUE,
+class UserSetting extends \Settings {
 
-	// Enable/disable ban
-	'ban' => FALSE,
+	public static bool $featureSignUp = TRUE;
+	public static bool $featureBan = FALSE;
 
-]);
+	const PASSWORD_SIZE_MIN = 8;
+	const NAME_SIZE_MAX = 50;
 
-Privilege::register('user', [
-	'admin' => FALSE,
-	'ban' => FALSE,
-	'privilege' => FALSE
-]);
-
-Setting::register('user', [
-
-	'passwordSizeMin' => 8,
-	'nameSizeMax' => 50,
-	'checkTos' => FALSE,
-
-	'signUpRoles' => [],
-	'statsRoles' => [],
+	public static bool $checkTos = FALSE;
+	public static array $signUpRoles = [];
+	public static array $statsRoles = [];
+	public static string $signUpView = '';
 
 	// Number of days for saving logs
-	'keepLogs' => 90,
+	const KEEP_LOGS = 90;
 
 	// Number of minutes after login to close its account
-	'closeTimeLimit' => 3,
+	const CLOSE_TIME_LIMIT = 3;
 
 	// Number of days to cancel account closing
-	'closeTimeout' => 10,
+	const CLOSE_TIMEOUT = 10;
 
 	// Authorized authentication
-	'auth' => ['basic'],
+	const AUTH = ['basic'];
 
 	// Maximum allowed people on the same IP to allow banishment by IP
-	'maxBanOnSameIp' => 1000,
+	const MAX_BAN_ON_SAME_IP = 1000;
 
 	// Maximum ban displayed per page on ban admin page
-	'maxByPage' => 50,
+	const MAX_BY_PAGE = 50;
+	const LOG_SPLIT = 1;
+}
 
-	'logSplit' => 1,
 
-]);
+UserSetting::setPrivilege('admin', FALSE);
+UserSetting::setPrivilege('ban', FALSE);
+UserSetting::setPrivilege('privilege', FALSE);
+
 ?>

@@ -16,7 +16,7 @@ class Plant extends PlantElement {
 		$this->expects(['farm']);
 
 		if(
-			\Privilege::can('plant\admin') and
+			PlantSetting::getPrivilege('admin') and
 			$this['farm']->empty()
 		) {
 			return TRUE;
@@ -49,7 +49,7 @@ class Plant extends PlantElement {
 		$this->expects(['farm', 'fqn']);
 
 		if(
-			\Privilege::can('plant\admin') and
+			PlantSetting::getPrivilege('admin') and
 			$this['farm']->empty() and
 			$this['fqn'] !== NULL
 		) {

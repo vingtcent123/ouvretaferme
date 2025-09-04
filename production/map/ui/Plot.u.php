@@ -186,7 +186,7 @@ class PlotUi {
 		$h .= $form->openAjax('/map/plot:doCreate', ['id' => 'plot-create', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('zone', $eZone['id']);
-			$h .= $form->hidden('season', \Setting::get('main\onlineSeason'));
+			$h .= $form->hidden('season', \main\MainSetting::$onlineSeason);
 
 			$h .= $form->group(
 				s("Parcelle"),
@@ -227,7 +227,7 @@ class PlotUi {
 		$h .= $form->openAjax('/map/plot:doUpdate', ['id' => 'plot-update', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $ePlot['id']);
-			$h .= $form->hidden('season', \Setting::get('main\onlineSeason'));
+			$h .= $form->hidden('season', \main\MainSetting::$onlineSeason);
 
 			$h .= $form->group(
 				s("Parcelle"),
@@ -286,7 +286,7 @@ class PlotUi {
 
 			$map = '<div class="form-control-block">';
 				$map .= '<p>'.s("Pour dessiner ce jardin sur la carte, vous devez d'abord cartographier la parcelle dans laquelle il se trouve. Vous pouvez aussi sauter cette étape et saisir directement la surface de ce jardin.").'</p>';
-				$map .= '<a href="/map/zone:update?id='.$eZone['id'].'&season='.\Setting::get('main\onlineSeason').'" class="btn btn-outline-primary">'.s("Cartographier la parcelle").'</a>';
+				$map .= '<a href="/map/zone:update?id='.$eZone['id'].'&season='.\main\MainSetting::$onlineSeason.'" class="btn btn-outline-primary">'.s("Cartographier la parcelle").'</a>';
 			$map .= '</div>';
 
 		} else {

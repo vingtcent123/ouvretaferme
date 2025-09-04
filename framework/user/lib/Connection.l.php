@@ -103,7 +103,7 @@ class ConnectionLib {
 
 		}
 
-		\Setting::set('main\onlineUser', self::$eUserOnline);
+		\main\MainSetting::$onlineUser = self::$eUserOnline;
 
 		return self::$eUserOnline;
 
@@ -167,7 +167,7 @@ class ConnectionLib {
 
 			// Check if the user or his IP is currently banned
 			if(
-				\Feature::get('user\ban') and
+				UserSetting::$featureBan and
 				BanLib::isBanned($eUserAuto['user'], getIp())
 			) {
 
@@ -336,7 +336,7 @@ class ConnectionLib {
 
 		$fw = new \FailWatch();
 
-		foreach(\Setting::get('auth') as $auth => $params) {
+		foreach(UserSetting::AUTH as $auth => $params) {
 
 			if(is_string($params)) {
 				$auth = $params;
@@ -354,7 +354,7 @@ class ConnectionLib {
 			if($eUserAuth->empty() === FALSE and $eUserAuth['user']->empty() === FALSE) {
 
 				// Check user ban
-				if(\Feature::get('user\ban')) {
+				if(UserSetting::$featureBan) {
 
 					$eBan = BanLib::getByUser($eUserAuth['user'], getIp());
 

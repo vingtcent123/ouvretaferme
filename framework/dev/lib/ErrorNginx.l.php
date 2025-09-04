@@ -21,7 +21,7 @@ class ErrorNginxLib {
 			$ext = '.log';
 
 			// set file path
-			$log['file'] = \Setting::get('errorNginxPath').'/'.$log['folder'].'/'.$log['file'];
+			$log['file'] = DevSetting::ERROR_NGINX_PATH.'/'.$log['folder'].'/'.$log['file'];
 
 		} else if($log['type'] === 'bz2') {
 
@@ -31,7 +31,7 @@ class ErrorNginxLib {
 			// bunzip and export the compressed file into the /tmp folder
 			$status = NULL;
 			$output = NULL;
-			exec('bzcat '.\Setting::get('errorNginxPath').'/'.$log['folder'].'/'.$log['file'].'.log.bz2 > /tmp/'.$log['file'].'.log', $output, $status);
+			exec('bzcat '.DevSetting::ERROR_NGINX_PATH.'/'.$log['folder'].'/'.$log['file'].'.log.bz2 > /tmp/'.$log['file'].'.log', $output, $status);
 
 			// Check bzcat returned value
 			if($status !== 0) {
@@ -49,8 +49,8 @@ class ErrorNginxLib {
 		$fileName = $log['file'].$ext;
 
 		// Check file size
-		if(filesize($fileName) > \Setting::get('errorNginxMaxLogSize') * 1024 * 1024) {
-			trigger_error("Log file '".$fileName."' is too big (> ".\Setting::get('errorNginxMaxLogSize')."Mb)");
+		if(filesize($fileName) > DevSetting::ERROR_NGINX_MAX_LOG_SIZE * 1024 * 1024) {
+			trigger_error("Log file '".$fileName."' is too big (> ".DevSetting::ERROR_NGINX_MAX_LOG_SIZE."Mb)");
 			return;
 		}
 
@@ -62,13 +62,13 @@ class ErrorNginxLib {
 
 		$minutes = date('i');
 
-		if($minutes > \Setting::get('errorNginxInterval')) {
-			$minutesMin = (int)((floor($minutes / \Setting::get('errorNginxInterval')) - 1) * \Setting::get('errorNginxInterval'));
+		if($minutes > DevSetting::ERROR_NGINX_INTERVAL) {
+			$minutesMin = (int)((floor($minutes / DevSetting::ERROR_NGINX_INTERVAL) - 1) * DevSetting::ERROR_NGINX_INTERVAL);
 		} else {
-			$minutesMin = (int)(60 - \Setting::get('errorNginxInterval'));
+			$minutesMin = (int)(60 - DevSetting::ERROR_NGINX_INTERVAL);
 		}
 
-		$minutesMax = $minutesMin + \Setting::get('errorNginxInterval') - 1;
+		$minutesMax = $minutesMin + DevSetting::ERROR_NGINX_INTERVAL - 1;
 
 		$nextLine = fgets($handle, 1000000);
 		$nextDate = NULL;
@@ -156,15 +156,15 @@ class ErrorNginxLib {
 
 		$minutes = date('i');
 
-		// from minutes 0 to \Setting::get('errorNginxInterval') - 1 we parse the archived file
-		// from \Setting::get('errorNginxInterval') to 59 we parse the current error file
+		// from minutes 0 to DevSetting::ERROR_NGINX_INTERVAL - 1 we parse the archived file
+		// from DevSetting::ERROR_NGINX_INTERVAL to 59 we parse the current error file
 
-		if($minutes < \Setting::get('errorNginxInterval')) {
+		if($minutes < DevSetting::ERROR_NGINX_INTERVAL) {
 			// generate file path
-			$file = strftime(\Setting::get('errorNginxFilePattern'), $timestamp);
+			$file = strftime(DevSetting::ERROR_NGINX_FILE_PATTERN, $timestamp);
 			$folder = sprintf("%02d", date('m', $timestamp));
 		} else {
-			$file = \Setting::get('errorNginxActiveFile');
+			$file = DevSetting::ERROR_NGINX_ACTIVE_FILE;
 			$folder = ".";
 		}
 
@@ -184,7 +184,7 @@ class ErrorNginxLib {
 		}
 
 		// get filters
-		$filters = self::conf('errorNginxFilters');
+		$filters = DevSetting::ERROR_NGINX_FILTER;
 
 		// determine error level
 		if(stripos($line, 'fatal') !== FALSE or strpos($line, 'Segmentation fault') !== FALSE) {
@@ -218,7 +218,7 @@ class ErrorNginxLib {
 		$file = self::getDataFromLine(self::getPattern('file'), $line);
 
 		if($file === NULL) {
-			if(\Setting::get('errorNginxReportAll') === TRUE) {
+			if(DevSetting::ERROR_NGINX_REPORT_ALL === TRUE) {
 				$file = '';
 			} else {
 				return new Error();
@@ -387,9 +387,9 @@ class ErrorNginxLib {
 
 	protected static function getFileType(string $folder, string $file) {
 
-		if(file_exists(\Setting::get('errorNginxPath').'/'.$folder.'/'.$file.'.log')) {
+		if(file_exists(DevSetting::ERROR_NGINX_PATH.'/'.$folder.'/'.$file.'.log')) {
 			return 'log';
-		} else if(file_exists(\Setting::get('errorNginxPath').'/'.$folder.'/'.$file.'.log.bz2')) {
+		} else if(file_exists(DevSetting::ERROR_NGINX_PATH.'/'.$folder.'/'.$file.'.log.bz2')) {
 			return 'bz2';
 		} else {
 			return NULL;

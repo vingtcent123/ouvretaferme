@@ -83,7 +83,7 @@ class DriverLib {
 
 	public static function directory() {
 
-		return \Setting::get('storage\basePath');
+		return StorageSetting::BASE_PATH;
 
 	}
 

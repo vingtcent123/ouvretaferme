@@ -80,7 +80,7 @@ class MembershipUi {
 
 		if($eFarm['membership'] === FALSE) {
 			$h .= '<p>';
-				$h .= '<a href="'.\Setting::get('association\url').'" class="btn btn-secondary">'.s("Voir le site de l'association").'</a> ';
+				$h .= '<a href="'.AssociationSetting::URL.'" class="btn btn-secondary">'.s("Voir le site de l'association").'</a> ';
 				$h .= '<a href="'.\farm\FarmUi::url($eFarm).'/donner" class="btn btn-outline-secondary">'.s("Je veux plutôt faire un don").'</a>';
 			$h .= '</p>';
 		}
@@ -158,7 +158,7 @@ class MembershipUi {
 
 			$form = new \util\FormUi();
 
-			$fee = \Setting::get('association\membershipFee');
+			$fee = AssociationSetting::MEMBERSHIP_FEE;
 
 			$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join']);
 

@@ -185,7 +185,7 @@ server {
 		$cWebsite = Website::model()
 			->select('id', 'domain', 'domainTry')
 			->whereDomainStatus('IN', [Website::CONFIGURED_UNSECURED, Website::FAILURE_UNSECURED])
-			->whereDomainTry('<', \Setting::get('domainMaxTry'))
+			->whereDomainTry('<', WebsiteSetting::DOMAIN_MAX_TRY)
 			->getCollection();
 
 		if($cWebsite->notEmpty()) {
@@ -274,7 +274,7 @@ server {
 		$cWebsite = Website::model()
 			->select('id', 'domain', 'domainTry')
 			->whereDomainStatus('IN', [Website::CONFIGURED_SECURED, Website::FAILURE_SECURED])
-			->whereDomainTry('<', \Setting::get('domainMaxTry'))
+			->whereDomainTry('<', WebsiteSetting::DOMAIN_MAX_TRY)
 			->getCollection();
 
 		foreach($cWebsite as $eWebsite) {

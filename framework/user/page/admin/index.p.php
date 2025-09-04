@@ -1,5 +1,5 @@
 <?php
-(new Page(fn() => Privilege::check('user\admin')))
+new Page(fn() => \user\UserSetting::checkPrivilege('admin'))
 	->match(['get', 'post'], 'index', function($data) {
 
 		$data->page = REQUEST('page', 'int');
@@ -13,7 +13,7 @@
 
 		[$data->cUser, $data->nUser] = \user\AdminLib::getUsers($data->page, $data->search);
 
-		$data->cRole = \user\RoleLib::getByFqns(Setting::get('user\statsRoles'));
+		$data->cRole = \user\RoleLib::getByFqns(\user\UserSetting::$statsRoles);
 		$data->cUserDaily = new \user\UserLib()->getDailyUsersStats($data->cRole);
 		$data->cUserActive = new \user\UserLib()->getActiveUsersStats($data->cRole);
 
@@ -27,7 +27,7 @@
 
 new \user\UserPage(
 		function($data) {
-			Privilege::check('user\admin');
+			\user\UserSetting::checkPrivilege('admin');
 		},
 		propertiesUpdate: ['email', 'birthdate', 'firstName', 'lastName']
 	)

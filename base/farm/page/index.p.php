@@ -1,5 +1,5 @@
 <?php
-(new Page(function($data) {
+new Page(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
@@ -9,7 +9,7 @@
 		$data->tip = \farm\TipLib::pickRandom($data->eUserOnline, $data->eFarm);
 		$data->tipNavigation = 'close';
 
-	}))
+	})
 	->get(['/ferme/{id}/itineraires', '/ferme/{id}/itineraires/{status}'], function($data) {
 
 		$data->sequences = \sequence\SequenceLib::countByFarm($data->eFarm);

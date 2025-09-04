@@ -93,7 +93,7 @@ class InviteLib extends InviteCrud {
 		}
 
 		$e['email'] = mb_strtolower($e['email']);
-		$e['expiresAt'] = new \Sql('CURDATE() + INTERVAL '.\Setting::get('farm\inviteDelay').' DAY');
+		$e['expiresAt'] = new \Sql('CURDATE() + INTERVAL '.FarmSetting::INVITE_DELAY.' DAY');
 
 		Invite::model()->insert($e);
 

@@ -1,14 +1,19 @@
 <?php
-Setting::register('association', [
+namespace association;
 
-	'url' => 'https://asso.ouvretaferme.org',
+class AssociationSetting extends \Settings {
 
-	'farm' => 1608,
+	const URL = 'https://asso.ouvretaferme.org';
 
-	'membershipFee' => 50,
-	'canJoinForNextYearFrom' => '09-01', // On peut adhérer pour l'année prochaine à partir du 1er octobre si on a déjà adhéré pour cette année
+	const FARM = 1608;
 
-	'isDonnerPageActive' => FALSE,
+	const MEMBERSHIP_FEE = 50;
 
-]);
+	// On peut adhérer pour l'année prochaine à partir du 1er octobre si on a déjà adhéré pour cette année
+	const CAN_JOIN_FOR_NEXT_YEAR_FROM = '10-01';
+
+	const IS_DONNER_PAGE_ACTIVE = FALSE;
+
+}
+
 ?>

@@ -1,14 +1,14 @@
 <?php
-Privilege::register('sequence', [
-	'admin' => FALSE,
-]);
+namespace sequence;
 
-Setting::register('sequence', [
+class SequenceSetting extends \Settings {
 
-	'minWeekN-1' => 26,
-	'maxWeekN+1' => 26,
+	const MIN_WEEK_MINUS_1 = 26;
+	const MIN_WEEK_PLUS_1 = 26;
+	const MAX_SEASON_STOP = 100;
 
-	'maxSeasonStop' => 100
+}
 
-]);
+SequenceSetting::setPrivilege('admin', FALSE);
+
 ?>

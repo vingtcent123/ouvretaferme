@@ -259,7 +259,7 @@ class SaleLib {
 				'unitPrice' => $eProduct['price'],
 				'unitPriceInitial' => $eProduct['priceInitial'],
 				'number' => $number,
-				'vatRate' => \Setting::get('selling\vatRates')[$eProductSelling['vat']],
+				'vatRate' => \selling\SellingSetting::VAT_RATES[$eProductSelling['vat']],
 			]);
 
 			$total += $number * ($eProduct['packaging'] ?? 1) * $eProduct['price'];

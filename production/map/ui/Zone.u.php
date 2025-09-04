@@ -168,7 +168,7 @@ class ZoneUi {
 		$h .= $form->openAjax('/map/zone:doCreate', ['id' => 'zone-create']);
 
 			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->hidden('season', \Setting::get('main\onlineSeason'));
+			$h .= $form->hidden('season', \main\MainSetting::$onlineSeason);
 
 			$h .= $form->group(
 				s("Ferme"),
@@ -206,7 +206,7 @@ class ZoneUi {
 		$h .= $form->openAjax('/map/zone:doUpdate', ['id' => 'zone-update']);
 
 			$h .= $form->hidden('id', $eZone['id']);
-			$h .= $form->hidden('season', \Setting::get('main\onlineSeason'));
+			$h .= $form->hidden('season', \main\MainSetting::$onlineSeason);
 
 			$h .= $form->group(
 				s("Ferme"),

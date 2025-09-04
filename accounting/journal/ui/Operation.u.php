@@ -770,7 +770,7 @@ class OperationUi {
 				$d->append = function(\util\FormUi $form, Operation $e) {
 					return $form->addon(s("€"));
 				};
-				$d->before = fn(\util\FormUi $form, $e) => $e->isQuick() and (int)substr($e['accountLabel'], 0, 3) !== \Setting::get('account\vatClass') ? \util\FormUi::info(s("Attention, pensez à répercuter ce changement sur la ligne de TVA si elle existe")) : '';
+				$d->before = fn(\util\FormUi $form, $e) => $e->isQuick() and (int)substr($e['accountLabel'], 0, 3) !== \account\AccountSetting::VAT_CLASS ? \util\FormUi::info(s("Attention, pensez à répercuter ce changement sur la ligne de TVA si elle existe")) : '';
 				break;
 
 

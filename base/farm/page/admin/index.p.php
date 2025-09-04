@@ -1,5 +1,5 @@
 <?php
-(new Page(fn() => Privilege::check('farm\admin')))
+new Page(fn() => \farm\FarmSetting::checkPrivilege('admin'))
 	->match(
 		['get', 'post'],
 		'index', function($data) {

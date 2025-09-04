@@ -155,7 +155,7 @@ class FlowLib extends FlowCrud {
 					$seasons = [$eFlow['seasonOnly']];
 				} else {
 					$seasons = [];
-					$lastSeason = $eFlow['seasonStop'] ?? \Setting::get('maxSeasonStop');
+					$lastSeason = $eFlow['seasonStop'] ?? SequenceSetting::MAX_SEASON_STOP;
 					for($season = $eFlow['seasonStart']; $season <= $lastSeason; $season++) {
 						$seasons[] = $season;
 					}
@@ -378,7 +378,7 @@ class FlowLib extends FlowCrud {
 
 					if(
 						$e[$propertyYear] < -1 or
-						($e[$propertyYear] === -1 and $e[$propertyWeek] < \Setting::get('minWeekN-1'))
+						($e[$propertyYear] === -1 and $e[$propertyWeek] < SequenceSetting::MIN_WEEK_MINUS_1)
 					) {
 						Flow::fail('weekTooSoonAnnual');
 						return FALSE;
@@ -386,7 +386,7 @@ class FlowLib extends FlowCrud {
 
 					if(
 						$e[$propertyYear] > 1 or
-						($e[$propertyYear] === 1 and $e[$propertyWeek] > \Setting::get('maxWeekN+1'))
+						($e[$propertyYear] === 1 and $e[$propertyWeek] > SequenceSetting::MIN_WEEK_PLUS_1)
 					) {
 						Flow::fail('weekTooLateAnnual');
 						return FALSE;

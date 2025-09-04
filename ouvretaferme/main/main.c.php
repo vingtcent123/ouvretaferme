@@ -1,15 +1,18 @@
 <?php
+namespace main;
 
-Setting::register('main', [
+class MainSetting extends \Settings {
 
-	'maintenance' => FALSE,
-	'limitTraining' => '2025-01-10',
+	const MAINTENANCE = FALSE;
 
-	'viewSettings' => 'settings',
-	'viewJournal' => 'journal',
-	'viewAsset' => 'asset',
-	'viewBank' => 'cashflow',
-	'viewAnalyze' => 'bank',
-	'viewOverview' => 'balance',
-]);
+	const LIMIT_TRAINING = '2025-01-10';
+
+	public static ?\user\User $onlineUser = NULL;
+	public static array $backupServer = ['user' => NULL, 'hostname' => NULL];
+	public static array $crypt = [];
+
+	public static ?int $onlineSeason = NULL;
+
+}
+
 ?>

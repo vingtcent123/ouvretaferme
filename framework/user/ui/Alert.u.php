@@ -35,7 +35,7 @@ class AlertUi {
 			'User::internal' => s("Une erreur interne est survenue."),
 
 			'UserAuth::password.match' => s("Vous avez entré deux mots de passe différents"),
-			'UserAuth::password.check' => p("Votre mot de passe doit contenir au minimum {value} caractère", "Votre mot de passe doit contenir au minimum {value} caractères", \Setting::get('passwordSizeMin')),
+			'UserAuth::password.check' => p("Votre mot de passe doit contenir au minimum {value} caractère", "Votre mot de passe doit contenir au minimum {value} caractères", UserSetting::PASSWORD_SIZE_MIN),
 			'UserAuth::passwordOld.invalid' => s("Votre mot de passe actuel n'est pas correct"),
 
 

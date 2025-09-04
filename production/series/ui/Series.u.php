@@ -464,7 +464,7 @@ class SeriesUi {
 
 					if($season < date('Y')) {
 
-						if(date('m') >= \Setting::get('farm\newSeason')) {
+						if(date('m') >= \farm\FarmSetting::NEW_SEASON) {
 							$nextSeason = s("{value1} ou {value2}", ['value1' => date('Y'), 'value2' => nextYear()]);
 						} else {
 							$nextSeason = date('Y');
@@ -472,7 +472,7 @@ class SeriesUi {
 
 						$d->after = '<div class="util-danger mt-1">'.s("Vous vous apprêtez à créer une série pour une saison déjà passée. Vous pouvez corriger votre choix si vous souhaitez créer une série pour la saison {value}.", $nextSeason).'</div>';
 
-					} else if($season === (int)date('Y') and date('m') >= \Setting::get('farm\newSeason')) {
+					} else if($season === (int)date('Y') and date('m') >= \farm\FarmSetting::NEW_SEASON) {
 
 						$nextSeason = $season + 1;
 
@@ -944,7 +944,7 @@ class SeriesUi {
 
 		$h .= $form->openAjax('/series/series:doDuplicate', ['id' => 'series-duplicate', 'data-season' => $eSeriesFirst['season']]);
 
-			$input = '<div class="series-duplicate-copies" data-limit="'.\Setting::get('series\duplicateLimit').'">';
+			$input = '<div class="series-duplicate-copies" data-limit="'.SeriesSetting::DUPLICATE_LIMIT.'">';
 				$input .= '<a onclick="Series.changeDuplicateCopies(this, -1)" class="series-duplicate-copies-minus series-duplicate-copies-disabled">'.\Asset::icon('dash-circle').'</a>';
 				$input .= '<span class="series-duplicate-copies-label">'.s("{value}", '<span class="series-duplicate-copies-value">1</span>').'</span>';
 				$input .= '<a onclick="Series.changeDuplicateCopies(this, 1)" class="series-duplicate-copies-plus">'.\Asset::icon('plus-circle').'</a>';
@@ -1072,7 +1072,7 @@ class SeriesUi {
 			$field .= '<div class="series-duplicate-interval">';
 				$field .= $form->inputGroup(
 					$form->addon(s("Décaler les interventions de")).
-					$form->number('taskInterval['.$eSeries['id'].']['.($copy - 1).']', attributes: \Setting::get('series\duplicateInterval')).
+					$form->number('taskInterval['.$eSeries['id'].']['.($copy - 1).']', attributes: SeriesSetting::DUPLICATE_INTERVAL).
 					$form->addon(s("semaine(s)"))
 				);
 			$field .= '</div>';

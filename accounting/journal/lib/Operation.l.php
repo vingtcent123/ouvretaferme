@@ -91,7 +91,7 @@ class OperationLib extends OperationCrud {
 
 	public static function getAllForVatDeclaration(\Search $search = new \Search()): \Collection {
 
-		$search->set('accountLabel', \Setting::get('account\vatClass'));
+		$search->set('accountLabel', \account\AccountSetting::VAT_CLASS);
 
 		return self::applySearch($search)
        ->select(
@@ -154,8 +154,8 @@ class OperationLib extends OperationCrud {
 			)
 			->sort(['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC])
 			->or(
-				fn() => $this->whereAccountLabel('LIKE', \Setting::get('account\chargeAccountClass').'%'),
-				fn() => $this->whereAccountLabel('LIKE', \Setting::get('account\productAccountClass').'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%'),
 			)
 			->getCollection();
 	}
@@ -176,7 +176,7 @@ class OperationLib extends OperationCrud {
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
 			)
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC])
-			->whereAccountLabel('LIKE', ($type === 'buy' ? \Setting::get('account\vatBuyClassPrefix') : \Setting::get('account\vatSellClassPrefix')).'%')
+			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
 			->where(new \Sql('operation IS NOT NULL'))
 			->getCollection(NULL, NULL, ['accountLabel', 'month', 'id']);
 
@@ -198,7 +198,7 @@ class OperationLib extends OperationCrud {
 			->where('m2.account = '.$eBankAccount['id'])
 			// Type banque
 			->join(\account\Account::model(), 'm1.account = m3.id')
-			->where('m3.class = '.\Setting::get('account\bankAccountClass'))
+			->where('m3.class = '.\account\AccountSetting::BANK_ACCOUNT_CLASS)
 			// De l'exercice comptable courant
 			->where('m1.date >= "'.$eFinancialYear['startDate'].'"')
 			->where('m1.date <= "'.$eFinancialYear['endDate'].'"')
@@ -271,12 +271,12 @@ class OperationLib extends OperationCrud {
 
 		if(mb_strpos($paymentType, 'client') !== FALSE) {
 
-			$eAccount = \account\AccountLib::getByClass(\Setting::get('account\thirdAccountClientReceivableClass'));
+			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
 			$thirdPartyType = 'client';
 
 			if($eOperation['thirdParty']['clientAccountLabel'] === NULL) {
 
-				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel',\Setting::get('account\thirdAccountClientReceivableClass'));
+				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
 				$eOperation['thirdParty']['clientAccountLabel'] = $nextLabel;
 				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['clientAccountLabel']);
 				$accountLabel = $nextLabel;
@@ -289,12 +289,12 @@ class OperationLib extends OperationCrud {
 
 		} else if(mb_strpos($paymentType, 'supplier') !== FALSE) {
 
-			$eAccount = \account\AccountLib::getByClass(\Setting::get('account\thirdAccountSupplierDebtClass'));
+			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
 			$thirdPartyType = 'supplier';
 
 			if($eOperation['thirdParty']['supplierAccountLabel'] === NULL) {
 
-				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel',\Setting::get('account\thirdAccountSupplierDebtClass'));
+				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
 				$eOperation['thirdParty']['supplierAccountLabel'] = $nextLabel;
 				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['supplierAccountLabel']);
 				$accountLabel = $nextLabel;
@@ -330,7 +330,7 @@ class OperationLib extends OperationCrud {
 		$eOperationBank->offsetUnset('id');
 		$eOperationBank['type'] = $type === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT;
 		$eBankAccount = \bank\BankAccountLib::getById($input['bankAccountLabel']);
-		$eAccount = \account\AccountLib::getByClass(\Setting::get('account\bankAccountClass'));
+		$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS);
 		$eOperationBank['accountLabel'] = $eBankAccount->empty() ? \account\ClassLib::pad($eBankAccount['class']) : $eBankAccount['label'];
 		$eOperationBank['account'] = $eAccount;
 		$eOperationBank['description'] = OperationUi::getDescriptionBank($paymentType);
@@ -537,18 +537,18 @@ class OperationLib extends OperationCrud {
 				$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
 
 				$eThirdParty = \account\ThirdPartyLib::getById($thirdParty);
-				$isChargeOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\Setting::get('account\chargeAccountClass');
-				$isProductOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\Setting::get('account\productAccountClass');
+				$isChargeOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\account\AccountSetting::CHARGE_ACCOUNT_CLASS;
+				$isProductOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\account\AccountSetting::PRODUCT_ACCOUNT_CLASS;
 
 				// Classe 6 => Fournisseur
 				if($isChargeOperation) {
 
 					$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
-					$eAccountThirdParty = \account\AccountLib::getByClass(\Setting::get('account\thirdAccountClientReceivableClass'));
+					$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
 
 					if($eThirdParty['supplierAccountLabel'] === NULL) {
 
-						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \Setting::get('account\thirdAccountSupplierDebtClass'));
+						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
 						$eThirdParty['supplierAccountLabel'] = $accountLabel;
 						\account\ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
 
@@ -562,11 +562,11 @@ class OperationLib extends OperationCrud {
 				} else if($isProductOperation) {
 
 					$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
-					$eAccountThirdParty = \account\AccountLib::getByClass(\Setting::get('account\thirdAccountClientReceivableClass'));
+					$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
 
 					if($eThirdParty['clientAccountLabel'] === NULL) {
 
-						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \Setting::get('account\thirdAccountClientReceivableClass'));
+						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
 						$eThirdParty['clientAccountLabel'] = $accountLabel;
 						\account\ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
 
@@ -808,14 +808,14 @@ class OperationLib extends OperationCrud {
 
 	public static function createBankOperationFromCashflow(\bank\Cashflow $eCashflow, Operation $eOperation, ?string $document = NULL): Operation {
 
-		$eAccountBank = \account\AccountLib::getByClass(\Setting::get('account\bankAccountClass'));
+		$eAccountBank = \account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS);
 
 		$eThirdParty = $eOperation['thirdParty'] ?? new \account\ThirdParty();
 
 		if($eCashflow['import']['account']['label'] !== NULL) {
 			$label = $eCashflow['import']['account']['label'];
 		} else {
-			$label = \account\ClassLib::pad(\Setting::get('account\defaultBankAccountLabel'));
+			$label = \account\ClassLib::pad(\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL);
 		}
 
 		$values = [
@@ -910,7 +910,7 @@ class OperationLib extends OperationCrud {
 		// Supprimer  l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
 		\journal\Operation::model()
       ->whereCashflow('=', $eCashflow['id'])
-			->whereAccountLabel('LIKE', \Setting::get('account\defaultBankAccountLabel').'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
       ->delete();
 
 		switch($action) {
@@ -1012,7 +1012,7 @@ class OperationLib extends OperationCrud {
 
 		$search = new \Search([
 			'thirdParty' => $eThirdParty['id'],
-			'accountLabels' => [\Setting::get('account\thirdAccountSupplierDebtClass'), \Setting::get('account\thirdAccountClientReceivableClass')]
+			'accountLabels' => [\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS, \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS]
 		]);
 
 		return self::applySearch($search)
@@ -1058,7 +1058,7 @@ class OperationLib extends OperationCrud {
 		$operation['eThirdParty'] = \account\ThirdPartyLib::selectFromOcrData($operation['thirdParty']);
 
 		if(count($operation['shipping']) > 0) {
-			$operation['shipping']['account'] = \account\AccountLib::getByClass(\Setting::get('account\shippingChargeAccountClass'));
+			$operation['shipping']['account'] = \account\AccountLib::getByClass(\account\AccountSetting::SHIPPING_CHARGE_ACCOUNT_CLASS);
 			if($operation['shipping']['vatRate'] !== NULL) {
 				$operation['shipping']['account']['vatRate'] = $operation['shipping']['vatRate'];
 			}
@@ -1145,8 +1145,8 @@ class OperationLib extends OperationCrud {
 				'accountLabel'
 			])
 			->whereFinancialYear($eFinancialYear)
-			->where(new \Sql('SUBSTRING(accountLabel, 1, 1) NOT IN ("'.join('", "', [\Setting::get('account\chargeAccountClass'), \Setting::get('account\productAccountClass')]).'")'))
-			->where(new \Sql('SUBSTRING(accountLabel, 1, 3) NOT IN ("'.join('", "', [\Setting::get('account\prepaidExpenseClass'), \Setting::get('account\accruedIncomeClass')]).'")'))
+			->where(new \Sql('SUBSTRING(accountLabel, 1, 1) NOT IN ("'.join('", "', [\account\AccountSetting::CHARGE_ACCOUNT_CLASS, \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]).'")'))
+			->where(new \Sql('SUBSTRING(accountLabel, 1, 3) NOT IN ("'.join('", "', [\account\AccountSetting::PREPAID_EXPENSE_CLASS, \account\AccountSetting::ACCRUED_EXPENSE_CLASS]).'")'))
 			->sort(['accountLabel' => SORT_ASC])
 			->group(['account', 'accountLabel'])
 			->having(new \Sql('ABS(total) > 0.5'))

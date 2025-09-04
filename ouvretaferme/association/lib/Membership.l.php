@@ -45,7 +45,7 @@ class MembershipLib {
 
 		if($eFarmOtf->empty()) {
 
-			$eFarmOtf = \farm\FarmLib::getById(\Setting::get('association\farm'));
+			$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
 
 		}
 
@@ -55,7 +55,7 @@ class MembershipLib {
 
 	public static function createPayment(\farm\Farm $eFarm, string $type): string {
 
-		$eFarmOtf = \farm\FarmLib::getById(\Setting::get('association\farm'));
+		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
 
 		if($eFarm->notEmpty()) {
 
@@ -318,7 +318,7 @@ class MembershipLib {
 
 		}
 
-		$eFarmOtf = \farm\FarmLib::getById(\Setting::get('association\farm'));
+		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
 
 		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 

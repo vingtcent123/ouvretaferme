@@ -107,7 +107,7 @@ class AccountLib extends AccountCrud {
         + ['vatAccount' => ['class', 'vatRate', 'description']]
       )
 			->sort(['class' => SORT_ASC])
-			->whereClass('IN', fn() => \Setting::get('account\stockVariationClasses')[$search->get('stock')['class']], if: $search->has('stock'))
+			->whereClass('IN', fn() => AccountSetting::STOCK_VARIATION_CLASSES[$search->get('stock')['class']], if: $search->has('stock'))
 			->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '')
 			->where('class LIKE "'.$search->get('classPrefix').'%"', if: $search->get('classPrefix'))
 			->whereClass('LIKE', fn() => '%'.$search->get('class').'%', if: $search->get('class') and is_string($search->get('class')))
@@ -152,11 +152,11 @@ class AccountLib extends AccountCrud {
 
 					switch((int)mb_substr($eAccount['class'], 0, 1)) {
 
-						case \Setting::get('account\thirdAccountGeneralClass'):
+						case AccountSetting::THIRD_ACCOUNT_GENERAL_CLASS:
 							$cAccountClassThird->append($eAccount);
 							break;
 
-						case \Setting::get('account\bankAccountGeneralClass'):
+						case AccountSetting::BANK_ACCOUNT_GENERAL_CLASS:
 							$cAccountClassAfter->append($eAccount);
 							break;
 
@@ -218,7 +218,7 @@ class AccountLib extends AccountCrud {
 
 	public static function getJournalCodeByClass(string $searchClass): ?string {
 
-		foreach(\Setting::get('account\classesByJournal') as $journal => $classes) {
+		foreach(AccountSetting::CLASSES_BY_JOURNAL as $journal => $classes) {
 
 			foreach($classes as $class) {
 

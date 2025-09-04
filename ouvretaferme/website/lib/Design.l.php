@@ -12,10 +12,10 @@ class DesignLib extends DesignCrud {
 
 	}
 
-	public static function isCustomFont(string $customFont, string $type): bool {
+	public static function isCustomFont(string $customFont, array $customFonts): bool {
 
 		return count(array_filter(
-			\Setting::get('website\\'.$type), fn($font) => $font['value'] === $customFont
+			$customFonts, fn($font) => $font['value'] === $customFont
 		)) > 0;
 
 	}

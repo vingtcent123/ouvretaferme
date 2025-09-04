@@ -15,7 +15,7 @@ abstract class MediaLib {
 
 		$this->type = preg_replace_callback('/([A-Z])/', function($data) { return '-'.strtolower($data[1]); }, lcfirst(substr(get_class($this), 6, -3)));
 
-		$this->settings = \Setting::get($this->type);
+		$this->settings = MediaSetting::$types[$this->type];
 		$this->field = $this->settings['field'];
 
 	}
@@ -25,7 +25,7 @@ abstract class MediaLib {
 	 */
 	public static function getInstance(string $type): ?MediaLib {
 
-		$class = \Setting::get($type)['class'] ?? NULL;
+		$class = MediaSetting::$types[$type]['class'] ?? NULL;
 
 		if($class) {
 			return new ('\media\\'.$class.'Lib')();
@@ -252,7 +252,7 @@ abstract class MediaLib {
 
 		if(MediaUi::isImage($hash) === FALSE) {
 
-			\Setting::get('media\mediaDriver')->sendBinary($binary, $path);
+			MediaSetting::$mediaDriver->sendBinary($binary, $path);
 
 		} else {
 
@@ -262,7 +262,7 @@ abstract class MediaLib {
 
 			$resource = new \Imagick($binaryFile);
 
-			\Setting::get('media\mediaDriver')->sendResource($resource, $path);
+			MediaSetting::$mediaDriver->sendResource($resource, $path);
 
 			$this->output = \storage\ServerLib::extractMetadata($resource);
 
@@ -347,7 +347,7 @@ abstract class MediaLib {
 	 */
 	public function getMetadata(string $hash): ?array {
 
-		$result = \Setting::get('media\mediaDriver')->getMetadata($this->type.'/'.$hash.'.'.MediaUi::getExtension($hash));
+		$result = MediaSetting::$mediaDriver->getMetadata($this->type.'/'.$hash.'.'.MediaUi::getExtension($hash));
 
 		if($result) {
 			return $result;

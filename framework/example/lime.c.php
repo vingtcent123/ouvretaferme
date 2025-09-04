@@ -17,7 +17,5 @@ if(LIME_ENV === 'prod') {
 // L::setLang();
 
 // Do not save errors in the database
-Feature::register('dev', [
-	'errorDatabase' => FALSE
-]);
+\dev\DevSetting::setPrivilege('errorDatabase', FALSE);
 ?>

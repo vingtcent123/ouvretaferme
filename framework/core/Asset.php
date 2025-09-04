@@ -182,7 +182,7 @@ class Asset {
 		$css = self::getCss();
 		$js = self::getJs();
 
-		if(Setting::get('dev\minify')) {
+		if(\dev\DevSetting::$minify) {
 
 			if($css) {
 
@@ -286,7 +286,7 @@ class Asset {
 
 		$json = [
 			'version' => self::getVersion(),
-			'minify' => \Setting::get('dev\minify'),
+			'minify' => \dev\DevSetting::$minify,
 			'js' => [],
 			'jsCode' => '',
 			'css' => [],
@@ -491,7 +491,7 @@ class AssetElement {
 		$path = $this->path;
 
 		if(
-			Setting::get('dev\minify') === FALSE and
+			\dev\DevSetting::$minify === FALSE and
 			str_starts_with($path, 'http') === FALSE
 		) {
 			$path .= '?'.Asset::getVersion();

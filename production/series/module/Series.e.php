@@ -253,7 +253,7 @@ class Series extends SeriesElement {
 
 				$value = (int)$value;
 
-				['min' => $min, 'max' => $max] = \Setting::get('series\duplicateInterval');
+				['min' => $min, 'max' => $max] = SeriesSetting::DUPLICATE_INTERVAL;
 
 				if($value > $min and $value < $max) {
 					$this['taskInterval'] = $value;

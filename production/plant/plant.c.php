@@ -1,9 +1,10 @@
 <?php
-Privilege::register('plant', [
-	'admin' => FALSE,
-]);
+namespace plant;
 
-Setting::register('plant', [
+class PlantSetting extends \Settings {
 
-]);
+}
+
+PlantSetting::setPrivilege('admin', FALSE);
+
 ?>

@@ -15,7 +15,7 @@ class SystemLib {
 	 */
 	public static function command(string $app, string $command): array {
 
-		exec(\Setting::get('php').' '.LIME_DIRECTORY.'/framework/lime.php -a '.$app.' '.$command, $output);
+		exec(DevSetting::PHP.' '.LIME_DIRECTORY.'/framework/lime.php -a '.$app.' '.$command, $output);
 
 		return $output;
 

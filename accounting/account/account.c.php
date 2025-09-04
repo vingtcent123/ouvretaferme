@@ -1,98 +1,103 @@
 <?php
-Privilege::register('account', [
-	'admin' => FALSE,
-	'access' => FALSE,
-]);
+namespace account;
 
-Setting::register('account', [
+class AccountSetting extends \Settings {
 
-	'dropbox' => [
+	public static $remoteKey;
+
+	public static $dropbox = [
 		'appKey' => '',
 		'appSecret' => '',
-	],
+	];
 
-	'assetClass' => 2,
-	'grantAssetClass' => '13',
-	'grantDepreciationClass' => '777', // Quote-part des subventions d'investissement virées au résultat de l'exercice
+	const ASSET_CLASS = 2;
+	const GRANT_ASSET_CLASS = '13';
+	const GRANT_DEPRECIATION_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
 
-	'thirdAccountGeneralClass' => 4,
-	'vatClass' => '445',
-	'bankAccountGeneralClass' => 5,
-	'chargeAccountClass' => 6,
-	'productAccountClass' => 7,
+	const THIRD_ACCOUNT_GENERAL_CLASS = 4;
+	const VAT_CLASS = 445;
+	const BANK_ACCOUNT_GENERAL_CLASS = 5;
+	const CHARGE_ACCOUNT_CLASS = 6;
+	const PRODUCT_ACCOUNT_CLASS = 7;
 
-	'bankAccountClass' => '512',
-	'cashAccountClass' => '5310', // caisse
-	'defaultBankAccountLabel' => '5121',
+	const BANK_ACCOUNT_CLASS = '512';
+	const CASH_ACCOUNT_CLASS = '5310'; // caisse
+	const DEFAULT_BANK_ACCOUNT_LABEL = '5121';
 
-	'thirdAccountSupplierDebtClass' => '401',
-	'thirdAccountClientReceivableClass' => '411',
+	const THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS = '401';
+	const THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS = '401';
 
-	'nonDepreciableAssetClass' => '2125',
 
-	'shippingChargeAccountClass' => '624',
+	const NON_DEPRECIABLE_ASSET_CLASS = '2125';
 
-	'disposalAssetValueClass' => '675', // Valeur comptable des éléments d'actifs cédés
-	'productAssetValueClass' => '775', // Produits des cessions d'éléments d'actif
+	const SHIPPING_CHARGE_ACCOUNT_CLASS = '624';
 
-	'intangibleAssetsClass' => '20', // Immobilisations incorporelles
-	'tangibleAssetsClasses' => ['21', '24'], // Immobilisations corporelles
+	const DISPOSAL_ASSET_VALUE_CLASS = '675'; // Valeur comptable des éléments d'actifs cédés
+	const PRODUCT_ASSET_VALUE_CLASS = '775'; // Produits des cessions d'éléments d'actif
 
-	'grantsInIncomeStatement' => '139', // Subventions d'investissement inscrites au CdR
-	'intangibleAssetsDepreciationChargeClass' => '68111', // Dotation aux amortissements sur immos incorporelles
-	'tangibleAssetsDepreciationChargeClass' => '68112', // Dotation aux amortissements sur immos corporelles
-	'exceptionalDepreciationChargeClass' => '6871', // Dotation aux amortissements exceptionnels
+	const INTANGIBLE_ASSETS_CLASS = 20; // Immobilisations incorporelles
+	const TANGIBLE_ASSETS_CLASS = 21; // Immobilisations corporelles
 
-	'receivablesOnAssetDisposalClass' => '462', // Créances sur cessions d'immobilisations
+	const GRANTS_IN_INCOME_STATEMENT = '139'; // Subventions d'investissement inscrites au CdR
+	const INTANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS = '68111'; // Dotation aux amortissements sur immos incorporelles
+	const TANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS = '68112'; // Dotation aux amortissements sur immos corporelles
 
-	'summaryAccountingBalanceCategories' => account\AccountUi::getSummaryBalanceCategories(),
-	'balanceActifCategories' => account\AccountUi::getActifBalanceCategories(),
-	'balancePassifCategories' => account\AccountUi::getPassifBalanceCategories(),
+	const RECEIVABLES_ON_ASSET_DISPOSAL_CLASS = '462'; // Créances sur cessions d'immobilisations
 
-	'vatBuyClassPrefix' => '4456', // TVA déductible (sur les ventes)
-	'vatSellClassPrefix' => '4457', // TVA collectée (sur les achats)
+	public static $summaryAccountingBalanceCategories;
+	public static $balanceActifCategories;
+	public static $balancePassifCategories;
 
-	'collectedVatClass' => '44571', // TVA collectée
-	'payableVatClass' => '44551', // TVA à décaisser
+	const VAT_BUY_CLASS_PREFIX = '4456'; // TVA déductible (sur les ventes)
+	const VAT_SELL_CLASS_PREFIX = '4457'; // TVA collectée (sur les achats)
 
-	'carriedVatClass' => '44567', // TVA à reporter
+	const COLLECTED_VAT_CLASS = '44571'; // TVA collectée
+	const PAYABLE_VAT_CLASS = '44571'; // TVA à décaisser
+
+	const CARRIED_VAT_CLASS = '44567'; // TVA à reporter
 
 	// Charges et produits constatés d'avance
-	'prepaidExpenseClass' => '486', // Charge constatée d'avance
-	'accruedIncomeClass' => '487', // Produit constaté d'avance
+	const PREPAID_EXPENSE_CLASS = '486';  // Charge constatée d'avance
+	const ACCRUED_EXPENSE_CLASS = '486'; // Produit constaté d'avance
 
-	'stockVariationClasses' => [ // Compte de stock => Compte de variation correspondant
-    '311' => '60311',
-    '312' => '60312',
-    '321' => '60321',
-    '322' => '60322',
-    '323' => '60323',
-    '324' => '60324',
-    '325' => '60325',
-    '326' => '60326',
-    '327' => '60327',
-    '328' => '60328',
-    '329' => '60329',
-    '331' => '71331',
-    '332' => '71332',
-    '341' => '71341',
-    '342' => '71342',
-    '344' => '71344',
-    '351' => '71351',
-    '353' => '71353',
-    '361' => '60361',
-    '362' => '60362',
-    '371' => '60371',
-    '372' => '60372',
-	],
+	// Compte de stock => Compte de variation correspondant
+	const STOCK_VARIATION_CLASSES = [
+		'311' => '60311',
+		'312' => '60312',
+		'321' => '60321',
+		'322' => '60322',
+		'323' => '60323',
+		'324' => '60324',
+		'325' => '60325',
+		'326' => '60326',
+		'327' => '60327',
+		'328' => '60328',
+		'329' => '60329',
+		'331' => '71331',
+		'332' => '71332',
+		'341' => '71341',
+		'342' => '71342',
+		'344' => '71344',
+		'351' => '71351',
+		'353' => '71353',
+		'361' => '60361',
+		'362' => '60362',
+		'371' => '60371',
+		'372' => '60372',
+	];
 
-	// Classement des classes par journal
-	'classesByJournal' => [
+	const CLASSES_BY_JOURNAL = [
 		\journal\Operation::BAN => ['5'],
 		\journal\Operation::ACH => ['60', '61', '6241', '63', '64', '44566'],
 		\journal\Operation::VEN => ['62', '70', '71', '72', '74', '44571'],
 		\journal\Operation::OD => ['28', '29', '65', '68', '69'],
-	]
+	];
+}
 
-]);
+AccountSetting::$summaryAccountingBalanceCategories = AccountUi::getSummaryBalanceCategories();
+AccountSetting::$balanceActifCategories = AccountUi::getActifBalanceCategories();
+AccountSetting::$balancePassifCategories = AccountUi::getPassifBalanceCategories();
+
+AccountSetting::$remoteKey = fn() => throw new \Exception('Undefined remote key');
+
 ?>

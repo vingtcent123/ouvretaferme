@@ -42,9 +42,9 @@ class AlertUi {
 			'Flow::weekStop.consistency2' => s("Une action en année N + 1 doit avoir lieu avant la semaine 12..."),
 			'Flow::weekTooSoonPerennial' => s("Vous ne pouvez pas avancer davantage cette intervention !"),
 			'Flow::weekTooLatePerennial' => s("Vous ne pouvez pas décaler davantage cette intervention !"),
-			'Flow::weekTooSoonAnnual' => s("Une intervention ne peut pas démarrer plus tôt que la semaine {value} de l'année N - 1 !", \Setting::get('minWeekN-1')),
-			'Flow::weekTooSoonAnnualNeutral' => fn($season) => s("Une série pour la saison {season} ne peut pas démarrer plus tôt que la semaine {week} de l'année précédente !", ['season' => $season, 'week' => \Setting::get('minWeekN-1')]),
-			'Flow::weekTooLateAnnual' => s("Une intervention ne peut pas finir plus tard que la semaine {value} de l'année N + 1 !", \Setting::get('maxWeekN+1')),
+			'Flow::weekTooSoonAnnual' => s("Une intervention ne peut pas démarrer plus tôt que la semaine {value} de l'année N - 1 !", SequenceSetting::MIN_WEEK_MINUS_1),
+			'Flow::weekTooSoonAnnualNeutral' => fn($season) => s("Une série pour la saison {season} ne peut pas démarrer plus tôt que la semaine {week} de l'année précédente !", ['season' => $season, 'week' => SequenceSetting::MIN_WEEK_MINUS_1]),
+			'Flow::weekTooLateAnnual' => s("Une intervention ne peut pas finir plus tard que la semaine {value} de l'année N + 1 !", SequenceSetting::MIN_WEEK_PLUS_1),
 
 			'Flow::flows.check' => s("Merci de sélectionner au moins une intervention"),
 

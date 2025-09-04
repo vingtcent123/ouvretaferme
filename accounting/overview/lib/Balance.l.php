@@ -33,7 +33,7 @@ Class BalanceLib {
 			if(
 				in_array((int)$balanceLine['accountPrefix'], $allLabels) === FALSE
 				// Déjà pris en charge dans les subventions
-				or $balanceLine['accountPrefix'] === strlen(\Setting::get('account\grantDepreciationClass'))
+				or $balanceLine['accountPrefix'] === strlen(\account\AccountSetting::GRANT_DEPRECIATION_CLASS)
 			) {
 				continue;
 			}
@@ -140,8 +140,8 @@ Class BalanceLib {
 
 	public static function getSummarizedBalance(\account\FinancialYear $eFinancialYear): array {
 
-		$balanceActifCategories = \Setting::get('account\balanceActifCategories');
-		$balancePassifCategories = \Setting::get('account\balancePassifCategories');
+		$balanceActifCategories = \account\AccountSetting::$balanceActifCategories;
+		$balancePassifCategories = \account\AccountSetting::$balancePassifCategories;
 
 		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceActifCategories + $balancePassifCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);
@@ -338,8 +338,8 @@ Class BalanceLib {
 
 	public static function getDetailedBalance(\account\FinancialYear $eFinancialYear): array {
 
-		$balanceActifCategories = \Setting::get('account\balanceActifCategories');
-		$balancePassifCategories = \Setting::get('account\balancePassifCategories');
+		$balanceActifCategories = \account\AccountSetting::$balanceActifCategories;
+		$balancePassifCategories = \account\AccountSetting::$balancePassifCategories;
 
 		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceActifCategories + $balancePassifCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);

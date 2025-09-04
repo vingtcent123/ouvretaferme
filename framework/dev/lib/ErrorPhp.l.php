@@ -200,7 +200,6 @@ class ErrorPhpLib {
 
 			case E_ERROR :
 			case E_CORE_ERROR :
-			case E_ERROR :
 				return 'Fatal';
 
 			case E_USER_WARNING :
@@ -228,7 +227,7 @@ class ErrorPhpLib {
 
 		$eError = Error::model()
 			->select(['id', 'createdAt'])
-			->where('createdAt < NOW() - INTERVAL '.\Setting::get('dev\errorKeep').' DAY')
+			->where('createdAt < NOW() - INTERVAL '.DevSetting::ERROR_KEEP.' DAY')
 			->sort(['createdAt' => SORT_DESC])
 			->get();
 
@@ -276,9 +275,9 @@ class ErrorPhpLib {
 
 		self::$count++;
 
-		if(\Setting::get('errorSaveMax') !== NULL) {
+		if(DevSetting::ERROR_SAVE_MAX !== NULL) {
 
-			if(self::$count > \Setting::get('errorSaveMax')) {
+			if(self::$count > DevSetting::ERROR_SAVE_MAX) {
 				return;
 			}
 

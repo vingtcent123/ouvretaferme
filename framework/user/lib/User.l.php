@@ -128,7 +128,10 @@ class UserLib extends UserCrud {
 		$can = $eUser['role']['can'];
 
 		foreach($can as $package => $privileges) {
-			\Privilege::register($package, $privileges, TRUE);
+			foreach($privileges as $privilege => $value) {
+				$settingsClassName = '\\'.$package.'\\'.ucfirst($package).'Setting';
+				$settingsClassName::setPrivilege($privilege, $value);
+			}
 		}
 
 	}

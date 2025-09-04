@@ -38,7 +38,7 @@ class Variety extends VarietyElement {
 			->setCallback('farm.check', function(\farm\Farm $eFarm): bool {
 
 				return (
-					(\Privilege::can('plant\admin') and $eFarm->empty()) or
+					(PlantSetting::getPrivilege('admin') and $eFarm->empty()) or
 					$eFarm->canManage()
 				);
 
@@ -46,7 +46,7 @@ class Variety extends VarietyElement {
 			->setCallback('plant.check', function(Plant $ePlant): bool {
 
 				return (
-					(\Privilege::can('plant\admin') and $ePlant->empty()) or
+					(PlantSetting::getPrivilege('admin') and $ePlant->empty()) or
 					Plant::model()
 						->where('farm IS NULL or farm = '.Plant::model()->format($this['farm']))
 						->exists($ePlant)
