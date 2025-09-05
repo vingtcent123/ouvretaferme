@@ -38,6 +38,8 @@ Role:
   fqn: fqn
   name: text8
   emoji: ?textFixed(1, 3)
+  level: int8(0, null)
+  can: ?json
   UNIQUE: [
     ["fqn"]
   ]
