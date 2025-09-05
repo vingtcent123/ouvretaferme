@@ -279,6 +279,16 @@ class ProductLib extends ProductCrud {
 
 	public static function fillForReport(\farm\Farm $eFarm, \Collection $cProduct, ?string $firstSale, ?string $lastSale): void {
 
+		if($firstSale === NULL and $lastSale === NULL) {
+
+			$cProduct->setColumn('sales', new Item([
+				'turnover' => 0.0,
+				'quantity' => 0.0
+			]));
+
+			return;
+		}
+
 		AnalyzeLib::filterItemStats();
 		AnalyzeLib::filterItemComposition($eFarm);
 
