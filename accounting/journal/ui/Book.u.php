@@ -47,6 +47,8 @@ class BookUi {
 
 		$h = '';
 
+		$totalDebit = 0;
+		$totalCredit = 0;
 		$debit = 0;
 		$credit = 0;
 		$currentClass = NULL;
@@ -60,6 +62,8 @@ class BookUi {
 			) {
 
 				$h .= self::getSubTotal($currentAccountLabel, $debit, $credit);
+				$totalCredit += $credit;
+				$totalDebit += $debit;
 
 			}
 
@@ -127,7 +131,22 @@ class BookUi {
 
 		// Dernier groupe
 		$h .= self::getSubTotal($currentAccountLabel, $debit, $credit);
+		$totalCredit += $credit;
+		$totalDebit += $debit;
 
+		$balance = abs($totalDebit - $totalCredit);
+		$h .= '<tr>';
+
+			$h .= '<td colspan="3" class="text-end">';
+				$h .= '<strong>'.s("Solde").'</strong>';
+			$h .= '</td>';
+			$h .= '<td class="text-end highlight-stick-right">';
+				$h .= '<strong>'.($totalDebit > $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
+			$h .= '</td>';
+				$h .= '<td class="text-end highlight-stick-left">';
+				$h .= '<strong>'.($totalDebit <= $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
+			$h .= '</td>';
+		$h .= '</tr>';
 		return $h;
 
 	}
@@ -176,20 +195,6 @@ class BookUi {
 			$h .= '</td>';
 			$h .= '<td class="text-end highlight-stick-left">';
 				$h .= '<strong>'.\util\TextUi::money($credit).'</strong>';
-			$h .= '</td>';
-		$h .= '</tr>';
-
-		$balance = abs($debit - $credit);
-		$h .= '<tr>';
-
-			$h .= '<td colspan="3" class="text-end">';
-				$h .= '<strong>'.s("Solde").'</strong>';
-			$h .= '</td>';
-			$h .= '<td class="text-end highlight-stick-right">';
-				$h .= '<strong>'.($debit > $credit ? \util\TextUi::money($balance) : '').'</strong>';
-			$h .= '</td>';
-			$h .= '<td class="text-end highlight-stick-left">';
-				$h .= '<strong>'.($debit <= $credit ? \util\TextUi::money($balance) : '').'</strong>';
 			$h .= '</td>';
 		$h .= '</tr>';
 
