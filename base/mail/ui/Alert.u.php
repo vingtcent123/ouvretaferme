@@ -7,6 +7,7 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Campaign::scheduledAt.check' => s("Vous n'avez pas indiqué de date de programmation."),
 			'Campaign::scheduledAt.soon' => s("Votre campagne ne peut pas être programmée aussi tôt, veuillez décaler l'envoi."),
 			'Campaign::scheduledAt.past' => s("Votre campagne ne peut pas être programmée dans le passé, veuillez décaler l'envoi."),
 			'Campaign::to.empty' => s("Merci de renseigner au moins un contact"),

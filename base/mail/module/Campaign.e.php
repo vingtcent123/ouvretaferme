@@ -76,7 +76,9 @@ class Campaign extends CampaignElement {
 		$p
 			->setCallback('scheduledAt.prepare', function(string &$scheduledAt): bool {
 				// HTML retourne la date dans un obscur format ISO
-				$scheduledAt = date('Y-m-d H:i:00', strtotime($scheduledAt));
+				if($scheduledAt !== '') {
+					$scheduledAt = date('Y-m-d H:i:00', strtotime($scheduledAt));
+				}
 				return TRUE;
 			})
 			->setCallback('scheduledAt.soon', function(string $scheduledAt): bool {
@@ -106,7 +108,10 @@ class Campaign extends CampaignElement {
 			})
 			->setCallback('to.limitExceeded', function(array $to) use ($p): bool {
 
-				if($p->isInvalid('to')) {
+				if(
+					$p->isInvalid('scheduledAt') or
+					$p->isInvalid('to')
+				) {
 					return TRUE;
 				}
 
