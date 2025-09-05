@@ -841,6 +841,18 @@ class SaleLib extends SaleCrud {
 
 			}
 
+
+			if(
+				$e['oldPreparationStatus'] === Sale::DELIVERED and
+				$e['preparationStatus'] !== Sale::CLOSED and
+				$e['paymentStatus'] === Sale::PAID
+			) {
+
+				$properties[] = 'paymentStatus';
+				$e['paymentStatus'] = Sale::NOT_PAID;
+
+			}
+
 		}
 
 		if($emptyPaymentMethod) {
