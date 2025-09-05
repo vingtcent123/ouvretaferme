@@ -128,7 +128,7 @@ class ConnectionLib {
 
 		User::model()
 			->select(User::getSelection() + [
-				'role' => ['can', 'fqn']
+				'role' => ['fqn']
 			])
 			->get($eUser);
 

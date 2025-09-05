@@ -40,45 +40,15 @@ class RoleModel extends \ModuleModel {
 			'fqn' => ['fqn', 'unique' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'cast' => 'string'],
 			'emoji' => ['textFixed', 'min' => 1, 'max' => 3, 'null' => TRUE, 'cast' => 'string'],
-			'level' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'can' => ['json', 'null' => TRUE, 'cast' => 'array'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'fqn', 'name', 'emoji', 'level', 'can'
+			'id', 'fqn', 'name', 'emoji'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['fqn']
 		]);
-
-	}
-
-	public function encode(string $property, $value) {
-
-		switch($property) {
-
-			case 'can' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
-
-			default :
-				return parent::encode($property, $value);
-
-		}
-
-	}
-
-	public function decode(string $property, $value) {
-
-		switch($property) {
-
-			case 'can' :
-				return $value === NULL ? NULL : json_decode($value, TRUE);
-
-			default :
-				return parent::decode($property, $value);
-
-		}
 
 	}
 
@@ -104,14 +74,6 @@ class RoleModel extends \ModuleModel {
 
 	public function whereEmoji(...$data): RoleModel {
 		return $this->where('emoji', ...$data);
-	}
-
-	public function whereLevel(...$data): RoleModel {
-		return $this->where('level', ...$data);
-	}
-
-	public function whereCan(...$data): RoleModel {
-		return $this->where('can', ...$data);
 	}
 
 
