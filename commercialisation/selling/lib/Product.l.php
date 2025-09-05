@@ -277,7 +277,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function fillForReport(\farm\Farm $eFarm, \Collection $cProduct, string $firstSale, string $lastSale): void {
+	public static function fillForReport(\farm\Farm $eFarm, \Collection $cProduct, ?string $firstSale, ?string $lastSale): void {
 
 		AnalyzeLib::filterItemStats();
 		AnalyzeLib::filterItemComposition($eFarm);
@@ -289,7 +289,9 @@ class ProductLib extends ProductCrud {
 						'turnover' => new \Sql('SUM(priceStats)', 'float'),
 						'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 					])
-					->whereDeliveredAt('BETWEEN', new \Sql(Item::model()->format($firstSale).' AND '.Item::model()->format($lastSale)))
+					->whereDeliveredAt('BETWEEN', new \Sql(Item::model()->format($firstSale).' AND '.Item::model()->format($lastSale)), if: $firstSale !== NULL and $lastSale !== NULL)
+					->whereDeliveredAt('>=', new \Sql(Item::model()->format($firstSale)), if: $firstSale !== NULL and $lastSale === NULL)
+					->whereDeliveredAt('<=', new \Sql(Item::model()->format($lastSale)), if: $firstSale === NULL and $lastSale !== NULL)
 					->group('product')
 					->delegateElement('product')
 			])
