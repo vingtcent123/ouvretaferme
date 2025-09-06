@@ -161,7 +161,7 @@ class DomainLib {
 
 			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
 
-			if(str_starts_with($ping, 'OK')) {
+			if(str_contains($ping, '***OK***')) {
 
 				Website::model()->update($eWebsite, [
 					'domainTry' => 0,
@@ -239,7 +239,7 @@ class DomainLib {
 
 			\dev\ErrorPhpLib::createExceptionFromError(FALSE);
 
-			if(str_starts_with($ping, 'OK')) {
+			if(str_contains($ping, '***OK***')) {
 
 				Website::model()->update($eWebsite, [
 					'domainTry' => 0,

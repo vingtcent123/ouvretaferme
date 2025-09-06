@@ -89,7 +89,7 @@ new Page()
 	->get('/public/{domain}/:test', function($data) {
 
 		if(in_array($data->eWebsite['domainStatus'], [\website\Website::CONFIGURED_UNSECURED, \website\Website::FAILURE_UNSECURED, \website\Website::CONFIGURED_SECURED, \website\Website::FAILURE_SECURED])) {
-			throw new DataAction('OK');
+			throw new DataAction('***OK***');
 		} else {
 			throw new ViewAction($data, ':nothing');
 		}
