@@ -2,41 +2,63 @@
 new Page()
 	->cli('index', function($data) {
 
-		$c = \selling\Customer::model()
-			->select(\selling\Customer::getSelection() + ['emailOptIn' => new Sql('emailOptIn')])
-			->where('emailOptIn IS NOT NULL')
-			->whereEmail('!=', NULL)
+		$cCultivation = \series\Cultivation::model()
+			->select('id', 'farm', 'series', 'plant', 'farm')
 			->getCollection();
 
-		foreach($c as $e) {
+		foreach($cCultivation as $eCultivation) {
 
-			\mail\ContactLib::autoCreate($e['farm'], $e['email']);
+			if(\series\Slice::model()
+				->whereCultivation($eCultivation)
+				->exists()) {
+				echo ' ';
+				continue;
+			}
 
-			\mail\Contact::model()
-				->whereFarm($e['farm'])
-				->whereEmail($e['email'])
-				->update([
-					'optIn' => $e['emailOptIn']
-				]);
+			$eSlice = new \sequence\Slice([
+				'farm' => $eCultivation['farm'],
+				'series' => $eCultivation['series'],
+				'cultivation' => $eCultivation,
+				'plant' => $eCultivation['plant'],
+				'variety' => new \plant\Variety(['id' => \plant\PlantSetting::VARIETY_UNKNOWN]),
+				'partPercent' => 100
+			]);
+
+			\series\Slice::model()->insert($eSlice);
+
+			\series\Cultivation::model()->update($eCultivation, [
+				'sliceUnit' => \series\Cultivation::PERCENT
+			]);
+
+			echo '.';
 
 		}
 
-		$c = \selling\Customer::model()
-			->select(\selling\Customer::getSelection() + ['emailOptOut' => new Sql('emailOptOut')])
-			->where('emailOptOut = 0')
-			->whereEmail('!=', NULL)
+		$cCrop = \sequence\Crop::model()
+			->select('id', 'farm', 'sequence', 'plant', 'farm')
 			->getCollection();
 
-		foreach($c as $e) {
+		foreach($cCrop as $eCrop) {
 
-			\mail\ContactLib::autoCreate($e['farm'], $e['email']);
+			if(\sequence\Slice::model()
+				->whereCrop($eCrop)
+				->exists()) {
+				echo ' ';
+				continue;
+			}
 
-			\mail\Contact::model()
-				->whereFarm($e['farm'])
-				->whereEmail($e['email'])
-				->update([
-					'optOut' => $e['emailOptOut']
-				]);
+			$eSlice = new \sequence\Slice([
+				'farm' => $eCrop['farm'],
+				'sequence' => $eCrop['sequence'],
+				'crop' => $eCrop,
+				'plant' => $eCrop['plant'],
+				'variety' => new \plant\Variety(['id' => \plant\PlantSetting::VARIETY_UNKNOWN]),
+				'partPercent' => 100
+			]);
+
+			\sequence\Slice::model()->insert($eSlice);
+
+			echo '.';
 
 		}
 
