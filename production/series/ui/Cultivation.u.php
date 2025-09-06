@@ -1913,9 +1913,9 @@ class CultivationUi {
 					$sum = $eCultivation['cSlice']->sum('partPercent');
 
 					if($sum < 100) {
-						$infos[] = s("La production couvre {value} % de l'espace.", $sum);
+						$infos[] = s("La production couvre {value} % de l'assolement.", $sum);
 					} else if($sum > 100) {
-						$infos[] = \Asset::icon('exclamation-circle').'  '.s("La production couvre plus de 100 % de l'espace.");
+						$infos[] = \Asset::icon('exclamation-circle').'  '.s("La production couvre plus de 100 % de l'assolement.");
 					}
 
 				}
