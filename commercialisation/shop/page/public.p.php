@@ -357,8 +357,7 @@ new Page(function($data) {
 			if(
 				$data->eSaleReference['paymentStatus'] !== \selling\Sale::PAID and
 				$data->eSaleReference['onlinePaymentStatus'] !== \selling\Sale::FAILURE and // On affiche la page de confirmation si le paiement est en échec
-				($data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET or
-				($data->eSaleReference['paymentMethod']->notEmpty() and $data->eSaleReference['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD))
+				$data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET
 			) {
 				throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
 			}
@@ -398,8 +397,8 @@ new Page(function($data) {
 		($data->validateLogged)();
 		($data->validateSale)();
 
-		// Si la vente est déjà payée, on ne peut pas changer de moyen de paiement
-		if($data->eSaleReference['paymentStatus'] === \selling\Sale::PAID) {
+		// Si la vente est déjà payée ou validée, on ne peut pas changer de moyen de paiement
+		if($data->eSaleReference['preparationStatus'] !== \selling\Sale::BASKET) {
 			throw new RedirectAction(\shop\ShopUi::confirmationUrl($data->eShop, $data->eDate));
 		}
 
@@ -559,6 +558,24 @@ new Page(function($data) {
 		$fw->validate();
 
 		throw new RedirectAction($url);
+
+	})
+	->post('/shop/public/{fqn}/{date}/:doUpdatePayment', function($data) {
+
+		\user\ConnectionLib::checkLogged();
+		($data->validateSale)();
+
+		if($data->eSaleReference->acceptUpdatePaymentByCustomer()) {
+
+			\shop\SaleLib::changePaymentForShop($data->eSaleReference);
+
+			$link = \shop\ShopUi::paymentUrl($data->eShop, $data->eDate);
+		} else {
+			$link = \shop\ShopUi::confirmationUrl($data->eShop, $data->eDate);
+		}
+
+
+		throw new RedirectAction($link);
 
 	})
 	->post('/shop/public/{fqn}/{date}/:doUpdateBasket', function($data) {

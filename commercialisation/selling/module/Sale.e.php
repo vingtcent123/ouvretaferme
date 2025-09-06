@@ -777,7 +777,18 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptStatusCanceledByCustomer(): bool {
+	public function acceptUpdatePaymentByCustomer(): bool {
+
+		return (
+			$this['preparationStatus'] === Sale::CONFIRMED and
+			$this['paymentStatus'] !== Sale::PAID and
+			$this['shop']['hasPayment'] and
+			$this['shop']['shared'] === FALSE
+		);
+
+	}
+
+	public function acceptUpdateByCustomer(): bool {
 
 		// Autres que les commandes en brouillon ou confirmées => NON
 		if(

@@ -129,6 +129,8 @@ class SaleLib {
 		$eDate = $eSaleReference['shopDate'];
 		$cFarm = $eShop['cFarm'];
 
+		$eSaleReference['preparationStatus'] = \selling\Sale::BASKET;
+
 		self::buildReference($eSaleReference, $eUser);
 
 		// Création des produits
@@ -222,7 +224,6 @@ class SaleLib {
 		$eSaleReference->merge([
 			'origin' => \selling\Sale::SALE,
 			'type' => $eSaleReference['shopDate']['type'],
-			'preparationStatus' => \selling\Sale::BASKET,
 			'deliveredAt' => $eSaleReference['shopDate']['deliveryDate'],
 			'shopPoint' => PointLib::getById($eSaleReference['shopPoint'])
 		]);
@@ -307,6 +308,17 @@ class SaleLib {
 			$eSale['paymentMethod']->empty() or
 			$eSale['paymentMethod']['fqn'] !== \payment\MethodLib::ONLINE_CARD
 		);
+
+	}
+
+	public static function changePaymentForShop(\selling\Sale $eSale): void {
+
+		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
+		$eSale['preparationStatus'] = \selling\Sale::BASKET;
+
+		\selling\SaleLib::update($eSale, ['preparationStatus']);
+
+		\selling\HistoryLib::createBySale($eSale, 'sale-update-payment');
 
 	}
 
@@ -408,11 +420,7 @@ class SaleLib {
 			self::notify('saleUpdated', $eSaleReference, $cItemLinearized, $group);
 		}
 
-		if($eShop['hasPayment'] === FALSE) {
-			return ShopUi::confirmationUrl($eShop, $eDate);
-		} else {
-			return ShopUi::paymentUrl($eShop, $eDate);
-		}
+		return ShopUi::confirmationUrl($eShop, $eDate);
 
 	}
 
@@ -530,7 +538,7 @@ class SaleLib {
 		\selling\Sale::model()->beginTransaction();
 
 			$cCustomer = \shop\SaleLib::getCustomersByShop($eShop, $eCustomer);
-			$cSale = \shop\SaleLib::getByCustomersForDate($eShop, $eDate, $cCustomer)->validate('acceptStatusCanceledByCustomer');
+			$cSale = \shop\SaleLib::getByCustomersForDate($eShop, $eDate, $cCustomer)->validate('acceptUpdateByCustomer');
 			$cSale->setColumn('shop', $eShop);
 			$cSale->setColumn('shopDate', $eDate);
 

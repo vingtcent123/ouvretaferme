@@ -108,7 +108,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 						echo s("Merci, votre commande pour le {value} est enregistrée !", \util\DateUi::textual($data->eDateSelected['deliveryDate'], \util\DateUi::DATE_HOUR_MINUTE));
 						if(
 							$data->cSaleExisting->notEmpty() and
-							$data->cSaleExisting->first()->acceptStatusCanceledByCustomer()
+							$data->cSaleExisting->first()->acceptUpdateByCustomer()
 						) {
 							echo '<br/>'.s("Cette commande est modifiable et annulable jusqu'au {value}.", \util\DateUi::textual($data->eDateSelected['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
 						}
@@ -269,7 +269,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, Sho
 	$t->header = $uiBasket->getHeader($data->eShop);
 
 	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleReference);
-	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleReference, $data->cSaleExisting, $data->cItemExisting, $data->cPaymentMethod);
+	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleReference, $data->cSaleExisting, $data->cItemExisting);
 
 });
 

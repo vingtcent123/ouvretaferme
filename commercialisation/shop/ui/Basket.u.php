@@ -713,19 +713,9 @@ class BasketUi {
 				$h .= '</p>';
 				break;
 
-			case 1 :
-				$h .= '<p class="util-info">';
-					$h .= s("Votre panier est enregistré pendant 30 minutes.<br/>Veuillez sélectionner votre moyen de paiement pour confirmer votre commande :");
-				$h .= '</p>';
-				break;
-
 			default :
 				$h .= '<h4>';
-					if(get_exists('modify')) {
-						$h .= s("Vous commande est toujours confirmée, mais vous pouvoir choisir un autre moyen de paiement :");
-					} else {
-						$h .= s("Votre panier est enregistré pendant 30 minutes.<br/>Veuillez choisir votre moyen de paiement pour confirmer votre commande :");
-					}
+					$h .= s("<b>Votre commande n'est pas encore confirmée et votre panier est enregistré pendant 30 minutes.</b><br/>Veuillez choisir votre moyen de paiement pour confirmer votre commande :");
 				$h .= '</h4>';
 				break;
 
@@ -743,7 +733,7 @@ class BasketUi {
 
 		$h .= '</div>';
 
-		if($eSale->acceptStatusCanceledByCustomer()) {
+		if($eSale->acceptUpdateByCustomer()) {
 			$h .= '<br/>';
 			$h .= '<br/>';
 			$h .= '<div class="util-block-gradient">';
@@ -874,7 +864,7 @@ class BasketUi {
 		}
 		$h .= '</div>';
 
-		if($eSaleReference->acceptStatusCanceledByCustomer()) {
+		if($eSaleReference->acceptUpdateByCustomer()) {
 			$h .= '<div>';
 				$h .= '<a href="'.ShopUi::dateUrl($eDate['shop'], $eDate).'?modify=1" target="_parent" class="btn btn-secondary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
 				$h .= '&nbsp;';
@@ -889,7 +879,7 @@ class BasketUi {
 
 	}
 
-	public function getConfirmation(Shop $eShop, Date $eDate, \selling\Sale $eSaleReference, \Collection $cSale, \Collection $cItem, \Collection $cPaymentMethod): string {
+	public function getConfirmation(Shop $eShop, Date $eDate, \selling\Sale $eSaleReference, \Collection $cSale, \Collection $cItem): string {
 
 		$h = '<div class="sale-confirmation-container">';
 
@@ -918,6 +908,12 @@ class BasketUi {
 						$h .= '<dt>'.s("Paiement").'</dt>';
 						$h .= '<dd>';
 							$h .= \selling\SaleUi::getPaymentMethodName($eSaleReference);
+							if(
+								$eSaleReference->acceptUpdatePaymentByCustomer() and
+								count($eShop->getPayments($eSaleReference['shopPoint'])) > 1
+							) {
+								$h .= ' (<a data-ajax="'.ShopUi::dateUrl($eShop, $eDate, ':doUpdatePayment').'" data-confirm="'.s("En retournant sur la page de choix du moyen de paiement, votre commande NE SERA PLUS CONFIRMÉE jusqu'à ce que vous ayez sélectionné un nouveau moyen de paiement. Voulez-vous continuer ?").'">'.s("changer").'</a>)';
+							}
 						$h .= '</dd>';
 
 						if($eSaleReference->isPaymentOnline()) {

@@ -832,6 +832,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['shop', 'public', '{fqn}', '{date}', ':doUpdateBasket'],
 		],
+		'/shop/public/{fqn}/{date}/:doUpdatePayment' => [
+			'request' => 'shop/public',
+			'priority' => 5,
+			'route' => ['shop', 'public', '{fqn}', '{date}', ':doUpdatePayment'],
+		],
 		'/shop/public/{fqn}/{date}/:doUpdatePhone' => [
 			'request' => 'shop/public',
 			'priority' => 5,
