@@ -376,7 +376,7 @@ class Task extends TaskElement {
 						return ($this['repeatMaster']['stop'] > $this['plannedWeek']);
 
 					case Task::DONE :
-						return ($this['repeatMaster']['stop'] > $this['plannedDone']);
+						return ($this['repeatMaster']['stop'] > $this['doneWeek']);
 
 				}
 
