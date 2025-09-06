@@ -141,7 +141,7 @@ new Page()
 		}
 
 	})
-	->get(['/public/{domain}/', '/public/{domain}/{page}'], function($data) {
+	->get(['/public/{domain}/', '/public/{domain}/{destination}'], function($data) {
 
 		if(
 			$data->eWebsite->canWrite() === FALSE or
@@ -154,12 +154,12 @@ new Page()
 					($data->eWebsite['domainStatus'] !== \website\Website::PINGED_SECURED and $data->origin === 'external')
 				)
 			) {
-				throw new PermanentRedirectAction($data->url.'/'.GET('page').LIME_REQUEST_ARGS);
+				throw new PermanentRedirectAction($data->url.'/'.GET('destination').LIME_REQUEST_ARGS);
 			}
 
 		}
 
-		$data->eWebpage = \website\WebpageLib::getByUrl($data->eWebsite, GET('page'));
+		$data->eWebpage = \website\WebpageLib::getByUrl($data->eWebsite, GET('destination'));
 		\website\WidgetLib::fill($data->eWebsite, $data->eWebpage);
 
 		$data->eWebpageNews = \website\WebpageLib::getNewsByWebsite($data->eWebsite);
@@ -168,11 +168,13 @@ new Page()
 			$data->eWebpage->notEmpty() and
 			$data->eWebpage['template']['fqn'] === 'news'
 		) {
-			$data->cNews = \website\NewsLib::getByWebsite($data->eWebsite, limit: 20);
+			$data->newsPage = GET('page', 'int');
+			$data->newsLimit = 20;
+			[$data->cNews, $data->nNews] = \website\NewsLib::getByWebsite($data->eWebsite, page: $data->newsPage, limit: $data->newsLimit);
 		} else {
 
 			if($data->eWebpageNews['status'] === \website\Webpage::ACTIVE) {
-				$data->cNews = \website\NewsLib::getByWebsite($data->eWebsite, limit: 3);
+				[$data->cNews] = \website\NewsLib::getByWebsite($data->eWebsite, limit: 3);
 			}
 
 		}

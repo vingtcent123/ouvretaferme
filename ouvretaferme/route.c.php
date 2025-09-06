@@ -373,10 +373,10 @@ Route::register([
 			'priority' => 1,
 			'route' => ['public', '{domain}', 'sitemap.xml'],
 		],
-		'/public/{domain}/{page}' => [
+		'/public/{domain}/{destination}' => [
 			'request' => 'website/public',
 			'priority' => 5,
-			'route' => ['public', '{domain}', '{page}'],
+			'route' => ['public', '{domain}', '{destination}'],
 		],
 		'/rapport/{id}' => [
 			'request' => 'analyze/report',

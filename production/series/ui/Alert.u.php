@@ -51,6 +51,7 @@ class AlertUi {
 			'Task::harvestConsistency.check' => s("Vous ne pouvez saisir de récoltes partagées que pour des productions identiques"),
 			'Task::harvestDates.check' => s("Merci de saisir une date de récolte valable"),
 			'Task::harvestDates.negative' => s("La récolte ne peut pas être négative sur une date donnée"),
+			'Task::repeatMaster.consistency' => s("La date de fin de répétition de l'intervention doit être postérieure à la date de démarrage"),
 			'Task::tasks.check' => s("Merci de sélectionner au moins une intervention"),
 			'Task::tasks.unit' => s("Il n'est pas possible de faire une récolte groupée car toutes les interventions n'ont pas la même unité de récolte"),
 			'Task::tasks.area' => s("Il n'est possible de choisir une répartition par surface car vous n'avez pas saisi l'espace occupé pour au moins une des cultures"),

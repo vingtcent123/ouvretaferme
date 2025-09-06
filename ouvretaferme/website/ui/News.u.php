@@ -7,7 +7,7 @@ class NewsUi {
 
 	}
 
-	public function getAll(\Collection $cNews): string {
+	public function getAll(\Collection $cNews, float $pages, int $page): string {
 
 		$h = '';
 
@@ -21,6 +21,8 @@ class NewsUi {
 			$h .= '</div>';
 
 		}
+
+		$h .= \util\TextUi::pagination($page, $pages);
 
 		return $h;
 

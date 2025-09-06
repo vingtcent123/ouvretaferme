@@ -15,7 +15,7 @@ class NewsLib extends NewsCrud {
 		return ['title', 'content', 'publishedAt'];
 	}
 
-	public static function getByWebsite(Website $eWebsite, ?int $limit = NULL, bool $onlyPublished = TRUE): \Collection {
+	public static function getByWebsite(Website $eWebsite, int $page = 0, ?int $limit = NULL, bool $onlyPublished = TRUE): array {
 
 		if($onlyPublished) {
 
@@ -25,11 +25,12 @@ class NewsLib extends NewsCrud {
 
 		}
 
-		return News::model()
+		return [News::model()
 			->select(News::getSelection())
+			->option('count')
 			->whereWebsite($eWebsite)
 			->sort(['publishedAt' => SORT_DESC])
-			->getCollection(0, $limit);
+			->getCollection($page * $limit, $limit), News::model()->found()];
 
 	}
 

@@ -12,7 +12,7 @@
 		if($data->eWebsite->notEmpty()) {
 			$data->cWebpage = \website\WebpageLib::getByWebsite($data->eWebsite);
 			$data->cMenu = \website\MenuLib::getByWebsite($data->eWebsite, onlyActive: FALSE);
-			$data->cNews = \website\NewsLib::getByWebsite($data->eWebsite, onlyPublished: FALSE);
+			[$data->cNews] = \website\NewsLib::getByWebsite($data->eWebsite, onlyPublished: FALSE);
 			$data->eWebsite['cDesign'] = \website\DesignLib::getAll();
 		}
 

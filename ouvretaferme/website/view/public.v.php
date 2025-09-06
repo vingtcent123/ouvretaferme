@@ -45,7 +45,7 @@ new AdaptativeView('public', function($data, WebsiteTemplate $t) {
 	}
 
 	if($data->eWebpage['template']['fqn'] === 'news') {
-		echo new \website\NewsUi()->getAll($data->cNews);
+		echo new \website\NewsUi()->getAll($data->cNews, $data->nNews / $data->newsLimit, $data->newsPage);
 	}
 
 });

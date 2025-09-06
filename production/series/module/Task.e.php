@@ -361,6 +361,26 @@ class Task extends TaskElement {
 				}
 
 			})
+			->setCallback('repeatMaster.consistency', function() use($input, $p) {
+
+				if(
+					$p->isInvalid('repeatMaster') or
+					$this['repeatMaster']->empty()
+				) {
+					return TRUE;
+				}
+
+				switch($this['status']) {
+
+					case Task::TODO :
+						return ($this['repeatMaster']['stop'] > $this['plannedWeek']);
+
+					case Task::DONE :
+						return ($this['repeatMaster']['stop'] > $this['plannedDone']);
+
+				}
+
+			})
 			->setCallback('harvest.check', function(?float &$harvest) use($fw): bool {
 
 				if($fw->has('Task::action.check')) { // L'action génère déjà une erreur

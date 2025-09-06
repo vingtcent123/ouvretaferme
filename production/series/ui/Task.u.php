@@ -4845,7 +4845,7 @@ class TaskUi {
 					return $h;
 
 				};
-				$d->group = ['wrapper' => $property.'Week '.$property.'Date '.$property.' frequency stop'];
+				$d->group = ['wrapper' => $property.'Week '.$property.'Date '.$property.' frequency stop repeatMaster'];
 				break;
 
 			case 'plant' :
