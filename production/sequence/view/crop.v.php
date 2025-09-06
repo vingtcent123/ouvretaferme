@@ -4,7 +4,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new JsonView('addPlant', function($data, AjaxTemplate $t) {
-	$t->qs('#crop-create-content')->innerHtml(new \sequence\CropUi()->createContent($data->eSequence, $data->ccVariety, $data->cAction));
+	$t->qs('#crop-create-content')->innerHtml(new \sequence\CropUi()->createContent($data->eSequence, $data->cVariety, $data->cAction));
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
@@ -14,7 +14,7 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 new JsonView('changePlant', function($data, AjaxTemplate $t) {
 
 	$form = new \util\FormUi();
-	$t->ref('crop-field-variety')->outerHtml(new \sequence\CropUi()->getVarietyGroup($form, $data->e, $data->ccVariety, $data->cSlice));
+	$t->ref('crop-field-variety')->outerHtml(new \sequence\CropUi()->getVarietyGroup($form, $data->e, $data->cVariety, $data->cSlice));
 
 });
 ?>

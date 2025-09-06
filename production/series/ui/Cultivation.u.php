@@ -1891,7 +1891,7 @@ class CultivationUi {
 		if($infos) {
 			$h .= '<div class="crop-item-info">';
 				foreach($infos as $info) {
-					$h .= '<div>'.\Asset::icon('exclamation-circle').'  '.$info.'</div>';
+					$h .= '<div>'.$info.'</div>';
 				}
 			$h .= '</div>';
 		}
@@ -1913,9 +1913,9 @@ class CultivationUi {
 					$sum = $eCultivation['cSlice']->sum('partPercent');
 
 					if($sum < 100) {
-						$infos[] = s("Les variétés ont été réparties sur moins de 100 % de l'espace.");
+						$infos[] = s("La production couvre {value} % de l'espace.", $sum);
 					} else if($sum > 100) {
-						$infos[] = s("Les variétés ont été réparties sur plus de 100 % de l'espace.");
+						$infos[] = \Asset::icon('exclamation-circle').'  '.s("La production couvre plus de 100 % de l'espace.");
 					}
 
 				}
@@ -1925,7 +1925,7 @@ class CultivationUi {
 			case Cultivation::LENGTH :
 
 				if($eCultivation['series']['use'] === Series::BLOCK) {
-					$infos[] = s("Les variétés ont été réparties au mL alors que la culture est sur surface au libre au m².");
+					$infos[] = \Asset::icon('exclamation-circle').'  '.s("Les variétés ont été réparties au mL alors que la culture est sur surface au libre au m².");
 				} else {
 
 					$sum = $eCultivation['cSlice']->sum('partLength');
@@ -1935,7 +1935,14 @@ class CultivationUi {
 						$limit !== NULL and
 						$sum !== $limit
 					) {
-						$infos[] = s("L'assolement couvre {limit} mL mais les variétés ont été réparties sur {value} mL.", ['limit' => $limit, 'value' => $sum]);
+
+						$text = s("La production couvre {value} / {limit} mL.", ['limit' => $limit, 'value' => $sum]);
+
+						if($sum < $limit) {
+							$infos[] = $text;
+						} else if($sum > $limit) {
+							$infos[] = \Asset::icon('exclamation-circle').'  '.$text;
+						}
 					}
 
 				}
@@ -1945,7 +1952,7 @@ class CultivationUi {
 			case Cultivation::AREA :
 
 				if($eCultivation['series']['use'] === Series::BED) {
-					$infos[] = s("Les variétés ont été réparties au m³ alors que la culture est sur planches au mL.");
+					$infos[] = \Asset::icon('exclamation-circle').'  '.s("Les variétés ont été réparties au m³ alors que la culture est sur planches au mL.");
 				} else {
 
 					$sum = $eCultivation['cSlice']->sum('partArea');
@@ -1955,7 +1962,14 @@ class CultivationUi {
 						$limit !== NULL and
 						$sum !== $limit
 					) {
-						$infos[] = s("L'assolement couvre {limit} m² mais les variétés ont été réparties sur {value} m².", ['limit' => $limit, 'value' => $sum]);
+
+						$text = s("La production couvre {value} / {limit} m².", ['limit' => $limit, 'value' => $sum]);
+
+						if($sum < $limit) {
+							$infos[] = $text;
+						} else if($sum > $limit) {
+							$infos[] = \Asset::icon('exclamation-circle').'  '.$text;
+						}
 					}
 
 				}
@@ -1997,7 +2011,7 @@ class CultivationUi {
 				$sum = $eCultivation['cSlice']->sum('partTray');
 
 				if($eCultivation['seedling'] === Cultivation::SOWING) {
-					$infos[] = s("Vous avez réparti les variétés en nombre de plateaux de semis alors que la production est implantée en semis direct.");
+					$infos[] = \Asset::icon('exclamation-circle').'  '.s("Vous avez réparti les variétés en nombre de plateaux de semis alors que la production est implantée en semis direct.");
 				} else {
 
 					$plants = $eCultivation->getYoungPlants();
@@ -2007,7 +2021,7 @@ class CultivationUi {
 						$limit !== NULL and
 						$sum !== $limit
 					) {
-						$infos[] = s("La production demande {limit} plateaux de semis mais vous avez réparti les variétés sur {value} plateaux.", ['limit' => $limit, 'value' => $sum]);
+						$infos[] = \Asset::icon('exclamation-circle').'  '.s("La production demande {limit} plateaux de semis mais vous avez réparti les variétés sur {value} plateaux.", ['limit' => $limit, 'value' => $sum]);
 					}
 
 					$tools = array_merge(...$cTask
@@ -2021,7 +2035,7 @@ class CultivationUi {
 						$tools !== [] and
 						in_array($eCultivation['sliceTool']['id'], $tools) === FALSE
 					) {
-						$infos[] = s("Vous avez réparti les variétés avec des plateaux de semis {value} alors que les interventions de semis en pépinière sur la série utilisent d'autres plateaux.", '<u>'.encode($eCultivation['sliceTool']['name']).'</u>');
+						$infos[] = \Asset::icon('exclamation-circle').'  '.s("Vous avez réparti les variétés avec des plateaux de semis {value} alors que les interventions de semis en pépinière sur la série utilisent d'autres plateaux.", '<u>'.encode($eCultivation['sliceTool']['name']).'</u>');
 					}
 
 				}

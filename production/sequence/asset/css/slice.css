@@ -106,6 +106,14 @@ div.slice-item a.slice-item-remove {
 	grid-area: remove;
 }
 
+div.slice-item a.slice-item-remove {
+	grid-area: remove;
+}
+
+div.slice-items:not(:has(> .slice-item:nth-child(2))) a.slice-item-remove {
+	display: none;
+}
+
 div.slice-item-create {
 	display: none;
 }

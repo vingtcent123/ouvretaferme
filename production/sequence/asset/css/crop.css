@@ -25,6 +25,15 @@ div.crop-item {
 	background-color: white;
 }
 
+@media (min-width: 1500px) {
+
+	div.crop-item {
+		display: grid;
+		grid-template-rows: auto 1fr auto;
+	}
+
+}
+
 div.crop-item.crop-item-ghost {
 	visibility: hidden;
 }
@@ -63,7 +72,7 @@ div.crop-item-varieties {
 	grid-template-columns: auto auto;
 	align-items: baseline;
 	font-size: 0.9rem;
-	line-height: 1.4	;
+	line-height: 1.4;
 }
 
 div.crop-item-varieties.crop-item-varieties-1 {

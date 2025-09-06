@@ -14,31 +14,14 @@ class VarietyLib extends VarietyCrud {
 		return self::getPropertiesCreate();
 	}
 
-	public static function query(\farm\Farm $eFarm, Plant $ePlant, ?array $properties = []): \Collection {
-
-		// On récupère les variétés déjà utilisées
-		$cVarietyUsed = \series\Slice::model()
-			->select('variety')
-			->whereFarm($eFarm)
-			->wherePlant($ePlant)
-			->whereVariety('!=', NULL)
-			->group('variety')
-			->getColumn('variety');
-
-		if($cVarietyUsed->notEmpty()) {
-			$use = 'OR id IN ('.implode(', ', $cVarietyUsed->getIds()).')';
-		} else {
-			$use = '';
-		}
+	public static function query(\farm\Farm $eFarm, Plant $ePlant): \Collection {
 
 		return Variety::model()
-			->select($properties ?: Variety::getSelection() + [
-				'weight' => new \Sql('IF(plant IS NOT NULL AND (farm = '.Variety::model()->format($eFarm).' '.$use.'), "farm", IF(plant IS NOT NULL, "common", "other"))', 'string')
-			])
-			->where('farm IS NULL OR farm = '.Variety::model()->format($eFarm).' '.$use)
+			->select(Variety::getSelection())
+			->where('farm IS NULL OR farm = '.Variety::model()->format($eFarm))
 			->where('plant IS NULL OR plant = '.Variety::model()->format($ePlant))
-			->sort(new \Sql('FIELD(weight, "farm", "common", "other"), name ASC'))
-			->getCollection(NULL, NULL, ['weight', NULL]);
+			->sort(new \Sql('id != '.PlantSetting::VARIETY_UNKNOWN.', id = '.PlantSetting::VARIETY_MIX.', name ASC'))
+			->getCollection();
 
 	}
 

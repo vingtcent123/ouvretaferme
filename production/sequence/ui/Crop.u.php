@@ -177,14 +177,14 @@ class CropUi {
 
 		$h = '<div class="crop-item-varieties crop-item-varieties-'.$cSlice->count().'">';
 
-		foreach($cSlice as $eSlice) {
+			foreach($cSlice as $eSlice) {
 
-			$h .= '<div>';
-				$h .= '<span class="crop-item-varieties-label">'.encode($eSlice['variety']['name']).'</span>';
-				$h .= '<span class="crop-item-varieties-part">'.$eSlice->formatPart($eCrop).'</span>';
-			$h .= '</div>';
+				$h .= '<div>';
+					$h .= '<span class="crop-item-varieties-label">'.encode($eSlice['variety']['name']).'</span>';
+					$h .= '<span class="crop-item-varieties-part">'.$eSlice->formatPart($eCrop).'</span>';
+				$h .= '</div>';
 
-		}
+			}
 
 		$h .= '</div>';
 
@@ -473,7 +473,7 @@ class CropUi {
 
 	}
 
-	public function createContent(Sequence $eSequence, \Collection $ccVariety, \Collection $cAction): string {
+	public function createContent(Sequence $eSequence, \Collection $cVariety, \Collection $cAction): string {
 
 		$eSequence->expects(['farm', 'plants']);
 
@@ -482,7 +482,7 @@ class CropUi {
 		$eSequence['plants']++;
 
 		$eCrop = new Crop([
-			'ccVariety' => $ccVariety,
+			'cVariety' => $cVariety,
 			'sequence' => $eSequence,
 			'farm' => $eSequence['farm'],
 			'seedling' => NULL,
@@ -604,11 +604,11 @@ class CropUi {
 
 	}
 
-	public function getVarietyGroup(\util\FormUi $form, Crop|\series\Cultivation $eCrop, \Collection $ccVariety, \Collection $cSlice, string $suffix = ''): string {
+	public function getVarietyGroup(\util\FormUi $form, Crop|\series\Cultivation $eCrop, \Collection $cVariety, \Collection $cSlice, string $suffix = ''): string {
 
 		return $form->group(
 			$this->p('variety')->label,
-			new SliceUi()->select($form, $suffix, $eCrop, $ccVariety, $cSlice),
+			new SliceUi()->select($form, $suffix, $eCrop, $cVariety, $cSlice),
 			['wrapper' => 'variety'.$suffix.' varietyCreate'.$suffix, 'data-ref' => 'crop-field-variety'.$suffix]
 		);
 

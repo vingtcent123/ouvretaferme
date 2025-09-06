@@ -32,7 +32,7 @@ document.delegateEventListener('click', 'a[data-action="slice-add"]', function(e
 	const wrapper = qs(id);
 
 	const clone = qs(id +' .slice-spare').firstChild.cloneNode(true);
-	clone.qs('option[value=""]').remove();
+	clone.qsa('[name*="spare"]', node => node.setAttribute('name', node.getAttribute('name').replace('spare', 'variety')));
 
 	wrapper.qs('.slice-items > *:last-child').insertAdjacentElement('beforebegin', clone);
 

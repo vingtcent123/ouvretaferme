@@ -18,7 +18,7 @@ class AlertUi {
 			'Crop::plant.duplicate' => s("Cette espèce est déjà utilisée dans l'itinéraire technique !"),
 			'Crop::deleteOnly' => s("Vous ne pouvez pas supprimer la seule production de l'itinéraire technique !"),
 
-			'Crop::variety.check' => s("Une erreur est survenue dans le traitement des variétés."),
+			'Crop::variety.check' => s("Vous devez choisir au moins une variété."),
 			'Crop::variety.createEmpty' => s("Vous devez indiquer un nom pour une variété que vous souhaitez ajouter."),
 			'Crop::variety.notExists' => s("La variété n'existe pas."),
 			'Crop::variety.partZero' => s("Vous n'avez pas indiqué de répartition pour au moins une des variétés."),

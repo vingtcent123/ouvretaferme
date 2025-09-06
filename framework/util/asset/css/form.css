@@ -511,7 +511,6 @@ div.form-group.form-group-nested > .form-control-label {
 
 .field-radio-separator {
 	color: var(--muted);
-	font-style: italic;
 }
 
 /* Switch */

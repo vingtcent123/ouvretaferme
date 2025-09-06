@@ -9,7 +9,7 @@ new \sequence\CropPage(function($data) {
 	->post('addPlant', function($data) {
 
 		$data->ePlant = \plant\PlantLib::getById(POST('plant'));
-		$data->ccVariety = \plant\VarietyLib::query($data->eSequence['farm'], $data->ePlant);
+		$data->cVariety = \plant\VarietyLib::query($data->eSequence['farm'], $data->ePlant);
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->eSequence['farm'], fqn: [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION], index: 'fqn');
 
@@ -36,7 +36,7 @@ new \sequence\CropPage()
 		if($data->ePlant->notEmpty()) {
 
 			$data->ePlant->validate('canRead');
-			$data->ccVariety = \plant\VarietyLib::query($data->e['farm'], $data->ePlant);
+			$data->cVariety = \plant\VarietyLib::query($data->e['farm'], $data->ePlant);
 
 			// On récupère les répartitions actuelles des variétés si l'espèce recherchée est celle actuellement utilisée
 			if($data->ePlant['id'] === $data->e['plant']['id']) {
@@ -46,7 +46,7 @@ new \sequence\CropPage()
 			}
 
 		} else {
-			$data->ccVariety = new Collection();
+			$data->cVariety = new Collection();
 			$data->cSlice = new Collection();
 		}
 
@@ -86,7 +86,7 @@ new Page()
 		if($data->ePlant->notEmpty()) {
 
 			$data->ePlant->validate('canRead');
-			$data->ccVariety = \plant\VarietyLib::query($data->ePlant['farm'], $data->ePlant);
+			$data->cVariety = \plant\VarietyLib::query($data->ePlant['farm'], $data->ePlant);
 
 			// On récupère les répartitions actuelles des variétés si l'espèce recherchée est celle actuellement utilisée
 			if($data->ePlant['id'] === $data->e['plant']['id']) {
@@ -96,7 +96,7 @@ new Page()
 			}
 
 		} else {
-			$data->ccVariety = new Collection();
+			$data->cVariety = new Collection();
 			$data->cSlice = new Collection();
 		}
 

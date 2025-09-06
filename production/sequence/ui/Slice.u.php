@@ -16,11 +16,21 @@ class SliceUi {
 			return '';
 		}
 
-		return implode(' / ', $cSlice->makeArray(fn($eSlice) => '<span title="'.$eSlice->formatPart($eCrop).'">'.encode($eSlice['variety']['name']).'</span>'));
+		$output = [];
+
+		foreach($cSlice as $eSlice) {
+
+			if($eSlice['variety']['id'] !== \plant\PlantSetting::VARIETY_UNKNOWN) {
+				$output[] = '<span title="'.$eSlice->formatPart($eCrop).'">'.encode($eSlice['variety']['name']).'</span>';
+			}
+
+		}
+
+		return implode(' / ', $output);
 
 	}
 
-	public function select(\util\FormUi $form, string $suffix, Crop|\series\Cultivation $eCrop, \Collection $ccVariety, \Collection $cSlice): string {
+	public function select(\util\FormUi $form, string $suffix, Crop|\series\Cultivation $eCrop, \Collection $cVariety, \Collection $cSlice): string {
 
 		$nameVariety = 'variety'.$suffix;
 		$nameUnit = 'sliceUnit'.$suffix;
@@ -62,7 +72,7 @@ class SliceUi {
 
 			$h .= '<div class="slice-items">';
 
-				$h .= $cSlice->makeString(fn($eSlice) => $this->getField($form, $nameVariety, $eCrop, $ccVariety, $eSlice));
+				$h .= $cSlice->makeString(fn($eSlice) => $this->getField($form, $nameVariety, $eCrop, $cVariety, $eSlice));
 
 				$h .= '<div class="slice-item-new">';
 					$h .= '<div class="slice-item-actions">';
@@ -218,7 +228,7 @@ class SliceUi {
 
 			$h .= '</div>';
 			$h .= '<div class="slice-spare">';
-				$h .= $this->getField($form, $nameVariety, $eCrop, $ccVariety, new Slice());
+				$h .= $this->getField($form, $nameVariety, $eCrop, $cVariety, new Slice(), spare: TRUE);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -252,28 +262,25 @@ class SliceUi {
 
 	}
 
-	protected function getField(\util\FormUi $form, string $name, Crop|\series\Cultivation $eCrop, \Collection $ccVariety, Slice|\series\Slice $eSlice): string {
+	protected function getField(\util\FormUi $form, string $name, Crop|\series\Cultivation $eCrop, \Collection $cVariety, Slice|\series\Slice $eSlice, bool $spare = FALSE): string {
 
 		$h = '<div class="slice-item">';
 
 			$h .= '<div class="slice-item-variety">';
 
-			if($ccVariety->empty()) {
-				$h .= $form->hidden($name.'[variety][]', 'new');
-				$h .= $this->getFieldCreate($form, $name, TRUE);
-			} else {
-				$h .= $form->dynamicField($eSlice, 'variety', function($d) use($ccVariety, $name, $eSlice) {
-					$d->values = $this->getFieldValues($ccVariety);
-					$d->name = $name.'[variety][]';
+				$h .= $form->dynamicField($eSlice, 'variety', function($d) use($cVariety, $name, $eSlice, $spare) {
+					$d->values = $this->getFieldValues($cVariety);
+					$d->name = $name.'['.($spare ? 'spare' : 'variety').'][]';
 					$d->attributes = [
 						'data-action' => 'slice-variety-change'
 					];
-					if($eSlice->exists()) {
-						$d->attributes['mandatory'] = TRUE;
-					}
+					$d->attributes['mandatory'] = TRUE;
 				});
-				$h .= $this->getFieldCreate($form, $name, FALSE);
-			}
+
+				$h .= '<div class="slice-item-create" style="display: none">';
+					$h .= $form->text($name.'['.($spare ? 'spare' : 'variety').'Create][]', '', ['data-action' => 'slice-variety-create', 'placeholder' => s("Tapez le nom de la variété")]);
+					$h .= '<a class="slice-item-create-cancel" data-action="slice-variety-create-cancel">'.\Asset::icon('trash').'</a>';
+				$h .= '</div>';
 
 			$h .= '</div>';
 
@@ -353,68 +360,28 @@ class SliceUi {
 
 	}
 
-	protected function getFieldCreate(\util\FormUi $form, string $name, bool $visible) {
-
-		$h = '<div class="slice-item-create" style="display: '.($visible ? 'grid' : 'none').'">';
-			$h .= $form->text($name.'[varietyCreate][]', '', ['data-action' => 'slice-variety-create', 'placeholder' => s("Tapez le nom de la variété")]);
-			$h .= '<a class="slice-item-create-cancel" data-action="slice-variety-create-cancel">'.\Asset::icon('trash').'</a>';
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getFieldValues(\Collection $ccVariety) {
+	protected function getFieldValues(\Collection $cVariety) {
 
 		$values = [];
 
-		if($ccVariety->offsetExists('farm')) {
+		foreach($cVariety as $eVariety) {
 
-			if($ccVariety->offsetExists('common')) {
-
-				$values[] = [
-					'label' => s("Variétés préférées"),
-					'attributes' => ['class' => 'field-radio-separator', 'disabled', 'value']
-				];
-
-			}
-
-			foreach($ccVariety['farm'] as $eVariety) {
-				$values[] = $eVariety;
-			}
-
-		}
-
-		if($ccVariety->offsetExists('common')) {
-
-			if($ccVariety->offsetExists('farm')) {
+			if($eVariety['id'] === \plant\PlantSetting::VARIETY_MIX) {
 
 				$values[] = [
-					'label' => s("Autres variétés"),
+					'label' => '* * *',
 					'attributes' => ['class' => 'field-radio-separator', 'disabled']
 				];
 
 			}
 
-			foreach($ccVariety['common'] as $eVariety) {
-				$values[] = $eVariety;
-			}
+			$values[] = $eVariety;
 
-		}
-
-		if($ccVariety->offsetExists('other')) {
-
-			if($ccVariety->offsetExists('farm') or $ccVariety->offsetExists('common')) {
-
+			if($eVariety['id'] === \plant\PlantSetting::VARIETY_UNKNOWN) {
 				$values[] = [
-					'label' => s("Autres choix"),
+					'label' => '* * *',
 					'attributes' => ['class' => 'field-radio-separator', 'disabled']
 				];
-
-			}
-
-			foreach($ccVariety['other'] as $eVariety) {
-				$values[] = $eVariety;
 			}
 
 		}

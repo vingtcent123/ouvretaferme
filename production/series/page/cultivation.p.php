@@ -52,7 +52,7 @@ new \series\CultivationPage()
 		if($data->ePlant->notEmpty()) {
 
 			$data->ePlant->validate('canRead');
-			$data->ccVariety = \plant\VarietyLib::query($data->e['farm'], $data->ePlant);
+			$data->cVariety = \plant\VarietyLib::query($data->e['farm'], $data->ePlant);
 
 			// On récupère les répartitions actuelles des variétés si l'espèce recherchée est celle actuellement utilisée
 			if($data->ePlant['id'] === $data->e['plant']['id']) {
@@ -65,7 +65,7 @@ new \series\CultivationPage()
 
 		} else {
 
-			$data->ccVariety = new Collection();
+			$data->cVariety = new Collection();
 			$data->cSlice = new Collection();
 
 			$data->e['cTray'] = new Collection();
