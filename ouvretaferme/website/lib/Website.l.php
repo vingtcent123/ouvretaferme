@@ -137,7 +137,9 @@ class WebsiteLib extends WebsiteCrud {
 						->exists($e) === FALSE
 				) {
 					$properties[] = 'domainStatus';
+					$properties[] = 'domainTry';
 					$e['domainStatus'] = Website::PENDING;
+					$e['domainTry'] = 0;
 				}
 
 			} else {
