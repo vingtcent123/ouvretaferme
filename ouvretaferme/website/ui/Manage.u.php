@@ -213,13 +213,16 @@ class ManageUi {
 			$eWebsite['domainStatus'] !== Website::PINGED_SECURED
 		) {
 
+			$analyze = analyze_url('https://'.$eWebsite['domain']);
+
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Configurer votre nom de domaine {value}", encode($eWebsite['domain'])).'</h4>';
-				$h .= '<p>'.s("Pour démarrer l'activation de votre nom de domaine, configurez les enregistrements DNS de votre nom de domaine pour qu'ils pointent vers :").'</p>';
+				$h .= '<p>'.s("Pour démarrer l'activation de votre nom de domaine, configurez les enregistrements DNS de votre nom de domaine pour qu'ils pointent vers {siteName} en utilisant un type <b>CNAME</b> :").'</p>';
 				$h .= '<pre class="mb-1">';
-					$h .= s("<b>www.{domain}.</b> <-- Le point (.) final est important", ['domain' => \Lime::getDomain()]);
+					$h .= '<b>www 10800 IN CNAME www.'.\Lime::getDomain().'.</b>';
 				$h .= '</pre>';
-				$h .= '<p>'.s("Vous devez utiliser un type <b>CNAME</b> pour configurer un sous-domaine comme <b>www</b> et / ou un type <b>ALIAS</b> pour configurer le domaine principal. Si vous n'êtes pas à l'aise avec ces instructions, nous vous conseillons de vous faire aider. Une fois les DNS modifiés et propagés, la configuration de votre nom de domaine se terminera automatiquement. Cette étape peut prendre plusieurs heures.").'</p>';
+				$h .= '<p>'.s("Le plus souvent, le fournisseur chez qui vous avez acheté votre nom de domaine vous propose un formulaire simplifié pour ajouter un type <b>CNAME</b>. Si vous n'êtes pas à l'aise avec ces instructions, nous vous conseillons de vous faire aider. Une fois les DNS modifiés et propagés, la configuration de votre nom de domaine se terminera automatiquement. Cette étape peut prendre plusieurs heures. Il est possible de demander de l'aide sur le <b>Discord</b> de {siteName}.").'</p>';
+				$h .= '<p>'.s("Pour configurer votre domaine principal <b>{value}</b> vers votre site, vous pouvez utiliser une redirection, fonctionnalité proposée par la plupart des fournisseurs de noms de domaine.", $analyze['domain']).'</p>';
 			$h .= '</div>';
 
 		}

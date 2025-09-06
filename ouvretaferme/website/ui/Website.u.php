@@ -155,7 +155,17 @@ class WebsiteUi {
 
 			case 'domain' :
 				$d->prepend = \Lime::getProtocol().'://';
-				$d->after = \util\FormUi::info(s("Si vous renseignez un nom de domaine, celui-ci est prioritaire par rapport à l'adresse du site sur <u>{siteName}</u>. Vous devez acheter et configurer séparément votre nom de domaine chez un vendeur agréé pour utiliser cette fonctionnalité."));
+				$d->placeholder = 'www.mondomaine.fr';
+				$d->labelAfter = \util\FormUi::info(s("Votre domaine doit impérativement commencer par un sous-domaine (exemple : www)"));
+
+				$after = s("Si vous renseignez un nom de domaine, celui-ci est prioritaire par rapport à l'adresse du site sur <u>{siteName}</u>. Vous devez acheter et configurer séparément votre nom de domaine pour utiliser cette fonctionnalité, par exemple chez :");
+				$after .= '<ul>';
+					$after .= '<li><a href="https://www.ovhcloud.com/" target="_blank">OVH</a></li>';
+					$after .= '<li><a href="https://www.gandi.net/" target="_blank">Gandi</a> (plus simple, mais plus cher)</li>';
+				$after .= '</ul>';
+
+				$d->after = \util\FormUi::info($after);
+
 				break;
 
 			case 'name' :

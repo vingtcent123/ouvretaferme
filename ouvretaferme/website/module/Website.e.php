@@ -47,6 +47,13 @@ class Website extends WebsiteElement {
 					)
 				);
 			})
+			->setCallback('domain.prefix', function(?string $domain): bool {
+
+				return (
+					$domain === NULL or
+					preg_match('/^[a-z0-9\-]+\.([a-z0-9\-]+\.)+[a-z0-9]+$/s', $domain) > 0
+				);
+			})
 			->setCallback('footer.prepare', function(string &$value): bool {
 				$value = new \editor\XmlLib()->fromHtml($value, ['acceptFigure' => TRUE]);
 				return TRUE;

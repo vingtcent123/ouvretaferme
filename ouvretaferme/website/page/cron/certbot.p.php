@@ -15,7 +15,7 @@ new Page()
 
 		\website\DomainLib::buildCertificate();
 
-	}, interval: '3 */12 * * *')
+	}, interval: '3 3 * * *')
 	->cron('clean', function($data) {
 
 		\website\DomainLib::cleanRewrites();
