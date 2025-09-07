@@ -107,6 +107,7 @@ class AlertUi {
 			'Unit::singular.duplicate' => s("Il y a déjà une unité avec le même nom"),
 			'Unit::deleteUsed' => s("Cette unité ne peut pas être supprimée car elle est utilisée dans une vente ou pour un produit"),
 
+			'Market::status' => s("Cette vente ne peut pas être terminée"),
 			'Market::emptyPayment' => s("Veuillez indiquer un moyen de paiement pour terminer cette vente"),
 			'Market::inconsistencyTotal' => s("Le montant total par moyen de paiement est différent du montant total de la vente"),
 

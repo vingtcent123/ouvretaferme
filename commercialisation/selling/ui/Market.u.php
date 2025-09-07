@@ -310,8 +310,9 @@ class MarketUi {
 							if($cItemSale->empty()) {
 								$buttons[] = '<a data-ajax="/selling/market:doDelete" post-id="'.$eSale['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous réellement supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
 							} else {
-								$buttons[] = '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Terminer<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a>';
-								$buttons[] = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Annuler<span> la vente</span>", ['span' => '<span class="hide-xs-down">']).'</a>';
+								$buttons[] = '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Vente payée").'</a>';
+								//$buttons[] = '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Vente payée plus tard").'</a>';
+								$buttons[] = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Vente annulée").'</a>';
 							}
 
 							break;

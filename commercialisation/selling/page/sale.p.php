@@ -426,22 +426,23 @@ new \selling\SalePage()
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->write('doUpdatePaymentMethod', function($data) {
 
-		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id');
+		$paymentStatus = \selling\Sale::POST('paymentStatus', 'paymentStatus');
+
 		$action = POST('action', 'string', 'update');
-		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse', 'acceptManualUpdate');
+		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse', 'acceptManualUpdate');
 
 		switch($action) {
 			case 'update':
 				$ePayment = \selling\PaymentLib::getById(POST('payment'));
-				\selling\PaymentLib::updateBySaleAndMethod($data->e, eMethod: $eMethod, ePayment: $ePayment);
+				\selling\PaymentLib::updateBySaleAndMethod($data->e, $eMethod, $ePayment);
 				break;
 
 			case 'remove':
-				\selling\PaymentLib::deleteBySaleAndMethod($data->e, eMethod: $eMethod);
+				\selling\PaymentLib::deleteBySaleAndMethod($data->e, $eMethod);
 				break;
 
 			case 'add':
-				\selling\PaymentLib::createByMarketSale($data->e, eMethod: $eMethod);
+				\selling\PaymentLib::createByMarketSale($data->e, $eMethod);
 				break;
 
 			default:
@@ -453,8 +454,7 @@ new \selling\SalePage()
 	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->write('doFillPaymentMethod', function($data) {
 
-		$paymentMethodId = \payment\Method::POST('paymentMethod', 'id');
-		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
+		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
 
 		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
 

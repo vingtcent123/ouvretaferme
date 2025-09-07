@@ -94,7 +94,7 @@ class MarketTemplate extends BaseTemplate {
 
 					}
 
-					$h .= '<h3>'.s("Ventes terminées ({value})", $cSaleDelivered->count()).'</h3>';
+					$h .= '<h3>'.s("Ventes payées ({value})", $cSaleDelivered->count()).'</h3>';
 
 					if($cSaleDelivered->notEmpty()) {
 						$h .= '<div class="market-sales-list">';

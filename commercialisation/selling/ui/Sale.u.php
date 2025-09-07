@@ -529,38 +529,28 @@ class SaleUi {
 
 										$payment = \payment\MethodUi::getName($ePayment['method']);
 
-										if(
-											$eSale['paymentMethod']->notEmpty() and
-											$eSale->isMarketSale() === FALSE
-										) {
-
-											$payment .= '<div style="margin-top: 0.25rem">'.self::getPaymentStatus($eSale).'</div>';
-
-										} else if(
-											$eSale->isMarketSale() and
-											$eSale['cPayment']->count() > 1
-										) {
-
+										if($eSale['cPayment']->count() > 1) {
 											$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
-
 										}
 
 										$paymentList[] = $payment;
 
 									}
+
 									$h .= join('<br />', $paymentList);
 
 								} else {
 
 									$h .= self::getPaymentMethodName($eSale);
 
-									if($eSale['paymentMethod']->notEmpty()) {
-
-										$h .= '<div style="margin-top: 0.25rem">'.self::getPaymentStatus($eSale).'</div>';
-
-									}
-
 								}
+
+								$paymentStatus = self::getPaymentStatus($eSale);
+
+								if($paymentStatus) {
+									$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+								}
+
 							$h .= '</td>';
 
 						}

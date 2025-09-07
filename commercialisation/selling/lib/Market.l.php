@@ -244,25 +244,19 @@ class MarketLib {
 
 		Sale::model()->beginTransaction();
 
+		if($eSale->acceptStatusDelivered() === FALSE) {
+			\Fail::log('Market::status');
+			return;
+		}
+
 		// Supprime les moyens de paiement vide / à 0€
 		PaymentLib::cleanBySale($eSale);
 
-		$ePaymentMethodLast = Payment::model()
-			->select('method')
-			->whereSale($eSale)
-			->sort(['id' => SORT_DESC])
-			->get();
+		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
+		$eSale['preparationStatus'] = Sale::DELIVERED;
+		$eSale['paymentStatus'] = Sale::PAID;
 
-		$inputValues = [
-			'paymentMethod' => ($ePaymentMethodLast['method']['id'] ?? NULL),
-			'paymentStatus' => Sale::PAID,
-			'preparationStatus' => Sale::DELIVERED,
-		];
-		$properties = array_keys($inputValues);
-
-		$eSale->build($properties, $inputValues, new \Properties('update'));
-
-		SaleLib::update($eSale, $properties);
+		SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);
 
 		Sale::model()->commit();
 	}
