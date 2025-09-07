@@ -70,12 +70,6 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 });
 
-new JsonView('doCloseMarketSale', function($data, AjaxTemplate $t) {
-
-	$t->ajaxReload();
-
-});
-
 new AdaptativeView('sendTicket', function($data, PanelTemplate $t) {
 
 	return new \selling\MarketUi()->getTicketForm($data->e);

@@ -310,9 +310,19 @@ class MarketUi {
 							if($cItemSale->empty()) {
 								$buttons[] = '<a data-ajax="/selling/market:doDelete" post-id="'.$eSale['id'].'" class="btn btn-danger" data-confirm="'.s("Voulez-vous réellement supprimer cette vente ?").'">'.s("Supprimer la vente").'</a>';
 							} else {
-								$buttons[] = '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Vente payée").'</a>';
-								//$buttons[] = '<a data-ajax="/selling/market:doCloseMarketSale" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Vente payée plus tard").'</a>';
-								$buttons[] = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" class="btn btn-muted" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'">'.s("Vente annulée").'</a>';
+								$buttons[] = '<a data-ajax="/selling/market:doPaidMarketSale" post-id="'.$eSale['id'].'" class="btn btn-success">'.s("Vente payée").'</a>';
+
+								$more = '<a class="btn btn-outline-primary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('list').'</a>';
+								$more .= '<div class="dropdown-list">';
+									if($eSale['customer']->empty()) {
+										$more .= '<a data-alert="'.s("Vous devez affecter cette vente à un client pour la mettre à payer plus tard.").'" class="dropdown-item">'.s("Vente en paiement différé").'</a>';
+									} else {
+										$more .= '<a data-ajax="/selling/market:doNotPaidMarketSale" post-id="'.$eSale['id'].'" data-confirm="'.s("Cette vente sera sortie du logiciel de caisse et vous pourrez la gérer directement depuis la page de vos ventes. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Vente en paiement différé").'</a>';
+									}
+									$more .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'" class="dropdown-item">'.s("Vente annulée").'</a>';
+								$more .= '</div>';
+
+								$buttons[] = $more;
 							}
 
 							break;

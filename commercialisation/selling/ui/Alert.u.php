@@ -107,7 +107,6 @@ class AlertUi {
 			'Unit::singular.duplicate' => s("Il y a déjà une unité avec le même nom"),
 			'Unit::deleteUsed' => s("Cette unité ne peut pas être supprimée car elle est utilisée dans une vente ou pour un produit"),
 
-			'Market::status' => s("Cette vente ne peut pas être terminée"),
 			'Market::emptyPayment' => s("Veuillez indiquer un moyen de paiement pour terminer cette vente"),
 			'Market::inconsistencyTotal' => s("Le montant total par moyen de paiement est différent du montant total de la vente"),
 
@@ -129,6 +128,7 @@ class AlertUi {
 			'Customer::optInUpdated' => s("Vos préférences de communication par e-mail ont bien été mises à jour."),
 
 			'Market::pricesUpdated' => s("Les nouveaux prix des produits proposés à la vente ont bien été enregistrés."),
+			'Market::saleExcluded' => s("La vente a bien été sortie du logiciel de caisse pour un paiement différé, vous la retrouverez dans la liste de vos ventes."),
 			'Market::closed' => s("La vente a bien été clôturée !"),
 
 			'Category::created' => s("La catégorie a bien été créée."),

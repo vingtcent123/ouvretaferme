@@ -61,19 +61,30 @@ new \selling\SalePage()
 		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'?success=selling:Market::closed');
 
 	})
-	->write('doCloseMarketSale', function($data) {
+	->write('doPaidMarketSale', function($data) {
 
 		$fw = new FailWatch();
 
-		\selling\MarketLib::checkPaymentsConsistency($data->e);
+		\selling\MarketLib::doPaidMarketSale($data->e);
 
 		$fw->validate();
 
-		\selling\MarketLib::doCloseMarketSale($data->e);
+		throw new ReloadAction();
 
-		throw new ViewAction($data);
+	}, validate: ['isMarketSale', 'acceptStatusDelivered', 'acceptUpdatePayment'])
+	->write('doNotPaidMarketSale', function($data) {
 
-	}, validate: ['isMarketSale', 'acceptUpdatePayment'])
+		if($data->e['customer']->empty()) {
+			throw new NotExpectedAction('Missing customer');
+		}
+
+		$eSaleMarket = $data->e['marketParent'];
+
+		\selling\MarketLib::doNotPaidMarketSale($data->e);
+
+		throw new RedirectAction(\selling\SaleUi::urlMarket($eSaleMarket).'?success=selling:Market::saleExcluded');
+
+	}, validate: ['isMarketSale', 'acceptStatusDelivered', 'acceptUpdatePayment'])
 	->write('doUpdatePrices', function($data) {
 
 		$cItem = \selling\MarketLib::checkNewPrices($data->e, POST('unitPrice', 'array', []));

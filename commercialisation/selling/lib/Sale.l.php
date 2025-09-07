@@ -383,7 +383,6 @@ class SaleLib extends SaleCrud {
 			->whereItems('>', 0)
 			->whereInvoice(NULL, if: $checkInvoice)
 			->whereOrigin('!=', Sale::MARKET)
-			->whereMarketParent(NULL)
 			->wherePreparationStatus(Sale::DELIVERED)
 			->sort(['id' => SORT_ASC])
 			->getCollection();

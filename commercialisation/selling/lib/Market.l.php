@@ -222,43 +222,88 @@ class MarketLib {
 
 	}
 
-	public static function checkPaymentsConsistency(Sale $eSale): void {
+	public static function doPaidMarketSale(Sale $eSale): void {
 
-		$eSale['cPayment'] = PaymentLib::getBySale($eSale);
+		Sale::model()->beginTransaction();
 
-		if($eSale['cPayment']->empty()) {
-			\Fail::log('Market::emptyPayment');
-		} else {
+			$eSale['cPayment'] = PaymentLib::getBySale($eSale);
 
-			$totalPayments = $eSale['cPayment']->reduce(fn($e, $v) => $v + $e['amountIncludingVat'], 0);
+			if($eSale['cPayment']->empty()) {
+				\Fail::log('Market::emptyPayment');
+				return;
+			} else {
 
-			if($totalPayments !== $eSale['priceIncludingVat']) {
-				\Fail::log('Market::inconsistencyTotal');
+				self::validatePaymentConsistency($eSale);
+
 			}
 
+			self::doPaymentStatusMarketSale($eSale, Sale::PAID);
+
+		Sale::model()->commit();
+	}
+
+	public static function doNotPaidMarketSale(Sale $eSale): void {
+
+		Sale::model()->beginTransaction();
+
+			$eSale['cPayment'] = PaymentLib::getBySale($eSale);
+
+			if($eSale['cPayment']->notEmpty()) {
+				self::validatePaymentConsistency($eSale);
+			}
+
+			// On sort la vente du logiciel de caisse
+			$eSale['origin'] = Sale::SALE;
+			$eSale['marketParent'] = new Sale();
+			$eSale['stats'] = TRUE;
+
+			Sale::model()
+				->select('origin', 'marketParent', 'stats')
+				->update($eSale);
+
+			Item::model()
+				->whereSale($eSale)
+				->update([
+					'parent' => new Item(),
+					'stats' => TRUE
+				]);
+
+			self::doPaymentStatusMarketSale($eSale, $eSale['cPayment']->notEmpty() ? Sale::NOT_PAID : NULL);
+
+		Sale::model()->commit();
+
+	}
+
+	public static function validatePaymentConsistency(Sale $eSale): void {
+
+		$totalPayments = $eSale['cPayment']->reduce(fn($e, $v) => $v + $e['amountIncludingVat'], 0);
+
+		if($totalPayments !== $eSale['priceIncludingVat']) {
+			throw new \FailException('selling\Market::inconsistencyTotal');
 		}
 
 	}
 
-	public static function doCloseMarketSale(Sale $eSale): void {
-
-		Sale::model()->beginTransaction();
-
-		if($eSale->acceptStatusDelivered() === FALSE) {
-			\Fail::log('Market::status');
-			return;
-		}
+	public static function doPaymentStatusMarketSale(Sale $eSale, ?string $paymentStatus): void {
 
 		// Supprime les moyens de paiement vide / à 0€
 		PaymentLib::cleanBySale($eSale);
 
+		$properties = ['preparationStatus', 'paymentStatus'];
+
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = Sale::DELIVERED;
-		$eSale['paymentStatus'] = Sale::PAID;
+		$eSale['paymentStatus'] = $paymentStatus;
 
-		SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);
+		if($eSale['cPayment']->notEmpty()) {
 
-		Sale::model()->commit();
+			$eSale['paymentMethod'] = $eSale['cPayment']->first()['method'];
+			$properties[] = 'paymentMethod';
+
+		}
+
+		SaleLib::update($eSale, $properties);
+
 	}
 
 
