@@ -1,3 +1,23 @@
+document.delegateEventListener('click', 'a[data-action="sale-payment-method-add"]', function() {
+
+const clone = qs('#sale-payment-method-wrapper .sale-payment-method-spare').firstChild.cloneNode(true);
+clone.qsa('[name*="spare"]', node => node.setAttribute('name', node.getAttribute('name').replace('spare', 'method')));
+clone.classList.remove('sale-payment-method-spare-item');
+
+qs('#sale-payment-method-wrapper').qs('.sale-payment-methods > *:last-child').insertAdjacentElement('afterend', clone);
+
+	const lastElement = Array.from(qsa('.sale-payment-method:not(.sale-payment-method-spare-item)')).at(-1);
+	Sale.fillLastPaymentMethod(lastElement);
+
+});
+
+document.delegateEventListener('click', 'a[data-action="sale-payment-method-remove"]', function() {
+
+	this.parentElement.remove();
+
+	Sale.updatePaymentMethod();
+
+});
 document.delegateEventListener('autocompleteSelect', '#sale-create', function(e) {
 
 	if(e.detail.value === '') {
@@ -9,6 +29,57 @@ document.delegateEventListener('autocompleteSelect', '#sale-create', function(e)
 });
 
 class Sale {
+
+	static updatePaymentMethod() {
+
+		const calculatedSum = Array.from(qsa('[name^="amountIncludingVat"]'))
+			.reduce((acc, value) => acc + parseFloat(value.value || 0), 0);
+
+		const totalSum = qs('.sale-payment-method-total-sum').innerHTML;
+
+		qs('.sale-payment-method-calculated-sum').innerHTML = Math.round(calculatedSum * 100) / 100;
+
+		if(Math.round(calculatedSum * 100) !== Math.round(totalSum * 100)) {
+
+			qs('.sale-payment-method-calculated-sum').classList.remove('color-success');
+			qs('.sale-payment-method-calculated-sum').classList.add('color-danger');
+
+		} else {
+
+			qs('.sale-payment-method-calculated-sum').classList.add('color-success');
+			qs('.sale-payment-method-calculated-sum').classList.remove('color-danger');
+
+		}
+
+		// S'il ne reste plus qu'un moyen de paiement on ne permet pas de le supprimer
+		const elements = qsa('.sale-payment-method:not(.sale-payment-method-spare-item)');
+		if(Array.from(elements).length === 1) {
+
+			qs('.sale-payment-method:not(.sale-payment-method-spare-item) a.sale-payment-method-remove').classList.add('hide');
+
+		} else {
+
+			qsa('.sale-payment-method:not(.sale-payment-method-spare-item) a.sale-payment-method-remove', element => element.classList.remove('hide'));
+		}
+
+	}
+
+	static fillLastPaymentMethod(element) {
+
+		const calculatedSum = Array.from(qsa('[name^="amountIncludingVat"]'))
+			.reduce((acc, value) => acc + parseFloat(value.value || 0), 0);
+
+		const totalSum = qs('.sale-payment-method-total-sum').innerHTML;
+
+		if(totalSum > calculatedSum) {
+
+			element.qs('[name^="amountIncludingVat"]').value = totalSum - calculatedSum;
+
+		}
+
+		Sale.updatePaymentMethod();
+
+	}
 
 	static refreshCustomerCreate(customer) {
 

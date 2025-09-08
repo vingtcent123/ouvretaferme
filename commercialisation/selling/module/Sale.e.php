@@ -18,7 +18,7 @@ class Sale extends SaleElement {
 				'customer' => ['type', 'name']
 			],
 			'paymentStatus',
-			'paymentMethod' => \payment\Method::getSelection(),
+			'cPayment' => PaymentLib::delegateBySale(),
 		];
 
 	}
@@ -52,6 +52,14 @@ class Sale extends SaleElement {
 		$this->expects(['origin']);
 
 		return $this['origin'] === Sale::SALE_MARKET;
+
+	}
+
+	public function isPaymentIncomplete(): bool {
+
+		$this->expects(['cPayment', 'priceIncludingVat']);
+
+		return $this['cPayment']->notEmpty() and $this['priceIncludingVat'] > $this['cPayment']->sum('amountIncludingVat');
 
 	}
 
@@ -225,7 +233,7 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateMarketSalePayment(): bool {
 
-		$this->expects(['paymentMethod', 'origin']);
+		$this->expects(['origin']);
 
 		return (
 			$this->isMarketSale() and
@@ -236,12 +244,12 @@ class Sale extends SaleElement {
 
 	public function acceptUpdatePayment(): bool {
 
-		$this->expects(['paymentMethod', 'invoice']);
+		$this->expects(['cPayment', 'invoice']);
 
 		return (
 			$this->isMarket() === FALSE and
 			$this->isComposition() === FALSE and
-			($this['paymentMethod']->empty() or $this->isPaymentOnline() === FALSE) and
+			($this['cPayment']->empty() or $this->isPaymentOnline() === FALSE) and
 			$this['preparationStatus'] !== Sale::CANCELED and
 			$this['invoice']->empty()
 		);
@@ -250,7 +258,7 @@ class Sale extends SaleElement {
 
 	public function acceptEmptyOnlinePayment(): bool {
 
-		$this->expects(['paymentMethod', 'invoice']);
+		$this->expects(['cPayment', 'invoice']);
 
 		return (
 			$this->isPaymentOnline() and
@@ -460,13 +468,13 @@ class Sale extends SaleElement {
 
 	public function isPaymentOnline(): bool {
 
-		if($this['paymentMethod']->empty()) {
+		if($this['cPayment']->empty()) {
 			return FALSE;
 		}
 
-		$this->expects(['paymentMethod' => ['fqn']]);
+		$this->expects(['cPayment']);
 
-		return ($this['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD);
+		return $this['cPayment']->find(fn($e) => $e['method']['fqn'] === \payment\MethodLib::ONLINE_CARD)->notEmpty();
 
 	}
 
@@ -798,7 +806,7 @@ class Sale extends SaleElement {
 		}
 
 		// Pas de paiement enregistré => OUI
-		if($this['paymentMethod']->empty()) {
+		if($this['cPayment']->empty()) {
 			return TRUE;
 		}
 
@@ -809,13 +817,13 @@ class Sale extends SaleElement {
 
 		// Paiement en ligne
 		if(
-			$this['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD
+			$this['cPayment']->find(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD)->notEmpty()
 			and in_array($this['paymentStatus'], [NULL, Sale::NOT_PAID])
 		) {
 			return TRUE;
 		}
 
-		if($this['paymentMethod']['fqn'] === \payment\MethodLib::TRANSFER) {
+		if($this['cPayment']->find(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::TRANSFER)->notEmpty()) {
 			return TRUE;
 		}
 
@@ -1187,24 +1195,64 @@ class Sale extends SaleElement {
 				return ($this['basket'] !== [] and $warning === FALSE);
 
 			})
-			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {
+			->setCallback('paymentMethod.check', function() use($input, $p): bool {
 
-				if($eMethod->empty()) {
+				$this->expects(['farm']);
+
+				$methods = POST('method', 'array', []);
+				$amountIncludingVatArray = POST('amountIncludingVat', 'array', []);
+
+				$cMethod = \payment\MethodLib::getByIds($methods);
+
+				$cPayment = new \Collection();
+				foreach($cMethod as $eMethod) {
+
+					$index = array_search((string)$eMethod['id'], $methods);
+					$amountIncludingVat = (float)$amountIncludingVatArray[$index];
+
+					if($amountIncludingVat === 0.0) {
+						continue;
+					}
+
+					$cPayment->append(new Payment([
+						'sale' => $this,
+						'customer' => $this['customer'],
+						'farm' => $this['farm'],
+						'checkoutId' => NULL,
+						'method' => $eMethod,
+						'amountIncludingVat' => $amountIncludingVat,
+						'onlineStatus' => NULL,
+					]));
+
+				}
+
+				$this['cPayment'] = $cPayment;
+				return TRUE;
+
+			})
+			->setCallback('paymentStatus.check', function(?string &$status) use($input, $p): bool {
+
+				if($p->isInvalid('paymentMethod')) {
 					return TRUE;
 				}
 
 				$this->expects(['farm']);
 
-				$this['paymentMethodBuilt'] = TRUE;
+				if(post_exists('method')) {
 
-				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
+					$eMethod = POST('method', 'payment\Method', new \payment\Method());
 
-			})
-			->setCallback('paymentStatus.check', function(?string &$status) use($p): bool {
+					if($eMethod->empty() or \payment\MethodLib::isSelectable($this['farm'], $eMethod) === FALSE) {
+						$this['cMethod'] = new \Collection();
+					} else {
+						$this['cMethod'] = new \Collection([$eMethod]);
+					}
 
-				$p->expectsBuilt('paymentMethod');
+				} else {
+					$this['cMethod'] = $this['cPayment']->getColumnCollection('method');
+				}
 
-				if($this['paymentMethod']->empty()) {
+				if($this['cMethod']->empty()) {
 					$status = NULL;
 					return TRUE;
 				} else {

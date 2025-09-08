@@ -521,35 +521,12 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
 
-								if($eSale->isMarketSale()) {
+							$h .= self::getPaymentMethodName($eSale);
 
-									$paymentList = [];
-
-									foreach($eSale['cPayment'] as $ePayment) {
-
-										$payment = \payment\MethodUi::getName($ePayment['method']);
-
-										if($eSale['cPayment']->count() > 1) {
-											$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
-										}
-
-										$paymentList[] = $payment;
-
-									}
-
-									$h .= join('<br />', $paymentList);
-
-								} else {
-
-									$h .= self::getPaymentMethodName($eSale);
-
-								}
-
-								$paymentStatus = self::getPaymentStatus($eSale);
-
-								if($paymentStatus) {
-									$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-								}
+							$paymentStatus = self::getPaymentStatus($eSale);
+							if($paymentStatus) {
+								$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+							}
 
 							$h .= '</td>';
 
@@ -978,10 +955,16 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
+		if($eSale['cPayment']->empty()) {
+			return '';
+		}
+
 		if($eSale['onlinePaymentStatus'] !== NULL) {
 			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['onlinePaymentStatus'].'">'.self::p('onlinePaymentStatus')->values[$eSale['onlinePaymentStatus']].'</span>';
 		} else if($eSale['paymentStatus'] !== NULL) {
 			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
+		} else if($eSale->isPaymentIncomplete()) {
+			return '<span class="util-badge sale-payment-status sale-payment-status-incomplete">'.s("Paiement partiel").'</span>';
 		} else {
 			return '';
 		}
@@ -1168,9 +1151,27 @@ class SaleUi {
 
 	public static function getPaymentMethodName(Sale $eSale): ?string {
 
-		$eSale->expects(['paymentMethod']);
+		$eSale->expects(['cPayment']);
 
-		return \payment\MethodUi::getName($eSale['paymentMethod']);
+		$hasSuccessfulPayment = $eSale['cPayment']->find(fn($ePayment) => $ePayment['onlineStatus'] === NULL or $ePayment['onlineStatus'] === Payment::SUCCESS)->notEmpty();
+
+		$paymentList = [];
+		foreach($eSale['cPayment'] as $ePayment) {
+
+			// On n'affiche pas les paiements en échec s'il y a au moins 1 paiement en succès
+			if($hasSuccessfulPayment and $ePayment->isNotPaid()) {
+				continue;
+			}
+
+			$payment = \payment\MethodUi::getName($ePayment['method']);
+			if($eSale['cPayment']->count() > 1 and $ePayment['amountIncludingVat'] !== NULL or $eSale->isPaymentIncomplete()) {
+				$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
+			}
+
+			$paymentList[] = $payment;
+		}
+
+		return implode('<br />', $paymentList);
 
 	}
 	public static function getPayment(Sale $eSale): string {
@@ -1190,9 +1191,16 @@ class SaleUi {
 			}
 		} else {
 
-			if($eSale['paymentMethod']->notEmpty()) {
-				$paymentList[] = self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+			$payment = self::getPaymentMethodName($eSale);
+
+			if($eSale['cPayment']->count() > 1) {
+				$payment .= '<br />';
+			} else {
+				$payment .= ' ';
 			}
+
+			$payment .= self::getPaymentStatus($eSale);
+			$paymentList[] = $payment;
 
 		}
 
@@ -1959,11 +1967,44 @@ class SaleUi {
 					$h .= $form->group(content: $paymentInfo);
 				$h .= '</div>';
 
+
 			} else if($eSale->acceptUpdatePayment()) {
 
-				$h .= '<div class="util-block bg-background-light">';
+				$h .= '<div class="util-block bg-background-light" onrender="Sale.updatePaymentMethod();">';
 					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->dynamicGroup($eSale, 'paymentMethod');
+
+					$paymentMethods = '<div class="sale-payment-methods">';
+						if($eSale['cPayment']->empty()) {
+							$paymentMethods .= $this->getField($form, new Payment(), $eSale['cPaymentMethod']);
+						} else {
+							$paymentMethods .= $eSale['cPayment']->makeString(fn($ePayment) => $this->getField($form, $ePayment, $eSale['cPaymentMethod']));
+						}
+					$paymentMethods .= '</div>';
+
+					$paymentMethods .= '<div class="sale-payment-method-actions">';
+						$paymentMethods .= '<a data-action="sale-payment-method-add" class="btn btn-sm btn-primary">'.s("Ajouter un moyen de paiement").'</a>';
+
+						$paymentMethods .= '<div class="sale-payment-method-total">';
+							$paymentMethods .= s("Total : <span>{total}</span> / <span2>{totalSale}</span2> €", [
+								'total' => $eSale['cPayment']->sum('amountIncludingVat'),
+								'span' => '<span class="sale-payment-method-calculated-sum">',
+								'totalSale' => number_format($eSale['priceIncludingVat'], 2),
+								'span2' => '<span class="sale-payment-method-total-sum">',
+							]);
+						$paymentMethods .= '</div>';
+
+					$paymentMethods .= '</div>';
+
+					$h .= '<div class="sale-payment-method-wrapper" id="sale-payment-method-wrapper">';
+
+						$h .= $form->group(s("Moyen de paiement"), $paymentMethods);
+
+						$h .= '<div class="sale-payment-method-spare">';
+							$h .= $this->getField($form, new Payment(), $eSale['cPaymentMethod'], spare: TRUE);
+						$h .= '</div>';
+
+					$h .= '</div>';
+
 					$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
 						$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] ?? Sale::NOT_PAID;
 					});
@@ -2029,6 +2070,34 @@ class SaleUi {
 			body: $h
 		);
 
+	}
+
+	public function getField(\util\FormUi $form, Payment $ePayment, \Collection $cMethod, bool $spare = FALSE): string {
+
+		$h = '<div class="sale-payment-method'.($spare ? ' sale-payment-method-spare-item' : '').'">';
+
+			$h .= '<div class="sale-payment-method-method">';
+
+				$h .= $form->select('method[]', $cMethod, $ePayment['method'] ?? new \payment\Method(), ['data-action' => 'payment-method-change', 'mandatory']);
+
+			$h .= '</div>';
+
+			$h .= '<div class="sale-payment-method-arrow"></div>';
+
+			$h .= '<div class="sale-payment-method-value">';
+
+				$h .= $form->inputGroup(
+					$form->number('amountIncludingVat[]', $ePayment['amountIncludingVat'] ?? 0, ['min' => 0, 'step' => 0.01, 'onfocus' => 'this.select()', 'oninput' => 'Sale.updatePaymentMethod();']).
+					$form->addon(s("€")),
+				);
+
+				$h .= '</div>';
+
+			$h .= '<a class="btn sale-payment-method-remove" data-action="sale-payment-method-remove">'.\Asset::icon('trash').'</a>';
+
+		$h .= '</div>';
+
+		return $h;
 	}
 
 	public function updateShop(Sale $eSale): \Panel {

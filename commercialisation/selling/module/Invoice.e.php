@@ -171,7 +171,7 @@ class Invoice extends InvoiceElement {
 					$eMethod = $this['cSale']->first()['paymentMethod'];
 
 					foreach($this['cSale'] as $eSale) {
-						if($eSale['paymentMethod']->is($eMethod) === FALSE) {
+						if($eSale['cPayment']->count() > 1 OR $eSale['cPayment']->first()['method']->is($eMethod) === FALSE) {
 							return FALSE;
 						}
 					}

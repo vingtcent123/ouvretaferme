@@ -305,8 +305,8 @@ class SaleLib {
 	public static function canUpdateForShop(\selling\Sale $eSale): bool {
 
 		return (
-			$eSale['paymentMethod']->empty() or
-			$eSale['paymentMethod']['fqn'] !== \payment\MethodLib::ONLINE_CARD
+			$eSale['cPayment']->empty() or
+			$eSale['cPayment']->find(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD)->empty()
 		);
 
 	}
@@ -426,6 +426,9 @@ class SaleLib {
 
 	public static function createPayment(?string $payment, \selling\Sale $eSale): string {
 
+		// On supprime les précédentes tentatives de paiement pour cette vente
+		\selling\PaymentLib::deleteBySale($eSale);
+
 		return match($payment) {
 			\payment\MethodLib::ONLINE_CARD => self::createCardPayment($eSale),
 			\payment\MethodLib::TRANSFER => self::createDirectPayment(\payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), $eSale),
@@ -478,9 +481,8 @@ class SaleLib {
 
 		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
-		$properties = ['paymentMethod', 'paymentStatus', 'onlinePaymentStatus'];
+		$properties = ['paymentStatus', 'onlinePaymentStatus'];
 
-		$eSale['paymentMethod'] = $eMethod;
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 		$eSale['onlinePaymentStatus'] = \selling\Sale::INITIALIZED;
 
@@ -516,12 +518,13 @@ class SaleLib {
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 
-		$eSale['paymentMethod'] = $eMethod;
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
 
 		\selling\Sale::model()->beginTransaction();
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod', 'paymentStatus']);
+		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);
+
+		\selling\PaymentLib::deleteBySale($eSale);
 		\selling\PaymentLib::putBySale($eSale, $eMethod);
 
 		$group = FALSE;
@@ -612,8 +615,6 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
-
 		$object = $event['data']['object'];
 
 		$amountReceived = (int)$object['amount_received'];
@@ -632,11 +633,10 @@ class SaleLib {
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 
-		$eSale['paymentMethod'] = $ePaymentMethod;
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
 		$eSale['onlinePaymentStatus'] = \selling\Sale::SUCCESS;
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentMethod', 'paymentStatus', 'onlinePaymentStatus']);
+		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus', 'onlinePaymentStatus']);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 

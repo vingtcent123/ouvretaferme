@@ -90,7 +90,7 @@ class SaleLib extends SaleCrud {
 		$eSale['invoice']['footer'] = $eFarm->getSelling('invoiceFooter');
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
-		$eSale['paymentMethod'] = \payment\MethodLib::getByFqn(\payment\MethodLib::CARD);
+		$eSale['cPayment'] = new \Collection([new Payment(['method' => \payment\MethodLib::getByFqn(\payment\MethodLib::CARD)])]);
 
 		$position = 0;
 		foreach($eSale['cItem'] as $eItem) {
@@ -205,8 +205,15 @@ class SaleLib extends SaleCrud {
 
 		$sort = 'FIELD(preparationStatus, "'.Sale::SELLING.'", "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "'.Sale::DELIVERED.'", "'.Sale::EXPIRED.'", "'.Sale::CANCELED.'")';
 
+		$joins = 1;
+
 		if(str_starts_with($search->getSort(), 'firstName') or str_starts_with($search->getSort(), 'lastName')) {
 			Sale::model()->join(Customer::model(), 'm1.customer = m2.id');
+			$joins++;
+		}
+
+		if($search->get('paymentMethod')) {
+			Sale::model()->join(Payment::model(), 'm1.id = m'.($joins + 1).'.sale AND method = '.$search->get('paymentMethod'));
 		}
 
 		$cSale = Sale::model()
@@ -227,7 +234,6 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
 			->wherePreparationStatus('!=', Sale::COMPOSITION)
-			->where('paymentMethod', $search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->where('m1.stats', TRUE)
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
@@ -773,8 +779,14 @@ class SaleLib extends SaleCrud {
 
 		$emptyPaymentMethod = (
 			in_array('paymentMethod', $properties) and
-			$e['paymentMethod']->empty()
+			$e['cPayment']->empty()
 		);
+		if(in_array('paymentMethod', $properties)) {
+			$updatePayments = TRUE;
+			unset($properties[array_search('paymentMethod', $properties)]);
+		} else {
+			$updatePayments = FALSE;
+		}
 
 		if(in_array('shippingVatRate', $properties)) {
 
@@ -930,13 +942,18 @@ class SaleLib extends SaleCrud {
 
 		} else if(
 
-			in_array('paymentMethod', $properties) and
-			isset($e['paymentMethodBuilt']) and
+			$updatePayments and
+			$e['cPayment']->notEmpty() and
 			$e->isMarketSale() === FALSE
 
 		) {
 
-			\selling\PaymentLib::putBySale($e, $e['paymentMethod']);
+			\selling\PaymentLib::deleteBySale($e);
+
+			foreach($e['cPayment'] as $ePayment) {
+				unset($ePayment['id']);
+				Payment::model()->insert($ePayment);
+			}
 
 		}
 
@@ -1036,16 +1053,17 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function emptyPaymentMethod(Sale $e): void {
+	public static function emptyOnlinePaymentMethod(Sale $e): void {
 
-		$e->expects([
-			'paymentMethod'
-		]);
+		$e->expects(['id']);
+
+		$cOnlineMethod = \payment\MethodLib::getOnline();
+		foreach($cOnlineMethod as $eMethod) {
+			PaymentLib::deleteBySaleAndMethod($e, $eMethod);
+		}
 
 		Sale::model()
-			->wherePaymentMethod($e['paymentMethod'])
 			->update($e, [
-				'paymentMethod' => new \payment\Method(),
 				'paymentStatus' => NULL
 			]);
 	}

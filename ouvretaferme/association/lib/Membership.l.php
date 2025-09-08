@@ -358,9 +358,8 @@ class MembershipLib {
 		\selling\ItemLib::create($eItem);
 
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
-		$eSale['paymentMethod'] = $ePaymentMethod;
 		\selling\Sale::model()
-			->select(['paymentStatus', 'paymentMethod'])
+			->select(['paymentStatus'])
 			->update($eSale);
 
 		HistoryLib::updateByPaymentIntentId($object['id'], [
