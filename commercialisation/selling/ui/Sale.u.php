@@ -1980,10 +1980,10 @@ class SaleUi {
 					$paymentMethods .= '</div>';
 
 					$paymentMethods .= '<div class="sale-payment-method-actions">';
-						$paymentMethods .= '<a data-action="sale-payment-method-add" class="btn btn-sm btn-primary">'.s("Ajouter un moyen de paiement").'</a>';
+						$paymentMethods .= '<a data-action="sale-payment-method-add" class="btn btn-sm btn-outline-primary">'.s("Ajouter un moyen de paiement").'</a>';
 
 						$paymentMethods .= '<div class="sale-payment-method-total">';
-							$paymentMethods .= s("Total : <span>{total}</span> / <span2>{totalSale}</span2> €", [
+							$paymentMethods .= s("<span>{total}</span> / <span2>{totalSale}</span2> €", [
 								'total' => $eSale['cPayment']->sum('amountIncludingVat'),
 								'span' => '<span class="sale-payment-method-calculated-sum">',
 								'totalSale' => number_format($eSale['priceIncludingVat'], 2),
@@ -1995,7 +1995,7 @@ class SaleUi {
 
 					$h .= '<div class="sale-payment-method-wrapper" id="sale-payment-method-wrapper">';
 
-						$h .= $form->group(s("Moyen de paiement"), $paymentMethods);
+						$h .= $form->group(s("Moyens de paiement"), $paymentMethods);
 
 						$h .= '<div class="sale-payment-method-spare">';
 							$h .= $this->getField($form, new Payment(), $eSale['cPaymentMethod'], spare: TRUE);

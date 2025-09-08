@@ -512,7 +512,7 @@ div.sale-payment-method-spare {
 }
 
 div.sale-payment-method-actions {
-	margin-top: 1rem;
+	margin-top: .5rem;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -520,4 +520,5 @@ div.sale-payment-method-actions {
 
 div.sale-payment-method-total {
 	font-weight: bold;
+	font-size: 1.2rem;
 }

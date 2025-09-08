@@ -526,8 +526,8 @@ div.form-group.form-group-nested > .form-control-label {
 }
 
 .field-switch:not(.disabled) {
-	height: 1.8rem;
-	width: 3.6rem;
+	height: 2rem;
+	width: 4rem;
 	min-width: max-content;
 	border: 1px solid white;
 	position: relative;
@@ -586,7 +586,7 @@ div.form-group.form-group-nested > .form-control-label {
 }
 
 .field-switch-off:not(.disabled) .field-switch-text {
-	transform: translate(0, calc(-1.8rem + 2px));
+	transform: translate(0, calc(-2rem + 2px));
 }
 
 .field-switch-off.field-switch-sm:not(.disabled) .field-switch-text {
@@ -594,7 +594,7 @@ div.form-group.form-group-nested > .form-control-label {
 }
 
 .field-switch:not(.disabled) .field-switch-text > div {
-	height: calc(1.8rem - 2px);
+	height: calc(2rem - 2px);
 	display: flex;
 	align-items: center;
 	line-height: 1;
@@ -624,7 +624,7 @@ div.form-group.form-group-nested > .form-control-label {
 	background-color: white;
 	position: absolute;
 	transition: left 0.25s;
-	margin: 0.3rem 0;
+	margin: 0.4rem 0;
 }
 
 .field-switch-sm .field-switch-circle {
