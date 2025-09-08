@@ -32,8 +32,8 @@ class WidgetLib {
 					'contactForm' => self::getContactForm($eWebsite),
 					'donationForm' => self::getDonationForm($eWebsite),
 					'newsletterForm' => self::getNewsletterForm($eWebsite),
-					'shop' => $value ? self::getShop($eFarm, (int)$value, 'limited') : '',
-					'fullShop' => $value ? self::getShop($eFarm, (int)$value, 'full') : '',
+					'shop' => $value ? self::getShop($eFarm, (int)$value, 'limited') : fn() => '',
+					'fullShop' => $value ? self::getShop($eFarm, (int)$value, 'full') : fn() => '',
 					default => throw new \Exception('Missing widget '.$app)
 				} ?? $original;
 
