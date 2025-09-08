@@ -262,10 +262,6 @@ class InvoiceLib extends InvoiceCrud {
 			$updateValues = [];
 			$updateKeys = [];
 
-			if(in_array('paymentMethod', $properties)) {
-				$updateValues['cMethod'] = new \Collection([$e['paymentMethod']]);
-			}
-
 			if(in_array('paymentStatus', $properties)) {
 				$updateValues['paymentStatus'] = $e['paymentStatus'];
 				$updateKeys[] = 'paymentStatus';
@@ -277,6 +273,9 @@ class InvoiceLib extends InvoiceCrud {
 
 				foreach($cSale as $eSale) {
 					SaleLib::update($eSale->merge($updateValues), $updateKeys);
+					if(in_array('paymentMethod', $properties)) {
+						PaymentLib::putBySale($eSale, $e['paymentMethod']);
+					}
 				}
 
 			}
