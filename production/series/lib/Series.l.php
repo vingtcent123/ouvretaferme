@@ -652,6 +652,7 @@ class SeriesLib extends SeriesCrud {
 		// Réaffecter les emplacements
 		self::duplicatePlaces($eSeries, $eSeriesNew);
 
+		SeriesLib::recalculate($eSeriesNew['farm'], $eSeriesNew);
 
 	}
 

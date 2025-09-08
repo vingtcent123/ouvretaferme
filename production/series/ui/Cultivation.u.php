@@ -1627,61 +1627,62 @@ class CultivationUi {
 
 		$minTs = NULL;
 		$maxTs = NULL;
-		$missing = FALSE;
 
-		if(
-			$eSeries['cycle'] === Series::PERENNIAL and
-			$eSeries['perennialSeason'] > 1
-		) {
+		if($eSeries['cycle'] === Series::PERENNIAL) {
 
-			$minTs = mktime(0, 0, 0, 1, 0, $eSeries['season']);
-			$maxTs = mktime(0, 0, 0, 12, 31, $eSeries['season']);
-
-		} else {
-
-			[$minHarvest, $maxHarvest] = $eCultivation->getHarvestBounds();
-			$missingHarvest = ($minHarvest === NULL);
-
-			$minHarvestTs = ($minHarvest !== NULL) ? strtotime($minHarvest.' + 3 DAY') : NULL;
-			$maxHarvestTs = ($maxHarvest !== NULL) ? strtotime($maxHarvest.' + 3 DAY') : NULL;
-
-			$minTs = ($minTs === NULL) ? $minHarvestTs : min($minTs, $minHarvestTs);
-			$maxTs = ($maxTs === NULL) ? $maxHarvestTs : max($maxTs, $maxHarvestTs);
-
-			$missingTask = TRUE;
-
-			// Interventions
-			foreach($cTask as $eTask) {
-
-				$week = $eTask['doneWeek'] ?? $eTask['plannedWeek'];
-
-				if($week === NULL) {
-					continue;
-				}
-
-				$ts = strtotime($week);
-
-				$minTs = ($minTs === NULL) ? $ts : min($minTs, $ts);
-				$maxTs = ($maxTs === NULL) ? $ts : max($maxTs, $ts);
-
-				$missingTask = FALSE;
-
+			if($eSeries['perennialSeason'] > 1) {
+				$minTs = mktime(0, 0, 0, 1, 0, $eSeries['season']);
 			}
 
-			if(
-				$eSeries['cycle'] === Series::PERENNIAL and
-				$eSeries['perennialSeason'] === 1
-			) {
+			if($eSeries['perennialLifetime'] === NULL or $eSeries['perennialSeason'] < $eSeries['perennialLifetime']) {
+
 				$maxTs = mktime(0, 0, 0, 12, 31, $eSeries['season']);
-				$missing = FALSE;
-			} else {
-				$missing = ($missingTask or $missingHarvest);
-			}
 
+			}
 
 		}
 
-		return [$minTs, $maxTs, $missing];
+		[$minHarvest, $maxHarvest] = $eCultivation->getHarvestBounds();
+
+		$minHarvestTs = ($minHarvest !== NULL) ? strtotime($minHarvest.' + 3 DAY') : NULL;
+		$maxHarvestTs = ($maxHarvest !== NULL) ? strtotime($maxHarvest.' + 3 DAY') : NULL;
+
+		$minTs = ($minTs === NULL) ? $minHarvestTs : min($minTs, $minHarvestTs);
+		$maxTs = ($maxTs === NULL) ? $maxHarvestTs : max($maxTs, $maxHarvestTs);
+
+		// Interventions
+		foreach($cTask as $eTask) {
+
+			$week = $eTask['doneWeek'] ?? $eTask['plannedWeek'];
+
+			if($week === NULL) {
+				continue;
+			}
+
+			$ts = strtotime($week);
+
+			$minTs = ($minTs === NULL) ? $ts : min($minTs, $ts);
+			$maxTs = ($maxTs === NULL) ? $ts : max($maxTs, $ts);
+
+		}
+
+
+		if(
+			$eSeries['cycle'] === Series::PERENNIAL and
+			$minTs === NULL
+		) {
+			$minTs = mktime(0, 0, 0, 1, 0, $eSeries['season']);
+		}
+
+
+		if(
+			$eSeries['cycle'] === Series::PERENNIAL and
+			$maxTs === NULL
+		) {
+			$maxTs = mktime(0, 0, 0, 12, 31, $eSeries['season']);
+		}
+
+		return [$minTs, $maxTs];
 
 	}
 
