@@ -491,7 +491,7 @@ class CropUi {
 		]);
 
 
-		$h = $this->getVarietyGroup($form, $eCrop, $eCrop['ccVariety'], new \Collection());
+		$h = $this->getVarietyGroup($form, $eCrop, $eCrop['cVariety'], new \Collection());
 		$h .= $this->getFieldsWrite($form, $eCrop, $cAction);
 
 		$h .= $form->group(
@@ -505,7 +505,7 @@ class CropUi {
 	public function update(Crop $eCrop, \Collection $cAction): \Panel {
 
 		$eCrop->expects([
-			'cSlice', 'ccVariety'
+			'cSlice', 'cVariety'
 		]);
 
 		$form = new \util\FormUi();
@@ -523,7 +523,7 @@ class CropUi {
 				];
 			});
 
-			$h .= $this->getVarietyGroup($form, $eCrop, $eCrop['ccVariety'], $eCrop['cSlice']);
+			$h .= $this->getVarietyGroup($form, $eCrop, $eCrop['cVariety'], $eCrop['cSlice']);
 			$h .= $this->getFieldsWrite($form, $eCrop, $cAction);
 
 			$h .= $form->group(

@@ -77,7 +77,7 @@ new \series\CultivationPage()
 	}, method: 'post')
 	->update(function($data) {
 
-		$data->e['ccVariety'] = \plant\VarietyLib::query($data->e['farm'], $data->e['plant']);
+		$data->e['cVariety'] = \plant\VarietyLib::query($data->e['farm'], $data->e['plant']);
 		$data->e['cTray'] = \farm\ToolLib::getTraysByFarm($data->e['farm']);
 
 		if($data->e['seedling'] === NULL) {

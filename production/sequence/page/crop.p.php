@@ -55,7 +55,7 @@ new \sequence\CropPage()
 	}, method: 'post')
 	->update(function($data) {
 
-		$data->e['ccVariety'] = \plant\VarietyLib::query($data->e['farm'], $data->e['plant']);
+		$data->e['cVariety'] = \plant\VarietyLib::query($data->e['farm'], $data->e['plant']);
 
 		if($data->e['seedling'] === NULL) {
 

@@ -2432,7 +2432,7 @@ class CultivationUi {
 			'sequence', 'season',
 			'series' => ['season', 'cycle', 'area', 'length'],
 			'distance',
-			'ccVariety', 'cSlice'
+			'cVariety', 'cSlice'
 		]);
 
 		$eCultivation['harvestedByUnit'] ??= [];
@@ -2440,7 +2440,7 @@ class CultivationUi {
 
 		$h = '<div class="cultivation-write">';
 
-			$h .= new \sequence\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice'], $suffix);
+			$h .= new \sequence\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['cVariety'], $eCultivation['cSlice'], $suffix);
 			$h .= new \sequence\CropUi()->getDistanceField($form, $eCultivation, $use, $suffix);
 
 			$h .= $form->dynamicGroup($eCultivation, 'seedling'.$suffix);
@@ -2467,7 +2467,7 @@ class CultivationUi {
 
 		$eCultivation->expects([
 			'series' => ['use', 'plants'],
-			'cSlice', 'ccVariety'
+			'cSlice', 'cVariety'
 		]);
 
 		$form = new \util\FormUi();
@@ -2484,7 +2484,7 @@ class CultivationUi {
 					];
 				});
 
-				$h .= new \sequence\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['ccVariety'], $eCultivation['cSlice']);
+				$h .= new \sequence\CropUi()->getVarietyGroup($form, $eCultivation, $eCultivation['cVariety'], $eCultivation['cSlice']);
 				$h .= new \sequence\CropUi()->getDistanceField($form, $eCultivation, $eCultivation['series']['use']);
 
 				$h .= $form->dynamicGroup($eCultivation, 'seedling');

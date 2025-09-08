@@ -17,7 +17,7 @@ class CultivationLib extends CultivationCrud {
 		
 		return new Cultivation([
 			'farm' => $eSeries['farm'],
-			'ccVariety' => \plant\VarietyLib::query($eSeries['farm'], $ePlant),
+			'cVariety' => \plant\VarietyLib::query($eSeries['farm'], $ePlant),
 			'cTray' => \farm\ToolLib::getTraysByFarm($eSeries['farm']),
 			'cSlice' => new \Collection(),
 			'series' => $eSeries,
@@ -917,7 +917,7 @@ class CultivationLib extends CultivationCrud {
 				'seedlingSeeds' => $eCrop['seedlingSeeds'],
 				'yieldExpected' => $eCrop['yieldExpected'],
 				'mainUnit' => $eCrop['mainUnit'],
-				'ccVariety' => \plant\VarietyLib::query($eFarm, $eCrop['plant']),
+				'cVariety' => \plant\VarietyLib::query($eFarm, $eCrop['plant']),
 				'cSlice' => $eCrop['cSlice']
 			]);
 
