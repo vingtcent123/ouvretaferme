@@ -45,6 +45,7 @@ class AdminUi {
 				$h .= $form->number('id', $search->get('id'), ['placeholder' => 'ID']);
 				$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom")]);
 				$h .= $form->text('user', $search->get('user'), ['placeholder' => s("Utilisateur")]);
+			$h .= $form->checkbox('membership', 1, ['checked' => $search->get('membership'), 'callbackLabel' => fn($input) => $input.' '.s("Fermes adhérentes")]);
 
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				if($search->notEmpty()) {

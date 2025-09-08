@@ -19,6 +19,10 @@ class AdminLib {
 			Farm::model()->whereId($search->get('id'));
 		}
 
+		if($search->get('membership')) {
+			Farm::model()->whereMembership($search->get('membership'));
+		}
+
 		if($search->get('user')) {
 
 			$cUser = \user\UserLib::getFromQuery($search->get('user'));

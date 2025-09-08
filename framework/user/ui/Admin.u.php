@@ -67,7 +67,7 @@ class AdminUi {
 			$h .= '<div class="user-admin-stats-period">'.s("30 jours").'</div>';
 			$h .= $this->getPeriodStats($cRole, $cUserActive);
 
-			$h .= '<div class="user-admin-stats-period">'.s("Adhérents").'</div>';
+			$h .= '<div class="user-admin-stats-period"><a href="/farm/admin/?membership=1">'.s("Fermes adhérentes").'</a></div>';
 			$h .= '<div class="user-admin-stats-roles">';
 				foreach($cAssociationHistory as $eHistory) {
 					$h .= '<div class="user-admin-stats-role">';

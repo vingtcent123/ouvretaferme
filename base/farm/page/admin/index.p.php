@@ -11,6 +11,7 @@ new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 				'name' => GET('name'),
 				'user' => GET('user'),
 				'userId' => GET('userId'),
+				'membership' => GET('membership'),
 			], REQUEST('sort', default: 'id-'));
 
 			list($data->cFarm, $data->nFarm) = \farm\AdminLib::getFarms($data->page, $data->search);
