@@ -267,10 +267,12 @@ class InvoiceLib extends InvoiceCrud {
 
 			if($updateValues) {
 
+				$updateProperties = array_keys($updateValues);
+
 				$cSale = SaleLib::getByIds($e['sales']);
 
 				foreach($cSale as $eSale) {
-					SaleLib::update($eSale->merge($updateValues), array_keys($updateValues));
+					SaleLib::update($eSale->merge($updateValues), $updateProperties);
 					if(in_array('paymentMethod', $properties)) {
 						PaymentLib::putBySale($eSale, $e['paymentMethod']);
 					}
