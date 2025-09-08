@@ -63,6 +63,14 @@ class Sale extends SaleElement {
 
 	}
 
+	public function hasSuccessfulPayment(): bool {
+
+		$this->expects(['cPayment']);
+
+		return $this['cPayment']->find(fn($ePayment) => $ePayment->isPaid())->notEmpty();
+
+	}
+
 	public function isComposition(): bool {
 
 		$this->expects(['origin']);
@@ -1236,23 +1244,9 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-				$this->expects(['farm']);
+				$this->expects(['farm', 'cPayment']);
 
-				if(post_exists('method')) {
-
-					$eMethod = POST('method', 'payment\Method', new \payment\Method());
-
-					if($eMethod->empty() or \payment\MethodLib::isSelectable($this['farm'], $eMethod) === FALSE) {
-						$this['cMethod'] = new \Collection();
-					} else {
-						$this['cMethod'] = new \Collection([$eMethod]);
-					}
-
-				} else {
-					$this['cMethod'] = $this['cPayment']->getColumnCollection('method');
-				}
-
-				if($this['cMethod']->empty()) {
+				if($this['cPayment']->empty()) {
 					$status = NULL;
 					return TRUE;
 				} else {

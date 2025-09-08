@@ -11,7 +11,17 @@ class Payment extends PaymentElement {
 
 	public function isNotPaid(): bool {
 
+		$this->expects(['method' => ['online'], 'onlineStatus']);
+
 		return $this['method']['online'] === TRUE and $this['onlineStatus'] !== Payment::SUCCESS;
+
+	}
+
+	public function isPaid(): bool {
+
+		$this->expects(['method' => ['online'], 'onlineStatus']);
+
+		return $this['method']['online'] === FALSE or $this['onlineStatus'] === Payment::SUCCESS;
 
 	}
 }

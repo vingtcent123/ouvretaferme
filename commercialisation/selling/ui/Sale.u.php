@@ -1153,13 +1153,11 @@ class SaleUi {
 
 		$eSale->expects(['cPayment']);
 
-		$hasSuccessfulPayment = $eSale['cPayment']->find(fn($ePayment) => $ePayment['onlineStatus'] === NULL or $ePayment['onlineStatus'] === Payment::SUCCESS)->notEmpty();
-
 		$paymentList = [];
 		foreach($eSale['cPayment'] as $ePayment) {
 
 			// On n'affiche pas les paiements en échec s'il y a au moins 1 paiement en succès
-			if($hasSuccessfulPayment and $ePayment->isNotPaid()) {
+			if($eSale->hasSuccessfulPayment() and $ePayment->isNotPaid()) {
 				continue;
 			}
 
@@ -2078,7 +2076,7 @@ class SaleUi {
 
 			$h .= '<div class="sale-payment-method-method">';
 
-				$h .= $form->select('method[]', $cMethod, $ePayment['method'] ?? new \payment\Method(), ['data-action' => 'payment-method-change', 'mandatory']);
+				$h .= $form->select('method[]', $cMethod, $ePayment['method'] ?? new \payment\Method(), ['mandatory']);
 
 			$h .= '</div>';
 

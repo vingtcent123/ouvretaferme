@@ -208,12 +208,13 @@ class SaleLib extends SaleCrud {
 		$joins = 1;
 
 		if(str_starts_with($search->getSort(), 'firstName') or str_starts_with($search->getSort(), 'lastName')) {
-			Sale::model()->join(Customer::model(), 'm1.customer = m2.id');
 			$joins++;
+			Sale::model()->join(Customer::model(), 'm1.customer = m'.($joins).'.id');
 		}
 
 		if($search->get('paymentMethod')) {
-			Sale::model()->join(Payment::model(), 'm1.id = m'.($joins + 1).'.sale AND method = '.$search->get('paymentMethod'));
+			$joins++;
+			Sale::model()->join(Payment::model(), 'm1.id = m'.($joins).'.sale AND method = '.$search->get('paymentMethod'));
 		}
 
 		$cSale = Sale::model()
