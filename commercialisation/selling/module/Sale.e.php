@@ -55,14 +55,6 @@ class Sale extends SaleElement {
 
 	}
 
-	public function isPaymentIncomplete(): bool {
-
-		$this->expects(['cPayment', 'priceIncludingVat']);
-
-		return $this['cPayment']->notEmpty() and $this['priceIncludingVat'] > $this['cPayment']->sum('amountIncludingVat');
-
-	}
-
 	public function hasSuccessfulPayment(): bool {
 
 		$this->expects(['cPayment']);

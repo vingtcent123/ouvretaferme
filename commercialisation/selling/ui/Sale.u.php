@@ -963,8 +963,6 @@ class SaleUi {
 			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['onlinePaymentStatus'].'">'.self::p('onlinePaymentStatus')->values[$eSale['onlinePaymentStatus']].'</span>';
 		} else if($eSale['paymentStatus'] !== NULL) {
 			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
-		} else if($eSale->isPaymentIncomplete()) {
-			return '<span class="util-badge sale-payment-status sale-payment-status-incomplete">'.s("Paiement partiel").'</span>';
 		} else {
 			return '';
 		}
@@ -1162,7 +1160,7 @@ class SaleUi {
 			}
 
 			$payment = \payment\MethodUi::getName($ePayment['method']);
-			if($eSale['cPayment']->count() > 1 and $ePayment['amountIncludingVat'] !== NULL or $eSale->isPaymentIncomplete()) {
+			if($eSale['cPayment']->count() > 1 and $ePayment['amountIncludingVat'] !== NULL) {
 				$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
 			}
 
