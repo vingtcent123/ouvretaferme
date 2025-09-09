@@ -521,35 +521,12 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
 
-								if($eSale->isMarketSale()) {
+							$h .= self::getPaymentMethodName($eSale);
 
-									$paymentList = [];
-
-									foreach($eSale['cPayment'] as $ePayment) {
-
-										$payment = \payment\MethodUi::getName($ePayment['method']);
-
-										if($eSale['cPayment']->count() > 1) {
-											$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
-										}
-
-										$paymentList[] = $payment;
-
-									}
-
-									$h .= join('<br />', $paymentList);
-
-								} else {
-
-									$h .= self::getPaymentMethodName($eSale);
-
-								}
-
-								$paymentStatus = self::getPaymentStatus($eSale);
-
-								if($paymentStatus) {
-									$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-								}
+							$paymentStatus = self::getPaymentStatus($eSale);
+							if($paymentStatus) {
+								$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+							}
 
 							$h .= '</td>';
 
@@ -1168,9 +1145,25 @@ class SaleUi {
 
 	public static function getPaymentMethodName(Sale $eSale): ?string {
 
-		$eSale->expects(['paymentMethod']);
+		$eSale->expects(['cPayment']);
 
-		return \payment\MethodUi::getName($eSale['paymentMethod']);
+		$paymentList = [];
+		foreach($eSale['cPayment'] as $ePayment) {
+
+			// On n'affiche pas les paiements en échec s'il y a au moins 1 paiement en succès
+			if($eSale->hasSuccessfulPayment() and $ePayment->isNotPaid()) {
+				continue;
+			}
+
+			$payment = \payment\MethodUi::getName($ePayment['method']);
+			if($eSale['cPayment']->count() > 1 and $ePayment['amountIncludingVat'] !== NULL) {
+				$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
+			}
+
+			$paymentList[] = $payment;
+		}
+
+		return implode('<br />', $paymentList);
 
 	}
 	public static function getPayment(Sale $eSale): string {
@@ -1190,9 +1183,16 @@ class SaleUi {
 			}
 		} else {
 
-			if($eSale['paymentMethod']->notEmpty()) {
-				$paymentList[] = self::getPaymentMethodName($eSale).' '.self::getPaymentStatus($eSale);
+			$payment = self::getPaymentMethodName($eSale);
+
+			if($eSale['cPayment']->count() > 1) {
+				$payment .= '<br />';
+			} else {
+				$payment .= ' ';
 			}
+
+			$payment .= self::getPaymentStatus($eSale);
+			$paymentList[] = $payment;
 
 		}
 
@@ -1959,11 +1959,23 @@ class SaleUi {
 					$h .= $form->group(content: $paymentInfo);
 				$h .= '</div>';
 
+
 			} else if($eSale->acceptUpdatePayment()) {
 
 				$h .= '<div class="util-block bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->dynamicGroup($eSale, 'paymentMethod');
+
+					$h .= $form->group(
+						s("Moyen de paiement"),
+						$form->select(
+							'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
+								'onrender' => 'Sale.changePaymentMethod(this)',
+								'onchange' => 'Sale.changePaymentMethod(this)',
+								'placeholder' => s("Non défini"),
+							]
+						)
+					);
+
 					$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
 						$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] ?? Sale::NOT_PAID;
 					});
@@ -2157,7 +2169,6 @@ class SaleUi {
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
-			'paymentMethod' => s("Moyen de paiement"),
 			'orderFormValidUntil' => s("Date d'échéance du devis"),
 			'orderFormPaymentCondition' => s("Conditions de paiement"),
 			'discount' => s("Remise commerciale"),
@@ -2312,13 +2323,6 @@ class SaleUi {
 					]);
 
 				};
-				break;
-
-			case 'paymentMethod' :
-				$d->values = fn(Sale $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
-				$d->attributes['onrender'] = 'Sale.changePaymentMethod(this)';
-				$d->attributes['onchange'] = 'Sale.changePaymentMethod(this)';
-				$d->placeholder = s("Non défini");
 				break;
 
 			case 'preparationStatus' :

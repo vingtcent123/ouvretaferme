@@ -806,7 +806,13 @@ class AnalyzeLib {
 				'priceIncludingVat', 'priceExcludingVat', 'vat',
 				'shop' => ['name'],
 				'deliveredAt',
-				'paymentMethod' => \payment\Method::getSelection()
+				'cPayment' => Payment::model()
+					->select(Payment::getSelection())
+					->or(
+						fn() => $this->whereOnlineStatus(NULL),
+						fn() => $this->whereOnlineStatus(Payment::SUCCESS)
+					)
+					->delegateCollection('sale', 'id'),
 			])
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
@@ -821,7 +827,7 @@ class AnalyzeLib {
 					\util\DateUi::numeric($eSale['deliveredAt']),
 					$eSale['items'],
 					$eSale['shop']->empty() ? '' : $eSale['shop']['name'],
-					$eSale['paymentMethod']->empty() ? '' : $eSale['paymentMethod']['name'],
+					$eSale['cPayment']->empty() ? '' : $eSale['cPayment']->first()['method']['name'],
 					\util\TextUi::csvNumber($eSale['priceExcludingVat']),
 				];
 

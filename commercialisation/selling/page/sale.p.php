@@ -426,8 +426,6 @@ new \selling\SalePage()
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->write('doUpdatePaymentMethod', function($data) {
 
-		$paymentStatus = \selling\Sale::POST('paymentStatus', 'paymentStatus');
-
 		$action = POST('action', 'string', 'update');
 		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse', 'acceptManualUpdate');
 
@@ -462,7 +460,7 @@ new \selling\SalePage()
 	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->write('doDeleteOnlinePaymentMethod', function($data) {
 
-		\selling\SaleLib::emptyPaymentMethod($data->e);
+		\selling\SaleLib::emptyOnlinePaymentMethod($data->e);
 
 		throw new ReloadLayerAction();
 

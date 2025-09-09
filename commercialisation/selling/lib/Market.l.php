@@ -295,13 +295,6 @@ class MarketLib {
 		$eSale['preparationStatus'] = Sale::DELIVERED;
 		$eSale['paymentStatus'] = $paymentStatus;
 
-		if($eSale['cPayment']->notEmpty()) {
-
-			$eSale['paymentMethod'] = $eSale['cPayment']->first()['method'];
-			$properties[] = 'paymentMethod';
-
-		}
-
 		SaleLib::update($eSale, $properties);
 
 	}

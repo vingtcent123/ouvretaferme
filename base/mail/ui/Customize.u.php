@@ -275,7 +275,7 @@ class CustomizeUi {
 
 					if($eSale['shop']['hasPayment']) {
 
-						if($eSale['paymentMethod']->empty()) {
+						if($eSale['cPayment']->empty()) {
 
 							if($eSale['shop']['shared']) {
 								$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
@@ -289,7 +289,7 @@ class CustomizeUi {
 
 						} else {
 
-							switch($eSale['paymentMethod']['fqn']) {
+							switch($eSale['cPayment']->first()['method']['fqn']) {
 
 								case \payment\MethodLib::TRANSFER :
 									$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");
@@ -309,7 +309,6 @@ class CustomizeUi {
 
 								default :
 									throw new \Exception('Not compatible');
-
 							}
 						}
 

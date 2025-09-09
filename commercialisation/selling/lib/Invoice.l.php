@@ -230,7 +230,7 @@ class InvoiceLib extends InvoiceCrud {
 
 			$e['name'] = $e->getInvoice($e['farm']);
 
-			$e['paymentMethod'] = $cSale->first()['paymentMethod'];
+			$e['paymentMethod'] = $cSale->first()['cPayment']->first()['method'];
 			$e['paymentStatus'] = $cSale->first()['paymentStatus'] ?? Invoice::NOT_PAID;
 
 			parent::create($e);
@@ -261,10 +261,6 @@ class InvoiceLib extends InvoiceCrud {
 
 			$updateValues = [];
 
-			if(in_array('paymentMethod', $properties)) {
-				$updateValues['paymentMethod'] = $e['paymentMethod'];
-			}
-
 			if(in_array('paymentStatus', $properties)) {
 				$updateValues['paymentStatus'] = $e['paymentStatus'];
 			}
@@ -277,6 +273,9 @@ class InvoiceLib extends InvoiceCrud {
 
 				foreach($cSale as $eSale) {
 					SaleLib::update($eSale->merge($updateValues), $updateProperties);
+					if(in_array('paymentMethod', $properties)) {
+						PaymentLib::putBySale($eSale, $e['paymentMethod']);
+					}
 				}
 
 			}
