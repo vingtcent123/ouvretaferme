@@ -59,10 +59,6 @@ class MethodLib extends MethodCrud {
 		$e->expects(['id', 'farm']);
 
 		if(
-			\selling\Sale::model()
-       ->whereFarm($e['farm'])
-       ->wherePaymentMethod($e)
-       ->exists() or
 			\selling\Payment::model()
 	      ->whereFarm($e['farm'])
 	      ->whereMethod($e)

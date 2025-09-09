@@ -406,6 +406,8 @@ class SaleLib extends SaleCrud {
 
 	public static function getForMonthlyInvoice(\farm\Farm $eFarm, string $month, ?string $type): \Collection {
 
+		$eMethodTransfer = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
+
 		return Sale::model()
 			->select([
 				'customer' => ['type', 'name'],
@@ -413,15 +415,16 @@ class SaleLib extends SaleCrud {
 				'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
 				'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
 				'number' => new \Sql('COUNT(*)'),
-				'list' => new \Sql('GROUP_CONCAT(id ORDER BY id SEPARATOR ",")')
+				'list' => new \Sql('GROUP_CONCAT(m1.id ORDER BY m1.id SEPARATOR ",")')
 			])
-			->whereFarm($eFarm)
+			->where('m1.farm = '.$eFarm['id'])
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
 			->whereOrigin('IN', [Sale::SALE, Sale::SALE_MARKET])
 			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
-			->wherePaymentMethod(fn() => \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), if: $type === \payment\MethodLib::TRANSFER)
+			->join(Payment::model(), 'm1.id = m2.sale')
+			->where('m2.method = '.$eMethodTransfer['id'], if: $type === \payment\MethodLib::TRANSFER)
 			->or(
 				fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
 				fn() => $this->wherePaymentStatus(NULL)
@@ -782,15 +785,22 @@ class SaleLib extends SaleCrud {
 			($e['oldPreparationStatus'] !== $e['preparationStatus'])
 		);
 
-		$emptyPaymentMethod = (
-			in_array('paymentMethod', $properties) and
-			$e['cPayment']->empty()
-		);
 		if(in_array('paymentMethod', $properties)) {
-			$updatePayments = TRUE;
+
 			unset($properties[array_search('paymentMethod', $properties)]);
+			$updatePayments = TRUE;
+
+			if($e['cPayment']->empty()) {
+
+				$e['paymentStatus'] = NULL;
+				$properties[] = 'paymentStatus';
+
+			}
+
 		} else {
+
 			$updatePayments = FALSE;
+
 		}
 
 		if(in_array('shippingVatRate', $properties)) {
@@ -871,13 +881,6 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		if($emptyPaymentMethod) {
-
-			$e['paymentStatus'] = NULL;
-			$properties[] = 'paymentStatus';
-
-		}
-
 		parent::update($e, $properties);
 
 		$newItems = [];
@@ -941,23 +944,16 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		if($emptyPaymentMethod) {
+		if($updatePayments) {
 
 			\selling\PaymentLib::deleteBySale($e);
 
-		} else if(
+			if($e['cPayment']->notEmpty() and $e->isMarketSale() === FALSE) {
 
-			$updatePayments and
-			$e['cPayment']->notEmpty() and
-			$e->isMarketSale() === FALSE
-
-		) {
-
-			\selling\PaymentLib::deleteBySale($e);
-
-			foreach($e['cPayment'] as $ePayment) {
-				unset($ePayment['id']);
-				Payment::model()->insert($ePayment);
+				foreach($e['cPayment'] as $ePayment) {
+					unset($ePayment['id']);
+					Payment::model()->insert($ePayment);
+				}
 			}
 
 		}
@@ -1041,6 +1037,12 @@ class SaleLib extends SaleCrud {
 			->delete();
 
 		Item::model()
+			->whereSale($e)
+			->update([
+				'customer' => $eCustomer,
+			]);
+
+		Payment::model()
 			->whereSale($e)
 			->update([
 				'customer' => $eCustomer,

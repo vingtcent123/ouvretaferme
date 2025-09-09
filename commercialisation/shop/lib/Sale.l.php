@@ -582,15 +582,12 @@ class SaleLib {
 			\selling\PaymentLib::hasSuccess($eSale) === FALSE
 		) {
 
-			$eMethod = \payment\MethodLib::getByFqn('online-card');
-
 			$newValues = [
 				'paymentStatus' => \selling\Sale::NOT_PAID,
 				'onlinePaymentStatus' => \selling\Sale::FAILURE,
 			];
 
 			$affected = \selling\Sale::model()
-				->wherePaymentMethod($eMethod)
 				->wherePaymentStatus('NOT IN', [\selling\Sale::PAID]) // En cas de concurrence (si le client a réussi entre temps)
 				->update($eSale, $newValues);
 
