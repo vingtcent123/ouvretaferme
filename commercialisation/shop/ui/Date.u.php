@@ -191,7 +191,7 @@ class DateUi {
 		} else if($eDate->acceptOrderSoon()) {
 			$h .= s("Commandes ouvertes du {from} jusqu'au {to}", ['from' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt'])))).' '.\util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE), 'to' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE)]);
 		} else if($eDate->isExpired()) {
-			$h .= s("Vente est terminée, et il n'y a pas encore d'autre vente ouverte");
+			$h .= s("La vente est terminée, et il n'y a pas encore d'autre vente ouverte");
 		}
 
 		if($eDate->isOrderSoonExpired()) {
