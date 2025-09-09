@@ -1966,23 +1966,19 @@ class SaleUi {
 
 			} else if($eSale->acceptUpdatePayment()) {
 
-				$h .= '<div class="util-block bg-background-light" onrender="Sale.updatePaymentMethod();">';
+				$h .= '<div class="util-block bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
 
-					$h .= '<div class="sale-payment-method-wrapper" id="sale-payment-method-wrapper">';
-
-						$h .= $form->group(
-							s("Moyen de paiement"),
-							$form->select(
-								'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
-									'onrender' => 'Sale.changePaymentMethod(this)',
-									'onchange' => 'Sale.changePaymentMethod(this)',
-									'placeholder' => s("Non défini"),
-								]
-							)
-						);
-
-					$h .= '</div>';
+					$h .= $form->group(
+						s("Moyen de paiement"),
+						$form->select(
+							'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
+								'onrender' => 'Sale.changePaymentMethod(this)',
+								'onchange' => 'Sale.changePaymentMethod(this)',
+								'placeholder' => s("Non défini"),
+							]
+						)
+					);
 
 					$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
 						$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] ?? Sale::NOT_PAID;
@@ -2177,7 +2173,6 @@ class SaleUi {
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
-			'paymentMethod' => s("Moyen de paiement"),
 			'orderFormValidUntil' => s("Date d'échéance du devis"),
 			'orderFormPaymentCondition' => s("Conditions de paiement"),
 			'discount' => s("Remise commerciale"),
@@ -2332,13 +2327,6 @@ class SaleUi {
 					]);
 
 				};
-				break;
-
-			case 'paymentMethod' :
-				$d->values = fn(Sale $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
-				$d->attributes['onrender'] = 'Sale.changePaymentMethod(this)';
-				$d->attributes['onchange'] = 'Sale.changePaymentMethod(this)';
-				$d->placeholder = s("Non défini");
 				break;
 
 			case 'preparationStatus' :

@@ -120,10 +120,6 @@ div.selling-label-example > * {
 	background-color: var(--danger);
 }
 
-.sale-payment-status-incomplete {
-	background-color: var(--warning);
-}
-
 .sale-payment-status-undefined,
 .sale-payment-status-waiting,
 .sale-payment-status-sepa-waiting {
@@ -487,38 +483,6 @@ a.sale-relative-after:hover .sale-relative-customer {
 }
 
 .sale-summary-value-highlight {
-	font-weight: bold;
-	font-size: 1.2rem;
-}
-
-div.sale-payment-methods {
-	display: grid;
-	grid-row-gap: 0.5rem;
-}
-
-div.sale-payment-method {
-	display: grid;
-	grid-template: "method arrow parts remove" 1fr / 1fr auto 10rem auto;
-	grid-column-gap: 0.5rem;
-	align-items: center;
-	border-radius: var(--radius);
-	background-color: rgba(0, 0, 0, 0.05);
-	padding: 0.5rem;
-}
-
-
-div.sale-payment-method-spare {
-	display: none;
-}
-
-div.sale-payment-method-actions {
-	margin-top: .5rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-}
-
-div.sale-payment-method-total {
 	font-weight: bold;
 	font-size: 1.2rem;
 }

@@ -1195,7 +1195,7 @@ class Sale extends SaleElement {
 				return ($this['basket'] !== [] and $warning === FALSE);
 
 			})
-			->setCallback('paymentMethod.check', function() use($input, $p): bool {
+			->setCallback('paymentMethod.check', function(): bool {
 
 				$this->expects(['customer', 'farm', 'priceIncludingVat']);
 
@@ -1206,7 +1206,7 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-				if($eMethod->canUse() === FALSE) {
+				if(\payment\MethodLib::isSelectable($this['farm'], $eMethod) === FALSE) {
 					return FALSE;
 				}
 
@@ -1222,7 +1222,7 @@ class Sale extends SaleElement {
 				return TRUE;
 
 			})
-			->setCallback('paymentStatus.check', function(?string &$status) use($input, $p): bool {
+			->setCallback('paymentStatus.check', function(?string &$status) use($p): bool {
 
 				if($p->isInvalid('paymentMethod')) {
 					return TRUE;
