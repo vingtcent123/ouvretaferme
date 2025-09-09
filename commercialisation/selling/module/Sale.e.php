@@ -67,7 +67,7 @@ class Sale extends SaleElement {
 
 		$this->expects(['cPayment']);
 
-		return $this['cPayment']->find(fn($ePayment) => $ePayment->isPaid())->notEmpty();
+		return $this['cPayment']->find(fn($ePayment) => $ePayment->isPaid(), limit: 1)->notEmpty();
 
 	}
 

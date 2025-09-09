@@ -733,7 +733,9 @@ class Collection extends ArrayIterator {
 			$this->map(fn($e) => $object[] = $e, depth: $depth);
 
 		} else {
-			$object = $this;
+
+			$object = clone $this;
+
 		}
 
 		$c = new Collection();

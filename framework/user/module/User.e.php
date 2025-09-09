@@ -28,6 +28,10 @@ class User extends UserElement {
 
 	public function isRole(string|array $roles): bool {
 
+		if($this->empty()) {
+			return FALSE;
+		}
+
 		$this->expects([
 			'role' => ['fqn']
 		]);
