@@ -955,10 +955,10 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
-		if($eSale['paymentStatus'] !== NULL) {
-			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
-		} else if($eSale['onlinePaymentStatus'] !== NULL) {
+		if($eSale['onlinePaymentStatus'] !== NULL) {
 			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['onlinePaymentStatus'].'">'.self::p('onlinePaymentStatus')->values[$eSale['onlinePaymentStatus']].'</span>';
+		} else if($eSale['paymentStatus'] !== NULL) {
+			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
 		} else {
 			return '';
 		}
