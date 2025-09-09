@@ -790,16 +790,16 @@ class SaleLib extends SaleCrud {
 			unset($properties[array_search('paymentMethod', $properties)]);
 			$updatePayments = TRUE;
 
-			if($e['cPayment']->empty()) {
-
-				$e['paymentStatus'] = NULL;
-				$properties[] = 'paymentStatus';
-
-			}
-
 		} else {
 
 			$updatePayments = FALSE;
+
+		}
+
+		if(($e['cPayment'] ?? new \Collection())->empty()) {
+
+			$e['paymentStatus'] = NULL;
+			$properties[] = 'paymentStatus';
 
 		}
 
