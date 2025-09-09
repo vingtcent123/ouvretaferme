@@ -1971,35 +1971,18 @@ class SaleUi {
 				$h .= '<div class="util-block bg-background-light" onrender="Sale.updatePaymentMethod();">';
 					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
 
-					$paymentMethods = '<div class="sale-payment-methods">';
-						if($eSale['cPayment']->empty()) {
-							$paymentMethods .= $this->getField($form, new Payment(), $eSale['cPaymentMethod']);
-						} else {
-							$paymentMethods .= $eSale['cPayment']->makeString(fn($ePayment) => $this->getField($form, $ePayment, $eSale['cPaymentMethod']));
-						}
-					$paymentMethods .= '</div>';
-
-					$paymentMethods .= '<div class="sale-payment-method-actions">';
-						$paymentMethods .= '<a data-action="sale-payment-method-add" class="btn btn-sm btn-outline-primary">'.s("Ajouter un moyen de paiement").'</a>';
-
-						$paymentMethods .= '<div class="sale-payment-method-total">';
-							$paymentMethods .= s("<span>{total}</span> / <span2>{totalSale}</span2> €", [
-								'total' => $eSale['cPayment']->sum('amountIncludingVat'),
-								'span' => '<span class="sale-payment-method-calculated-sum">',
-								'totalSale' => number_format($eSale['priceIncludingVat'], 2),
-								'span2' => '<span class="sale-payment-method-total-sum">',
-							]);
-						$paymentMethods .= '</div>';
-
-					$paymentMethods .= '</div>';
-
 					$h .= '<div class="sale-payment-method-wrapper" id="sale-payment-method-wrapper">';
 
-						$h .= $form->group(s("Moyens de paiement"), $paymentMethods);
-
-						$h .= '<div class="sale-payment-method-spare">';
-							$h .= $this->getField($form, new Payment(), $eSale['cPaymentMethod'], spare: TRUE);
-						$h .= '</div>';
+						$h .= $form->group(
+							s("Moyen de paiement"),
+							$form->select(
+								'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
+									'onrender' => 'Sale.changePaymentMethod(this)',
+									'onchange' => 'Sale.changePaymentMethod(this)',
+									'placeholder' => s("Non défini"),
+								]
+							)
+						);
 
 					$h .= '</div>';
 
@@ -2068,34 +2051,6 @@ class SaleUi {
 			body: $h
 		);
 
-	}
-
-	public function getField(\util\FormUi $form, Payment $ePayment, \Collection $cMethod, bool $spare = FALSE): string {
-
-		$h = '<div class="sale-payment-method'.($spare ? ' sale-payment-method-spare-item' : '').'">';
-
-			$h .= '<div class="sale-payment-method-method">';
-
-				$h .= $form->select('method[]', $cMethod, $ePayment['method'] ?? new \payment\Method(), ['mandatory']);
-
-			$h .= '</div>';
-
-			$h .= '<div class="sale-payment-method-arrow"></div>';
-
-			$h .= '<div class="sale-payment-method-value">';
-
-				$h .= $form->inputGroup(
-					$form->number('amountIncludingVat[]', $ePayment['amountIncludingVat'] ?? 0, ['min' => 0, 'step' => 0.01, 'onfocus' => 'this.select()', 'oninput' => 'Sale.updatePaymentMethod();']).
-					$form->addon(s("€")),
-				);
-
-				$h .= '</div>';
-
-			$h .= '<a class="btn sale-payment-method-remove" data-action="sale-payment-method-remove">'.\Asset::icon('trash').'</a>';
-
-		$h .= '</div>';
-
-		return $h;
 	}
 
 	public function updateShop(Sale $eSale): \Panel {

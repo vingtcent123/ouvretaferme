@@ -1205,36 +1205,28 @@ class Sale extends SaleElement {
 			})
 			->setCallback('paymentMethod.check', function() use($input, $p): bool {
 
-				$this->expects(['farm']);
+				$this->expects(['customer', 'farm', 'priceIncludingVat']);
 
-				$methods = POST('method', 'array', []);
-				$amountIncludingVatArray = POST('amountIncludingVat', 'array', []);
+				$eMethod = \payment\MethodLib::getById(POST('method', 'int'));
 
-				$cMethod = \payment\MethodLib::getByIds($methods);
-
-				$cPayment = new \Collection();
-				foreach($cMethod as $eMethod) {
-
-					$index = array_search((string)$eMethod['id'], $methods);
-					$amountIncludingVat = (float)$amountIncludingVatArray[$index];
-
-					if($amountIncludingVat === 0.0) {
-						continue;
-					}
-
-					$cPayment->append(new Payment([
-						'sale' => $this,
-						'customer' => $this['customer'],
-						'farm' => $this['farm'],
-						'checkoutId' => NULL,
-						'method' => $eMethod,
-						'amountIncludingVat' => $amountIncludingVat,
-						'onlineStatus' => NULL,
-					]));
-
+				if($eMethod->empty()) {
+					$this['cPayment'] = new \Collection();
+					return TRUE;
 				}
 
-				$this['cPayment'] = $cPayment;
+				if($eMethod->canUse() === FALSE) {
+					return FALSE;
+				}
+
+				$this['cPayment'] = new \Collection([new Payment([
+					'sale' => $this,
+					'customer' => $this['customer'],
+					'farm' => $this['farm'],
+					'checkoutId' => NULL,
+					'method' => $eMethod,
+					'amountIncludingVat' => $this['priceIncludingVat'],
+					'onlineStatus' => NULL,
+				])]);
 				return TRUE;
 
 			})
