@@ -41,3 +41,19 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
 	opacity: 0.8;
 	font-style: italic;
 }
+.journal-operation-description {
+	display: flex;
+	gap: 0.25rem;
+}
+.journal-operation-description span {
+	cursor: help;
+}
+
+.journal-operation-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+.journal-operation-actions > .journal-operation-action-icon {
+	width: 15px;
+}
+

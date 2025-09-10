@@ -244,8 +244,8 @@ class JournalUi {
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
 							$h .= '<td>';
-								$h .= '<div style="display: flex; gap: 0.25rem;">';
-									$h .= '<span title="'.encode($eOperation['account']['description']).'" style="cursor: help;">';
+								$h .= '<div class="journal-operation-description">';
+									$h .= '<span title="'.encode($eOperation['account']['description']).'">';
 										if($eOperation['accountLabel'] !== NULL) {
 											$h .= encode($eOperation['accountLabel']);
 										} else {
@@ -314,15 +314,15 @@ class JournalUi {
 							if(in_array('actions', $hide) === FALSE) {
 
 								$h .= '<td class="td-vertical-align-top">';
-									$h .= '<div style="display: flex; gap: 0.5rem;">';
-										$h .= '<div class="" style="width: 15px">';
+									$h .= '<div class="journal-operation-actions">';
+										$h .= '<div class="journal-operation-action-icon">';
 											if($eOperation['document'] !== NULL) {
 												$h .= '<span title="'.s("Pièce comptable : {document}", ['document' => encode($eOperation['document'])]).'">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
 											} else {
 												$h .= '';
 											}
 										$h .= '</div>';
-										$h .= '<div class="" style="width: 15px">';
+										$h .= '<div class="journal-operation-action-icon">';
 											if($eOperation['comment'] !== NULL) {
 												$h .= '<span title="'.encode($eOperation['comment']).'">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
 											} else {
