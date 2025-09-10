@@ -670,7 +670,7 @@ class FarmUi {
 
 			}
 
-			if($eFarm->hasAccounting() and $eFarm->canAccounting()) {
+			if((FEATURE_ACCOUNTING or $eFarm->hasAccounting()) and $eFarm->canAccounting()) {
 
 				$h .= '<div class="farm-tabs farm-section-accounting">';
 					$h .= $this->getCloseSection();

@@ -6,7 +6,7 @@ class Customer extends CustomerElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'vignette', 'url'],
+			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'vignette', 'url', 'hasAccounting'],
 			'user' => ['email'],
 			'cGroup?' => fn($e) => fn() => \selling\GroupLib::askByFarm($e['farm'], $e['groups']),
 		];

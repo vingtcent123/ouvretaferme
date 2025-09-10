@@ -95,11 +95,11 @@ class Farm extends FarmElement {
 		return ($this['status'] === Farm::ACTIVE);
 	}
 
+	// Est-ce que la ferme a la comptabilité d'activée ?
 	public function hasAccounting(): bool {
 		return (
-			!OTF_DEMO and
-			(FEATURE_ACCOUNTING or ($this->exists() and in_array($this['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS)))
-		); // Jardins de Tallende
+			!OTF_DEMO and $this['hasAccounting']
+		);
 	}
 
 	public function canSection(string $section): bool {
