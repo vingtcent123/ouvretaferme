@@ -518,7 +518,11 @@ class SaleLib {
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 
-		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
+		if($eMethod->empty()) {
+			$eSale['paymentStatus'] = NULL;
+		} else {
+			$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
+		}
 
 		\selling\Sale::model()->beginTransaction();
 

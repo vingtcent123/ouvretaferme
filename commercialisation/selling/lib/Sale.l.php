@@ -785,6 +785,11 @@ class SaleLib extends SaleCrud {
 			($e['oldPreparationStatus'] !== $e['preparationStatus'])
 		);
 
+		$emptyPaymentMethod = (
+			in_array('paymentMethod', $properties) and
+			$e['cPayment']->empty()
+		);
+
 		if(in_array('paymentMethod', $properties)) {
 
 			unset($properties[array_search('paymentMethod', $properties)]);
@@ -796,7 +801,7 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		if(($e['cPayment'] ?? new \Collection())->empty()) {
+		if($emptyPaymentMethod) {
 
 			$e['paymentStatus'] = NULL;
 			$properties[] = 'paymentStatus';
