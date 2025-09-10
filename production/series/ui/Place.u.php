@@ -586,18 +586,11 @@ class PlaceUi {
 
 		}
 
-
-		switch(count($lines)) {
-
-			case 0 :
-				$totalHeight = '2.8rem';
-				break;
-
-			default :
-				$totalHeight = (count($lines) * 2 + (count($lines) - 1) * 0.3 + 0.6).'rem';
-				break;
-
+		if($lines === []) {
+			return '';
 		}
+
+		$totalHeight = (count($lines) * 2 + (count($lines) - 1) * 0.3 + 0.6).'rem';
 
 		$h = '<div class="place-grid-series-timeline-lines" style="height: '.$totalHeight.'">';
 
@@ -838,7 +831,7 @@ class PlaceUi {
 			}
 		}
 
-		[$startTs, $stopTs] = $this->getPositionTimestamp($eFarm, $season);
+		[$startTs, $stopTs] = $this->getBounds($eFarm, $season);
 
 		$id = uniqid('place-timeline-');
 
@@ -925,22 +918,32 @@ class PlaceUi {
 
 	}
 
-	public function getPositionTimestamp(\farm\Farm $eFarm, int $season): array {
+	public function getBounds(\farm\Farm $eFarm, int $season): array {
 
-		$startTs = $eFarm['calendarMonthStart'] ? strtotime(($season - 1).'-'.sprintf('%02d', $eFarm['calendarMonthStart']).'-01') : strtotime($season.'-01-01');
-
-		if($eFarm['calendarMonthStop']) {
-
-			$date = new \DateTime(($season + 1).'-'.$eFarm['calendarMonthStop'].'-01');
-			$date->modify('last day of this month');
-
-			$stopTs = $date->getTimestamp();
-
-		} else {
-			$stopTs = strtotime($season.'-12-31');
-		}
+		$startTs = strtotime($eFarm->getCalendarStartDay($season));
+		$stopTs = strtotime($eFarm->getCalendarStopDay($season));
 
 		return [$startTs, $stopTs];
+
+	}
+
+	public function getWeeksInBounds(\farm\Farm $eFarm, int $season): array {
+
+		$startDay = $eFarm->getCalendarStartDay($season);
+		$stopDay = $eFarm->getCalendarStopDay($season);
+
+		$startWeek = week_date_starts(toWeek($startDay));
+		$stopWeek = week_date_ends(toWeek($stopDay));
+
+		$currentWeek = $startWeek;
+		$weeks = [];
+
+		do {
+			$weeks[] = $currentWeek;
+			$currentWeek = toWeek(strtotime($currentWeek.' + 1 WEEK'));
+		} while($currentWeek <= $stopWeek);
+
+		return $weeks;
 
 	}
 

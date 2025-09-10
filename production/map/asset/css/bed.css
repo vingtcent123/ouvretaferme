@@ -52,57 +52,44 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 }
 
 div.bed-item-grid-plan {
-	grid-template-columns: 14rem 8rem 4rem 1fr;
+	grid-template-columns: 10rem 8rem 1fr;
 	align-items: center;
 }
 
 div.bed-item-wrapper div.series-grid {
-	left: calc(14rem + 8rem + 4rem);
+	left: calc(10rem + 8rem);
 	margin-left: 1rem;
 }
 
 div.bed-item-grid-rotation-5 {
-	grid-template-columns: 1fr 4rem repeat(5, 1fr);
+	grid-template-columns: 1fr repeat(5, 1fr);
 }
 
 div.bed-item-grid-rotation-4 {
-	grid-template-columns: 1fr 4rem repeat(4, 1fr);
+	grid-template-columns: 1fr repeat(4, 1fr);
 }
 
 div.bed-item-grid-rotation-3 {
-	grid-template-columns: 1fr 4rem repeat(3, 1fr);
+	grid-template-columns: 1fr repeat(3, 1fr);
 }
 
 div.bed-item-grid-rotation-2 {
-	grid-template-columns: 1fr 4rem repeat(2, 1fr);
+	grid-template-columns: 1fr repeat(2, 1fr);
 }
 
-@media (max-width: 991px) {
+@media (max-width: 1199px) {
 
 	div.bed-item-grid-plan {
-		grid-template-columns: 12rem 4rem 1fr;
+		grid-template-columns: 8rem 4rem 1fr;
 	}
 
 	div.bed-item-wrapper div.series-grid {
-		left: calc(12rem + 4rem);
-	}
-
-	div.bed-item-grid div.bed-item-header-size,
-	div.bed-item-grid div.bed-item-size {
-		display: none;
+		left: calc(8rem + 4rem);
 	}
 
 }
 
 @media (max-width: 768px) {
-
-	div.bed-item-grid-plan {
-		grid-template-columns: 12rem 1fr;
-	}
-
-	div.bed-item-wrapper div.series-grid {
-		left: 12rem;
-	}
 
 	div.bed-item-grid-rotation-5 {
 		grid-template-columns: 1fr repeat(5, 1fr);
@@ -120,10 +107,6 @@ div.bed-item-grid-rotation-2 {
 		grid-template-columns: 1fr repeat(2, 1fr);
 	}
 
-	div.bed-item-grid div.bed-item-area {
-		display: none;
-	}
-
 }
 
 div.bed-item-grid .bed-item-bed {
@@ -139,17 +122,11 @@ div.bed-item-grid .bed-item-bed a {
 	color: black;
 }
 
-div.bed-item-grid .bed-item-bed.bed-item-bed-fill {
+
+div.bed-item-grid.bed-item-grid-plan .bed-item-bed.bed-item-bed-fill {
 	grid-column: span 2;
 }
 
-@media (min-width: 992px) {
-
-	div.bed-item-grid.bed-item-grid-plan .bed-item-bed.bed-item-bed-fill {
-		grid-column: span 3;
-	}
-
-}
 
 @media (max-width: 767px) {
 
@@ -165,13 +142,6 @@ div.bed-item-grid div.bed-item-size {
 	color: var(--muted);
 }
 
-div.bed-item-grid div.bed-item-area {
-	text-align: right;
-	font-size: 0.9rem;
-	white-space: nowrap;
-	color: var(--muted);
-}
-
 div.bed-item-grid div.bed-item-places {
 	overflow: hidden;
 	margin-left: 1rem;
@@ -183,7 +153,7 @@ div.bed-item-grid div.bed-item-cultivation {
 }
 
 div.bed-item-grid div.series-timeline-season:not(:empty) {
-	min-height: 2.2rem;
+	overflow: hidden;
 }
 
 div.bed-item-grid div.bed-item-cultivation-muted {

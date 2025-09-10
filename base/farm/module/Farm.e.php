@@ -70,6 +70,25 @@ class Farm extends FarmElement {
 		return $seasons;
 	}
 
+	public function getCalendarStartDay(int $season): string {
+		return $this['calendarMonthStart'] ? ($season - 1).'-'.sprintf('%02d', $this['calendarMonthStart']).'-01' : $season.'-01-01';
+	}
+
+	public function getCalendarStopDay(int $season): string {
+
+		if($this['calendarMonthStop']) {
+
+			$date = new \DateTime(($season + 1).'-'.$this['calendarMonthStop'].'-01');
+			$date->modify('last day of this month');
+
+			return $date->format('Y-m-d');
+
+		} else {
+			return $season.'-12-31';
+		}
+
+	}
+
 	public function getRotationSeasons(int $lastSeason): array {
 
 		$this->expects(['rotationYears', 'seasonFirst']);

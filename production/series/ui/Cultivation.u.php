@@ -66,27 +66,65 @@ class CultivationUi {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
-		$h = '<div class="series-timeline-season series-grid" style="grid-template-columns: repeat('.$eFarm['calendarMonths'].', 1fr);">';
+		return $this->getMonthlyListGrid($eFarm, $season);
+		return $this->getWeeklyListGrid($eFarm, $season);
 
-			for($i = 0; $i < $eFarm['calendarMonths']; $i++) {
-				$h .= '<div class="series-grid-month"></div>';
-			}
+	}
 
-			[$startTs, $stopTs] = new PlaceUi()->getPositionTimestamp($eFarm, $season);
+	public function getWeeklyListGrid(\farm\Farm $eFarm, int $season): string {
 
-			$currentTs = time();
+		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
-			if($currentTs < $stopTs) {
+		$weeks = new PlaceUi()->getWeeksInBounds($eFarm, $season);
+		[$startTs, $stopTs] = new PlaceUi()->getBounds($eFarm, $season);
+		$startWeekTs = strtotime(week_date_starts($weeks[0]));
 
-				$left = ($currentTs - $startTs) / ($stopTs - $startTs) * 100;
-				$h .= '<div class="series-grid-now" style="right: '.(100 - $left).'%"></div>';
+		$gap = ($startWeekTs - $startTs) / ($stopTs - $startTs) * 100;
 
-			}
+		$h = '<div class="series-timeline-season series-grid" style="grid-template-columns: repeat('.count($weeks).', 1fr);">';
+
+			$h .= str_repeat('<div class="series-grid-month" style="margin-left: '.$gap.'%"></div>', count($weeks));
+
+			$h .= $this->getNowGrid($startTs, $stopTs);
 
 		$h .= '</div>';
 
 
 		return $h;
+
+	}
+
+	public function getMonthlyListGrid(\farm\Farm $eFarm, int $season): string {
+
+		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
+
+		$h = '<div class="series-timeline-season series-grid" style="grid-template-columns: repeat('.$eFarm['calendarMonths'].', 1fr);">';
+
+			$h .= str_repeat('<div class="series-grid-month"></div>', $eFarm['calendarMonths']);
+
+			[$startTs, $stopTs] = new PlaceUi()->getBounds($eFarm, $season);
+
+			$h .= $this->getNowGrid($startTs, $stopTs);
+
+		$h .= '</div>';
+
+
+		return $h;
+
+	}
+
+	protected function getNowGrid(int $startTs, int $stopTs): string {
+
+		$currentTs = time();
+
+		if($currentTs < $stopTs) {
+
+			$left = ($currentTs - $startTs) / ($stopTs - $startTs) * 100;
+			return '<div class="series-grid-now" style="right: '.(100 - $left).'%"></div>';
+
+		} else {
+			return '';
+		}
 
 	}
 
@@ -1436,7 +1474,7 @@ class CultivationUi {
 
 		$items = [];
 
-		[$startTs, $stopTs] = $uiPlace->getPositionTimestamp($eFarm, $season);
+		[$startTs, $stopTs] = $uiPlace->getBounds($eFarm, $season);
 
 		[$minTs, $maxTs] = $this->getTimestampBounds($eSeries, $eCultivation, $cTask);
 

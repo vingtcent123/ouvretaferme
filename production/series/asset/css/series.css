@@ -59,7 +59,7 @@ div.series-item-wrapper {
 
 div.series-season {
 	display: grid;
-	padding: 0.5rem 0 !important;
+	padding-top: 0.5rem;
 }
 
 div.series-season-year {
@@ -68,8 +68,7 @@ div.series-season-year {
 	justify-content: center;
 	background: var(--muted);
 	font-weight: bold;
-	border-left: 2px solid var(--background-light);
-	border-right: 2px solid var(--background-light);
+	margin: 0 1px;
 	line-height: 1;
 	font-size: 0.9rem;
 	padding: 0.25rem 0;
@@ -84,9 +83,16 @@ div.series-season-year.series-season-year-current {
 div.series-season-month {
 	text-align: center;
 	font-weight: bold;
-	height: 100%;
-	padding-top: 0.5rem;
+	height: calc(100% - 0.25rem);
+	margin-right: -1px;
+	padding: 0.5rem 0;
 	line-height: 1;
+	border-right: 1px dashed var(--border);
+	border-left: 1px solid transparent;
+}
+
+div.series-season-month:last-child {
+	border-right-color: transparent;
 }
 
 div.series-grid-now {
@@ -114,10 +120,11 @@ div.series-grid {
 	bottom: 0;
 	display: grid;
 	pointer-events: none;
+	z-index: 0;
 }
 
 div.series-grid > div.series-grid-month:not(:first-child) {
-	border-left: 1px dashed #ccc5;
+	border-left: 1px dashed var(--border);
 	z-index: 100;
 }
 
@@ -246,10 +253,6 @@ a.series-item-title-plant-safety {
 .series-item-planning.series-item-header {
 	padding-left: 0;
 	padding-right: 0;
-}
-
-.series-item-planning-wrapper div.series-grid {
-	margin-left: 1rem;
 }
 
 @media (max-width: 991px) {

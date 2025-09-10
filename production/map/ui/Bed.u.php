@@ -29,13 +29,11 @@ class BedUi {
 
 		$h = '<div class="'.$class.' bed-item-grid-header">';
 
-			$h .= '<div class="util-grid-header bed-item-header">'.s("Emplacement").'</div>';
+			$h .= '<div class="util-grid-header bed-item-header">'.s("Planche").'</div>';
 
 			if($view === \farm\Farmer::PLAN) {
-				$h .= '<div class="util-grid-header bed-item-header bed-item-header-size"></div>';
+				$h .= '<div class="util-grid-header bed-item-header"></div>';
 			}
-
-			$h .= '<div class="util-grid-header bed-item-header bed-item-area"></div>';
 
 			$h .= match($view) {
 				\farm\Farmer::PLAN => $this->displayHeaderBySeason($eFarm, $season),
@@ -80,6 +78,10 @@ class BedUi {
 				\farm\Farmer::ROTATION => $this->displayPlaceByHistory($eBed['cPlace'], $season, $eFarm)
 			};
 
+			if($eBed['plotFill'] and $place === '') {
+				continue;
+			}
+
 			$class = 'bed-item-grid bed-item-grid-'.$view;
 			if($view === \farm\Farmer::ROTATION) {
 				$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
@@ -95,15 +97,16 @@ class BedUi {
 
 				} else {
 
-					$name = s("Planche {value}", encode($eBed['name']));
-
 					$h .= '<div class="bed-item-bed">';
 
 						$h .= '<div>';
-							$h .= '<a data-dropdown="bottom-start">'.$name.'</a>';
+							$h .= '<a data-dropdown="bottom-start">'.encode($eBed['name']).'</a>';
 
 							$h .= '<div class="dropdown-list bg-primary">';
-								$h .= '<div class="dropdown-title">'.$name.'</div>';
+								$h .= '<div class="dropdown-title">';
+									$h .= s("Planche {value}", encode($eBed['name']));
+									$h .= '<div class="font-sm">'.s("{length} mL x {width} cm", $eBed).'</div>';
+								$h .= '</div>';
 								$h .= '<a href="/map/bed:swapSeries?id='.$eBed['id'].'&season='.$season.'" class="dropdown-item">'.s("Échanger les séries").'</a>';
 							$h .= '</div>';
 						$h .= '</div>';
@@ -115,14 +118,11 @@ class BedUi {
 					$h .= '</div>';
 
 					if($view === \farm\Farmer::PLAN) {
-						$h .= '<div class="bed-item-size">';
-							$h .= s("{length}&nbsp;mL x&nbsp;{width}&nbsp;cm", $eBed);
+						$h .= '<div class="bed-item-size" title="'.s("{area} m²", $eBed).'">';
+							$h .= s("{length} mL", $eBed);
+							$h .= ' <span class="hide-lg-down">'.s("x {width} cm", $eBed).'</span>';
 						$h .= '</div>';
 					}
-
-					$h .= '<div class="bed-item-area">';
-						$h .= s("{area} m²", $eBed);
-					$h .= '</div>';
 
 				}
 
@@ -148,11 +148,13 @@ class BedUi {
 
 	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season): string {
 
-		$h = '<div class="bed-item-places">';
-			$h .= new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season);
-		$h .= '</div>';
+		$timeline = new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season);
 
-		return $h;
+		if($timeline !== '') {
+			return '<div class="bed-item-places">'.$timeline.'</div>';
+		} else {
+			return '';
+		}
 
 	}
 
