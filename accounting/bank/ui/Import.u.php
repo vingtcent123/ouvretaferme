@@ -139,7 +139,7 @@ class ImportUi {
 
 				if(in_array($eImport['status'], [ImportElement::FULL, ImportElement::PARTIAL]) === TRUE) {
 
-					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashimport?import='.$eImport['id'].'" class="color-text">';
+					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?import='.$eImport['id'].'" class="color-text">';
 						$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 						$h.= p(
 							"{number} mouvement enregistré",

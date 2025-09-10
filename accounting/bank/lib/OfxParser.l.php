@@ -5,19 +5,11 @@ class OfxParserLib {
 
 	public static function extractFile(string $filepath): \SimpleXMLElement {
 
-		$fileContent = explode("\n", file_get_contents($filepath));
+		// Récupérer uniquement le contenu OFX
+		preg_match("'<ofx>(.*?)</ofx>'si", file_get_contents($filepath), $match);
 
-		$fileArray = array_splice($fileContent, 9);
-
-		foreach($fileArray as $index => $line) {
-
-			if(preg_match('/<([A-Z]+)>(.*)/', $line, $matches) and strlen($matches[2]) > 0) {
-				$fileArray[$index] = '<'.$matches[1].'>'.$matches[2].'</'.$matches[1].'>';
-			}
-
-		}
-
-		$xmlContent = implode("\n", $fileArray);
+		// Fermer correctement les tags
+		$xmlContent = preg_replace('/<([A-Za-z0-9.]+)>([^<\r\n]+)/', '<\1>\2</\1>', '<OFX>'.$match[1].'</OFX>');
 
 		return simplexml_load_string($xmlContent);
 
@@ -55,13 +47,15 @@ class OfxParserLib {
 
 		foreach($xmlElement->BANKMSGSRSV1->STMTTRNRS->STMTRS->BANKTRANLIST->STMTTRN as $operation) {
 
+			$memo = ucfirst(strtolower(mb_strlen((string)$operation->MEMO) === 0 ? (string) $operation->NAME : (string) $operation->MEMO));
+
 			$cashflows[] = [
 				'date' => (string) $operation->DTPOSTED,
 				'amount' => (float) $operation->TRNAMT,
 				'type' => (string) $operation->TRNTYPE,
 				'fitid' => (string) $operation->FITID,
 				'name' => (string) $operation->NAME,
-				'memo' => ucfirst(strtolower((string) $operation->MEMO)),
+				'memo' => $memo,
 				'account' => $eBankAccount,
 				'import' => $eImport,
 			];

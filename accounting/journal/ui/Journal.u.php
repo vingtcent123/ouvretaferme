@@ -187,156 +187,94 @@ class JournalUi {
 		\Asset::js('util', 'form.js');
 		\Asset::css('util', 'form.css');
 
-		$thRowspan = 2;
-		$descriptionColspan = 4;
+		$columns = 5;
 		$baseUrl = $this->getBaseUrl($eFarm, $eFinancialYearSelected);
 
 		$h = '';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="td-vertical-top no-background tbody-hover table-operations">';
+			$h .= '<table class="tr-even tr-hover">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						$h .= '<th>';
-
-							if($eFinancialYearSelected->isCashAccounting()) {
-								$label = s("Date de l'écriture");
-								$h .= ($search ? $search->linkSort('paymentDate', $label) : $label);
-							} else {
-								$label = s("Date de transaction");
-								$h .= ($search ? $search->linkSort('date', $label) : $label);
-							}
-						$h .= '</th>';
-
-						if(in_array('cashflow', $hide) === FALSE) {
-							$h .= '<th><span title="'.s("Numéro d'opération bancaire").'">'.s("Op.").'</span></th>';
-						}
-
-						if($selectedJournalCode === NULL) {
-							$h .= '<th class="td-min-content"><span title="'.s("Journal").'">'.s("J.").'</span></th>';
-						}
-
-						$h .= '<th colspan="2">'.s("Compte (Libellé et classe)").'</th>';
-						$h .= '<th class="rowspaned-center" rowspan="'.$thRowspan.'"><span title="'.s("Mode de paiement").'">'.s("Mode").'</span></th>';
-						$h .= '<th class="rowspaned-center" rowspan="'.$thRowspan.'">'.s("Tiers").'</th>';
-						$h .= '<th class="text-end highlight-stick-right rowspaned-center" rowspan="'.$thRowspan.'">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left rowspaned-center" rowspan="'.$thRowspan.'">'.s("Crédit (C)").'</th>';
+						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Libellé").'</th>';
+						$h .= '<th>'.s("Tiers").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
 
 						if(in_array('actions', $hide) === FALSE) {
-							$h .= '<th class="td-min-content" rowspan="'.$thRowspan.'" class="rowspaned-center"></th>';
+							$columns++;
+							$h .= '<th class="td-min-content"></th>';
 						}
 
-						if(in_array('vatAdjustement', $show)) {
-							$h .= '<th class="text-end" rowspan="'.$thRowspan.'" class="rowspaned-center">'.s("Régularisation").'</th>';
-						}
-
-					$h .= '</tr>';
-
-					$h .= '<tr>';
-
-						if(in_array('document', $hide) === FALSE) {
-
-							$h .= '<th colspan="'.($selectedJournalCode === NULL ? 3 : 2).'">';
-								$label = s("Pièce comptable");
-								$h .= ($search ? $search->linkSort('document', $label) : $label);
-							$h .= '</th>';
-
-						} else {
-
-							$h .= '<th></th>';
-							$h .= '<th></th>';
-							if($selectedJournalCode === NULL) {
-								$h .= '<th></th>';
-							}
-
-						}
-						$h .= '<th colspan="'.($descriptionColspan - 2).'">';
-							$h .= s("Description");
-						$h .= '</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
 
-				foreach($cOperation as $eOperation) {
+				$h .= '<tbody>';
+					$currentDate = NULL;
+					foreach($cOperation as $eOperation) {
 
-					$canUpdate = (
-						$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
-						and $eOperation['date'] <= $eFinancialYearSelected['endDate']
-						and $eOperation['date'] >= $eFinancialYearSelected['startDate']
-						and $eFarm->canManage()
-						and $eOperation->canUpdate()
-						and in_array('actions', $hide) === FALSE
-					);
+						$canUpdate = (
+							$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
+							and $eOperation['date'] <= $eFinancialYearSelected['endDate']
+							and $eOperation['date'] >= $eFinancialYearSelected['startDate']
+							and $eFarm->canManage()
+							and $eOperation->canUpdate()
+							and in_array('actions', $hide) === FALSE
+						);
 
-					$eOperation->setQuickAttribute('farm', $eFarm['id']);
-					$eOperation->setQuickAttribute('app', 'accounting');
+						$eOperation->setQuickAttribute('farm', $eFarm['id']);
+						$eOperation->setQuickAttribute('app', 'accounting');
 
-					$h .= '<tbody>';
-						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'" class="tr-border-top">';
+						$referenceDate = $eFinancialYearSelected->isCashAccounting() ? $eOperation['paymentDate'] : $eOperation['date'];
 
-							$h .= '<td>';
-								$h .= \util\DateUi::numeric($eOperation['date']);
-							$h .= '</td>';
-
-							if(in_array('cashflow', $hide) === FALSE) {
-								$h .= '<td>';
-									if($eOperation['cashflow']->exists() === TRUE) {
-										$searchCashflow = clone $search;
-										$searchCashflow->set('cashflow', $eOperation['cashflow']['id']);
-										$cashflowLink = $baseUrl.'&'.$searchCashflow->toQuery();
-										$h .= '<a href="'.$cashflowLink.'" title="'.s("Filtrer sur cette opération bancaire").'">'.$eOperation['cashflow']['id'].'</a>';
-									} else {
-										$h .= '';
-									}
+						if($currentDate === NULL or $currentDate !== $referenceDate) {
+							$h .= '<tr class="tr-title">';
+								$h .= '<td colspan="'.$columns.'">';
+									$h .= \util\DateUi::numeric($referenceDate);
 								$h .= '</td>';
+							$h .= '</tr>';
+						}
 
-							}
+						$currentDate = $referenceDate;
 
-							if($selectedJournalCode === NULL) {
-								$h .= '<td class="td-min-content">';
+						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
-									if($eOperation['journalCode']) {
-										$journalLink = $baseUrl.'&'.$search->toQuery().'&code='.encode($eOperation['journalCode']);
-										$h .= '<a href="'.$journalLink.'">'.mb_strtoupper($eOperation['journalCode']).'</a>';
-									} else {
-										$h .= '-';
+							$h .= '<td>';
+								$h .= '<div style="display: flex; gap: 0.25rem;">';
+									$h .= '<span title="'.encode($eOperation['account']['description']).'" style="cursor: help;">';
+										if($eOperation['accountLabel'] !== NULL) {
+											$h .= encode($eOperation['accountLabel']);
+										} else {
+											$h .= encode(str_pad($eOperation['account']['class'], 8, 0));
+										}
+									$h .= '</span>';
+								$h .= '</div>';
+							$h .= '</td>';
+
+							$h .= '<td>';
+								$h .= '<div class="description">';
+									if($eOperation['asset']->exists() === TRUE) {
+										$attributes = [
+											'href' => \company\CompanyUi::urlAsset($eFarm).'/depreciation?id='.$eOperation['asset']['id'],
+											'data-dropdown' => 'bottom-end',
+											'data-dropdown-hover' => TRUE,
+											'data-dropdown-offset-x' => 0,
+										];
+										$h .= '<a '.attrs($attributes).'>'.\Asset::icon('house-door').'</a>';
+										$h .= '&nbsp;';
+										$h .= '<div class="operation-asset-dropdown dropdown-list dropdown-list-unstyled">';
+											$h .= s("Voir l'immobilisation liée");
+										$h .= '</div>';
 									}
 
-								$h .= '</td>';
-							}
-
-							$h .= '<td>';
-								if($eOperation['accountLabel'] !== NULL) {
-									$h .= encode($eOperation['accountLabel']);
-								} else {
-									$h .= encode(str_pad($eOperation['account']['class'], 8, 0));
-								}
-							$h .= '</td>';
-
-							$h .= '<td>';
-								if($eOperation['asset']->exists() === TRUE) {
-									$attributes = [
-										'href' => \company\CompanyUi::urlAsset($eFarm).'/depreciation?id='.$eOperation['asset']['id'],
-										'data-dropdown' => 'bottom-end',
-										'data-dropdown-hover' => TRUE,
-										'data-dropdown-offset-x' => 0,
-									];
-									$h .= '<a '.attrs($attributes).'>'.\Asset::icon('house-door').'</a>';
-									$h .= '&nbsp;';
-									$h .= '<div class="operation-asset-dropdown dropdown-list dropdown-list-unstyled">';
-										$h .= s("Voir l'immobilisation liée");
-									$h .= '</div>';
-								}
-								$h .= encode($eOperation['account']['description']);
-							$h .= '</td>';
-
-							$h .= '<td>';
 								if($canUpdate === TRUE) {
-									$h .= $eOperation->quick('paymentMethod', \payment\MethodUi::getShort($eOperation['paymentMethod']) ?? '<i>'.s("?").'</i>');
+									$h .= $eOperation->quick('description', encode($eOperation['description']));
 								} else {
-									$h .= \payment\MethodUi::getShort($eOperation['paymentMethod']);
+									$h .= encode($eOperation['description']);
 								}
 							$h .= '</td>';
 
@@ -349,7 +287,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top" rowspan="2">';
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
 								$debitDisplay = match($eOperation['type']) {
 									Operation::DEBIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
@@ -361,7 +299,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top" rowspan="2">';
+							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
 								$creditDisplay = match($eOperation['type']) {
 									Operation::CREDIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
@@ -375,64 +313,33 @@ class JournalUi {
 
 							if(in_array('actions', $hide) === FALSE) {
 
-								$h .= '<td rowspan="2" class="td-vertical-align-top">';
-									$h .= '<div class="util-unit td-min-content text-end">';
+								$h .= '<td class="td-vertical-align-top">';
+									$h .= '<div style="display: flex; gap: 0.5rem;">';
+										$h .= '<div class="" style="width: 15px">';
+											if($eOperation['document'] !== NULL) {
+												$h .= '<span title="'.s("Pièce comptable : {document}", ['document' => encode($eOperation['document'])]).'">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
+											} else {
+												$h .= '';
+											}
+										$h .= '</div>';
+										$h .= '<div class="" style="width: 15px">';
+											if($eOperation['comment'] !== NULL) {
+												$h .= '<span title="'.encode($eOperation['comment']).'">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
+											} else {
+												$h .= '';
+											}
+										$h .= '</div>';
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
 									$h .= '</div>';
 								$h .= '</td>';
 
 							}
 
-							if(in_array('vatAdjustement', $show)) {
-
-								$h .= '<td>';
-									$h .= '<div class="text-center">';
-										$h .= $eOperation->isVatAdjustement($show['period']) ? s("oui") : '';
-									$h .= '</div>';
-								$h .= '</td>';
-
-							}
-
 						$h .= '</tr>';
 
-						$h .= '<tr class="td-padding-xs">';
+					}
 
-							if(in_array('document', $hide) === FALSE) {
-								$h .= '<td colspan="'.($selectedJournalCode === NULL ? 3 : 2).'">';
-									$h .= '<div class="operation-info">';
-										if($canUpdate === TRUE) {
-											$h .= $eOperation->quick('document', $eOperation['document'] ? encode($eOperation['document']) : '<i>'.s("Non défini").'</i>');
-										} else {
-											$h .= encode($eOperation['document']);
-										}
-									$h .= '</div>';
-								$h .= '</td>';
-							}
-
-							$h .= '<td colspan="'.$descriptionColspan.'" class="td-description">';
-
-								$h .= '<div class="description">';
-									if($canUpdate === TRUE) {
-										$h .= $eOperation->quick('description', encode($eOperation['description']));
-									} else {
-										$h .= encode($eOperation['description']);
-									}
-
-								$h .= '</div>';
-
-								if($eOperation['comment'] !== NULL) {
-									$h .= '<div><i>'.s("Commentaire : {comment}", ['comment' => $eOperation->quick('comment', encode($eOperation['comment']))]).'</i></div>';
-								}
-
-							$h .= '</td>';
-							if(in_array('vatAdjustement', $show)) {
-								$h .= '<td></td>';
-							}
-
-						$h .= '</tr>';
-
-					$h .= '</tbody>';
-				}
+				$h .= '</tbody>';
 
 			$h .= '</table>';
 		$h .= '</div>';
@@ -451,10 +358,6 @@ class JournalUi {
 
 		}
 
-		$canAddShipping = ($eOperation->isClassAccount(\account\AccountSetting::CHARGE_ACCOUNT_CLASS) === TRUE
-			// On ne rajoute pas des frais de port sur des frais de port
-			and \account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::SHIPPING_CHARGE_ACCOUNT_CLASS) === FALSE);
-
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable").'</div>';
@@ -462,34 +365,22 @@ class JournalUi {
 			// COMMENTAIRE
 			if($eOperation['comment'] === NULL) {
 				$title = s("Ajouter un commentaire");
-				$h .= $eOperation->quick('comment', $title, 'dropdown-item');
+	 		} else {
+				$title = s("Modifier le commentaire");
 			}
+			$h .= $eOperation->quick('comment', $title, 'dropdown-item');
 
-			// FRAIS DE LIVRAISON
-			if($canAddShipping) {
-
-				$args = [
-					'accountPrefix' => \account\AccountSetting::SHIPPING_CHARGE_ACCOUNT_CLASS,
-					'accountLabel' => encode(OperationUi::getAccountLabelFromAccountPrefix(\account\AccountSetting::SHIPPING_CHARGE_ACCOUNT_CLASS)),
-					'document' => $eOperation['document'],
-					'type' => $eOperation['type'],
-					'date' => $eOperation['date'],
-					'thirdParty' => $eOperation['thirdParty']['id'] ?? NULL,
-					'description' => $eOperation['description'],
-					'cashflow' => $eOperation['cashflow']['id'] ?? NULL,
-				];
-
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?'.http_build_query($args).'" class="dropdown-item">';
-					$h .= s("Ajouter des frais de livraison");
-				$h .= '</a>';
-
+			// PIÈCE COMPTABLE
+			if($eOperation['document'] === NULL) {
+				$title = s("Indiquer le n° de pièce comptable");
+	 		} else {
+				$title = s("Modifier la pièce comptable");
 			}
+			$h .= $eOperation->quick('document', $title, 'dropdown-item');
 
-			if($eOperation['comment'] === NULL or $canAddShipping) {
-				$h .= '<div class="dropdown-divider"></div>';
-			}
+			$h .= '<div class="dropdown-divider"></div>';
 
-			// SUPPRIMER
+			// ACTION "SUPPRIMER"
 			if($eOperation['cashflow']->exists() === FALSE) {
 
 				// Cette opération est liée à une autre : on ne peut pas la supprimer.

@@ -140,6 +140,9 @@ new \bank\CashflowPage(
 			\bank\Cashflow::fail('noSelectedOperation');
 		}
 
+		// Payment methods
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+
 		\bank\CashflowLib::attach($data->eCashflow, POST('operation', 'array'), $data->cPaymentMethod);
 
 		$fw->validate();
