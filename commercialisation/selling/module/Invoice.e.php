@@ -168,9 +168,20 @@ class Invoice extends InvoiceElement {
 					return TRUE;
 				} else {
 
-					$eMethod = $this['cSale']->first()['paymentMethod'];
+					$eMethod = $this['cSale']->first()['cPayment']->first()['method'] ?? new \payment\Method();
 
 					foreach($this['cSale'] as $eSale) {
+
+						if($eMethod->empty()) {
+
+							// Pas de moyen de paiement pour les 2
+							if($eSale['cPayment']->count() === 0) {
+								continue;
+							}
+
+							return FALSE;
+						}
+
 						if($eSale['cPayment']->count() !== 1 or $eSale['cPayment']->first()['method']->is($eMethod) === FALSE) {
 							return FALSE;
 						}
