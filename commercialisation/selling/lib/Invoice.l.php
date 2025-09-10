@@ -230,7 +230,7 @@ class InvoiceLib extends InvoiceCrud {
 
 			$e['name'] = $e->getInvoice($e['farm']);
 
-			$e['paymentMethod'] = $cSale->first()['cPayment']->first()['method'];
+			$e['paymentMethod'] = $cSale->first()['cPayment']->first()['method'] ?? NULL;
 			$e['paymentStatus'] = $cSale->first()['paymentStatus'] ?? Invoice::NOT_PAID;
 
 			parent::create($e);
