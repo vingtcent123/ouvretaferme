@@ -410,7 +410,7 @@ class JournalUi {
 			$h .= '<div class="dropdown-divider"></div>';
 
 			// ACTION "SUPPRIMER"
-			if($eOperation['cOperationCashflow']->notEmpty()) {
+			if($eOperation['cOperationCashflow']->empty()) {
 
 				// Cette opération est liée à une autre : on ne peut pas la supprimer.
 				if($eOperation['operation']->exists() === TRUE) {
@@ -419,8 +419,10 @@ class JournalUi {
 						'class' => 'dropdown-item inactive',
 						'onclick' => 'void(0);',
 					];
-					$buttonDelete = '<a '.attrs($attributes).'>'.s("Supprimer").'</a>';
 
+					$more = s("Cette écriture est liée à une autre écriture. Supprimez l'autre écriture pour supprimer celle-ci.");
+					$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+					$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
 
 				} else {
 

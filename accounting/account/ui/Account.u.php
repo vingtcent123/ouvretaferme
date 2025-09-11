@@ -4,6 +4,10 @@ namespace account;
 class AccountUi {
 
 	public function __construct() {
+
+		\Asset::css('company', 'company.css');
+		\Asset::js('account', 'settings.js');
+
 	}
 
 	public function getManageTitle(\farm\Farm $eFarm): string {
@@ -124,7 +128,7 @@ class AccountUi {
 						$h .= '</td>';
 
 						$h .= '<td>';
-							$h .= ($eAccount['vatAccount']->exists() === TRUE ? '<a '.attr('onclick', 'Settings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>' : '');
+							$h .= ($eAccount['vatAccount']->exists() === TRUE ? '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>' : '');
 						$h .= '</td>';
 
 						$h .= '<td>';
