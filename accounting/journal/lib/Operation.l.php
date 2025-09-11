@@ -53,8 +53,8 @@ class OperationLib extends OperationCrud {
 
 		if($search->get('cashflow')) {
 			$model
-				->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
-				->where('m2.id = '.$search->get('cashflow'));
+				->join(OperationCashflow::model(), 'm1.id = m2.operation')
+				->where('m2.cashflow = '.$search->get('cashflow'));
 
 		}
 
@@ -778,15 +778,17 @@ class OperationLib extends OperationCrud {
 
 		$cOperation = self::addOpenFinancialYearCondition()
 			->select($properties)
-			->whereCashflow(NULL)
-			->whereOperation(NULL)
+			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+			->where('m2.id IS NULL')
+			->where('m1.operation is null')
 			->sort(['date' => SORT_ASC])
 			->getCollection();
 
 		$cOperationLinked = $cOperation->empty() === FALSE ? Operation::model()
 			->select($properties)
-			->whereCashflow(NULL)
-			->whereOperation('IN', $cOperation)
+			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+			->where('m2.id IS NULL')
+			->where('m1.operation IN ('.join(',', $cOperation->getIds()).')')
 			->getCollection() : new \Collection();
 
 		// Tri pour optimiser le montant
@@ -809,7 +811,7 @@ class OperationLib extends OperationCrud {
 
 	public static function countByCashflow(\bank\Cashflow $eCashflow): int {
 
-		return Operation::model()
+		return OperationCashflow::model()
 			->whereCashflow($eCashflow)
 			->count();
 
@@ -959,14 +961,6 @@ class OperationLib extends OperationCrud {
 		}
 	}
 
-	public static function getByCashflow(\bank\Cashflow $eCashflow): \Collection {
-
-		return Operation::model()
-			->select(['id', 'asset'])
-      ->whereCashflow($eCashflow)
-      ->getCollection();
-	}
-
 	public static function unlinkCashflow(\bank\Cashflow $eCashflow, string $action): void {
 
 		if($eCashflow->exists() === FALSE) {
@@ -975,32 +969,33 @@ class OperationLib extends OperationCrud {
 
 		Operation::model()->beginTransaction();
 
-		// Supprimer  l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
+		$cOperationCashflow = OperationCashflow::model()
+			->select(['operation' => ['asset']])
+			->whereCashflow($eCashflow)
+			->getCollection();
+
+		// Suppression de  l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
 		\journal\Operation::model()
-      ->whereCashflow('=', $eCashflow['id'])
+			->whereId('IN', $cOperationCashflow->getColumnCollection('operation')->getIds())
 			->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
       ->delete();
 
-		switch($action) {
+		// Dissociation cashflow <-> operation
+		OperationCashflow::model()
+			->whereCashflow($eCashflow)
+			->delete();
 
-			case 'dissociate':
-				// Dissocier les autres écritures
-				\journal\Operation::model()
-		      ->whereCashflow('=', $eCashflow['id'])
-		      ->update('cashflow = NULL');
-				break;
+		if($action === 'delete') {
 
-			case 'delete':
-				// Suppression des immos
-				$cAsset = OperationLib::getByCashflow($eCashflow)->getColumnCollection('asset');
-				if($cAsset->empty() === FALSE) {
-					\asset\AssetLib::deleteByIds($cAsset->getIds());
-				}
-				// Supprimer toutes les écritures
-				\journal\Operation::model()
-		      ->whereCashflow('=', $eCashflow['id'])
-		      ->delete();
-				break;
+			// Suppression des immos
+			$cAsset = $cOperationCashflow->getColumnCollection('operation')->getColumnCollection('asset');
+			if($cAsset->empty() === FALSE) {
+				\asset\AssetLib::deleteByIds($cAsset->getIds());
+			}
+			// Suppression des écritures
+			\journal\Operation::model()
+	      ->whereId('IN', $cOperationCashflow->getColumnCollection('operation')->getIds())
+	      ->delete();
 
 		}
 
