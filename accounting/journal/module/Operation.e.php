@@ -8,6 +8,8 @@ class Operation extends OperationElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
+			'account' => \account\Account::getSelection(),
+			'thirdParty' => \account\ThirdParty::getSelection(),
 			'paymentMethod' => \payment\Method::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
 			'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),

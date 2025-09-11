@@ -69,7 +69,7 @@ class JournalUi {
 		return \company\CompanyUi::urlJournal($eFarm).'/operations'.'?financialYear='.($eFinancialYear['id'] ?? '').'&code='.GET('code');
 
 	}
-	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): string {
 
 		\Asset::js('journal', 'operation.js');
 
@@ -87,6 +87,7 @@ class JournalUi {
 					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Classe de compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
 					$h .= $form->select('type', $statuses, $search->get('type'), ['placeholder' => s("Type")]);
+					$h .= $form->select('paymentMethod', $cPaymentMethod, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);
 					$h .= $form->dynamicField(new Operation(['thirdParty' => $eThirdParty]), 'thirdParty', function($d) use($form) {
 						$d->autocompleteDispatch = '[data-third-party="form-search"]';
 						$d->attributes['data-index'] = 0;
@@ -143,7 +144,12 @@ class JournalUi {
 
 				foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
 
-					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">'.OperationUi::p('journalCode')->values[$journalCode].'</a>';
+					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">';
+						$h .= '<div class="text-center">';
+							$h .= OperationUi::p('journalCode')->values[$journalCode];
+							$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.OperationUi::p('journalCode')->shortValues[$journalCode].')</span></small>';
+						$h .= '</div>';
+					$h .= '</a>';
 
 				}
 
@@ -317,23 +323,23 @@ class JournalUi {
 									$h .= '<div class="journal-operation-actions">';
 										$h .= '<div class="journal-operation-action-icon">';
 											if($eOperation['cOperationCashflow']->notEmpty()) {
-												$h .= '<span title="'.s("Écriture rattachée à une opération bancaire").'">'.\Asset::icon('piggy-bank').'</a>';
+												$h .= '<span title="'.s("Écriture rattachée à une opération bancaire").'">'.\Asset::icon('piggy-bank').'</span>';
 											} else {
-												$h .= '';
+												$h .= '<span class="color-muted opacity-50" title="'.s("Pas d'opération bancaire liée").'">'.\Asset::icon('piggy-bank').'</a>';
 											}
 										$h .= '</div>';
 										$h .= '<div class="journal-operation-action-icon">';
 											if($eOperation['document'] !== NULL) {
 												$h .= '<span title="'.s("Pièce comptable : {document}", ['document' => encode($eOperation['document'])]).'">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
 											} else {
-												$h .= '';
+												$h .= '<span data-is-updatable class="color-muted opacity-50" title="'.s("Indiquer la pièce comptable").'">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
 											}
 										$h .= '</div>';
 										$h .= '<div class="journal-operation-action-icon">';
 											if($eOperation['comment'] !== NULL) {
 												$h .= '<span title="'.encode($eOperation['comment']).'">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
 											} else {
-												$h .= '';
+												$h .= '<span data-is-updatable class="color-muted opacity-50" title="'.s("Ajouter un commentaire").'">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
 											}
 										$h .= '</div>';
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
@@ -369,6 +375,22 @@ class JournalUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable").'</div>';
 
+			// JOURNAL
+			if($eOperation['journalCode'] === NULL) {
+				$title = s("Indiquer le journal");
+	 		} else {
+				$title = s("Modifier le journal ({value})", OperationUi::p('journalCode')->shortValues[$eOperation['journalCode']]);
+			}
+			$h .= $eOperation->quick('journalCode', $title, 'dropdown-item');
+
+			// MOYEN DE PAIEMENT
+			if($eOperation['paymentMethod'] === NULL) {
+				$title = s("Indiquer le moyen de paiement");
+	 		} else {
+				$title = s("Modifier le moyen de paiement ({value})", \payment\MethodUi::getName($eOperation['paymentMethod']));
+			}
+			$h .= $eOperation->quick('paymentMethod', $title, 'dropdown-item');
+
 			// COMMENTAIRE
 			if($eOperation['comment'] === NULL) {
 				$title = s("Ajouter un commentaire");
@@ -381,7 +403,7 @@ class JournalUi {
 			if($eOperation['document'] === NULL) {
 				$title = s("Indiquer le n° de pièce comptable");
 	 		} else {
-				$title = s("Modifier la pièce comptable");
+				$title = s("Modifier la pièce comptable ({value})", encode($eOperation['document']));
 			}
 			$h .= $eOperation->quick('document', $title, 'dropdown-item');
 

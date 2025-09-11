@@ -57,3 +57,7 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
 	width: 15px;
 }
 
+.journal-operation-action-icon span[data-is-updatable]:hover {
+	color: var(--text) !important;
+	opacity: 1;
+}

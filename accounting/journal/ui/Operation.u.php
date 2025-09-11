@@ -367,7 +367,7 @@ class OperationUi {
 		\Asset::js('journal', 'operation.js');
 
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
-		$isFromCashflow = $eOperation['cOperationCashflow']->notEmpty();
+		$isFromCashflow = ($eOperation['cOperationCashflow'] ?? new \Collection())->notEmpty();
 
 		$cAssetGrant = $assetData['grant'] ?? new \Collection();
 		$cAssetToLinkToGrant = $assetData['asset'] ?? new \Collection();
@@ -668,7 +668,7 @@ class OperationUi {
 	): string {
 
 		$suffix = '['.$index.']';
-		$isFromCashflow = ($defaultValues['cashflow']->exists() === TRUE);
+		$isFromCashflow = ($eOperation['cOperationCashflow'] ?? new \Collection())->notEmpty();
 
 		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
@@ -714,6 +714,7 @@ class OperationUi {
 			'paymentDate' => s("Date de paiement"),
 			'vatRate' => s("Taux de TVA"),
 			'vatValue' => s("Valeur de TVA"),
+			'journalCode' => s("Journal"),
 		]);
 
 		switch($property) {
@@ -737,6 +738,12 @@ class OperationUi {
 					OperationElement::VEN => s("Ventes"),
 					OperationElement::BAN => s("Trésorerie"),
 					OperationElement::OD => s("Opérations diverses"),
+				];
+				$d->shortValues = [
+					OperationElement::ACH => s("JA"),
+					OperationElement::VEN => s("JV"),
+					OperationElement::BAN => s("JT"),
+					OperationElement::OD => s("JOD"),
 				];
 				break;
 

@@ -23,6 +23,7 @@ new Page(function($data) {
 			'document' => GET('document'),
 			'thirdParty' => GET('thirdParty'),
 			'asset' => GET('asset'),
+			'paymentMethod' => GET('paymentMethod'),
 		], GET('sort'));
 
 		$search->set('cashflowFilter', GET('cashflowFilter', 'bool'));
@@ -45,6 +46,9 @@ new Page(function($data) {
 
 		$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 		$data->cAccount = \account\AccountLib::getAll();
+
+		// Payment methods
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 
 		throw new ViewAction($data);
 

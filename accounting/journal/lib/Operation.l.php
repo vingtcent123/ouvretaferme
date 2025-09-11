@@ -62,6 +62,7 @@ class OperationLib extends OperationCrud {
 			->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL)
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->wherePaymentDate('LIKE', '%'.$search->get('paymentDate').'%', if: $search->get('paymentDate'))
+			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->whereAccountLabel('LIKE', '%'.$search->get('accountLabel').'%', if: $search->get('accountLabel'))
 			->where(fn() => 'accountLabel LIKE "'.join('%" OR accountLabel LIKE "', $search->get('accountLabels')).'%"', if: $search->get('accountLabels'))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
@@ -827,11 +828,10 @@ class OperationLib extends OperationCrud {
 				fn() => $this->whereOperation('IN', $operationIds),
 			)
 			->getCollection();
-		$properties = ['updatedAt', 'paymentDate', 'paymentMethod'];
+		$properties = ['updatedAt', 'paymentDate'];
 		$eOperation = new Operation([
 			'updatedAt' => Operation::model()->now(),
 			'paymentDate' => $eCashflow['date'],
-			'paymentMethod' => new \bank\CashflowUi()::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod),
 		]);
 
 		$updated = self::addOpenFinancialYearCondition()
@@ -886,7 +886,7 @@ class OperationLib extends OperationCrud {
 			},
 			'amount' => abs($eCashflow['amount']),
 			'paymentDate' => $eCashflow['date'],
-			'paymentMethod'=> $eOperation['paymentMethod'],
+			'paymentMethod'=> $eOperation['paymentMethod']['id'] ?? NULL,
 			'financialYear'=> $eOperation['financialYear']['id'],
 			'journalCode' => \account\AccountLib::getJournalCodeByClass($label),
 		];
