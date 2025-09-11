@@ -70,7 +70,7 @@ class VatDeclarationUi {
 		$h .= '<h3>'.s("Liste des écritures").'</h3>';
 		$h .= new JournalUi()->getTableContainer(
 			$eFarm, $cOperation, $eFinancialYear,
-			hide: ['cashflow', 'actions', 'document'],
+			hide: ['actions', 'document'],
 			show: ['vatAdjustement', 'period' => $eFinancialYear['lastPeriod']],
 		);
 

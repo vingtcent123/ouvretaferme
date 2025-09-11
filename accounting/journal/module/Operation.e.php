@@ -10,6 +10,7 @@ class Operation extends OperationElement {
 		return parent::getSelection() + [
 			'paymentMethod' => \payment\Method::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
+			'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
 		];
 
 	}

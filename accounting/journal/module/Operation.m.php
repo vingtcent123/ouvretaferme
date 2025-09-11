@@ -62,7 +62,6 @@ class OperationModel extends \ModuleModel {
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'type' => ['enum', [\journal\Operation::DEBIT, \journal\Operation::CREDIT], 'cast' => 'enum'],
-			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'cast' => 'float'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
@@ -79,7 +78,7 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'cashflow', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'vatDeclaration', 'vatAdjustement', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -87,7 +86,6 @@ class OperationModel extends \ModuleModel {
 			'account' => 'account\Account',
 			'thirdParty' => 'account\ThirdParty',
 			'invoice' => 'selling\Invoice',
-			'cashflow' => 'bank\Cashflow',
 			'vatAccount' => 'account\Account',
 			'operation' => 'journal\Operation',
 			'asset' => 'asset\Asset',
@@ -212,10 +210,6 @@ class OperationModel extends \ModuleModel {
 
 	public function whereType(...$data): OperationModel {
 		return $this->where('type', ...$data);
-	}
-
-	public function whereCashflow(...$data): OperationModel {
-		return $this->where('cashflow', ...$data);
 	}
 
 	public function whereVatRate(...$data): OperationModel {

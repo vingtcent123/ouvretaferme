@@ -122,7 +122,7 @@ class CashflowUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 						$h .= '<th class="td-vertical-align-middle">';
-							$label = s("Numéro d'Op.");
+							$label = s("#");
 							$h .= ($search ? $search->linkSort('id', $label) : $label);
 						$h .= '</th>';
 						$h .= '<th class="td-vertical-align-middle">';
@@ -362,7 +362,6 @@ class CashflowUi {
 			'description' => $eCashflow['memo'],
 			'paymentDate' => $eCashflow['date'],
 			'paymentMethod' => self::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::ACCOUNTING))),
-			'cashflow' => $eCashflow,
 			'amountIncludingVAT' => abs($eCashflow['amount']),
 		];
 
@@ -473,7 +472,6 @@ class CashflowUi {
 			'date' => $eCashflow['date'],
 			'type' => $eCashflow['type'],
 			'description' => $eCashflow['memo'],
-			'cashflow' => $eCashflow,
 		];
 
 		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $assetData, new \Collection());
@@ -519,6 +517,7 @@ class CashflowUi {
 
 		} else {
 
+			$h .= '<h3>'.s("1. Sélectionnez les écritures liées à cette opération bancaire").'</h3>';
 			$form = new \util\FormUi();
 			$h .= $form->openAjax(\company\CompanyUi::urlBank($eFarm).'/cashflow:doAttach', ['method' => 'post', 'id' => 'cashflow-doAttach']);
 
@@ -538,7 +537,6 @@ class CashflowUi {
 								$h .= '</th>';
 								$h .= '<th>'.s("Tiers").'</th>';
 								$h .= '<th>'.s("Moyen de paiement").'</th>';
-								$h .= '<th class="text-end">'.s("Total").'</th>';
 								$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
 								$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
 								$h .= '<th class="text-center">'.s("Choisir").'</th>';
@@ -553,6 +551,11 @@ class CashflowUi {
 							$eOperation->setQuickAttribute('app', 'accounting');
 
 							if($eOperation['links']->empty() === FALSE) {
+
+								$amount = $eOperation['difference'] < 1 ? '<b>' : '';
+									$amount .= \util\TextUi::money($eOperation['totalVATIncludedAmount']);
+								$amount .= $eOperation['difference'] < 1 ? '</b>' : '';
+
 								// Ajouter une ligne de résumé
 								$h .= '<tr class="border-top">';
 									$h .= '<td class="text-end">';
@@ -571,14 +574,15 @@ class CashflowUi {
 									$h .= '<td></td>';
 
 									$h .= '<td class="text-end">';
-										$h .= $eOperation['difference'] < 1 ? '<b>' : '';
-											$h .= \util\TextUi::money($eOperation['totalVATIncludedAmount']);
-										$h .= $eOperation['difference'] < 1 ? '</b>' : '';
+										if($eOperation['type'] === \journal\Operation::DEBIT) {
+											$h .= $amount;
+										}
 									$h .= '</td>';
 
-									$h .= '<td class="text-end"></td>';
-
 									$h .= '<td class="text-end">';
+										if($eOperation['type'] === \journal\Operation::CREDIT) {
+											$h .= $amount;
+										}
 									$h .= '</td>';
 
 									$h .= '<td class="text-center">';
@@ -612,10 +616,19 @@ class CashflowUi {
 				$h .= '</div>';
 
 				$h .= '<div id="cashflow-attach-difference-warning" class="util-warning-outline hide">';
-				$h .= s("Attention, le montant de l'opération bancaire ne correspond pas au total des écritures sélectionnées. Vous pouvez quand même valider.");
+					$h .= s("Attention, le montant de l'opération bancaire ne correspond pas au total des écritures sélectionnées ({span} de différence). Vous pouvez quand même valider.", ['span' => '<span id="cashflow-attach-missing-value"></span>']);
 				$h .= '</div>';
 
-				$h .= '<div class="text-end">'.$form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']).'</div>';
+				$h .= '<h3>'.s("2. Indiquez le tiers lié à cette opération bancaire").'</h3>';
+				$h .= $form->dynamicField(new \journal\Operation(), 'thirdParty', function($d) use($form) {
+					$d->autocompleteDispatch = '[data-third-party="'.$form->getId().'"]';
+					$d->attributes['data-third-party'] = $form->getId();
+					$d->default = fn($e, $property) => get('thirdParty');
+					$d->label = '';
+					$d->wrapper = 'third-party';
+				});
+
+				$h .= '<div class="text-end mt-1 mb-3">'.$form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']).'</div>';
 
 			$h .= $form->close();
 		}
@@ -638,7 +651,7 @@ class CashflowUi {
 			$h .= '</td>';
 			$h .= '<td>';
 			if($form !== NULL) {
-				$h .= encode($eOperation['account']['class'].' '.$eOperation['account']['description']).' - '.encode($eOperation['description']);
+				$h .= encode($eOperation['account']['class']).' - '.encode($eOperation['description']);
 			} else {
 				$h .= '<span class="ml-1">'.\Asset::icon('arrow-return-right', ['class' => 'mr-1']).encode($eOperation['account']['class'].' '.$eOperation['account']['description']).'</span>';
 			}
@@ -651,9 +664,8 @@ class CashflowUi {
 			$h .= '</td>';
 
 			$h .= '<td>';
-				$h .= $eOperation->quick('paymentMethod', \payment\MethodUi::getName($eOperation['paymentMethod']) ?? '<i>'.s("Non défini").'</i>');
+				$h .= \payment\MethodUi::getName($eOperation['paymentMethod']);
 			$h .= '</td>';
-			$h .= '<td class="text-end"></td>';
 
 			$h .= '<td class="text-end">';
 			$h .= match($eOperation['type']) {

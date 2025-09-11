@@ -45,6 +45,19 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
+		if($search->get('cashflowFilter') === TRUE) {
+			$model
+				->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+				->where('m2.id IS NULL');
+		}
+
+		if($search->get('cashflow')) {
+			$model
+				->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+				->where('m2.id = '.$search->get('cashflow'));
+
+		}
+
 		return $model
 			->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL)
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
@@ -53,12 +66,9 @@ class OperationLib extends OperationCrud {
 			->where(fn() => 'accountLabel LIKE "'.join('%" OR accountLabel LIKE "', $search->get('accountLabels')).'%"', if: $search->get('accountLabels'))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereDocument($search->get('document'), if: $search->get('document'))
-			->whereCashflow('=', $search->get('cashflow'), if: $search->get('cashflow'))
-			->whereCashflow(NULL, if: $search->get('cashflowFilter') === TRUE)
 			->whereType($search->get('type'), if: $search->get('type'))
 			->whereAsset($search->get('asset'), if: $search->get('asset'))
 			->whereThirdParty('=', $search->get('thirdParty'), if: $search->get('thirdParty'));
-
 
 	}
 
@@ -124,7 +134,7 @@ class OperationLib extends OperationCrud {
 	public static function getAllForJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
 		$eFinancialYear = $search->get('financialYear');
-		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC] : ['date' => SORT_ASC, 'id' => SORT_ASC];
+		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
 
 		return self::applySearch($search)
 			->select(
@@ -145,14 +155,14 @@ class OperationLib extends OperationCrud {
 				+ ['operation' => [
 					'id', 'account', 'accountLabel', 'document', 'type',
 					'thirdParty' => ['id', 'name'],
-					'description', 'amount', 'vatRate', 'cashflow', 'date',
+					'description', 'amount', 'vatRate', 'date',
 					'financialYear',
 				]]
 				+ ['account' => ['class', 'description']]
 				+ ['thirdParty' => ['id', 'name']]
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
 			)
-			->sort(['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC])
+			->sort(['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%'),
@@ -168,17 +178,18 @@ class OperationLib extends OperationCrud {
 				+ ['operation' => [
 					'id', 'account', 'accountLabel', 'document', 'type',
 					'thirdParty' => ['id', 'name'],
-					'description', 'amount', 'vatRate', 'cashflow', 'date',
+					'description', 'amount', 'vatRate', 'date',
 					'financialYear',
+					'cOperationCashflow' => OperationCashflowLib::delegateByOperation()
 				]]
 				+ ['account' => ['class', 'description']]
 				+ ['thirdParty' => ['id', 'name']]
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
 			)
-			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'id' => SORT_ASC])
+			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
 			->where(new \Sql('operation IS NOT NULL'))
-			->getCollection(NULL, NULL, ['accountLabel', 'month', 'id']);
+			->getCollection(NULL, NULL, ['accountLabel', 'month', 'm1.id']);
 
 	}
 
@@ -219,14 +230,16 @@ class OperationLib extends OperationCrud {
 
 		// Quick document update
 		if(in_array('document', $properties) === TRUE) {
-			// On rattache cette pièce comptable au cashflow + aux opérations liées
-			if($e['cashflow']->exists() === TRUE) {
-				$eCashflow = $e['cashflow'];
-				$eCashflow['document'] = $e['document'];
-				\bank\CashflowLib::update($eCashflow, ['document']);
+			// On rattache cette pièce comptable aux cashflows + aux opérations liées
+			if($e['cOperationCashflow']->notEmpty()) {
+				$cCashflow = $e['cOperationCashflow']->getColumnCollection('cashflow');
+				\bank\Cashflow::model()
+					->select('document')
+					->whereId('IN', $cCashflow->getIds())
+					->update(['document' => $e['document']]);
 				Operation::model()
 					->select('document', 'documentDate')
-					->whereCashflow('=', $e['cashflow']['id'])
+					->whereId('IN', $e['cOperationCashflow']->getColumnCollection('operation')->getIds())
 					->update(['document' => $e['document'], 'documentDate' => new \Sql('NOW()')]);
 			}
 		}
@@ -345,7 +358,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function prepareOperations(\farm\Farm $eFarm, array $input, Operation $eOperationDefault): \Collection {
+	public static function prepareOperations(\farm\Farm $eFarm, array $input, Operation $eOperationDefault, \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
@@ -353,7 +366,7 @@ class OperationLib extends OperationCrud {
 		$invoiceId = var_filter($input['invoice']['id'] ?? NULL, '?int');
 		$ePaymentMethodInvoice = var_filter($input['invoice']['paymentMethod'] ?? NULL, 'payment\Method');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
-		$isFromCashflow = ($eOperationDefault->offsetExists('cashflow') === TRUE);
+		$isFromCashflow = $eCashflow->notEmpty();
 
 		$isAccrual = $eFinancialYear->isAccrualAccounting();
 		$isCash = $eFinancialYear->isCashAccounting();
@@ -368,6 +381,7 @@ class OperationLib extends OperationCrud {
 		$cAccounts = \account\AccountLib::getByIdsWithVatAccount($accounts);
 
 		$cOperation = new \Collection();
+		$cOperationCashflow = new \Collection();
 		$properties = [
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
@@ -378,7 +392,7 @@ class OperationLib extends OperationCrud {
 
 		if($isFromCashflow === FALSE) {
 
-			$properties = array_merge($properties, ['date', 'cashflow', 'paymentDate', 'paymentMethod']);
+			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
 
 		} else {
 
@@ -435,7 +449,7 @@ class OperationLib extends OperationCrud {
 
 				// Enregistre les termes du libellé de banque pour améliorer les prédictions
 				if($isFromCashflow === TRUE) {
-					$memos = explode(' ', $eOperation['cashflow']['memo']);
+					$memos = explode(' ', $eCashflow['memo']);
 					if($eOperation['thirdParty']['memos'] === NULL) {
 						$eOperation['thirdParty']['memos'] = [];
 					}
@@ -508,6 +522,13 @@ class OperationLib extends OperationCrud {
 
 			\journal\Operation::model()->insert($eOperation);
 			$cOperation->append($eOperation);
+			if($isFromCashflow) {
+				$cOperationCashflow->append(new OperationCashflow([
+					'operation' => $eOperation,
+					'cashflow' => $eCashflow,
+					'amount' => min($eOperation['amount'], abs($eCashflow['amount']))
+				]));
+			}
 
 			// Ajout de l'entrée de compte de TVA correspondante
 			if($hasVatAccount === TRUE) {
@@ -518,13 +539,14 @@ class OperationLib extends OperationCrud {
 					$input['vatValue'][$index],
 					$isFromCashflow === TRUE
 						? [
-							'date' => $eOperationDefault['cashflow']['date'],
-							'description' => $eOperation['description'] ?? $eOperationDefault['cashflow']['memo'],
-							'cashflow' => $eOperationDefault['cashflow'],
+							'date' => $eCashflow['date'],
+							'description' => $eOperation['description'] ?? $eCashflow['memo'],
+							'cashflow' => $eCashflow,
 							'paymentMethod' => $eOperation['paymentMethod'],
 							'journalCode' => $eOperation['journalCode'],
 						]
 						: $eOperation->getArrayCopy(),
+					eCashflow: $eCashflow,
 				);
 
 				$cOperation->append($eOperationVat);
@@ -620,8 +642,9 @@ class OperationLib extends OperationCrud {
 			// Ajout de la transaction sur la classe de compte bancaire 512
 			if($isFromCashflow === TRUE) {
 
+				// Crée automatiquement l'operationCashflow correspondante
 				$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
-					$eOperationDefault['cashflow'],
+					$eCashflow,
 					$eOperationDefault,
 					$document,
 				);
@@ -642,6 +665,10 @@ class OperationLib extends OperationCrud {
 
 		}
 
+		if($cOperationCashflow->notEmpty()) {
+			OperationCashflow::model()->insert($cOperationCashflow);
+		}
+
 		if($fw->ko()) {
 			return new \Collection();
 		}
@@ -649,7 +676,7 @@ class OperationLib extends OperationCrud {
 		return $cOperation;
 	}
 
-	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues): Operation {
+	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues, \bank\Cashflow $eCashflow): Operation {
 
 		$values = [
 			...$defaultValues,
@@ -663,9 +690,6 @@ class OperationLib extends OperationCrud {
 			'amount' => abs($vatValue),
 			'financialYear' => $eOperationLinked['financialYear']['id'],
 		];
-		if($eOperationLinked['cashflow']->exists() === TRUE) {
-			$values['cashflow'] = $eOperationLinked['cashflow']['id'];
-		}
 
 		$eOperationVat = new Operation();
 
@@ -674,7 +698,7 @@ class OperationLib extends OperationCrud {
 		$eOperationVat->build(
 			[
 				'financialYear',
-				'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'journalCode',
+				'date', 'account', 'accountLabel', 'description', 'document', 'journalCode',
 				'thirdParty', 'type', 'amount', 'operation',
 				'paymentDate', 'paymentMethod',
 			],
@@ -689,6 +713,18 @@ class OperationLib extends OperationCrud {
 		$fw->validate();
 
 		Operation::model()->insert($eOperationVat);
+
+		if($eCashflow->notEmpty()) {
+
+			$eOperationCashflow = new OperationCashflow([
+				'operation' => $eOperationVat,
+				'cashflow' => $eCashflow,
+				'amount' => min($eOperationVat['amount'], abs($eCashflow['amount'])),
+			]);
+
+			OperationCashflow::model()->insert($eOperationCashflow);
+
+		}
 
 		return $eOperationVat;
 
@@ -713,6 +749,10 @@ class OperationLib extends OperationCrud {
 
 		\journal\Operation::model()->commit();
 
+		OperationCashflow::model()
+			->whereOperation($e)
+			->delete();
+
 		\account\LogLib::save('delete', 'Operation', ['id' => $e['id']]);
 
 	}
@@ -734,12 +774,13 @@ class OperationLib extends OperationCrud {
 
 		$properties = Operation::getSelection()
 			+ ['account' => ['class', 'description']]
-			+ ['thirdParty' => ['name']];
+			+ ['thirdParty' => \account\ThirdParty::getSelection()];
 
 		$cOperation = self::addOpenFinancialYearCondition()
 			->select($properties)
 			->whereCashflow(NULL)
 			->whereOperation(NULL)
+			->sort(['date' => SORT_ASC])
 			->getCollection();
 
 		$cOperationLinked = $cOperation->empty() === FALSE ? Operation::model()
@@ -762,8 +803,6 @@ class OperationLib extends OperationCrud {
 			$eOperation['difference'] = abs($eOperation['totalVATIncludedAmount'] - $amount);
 		}
 
-		$cOperation->sort(['difference' => SORT_ASC]);
-
 		return $cOperation;
 
 	}
@@ -776,11 +815,18 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function attachIdsToCashflow(\bank\Cashflow $eCashflow, array $operationIds, \Collection $cPaymentMethod): int {
+	public static function attachIdsToCashflow(\bank\Cashflow $eCashflow, array $operationIds, \account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): int {
 
-		$properties = ['cashflow', 'updatedAt'];
+		// Get the operations AND linked Operations
+		$cOperation = Operation::model()
+			->select(Operation::getSelection())
+			->or(
+				fn() => $this->whereId('IN', $operationIds),
+				fn() => $this->whereOperation('IN', $operationIds),
+			)
+			->getCollection();
+		$properties = ['updatedAt', 'paymentDate', 'paymentMethod'];
 		$eOperation = new Operation([
-			'cashflow' => $eCashflow,
 			'updatedAt' => Operation::model()->now(),
 			'paymentDate' => $eCashflow['date'],
 			'paymentMethod' => new \bank\CashflowUi()::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod),
@@ -788,20 +834,27 @@ class OperationLib extends OperationCrud {
 
 		$updated = self::addOpenFinancialYearCondition()
 			->select($properties)
-			->whereId('IN', $operationIds)
-			->whereCashflow(NULL)
+			->whereId('IN', $cOperation->getIds())
 			->update($eOperation);
 
-		// Also update linked operations
-		Operation::model()
-			->select($properties)
-			->whereOperation('IN', $operationIds)
-			->whereCashflow(NULL)
-			->update($eOperation);
+		// Create OperationCashflow entries
+		$cOperationCashflow = new \Collection();
 
-		// Create Bank line
-		$eOperation = OperationLib::getById(first($operationIds));
-		OperationLib::createBankOperationFromCashflow($eCashflow, $eOperation);
+		foreach($cOperation as $eOperation) {
+			$cOperationCashflow->append(new OperationCashflow([
+				'operation' => $eOperation,
+				'cashflow' => $eCashflow,
+				'amount' => min($eOperation['amount'], abs($eCashflow['amount'])),
+			]));
+		}
+		OperationCashflow::model()->insert($cOperationCashflow);
+
+		// Create Bank line with the good third party
+		OperationLib::createBankOperationFromCashflow($eCashflow, new Operation([
+			'thirdParty' => $eThirdParty,
+			'paymentMethod' => $eOperation['paymentMethod'],
+			'financialYear' => $eOperation['financialYear'],
+		]));
 
 		return $updated;
 	}
@@ -820,7 +873,6 @@ class OperationLib extends OperationCrud {
 
 		$values = [
 			'date' => $eCashflow['date'],
-			'cashflow' => $eCashflow['id'] ?? NULL,
 			'account' => $eAccountBank['id'] ?? NULL,
 			'accountLabel' => $label,
 			'description' => $eCashflow['memo'],
@@ -842,7 +894,7 @@ class OperationLib extends OperationCrud {
 		$fw = new \FailWatch();
 
 		$eOperationBank->build([
-			'financialYear', 'cashflow', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
+			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
 			'operation', 'paymentDate', 'paymentMethod', 'journalCode',
 		], $values, new \Properties('create'));
 
@@ -854,11 +906,19 @@ class OperationLib extends OperationCrud {
 
 		\journal\Operation::model()->insert($eOperationBank);
 
+		$eOperationCashflow = new OperationCashflow([
+			'operation' => $eOperationBank,
+			'cashflow' => $eCashflow,
+			'amount' => min($eOperationBank['amount'], abs($eCashflow['amount'])),
+		]);
+
+		OperationCashflow::model()->insert($eOperationCashflow);
+
 		return $eOperationBank;
 
 	}
 
-	public static function createFromValues(array $values): void {
+	public static function createFromValues(array $values, \bank\Cashflow $eCashflow = new \bank\Cashflow()): void {
 
 		$eOperation = new Operation();
 
@@ -867,7 +927,7 @@ class OperationLib extends OperationCrud {
 		$eOperation->build(
 			[
 				'financialYear', 'date',
-				'cashflow', 'operation', 'asset', 'thirdParty',
+				'operation', 'asset', 'thirdParty',
 				'account', 'accountLabel',
 				'description', 'type', 'amount',
 				'document', 'documentDate',
@@ -882,13 +942,21 @@ class OperationLib extends OperationCrud {
 			$eOperation['asset'] = $values['asset'];
 		}
 
-		if(($values['cashflow'] ?? NULL) !== NULL) {
-			$eOperation['cashflow'] = $values['cashflow'];
-		}
-
 		$fw->validate();
 
 		Operation::model()->insert($eOperation);
+
+		if($eCashflow->notEmpty()) {
+
+			$eOperationCashflow = new OperationCashflow([
+				'operation' => $eOperation,
+				'cashflow' => $eCashflow,
+				'amount' => min($eOperation['amount'], abs($eCashflow['amount'])),
+			]);
+
+			OperationCashflow::model()->insert($eOperationCashflow);
+
+		}
 	}
 
 	public static function getByCashflow(\bank\Cashflow $eCashflow): \Collection {
@@ -995,7 +1063,7 @@ class OperationLib extends OperationCrud {
 
 		$cOperation = self::applySearch($search)
 			->select('id')
-			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
+			->sort(['date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->getCollection();
 
 		$number = 0;
@@ -1021,7 +1089,7 @@ class OperationLib extends OperationCrud {
 				fn() => $this->whereLetteringStatus(NULL),
 				fn() => $this->whereLetteringStatus('!=', Operation::TOTAL),
 			)
-			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
+			->sort(['date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->getCollection();
 
 	}

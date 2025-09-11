@@ -367,7 +367,7 @@ class OperationUi {
 		\Asset::js('journal', 'operation.js');
 
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
-		$isFromCashflow = (isset($defaultValues['cashflow']) and $defaultValues['cashflow']->exists() === TRUE);
+		$isFromCashflow = $eOperation['cOperationCashflow']->notEmpty();
 
 		$cAssetGrant = $assetData['grant'] ?? new \Collection();
 		$cAssetToLinkToGrant = $assetData['asset'] ?? new \Collection();

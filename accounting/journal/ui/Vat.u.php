@@ -92,6 +92,9 @@ Class VatUi {
 			$h .= '<td>';
 			$h .= '</td>';
 
+			$h .= '<td>';
+			$h .= '</td>';
+
 			$h .= '<td class="text-end highlight-stick-right">';
 			$h .= \util\TextUi::money($totals['withVat']);
 			$h .= '</td>';
@@ -175,7 +178,7 @@ Class VatUi {
 
 			$h .= new JournalUi()->getTableContainer(
 				$eFarm, $cOperationWaiting, $eFinancialYear,
-				hide: ['cashflow', 'actions', 'document'],
+				hide: ['actions', 'document'],
 				show: ['vatAdjustement', 'period' => $eFinancialYear['lastPeriod']],
 			);
 
@@ -308,23 +311,19 @@ Class VatUi {
 							$label = s("Date");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('date', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th><span title="'.s("Numéro d'opération bancaire").'">'.s("Op.").'</span></th>';
-						$h .= '<th>'.s("Tiers").'</th>';
-						$h .= '<th class="td-min-content text-end rowspaned-center" rowspan="2">'.s("Taux TVA").'</th>';
-						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center" rowspan="2">'.s("Montant (TTC)").'</th>';
-						$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center" rowspan="2">'.s("Montant (HT)").'</th>';
-						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center" rowspan="2">'.s("TVA").'</th>';
-					$h .= '</tr>';
-
-					$h .= '<tr>';
-						$h .= '<th colspan="2">';
+						$h .= '<th>';
 							$label = s("Pièce comptable");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('document', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th colspan="2">';
+						$h .= '<th>';
 							$label = s("Description");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('description', $label) : $label);
 						$h .= '</th>';
+						$h .= '<th>'.s("Tiers").'</th>';
+						$h .= '<th class="td-min-content text-end rowspaned-center">'.s("Taux TVA").'</th>';
+						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("Montant (TTC)").'</th>';
+						$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center">'.s("Montant (HT)").'</th>';
+						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("TVA").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -371,11 +370,17 @@ Class VatUi {
 								$h .= '</td>';
 
 								$h .= '<td>';
-								if($eOperationInitial['cashflow']->exists() === TRUE) {
-									$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&cashflow='.$eOperationInitial['cashflow']['id'].'" title="'.s("Voir les écritures liées à cette opération bancaire").'">'.encode($eOperationInitial['cashflow']['id']).'</a>';
-								} else {
-									$h .= '';
-								}
+									$h .= '<div class="operation-info">';
+										if($eOperationInitial['document'] !== NULL) {
+											$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+										}
+									$h .= '</div>';
+								$h .= '</td>';
+
+								$h .= '<td class="td-description">';
+									$h .= '<div class="description">';
+										$h .= encode($eOperationInitial['description']);
+									$h .= '</div>';
 								$h .= '</td>';
 
 								$h .= '<td>';
@@ -388,37 +393,20 @@ Class VatUi {
 										$h .= $eOperationInitial['vatRate'];
 								$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
 										$h .= \util\TextUi::money($multiplyer * ($eOperationInitial['amount'] + $eOperation['amount']));
 								$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
 										$h .= \util\TextUi::money($multiplyer * $eOperationInitial['amount']);
 								$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top" rowspan="2">';
+								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
 										$h .= \util\TextUi::money($multiplyer * $eOperation['amount']);
 								$h .= '</td>';
 
 							$h .= '</tr>';
 
-							$h .= '<tr class="td-padding-xs">';
-
-								$h .= '<td colspan="2">';
-									$h .= '<div class="operation-info">';
-										if($eOperationInitial['document'] !== NULL) {
-											$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
-										}
-									$h .= '</div>';
-								$h .= '</td>';
-
-								$h .= '<td colspan="2" class="td-description">';
-									$h .= '<div class="description">';
-										$h .= encode($eOperationInitial['description']);
-									$h .= '</div>';
-								$h .= '</td>';
-
-							$h .= '</tr>';
 						$h .= '</tbody>';
 					}
 

@@ -250,8 +250,11 @@ class CashflowAttach {
 
         const cashflowAmount = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
 
+        const difference = cashflowAmount - total;
+
         if(qsa('input[type="checkbox"][name="operation[]"]:checked').length > 0 && Math.abs(cashflowAmount) !== Math.abs(total)) {
             qs('#cashflow-attach-difference-warning').classList.remove('hide');
+            qs('#cashflow-attach-missing-value').innerHTML = money(difference);
         } else {
             qs('#cashflow-attach-difference-warning').classList.add('hide');
         }

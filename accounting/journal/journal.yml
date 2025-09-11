@@ -49,7 +49,6 @@ Operation:
   # Une opération est toujours HT
   amount: decimal(8, 2)
   type: enum(DEBIT, CREDIT)
-  cashflow: ?bank\Cashflow
   vatRate: decimal(5, 2) = 0.00
   vatAccount: ?account\Account
   # Opération à laquelle celle-ci est liée (ex: opération de TVA reliée à une autre opération)
@@ -69,6 +68,19 @@ Operation:
   INDEX: [
     ["document"],
     ["cashflow"]
+  ]
+
+OperationCashflow:
+  id: serial32
+  operation: journal\Operation
+  cashflow: journal\Operation
+  amount: decimal(8, 2)
+  INDEX: [
+    ["operation"],
+    ["cashflow"]
+  ]
+  UNIQUE: [
+    ["operation", "cashflow"]
   ]
 
 Stock:

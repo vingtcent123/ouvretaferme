@@ -93,9 +93,8 @@ new \bank\CashflowPage(
 		}
 
 		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation([
-			'cashflow' => $data->eCashflow,
 			'date' => $data->eCashflow['date'],
-		]));
+		]), eCashflow: $data->eCashflow);
 
 		if($cOperation->empty() === TRUE) {
 			\Fail::log('Cashflow::allocate.noOperation');
@@ -142,8 +141,9 @@ new \bank\CashflowPage(
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
 
-		\bank\CashflowLib::attach($data->eCashflow, POST('operation', 'array'), $data->cPaymentMethod);
+		\bank\CashflowLib::attach($data->eCashflow, POST('operation', 'array'), $eThirdParty, $data->cPaymentMethod);
 
 		$fw->validate();
 

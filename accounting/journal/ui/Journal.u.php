@@ -316,6 +316,13 @@ class JournalUi {
 								$h .= '<td class="td-vertical-align-top">';
 									$h .= '<div class="journal-operation-actions">';
 										$h .= '<div class="journal-operation-action-icon">';
+											if($eOperation['cOperationCashflow']->notEmpty()) {
+												$h .= '<span title="'.s("Écriture rattachée à une opération bancaire").'">'.\Asset::icon('piggy-bank').'</a>';
+											} else {
+												$h .= '';
+											}
+										$h .= '</div>';
+										$h .= '<div class="journal-operation-action-icon">';
 											if($eOperation['document'] !== NULL) {
 												$h .= '<span title="'.s("Pièce comptable : {document}", ['document' => encode($eOperation['document'])]).'">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
 											} else {
@@ -381,7 +388,7 @@ class JournalUi {
 			$h .= '<div class="dropdown-divider"></div>';
 
 			// ACTION "SUPPRIMER"
-			if($eOperation['cashflow']->exists() === FALSE) {
+			if($eOperation['cOperationCashflow']->notEmpty()) {
 
 				// Cette opération est liée à une autre : on ne peut pas la supprimer.
 				if($eOperation['operation']->exists() === TRUE) {
