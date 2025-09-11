@@ -190,7 +190,7 @@ class OperationLib extends OperationCrud {
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
 			->where(new \Sql('operation IS NOT NULL'))
-			->getCollection(NULL, NULL, ['accountLabel', 'month', 'm1.id']);
+			->getCollection(NULL, NULL, ['accountLabel', 'month', NULL]);
 
 	}
 
