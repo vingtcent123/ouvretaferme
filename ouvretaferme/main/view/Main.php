@@ -76,10 +76,6 @@ class MainTemplate extends BaseTemplate {
 				$h .= $stream;
 			}
 
-			if($this->data->browserObsolete) {
-				$h .= '<div class="util-box-warning util-box-sticked">'.$this->getWarningObsoleteBrowser().'</div>';
-			}
-
 			return $h;
 
 		}
@@ -245,6 +241,10 @@ class MainTemplate extends BaseTemplate {
 			$this->data->logInExternal !== NULL
 		) {
 			$h .= new user\UserUi()->logOutExternal($this->data->logInExternal[0]);
+		}
+
+		if($this->data->browserObsolete) {
+			$h .= '<div class="util-box-warning util-box-sticked">'.$this->getWarningObsoleteBrowser().'</div>';
 		}
 
 		return $h;

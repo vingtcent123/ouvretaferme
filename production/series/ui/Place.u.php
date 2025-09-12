@@ -590,7 +590,7 @@ class PlaceUi {
 			return '';
 		}
 
-		$totalHeight = (count($lines) * 2 + (count($lines) - 1) * 0.3 + 0.6).'rem';
+		$totalHeight = (count($lines) * 2 + (count($lines) - 1) * 0.3 + 0.8).'rem';
 
 		$h = '<div class="place-grid-series-timeline-lines" style="height: '.$totalHeight.'">';
 
@@ -612,8 +612,8 @@ class PlaceUi {
 
 					$top = match($key) {
 
-						0 => '0.3rem',
-						default => '0.3rem + ('.$key.' * (2rem + 0.3rem))'
+						0 => '0.4rem',
+						default => '0.4rem + ('.$key.' * (2rem + 0.3rem))'
 
 					};
 

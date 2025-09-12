@@ -95,6 +95,21 @@ div.series-season-month:last-child {
 	border-right-color: transparent;
 }
 
+div.series-season-weeks {
+	display: grid;
+	font-size: 0.6rem;
+	text-align: center;
+}
+
+div.series-season-weeks > * {
+	letter-spacing: -0.5px;
+	border-right: 1px dashed var(--border);
+}
+
+div.series-season-weeks > *:last-child {
+	border-right-color: transparent;
+}
+
 div.series-grid-now {
 	position: absolute;
 	border-right: 1px solid var(--secondary);

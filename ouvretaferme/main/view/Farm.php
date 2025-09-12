@@ -134,7 +134,11 @@ class FarmTemplate extends MainTemplate {
 			if($this->data->tip) {
 				$h .= new \farm\TipUi()->get($this->data->eFarm, $this->data->tip, $this->data->tipNavigation);
 			}
-			$h .= parent::getMain($stream);
+			if($this->mainContainer) {
+				$h .= '<div class="container farm-template-main-container">'.$stream.'</div>';
+			} else {
+				$h .= $stream;
+			}
 
 			return $h;
 

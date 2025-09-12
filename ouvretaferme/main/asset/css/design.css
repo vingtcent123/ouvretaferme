@@ -314,12 +314,12 @@ body[data-template~="panel"] nav {
 
 /* Header */
 body[data-template~="default"] header {
-	padding: 1.5rem 0;
+	padding: 1.5rem 0 2.5rem;
 }
 
 @media (min-width: 1100px) and (min-height: 650px) {
 
-	body[data-template~="farm"] header {
+	body[data-template~="farm"] > header {
 		top: var(--mainNav);
 	}
 
@@ -333,13 +333,13 @@ body[data-template~="default"] header {
 
 @media (max-width: 1099px), (max-height: 649px) {
 
-	body[data-template~="farm"] header {
+	body[data-template~="farm"] > header {
 		top: 0;
 	}
 
 }
 
-body[data-template~="farm"] main > div.container:not(:first-child) {
+body[data-template~="farm"] > main > div.container:not(:first-child) {
 	margin-top: 0;
 }
 
@@ -466,10 +466,6 @@ body > nav .nav-user > *:not(:first-child) {
 /* Main */
 main {
 	flex-grow: 1;
-}
-
-main > div.container {
-	margin-top: 1.5rem;
 }
 
 /* Footer */

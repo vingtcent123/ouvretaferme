@@ -55,7 +55,23 @@ class CultivationUi {
 					$h .= '<div class="series-season-month series-season-month-external">'.$months[$i].'</div>';
 				}
 			}
+/*
+			$weeks = new PlaceUi()->getWeeksInBounds($eFarm, $season);
 
+			$h .= '<div class="series-season-weeks" style="grid-column: span '.$eFarm['calendarMonths'].'; grid-template-columns: repeat('.count($weeks).', 1fr)">';
+
+				$weeks = new PlaceUi()->getWeeksInBounds($eFarm, $season);
+				[$startTs, $stopTs] = new PlaceUi()->getBounds($eFarm, $season);
+				$startWeekTs = strtotime(week_date_starts($weeks[0]));
+
+				$gap = ($startWeekTs - $startTs) / ($stopTs - $startTs) * 100;
+
+				foreach($weeks as $week) {
+					$h .= '<div>'.week_number($week).'</div>';
+				}
+
+			$h .= '</div>';
+*/
 		$h .= '</div>';
 
 		return $h;
@@ -66,8 +82,8 @@ class CultivationUi {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
+	//	return $this->getWeeklyListGrid($eFarm, $season);
 		return $this->getMonthlyListGrid($eFarm, $season);
-		return $this->getWeeklyListGrid($eFarm, $season);
 
 	}
 

@@ -31,10 +31,6 @@ class BedUi {
 
 			$h .= '<div class="util-grid-header bed-item-header">'.s("Planche").'</div>';
 
-			if($view === \farm\Farmer::PLAN) {
-				$h .= '<div class="util-grid-header bed-item-header"></div>';
-			}
-
 			$h .= match($view) {
 				\farm\Farmer::PLAN => $this->displayHeaderBySeason($eFarm, $season),
 				\farm\Farmer::ROTATION => $this->displayHeaderByRotation($season, $eFarm['rotationYears'])
@@ -91,7 +87,7 @@ class BedUi {
 
 				if($eBed['plotFill']) {
 
-					$h .= '<div class="bed-item-bed bed-item-bed-fill">';
+					$h .= '<div class="bed-item-bed">';
 						$h .= s("Surface libre");
 					$h .= '</div>';
 
@@ -99,8 +95,13 @@ class BedUi {
 
 					$h .= '<div class="bed-item-bed">';
 
-						$h .= '<div>';
-							$h .= '<a data-dropdown="bottom-start">'.encode($eBed['name']).'</a>';
+						$h .= '<div class="bed-item-name">';
+							$h .= '<a data-dropdown="bottom-start">';
+								$h .= encode($eBed['name']);
+								if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
+									$h .= '  '.$eBed->getGreenhouseIcon();
+								}
+							$h .= '</a>';
 
 							$h .= '<div class="dropdown-list bg-primary">';
 								$h .= '<div class="dropdown-title">';
@@ -109,20 +110,16 @@ class BedUi {
 								$h .= '</div>';
 								$h .= '<a href="/map/bed:swapSeries?id='.$eBed['id'].'&season='.$season.'" class="dropdown-item">'.s("Échanger les séries").'</a>';
 							$h .= '</div>';
+
 						$h .= '</div>';
 
-						if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
-							$h .= $eBed->getGreenhouseIcon();
+						if($view === \farm\Farmer::PLAN) {
+							$h .= '<div class="bed-item-size" title="'.s("{area} m²", $eBed).'">';
+								$h .= s("{length} mL", $eBed).' '.s("x {width} cm", $eBed);
+							$h .= '</div>';
 						}
 
 					$h .= '</div>';
-
-					if($view === \farm\Farmer::PLAN) {
-						$h .= '<div class="bed-item-size" title="'.s("{area} m²", $eBed).'">';
-							$h .= s("{length} mL", $eBed);
-							$h .= ' <span class="hide-lg-down">'.s("x {width} cm", $eBed).'</span>';
-						$h .= '</div>';
-					}
 
 				}
 

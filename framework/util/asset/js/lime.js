@@ -18,6 +18,14 @@ if('scrollRestoration' in history) { // what an amazing feature!
 	history.scrollRestoration = 'manual';
 }
 
+function calculateScrollbarWidth() {
+  document.documentElement.style.setProperty('--scrollbar-width', (window.innerWidth - document.documentElement.clientWidth) + "px");
+}
+
+window.addEventListener('resize', calculateScrollbarWidth, false);
+document.addEventListener('DOMContentLoaded', calculateScrollbarWidth, false);
+window.addEventListener('load', calculateScrollbarWidth);
+
 document.addEventListener("keydown", e => {
 
     if(e.key === 'Backspace' && e.target.matches('input, textarea, [contenteditable="true"]') === false) {

@@ -58,7 +58,7 @@ class ZoneUi {
 
 		$h = '<div class="tabs-h" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
 
-			$h .= '<div class="tabs-item util-print-hide">';
+			$h .= '<div class="main-sticky-left tabs-item util-print-hide">';
 
 				foreach($cZone as $eZone) {
 
@@ -105,7 +105,7 @@ class ZoneUi {
 
 		$cPlot = $eZone['cPlot'];
 
-		$h = '<div class="zone-item" id="zone-item-'.$eZone['id'].'" data-ref="zone" data-name="'.encode($eZone['name']).'">';
+		$h = '<div class="zone-item main-sticky-left" id="zone-item-'.$eZone['id'].'" data-ref="zone" data-name="'.encode($eZone['name']).'">';
 
 			$h .= '<div class="util-title">';
 				$h .= '<h2>';

@@ -15,7 +15,7 @@ class WidgetLib {
 
 		if($eWebpage['content'] !== NULL) {
 
-			$found = preg_match_all('/\@('.implode('|', self::getList()).')(=([0-9]+))?/si', $eWebpage['content'], $matches);
+			$found = preg_match_all('/\@('.implode('|', self::getList()).')(=([0-9]+))?/s', $eWebpage['content'], $matches);
 
 			for($i = 0; $i < $found; $i++) {
 

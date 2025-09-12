@@ -34,7 +34,7 @@ class PlotUi {
 
 				$h .= '<div>';
 
-					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-item" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
+					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-item main-sticky-left" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
 
 						$h .= '<h4 class="plot-item-title">';
 							$h .= s("Jardin {value}", encode($ePlot['name']));
@@ -134,7 +134,7 @@ class PlotUi {
 
 			$h .= '<div class="plot-item-wrapper">';
 
-				$h .= '<div class="plot-item text-center">';
+				$h .= '<div class="plot-item main-sticky-left text-center">';
 					if($cPlot->count() > 1) {
 						$label = s("Ajouter un autre jardin à cette parcelle");
 					} else {

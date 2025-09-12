@@ -175,7 +175,7 @@ body[data-template^="farm"] header a:hover {
 	color: white;
 }
 
-body[data-template~="farm"] main .container.farm-template-main-title.farm-template-main-title-with-year > div.farm-template-main-content {
+body[data-template~="farm"] > main .container.farm-template-main-title.farm-template-main-title-with-year > div.farm-template-main-content {
 	margin-top: .5rem;
 }
 
@@ -240,101 +240,100 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 
 	}
 
-	body[data-template~="farm"] header {
+	body[data-template~="farm"] > header {
 		grid-area: header;
 		position: fixed;
 		width: var(--nav-width);
 		top: var(--nav-height);
 		height: calc(100vh - var(--nav-height));
+		z-index: 20;
 	}
 
-	body[data-template~="farm"] main  {
+	body[data-template~="farm"] > main  {
 		grid-area: main;
 	}
 
-	body[data-template~="farm"] main .container {
+	body[data-template~="farm"] > main .container {
 		margin-left: 0;
 		margin-right: 0;
 		padding-left: var(--container-padding);
 		padding-right: var(--container-padding);
 	}
 
-	@media (max-width: 1199px) {
-
-		body[data-template~="farm"] main .container {
-			padding-left: 1rem;
-			padding-right: 1rem;
-		}
-
-	}
-
-	body[data-template~="farm"] main .container.farm-template-main-title {
+	body[data-template~="farm"] > main .container.farm-template-main-title {
 		height: var(--nav-height);
-		margin-bottom: 1rem;
-		margin-top: 0;
-		position: relative;
+		position: sticky;
+		left: var(--nav-width);
+		width: calc(100vw - var(--nav-width) - var(--scrollbar-width) - 1px);
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title:not(.farm-template-main-title-with-year) {
+	body[data-template~="farm"] > main .container.farm-template-main-container {
+		padding-top: 1rem;
+	}
+
+	body[data-template~="farm"] > main .container.farm-template-main-title:not(.farm-template-main-title-with-year) {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title.farm-template-main-title-with-year {
+	body[data-template~="farm"] > main .container.farm-template-main-title.farm-template-main-title-with-year {
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-template-rows: auto 1fr;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title > div.farm-template-main-content {
+	body[data-template~="farm"] > main .container.farm-template-main-title > div.farm-template-main-content {
 		display: flex;
 		align-items: center;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title > div.farm-template-main-content > div {
+	body[data-template~="farm"] > main .container.farm-template-main-title > div.farm-template-main-content > div {
 		width: 100%;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title > div.farm-template-main-content > div > *:last-child {
+	body[data-template~="farm"] > main .container.farm-template-main-title > div.farm-template-main-content > div > *:last-child {
 		margin-bottom: 0;
 	}
 
-	body[data-template~="farm"] footer  {
+	body[data-template~="farm"] > footer  {
 		grid-area: footer;
 	}
 
-	body[data-template~="farm"] nav {
+	body[data-template~="farm"] > nav {
 		grid-area: nav;
+		position: fixed;
+		height: var(--nav-height);
 		top: 0;
 		width: var(--nav-width);
+		z-index: 20;
 	}
 
-	body[data-template~="farm"] nav .nav-wrapper.container {
+	body[data-template~="farm"] > nav .nav-wrapper.container {
 		padding: 0 var(--nav-padding);
 		display: flex;
 		justify-content: center;
 		align-items: center;
 	}
 
-	body[data-template~="farm"] nav .nav-wrapper {
+	body[data-template~="farm"] > nav .nav-wrapper {
 		display: block;
 		height: var(--nav-height);
 		min-height: var(--nav-height);
 	}
 
-	body[data-template~="farm"] nav .nav-actions {
+	body[data-template~="farm"] > nav .nav-actions {
 		position: absolute;
 		top: 0;
 		left: 0;
 		right: 0;
 	}
 
-	body[data-template~="farm"] nav .nav-actions .nav-item {
+	body[data-template~="farm"] > nav .nav-actions .nav-item {
 		padding: 1rem var(--nav-padding);
 	}
 
-	body[data-template~="farm"] nav .nav-actions .nav-user .media-vignette-image {
+	body[data-template~="farm"] > nav .nav-actions .nav-user .media-vignette-image {
 		border: 1px solid white;
 	}
 
@@ -512,6 +511,12 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		display: none;
 	}
 
+	.main-sticky-left {
+		position: sticky;
+		left: calc(var(--nav-width) + var(--container-padding));
+		width: calc(100vw - var(--nav-width) - var(--container-padding) * 2 - var(--scrollbar-width) - 1px);
+	}
+
 }
 
 @media (max-width: 1099px), (max-height: 649px) {
@@ -520,12 +525,12 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 		--nav-width: 0;
 	}
 
-	body[data-template~="farm"] header {
+	body[data-template~="farm"] > header {
 		position: sticky;
 		z-index: 500;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title {
+	body[data-template~="farm"] > main .container.farm-template-main-title {
 		background: linear-gradient(to bottom, var(--background) 0, var(--background) 50%, transparent 100%);
 		margin-top: 0;
 		padding-top: 1rem;
@@ -536,17 +541,17 @@ body[data-template~="farm"] main .container.farm-template-main-title.farm-templa
 
 	@media print {
 
-		body[data-template~="farm"] main .container.farm-template-main-title {
+		body[data-template~="farm"] > main .container.farm-template-main-title {
 			background: transparent;
 		}
 
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title > div > *:last-child {
+	body[data-template~="farm"] > main .container.farm-template-main-title > div > *:last-child {
 		margin-bottom: 0;
 	}
 
-	body[data-template~="farm"] main .container.farm-template-main-title + .container {
+	body[data-template~="farm"] > main .container.farm-template-main-title + .container {
 		margin-top: 1.5rem;
 	}
 
