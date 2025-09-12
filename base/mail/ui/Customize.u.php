@@ -175,7 +175,7 @@ class CustomizeUi {
 				if($eSaleExample['shop']['hasPayment'] === FALSE) {
 					$variables['payment'] = '<i>'.s("Vide car le choix du moyen de paiement est désactivé sur la boutique").'</i>';
 				} else {
-					$variables['payment'] = $eSaleExample['paymentMethod']['name'];
+					$variables['payment'] = \payment\MethodUi::getName($eSaleExample['cPayment']->first()['method']);
 				}
 
 				return $variables;
