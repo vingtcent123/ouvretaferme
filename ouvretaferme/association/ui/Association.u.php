@@ -207,7 +207,7 @@ Cordialement,
 					$h .= '</p>';
 
 					$h .= '<p>';
-						$h .= s("Moyen de paiement : {paymentMethod}", ['paymentMethod' => encode($eHistory['sale']['paymentMethod']['name'])]);
+						$h .= s("Moyen de paiement : {paymentMethod}", ['paymentMethod' => \payment\MethodUi::getName($eHistory['sale']['cPayment']->first()['method'])]);
 					$h .= '</p>';
 
 				$h .= '</div>';
