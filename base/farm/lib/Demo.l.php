@@ -26,6 +26,7 @@ class DemoLib {
 		'bank\Import',
 		'journal\Lettering',
 		'journal\Operation',
+		'journal\OperationCashflow',
 		'farm\Invite',
 		'farm\Tip',
 		'payment\StripeFarm',
