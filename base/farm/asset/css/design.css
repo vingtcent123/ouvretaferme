@@ -265,6 +265,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		position: sticky;
 		left: var(--nav-width);
 		width: calc(100vw - var(--nav-width) - var(--scrollbar-width) - 1px);
+		z-index: 20;
 	}
 
 	body[data-template~="farm"] > main .container.farm-template-main-container {
@@ -298,6 +299,13 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 
 	body[data-template~="farm"] > footer  {
 		grid-area: footer;
+	}
+
+	body[data-template~="farm"] > footer .footer-content  {
+		position: sticky;
+		left: var(--nav-width);
+		width: calc(100vw - var(--nav-width) - var(--scrollbar-width) - 1px);
+		z-index: 20;
 	}
 
 	body[data-template~="farm"] > nav {
@@ -515,6 +523,24 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		position: sticky;
 		left: calc(var(--nav-width) + var(--container-padding));
 		width: calc(100vw - var(--nav-width) - var(--container-padding) * 2 - var(--scrollbar-width) - 1px);
+	}
+
+	.main-sticky-overlay-left,
+	.main-sticky-overlay-right {
+		width: var(--container-padding);
+		background-color: var(--background-body);
+		top: 0;
+		height: 100vh;
+		position: fixed;
+		z-index: 19;
+	}
+
+	.main-sticky-overlay-left {
+		left: var(--nav-width);
+	}
+
+	.main-sticky-overlay-right {
+		right: 0;
 	}
 
 }

@@ -32,17 +32,20 @@ div.bed-item-header {
 	padding-top: 0.5rem;
 }
 
-div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even) {
+div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even),
+div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even) .bed-item-bed {
 	background-color: white;
 }
 
-div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(odd) {
+div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(odd),
+div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(odd) .bed-item-bed {
 	background-color: var(--background-odd);
 }
 
 div.bed-item-grid-plan:not(.bed-item-grid-header):hover,
+div.bed-item-grid-plan:not(.bed-item-grid-header):hover .bed-item-bed,
 div.bed-item-grid-rotation:not(.bed-item-grid-header):hover {
-	background-color: #88888820;
+	background-color: var(--background);
 	transition: background-color 0.25s;
 }
 
@@ -52,12 +55,12 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 }
 
 div.bed-item-grid-plan {
-	grid-template-columns: 12rem 1fr;
+	grid-template-columns: 10rem 1fr;
 	align-items: center;
 }
 
 div.bed-item-wrapper div.series-grid {
-	left: 12rem;
+	left: 10rem;
 	margin-left: 1rem;
 }
 
@@ -80,11 +83,11 @@ div.bed-item-grid-rotation-2 {
 @media (max-width: 1199px) {
 
 	div.bed-item-grid-plan {
-		grid-template-columns: 10rem 1fr;
+		grid-template-columns: 8rem 1fr;
 	}
 
 	div.bed-item-wrapper div.series-grid {
-		left: 10rem;
+		left: 8rem;
 	}
 
 }
@@ -92,27 +95,48 @@ div.bed-item-grid-rotation-2 {
 @media (max-width: 768px) {
 
 	div.bed-item-grid-rotation-5 {
-		grid-template-columns: 1fr repeat(5, 1fr);
+		grid-template-columns: 8rem repeat(5, 1fr);
 	}
 
 	div.bed-item-grid-rotation-4 {
-		grid-template-columns: 1fr repeat(4, 1fr);
+		grid-template-columns: 8rem repeat(4, 1fr);
 	}
 
 	div.bed-item-grid-rotation-3 {
-		grid-template-columns: 1fr repeat(3, 1fr);
+		grid-template-columns: 8rem repeat(3, 1fr);
 	}
 
 	div.bed-item-grid-rotation-2 {
-		grid-template-columns: 1fr repeat(2, 1fr);
+		grid-template-columns: 8rem repeat(2, 1fr);
 	}
 
 }
 
 div.bed-item-grid .bed-item-bed {
 	line-height: 1;
+	align-self: stretch;
 	overflow: hidden;
-	max-height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+div.bed-item-grid .bed-item-bed-header {
+	background-color: white;
+	align-self: stretch;
+	display: flex;
+	align-items: end;
+}
+
+@media (min-width: 1100px) and (min-height: 650px) {
+
+	div.bed-item-grid .bed-item-bed-header,
+	div.bed-item-grid .bed-item-bed {
+		position: sticky;
+		left: calc(var(--nav-width) + var(--container-padding));
+		z-index: 20;
+	}
+
 }
 
 div.bed-item-grid .bed-item-bed a {
@@ -130,6 +154,7 @@ div.bed-item-grid div.bed-item-size {
 div.bed-item-grid div.bed-item-places {
 	overflow: hidden;
 	margin-left: 1rem;
+	//width: 80rem;
 }
 
 div.bed-item-grid div.bed-item-cultivation {

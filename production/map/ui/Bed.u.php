@@ -29,7 +29,7 @@ class BedUi {
 
 		$h = '<div class="'.$class.' bed-item-grid-header">';
 
-			$h .= '<div class="util-grid-header bed-item-header">'.s("Planche").'</div>';
+			$h .= '<div class="util-grid-header bed-item-header bed-item-bed-header">'.s("Planche").'</div>';
 
 			$h .= match($view) {
 				\farm\Farmer::PLAN => $this->displayHeaderBySeason($eFarm, $season),

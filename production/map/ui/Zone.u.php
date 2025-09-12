@@ -52,13 +52,13 @@ class ZoneUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cZone, int $season, \Search $search = new \Search()) {
+	public function getList(\farm\Farm $eFarm, string $view, \Collection $cZone, int $season, \Search $search = new \Search()) {
 
 		$eZoneSelected = $cZone->first();
 
 		$h = '<div class="tabs-h" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
 
-			$h .= '<div class="main-sticky-left tabs-item util-print-hide">';
+			$h .= '<div class="'.($view === \farm\Farmer::PLAN ? 'main-sticky-left' : '').' tabs-item util-print-hide">';
 
 				foreach($cZone as $eZone) {
 
@@ -85,11 +85,19 @@ class ZoneUi {
 			$h .= '</div>';
 
 			foreach($cZone as $eZone) {
+
 				$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
-					$h .= '<div class="util-overflow-sm stick-sm">';
-						$h .= $this->getOne($eFarm, $eZone, $season);
-					$h .= '</div>';
+
+					$content = $this->getOne($eFarm, $eZone, $season);
+
+					$h .= match($view) {
+					//	\farm\Farmer::PLAN => $content,
+						\farm\Farmer::PLAN => '<div class="util-overflow-sm stick-sm">'.$content.'</div>',
+						\farm\Farmer::ROTATION => '<div class="util-overflow-sm stick-sm">'.$content.'</div>'
+					};
+
 				$h .= '</div>';
+
 			}
 
 

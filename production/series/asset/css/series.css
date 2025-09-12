@@ -97,7 +97,7 @@ div.series-season-month:last-child {
 
 div.series-season-weeks {
 	display: grid;
-	font-size: 0.6rem;
+	font-size: 0.7rem;
 	text-align: center;
 }
 
@@ -141,6 +141,10 @@ div.series-grid {
 div.series-grid > div.series-grid-month:not(:first-child) {
 	border-left: 1px dashed var(--border);
 	z-index: 100;
+}
+
+div.series-grid > div.series-grid-month:nth-child(even) {
+	background-color: #00000005;
 }
 
 div.series-item-header {
