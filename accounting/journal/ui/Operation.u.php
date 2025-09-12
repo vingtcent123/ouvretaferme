@@ -745,6 +745,10 @@ class OperationUi {
 					OperationElement::BAN => s("JT"),
 					OperationElement::OD => s("JOD"),
 				];
+				$d->field = 'select';
+
+				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and ($e['cOperationLinked'] ?? new \Collection())->notEmpty()) ? \util\FormUi::info(s("Cette modification sera également reportée sur les opérations liées")) : '';
+
 				break;
 
 			case 'account':
@@ -794,6 +798,7 @@ class OperationUi {
 				break;
 
 			case 'document':
+				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and ($e['cOperationLinked'] ?? new \Collection())->notEmpty()) ? \util\FormUi::info(s("Cette modification sera également reportée sur les opérations liées")) : '';
 				break;
 
 			case 'comment' :
@@ -809,6 +814,7 @@ class OperationUi {
 					}
 					return [];
 				};
+				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and ($e['cOperationLinked'] ?? new \Collection())->notEmpty()) ? \util\FormUi::info(s("Cette modification sera également reportée sur les opérations liées")) : '';
 				break;
 
 		}
