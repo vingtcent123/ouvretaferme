@@ -24,11 +24,16 @@ class Operation extends OperationElement {
 		return $this['vatDeclaration']->empty() and \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']);
 	}
 
+	public function canUpdateQuick(): bool {
+
+		return $this->canUpdate() and $this['operation']->empty();
+	}
+
 	public function canDelete(): bool {
 
 		$this->expects(['operation']);
 
-		return ($this->exists() === TRUE and $this->canUpdate() and $this['operation']->exists() === FALSE );
+		return ($this->notEmpty() and $this->canUpdate() and $this['operation']->empty());
 
 	}
 

@@ -42,10 +42,6 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
 	font-style: italic;
 }
 .journal-operation-description {
-	display: flex;
-	gap: 0.25rem;
-}
-.journal-operation-description span {
 	cursor: help;
 }
 

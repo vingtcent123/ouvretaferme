@@ -250,14 +250,15 @@ class JournalUi {
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
 							$h .= '<td>';
-								$h .= '<div class="journal-operation-description">';
-									$h .= '<span title="'.encode($eOperation['account']['description']).'">';
-										if($eOperation['accountLabel'] !== NULL) {
-											$h .= encode($eOperation['accountLabel']);
-										} else {
-											$h .= encode(str_pad($eOperation['account']['class'], 8, 0));
-										}
-									$h .= '</span>';
+								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
+									if($eOperation['accountLabel'] !== NULL) {
+										$h .= encode($eOperation['accountLabel']);
+									} else {
+										$h .= encode(str_pad($eOperation['account']['class'], 8, 0));
+									}
+								$h .= '</div>';
+								$h .= '<div class="dropdown-list bg-primary">';
+									$h .= '<span class="dropdown-item">'.encode($eOperation['account']['description']).'</span>';
 								$h .= '</div>';
 							$h .= '</td>';
 
@@ -321,27 +322,45 @@ class JournalUi {
 
 								$h .= '<td class="td-vertical-align-top">';
 									$h .= '<div class="journal-operation-actions">';
-										$h .= '<div class="journal-operation-action-icon">';
+										$h .= '<div class="journal-operation-action-icon" data-dropdown="bottom" data-dropdown-hover="true">';
 											if($eOperation['cOperationCashflow']->notEmpty()) {
-												$h .= '<span title="'.s("Écriture rattachée à une opération bancaire").'">'.\Asset::icon('piggy-bank').'</span>';
+												$title = s("Écriture rattachée à une opération bancaire");
+												$h .= '<span>'.\Asset::icon('piggy-bank').'</span>';
 											} else {
-												$h .= '<span class="color-muted opacity-50" title="'.s("Pas d'opération bancaire liée").'">'.\Asset::icon('piggy-bank').'</a>';
+												$title = s("Pas d'opération bancaire liée");
+												$h .= '<span class="color-muted opacity-50">'.\Asset::icon('piggy-bank').'</a>';
 											}
 										$h .= '</div>';
-										$h .= '<div class="journal-operation-action-icon">';
+										$h .= '<div class="dropdown-list bg-primary">';
+											$h .= '<span class="dropdown-item">'.$title.'</span>';
+										$h .= '</div>';
+
+										$h .= '<div class="journal-operation-action-icon" data-dropdown="bottom" data-dropdown-hover="true">';
 											if($eOperation['document'] !== NULL) {
-												$h .= '<span title="'.s("Pièce comptable : {document}", ['document' => encode($eOperation['document'])]).'">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
+												$title = s("Pièce comptable : <em>{document}</em>", ['document' => encode($eOperation['document'])]);
+												$h .= '<span>'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
 											} else {
-												$h .= '<span data-is-updatable class="color-muted opacity-50" title="'.s("Indiquer la pièce comptable").'">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
+												$title = s("Indiquer la pièce comptable");
+												$h .= '<span data-is-updatable class="color-muted opacity-50">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
 											}
 										$h .= '</div>';
-										$h .= '<div class="journal-operation-action-icon">';
+										$h .= '<div class="dropdown-list bg-primary">';
+											$h .= '<span class="dropdown-item">'.$title.'</span>';
+										$h .= '</div>';
+
+										$h .= '<div class="journal-operation-action-icon" data-dropdown="bottom" data-dropdown-hover="true">';
 											if($eOperation['comment'] !== NULL) {
-												$h .= '<span title="'.encode($eOperation['comment']).'">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
+												$title = s("Commentaire : <em>{value}</em>", encode($eOperation['comment']));
+												$h .= '<span>'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
 											} else {
-												$h .= '<span data-is-updatable class="color-muted opacity-50" title="'.s("Ajouter un commentaire").'">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
+												$title = s("Ajouter un commentaire");
+												$h .= '<span data-is-updatable class="color-muted opacity-50">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
 											}
 										$h .= '</div>';
+										$h .= '<div class="dropdown-list bg-primary">';
+											$h .= '<span class="dropdown-item">'.$title.'</span>';
+										$h .= '</div>';
+
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
 									$h .= '</div>';
 								$h .= '</td>';
@@ -361,6 +380,20 @@ class JournalUi {
 
 	}
 
+	protected function action(Operation $eOperation, string $title, string $property): string {
+
+		if($eOperation['operation']->notEmpty()) {
+			$attributes = [
+				'class' => 'dropdown-item inactive',
+				'onclick' => 'void(0);',
+			];
+
+			return '<a '.attrs($attributes).'>'.$title.'<sup>*</sup></a>';
+		} else {
+			return $eOperation->quick($property, $title, 'dropdown-item');
+		}
+	}
+
 	protected function displayActions(\farm\Farm $eFarm, Operation $eOperation, bool $canUpdate): string {
 
 		if($canUpdate === FALSE or $eFarm->canManage() === FALSE) {
@@ -373,23 +406,13 @@ class JournalUi {
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
-			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable").'</div>';
-
-			// JOURNAL
-			if($eOperation['journalCode'] === NULL) {
-				$title = s("Indiquer le journal");
-	 		} else {
-				$title = s("Modifier le journal ({value})", OperationUi::p('journalCode')->shortValues[$eOperation['journalCode']]);
+			if($eOperation['type'] === Operation::CREDIT) {
+				$detail = s("Crédit de {value}", \util\TextUi::money($eOperation['amount']));
+			} else {
+				$detail = s("Débit de {value}", \util\TextUi::money($eOperation['amount']));
 			}
-			$h .= $eOperation->quick('journalCode', $title, 'dropdown-item');
 
-			// MOYEN DE PAIEMENT
-			if($eOperation['paymentMethod'] === NULL) {
-				$title = s("Indiquer le moyen de paiement");
-	 		} else {
-				$title = s("Modifier le moyen de paiement ({value})", \payment\MethodUi::getName($eOperation['paymentMethod']));
-			}
-			$h .= $eOperation->quick('paymentMethod', $title, 'dropdown-item');
+			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable ({value})", $detail).'</div>';
 
 			// COMMENTAIRE
 			if($eOperation['comment'] === NULL) {
@@ -399,13 +422,41 @@ class JournalUi {
 			}
 			$h .= $eOperation->quick('comment', $title, 'dropdown-item');
 
+			// JOURNAL
+			if($eOperation['journalCode'] === NULL) {
+				$title = s("Indiquer le journal");
+	 		} else {
+				$title = s("Modifier le journal ({value})", OperationUi::p('journalCode')->shortValues[$eOperation['journalCode']]);
+			}
+			$h .= $this->action($eOperation, $title, 'journalCode');
+
+			// MOYEN DE PAIEMENT
+			if($eOperation['paymentMethod'] === NULL) {
+				$title = s("Indiquer le moyen de paiement");
+	 		} else {
+				$title = s("Modifier le moyen de paiement ({value})", \payment\MethodUi::getName($eOperation['paymentMethod']));
+			}
+			$h .= $this->action($eOperation, $title, 'paymentMethod');
+
 			// PIÈCE COMPTABLE
 			if($eOperation['document'] === NULL) {
 				$title = s("Indiquer le n° de pièce comptable");
 	 		} else {
 				$title = s("Modifier la pièce comptable ({value})", encode($eOperation['document']));
 			}
-			$h .= $eOperation->quick('document', $title, 'dropdown-item');
+			$h .= $this->action($eOperation, $title, 'document');
+
+			if($eOperation['operation']->notEmpty()) {
+
+				$attributes = [
+					'class' => 'dropdown-item inactive',
+					'onclick' => 'void(0);',
+				];
+
+				$more = s("Les actions désactivées doivent être effectuées depuis l'écriture originale.");
+				$title = s("<div><sup>*</sup>({more})</div>", ['div' => '<div class="operations-delete-more" data-highlight="operation-'.$eOperation['operation']['id'].'">', 'more' => $more, 'title' => $title]);
+				$h .= '<a '.attrs($attributes).'>'.$title.'</a>';
+			}
 
 			$h .= '<div class="dropdown-divider"></div>';
 
@@ -413,11 +464,12 @@ class JournalUi {
 			if($eOperation['cOperationCashflow']->empty()) {
 
 				// Cette opération est liée à une autre : on ne peut pas la supprimer.
-				if($eOperation['operation']->exists() === TRUE) {
+				if($eOperation['operation']->notEmpty()) {
 
 					$attributes = [
 						'class' => 'dropdown-item inactive',
 						'onclick' => 'void(0);',
+						'data-highlight' => 'operation-'.$eOperation['operation']['id'],
 					];
 
 					$more = s("Cette écriture est liée à une autre écriture. Supprimez l'autre écriture pour supprimer celle-ci.");
@@ -433,7 +485,7 @@ class JournalUi {
 						'class' => 'dropdown-item',
 					];
 
-					if($eOperation['vatAccount']->exists() === TRUE) {
+					if($eOperation['vatAccount']->notEmpty()) {
 						$attributes += [
 							'data-highlight' => $eOperation['vatAccount']->exists()
 								? 'operation-linked-'.$eOperation['id']

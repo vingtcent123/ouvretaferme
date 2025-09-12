@@ -245,6 +245,17 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
+		// à répercuter sur les opérations liées
+		if(
+			in_array('journalCode', $properties) or
+			in_array('paymentMethod', $properties) or
+			in_array('document', $properties)
+		) {
+			Operation::model()
+				->whereOperation($e)
+				->update(['journalCode' => $e['journalCode'], 'paymentMethod' => $e['paymentMethod'], 'document' => $e['document']]);
+		}
+
 		\account\LogLib::save('update', 'Operation', ['id' => $e['id'], 'properties' => $properties]);
 
 	}
