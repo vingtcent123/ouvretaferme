@@ -95,8 +95,7 @@ class OperationModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['document'],
-			['cashflow']
+			['document']
 		]);
 
 	}
