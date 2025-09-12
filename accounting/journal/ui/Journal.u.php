@@ -128,7 +128,8 @@ class JournalUi {
 		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
-		\Search $search = new \Search()
+		\Search $search = new \Search(),
+		\Collection $cPaymentMethod = new \Collection()
 	): string {
 
 		$selectedJournalCode = GET('code');
@@ -156,16 +157,18 @@ class JournalUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal">';
-				$h .= $this->getTableContainer($eFarm, $cOperation, $eFinancialYearSelected, $search, $selectedJournalCode);
+				$h .= $this->getTableContainer($eFarm, (string)$selectedJournalCode, $cOperation, $eFinancialYearSelected, $search);
 			$h .= '</div>';
 
 			foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
 				$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
-					$h .= $this->getTableContainer($eFarm, $cOperation, $eFinancialYearSelected, $search, $selectedJournalCode);
+					$h .= $this->getTableContainer($eFarm, $journalCode, $cOperation, $eFinancialYearSelected, $search);
 				$h .= '</div>';
 			}
 
 		$h .= '</div>';
+
+		$h .= $this->getBatch($eFarm, $cPaymentMethod);
 
 		return $h;
 
@@ -173,10 +176,10 @@ class JournalUi {
 
 	public function getTableContainer(
 		\farm\Farm $eFarm,
+		string $journalCode,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search(),
-		?string $selectedJournalCode = NULL,
 		array $hide = [],
 		array $show = [],
 	): string {
@@ -193,6 +196,11 @@ class JournalUi {
 		\Asset::js('util', 'form.js');
 		\Asset::css('util', 'form.css');
 
+		\Asset::css('util', 'batch.css');
+		\Asset::js('util', 'batch.js');
+
+		\Asset::js('journal', 'journal.js');
+
 		$columns = 5;
 		$baseUrl = $this->getBaseUrl($eFarm, $eFinancialYearSelected);
 
@@ -204,6 +212,10 @@ class JournalUi {
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
+						if($eFinancialYearSelected->canUpdate()) {
+							$h .= '<th>';
+							$h .= '</th>';
+						}
 						$h .= '<th>'.s("Compte").'</th>';
 						$h .= '<th>'.s("Libellé").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
@@ -224,7 +236,7 @@ class JournalUi {
 					foreach($cOperation as $eOperation) {
 
 						$canUpdate = (
-							$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN
+							$eFinancialYearSelected->canUpdate()
 							and $eOperation['date'] <= $eFinancialYearSelected['endDate']
 							and $eOperation['date'] >= $eFinancialYearSelected['startDate']
 							and $eFarm->canManage()
@@ -239,6 +251,7 @@ class JournalUi {
 
 						if($currentDate === NULL or $currentDate !== $referenceDate) {
 							$h .= '<tr class="tr-title">';
+								$h .= '<td></td>';
 								$h .= '<td colspan="'.$columns.'">';
 									$h .= \util\DateUi::numeric($referenceDate);
 								$h .= '</td>';
@@ -249,6 +262,26 @@ class JournalUi {
 
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
+						if($eFinancialYearSelected->canUpdate()) {
+							$h .= '<td class="td-checkbox">';
+							$attributesCheckbox = [
+								'data-batch-type' => $eOperation['type'],
+								'data-batch-amount' => $eOperation['amount'],
+								'data-journal-code' => (string)$journalCode,
+							];
+							if($eOperation['operation']->notEmpty()) {
+								$attributesCheckbox['class'] = 'hide';
+								$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
+							} else {
+								$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$journalCode.'")';
+							}
+							if($canUpdate) {
+								$h .= '<label>';
+									$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
+								$h .= '</label>';
+							}
+							$h .= '</td>';
+						}
 							$h .= '<td>';
 								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
 									if($eOperation['accountLabel'] !== NULL) {
@@ -380,6 +413,63 @@ class JournalUi {
 
 	}
 
+	public function getBatch(\farm\Farm $eFarm, \Collection $cPaymentMethod): string {
+
+		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
+			$menu .= '<span>';
+				$menu .= '<span class="batch-menu-item-number-debit"></span>';
+			$menu .= '</span>';
+			$menu .= '<span>'.s("Débit").'</span>';
+		$menu .= '</a>';
+		$menu .= '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
+			$menu .= '<span>';
+				$menu .= '<span class="batch-menu-item-number-credit"></span>';
+			$menu .= '</span>';
+			$menu .= '<span>'.s("Crédit").'</span>';
+		$menu .= '</a>';
+
+		foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
+
+			$warningText = match($journalCode) {
+				Operation::ACH => s("Déplacer ces écritures dans le journal d'achats ?"),
+				Operation::VEN => s("Déplacer ces écritures dans le journal de ventes ?"),
+				Operation::OD => s("Déplacer ces écritures dans le journal d'opérations diverses ?"),
+				Operation::BAN => s("Déplacer ces écritures dans le journal de trésorerie ?"),
+			} ;
+
+			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" post-journal-code="'.$journalCode.'"  data-confirm="'.$warningText.'" class="batch-menu-'.$journalCode.' batch-menu-item">';
+				$menu .= '<span class="btn btn-sm journal-code-batch journal-code-button">'.OperationUi::p('journalCode')->shortValues[$journalCode].'</span>';
+			$menu .= '<span>'.OperationUi::p('journalCode')->values[$journalCode].'</span>';
+			$menu .= '</a>';
+		}
+
+		$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
+			$menu .= \Asset::icon('cash-coin');
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de paiement").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<div class="dropdown-list bg-secondary">';
+
+			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").'</div>';
+			foreach($cPaymentMethod as $ePaymentMethod) {
+				if($ePaymentMethod['online'] === FALSE) {
+					$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-group-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+				}
+			}
+			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-group-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
+		$menu .= '</div>';
+
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createCommentCollection" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('chat-text-fill').'<span>'.s("Commenter").'</span></a>';
+
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createDocumentCollection" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('paperclip').'<span>'.s("Pièce comptable").'</span></a>';
+
+		$menu .= '<span class="hide" data-batch-title-more-singular>'.s(", dont 1 opération liée").'</span>';
+		$menu .= '<span class="hide" data-batch-title-more-plural>'.s(", dont <span data-batch-title-more-value></span> opérations liées").'</span>';
+
+		return \util\BatchUi::group($menu, '', title: s("Pour les opérations sélectionnées"));
+
+	}
+
 	protected function action(Operation $eOperation, string $title, string $property): string {
 
 		if($eOperation['operation']->notEmpty()) {
@@ -431,7 +521,7 @@ class JournalUi {
 			$h .= $this->action($eOperation, $title, 'journalCode');
 
 			// MOYEN DE PAIEMENT
-			if($eOperation['paymentMethod'] === NULL) {
+			if($eOperation['paymentMethod']->empty()) {
 				$title = s("Indiquer le moyen de paiement");
 	 		} else {
 				$title = s("Modifier le moyen de paiement ({value})", \payment\MethodUi::getName($eOperation['paymentMethod']));

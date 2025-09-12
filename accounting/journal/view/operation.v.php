@@ -17,6 +17,18 @@ new AdaptativeView('createPayment', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('createCommentCollection', function($data, PanelTemplate $t) {
+
+		return new \journal\OperationUi()->createCommentCollection($data->eFarm);
+
+});
+
+new AdaptativeView('createDocumentCollection', function($data, PanelTemplate $t) {
+
+		return new \journal\OperationUi()->createDocumentCollection($data->eFarm);
+
+});
+
 new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 
 	$form = new \util\FormUi();

@@ -217,4 +217,70 @@ new \journal\OperationPage(
 
 	throw new ReloadAction('journal', 'Operation::deleted');
 });
+
+new \journal\OperationPage(function($data) {
+
+	$data->eFarm->validate('canManage');
+	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+})
+	->get('createCommentCollection', function($data) {
+
+		throw new ViewAction($data);
+
+	})
+	->get('createDocumentCollection', function($data) {
+
+		throw new ViewAction($data);
+
+	})
+	->writeCollection('doUpdatePaymentCollection', function($data) {
+
+		$ePaymentMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
+
+		$fw = new FailWatch();
+
+		\journal\OperationLib::updatePaymentMethodCollection($data->c, $ePaymentMethod);
+
+		$fw->validate();
+
+		throw new ReloadAction('journal', 'Operations::updated');
+
+	})
+	->writeCollection('doUpdateJournalCollection', function($data) {
+
+		$journalCode = POST('journalCode');
+
+		$fw = new FailWatch();
+
+		\journal\OperationLib::updateJournalCodeCollection($data->c, $journalCode);
+
+		$fw->validate();
+
+		throw new ReloadAction('journal', 'Operations::updated');
+	})
+	->writeCollection('doUpdateCommentCollection', function($data) {
+
+		$comment = POST('comment');
+
+		$fw = new FailWatch();
+
+		\journal\OperationLib::updateCommentCollection($data->c, $comment);
+
+		$fw->validate();
+
+		throw new ReloadAction('journal', 'Operations::updated');
+	})
+	->writeCollection('doUpdateDocumentCollection', function($data) {
+
+		$comment = POST('document');
+
+		$fw = new FailWatch();
+
+		\journal\OperationLib::updateDocumentCollection($data->c, $comment);
+
+		$fw->validate();
+
+		throw new ReloadAction('journal', 'Operations::updated');
+	});
 ?>

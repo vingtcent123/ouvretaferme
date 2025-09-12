@@ -35,6 +35,8 @@ class AlertUi {
 
 			'Operation::FinancialYear.notUpdatable' => s("Il n'est plus possible d'écrire dans cet exercice comptable."),
 
+			'Operation::selectedOperationInconsistency' => s("Les opérations sélectionnées ne sont pas cohérentes, veuillez rafraîchir la page et recommencer."),
+			'Operation::selectedJournalCodeInconsistency' => s("Un problème technique est survenu avec le journal choisi. Veuillez rafraîchir la page et recommencer."),
 			default => null
 
 		};
@@ -51,6 +53,8 @@ class AlertUi {
 			'Operation::created' => s("L'écriture a bien été enregistrée."),
 			'Operation::createdSeveral' => s("Les écritures ont bien été enregistrées."),
 			'Operation::deleted' => s("L'écriture a bien été supprimée."),
+
+			'Operations::updated' => s("Les opérations ont été modifiées."),
 
 			'VatDeclaration:created' => s("La déclaration de TVA a bien été créée."),
 

@@ -23,6 +23,62 @@ class OperationUi {
 
 	}
 
+	public function createCommentCollection(\farm\Farm $eFarm): \Panel {
+
+		$form = new \util\FormUi();
+		$dialogOpen = $form->openAjax(
+			\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateCommentCollection',
+			[
+				'id' => 'journal-operation-comment',
+				'class' => 'panel-dialog container',
+			],
+		);
+
+		$h = $form->dynamicGroup(new Operation(), 'comment');
+		foreach(get('ids', 'array') as $id) {
+			$h .= $form->hidden('ids[]', $id);
+		}
+
+		$dialogClose = $form->close();
+		$footer = $form->submit(s("Enregistrer"));
+		return new \Panel(
+			id: 'panel-journal-operations-comment',
+			title: s("Commenter"),
+			dialogOpen: $dialogOpen,
+			dialogClose: $dialogClose,
+			body: $h,
+			footer: $footer,
+		);
+	}
+
+	public function createDocumentCollection(\farm\Farm $eFarm): \Panel {
+
+		$form = new \util\FormUi();
+		$dialogOpen = $form->openAjax(
+			\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateDocumentCollection',
+			[
+				'id' => 'journal-operation-document',
+				'class' => 'panel-dialog container',
+			],
+		);
+
+		$h = $form->dynamicGroup(new Operation(), 'document');
+		foreach(get('ids', 'array') as $id) {
+			$h .= $form->hidden('ids[]', $id);
+		}
+
+		$dialogClose = $form->close();
+		$footer = $form->submit(s("Enregistrer"));
+		return new \Panel(
+			id: 'panel-journal-operations-document',
+			title: s("Enregister la pièce comptable"),
+			dialogOpen: $dialogOpen,
+			dialogClose: $dialogClose,
+			body: $h,
+			footer: $footer,
+		);
+	}
+
 	public function createPayment(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Operation $eOperation, \Collection $cBankAccount): \Panel {
 
 		\Asset::css('journal', 'operation.css');
@@ -803,6 +859,7 @@ class OperationUi {
 
 			case 'comment' :
 				$d->attributes['data-limit'] = 250;
+				$d->field = 'textarea';
 				break;
 
 			case 'paymentMethod' :

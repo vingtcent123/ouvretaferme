@@ -20,6 +20,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	if($data->eFinancialYear->notEmpty()) {
 		echo new \journal\JournalUi()->getSearch($data->eFarm, $data->search, $data->eFinancialYear, $data->eCashflow, $data->eThirdParty, $data->cPaymentMethod);
 	}
-	echo new \journal\JournalUi()->getJournal($data->eFarm, $data->cOperation, $data->eFinancialYear, $data->search);
+	echo new \journal\JournalUi()->getJournal($data->eFarm, $data->cOperation, $data->eFinancialYear, $data->search, cPaymentMethod: $data->cPaymentMethod);
 
 });
