@@ -2134,6 +2134,11 @@ Lime.History = class {
 
 		const poppedInitialURL = location.href;
 
+		window.oldScrollY = window.scrollY;
+		window.onscroll = function() {
+			this.oldScrollY = this.scrollY;
+		}
+
 		window.onpopstate = e => {
 
 			// Handle promise

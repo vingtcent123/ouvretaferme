@@ -1,26 +1,38 @@
-document.addEventListener('scroll', function() {
+if(isTouch()) {
 
-	if(isTouch() === false) {
-		return;
-	}
+	document.addEventListener('scroll', function() {
 
-	const zone = qs('#zone-content');
-	const header = qs('#zone-header');
+		if(window.oldScrollY > window.scrollY) {
+			qs('#zone-header', node => {
+				node.style.transition = '';
+				node.style.top = 0;
+			});
+		}
 
-	if(header === null) {
-		return;
-	}
+	});
 
-	const zoneTop = zone.getBoundingClientRect().top;
-	const headerHeight = qs('header').getBoundingClientRect().height;
+	document.addEventListener('scrollend', function() {
 
-	if(zoneTop < headerHeight) {
-		header.style.top = (headerHeight - zoneTop) + 'px';
-	} else {
-		delete header.style.top;
-	}
+		const zone = qs('#zone-content');
+		const header = qs('#zone-header');
 
-});
+		if(header === null) {
+			return;
+		}
+
+		const zoneTop = zone.getBoundingClientRect().top;
+		const sticky = parseFloat(window.getComputedStyle(document.body).getPropertyValue('--mainSticky')) * rem();
+
+		if(zoneTop < sticky) {
+			header.style.transition = 'top 0.25s';
+			header.style.top = (sticky - zoneTop) +'px';
+		} else {
+			header.style.top = 0;
+		}
+
+	});
+
+}
 
 document.delegateEventListener('click', '#bed-create-button', function(e) {
 
