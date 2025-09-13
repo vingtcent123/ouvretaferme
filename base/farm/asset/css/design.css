@@ -1,4 +1,4 @@
-body[data-template~="farm"] .container {
+body[data-template~="farm"] > main .container {
 	max-width: initial;
 	margin-left: 0;
 	margin-right: 0;
