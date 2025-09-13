@@ -55,9 +55,12 @@ class BedUi {
 
 						$h .= '<div class="bed-item-name">';
 							$h .= '<a data-dropdown="bottom-start">';
-								$h .= encode($eBed['name']);
+								$h .= s("Planche {value}", '<b>'.encode($eBed['name']).'</b>');
 								if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
-									$h .= '  '.$eBed->getGreenhouseIcon();
+									$greenhouse = $eBed->getGreenhouseIcon();
+									if($greenhouse) {
+										$h .= '  '.$greenhouse;
+									}
 								}
 							$h .= '</a>';
 

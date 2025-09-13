@@ -367,6 +367,7 @@ div.nav-wrapper {
 	height: var(--mainNav);
 	min-height: var(--mainNav);
 	column-gap: 0.5rem;
+	padding: 0 var(--container-padding);
 }
 
 body > nav ul > li > form > button {

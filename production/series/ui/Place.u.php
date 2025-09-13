@@ -421,7 +421,7 @@ class PlaceUi {
 						if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
 							$greenhouse = $eBed->getGreenhouseIcon();
 							if($greenhouse) {
-								$h .= ' '.$greenhouse;
+								$h .= '  '.$greenhouse;
 							}
 						}
 					$h .= '</div>';

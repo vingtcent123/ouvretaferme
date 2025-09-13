@@ -92,7 +92,7 @@ class MainTemplate extends BaseTemplate {
 			return '';
 		}
 
-		$h = '<div class="nav-wrapper nav-default-wrapper container">';
+		$h = '<div class="nav-wrapper nav-default-wrapper">';
 
 			if($center === NULL) {
 

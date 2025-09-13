@@ -46,10 +46,6 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 	border-top: 1px solid var(--border);
 }
 
-div.bed-item-name {
-	letter-spacing: -0.1px;
-}
-
 div.bed-item-grid-plan {
 	grid-template-columns: 10rem 1fr;
 	align-items: center;
@@ -109,7 +105,7 @@ div.bed-item-grid-rotation-2 {
 
 div.bed-item-grid .bed-item-bed {
 	position: sticky;
-	line-height: 1;
+	line-height: 1.2;
 	align-self: stretch;
 	overflow: hidden;
 	display: flex;
@@ -138,8 +134,11 @@ body[data-touch="yes"] div.bed-item-grid .bed-item-bed {
 	left: 0;
 }
 
-div.bed-item-grid .bed-item-bed a {
-	font-weight: bold;
+div.bed-item-grid div.bed-item-name {
+	letter-spacing: -0.1px;
+}
+
+div.bed-item-grid div.bed-item-name a {
 	color: black;
 }
 
