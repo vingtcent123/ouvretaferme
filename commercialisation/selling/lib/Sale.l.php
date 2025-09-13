@@ -521,15 +521,16 @@ class SaleLib extends SaleCrud {
 			$e['preparationStatus'] ??= Sale::DRAFT;
 		}
 
+		$ePaymentMethod = new \payment\Method();
+
 		if(
 			$e->isSale() and
 			$e['shop']->empty()
 		) {
 
-			$e['paymentMethod'] = $e['customer']['defaultPaymentMethod'];
-
-			if($e['paymentMethod']->notEmpty()) {
+			if($e['customer']['defaultPaymentMethod']->notEmpty()) {
 				$e['paymentStatus'] = Sale::NOT_PAID;
+				$ePaymentMethod = $e['customer']['defaultPaymentMethod'];
 			}
 
 		}
@@ -580,6 +581,21 @@ class SaleLib extends SaleCrud {
 			\selling\ItemLib::createCollection($e, $e['cItemCreate']);
 		}
 
+		if($ePaymentMethod->notEmpty()) {
+
+			$ePayment = new Payment([
+				'sale' => $e,
+				'customer' => $e['customer'],
+				'farm' => $e['farm'],
+				'checkoutId' => NULL,
+				'method' => $e['customer']['defaultPaymentMethod'],
+				'amountIncludingVat' => $e['priceIncludingVat'],
+				'onlineStatus' => NULL,
+			]);
+
+			Payment::model()->insert($ePayment);
+
+		}
 
 		if($e->isComposition()) {
 			self::reorderComposition($e);
