@@ -97,23 +97,31 @@ div.series-season-month:not(.series-season-month-with-weeks) {
 }
 
 div.series-season-weeks {
-	display: grid;
+	position: relative;
+	height: 1.5rem;
+	display: flex;
 	font-size: 0.7rem;
 	text-align: center;
 }
 
-div.series-season-weeks > * {
+div.series-season-weeks > div.series-season-week {
+	position: absolute;
+	top: 0;
+	bottom: 0;
 	letter-spacing: -0.5px;
-	border-right: 1px dashed var(--border);
+	border-right: 1px dashed #bbb;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-div.series-season-weeks > *:last-child {
+div.series-season-weeks > div.series-season-week:last-child {
 	border-right-color: transparent;
 }
 
 div.series-grid-now {
 	position: absolute;
-	border-right: 1px solid var(--secondary);
+	border-right: 2px solid var(--secondary);
 	opacity: 0.5;
 	left: 0;
 	top: 0;
@@ -133,30 +141,42 @@ div.series-grid {
 	right: 0;
 	top: 0;
 	bottom: 0;
-	display: grid;
 	pointer-events: none;
 	z-index: 0;
 }
 
-div.series-grid-week > div.series-grid-line:not(:first-child) {
+div.series-grid-weeks > div.series-grid-line {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 0;
+}
+
+div.series-grid-weeks > div.series-grid-line:not(:first-child) {
 	border-left: 1px dashed #0001;
 	z-index: 100;
 }
 
-div.series-grid-month > div.series-grid-line:not(:first-child) {
+div.series-grid-months > div.series-grid-line {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+}
+
+div.series-grid-months > div.series-grid-line:not(:first-child) {
 	z-index: 100;
 }
 
-div.series-grid-month > div.series-grid-line {
+div.series-grid-months > div.series-grid-line {
 	border-left: 1px dashed #0001;
 }
 
-div.series-grid-week + div.series-grid-month > div.series-grid-line {
+div.series-grid-weeks + div.series-grid-months > div.series-grid-line {
 	border-left: 0;
 }
 
-div.series-grid-week + div.series-grid-month > div.series-grid-line:nth-child(even) {
-	background-color: #00000002;
+div.series-grid-weeks + div.series-grid-months > div.series-grid-line:nth-child(even) {
+	background-color: #00000003;
 	border-left: 0;
 }
 
@@ -166,12 +186,12 @@ body[data-touch="yes"] #zone-content {
 }
 
 #zone-content > * {
-	min-width: 80rem;
+	min-width: calc(var(--zone-content-months) * 4.5rem);
 }
 
 #zone-tabs {
 
-	div.series-grid-week > div.series-grid-line:not(:first-child) {
+	div.series-grid-weeks > div.series-grid-line:not(:first-child) {
 		border-left: 1px dashed #0002;
 	}
 
@@ -179,7 +199,7 @@ body[data-touch="yes"] #zone-content {
 
 div.series-item-header {
 	background: var(--background-body);
-	padding-bottom: 1rem;
+	padding-bottom: .5rem;
 	padding-left: 1rem;
 	padding-right: 1rem;
 }
@@ -517,6 +537,10 @@ div.series-item:not(.series-item-header) div.series-item-planning-place {
 
 div.series-item-planning-timeline {
 	margin-left: 1rem;
+}
+
+div.series-item-planning-timeline.util-grid-header {
+	margin-bottom: -.5rem;
 }
 
 div.series-item:not(.series-item-header) div.series-item-planning-timeline {

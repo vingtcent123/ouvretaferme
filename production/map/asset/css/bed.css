@@ -46,6 +46,10 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 	border-top: 1px solid var(--border);
 }
 
+div.bed-item-name {
+	letter-spacing: -0.1px;
+}
+
 div.bed-item-grid-plan {
 	grid-template-columns: 10rem 1fr;
 	align-items: center;
@@ -53,7 +57,6 @@ div.bed-item-grid-plan {
 
 div.bed-item-wrapper div.series-grid {
 	left: 10rem;
-	margin-left: 1rem;
 }
 
 div.bed-item-grid-rotation-5 {
@@ -114,6 +117,7 @@ div.bed-item-grid .bed-item-bed {
 	justify-content: center;
 	min-height: 2.8rem;
 	z-index: 10;
+	padding-right: 1rem;
 }
 
 div.bed-item-grid .bed-item-corner {
@@ -121,6 +125,7 @@ div.bed-item-grid .bed-item-corner {
 	top: 0;
 	background-color: var(--background-body);
 	align-self: stretch;
+	z-index: 1;
 }
 
 body[data-touch="no"] div.bed-item-grid .bed-item-corner,
@@ -147,7 +152,6 @@ div.bed-item-grid div.bed-item-size {
 
 div.bed-item-grid div.bed-item-places {
 	overflow: hidden;
-	margin-left: 1rem;
 }
 
 div.bed-item-grid div.bed-item-cultivation {

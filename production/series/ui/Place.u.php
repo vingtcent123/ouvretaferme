@@ -419,7 +419,10 @@ class PlaceUi {
 					$h .= '<div>';
 						$h .= $name;
 						if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
-							$h .= ' '.$eBed->getGreenhouseIcon();
+							$greenhouse = $eBed->getGreenhouseIcon();
+							if($greenhouse) {
+								$h .= ' '.$greenhouse;
+							}
 						}
 					$h .= '</div>';
 					if(($eBed['test']['rotation'] ?? NULL) > 0) {
@@ -738,7 +741,7 @@ class PlaceUi {
 
 	}
 
-	protected function positionToTimestamp(Series $eSeries, int $position, int $season): int {
+	protected function positionToTimestamp(Series $eSeries, int $position, int $season, int $gap): int {
 
 		$positionSeason = (int)floor($position / 100);
 		$positionWeek = (int)($position - $positionSeason * 100);
@@ -759,7 +762,7 @@ class PlaceUi {
 
 		$week = sprintf('%02d', $positionWeek);
 
-		return strtotime($year.'-W'.$week.' + 3 DAYS');
+		return strtotime($year.'-W'.$week.' + '.$gap.' DAYS');
 
 	}
 
@@ -773,8 +776,8 @@ class PlaceUi {
 			'cTask'
 		]);
 
-		$minTs = $this->positionToTimestamp($eSeries, $ePlace['positionStart'], $season);
-		$maxTs = $this->positionToTimestamp($eSeries, $ePlace['positionStop'], $season);
+		$minTs = $this->positionToTimestamp($eSeries, $ePlace['positionStart'], $season, 0);
+		$maxTs = $this->positionToTimestamp($eSeries, $ePlace['positionStop'], $season, 6);
 
 		$h = '';
 
@@ -932,8 +935,8 @@ class PlaceUi {
 		$startDay = $eFarm->getCalendarStartDay($season);
 		$stopDay = $eFarm->getCalendarStopDay($season);
 
-		$startWeek = week_date_starts(toWeek($startDay));
-		$stopWeek = week_date_ends(toWeek($stopDay));
+		$startWeek = toWeek($startDay);
+		$stopWeek = toWeek($stopDay);
 
 		$currentWeek = $startWeek;
 		$weeks = [];

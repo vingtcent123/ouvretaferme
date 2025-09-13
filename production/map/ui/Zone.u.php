@@ -83,6 +83,11 @@ class ZoneUi {
 				}
 
 			$h .= '</div>';
+			$h .= '<style>';
+				$h .= ':root {';
+					$h .= '--zone-content-months: '.$eFarm['calendarMonths'].';';
+				$h .= '}';
+			$h .= '</style>';
 			$h .= '<div id="zone-content">';
 
 				$h .= new BedUi()->displayHeader($eFarm, $view, $season);

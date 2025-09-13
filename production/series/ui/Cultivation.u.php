@@ -20,7 +20,15 @@ class CultivationUi {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
-		$h = '<div class="series-timeline-season series-season" style="grid-template-columns: repeat('.$eFarm['calendarMonths'].', 1fr);">';
+		$daysList = $this->getListDays($eFarm, $season);
+		$days = array_sum($daysList);
+
+		$widths = [];
+		foreach($daysList as $dayByMonth) {
+			$widths[] = ($dayByMonth / $days * 100).'%';
+		}
+
+		$h = '<div class="series-timeline-season series-season" style="grid-template-columns: '.implode(' ', $widths).';">';
 
 			if($eFarm['calendarMonthStart'] !== NULL) {
 				$h .= '<div class="series-season-year series-season-year-external" style="grid-column: span '.(12 - $eFarm['calendarMonthStart'] + 1).';">';
@@ -39,11 +47,11 @@ class CultivationUi {
 			}
 
 			$months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
-			$hasWeeks = FALSE; // WEEK
+			$hasWeeks = false; // WEEK
 
 			if($eFarm['calendarMonthStart'] !== NULL) {
-				for($i = $eFarm['calendarMonthStart'] - 1; $i < 12; $i++) {
-					$h .= '<div class="series-season-month '.($hasWeeks ? 'series-season-month-with-weeks' : '').' series-season-month-external">'.$months[$i].'</div>';
+				for($month = $eFarm['calendarMonthStart'] - 1; $month < 12; $month++) {
+					$h .= '<div class="series-season-month '.($hasWeeks ? 'series-season-month-with-weeks' : '').' series-season-month-external">'.$months[$month].'</div>';
 				}
 			}
 
@@ -52,26 +60,30 @@ class CultivationUi {
 			}
 
 			if($eFarm['calendarMonthStop'] !== NULL) {
-				for($i = 0; $i < $eFarm['calendarMonthStop']; $i++) {
-					$h .= '<div class="series-season-month '.($hasWeeks ? 'series-season-month-with-weeks' : '').' series-season-month-external">'.$months[$i].'</div>';
+				for($month = 0; $month < $eFarm['calendarMonthStop']; $month++) {
+					$h .= '<div class="series-season-month '.($hasWeeks ? 'series-season-month-with-weeks' : '').' series-season-month-external">'.$months[$month].'</div>';
 				}
 			}
 
 			if($hasWeeks) {
 
 				$weeks = new PlaceUi()->getWeeksInBounds($eFarm, $season);
+				[$startTs, $stopTs] = new PlaceUi()->getBounds($eFarm, $season);
+				$startWeekTs = strtotime(week_date_starts($weeks[0]));
 
-				$h .= '<div class="series-season-weeks" style="grid-column: span '.$eFarm['calendarMonths'].'; grid-template-columns: repeat('.count($weeks).', 1fr)">';
+				$left = ($startWeekTs - $startTs) / ($stopTs - $startTs) * 100;
+				$width = 7 / $days * 100;
 
-					$weeks = new PlaceUi()->getWeeksInBounds($eFarm, $season);
-					[$startTs, $stopTs] = new PlaceUi()->getBounds($eFarm, $season);
-					$startWeekTs = strtotime(week_date_starts($weeks[0]));
-
-					$gap = ($startWeekTs - $startTs) / ($stopTs - $startTs) * 100;
+				$h .= '<div class="series-season-weeks" style="grid-column: span '.$eFarm['calendarMonths'].'">';
 
 					foreach($weeks as $week) {
-						$h .= '<div>'.week_number($week).'</div>';
+
+						$h .= '<div class="series-season-week" style="left: '.$left.'%; width: '.$width.'%">'.week_number($week).'</div>';
+						$left += $width;
+
 					}
+
+					$h .= $this->getNowGrid($startTs, $stopTs);
 
 				$h .= '</div>';
 
@@ -87,16 +99,42 @@ class CultivationUi {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
+		$days = array_sum($this->getListDays($eFarm, $season));
+
 		// WEEK
 		$h = '';
-		//$h .= $this->getWeeklyListGrid($eFarm, $season);
-		$h .= $this->getMonthlyListGrid($eFarm, $season);
+		//$h .= $this->getWeeklyListGrid($eFarm, $season, $days);
+		$h .= $this->getMonthlyListGrid($eFarm, $season, $days);
 
 		return $h;
 
 	}
 
-	public function getWeeklyListGrid(\farm\Farm $eFarm, int $season): string {
+	protected function getListDays(\farm\Farm $eFarm, int $season): array {
+
+		$days = [];
+
+		if($eFarm['calendarMonthStart'] !== NULL) {
+			for($month = $eFarm['calendarMonthStart']; $month <= 12; $month++) {
+				$days[] = date('t', strtotime(($season - 1).'-'.sprintf('%02d', $month).'-01'));
+			}
+		}
+
+		for($month = 1; $month <= 12; $month++) {
+			$days[] = date('t', strtotime($season.'-'.sprintf('%02d', $month).'-01'));
+		}
+
+		if($eFarm['calendarMonthStop'] !== NULL) {
+			for($month = 1; $month <= $eFarm['calendarMonthStop']; $month++) {
+				$days[] = date('t', strtotime(($season + 1).'-'.sprintf('%02d', $month).'-01'));
+			}
+		}
+
+		return $days;
+
+	}
+
+	public function getWeeklyListGrid(\farm\Farm $eFarm, int $season, int $days): string {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
@@ -104,13 +142,17 @@ class CultivationUi {
 		[$startTs, $stopTs] = new PlaceUi()->getBounds($eFarm, $season);
 		$startWeekTs = strtotime(week_date_starts($weeks[0]));
 
-		$gap = ($startWeekTs - $startTs) / ($stopTs - $startTs) * 100;
+		$left = ($startWeekTs - $startTs) / ($stopTs - $startTs) * 100;
+		$width = 7 / $days * 100;
 
-		$h = '<div class="series-timeline-season series-grid series-grid-weeks" style="grid-template-columns: repeat('.count($weeks).', 1fr);">';
+		$h = '<div class="series-grid series-grid-weeks">';
 
-			$h .= str_repeat('<div class="series-grid-line" style="margin-left: '.$gap.'%"></div>', count($weeks));
+			foreach($weeks as $week) {
 
-			$h .= $this->getNowGrid($startTs, $stopTs);
+				$h .= '<div class="series-grid-line" style="left: calc('.$left.'% - 1px)"></div>';
+				$left += $width;
+
+			}
 
 		$h .= '</div>';
 
@@ -119,16 +161,37 @@ class CultivationUi {
 
 	}
 
-	public function getMonthlyListGrid(\farm\Farm $eFarm, int $season): string {
+	public function getMonthlyListGrid(\farm\Farm $eFarm, int $season, int $days): string {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
-		$h = '<div class="series-timeline-season series-grid series-grid-month" style="grid-template-columns: repeat('.$eFarm['calendarMonths'].', 1fr);">';
+		$h = '<div class="series-grid series-grid-months">';
 
-			$h .= str_repeat('<div class="series-grid-line"></div>', $eFarm['calendarMonths']);
+			$left = 0;
+
+			if($eFarm['calendarMonthStart'] !== NULL) {
+				for($month = $eFarm['calendarMonthStart']; $month <= 12; $month++) {
+					$width = date('t', strtotime(($season - 1).'-'.sprintf('%02d', $month).'-01')) / $days * 100;
+					$h .= '<div class="series-grid-line" style="left: '.$left.'%; width: '.$width.'%"></div>';
+					$left += $width;
+				}
+			}
+
+			for($month = 1; $month < 12; $month++) {
+				$width = date('t', strtotime($season.'-'.sprintf('%02d', $month).'-01')) / $days * 100;
+				$h .= '<div class="series-grid-line" style="left: '.$left.'%; width: '.$width.'%"></div>';
+				$left += $width;
+			}
+
+			if($eFarm['calendarMonthStop'] !== NULL) {
+				for($month = 1; $month <= $eFarm['calendarMonthStop']; $month++) {
+					$width = date('t', strtotime(($season + 1).'-'.sprintf('%02d', $month).'-01')) / $days * 100;
+					$h .= '<div class="series-grid-line" style="left: '.$left.'%; width: '.$width.'%"></div>';
+					$left += $width;
+				}
+			}
 
 			[$startTs, $stopTs] = new PlaceUi()->getBounds($eFarm, $season);
-
 			$h .= $this->getNowGrid($startTs, $stopTs);
 
 		$h .= '</div>';
@@ -221,7 +284,7 @@ class CultivationUi {
 
 				}
 
-				$h .= '<div class="series-item-planning-timeline">';
+				$h .= '<div class="util-grid-header series-item-planning-timeline">';
 					$h .= $this->getListSeason($eFarm, $season);
 				$h .= '</div>';
 
