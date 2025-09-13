@@ -47,7 +47,7 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 }
 
 div.bed-item-grid-plan {
-	grid-template-columns: 10rem 1fr;
+	grid-template-columns: 12rem 1fr;
 	align-items: center;
 }
 
@@ -74,7 +74,7 @@ div.bed-item-grid-rotation-2 {
 @media (max-width: 1199px) {
 
 	div.bed-item-grid-plan {
-		grid-template-columns: 8rem 1fr;
+		grid-template-columns: 9rem 1fr;
 	}
 
 	div.bed-item-wrapper div.series-grid {
