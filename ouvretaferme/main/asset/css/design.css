@@ -273,6 +273,7 @@ h5 {
 body {
 	display: grid;
 	grid-template-rows: max-content max-content 1fr max-content;
+	grid-template-columns: var(--screen-width);
 	background-color: var(--background-body);
 }
 
