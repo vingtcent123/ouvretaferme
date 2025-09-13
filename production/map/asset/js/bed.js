@@ -1,5 +1,7 @@
 if(isTouch()) {
 
+	let zoneEvent = null;
+
 	document.addEventListener('scroll', function() {
 
 		if(window.oldScrollY > window.scrollY) {
@@ -9,26 +11,34 @@ if(isTouch()) {
 			});
 		}
 
-	});
+		if(zoneEvent !== null) {
 
-	document.addEventListener('scrollend', function() {
+			clearTimeout(zoneEvent);
 
-		const zone = qs('#zone-content');
-		const header = qs('#zone-header');
-
-		if(header === null) {
-			return;
 		}
 
-		const zoneTop = zone.getBoundingClientRect().top;
-		const sticky = parseFloat(window.getComputedStyle(document.body).getPropertyValue('--mainSticky')) * rem();
+		zoneEvent = setTimeout(() => {
 
-		if(zoneTop < sticky) {
-			header.style.transition = 'top 0.25s';
-			header.style.top = (sticky - zoneTop) +'px';
-		} else {
-			header.style.top = 0;
-		}
+			const zone = qs('#zone-content');
+			const header = qs('#zone-header');
+
+			if(header === null) {
+				return;
+			}
+
+			const zoneTop = zone.getBoundingClientRect().top;
+			const sticky = parseFloat(window.getComputedStyle(document.body).getPropertyValue('--mainSticky')) * rem();
+
+			if(zoneTop < sticky) {
+				header.style.transition = 'top 0.25s';
+				header.style.top = (sticky - zoneTop) +'px';
+			} else {
+				header.style.top = 0;
+			}
+
+			zoneEvent = null;
+
+		}, 250);
 
 	});
 
