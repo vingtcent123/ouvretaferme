@@ -17,7 +17,7 @@ div.bed-item-grid > *:first-child {
 	background-color: var(--background-body);
 	position: sticky;
 	z-index: 50;
-	top: 0;
+	top: var(--mainSticky);
 }
 
 div.bed-item-header {
@@ -123,22 +123,14 @@ div.bed-item-grid .bed-item-corner {
 	align-self: stretch;
 }
 
-body[data-touch="no"] {
-
-	div.bed-item-grid .bed-item-corner,
-	div.bed-item-grid .bed-item-bed {
-		left: calc(var(--nav-width) + var(--container-padding));
-	}
-
+body[data-touch="no"] div.bed-item-grid .bed-item-corner,
+body[data-touch="no"] div.bed-item-grid .bed-item-bed {
+	left: calc(var(--nav-width) + var(--container-padding));
 }
 
-body[data-touch="yes"] {
-
-	div.bed-item-grid .bed-item-corner,
-	div.bed-item-grid .bed-item-bed {
-		left: 0;
-	}
-
+body[data-touch="yes"] div.bed-item-grid .bed-item-corner,
+body[data-touch="yes"] div.bed-item-grid .bed-item-bed {
+	left: 0;
 }
 
 div.bed-item-grid .bed-item-bed a {
