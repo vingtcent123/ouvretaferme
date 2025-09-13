@@ -5,10 +5,7 @@ if(isTouch()) {
 	document.addEventListener('scroll', function() {
 
 		if(window.oldScrollY > window.scrollY) {
-			qs('#zone-header', node => {
-				node.style.transition = '';
-				node.style.top = 0;
-			});
+			qs('#zone-header', node => node.style.top = 0);
 		}
 
 		if(zoneEvent !== null) {
@@ -30,7 +27,6 @@ if(isTouch()) {
 			const sticky = parseFloat(window.getComputedStyle(document.body).getPropertyValue('--mainSticky')) * rem();
 
 			if(zoneTop < sticky) {
-				header.style.transition = 'top 0.25s';
 				header.style.top = (sticky - zoneTop) +'px';
 			} else {
 				header.style.top = 0;
