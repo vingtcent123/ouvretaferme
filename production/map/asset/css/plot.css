@@ -1,4 +1,14 @@
 /* Items */
+div.plot-soil {
+	background-color: #fff3;
+	padding: 1.25rem 0.75rem;
+}
+
+div.plot-soil h4 {
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
 div.plot-item-wrapper {
 	box-shadow: 1px 1px 1px var(--border);
 }
@@ -6,10 +16,7 @@ div.plot-item-wrapper {
 div.plot-item {
 	background: white;
 	padding: var(--responsive-padding);
-	margin-top: 2rem;
-}
-
-div.plot-item:not(:only-child) {
+	border-top: 1px solid var(--border);
 	border-bottom: 1px solid var(--border);
 }
 

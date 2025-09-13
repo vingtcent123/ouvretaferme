@@ -24,28 +24,24 @@ class PlotUi {
 
 			if($ePlot['zoneFill']) {
 
-				$beds = new BedUi()->displayFromPlot($eFarm, $ePlot, $season);
-
-				if($beds) {
-					$h .= $beds;
-				}
+				$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season);
 
 			} else {
 
 				$h .= '<div>';
 
-					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-item main-sticky-left" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
+					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-soil main-sticky-left" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
 
-						$h .= '<h4 class="plot-item-title">';
-							$h .= s("Jardin {value}", encode($ePlot['name']));
-						$h .= '</h4>';
-						$h .= '<div>';
-							$h .= $this->getPlotUse($ePlot);
+						$h .= '<div class="util-action">';
+							$h .= '<h4>';
+								$h .= s("Jardin {value}", encode($ePlot['name']));
+							$h .= '</h4>';
+							$h .= '<span>'.$this->getPlotArea($ePlot).'</span>';
 						$h .= '</div>';
 
 					$h .= '</div>';
 
-					$h .= new BedUi()->displayFromPlot($eFarm, $ePlot, $season);
+					$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season);
 
 				$h .= '</div>';
 
@@ -151,15 +147,19 @@ class PlotUi {
 
 	}
 
-	public function getPlotUse(Plot $ePlot): string {
-
-		$h = '';
+	public function getPlotArea(Plot $ePlot): string {
 
 		if($ePlot['area'] > 1000) {
-			$h .= s("{value} ha", sprintf('%.02f', $ePlot['area'] / 10000));
+			return s("{value} ha", sprintf('%.02f', $ePlot['area'] / 10000));
 		} else {
-			$h .= s("{value} m²", $ePlot['area']);
+			return s("{value} m²", $ePlot['area']);
 		}
+
+	}
+
+	public function getPlotUse(Plot $ePlot): string {
+
+		$h = $this->getPlotArea($ePlot);
 
 		$interval = SeasonUi::getInterval($ePlot);
 

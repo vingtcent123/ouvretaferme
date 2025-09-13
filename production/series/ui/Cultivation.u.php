@@ -1498,7 +1498,7 @@ class CultivationUi {
 		$showHarvest = function(bool $expected, bool $letter, int $first, int $last, \Closure $label) use($uiPlace, $eCultivation, $startTs, $stopTs, $minTs, $maxTs) {
 
 			if($expected) {
-				$css = 'background: repeating-linear-gradient(135deg, var(--harvest) 0, var(--harvest) 1px, #fff8 1px, #fff8 7px); color: var(--harvest)';
+				$css = 'background: repeating-linear-gradient(135deg, var(--harvest) 0, var(--harvest) 1px, #fff8 1px, #fff8 7px); color: var(--harvest); border-color: var(--harvest)';
 				$class = 'series-item-timeline-event-expected';
 			} else {
 				$css = 'background-color: var(--harvest);';
@@ -1615,7 +1615,7 @@ class CultivationUi {
 				$color = 'background-color: '.$eAction['color'].';';
 				$class = 'series-item-timeline-event-done';
 			} else {
-				$color = 'color: '.$eAction['color'].';';
+				$color = 'color: '.$eAction['color'].'; border-color: '.$eAction['color'].';';
 				$class = 'series-item-timeline-event-expected';
 			}
 
@@ -1626,7 +1626,7 @@ class CultivationUi {
 			$item .= '</div>';
 
 			$item .= '<style>';
-				$item .= $uiPlace->getPositionStyle($id, $startTs, $stopTs, $ts, $ts, width: '1.3rem');
+				$item .= $uiPlace->getPositionStyle($id, $startTs, $stopTs, $ts, $ts, width: '1.2rem');
 			$item .= '</style>';
 
 			$items[] = [$ts, $ts, $item];

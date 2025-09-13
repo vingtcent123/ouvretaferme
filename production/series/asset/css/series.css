@@ -27,7 +27,7 @@ div.series-header-perennial-seasons-separator {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border-radius: 0.75rem;
+	border-radius: var(--radius);
 	background-color: var(--text);
 	color: white;
 	font-weight: bold;
@@ -87,7 +87,7 @@ div.series-season-month {
 	margin-right: -1px;
 	padding: 0.5rem 0;
 	line-height: 1;
-	border-right: 1px dashed var(--border);
+	border-right: 1px dashed #0002;
 	border-left: 1px solid transparent;
 }
 
@@ -113,7 +113,6 @@ div.series-season-weeks > *:last-child {
 div.series-grid-now {
 	position: absolute;
 	border-right: 1px solid var(--secondary);
-	background: linear-gradient(to right, transparent 0, #C1426920 100%);
 	opacity: 0.5;
 	left: 0;
 	top: 0;
@@ -139,12 +138,29 @@ div.series-grid {
 }
 
 div.series-grid > div.series-grid-month:not(:first-child) {
-	border-left: 1px dashed var(--border);
+	border-left: 1px dashed #0001;
 	z-index: 100;
 }
 
-div.series-grid > div.series-grid-month:nth-child(even) {
-	background-color: #00000005;
+body[data-touch="yes"] #zone-content {
+	width: calc(var(--screen-width) - var(--container-padding) * 2 - var(--nav-width));
+	overflow-x: auto;
+}
+
+#zone-content > * {
+	min-width: 80rem;
+}
+
+#zone-tabs {
+
+	div.series-grid > div.series-grid-month:not(:first-child) {
+		border-left: 1px dashed #0002;
+	}
+
+	div.series-grid > div.series-grid-month:nth-child(even) {
+		background-color: #00000002;
+	}
+
 }
 
 div.series-item-header {
@@ -424,7 +440,7 @@ div.series-item-timeline {
 	position: relative;
 	display: flex;
 	align-items: center;
-	height: 100%;
+	height: 1.4rem;
 	overflow: hidden;
 }
 
@@ -436,7 +452,8 @@ div.series-item-timeline-event {
 	align-items: center;
 	justify-content: center;
 	line-height: 1;
-	font-size: .75rem;
+	font-size: .7rem;
+	border-radius: var(--radius);
 }
 
 div.series-item-timeline:not(.series-item-timeline-full) div.series-item-timeline-event {
@@ -444,8 +461,8 @@ div.series-item-timeline:not(.series-item-timeline-full) div.series-item-timelin
 }
 
 div.series-item-timeline-event:not(.series-item-timeline-event-full) {
-	height: calc(100% - 2px);
-	top: 1px;
+	bottom: 0;
+	top: 0;
 }
 
 div.series-item-timeline-event.series-item-timeline-event-expected > span {
@@ -458,32 +475,21 @@ div.series-item-timeline-event.series-item-timeline-event-full {
 	top: 0;
 	height: 100%;
 	background-color: white;
-	border: 1px solid var(--muted);
-	border-radius: calc(var(--radius) / 3);
+	border: 1px solid var(--primary);
 }
 
 div.series-item-timeline-event.series-item-timeline-event-expected {
-	border-left: 1px solid var(--muted);
-	border-right: 1px solid var(--muted);
-}
-
-div.series-item-timeline-event.series-item-timeline-event-done {
-	border-left: 1px solid white;
-	border-right: 1px solid white;
+	border: 1px solid var(--border);
 }
 
 div.series-item-timeline-event-min div.series-item-timeline-event:not(.series-item-timeline-event-full) {
-	border-top-left-radius: calc(var(--radius) / 3);
-	border-bottom-left-radius: calc(var(--radius) / 3);
-	transform: translate(1px, 0);
-	border-left: 0;
+	border-top-left-radius: var(--radius);
+	border-bottom-left-radius: var(--radius);
 }
 
 div.series-item-timeline-event-max div.series-item-timeline-event:not(.series-item-timeline-event-full) {
-	border-top-right-radius: calc(var(--radius) / 3);
-	border-bottom-right-radius: calc(var(--radius) / 3);
-	transform: translate(-1px, 0);
-	border-right: 0;
+	border-top-right-radius: var(--radius);
+	border-bottom-right-radius: var(--radius);
 }
 
 div.series-item:not(.series-item-header) div.series-item-planning-place {

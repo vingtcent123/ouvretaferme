@@ -1,3 +1,27 @@
+document.addEventListener('scroll', function() {
+
+	if(isTouch() === false) {
+		return;
+	}
+
+	const zone = qs('#zone-content');
+	const header = qs('#zone-header');
+
+	if(header === null) {
+		return;
+	}
+
+	const zoneTop = zone.getBoundingClientRect().top;
+	const headerHeight = qs('header').getBoundingClientRect().height;
+
+	if(zoneTop < headerHeight) {
+		header.style.top = (headerHeight - zoneTop) + 'px';
+	} else {
+		delete header.style.top;
+	}
+
+});
+
 document.delegateEventListener('click', '#bed-create-button', function(e) {
 
 	let number = parseInt(qs('#bed-create-number').value);

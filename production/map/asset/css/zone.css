@@ -1,8 +1,4 @@
 /* Map */
-#zone-tabs .tabs-item {
-	margin-bottom: 0;
-}
-
 @media print {
 
 	#zone-tabs .tab-panel {

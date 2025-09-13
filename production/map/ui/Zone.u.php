@@ -56,7 +56,7 @@ class ZoneUi {
 
 		$eZoneSelected = $cZone->first();
 
-		$h = '<div class="tabs-h" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
+		$h = '<div class="tabs-b" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
 
 			$h .= '<div class="'.($view === \farm\Farmer::PLAN ? 'main-sticky-left' : '').' tabs-item util-print-hide">';
 
@@ -83,23 +83,34 @@ class ZoneUi {
 				}
 
 			$h .= '</div>';
+			$h .= '<div id="zone-content">';
 
-			foreach($cZone as $eZone) {
+				$h .= new BedUi()->displayHeader($eFarm, $view, $season);
 
-				$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
+				$h .= '<div class="bed-item-wrapper">';
 
-					$content = $this->getOne($eFarm, $eZone, $season);
+					if($view === \farm\Farmer::PLAN) {
+						$h .= new \series\CultivationUi()->getListGrid($eFarm, $season);
+					}
 
-					$h .= match($view) {
-					//	\farm\Farmer::PLAN => $content,
-						\farm\Farmer::PLAN => '<div class="util-overflow-sm stick-sm">'.$content.'</div>',
-						\farm\Farmer::ROTATION => '<div class="util-overflow-sm stick-sm">'.$content.'</div>'
-					};
+					foreach($cZone as $eZone) {
+
+						$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
+
+							$content = $this->getOne($eFarm, $eZone, $season);
+
+							$h .= match($view) {
+								\farm\Farmer::PLAN => $content,
+								\farm\Farmer::ROTATION => '<div class="util-overflow-sm stick-sm">'.$content.'</div>'
+							};
+
+						$h .= '</div>';
+
+					}
+
 
 				$h .= '</div>';
-
-			}
-
+			$h .= '</div>';
 
 		$h .= '</div>';
 
@@ -115,13 +126,13 @@ class ZoneUi {
 
 		$h = '<div class="zone-item main-sticky-left" id="zone-item-'.$eZone['id'].'" data-ref="zone" data-name="'.encode($eZone['name']).'">';
 
-			$h .= '<div class="util-title">';
+			$h .= '<div class="util-action">';
 				$h .= '<h2>';
 					$h .= s("Parcelle {value}", encode($eZone['name']));
 				$h .= '</h2>';
+				$h .= '<span>'.$this->getZoneArea($eZone).'</span>';
 			$h .= '</div>';
 			$h .= '<div>';
-				$h .= $this->getZoneUse($eZone);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -132,7 +143,7 @@ class ZoneUi {
 
 	}
 
-	protected function getZoneUse(Zone $eZone): string {
+	protected function getZoneArea(Zone $eZone): string {
 
 		if($eZone['area'] > 1000) {
 			$area = s("{value} ha", sprintf('%.02f', $eZone['area'] / 10000));
@@ -140,7 +151,13 @@ class ZoneUi {
 			$area = s("{value} m²", $eZone['area']);
 		}
 
-		$h = $area;
+		return $area;
+
+	}
+
+	protected function getZoneUse(Zone $eZone): string {
+
+		$h = $this->getZoneArea($eZone);
 
 		$interval = SeasonUi::getInterval($eZone);
 

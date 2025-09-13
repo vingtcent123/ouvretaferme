@@ -222,7 +222,7 @@ class MainTemplate extends BaseTemplate {
 							$h .= '</div>';
 							$h .= '<div>';
 								$h .= '<h4>'.s("Usage").'</h4>';
-								$h .= '<a href="'.\association\AssociationSetting::URL.'">'.s("L'association Ouvretaferme").'</a><br/>';
+								$h .= '<a href="'.\association\AssociationSetting::URL.'">'.s("Qui sommes-nous ?").'</a><br/>';
 								$h .= '<a href="'.\association\AssociationSetting::URL.'/mentions-legales">'.s("Mentions légales").'</a><br/>';
 								$h .= '<a href="'.\association\AssociationSetting::URL.'/nous-contacter">'.s("Nous contacter").'</a><br/>';
 								$h .= '<a href="/presentation/service">'.s("Conditions d'utilisation").'</a><br/>';

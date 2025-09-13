@@ -319,6 +319,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 			echo '<h2>'.Asset::icon('megaphone').'<br/>'.s("Un logiciel pour communiquer").'</h2>';
 			echo '<div class="home-presentation-description">';
 				echo '<ul>';
+					echo '<li>'.s("<b>Programmez des campagnes d'e-mailing.</b><br/><small>Vous pouvez envoyer des e-mails à vos clients pour les prévenir de l'ouverture de vos ventes ou tout simplement leur envoyer une newsletter.</small>").'</li>';
 					echo '<li>'.s("<b>Créez le site internet de votre ferme.</b><br/><small>Créez autant de pages que vous voulez sur votre nouveau site et personnalisez le thème graphique. Vous pouvez même avoir un nom de domaine si vous le souhaitez.</small>").'</li>';
 					echo '<li>'.s("<b>Aucune connaissance technique n'est nécessaire.</b><br/><small>Toutes les étapes de création de votre site internet se font depuis votre téléphone ou votre ordinateur.</small>").'</li>';
 					echo '<li>'.s("<b>Pas de publicité.</b>").'</li>';

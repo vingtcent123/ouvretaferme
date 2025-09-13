@@ -299,7 +299,7 @@ div.place-grid-series-timeline-lines {
 	padding: 0 0.375rem;
 	background-color: white;
 	border: 1px solid var(--text);
-	border-radius: calc(var(--radius) / 2);
+	border-radius: var(--radius);
 	font-size: 0.9rem;
 	letter-spacing: -0.2px;
 	z-index: 2;

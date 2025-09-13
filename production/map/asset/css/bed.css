@@ -1,7 +1,6 @@
 /* Liste de planches avec leurs cultures */
 div.bed-item-wrapper {
 	position: relative;
-	margin-bottom: 0.5rem;
 }
 
 div.bed-item-grid {
@@ -14,18 +13,11 @@ div.bed-item-grid > *:first-child {
 	padding-left: 0.75rem;
 }
 
-div.bed-item-grid-header {
-	background-color: white;
-}
-
-@media (min-width: 768px) {
-
-	div.bed-item-grid-header {
-		position: sticky;
-		top: calc(var(--mainSticky) - 1px);
-		z-index: 10;
-	}
-
+#zone-header {
+	background-color: var(--background-body);
+	position: sticky;
+	z-index: 50;
+	top: 0;
 }
 
 div.bed-item-header {
@@ -113,28 +105,38 @@ div.bed-item-grid-rotation-2 {
 }
 
 div.bed-item-grid .bed-item-bed {
+	position: sticky;
 	line-height: 1;
 	align-self: stretch;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	min-height: 2.8rem;
+	z-index: 10;
 }
 
-div.bed-item-grid .bed-item-bed-header {
-	background-color: white;
+div.bed-item-grid .bed-item-corner {
+	position: sticky;
+	top: 0;
+	background-color: var(--background-body);
 	align-self: stretch;
-	display: flex;
-	align-items: end;
 }
 
-@media (min-width: 1100px) and (min-height: 650px) {
+body[data-touch="no"] {
 
-	div.bed-item-grid .bed-item-bed-header,
+	div.bed-item-grid .bed-item-corner,
 	div.bed-item-grid .bed-item-bed {
-		position: sticky;
 		left: calc(var(--nav-width) + var(--container-padding));
-		z-index: 20;
+	}
+
+}
+
+body[data-touch="yes"] {
+
+	div.bed-item-grid .bed-item-corner,
+	div.bed-item-grid .bed-item-bed {
+		left: 0;
 	}
 
 }
@@ -154,7 +156,6 @@ div.bed-item-grid div.bed-item-size {
 div.bed-item-grid div.bed-item-places {
 	overflow: hidden;
 	margin-left: 1rem;
-	//width: 80rem;
 }
 
 div.bed-item-grid div.bed-item-cultivation {

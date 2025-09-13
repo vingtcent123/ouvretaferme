@@ -18,13 +18,15 @@ if('scrollRestoration' in history) { // what an amazing feature!
 	history.scrollRestoration = 'manual';
 }
 
-function calculateScrollbarWidth() {
-  document.documentElement.style.setProperty('--scrollbar-width', (window.innerWidth - document.documentElement.clientWidth) + "px");
+function calculateScreenWidth() {
+  document.documentElement.style.setProperty('--screen-width', document.documentElement.clientWidth + 'px');
 }
 
-window.addEventListener('resize', calculateScrollbarWidth, false);
-document.addEventListener('DOMContentLoaded', calculateScrollbarWidth, false);
-window.addEventListener('load', calculateScrollbarWidth);
+calculateScreenWidth();
+
+window.addEventListener('resize', calculateScreenWidth, false);
+document.addEventListener('DOMContentLoaded', calculateScreenWidth, false);
+window.addEventListener('load', calculateScreenWidth);
 
 document.addEventListener("keydown", e => {
 
@@ -1375,11 +1377,11 @@ Lime.Tab = class {
 	static select(target) {
 
 		const tab = target.dataset.tab;
-		const wrapper = target.firstParent('.tabs-h, .tabs-v');
+		const wrapper = target.firstParent('.tabs-h, .tabs-v, .tabs-b');
 
 		wrapper.qsa('[data-tab]', node => {
 
-			if(node.firstParent('.tabs-h, .tabs-v') !== wrapper) {
+			if(node.firstParent('.tabs-h, .tabs-v, .tabs-b') !== wrapper) {
 				return;
 			}
 

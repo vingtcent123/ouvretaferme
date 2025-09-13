@@ -93,14 +93,6 @@ a.nav-year:hover {
 			"header footer" auto / var(--nav-width) 1fr;
 	}
 
-	@media (min-width: 2000px) {
-
-		body[data-template~="company"] {
-			padding: 0 calc((100vw - 1800px) / 2);
-		}
-
-	}
-
 	body[data-template~="company"] header {
 		grid-area: header;
 		position: fixed;

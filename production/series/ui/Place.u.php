@@ -965,9 +965,9 @@ class PlaceUi {
 		$css = '';
 
 		if($left < 0 or $right <= 100) {
-			$css .= '#'.$id.' { left: calc('.$left.'%'.($shiftLeft ? ' + '.$shiftLeft : '').'); width: '.($width ?: 'calc('.($right - $left).'% + 1px)').'; }';
+			$css .= '#'.$id.' { left: calc('.$left.'%'.($shiftLeft ? ' + '.$shiftLeft : '').'); width: '.($width ?: ($right - $left).'%').'; }';
 		} else {
-			$css .= '#'.$id.' { right: calc('.(100 - $right).'%'.($shiftRight ? ' + '.$shiftRight : '').'); width: '.($width ?: 'calc('.($right - $left).'% + 1px)').'; }';
+			$css .= '#'.$id.' { right: calc('.(100 - $right).'%'.($shiftRight ? ' + '.$shiftRight : '').'); width: '.($width ?: ($right - $left).'%').'; }';
 		}
 
 		return $css;

@@ -24,6 +24,10 @@ body[data-template="home-legal"] header {
 	position: relative;
 }
 
+body[data-template="home-legal"] main {
+	padding-top: 2rem;
+}
+
 body[data-template^="home"] main {
 	font-size: 1.1rem;
 	background-color: var(--background-light);

@@ -10,48 +10,6 @@ class BedUi {
 
 	}
 
-	public function displayFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season): string {
-
-		$beds = $this->displayBedsFromPlot($eFarm, $ePlot, $season);
-
-		if($beds === '') {
-			return '';
-		}
-
-		$view = $eFarm->getView('viewSoil');
-
-		\Asset::css('series', 'series.css');
-
-		$class = 'bed-item-grid bed-item-grid-'.$view;
-		if($view === \farm\Farmer::ROTATION) {
-			$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
-		}
-
-		$h = '<div class="'.$class.' bed-item-grid-header">';
-
-			$h .= '<div class="util-grid-header bed-item-header bed-item-bed-header">'.s("Planche").'</div>';
-
-			$h .= match($view) {
-				\farm\Farmer::PLAN => $this->displayHeaderBySeason($eFarm, $season),
-				\farm\Farmer::ROTATION => $this->displayHeaderByRotation($season, $eFarm['rotationYears'])
-			};
-
-		$h .= '</div>';
-
-		$h .= '<div class="bed-item-wrapper">';
-
-			if($view === \farm\Farmer::PLAN) {
-				$h .= new \series\CultivationUi()->getListGrid($eFarm, $season);
-			}
-
-			$h .= $beds;
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season): string {
 
 		$view = $eFarm->getView('viewSoil');
@@ -128,6 +86,29 @@ class BedUi {
 			$h .= '</div>';
 
 		}
+
+		return $h;
+
+	}
+
+	public function displayHeader(\farm\Farm $eFarm, string $view, int $season): string {
+
+		$class = 'bed-item-grid bed-item-grid-'.$view;
+
+		if($view === \farm\Farmer::ROTATION) {
+			$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
+		}
+
+		$h = '<div id="zone-header" class="'.$class.' bed-item-grid-header">';
+
+			$h .= '<div class="bed-item-header bed-item-corner"></div>';
+
+			$h .= match($view) {
+				\farm\Farmer::PLAN => $this->displayHeaderBySeason($eFarm, $season),
+				\farm\Farmer::ROTATION => $this->displayHeaderByRotation($season, $eFarm['rotationYears'])
+			};
+
+		$h .= '</div>';
 
 		return $h;
 

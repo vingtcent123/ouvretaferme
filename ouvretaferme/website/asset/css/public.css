@@ -10,10 +10,18 @@ html {
 
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (max-width: 1999px) {
 
 	html {
 		font-size: 17px;
+	}
+
+}
+
+@media (min-width: 2000px) {
+
+	html {
+		font-size: 19px;
 	}
 
 }

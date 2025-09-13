@@ -11,6 +11,7 @@
 	--success: #198754;
 	--radius: .5rem;
 	--gradient: linear-gradient(to top, transparent 0, #8882 100%);
+	--screen-width: calc(100vw - 15px)
 }
 
 body {
@@ -2561,9 +2562,6 @@ body[data-touch="yes"] .dropdown-list:not(.dropdown-list-minimalist).dropdown-li
 }
 
 .h-menu-wrapper {
-	background: linear-gradient(to right, #0000000C, transparent);
-	border-top-left-radius: 4rem;
-	border-bottom-left-radius: 4rem;
 	font-size: 2.25rem;
 	height: 3rem;
 	display: inline-block;
@@ -2740,6 +2738,7 @@ div.tabs-v {
 	grid-column-gap: 1rem;
 }
 
+div.tabs-b .tab-panel:not(.selected),
 div.tabs-h .tab-panel:not(.selected),
 div.tabs-v .tab-panel:not(.selected) {
 	display: none;
@@ -2799,8 +2798,15 @@ div.tabs-item + div.tabs-panel.util-block {
 	column-gap: 0.5rem;
 	align-items: stretch;
 	margin-bottom: 1.5rem;
-	border-bottom: 1px solid var(--secondary);
 	overflow-x: auto;
+}
+
+div.tabs-b > div.tabs-item {
+	margin-bottom: 1rem;
+}
+
+div.tabs-h > div.tabs-item {
+	border-bottom: 1px solid var(--secondary);
 }
 
 div.tabs-v > div.tabs-item {
@@ -2822,7 +2828,15 @@ div.tabs-v > div.tabs-item {
 	white-space: nowrap;
 }
 
-:not(div.tabs-v) > div.tabs-item .tab-item {
+div.tabs-b > div.tabs-item .tab-item {
+	border-radius: var(--radius);
+}
+
+div.tabs-b > div.tabs-item .tab-item:not(.selected):not(:hover) {
+	background-color: #00000008;
+}
+
+div.tabs-h > div.tabs-item .tab-item {
 	border-top-left-radius: var(--radius);
 	border-top-right-radius: var(--radius);
 	justify-content: center;
