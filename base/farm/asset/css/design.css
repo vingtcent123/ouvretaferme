@@ -250,7 +250,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		grid-template:
 			"nav main" var(--nav-height)
 			"header main" auto
-			"header footer" auto / var(--nav-width) 1fr;
+			"header footer" auto / var(--nav-width) calc(var(--screen-width) - var(--nav-width));
 	}
 
 	body[data-template~="farm"] > header {
