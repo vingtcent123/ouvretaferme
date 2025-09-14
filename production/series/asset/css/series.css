@@ -186,7 +186,7 @@ body[data-touch="yes"] #zone-content {
 }
 
 #zone-content > * {
-	min-width: calc(var(--zone-content-months) * 4.5rem);
+	min-width: calc(var(--zone-content-months) * 4.5rem + 10rem);
 }
 
 #zone-tabs {

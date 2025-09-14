@@ -95,7 +95,7 @@ class ZoneUi {
 				$h .= '<div class="bed-item-wrapper">';
 
 					if($view === \farm\Farmer::PLAN) {
-						$h .= new \series\CultivationUi()->getListGrid($eFarm, $season);
+						$h .= new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);
 					}
 
 					foreach($cZone as $eZone) {

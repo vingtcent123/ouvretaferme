@@ -121,7 +121,7 @@ class BedUi {
 	protected function displayHeaderBySeason(\farm\Farm $eFarm, int $season): string {
 
 		$h = '<div class="bed-item-header bed-item-places">';
-			$h .= new \series\CultivationUi()->getListSeason($eFarm, $season);
+			$h .= new \series\CultivationUi()->getListSeason($eFarm, $season, hasWeeks: TRUE);
 		$h .= '</div>';
 
 		return $h;

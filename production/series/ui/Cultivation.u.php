@@ -16,7 +16,7 @@ class CultivationUi {
 
 	}
 
-	public function getListSeason(\farm\Farm $eFarm, int $season): string {
+	public function getListSeason(\farm\Farm $eFarm, int $season, bool $hasWeeks = FALSE): string {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
@@ -47,7 +47,6 @@ class CultivationUi {
 			}
 
 			$months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
-			$hasWeeks = false; // WEEK
 
 			if($eFarm['calendarMonthStart'] !== NULL) {
 				for($month = $eFarm['calendarMonthStart'] - 1; $month < 12; $month++) {
@@ -95,15 +94,16 @@ class CultivationUi {
 
 	}
 
-	public function getListGrid(\farm\Farm $eFarm, int $season): string {
+	public function getListGrid(\farm\Farm $eFarm, int $season, bool $hasWeeks = FALSE): string {
 
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
 
 		$days = array_sum($this->getListDays($eFarm, $season));
 
-		// WEEK
 		$h = '';
-		//$h .= $this->getWeeklyListGrid($eFarm, $season, $days);
+		if($hasWeeks) {
+			$h .= $this->getWeeklyListGrid($eFarm, $season, $days);
+		}
 		$h .= $this->getMonthlyListGrid($eFarm, $season, $days);
 
 		return $h;
@@ -294,7 +294,7 @@ class CultivationUi {
 
 			$h .= '<div class="series-item-body">';
 
-				$h .= $this->getListGrid($eFarm, $season);
+				$h .= $this->getListGrid($eFarm, $season, hasWeeks: TRUE);
 
 				foreach($ccCultivation as $cCultivation) {
 
