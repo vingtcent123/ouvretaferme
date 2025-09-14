@@ -52,13 +52,67 @@ class ZoneUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, string $view, \Collection $cZone, int $season, \Search $search = new \Search()) {
+	public function getPlan(\farm\Farm $eFarm, \Collection $cZone, int $season) {
 
 		$eZoneSelected = $cZone->first();
 
 		$h = '<div class="tabs-b" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
 
-			$h .= '<div class="'.($view === \farm\Farmer::PLAN ? 'main-sticky-left' : '').' tabs-item util-print-hide">';
+			$h .= '<div class="main-sticky-left tabs-item util-print-hide">';
+
+				foreach($cZone as $eZone) {
+
+					$h .= '<a class="tab-item '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'" onclick="Lime.Tab.select(this)">';
+						$h .= encode($eZone['name']);
+					$h .= '</a>';
+
+				}
+
+			$h .= '</div>';
+			$h .= '<style>';
+				$h .= ':root {';
+					$h .= '--zone-content-months: '.$eFarm['calendarMonths'].';';
+				$h .= '}';
+			$h .= '</style>';
+			$h .= '<div id="zone-content">';
+
+				$h .= '<div id="zone-header" class="bed-item-grid bed-item-grid-plan bed-item-grid-header">';
+
+					$h .= '<div class="zone-corner"></div>';
+
+					$h .= $this->displayHeaderBySeason($eFarm, $season);
+
+				$h .= '</div>';
+
+				$h .= '<div class="bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
+
+					$h .= new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);
+
+					foreach($cZone as $eZone) {
+
+						$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
+							$h .= $this->getOne($eFarm, $eZone, $season);
+						$h .= '</div>';
+
+					}
+
+
+				$h .= '</div>';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getRotation(\farm\Farm $eFarm, \Collection $cZone, int $season, \Search $search = new \Search()) {
+
+		$eZoneSelected = $cZone->first();
+
+		$h = '<div class="tabs-b" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
+
+			$h .= '<div class="tabs-item util-print-hide">';
 
 				foreach($cZone as $eZone) {
 
@@ -83,32 +137,19 @@ class ZoneUi {
 				}
 
 			$h .= '</div>';
-			$h .= '<style>';
-				$h .= ':root {';
-					$h .= '--zone-content-months: '.$eFarm['calendarMonths'].';';
-				$h .= '}';
-			$h .= '</style>';
 			$h .= '<div id="zone-content">';
 
-				$h .= new BedUi()->displayHeader($eFarm, $view, $season);
+				$h .= '<div class="bed-item-grid bed-item-grid-rotation bed-item-grid-rotation-'.$eFarm['rotationYears'].' bed-item-grid-header">';
+					$h .= '<div></div>';
+					$h .= $this->displayHeaderByRotation($season, $eFarm['rotationYears']);
+				$h .= '</div>';
 
 				$h .= '<div class="bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
-
-					if($view === \farm\Farmer::PLAN) {
-						$h .= new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);
-					}
 
 					foreach($cZone as $eZone) {
 
 						$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
-
-							$content = $this->getOne($eFarm, $eZone, $season);
-
-							$h .= match($view) {
-								\farm\Farmer::PLAN => $content,
-								\farm\Farmer::ROTATION => '<div class="util-overflow-sm stick-sm">'.$content.'</div>'
-							};
-
+							$h .= '<div class="util-overflow-sm stick-sm">'.$this->getOne($eFarm, $eZone, $season).'</div>';
 						$h .= '</div>';
 
 					}
@@ -118,6 +159,28 @@ class ZoneUi {
 			$h .= '</div>';
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function displayHeaderBySeason(\farm\Farm $eFarm, int $season): string {
+
+		$h = '<div class="zone-header-season">';
+			$h .= new \series\CultivationUi()->getListSeason($eFarm, $season, hasWeeks: TRUE);
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function displayHeaderByRotation(int $season, int $number): string {
+
+		$h = '';
+
+		for($i = $season; $i > $season - $number; $i--) {
+			$h .= '<div class="util-grid-header '.($i === $season ? 'ml-1' : '').'">'.$i.'</div>';
+		}
 
 		return $h;
 

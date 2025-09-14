@@ -299,12 +299,12 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 			case \farm\Farmer::PLAN :
 				echo '<div class="main-sticky-overlay-left"></div>';
 				echo '<div class="main-sticky-overlay-right"></div>';
-				echo new \map\ZoneUi()->getList($data->eFarm, $view, $data->cZone, $data->season);
+				echo new \map\ZoneUi()->getPlan($data->eFarm, $data->cZone, $data->season);
 				break;
 
 			case \farm\Farmer::ROTATION :
 				echo new \farm\FarmUi()->getRotationSearch($data->search, $data->selectedSeasons);
-				echo new \map\ZoneUi()->getList($data->eFarm, $view, $data->cZone, $data->season, $data->search);
+				echo new \map\ZoneUi()->getRotation($data->eFarm, $data->cZone, $data->season, $data->search);
 				break;
 
 		}

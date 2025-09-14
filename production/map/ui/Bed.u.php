@@ -95,39 +95,6 @@ class BedUi {
 
 	}
 
-	public function displayHeader(\farm\Farm $eFarm, string $view, int $season): string {
-
-		$class = 'bed-item-grid bed-item-grid-'.$view;
-
-		if($view === \farm\Farmer::ROTATION) {
-			$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
-		}
-
-		$h = '<div id="zone-header" class="'.$class.' bed-item-grid-header">';
-
-			$h .= '<div class="bed-item-header bed-item-corner"></div>';
-
-			$h .= match($view) {
-				\farm\Farmer::PLAN => $this->displayHeaderBySeason($eFarm, $season),
-				\farm\Farmer::ROTATION => $this->displayHeaderByRotation($season, $eFarm['rotationYears'])
-			};
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function displayHeaderBySeason(\farm\Farm $eFarm, int $season): string {
-
-		$h = '<div class="bed-item-header bed-item-places">';
-			$h .= new \series\CultivationUi()->getListSeason($eFarm, $season, hasWeeks: TRUE);
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season): string {
 
 		$timeline = new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season);
@@ -137,18 +104,6 @@ class BedUi {
 		} else {
 			return '';
 		}
-
-	}
-
-	protected function displayHeaderByRotation(int $season, int $number): string {
-
-		$h = '';
-
-		for($i = $season; $i > $season - $number; $i--) {
-			$h .= '<div class="util-grid-header bed-item-header '.($i === $season ? 'ml-1' : '').'">'.$i.'</div>';
-		}
-
-		return $h;
 
 	}
 
