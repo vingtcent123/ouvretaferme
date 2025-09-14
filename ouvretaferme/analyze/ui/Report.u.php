@@ -509,8 +509,15 @@ class ReportUi {
 				$h .= '</td>';
 
 				$h .= '<td class="text-end report-item-ratio">';
+					$hasYield = FALSE;
 					foreach($harvestedByUnit as $unit => $value) {
-						$h .= \selling\UnitUi::getValue(round($value / $eCultivation['area'], 1), $unit).'<br/>';
+						if($eCultivation['area'] > 0) {
+							$h .= \selling\UnitUi::getValue(round($value / $eCultivation['area'], 1), $unit).'<br/>';
+							$hasYield = TRUE;
+						}
+					}
+					if($hasYield === FALSE) {
+						$h .= '-';
 					}
 				$h .= '</td>';
 
