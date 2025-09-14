@@ -208,7 +208,7 @@ class PlaceUi {
 	protected function getUpdatePlaces(\util\FormUi $form, string $source, Series|Task $e, \Collection $cZone, \Collection $cPlace): string {
 
 		if($cZone->count() === 1) {
-			$h = '<div class="place-grid-'.$source.'">';
+			$h = '<div class="place-grid-'.$source.'" data-soil-color="'.$e['farm']->getView('viewSoilColor').'">';
 				$h .= $this->getUpdateZone($form, $source, $e, $cZone->first(), $cPlace);
 			$h .= '</div>';
 			return $h;
