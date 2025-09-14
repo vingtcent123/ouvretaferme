@@ -1329,8 +1329,8 @@ class FarmUi {
 							};
 
 							$h .= match($eFarmer['viewSoilOverlay']) {
-								TRUE => '<a data-ajax="/farm/farmer:doUpdateSoilOverlay" post-id="'.$eFarmer['id'].'" post-view-soil-overlay="0" class="dropdown-item">'.s("Ne pas superposer les séries").'</a>',
-								FALSE => '<a data-ajax="/farm/farmer:doUpdateSoilOverlay" post-id="'.$eFarmer['id'].'" post-view-soil-overlay="1" class="dropdown-item">'.s("Superposer les séries").'</a>'
+								TRUE => '<a data-ajax="/farm/farmer:doUpdateSoilOverlay" post-id="'.$eFarmer['id'].'" post-view-soil-overlay="0" class="dropdown-item">'.s("Ne pas superposer les séries qui se chevauchent").'</a>',
+								FALSE => '<a data-ajax="/farm/farmer:doUpdateSoilOverlay" post-id="'.$eFarmer['id'].'" post-view-soil-overlay="1" class="dropdown-item">'.s("Superposer les séries qui se chevauchent").'</a>'
 							};
 
 						$h .= '</div>';
