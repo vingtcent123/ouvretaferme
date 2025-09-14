@@ -1642,7 +1642,7 @@ class AnalyzeUi {
 
 											foreach($cItem as $eItem) {
 
-												$eItemMonthly = $cItemMonthly[$eItem['unit']['id']] ?? new Item();
+												$eItemMonthly = $cItemMonthly[$eItem['unit']->empty() ? NULL : $eItem['unit']['id']] ?? new Item();
 
 												$h .= '<div style="'.(($position++ % 2) ? 'opacity: 0.66' : '').'">';
 													if($eItemMonthly->notEmpty()) {
