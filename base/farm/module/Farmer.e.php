@@ -31,7 +31,7 @@ class Farmer extends FarmerElement {
 	public function canSelf(): bool {
 
 		$this->expects(['farm']);
-		return $this['farm']->canManage();
+		return $this['farm']->getFarmer()->is($this);
 
 	}
 
