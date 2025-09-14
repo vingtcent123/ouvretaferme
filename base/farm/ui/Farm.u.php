@@ -1324,7 +1324,7 @@ class FarmUi {
 
 							$h .= match($eFarmer['viewSoilColor']) {
 								Farmer::WHITE => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::BLACK.'" class="dropdown-item">'.s("Utiliser des couleurs sombres").'</a>',
-								Farmer::BLACK => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::PLANT.'" class="dropdown-item">'.s("Utiliser la couleurs des espèces").'</a>',
+								Farmer::BLACK => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::PLANT.'" class="dropdown-item">'.s("Utiliser la couleur des espèces").'</a>',
 								Farmer::PLANT => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::WHITE.'" class="dropdown-item">'.s("Utiliser des couleurs claires").'</a>'
 							};
 
