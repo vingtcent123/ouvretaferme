@@ -61,7 +61,7 @@ new AdaptativeView('start', function($data, MainTemplate $t) {
 				echo '<li>'.s("Je note éventuellement mon temps de travail").'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\farm\FarmUi::urlCartography($data->e).'" class="btn btn-production"><p>'.Asset::icon('geo-alt-fill').'</p>'.s("Démarrer la planification").'</a>';
+				echo '<a href="'.\farm\FarmUi::urlCultivationCartography($data->e).'" class="btn btn-production"><p>'.Asset::icon('geo-alt-fill').'</p>'.s("Démarrer la planification").'</a>';
 			echo '</div>';
 		echo '</div>';
 		echo '<div class="home-feature bg-background">';

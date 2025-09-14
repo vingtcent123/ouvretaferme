@@ -26,7 +26,7 @@ new \map\PlotPage(function($data) {
 
 	})
 	->doCreate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->eZone['farm'], $data->season).'?zone='.$data->eZone['id'].'&success=map:Plot::created');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->eZone['farm'], $data->season).'?zone='.$data->eZone['id'].'&success=map:Plot::created');
 	});
 
 new \map\PlotPage(function($data) {
@@ -50,9 +50,9 @@ new \map\PlotPage(function($data) {
 
 	})
 	->doUpdate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e['farm'], $data->season).'?zone='.$data->e['zone']['id'].'&success=map:Plot::updated');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->e['farm'], $data->season).'?zone='.$data->e['zone']['id'].'&success=map:Plot::updated');
 	})
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e['farm'], $data->season).'?zone='.$data->e['zone']['id'].'&success=map:Plot::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->e['farm'], $data->season).'?zone='.$data->e['zone']['id'].'&success=map:Plot::deleted');
 	});
 ?>

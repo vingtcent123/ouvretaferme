@@ -70,7 +70,7 @@ class PlaceUi {
 				}
 
 				$h .= '<div class="place-update-filter">';
-					$h .= '<a href="'.\farm\FarmUi::urlCartography($e['farm'], $e['season']).'" class="btn btn-primary">'.\Asset::icon('geo-alt-fill').' '.s("Modifier le plan de la ferme").'</a> ';
+					$h .= '<a href="'.\farm\FarmUi::urlCultivationCartography($e['farm'], $e['season']).'" class="btn btn-primary">'.\Asset::icon('geo-alt-fill').' '.s("Modifier le plan de la ferme").'</a> ';
 					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#place-search")').' class="btn btn-primary">';
 						$h .= \Asset::icon('search').' '.s("Filtrer les planches");
 					$h .= '</a>';

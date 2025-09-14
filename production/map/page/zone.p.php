@@ -24,7 +24,7 @@ new \map\ZonePage(function($data) {
 
 	})
 	->doCreate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e['farm'], $data->season).'?zone='.$data->e['id'].'&success=map:Zone::created');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->e['farm'], $data->season).'?zone='.$data->e['id'].'&success=map:Zone::created');
 	});
 
 new \map\ZonePage(function($data) {
@@ -70,9 +70,9 @@ new \map\ZonePage(function($data) {
 
 	})
 	->doUpdate(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e['farm'], $data->season).'?zone='.$data->e['id'].'&success=map:Zone::updated');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->e['farm'], $data->season).'?zone='.$data->e['id'].'&success=map:Zone::updated');
 	})
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCartography($data->e['farm'], $data->season).'?success=map:Zone::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->e['farm'], $data->season).'?success=map:Zone::deleted');
 	});
 ?>

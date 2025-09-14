@@ -237,16 +237,13 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 
 	$t->nav = 'settings-production';
 
-	$t->canonical = \farm\FarmUi::urlCartography($data->eFarm, $data->season);
+	$t->canonical = \farm\FarmUi::urlCultivationCartography($data->eFarm, $data->season);
 	$t->title = s("Plan de {value}", $data->eFarm['name']);
+	$t->nav = 'cultivation';
+	$t->subNav = 'map';
 
 	$h = '<div class="util-action">';
-		$h .= '<h1>';
-			if($data->eFarm->canManage()) {
-				$h .= '<a href="'.\farm\FarmUi::urlSettingsProduction($data->eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			}
-			$h .= s("Plan de la ferme");
-		$h .= '</h1>';
+		$h .= '<h1>'.s("Plan de la ferme").'</h1>';
 		if($data->eFarm->canManage()) {
 			$h .=  '<div>';
 				$h .=  '<a href="/map/zone:create?farm='.$data->eFarm['id'].'&season='.$data->season.'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle parcelle").'</a>';
@@ -255,7 +252,7 @@ new AdaptativeView('cartography', function($data, FarmTemplate $t) {
 	$h .= '</div>';
 
 	$t->mainTitle = $h;
-	$t->mainYear = new \farm\FarmUi()->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCartography($data->eFarm, $season), $data->season);;
+	$t->mainYear = new \farm\FarmUi()->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCultivationCartography($data->eFarm, $season), $data->season);;
 
 	if(
 		$data->cZone->count() === 1 and // Une seule parcelle
@@ -317,7 +314,7 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur votre futur plan d'assolement").'</h4>';
 			echo '<p>'.s("Vous pourrez consulter votre plan d'assolement dès lors que vous aurez configuré les parcelles et les planches de culture de votre ferme et créé vos premières séries.").'</p>';
-			echo '<a href="'.\farm\FarmUi::urlCartography($data->eFarm, $data->season).'" class="btn btn-secondary">'.s("Créer le plan de ma ferme").'</a>';
+			echo '<a href="'.\farm\FarmUi::urlCultivationCartography($data->eFarm, $data->season).'" class="btn btn-secondary">'.s("Créer le plan de ma ferme").'</a>';
 		echo '</div>';
 
 	}

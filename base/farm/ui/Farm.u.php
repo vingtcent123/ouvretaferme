@@ -115,7 +115,8 @@ class FarmUi {
 			'series' => self::urlCultivationSeries($eFarm, $subView),
 			'forecast' => self::urlCultivationForecast($eFarm),
 			'soil' => self::urlCultivationSoil($eFarm, $subView),
-			'sequence' => self::urlCultivationSequences($eFarm)
+			'sequence' => self::urlCultivationSequences($eFarm),
+			'map' => self::urlCultivationCartography($eFarm)
 		};
 
 	}
@@ -149,7 +150,7 @@ class FarmUi {
 		return self::url($eFarm).'/itineraires';
 	}
 
-	public static function urlCartography(Farm $eFarm, ?int $season = NULL): string {
+	public static function urlCultivationCartography(Farm $eFarm, ?int $season = NULL): string {
 		return self::url($eFarm).'/carte'.($season ? '/'.$season : '');
 	}
 
@@ -860,6 +861,7 @@ class FarmUi {
 				'soil' => s("Plan d'assolement"),
 				'forecast' => s("Prévisionnel financier"),
 				'sequence' => s("Itinéraires techniques"),
+				'map' => s("Plan de la ferme"),
 			},
 
 			'analyze-production' => match($name) {
@@ -1311,7 +1313,7 @@ class FarmUi {
 
 				case \farm\Farmer::PLAN :
 					if($cZone->notEmpty()) {
-						$h .= '<a href="'.\farm\FarmUi::urlCartography($eFarm, $selectedSeason).'" class="btn btn-primary">';
+						$h .= '<a href="'.\farm\FarmUi::urlCultivationCartography($eFarm, $selectedSeason).'" class="btn btn-primary">';
 							$h .= \Asset::icon('geo-alt-fill').' ';
 							if($eFarm->canManage()) {
 								$h .= s("Modifier le plan de la ferme");
@@ -1610,7 +1612,7 @@ class FarmUi {
 
 			case 'cultivation' :
 
-				$categories = ['series', 'soil', 'forecast', 'sequence'];
+				$categories = ['series', 'soil', 'forecast', 'sequence', 'map'];
 
 				if($eFarm->canAnalyze() === FALSE) {
 					array_delete($categories, 'forecast');
@@ -1990,11 +1992,6 @@ class FarmUi {
 			$h .= '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'" class="util-button">';
 				$h .= '<h4>'.s("Les réglages de base").'</h4>';
 				$h .= \Asset::icon('gear-fill');
-			$h .= '</a>';
-
-			$h .= '<a href="'.FarmUi::urlCartography($eFarm).'" class="util-button">';
-				$h .= '<h4>'.s("Le plan de la ferme").'</h4>';
-				$h .= \Asset::icon('geo-alt-fill');
 			$h .= '</a>';
 
 			$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" class="util-button">';

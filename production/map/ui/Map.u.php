@@ -13,7 +13,7 @@ class MapUi {
 				$h .= '<div class="tabs-item">';
 
 					foreach($cZone as $eZone) {
-						$h .= '<a '.attr('onclick', 'Cartography.get("cartography-farm").clickZone('.$eZone['id'].')').' data-url="'.\farm\FarmUi::urlCartography($eFarm, $season).'?zone='.$eZone['id'].'" class="tab-item '.(($eZoneSelected->notEmpty() and $eZoneSelected['id'] === $eZone['id']) ? 'selected' : '').'" id="cartography-farm-tab-'.$eZone['id'].'">';
+						$h .= '<a '.attr('onclick', 'Cartography.get("cartography-farm").clickZone('.$eZone['id'].')').' data-url="'.\farm\FarmUi::urlCultivationCartography($eFarm, $season).'?zone='.$eZone['id'].'" class="tab-item '.(($eZoneSelected->notEmpty() and $eZoneSelected['id'] === $eZone['id']) ? 'selected' : '').'" id="cartography-farm-tab-'.$eZone['id'].'">';
 							$h .= encode($eZone['name']);
 						$h .= '</a>';
 					}
