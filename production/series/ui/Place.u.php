@@ -604,79 +604,86 @@ class PlaceUi {
 			return '';
 		}
 
-		$totalHeight = (count($lines) * 2 + (count($lines) - 1) * 0.3 + 0.8).'rem';
+		$totalHeight = (count($lines) * 2 + (count($lines) - 1) * 0.3 + 0.8);
 
-		$h = '<div class="place-grid-series-timeline-lines" style="height: '.$totalHeight.'">';
+		$list = '';
+		$gap = 0;
 
-			foreach($lines as $key => $line) {
+		foreach($lines as $key => $line) {
 
-				$positions = [];
+			$positions = [];
 
-				foreach($line as $ePlace) {
+			foreach($line as $ePlace) {
 
-					$isPlaceholder = (
-						$placeholderSource !== NULL and
-						$ePlaceholder->notEmpty() and
-						$ePlaceholder['id'] === $ePlace['series']['id']
-					);
+				$isPlaceholder = (
+					$placeholderSource !== NULL and
+					$ePlaceholder->notEmpty() and
+					$ePlaceholder['id'] === $ePlace['series']['id']
+				);
 
-					if($isPlaceholder) {
-						continue;
-					}
+				if($isPlaceholder) {
+					continue;
+				}
 
-					$top = match($key) {
+				$top = match($key) {
 
-						0 => '0.4rem',
-						default => '0.4rem + ('.$key.' * (2rem + 0.3rem))'
+					0 => '0.4rem',
+					default => '0.4rem + ('.$key.' * (2rem + 0.3rem))'
 
-					};
+				};
 
-					if($ePlace['visible']) {
+				if($ePlace['visible']) {
 
-						$reset = TRUE;
+					$reset = TRUE;
 
-						foreach($positions as $positionStop) {
+					foreach($positions as $positionStop) {
 
-							if($ePlace['positionStart'] < $positionStop) {
-								$reset = FALSE;
-								break;
-							}
-
-						}
-
-						if($reset) {
-							$positions = [$ePlace['positionStop']];
-						} else {
-							$positions[] = $ePlace['positionStop'];
-							$top .= ' + '.((count($positions) - 1) * 0.3).'rem';
+						if($ePlace['positionStart'] < $positionStop) {
+							$reset = FALSE;
+							break;
 						}
 
 					}
 
-					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'top: calc('.$top.');');
+					if($reset) {
+						$positions = [$ePlace['positionStop']];
+					} else {
+						$positions[] = $ePlace['positionStop'];
+						$top .= ' + '.((count($positions) - 1) * 0.3).'rem';
+					}
+
+					$gap = max($gap, (count($positions) - 1) * 0.3);
 
 				}
 
-			}
-
-			if($placeholderSource !== NULL) {
-
-				$ePlace = new Place([
-					'missing' => FALSE,
-					'series' => new Series(),
-					'task' => new Task()
-				]);
-
-				$ePlace[$placeholderSource] = $ePlaceholder;
-
-				$this->positionPlace($ePlace, $season, $firstWeekShown, $lastWeekShown);
-
-				if($ePlace['positionStart'] !== NULL and $ePlace['positionStop'] !== NULL) {
-					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'; top: 0;');
-				}
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'top: calc('.$top.');');
 
 			}
 
+		}
+
+		$totalHeight += $gap;
+
+		if($placeholderSource !== NULL) {
+
+			$ePlace = new Place([
+				'missing' => FALSE,
+				'series' => new Series(),
+				'task' => new Task()
+			]);
+
+			$ePlace[$placeholderSource] = $ePlaceholder;
+
+			$this->positionPlace($ePlace, $season, $firstWeekShown, $lastWeekShown);
+
+			if($ePlace['positionStart'] !== NULL and $ePlace['positionStop'] !== NULL) {
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'rem; top: 0;');
+			}
+
+		}
+
+		$h = '<div class="place-grid-series-timeline-lines" style="height: '.$totalHeight.'rem">';
+			$h .= $list;
 		$h .= '</div>';
 
 		return $h;
