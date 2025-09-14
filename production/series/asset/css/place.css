@@ -349,7 +349,7 @@ a.place-grid-series-timeline {
 	border-color: var(--primary);
 }
 
-.place-grid-series-timeline.place-grid-series-timeline-not-season > * {
+.place-grid-series-timeline.place-grid-series-timeline-not-season:not(:hover) {
 	opacity: 0.5;
 }
 

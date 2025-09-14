@@ -555,6 +555,12 @@ class PlaceUi {
 
 		$cPlace->sort('positionStart');
 
+		$overlay = $eFarm->getView('viewSoilOverlay');
+
+		if($overlay) {
+			$lines[0] = [];
+		}
+
 		foreach($cPlace as $ePlace) {
 
 			// Il faut au moins une date de démarrage
@@ -562,28 +568,34 @@ class PlaceUi {
 				continue;
 			}
 
-			$added = FALSE;
+			if($overlay) {
+				$lines[0][] = $ePlace;
+			} else {
 
-			foreach($lines as $key => $line) {
+				$added = FALSE;
 
-				$ePlaceLast = end($line);
+				foreach($lines as $key => $line) {
 
-				if(
-					$ePlace['visible'] === FALSE or
-					$ePlace['positionStart'] - $ePlaceLast['positionStart'] >= 4 or
-					($ePlaceLast['positionStop'] !== NULL and $ePlace['positionStart'] - $ePlaceLast['positionStop'] >= 0)
-				) {
+					$ePlaceLast = end($line);
 
-					$lines[$key][] = $ePlace;
-					$added = TRUE;
-					break;
+					if(
+						$ePlace['visible'] === FALSE or
+						$ePlaceLast['positionStop'] === NULL or
+						$ePlace['positionStart'] >= $ePlaceLast['positionStop']
+					) {
+
+						$lines[$key][] = $ePlace;
+						$added = TRUE;
+						break;
+
+					}
 
 				}
 
-			}
+				if($added === FALSE) {
+					$lines[] = [$ePlace];
+				}
 
-			if($added === FALSE) {
-				$lines[] = [$ePlace];
 			}
 
 		}

@@ -1328,7 +1328,11 @@ class FarmUi {
 								Farmer::PLANT => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::WHITE.'" class="dropdown-item">'.s("Utiliser des couleurs claires").'</a>'
 							};
 
-						//	$h .= '<a href="'.\farm\FarmUi::urlCultivationCartography($eFarm, $selectedSeason).'" class="dropdown-item">'.s("Superposer les séries").'</a>';
+							$h .= match($eFarmer['viewSoilOverlay']) {
+								TRUE => '<a data-ajax="/farm/farmer:doUpdateSoilOverlay" post-id="'.$eFarmer['id'].'" post-view-soil-overlay="0" class="dropdown-item">'.s("Ne pas superposer les séries").'</a>',
+								FALSE => '<a data-ajax="/farm/farmer:doUpdateSoilOverlay" post-id="'.$eFarmer['id'].'" post-view-soil-overlay="1" class="dropdown-item">'.s("Superposer les séries").'</a>'
+							};
+
 						$h .= '</div>';
 
 					}
