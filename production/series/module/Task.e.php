@@ -373,9 +373,15 @@ class Task extends TaskElement {
 				switch($this['status']) {
 
 					case Task::TODO :
+						if($p->isInvalid('planned')) {
+							return TRUE;
+						}
 						return ($this['repeatMaster']['stop'] > $this['plannedWeek']);
 
 					case Task::DONE :
+						if($p->isInvalid('done')) {
+							return TRUE;
+						}
 						return ($this['repeatMaster']['stop'] > $this['doneWeek']);
 
 				}
