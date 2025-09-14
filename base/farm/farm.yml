@@ -85,6 +85,8 @@ Farmer:
   viewCultivationCategory: enum(AREA, PLANT, FAMILY) = AREA
   viewSeries: enum(AREA, SEEDLING, HARVESTING, WORKING_TIME) = AREA
   viewSoil: enum(PLAN, ROTATION) = PLAN
+  viewSoilColor: enum(WHITE, BLACK, PLANT) = WHITE
+  viewSoilOverlay: bool = TRUE
   viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingCategoryCurrent: ?selling\Category

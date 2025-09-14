@@ -146,6 +146,8 @@ new \farm\FarmerPage(function($data) {
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
 		throw new RedirectAction(\farm\FarmerUi::urlManage($eFarm).'&success=farm:'.($data->e['status'] === \farm\Farmer::IN ? 'Farmer::created' : 'Farmer::deleted'));
 	})
+	->doUpdateProperties('doUpdateSoilColor', ['viewSoilColor'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
+	->doUpdateProperties('doUpdateSoilOverlay', ['viewSoilOverlay'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
 	->quick(['viewAnalyzeComposition'], [
 		'viewAnalyzeComposition' => fn() => throw new ReloadAction()
 	])

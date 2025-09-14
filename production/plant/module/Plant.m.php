@@ -46,6 +46,7 @@ class PlantModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'fqn' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'aliases' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'color' => ['color', 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'family' => ['element32', 'plant\Family', 'null' => TRUE, 'cast' => 'element'],
 			'vignette' => ['text8', 'min' => 30, 'max' => 30, 'null' => TRUE, 'cast' => 'string'],
@@ -57,7 +58,7 @@ class PlantModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'aliases', 'farm', 'family', 'vignette', 'plantsSafetyMargin', 'seedsSafetyMargin', 'cycle', 'status', 'createdAt'
+			'id', 'name', 'fqn', 'aliases', 'color', 'farm', 'family', 'vignette', 'plantsSafetyMargin', 'seedsSafetyMargin', 'cycle', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -78,6 +79,9 @@ class PlantModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'color' :
+				return '#373737';
 
 			case 'status' :
 				return Plant::ACTIVE;
@@ -131,6 +135,10 @@ class PlantModel extends \ModuleModel {
 
 	public function whereAliases(...$data): PlantModel {
 		return $this->where('aliases', ...$data);
+	}
+
+	public function whereColor(...$data): PlantModel {
+		return $this->where('color', ...$data);
 	}
 
 	public function whereFarm(...$data): PlantModel {

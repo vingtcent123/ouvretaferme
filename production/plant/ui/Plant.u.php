@@ -29,6 +29,14 @@ class PlantUi {
 		return \farm\FarmUi::url($eFarm).'/especes';
 	}
 
+	public static function getColorCircle(Plant $ePlant): string {
+
+		$ePlant->expects(['color']);
+
+		return '<div class="plant-color-circle" style="background-color: '.$ePlant['color'].'"></div>';
+
+	}
+
 	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
 
 		$d->prepend ??= \Asset::icon('flower2');
@@ -301,6 +309,7 @@ class PlantUi {
 							}
 						$h .= '</td>';
 						$h .= '<td>';
+							$h .= self::getColorCircle($ePlant);
 							$h .= self::link($ePlant);
 							if($ePlant->isOwner() === FALSE) {
 								$h .= ' <span class="plant-manage-locked">'.\Asset::icon('lock-fill').'</span>';
@@ -417,7 +426,7 @@ class PlantUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($ePlant, ['name*', 'family', 'cycle*']);
+			$h .= $form->dynamicGroups($ePlant, ['name*', 'color*', 'family', 'cycle*']);
 
 			$h .= $form->group(content: '<h3>'.s("Marges de sécurité").'</h3>');
 			$h .= $form->dynamicGroups($ePlant, ['plantsSafetyMargin', 'seedsSafetyMargin']);
@@ -439,7 +448,7 @@ class PlantUi {
 		$h = $form->openAjax('/plant/plant:doUpdate');
 
 			$h .= $form->hidden('id', $ePlant['id']);
-			$h .= $form->dynamicGroups($ePlant, ['name']);
+			$h .= $form->dynamicGroups($ePlant, ['name', 'color']);
 
 			if($ePlant->isOwner()) {
 				$h .= $form->dynamicGroups($ePlant, ['family', 'cycle']);
@@ -475,6 +484,7 @@ class PlantUi {
 		$d = Plant::model()->describer($property, [
 			'fqn' => s("Nom qualifié"),
 			'name' => s("Nom"),
+			'color' => s("Couleur"),
 			'aliases' => s("Autres noms"),
 			'plantsSafetyMargin' => s("Pour le calcul des plants à produire"),
 			'seedsSafetyMargin' => s("Pour le calcul des semences à acheter"),
@@ -492,6 +502,10 @@ class PlantUi {
 					];
 				};
 				new \plant\PlantUi()->query($d);
+				break;
+
+			case 'color' :
+				$d->after = \util\FormUi::info(s("Une couleur sombre utilisée pour l'assolement"));
 				break;
 
 			case 'aliases' :

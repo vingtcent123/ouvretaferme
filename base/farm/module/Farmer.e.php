@@ -28,6 +28,13 @@ class Farmer extends FarmerElement {
 
 	}
 
+	public function canSelf(): bool {
+
+		$this->expects(['farm']);
+		return $this['farm']->canManage();
+
+	}
+
 	public function canUpdateRole(): bool {
 
 		$this->expects(['user', 'farm', 'farmGhost']);

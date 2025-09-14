@@ -30,6 +30,7 @@ Plant:
   name: text8(1, null) @collate(general)
   fqn: ?text8
   aliases: ?text8(0, null)
+  color: color = PHP('#373737')
   farm: ?farm\Farm
   family: ?plant\Family
   vignette: ?text8(30, 30)

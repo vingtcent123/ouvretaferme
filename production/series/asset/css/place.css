@@ -297,13 +297,33 @@ div.place-grid-series-timeline-lines {
 	align-items: center;
 	line-height: 1.2;
 	padding: 0 0.375rem;
-	background-color: white;
-	border: 1px solid var(--text);
 	border-radius: var(--radius);
 	font-size: 0.9rem;
 	letter-spacing: -0.2px;
 	z-index: 2;
-	color: var(--text);
+}
+
+[data-soil-color="white"] {
+
+	.place-grid-series-timeline.place-grid-series-timeline-season,
+	.place-grid-series-timeline.place-grid-series-timeline-not-season {
+		background-color: white;
+		border: 1px solid var(--text);
+		color: var(--text);
+	}
+
+}
+
+[data-soil-color="plant"],
+[data-soil-color="black"] {
+
+	.place-grid-series-timeline.place-grid-series-timeline-season,
+	.place-grid-series-timeline.place-grid-series-timeline-not-season {
+		background-color: var(--primary);
+		border: 1px solid white;
+		color: white;
+	}
+
 }
 
 @media print {
@@ -431,8 +451,16 @@ div.place-grid-series-timeline-name {
 }
 
 div.place-grid-series-timeline-more {
-	color: var(--muted);
 	font-size: 0.8rem;
+}
+
+[data-soil-color="white"] div.place-grid-series-timeline-more {
+	color: var(--muted);
+}
+
+[data-soil-color="plant"] div.place-grid-series-timeline-more,
+[data-soil-color="black"] div.place-grid-series-timeline-more {
+	color: #ccc;
 }
 
 @media (min-width: 1200px) {

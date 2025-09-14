@@ -3,22 +3,6 @@ namespace farm;
 
 class CategoryUi {
 
-	public static function getColorCircle(Category $eCategory): string {
-
-		$eCategory->expects(['color']);
-
-		return '<div class="category-color-circle" style="background-color: '.$eCategory['color'].'"></div>';
-
-	}
-
-	public static function getShort(Category $eCategory): string {
-
-		$eCategory->expects(['short', 'name']);
-
-		return encode($eCategory['short'] ?? strtoupper(mb_substr($eCategory['name'], 0, 1)));
-
-	}
-
 	public static function text(\sequence\Flow|series\Task $e): string {
 
 		if($e instanceof \sequence\Flow) {

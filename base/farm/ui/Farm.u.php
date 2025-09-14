@@ -1312,15 +1312,25 @@ class FarmUi {
 			switch($selectedView) {
 
 				case \farm\Farmer::PLAN :
+
 					if($cZone->notEmpty()) {
-						$h .= '<a href="'.\farm\FarmUi::urlCultivationCartography($eFarm, $selectedSeason).'" class="btn btn-primary">';
-							$h .= \Asset::icon('geo-alt-fill').' ';
-							if($eFarm->canManage()) {
-								$h .= s("Modifier le plan de la ferme");
-							} else {
-								$h .= s("Plan de la ferme");
-							}
+
+						$eFarmer = $eFarm->getFarmer();
+
+						$h .= '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end">';
+							$h .= \Asset::icon('palette-fill');
 						$h .= '</a>';
+						$h .= '<div class="dropdown-list">';
+
+							$h .= match($eFarmer['viewSoilColor']) {
+								Farmer::WHITE => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::BLACK.'" class="dropdown-item">'.s("Utiliser des couleurs sombres").'</a>',
+								Farmer::BLACK => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::PLANT.'" class="dropdown-item">'.s("Utiliser la couleurs des espèces").'</a>',
+								Farmer::PLANT => '<a data-ajax="/farm/farmer:doUpdateSoilColor" post-id="'.$eFarmer['id'].'" post-view-soil-color="'.Farmer::WHITE.'" class="dropdown-item">'.s("Utiliser des couleurs claires").'</a>'
+							};
+
+						//	$h .= '<a href="'.\farm\FarmUi::urlCultivationCartography($eFarm, $selectedSeason).'" class="dropdown-item">'.s("Superposer les séries").'</a>';
+						$h .= '</div>';
+
 					}
 					break;
 

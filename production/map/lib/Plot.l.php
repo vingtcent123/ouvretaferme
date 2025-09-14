@@ -350,7 +350,7 @@ class PlotLib extends PlotCrud {
 									'harvestWeeks', 'harvestWeeksExpected',
 									'startWeek', 'startAction',
 									'plant' => [
-										'name', 'vignette', 'fqn',
+										'name', 'vignette', 'fqn', 'color',
 										'family' => ['fqn', 'name', 'color']
 									],
 									'cTask' => \series\Task::model()

@@ -10,7 +10,7 @@ class Cultivation extends CultivationElement {
 				'name', 'area', 'areaTarget', 'bedWidth', 'alleyWidth', 'length', 'lengthTarget', 'season', 'cycle', 'use', 'mode', 'plants', 'perennialSeason', 'perennialLifetime', 'status'
 			],
 			'farm' => ['name'],
-			'plant' => ['name', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
+			'plant' => ['name', 'color', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
 			'sliceTool' => ['name', 'routineValue'],
 			'cSlice' => SliceLib::delegateByCultivation(),
 			'sequence' => ['name', 'mode'],

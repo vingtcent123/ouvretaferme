@@ -70,7 +70,6 @@ class PlaceUi {
 				}
 
 				$h .= '<div class="place-update-filter">';
-					$h .= '<a href="'.\farm\FarmUi::urlCultivationCartography($e['farm'], $e['season']).'" class="btn btn-primary">'.\Asset::icon('geo-alt-fill').' '.s("Modifier le plan de la ferme").'</a> ';
 					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#place-search")').' class="btn btn-primary">';
 						$h .= \Asset::icon('search').' '.s("Filtrer les planches");
 					$h .= '</a>';
@@ -218,7 +217,7 @@ class PlaceUi {
 		$zones = array_count_values($cPlace->getColumnCollection('zone')->getIds());
 		asort($zones);
 
-		$h = '<div class="tabs-h place-grid-'.$source.'" id="place-grid-wrapper" onrender="'.encode('Lime.Tab.restore(this, "map-place-update"'.($zones ? ', '.array_key_last($zones) : '').')').'">';
+		$h = '<div class="tabs-h place-grid-'.$source.'" id="place-grid-wrapper" onrender="'.encode('Lime.Tab.restore(this, "map-place-update"'.($zones ? ', '.array_key_last($zones) : '').')').'" data-soil-color="'.$e['farm']->getView('viewSoilColor').'">';
 
 			$h .= '<div class="tabs-item">';
 
@@ -642,7 +641,7 @@ class PlaceUi {
 
 					}
 
-					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'top: calc('.$top.')');
+					$h .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'top: calc('.$top.');');
 
 				}
 
@@ -776,6 +775,8 @@ class PlaceUi {
 			'cTask'
 		]);
 
+		$soilColor = $eFarm->getView('viewSoilColor');
+
 		$minTs = $this->positionToTimestamp($eSeries, $ePlace['positionStart'], $season, 0);
 		$maxTs = $this->positionToTimestamp($eSeries, $ePlace['positionStop'], $season, 6);
 
@@ -844,6 +845,25 @@ class PlaceUi {
 			$dropdown = '';
 		}
 
+		if($soilColor === \farm\Farmer::PLANT) {
+
+			$colors = $cCultivation->getColumnCollection('plant')->getColumn('color');
+			$nColors = count($colors);
+
+			if($nColors === 1) {
+				$style .= 'background-color: '.$colors[0].';';
+			} else {
+
+				$style .= 'background: linear-gradient(to right';
+					foreach($colors as $position => $color) {
+						$style .= ', '.$color.' '.(100 * $position / ($nColors - 1)).'%';
+					}
+				$style .= ');';
+
+			}
+
+		}
+
 		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" '.$dropdown.' data-ajax-navigation="notouch">';
 
 			if($isPlaceholder) {
@@ -854,20 +874,25 @@ class PlaceUi {
 
 			} else {
 
-				$h .= '<div class="place-grid-series-timeline-images">';
+				if($soilColor !== \farm\Farmer::PLANT) {
 
-					foreach($cCultivation as $eCultivation) {
-						$h .= '<div class="place-grid-series-timeline-plant">';
-							$h .= \plant\PlantUi::getVignette($eCultivation['plant'], '1.4rem');
-						$h .= '</div>';
-					}
-					if($eSeries['status'] === Series::CLOSED) {
-						$h .= '<div class="place-grid-series-timeline-lock">';
-							$h .= \Asset::icon('lock-fill');
-						$h .= '</div>';
-					}
+					$h .= '<div class="place-grid-series-timeline-images">';
 
-				$h .= '</div>';
+						foreach($cCultivation as $eCultivation) {
+							$h .= '<div class="place-grid-series-timeline-plant">';
+								$h .= \plant\PlantUi::getVignette($eCultivation['plant'], '1.4rem');
+							$h .= '</div>';
+						}
+
+						if($eSeries['status'] === Series::CLOSED) {
+							$h .= '<div class="place-grid-series-timeline-lock">';
+								$h .= \Asset::icon('lock-fill');
+							$h .= '</div>';
+						}
+
+					$h .= '</div>';
+
+				}
 
 				$h .= '<div class="place-grid-series-timeline-name">';
 

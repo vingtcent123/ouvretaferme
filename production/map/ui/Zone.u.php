@@ -92,7 +92,7 @@ class ZoneUi {
 
 				$h .= new BedUi()->displayHeader($eFarm, $view, $season);
 
-				$h .= '<div class="bed-item-wrapper">';
+				$h .= '<div class="bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
 
 					if($view === \farm\Farmer::PLAN) {
 						$h .= new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);

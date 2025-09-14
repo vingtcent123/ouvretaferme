@@ -33,6 +33,15 @@ class ColorExtractor
     }
 
     /**
+     * @param int $colorCount
+     *
+     * @return array
+     */
+    public static function average(array $colors): string {
+        return self::mergeColors(\SplFixedArray::fromArray($colors), 1, 100 / count($colors))[0];
+    }
+
+    /**
      * @return bool
      */
     protected function isInitialized()
