@@ -7,6 +7,7 @@ class History extends HistoryElement {
 
 		return parent::getSelection() + [
 			'farm' => \farm\Farm::getSelection(),
+			'sale' => ['id', 'priceIncludingVat', 'cPayment' => \selling\PaymentLib::delegateBySale()],
 		];
 
 	}
@@ -25,7 +26,7 @@ class History extends HistoryElement {
 		$p
 			->setCallback('amount.check', function(?int $amount) use($p): bool {
 
-				if($p->isBuilt('type') === FALSE or $this['type'] === self::DONATION) {
+				if($p->isBuilt('type') === FALSE or $this['type'] === self::DONATION or post_exists('fromAdmin')) {
 					return TRUE;
 				}
 
@@ -38,7 +39,7 @@ class History extends HistoryElement {
 			})
 			->setCallback('amount.checkDonation', function(?int $amount) use($p): bool {
 
-				if($p->isBuilt('type') === FALSE or $this['type'] === self::MEMBERSHIP) {
+				if($p->isBuilt('type') === FALSE or $this['type'] === self::MEMBERSHIP or post_exists('fromAdmin')) {
 					return TRUE;
 				}
 
@@ -55,6 +56,22 @@ class History extends HistoryElement {
 				}
 
 				return $terms !== NULL;
+
+			})
+			->setCallback('membership.check', function(?int $membership) use($p): bool {
+
+				if($p->isBuilt('type') === FALSE or $this['type'] === self::DONATION) {
+					return TRUE;
+				}
+
+				if($membership === NULL) {
+					return FALSE;
+				}
+
+				return History::model()
+					->whereStatus(History::VALID)
+					->whereMembership($membership)
+					->count() === 0;
 
 			});
 

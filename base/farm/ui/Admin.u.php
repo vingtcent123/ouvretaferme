@@ -83,6 +83,7 @@ class AdminUi {
 						$h .= '<th>'.$search->linkSort('name', s("Nom")).'</th>';
 						$h .= '<th>'.s("Ville").'</th>';
 						$h .= '<th>'.s("Utilisateurs").'</th>';
+						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -134,6 +135,17 @@ class AdminUi {
 
 								})).'</small>';
 							}
+						$h .= '</td>';
+
+						$h .= '<td class="text-center">';
+						$h .= '<div>';
+							$h .= '<a class="dropdown-toggle btn btn-secondary" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<a href="/association/admin/:create?id='.$eFarm['id'].'" class="dropdown-item">';
+								$h .= s("Gérer les adhésions");
+							$h .= '</a>';
+							$h .= '</div>';
+						$h .= '</div>';
 						$h .= '</td>';
 					$h .= '</tr>';
 				}

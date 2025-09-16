@@ -3,6 +3,10 @@ namespace association;
 
 class HistoryLib extends HistoryCrud {
 
+	public static function getPropertiesCreate(): array {
+		return ['farm', 'type', 'membership', 'paidAt', 'amount'];
+	}
+
 	public static function countByYears(array $years): \Collection {
 
 		return History::model()

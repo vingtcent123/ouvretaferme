@@ -52,8 +52,7 @@ class MembershipLib {
 		return \payment\StripeLib::getByFarm($eFarmOtf);
 		
 	}
-
-	public static function createPayment(\farm\Farm $eFarm, string $type): string {
+	private static function getCustomerByFarm(\farm\Farm $eFarm, \payment\Method $ePaymentMethod): \selling\Customer {
 
 		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
 
@@ -98,24 +97,7 @@ class MembershipLib {
 
 		}
 
-		$fw = new \FailWatch();
-
-		$eHistory = new History();
-		$eHistory->build(['type', 'amount', 'terms'], $_POST + ['type' => $type]);
-
-		$fw->validate();
-
-		$eStripeFarm = self::getAssociationStripeFarm($eFarmOtf);
-
-		if($eStripeFarm->empty()) {
-			throw new \Exception('Missing stripe configuration for OTF');
-		}
-
-		History::model()->beginTransaction();
-
 		// Création du customer
-		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
-
 		if($eCustomer->empty()) {
 
 			$eCustomer = new \selling\Customer([
@@ -159,30 +141,19 @@ class MembershipLib {
 
 		}
 
-		if($type === History::MEMBERSHIP) {
+		return $eCustomer;
 
-			$currentYear = date('Y');
+	}
 
-			// On cotise pour l'année prochaine
-			if(
-				History::model()
-					->whereFarm($eFarm)
-					->whereMembership($currentYear)
-					->whereType(History::MEMBERSHIP)
-					->whereStatus(History::VALID)
-					->exists()
-			) {
+	private static function createStripePayment(\farm\Farm $eFarm, History $eHistory, string $type, ?int $membershipYear): array {
 
-				$membershipYear = nextYear();
+		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
+		$eCustomer = $eHistory['customer'];
 
-			} else {
+		$eStripeFarm = self::getAssociationStripeFarm($eFarmOtf);
 
-				$membershipYear = $currentYear;
-
-			}
-
-		} else {
-			$membershipYear = NULL;
+		if($eStripeFarm->empty()) {
+			throw new \Exception('Missing stripe configuration for OTF');
 		}
 
 		$items = [];
@@ -196,6 +167,90 @@ class MembershipLib {
 				'unit_amount' => ($eHistory['amount'] * 100),
 			]
 		];
+
+		$successUrl = AssociationUi::confirmationUrl($eHistory, $type, POST('from'));
+		$cancelUrl = $eFarm->empty() ? POST('from') : AssociationUi::url($eFarm);
+
+		$arguments = [
+			'payment_intent_data' => [
+				'metadata' => ['source' => 'otf', 'type' => 'membership']
+			],
+			'expires_at' => time() + 60 * 45,
+			'client_reference_id' => $eCustomer['id'],
+			'line_items' => $items,
+			'success_url' => $successUrl,
+			'cancel_url' => $cancelUrl,
+		];
+
+		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
+
+		History::model()->update(
+			$eHistory, [
+				'checkoutId' => $stripeSession['id'],
+			]
+		);
+
+		return $stripeSession;
+	}
+
+	public static function createPayment(\farm\Farm $eFarm, string $type, bool $fromAdmin = FALSE): ?string {
+
+		$fw = new \FailWatch();
+
+		$eHistory = new History();
+
+		if($fromAdmin) {
+
+			$properties = ['type', 'amount', 'membership', 'paidAt'];
+
+			$eMethod = \payment\MethodLib::getById(post('method'));
+
+			if($eMethod->notEmpty() and $eMethod->validate('canUse') === FALSE) {
+				\Fail::log('History::invalidMethod');
+				return NULL;
+			}
+
+			$membershipYear = POST('membership', 'int');
+
+		} else {
+
+			$properties = ['type', 'amount', 'terms'];
+			$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
+
+			if($type === History::MEMBERSHIP) {
+
+				$currentYear = date('Y');
+
+				// On cotise pour l'année prochaine
+				if(
+					History::model()
+						->whereFarm($eFarm)
+						->whereMembership($currentYear)
+						->whereType(History::MEMBERSHIP)
+						->whereStatus(History::VALID)
+						->exists()
+				) {
+
+					$membershipYear = nextYear();
+
+				} else {
+
+					$membershipYear = $currentYear;
+
+				}
+
+			} else {
+				$membershipYear = NULL;
+			}
+		}
+
+		$eHistory->build($properties, $_POST + ['type' => $type]);
+
+		$fw->validate();
+
+		History::model()->beginTransaction();
+
+		$eCustomer = self::getCustomerByFarm($eFarm, $eMethod);
 
 		$eHistoryDb = History::model()
      ->select(History::getSelection() + ['customer' => ['id', 'invoiceEmail']])
@@ -232,31 +287,21 @@ class MembershipLib {
 
 		}
 
-		$successUrl = AssociationUi::confirmationUrl($eHistory, $type, POST('from'));
-		$cancelUrl = $eFarm->empty() ? POST('from') : AssociationUi::url($eFarm);
+		if($eMethod->notEmpty() and $eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) {
 
-		$arguments = [
-			'payment_intent_data' => [
-				'metadata' => ['source' => 'otf', 'type' => 'membership']
-			],
-			'expires_at' => time() + 60 * 45,
-			'client_reference_id' => $eCustomer['id'],
-			'line_items' => $items,
-			'success_url' => $successUrl,
-			'cancel_url' => $cancelUrl,
-		];
+			$stripeSession = self::createStripePayment($eFarm, $eHistory, $type, $membershipYear);
 
-		$stripeSession = \payment\StripeLib::createCheckoutSession($eStripeFarm, $arguments);
+		} else {
 
-		History::model()->update(
-			$eHistory, [
-				'checkoutId' => $stripeSession['id'],
-			]
-		);
+			self::activateMembership($eHistory, $eMethod);
+
+			$stripeSession = NULL;
+
+		}
 
 		History::model()->commit();
 
-		return $stripeSession['url'];
+		return $stripeSession['url'] ?? NULL;
 
 	}
 
@@ -307,6 +352,11 @@ class MembershipLib {
 			return;
 		}
 
+		self::activateMembership($eHistory, new \payment\Method());
+	}
+
+	private static function activateMembership(History $eHistory, \payment\Method $eMethod): void {
+
 		History::model()->beginTransaction();
 
 		$eFarm = $eHistory['farm'];
@@ -320,10 +370,11 @@ class MembershipLib {
 
 		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
 
-		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
-
 		// Récupération ou création du customer
 		$eCustomer = \selling\CustomerLib::getById($eHistory['customer']['id']);
+		if($eMethod->notEmpty()) {
+			$eCustomer['defaultPaymentMethod'] = $eMethod;
+		}
 
 		// Création d'une vente et de l'item
 		$eSale = new \selling\Sale([
@@ -362,13 +413,16 @@ class MembershipLib {
 			->select(['paymentStatus'])
 			->update($eSale);
 
-		HistoryLib::updateByPaymentIntentId($object['id'], [
+		$properties = [
 			'customer' => $eCustomer,
-			'paymentStatus' => History::SUCCESS,
+			'paymentStatus' => $eHistory['paymentStatus'] !== NULL ? History::SUCCESS : NULL,
 			'status' => History::VALID,
-			'paidAt' => new \Sql('NOW()'),
 			'sale' => $eSale,
-		]);
+		];
+		if($eHistory['paidAt'] === NULL) {
+			$properties['paidAt'] = new \Sql('NOW()');
+		}
+		History::model()->update($eHistory, $properties);
 
 		// Promo adhésion 2025-2026
 		// Promotion : toute adhésion en 2025 donne droit à une adhésion pour 2026
@@ -401,6 +455,7 @@ class MembershipLib {
 			->setContent(...new AssociationUi()->getDocumentMail($eFarmOtf, $eHistory))
 			->addAttachment($pdfContent, new AssociationUi()->getDocumentFilename($eHistory).'.pdf', 'application/pdf')
 			->send();
+
 	}
 
 	private static function getHistoryFromPaymentIntent(array $event): History {
