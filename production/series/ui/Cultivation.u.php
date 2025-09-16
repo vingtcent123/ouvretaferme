@@ -1377,7 +1377,7 @@ class CultivationUi {
 										$yield = round($eCultivation['yieldByUnit'][$eCultivation['mainUnit']] / $eCultivation['series']['area'], 1);
 										$cultivations .= '<b>'.\selling\UnitUi::getValue($yield, $unit, TRUE).'</b>';
 
-										if($eCultivation['mainUnit'] === $unit and $eCultivation['harvestExpected'] !== NULL) {
+										if($eCultivation['mainUnit'] === $unit and $eCultivation['harvestExpected'] > 0) {
 
 											$value = round(($eCultivation['yieldByUnit'][$eCultivation['mainUnit']] / $eCultivation['harvestExpected'] - 1) * 100);
 
