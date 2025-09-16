@@ -295,6 +295,21 @@ class MembershipLib {
 
 			self::activateMembership($eHistory, $eMethod);
 
+			// Pas de moyen de paiement => Pas de paiement
+			if($fromAdmin and $eMethod->empty()) {
+
+				$eHistory = HistoryLib::getById($eHistory['id']);
+
+				if($eHistory['sale']->notEmpty()) {
+
+				\selling\Payment::model()
+					->whereSale($eHistory['sale'])
+					->delete();
+
+				}
+
+			}
+
 			$stripeSession = NULL;
 
 		}
