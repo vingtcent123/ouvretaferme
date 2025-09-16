@@ -83,7 +83,7 @@ class PageLib {
 				throw $action;
 			}
 
-			if($data->eFarm->hasAccounting()) {
+			if(in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS) and $data->eFarm->hasAccounting()) {
 
 				\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
