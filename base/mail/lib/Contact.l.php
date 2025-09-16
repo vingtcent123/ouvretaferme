@@ -128,6 +128,10 @@ class ContactLib extends ContactCrud {
 				$search->set('period', $eCampaign['sourcePeriod']);
 				break;
 
+			case Campaign::NEWSLETTER :
+				$search->set('newsletter', TRUE);
+				break;
+
 			default :
 				return new \Collection();
 
