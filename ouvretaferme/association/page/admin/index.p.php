@@ -6,7 +6,7 @@ new \association\HistoryPage(
 
 		$data->eFarm = \farm\FarmLib::getById(GET('id'));
 		$data->cHistory = \association\HistoryLib::getByFarm($data->eFarm);
-		$data->cMethod = \payment\MethodLib::getByFqns(['card', 'online-card', 'cash', 'check', 'transfer', 'direct-debit']);
+		$data->cMethod = \payment\MethodLib::getByFqns([\payment\MethodLib::CARD, \payment\MethodLib::CASH, \payment\MethodLib::CHECK, \payment\MethodLib::TRANSFER, \payment\MethodLib::DIRECT_DEBIT]);
 
 		throw new ViewAction($data);
 
@@ -21,5 +21,5 @@ new \association\HistoryPage(
 
 		$fw->validate();
 
-		throw new ReloadAction('association', 'History::adminCreated');
+		POST('type') === \association\History::MEMBERSHIP ? throw new ReloadAction('association', 'History::adminMembershipCreated') : throw new ReloadAction('association', 'History::adminCreated');
 	});

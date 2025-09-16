@@ -71,7 +71,9 @@ class History extends HistoryElement {
 				return History::model()
 					->whereStatus(History::VALID)
 					->whereMembership($membership)
-					->count() === 0;
+					->count() === 0 and
+					// pour éviter les fautes de frappe
+					$membership > (int)date('Y') - 5 and $membership < (int)date('Y') + 5;
 
 			});
 

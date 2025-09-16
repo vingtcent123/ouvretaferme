@@ -8,6 +8,7 @@ class MethodLib extends MethodCrud {
 	const CASH = 'cash';
 	const CHECK = 'check';
 	const TRANSFER = 'transfer';
+	const DIRECT_DEBIT = 'direct-debit';
 
 	public static function getPropertiesCreate(): array {
 		return ['name'];

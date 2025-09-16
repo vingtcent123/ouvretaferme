@@ -22,7 +22,8 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'History::adminCreated' => s("L'adhésion a bien été ajoutée"),
+			'History::adminCreated' => s("Le don a bien été enregistré"),
+			'adminMembershipCreated' => s("L'adhésion a bien été enregistrée"),
 
 			default => NULL
 
