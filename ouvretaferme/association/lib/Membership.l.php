@@ -173,7 +173,7 @@ class MembershipLib {
 
 		$arguments = [
 			'payment_intent_data' => [
-				'metadata' => ['source' => 'otf', 'type' => 'membership']
+				'metadata' => ['source' => 'otf', 'type' => 'membership', 'membershipType' => $type]
 			],
 			'expires_at' => time() + 60 * 45,
 			'client_reference_id' => $eCustomer['id'],

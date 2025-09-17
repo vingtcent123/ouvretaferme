@@ -404,7 +404,7 @@ class CashflowUi {
 			);
 		$subtitle .= '</div>';
 
-		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, new \Collection());
+		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, $cPaymentMethod);
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
