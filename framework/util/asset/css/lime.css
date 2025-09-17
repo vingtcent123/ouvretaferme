@@ -2992,6 +2992,10 @@ div.util-buttons > .util-button h4 {
 		display: none !important;
 	}
 
+	.util-print-invisible {
+		visibility: hidden !important;
+	}
+
 	.util-print-hide {
 		display: none !important;
 	}

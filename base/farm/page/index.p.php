@@ -642,6 +642,7 @@ new Page(function($data) {
 		\map\SeasonLib::setOnline($data->season);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
+		$data->eZoneSelected = GET('zone', 'map\Zone');
 
 		\map\GreenhouseLib::putFromZone($data->cZone);
 

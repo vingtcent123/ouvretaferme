@@ -6,6 +6,7 @@ class ZoneUi {
 	public function __construct() {
 
 		\Asset::css('map', 'zone.css');
+		\Asset::js('map', 'zone.js');
 
 	}
 
@@ -52,23 +53,10 @@ class ZoneUi {
 
 	}
 
-	public function getPlan(\farm\Farm $eFarm, \Collection $cZone, int $season) {
+	public function getPlan(\farm\Farm $eFarm, \Collection $cZone, Zone $eZoneSelected, int $season) {
 
-		$eZoneSelected = $cZone->first();
+		$h = '<div id="zone-tabs">';
 
-		$h = '<div class="tabs-b" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
-
-			$h .= '<div class="main-sticky-left tabs-item util-print-hide">';
-
-				foreach($cZone as $eZone) {
-
-					$h .= '<a class="tab-item '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'" onclick="Lime.Tab.select(this)">';
-						$h .= encode($eZone['name']);
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
 			$h .= '<style>';
 				$h .= ':root {';
 					$h .= '--zone-content-months: '.$eFarm['calendarMonths'].';';
@@ -78,19 +66,46 @@ class ZoneUi {
 
 				$h .= '<div id="zone-header" class="bed-item-grid bed-item-grid-plan bed-item-grid-header">';
 
-					$h .= '<div class="zone-corner"></div>';
+					$h .= '<div class="zone-corner util-print-invisible">';
+
+						if($cZone->count() >= 2) {
+
+							$h .= '<a data-dropdown="bottom-start" class="zone-button btn btn-secondary dropdown-toggle" data-dropdown-hover="true">';
+								$h .= '<span class="zone-dropdown" data-placeholder="'.s("Mes parcelles").'">';
+									$h .= $eZoneSelected->notEmpty() ? encode($cZone->findById($eZoneSelected)['name']) : s("Mes parcelles");
+								$h .= '</span>';
+							$h .= '</a>';
+							$h .= '<div class="dropdown-list" data-wrapper="#zone-tabs">';
+
+								$h .= '<a class="dropdown-item '.($eZoneSelected->empty() ? 'selected' : '').'" data-tab="" onclick="Zone.select(this)">';
+									$h .= s("Toutes mes parcelles");
+								$h .= '</a>';
+
+								foreach($cZone as $eZone) {
+
+									$h .= '<a class="dropdown-item '.($eZoneSelected->is($eZone) ? 'selected' : '').'" data-zone="'.$eZone['id'].'" onclick="Zone.select(this)" '.attr('data-placeholder', encode($eZone['name'])).'>';
+										$h .= s("Parcelle {value}", encode($eZone['name']));
+									$h .= '</a>';
+
+								}
+
+							$h .= '</div>';
+
+						}
+
+					$h .= '</div>';
 
 					$h .= $this->displayHeaderBySeason($eFarm, $season);
 
 				$h .= '</div>';
 
-				$h .= '<div class="bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
+				$h .= '<div class="zone-tabs bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
 
 					$h .= new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);
 
 					foreach($cZone as $eZone) {
 
-						$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
+						$h .= '<div class="zone-tab util-print-block '.(($eZoneSelected->empty() or $eZone->is($eZoneSelected)) ? '' : 'hide').'" data-zone="'.$eZone['id'].'">';
 							$h .= $this->getOne($eFarm, $eZone, $season);
 						$h .= '</div>';
 
@@ -110,7 +125,7 @@ class ZoneUi {
 
 		$eZoneSelected = $cZone->first();
 
-		$h = '<div class="tabs-b" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
+		$h = '<div class="tabs-xxx" id="zone-tabs" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
 
 			$h .= '<div class="tabs-item util-print-hide">';
 

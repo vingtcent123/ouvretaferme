@@ -274,7 +274,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		position: sticky;
 		left: var(--nav-width);
 		width: calc(var(--screen-width) - var(--nav-width));
-		z-index: 100;
+		z-index: 99;
 	}
 
 	body[data-template~="farm"] > main .container.farm-template-main-container {
@@ -1080,7 +1080,7 @@ body[data-touch="no"] {
 		top: 0;
 		height: 100vh;
 		position: fixed;
-		z-index: 99;
+		z-index: 98;
 	}
 
 	.main-sticky-overlay-left {

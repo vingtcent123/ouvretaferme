@@ -1,45 +1,3 @@
-if(isTouch()) {
-
-	let zoneEvent = null;
-
-	document.addEventListener('scroll', function() {
-
-		if(window.oldScrollY > window.scrollY) {
-			qs('#zone-header', node => node.style.top = 0);
-		}
-
-		if(zoneEvent !== null) {
-
-			clearTimeout(zoneEvent);
-
-		}
-
-		zoneEvent = setTimeout(() => {
-
-			const zone = qs('#zone-content');
-			const header = qs('#zone-header');
-
-			if(header === null) {
-				return;
-			}
-
-			const zoneTop = zone.getBoundingClientRect().top;
-			const sticky = parseFloat(window.getComputedStyle(document.body).getPropertyValue('--mainSticky')) * rem();
-
-			if(zoneTop < sticky) {
-				header.style.top = (sticky - zoneTop) +'px';
-			} else {
-				header.style.top = 0;
-			}
-
-			zoneEvent = null;
-
-		}, 250);
-
-	});
-
-}
-
 document.delegateEventListener('click', '#bed-create-button', function(e) {
 
 	let number = parseInt(qs('#bed-create-number').value);
@@ -75,7 +33,7 @@ document.delegateEventListener('click', '#bed-create-button', function(e) {
 
 		while(number < already) {
 
-			nodeNames.qs('.bed-create-one:last-of-type', input => input.remove());
+			nodeNames.qsa('.bed-create-one:last-of-type', input => input.remove());
 
 			already--;
 

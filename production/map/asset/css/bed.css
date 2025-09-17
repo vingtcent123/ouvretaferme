@@ -13,32 +13,6 @@ div.bed-item-grid > *:first-child {
 	padding-left: 0.75rem;
 }
 
-#zone-header {
-	background-color: var(--background-body);
-	position: sticky;
-	z-index: 50;
-	top: var(--mainSticky);
-}
-
-
-.zone-corner {
-	position: sticky;
-	top: 0;
-	background-color: var(--background-body);
-	align-self: stretch;
-	z-index: 1;
-}
-
-body[data-touch="no"] .zone-corner {
-	left: calc(var(--nav-width) + var(--container-padding));
-}
-
-body[data-touch="yes"] .zone-corner {
-	left: 0;
-}
-div.zone-header-season {
-	overflow: hidden;
-}
 
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even),
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even) .bed-item-bed {

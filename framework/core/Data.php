@@ -769,6 +769,20 @@ class Collection extends ArrayIterator {
 
 	}
 
+	public function findById(int|Element $id): Element {
+
+		if($id instanceof Element) {
+			if($id->exists()) {
+				$id = $id['id'];
+			} else {
+				return new Element();
+			}
+		}
+
+		return $this->find(fn($e) => $e['id'] === $id, limit: 1);
+
+	}
+
 	/**
 	 * Reduce collection
 	 *
