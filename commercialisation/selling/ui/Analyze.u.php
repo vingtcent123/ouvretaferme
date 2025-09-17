@@ -174,7 +174,7 @@ class AnalyzeUi {
 									}
 								$h .= '</td>';
 								$h .= '<td class="td-min-content">';
-									if($turnover !== NULL) {
+									if((float)$turnover !== 0.0) {
 
 										$partPrivate = round($turnoverPrivate / $turnover * 100);
 										$partPro = 100 - $partPrivate;
