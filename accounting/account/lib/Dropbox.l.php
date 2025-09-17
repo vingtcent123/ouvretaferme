@@ -227,6 +227,9 @@ Class DropboxLib {
 				'updatedAt' => new \Sql('NOW()'),
 				'updatedBy' => \user\ConnectionLib::getOnline(),
 			]);
+			if(LIME_ENV === 'dev') {
+				$ePartner['updatedBy'] = new \user\User(['id' => 21]);
+			}
 
 			Partner::model()->option('add-replace')->insert($ePartner);
 
@@ -263,6 +266,10 @@ Class DropboxLib {
 			'updatedAt' => new \Sql('NOW()'),
 			'updatedBy' => \user\ConnectionLib::getOnline(),
 		]);
+		if(LIME_ENV === 'dev') {
+			$ePartner['updatedBy'] = new \user\User(['id' => 21]);
+			$ePartner['createdBy'] = new \user\User(['id' => 21]);
+		}
 
 		Partner::model()->option('add-replace')->insert($ePartner);
 
@@ -311,7 +318,11 @@ Class DropboxLib {
 
 	private static function getRedirectUri(): string {
 
-		return \Lime::getUrl().'/public:dropbox';
+		if(LIME_ENV === 'dev') {
+			return 'https://49fe64d09cb2.ngrok-free.app/company/public:dropbox';
+		}
+
+		return \Lime::getUrl().'/company/public:dropbox';
 
 	}
 }
