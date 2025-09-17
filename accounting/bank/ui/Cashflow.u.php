@@ -464,7 +464,7 @@ class CashflowUi {
 
 	}
 
-	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, array $assetData): string {
+	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, array $assetData, \Collection $cPaymentMethod): string {
 
 		$form = new \util\FormUi();
 		$form->open('bank-cashflow-allocate');
@@ -474,7 +474,7 @@ class CashflowUi {
 			'description' => $eCashflow['memo'],
 		];
 
-		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $assetData, new \Collection());
+		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $assetData, $cPaymentMethod);
 
 	}
 

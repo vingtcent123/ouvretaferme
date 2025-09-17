@@ -70,6 +70,7 @@ new \bank\CashflowPage(
 
 		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
 		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 
 		throw new ViewAction($data);
 
