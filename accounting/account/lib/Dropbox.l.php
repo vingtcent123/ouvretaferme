@@ -318,11 +318,7 @@ Class DropboxLib {
 
 	private static function getRedirectUri(): string {
 
-		if(LIME_ENV === 'dev') {
-			return 'https://49fe64d09cb2.ngrok-free.app/company/public:dropbox';
-		}
-
-		return \Lime::getUrl().'/company/public:dropbox';
+		return AccountSetting::$dropbox['redirectDomain'].'/company/public:dropbox';
 
 	}
 }

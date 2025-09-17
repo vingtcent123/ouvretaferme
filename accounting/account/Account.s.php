@@ -8,6 +8,7 @@ class AccountSetting extends \Settings {
 	public static $dropbox = [
 		'appKey' => '',
 		'appSecret' => '',
+		'redirectDomain' => '',
 	];
 
 	const ASSET_CLASS = 2;
