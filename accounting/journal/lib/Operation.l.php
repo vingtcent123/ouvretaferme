@@ -408,16 +408,14 @@ class OperationLib extends OperationCrud {
 
 		} else {
 
-			$fields = ['paymentMethod', 'paymentDate'];
+			$properties = array_merge($properties, ['paymentMethod', 'paymentDate']);
 
 			if($invoiceId !== NULL) {
 
 				$input['invoice'] = $invoiceId;
-				$fields[] = 'invoice';
+				$properties[] = 'invoice';
 
 			}
-
-			$eOperationDefault->build($fields, $input);
 
 		}
 
