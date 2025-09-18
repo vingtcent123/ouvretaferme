@@ -1902,10 +1902,6 @@ class CultivationUi {
 
 				for($i = 1; $cSeriesPerennial->notEmpty(); $i++) {
 
-					if($i > 1) {
-						$h .= '<div class="series-header-perennial-seasons-separator"></div>';
-					}
-
 					if($cSeriesPerennial->offsetExists($i)) {
 
 						$eSeriesPerennial = $cSeriesPerennial[$i];
@@ -1924,7 +1920,6 @@ class CultivationUi {
 
 					for($i = $eSeriesPerennial['perennialSeason'] + 1; $i <= $eSeries['perennialLifetime']; $i++) {
 
-						$h .= '<div class="series-header-perennial-seasons-separator"></div>';
 						$h .= '<div class="series-header-perennial-seasons-one series-header-perennial-seasons-one-future">'.$i.'</div>';
 
 					}

@@ -644,6 +644,8 @@ new Page(function($data) {
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 		$data->eZoneSelected = GET('zone', 'map\Zone');
 
+		\farm\ActionLib::getMainByFarm($data->eFarm);
+
 		\map\GreenhouseLib::putFromZone($data->cZone);
 
 		$seasonsSeries = [$data->season + 1, $data->season, $data->season - 1];

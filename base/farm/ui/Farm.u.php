@@ -1333,6 +1333,11 @@ class FarmUi {
 								FALSE => '<a data-ajax="/farm/farmer:doUpdateSoilOverlay" post-id="'.$eFarmer['id'].'" post-view-soil-overlay="1" class="dropdown-item">'.s("Superposer les séries qui se chevauchent").'</a>'
 							};
 
+							$h .= match($eFarmer['viewSoilTasks']) {
+								TRUE => '<a data-ajax="/farm/farmer:doUpdateSoilTasks" post-id="'.$eFarmer['id'].'" post-view-soil-tasks="0" class="dropdown-item">'.s("Cacher les semaines de semis, plantation et récolte").'</a>',
+								FALSE => '<a data-ajax="/farm/farmer:doUpdateSoilTasks" post-id="'.$eFarmer['id'].'" post-view-soil-tasks="1" class="dropdown-item">'.s("Afficher les semaines de semis, plantation et récolte").'</a>'
+							};
+
 						$h .= '</div>';
 
 					}

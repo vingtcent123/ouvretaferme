@@ -148,6 +148,7 @@ new \farm\FarmerPage(function($data) {
 	})
 	->doUpdateProperties('doUpdateSoilColor', ['viewSoilColor'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
 	->doUpdateProperties('doUpdateSoilOverlay', ['viewSoilOverlay'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
+	->doUpdateProperties('doUpdateSoilTasks', ['viewSoilTasks'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
 	->quick(['viewAnalyzeComposition'], [
 		'viewAnalyzeComposition' => fn() => throw new ReloadAction()
 	])

@@ -9,19 +9,17 @@ div.series-header-perennial-seasons {
 	padding: 1rem;
 	display: flex;
 	align-items: center;
+	gap: 0.25rem;
 	line-height: 1;
+	overflow-x: auto;
 }
 
 div.series-header-perennial-seasons-label {
 	margin-right: 1rem;
 }
 
-div.series-header-perennial-seasons-separator {
-	width: 1rem;
-	border-top: 1px dashed #ccc;
-}
-
 .series-header-perennial-seasons-one {
+	min-width: 1.75rem;
 	width: 1.75rem;
 	height: 1.75rem;
 	display: flex;

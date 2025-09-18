@@ -78,6 +78,20 @@ class Cultivation extends CultivationElement {
 
 	}
 
+	public function getStartWeek(int $year): string {
+
+		$week = sprintf('%02d', ($this['startWeek'] + 100) % 100);
+
+		if($this['startWeek'] < 0) {
+			return ($year - 1).'-W'.$week;
+		} else if($this['startWeek'] > 100) {
+			return ($year - 1).'-W'.$week;
+		} else {
+			return $year.'-W'.$week;
+		}
+
+	}
+
 	public function getYoungPlants(Slice $eSlice = new Slice(),  ?bool &$targeted = NULL, ?int $safetyMargin = NULL, ?string &$error = NULL): ?int {
 
 		$this->expects([
@@ -198,7 +212,7 @@ class Cultivation extends CultivationElement {
 
 	public function calculateHarvestedNormalized() {
 
-		$this->expects(['mainUnit', 'harvestedByUnit', 'bunchWeight', 'unitWeight' ]);
+		$this->expects(['mainUnit', 'harvestedByUnit', 'bunchWeight', 'unitWeight']);
 
 		if($this['harvestedByUnit'] === NULL) {
 			$this['harvestedNormalized'] = NULL;

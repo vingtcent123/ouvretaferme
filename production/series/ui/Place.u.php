@@ -677,7 +677,7 @@ class PlaceUi {
 			$this->positionPlace($ePlace, $season, $firstWeekShown, $lastWeekShown);
 
 			if($ePlace['positionStart'] !== NULL and $ePlace['positionStop'] !== NULL) {
-				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'rem; top: 0;');
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'rem; top: 0;', );
 			}
 
 		}
@@ -802,6 +802,7 @@ class PlaceUi {
 		$h = '';
 
 		$details = '';
+		$actions = [];
 
 		if($isPlaceholder) {
 			$class = 'place-grid-series-timeline-light';
@@ -822,7 +823,21 @@ class PlaceUi {
 					$details .= \plant\PlantUi::getVignette($eCultivation['plant'], '1.6rem');
 				$details .= '</div>';
 				$details .= '<div>';
+
 					if($eCultivation['startAction'] !== NULL) {
+
+						if($eFarm->getView('viewSoilTasks')) {
+
+							$actions[] = [
+								'action' => match($eCultivation['startAction']) {
+										Cultivation::PLANTING => ACTION_PLANTATION,
+										Cultivation::SOWING => ACTION_SEMIS_DIRECT,
+								},
+								'weekStart' => $eCultivation->getStartWeek($eCultivation['season']),
+								'weekStop' => $eCultivation->getStartWeek($eCultivation['season']),
+							];
+
+						}
 
 						$start = ($eCultivation['startWeek'] + 1000) % 100;
 
@@ -834,12 +849,23 @@ class PlaceUi {
 						$details .= '</div>';
 
 					}
+
 					if($eCultivation['harvestWeeksExpected'] !== NULL or $eCultivation['harvestWeeks'] !== NULL) {
 
 						$harvests = array_merge($eCultivation['harvestWeeksExpected'] ?? [], $eCultivation['harvestWeeks'] ?? []);
 
 						$start = min($harvests);
 						$stop = max($harvests);
+
+						if($eFarm->getView('viewSoilTasks')) {
+
+							$actions[] = [
+								'action' => ACTION_RECOLTE,
+								'weekStart' => $start,
+								'weekStop' => $stop,
+							];
+
+						}
 
 						$details .= '<div>';
 							if($start !== $stop) {
@@ -849,6 +875,7 @@ class PlaceUi {
 							}
 						$details .= '</div>';
 					}
+
 				$details .= '</div>';
 
 			}
@@ -936,6 +963,28 @@ class PlaceUi {
 					}
 
 				$h .= '</div>';
+
+			}
+
+			if($actions) {
+
+				usort($actions, fn($action1, $action2) => $action1['weekStart'] > $action2['weekStart'] ? -1 : 1);
+
+				$cAction = \farm\FarmSetting::$mainActions;
+
+				foreach($actions as ['action' => $action, 'weekStart' => $startWeek, 'weekStop' => $stopWeek]) {
+
+					$eAction = $cAction[$action];
+
+					$startActionTs = strtotime(week_date_starts($startWeek).' 00:00:00');
+					$stopActionTs = strtotime(week_date_ends($stopWeek).' 23:59:59');
+
+					$left = ($startActionTs - $minTs) / ($maxTs - $minTs) * 100;
+					$width = ($stopActionTs - $minTs) / ($maxTs - $minTs) * 100 - $left;
+
+					$h .= '<div class="place-grid-series-timeline-week" style="left: '.$left.'%; width: '.$width.'%; background-color: '.$eAction['color'].'"></div>';
+
+				}
 
 			}
 

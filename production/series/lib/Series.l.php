@@ -1129,7 +1129,7 @@ class SeriesLib extends SeriesCrud {
 
 		}
 
-		// On récupére les données de la série à jour
+		// On récupère les données de la série à jour
 		Series::model()
 			->select(['bedStartCalculated', 'bedStartUser', 'bedStopCalculated', 'bedStopUser'])
 			->get($e);

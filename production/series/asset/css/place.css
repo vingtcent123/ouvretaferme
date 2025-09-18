@@ -284,7 +284,6 @@ div.place-grid-series-timeline-lines {
 }
 
 .place-grid-series-timeline {
-	overflow: hidden;
 	position: absolute;
 }
 
@@ -301,6 +300,11 @@ div.place-grid-series-timeline-lines {
 	font-size: 0.9rem;
 	letter-spacing: -0.2px;
 	z-index: 2;
+}
+
+.place-grid-series-timeline.place-grid-series-timeline-season:has(.place-grid-series-timeline-week),
+.place-grid-series-timeline.place-grid-series-timeline-not-season:has(.place-grid-series-timeline-week) {
+	border-radius: calc(var(--radius) / 2);
 }
 
 [data-soil-color="white"] {
@@ -431,6 +435,7 @@ div.place-grid-series-timeline-images div.place-grid-series-timeline-lock {
 div.place-grid-series-timeline-name {
 	white-space: nowrap;
 	line-height: 0.9;
+	overflow: hidden;
 }
 
 @media (max-width: 575px) {
@@ -448,6 +453,14 @@ div.place-grid-series-timeline-name {
 		line-height: 1;
 	}
 
+}
+
+div.place-grid-series-timeline-week {
+	position: absolute;
+	height: 0.3rem;
+	border-radius: var(--radius);
+	bottom: -0.15rem;
+	transform: translate(-1px, 0);
 }
 
 div.place-grid-series-timeline-more {

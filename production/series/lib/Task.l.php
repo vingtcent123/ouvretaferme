@@ -1757,7 +1757,6 @@ class TaskLib extends TaskCrud {
 		$cTask = Task::model()
 			->select('harvest', 'harvestUnit', 'harvestSize', 'doneWeek', 'doneDate')
 			->whereAction($eAction)
-			->where('harvest < 0 OR harvest > 0')
 			->whereCultivation($eCultivation)
 			->whereStatus(Task::DONE)
 			->getCollection();
@@ -1772,20 +1771,20 @@ class TaskLib extends TaskCrud {
 			foreach($cTask as $eTask) {
 
 				// Pas encore d'unité de récolte pour cette tâche
-				if($eTask['harvestUnit'] === NULL) {
-					continue;
-				}
+				if($eTask['harvestUnit'] !== NULL) {
 
-				// Récolte totale
-				if($eTask['harvestUnit'] === $eCultivation['mainUnit']) {
-					$harvested += $eTask['harvest'];
-				}
+					// Récolte totale
+					if($eTask['harvestUnit'] === $eCultivation['mainUnit']) {
+						$harvested += $eTask['harvest'];
+					}
 
-				// Récolte par unité
-				if(empty($harvestedByUnit[$eTask['harvestUnit']])) {
-					$harvestedByUnit[$eTask['harvestUnit']] = 0;
+					// Récolte par unité
+					if(empty($harvestedByUnit[$eTask['harvestUnit']])) {
+						$harvestedByUnit[$eTask['harvestUnit']] = 0;
+					}
+					$harvestedByUnit[$eTask['harvestUnit']] += $eTask['harvest'];
+
 				}
-				$harvestedByUnit[$eTask['harvestUnit']] += $eTask['harvest'];
 
 				// Gestion des mois de récolte
 				$months[] = date('Y-m', strtotime($eTask['doneWeek'].' + 3 DAYS'));
