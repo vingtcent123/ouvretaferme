@@ -402,13 +402,7 @@ class OperationLib extends OperationCrud {
 		$eOperationDefault['thirdParty'] = NULL;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
 
-		if($isFromCashflow === FALSE) {
-
-			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
-
-		} else {
-
-			$properties = array_merge($properties, ['paymentMethod', 'paymentDate']);
+		if($isFromCashflow) {
 
 			if($invoiceId !== NULL) {
 
@@ -416,6 +410,10 @@ class OperationLib extends OperationCrud {
 				$properties[] = 'invoice';
 
 			}
+
+		} else {
+
+			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
 
 		}
 
@@ -427,6 +425,10 @@ class OperationLib extends OperationCrud {
 
 			$input['invoiceFile'] = [$index => $invoiceFile];
 			$eOperation->buildIndex($properties, $input, $index);
+
+			if($isFromCashflow) {
+				$eOperation->build(['paymentDate', 'paymentMethod'], $input);
+			}
 
 			$eOperation['amount'] = abs($eOperation['amount']);
 

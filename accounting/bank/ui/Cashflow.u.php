@@ -404,6 +404,7 @@ class CashflowUi {
 			);
 		$subtitle .= '</div>';
 
+		$eOperation['cOperationCashflow'] = new \Collection([$eCashflow]);
 		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, $cPaymentMethod);
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';

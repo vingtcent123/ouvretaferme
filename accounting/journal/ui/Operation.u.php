@@ -685,6 +685,8 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
+			$h .= '<div class="cashflow-create-operation-validate"></div>';
+			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate cashflow-warning">';
 				$h .= '<div>';
 					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
@@ -859,7 +861,6 @@ class OperationUi {
 
 			case 'comment' :
 				$d->attributes['data-limit'] = 250;
-				$d->field = 'textarea';
 				break;
 
 			case 'paymentMethod' :

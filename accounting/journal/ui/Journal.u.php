@@ -311,10 +311,11 @@ class JournalUi {
 										$h .= '</div>';
 									}
 
+								$class = ($eOperation['type'] === Operation::CREDIT ? ' ml-3' : '');
 								if($canUpdate === TRUE) {
-									$h .= $eOperation->quick('description', encode($eOperation['description']));
+									$h .= $eOperation->quick('description', encode($eOperation['description']), 'util-quick'.$class);
 								} else {
-									$h .= encode($eOperation['description']);
+									$h .= '<span class="'.$class.'">'.encode($eOperation['description']).'</span>';
 								}
 							$h .= '</td>';
 
