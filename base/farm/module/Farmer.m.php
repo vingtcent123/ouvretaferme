@@ -208,7 +208,7 @@ class FarmerModel extends \ModuleModel {
 				return TRUE;
 
 			case 'viewSoilTasks' :
-				return TRUE;
+				return FALSE;
 
 			case 'viewSellingSales' :
 				return Farmer::ALL;
