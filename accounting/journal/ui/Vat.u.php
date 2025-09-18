@@ -177,7 +177,7 @@ Class VatUi {
 				).'</div>';
 
 			$h .= new JournalUi()->getTableContainer(
-				$eFarm, $cOperationWaiting, $eFinancialYear,
+				$eFarm, journalCode: '', cOperation: $cOperationWaiting, eFinancialYearSelected: $eFinancialYear,
 				hide: ['actions', 'document'],
 				show: ['vatAdjustement', 'period' => $eFinancialYear['lastPeriod']],
 			);

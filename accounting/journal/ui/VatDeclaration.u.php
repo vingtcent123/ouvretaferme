@@ -69,7 +69,7 @@ class VatDeclarationUi {
 
 		$h .= '<h3>'.s("Liste des écritures").'</h3>';
 		$h .= new JournalUi()->getTableContainer(
-			$eFarm, $cOperation, $eFinancialYear,
+			$eFarm, journalCode: '', cOperation: $cOperation, eFinancialYearSelected: $eFinancialYear,
 			hide: ['actions', 'document'],
 			show: ['vatAdjustement', 'period' => $eFinancialYear['lastPeriod']],
 		);
