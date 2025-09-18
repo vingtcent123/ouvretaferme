@@ -23,7 +23,7 @@ class SaleLib {
 		$cSale = \selling\Sale::model()
 			->select(['id'])
 			->whereShopDate($eDate)
-			->wherePreparationStatus('!=', \selling\Sale::CANCELED)
+			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::EXPIRED])
 			->getCollection();
 
 		return \selling\Item::model()
