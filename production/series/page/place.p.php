@@ -58,6 +58,8 @@
 
 		}
 
+		\farm\ActionLib::getMainByFarm($data->e['farm']);
+
 		throw new \ViewAction($data);
 
 	})
