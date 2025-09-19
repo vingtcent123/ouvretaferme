@@ -1016,7 +1016,7 @@ class CultivationUi {
 										$h .= '<div class="series-item-seeds-supplier">'.encode($eVariety['supplierSeed']['name']).'</div>';
 									}
 									if($eVariety->notEmpty() and $eVariety['weightSeed1000'] !== NULL) {
-										$h .= '<small class="color-muted">('.\plant\VarietyUi::getSeedsWeight1000($eVariety, $seedsVariety['seeds']).')</small>';
+										$h .= ' <small class="color-muted">('.\plant\VarietyUi::getSeedsWeight1000($eVariety, $seedsVariety['seeds']).')</small>';
 									}
 
 								}

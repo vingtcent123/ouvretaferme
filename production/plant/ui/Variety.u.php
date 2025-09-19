@@ -12,9 +12,9 @@ class VarietyUi {
 		$weight = ($seeds / 1000 * $e['weightSeed1000']);
 
 		if($weight > 1000) {
-			return \selling\UnitUi::getValue(round($weight / 1000, 1), 'kg', short: TRUE);
+			return \selling\UnitUi::getValue(ceil($weight / 100) / 10, 'kg', short: TRUE);
 		} else {
-			return \selling\UnitUi::getValue(round($weight), 'gram', short: TRUE);
+			return \selling\UnitUi::getValue(ceil($weight), 'gram', short: TRUE);
 		}
 
 	}
