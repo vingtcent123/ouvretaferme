@@ -16,7 +16,7 @@ class History extends HistoryElement {
 
 		$this->expects(['farm']);
 
-		return $this['paymentStatus'] === History::SUCCESS and $this['farm']->canManage();
+		return $this['paymentStatus'] === History::SUCCESS and ($this['farm']->canManage() or \user\ConnectionLib::getOnline()->isAdmin());
 
 	}
 

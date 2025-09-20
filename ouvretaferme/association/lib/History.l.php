@@ -134,10 +134,6 @@ class HistoryLib extends HistoryCrud {
 
 			exec('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
 
-			if(LIME_ENV === 'dev') {
-				d('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
-			}
-
 			$content = file_get_contents($file);
 
 			unlink($file);

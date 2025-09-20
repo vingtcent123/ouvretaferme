@@ -28,7 +28,6 @@ class AdminUi {
 			$d->append = s("");
 			$d->attributes = ['min' => date('Y')];
 		}, 'paidAt' => function($d) {
-			//$d->type = 'date';
 			$d->default = date('Y-m-d H:i');
 		}]);
 
@@ -50,6 +49,7 @@ class AdminUi {
 					$h .= '<th>'.s("Statut").'</th>';
 					$h .= '<th>'.s("Payé le").'</th>';
 					$h .= '<th>'.s("Moyen de paiement").'</th>';
+					$h .= '<th></th>';
 				$h .= '</tr>';
 
 				foreach($cHistory as $eHistory) {
@@ -63,6 +63,11 @@ class AdminUi {
 						if(($eHistory['sale']['cPayment'] ?? new \Collection())->notEmpty()) {
 							$h .= join(', ', \selling\PaymentUi::getList($eHistory['sale']['cPayment']));
 						}
+						$h .= '</td>';
+						$h .= '<td>';
+							if($eHistory->canReadDocument()) {
+								$h .= '<a href="/association/pdf:document?id='.$eHistory['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'  '.s("Reçu").'</a> ';
+							}
 						$h .= '</td>';
 					$h .= '</tr>';
 				}

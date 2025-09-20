@@ -287,6 +287,8 @@ class MembershipLib {
 
 		}
 
+		History::model()->commit();
+
 		if($eMethod->notEmpty() and $eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) {
 
 			$stripeSession = self::createStripePayment($eFarm, $eHistory, $type, $membershipYear);
@@ -313,8 +315,6 @@ class MembershipLib {
 			$stripeSession = NULL;
 
 		}
-
-		History::model()->commit();
 
 		return $stripeSession['url'] ?? NULL;
 
