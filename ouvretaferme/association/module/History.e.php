@@ -68,8 +68,11 @@ class History extends HistoryElement {
 					return FALSE;
 				}
 
+				$this->expects(['farm']);
+
 				return History::model()
 					->whereStatus(History::VALID)
+					->whereFarm($this['farm'])
 					->whereMembership($membership)
 					->count() === 0 and
 					// pour éviter les fautes de frappe

@@ -197,7 +197,7 @@ class MembershipLib {
 
 		$fw = new \FailWatch();
 
-		$eHistory = new History();
+		$eHistory = new History(['farm' => $eFarm]);
 
 		if($fromAdmin) {
 
