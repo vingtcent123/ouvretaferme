@@ -15,21 +15,6 @@ class Place {
 
 	}
 
-	static resetSearch() {
-
-		const wrapper = qs('#place-search');
-
-		wrapper.qs('[name="mode"]').value = '';
-		wrapper.qs('[name="width"]').value = '0';
-		wrapper.qs('[name="rotation"]').value = '0';
-		wrapper.qs('[name="free"]').value = '0';
-
-		wrapper.hide();
-
-		this.updateSearch();
-
-	}
-
 	static updateSearch() {
 
 		const wrapper = qs('#place-search');

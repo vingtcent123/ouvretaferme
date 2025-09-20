@@ -189,6 +189,21 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
+	public static function getForSelector(\farm\Farm $eFarm, int $season): \Collection {
+
+		$ccCultivation = Cultivation::model()
+			->select(Cultivation::getSelection())
+			->whereFarm($eFarm)
+			->whereSeason($season)
+			->sort(['startWeek' => SORT_ASC, 'mainUnit' => SORT_ASC, 'id' => SORT_ASC])
+			->getCollection(NULL, NULL, ['plant', NULL]);
+
+		self::orderByPlant($ccCultivation);
+
+		return $ccCultivation;
+
+	}
+
 	public static function getForForecast(\farm\Farm $eFarm, int $season): \Collection {
 
 		$cccCultivation = Cultivation::model()

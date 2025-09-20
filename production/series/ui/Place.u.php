@@ -69,12 +69,6 @@ class PlaceUi {
 
 				}
 
-				$h .= '<div class="place-update-filter">';
-					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#place-search")').' class="btn btn-primary">';
-						$h .= \Asset::icon('search').' '.s("Filtrer les planches");
-					$h .= '</a>';
-				$h .= '</div>';
-
 				$h .= $this->getPlaceSearch($e, $search);
 
 			}
@@ -133,7 +127,7 @@ class PlaceUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="place-search" class="util-block-search stick-xs '.($search->empty(['canWidth']) ? 'hide' : '').'">';
+		$h = '<div id="place-search" class="util-block-search stick-xs">';
 
 			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'id' => 'form-search']);
 				$h .= $form->hidden('search', 1);
@@ -141,25 +135,19 @@ class PlaceUi {
 
 				$h .= '<div>';
 
-					if($search->get('canWidth')) {
-
-						$h .= $form->inputGroup(
-							$form->addon('Largeur de planche').
-							$form->select('width', [
-								0 => s("Toutes"),
-								1 => s("Seulement {value} cm", $eSeries['bedWidth']),
-							], (int)$search->get('width'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()'])
-						);
-
-					}
-
 					$h .= $form->inputGroup(
-						$form->addon('Mode de culture').
+						$form->addon('Planches').
 						$form->select('mode', [
-							NULL => s("Tous"),
+							NULL => s("Plein champ et tunnel"),
 							\map\Plot::OPEN_FIELD => s("Plein champ"),
 							\map\Plot::GREENHOUSE => s("Tunnel"),
-						], $search->get('mode'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()'])
+						], $search->get('mode'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()']).
+						(
+							$search->get('canWidth') ? $form->select('width', [
+								0 => s("Toutes largeurs"),
+								1 => s("{value} cm", $eSeries['bedWidth']),
+							], (int)$search->get('width'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()']) : ''
+						)
 					);
 
 					if(
@@ -191,9 +179,6 @@ class PlaceUi {
 							5 => s("5 ans")
 						], $search->get('rotation'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()'])
 					);
-					$h .= '<div>';
-						$h .= '<a onclick="Place.resetSearch()" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
-					$h .= '</div>';
 
 				$h .= '</div>';
 

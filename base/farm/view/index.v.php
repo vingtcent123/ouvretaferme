@@ -285,8 +285,6 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 	$view = $data->eFarm->getView('viewSoil');
 
-	$t->js()->replaceHistory($t->canonical);
-
 	$uiFarm = new \farm\FarmUi();
 
 	$t->mainYear = $uiFarm->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCultivationSoil($data->eFarm, season: $season), $data->season);
@@ -299,6 +297,14 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 			case \farm\Farmer::PLAN :
 				echo '<div class="main-sticky-overlay-left"></div>';
 				echo '<div class="main-sticky-overlay-right"></div>';
+				if($data->hasSelector) {
+					echo '<style>
+						:root {
+							--nav-width: 25rem;
+						}
+					</style>';
+					echo new \series\SeriesUi()->getSelector($data->eFarm, $data->ccCultivation, $data->eCultivationSelected);
+				}
 				echo new \map\ZoneUi()->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
 				break;
 

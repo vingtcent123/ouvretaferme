@@ -55,6 +55,106 @@ class SeriesUi {
 
 	}
 
+	public function getSelector(\farm\Farm $eFarm, \Collection $ccCultivation, Cultivation $eCultivationSelected): string {
+
+		$h = '<div class="series-selector">';
+			$h .= '<div class="util-title">';
+				$h .= '<h3>'.s("Séries").'</h3>';
+				$h .= '<a href="'.\farm\FarmUi::urlSoil($eFarm).'" class="btn">'.\Asset::icon('x-lg').'</a>';
+			$h .= '</div>';
+			$h .= $this->getSelectorSeries($ccCultivation, $eCultivationSelected);
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getSelectorSeries(\Collection $ccCultivation, Cultivation $eCultivationSelected) {
+
+		\Asset::js('series', 'seriesSelector.js');
+
+		$h = '<div id="series-selector-list">';
+
+			foreach($ccCultivation as $cCultivation) {
+
+				$ePlant = $cCultivation->first()['plant'];
+
+				$h .= '<div class="series-selector-plant">';
+
+					$h .= '<h4>';
+						$h .= \plant\PlantUi::getVignette($ePlant, '1.5rem').' ';
+						$h .= encode($ePlant['name']);
+					$h .= '</h4>';
+					$h .= '<div class="series-selector-cultivations">';
+
+						foreach($cCultivation as $eCultivation) {
+
+							$eSeries = $eCultivation['series'];
+
+							$startTs = $eSeries->getBedStart() ? strtotime($eSeries->getBedStart().' 00:00:00') : NULL;
+							$stopTs = $eSeries->getBedStop() ? strtotime($eSeries->getBedStop().' 23:59:59') : NULL;
+
+							$h .= '<div onclick="SeriesSelector.select(this)" class="series-selector-cultivation '.($eCultivation->is($eCultivationSelected) ? 'selected' : '').'" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
+								$h .= '<div class="series-selector-header">';
+									$h .= '<a href="'.SeriesUi::url($eSeries).'" target="_blank">';
+										$h .= '<span class="series-selector-name">'.encode($eSeries['name']).'</span>';
+										$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
+									$h .= '</a>';
+									$h .= '<span class="series-selector-area">';
+
+										if($eSeries['use'] === Series::BED) {
+
+											if($eSeries['length'] !== NULL) {
+												if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] > $eSeries['length']) {
+													$h .= '<span class="color-warning">'.s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]).'</span>';
+												} else if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] < $eSeries['length']) {
+													$h .= s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]).'</span>';
+												} else {
+													$h .= s("{value} mL", $eSeries['length']);
+												}
+											} else if($eSeries['lengthTarget'] !== NULL) {
+												$h .= '<span class="color-danger">'.s("0 / {value} mL", $eSeries['lengthTarget']).'</div>';
+											}
+
+										} else {
+
+											if($eSeries['area'] !== NULL) {
+												if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] > $eSeries['area']) {
+													$h .= '<span class="color-warning">'.s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]).'</span>';
+												} else if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] < $eSeries['area']) {
+													$h .= s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]);
+												} else {
+													$h .= s("{value} m²", $eSeries['area']);
+												}
+											} else if($eSeries['areaTarget'] !== NULL) {
+												$h .= '<span class="color-danger">'.s("0 / {value} m²", $eSeries['areaTarget']).'</span>';
+											}
+
+										}
+
+									$h .= '</span>';
+								$h .= '</div>';
+								$h .= '<div class="series-selector-more">';
+									$h .= '<h5>'.s("Assolement").'</h5>';
+									$h .= '<a href="" class="btn btn-sm btn-primary">'.s("Modifier").'</a> ';
+									$h .= '<a href="" class="btn btn-sm btn-outline-primary">'.s("Supprimer").'</a>';
+								$h .= '</div>';
+							$h .= '</div>';
+
+						}
+
+					$h .= '</div>';
+
+				$h .= '</div>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getComment(Series $eSeries): string {
 
 		$h = '<div id="series-comment" class="util-block">';

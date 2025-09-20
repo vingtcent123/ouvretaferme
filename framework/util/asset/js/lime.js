@@ -796,7 +796,7 @@ String.prototype.setArgument = function(name, value) {
 
 	let location = this;
 
-	const regex = new RegExp('([\&\?])'+ name +'=([^\&]*)', 'i');
+	const regex = new RegExp('([\&\?])'+ name +'(=[^\&]*|$|\&)', 'i');
 
 	if(location.match(regex)) {
 

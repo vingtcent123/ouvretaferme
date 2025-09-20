@@ -335,8 +335,8 @@ class CsvLib {
 				$ePlace['series']['name'],
 				\util\TextUi::csvNumber($ePlace['length']),
 				\util\TextUi::csvNumber($ePlace['area']),
-				self::getWeekCalculated($ePlace['series']['bedStartCalculated'], $season, 1),
-				self::getWeekCalculated($ePlace['series']['bedStopCalculated'], $season, 7),
+				$ePlace['series']->getBedStart(),
+				$ePlace['series']->getBedStop(),
 			];
 
 			foreach($ePlace['series']['cCultivation'] as $eCultivation) {
@@ -348,20 +348,6 @@ class CsvLib {
 		}
 
 		return $output;
-
-	}
-
-	private static function getWeekCalculated(?int $value, int $season, int $day) {
-
-		if($value === NULL) {
-			return '';
-		} else if($value < 0) {
-			return week_date_day(($season - 1).'-W'.(100 + $value), $day);
-		} else if($value >= 100) {
-			return week_date_day(($season + 1).'-W'.($value - 100), $day);
-		} else {
-			return week_date_day($season.'-W'.sprintf('%02d', $value), $day);
-		}
 
 	}
 

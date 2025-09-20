@@ -1317,6 +1317,11 @@ class FarmUi {
 
 						$eFarmer = $eFarm->getFarmer();
 
+						if(LIME_ENV === 'dev') {
+							$h .= '<a href="'.FarmUi::urlSoil($eFarm, $selectedSeason).'?selector" class="btn btn-primary hide-lateral-down">';
+								$h .= \Asset::icon('upc-scan', ['class' => 'asset-icon-rotate--90']).'  '.s("Assoler mes séries");
+							$h .= '</a> ';
+						}
 						$h .= '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end">';
 							$h .= \Asset::icon('palette-fill');
 						$h .= '</a>';

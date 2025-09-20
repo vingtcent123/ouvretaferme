@@ -55,6 +55,8 @@ class ZoneUi {
 
 	public function getPlan(\farm\Farm $eFarm, \Collection $cZone, Zone $eZoneSelected, int $season) {
 
+		[$startTs, $stopTs] = new \series\PlaceUi()->getBounds($eFarm, $season);
+
 		$h = '<div id="zone-tabs">';
 
 			$h .= '<style>';
@@ -62,7 +64,7 @@ class ZoneUi {
 					$h .= '--zone-content-months: '.$eFarm['calendarMonths'].';';
 				$h .= '}';
 			$h .= '</style>';
-			$h .= '<div id="zone-content">';
+			$h .= '<div id="zone-content" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
 
 				$h .= '<div id="zone-header" class="bed-item-grid bed-item-grid-plan bed-item-grid-header">';
 

@@ -202,7 +202,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 	@media (min-width: 2000px) {
 
 		:root {
-			--nav-width: 20vw;
+			--nav-width: 22vw;
 			--nav-padding: 1.5rem;
 		}
 
@@ -211,7 +211,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 	@media (min-width: 1600px) and (max-width: 1999px) {
 
 		:root {
-			--nav-width: 22rem;
+			--nav-width: 23rem;
 			--nav-padding: 1.5rem;
 		}
 
@@ -250,7 +250,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		grid-template:
 			"nav main" var(--nav-height)
 			"header main" auto
-			"header footer" auto / var(--nav-width) calc(var(--screen-width) - var(--nav-width));
+			"header footer" auto / var(--nav-width) 1fr;
 	}
 
 	body[data-template~="farm"] > header {
@@ -571,7 +571,6 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 
 	body[data-touch="no"][data-template~="farm"] > main .container.farm-template-main-title {
 		position: sticky;
-		left: 0;
 		width: var(--screen-width);
 		z-index: 100;
 	}
