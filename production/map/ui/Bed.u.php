@@ -12,7 +12,6 @@ class BedUi {
 
 	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season, \series\Series|\series\Task $eUpdate): string {
 
-		$view = $eFarm->getView('viewSoil');
 		$form = new \util\FormUi();
 
 		$cBed = $ePlot['cBed'];
@@ -21,19 +20,9 @@ class BedUi {
 
 		foreach($cBed as $eBed) {
 
-			if(
-				($view === \farm\Farmer::ROTATION and $eBed['plotFill'])
-			) {
-				continue;
-			}
-
-			$place = match($view) {
-				\farm\Farmer::PLAN => $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season, $eUpdate),
-				\farm\Farmer::ROTATION => $this->displayPlaceByHistory($eBed['cPlace'], $season, $eFarm)
-			};
+			$place = $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season, $eUpdate);
 
 			if(
-				$view === \farm\Farmer::PLAN and
 				$eUpdate->empty() and
 				$eBed['plotFill'] and
 				$place === ''
@@ -59,17 +48,12 @@ class BedUi {
 
 			}
 
-			$class = 'bed-item-grid bed-item-grid-'.$view;
-
-			if($view === \farm\Farmer::ROTATION) {
-				$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
-			}
-
-
 			if($eBed['zoneFill']) {
-				$class .= ' bed-item-fill bed-item-fill-zone';
+				$class = 'bed-item-fill bed-item-fill-zone';
 			} else if($eBed['plotFill']) {
-				$class .= ' bed-item-fill bed-item-fill-plot';
+				$class = 'bed-item-fill bed-item-fill-plot';
+			} else {
+				$class = '';
 			}
 
 			if($eUpdate->notEmpty()) {
@@ -81,7 +65,7 @@ class BedUi {
 				$ePlace = new \series\Place();
 			}
 
-			$h .= '<div class="'.$class.'" '.$this->getTest($eBed).'>';
+			$h .= '<div class="bed-item-grid bed-item-grid-plan '.$class.'" '.$this->getTest($eBed).'>';
 
 				if($eBed['plotFill']) {
 
@@ -178,46 +162,44 @@ class BedUi {
 
 							$h .= '</div>';
 
-							if($view === \farm\Farmer::PLAN) {
 
-								$h .= '<div class="bed-item-size">';
+							$h .= '<div class="bed-item-size">';
 
-									if($eUpdate->notEmpty() and $eUpdate instanceof \series\Series) {
+								if($eUpdate->notEmpty() and $eUpdate instanceof \series\Series) {
 
-										if(
-											$eUpdate['use'] === \series\Series::BED and
-											$eUpdate['bedWidth'] !== NULL and
-											$eUpdate['bedWidth'] !== $eBed['width']
-										) {
-											$width = '<span class="color-danger" style="font-weight: bold">'.\Asset::icon('exclamation-circle').' '.s("{width} cm", $eBed).'</span>';
-										} else {
-											$width = s("{width} cm", $eBed);
-										}
-
-										$h .= '<div class="bed-item-size-write">';
-
-											$h .= $form->inputGroup(
-												$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
-													'min' => 0,
-													'max' => $eBed['length'],
-													'onfocus' => 'this.select()'
-												]).
-												$form->addon(s("mL x {width}", ['width' => $width]))
-											);
-
-										$h .= '</div>';
-
-										$h .= '<div class="bed-item-size-read">';
-											$h .= s("{length} mL x {width}", ['length' => $eBed['length'], 'width' => $width]);
-										$h .= '</div>';
-
+									if(
+										$eUpdate['use'] === \series\Series::BED and
+										$eUpdate['bedWidth'] !== NULL and
+										$eUpdate['bedWidth'] !== $eBed['width']
+									) {
+										$width = '<span class="color-danger" style="font-weight: bold">'.\Asset::icon('exclamation-circle').' '.s("{width} cm", $eBed).'</span>';
 									} else {
-
-										$h .= '<span title="'.s("{area} m²", $eBed).'">'.s("{length} mL x {width} cm", $eBed).'</span>';
+										$width = s("{width} cm", $eBed);
 									}
 
-								$h .= '</div>';
-							}
+									$h .= '<div class="bed-item-size-write">';
+
+										$h .= $form->inputGroup(
+											$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
+												'min' => 0,
+												'max' => $eBed['length'],
+												'onfocus' => 'this.select()'
+											]).
+											$form->addon(s("mL x {width}", ['width' => $width]))
+										);
+
+									$h .= '</div>';
+
+									$h .= '<div class="bed-item-size-read">';
+										$h .= s("{length} mL x {width}", ['length' => $eBed['length'], 'width' => $width]);
+									$h .= '</div>';
+
+								} else {
+
+									$h .= '<span title="'.s("{area} m²", $eBed).'">'.s("{length} mL x {width} cm", $eBed).'</span>';
+								}
+
+							$h .= '</div>';
 
 						$h .= '</div>';
 					$h .= '</div>';
@@ -256,7 +238,40 @@ class BedUi {
 
 	}
 
-	protected function displayPlaceByHistory(\Collection $cPlace, int $season, \farm\Farm $eFarm): string {
+	public function getRotations(\farm\Farm $eFarm, \Collection $cBed, int $season): string {
+
+		$h = '';
+
+		foreach($cBed as $eBed) {
+
+			if($eBed['plotFill']) {
+				continue;
+			}
+
+			$h .= '<div class="bed-item-grid bed-item-grid-rotation-'.$eFarm['rotationYears'].'">';
+
+				$h .= '<div class="bed-item-bed">';
+
+					$h .= '<div class="bed-item-content">';
+						$h .= '<div class="bed-item-name">';
+							$h .= '<b>'.encode($eBed['name']).'</b>';
+						$h .= '</div>';
+
+					$h .= '</div>';
+				$h .= '</div>';
+
+
+				$h .= new BedUi()->displayPlaceByHistory($eBed['cPlace'], $season, $eFarm);
+
+			$h .= '</div>';
+
+		}
+
+		return $h;
+
+	}
+
+	public function displayPlaceByHistory(\Collection $cPlace, int $season, \farm\Farm $eFarm): string {
 
 		$cCultivationBySeason = new \Collection();
 		$cFamily = new \Collection();

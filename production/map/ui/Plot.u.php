@@ -48,7 +48,7 @@ class PlotUi {
 
 								}
 								$h .= s("Jardin {value}", encode($ePlot['name']));
-								$h .= '<span class="plot-title-area">'.$this->getPlotArea($ePlot).'</span>';
+								$h .= '<span class="plot-title-area">'.$ePlot->getArea().'</span>';
 							$h .= '</h4>';
 							if(
 								$eUpdate->notEmpty() and
@@ -170,19 +170,48 @@ class PlotUi {
 
 	}
 
-	public function getPlotArea(Plot $ePlot): string {
+	public function getRotations(\farm\Farm $eFarm, \Collection $cPlot, int $season): string {
 
-		if($ePlot['area'] > 1000) {
-			return s("{value} ha", sprintf('%.02f', $ePlot['area'] / 10000));
-		} else {
-			return s("{value} m²", $ePlot['area']);
+		$h = '';
+
+		foreach($cPlot as $ePlot) {
+
+			if($ePlot['zoneFill']) {
+
+				$h .= '<div class="plot-wrapper">';
+					$h .= new BedUi()->getRotations($eFarm, $ePlot['cBed'], $season);
+				$h .= '</div>';
+
+			} else {
+
+				$h .= '<div class="plot-wrapper">';
+
+					$h .= '<div class="plot-title">';
+
+						$h .= '<div class="util-action">';
+							$h .= '<h4>';
+								$h .= s("Jardin {value}", encode($ePlot['name']));
+								$h .= '<span class="plot-title-area">'.$ePlot->getArea().'</span>';
+							$h .= '</h4>';
+						$h .= '</div>';
+
+					$h .= '</div>';
+
+					$h .= new BedUi()->getRotations($eFarm, $ePlot['cBed'], $season);
+
+				$h .= '</div>';
+
+			}
+
 		}
+
+		return $h;
 
 	}
 
 	public function getPlotUse(Plot $ePlot): string {
 
-		$h = $this->getPlotArea($ePlot);
+		$h = $ePlot->getArea();
 
 		$interval = SeasonUi::getInterval($ePlot);
 

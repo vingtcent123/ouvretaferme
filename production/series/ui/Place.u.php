@@ -55,7 +55,6 @@ class PlaceUi {
 
 
 		// Positionné avant pour récupérer les alertes
-	//	$places = $this->getUpdatePlaces($form, $source, $e, $cZone, $cPlace);
 		$places = new \map\ZoneUi()
 			->setUpdate($e)
 			->getPlan($eFarm, $cZone, new \map\Zone(), $e['season']);

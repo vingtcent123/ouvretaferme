@@ -11,6 +11,18 @@ class Zone extends ZoneElement {
 
 	}
 
+	public function getArea(): string {
+
+		if($this['area'] > 1000) {
+			$area = s("{value} ha", sprintf('%.02f', $this['area'] / 10000));
+		} else {
+			$area = s("{value} m²", $this['area']);
+		}
+
+		return $area;
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm']);

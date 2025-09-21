@@ -158,7 +158,7 @@ class ZoneUi {
 
 		$eZoneSelected = $cZone->first();
 
-		$h = '<div class="tabs-xxx" id="zone-container" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
+		$h = '<div class="tabs-h" id="zone-container" onrender="'.encode('Lime.Tab.restore(this, "map-soil")').'">';
 
 			$h .= '<div class="tabs-item util-print-hide">';
 
@@ -185,25 +185,42 @@ class ZoneUi {
 				}
 
 			$h .= '</div>';
-			$h .= '<div id="zone-content">';
 
-				$h .= '<div class="bed-item-grid bed-item-grid-rotation bed-item-grid-rotation-'.$eFarm['rotationYears'].' bed-item-grid-header">';
-					$h .= '<div></div>';
-					$h .= $this->displayHeaderByRotation($season, $eFarm['rotationYears']);
-				$h .= '</div>';
+			$h .= '<div class="bed-item-wrapper">';
 
-				$h .= '<div class="bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
+				foreach($cZone as $eZone) {
 
-					foreach($cZone as $eZone) {
+					$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
+						$h .= '<div class="util-overflow-sm stick-sm">';
 
-						$h .= '<div class="tab-panel util-print-block '.($eZone['id'] === $eZoneSelected['id'] ? 'selected' : '').'" data-tab="'.$eZone['id'].'">';
-							$h .= '<div class="util-overflow-sm stick-sm">'.$this->getOne($eFarm, $eZone, $season).'</div>';
+							$eZone->expects(['cGreenhouse', 'cPlot']);
+
+							$cPlot = $eZone['cPlot'];
+
+							$h .= '<div class="zone-title">';
+
+								$h .= '<div class="util-action">';
+									$h .= '<h2>';
+										$h .= s("Parcelle {value}", encode($eZone['name']));
+										$h .= '<span class="zone-title-area">'.$eZone->getArea().'</span>';
+									$h .= '</h2>';
+								$h .= '</div>';
+
+							$h .= '</div>';
+
+							$h .= '<div class="bed-item-grid bed-item-grid-rotation bed-item-grid-rotation-'.$eFarm['rotationYears'].' bed-item-grid-header">';
+								$h .= '<div></div>';
+								$h .= $this->displayHeaderByRotation($season, $eFarm['rotationYears']);
+							$h .= '</div>';
+
+							$h .= new PlotUi()->getRotations($eFarm, $eZone['cPlot'], $season);
+
 						$h .= '</div>';
+					$h .= '</div>';
 
-					}
+				}
 
 
-				$h .= '</div>';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -256,7 +273,7 @@ class ZoneUi {
 
 					}
 					$h .= s("Parcelle {value}", encode($eZone['name']));
-					$h .= '<span class="zone-title-area">'.$this->getZoneArea($eZone).'</span>';
+					$h .= '<span class="zone-title-area">'.$eZone->getArea().'</span>';
 				$h .= '</h2>';
 				if(
 					$this->eUpdate->notEmpty() and
@@ -280,21 +297,9 @@ class ZoneUi {
 
 	}
 
-	protected function getZoneArea(Zone $eZone): string {
-
-		if($eZone['area'] > 1000) {
-			$area = s("{value} ha", sprintf('%.02f', $eZone['area'] / 10000));
-		} else {
-			$area = s("{value} m²", $eZone['area']);
-		}
-
-		return $area;
-
-	}
-
 	protected function getZoneUse(Zone $eZone): string {
 
-		$h = $this->getZoneArea($eZone);
+		$h = $eZone->getArea();
 
 		$interval = SeasonUi::getInterval($eZone);
 

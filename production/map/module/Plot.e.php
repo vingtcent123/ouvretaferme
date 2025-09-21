@@ -12,6 +12,16 @@ class Plot extends PlotElement {
 
 	}
 
+	public function getArea(): string {
+
+		if($this['area'] > 1000) {
+			return s("{value} ha", sprintf('%.02f', $this['area'] / 10000));
+		} else {
+			return s("{value} m²", $this['area']);
+		}
+
+	}
+
 	public function canRead(): bool {
 
 		$this->expects(['farm']);
