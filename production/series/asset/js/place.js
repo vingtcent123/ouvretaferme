@@ -158,7 +158,7 @@ class Place {
 		const form = qs('#place-update');
 
 		let total = 0;
-		form.qsa('div.place-grid.selected [name^="sizes"]', (node) => total += parseInt(node.value || 0));
+		form.qsa('div.bed-item-grid.selected [name^="sizes"]', (node) => total += parseInt(node.value || 0));
 
 		if(length) {
 			length.innerHTML = total;

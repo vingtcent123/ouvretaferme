@@ -26,7 +26,7 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header):hover {
 	transition: background-color 0.25s;
 }
 
-div.bed-item-grid-plan:not(.bed-item-grid-header),
+div.bed-item-grid-plan:not(.bed-item-grid-header):not(:first-child),
 div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 	border-top: 1px solid var(--border);
 }
@@ -178,7 +178,6 @@ div.bed-item-grid .bed-item-content {
 	flex-direction: column;
 	justify-content: center;
 	min-height: 3rem;
-	padding-right: 1rem;
 	padding-left: 0.75rem;
 	width: 100%;
 }

@@ -203,7 +203,7 @@ main  #zone-content > * {
 	min-width: calc(var(--zone-content-months) * 4.5rem + 10rem);
 }
 
-div.zone-update [data-hide="1"] {
+div.zone-update [data-hide="1"]:not(.selected) {
 	display: none;
 }
 

@@ -45,8 +45,8 @@ class PlotUi {
 									$h .= '</label>';
 								}
 								$h .= s("Jardin {value}", encode($ePlot['name']));
+								$h .= '<span class="plot-title-area">'.$this->getPlotArea($ePlot).'</span>';
 							$h .= '</h4>';
-							$h .= '<span>'.$this->getPlotArea($ePlot).'</span>';
 						$h .= '</div>';
 
 					$h .= '</div>';

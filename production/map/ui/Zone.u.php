@@ -253,8 +253,9 @@ class ZoneUi {
 						$h .= '</label>';
 					}
 					$h .= s("Parcelle {value}", encode($eZone['name']));
+					$h .= '<span class="zone-title-area">'.$this->getZoneArea($eZone).'</span>';
 				$h .= '</h2>';
-				$h .= '<span>'.$this->getZoneArea($eZone).'</span>';
+				$h .= '<a href="">Planche temporaire</a>';
 			$h .= '</div>';
 			$h .= '<div>';
 			$h .= '</div>';

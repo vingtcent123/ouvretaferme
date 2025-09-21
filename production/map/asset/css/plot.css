@@ -11,6 +11,13 @@ div.plot-title h4 {
 	font-weight: bold;
 }
 
+.plot-title-area {
+	opacity: 0.8;
+	font-size: 1rem;
+	margin-left: 1rem;
+	font-weight: normal;
+}
+
 div.plot-item-wrapper {
 	box-shadow: 1px 1px 1px var(--border);
 }
