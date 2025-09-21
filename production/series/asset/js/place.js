@@ -119,14 +119,6 @@ class Place {
 
 	static selectBed(target) {
 
-		let wrapper = target.firstParent('div.bed-item-grid');
-
-		if(target.checked) {
-			wrapper.classList.add('selected');
-		} else {
-			wrapper.classList.remove('selected');
-		}
-
 		Place.updateSelected();
 
 		// Présence d'onglets
@@ -158,7 +150,7 @@ class Place {
 		const form = qs('#place-update');
 
 		let total = 0;
-		form.qsa('div.bed-item-grid.selected [name^="sizes"]', (node) => total += parseInt(node.value || 0));
+		form.qsa('div.bed-item-grid:has([name^="beds"]:checked) [name^="sizes"], div.zone-wrapper:has(input.zone-title-fill:checked) .bed-item-fill-zone [name^="sizes"], div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot [name^="sizes"]', (node) => total += parseInt(node.value || 0));
 
 		if(length) {
 			length.innerHTML = total;

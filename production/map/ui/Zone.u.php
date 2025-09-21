@@ -244,13 +244,16 @@ class ZoneUi {
 
 			$h .= '<div class="util-action">';
 				$h .= '<h2>';
-					if(
-						$this->eUpdate->notEmpty() and
-						$this->eUpdate['use'] === \series\Series::BED
-					) {
+
+					if($this->eUpdate->notEmpty()) {
+
+						$eBed = $eZone['cPlot']->first()['cBed']->first();
+						$ePlace = $this->eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
+
 						$h .= '<label class="bed-item-select">';
-							$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
+							$h .= new \util\FormUi()->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty(), 'class' => 'zone-title-fill']);
 						$h .= '</label>';
+
 					}
 					$h .= s("Parcelle {value}", encode($eZone['name']));
 					$h .= '<span class="zone-title-area">'.$this->getZoneArea($eZone).'</span>';

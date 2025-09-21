@@ -9,8 +9,14 @@ div.bed-item-grid {
 	background-color: white;
 }
 
-div.bed-item-fill-discrete:not(.selected) {
+div.bed-item-fill {
 	display: none;
+	padding: 0.5rem 0;
+}
+
+div.zone-wrapper:has(input.zone-title-fill:checked) .bed-item-fill-zone,
+div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot {
+	display: grid;
 }
 
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even),
@@ -184,18 +190,10 @@ div.bed-item-grid .bed-item-select {
 div.zone-title .bed-item-select,
 div.plot-title .bed-item-select {
 	margin-right: 0.75rem;
-	opacity: 0.5;
 }
 
-div.zone-wrapper:not(:has(.bed-item-grid:not(.bed-item-fill))) div.zone-title .bed-item-select,
-div.plot-wrapper:not(:has(.bed-item-grid:not(.bed-item-fill))) div.plot-title .bed-item-select {
-	opacity: 0;
-	width: 0.25rem !important;
-	min-width: 0.25rem !important;
-	overflow: hidden;
-}
 
-div.bed-item-grid.selected .bed-item-select {
+div.bed-item-grid:has(input[name^="beds"]:checked) .bed-item-select {
 	background-color: var(--info);
 }
 
@@ -209,7 +207,7 @@ div.bed-item-grid .bed-item-content {
 	width: 100%;
 }
 
-div.bed-item-grid.selected .bed-item-content {
+div.bed-item-grid:has(input[name^="beds"]:checked) .bed-item-content {
 	min-height: 5rem;
 }
 
@@ -232,24 +230,27 @@ div.bed-item-grid div.bed-item-size-read {
 	margin-top: 0.125rem;
 }
 
-div.bed-item-grid div.bed-item-size-write {
+div.bed-item-grid div.bed-item-size-write,
+div.bed-item-grid div.bed-item-size-fill {
 	width: 15rem;
 	margin-top: 0.25rem;
 }
 
-div.bed-item-grid div.bed-item-size-write input {
+div.bed-item-grid div.bed-item-size-write input,
+div.bed-item-grid div.bed-item-size-fill input {
 	text-align: center;
 }
 
-div.bed-item-grid div.bed-item-size-write .input-group-addon {
+div.bed-item-grid div.bed-item-size-write .input-group-addon,
+div.bed-item-grid div.bed-item-size-fill .input-group-addon {
 	background-color: var(--background) !important;
 }
 
-div.bed-item-grid.selected div.bed-item-size-read {
+div.bed-item-grid:has(input[name^="beds"]:checked) div.bed-item-size-read {
 	display: none;
 }
 
-div.bed-item-grid:not(.selected) div.bed-item-size-write {
+div.bed-item-grid:not(:has(input[name^="beds"]:checked)) div.bed-item-size-write {
 	display: none;
 }
 

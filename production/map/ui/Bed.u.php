@@ -22,8 +22,7 @@ class BedUi {
 		foreach($cBed as $eBed) {
 
 			if(
-				($view === \farm\Farmer::ROTATION and $eBed['plotFill']) or
-				($view === \farm\Farmer::PLAN and $eBed['plotFill'] and $eBed['cPlace']->empty())
+				($view === \farm\Farmer::ROTATION and $eBed['plotFill'])
 			) {
 				continue;
 			}
@@ -34,6 +33,7 @@ class BedUi {
 			};
 
 			if(
+				$view === \farm\Farmer::PLAN and
 				$eUpdate->empty() and
 				$eBed['plotFill'] and
 				$place === ''
@@ -41,12 +41,22 @@ class BedUi {
 				continue;
 			}
 
-			if(
-				$eUpdate->notEmpty() and
-				$eBed['plotFill'] === FALSE and
-				$eUpdate['use'] === \series\Series::BLOCK
-			) {
-				continue;
+			if($eUpdate->notEmpty()) {
+
+				if(
+					$eBed['plotFill'] === FALSE and
+					$eUpdate['use'] === \series\Series::BLOCK
+				) {
+					continue;
+				}
+
+				if(
+					$eUpdate instanceof \series\Task and
+					$eBed['plotFill']
+				) {
+					continue;
+				}
+
 			}
 
 			$class = 'bed-item-grid bed-item-grid-'.$view;
@@ -55,26 +65,17 @@ class BedUi {
 				$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
 			}
 
-			if($eBed['plotFill']) {
 
-				$class .= ' bed-item-fill';
-
-				if(
-					$eUpdate->notEmpty() and
-					$eUpdate['use'] === \series\Series::BED
-				) {
-					$class .= ' bed-item-fill-discrete';
-				}
-
+			if($eBed['zoneFill']) {
+				$class .= ' bed-item-fill bed-item-fill-zone';
+			} else if($eBed['plotFill']) {
+				$class .= ' bed-item-fill bed-item-fill-plot';
 			}
 
 			if($eUpdate->notEmpty()) {
 
 				$ePlace = $eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
 
-				if($ePlace->notEmpty()) {
-					$class .= ' selected';
-				}
 
 			} else {
 				$ePlace = new \series\Place();
@@ -86,10 +87,6 @@ class BedUi {
 
 					$h .= '<div class="bed-item-bed">';
 
-						if($eUpdate->notEmpty()) {
-							$h .= '<label class="bed-item-select">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
-						}
-
 						$h .= '<div class="bed-item-content">';
 
 							if($eUpdate->notEmpty()) {
@@ -99,38 +96,36 @@ class BedUi {
 									case \series\Series::BED :
 
 										$h .= '<b>'.s("Planche temporaire").'</b>';
-										$h .= '<div class="bed-item-size">';
-											$h .= '<div class="bed-item-size-write">';
+										$h .= '<div class="bed-item-size bed-item-size-fill">';
 
 												$h .= $form->inputGroup(
 													$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
 														'min' => 0,
 														'max' => $eBed['length'],
-														'onfocus' => 'this.select()'
+														'onfocus' => 'this.select()',
+														'oninput' => 'Place.selectBed(this)'
 													]).
 													$form->addon(s("mL"))
 												);
 
-											$h .= '</div>';
 										$h .= '</div>';
 										break;
 
 									case \series\Series::BLOCK :
 
 										$h .= s("Surface libre");
-										$h .= '<div class="bed-item-size">';
-											$h .= '<div class="bed-item-size-write">';
+										$h .= '<div class="bed-item-size bed-item-size-fill">';
 
-												$h .= $form->inputGroup(
-													$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['area'] : $eBed['area'], [
-														'min' => 0,
-														'max' => $eBed['area'],
-														'onfocus' => 'this.select()'
-													]).
-													$form->addon(s("m²"))
-												);
+											$h .= $form->inputGroup(
+												$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['area'] : $eBed['area'], [
+													'min' => 0,
+													'max' => $eBed['area'],
+													'onfocus' => 'this.select()',
+													'oninput' => 'Place.selectBed(this)'
+												]).
+												$form->addon(s("m²"))
+											);
 
-											$h .= '</div>';
 										$h .= '</div>';
 										break;
 

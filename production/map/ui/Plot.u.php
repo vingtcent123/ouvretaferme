@@ -36,13 +36,16 @@ class PlotUi {
 
 						$h .= '<div class="util-action">';
 							$h .= '<h4>';
-								if(
-									$eUpdate->notEmpty() and
-									$eUpdate['use'] === \series\Series::BED
-								) {
+
+								if($eUpdate->notEmpty()) {
+
+									$eBed = $ePlot['cBed']->first();
+									$ePlace = $eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
+
 									$h .= '<label class="bed-item-select">';
-										$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
+										$h .= new \util\FormUi()->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty(), 'class' => 'plot-title-fill']);
 									$h .= '</label>';
+
 								}
 								$h .= s("Jardin {value}", encode($ePlot['name']));
 								$h .= '<span class="plot-title-area">'.$this->getPlotArea($ePlot).'</span>';
