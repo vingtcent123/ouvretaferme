@@ -206,42 +206,6 @@ class Product extends ProductElement {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
 			})
 			->setCallback('proOrPrivate.check', fn() => ((int)$this['pro'] + (int)$this['private']) === 1)
-			->setCallback('privatePrice.empty', function(?float &$value) use ($p) {
-
-				if($p->for === 'create') {
-					$p->expectsBuilt('private');
-				} else {
-					$this->expects(['private']);
-				}
-
-				if($this['private']) {
-					return ($value !== NULL);
-				} else {
-					$value = NULL;
-				}
-
-				return TRUE;
-
-			})
-			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
-
-				if($p->for === 'create') {
-					$p->expectsBuilt('pro');
-				} else {
-					$this->expects(['pro']);
-				}
-
-				if($this['pro']) {
-					return ($value !== NULL);
-				} else {
-					$value = NULL;
-				}
-
-				return TRUE;
-
-			})
-
-
 			->setCallback('privatePriceInitial.check', function() use($input): bool {
 
 				$this->setQuick((($input['property'] ?? NULL) === 'privatePriceInitial'));
@@ -394,8 +358,6 @@ class Product extends ProductElement {
 				throw new \PropertySkip();
 
 			})
-
-
 			->setCallback('proPriceInitial.check', function() use($input): bool {
 
 				$this->setQuick((($input['property'] ?? NULL) === 'proPriceInitial'));
@@ -546,6 +508,19 @@ class Product extends ProductElement {
 				$p->addBuilt('proPrice');
 
 				throw new \PropertySkip();
+
+			})
+			->setCallback('proOrPrivatePrice.empty', function() use ($p) {
+
+				if(
+					$p->isBuilt('proPrice') and
+					$p->isBuilt('privatePrice') and
+					($this['pro'] or $this['private'])
+				) {
+					return $this['proPrice'] !== NULL or $this['privatePrice'] !== NULL;
+				} else {
+					return TRUE;
+				}
 
 			});
 

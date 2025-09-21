@@ -59,6 +59,8 @@ class ProductLib extends ProductCrud {
 				$properties[] = 'proStep';
 			}
 
+			$properties[] = 'proOrPrivatePrice';
+
 			return $properties;
 
 		}
@@ -73,6 +75,8 @@ class ProductLib extends ProductCrud {
 		if(array_delete($properties, 'proPriceDiscount')) {
 			$properties[] = 'proPriceInitial';
 		}
+
+		array_delete($properties, 'proOrPrivatePrice');
 
 		parent::update($e, $properties);
 
