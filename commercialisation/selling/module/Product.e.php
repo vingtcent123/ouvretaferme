@@ -510,6 +510,36 @@ class Product extends ProductElement {
 				throw new \PropertySkip();
 
 			})
+			->setCallback('privatePrice.empty', function(?float &$value) use ($p) {
+
+				$this->expects(['composition']);
+
+				if(
+					$this['composition'] === FALSE or
+					$this['private'] === FALSE
+				) {
+					return TRUE;
+				}
+
+				return ($value !== NULL);
+
+			})
+			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
+
+				$this->expects(['composition']);
+
+				if(
+					$this['composition'] === FALSE or
+					$this['pro'] === FALSE
+				) {
+					return TRUE;
+				}
+
+				return ($value !== NULL);
+
+			})
+
+
 			->setCallback('proOrPrivatePrice.empty', function() use ($p) {
 
 				if(

@@ -1028,7 +1028,7 @@ class ProductUi {
 			$h .= $form->group(
 				s("Prix de base"),
 				content: $inputGroup.$discountAddon,
-				attributes: ['wrapper' => 'proTaxes proPrice']
+				attributes: ['wrapper' => 'proTaxes proPrice proOrPrivatePrice']
 			);
 
 			$h .= $form->group(
@@ -1097,7 +1097,7 @@ class ProductUi {
 			$h .= $form->group(
 				s("Prix de base"),
 				content: $inputGroup.$discountAddon,
-				attributes: ['wrapper' => 'privatePrice']
+				attributes: ['wrapper' => 'privatePrice proOrPrivatePrice']
 			);
 
 			$h .= $form->group(

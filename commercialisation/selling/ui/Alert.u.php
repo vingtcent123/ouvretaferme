@@ -39,7 +39,9 @@ class AlertUi {
 			'Invoice::fileEmpty' => s("Le fichier PDF de cette facture n'existe pas."),
 
 			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
-			'Product::proOrPrivatePrice.empty' => s("Veuillez indiquer un prix pour ce produit"),
+			'Product::proOrPrivatePrice.empty' => s("Veuillez indiquer au moins un prix pour ce produit"),
+			'Product::privatePrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux particuliers"),
+			'Product::proPrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux professionnels"),
 			'Product::privatePriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
 			'Product::privatePrice.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
 			'Product::privatePriceInitial.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
