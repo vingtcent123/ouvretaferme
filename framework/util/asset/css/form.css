@@ -241,10 +241,6 @@ input[type="checkbox"] {
 	margin-left: 1rem;
 }
 
-.form-info svg {
-	margin: 0 0.5rem;
-}
-
 .form-info a {
 	text-decoration: underline;
 	color: var(--muted);

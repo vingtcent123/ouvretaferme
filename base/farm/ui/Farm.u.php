@@ -2189,6 +2189,10 @@ class FarmUi {
 
 	}
 
+	public static function getAlleyWarning(): string {
+		return \util\FormUi::info(\Asset::icon('exclamation-circle').' '.s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied."));
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Farm::model()->describer($property, [
@@ -2259,17 +2263,18 @@ class FarmUi {
 
 			case 'defaultBedLength' :
 				$d->append = s("m");
-				$d->after = \util\FormUi::info(s("Si vous travaillez sur planches permanentes ou temporaires, indiquez ici la longueur habituelle de vos planches."));
+				$d->after = \util\FormUi::info(s("Si vous travaillez sur planches, indiquez ici la longueur habituelle de vos planches."));
 				break;
 
 			case 'defaultBedWidth' :
 				$d->append = s("cm");
-				$d->after = \util\FormUi::info(s("Si vous travaillez sur planches permanentes ou temporaires, indiquez ici la largeur travaillée habituelle de vos planches."));
+				$d->after = \util\FormUi::info(s("Si vous travaillez sur planches, indiquez ici la largeur travaillée habituelle de vos planches."));
 				break;
 
 			case 'defaultAlleyWidth' :
 				$d->append = s("cm");
-				$d->after = \util\FormUi::info(s("Si vous travaillez sur planches permanentes ou temporaires, indiquez ici la largeur habituelle des passe-pieds entre vos planches."));
+				$d->labelAfter = \farm\FarmUi::getAlleyWarning();
+				$d->after = \util\FormUi::info(s("Si vous travaillez sur planches, indiquez ici la largeur habituelle des passe-pieds entre vos planches"));
 				break;
 
 			case 'quality' :

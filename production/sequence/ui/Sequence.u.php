@@ -907,7 +907,6 @@ class SequenceUi {
 
 			case 'bedWidth' :
 				$d->append = s("cm");
-				$d->after = \util\FormUi::info(s("La largeur travaillée de planche est obligatoirement à renseigner pour définir le périmètre de l'itinéraire technique."));
 				$d->group = function(Sequence $e) {
 
 					$use = $e['use'] ?? NULL;
@@ -921,7 +920,7 @@ class SequenceUi {
 
 			case 'alleyWidth' :
 				$d->append = s("cm");
-				$d->after = \util\FormUi::info(s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied."));
+				$d->labelAfter = \farm\FarmUi::getAlleyWarning();
 				$d->group = function(Sequence $e) {
 
 					$use = $e['use'] ?? NULL;

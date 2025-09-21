@@ -1615,7 +1615,7 @@ class SeriesUi {
 				break;
 
 			case 'alleyWidth' :
-				$d->after = \util\FormUi::info(s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied.").'</small>');
+				$d->labelAfter = \farm\FarmUi::getAlleyWarning();
 				$d->append = s("cm");
 				$d->attributes['oninput'] = 'Series.updateArea(this)';
 				break;
