@@ -29,21 +29,23 @@
 			\series\SeriesLib::fillTimeline($data->e);
 		}
 
-		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		// On récupère les emplacements
-		$data->cZone = \map\ZoneLib::getByFarm($data->e['farm'], season: $data->e['season']);
-		\map\PlotLib::putFromZoneWithSeries($data->e['farm'], $data->cZone, $data->e['season'], [$data->e['season'], $data->e['season'] - 1, $data->e['season'] + 1]);
+		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->e['season']);
 
-		$data->cPlace = \series\PlaceLib::getByElement($data->e);
+		\map\GreenhouseLib::putFromZone($data->cZone);
+		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->e['season'], [$data->e['season'], $data->e['season'] - 1, $data->e['season'] + 1]);
+
+		$data->e['cPlace'] = \series\PlaceLib::getByElement($data->e);
 
 		switch($data->source) {
 
 			case 'series' :
 
 				$data->search = new Search([
-					'canWidth' => \map\BedLib::countWidthsByFarm($data->e['farm'], $data->e['season']) > 1,
-					'mode' => GET('mode', [NULL, \map\Plot::GREENHOUSE, \map\Plot::OPEN_FIELD], NULL),
+					'canWidth' => \map\BedLib::countWidthsByFarm($data->eFarm, $data->e['season']) > 1,
+					'mode' => GET('mode', [NULL, \map\Plot::GREENHOUSE, \map\Plot::OPEN_FIELD]),
 				]);
 
 				\map\ZoneLib::test($data->cZone, $data->search, $data->e);
@@ -58,7 +60,7 @@
 
 		}
 
-		\farm\ActionLib::getMainByFarm($data->e['farm']);
+		\farm\ActionLib::getMainByFarm($data->eFarm);
 
 		throw new \ViewAction($data);
 

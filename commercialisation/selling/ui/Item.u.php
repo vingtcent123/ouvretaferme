@@ -823,7 +823,7 @@ class ItemUi {
 			return new \Panel(
 				id: 'panel-item-create-collection',
 				title: $title,
-				dialogOpen: $form->openAjax('/selling/item:doCreateCollection', ['class' => 'panel-dialog container']),
+				dialogOpen: $form->openAjax('/selling/item:doCreateCollection', ['class' => 'panel-dialog']),
 				dialogClose: $form->close(),
 				body: $h,
 				footer: $form->submit(s("Ajouter les produits"), ['class' => 'btn btn-primary btn-lg'])

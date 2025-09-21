@@ -89,7 +89,7 @@ class TimesheetUi {
 
 		$h = '';
 
-		$formOpen = $form->openAjax('/series/timesheet:doUpdateUser', ['data-ajax-origin' => 'timesheet', 'class' => 'panel-dialog container']);
+		$formOpen = $form->openAjax('/series/timesheet:doUpdateUser', ['data-ajax-origin' => 'timesheet', 'class' => 'panel-dialog']);
 
 		$h .= new TaskUi()->getTasksField($form, $cTask, 'hidden', class: 'util-overflow-xs', displayPlace: TRUE, displayTime: TRUE);
 

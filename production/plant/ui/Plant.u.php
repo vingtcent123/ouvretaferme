@@ -131,7 +131,7 @@ class PlantUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
-		$h = '<div id="plant-search" class="util-block-search stick-xs '.($search->empty(['status', 'cFamily']) ? 'hide' : '').'">';
+		$h = '<div id="plant-search" class="util-block-search '.($search->empty(['status', 'cFamily']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 

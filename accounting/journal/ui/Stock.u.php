@@ -25,7 +25,7 @@ class StockUi {
 			\company\CompanyUi::urlJournal($eFarm).'/stock:doCreate',
 			[
 				'id' => 'journal-stock-create',
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			],
 		);
 
@@ -80,7 +80,7 @@ class StockUi {
 			\company\CompanyUi::urlJournal($eFarm).'/stock:doSet',
 			[
 				'id' => 'journal-stock-set',
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			],
 		);
 

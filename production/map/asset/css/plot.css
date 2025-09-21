@@ -1,11 +1,13 @@
 /* Items */
-div.plot-soil {
-	background-color: #fff3;
-	padding: 1.25rem 0.75rem;
+div.plot-title {
+	padding: 1rem 0.75rem;
 }
 
-div.plot-soil h4 {
-	text-transform: uppercase;
+div.plot-title:has(.bed-item-select) {
+	padding-left: 0;
+}
+
+div.plot-title h4 {
 	font-weight: bold;
 }
 

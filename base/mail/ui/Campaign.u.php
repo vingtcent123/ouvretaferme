@@ -178,7 +178,7 @@ class CampaignUi {
 		return new \Panel(
 			id: 'panel-campaign-update',
 			title: s("Modifier une campagne"),
-			dialogOpen: $form->openAjax('/mail/campaign:doUpdate', ['class' => 'panel-dialog container', 'id' => 'campaign-write']),
+			dialogOpen: $form->openAjax('/mail/campaign:doUpdate', ['class' => 'panel-dialog', 'id' => 'campaign-write']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary btn-lg']),

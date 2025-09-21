@@ -1209,7 +1209,7 @@ class ProductUi {
 		return new \Panel(
 			id: 'panel-product-create',
 			title: $title,
-			dialogOpen: $form->openAjax('/shop/product:doCreateCollection', ['class' => 'panel-dialog container']),
+			dialogOpen: $form->openAjax('/shop/product:doCreateCollection', ['class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $form->submit(s("Ajouter les produits"), ['data-submit-waiter' => s("Ajout en cours..."), 'class' => 'btn btn-primary btn-lg'])

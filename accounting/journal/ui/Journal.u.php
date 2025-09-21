@@ -73,7 +73,7 @@ class JournalUi {
 
 		\Asset::js('journal', 'operation.js');
 
-		$h = '<div id="journal-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+		$h = '<div id="journal-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = $this->getBaseUrl($eFarm, $eFinancialYearSelected);
@@ -106,7 +106,7 @@ class JournalUi {
 		$h .= '</div>';
 
 		if($eCashflow->exists() === TRUE) {
-			$h .= '<div class="util-block-search stick-xs">';
+			$h .= '<div class="util-block-search">';
 				$h .= s(
 					"Vous visualisez actuellement les écritures correspondant à l'opération bancaire du {date}, \"{memo}\" d'un {type} de {amount} (<link>annuler le filtre</link>).",
 					[

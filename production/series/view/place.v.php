@@ -1,6 +1,6 @@
 <?php
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return new \series\PlaceUi()->update($data->source, $data->e, $data->cZone, $data->cPlace, $data->search);
+	return new \series\PlaceUi()->update($data->eFarm, $data->source, $data->e, $data->cZone, $data->search);
 });
 
 new JsonView('doUpdate', function($data, AjaxTemplate $t) {

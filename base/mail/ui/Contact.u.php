@@ -44,7 +44,7 @@ class ContactUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="contact-search" class="util-block-search stick-xs '.($search->empty(['source', 'cShop']) ? 'hide' : '').'">';
+		$h = '<div id="contact-search" class="util-block-search '.($search->empty(['source', 'cShop']) ? 'hide' : '').'">';
 
 			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsContact($eFarm), ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';

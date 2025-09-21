@@ -10,9 +10,10 @@ class BedUi {
 
 	}
 
-	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season): string {
+	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season, \series\Series|\series\Task $eUpdate): string {
 
 		$view = $eFarm->getView('viewSoil');
+		$form = new \util\FormUi();
 
 		$cBed = $ePlot['cBed'];
 
@@ -28,11 +29,23 @@ class BedUi {
 			}
 
 			$place = match($view) {
-				\farm\Farmer::PLAN => $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season),
+				\farm\Farmer::PLAN => $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season, $eUpdate),
 				\farm\Farmer::ROTATION => $this->displayPlaceByHistory($eBed['cPlace'], $season, $eFarm)
 			};
 
-			if($eBed['plotFill'] and $place === '') {
+			if(
+				$eUpdate->empty() and
+				$eBed['plotFill'] and
+				$place === ''
+			) {
+				continue;
+			}
+
+			if(
+				$eUpdate->notEmpty() and
+				$eBed['plotFill'] === FALSE and
+				$eUpdate['use'] === \series\Series::BLOCK
+			) {
 				continue;
 			}
 
@@ -41,46 +54,163 @@ class BedUi {
 				$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
 			}
 
-			$h .= '<div class="'.$class.'">';
+			if($eUpdate->notEmpty()) {
+
+				$ePlace = $eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
+
+				if($ePlace->notEmpty()) {
+					$class .= ' selected';
+				}
+
+			} else {
+				$ePlace = new \series\Place();
+			}
+
+			$h .= '<div class="'.$class.'" '.$this->getTest($eBed).'>';
 
 				if($eBed['plotFill']) {
 
-					$h .= '<div class="bed-item-bed">';
-						$h .= s("Surface libre");
+					$h .= '<div class="bed-item-bed bed-item-fill">';
+
+						if($eUpdate->notEmpty()) {
+							$h .= '<label class="bed-item-select">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
+						}
+
+						$h .= '<div class="bed-item-content">';
+
+							if($eUpdate->notEmpty()) {
+
+								switch($eUpdate['use']) {
+
+									case \series\Series::BED :
+
+										$h .= '<b>'.s("Planche temporaire").'</b>';
+										$h .= '<div class="bed-item-size">';
+											$h .= '<div class="bed-item-size-write">';
+
+												$h .= $form->inputGroup(
+													$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
+														'min' => 0,
+														'max' => $eBed['length'],
+														'onfocus' => 'this.select()'
+													]).
+													$form->addon(s("mL"))
+												);
+
+											$h .= '</div>';
+										$h .= '</div>';
+										break;
+
+									case \series\Series::BLOCK :
+
+										$h .= s("Surface libre");
+										$h .= '<div class="bed-item-size">';
+											$h .= '<div class="bed-item-size-write">';
+
+												$h .= $form->inputGroup(
+													$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['area'] : $eBed['area'], [
+														'min' => 0,
+														'max' => $eBed['area'],
+														'onfocus' => 'this.select()'
+													]).
+													$form->addon(s("m²"))
+												);
+
+											$h .= '</div>';
+										$h .= '</div>';
+										break;
+
+								}
+
+							} else {
+								$h .= s("Surface libre");
+							}
+
+						$h .= '</div>';
 					$h .= '</div>';
 
 				} else {
 
 					$h .= '<div class="bed-item-bed">';
 
-						$h .= '<div class="bed-item-name">';
-							$h .= '<a data-dropdown="bottom-start">';
-								$h .= '<span class="hide-lg-down">'.s("Planche {value}", '<b>'.encode($eBed['name']).'</b>').'</span>';
-								$h .= '<span class="hide-xl-up"><b>'.encode($eBed['name']).'</b></span>';
-								if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
-									$greenhouse = $eBed->getGreenhouseIcon();
-									if($greenhouse) {
-										$h .= '  '.$greenhouse;
-									}
-								}
-							$h .= '</a>';
+						if($eUpdate->notEmpty()) {
 
-							$h .= '<div class="dropdown-list bg-primary">';
-								$h .= '<div class="dropdown-title">';
-									$h .= s("Planche {value}", encode($eBed['name']));
-									$h .= '<div class="font-sm">'.s("{length} mL x {width} cm", $eBed).'</div>';
-								$h .= '</div>';
-								$h .= '<a href="/map/bed:swapSeries?id='.$eBed['id'].'&season='.$season.'" class="dropdown-item">'.s("Échanger les séries").'</a>';
-							$h .= '</div>';
+							$h .= '<label class="bed-item-select">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
 
-						$h .= '</div>';
-
-						if($view === \farm\Farmer::PLAN) {
-							$h .= '<div class="bed-item-size" title="'.s("{area} m²", $eBed).'">';
-								$h .= s("{length} mL", $eBed).' '.s("x {width} cm", $eBed);
-							$h .= '</div>';
 						}
 
+						$h .= '<div class="bed-item-content">';
+							$h .= '<div class="bed-item-name">';
+
+								$h .= '<div>';
+									$h .= '<a data-dropdown="bottom-start">';
+										$h .= '<b>'.encode($eBed['name']).'</b>';
+										if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
+											$greenhouse = $eBed->getGreenhouseIcon();
+											if($greenhouse) {
+												$h .= '  '.$greenhouse;
+											}
+										}
+									$h .= '</a>';
+									$h .= '<div class="dropdown-list bg-primary">';
+										$h .= '<div class="dropdown-title">';
+											$h .= s("Planche {value}", encode($eBed['name']));
+											$h .= '<div class="font-sm">'.s("{length} mL x {width} cm", $eBed).'</div>';
+										$h .= '</div>';
+										$h .= '<a href="/map/bed:swapSeries?id='.$eBed['id'].'&season='.$season.'" class="dropdown-item">'.s("Échanger les séries").'</a>';
+									$h .= '</div>';
+								$h .= '</div>';
+
+								if(($eBed['test']['rotation'] ?? NULL) > 0) {
+									$h .= '<div class="bed-item-rotation" title="'.s("Rotation sur la même famille").'">';
+										$h .= \Asset::icon('arrow-clockwise').' '.p("{value} an", "{value} ans", $eBed['test']['rotation']);
+									$h .= '</div>';
+								}
+
+							$h .= '</div>';
+
+							if($view === \farm\Farmer::PLAN) {
+
+								$h .= '<div class="bed-item-size">';
+
+									if($eUpdate->notEmpty()) {
+
+										if(
+											$eUpdate['use'] === \series\Series::BED and
+											$eUpdate['bedWidth'] !== NULL and
+											$eUpdate['bedWidth'] !== $eBed['width']
+										) {
+											$width = '<span class="color-danger" style="font-weight: bold">'.\Asset::icon('exclamation-circle').' '.s("{width} cm", $eBed).'</span>';
+										} else {
+											$width = s("{width} cm", $eBed);
+										}
+
+										$h .= '<div class="bed-item-size-write">';
+
+											$h .= $form->inputGroup(
+												$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
+													'min' => 0,
+													'max' => $eBed['length'],
+													'onfocus' => 'this.select()'
+												]).
+												$form->addon(s("mL x {width}", ['width' => $width]))
+											);
+
+										$h .= '</div>';
+
+										$h .= '<div class="bed-item-size-read">';
+											$h .= s("{length} mL x {width}", ['length' => $eBed['length'], 'width' => $width]);
+										$h .= '</div>';
+
+									} else {
+
+										$h .= '<span title="'.s("{area} m²", $eBed).'">'.s("{length} mL x {width} cm", $eBed).'</span>';
+									}
+
+								$h .= '</div>';
+							}
+
+						$h .= '</div>';
 					$h .= '</div>';
 
 				}
@@ -95,9 +225,19 @@ class BedUi {
 
 	}
 
-	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season): string {
+	protected function getTest(Bed $eBed): string {
 
-		$timeline = new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season);
+		if(isset($eBed['test'])) {
+			return 'data-same-width="'.($eBed['test']['sameWidth'] ? 1 : 0).'" data-greenhouse="'.($eBed['test']['hasGreenhouse'] ? 1 : 0).'" data-rotation="'.$eBed['test']['rotation'].'" data-free="'.$eBed['test']['free'].'" data-hide="'.($eBed['test']['hide'] ? 1 : 0).'"';
+		} else {
+			return '';
+		}
+
+	}
+
+	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season, \series\Series $ePlaceholder): string {
+
+		$timeline = new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season, $ePlaceholder);
 
 		if($timeline !== '') {
 			return '<div class="bed-item-places">'.$timeline.'</div>';

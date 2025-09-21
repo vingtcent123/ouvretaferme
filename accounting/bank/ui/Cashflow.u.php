@@ -11,7 +11,7 @@ class CashflowUi {
 
 	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected): string {
 
-		$h = '<div id="cashflow-search" class="util-block-search stick-xs '.($search->empty(['ids', 'status']) ? 'hide' : '').'">';
+		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids', 'status']) ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH.'?financialYear='.$eFinancialYearSelected['id'];
@@ -104,7 +104,7 @@ class CashflowUi {
 
 		if($eImport->exists() === TRUE) {
 
-			$h .= '<div class="util-block-search stick-xs">';
+			$h .= '<div class="util-block-search">';
 			$h .= s(
 				"Vous visualisez actuellement les opérations bancaires correspondant à l'import #{id} du {date}.",
 				[
@@ -349,7 +349,7 @@ class CashflowUi {
 			[
 				'id' => 'bank-cashflow-allocate',
 				'third-party-create-index' => 0,
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			]
 		);
 

@@ -86,7 +86,7 @@ class SaleUi {
 
 	public function getSearch(\Search $search, \Collection $cPaymentMethod): string {
 
-		$h = '<div id="sale-search" class="util-block-search stick-xs '.($search->empty(['ids']) ? 'hide' : '').'">';
+		$h = '<div id="sale-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
@@ -1679,7 +1679,7 @@ class SaleUi {
 		return new \Panel(
 			id: 'panel-sale-create',
 			title: encode($eSale['compositionOf']['name']),
-			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog container']),
+			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $footer
@@ -1759,7 +1759,7 @@ class SaleUi {
 		return new \Panel(
 			id: 'panel-sale-create',
 			title: s("Ajouter une vente"),
-			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog container']),
+			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $footer
@@ -1845,7 +1845,7 @@ class SaleUi {
 		return new \Panel(
 			id: 'panel-sale-create-collection',
 			title: s("Ajouter une vente"),
-			dialogOpen: $form->openAjax('/selling/sale:doCreateCollection', ['id' => $formId, 'class' => 'panel-dialog container']),
+			dialogOpen: $form->openAjax('/selling/sale:doCreateCollection', ['id' => $formId, 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $footer

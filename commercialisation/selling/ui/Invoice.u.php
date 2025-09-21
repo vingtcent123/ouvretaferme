@@ -48,7 +48,7 @@ class InvoiceUi {
 
 	public function getSearch(\Search $search): string {
 
-		$h = '<div id="sale-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="sale-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;

@@ -10,7 +10,7 @@ class PlotUi {
 
 	}
 
-	public function getPlots(\farm\Farm $eFarm, \Collection $cPlot, Zone $eZone, int $season): string {
+	public function getPlots(\farm\Farm $eFarm, \Collection $cPlot, Zone $eZone, int $season, \series\Series|\series\Task $eUpdate): string {
 
 		$eZone->expects(['id', 'area']);
 
@@ -24,16 +24,26 @@ class PlotUi {
 
 			if($ePlot['zoneFill']) {
 
-				$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season);
+				$h .= '<div class="plot-wrapper">';
+					$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate);
+				$h .= '</div>';
 
 			} else {
 
-				$h .= '<div>';
+				$h .= '<div class="plot-wrapper">';
 
-					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-soil main-sticky-left" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
+					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-title zone-sticky-left" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
 
 						$h .= '<div class="util-action">';
 							$h .= '<h4>';
+								if(
+									$eUpdate->notEmpty() and
+									$eUpdate['use'] === \series\Series::BED
+								) {
+									$h .= '<label class="bed-item-select">';
+										$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
+									$h .= '</label>';
+								}
 								$h .= s("Jardin {value}", encode($ePlot['name']));
 							$h .= '</h4>';
 							$h .= '<span>'.$this->getPlotArea($ePlot).'</span>';
@@ -41,7 +51,7 @@ class PlotUi {
 
 					$h .= '</div>';
 
-					$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season);
+					$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate);
 
 				$h .= '</div>';
 
@@ -130,7 +140,7 @@ class PlotUi {
 
 			$h .= '<div class="plot-item-wrapper">';
 
-				$h .= '<div class="plot-item main-sticky-left text-center">';
+				$h .= '<div class="plot-item zone-sticky-left text-center">';
 					if($cPlot->count() > 1) {
 						$label = s("Ajouter un autre jardin à cette parcelle");
 					} else {

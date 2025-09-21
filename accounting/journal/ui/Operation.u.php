@@ -30,7 +30,7 @@ class OperationUi {
 			\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateCommentCollection',
 			[
 				'id' => 'journal-operation-comment',
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			],
 		);
 
@@ -58,7 +58,7 @@ class OperationUi {
 			\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateDocumentCollection',
 			[
 				'id' => 'journal-operation-document',
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			],
 		);
 
@@ -92,7 +92,7 @@ class OperationUi {
 			[
 				'id' => 'journal-operation-create-payment',
 				'third-party-create-index' => 0,
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			],
 		);
 
@@ -253,7 +253,7 @@ class OperationUi {
 			[
 				'id' => 'journal-operation-create',
 				'third-party-create-index' => 0,
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			],
 		);
 

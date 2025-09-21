@@ -173,7 +173,7 @@ class ThirdPartyUi {
 
 	public function getSearch(\Search $search): string {
 
-		$h = '<div id="thirdParty-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+		$h = '<div id="thirdParty-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \LIME_REQUEST_PATH;

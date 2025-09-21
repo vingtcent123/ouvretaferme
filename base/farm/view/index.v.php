@@ -295,8 +295,6 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 		switch($view) {
 
 			case \farm\Farmer::PLAN :
-				echo '<div class="main-sticky-overlay-left"></div>';
-				echo '<div class="main-sticky-overlay-right"></div>';
 				if($data->hasSelector) {
 					echo '<style>
 						:root {

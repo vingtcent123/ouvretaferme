@@ -33,7 +33,7 @@ class AccountsUi {
 
 		\Asset::js('journal', 'operation.js');
 
-		$h = '<div id="accounts-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+		$h = '<div id="accounts-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH.'?financialYear='.$eFinancialYearSelected['id'].'&accountType='.GET('accountType', 'string', 'customer');

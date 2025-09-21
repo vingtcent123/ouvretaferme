@@ -46,9 +46,87 @@ class SeriesUi {
 
 		$eSeries->expects(['name', 'season']);
 
-		$h = '<div class="panel-header-subtitle">';
-			$h .= '<span class="hide-xs-down">'.s("Saison {season}", ['season' => $eSeries['season']]).' '.\Asset::icon('chevron-right').'</span> ';
+		$h = '<div>';
+			$h .= '<div class="util-badge bg-secondary" style="margin-right: 0.5rem">'.s("Saison {value}", $eSeries['season']).'</div>';
 			$h .= s("Série {name}", ['name' => self::link($eSeries)]);
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getHeader(Series $eSeries): string {
+
+		$h = '<div class="util-action">';
+
+			$h .= '<div>';
+
+				$h .= '<h1 style="margin-bottom: 0.25rem">';
+					$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eSeries['farm']).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= $eSeries->quick('name', SeriesUi::name($eSeries));
+					if($eSeries['status'] === Series::CLOSED) {
+						$h .= '<span class="series-header-closed" title="'.s("Série clôturée").'">'.\Asset::icon('lock-fill').'</span>';
+					}
+				$h .= '</h1>';
+
+				$infos = [];
+
+				if($eSeries['cycle'] === Series::PERENNIAL) {
+					$start = $eSeries['season'] - $eSeries['perennialSeason'] + 1;
+					if($eSeries['perennialLifetime'] !== NULL) {
+						$perennial = p("Culture pérenne en place depuis la saison {start} pour {value} an", "Culture pérenne en place depuis la saison {start} pour {value} ans", $eSeries['perennialLifetime'], ['start' => $start]);
+					} else {
+						$perennial = s("Culture pérenne en place depuis la saison {start}", ['start' => $start]);
+					}
+				} else {
+					$perennial = s("Culture annuelle");
+				}
+
+				$infos[] = $perennial;
+
+				if($eSeries['sequence']->notEmpty()) {
+					$infos[] = s("Itinéraire technique {value}", '<u>'.\sequence\SequenceUi::link($eSeries['sequence']).'</u>');
+				}
+
+				$h .= '<div>';
+					$h .= '<div class="util-badge bg-secondary" style="margin-right: 0.5rem">'.s("Saison {value}", $eSeries['season']).'</div>';
+					$h .= implode(' | ', $infos);
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+			$h .= '<div>';
+
+				if($eSeries->canWrite()) {
+
+					$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
+					$h .= '<div class="dropdown-list">';
+						$h .= '<div class="dropdown-title">'.encode($eSeries['name']).'</div>';
+						if($eSeries['status'] === Series::OPEN) {
+							$h .= '<a href="/series/series:update?id='.$eSeries['id'].'" class="dropdown-item">'.s("Modifier la série").'</a>';
+							$h .= '<a data-ajax="/series/series:updateComment" post-id="'.$eSeries['id'].'" class="dropdown-item">'.s("Ajouter des notes sur cette série").'</a>';
+							$h .= '<a href="/series/cultivation:create?series='.$eSeries['id'].'" class="dropdown-item">'.s("Ajouter une autre production").'</a>';
+							$h .= '<div class="dropdown-divider"></div>';
+						}
+
+						if($eSeries->acceptOpen()) {
+							$h .= '<a data-ajax="/series/series:doUpdateStatus" post-id="'.$eSeries['id'].'" post-status="'.Series::OPEN.'" class="dropdown-item">'.s("Réouvrir la série").'</a>';
+						}
+
+						if($eSeries->acceptClose()) {
+							$h .= '<a data-ajax="/series/series:doUpdateStatus" post-id="'.$eSeries['id'].'" post-status="'.Series::CLOSED.'" class="dropdown-item" data-confirm="'.s("Une série clôturée est une série pour laquelle vous avez terminé toutes les interventions culturales. Confirmer ?").'">'.s("Clôturer la série").'</a>';
+						}
+						if($eSeries->acceptDuplicate()) {
+							$h .= '<a href="/series/series:duplicate?ids[]='.$eSeries['id'].'" class="dropdown-item">'.s("Dupliquer la série").'</a>';
+							$h .= '<div class="dropdown-divider"></div>';
+						}
+						$h .= '<a data-ajax="/series/series:doDelete" post-id="'.$eSeries['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette série de votre plan de culture ?").'" class="dropdown-item">'.s("Supprimer la série").'</a>';
+					$h .= '</div>';
+
+				}
+
+			$h .= '</div>';
+
 		$h .= '</div>';
 
 		return $h;

@@ -1101,7 +1101,7 @@ Lime.Panel = class {
 
 			h += '<div class="panel" id="'+ id +'">';
 				h += '<div class="panel-backdrop"></div>';
-				h += options.dialogOpen ?? '<div class="panel-dialog container">';
+				h += options.dialogOpen ?? '<div class="panel-dialog">';
 					h += '<div class="panel-header"></div>';
 					h += '<div class="panel-body"></div>';
 					h += '<div class="panel-footer"></div>';

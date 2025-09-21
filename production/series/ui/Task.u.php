@@ -944,7 +944,7 @@ class TaskUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="planning-search" class="util-block-search stick-xs '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="planning-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
 
 			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'id' => 'form-search']);
 

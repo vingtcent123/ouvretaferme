@@ -85,7 +85,7 @@ div.series-season-month {
 	line-height: 1;
 }
 
-div.series-season-month.series-season-month-with-weeks:nth-child(even) {
+div.series-season-month-1 {
 	background-color: #00000008;
 }
 
@@ -100,6 +100,14 @@ div.series-season-weeks {
 	display: flex;
 	font-size: 0.7rem;
 	text-align: center;
+}
+
+@media (max-width: 1400px) {
+
+	.panel div.series-season-weeks {
+		display: none;
+	}
+
 }
 
 div.series-season-weeks > div.series-season-week {
@@ -143,6 +151,14 @@ div.series-grid {
 	z-index: 0;
 }
 
+@media (max-width: 991px) {
+
+	.panel div.series-grid-weeks {
+		display: none;
+	}
+
+}
+
 div.series-grid-weeks > div.series-grid-line {
 	position: absolute;
 	top: 0;
@@ -178,16 +194,20 @@ div.series-grid-weeks + div.series-grid-months > div.series-grid-line:nth-child(
 	border-left: 0;
 }
 
-body[data-touch="yes"] #zone-content {
+body[data-touch="yes"] main #zone-content {
 	width: calc(var(--screen-width) - var(--container-padding) * 2 - var(--nav-width));
 	overflow-x: auto;
 }
 
-#zone-content > * {
+main  #zone-content > * {
 	min-width: calc(var(--zone-content-months) * 4.5rem + 10rem);
 }
 
-#zone-tabs {
+div.zone-update [data-hide="1"] {
+	display: none;
+}
+
+#zone-container {
 
 	div.series-grid-weeks > div.series-grid-line:not(:first-child) {
 		border-left: 1px dashed #0002;

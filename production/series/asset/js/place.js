@@ -11,7 +11,7 @@ class Place {
 
 	static toggleSelection(target) {
 
-		CheckboxField.all(target.firstParent('.place-grid-container'), target.checked, '[name^="beds[]"]', (bed) => this.selectBed(bed));
+		CheckboxField.all(target.firstParent('.plot-wrapper, .zone-wrapper'), target.checked, '.bed-item-bed:not(.bed-item-fill) [name^="beds[]"]', (bed) => this.selectBed(bed));
 
 	}
 
@@ -24,85 +24,94 @@ class Place {
 		const searchFree = wrapper.qs('[name="free"]').value;
 		const searchRotation = parseInt(wrapper.qs('[name="rotation"]').value);
 
-		qsa('.place-grid-container', container => {
+		qsa('.zone-wrapper', zoneWrapper => {
 
-			let containerHide = 1;
+			let zoneHide = 1;
 
-			container.qsa('.place-grid-bed', bed => {
+			zoneWrapper.qsa('.plot-wrapper', plotWrapper => {
 
-				let bedHide = 0;
+				let plotHide = 1;
 
-				switch(searchFree) {
+				plotWrapper.qsa('.bed-item-grid', bed => {
 
-					case '0' :
-						break;
+					let bedHide = 0;
 
-					case '100' :
-						if(bed.dataset.free !== '0') {
-							bedHide = 1;
-						}
-						break;
+					switch(searchFree) {
 
-					case '1' :
-						if(bed.dataset.free !== '0' && bed.dataset.free !== '1') {
-							bedHide = 1;
-						}
-					case '2' :
-						if(bed.dataset.free !== '0' && bed.dataset.free !== '1' && bed.dataset.free !== '2') {
-							bedHide = 1;
-						}
-						break;
+						case '0' :
+							break;
 
-				}
+						case '100' :
+							if(bed.dataset.free !== '0') {
+								bedHide = 1;
+							}
+							break;
 
-				switch(searchMode) {
+						case '1' :
+							if(bed.dataset.free !== '0' && bed.dataset.free !== '1') {
+								bedHide = 1;
+							}
+						case '2' :
+							if(bed.dataset.free !== '0' && bed.dataset.free !== '1' && bed.dataset.free !== '2') {
+								bedHide = 1;
+							}
+							break;
 
-					case '' :
-						break;
+					}
 
-					case 'open-field' :
-						if(bed.dataset.greenhouse === '1') {
-							bedHide = 1;
-						}
-						break;
+					switch(searchMode) {
 
-					case 'greenhouse' :
-						if(bed.dataset.greenhouse === '0') {
-							bedHide = 1;
-						}
-						break;
+						case '' :
+							break;
 
-				}
+						case 'open-field' :
+							if(bed.dataset.greenhouse === '1') {
+								bedHide = 1;
+							}
+							break;
 
-				if(
-					searchWidth === '1' &&
-					bed.dataset.sameWidth === '0'
-				) {
-					bedHide = 1;
-				}
+						case 'greenhouse' :
+							if(bed.dataset.greenhouse === '0') {
+								bedHide = 1;
+							}
+							break;
 
-				if(
-					searchRotation > 0 &&
-					bed.dataset.rotation !== ''
-				) {
+					}
 
-					const rotation = parseInt(bed.dataset.rotation);
-
-					if(searchRotation > rotation) {
+					if(
+						searchWidth === '1' &&
+						bed.dataset.sameWidth === '0'
+					) {
 						bedHide = 1;
 					}
 
-				}
+					if(
+						searchRotation > 0 &&
+						bed.dataset.rotation !== ''
+					) {
 
-				if(bedHide === 0) {
-					containerHide = 0;
-				}
+						const rotation = parseInt(bed.dataset.rotation);
 
-				bed.dataset.hide = bedHide;
+						if(searchRotation > rotation) {
+							bedHide = 1;
+						}
 
+					}
+
+					if(bedHide === 0) {
+						zoneHide = 0;
+						plotHide = 0;
+					}
+
+					bed.dataset.hide = bedHide;
+
+				});
+
+				plotWrapper.dataset.hide = plotHide;
+				
 			});
 
-			container.dataset.hide = containerHide;
+			zoneWrapper.dataset.hide = zoneHide;
 
 		});
 
@@ -110,7 +119,7 @@ class Place {
 
 	static selectBed(target) {
 
-		let wrapper = target.firstParent('div.place-grid');
+		let wrapper = target.firstParent('div.bed-item-grid');
 
 		if(target.checked) {
 			wrapper.classList.add('selected');
@@ -121,12 +130,13 @@ class Place {
 		Place.updateSelected();
 
 		// Présence d'onglets
-		if(qs('#place-grid-wrapper')) {
+		const zoneWrapper = target.firstParent('.zone-wrapper');
+		const zoneCount = qs('#zone-count-'+ zoneWrapper.dataset.zone);
 
-			const panel = target.firstParent('.tab-panel');
-			const beds = panel.qsa('[name="beds[]"]:checked').length;
+		if(zoneCount) {
 
-			qs('#place-grid-wrapper [data-tab="'+ panel.dataset.tab +'"] .tab-item-count').innerHTML = (beds > 0) ? beds : '';
+			const beds = zoneWrapper.qsa('[name="beds[]"]:checked').length;
+			zoneCount.innerHTML = (beds > 0) ? beds : '';
 
 		}
 

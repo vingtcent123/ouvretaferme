@@ -563,7 +563,7 @@ class FarmUi {
 		$h = '<h3>'.s("Les données annuelles").'</h3>';
 
 		$h .= $form->openAjax('/farm/farm:export', attributes: ['method' => 'get']);
-			$h .= '<div class="util-block-search stick-xs" style="display: flex; column-gap: 1rem">';
+			$h .= '<div class="util-block-search" style="display: flex; column-gap: 1rem">';
 				$h .= $form->hidden('id', $eFarm['id']);
 				$h .= $form->inputGroup(
 					$form->addon(s("Année")).
@@ -1238,7 +1238,7 @@ class FarmUi {
 
 	public function getCultivationSeriesSearch(string $view, \farm\Farm $eFarm, int $season, \Search $search, \Collection $cSupplier, \Collection $cAction): string {
 
-		$h = '<div id="series-search" class="util-block-search stick-xs '.($search->empty(['cAction']) ? 'hide' : '').'">';
+		$h = '<div id="series-search" class="util-block-search '.($search->empty(['cAction']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlCultivationSeries($eFarm, season: $season);
@@ -1424,7 +1424,7 @@ class FarmUi {
 			$seen[$i] = p("exactement {value} fois entre {start} et {stop}", "exactement {value} fois entre {start} et {stop}", $i, ['start' => last($seasons), 'stop' => first($seasons)]);
 		}
 
-		$h = '<div id="bed-rotation-search" class="util-block-search stick-xs '.($search->empty(['cFamily']) ? 'hide' : '').' mt-1">';
+		$h = '<div id="bed-rotation-search" class="util-block-search '.($search->empty(['cFamily']) ? 'hide' : '').' mt-1">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;

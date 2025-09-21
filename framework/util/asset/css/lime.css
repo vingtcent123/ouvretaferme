@@ -1366,8 +1366,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 
 @media (max-width: 575px) {
 
-	.util-block-gradient,
-	.util-block-search {
+	.util-block-gradient {
 		padding: var(--container-xs-padding);
 	}
 
@@ -2209,13 +2208,14 @@ body[data-touch="yes"] .panel.closing {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+	max-width: 1400px;
 	min-height: 100vh;
 	outline: 0;
 	pointer-events: none;
-}
-
-.panel-dialog.container {
-	max-width: 1400px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: var(--container-padding);
+	padding-right: var(--container-padding);
 }
 
 .panel-dialog > * {
@@ -2334,6 +2334,7 @@ a.panel-back:hover {
 .panel-header {
 	position: sticky;
 	top: 0;
+	width: 100%;
 	display: grid;
 	align-items: center;
 	justify-content: space-between;

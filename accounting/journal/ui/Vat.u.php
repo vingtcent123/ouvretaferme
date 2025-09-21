@@ -38,7 +38,7 @@ Class VatUi {
 
 	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected, ?\account\ThirdParty $eThirdParty): string {
 
-		$h = '<div id="vat-search" class="util-block-search stick-xs '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+		$h = '<div id="vat-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH.'?financialYear='.$eFinancialYearSelected['id'];

@@ -14,7 +14,7 @@ class VatDeclarationUi {
 			\company\CompanyUi::urlJournal($eFarm).'/vatDeclaration:doCreate',
 			[
 				'id' => 'journal-vat-create',
-				'class' => 'panel-dialog container',
+				'class' => 'panel-dialog',
 			],
 		);
 

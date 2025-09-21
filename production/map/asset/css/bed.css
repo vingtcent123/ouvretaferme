@@ -9,11 +9,6 @@ div.bed-item-grid {
 	background-color: white;
 }
 
-div.bed-item-grid > *:first-child {
-	padding-left: 0.75rem;
-}
-
-
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even),
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even) .bed-item-bed {
 	background-color: white;
@@ -41,8 +36,16 @@ div.bed-item-grid-plan {
 	align-items: center;
 }
 
+div.zone-update div.bed-item-grid-plan {
+	grid-template-columns: 16rem 1fr;
+}
+
 div.bed-item-wrapper div.series-grid {
 	left: 12rem;
+}
+
+div.zone-update div.bed-item-wrapper div.series-grid {
+	left: 16rem;
 }
 
 div.bed-item-grid-rotation-5 {
@@ -67,8 +70,16 @@ div.bed-item-grid-rotation-2 {
 		grid-template-columns: 9rem 1fr;
 	}
 
+	div.zone-update div.bed-item-grid-plan {
+		grid-template-columns: 12rem 1fr;
+	}
+
 	div.bed-item-wrapper div.series-grid {
 		left: 9rem;
+	}
+
+	div.zone-update div.bed-item-wrapper div.series-grid {
+		left: 12rem;
 	}
 
 }
@@ -91,31 +102,95 @@ div.bed-item-grid-rotation-2 {
 		grid-template-columns: 8rem repeat(2, 1fr);
 	}
 
+	div.zone-update div.bed-item-grid-plan {
+		grid-template-columns: 10rem 1fr;
+	}
+
+	div.zone-update div.bed-item-wrapper div.series-grid {
+		left: 10rem;
+	}
+
 }
 
 div.bed-item-grid .bed-item-bed {
 	position: sticky;
-	line-height: 1.2;
 	align-self: stretch;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	min-height: 2.8rem;
 	z-index: 10;
-	padding-right: 1rem;
+	display: flex;
+	align-items: center;
 }
 
-body[data-touch="no"] div.bed-item-grid .bed-item-bed {
+body[data-touch="no"] main div.bed-item-grid .bed-item-bed {
 	left: calc(var(--nav-width) + var(--container-padding));
 }
 
-body[data-touch="yes"] div.bed-item-grid .bed-item-bed {
+body[data-touch="yes"] main div.bed-item-grid .bed-item-bed {
 	left: 0;
+}
+
+.panel div.bed-item-grid .bed-item-bed {
+	left: 0;
+}
+
+.bed-item-select {
+	align-self: stretch;
+	color: white;
+	margin: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	width: 3rem;
+	min-width: 3rem;
+}
+
+@media (max-width: 991px) {
+
+	.bed-item-select {
+		width: 2.5rem;
+		min-width: 2.5rem;
+	}
+
+}
+
+div.bed-item-grid .bed-item-select {
+	background-color: #0001;
+}
+
+div.zone-title .bed-item-select,
+div.plot-title .bed-item-select {
+	margin-right: 0.75rem;
+	opacity: 0.5;
+}
+
+div.zone-wrapper:not(:has(.bed-item-bed:not(.bed-item-fill))) div.zone-title .bed-item-select,
+div.plot-wrapper:not(:has(.bed-item-bed:not(.bed-item-fill))) div.plot-title .bed-item-select {
+	display: none;
+}
+
+div.bed-item-grid.selected .bed-item-select {
+	background-color: var(--info);
+}
+
+div.bed-item-grid .bed-item-content {
+	line-height: 1.2;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-height: 3rem;
+	padding-right: 1rem;
+	padding-left: 0.75rem;
+	width: 100%;
+}
+
+div.bed-item-grid.selected .bed-item-content {
+	min-height: 5rem;
 }
 
 div.bed-item-grid div.bed-item-name {
 	letter-spacing: -0.1px;
+	display: flex;
+	justify-content: space-between;
 }
 
 div.bed-item-grid div.bed-item-name a {
@@ -123,10 +198,47 @@ div.bed-item-grid div.bed-item-name a {
 }
 
 div.bed-item-grid div.bed-item-size {
-	text-align: right;
 	font-size: 0.7rem;
-	color: var(--muted);
-	opacity: 0.8;
+	color: #999;
+}
+
+div.bed-item-grid div.bed-item-size-read {
+	margin-top: 0.125rem;
+}
+
+div.bed-item-grid div.bed-item-size-write {
+	width: 15rem;
+	margin-top: 0.25rem;
+}
+
+div.bed-item-grid div.bed-item-size-write input {
+	text-align: center;
+}
+
+div.bed-item-grid div.bed-item-size-write .input-group-addon {
+	background-color: var(--background) !important;
+}
+
+div.bed-item-grid.selected div.bed-item-size-read {
+	display: none;
+}
+
+div.bed-item-grid:not(.selected) div.bed-item-size-write {
+	display: none;
+}
+
+div.bed-item-grid .bed-item-rotation {
+	font-size: 0.9rem;
+	color: var(--secondary);
+	white-space: nowrap;
+}
+
+@media (max-width: 991px) {
+
+	div.bed-item-grid .bed-item-rotation {
+		display: none;
+	}
+
 }
 
 div.bed-item-grid div.bed-item-places {

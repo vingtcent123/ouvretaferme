@@ -47,12 +47,12 @@ class Zone {
 		let location;
 
 		const zone = target.dataset.zone;
-		const zoneDropdown = qs('#zone-tabs .zone-dropdown');
+		const zoneDropdown = qs('#zone-container .zone-dropdown');
 
 		if(zone === undefined) {
 
-			qsa('#zone-tabs .zone-tab', tab => tab.removeHide());
-			qsa('[data-wrapper="#zone-tabs"] .dropdown-item', tab => tab.dataset.zone === undefined ? tab.classList.add('selected') : tab.classList.remove('selected'));
+			qsa('#zone-container .zone-wrapper', wrapper => wrapper.removeHide());
+			qsa('[data-wrapper="#zone-container"] .dropdown-item', item => item.dataset.zone === undefined ? item.classList.add('selected') : item.classList.remove('selected'));
 
 			location = document.location.href.removeArgument('zone');
 
@@ -60,8 +60,8 @@ class Zone {
 
 		} else {
 
-			qsa('#zone-tabs .zone-tab', tab => tab.dataset.zone === zone ? tab.removeHide() : tab.hide());
-			qsa('[data-wrapper="#zone-tabs"] .dropdown-item', tab => tab.dataset.zone === zone ? tab.classList.add('selected') : tab.classList.remove('selected'));
+			qsa('#zone-container .zone-wrapper', tab => tab.dataset.zone === zone ? tab.removeHide() : tab.hide());
+			qsa('[data-wrapper="#zone-container"] .dropdown-item', tab => tab.dataset.zone === zone ? tab.classList.add('selected') : tab.classList.remove('selected'));
 
 			location = document.location.href.setArgument('zone', zone);
 

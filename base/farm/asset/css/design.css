@@ -1064,51 +1064,6 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 
 }
 
-
-.main-sticky-left {
-	position: sticky;
-	width: calc(var(--screen-width) - var(--nav-width) - var(--container-padding) * 2);
-}
-
-body[data-touch="no"] {
-
-	.main-sticky-overlay-left,
-	.main-sticky-overlay-right {
-		width: var(--container-padding);
-		background-color: var(--background-body);
-		top: 0;
-		height: 100vh;
-		position: fixed;
-		z-index: 98;
-	}
-
-	.main-sticky-overlay-left {
-		left: var(--nav-width);
-	}
-
-	.main-sticky-overlay-right {
-		right: 0;
-	}
-
-	.main-sticky-left {
-		left: calc(var(--nav-width) + var(--container-padding));
-	}
-
-}
-
-body[data-touch="yes"] {
-
-	.main-sticky-overlay-left,
-	.main-sticky-overlay-right {
-		display: none;
-	}
-
-	.main-sticky-left {
-		left: 0;
-	}
-
-}
-
 .farm-tab-disabled {
 	opacity: 0.5;
 }

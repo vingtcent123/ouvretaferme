@@ -79,7 +79,7 @@ class NewsUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/website/news:doCreate', ['class' => 'panel-dialog container']);
+		$h = $form->openAjax('/website/news:doCreate', ['class' => 'panel-dialog']);
 
 			$h .= $form->hidden('website', $eNews['website']);
 			$h .= $form->dynamicGroups($eNews, ['title', 'publishedAt', 'content']);
@@ -106,7 +106,7 @@ class NewsUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/website/news:doUpdate', ['class' => 'panel-dialog container']);
+		$h = $form->openAjax('/website/news:doUpdate', ['class' => 'panel-dialog']);
 			$h .= $form->hidden('id', $eNews['id']);
 			$h .= $form->dynamicGroups($eNews, ['title', 'publishedAt', 'content']);
 			$h .= $form->group(content: $form->submit(s("Modifier l'actualité")));

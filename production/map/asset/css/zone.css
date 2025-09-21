@@ -1,9 +1,12 @@
-
 #zone-header {
 	background-color: var(--background-body);
 	position: sticky;
 	z-index: 50;
 	top: 0;
+}
+
+.panel #zone-header {
+	background-color: white;
 }
 
 .zone-button {
@@ -12,9 +15,6 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border-bottom-left-radius: 0 !important;
-	border-bottom-right-radius: 0 !important;
-	border-bottom: 1px solid var(--background-body);
 }
 
 .zone-dropdown {
@@ -34,8 +34,9 @@
 
 }
 
-.zone-tabs:has(.zone-tab.hide) .zone-item {
-	display: none;
+.zone-container {
+	margin-top: -1.5rem;
+	padding-top: 0.5rem;
 }
 
 .zone-corner {
@@ -49,16 +50,29 @@
 	padding: 1rem 0 0 0 !important;
 }
 
+.panel .zone-corner {
+	background-color: white;
+	left: 0;
+}
 
-body[data-touch="no"] .zone-corner {
+body[data-touch="no"] main .zone-corner {
 	left: calc(var(--nav-width) + var(--container-padding));
 }
 
-body[data-touch="yes"] .zone-corner {
+body[data-touch="yes"] main .zone-corner {
 	left: 0;
 }
+
 div.zone-header-season {
 	overflow: hidden;
+}
+
+.zone-count {
+	margin-left: .5rem;
+}
+
+.zone-count:empty {
+	display: none;
 }
 
 /* Cartographie */
@@ -104,8 +118,61 @@ div.zone-map {
 }
 
 /* Items */
-div.zone-item {
-	background-color: var(--secondary);
-	padding: 1rem;
+div.zone-title {
+	margin-top: 1.5rem;
+	border-bottom: 3px solid var(--secondary);
+	padding: 1.25rem 0.75rem 1.25rem;
+	background: var(--secondary);
 	color: white;
+	border-top-left-radius: var(--radius);
+	border-top-right-radius: var(--radius);
+}
+
+div.zone-title:has(.bed-item-select) {
+	padding-left: 0;
+}
+
+.zone-sticky-overlay-left,
+.zone-sticky-overlay-right {
+	display: none;
+}
+
+main .zone-sticky-left {
+	position: sticky;
+	width: calc(var(--screen-width) - var(--nav-width) - var(--container-padding) * 2);
+}
+
+body[data-touch="no"] {
+
+	main .zone-sticky-overlay-left,
+	main .zone-sticky-overlay-right {
+		display: block;
+		width: var(--container-padding);
+		background-color: var(--background-body);
+		top: 0;
+		height: 100vh;
+		position: fixed;
+		z-index: 98;
+	}
+
+	main .zone-sticky-overlay-left {
+		left: var(--nav-width);
+	}
+
+	main .zone-sticky-overlay-right {
+		right: 0;
+	}
+
+	main .zone-sticky-left {
+		left: calc(var(--nav-width) + var(--container-padding));
+	}
+
+}
+
+body[data-touch="yes"] {
+
+	main .zone-sticky-left {
+		left: 0;
+	}
+
 }
