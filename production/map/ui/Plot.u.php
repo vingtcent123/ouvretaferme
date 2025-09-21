@@ -47,6 +47,16 @@ class PlotUi {
 								$h .= s("Jardin {value}", encode($ePlot['name']));
 								$h .= '<span class="plot-title-area">'.$this->getPlotArea($ePlot).'</span>';
 							$h .= '</h4>';
+							if(
+								$eUpdate->notEmpty() and
+								$eUpdate['use'] === \series\Series::BED
+							) {
+								$h .= '<label class="bed-item-all">';
+									$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
+									$h .= '<span class="show-checked">'.s("Tout décocher").'</span>';
+									$h .= '<span class="show-not-checked">'.s("Tout cocher").'</span>';
+								$h .= '</label>';
+							}
 						$h .= '</div>';
 
 					$h .= '</div>';

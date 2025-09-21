@@ -11,7 +11,7 @@ class Place {
 
 	static toggleSelection(target) {
 
-		CheckboxField.all(target.firstParent('.plot-wrapper, .zone-wrapper'), target.checked, '.bed-item-bed:not(.bed-item-fill) [name^="beds[]"]', (bed) => this.selectBed(bed));
+		CheckboxField.all(target.firstParent('.plot-wrapper, .zone-wrapper'), target.checked, '.bed-item-grid:not(.bed-item-fill) [name^="beds[]"]', (bed) => this.selectBed(bed));
 
 	}
 

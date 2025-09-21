@@ -9,6 +9,10 @@ div.bed-item-grid {
 	background-color: white;
 }
 
+div.bed-item-fill-discrete:not(.selected) {
+	display: none;
+}
+
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even),
 div.bed-item-grid-plan:not(.bed-item-grid-header):nth-child(even) .bed-item-bed {
 	background-color: white;
@@ -26,9 +30,9 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header):hover {
 	transition: background-color 0.25s;
 }
 
-div.bed-item-grid-plan:not(.bed-item-grid-header):not(:first-child),
+div.bed-item-grid-plan:not(.bed-item-grid-header),
 div.bed-item-grid-rotation:not(.bed-item-grid-header) {
-	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
 }
 
 div.bed-item-grid-plan {
@@ -132,6 +136,26 @@ body[data-touch="yes"] main div.bed-item-grid .bed-item-bed {
 	left: 0;
 }
 
+.bed-item-all {
+	cursor: pointer;
+}
+
+.bed-item-all:hover {
+	text-decoration: underline;
+}
+
+.bed-item-all input {
+	display: none;
+}
+
+.bed-item-all input:not(:checked) + .show-checked {
+	display: none;
+}
+
+.bed-item-all input:checked + .show-checked + .show-not-checked {
+	display: none;
+}
+
 .bed-item-select {
 	align-self: stretch;
 	color: white;
@@ -163,9 +187,12 @@ div.plot-title .bed-item-select {
 	opacity: 0.5;
 }
 
-div.zone-wrapper:not(:has(.bed-item-bed:not(.bed-item-fill))) div.zone-title .bed-item-select,
-div.plot-wrapper:not(:has(.bed-item-bed:not(.bed-item-fill))) div.plot-title .bed-item-select {
-	display: none;
+div.zone-wrapper:not(:has(.bed-item-grid:not(.bed-item-fill))) div.zone-title .bed-item-select,
+div.plot-wrapper:not(:has(.bed-item-grid:not(.bed-item-fill))) div.plot-title .bed-item-select {
+	opacity: 0;
+	width: 0.25rem !important;
+	min-width: 0.25rem !important;
+	overflow: hidden;
 }
 
 div.bed-item-grid.selected .bed-item-select {
@@ -230,6 +257,7 @@ div.bed-item-grid .bed-item-rotation {
 	font-size: 0.9rem;
 	color: var(--secondary);
 	white-space: nowrap;
+	padding-right: 0.5rem;
 }
 
 @media (max-width: 991px) {

@@ -1,6 +1,7 @@
 /* Items */
 div.plot-title {
 	padding: 1rem 0.75rem;
+	background-color: #8883;
 }
 
 div.plot-title:has(.bed-item-select) {

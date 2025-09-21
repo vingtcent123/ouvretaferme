@@ -255,7 +255,16 @@ class ZoneUi {
 					$h .= s("Parcelle {value}", encode($eZone['name']));
 					$h .= '<span class="zone-title-area">'.$this->getZoneArea($eZone).'</span>';
 				$h .= '</h2>';
-				$h .= '<a href="">Planche temporaire</a>';
+				if(
+					$this->eUpdate->notEmpty() and
+					$this->eUpdate['use'] === \series\Series::BED
+				) {
+					$h .= '<label class="bed-item-all">';
+						$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
+						$h .= '<span class="show-checked">'.s("Tout décocher").'</span>';
+						$h .= '<span class="show-not-checked">'.s("Tout cocher").'</span>';
+					$h .= '</label>';
+				}
 			$h .= '</div>';
 			$h .= '<div>';
 			$h .= '</div>';

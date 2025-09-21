@@ -50,8 +50,22 @@ class BedUi {
 			}
 
 			$class = 'bed-item-grid bed-item-grid-'.$view;
+
 			if($view === \farm\Farmer::ROTATION) {
 				$class .= ' bed-item-grid-rotation-'.$eFarm['rotationYears'];
+			}
+
+			if($eBed['plotFill']) {
+
+				$class .= ' bed-item-fill';
+
+				if(
+					$eUpdate->notEmpty() and
+					$eUpdate['use'] === \series\Series::BED
+				) {
+					$class .= ' bed-item-fill-discrete';
+				}
+
 			}
 
 			if($eUpdate->notEmpty()) {
@@ -70,7 +84,7 @@ class BedUi {
 
 				if($eBed['plotFill']) {
 
-					$h .= '<div class="bed-item-bed bed-item-fill">';
+					$h .= '<div class="bed-item-bed">';
 
 						if($eUpdate->notEmpty()) {
 							$h .= '<label class="bed-item-select">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
@@ -173,7 +187,7 @@ class BedUi {
 
 								$h .= '<div class="bed-item-size">';
 
-									if($eUpdate->notEmpty()) {
+									if($eUpdate->notEmpty() and $eUpdate instanceof \series\Series) {
 
 										if(
 											$eUpdate['use'] === \series\Series::BED and
@@ -235,7 +249,7 @@ class BedUi {
 
 	}
 
-	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season, \series\Series $ePlaceholder): string {
+	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season, \series\Series|\series\Task $ePlaceholder): string {
 
 		$timeline = new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season, $ePlaceholder);
 
