@@ -641,7 +641,10 @@ class TaskLib extends TaskCrud {
 
 				if(
 					$cccPlace->empty() or
-					$cccPlace->find(fn($ePlace) => $ePlace['plot']['id'] === $ePlotSearch['id'], depth: 3, limit: 1)->empty()
+					$cccPlace->find(fn($ePlace) => (
+						($ePlotSearch['zoneFill'] === FALSE and $ePlace['plot']->is($ePlotSearch)) or
+						($ePlotSearch['zoneFill'] === TRUE and $ePlace['zone']->is($ePlotSearch['zone']))
+					), depth: 3, limit: 1)->empty()
 				) {
 					$delete[] = $key;
 				}
