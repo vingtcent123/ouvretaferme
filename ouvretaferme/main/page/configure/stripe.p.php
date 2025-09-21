@@ -5,9 +5,20 @@ new Page()
 
 
 		$eStripeFarm = \payment\StripeLib::getByFarm(new \farm\Farm(['id' => GET('farm', 'int')]));
-		$paymentDetails = \payment\StripeLib::getPaymentIntentDetails($eStripeFarm, GET('paymentIntent'));
 
-		dd($paymentDetails);
+		if(get_exists('paymentIntent')) {
+
+			$paymentDetails = \payment\StripeLib::getPaymentIntentDetails($eStripeFarm, GET('paymentIntent'));
+
+			dd($paymentDetails);
+
+		}
+
+		if(get_exists('checkoutId')) {
+			$paymentDetails = \payment\StripeLib::getCheckoutIdDetails($eStripeFarm, GET('checkoutId'));
+			dd($paymentDetails);
+
+		}
 
 		//dd(ip2long('91.173.108.131'));
 

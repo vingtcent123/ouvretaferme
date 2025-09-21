@@ -237,6 +237,12 @@ class StripeLib {
 
 	}
 
+	public static function getCheckoutIdDetails(StripeFarm $eStripeFarm, string $checkoutId): array {
+
+		return self::sendStripeRequest($eStripeFarm, 'checkout/sessions/'.encode($checkoutId));
+
+	}
+
 	public static function getPaymentIntentDetails(StripeFarm $eStripeFarm, string $paymentIntent): array {
 
 		return self::sendStripeRequest($eStripeFarm, 'payment_intents/'.encode($paymentIntent));
