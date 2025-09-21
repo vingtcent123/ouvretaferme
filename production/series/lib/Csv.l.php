@@ -300,6 +300,7 @@ class CsvLib {
 				'length',
 				'area',
 				'series' => [
+					'season',
 					'name', 'bedStartCalculated', 'bedStopCalculated',
 					'cCultivation' => Cultivation::model()
 						->select([
