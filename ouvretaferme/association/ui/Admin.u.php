@@ -5,8 +5,6 @@ class AdminUi {
 
 	public function __construct() {
 
-		\Asset::css('association', 'admin.css');
-
 	}
 
 	public function create(\farm\Farm $eFarm, \Collection $cHistory, \Collection $cMethod): \Panel {
