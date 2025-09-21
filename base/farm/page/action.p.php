@@ -47,7 +47,7 @@ new Page()
 
 		$data->year = GET('year', 'int', date('Y'));
 
-		$data->eCategory = \farm\CategoryLib::getById(GET('category'));
+		$data->eCategory = \farm\CategoryLib::getById(GET('category'))->validate();
 		$data->eCategory['farm']->validate('canAnalyze');
 
 		$data->eAction = \farm\ActionLib::getById(GET('action'));
