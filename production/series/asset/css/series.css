@@ -203,7 +203,7 @@ main  #zone-content > * {
 	min-width: calc(var(--zone-content-months) * 4.5rem + 10rem);
 }
 
-div.zone-update [data-hide="1"]:not(.selected) {
+#zone-content [data-hide="1"]:not(.selected) {
 	display: none;
 }
 
@@ -1349,11 +1349,11 @@ td.series-field-cultivations {
 
 .series-selector-cultivation:hover {
 	cursor: pointer;
+	background-color: var(--background-body);
 }
 
-.series-selector-cultivation:hover,
 .series-selector-cultivation.selected {
-	background-color: var(--background-body);
+	background-color: var(--info);
 }
 
 .series-selector-cultivation:not(.selected) .series-selector-header {
@@ -1371,7 +1371,11 @@ td.series-field-cultivations {
 }
 
 .series-selector-more {
-	margin-top: 0.5rem;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	margin-top: 1rem;
 }
 
 .series-selector-cultivation:not(.selected) .series-selector-more {

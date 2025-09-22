@@ -295,7 +295,8 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 		switch($view) {
 
 			case \farm\Farmer::PLAN :
-				if($data->hasSelector) {
+
+				if($data->hasUpdate) {
 					echo '<style>
 						:root {
 							--nav-width: 25rem;
@@ -303,7 +304,15 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 					</style>';
 					echo new \series\SeriesUi()->getSelector($data->eFarm, $data->ccCultivation, $data->eCultivationSelected);
 				}
+
+				$uiZone = new \map\ZoneUi();
+
+				if($data->eCultivationSelected->notEmpty()) {
+					$uiZone->setUpdate($data->eCultivationSelected['series']);
+				}
+
 				echo new \map\ZoneUi()->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
+
 				break;
 
 			case \farm\Farmer::ROTATION :

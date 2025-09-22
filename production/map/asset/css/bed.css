@@ -9,6 +9,11 @@ div.bed-item-grid {
 	background-color: white;
 }
 
+div.bed-item-grid.selected,
+div.bed-item-grid.selected .bed-item-bed {
+	background-color: var(--info) !important;
+}
+
 div.bed-item-fill {
 	display: none;
 	padding: 0.5rem 0;
@@ -16,6 +21,11 @@ div.bed-item-fill {
 
 div.zone-wrapper:has(input.zone-title-fill:checked) .bed-item-fill-zone,
 div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot {
+	display: grid;
+}
+
+div.zone-wrapper:has(.place-grid-series-timeline) .bed-item-fill-zone,
+div.plot-wrapper:has(.place-grid-series-timeline) .bed-item-fill-plot {
 	display: grid;
 }
 

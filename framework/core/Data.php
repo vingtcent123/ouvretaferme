@@ -769,17 +769,17 @@ class Collection extends ArrayIterator {
 
 	}
 
-	public function findById(int|Element $id): Element {
+	public function findById(int|Element $id, int $depth = 1, Closure|Element $default = new Element()): Element {
 
 		if($id instanceof Element) {
 			if($id->exists()) {
 				$id = $id['id'];
 			} else {
-				return new Element();
+				return is_closure($default) ? $default() : $default;
 			}
 		}
 
-		return $this->find(fn($e) => $e['id'] === $id, limit: 1);
+		return $this->find(fn($e) => $e['id'] === $id, limit: 1, depth: $depth, default: $default);
 
 	}
 

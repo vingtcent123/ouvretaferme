@@ -1317,9 +1317,13 @@ class FarmUi {
 
 						$eFarmer = $eFarm->getFarmer();
 
-						if(LIME_ENV === 'dev') {
-							$h .= '<a href="'.FarmUi::urlSoil($eFarm, $selectedSeason).'?selector" class="btn btn-primary hide-lateral-down">';
-								$h .= \Asset::icon('upc-scan', ['class' => 'asset-icon-rotate--90']).'  '.s("Assoler mes séries");
+						if(get_exists('update') === FALSE) {
+							$h .= '<a href="'.FarmUi::urlSoil($eFarm, $selectedSeason).'?update" class="btn btn-primary hide-lateral-down">';
+								if(LIME_ENV === 'dev') {
+									$h .= \Asset::icon('upc-scan', ['class' => 'asset-icon-rotate--90']).'  '.s("Assoler mes séries");
+								} else {
+									$h .= \Asset::icon('search');
+								}
 							$h .= '</a> ';
 						}
 						$h .= '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end">';

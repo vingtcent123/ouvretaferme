@@ -652,13 +652,25 @@ new Page(function($data) {
 
 		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, $seasonsSeries);
 
-		$data->hasSelector = get_exists('selector');
+		$data->hasUpdate = get_exists('update');
 
-		if($data->hasSelector) {
+		if($data->hasUpdate) {
 
 			$data->ccCultivation = \series\CultivationLib::getForSelector($data->eFarm, $data->season);
-			$data->eCultivationSelected = GET('selector', 'series\Cultivation');
+			$data->eCultivationSelected = $data->ccCultivation->findById(GET('update', 'int'), depth: 2, default: new \series\Cultivation());
 
+			if($data->eCultivationSelected->notEmpty()) {
+
+				$eSeries = $data->eCultivationSelected['series'];
+
+				$eSeries['cPlace'] = \series\PlaceLib::getByElement($eSeries);
+				\series\SeriesLib::fillTimeline($eSeries);
+
+			}
+
+
+		} else {
+			$data->eCultivationSelected = new \series\Cultivation();
 		}
 
 		throw new ViewAction($data, ':soil');

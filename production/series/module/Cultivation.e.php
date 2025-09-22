@@ -6,9 +6,7 @@ class Cultivation extends CultivationElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'series' => [
-				'name', 'area', 'areaTarget', 'bedWidth', 'alleyWidth', 'length', 'lengthTarget', 'season', 'cycle', 'use', 'mode', 'plants', 'perennialSeason', 'perennialLifetime', 'status', 'bedStartCalculated', 'bedStopCalculated'
-			],
+			'series' => SeriesElement::getSelection(),
 			'farm' => ['name'],
 			'plant' => ['name', 'color', 'fqn', 'vignette', 'seedsSafetyMargin', 'plantsSafetyMargin'],
 			'sliceTool' => ['name', 'routineValue'],

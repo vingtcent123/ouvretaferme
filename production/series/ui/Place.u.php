@@ -145,7 +145,7 @@ class PlaceUi {
 							NULL => s("Plein champ et tunnel"),
 							\map\Plot::OPEN_FIELD => s("Plein champ"),
 							\map\Plot::GREENHOUSE => s("Tunnel"),
-						], $search->get('mode'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()'])
+						], $search->get('mode'), ['mandatory' => TRUE, 'onchange' => 'Place.search()'])
 					);
 
 					if($search->get('canWidth')) {
@@ -153,7 +153,7 @@ class PlaceUi {
 						$h .= $form->select('width', [
 							0 => s("Toutes largeurs"),
 							1 => s("{value} cm", $eSeries['bedWidth']),
-						], (int)$search->get('width'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()']);
+						], (int)$search->get('width'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
 
 					}
 
@@ -166,7 +166,7 @@ class PlaceUi {
 								100 => s("Oui"),
 								1 => s("À ± 1 semaine"),
 								2 => s("À ± 2 semaines"),
-							], $search->get('available'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()']);
+							], $search->get('available'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
 					} else {
 						$input = $form->addon(\Asset::icon('exclamation-circle-fill'), ['title' => s("Indiquez les dates de semis direct, de plantation ou les périodes de récolte attendues sur cette séries pour utiliser ce filtre.")]);
 					}
@@ -184,7 +184,7 @@ class PlaceUi {
 							3 => s("3 ans"),
 							4 => s("4 ans"),
 							5 => s("5 ans")
-						], $search->get('rotation'), ['mandatory' => TRUE, 'onchange' => 'Place.updateSearch()'])
+						], $search->get('rotation'), ['mandatory' => TRUE, 'onchange' => 'Place.search()'])
 					);
 
 				$h .= '</div>';
@@ -570,7 +570,7 @@ class PlaceUi {
 
 		}
 
-		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" '.$dropdown.' data-ajax-navigation="notouch">';
+		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" '.$dropdown.' data-ajax-navigation="notouch" data-series="'.$eSeries['id'].'">';
 
 			if($isPlaceholder) {
 

@@ -15,14 +15,42 @@ class Place {
 
 	}
 
-	static updateSearch() {
+	static search() {
 
 		const wrapper = qs('#place-search');
 
-		const searchMode = wrapper.qs('[name="mode"]').value;
-		const searchWidth = wrapper.qs('[name="width"]')?.value;
-		const searchFree = wrapper.qs('[name="free"]').value;
-		const searchRotation = parseInt(wrapper.qs('[name="rotation"]').value);
+		this.updateSearch({
+			mode: wrapper.qs('[name="mode"]').value,
+			width: wrapper.qs('[name="width"]')?.value === '1' ? true : false,
+			free: parseInt(wrapper.qs('[name="free"]').value),
+			rotation: parseInt(wrapper.qs('[name="rotation"]').value)
+		});
+
+	}
+
+	static scroll(series) {
+
+		// Placement du scroll pour centrer la série
+		qs('.place-grid-series-timeline[data-series="'+ series +'"]', bed => {
+
+			const bedName = bed.firstParent('.bed-item-grid').qs('.bed-item-bed');
+
+			window.scrollTo(
+				Math.max(0, bed.getBoundingClientRect().left + window.scrollX - bedName.getBoundingClientRect().right),
+				Math.max(0, bed.getBoundingClientRect().top + window.scrollY - 200)
+			);
+
+		});
+
+	}
+
+	static updateSearch(query) {
+
+		const searchMode = query.mode || '';
+		const searchWidth = query.width || false;
+		const searchFree = query.free || 0;
+		const searchRotation = query.rotation || 0;
+		const searchSeries = query.series || null;
 
 		qsa('.zone-wrapper', zoneWrapper => {
 
@@ -36,22 +64,30 @@ class Place {
 
 					let bedHide = 0;
 
+					if(searchSeries !== null) {
+
+						if(bed.qs('.place-grid-series-timeline[data-series="'+ searchSeries +'"]') === null) {
+							bedHide = 1;
+						}
+
+					}
+
 					switch(searchFree) {
 
-						case '0' :
+						case 0 :
 							break;
 
-						case '100' :
+						case 100 :
 							if(bed.dataset.free !== '0') {
 								bedHide = 1;
 							}
 							break;
 
-						case '1' :
+						case 1 :
 							if(bed.dataset.free !== '0' && bed.dataset.free !== '1') {
 								bedHide = 1;
 							}
-						case '2' :
+						case 2 :
 							if(bed.dataset.free !== '0' && bed.dataset.free !== '1' && bed.dataset.free !== '2') {
 								bedHide = 1;
 							}
@@ -79,7 +115,7 @@ class Place {
 					}
 
 					if(
-						searchWidth === '1' &&
+						searchWidth === true &&
 						bed.dataset.sameWidth === '0'
 					) {
 						bedHide = 1;
@@ -108,7 +144,7 @@ class Place {
 				});
 
 				plotWrapper.dataset.hide = plotHide;
-				
+
 			});
 
 			zoneWrapper.dataset.hide = zoneHide;

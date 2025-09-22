@@ -212,11 +212,12 @@ class SeriesUi {
 
 									$h .= '</span>';
 								$h .= '</div>';
-								$h .= '<div class="series-selector-more">';
-									$h .= '<h5>'.s("Assolement").'</h5>';
-									$h .= '<a href="" class="btn btn-sm btn-primary">'.s("Modifier").'</a> ';
-									$h .= '<a href="" class="btn btn-sm btn-outline-primary">'.s("Supprimer").'</a>';
-								$h .= '</div>';
+								if(LIME_ENV === 'dev') {
+									$h .= '<div class="series-selector-more">';
+										$h .= '<a href="'.\farm\FarmUi::urlSoil($eSeries['farm']).'?update='.$eCultivation['id'].'" class="btn btn-sm btn-secondary">'.s("Modifier l'assolement").'</a> ';
+										$h .= '<a href="'.\farm\FarmUi::urlSoil($eSeries['farm']).'?update='.$eCultivation['id'].'" class="btn btn-sm btn-secondary" data-confirm="'.s("Cette série ne sera plus assolée. Continuer ?").'">'.s("Supprimer l'assolement").'</a> ';
+									$h .= '</div>';
+								}
 							$h .= '</div>';
 
 						}

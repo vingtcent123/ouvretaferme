@@ -10,8 +10,9 @@ class SeriesSelector {
 
 			target.classList.add('selected');
 
-			const location = document.location.href.setArgument('selector', target.dataset.series);
-			Lime.History.replaceState(location)
+			Place.scroll(target.dataset.series);
+
+			qsa('#zone-content .bed-item-grid:has(.place-grid-series-timeline[data-series="'+ target.dataset.series +'"])', node => node.classList.add('selected'));
 
 		}
 
@@ -19,6 +20,7 @@ class SeriesSelector {
 
 	static close() {
 
+		qsa('#zone-content .bed-item-grid.selected', node => node.classList.remove('selected'));
 		qs("#series-selector-list .series-selector-cultivation.selected", node => node.classList.remove('selected'));
 
 	}
