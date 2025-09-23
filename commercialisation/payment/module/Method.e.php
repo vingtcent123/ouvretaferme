@@ -42,5 +42,12 @@ class Method extends MethodElement {
 
 	}
 
+	public function isOnline(): bool {
+
+		$this->expects(['online']);
+
+		return $this['online'] === TRUE;
+
+	}
 }
 ?>

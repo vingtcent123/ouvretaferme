@@ -275,7 +275,7 @@ class CustomizeUi {
 
 					if($eSale['shop']['hasPayment']) {
 
-						if($eSale['cPayment']->empty()) {
+						if($eSale->hasSuccessfulPayment() === FALSE) {
 
 							if($eSale['shop']['shared']) {
 								$payment = s("Vous avez choisi de régler cette commande en direct avec vos producteurs.");
@@ -289,7 +289,8 @@ class CustomizeUi {
 
 						} else {
 
-							switch($eSale['cPayment']->first()['method']['fqn']) {
+							$ePayment = $eSale->extractFirstValidPayment();
+							switch($ePayment['method']['fqn']) {
 
 								case \payment\MethodLib::TRANSFER :
 									$payment = s("Vous avez choisi de régler cette commande par virement bancaire.");

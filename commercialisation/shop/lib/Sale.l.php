@@ -426,9 +426,16 @@ class SaleLib {
 
 	public static function createPayment(?string $payment, \selling\Sale $eSale): string {
 
-		// On supprime les précédentes tentatives de paiement pour cette vente
-		\selling\PaymentLib::deleteBySale($eSale);
+		if($eSale['cPayment']->notEmpty()) {
 
+			SaleLib::changePaymentForShop($eSale);
+
+			// On annule les précédentes tentatives de paiement pour cette vente
+			\selling\PaymentLib::expiresPaymentSessions($eSale);
+
+		}
+
+		// On crée le paiement
 		return match($payment) {
 			\payment\MethodLib::ONLINE_CARD => self::createCardPayment($eSale),
 			\payment\MethodLib::TRANSFER => self::createDirectPayment(\payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), $eSale),
@@ -479,8 +486,6 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
-
 		$properties = ['paymentStatus', 'onlinePaymentStatus'];
 
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
@@ -492,11 +497,11 @@ class SaleLib {
 			$properties[] = 'expiresAt';
 		}
 
+		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
+
 		\selling\SaleLib::update($eSale, $properties);
 		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
-
-		\selling\PaymentLib::expiresPaymentSessions($eStripeFarm, $eSale, $eMethod, $stripeSession['id']);
 
 		\selling\Sale::model()->commit();
 
@@ -530,6 +535,9 @@ class SaleLib {
 
 		\selling\PaymentLib::deleteBySale($eSale);
 		\selling\PaymentLib::putBySale($eSale, $eMethod);
+
+		// On re-récupère la liste de moyens de paiement à jour (pour le notify)
+		$eSale['cPayment'] = \selling\PaymentLib::getBySale($eSale);
 
 		$group = FALSE;
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem'], $group);

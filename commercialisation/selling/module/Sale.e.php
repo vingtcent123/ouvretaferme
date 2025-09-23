@@ -466,16 +466,40 @@ class Sale extends SaleElement {
 
 	}
 
+	// Une vente est online seulement si le paiement lié est validé.
 	public function isPaymentOnline(): bool {
+
+		$this->expects(['cPayment']);
 
 		if($this['cPayment']->empty()) {
 			return FALSE;
 		}
 
+		foreach($this['cPayment'] as $ePayment) {
+			if($ePayment['method']->isOnline() and $ePayment['onlineStatus'] === Payment::SUCCESS) {
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+
+	}
+
+	public function extractFirstValidPayment(): Payment {
+
 		$this->expects(['cPayment']);
 
-		return $this['cPayment']->find(fn($e) => $e['method']['fqn'] === \payment\MethodLib::ONLINE_CARD)->notEmpty();
+		if($this['cPayment']->empty()) {
+			return new Payment();
+		}
 
+		foreach($this['cPayment'] as $ePayment) {
+			if($ePayment->isPaid()) {
+				return $ePayment;
+			}
+		}
+
+		return new Payment();
 	}
 
 	public function acceptCancelDelivered(): bool {

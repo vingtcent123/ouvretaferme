@@ -100,7 +100,7 @@ class Operation extends OperationElement {
 
 				$eAccount = \account\AccountLib::getById($this['account']['id']);
 
-				return str_starts_with($accountLabel, $eAccount['class']) === true;
+				return \account\ClassLib::isFromClass($accountLabel, $eAccount['class']);
 
 			})
 			->setCallback('date.empty', function(?string $date): bool {

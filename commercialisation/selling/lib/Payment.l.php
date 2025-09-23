@@ -155,28 +155,50 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function expiresPaymentSessions(\payment\StripeFarm $eStripeFarm, Sale $eSale, \payment\Method $eMethod, string $providerIdToKeep): void {
+	/**
+	 * Expire les paiements par CB en ligne
+	 * OU supprime tous les autres moyens de paiement
+	 * pour une vente donnée.
+	 *
+	 */
+	public static function expiresPaymentSessions(Sale $eSale): void {
 
-		// Expires the other checkout sessions
+		// On expire toutes les sessions paiement en ligne
 		$cPayment = Payment::model()
 			->select(Payment::getSelection())
-			->whereMethod($eMethod)
 			->whereSale($eSale)
-			->whereCheckoutId('!=', $providerIdToKeep)
 			->whereOnlineStatus(Payment::INITIALIZED)
 			->getCollection();
 
+		if($cPayment->notEmpty()) {
+			$eStripeFarm = \payment\StripeLib::getByFarm($eSale['farm']);
+		}
+
 		foreach($cPayment as $ePayment) {
 
-			try {
-				\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $ePayment['checkoutId']);
-			}
-			catch(\payment\StripeException) {
-			}
+			if($eStripeFarm->notEmpty() and $ePayment['method']->isOnline()) {
 
-			Payment::model()->update($ePayment, ['onlineStatus' => Payment::EXPIRED]);
+				try {
+					\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $ePayment['checkoutId']);
+				} catch(\payment\StripeException) {
+				}
+
+				Payment::model()->update($ePayment, ['onlineStatus' => Payment::EXPIRED]);
+
+			}
 
 		}
+
+		// On supprime tous les paiements autres que en ligne
+		Payment::model()
+			->join(\payment\Method::model(), 'm1.method = m2.id')
+			->whereSale($eSale)
+			->where('m2.online = 0')
+			->delete();
+
+		// On réinitialise le statut de la vente
+		$properties = ['paymentStatus' => NULL, 'onlinePaymentStatus' => NULL];
+		Sale::model()->update($eSale, $properties);
 
 	}
 

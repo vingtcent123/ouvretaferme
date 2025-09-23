@@ -63,6 +63,18 @@ class SaleLib extends SaleCrud {
 			Customer::PRIVATE => SellingSetting::EXAMPLE_SALE_PRIVATE,
 		};
 
+		$eMethod = \payment\MethodLib::getByFqn(get('paymentMethod', 'string', \payment\MethodLib::CARD));
+		if($eMethod->empty()) {
+			$cPayment = new \Collection();
+		} else {
+			$cPayment = new \Collection([
+				new Payment([
+					'method' => $eMethod,
+					'onlineStatus' => ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::SUCCESS : NULL,
+				])
+			]);
+		}
+
 		$eSale = \selling\SaleLib::getById($id);
 		$eSale['document'] = '123';
 		$eSale['farm'] = $eFarm;
@@ -90,11 +102,7 @@ class SaleLib extends SaleCrud {
 		$eSale['invoice']['footer'] = $eFarm->getSelling('invoiceFooter');
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
-		$eSale['cPayment'] = new \Collection([
-			new Payment([
-				'method' => \payment\MethodLib::getByFqn(\payment\MethodLib::CARD)
-			])
-		]);
+		$eSale['cPayment'] = $cPayment;
 
 		$position = 0;
 		foreach($eSale['cItem'] as $eItem) {

@@ -1146,17 +1146,22 @@ class SaleUi {
 	public static function getPaymentMethodName(Sale $eSale): ?string {
 
 		$eSale->expects(['cPayment']);
+		$hasAtLeastOneSuccessfulPayment = $eSale->hasSuccessfulPayment();
 
 		$paymentList = [];
 		foreach($eSale['cPayment'] as $ePayment) {
 
 			// On n'affiche pas les paiements en échec s'il y a au moins 1 paiement en succès
-			if($eSale->hasSuccessfulPayment() and $ePayment->isNotPaid()) {
+			if(
+				($hasAtLeastOneSuccessfulPayment and $ePayment->isNotPaid()) or
+				// Le paiement par CB n'est pas le dernier => On ne le prend pas en compte
+				($eSale['onlinePaymentStatus'] === NULL and $ePayment['method']->isOnline())
+			) {
 				continue;
 			}
 
 			$payment = \payment\MethodUi::getName($ePayment['method']);
-			if($eSale['cPayment']->count() > 1 and $ePayment['amountIncludingVat'] !== NULL) {
+			if($eSale['cPayment']->find(fn($e) => $e->isPaid())->count() > 1 and $ePayment['amountIncludingVat'] !== NULL) {
 				$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
 			}
 
