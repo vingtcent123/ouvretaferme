@@ -291,7 +291,7 @@ class JournalUi {
 									}
 								$h .= '</div>';
 								$h .= '<div class="dropdown-list bg-primary">';
-									$h .= '<span class="dropdown-item">'.encode($eOperation['account']['description']).'</span>';
+									$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
 								$h .= '</div>';
 							$h .= '</td>';
 

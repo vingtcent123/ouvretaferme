@@ -11,6 +11,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Operation::accountLabel.check' => s("Sélectionnez une classe de compte proposée."),
+
 			'Operation::allocate.accountsCheck' => s("Veuillez sélectionner au moins une classe de compte."),
 			'Operation::allocate.noOperation' => s("Aucune opération n'a pu être enregistrée."),
 
