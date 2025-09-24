@@ -245,7 +245,7 @@ class CashflowUi {
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
-				$h .= '<div class="dropdown-title">'.s("Annuler les écritures comptables").'</div>';
+				$h .= '<div class="dropdown-title">'.s("Actions sur les écritures comptables liées").'</div>';
 
 				$confirm = s("Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?");
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="dissociate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
@@ -281,12 +281,16 @@ class CashflowUi {
 
 				$h .= '<div class="dropdown-divider"></div>';
 
-				$deleteText = s("Supprimer <div>(Supprimez d'abord les écritures liées)</div>", ['div' => '<div class="operations-delete-more">']);
+				$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
+
+				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les écritures liées)</div>", ['div' => '<div class="operations-delete-more">']);
 				$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 
 			} else {
 
 				$h .= '<div class="dropdown-divider"></div>';
+
+				$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
 
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Supprimer l'opération bancaire");
