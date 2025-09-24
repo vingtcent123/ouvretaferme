@@ -203,14 +203,19 @@ class OperationLib extends OperationCrud {
 			return TRUE;
 		}
 
+		$cOperation = OperationCashflow::model()
+			->select('operation')
+			->join(\bank\Cashflow::model(), 'm1.cashflow = m2.id')
+			->where('m2.account = '.$eBankAccount['id'])
+			->getColumn('operation');
+
 		Operation::model()
 			->select(['accountLabel', 'updatedAt'])
 			// Liée aux cashflow de ce compte bancaire
-			->join(\bank\Cashflow::model(), 'm1.cashflow = m2.id')
-			->where('m2.account = '.$eBankAccount['id'])
+			->where('m1.id IN ('.join(', ', $cOperation->getIds()).')')
 			// Type banque
-			->join(\account\Account::model(), 'm1.account = m3.id')
-			->where('m3.class = '.\account\AccountSetting::BANK_ACCOUNT_CLASS)
+			->join(\account\Account::model(), 'm1.account = m2.id')
+			->where('m2.class = '.\account\AccountSetting::BANK_ACCOUNT_CLASS)
 			// De l'exercice comptable courant
 			->where('m1.date >= "'.$eFinancialYear['startDate'].'"')
 			->where('m1.date <= "'.$eFinancialYear['endDate'].'"')
