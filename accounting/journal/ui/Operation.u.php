@@ -395,7 +395,7 @@ class OperationUi {
 	private static function getAmountButtonIcons(string $type, int $index): string {
 
 		$activeIcon = match($type) {
-			'amountIncludingVAT' => 'lock',
+			'amount' => 'lock',
 			default => 'erase',
 		};
 		$h = '<div class="merchant-write hide">'.\Asset::icon('pencil').'</div>';
@@ -520,7 +520,6 @@ class OperationUi {
 						$defaultValues['amountIncludingVAT'] ?? '',
 						[
 							'min' => 0, 'step' => 0.01,
-							'disabled' => TRUE,
 							'data-field' => 'amountIncludingVAT',
 							'data-index' => $index,
 						]
@@ -535,6 +534,7 @@ class OperationUi {
 					$d->attributes['step'] = 0.01;
 					$d->attributes['data-field'] = 'amount';
 					$d->attributes['data-index'] = $index;
+					$d->attributes['disabled'] = TRUE;
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
 				});
 			$h .='</div>';

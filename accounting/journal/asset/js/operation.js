@@ -402,7 +402,6 @@ class Operation {
             } else if(isNaN(vatRate) === false) {
                 newAmount = round(amountIncludingVAT / (1 + vatRate / 100));
             }
-            d(newAmount);
             if(newAmount !== null) {
                 CalculationField.setValue(targetAmount, newAmount);
             }
