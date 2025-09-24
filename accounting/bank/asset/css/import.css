@@ -14,7 +14,7 @@ div.import-timeline {
 @media (max-width: 767px) {
 
     div.import-timeline {
-        grid-template-columns: 4rem 4rem 2rem 1fr;
+        grid-template-columns: 0.3fr 1fr;
         grid-column-gap: 0.5rem;
     }
 
@@ -23,7 +23,7 @@ div.import-timeline {
 @media (max-width: 449px) {
 
     div.import-timeline {
-        grid-template-columns: 2.5rem 3rem 2rem 1fr;
+        grid-template-columns: 0.3fr 1fr;
         grid-column-gap: 0.25rem;
     }
 
