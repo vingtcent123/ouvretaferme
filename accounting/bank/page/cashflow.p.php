@@ -21,11 +21,18 @@ new Page(
 			'memo' => GET('memo'),
 			'status' => GET('status'),
 		], GET('sort'));
+		if($search->get('status') === '') {
+			$search->set('statusWithDeleted', GET('statusWithDeleted', 'bool', FALSE));
+		}
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 
 		// Ne pas ouvrir le bloc de recherche pour ces champs
 		$search->set('financialYear', $data->eFinancialYear);
+
+		if($search->get('statusWithDeleted') === FALSE) {
+			$search->set('statusNotDeleted', TRUE);
+		}
 		if(get_exists('import') === TRUE) {
 			$search->set('import', GET('import'));
 			$data->eImport = \bank\ImportLib::getById(GET('import', 'int'));
@@ -187,4 +194,26 @@ new \bank\CashflowPage(
 	throw new ReloadAction('bank', 'Cashflow::deallocated');
 
 })
+->post('doDelete', function($data) {
+
+	if($data->eCashflow->exists() === FALSE or $data->eCashflow->canDelete() === FALSE) {
+		\bank\Cashflow::fail('internal');
+	}
+
+	\bank\CashflowLib::deleteCasfhlow($data->eCashflow);
+
+	throw new ReloadAction('bank', 'Cashflow::deleted');
+
+})
+->post('undoDelete', function($data) {
+
+	if($data->eCashflow->exists() === FALSE or $data->eCashflow['status'] !== \bank\Cashflow::DELETED) {
+		\bank\Cashflow::fail('internal');
+	}
+
+	\bank\CashflowLib::undeleteCashflow($data->eCashflow);
+
+	throw new ReloadAction('bank', 'Cashflow::undeleted');
+
+});
 ?>

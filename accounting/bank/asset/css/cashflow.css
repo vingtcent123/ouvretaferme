@@ -102,3 +102,8 @@
     color: var(--success);
     cursor: help;
 }
+
+.cashflow-strikethrough {
+	text-decoration: line-through;
+	color: var(--muted);
+}

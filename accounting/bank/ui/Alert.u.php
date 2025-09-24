@@ -28,6 +28,8 @@ Class AlertUi {
 
 			'Cashflow::allocated' => s("Les écritures ont bien été attribuées !"),
 			'Cashflow::deallocated' => s("Les écritures du journal ont bien été dissociées de l'écriture' bancaire !"),
+			'Cashflow::deleted' => s("L'opération bancaire a bien été supprimée."),
+			'Cashflow::undeleted' => s("L'opération bancaire a bien été remise."),
 			'Cashflow::attached' => s("L'opération bancaire a bien été rattachée !"),
 
 			'Import::full' => s("L'import de votre relevé bancaire a bien été effectué !"),

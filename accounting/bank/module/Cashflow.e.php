@@ -22,5 +22,11 @@ class Cashflow extends CashflowElement {
 
 		return $this['status'] === Cashflow::WAITING;
 	}
+
+	public function canDelete(): bool {
+
+		return $this->canAllocate();
+
+	}
 }
 ?>

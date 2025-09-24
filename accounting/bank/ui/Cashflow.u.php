@@ -23,6 +23,7 @@ class CashflowUi {
 			$h .= $form->month('date', $search->get('date'), ['placeholder' => s("Mois")]);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut")]);
+			$h .= $form->checkbox('statusWithDeleted', 1, ['checked' => $search->get('statusWithDeleted'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher aussi les opérations supprimées")]);
 		$h .= '</div>';
 		$h .= '<div>';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -47,11 +48,19 @@ class CashflowUi {
 
 			foreach(CashflowUi::p('status')->translation as $status => $translation) {
 
+				if($status === Cashflow::DELETED) {
+					continue;
+				}
 				$count = $nCashflow[$status]['count'] ?? 0;
 
 				$h .= '<li '.($search->get('status') === $status ? 'class="selected"' : '').'>';
 
-					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?'.$search->toQuery(['status']).'&status='.$status.'">';
+					if($search->get('status') !== $status) {
+						$link = 'status='.$status;
+					} else {
+						$link = '';
+					}
+					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?'.$search->toQuery(['status']).'&'.$link.'">';
 
 						$h .= '<h5>';
 							if($count > 1) {
@@ -157,7 +166,14 @@ class CashflowUi {
 							$h .= '</tr>';
 					}
 
-					$h .= '<tr name="cashflow-'.$eCashflow['id'].'" '.($highlightedCashflowId === $eCashflow['id'] ? ' class="row-highlight"' : '').'>';
+					$class = [];
+					if($highlightedCashflowId === $eCashflow['id']) {
+						$class[] = 'row-highlight';
+					}
+					if($eCashflow['status'] === CashflowElement::DELETED) {
+						$class[] = 'cashflow-strikethrough';
+					}
+					$h .= '<tr name="cashflow-'.$eCashflow['id'].'" class="'.join(' ', $class).'">';
 
 						$h .= '<td class="text-left">';
 							$h .= encode($eCashflow['id']);
@@ -191,7 +207,8 @@ class CashflowUi {
 						$h .= '</td>';
 
 					$h .= '<td class="td-min-content text-center">';
-					if($eCashflow['status'] === CashflowElement::ALLOCATED) {
+					if($eCashflow['status'] === CashflowElement::DELETED) {
+					} else if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 						$h .= '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">';
 							$h .= CashflowUi::p('status')->values[$eCashflow['status']];
 						$h .= '</a>';
@@ -255,6 +272,22 @@ class CashflowUi {
 
 				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Rattacher des écritures comptables");
+				$h .= '</a>';
+
+			}
+
+			if($eCashflow['status'] === Cashflow::DELETED) {
+
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
+					$h .= s("Annuler la suppression de l'opération bancaire");
+				$h .= '</a>';
+
+			} else {
+
+				$h .= '<div class="dropdown-divider"></div>';
+
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
+					$h .= s("Supprimer l'opération bancaire");
 				$h .= '</a>';
 
 			}
@@ -736,14 +769,17 @@ class CashflowUi {
 			case 'status' :
 				$d->values = [
 					CashflowElement::ALLOCATED => s("Attribuée"),
+					CashflowElement::DELETED => s("Supprimée"),
 					CashflowElement::WAITING => s("Attente"),
 				];
 				$d->translation = [
 					CashflowElement::ALLOCATED => ['singular' => s("Attribuée"), 'plural' => s("Attribuées")],
+					CashflowElement::DELETED => ['singular' => s("Supprimée"), 'plural' => s("Supprimées")],
 					CashflowElement::WAITING => ['singular' => s("En attente"), 'plural' => s("En attente")],
 				];
 				$d->shortValues = [
 					CashflowElement::ALLOCATED => s("I"),
+					CashflowElement::DELETED => s("S"),
 					CashflowElement::WAITING => s("A"),
 				];
 				break;

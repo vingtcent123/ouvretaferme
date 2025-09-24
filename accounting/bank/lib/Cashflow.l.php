@@ -14,6 +14,7 @@ class CashflowLib extends CashflowCrud {
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
+			->whereStatus('!=', Cashflow::DELETED, if: $search->get('statusNotDeleted'))
 			->where('amount BETWEEN '.$search->get('amountMin').' AND '.$search->get('amountMax'), if: ($search->has('amountMin') and $search->has('amountMax')))
 		;
 
@@ -118,5 +119,26 @@ class CashflowLib extends CashflowCrud {
 
 		\account\LogLib::save('attach', 'cashflow', ['id' => $eCashflow['id'], 'operations' => $operations]);
 	}
+
+	public static function deleteCasfhlow(Cashflow $eCashflow): void {
+
+		$eCashflow->expects(['id']);
+
+		Cashflow::model()
+			->whereStatus(Cashflow::WAITING)
+			->whereId($eCashflow['id'])
+			->update(['status' => Cashflow::DELETED]);
+	}
+
+	public static function undeleteCashflow(Cashflow $eCashflow): void {
+
+		$eCashflow->expects(['id']);
+
+		Cashflow::model()
+			->whereStatus(Cashflow::DELETED)
+			->whereId($eCashflow['id'])
+			->update(['status' => Cashflow::WAITING]);
+	}
+
 }
 ?>

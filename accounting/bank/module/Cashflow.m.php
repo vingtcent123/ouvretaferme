@@ -13,6 +13,7 @@ abstract class CashflowElement extends \Element {
 
 	const WAITING = 'waiting';
 	const ALLOCATED = 'allocated';
+	const DELETED = 'deleted';
 
 	public static function getSelection(): array {
 		return Cashflow::model()->getProperties();
@@ -52,7 +53,7 @@ class CashflowModel extends \ModuleModel {
 			'memo' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'account' => ['element32', 'bank\BankAccount', 'cast' => 'element'],
 			'import' => ['element32', 'bank\Import', 'cast' => 'element'],
-			'status' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::ALLOCATED], 'cast' => 'enum'],
+			'status' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::ALLOCATED, \bank\Cashflow::DELETED], 'cast' => 'enum'],
 			'document' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],

@@ -18,7 +18,7 @@ Cashflow:
   memo: ?text8(1, null) @collate(general)
   account: bank\BankAccount
   import: bank\Import
-  status: enum(WAITING, ALLOCATED) = WAITING
+  status: enum(WAITING, ALLOCATED, DELETED) = WAITING
   document: ?text8(1, null) @collate(general)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
