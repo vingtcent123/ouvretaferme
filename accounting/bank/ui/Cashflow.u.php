@@ -207,16 +207,11 @@ class CashflowUi {
 						$h .= '</td>';
 
 					$h .= '<td class="td-min-content text-center">';
-					if($eCashflow['status'] === CashflowElement::DELETED) {
-					} else if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-						$h .= '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">';
-							$h .= CashflowUi::p('status')->values[$eCashflow['status']];
-						$h .= '</a>';
-					} else {
-						$h .= '<div class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'">';
-							$h .= CashflowUi::p('status')->values[$eCashflow['status']];
-						$h .= '</div>';
-					}
+						$h .= match($eCashflow['status']) {
+							CashflowElement::ALLOCATED => '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">'.CashflowUi::p('status')->values[$eCashflow['status']].'</a>',
+							CashflowElement::WAITING => '<div class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'">'.CashflowUi::p('status')->values[$eCashflow['status']].'</div>',
+							CashflowElement::DELETED => '',
+						};
 					$h .= '</td>';
 
 					$h .= '<td>';
