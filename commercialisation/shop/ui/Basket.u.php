@@ -907,7 +907,12 @@ class BasketUi {
 
 						$h .= '<dt>'.s("Paiement").'</dt>';
 						$h .= '<dd>';
-							$h .= \selling\SaleUi::getPaymentMethodName($eSaleReference);
+							$payment = \selling\SaleUi::getPaymentMethodName($eSaleReference);
+							if(mb_strlen($payment) === 0) {
+								$h .= s("Direct avec le producteur");
+							} else {
+								$h .= $payment;
+							}
 							if(
 								$eSaleReference->acceptUpdatePaymentByCustomer() and
 								count($eShop->getPayments($eSaleReference['shopPoint'])) > 1
