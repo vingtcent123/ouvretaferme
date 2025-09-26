@@ -450,6 +450,7 @@ body > nav a:hover:not(.dropdown-item) {
 	display: flex;
 	align-items: center;
 	line-height: 1.2;
+	z-index: 1;
 }
 
 body > nav .nav-user {
