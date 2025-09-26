@@ -39,6 +39,14 @@
 	padding-top: 0.5rem;
 }
 
+#zone-content.zone-update .bed-read {
+	display: none;
+}
+
+#zone-content:not(.zone-update) .bed-write {
+	display: none;
+}
+
 .zone-corner {
 	position: sticky;
 	top: 0;
@@ -131,7 +139,7 @@ div.zone-title a {
 	color: white;
 }
 
-div.zone-title:has(.bed-item-select) {
+div.zone-update div.zone-title {
 	padding-left: 0;
 }
 

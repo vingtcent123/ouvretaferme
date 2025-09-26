@@ -296,22 +296,26 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 			case \farm\Farmer::PLAN :
 
-				if($data->hasUpdate) {
-					echo '<style>
-						:root {
-							--nav-width: 25rem;
-						}
-					</style>';
-					echo new \series\SeriesUi()->getSelector($data->eFarm, $data->ccCultivation, $data->eCultivationSelected);
-				}
+				$form = new \util\FormUi();
 
-				$uiZone = new \map\ZoneUi();
+				echo $form->openAjax('/series/place:doUpdate', ['id' => 'place-update']);
+					echo $form->hidden('series');
 
-				if($data->eCultivationSelected->notEmpty()) {
-					$uiZone->setUpdate($data->eCultivationSelected['series']);
-				}
+					if($data->hasUpdate) {
 
-				echo $uiZone->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
+						echo '<style>
+							:root {
+								--nav-width: 25rem;
+							}
+						</style>';
+
+						echo new \series\SeriesUi()->getSelector($data->eFarm, $data->ccCultivation);
+
+					}
+
+					echo new \map\ZoneUi()->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
+
+				echo $form->close();
 
 				break;
 

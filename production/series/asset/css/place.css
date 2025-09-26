@@ -113,7 +113,7 @@ a.place-grid-series-timeline {
 	opacity: 0.5;
 }
 
-.place-grid-series-timeline.place-grid-series-timeline-light {
+.place-grid-series-timeline.place-grid-series-timeline-placeholder {
 	display: flex;
 	align-items: center;
 	background: var(--info);
@@ -130,7 +130,7 @@ a.place-grid-series-timeline {
 	color: var(--warning);
 }
 
-.place-grid-series-timeline:not(.place-grid-series-timeline-light):hover {
+.place-grid-series-timeline:not(.place-grid-series-timeline-placeholder):hover {
 	z-index: 3 !important;
 }
 

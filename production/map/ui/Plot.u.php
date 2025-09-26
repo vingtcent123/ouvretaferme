@@ -42,7 +42,7 @@ class PlotUi {
 									$eBed = $ePlot['cBed']->first();
 									$ePlace = $eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
 
-									$h .= '<label class="bed-item-select">';
+									$h .= '<label class="bed-item-select bed-write">';
 										$h .= new \util\FormUi()->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty(), 'class' => 'plot-title-fill']);
 									$h .= '</label>';
 
@@ -54,7 +54,7 @@ class PlotUi {
 								$eUpdate->notEmpty() and
 								$eUpdate['use'] === \series\Series::BED
 							) {
-								$h .= '<label class="bed-item-all">';
+								$h .= '<label class="bed-item-all bed-write">';
 									$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
 									$h .= '<span class="show-checked">'.s("Tout décocher").'</span>';
 									$h .= '<span class="show-not-checked">'.s("Tout cocher").'</span>';

@@ -20,4 +20,23 @@ new JsonView('doUpdate', function($data, AjaxTemplate $t) {
 	}
 
 });
+
+new JsonView('updateSoil', function($data, AjaxTemplate $t) {
+
+	$t->qs('.series-selector-cultivation[data-cultivation="'.$data->e['id'].'"]')->outerHtml(new \series\SeriesUi()->getSelectorCultivation($data->e, TRUE));
+
+});
+
+new JsonView('doUpdateSoil', function($data, AjaxTemplate $t) {
+
+
+					$uiZone = new \map\ZoneUi();
+
+					if($data->eCultivationSelected->notEmpty()) {
+						$uiZone->setUpdate($data->eCultivationSelected['series']);
+					}
+
+					echo $uiZone->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
+
+});
 ?>

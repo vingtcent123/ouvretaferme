@@ -75,49 +75,53 @@ class BedUi {
 
 							if($eUpdate->notEmpty()) {
 
-								switch($eUpdate['use']) {
+								$h .= '<div class="bed-write">';
 
-									case \series\Series::BED :
+									switch($eUpdate['use']) {
 
-										$h .= '<b>'.s("Planche temporaire").'</b>';
-										$h .= '<div class="bed-item-size bed-item-size-fill">';
+										case \series\Series::BED :
+
+											$h .= '<b>'.s("Planche temporaire").'</b>';
+											$h .= '<div class="bed-item-size bed-item-size-fill">';
+
+													$h .= $form->inputGroup(
+														$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
+															'min' => 0,
+															'max' => $eBed['length'],
+															'onfocus' => 'this.select()',
+															'oninput' => 'Place.selectBed(this)'
+														]).
+														$form->addon(s("mL"))
+													);
+
+											$h .= '</div>';
+											break;
+
+										case \series\Series::BLOCK :
+
+											$h .= s("Surface libre");
+											$h .= '<div class="bed-item-size bed-item-size-fill">';
 
 												$h .= $form->inputGroup(
-													$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
+													$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['area'] : $eBed['area'], [
 														'min' => 0,
-														'max' => $eBed['length'],
+														'max' => $eBed['area'],
 														'onfocus' => 'this.select()',
 														'oninput' => 'Place.selectBed(this)'
 													]).
-													$form->addon(s("mL"))
+													$form->addon(s("m²"))
 												);
 
-										$h .= '</div>';
-										break;
+											$h .= '</div>';
+											break;
 
-									case \series\Series::BLOCK :
+									}
 
-										$h .= s("Surface libre");
-										$h .= '<div class="bed-item-size bed-item-size-fill">';
+								$h .= '</div>';
 
-											$h .= $form->inputGroup(
-												$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['area'] : $eBed['area'], [
-													'min' => 0,
-													'max' => $eBed['area'],
-													'onfocus' => 'this.select()',
-													'oninput' => 'Place.selectBed(this)'
-												]).
-												$form->addon(s("m²"))
-											);
-
-										$h .= '</div>';
-										break;
-
-								}
-
-							} else {
-								$h .= s("Surface libre");
 							}
+
+							$h .= '<div class="bed-read">'.s("Surface libre").'</div>';
 
 						$h .= '</div>';
 					$h .= '</div>';
@@ -128,7 +132,7 @@ class BedUi {
 
 						if($eUpdate->notEmpty()) {
 
-							$h .= '<label class="bed-item-select">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
+							$h .= '<label class="bed-item-select bed-write">'.$form->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty()]).'</label>';
 
 						}
 
@@ -163,9 +167,9 @@ class BedUi {
 							$h .= '</div>';
 
 
-							$h .= '<div class="bed-item-size">';
+							if($eUpdate->notEmpty() and $eUpdate instanceof \series\Series) {
 
-								if($eUpdate->notEmpty() and $eUpdate instanceof \series\Series) {
+								$h .= '<div class="bed-item-size bed-write">';
 
 									if(
 										$eUpdate['use'] === \series\Series::BED and
@@ -194,11 +198,12 @@ class BedUi {
 										$h .= s("{length} mL x {width}", ['length' => $eBed['length'], 'width' => $width]);
 									$h .= '</div>';
 
-								} else {
+								$h .= '</div>';
 
-									$h .= '<span title="'.s("{area} m²", $eBed).'">'.s("{length} mL x {width} cm", $eBed).'</span>';
-								}
+							}
 
+							$h .= '<div class="bed-item-size bed-write">';
+								$h .= '<span title="'.s("{area} m²", $eBed).'">'.s("{length} mL x {width} cm", $eBed).'</span>';
 							$h .= '</div>';
 
 						$h .= '</div>';

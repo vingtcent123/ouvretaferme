@@ -465,7 +465,7 @@ class PlaceUi {
 		$actions = [];
 
 		if($isPlaceholder) {
-			$class = 'place-grid-series-timeline-light';
+			$class = 'place-grid-series-timeline-placeholder bed-write';
 		} else {
 			$class = ($season === $eSeries['season']) ? 'place-grid-series-timeline-season' : 'place-grid-series-timeline-not-season';
 

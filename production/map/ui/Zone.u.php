@@ -267,7 +267,7 @@ class ZoneUi {
 						$eBed = $eZone['cPlot']->first()['cBed']->first();
 						$ePlace = $this->eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
 
-						$h .= '<label class="bed-item-select">';
+						$h .= '<label class="bed-item-select bed-write">';
 							$h .= new \util\FormUi()->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty(), 'class' => 'zone-title-fill']);
 						$h .= '</label>';
 
@@ -279,7 +279,7 @@ class ZoneUi {
 					$this->eUpdate->notEmpty() and
 					$this->eUpdate['use'] === \series\Series::BED
 				) {
-					$h .= '<label class="bed-item-all">';
+					$h .= '<label class="bed-item-all bed-write">';
 						$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
 						$h .= '<span class="show-checked">'.s("Tout décocher").'</span>';
 						$h .= '<span class="show-not-checked">'.s("Tout cocher").'</span>';

@@ -798,20 +798,12 @@ String.prototype.setArgument = function(name, value) {
 
 	const regex = new RegExp('([\&\?])'+ name +'(=[^\&]*|$|\&)', 'i');
 
+	const newArgument = (typeof value !== 'undefined') ? location + name +'='+ encodeURIComponent(value) : name;
+
 	if(location.match(regex)) {
-
-		location = location.replace(regex, '$1'+ name +'='+ encodeURIComponent(value));
-
+		location = location.replace(regex, '$1'+ newArgument);
 	} else {
-
-		location = location + (location .indexOf('?') === -1 ? '?' : '&');
-
-		if(typeof value !== 'undefined') {
-			location = location + name +'='+ encodeURIComponent(value);
-		} else {
-			location = location + name;
-		}
-
+		location = location + (location .indexOf('?') === -1 ? '?' : '&') + newArgument;
 	}
 
 	return location;

@@ -4,7 +4,7 @@ div.plot-title {
 	background-color: #8883;
 }
 
-div.plot-title:has(.bed-item-select) {
+div.zone-update div.plot-title {
 	padding-left: 0;
 }
 
