@@ -44,7 +44,7 @@ Class BalanceUi {
 		$h .= '<div>';
 			$h .= $form->addon(s("Du")).$form->date('startDate', $startDate, ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
 			$h .= $form->addon(s("au")).$form->date('endDate', $endDate, ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
-			$h .= $form->addon(s("Précision du compte")).$form->number('precision', $search->get('precision') ?? 3, ['min' => 1, 'max' => 5]).$form->addon(s("chiffres"));
+			$h .= $form->addon(s("Précision du compte")).$form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 1, 'max' => 5]).$form->addon(s("chiffres"));
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 		$h .= '</div>';
