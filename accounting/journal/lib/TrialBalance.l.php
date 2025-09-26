@@ -34,6 +34,7 @@ Class TrialBalanceLib {
 				'credit' => new \Sql('SUM(IF(type = "'.\journal\Operation::CREDIT.'", amount, 0))'),
 			])
 			->whereDate('BETWEEN', new \Sql(Operation::model()->format($startDate).' AND '.Operation::model()->format($endDate)))
+			->having('debit != 0 OR credit != 0')
 			->group('label')
 			->sort(['label' => SORT_ASC])
 			->getCollection();

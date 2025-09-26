@@ -67,16 +67,16 @@ Class BalanceUi {
 
 				$h .= '<thead class="thead-sticky">';
 				$h .= '<tr>';
-					$h .= '<th rowspan="2" class="td-vertical-align-middle">'.s("N° de compte").'</th>';
+					$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content">'.s("N° de compte").'</th>';
 					$h .= '<th rowspan="2" class="td-vertical-align-middle hide-sm-down">'.s("Libellé").'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Totaux").'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Soldes").'</th>';
 				$h .= '</tr>';
 				$h .= '<tr>';
-					$h .= '<th class="text-center">'.s("Débit").'</th>';
-					$h .= '<th class="text-center">'.s("Crédit").'</th>';
-					$h .= '<th class="text-center">'.s("Débit").'</th>';
-					$h .= '<th class="text-center">'.s("Crédit").'</th>';
+					$h .= '<th class="text-center highlight-stick-right">'.s("Débit").'</th>';
+					$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
+					$h .= '<th class="text-center highlight-stick-right">'.s("Débit").'</th>';
+					$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
 				$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -97,10 +97,10 @@ Class BalanceUi {
 							}
 						$h .= '</td>';
 						$h .= '<td class="hide-sm-down">'.encode($line['label']).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($line['debit']).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($line['credit']).'</td>';
-						$h .= '<td class="text-end">'.($line['debit'] > $line['credit'] ? \util\TextUi::money($line['debit'] - $line['credit']) : '').'</td>';
-						$h .= '<td class="text-end">'.($line['credit'] > $line['debit'] ? \util\TextUi::money($line['credit'] - $line['debit']) : '').'</td>';
+						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($line['debit']).'</td>';
+						$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($line['credit']).'</td>';
+						$h .= '<td class="text-end highlight-stick-right">'.($line['debit'] > $line['credit'] ? \util\TextUi::money($line['debit'] - $line['credit']) : '').'</td>';
+						$h .= '<td class="text-end highlight-stick-left">'.($line['credit'] > $line['debit'] ? \util\TextUi::money($line['credit'] - $line['debit']) : '').'</td>';
 					$h .= '</tr>';
 
 					$totalDebit += $line['debit'];
@@ -117,10 +117,10 @@ Class BalanceUi {
 					$h .= '<tr class="row-bold">';
 						$h .= '<td class="hide-sm-down"></td>';
 						$h .= '<td class="text-end">'.s("Totaux").'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totalDebit).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totalCredit).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($balanceDebit).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($balanceCredit).'</td>';
+						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebit).'</td>';
+						$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCredit).'</td>';
+						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($balanceDebit).'</td>';
+						$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($balanceCredit).'</td>';
 					$h .= '</tr>';
 
 				$h .= '</tbody>';
