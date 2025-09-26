@@ -14,6 +14,9 @@ class SeriesSelector {
 
 			this.close();
 
+			// TODO reste de l'édition et retour sur Modifier/Supprimer
+			qsa('#place-update-length, #place-update-area', node => node.id = null);
+
 			target.classList.add('selected');
 
 			Place.scroll(target.dataset.series);

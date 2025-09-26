@@ -201,7 +201,11 @@ class SeriesUi {
 					if($eSeries['use'] === Series::BED) {
 
 						if($selected) {
-							$h .= s("{value} mL", '<span id="place-update-length">'.$eSeries['length'].'</span>');
+							if($eSeries['lengthTarget'] !== NULL) {
+								$h .= ' '.s("{value} / {target} mL", ['value' => '<span id="place-update-length">'.$eSeries['length'].'</span>', 'target' => $eSeries['lengthTarget']]).'</span>';
+							} else {
+								$h .= s("{value} mL", '<span id="place-update-length">'.$eSeries['length'].'</span>');
+							}
 						} else {
 
 							if($eSeries['length'] !== NULL) {
@@ -221,7 +225,11 @@ class SeriesUi {
 					} else {
 
 						if($selected) {
-							$h .= s("{value} m²", '<span id="place-update-area">'.$eSeries['area'].'</span>');
+							if($eSeries['areaTarget'] !== NULL) {
+								$h .= ' '.s("{value} / {target} mL", ['value' => '<span id="place-update-area">'.$eSeries['area'].'</span>', 'target' => $eSeries['areaTarget']]).'</span>';
+							} else {
+								$h .= s("{value} mL", '<span id="place-update-area">'.$eSeries['area'].'</span>');
+							}
 						} else {
 
 							if($eSeries['area'] !== NULL) {

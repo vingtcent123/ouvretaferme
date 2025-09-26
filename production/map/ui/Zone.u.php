@@ -71,10 +71,7 @@ class ZoneUi {
 
 		[$startTs, $stopTs] = new \series\PlaceUi()->getBounds($eFarm, $season);
 
-		$h = '<div class="zone-sticky-overlay-left"></div>';
-		$h .= '<div class="zone-sticky-overlay-right"></div>';
-
-		$h .= '<div id="zone-container">';
+		$h = '<div id="zone-container">';
 
 			$h .= '<style>';
 				$h .= ':root {';

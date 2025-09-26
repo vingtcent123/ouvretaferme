@@ -140,11 +140,11 @@ div.bed-item-grid .bed-item-bed {
 	align-items: center;
 }
 
-body[data-touch="no"] #zone-content:not(.zone-update) div.bed-item-grid .bed-item-bed {
+body[data-touch="no"] main div.bed-item-grid .bed-item-bed {
 	left: calc(var(--nav-width) + var(--container-padding));
 }
 
-body[data-touch="yes"] #zone-content:not(.zone-update) div.bed-item-grid .bed-item-bed {
+body[data-touch="yes"] main div.bed-item-grid .bed-item-bed {
 	left: 0;
 }
 

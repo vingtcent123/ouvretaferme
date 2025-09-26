@@ -24,6 +24,11 @@ new JsonView('doUpdate', function($data, AjaxTemplate $t) {
 new JsonView('updateSoil', function($data, AjaxTemplate $t) {
 
 	$t->qs('.series-selector-cultivation[data-cultivation="'.$data->e['id'].'"]')->outerHtml(new \series\SeriesUi()->getSelectorCultivation($data->e, TRUE));
+	$t->qs('#zone-container')->outerHtml(new \map\ZoneUi()
+		->setUpdate($data->eSeries)
+		->getPlan($data->eFarm, $data->cZone, new \map\Zone(), $data->season));
+
+	$t->js()->eval('Place.scroll('.$data->eSeries['id'].')');
 
 });
 

@@ -94,15 +94,15 @@ new \series\CultivationPage()
 		\series\SeriesLib::fillTimeline($data->eSeries);
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
-		$season = $data->e['season'];
+		$data->season = $data->e['season'];
 
 		// On récupère les emplacements
-		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $season);
+		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
 		\map\GreenhouseLib::putFromZone($data->cZone);
-		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $season, [$season, $season - 1, $season + 1]);
+		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, [$data->season, $data->season - 1, $data->season + 1]);
 
-		$data->e['cPlace'] = \series\PlaceLib::getByElement($data->eSeries);
+		$data->eSeries['cPlace'] = \series\PlaceLib::getByElement($data->eSeries);
 
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 

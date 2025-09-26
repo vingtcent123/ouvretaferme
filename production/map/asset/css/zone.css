@@ -149,11 +149,6 @@ div.zone-update div.zone-title {
 	margin-left: 1rem;
 }
 
-.zone-sticky-overlay-left,
-.zone-sticky-overlay-right {
-	display: none;
-}
-
 main .zone-sticky-left {
 	position: sticky;
 	width: calc(var(--screen-width) - var(--nav-width) - var(--container-padding) * 2);
@@ -172,11 +167,11 @@ body[data-touch="no"] {
 		z-index: 98;
 	}
 
-	main .zone-sticky-overlay-left {
+	.zone-sticky-overlay-left {
 		left: var(--nav-width);
 	}
 
-	main .zone-sticky-overlay-right {
+	.zone-sticky-overlay-right {
 		right: 0;
 	}
 

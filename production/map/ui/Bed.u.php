@@ -202,7 +202,7 @@ class BedUi {
 
 							}
 
-							$h .= '<div class="bed-item-size bed-write">';
+							$h .= '<div class="bed-item-size bed-read">';
 								$h .= '<span title="'.s("{area} m²", $eBed).'">'.s("{length} mL x {width} cm", $eBed).'</span>';
 							$h .= '</div>';
 

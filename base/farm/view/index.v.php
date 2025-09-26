@@ -313,6 +313,9 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 					}
 
+					echo '<div class="zone-sticky-overlay-left"></div>';
+					echo '<div class="zone-sticky-overlay-right"></div>';
+
 					echo new \map\ZoneUi()->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
 
 				echo $form->close();
