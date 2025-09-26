@@ -907,7 +907,8 @@ class FarmUi {
 			'journal' => match($name) {
 				'operations' => ($eFarm->getView('viewAccountingType') === \account\FinancialYear::CASH) ? s("Journal comptable") : s("Journaux"),
 				'accounts' => s("Comptes"),
-				'book' => s("Grand livre"),
+				'book' => s("Grand-livre"),
+				'balance' => s("Balance comptable"),
 				'vat' => s("Journaux de TVA"),
 			},
 
@@ -1727,6 +1728,7 @@ class FarmUi {
 				}
 
 				$categories[] = 'book';
+				$categories[] = 'balance';
 				if($eFarm->getView('viewAccountingHasVat')) {
 					$categories[] = 'vat';
 				}
