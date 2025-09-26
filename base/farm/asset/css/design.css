@@ -20,6 +20,11 @@ body[data-template~="farm"] .nav-title-member-link img {
 	width: auto;
 }
 
+body[data-template~="farm"] .nav-title-member-name {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
 #farm-nav {
 	padding: 0;
 }
@@ -356,16 +361,17 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 	}
 
 	body[data-template~="farm"] .nav-title-member {
-		margin-top: 0.5rem;
+		margin-top: 0.75rem;
 	}
 
 	body[data-template~="farm"] .nav-title-member-link {
-		background-color: #fff1;
+		background-color: var(--background-body);
 		border-radius: var(--radius);
 		text-align: center;
-		padding: 0.5rem 0.5rem 0.4rem;
-		font-size: 0.85rem;
+		padding: 0.5rem;
+		font-size: 0.9rem;
 		letter-spacing: 0.5px;
+		color: var(--text);
 	}
 
 	body[data-template~="farm"] .nav-title-member-link img {

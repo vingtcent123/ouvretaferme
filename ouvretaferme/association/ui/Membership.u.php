@@ -47,6 +47,7 @@ class MembershipUi {
 			$h .= '<li>'.s("Un immense soutien pour nous aider à développer Ouvretaferme").'</li>';
 			$h .= '<li>'.s("Envoyer jusqu'à {value} e-mails par semaine avec les campagnes d'e-mailing", \farm\Farm::getCampaignMemberLimit()).'</li>';
 		$h .= '</ul>';
+		$h .= '<p>'.s("Rassurez-vous, adhérer à l'association Ouvretaferme ne vous engage en rien à consacrer du temps pour participer à la vie de l'association ou au développement du logiciel (à moins que vous ne le souhaitez !). Il s'agit simplement de nous aider et nous motiver à continuer à développement !").'</p>';
 
 		return $h;
 
