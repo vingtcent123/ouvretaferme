@@ -37,7 +37,7 @@ class Place {
 
 			window.scrollTo(
 				Math.max(0, bed.getBoundingClientRect().left + window.scrollX - bedName.getBoundingClientRect().right),
-				Math.max(0, bed.getBoundingClientRect().top + window.scrollY - 200)
+				Math.max(0, bed.getBoundingClientRect().top + window.scrollY - 300)
 			);
 
 		});

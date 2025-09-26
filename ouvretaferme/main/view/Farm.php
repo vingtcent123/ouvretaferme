@@ -182,7 +182,11 @@ class FarmTemplate extends MainTemplate {
 				$canNavigate = ($this->data->cFarmUser->count() > 1);
 
 				$farm .= '<div class="nav-title-farm">';
-					$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, $this->data->eFarm->isMembership() ? '4rem' : '3rem').'</div>';
+					if($this->data->eFarm->isMembership()) {
+						$farm .= '<div>'.\farm\FarmUi::getVignette($this->data->eFarm, $this->data->eFarm->isMembership() ? '4rem' : '3rem').'</div>';
+					}else {
+						$farm .= '<br class="hide-lateral-down"/>';
+					}
 
 					if($canUpdate or $canNavigate) {
 

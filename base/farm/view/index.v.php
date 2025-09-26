@@ -311,7 +311,7 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 					$uiZone->setUpdate($data->eCultivationSelected['series']);
 				}
 
-				echo new \map\ZoneUi()->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
+				echo $uiZone->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
 
 				break;
 

@@ -16,7 +16,7 @@ body[data-template~="farm"] .nav-title-member-link {
 }
 
 body[data-template~="farm"] .nav-title-member-link img {
-	height: 1.66rem;
+	height: 1.5rem;
 	width: auto;
 }
 
@@ -356,7 +356,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 	}
 
 	body[data-template~="farm"] .nav-title-member {
-		margin-top: 0.25rem;
+		margin-top: 0.5rem;
 	}
 
 	body[data-template~="farm"] .nav-title-member-link {
@@ -369,7 +369,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 	}
 
 	body[data-template~="farm"] .nav-title-member-link img {
-		margin-top: -4px;
+		margin-top: -2px;
 	}
 
 	#farm-nav {
