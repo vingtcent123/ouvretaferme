@@ -137,8 +137,23 @@ class SeriesUi {
 
 		$h = '<div id="series-selector" class="hide">';
 			$h .= '<div class="util-title">';
-				$h .= '<h3>'.s("Séries").'</h3>';
-				$h .= '<a onclick="SeriesSelector.close()" class="btn">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<h3 class="flex-align-center">';
+						$h .= '<span>'.s("Séries").'</span>';
+						$h .= new \util\FormUi()->select(
+							NULL,
+							[
+								'all' => s("Toutes"),
+								'zero' => s("Non assolées"),
+								'gap' => s("Partiellement assolées"),
+							],
+							attributes: [
+								'id' => 'series-selector-filter',
+								'onchange' => 'SeriesSelector.filter()',
+								'mandatory' => TRUE,
+								'style' => 'letter-spacing: -0.3px'
+							]);
+					$h .= '</h3>';
+				$h .= '<a onclick="SeriesSelector.close()" class="btn btn-lg">'.\Asset::icon('x-lg').'</a>';
 			$h .= '</div>';
 			$h .= $this->getSelectorSeries($ccCultivation);
 		$h .= '</div>';
@@ -167,7 +182,7 @@ class SeriesUi {
 
 						foreach($cCultivation as $eCultivation) {
 
-							$h .= $this->getSelectorCultivation($eCultivation, FALSE);
+							$h .= $this->getSelectorCultivation($eCultivation);
 
 						}
 
@@ -190,7 +205,7 @@ class SeriesUi {
 		$startTs = $eSeries->getBedStart() ? strtotime($eSeries->getBedStart().' 00:00:00') : NULL;
 		$stopTs = $eSeries->getBedStop() ? strtotime($eSeries->getBedStop().' 23:59:59') : NULL;
 
-		$h = '<div id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation '.($eSeries['status'] === Series::CLOSED ? 'series-selector-closed' : '').'" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
+		$h = '<div id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation '.($eSeries['status'] === Series::CLOSED ? 'series-selector-closed' : '').'" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'" data-status="'.$eSeries['status'].'">';
 			$h .= '<div class="series-selector-header" onclick="SeriesSelector.select('.$eCultivation['id'].')">';
 				$h .= '<a href="'.SeriesUi::url($eSeries).'" target="_blank">';
 					$h .= '<span class="series-selector-name">'.encode($eSeries['name']).'</span>';

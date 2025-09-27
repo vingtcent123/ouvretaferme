@@ -1326,7 +1326,7 @@ td.series-field-cultivations {
 	background-color: white;
 	box-shadow: 0 0 1rem #0003;
 	position: fixed;
-	padding: 0.5rem 0.5rem 3rem 0.5rem;
+	padding: 1rem 0.75rem 3rem 0.75rem;
 	overflow-y: auto;
 }
 

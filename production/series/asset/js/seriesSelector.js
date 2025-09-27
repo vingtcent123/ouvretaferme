@@ -1,5 +1,78 @@
 class SeriesSelector {
 
+	static mode = 'all';
+
+	static restoreFilter() {
+
+		qs('#series-selector-filter').value = this.mode;
+		this.filter();
+
+	}
+
+	static filter() {
+
+		this.mode = qs('#series-selector-filter').value;
+
+		qsa('.series-selector-plant', plant => {
+
+			let hide = true;
+
+			plant.qsa('.series-selector-cultivation', cultivation => {
+
+				const value = parseInt(cultivation.qs('.series-selector-value').innerHTML);
+
+				switch(this.mode) {
+
+					case 'all' :
+						cultivation.removeHide();
+						hide = false;
+						break;
+
+					case 'zero' :
+
+						if(
+							cultivation.dataset.status !== 'closed' &&
+							value === 0
+						) {
+							cultivation.removeHide();
+							hide = false;
+						} else {
+							cultivation.hide();
+						}
+
+						break;
+
+					case 'gap' :
+
+						const target = cultivation.qs('.series-selector-place').dataset.valueTarget;
+
+						if(
+							cultivation.dataset.status !== 'closed' &&
+							target !== '' &&
+							value < parseInt(target)
+						) {
+							cultivation.removeHide();
+							hide = false;
+						} else {
+							cultivation.hide();
+						}
+
+						break;
+
+				}
+
+			});
+
+			if(hide) {
+				plant.hide();
+			} else {
+				plant.removeHide();
+			}
+
+		});
+
+	}
+
 	static edit(target) {
 
 		const cultivation = target.dataset.cultivation;

@@ -23,6 +23,7 @@ new JsonView('doUpdate', function($data, AjaxTemplate $t) {
 
 			$t->js()->success('series', 'Series::updatedSoil');
 			$t->js()->eval('SeriesSelector.select('.$data->eCultivation['id'].')');
+			$t->js()->eval('SeriesSelector.restoreFilter()');
 			break;
 
 		case 'series' :
