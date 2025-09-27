@@ -149,7 +149,7 @@ div.zone-title a {
 	color: white;
 }
 
-div.zone-update div.zone-title {
+body.bed-updating div.zone-title {
 	padding-left: 0;
 }
 

@@ -4,7 +4,7 @@ div.plot-title {
 	background-color: #8883;
 }
 
-div.zone-update div.plot-title {
+body.bed-update div.plot-title {
 	padding-left: 0;
 }
 
