@@ -1377,6 +1377,10 @@ body:has(#series-selector:not(.hide)) #series-selector-button {
 	pointer-events: none;
 }
 
+.series-selector-closed:not(.selected) {
+	opacity: 0.5;
+}
+
 .series-selector-header {
 	display: flex;
 	justify-content: space-between;

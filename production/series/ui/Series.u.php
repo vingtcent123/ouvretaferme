@@ -190,11 +190,14 @@ class SeriesUi {
 		$startTs = $eSeries->getBedStart() ? strtotime($eSeries->getBedStart().' 00:00:00') : NULL;
 		$stopTs = $eSeries->getBedStop() ? strtotime($eSeries->getBedStop().' 23:59:59') : NULL;
 
-		$h = '<div id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
+		$h = '<div id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation '.($eSeries['status'] === Series::CLOSED ? 'series-selector-closed' : '').'" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
 			$h .= '<div class="series-selector-header" onclick="SeriesSelector.select('.$eCultivation['id'].')">';
 				$h .= '<a href="'.SeriesUi::url($eSeries).'" target="_blank">';
 					$h .= '<span class="series-selector-name">'.encode($eSeries['name']).'</span>';
 					$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
+					if($eSeries['status'] === Series::CLOSED) {
+						$h .= ' '.\Asset::icon('lock-fill');
+					}
 				$h .= '</a>';
 
 				if($eSeries['use'] === Series::BED) {
@@ -233,7 +236,10 @@ class SeriesUi {
 					$h .= ' '.$unit;
 				$h .= '</span>';
 			$h .= '</div>';
-			if($eCultivation->canWrite()) {
+			if(
+				$eSeries['status'] !== Series::CLOSED and
+				$eCultivation->canWrite()
+			) {
 				$h .= '<div class="series-selector-more bed-write">';
 					$h .= new \util\FormUi()->submit(s("Enregistrer l'assolement"), ['class' => 'btn btn-lg btn-secondary', 'style' => 'height: 4rem']);
 					$h .= '<a onclick="SeriesSelector.deselect()" class="btn btn-outline-secondary">'.s("Annuler").'</a> ';

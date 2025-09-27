@@ -1319,12 +1319,11 @@ class FarmUi {
 						$eFarmer = $eFarm->getFarmer();
 
 						$h .= '<a onclick="SeriesSelector.show()" id="series-selector-button" class="btn btn-primary hide-lateral-down">';
-							if(LIME_ENV === 'dev') {
-								$h .= \Asset::icon('bar-chart-steps').'  '.s("Assoler mes séries");
-							} else {
-								$h .= \Asset::icon('search');
-							}
+							$h .= \Asset::icon('bar-chart-steps').'  '.s("Assoler mes séries");
 						$h .= '</a> ';
+						$h .= '<div data-alert="'.s("Veuillez utiliser un ordinateur avec un écran plus grand pour assoler vos séries sur cette page. Si vous souhaitez malgré tout réaliser votre assolement, allez directement sur la page des séries à assoler.").'" class="btn btn-primary hide-lateral-up">';
+							$h .= \Asset::icon('bar-chart-steps').'  '.s("Assoler");
+						$h .= '</div> ';
 						$h .= '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end">';
 							$h .= \Asset::icon('palette-fill');
 						$h .= '</a>';
