@@ -1302,7 +1302,7 @@ td.series-field-cultivations {
 }
 
 
-.series-selector {
+#series-selector {
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -1314,6 +1314,10 @@ td.series-field-cultivations {
 	position: fixed;
 	padding: .5rem;
 	overflow-y: auto;
+}
+
+body:has(#series-selector:not(.hide)) #series-selector-button {
+	display: none;
 }
 
 .series-selector-cultivations {
@@ -1382,7 +1386,19 @@ td.series-field-cultivations {
 	display: none;
 }
 
-.series-selector-area {
+.series-selector-place {
 	font-size: 0.85rem;
 	white-space: nowrap;
+}
+
+.series-selector-place[data-color="zero"] {
+	color: var(--danger);
+}
+
+.series-selector-place[data-color="gap"] {
+	color: var(--warning);
+}
+
+.series-selector-cultivation:not(.selected) .series-selector-place[data-color=""] .series-selector-target {
+	display: none;
 }

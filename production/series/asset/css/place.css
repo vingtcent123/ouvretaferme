@@ -117,8 +117,14 @@ a.place-grid-series-timeline {
 	display: flex;
 	align-items: center;
 	background: var(--info);
-	opacity: 0.75;
+	opacity: 0.5;
 	padding-left: 0.5rem;
+}
+
+div.bed-item-grid:has(input[name^="beds"]:checked) .place-grid-series-timeline.place-grid-series-timeline-placeholder {
+	border: 2px dashed var(--secondary);
+	border-radius: var(--radius);
+	opacity: 0.75;
 }
 
 .place-grid-series-timeline.place-grid-series-timeline-alert {

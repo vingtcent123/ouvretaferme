@@ -23,7 +23,7 @@
 	}
 
 }))
-	->get('update', function($data) {
+	->get('updateModal', function($data) {
 
 		if($data->source === 'series') {
 			\series\SeriesLib::fillTimeline($data->e);
@@ -63,7 +63,7 @@
 		throw new \ViewAction($data);
 
 	})
-	->post('doUpdate', function($data) {
+	->post('doUpdateModal', function($data) {
 
 		$fw = new \FailWatch();
 
@@ -87,16 +87,20 @@
 
 
 new \series\CultivationPage()
-	->read('updateSoil', function($data) {
+	->applyElement(function($data, \series\Cultivation $e) {
 
-		$data->eSeries = $data->e['series'];
+		$data->eSeries = $e['series'];
+
+		$data->eFarm = \farm\FarmLib::getById($e['farm']);
+		$data->season = $e['season'];
+
+		\farm\ActionLib::getMainByFarm($data->eFarm);
+
+	})
+	->read('updateSoil', function($data) {
 
 		\series\SeriesLib::fillTimeline($data->eSeries);
 
-		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
-		$data->season = $data->e['season'];
-
-		// On récupère les emplacements
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 
 		\map\GreenhouseLib::putFromZone($data->cZone);
@@ -104,12 +108,11 @@ new \series\CultivationPage()
 
 		$data->eSeries['cPlace'] = \series\PlaceLib::getByElement($data->eSeries);
 
-		\farm\ActionLib::getMainByFarm($data->eFarm);
 
 		throw new \ViewAction($data);
 
 	})
-	->post('doUpdateSoil', function($data) {
+	->write('doUpdateSoil', function($data) {
 
 		$fw = new \FailWatch();
 
@@ -126,6 +129,24 @@ new \series\CultivationPage()
 		$fw->validate();
 
 		$data->cPlace = \series\PlaceLib::getByElement($data->e);
+
+		throw new \ViewAction($data);
+
+	})
+	->write('doDeleteSoil', function($data) {
+
+		$data->eSeries['cPlace'] = new Collection();
+
+		\series\PlaceLib::replaceForSeries($data->eSeries, $data->eSeries['cPlace']);
+
+		\series\SeriesLib::fillTimeline($data->eSeries);
+
+		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
+
+		\map\GreenhouseLib::putFromZone($data->cZone);
+		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, [$data->season, $data->season - 1, $data->season + 1]);
+
+		$data->ccCultivation = \series\CultivationLib::getForSelector($data->eFarm, $data->season);
 
 		throw new \ViewAction($data);
 

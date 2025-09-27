@@ -798,7 +798,7 @@ String.prototype.setArgument = function(name, value) {
 
 	const regex = new RegExp('([\&\?])'+ name +'(=[^\&]*|$|\&)', 'i');
 
-	const newArgument = (typeof value !== 'undefined') ? location + name +'='+ encodeURIComponent(value) : name;
+	const newArgument = (typeof value !== 'undefined') ? name +'='+ encodeURIComponent(value) : name;
 
 	if(location.match(regex)) {
 		location = location.replace(regex, '$1'+ newArgument);

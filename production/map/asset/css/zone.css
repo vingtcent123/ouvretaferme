@@ -5,6 +5,14 @@
 	top: 0;
 }
 
+@media (min-width: 1100px) and (min-height: 650px) {
+
+	main #zone-header {
+		height: 6rem;
+	}
+
+}
+
 .panel #zone-header {
 	background-color: white;
 }
@@ -56,6 +64,7 @@
 	display: flex;
 	align-items: end;
 	padding: 1rem 0 0 0 !important;
+	margin-bottom: 0.5rem;
 }
 
 .panel .zone-corner {
@@ -133,6 +142,7 @@ div.zone-title {
 	color: white;
 	border-top-left-radius: var(--radius);
 	border-top-right-radius: var(--radius);
+	z-index: 11;
 }
 
 div.zone-title a {
@@ -152,6 +162,14 @@ div.zone-update div.zone-title {
 main .zone-sticky-left {
 	position: sticky;
 	width: calc(var(--screen-width) - var(--nav-width) - var(--container-padding) * 2);
+}
+
+@media (min-width: 1100px) and (min-height: 650px) {
+
+	main div.zone-title {
+		top: 6rem;
+	}
+
 }
 
 body[data-touch="no"] {

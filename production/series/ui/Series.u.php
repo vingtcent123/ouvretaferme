@@ -133,12 +133,12 @@ class SeriesUi {
 
 	}
 
-	public function getSelector(\farm\Farm $eFarm, \Collection $ccCultivation): string {
+	public function getSelector(\Collection $ccCultivation): string {
 
-		$h = '<div class="series-selector">';
+		$h = '<div id="series-selector" class="hide">';
 			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Séries").'</h3>';
-				$h .= '<a href="'.\farm\FarmUi::urlSoil($eFarm).'" class="btn">'.\Asset::icon('x-lg').'</a>';
+				$h .= '<a onclick="SeriesSelector.close()" class="btn">'.\Asset::icon('x-lg').'</a>';
 			$h .= '</div>';
 			$h .= $this->getSelectorSeries($ccCultivation);
 		$h .= '</div>';
@@ -147,7 +147,7 @@ class SeriesUi {
 
 	}
 
-	protected function getSelectorSeries(\Collection $ccCultivation) {
+	public function getSelectorSeries(\Collection $ccCultivation) {
 
 		\Asset::js('series', 'seriesSelector.js');
 
@@ -183,79 +183,60 @@ class SeriesUi {
 
 	}
 
-	public function getSelectorCultivation(Cultivation $eCultivation, bool $selected): string {
+	public function getSelectorCultivation(Cultivation $eCultivation): string {
 
 		$eSeries = $eCultivation['series'];
 
 		$startTs = $eSeries->getBedStart() ? strtotime($eSeries->getBedStart().' 00:00:00') : NULL;
 		$stopTs = $eSeries->getBedStop() ? strtotime($eSeries->getBedStop().' 23:59:59') : NULL;
 
-		$h = '<div onclick="SeriesSelector.select(this)" class="series-selector-cultivation '.($selected ? 'selected' : '').'" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
+		$h = '<div onclick="SeriesSelector.select('.$eCultivation['id'].')" id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
 			$h .= '<div class="series-selector-header">';
 				$h .= '<a href="'.SeriesUi::url($eSeries).'" target="_blank">';
 					$h .= '<span class="series-selector-name">'.encode($eSeries['name']).'</span>';
 					$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
 				$h .= '</a>';
-				$h .= '<span class="series-selector-area">';
 
-					if($eSeries['use'] === Series::BED) {
+				if($eSeries['use'] === Series::BED) {
 
-						if($selected) {
-							if($eSeries['lengthTarget'] !== NULL) {
-								$h .= ' '.s("{value} / {target} mL", ['value' => '<span id="place-update-length">'.$eSeries['length'].'</span>', 'target' => $eSeries['lengthTarget']]).'</span>';
-							} else {
-								$h .= s("{value} mL", '<span id="place-update-length">'.$eSeries['length'].'</span>');
-							}
-						} else {
+					$value = ($eSeries['length'] ?? 0);
+					$target = $eSeries['lengthTarget'];
+					$unit = s("mL");
 
-							if($eSeries['length'] !== NULL) {
-								if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] > $eSeries['length']) {
-									$h .= '<span class="color-warning">'.s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]).'</span>';
-								} else if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] < $eSeries['length']) {
-									$h .= s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]).'</span>';
-								} else {
-									$h .= s("{value} mL", $eSeries['length']);
-								}
-							} else if($eSeries['lengthTarget'] !== NULL) {
-								$h .= '<span class="color-danger">'.s("0 / {value} mL", $eSeries['lengthTarget']).'</div>';
-							}
+				} else {
 
-						}
+					$value = ($eSeries['area'] ?? 0);
+					$target = $eSeries['areaTarget'];
+					$unit = s("m²");
 
-					} else {
+				}
 
-						if($selected) {
-							if($eSeries['areaTarget'] !== NULL) {
-								$h .= ' '.s("{value} / {target} mL", ['value' => '<span id="place-update-area">'.$eSeries['area'].'</span>', 'target' => $eSeries['areaTarget']]).'</span>';
-							} else {
-								$h .= s("{value} mL", '<span id="place-update-area">'.$eSeries['area'].'</span>');
-							}
-						} else {
+				$color = '';
 
-							if($eSeries['area'] !== NULL) {
-								if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] > $eSeries['area']) {
-									$h .= '<span class="color-warning">'.s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]).'</span>';
-								} else if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] < $eSeries['area']) {
-									$h .= s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]);
-								} else {
-									$h .= s("{value} m²", $eSeries['area']);
-								}
-							} else if($eSeries['areaTarget'] !== NULL) {
-								$h .= '<span class="color-danger">'.s("0 / {value} m²", $eSeries['areaTarget']).'</span>';
-							}
+				if($target !== NULL) {
 
-						}
-
+					if($value === 0) {
+						$color = 'zero';
+					} else if($value !== $target) {
+						$color = 'gap';
 					}
 
+				}
+
+				$h .= '<span class="series-selector-place" data-color="'.$color.'" data-target="'.$target.'">';
+					$h .= '<span class="series-selector-value">'.$value.'</span>';
+					if($target !== NULL) {
+						$h .= '<span class="series-selector-target"> / '.$target.'</span>';
+					} else {
+						$target = NULL;
+					}
+					$h .= ' '.$unit;
 				$h .= '</span>';
 			$h .= '</div>';
 			if(LIME_ENV === 'dev') {
 				$h .= '<div class="series-selector-more">';
 					$h .= '<a data-ajax="/series/place:updateSoil?id='.$eCultivation['id'].'" data-ajax-method="get" class="btn btn-sm btn-secondary">'.s("Modifier l'assolement").'</a> ';
-					if($selected === FALSE) {
-						$h .= '<a href="'.\farm\FarmUi::urlSoil($eSeries['farm']).'?update='.$eCultivation['id'].'" class="btn btn-sm btn-secondary" data-confirm="'.s("Cette série ne sera plus assolée. Continuer ?").'">'.s("Supprimer l'assolement").'</a> ';
-					}
+					$h .= '<a data-ajax="/series/place:doDeleteSoil" post-id="'.$eCultivation['id'].'" class="btn btn-sm btn-secondary" data-confirm="'.s("Cette série ne sera plus assolée. Continuer ?").'">'.s("Supprimer l'assolement").'</a> ';
 				$h .= '</div>';
 			}
 		$h .= '</div>';
@@ -330,7 +311,7 @@ class SeriesUi {
 						$cPlace->notEmpty()
 					) {
 						$h .= '<div>';
-							$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<a href="/series/place:updateModal?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
 						$h .= '</div>';
 					}
 				$h .= '</div>';
@@ -377,7 +358,7 @@ class SeriesUi {
 						$eSeries['status'] === Series::OPEN
 					) {
 						$h .= '<div class="series-soil-empty">';
-							$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Définir l'assolement pour cette série").'</a>';
+							$h .= '<a href="/series/place:updateModal?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Définir l'assolement pour cette série").'</a>';
 						$h .= '</div>';
 					} else {
 						$h .= '<div class="series-soil-empty">';

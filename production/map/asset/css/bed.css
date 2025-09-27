@@ -53,7 +53,7 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 
 div.bed-item-grid-plan {
 	grid-template-columns: 12rem 1fr;
-	align-items: center;
+	align-items: end;
 }
 
 div.zone-update div.bed-item-grid-plan {

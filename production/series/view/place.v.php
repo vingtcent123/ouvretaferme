@@ -1,9 +1,9 @@
 <?php
-new AdaptativeView('update', function($data, PanelTemplate $t) {
+new AdaptativeView('updateModal', function($data, PanelTemplate $t) {
 	return new \series\PlaceUi()->update($data->eFarm, $data->source, $data->e, $data->cZone, $data->search);
 });
 
-new JsonView('doUpdate', function($data, AjaxTemplate $t) {
+new JsonView('doUpdateModal', function($data, AjaxTemplate $t) {
 
 	switch($data->source) {
 
@@ -23,25 +23,33 @@ new JsonView('doUpdate', function($data, AjaxTemplate $t) {
 
 new JsonView('updateSoil', function($data, AjaxTemplate $t) {
 
-	$t->qs('.series-selector-cultivation[data-cultivation="'.$data->e['id'].'"]')->outerHtml(new \series\SeriesUi()->getSelectorCultivation($data->e, TRUE));
 	$t->qs('#zone-container')->outerHtml(new \map\ZoneUi()
 		->setUpdate($data->eSeries)
 		->getPlan($data->eFarm, $data->cZone, new \map\Zone(), $data->season));
 
-	$t->js()->eval('Place.scroll('.$data->eSeries['id'].')');
+	$t->js()->eval('SeriesSelector.edit('.$data->e['id'].')');
 
 });
 
 new JsonView('doUpdateSoil', function($data, AjaxTemplate $t) {
 
 
-					$uiZone = new \map\ZoneUi();
+		$uiZone = new \map\ZoneUi();
 
-					if($data->eCultivationSelected->notEmpty()) {
-						$uiZone->setUpdate($data->eCultivationSelected['series']);
-					}
+		if($data->eCultivationSelected->notEmpty()) {
+			$uiZone->setUpdate($data->eCultivationSelected['series']);
+		}
 
-					echo $uiZone->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
+		echo $uiZone->getPlan($data->eFarm, $data->cZone, $data->eZoneSelected, $data->season);
+
+});
+
+new JsonView('doDeleteSoil', function($data, AjaxTemplate $t) {
+
+	$t->qs('#series-selector-list')->outerHtml(new \series\SeriesUi()->getSelectorSeries($data->ccCultivation));
+	$t->qs('#zone-container')->outerHtml(new \map\ZoneUi()->getPlan($data->eFarm, $data->cZone, new \map\Zone(), $data->season));
+
+	$t->js()->eval('SeriesSelector.select('.$data->e['id'].')');
 
 });
 ?>

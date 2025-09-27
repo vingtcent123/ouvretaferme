@@ -298,20 +298,10 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 				$form = new \util\FormUi();
 
-				echo $form->openAjax('/series/place:doUpdate', ['id' => 'place-update']);
+				echo $form->openAjax('/series/place:doUpdateModal', ['id' => 'place-update']);
 					echo $form->hidden('series');
 
-					if($data->hasUpdate) {
-
-						echo '<style>
-							:root {
-								--nav-width: 25rem;
-							}
-						</style>';
-
-						echo new \series\SeriesUi()->getSelector($data->eFarm, $data->ccCultivation);
-
-					}
+					echo new \series\SeriesUi()->getSelector($data->ccCultivation);
 
 					echo '<div class="zone-sticky-overlay-left"></div>';
 					echo '<div class="zone-sticky-overlay-right"></div>';

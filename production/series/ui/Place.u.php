@@ -79,7 +79,7 @@ class PlaceUi {
 
 		}
 
-		$h .= $form->openAjax('/series/place:doUpdate', ['id' => 'place-update']);
+		$h .= $form->openAjax('/series/place:doUpdateModal', ['id' => 'place-update']);
 
 			$h .= $form->hidden($source, $e['id']);
 			$h .=	$places;
@@ -570,7 +570,9 @@ class PlaceUi {
 
 		}
 
-		$h .= '<a href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" '.$dropdown.' data-ajax-navigation="notouch" data-series="'.$eSeries['id'].'">';
+		$tag = $isPlaceholder ? 'div' : 'a';
+
+		$h .= '<'.$tag.' href="'.SeriesUi::url($eSeries).'" id="'.$id.'" class="place-grid-series-timeline '.$class.' '.($ePlace['missing'] ? 'place-grid-series-timeline-alert' : '').' '.($details ? 'place-grid-series-timeline-with-details' : '').'" style="'.$style.'" '.$dropdown.' data-ajax-navigation="notouch" '.($isPlaceholder ? '': 'data-series="'.$eSeries['id'].'').'">';
 
 			if($isPlaceholder) {
 
@@ -652,7 +654,7 @@ class PlaceUi {
 				$h .= $this->getPositionStyle($id, $startTs, $stopTs, $minTs, $maxTs);
 			$h .= '</style>';
 
-		$h .= '</a>';
+		$h .= '</'.$tag.'>';
 
 		if($details) {
 			$h .= '<div class="place-grid-series-timeline-dropdown dropdown-list dropdown-list-unstyled">';

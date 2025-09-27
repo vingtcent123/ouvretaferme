@@ -652,11 +652,7 @@ new Page(function($data) {
 
 		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, $seasonsSeries);
 
-		$data->hasUpdate = get_exists('update');
-
-		if($data->hasUpdate) {
-			$data->ccCultivation = \series\CultivationLib::getForSelector($data->eFarm, $data->season);
-		}
+		$data->ccCultivation = \series\CultivationLib::getForSelector($data->eFarm, $data->season);
 
 		throw new ViewAction($data, ':soil');
 
