@@ -223,7 +223,7 @@ class SeriesUi {
 
 				}
 
-				$h .= '<span class="series-selector-place" data-color="'.$color.'" data-target="'.$target.'">';
+				$h .= '<span class="series-selector-place" data-color="'.$color.'" data-value-target="'.$target.'">';
 					$h .= '<span class="series-selector-value">'.$value.'</span>';
 					if($target !== NULL) {
 						$h .= '<span class="series-selector-target"> / '.$target.'</span>';

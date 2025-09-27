@@ -174,18 +174,36 @@ class Place {
 
 	static updateSelected() {
 
-		const target = qs('#place-update-value');
+		const nodeValue = qs('#place-update-value');
+		const nodeTarget = nodeValue.firstParent('[data-value-target]');
 
-		if(target === null) {
+		if(nodeValue === null) {
 			return;
 		}
 
 		const form = qs('#place-update');
 
-		let total = 0;
-		form.qsa('div.bed-item-grid:has([name^="beds"]:checked) [name^="sizes"], div.zone-wrapper:has(input.zone-title-fill:checked) .bed-item-fill-zone [name^="sizes"], div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot [name^="sizes"]', (node) => total += parseInt(node.value || 0));
+		let totalValue = 0;
+		form.qsa('div.bed-item-grid:has([name^="beds"]:checked) [name^="sizes"], div.zone-wrapper:has(input.zone-title-fill:checked) .bed-item-fill-zone [name^="sizes"], div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot [name^="sizes"]', (node) => totalValue += parseInt(node.value || 0));
 
-		target.innerHTML = total;
+		nodeValue.innerHTML = totalValue;
+
+		if(
+			nodeTarget !== null &&
+			nodeTarget.dataset.valueTarget !== ''
+		) {
+
+			const totalTarget = parseInt(nodeTarget.dataset.valueTarget);
+
+			if(totalValue === 0) {
+				nodeTarget.dataset.color = 'zero';
+			} else if(totalValue !== totalTarget) {
+				nodeTarget.dataset.color = 'gap';
+			} else {
+				nodeTarget.dataset.color = '';
+			}
+
+		}
 
 	}
 

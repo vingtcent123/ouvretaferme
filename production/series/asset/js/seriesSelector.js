@@ -19,6 +19,7 @@ class SeriesSelector {
 				qs('#place-update [name="cultivation"]').value = cultivation;
 
 				qs('#place-update-value', node => node.removeAttribute('id'));
+
 				selector.qs('.series-selector-value').id = 'place-update-value';
 
 				Place.scroll(selector.dataset.series);
