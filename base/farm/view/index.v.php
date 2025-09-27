@@ -298,8 +298,10 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 				$form = new \util\FormUi();
 
-				echo $form->openAjax('/series/place:doUpdateModal', ['id' => 'place-update']);
-					echo $form->hidden('series');
+				echo '<div id="zone-form-search" class="bed-write"></div>';
+
+				echo $form->openAjax('/series/place:doUpdate', ['id' => 'place-update']);
+					echo $form->hidden('cultivation');
 
 					echo new \series\SeriesUi()->getSelector($data->ccCultivation);
 

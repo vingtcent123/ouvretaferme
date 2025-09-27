@@ -79,7 +79,7 @@ class PlaceUi {
 
 		}
 
-		$h .= $form->openAjax('/series/place:doUpdateModal', ['id' => 'place-update']);
+		$h .= $form->openAjax('/series/place:doUpdate', ['id' => 'place-update']);
 
 			$h .= $form->hidden($source, $e['id']);
 			$h .=	$places;
@@ -94,14 +94,14 @@ class PlaceUi {
 						switch($e['use']) {
 
 							case Series::BED;
-								$submit .= s("Sélectionné : {value} mL", '<span id="place-update-length">'.($e['length'] ?? 0).'</span>');
+								$submit .= s("Sélectionné : {value} mL", '<span id="place-update-value">'.($e['length'] ?? 0).'</span>');
 								if($e['lengthTarget']) {
 									$submit .= s(" / Objectif : {value} mL", $e['lengthTarget']);
 								}
 								break;
 
 							case Series::BLOCK;
-								$submit .= s("Sélectionné : {value} m²", '<span id="place-update-area">'.($e['area'] ?? 0).'</span>');
+								$submit .= s("Sélectionné : {value} m²", '<span id="place-update-value">'.($e['area'] ?? 0).'</span>');
 								if($e['areaTarget']) {
 									$submit .= s(" / Objectif : {value} m²", $e['areaTarget']);
 								}

@@ -24,8 +24,8 @@ div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot {
 	display: grid;
 }
 
-#zone-content:not(.zone-update) div.zone-wrapper:has(.place-grid-series-timeline) .bed-item-fill-zone,
-#zone-content:not(.zone-update) div.plot-wrapper:has(.place-grid-series-timeline) .bed-item-fill-plot {
+body:not(.bed-updating) div.zone-wrapper:has(.place-grid-series-timeline) .bed-item-fill-zone,
+body:not(.bed-updating) div.plot-wrapper:has(.place-grid-series-timeline) .bed-item-fill-plot {
 	display: grid;
 }
 
@@ -53,6 +53,10 @@ div.bed-item-grid-rotation:not(.bed-item-grid-header) {
 
 div.bed-item-grid-plan {
 	grid-template-columns: 12rem 1fr;
+	align-items: center;
+}
+
+div.bed-item-grid-plan.bed-item-grid-header {
 	align-items: end;
 }
 
@@ -246,6 +250,7 @@ div.bed-item-grid div.bed-item-size-fill {
 	margin-top: 0.25rem;
 }
 
+
 div.bed-item-grid div.bed-item-size-write input,
 div.bed-item-grid div.bed-item-size-fill input {
 	text-align: center;
@@ -254,6 +259,7 @@ div.bed-item-grid div.bed-item-size-fill input {
 div.bed-item-grid div.bed-item-size-write .input-group-addon,
 div.bed-item-grid div.bed-item-size-fill .input-group-addon {
 	background-color: var(--background) !important;
+	font-size: 0.8rem !important;
 }
 
 div.bed-item-grid:has(input[name^="beds"]:checked) div.bed-item-size-read {

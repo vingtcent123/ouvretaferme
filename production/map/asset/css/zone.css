@@ -42,16 +42,16 @@
 
 }
 
-.zone-container {
+.zone-list {
 	margin-top: -1.5rem;
-	padding-top: 0.5rem;
 }
 
-#zone-content.zone-update .bed-read {
+body.bed-updating .bed-read,
+body.panel-open .bed-read {
 	display: none;
 }
 
-#zone-content:not(.zone-update) .bed-write {
+body:not(.bed-updating):not(.panel-open) .bed-write {
 	display: none;
 }
 

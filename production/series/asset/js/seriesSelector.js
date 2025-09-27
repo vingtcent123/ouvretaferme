@@ -1,10 +1,29 @@
 class SeriesSelector {
 
-	static edit(cultivation) {
+	static edit(target) {
 
-		const target = qs('#series-selector-'+ cultivation);
+		const cultivation = target.dataset.cultivation;
 
-		Place.scroll(target.dataset.series);
+		new Ajax.Query()
+			.url('/series/place:update?cultivation='+ cultivation)
+			.method('get')
+			.fetch()
+			.then((json) => {
+
+				qs('#zone-container').renderOuter(json.plan);
+				qs('#zone-form-search').renderInner(json.search);
+
+				const selector = qs('#series-selector-'+ cultivation);
+
+				document.body.classList.add('bed-updating');
+				qs('#place-update [name="cultivation"]').value = cultivation;
+
+				qs('#place-update-value', node => node.removeAttribute('id'));
+				selector.qs('.series-selector-value').id = 'place-update-value';
+
+				Place.scroll(selector.dataset.series);
+
+			});
 
 	}
 
@@ -13,13 +32,7 @@ class SeriesSelector {
 		const target = qs('#series-selector-'+ cultivation);
 
 		if(target.classList.contains('selected')) {
-
-			if(qs('#zone-content.zone-update') === null) {
-				Place.scroll(target.dataset.series);
-			}
-
 			return;
-
 		} else {
 
 			this.deselect();
@@ -39,10 +52,7 @@ class SeriesSelector {
 		qsa('#zone-content .bed-item-grid.selected', node => node.classList.remove('selected'));
 		qs("#series-selector-list .series-selector-cultivation.selected", node => node.classList.remove('selected'));
 
-		qs('#zone-content').classList.remove('zone-update');
-
-		// TODO reste de l'édition et retour sur Modifier/Supprimer
-		qsa('#place-update-length, #place-update-area', node => node.id = null);
+		document.body.classList.remove('bed-updating');
 
 	}
 

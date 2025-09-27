@@ -1,152 +1,123 @@
 <?php
-(new Page(function($data) {
+new Page(function($data) {
 
-	if(input_exists('series')) {
+		if(input_exists('cultivation')) {
 
-		$data->e = \series\SeriesLib::getById(INPUT('series'))->validate('canWrite');
-		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
+			$data->eCultivation = \series\CultivationLib::getById(INPUT('cultivation'))->validate('canWrite');
 
-		$data->source = 'series';
+			$data->e = $data->eCultivation['series'];
+			$data->e['farm'] = \farm\FarmLib::getById($data->eCultivation['farm']);
 
-	} else if(input_exists('task')) {
+			$data->source = 'cultivation';
 
-		$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'acceptSoil');
-		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
-		$data->e['season'] = week_year($data->e['doneWeek'] ?? $data->e['plannedWeek']);
-		$data->e['use'] = \series\Series::BED;
-		$data->e['bedWidth'] = NULL;
+		} else if(input_exists('series')) {
 
-		$data->source = 'task';
+			$data->e = \series\SeriesLib::getById(INPUT('series'))->validate('canWrite');
+			$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
 
-	} else {
-		throw new NotExpectedAction('Missing entry');
-	}
+			$data->source = 'series';
 
-}))
-	->get('updateModal', function($data) {
+		} else if(input_exists('task')) {
 
-		if($data->source === 'series') {
+			$data->e = \series\TaskLib::getById(INPUT('task'))->validate('canWrite', 'acceptSoil');
+			$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
+			$data->e['season'] = week_year($data->e['doneWeek'] ?? $data->e['plannedWeek']);
+			$data->e['use'] = \series\Series::BED;
+			$data->e['bedWidth'] = NULL;
+
+			$data->source = 'task';
+
+		} else {
+			throw new NotExpectedAction('Missing entry');
+		}
+
+	})
+	->get('update', function($data) {
+
+		if(
+			$data->source === 'series' or
+			$data->source === 'cultivation'
+		) {
 			\series\SeriesLib::fillTimeline($data->e);
 		}
 
-		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
-
 		// On récupère les emplacements
-		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->e['season']);
+		$data->cZone = \map\ZoneLib::getByFarm($data->e['farm'], season: $data->e['season']);
 
 		\map\GreenhouseLib::putFromZone($data->cZone);
-		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->e['season'], [$data->e['season'], $data->e['season'] - 1, $data->e['season'] + 1]);
+		\map\PlotLib::putFromZoneWithSeries($data->e['farm'], $data->cZone, $data->e['season'], [$data->e['season'], $data->e['season'] - 1, $data->e['season'] + 1]);
 
 		$data->e['cPlace'] = \series\PlaceLib::getByElement($data->e);
 
+		\farm\ActionLib::getMainByFarm($data->e['farm']);
+
 		switch($data->source) {
 
+			case 'cultivation' :
 			case 'series' :
 
 				$data->search = new Search([
-					'canWidth' => \map\BedLib::countWidthsByFarm($data->eFarm, $data->e['season']) > 1,
+					'canWidth' => \map\BedLib::countWidthsByFarm($data->e['farm'], $data->e['season']) > 1,
 					'mode' => GET('mode', [NULL, \map\Plot::GREENHOUSE, \map\Plot::OPEN_FIELD]),
 				]);
 
 				\map\ZoneLib::test($data->cZone, $data->search, $data->e);
 
-				break;
+				throw new \ViewAction($data, match($data->source) {
+					'cultivation' => ':updateCultivation',
+					'series' => ':updateModal',
+				});
 
 			case 'task' :
+
 				$data->search = new Search();
-				break;
+
+				throw new \ViewAction($data, ':updateModal');
 
 		}
 
-		\farm\ActionLib::getMainByFarm($data->eFarm);
-
-		throw new \ViewAction($data);
 
 	})
-	->post('doUpdateModal', function($data) {
+	->post('doUpdate', function($data) {
 
 		$fw = new \FailWatch();
 
-		$cPlace = \series\PlaceLib::buildFromBeds($data->source, $data->e, POST('beds', 'array'), POST('sizes', 'array'));
+		$cPlace = \series\PlaceLib::buildFromBeds(
+			match($data->source) {
+				'series', 'cultivation' => 'series',
+				'task' => 'task',
+			},
+			$data->e,
+			POST('beds', 'array'),
+			POST('sizes', 'array')
+		);
 
 		if($fw->ok()) {
 
 			match($data->source) {
-				'series' => \series\PlaceLib::replaceForSeries($data->e, $cPlace),
+				'series', 'cultivation' => \series\PlaceLib::replaceForSeries($data->e, $cPlace),
 				'task' => \series\PlaceLib::replaceForTask($data->e, $cPlace),
 			};
 		}
 
 		$fw->validate();
 
-		$data->cPlace = \series\PlaceLib::getByElement($data->e);
+		if($data->source === 'cultivation') {
 
-		throw new \ViewAction($data);
+			\farm\ActionLib::getMainByFarm($data->e['farm']);
 
-	});
+			\series\SeriesLib::fillTimeline($data->e);
 
+			$data->cZone = \map\ZoneLib::getByFarm($data->e['farm'], season: $data->e['season']);
 
-new \series\CultivationPage()
-	->applyElement(function($data, \series\Cultivation $e) {
+			\map\GreenhouseLib::putFromZone($data->cZone);
+			\map\PlotLib::putFromZoneWithSeries($data->e['farm'], $data->cZone, $data->e['season'], [$data->e['season'], $data->e['season'] - 1, $data->e['season'] + 1]);
 
-		$data->eSeries = $e['series'];
+			$data->ccCultivation = \series\CultivationLib::getForSelector($data->e['farm'], $data->e['season']);
 
-		$data->eFarm = \farm\FarmLib::getById($e['farm']);
-		$data->season = $e['season'];
-
-		\farm\ActionLib::getMainByFarm($data->eFarm);
-
-	})
-	->read('updateSoil', function($data) {
-
-		\series\SeriesLib::fillTimeline($data->eSeries);
-
-		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
-
-		\map\GreenhouseLib::putFromZone($data->cZone);
-		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, [$data->season, $data->season - 1, $data->season + 1]);
-
-		$data->eSeries['cPlace'] = \series\PlaceLib::getByElement($data->eSeries);
-
-
-		throw new \ViewAction($data);
-
-	})
-	->write('doUpdateSoil', function($data) {
-
-		$fw = new \FailWatch();
-
-		$cPlace = \series\PlaceLib::buildFromBeds($data->source, $data->e, POST('beds', 'array'), POST('sizes', 'array'));
-
-		if($fw->ok()) {
-
-			match($data->source) {
-				'series' => \series\PlaceLib::replaceForSeries($data->e, $cPlace),
-				'task' => \series\PlaceLib::replaceForTask($data->e, $cPlace),
-			};
+		} else {
+			$data->cPlace = \series\PlaceLib::getByElement($data->e);
 		}
-
-		$fw->validate();
-
-		$data->cPlace = \series\PlaceLib::getByElement($data->e);
-
-		throw new \ViewAction($data);
-
-	})
-	->write('doDeleteSoil', function($data) {
-
-		$data->eSeries['cPlace'] = new Collection();
-
-		\series\PlaceLib::replaceForSeries($data->eSeries, $data->eSeries['cPlace']);
-
-		\series\SeriesLib::fillTimeline($data->eSeries);
-
-		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
-
-		\map\GreenhouseLib::putFromZone($data->cZone);
-		\map\PlotLib::putFromZoneWithSeries($data->eFarm, $data->cZone, $data->season, [$data->season, $data->season - 1, $data->season + 1]);
-
-		$data->ccCultivation = \series\CultivationLib::getForSelector($data->eFarm, $data->season);
 
 		throw new \ViewAction($data);
 

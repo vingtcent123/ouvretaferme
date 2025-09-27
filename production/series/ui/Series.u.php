@@ -190,8 +190,8 @@ class SeriesUi {
 		$startTs = $eSeries->getBedStart() ? strtotime($eSeries->getBedStart().' 00:00:00') : NULL;
 		$stopTs = $eSeries->getBedStop() ? strtotime($eSeries->getBedStop().' 23:59:59') : NULL;
 
-		$h = '<div onclick="SeriesSelector.select('.$eCultivation['id'].')" id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
-			$h .= '<div class="series-selector-header">';
+		$h = '<div id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
+			$h .= '<div class="series-selector-header" onclick="SeriesSelector.select('.$eCultivation['id'].')">';
 				$h .= '<a href="'.SeriesUi::url($eSeries).'" target="_blank">';
 					$h .= '<span class="series-selector-name">'.encode($eSeries['name']).'</span>';
 					$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
@@ -233,10 +233,18 @@ class SeriesUi {
 					$h .= ' '.$unit;
 				$h .= '</span>';
 			$h .= '</div>';
-			if(LIME_ENV === 'dev') {
-				$h .= '<div class="series-selector-more">';
-					$h .= '<a data-ajax="/series/place:updateSoil?id='.$eCultivation['id'].'" data-ajax-method="get" class="btn btn-sm btn-secondary">'.s("Modifier l'assolement").'</a> ';
-					$h .= '<a data-ajax="/series/place:doDeleteSoil" post-id="'.$eCultivation['id'].'" class="btn btn-sm btn-secondary" data-confirm="'.s("Cette série ne sera plus assolée. Continuer ?").'">'.s("Supprimer l'assolement").'</a> ';
+			if($eCultivation->canWrite()) {
+				$h .= '<div class="series-selector-more bed-write">';
+					$h .= new \util\FormUi()->submit(s("Enregistrer l'assolement"), ['class' => 'btn btn-lg btn-secondary', 'style' => 'height: 4rem']);
+					$h .= '<a onclick="SeriesSelector.deselect()" class="btn btn-outline-secondary">'.s("Annuler").'</a> ';
+				$h .= '</div>';
+				$h .= '<div class="series-selector-more bed-read">';
+					$h .= '<a onclick="SeriesSelector.edit(this)" data-cultivation="'.$eCultivation['id'].'" data-ajax-method="get" class="btn btn-outline-secondary">';
+						$h .= ($value > 0) ? s("Modifier l'assolement") : s("Choisir l'assolement");
+					$h .= '</a> ';
+					if($value > 0) {
+						$h .= '<a data-ajax="/series/place:doUpdate" post-cultivation="'.$eCultivation['id'].'" class="btn btn-secondary" data-confirm="'.s("Cette série ne sera plus assolée. Continuer ?").'">'.s("Supprimer l'assolement").'</a> ';
+					}
 				$h .= '</div>';
 			}
 		$h .= '</div>';
@@ -311,7 +319,7 @@ class SeriesUi {
 						$cPlace->notEmpty()
 					) {
 						$h .= '<div>';
-							$h .= '<a href="/series/place:updateModal?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-color-primary">'.\Asset::icon('gear-fill').'</a>';
 						$h .= '</div>';
 					}
 				$h .= '</div>';
@@ -358,7 +366,7 @@ class SeriesUi {
 						$eSeries['status'] === Series::OPEN
 					) {
 						$h .= '<div class="series-soil-empty">';
-							$h .= '<a href="/series/place:updateModal?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Définir l'assolement pour cette série").'</a>';
+							$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Définir l'assolement pour cette série").'</a>';
 						$h .= '</div>';
 					} else {
 						$h .= '<div class="series-soil-empty">';

@@ -207,6 +207,21 @@ main  #zone-content > * {
 	display: none;
 }
 
+#zone-form-search {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 110;
+	padding: 1rem;
+	box-shadow: 0 0 1rem #0003;
+	background-color: var(--primary);
+}
+
+#zone-form-search .util-block-search {
+	margin-bottom: 0;
+}
+
 #zone-container {
 
 	div.series-grid-weeks > div.series-grid-line:not(:first-child) {
@@ -1303,7 +1318,6 @@ td.series-field-cultivations {
 
 
 #series-selector {
-	position: absolute;
 	left: 0;
 	top: 0;
 	bottom: 0;
@@ -1312,7 +1326,7 @@ td.series-field-cultivations {
 	background-color: white;
 	box-shadow: 0 0 1rem #0003;
 	position: fixed;
-	padding: .5rem;
+	padding: 0.5rem 0.5rem 3rem 0.5rem;
 	overflow-y: auto;
 }
 
@@ -1328,7 +1342,6 @@ body:has(#series-selector:not(.hide)) #series-selector-button {
 .series-selector-cultivation {
 	display: block;
 	text-decoration: none;
-	padding: 0.375rem 0.5rem;
 	background-color: var(--background-light);
 }
 
@@ -1360,7 +1373,7 @@ body:has(#series-selector:not(.hide)) #series-selector-button {
 	background-color: var(--info);
 }
 
-.series-selector-cultivation:not(.selected) .series-selector-header {
+.series-selector-cultivation:not(.selected) .series-selector-header a {
 	pointer-events: none;
 }
 
@@ -1368,6 +1381,7 @@ body:has(#series-selector:not(.hide)) #series-selector-button {
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
+	padding: 0.375rem 0.5rem;
 }
 
 .series-selector-name {
@@ -1379,7 +1393,7 @@ body:has(#series-selector:not(.hide)) #series-selector-button {
 	grid-template-columns: 1fr;
 	gap: 0.5rem;
 	flex-wrap: wrap;
-	margin-top: 1rem;
+	padding: 0.375rem 0.5rem;
 }
 
 .series-selector-cultivation:not(.selected) .series-selector-more {

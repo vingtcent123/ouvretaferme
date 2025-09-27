@@ -2273,7 +2273,7 @@ class TaskUi {
 			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Assolement").'</h3>';
 				if($eTask->canWrite()) {
-					$h .= '<a href="/series/place:updateModal?task='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-outline-primary">';
+					$h .= '<a href="/series/place:update?task='.$eTask['id'].'&close=reloadIgnoreCascade" class="btn btn-outline-primary">';
 						if($cPlace->empty()) {
 							$h .= \Asset::icon('plus-circle').' '.s("Assoler");
 						} else {
@@ -3560,7 +3560,7 @@ class TaskUi {
 							if($eSeries['area']) {
 								$h .= s("{value} m²", $eSeries['area']);
 							} else {
-								$h .= '<a href="/series/place:updateModal?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-secondary">'.s("Assoler").'</a>';
+								$h .= '<a href="/series/place:update?series='.$eSeries['id'].($eSeries['mode'] === Series::GREENHOUSE ? '&mode='.Series::GREENHOUSE : '').'" class="btn btn-outline-secondary">'.s("Assoler").'</a>';
 							}
 						$h .= '</td>';
 					$h .= '</tr>';

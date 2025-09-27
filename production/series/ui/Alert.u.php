@@ -79,6 +79,7 @@ class AlertUi {
 			'Task::deleted' => s("La tâche a bien été supprimée !"),
 
 			'Series::created' => s("La série a bien été créée !"),
+			'Series::updatedSoil' => s("L'assolement a bien été enregistré"),
 			'Series::updatedSeason' => s("La série a bien été changée de saison."),
 			'Series::updatedSeasonCollection' => s("Les séries ont bien été changées de saison."),
 			'Series::duplicated' => s("La série a bien été dupliquée ici !"),

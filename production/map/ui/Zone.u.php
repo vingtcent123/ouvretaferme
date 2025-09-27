@@ -78,7 +78,7 @@ class ZoneUi {
 					$h .= '--zone-content-months: '.$eFarm['calendarMonths'].';';
 				$h .= '}';
 			$h .= '</style>';
-			$h .= '<div id="zone-content" class="'.($this->eUpdate->notEmpty() ? 'zone-update' : '').'" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
+			$h .= '<div id="zone-content" data-start="'.$startTs.'" data-stop="'.$stopTs.'">';
 
 				$h .= '<div id="zone-header" class="bed-item-grid bed-item-grid-plan bed-item-grid-header">';
 
@@ -129,7 +129,7 @@ class ZoneUi {
 
 				$h .= '</div>';
 
-				$h .= '<div class="zone-container bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
+				$h .= '<div class="zone-list bed-item-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
 
 					$h .= new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);
 

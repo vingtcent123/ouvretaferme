@@ -31,14 +31,12 @@ class Place {
 	static scroll(series) {
 
 		// Placement du scroll pour centrer la série
-		qs('.place-grid-series-timeline[data-series="'+ series +'"]', bed => {
+		qs('body:not(.bed-updating) .place-grid-series-timeline[data-series="'+ series +'"], body.bed-updating [name="beds[]"]:checked', bed => {
 
-			const bedName = bed.firstParent('.bed-item-grid').qs('.bed-item-bed');
-
-			window.scrollTo(
-				Math.max(0, bed.getBoundingClientRect().left + window.scrollX - bedName.getBoundingClientRect().right),
-				Math.max(0, bed.getBoundingClientRect().top + window.scrollY - 300)
-			);
+			bed.scrollIntoView({
+				block: 'center',
+				inline: 'center'
+			});
 
 		});
 
@@ -176,10 +174,9 @@ class Place {
 
 	static updateSelected() {
 
-		const area = qs('#place-update-area');
-		const length = qs('#place-update-length');
+		const target = qs('#place-update-value');
 
-		if(area === null && length === null) {
+		if(target === null) {
 			return;
 		}
 
@@ -188,13 +185,7 @@ class Place {
 		let total = 0;
 		form.qsa('div.bed-item-grid:has([name^="beds"]:checked) [name^="sizes"], div.zone-wrapper:has(input.zone-title-fill:checked) .bed-item-fill-zone [name^="sizes"], div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot [name^="sizes"]', (node) => total += parseInt(node.value || 0));
 
-		if(length) {
-			length.innerHTML = total;
-		}
-
-		if(area) {
-			area.innerHTML = total;
-		}
+		target.innerHTML = total;
 
 	}
 

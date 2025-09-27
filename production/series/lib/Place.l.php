@@ -72,6 +72,10 @@ class PlaceLib extends PlaceCrud {
 
 		$e->expects(['farm', 'season', 'use']);
 
+		if($beds === []) {
+			return new \Collection();
+		}
+
 		$cBed = \map\Bed::model()
 			->select([
 				'id',
