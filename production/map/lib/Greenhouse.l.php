@@ -23,14 +23,9 @@ class GreenhouseLib extends GreenhouseCrud {
 
 	public static function getByPlot(Plot $ePlot): \Collection {
 
-		if($ePlot['zoneFill']) {
-			Greenhouse::model()->whereZone($ePlot['zone']);
-		} else {
-			Greenhouse::model()->wherePlot($ePlot);
-		}
-
 		return Greenhouse::model()
 			->select(Greenhouse::getSelection())
+			->wherePlot($ePlot)
 			->sort('name')
 			->getCollection(NULL, NULL, 'id');
 
