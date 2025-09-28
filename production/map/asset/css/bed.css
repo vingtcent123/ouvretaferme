@@ -24,8 +24,8 @@ div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot {
 	display: grid;
 }
 
-body:not(.bed-updating) div.zone-wrapper:has(.place-grid-series-timeline) .bed-item-fill-zone,
-body:not(.bed-updating) div.plot-wrapper:has(.place-grid-series-timeline) .bed-item-fill-plot {
+body:not(.bed-updating) main div.zone-wrapper:has(.place-grid-series-timeline) .bed-item-fill-zone,
+body:not(.bed-updating) main div.plot-wrapper:has(.place-grid-series-timeline) .bed-item-fill-plot {
 	display: grid;
 }
 
