@@ -78,38 +78,38 @@ new Page(function($data) {
 
 new \account\AccountPage(function($data) {
 
-	\user\ConnectionLib::checkLogged();
+		\user\ConnectionLib::checkLogged();
 
-	$data->eFarm->validate('canManage');
-})
-->quick(['description'], [], ['canQuickUpdate'])
-->create(function($data) {
+		$data->eFarm->validate('canManage');
+	})
+	->quick(['description'], validate: ['canQuickUpdate'])
+	->create(function($data) {
 
-	throw new ViewAction($data);
+		throw new ViewAction($data);
 
-})
-->post('doCreate', function($data) {
+	})
+	->post('doCreate', function($data) {
 
-	$fw = new FailWatch();
+		$fw = new FailWatch();
 
-	\account\AccountLib::createCustomClass($_POST);
+		\account\AccountLib::createCustomClass($_POST);
 
-	$fw->validate();
+		$fw->validate();
 
-	throw new ReloadAction('account', 'Account::created');
-})
-->post('doDelete', function($data) {
+		throw new ReloadAction('account', 'Account::created');
+	})
+	->post('doDelete', function($data) {
 
-	$fw = new FailWatch();
+		$fw = new FailWatch();
 
-	$eAccount = \account\AccountLib::getById(POST('id', 'int'));
+		$eAccount = \account\AccountLib::getById(POST('id', 'int'));
 
-	\account\AccountLib::delete($eAccount);
+		\account\AccountLib::delete($eAccount);
 
-	$fw->validate();
+		$fw->validate();
 
-	throw new ReloadAction('account', 'Account::deleted');
+		throw new ReloadAction('account', 'Account::deleted');
 
-});
+	});
 
 ?>

@@ -14,7 +14,7 @@ new \journal\OperationPage(
 		$e['cPaymentMethod'] = $data->cPaymentMethod;
 		$e['farm'] = $data->eFarm;
 	})
-	->quick(['document', 'description', 'amount', 'comment', 'paymentMethod', 'journalCode'], [], ['canUpdateQuick'])
+	->quick(['document', 'description', 'amount', 'comment', 'paymentMethod', 'journalCode'], validate: ['canUpdateQuick'])
 	->create(function($data) {
 
 		if(get_exists('account') === TRUE) {

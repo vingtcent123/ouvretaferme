@@ -55,7 +55,7 @@ new \map\BedPage()
 
 	})
 	->doUpdate(fn($data) => throw new ViewAction($data))
-	->quick(['name'])
+	->quick(['name'], action: fn($data) => throw new ViewAction($data, ':doUpdateQuick'))
 	->doDelete(fn($data) => throw new ViewAction($data))
 	->read('swapSeries', function($data) {
 

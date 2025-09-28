@@ -60,6 +60,12 @@ new AdaptativeView('doUpdate', function($data, AjaxTemplate $t) {
 
 });
 
+new AdaptativeView('doUpdateQuick', function($data, AjaxTemplate $t) {
+
+	$t->js()->eval('Cartography.queryZone('.$data->e['zone']['id'].')');
+
+});
+
 new AdaptativeView('doDeleteCollection', function($data, AjaxTemplate $t) {
 
 	$t->js()->eval('Cartography.queryZone('.$data->ePlot['zone']['id'].')');

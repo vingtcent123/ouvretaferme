@@ -5322,7 +5322,7 @@ abstract class ModulePage extends Page {
 
 	}
 
-	public function quick(array $propertiesAllowed, array $callbacks = [], array $validate = ['canUpdate']): ModulePage {
+	public function quick(array $propertiesAllowed, array $callbacks = [], ?Closure $action = NULL, array $validate = ['canUpdate']): ModulePage {
 
 		$this->post('/@module/'.str_replace('\\', '/', $this->module).'/quick', function($data) use($propertiesAllowed, $callbacks) {
 
@@ -5359,7 +5359,7 @@ abstract class ModulePage extends Page {
 
 		});
 
-		$this->post('/@module/'.str_replace('\\', '/', $this->module).'/doQuick', function($data) use($propertiesAllowed, $validate) {
+		$this->post('/@module/'.str_replace('\\', '/', $this->module).'/doQuick', function($data) use($propertiesAllowed, $action, $validate) {
 
 			$property = POST('property');
 
@@ -5367,34 +5367,38 @@ abstract class ModulePage extends Page {
 				throw new NotAllowedAction('Property '.$this->module.'::'.$property.' not allowed for quick update');
 			}
 
-			$e = $this->element->call($this, $data);
+			$data->e = $this->element->call($this, $data);
 
-			if($e === NULL) {
+			if($data->e === NULL) {
 
 				$id = POST('id', '?int');
-				$e = ($this->module.'Lib')::getById($id);
+				$data->e = ($this->module.'Lib')::getById($id);
 
-				if($e->empty()) {
+				if($data->e->empty()) {
 					throw new \NotExistsAction($this->module.' #'.$id);
 				}
 
 			}
 
-			$e->validate(...$validate);
+			$data->e->validate(...$validate);
 
-			$this->applyElement->call($this, $data, $e);
+			$this->applyElement->call($this, $data, $data->e);
 
 			$fw = new \FailWatch();
 
 			$properties = new \Properties('update');
-			$e->build([$property], $_POST, $properties);
+			$data->e->build([$property], $_POST, $properties);
 			$fw->validate();
 
-			($this->module.'Lib')::update($e, $properties->getBuilt());
+			($this->module.'Lib')::update($data->e, $properties->getBuilt());
 
 			$fw->validate();
 
-			throw new \ReloadLayerAction();
+			if($action) {
+				$action($data);
+			} else {
+				throw new \ReloadLayerAction();
+			}
 
 		});
 
