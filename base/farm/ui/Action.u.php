@@ -211,8 +211,8 @@ class ActionUi {
 											$h .= s("Supprimer l'intervention");
 										$h .= '</a>';
 									} else {
-										$h .= '<div class="dropdown-item disabled" title="'.s("Action indispensable au bon fonctionnement de {siteName}").'">';
-											$h .= s("Supprimer l'intervention");
+										$h .= '<div class="dropdown-item disabled">';
+											$h .= \Asset::icon('lock-fill').' '.s("Supprimer l'intervention");
 										$h .= '</div>';
 									}
 

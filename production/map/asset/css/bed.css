@@ -415,15 +415,7 @@ div.bed-item-grid div.bed-item-cultivation-plant {
 }
 
 /* Create */
-div.bed-create-number {
-	background-color: var(--background);
-	padding: 1rem !important;
-	margin: 0;
-	border-radius: var(--radius);
-}
-
 #bed-create-form {
-	padding: 1rem;
 }
 
 #bed-create-form[data-number="0"] {
@@ -443,7 +435,7 @@ div.bed-create-number {
 
 .bed-create-fill {
 	display: grid;
-	grid-template-columns: auto auto auto;
+	grid-template-columns: 1fr;
 	grid-gap: 0.5rem;
 }
 

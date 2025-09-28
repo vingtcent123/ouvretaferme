@@ -558,8 +558,14 @@ div.input-group {
 	width: 100%;
 }
 
-div.input-group-lg .form-control {
-	line-height: 2;
+div.input-group-sm .form-control,
+div.input-group-sm .input-group-addon {
+	line-height: 1.2 !important;
+}
+
+div.input-group-lg .form-control,
+div.input-group-lg .input-group-addon {
+	line-height: 2 !important;
 }
 
 div.form-control-field div.input-group {
@@ -2664,6 +2670,11 @@ body[data-touch="yes"] .dropdown-item {
 	color: white;
 	text-decoration: none;
 	background-color: #fff2;
+}
+
+.dropdown-item.disabled {
+	pointer-events: none;
+	opacity: 0.5;
 }
 
 .dropdown-item-status {

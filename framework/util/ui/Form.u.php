@@ -1816,7 +1816,7 @@ class FormUi {
 	 */
 	public function fake(string $value, ?string $icon = NULL, bool $encode = TRUE): string {
 
-		$icon ??= \Asset::icon('lock-fill');
+		$icon ??= \Asset::icon('check-lg');
 
 		return $this->inputGroup(
 			$this->addon($icon).

@@ -22,10 +22,13 @@ document.delegateEventListener('click', '#bed-create-button', function(e) {
 
 		while(already < number) {
 
-			nodeNames.insertAdjacentHTML('beforeend', input);
-			nodeNames.qs('.bed-create-one:last-child h5', input => input.innerHTML += ' '+ (already + 1));
-
 			already++;
+
+			nodeNames.insertAdjacentHTML('beforeend', input);
+			nodeNames.qs('.bed-create-one:last-child input', input => {
+				input.removeAttribute('id');
+				input.value += already;
+			});
 
 		}
 
@@ -41,14 +44,17 @@ document.delegateEventListener('click', '#bed-create-button', function(e) {
 
 	}
 
+	qs('#bed-create-submit').disabled = (number === 0);
+
 });
 
 document.delegateEventListener('click', '#bed-create-auto', function(e) {
 
 	const prefix = qs('#bed-create-prefix').value;
+	const suffix = qs('#bed-create-suffix').value;
 	let start = parseInt(qs('#bed-create-start').value);
 
-	qsa('#bed-create-names input[name="names[]"]', input => input.value = prefix + start++);
+	qsa('#bed-create-names input[name="names[]"]', input => input.value = prefix + start++ + suffix);
 
 });
 
@@ -91,6 +97,13 @@ class Bed {
 		CheckboxField.all(target.firstParent('form'), target.checked, '[name^="ids[]"]');
 
 		this.changeSelection(target);
+
+	}
+
+	static startCustomizeNumbering() {
+
+		qs('#bed-create-customize-label').hide();
+		qs('#bed-create-customize').removeHide();
 
 	}
 

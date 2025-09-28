@@ -500,22 +500,23 @@ class BedUi {
 		$eBed = new Bed();
 		$eFarm = $ePlot['farm'];
 
-		$h = '<div class="util-block-help">';
-			$h .= '<h4>'.s("Ajouter des planches à {value}", '<u>'.encode($ePlot['zoneFill'] ? $ePlot['zone']['name'] : $ePlot['name']).'</u>').'</h4>';
-			$h .= '<p>';
-				$h .= s("Pour chaque planche à ajouter, précisez le nom, la longueur et la largeur travaillée.");
+		$h = '';
 
-			if($eFarm['defaultBedWidth'] === NULL) {
-				$h .= '<br/>'.s("Vous pouvez également gagner du temps en <link>indiquant les longueur et largeur de planche par défaut</link> sur votre ferme.", ['link' => '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'">']);
-			}
-
-			$h .= '</p>';
-
-		$h .= '</div>';
+		if($eFarm['defaultBedWidth'] === NULL) {
+			$h .= '<div class="util-block-help">';
+				$h .= '<p>'.s("Vous pouvez gagner du temps en indiquant les longueur et largeur de planche par défaut sur votre ferme.").'</p>';
+				$h .= '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'" class="btn btn-secondary" target="_blank">'.s("Configurer les dimensions").'</a>';
+			$h .= '</div>';
+		}
 
 		$form = new \util\FormUi();
 
 		$h .= $form->openAjax('/map/bed:doCreate', ['id' => 'bed-create', 'autocomplete' => 'off']);
+
+			$h .= $form->group(
+				s("Emplacement"),
+				$form->fake(encode($ePlot['zoneFill'] ? $ePlot['zone']['name'] : $ePlot['name']))
+			);
 
 			$beds = '<div class="input-group">';
 				$beds .= $form->number('number', attributes: ['id' => 'bed-create-number']);
@@ -524,8 +525,7 @@ class BedUi {
 
 			$h .= $form->group(
 				s("Nombre de planches à ajouter"),
-				$beds,
-				['class' => 'bed-create-number']
+				$beds
 			);
 
 			$h .= $form->hidden('plot', $ePlot);
@@ -533,26 +533,39 @@ class BedUi {
 
 			$h .= '<div id="bed-create-form" data-number="0">';
 
+			$numbering = '<div id="bed-create-customize-label" class="mb-1">';
+				$numbering .= '<a onclick="Bed.startCustomizeNumbering()" class="btn btn-outline-primary">'.\Asset::icon('plus').' '.s("Personnaliser la numérotation").'</a>';
+			$numbering .= '</div>';
+			$numbering .= '<div id="bed-create-customize" class="hide mb-1">';
+					$numbering .= '<h5>'.s("Renuméroter les planches").'</h5>';
+					$numbering .= '<div class="bed-create-fill">';
+						$numbering .= '<div class="input-group input-group-sm">';
+							$numbering .= '<span class="input-group-addon">'.s("Préfixe").'</span>';
+							$numbering .= $form->text(attributes: ['id' => 'bed-create-prefix', 'placeholder' => s("XXX-")]);
+						$numbering .= '</div>';
+						$numbering .= '<div class="input-group input-group-sm">';
+							$numbering .= '<span class="input-group-addon">'.s("Début de numérotation").'</span>';
+							$numbering .= $form->number(value: 1, attributes: ['id' => 'bed-create-start', 'onfocus' => 'this.select()']);
+						$numbering .= '</div>';
+						$numbering .= '<div class="input-group input-group-sm">';
+							$numbering .= '<span class="input-group-addon">'.s("Suffixe").'</span>';
+							$numbering .= $form->text(attributes: ['id' => 'bed-create-suffix', 'placeholder' => s("-XXX")]);
+						$numbering .= '</div>';
+						$numbering .= '<div>';
+							$numbering .= $form->button(s("Appliquer"), ['id' => 'bed-create-auto']);
+						$numbering .= '</div>';
+					$numbering .= '</div>';
+				$numbering .= '</div>';
+
 				$names = '<div class="util-block bg-background">';
-					$names .= '<h4>'.s("Aide au remplissage automatique du nom des planches").'</h4>';
-					$names .= '<div class="bed-create-fill">';
-						$names .= '<div class="input-group">';
-							$names .= '<span class="input-group-addon">'.\Asset::icon('1-circle-fill').'&nbsp;'.s("Préfixe").'</span>';
-							$names .= $form->text(attributes: ['id' => 'bed-create-prefix', 'placeholder' => s("XXX-")]);
-						$names .= '</div>';
-						$names .= '<div class="input-group">';
-							$names .= '<span class="input-group-addon">'.\Asset::icon('2-circle-fill').'&nbsp;'.s("Début de numérotation").'</span>';
-							$names .= $form->number(value: 1, attributes: ['id' => 'bed-create-start']);
-						$names .= '</div>';
-						$names .= '<div>';
-							$names .= $form->button(s("Nommer"), ['id' => 'bed-create-auto']);
-						$names .= '</div>';
-					$names .= '</div>';
+
+					$names .= $numbering;
+					$names .= '<div id="bed-create-names" data-input="'.encode('<div class="bed-create-one"><h5>'.s("Planche").'</h5>'.$form->text('names[]', '', ['placeholder' => s("Donnez un nom")]).'</div>').'"></div>';
+
 				$names .= '</div>';
-				$names .= '<div id="bed-create-names" data-input="'.encode('<div class="bed-create-one"><h5>'.s("Planche").'</h5>'.$form->text('names[]', '', ['placeholder' => s("Donnez un nom")]).'</div>').'"></div>';
 
 				$h .= $form->group(
-					s("Nom des planches"),
+					s("Numérotation des planches"),
 					$names,
 					['wrapper' => 'names']
 				);
@@ -575,7 +588,7 @@ class BedUi {
 				}
 
 				$h .= $form->group(
-					content: $form->submit(s("Ajouter"))
+					content: $form->submit(s("Ajouter"), ['id' => 'bed-create-submit', 'disabled' => TRUE])
 				);
 
 			$h .= '</div>';
