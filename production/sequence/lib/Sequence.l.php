@@ -148,7 +148,12 @@ class SequenceLib extends SequenceCrud {
 			}
 
 			// Interventions
-			$cTask = \series\TaskLib::getBySeries($eSeries, $cAction);
+			$cActionMain = \farm\ActionLib::getMainByFarm($eSeries['farm']);
+			$cActionFull = new \Collection()
+				->mergeCollection($cActionMain)
+				->mergeCollection($cAction);
+
+			$cTask = \series\TaskLib::getBySeries($eSeries, $cActionFull);
 			$cFlow = new \Collection();
 
 			foreach($cTask as $eTask) {
@@ -172,8 +177,6 @@ class SequenceLib extends SequenceCrud {
 
 
 			}
-
-			$cActionMain = \farm\ActionLib::getMainByFarm($eSeries['farm']);
 
 			foreach($cCultivation as $eCultivation) {
 
