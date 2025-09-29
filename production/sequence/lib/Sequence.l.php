@@ -148,7 +148,7 @@ class SequenceLib extends SequenceCrud {
 			}
 
 			// Interventions
-			$cTask = \series\TaskLib::getBySeries($eSeries);
+			$cTask = \series\TaskLib::getBySeries($eSeries, $cAction);
 			$cFlow = new \Collection();
 
 			foreach($cTask as $eTask) {
@@ -172,7 +172,48 @@ class SequenceLib extends SequenceCrud {
 
 
 			}
-			dd($cFlow);
+
+			$cActionMain = \farm\ActionLib::getMainByFarm($eSeries['farm']);
+
+			foreach($cCultivation as $eCultivation) {
+
+				$harvestWeeks = $eCultivation['harvestWeeks'] ?? $eCultivation['harvestWeeksExpected'] ?? [];
+
+				if($harvestWeeks === []) {
+					continue;
+				}
+
+				$eFlow = new Flow([
+					'sequence' => $eSequence,
+					'crop' => $eCultivation->empty() ? new Flow() : $cCrop[$eCultivation['id']],
+					'action' => $cActionMain[ACTION_RECOLTE]
+				]);
+
+				$minHarvestWeek = min($harvestWeeks);
+				$maxHarvestWeek = max($harvestWeeks);
+
+				if($maxHarvestWeek === $minHarvestWeek) {
+
+					$week = week_number($maxHarvestWeek);
+					$year = week_year($maxHarvestWeek) - $eSeries['season'];
+
+					$eFlow['weekOnly'] = week_number($maxHarvestWeek);
+					$eFlow['yearOnly'] = week_year($maxHarvestWeek) - $eSeries['season'];
+
+				} else {
+
+					$eFlow['weekStart'] = week_number($minHarvestWeek);
+					$eFlow['yearStart'] = week_year($minHarvestWeek) - $eSeries['season'];
+					$eFlow['weekStop'] = week_number($maxHarvestWeek);
+					$eFlow['yearStop'] = week_year($maxHarvestWeek) - $eSeries['season'];
+
+				}
+
+				$eFlow->merge($eCultivation->extracts(['farm', 'plant', 'action']));
+
+				$cFlow[] = $eFlow;
+
+			}
 
 			Sequence::model()->insert($eSequence);
 
@@ -181,6 +222,7 @@ class SequenceLib extends SequenceCrud {
 				Crop::model()->insert($eCrop);
 			}
 
+			Flow::model()->insert($cFlow);
 			Slice::model()->insert($cSliceCrop);
 
 			self::recalculate($eSequence['farm'], $eSequence);

@@ -184,7 +184,7 @@ class TaskLib extends TaskCrud {
 
 	}
 
-	public static function getBySeries(Series $eSeries) {
+	public static function getBySeries(Series $eSeries, ?\Collection $cAction = NULL) {
 
 		return Task::model()
 			->select([
@@ -207,6 +207,7 @@ class TaskLib extends TaskCrud {
 				'times' => TimesheetLib::delegateByTask()
 			])
 			->whereSeries($eSeries)
+			->whereAction('IN', $cAction, if: $cAction !== NULL)
 			->sort(new \Sql('display ASC'))
 			->getCollection();
 

@@ -271,7 +271,7 @@ new \series\SeriesPage()
 	}, validate: ['canRead', 'acceptDuplicate'])
 	->write('doCreateSequence', function($data) {
 
-		$cAction = \farm\ActionLib::getByFarm($data->eFarm, id: POST('actions', 'array'));
+		$cAction = \farm\ActionLib::getByFarm($data->eFarm, id: POST('actions', 'array'), index: 'id');
 
 		$fw = new FailWatch();
 
