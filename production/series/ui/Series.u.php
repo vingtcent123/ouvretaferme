@@ -1196,7 +1196,7 @@ class SeriesUi {
 			}
 
 			$h .= $form->group(
-				s("Productions"),
+				p("Production", "Productions", $cCultivation->count()),
 				$cultivations
 			);
 
