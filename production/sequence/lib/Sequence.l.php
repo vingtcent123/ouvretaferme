@@ -194,9 +194,6 @@ class SequenceLib extends SequenceCrud {
 
 				if($maxHarvestWeek === $minHarvestWeek) {
 
-					$week = week_number($maxHarvestWeek);
-					$year = week_year($maxHarvestWeek) - $eSeries['season'];
-
 					$eFlow['weekOnly'] = week_number($maxHarvestWeek);
 					$eFlow['yearOnly'] = week_year($maxHarvestWeek) - $eSeries['season'];
 
@@ -226,6 +223,10 @@ class SequenceLib extends SequenceCrud {
 			Slice::model()->insert($cSliceCrop);
 
 			self::recalculate($eSequence['farm'], $eSequence);
+
+			\series\Series::model()->update($eSeries, [
+				'sequence' => $eSequence
+			]);
 
 		Sequence::model()->commit();
 
