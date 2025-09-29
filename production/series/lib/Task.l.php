@@ -170,6 +170,20 @@ class TaskLib extends TaskCrud {
 
 	}
 
+	public static function getMetadataForSequence(Series $eSeries): \Collection {
+
+		return Task::model()
+			->select([
+				'action' => ['name', 'fqn'],
+				'week' => new \Sql('MIN(IF(doneWeek IS NOT NULL, doneWeek, plannedWeek))')
+			])
+			->whereSeries($eSeries)
+			->whereAction('NOT IN', \farm\FarmSetting::$mainActions)
+			->group('action')
+			->getCollection(index: 'action');
+
+	}
+
 	public static function getBySeries(Series $eSeries) {
 
 		return Task::model()

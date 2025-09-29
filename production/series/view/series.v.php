@@ -22,6 +22,10 @@ new AdaptativeView('duplicate', function($data, PanelTemplate $t) {
 	return new \series\SeriesUi()->duplicate($data->eFarm, $data->c, $data->cTaskMetadata, $data->hasPlaces);
 });
 
+new AdaptativeView('createSequence', function($data, PanelTemplate $t) {
+	return new \series\SeriesUi()->createSequence($data->e, $data->cCultivation, $data->cTaskMetadata);
+});
+
 new AdaptativeView('updateSeasonCollection', function($data, PanelTemplate $t) {
 	return new \series\SeriesUi()->updateSeason($data->eFarm, $data->c);
 });

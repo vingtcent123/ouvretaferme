@@ -250,12 +250,16 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 
 	}
 
-	body[data-template~="farm"] {
-		display: grid;
-		grid-template:
-			"nav main" var(--nav-height)
-			"header main" auto
-			"header footer" auto / var(--nav-width) 1fr;
+	@media screen {
+
+		body[data-template~="farm"] {
+			display: grid;
+			grid-template:
+				"nav main" var(--nav-height)
+				"header main" auto
+				"header footer" auto / var(--nav-width) 1fr;
+		}
+
 	}
 
 	body[data-template~="farm"] > header {
@@ -267,19 +271,27 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		z-index: 100;
 	}
 
-	body[data-template~="farm"] > main  {
-		grid-area: main;
+	@media screen {
+
+		body[data-template~="farm"] > main  {
+			grid-area: main;
+		}
+
 	}
 
 	body[data-template~="farm"] > main .container.farm-template-main-title {
 		height: var(--nav-height);
 	}
 
-	body[data-touch="no"][data-template~="farm"] > main .container.farm-template-main-title {
-		position: sticky;
-		left: var(--nav-width);
-		width: calc(var(--screen-width) - var(--nav-width));
-		z-index: 99;
+	@media screen {
+
+		body[data-touch="no"][data-template~="farm"] > main .container.farm-template-main-title {
+			position: sticky;
+			left: var(--nav-width);
+			width: calc(var(--screen-width) - var(--nav-width));
+			z-index: 99;
+		}
+
 	}
 
 	body[data-template~="farm"] > main .container.farm-template-main-container {

@@ -17,9 +17,8 @@ class SliceLib extends SliceCrud {
 	public static function getByCultivation(Cultivation $eCultivation): \Collection {
 
 		return Slice::model()
-			->select([
-				'variety' => ['name'],
-				'partPercent', 'partArea', 'partLength', 'partPlant', 'partTray'
+			->select(SliceElement::getSelection() + [
+				'variety' => ['name']
 			])
 			->whereCultivation($eCultivation)
 			->getCollection();

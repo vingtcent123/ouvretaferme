@@ -259,6 +259,34 @@ new \series\SeriesPage()
 		throw new ReloadAction();
 
 	}, method: 'post')
+	->read('createSequence', function($data) {
+
+		\farm\ActionLib::getMainByFarm($data->eFarm);
+
+		$data->cTaskMetadata = \series\TaskLib::getMetadataForSequence($data->e);
+		$data->cCultivation = \series\CultivationLib::getBySeries($data->e);
+
+		throw new ViewAction($data);
+
+	}, validate: ['canRead', 'acceptDuplicate'])
+	->write('doCreateSequence', function($data) {
+
+		$cAction = \farm\ActionLib::getByFarm($data->eFarm, id: POST('actions', 'array'));
+
+		$fw = new FailWatch();
+
+		$eSequence = new \sequence\Sequence();
+		$eSequence->build(['name'], $_POST);
+
+		$fw->validate();
+
+		\sequence\SequenceLib::createFromSeries($eSequence, $data->e, $cAction);
+
+		$fw->validate();
+
+		throw new RedirectAction(\sequence\SequenceUi::url($eSequence).'?success=sequence:Sequence::createdFromSeries');
+
+	}, validate: ['canRead', 'acceptDuplicate'])
 	->update(function($data) {
 
 		$cCultivation = \series\CultivationLib::getBySeries($data->e);

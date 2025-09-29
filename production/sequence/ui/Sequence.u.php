@@ -841,8 +841,8 @@ class SequenceUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Sequence::model()->describer($property, [
-			'name' => s("Nom de l'itinéraire"),
-			'description' => s("Description de l'itinéraire"),
+			'name' => s("Nom de l'itinéraire technique"),
+			'description' => s("Description de l'itinéraire technique"),
 			'author' => s("Auteur"),
 			'farm' => s("Ferme"),
 			'plantsList' => s("Espèces"),

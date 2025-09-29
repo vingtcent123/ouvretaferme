@@ -61,6 +61,7 @@ class AlertUi {
 		return match($fqn) {
 
 			'Sequence::created' => s("L'itinéraire technique a bien été créé."),
+			'Sequence::createdFromSeries' => s("L'itinéraire technique a bien été créé à partir de la série."),
 			'Sequence::updated' => s("L'itinéraire technique a bien été mis à jour."),
 			'Sequence::duplicated' => s("L'itinéraire technique a bien été dupliqué ici !"),
 			'Sequence::deleted' => s("L'itinéraire technique a bien été supprimé."),

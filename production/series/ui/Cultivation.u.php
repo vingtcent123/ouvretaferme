@@ -1857,11 +1857,7 @@ class CultivationUi {
 		$h .= '<div class="crop-items">';
 
 		foreach($cCultivation as $eCultivation) {
-
-			$h .= '<div class="crop-item">';
-				$h .= $this->getOne($eSeries, $eCultivation, $cTask, $cActionMain);
-			$h .= '</div>';
-
+			$h .= $this->getOne($eSeries, $eCultivation, $cTask, $cActionMain);
 		}
 
 		$h .= '</div>';
@@ -1877,70 +1873,73 @@ class CultivationUi {
 
 		$ePlant = $eCultivation['plant'];
 
-		$h = '<div class="crop-item-header">';
+		$h = '<div class="crop-item">';
+			$h .= '<div class="crop-item-header">';
 
-			$h .= '<div class="crop-item-title">';
-				$h .= \plant\PlantUi::getVignette($ePlant, '3rem').' ';
-				$h .= '<h2>';
-					$h .= \plant\PlantUi::link($ePlant);
-					$h .= \sequence\CropUi::start($eCultivation, $cActionMain, fontSize: '0.7em');
-				$h .= '</h2>';
+				$h .= '<div class="crop-item-title">';
+					$h .= \plant\PlantUi::getVignette($ePlant, '3rem').' ';
+					$h .= '<h2>';
+						$h .= \plant\PlantUi::link($ePlant);
+						$h .= \sequence\CropUi::start($eCultivation, $cActionMain, fontSize: '0.7em');
+					$h .= '</h2>';
 
-				if(
-					$eSeries->canWrite() and
-					$eSeries['status'] === Series::OPEN
-				) {
+					if(
+						$eSeries->canWrite() and
+						$eSeries['status'] === Series::OPEN
+					) {
 
-					$h .= '<div>';
-						$h .= '<a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle" title="'.s("Ajouter une intervention").'">'.\Asset::icon('calendar-plus').'</a>';
-						$h .= '<div class="dropdown-list">';
-							$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
-							$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::TODO.'" class="dropdown-item">'.s("Planifier une future intervention").'</a>';
-							$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Ajouter une intervention déjà réalisée").'</a>';
-							$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&doneWeek='.currentWeek().'&action='.$cActionMain[ACTION_RECOLTE]['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Saisir une récolte").'</a>';
+						$h .= '<div>';
+							$h .= '<a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle" title="'.s("Ajouter une intervention").'">'.\Asset::icon('calendar-plus').'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
+								$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::TODO.'" class="dropdown-item">'.s("Planifier une future intervention").'</a>';
+								$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Ajouter une intervention déjà réalisée").'</a>';
+								$h .= '<a href="/series/task:createFromSeries?farm='.$eSeries['farm']['id'].'&series='.$eSeries['id'].'&cultivation='.$eCultivation['id'].'&doneWeek='.currentWeek().'&action='.$cActionMain[ACTION_RECOLTE]['id'].'&status='.Task::DONE.'" class="dropdown-item">'.s("Saisir une récolte").'</a>';
+							$h .= '</div>';
+							$h .= ' <a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
+								$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="dropdown-item">'.s("Modifier la production").'</a>';
+								if($eSeries['plants'] > 1) {
+									$h .= '<div class="dropdown-divider"></div>';
+									$h .= '<a data-ajax="/series/cultivation:doDelete" post-id="'.$eCultivation['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la production de la série ?").'">'.s("Supprimer la production").'</a>';
+								}
+							$h .= '</div>';
 						$h .= '</div>';
-						$h .= ' <a data-dropdown="bottom-end" class="btn btn-color-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
-						$h .= '<div class="dropdown-list">';
-							$h .= '<div class="dropdown-title">'.encode($ePlant['name']).'</div>';
-							$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="dropdown-item">'.s("Modifier la production").'</a>';
-							if($eSeries['plants'] > 1) {
-								$h .= '<div class="dropdown-divider"></div>';
-								$h .= '<a data-ajax="/series/cultivation:doDelete" post-id="'.$eCultivation['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la production de la série ?").'">'.s("Supprimer la production").'</a>';
-							}
-						$h .= '</div>';
+					}
+
+				$h .= '</div>';
+
+				$h .= new \sequence\CropUi()->getVarieties($eCultivation, $eCultivation['cSlice']);
+
+			$h .= '</div>';
+
+			$h .= '<div class="crop-item-presentation">';
+
+				$filled = 0;
+				$presentation = $this->getPresentation($eSeries, $eCultivation, $filled);
+
+				if($filled > 0) {
+					$h .= $presentation;
+				} else {
+					$h .= '<div class="text-center">';
+						$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="btn mt-1 mb-1 btn-outline-primary">'.s("Configurer maintenant").'</a>';
 					$h .= '</div>';
 				}
 
 			$h .= '</div>';
 
-			$h .= new \sequence\CropUi()->getVarieties($eCultivation, $eCultivation['cSlice']);
+			$infos = $this->getVarietiesInfo($eCultivation, $cTask);
 
-		$h .= '</div>';
-
-		$h .= '<div class="crop-item-presentation">';
-
-			$filled = 0;
-			$presentation = $this->getPresentation($eSeries, $eCultivation, $filled);
-
-			if($filled > 0) {
-				$h .= $presentation;
-			} else {
-				$h .= '<div class="text-center">';
-					$h .= '<a href="/series/cultivation:update?id='.$eCultivation['id'].'" class="btn mt-1 mb-1 btn-outline-primary">'.s("Configurer maintenant").'</a>';
+			if($infos) {
+				$h .= '<div class="crop-item-info">';
+					foreach($infos as $info) {
+						$h .= '<div>'.$info.'</div>';
+					}
 				$h .= '</div>';
 			}
 
 		$h .= '</div>';
-
-		$infos = $this->getVarietiesInfo($eCultivation, $cTask);
-
-		if($infos) {
-			$h .= '<div class="crop-item-info">';
-				foreach($infos as $info) {
-					$h .= '<div>'.$info.'</div>';
-				}
-			$h .= '</div>';
-		}
 
 		return $h;
 
@@ -2094,7 +2093,7 @@ class CultivationUi {
 
 	}
 
-	protected function getPresentation(Series $eSeries, Cultivation $eCultivation, int &$filled): string {
+	public function getPresentation(Series $eSeries, Cultivation $eCultivation, int &$filled = 0, $withYields = TRUE): string {
 
 		$uiCrop = new \sequence\CropUi();
 
@@ -2103,8 +2102,11 @@ class CultivationUi {
 			$h .= $uiCrop->getPresentationYieldExpected($eSeries, $eCultivation, $filled);
 
 			$h .= $uiCrop->getPresentationDistance($eSeries, $eCultivation, $filled);
-			$h .= '<dt>'.$this->p('yield').'</dt>';
-			$h .= '<dd>'.$this->getYieldByUnits($eSeries, $eCultivation, $filled).'</dd>';
+
+			if($withYields) {
+				$h .= '<dt>'.$this->p('yield').'</dt>';
+				$h .= '<dd>'.$this->getYieldByUnits($eSeries, $eCultivation, $filled).'</dd>';
+			}
 
 			$h .= '<dt>'.s("Implantation").'</dt>';
 			$h .= '<dd>';
@@ -2121,8 +2123,10 @@ class CultivationUi {
 				}
 			$h .= '</dd>';
 
-			$h .= '<dt>'.$this->p('harvested').'</dt>';
-			$h .= '<dd>'.$this->getHarvestedByUnits($eCultivation, $filled).'</dd>';
+			if($withYields) {
+				$h .= '<dt>'.$this->p('harvested').'</dt>';
+				$h .= '<dd>'.$this->getHarvestedByUnits($eCultivation, $filled).'</dd>';
+			}
 
 			$h .= $uiCrop->getPresentationSeedlingSeeds($eSeries, $eCultivation);
 

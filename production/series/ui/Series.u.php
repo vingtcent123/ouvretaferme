@@ -118,6 +118,7 @@ class SeriesUi {
 						}
 						if($eSeries->acceptDuplicate()) {
 							$h .= '<a href="/series/series:duplicate?ids[]='.$eSeries['id'].'" class="dropdown-item">'.s("Dupliquer la série").'</a>';
+							$h .= '<a href="/series/series:createSequence?id='.$eSeries['id'].'" class="dropdown-item">'.s("Créer un itinéraire technique").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
 						}
 						$h .= '<a data-ajax="/series/series:doDelete" post-id="'.$eSeries['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette série de votre plan de culture ?").'" class="dropdown-item">'.s("Supprimer la série").'</a>';
@@ -1141,6 +1142,86 @@ class SeriesUi {
 		return new \Panel(
 			id: 'panel-series-update',
 			title: s("Modifier la saison"),
+			body: $h,
+		);
+
+	}
+
+	public function createSequence(Series $eSeries, \Collection $cCultivation, \Collection $cTaskMetadata): \Panel {
+
+		$form = new \util\FormUi();
+
+		$eSequence = new \sequence\Sequence([
+			'name' => $eSeries['name']
+		]);
+
+		$h = '<div class="util-block-help">';
+			$h .= '<p>'.s("Vous vous apprêtez à créer un itinéraire technique à partir de la série {name}.", ['name' => '<b>'.encode($eSeries['name']).'</b>']).'</p>';
+		$h .= '</div>';
+
+		$h .= $form->openAjax('/series/series:doCreateSequence');
+			$h .= $form->hidden('id', $eSeries['id']);
+			$h .= $form->dynamicGroup($eSequence, 'name');
+			
+			$cultivations = '';
+
+			foreach($cCultivation as $eCultivation) {
+
+				$ePlant = $eCultivation['plant'];
+
+				$cultivations .= '<div class="crop-item mb-1" style="border: 1px solid var(--border)">';
+					$cultivations .= '<div class="crop-item-header">';
+
+						$cultivations .= '<div class="crop-item-title">';
+							$cultivations .= \plant\PlantUi::getVignette($ePlant, '3rem').' ';
+							$cultivations .= '<h2>';
+								$cultivations .= \plant\PlantUi::link($ePlant);
+								$cultivations .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions, fontSize: '0.7em');
+							$cultivations .= '</h2>';
+
+						$cultivations .= '</div>';
+
+						$cultivations .= new \sequence\CropUi()->getVarieties($eCultivation, $eCultivation['cSlice']);
+
+					$cultivations .= '</div>';
+
+					$cultivations .= '<div class="crop-item-presentation">';
+
+						$cultivations .= new CultivationUi()->getPresentation($eSeries, $eCultivation, withYields: FALSE);
+
+					$cultivations .= '</div>';
+
+				$cultivations .= '</div>';
+
+			}
+
+			$h .= $form->group(
+				s("Productions"),
+				$cultivations
+			);
+
+			if($cTaskMetadata->notEmpty()) {
+
+				$cAction = $cTaskMetadata
+					->getColumnCollection('action')
+					->sort('name');
+
+				$h .= $form->group(
+					s("Interventions à conserver dans l'itinéraire technique").\util\FormUi::info(s("Les interventions de semis, plantation et récolte sont toujours conservées.")),
+					$form->checkboxes('actions[]', $cAction, $cAction)
+				);
+
+			}
+
+			$h .= $form->group(
+				content: $form->submit(s("Créer un itinéraire technique"), ['data-submit-waiter' => s("Création en cours..."), 'data-confirm' => s("Vous allez dupliquer un itinéraire technique à partir d'une série, voulez-vous continuer ?")])
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-series-create-sequence',
+			title: s("Créer un itinéraire technique à partir d'une série"),
 			body: $h,
 		);
 

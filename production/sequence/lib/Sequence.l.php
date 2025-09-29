@@ -79,6 +79,117 @@ class SequenceLib extends SequenceCrud {
 
 	}
 
+	public static function createFromSeries(Sequence $eSequence, \series\Series $eSeries, \Collection $cAction): void {
+
+		Sequence::model()->beginTransaction();
+
+			$eSequence['cycle'] = Sequence::ANNUAL;
+			$eSequence->merge($eSeries->extracts(['farm', 'plants', 'use', 'bedWidth', 'alleyWidth', 'mode']));
+
+			$cCultivation = \series\CultivationLib::getBySeries($eSeries);
+
+			$cCrop = new \Collection();
+			$cSliceCrop = new \Collection();
+
+			foreach($cCultivation as $eCultivation) {
+
+				$eCrop = new Crop([
+					'sequence' => $eSequence
+				]);
+				$eCrop->merge($eCultivation->extracts(['plant', 'farm', 'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'mainUnit', 'seedling', 'seedlingSeeds', 'yieldExpected']));
+
+				$cCrop[$eCultivation['id']] = $eCrop;
+
+				// Variétés
+				$cSliceCultivation = \series\SliceLib::getByCultivation($eCultivation);
+				$sliceTotal = match($eCultivation['sliceUnit']) {
+					\series\Cultivation::PERCENT => 100,
+					\series\Cultivation::AREA => $cSliceCultivation->sum('partArea'),
+					\series\Cultivation::LENGTH => $cSliceCultivation->sum('partLength'),
+					\series\Cultivation::PLANT => $cSliceCultivation->sum('partPlant'),
+					\series\Cultivation::TRAY => $cSliceCultivation->sum('partTray')
+				};
+
+				foreach($cSliceCultivation as $eSliceCultivation) {
+
+					$eSliceCrop = new Slice([
+						'sequence' => $eSequence,
+						'crop' => $eCrop,
+						'partPercent' => ($sliceTotal > 0) ? match($eCultivation['sliceUnit']) {
+
+							\series\Cultivation::PERCENT => (int)$eSliceCultivation['partPercent'],
+							\series\Cultivation::AREA => (int)($eSliceCultivation['partArea'] / $sliceTotal * 100),
+							\series\Cultivation::LENGTH => (int)($eSliceCultivation['partLength'] / $sliceTotal * 100),
+							\series\Cultivation::PLANT => (int)($eSliceCultivation['partPlant'] / $sliceTotal * 100),
+							\series\Cultivation::TRAY => (int)($eSliceCultivation['partTray'] / $sliceTotal * 100),
+
+						} : 0
+					]);
+					$eSliceCrop->merge($eSliceCultivation->extracts(['farm', 'plant', 'variety']));
+
+					$cSliceCrop[] = $eSliceCrop;
+
+				}
+
+				$distribute = 100 - $cSliceCrop->sum('partPercent');
+
+				foreach($cSliceCrop as $eSliceCrop) {
+
+					if($distribute === 0) {
+						break;
+					}
+
+					$eSliceCrop['partPercent']++;
+					$distribute--;
+
+				}
+
+
+			}
+
+			// Interventions
+			$cTask = \series\TaskLib::getBySeries($eSeries);
+			$cFlow = new \Collection();
+
+			foreach($cTask as $eTask) {
+
+				if($eTask['action']['fqn'] === ACTION_RECOLTE) {
+					continue;
+				}
+
+				$week = week_number($eTask['display']);
+				$year = week_year($eTask['display']) - $eSeries['season'];
+
+				$eFlow = new Flow([
+					'sequence' => $eSequence,
+					'crop' => $eTask['cultivation']->empty() ? new Flow() : $cCrop[$eTask['cultivation']['id']],
+					'weekOnly' => $week,
+					'yearOnly' => $year,
+				]);
+				$eFlow->merge($eTask->extracts(['farm', 'plant', 'action', 'methods', 'tools', 'description', 'fertilizer']));
+
+				$cFlow[] = $eFlow;
+
+
+			}
+			dd($cFlow);
+
+			Sequence::model()->insert($eSequence);
+
+			// Il nous faut les IDs
+			foreach($cCrop as $eCrop) {
+				Crop::model()->insert($eCrop);
+			}
+
+			Slice::model()->insert($cSliceCrop);
+
+			self::recalculate($eSequence['farm'], $eSequence);
+
+		Sequence::model()->commit();
+
+
+	}
+
 	/**
 	 * Dupliquer une série
 	 */
