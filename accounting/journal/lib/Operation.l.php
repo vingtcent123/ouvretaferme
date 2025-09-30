@@ -209,6 +209,10 @@ class OperationLib extends OperationCrud {
 			->where('m2.account = '.$eBankAccount['id'])
 			->getColumn('operation');
 
+		if($cOperation->empty()) {
+			return TRUE;
+		}
+
 		Operation::model()
 			->select(['accountLabel', 'updatedAt'])
 			// Liée aux cashflow de ce compte bancaire
