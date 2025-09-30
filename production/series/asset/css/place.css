@@ -195,7 +195,7 @@ div.place-grid-series-timeline-images div.place-grid-series-timeline-lock {
 
 div.place-grid-series-timeline-name {
 	white-space: nowrap;
-	line-height: 0.9;
+	overflow: hidden;
 }
 
 @media (max-width: 575px) {
@@ -203,14 +203,6 @@ div.place-grid-series-timeline-name {
 	div.place-grid-series-timeline-name {
 		font-size: 0.8rem;
 		letter-spacing: -0.1px;
-	}
-
-}
-
-@media (min-width: 1200px) {
-
-	div.place-grid-series-timeline-name {
-		line-height: 1;
 	}
 
 }
