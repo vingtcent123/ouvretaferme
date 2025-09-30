@@ -283,7 +283,7 @@ body[data-touch="yes"] {
 @media print {
 
 	body {
-		background: transparent;
+		background-color: white;
 	}
 
 }

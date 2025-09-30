@@ -261,7 +261,10 @@ class PlaceUi {
 			return '';
 		}
 
-		$totalHeight = (count($lines) * 2.2 + (count($lines) - 1) * 0.3 + 0.8);
+		$baseHeight = 2.2;
+		$basePadding = 0.25;
+		$baseGap = 0.3;
+		$totalHeight = (count($lines) * $baseHeight + (count($lines) - 1) * $baseGap + $basePadding * 2);
 
 		$list = '';
 		$gap = 0;
@@ -283,8 +286,8 @@ class PlaceUi {
 
 				$top = match($key) {
 
-					0 => '0.4rem',
-					default => '0.4rem + ('.$key.' * (2rem + 0.3rem))'
+					0 => $basePadding.'rem',
+					default => $basePadding.'rem + ('.$key.' * ('.$baseHeight.'rem + '.$baseGap.'rem))'
 
 				};
 
@@ -305,14 +308,14 @@ class PlaceUi {
 						$positions = [$ePlace['positionStop']];
 					} else {
 						$positions[] = $ePlace['positionStop'];
-						$top .= ' + '.((count($positions) - 1) * 0.3).'rem';
+						$top .= ' + '.((count($positions) - 1) * $baseGap).'rem';
 					}
 
-					$gap = max($gap, (count($positions) - 1) * 0.3);
+					$gap = max($gap, (count($positions) - 1) * $baseGap);
 
 				}
 
-				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'top: calc('.$top.');');
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'height: '.$baseHeight.'rem; top: calc('.$top.');');
 
 			}
 

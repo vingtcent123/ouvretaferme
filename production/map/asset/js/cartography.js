@@ -361,7 +361,7 @@ class Cartography {
 
 			case 'farm' :
 				options = {...{
-					duration: 1000,
+					duration: 200,
 					padding: 20
 				}, ...options};
 				break;
@@ -369,7 +369,7 @@ class Cartography {
 			case 'zone' :
 			case 'plot' :
 				options = {...{
-					duration: 1000,
+					duration: 200,
 					padding: 40
 				}, ...options};
 				break;

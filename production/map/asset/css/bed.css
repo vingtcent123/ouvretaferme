@@ -7,6 +7,7 @@ div.bed-item-grid {
 	display: grid;
 	align-items: baseline;
 	background-color: white;
+	break-inside: avoid;
 }
 
 div.bed-item-grid.selected,
@@ -16,12 +17,25 @@ div.bed-item-grid.selected .bed-item-bed {
 
 div.bed-item-fill {
 	display: none;
-	padding: 0.5rem 0;
+}
+
+@media print {
+
+	div.zone-wrapper {
+		page-break-after: always;
+	}
+
+	div.zone-wrapper,
+	div.plot-wrapper {
+		break-inside: avoid;
+	}
+
 }
 
 div.zone-wrapper:has(input.zone-title-fill:checked) .bed-item-fill-zone,
 div.plot-wrapper:has(input.plot-title-fill:checked) .bed-item-fill-plot {
 	display: grid;
+	padding: 0.5rem 0;
 }
 
 body:not(.bed-updating) main div.zone-wrapper:has(.place-grid-series-timeline) .bed-item-fill-zone,
@@ -216,8 +230,9 @@ div.bed-item-grid .bed-item-content {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	min-height: 3rem;
 	padding-left: 0.75rem;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
 	width: 100%;
 }
 

@@ -3025,7 +3025,7 @@ div.util-buttons > .util-button h4 {
 	}
 
 	.util-print-break-inside-avoid {
-		page-break-inside: avoid;
+		break-inside: avoid;
 	}
 
 }

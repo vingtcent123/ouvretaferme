@@ -46,7 +46,6 @@ div.place-grid-series-timeline-lines {
 
 .place-grid-series-timeline.place-grid-series-timeline-season,
 .place-grid-series-timeline.place-grid-series-timeline-not-season {
-	height: 2.2rem;
 	display: grid;
 	grid-template-columns: max-content 1fr;
 	grid-column-gap: 0.5rem;
@@ -197,7 +196,6 @@ div.place-grid-series-timeline-images div.place-grid-series-timeline-lock {
 div.place-grid-series-timeline-name {
 	white-space: nowrap;
 	line-height: 0.9;
-	overflow: hidden;
 }
 
 @media (max-width: 575px) {

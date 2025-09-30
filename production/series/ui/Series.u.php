@@ -1178,7 +1178,6 @@ class SeriesUi {
 								$cultivations .= \plant\PlantUi::link($ePlant);
 								$cultivations .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions, fontSize: '0.7em');
 							$cultivations .= '</h2>';
-
 						$cultivations .= '</div>';
 
 						$cultivations .= new \sequence\CropUi()->getVarieties($eCultivation, $eCultivation['cSlice']);
@@ -1186,9 +1185,7 @@ class SeriesUi {
 					$cultivations .= '</div>';
 
 					$cultivations .= '<div class="crop-item-presentation">';
-
 						$cultivations .= new CultivationUi()->getPresentation($eSeries, $eCultivation, withYields: FALSE);
-
 					$cultivations .= '</div>';
 
 				$cultivations .= '</div>';

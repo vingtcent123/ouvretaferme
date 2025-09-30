@@ -53,7 +53,7 @@ html {
 }
 
 tr {
-	page-break-inside: avoid;
+	break-inside: avoid;
 }
 
 .text-small {
