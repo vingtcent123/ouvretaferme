@@ -170,10 +170,6 @@ class SliceLib extends SliceCrud {
 
 		}
 
-		if($cSlice->empty()) {
-			throw new \FailException('sequence\Crop::variety.check', wrapper: $wrapper);
-		}
-
 		// Une seule variété -> les parts sont automatiquement remplies
 		foreach($cSlice as $eSlice) {
 

@@ -729,6 +729,8 @@ class CsvLib {
 		$fw = new \FailWatch();
 		$prepared = [];
 
+		$eVarietyEmpty = \plant\VarietyLib::getByFqn('unknown');
+
 		foreach($list as ['series' => $series, 'cultivations' => $cultivations]) {
 
 			$input = [
@@ -825,6 +827,16 @@ class CsvLib {
 
 				}
 
+				if($input['variety'][$position]['variety'] === []) {
+
+					$input['sliceUnit'][$position] = Cultivation::PERCENT;
+
+					$input['variety'][$position]['variety'][] = $eVarietyEmpty;
+					$input['variety'][$position]['varietyCreate'][] = NULL;
+					$input['variety'][$position]['varietyPartPercent'][] = 100;
+
+				}
+
 				// harvest
 				if($cultivation['first_harvest_date']) {
 
@@ -860,7 +872,7 @@ class CsvLib {
 				return FALSE;
 			}
 
-			$prepare[0]['status'] = ($series['finished'] === TRUE) ? Series::FINISHED : Series::OPEN;
+			$prepare[0]['status'] = ($series['finished'] === TRUE) ? Series::CLOSED : Series::OPEN;
 
 			$prepared[] = $prepare;
 
