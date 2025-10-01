@@ -98,6 +98,10 @@ class CompanyLib {
 		foreach($cAccount as $eAccount) {
 			\account\Account::model()->insert($eAccount);
 		}
+		// Set next auto-increment to 100000 (for the custom accounts)
+		$db = new Database(new \account\AccountModel()->getPackage());
+		$database = new \account\AccountModel()->getDb();
+		$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = 100004');
 	}
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {
