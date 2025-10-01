@@ -75,16 +75,21 @@ class ImportUi {
 
 			foreach(array_reverse($imports) as $import) {
 				$eImport = $import['import'];
+				$endPeriod = $this->getPeriod($import['endPeriod'], $eFinancialYearSelected);
+				$startPeriod = $this->getPeriod($import['startPeriod'], $eFinancialYearSelected);
+				if($endPeriod === $startPeriod and $eImport->empty()) {
+					continue;
+				}
 				$h .= '<div class="import-timeline import-timeline-only">';
 					$h .= '<div class="import-timeline-item">';
 						$h .= '<div class="import-timeline-circle">';
-							if($import['endPeriod'] === date('Y-m-d')) {
+							if($endPeriod === date('d/m/Y')) {
 								$h .= s("Aujourd'hui");
 							} else {
-								$h .= $this->getPeriod($import['endPeriod'], $eFinancialYearSelected);
+								$h .= $endPeriod;
 							}
 							$h .= '<br />';
-							$h .= $this->getPeriod($import['startPeriod'], $eFinancialYearSelected);
+							$h .= $startPeriod;
 						$h .= '</div>';
 					$h .= '</div>';
 					$h .= '<div class="import-timeline-action">';
