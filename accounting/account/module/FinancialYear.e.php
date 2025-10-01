@@ -13,6 +13,14 @@ class FinancialYear extends FinancialYearElement {
 		return $this->empty() or $this['accountingType'] === FinancialYear::CASH;
 	}
 
+	public function isCurrent() {
+
+		$this->expects(['startDate', 'endDate']);
+
+		return $this['startDate'] <= date('Y-m-d') and $this['endDate'] >= date('Y-m-d');
+
+	}
+
 	public function canUpdate(): bool {
 		return ($this['status'] === FinancialYearElement::OPEN);
 	}

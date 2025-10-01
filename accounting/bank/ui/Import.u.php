@@ -80,10 +80,11 @@ class ImportUi {
 				if($endPeriod === $startPeriod and $eImport->empty()) {
 					continue;
 				}
+
 				$h .= '<div class="import-timeline import-timeline-only">';
 					$h .= '<div class="import-timeline-item">';
 						$h .= '<div class="import-timeline-circle">';
-							if($endPeriod === date('d/m/Y')) {
+							if($eFinancialYearSelected->isCurrent() and substr($endPeriod, 0, 5) === date('d/m')) {
 								$h .= s("Aujourd'hui");
 							} else {
 								$h .= $endPeriod;
