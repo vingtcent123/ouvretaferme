@@ -73,7 +73,7 @@ new \bank\CashflowPage(
 
 		$data->index = POST('index');
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
-		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
+		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty, 'cOperationCashflow' => new Collection(['cashflow' => $data->eCashflow])]);
 
 		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
 		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
