@@ -414,9 +414,7 @@ class SaleLib extends SaleCrud {
 
 	public static function getForMonthlyInvoice(\farm\Farm $eFarm, string $month, ?string $type): \Collection {
 
-		$eMethodTransfer = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
-
-		return Sale::model()
+		$mSale = Sale::model()
 			->select([
 				'customer' => ['type', 'name'],
 				'hasVat', 'taxes',
@@ -431,13 +429,20 @@ class SaleLib extends SaleCrud {
 			->whereInvoice(NULL)
 			->whereOrigin('IN', [Sale::SALE, Sale::SALE_MARKET])
 			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
-			->join(Payment::model(), 'm1.id = m2.sale')
-			->where('m2.method = '.$eMethodTransfer['id'], if: $type === \payment\MethodLib::TRANSFER)
 			->or(
-				fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
-				fn() => $this->wherePaymentStatus(NULL)
+			fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
+			fn() => $this->wherePaymentStatus(NULL)
 			)
-			->group(['m1.customer', 'taxes', 'hasVat'])
+			->group(['m1.customer', 'taxes', 'hasVat']);
+
+		if($type === \payment\MethodLib::TRANSFER) {
+			$eMethodTransfer = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
+			$mSale
+				->join(Payment::model(), 'm1.id = m2.sale', 'LEFT')
+				->where('m2.method = '.$eMethodTransfer['id']);
+		}
+
+		return $mSale
 			->getCollection()
 			->sort(['m1.customer' => ['name']]);
 
