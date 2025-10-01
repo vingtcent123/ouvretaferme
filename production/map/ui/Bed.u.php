@@ -889,8 +889,9 @@ class BedUi {
 			$h .= $form->hidden('id', $eBed);
 			$h .= $form->hidden('season', $season);
 
-			$h .= '<div class="util-info">';
-				$h .= s("Choisissez la planche avec laquelle vous souhaitez échanger les séries pour la saison {value}.", $season);
+			$h .= '<div class="util-block-help">';
+				$h .= '<h3>'.s("Échanger les séries entre deux planches").'</h3>';
+				$h .= '<p>'.s("Vous pouvez choisissez une deuxième planche avec laquelle toutes les séries de la saison {value} de la première planche seront échangées.", $season).'</p>';
 			$h .= '</div>';
 
 			$bed1 = s("Zone {value}", '<b>'.encode($eBed['zone']['name'])).'</b>';
@@ -917,7 +918,7 @@ class BedUi {
 
 		return new \Panel(
 			id: 'panel-bed-swap',
-			title: s("Échanger les séries de deux planches"),
+			title: s("Échanger les séries"),
 			body: $h
 		);
 
