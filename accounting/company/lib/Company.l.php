@@ -139,9 +139,9 @@ class CompanyLib {
 			}
 			echo $class."\n";
 			try {
-				new \ModuleAdministration($class)->init();
-			} catch (\Exception $e) {
 				new \ModuleAdministration($class)->rebuild([]);
+			} catch (\Exception $e) {
+				new \ModuleAdministration($class)->init();
 			}
 
 		}
