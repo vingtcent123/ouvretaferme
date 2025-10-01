@@ -340,17 +340,20 @@ class CashflowUi {
 		}
 
 		if(
-			mb_strpos(mb_strtolower($description), 'virement') !== FALSE
-			or mb_strpos(mb_strtolower($description), 'sepa') !== FALSE
-		) {
-			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'transfer')->first();
-		}
-
-		if(
 			mb_strpos(mb_strtolower($description), 'prélèvement') !== FALSE
 			or mb_strpos(mb_strtolower($description), 'prelevement') !== FALSE
+			or mb_strpos(mb_strtolower($description), 'prlv') !== FALSE
 		) {
 			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'direct-debit')->first();
+		}
+
+		// Après les prélèvements car on capte SEPA (où y'a parfois écrit SEPA)
+		if(
+			mb_strpos(mb_strtolower($description), 'virement') !== FALSE
+			or mb_strpos(mb_strtolower($description), 'sepa') !== FALSE
+			or mb_strpos(mb_strtolower($description), 'vir') === 0
+		) {
+			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'transfer')->first();
 		}
 
 		if(
