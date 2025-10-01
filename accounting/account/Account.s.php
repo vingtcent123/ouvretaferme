@@ -11,6 +11,8 @@ class AccountSetting extends \Settings {
 		'redirectDomain' => '',
 	];
 
+	const FIRST_CUSTOM_ID = 100000;
+
 	const ASSET_CLASS = 2;
 	const GRANT_ASSET_CLASS = '13';
 	const GRANT_DEPRECIATION_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
@@ -88,7 +90,8 @@ class AccountSetting extends \Settings {
 	];
 
 	const CLASSES_BY_JOURNAL = [
-		\journal\Operation::BAN => ['5'],
+		\journal\Operation::BAN => ['512'],
+		\journal\Operation::KS => ['530'],
 		\journal\Operation::ACH => ['60', '61', '62', '63', '64', '4456'],
 		\journal\Operation::VEN => ['70', '71', '72', '74', '4452', '4457'],
 		\journal\Operation::OD => ['28', '29', '65', '68', '69'],

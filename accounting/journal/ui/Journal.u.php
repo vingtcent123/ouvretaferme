@@ -435,7 +435,8 @@ class JournalUi {
 				Operation::ACH => s("Déplacer ces écritures dans le journal d'achats ?"),
 				Operation::VEN => s("Déplacer ces écritures dans le journal de ventes ?"),
 				Operation::OD => s("Déplacer ces écritures dans le journal d'opérations diverses ?"),
-				Operation::BAN => s("Déplacer ces écritures dans le journal de trésorerie ?"),
+				Operation::BAN => s("Déplacer ces écritures dans le journal de banque ?"),
+				Operation::KS => s("Déplacer ces écritures dans le journal de caisse ?"),
 			} ;
 
 			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" post-journal-code="'.$journalCode.'"  data-confirm="'.$warningText.'" class="batch-menu-'.$journalCode.' batch-menu-item">';

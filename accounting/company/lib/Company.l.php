@@ -101,7 +101,7 @@ class CompanyLib {
 		// Set next auto-increment to 100000 (for the custom accounts)
 		$db = new Database(new \account\AccountModel()->getPackage());
 		$database = new \account\AccountModel()->getDb();
-		$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = 100004');
+		$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
 	}
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {
@@ -109,6 +109,56 @@ class CompanyLib {
     return (LIME_ENV === 'dev' ? 'dev_' : '').'farm_'.$eFarm['id'];
 
   }
+
+	public static function rebuildTables(\farm\Farm $eFarm): void {
+
+		d($eFarm['id']);
+
+		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+
+		$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eFarm);
+		\Database::addBase($databaseName, 'ouvretaferme');
+
+		$packagesToAdd = [];
+		foreach(\company\CompanyLib::$specificPackages as $package) {
+			$packagesToAdd[$package] = $databaseName;
+		}
+		$packages = \Database::getPackages();
+		\Database::setPackages(array_merge($packages, $packagesToAdd));
+
+		// Recrée les modules puis crée ou recrée toutes les tables
+		$libModule = new \dev\ModuleLib();
+		$libModule->load();
+
+		$classes = $libModule->getClasses();
+		foreach($classes as $class) {
+			$libModule->buildModule($class);
+			list($package) = explode('\\', $class);
+			if(in_array($package, \company\CompanyLib::$specificPackages) === FALSE) {
+				continue;
+			}
+			echo $class."\n";
+			try {
+				new \ModuleAdministration($class)->init();
+			} catch (\Exception $e) {
+				new \ModuleAdministration($class)->rebuild([]);
+			}
+
+		}
+
+		// Cas particulier de la table Account : s'il n'y a pas encore eu de compte custom, il faut replacer le next auto increment
+		$maxId = \account\Account::model()
+			->select(['id' => new \Sql('MAX(id)', 'int')])
+			->getValue('id');
+		if($maxId < \account\AccountSetting::FIRST_CUSTOM_ID) {
+			$db = new \Database(new \account\AccountModel()->getPackage());
+			$database = new \account\AccountModel()->getDb();
+			$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
+		}
+
+		\ModuleModel::dbClean();
+
+	}
 
 	// TODO DELETE FARM
   //new \ModuleAdministration('main\GenericAccount')->dropDatabase(CompanyLib::getDatabaseNameFromCompany($e));

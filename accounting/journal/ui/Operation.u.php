@@ -794,13 +794,15 @@ class OperationUi {
 				$d->values = [
 					OperationElement::ACH => s("Achats"),
 					OperationElement::VEN => s("Ventes"),
-					OperationElement::BAN => s("Trésorerie"),
+					OperationElement::BAN => s("Banque"),
+					OperationElement::KS => s("Caisse"),
 					OperationElement::OD => s("Opérations diverses"),
 				];
 				$d->shortValues = [
 					OperationElement::ACH => s("JA"),
 					OperationElement::VEN => s("JV"),
-					OperationElement::BAN => s("JT"),
+					OperationElement::BAN => s("JB"),
+					OperationElement::KS => s("JK"),
 					OperationElement::OD => s("JOD"),
 				];
 				$d->field = 'select';
