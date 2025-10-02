@@ -3,10 +3,16 @@ Account:
   id: serial32
   class: text8(1, null)
   description: text8(1, null) @collate(general)
+  # Utilisé si le compte a été modifié récemment
+  oldDescription: ?text8(1, null) @collate(general)
   visible: bool = TRUE
   custom: bool = FALSE
   vatAccount: ?account\Account
-  vatRate: ?decimal(5, 2) = 0.00
+  vatRate: ?decimal(5, 2)
+  # À désactiver si le compte n'est plus en vigueur
+  isActive: bool = TRUE
+  # Date de désactivation
+  deletedAt: ?date
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   INDEX: [

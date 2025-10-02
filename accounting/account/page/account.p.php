@@ -30,8 +30,7 @@ new Page(function($data) {
 	$classPrefix = REQUEST('classPrefix');
 	$accountsAlreadyUsed = POST('accountAlready', 'array', []);
 	$stock = POST('stock', '?int');
-
-
+	
 	$data->search = new Search(['classPrefix' => $classPrefix]);
 	if($stock) {
 		$eAccountStock = \account\AccountLib::getById($stock);

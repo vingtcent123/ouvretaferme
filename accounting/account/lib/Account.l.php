@@ -2,23 +2,6 @@
 namespace account;
 
 class AccountLib extends AccountCrud {
-
-	public static function getByClassWithVatAccount(string $class): Account {
-
-		$eAccount = new Account();
-
-		Account::model()
-			->select([
-         'name' => new \Sql('CONCAT(class, ". ", description)')]
-	       + Account::getSelection()
-	       + ['vatAccount' => ['class', 'vatRate', 'description']
-       ])
-			->whereClass($class)
-			->get($eAccount);
-
-		return $eAccount;
-
-	}
 	
 	public static function getByClass(string $class): Account {
 
@@ -27,6 +10,7 @@ class AccountLib extends AccountCrud {
 		Account::model()
 			->select(Account::getSelection())
 			->whereClass($class)
+			->whereIsActive(TRUE)
 			->get($eAccount);
 
 		return $eAccount;
@@ -37,6 +21,7 @@ class AccountLib extends AccountCrud {
 
 		return Account::model()
 			->whereClass($class)
+			->whereIsActive(TRUE)
 			->count();
 
 	}
@@ -50,6 +35,7 @@ class AccountLib extends AccountCrud {
 				+ ['vatAccount' => ['class', 'vatRate', 'description']]
 			)
 			->whereClass('IN', $classes)
+			->whereIsActive(TRUE)
 			->getCollection(NULL, NULL, $index);
 
 	}
@@ -77,6 +63,7 @@ class AccountLib extends AccountCrud {
 				+ ['vatAccount' => ['class', 'vatRate', 'description']]
 			)
 			->whereClass('LIKE', $prefix.'%')
+			->whereIsActive(TRUE)
 			->get($eAccount);
 
 		return $eAccount;
@@ -115,6 +102,7 @@ class AccountLib extends AccountCrud {
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
 			->where('vatAccount IS NOT NULL', if: $search->get('vatFilter') === TRUE)
+			->whereIsActive($search->get('isActive') ?? TRUE)
 			->getCollection(NULL, NULL, 'id');
 	}
 

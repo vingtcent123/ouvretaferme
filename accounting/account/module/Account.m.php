@@ -39,16 +39,19 @@ class AccountModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'class' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'oldDescription' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'visible' => ['bool', 'cast' => 'bool'],
 			'custom' => ['bool', 'cast' => 'bool'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'isActive' => ['bool', 'cast' => 'bool'],
+			'deletedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'visible', 'custom', 'vatAccount', 'vatRate', 'createdAt', 'createdBy'
+			'id', 'class', 'description', 'oldDescription', 'visible', 'custom', 'vatAccount', 'vatRate', 'isActive', 'deletedAt', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -73,8 +76,8 @@ class AccountModel extends \ModuleModel {
 			case 'custom' :
 				return FALSE;
 
-			case 'vatRate' :
-				return 0;
+			case 'isActive' :
+				return TRUE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -109,6 +112,10 @@ class AccountModel extends \ModuleModel {
 		return $this->where('description', ...$data);
 	}
 
+	public function whereOldDescription(...$data): AccountModel {
+		return $this->where('oldDescription', ...$data);
+	}
+
 	public function whereVisible(...$data): AccountModel {
 		return $this->where('visible', ...$data);
 	}
@@ -123,6 +130,14 @@ class AccountModel extends \ModuleModel {
 
 	public function whereVatRate(...$data): AccountModel {
 		return $this->where('vatRate', ...$data);
+	}
+
+	public function whereIsActive(...$data): AccountModel {
+		return $this->where('isActive', ...$data);
+	}
+
+	public function whereDeletedAt(...$data): AccountModel {
+		return $this->where('deletedAt', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): AccountModel {

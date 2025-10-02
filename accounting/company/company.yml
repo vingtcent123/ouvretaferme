@@ -4,7 +4,9 @@ GenericAccount:
   description: text8(1, null) @collate(general)
   visible: bool = TRUE
   vatAccount: ?account\Account
-  vatRate: ?decimal(5, 2) = 0.00
+  vatRate: ?decimal(5, 2)
+  isActive: bool = TRUE
+  deletedAt: ?date
   type: enum(AGRICULTURAL, ASSOCIATION)
   INDEX: [
     ["id"],

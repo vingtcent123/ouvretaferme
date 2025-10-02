@@ -45,11 +45,13 @@ class GenericAccountModel extends \ModuleModel {
 			'visible' => ['bool', 'cast' => 'bool'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'isActive' => ['bool', 'cast' => 'bool'],
+			'deletedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\company\GenericAccount::AGRICULTURAL, \company\GenericAccount::ASSOCIATION], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'type'
+			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'isActive', 'deletedAt', 'type'
 		]);
 
 		$this->propertiesToModule += [
@@ -70,8 +72,8 @@ class GenericAccountModel extends \ModuleModel {
 			case 'visible' :
 				return TRUE;
 
-			case 'vatRate' :
-				return 0;
+			case 'isActive' :
+				return TRUE;
 
 			default :
 				return parent::getDefaultValue($property);
@@ -124,6 +126,14 @@ class GenericAccountModel extends \ModuleModel {
 
 	public function whereVatRate(...$data): GenericAccountModel {
 		return $this->where('vatRate', ...$data);
+	}
+
+	public function whereIsActive(...$data): GenericAccountModel {
+		return $this->where('isActive', ...$data);
+	}
+
+	public function whereDeletedAt(...$data): GenericAccountModel {
+		return $this->where('deletedAt', ...$data);
 	}
 
 	public function whereType(...$data): GenericAccountModel {
