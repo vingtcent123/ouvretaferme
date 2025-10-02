@@ -596,7 +596,9 @@ class AnalyzeUi {
 							$h .= \util\TextUi::money($eItem['turnover'], precision: 0);
 						$h .= '</td>';
 						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eItem['turnover'] / $turnover * 100, 0);
+							if($turnover > 0) {
+								$h .= \util\TextUi::pc($eItem['turnover'] / $turnover * 100, 0);
+							}
 						$h .= '</td>';
 
 						switch($monthly) {
@@ -626,7 +628,9 @@ class AnalyzeUi {
 										$h .= \util\TextUi::money($eItemBefore['turnover'], precision: 0);
 									$h .= '</td>';
 									$h .= '<td class="util-annotation">';
-										$h .= \util\TextUi::pc($eItemBefore['turnover'] / $turnoverBefore * 100, 0);
+										if($turnoverBefore > 0) {
+											$h .= \util\TextUi::pc($eItemBefore['turnover'] / $turnoverBefore * 100, 0);
+										}
 									$h .= '</td>';
 								} else {
 									$h .= '<td class="text-end">-</td>';

@@ -39,7 +39,6 @@ class AlertUi {
 
 			'Task::actions.check' => s("Merci de sélectionner des interventions identiques"),
 			'Task::cultivation.check' => s("Vous n'avez pas saisi de production pour cette intervention"),
-			'Task::planned.season' => s("Vous ne pouvez pas saisir d'intervention aussi éloignée dans le temps"),
 			'Task::done.interval' => s("Vous ne pouvez pas saisir d'intervention plus de cinq ans dans le passé ou le futur"),
 			'Task::planned.season' => s("Vous ne pouvez pas planifier d'intervention aussi éloignée dans le temps"),
 			'Task::planned.interval' => s("Vous ne pouvez pas planifier d'intervention plus de cinq ans dans le passé ou le futur"),

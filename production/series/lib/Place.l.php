@@ -115,12 +115,16 @@ class PlaceLib extends PlaceCrud {
 
 					$size = (int)($sizes[$eBed['id']] ?? 0);
 
+					if($size === 0) {
+						continue 2;
+					}
+
 					switch($e['use']) {
 
 						case Series::BED :
 
 							if(
-								$size <= 0 or
+								$size < 0 or
 								($eBed['length'] !== NULL and $size > $eBed['length'])
 							) {
 								Place::fail('bedsSize');
