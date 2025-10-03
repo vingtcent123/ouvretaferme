@@ -254,6 +254,7 @@ class OperationUi {
 				'id' => 'journal-operation-create',
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
+				'data-has-vat' => (int)$eFinancialYear['hasVat'],
 			],
 		);
 
@@ -375,8 +376,12 @@ class OperationUi {
 			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('duration')->label.' '.\util\FormUi::asterisk().'</div>';
 
 			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('vatRate')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header" data-wrapper="vatValue">'.self::p('vatValue')->label.' '.\util\FormUi::asterisk().'</div>';
+
+			if($eFinancialYear['hasVat']) {
+
+				$h .= '<div class="operation-create-header">'.self::p('vatRate')->label.' '.\util\FormUi::asterisk().'</div>';
+				$h .= '<div class="operation-create-header" data-wrapper="vatValue">'.self::p('vatValue')->label.' '.\util\FormUi::asterisk().'</div>';
+			}
 
 			if($isFromCashflow === FALSE) {
 
@@ -603,55 +608,58 @@ class OperationUi {
 					]);
 			$h .= '</div>';
 
-			$vatRateDefault = 0;
-			if($eOperation['account']->exists() === TRUE) {
-				if($eOperation['account']['vatRate'] !== NULL) {
-					$vatRateDefault = $eOperation['account']['vatRate'];
-				} else if($eOperation['account']['vatAccount']->exists() === TRUE) {
-					$vatRateDefault = $eOperation['account']['vatAccount']['vatRate'];
+			if($eFinancialYear['hasVat']) {
+
+				$vatRateDefault = 0;
+				if($eOperation['account']->exists() === TRUE) {
+					if($eOperation['account']['vatRate'] !== NULL) {
+						$vatRateDefault = $eOperation['account']['vatRate'];
+					} else if($eOperation['account']['vatAccount']->exists() === TRUE) {
+						$vatRateDefault = $eOperation['account']['vatAccount']['vatRate'];
+					}
 				}
-			}
-			$vatAmountDefault = $vatRateDefault !== 0 ? round(($defaultValues['amount'] ?? 0) * $vatRateDefault / 100,2) : 0;
+				$vatAmountDefault = $vatRateDefault !== 0 ? round(($defaultValues['amount'] ?? 0) * $vatRateDefault / 100,2) : 0;
 
-			$eOperation['vatRate'.$suffix] = '';
+				$eOperation['vatRate'.$suffix] = '';
 
-			$h .= '<div data-wrapper="vatRate'.$suffix.'">';
-				$h .= $form->inputGroup(
-					$form->addon(self::getAmountButtonIcons('vatRate', $index))
-					.$form->number(
-						'vatRate'.$suffix,
-						$vatRateDefault,
-						['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1],
-					)
-					.$form->addon('% '));
-					$h .= '<div class="warning hide mt-1" data-vat-rate-warning data-index="'.$index.'">';
+				$h .= '<div data-wrapper="vatRate'.$suffix.'">';
+					$h .= $form->inputGroup(
+						$form->addon(self::getAmountButtonIcons('vatRate', $index))
+						.$form->number(
+							'vatRate'.$suffix,
+							$vatRateDefault,
+							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1],
+						)
+						.$form->addon('% '));
+						$h .= '<div class="warning hide mt-1" data-vat-rate-warning data-index="'.$index.'">';
+							$h .= s(
+								"Attention : Habituellement, pour la classe <b>{class}</b> le taux de <b>{vatRate}%</b> est utilisé. Souhaitez-vous <link>l'utiliser</link> ?",
+								[
+									'vatRate' => '<span data-vat-rate-default data-index="'.$index.'"></span>',
+									'class' => '<span data-vat-rate-class data-index="'.$index.'"></span>',
+									'link' => '<a data-vat-rate-link data-index="'.$index.'">',
+								],
+							);
+						$h .= '</div>';
+				$h .= '</div>';
+
+				$h .= '<div data-wrapper="vatValue'.$suffix.'">';
+					$h .= $form->dynamicField($eOperation, 'vatValue'.$suffix, function($d) use($vatAmountDefault, $index) {
+						$d->default = $vatAmountDefault ?? '';
+						$d->attributes['min'] = 0;
+						$d->attributes['step'] = 0.01;
+						$d->attributes['data-field'] = 'vatValue';
+						$d->attributes['data-index'] = $index;
+						$d->prepend = OperationUi::getAmountButtonIcons('vatValue', $index);
+					});
+					$h .= '<div class="warning hide mt-1" data-vat-warning data-index="'.$index.'">';
 						$h .= s(
-							"Attention : Habituellement, pour la classe <b>{class}</b> le taux de <b>{vatRate}%</b> est utilisé. Souhaitez-vous <link>l'utiliser</link> ?",
-							[
-								'vatRate' => '<span data-vat-rate-default data-index="'.$index.'"></span>',
-								'class' => '<span data-vat-rate-class data-index="'.$index.'"></span>',
-								'link' => '<a data-vat-rate-link data-index="'.$index.'">',
-							],
+							"Il y a une incohérence de calcul de TVA, souhaitiez-vous plutôt indiquer {amountVAT} ?",
+							['amountVAT' => '<a onclick="Operation.updateVatValue('.$index.')" data-vat-warning-value data-index="'.$index.'"></a>'],
 						);
 					$h .= '</div>';
-			$h .= '</div>';
-
-			$h .= '<div data-wrapper="vatValue'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'vatValue'.$suffix, function($d) use($vatAmountDefault, $index) {
-					$d->default = $vatAmountDefault ?? '';
-					$d->attributes['min'] = 0;
-					$d->attributes['step'] = 0.01;
-					$d->attributes['data-field'] = 'vatValue';
-					$d->attributes['data-index'] = $index;
-					$d->prepend = OperationUi::getAmountButtonIcons('vatValue', $index);
-				});
-				$h .= '<div class="warning hide mt-1" data-vat-warning data-index="'.$index.'">';
-					$h .= s(
-						"Il y a une incohérence de calcul de TVA, souhaitiez-vous plutôt indiquer {amountVAT} ?",
-						['amountVAT' => '<a onclick="Operation.updateVatValue('.$index.')" data-vat-warning-value data-index="'.$index.'"></a>'],
-					);
 				$h .= '</div>';
-			$h .= '</div>';
+			}
 
 			if($isFromCashflow === FALSE) {
 
@@ -676,7 +684,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateValidate(): string {
+	private static function getCreateValidate(bool $hasVat): string {
 
 		$h = '<div class="operation-create operation-create-validation">';
 
@@ -705,8 +713,11 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
 
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>';
+
+			if($hasVat) {
+				$h .= '<div class="cashflow-create-operation-validate"></div>';
+				$h .= '<div class="cashflow-create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>';
+			}
 
 		$h .= '</div>';
 
@@ -734,7 +745,7 @@ class OperationUi {
 			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData, $cPaymentMethod);
 
 			if($isFromCashflow === TRUE) {
-				$h .= self::getCreateValidate();
+				$h .= self::getCreateValidate($eFinancialYear['hasVat']);
 			}
 
 		$h .= '</div>';

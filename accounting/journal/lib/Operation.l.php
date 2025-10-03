@@ -407,6 +407,10 @@ class OperationLib extends OperationCrud {
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
 		];
+		if($eFinancialYear['hasVat']) {
+			$properties[] = 'vat';
+		}
+
 
 		$eOperationDefault['thirdParty'] = NULL;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
@@ -518,8 +522,9 @@ class OperationLib extends OperationCrud {
 			$eAccount = $cAccounts[$account] ?? new \account\Account();
 			$vatValue = var_filter($vatValues[$index] ?? NULL, 'float', 0.0);
 			$hasVatAccount = (
-				$eAccount->exists() === TRUE
-				and $eAccount['vatAccount']->exists() === TRUE
+				$eFinancialYear['hasVat']
+				and $eAccount->exists()
+				and $eAccount['vatAccount']->exists()
 				and (
 					$vatValue !== 0.0
 					// Cas où on enregistre quand même une entrée de TVA à 0% : Si c'est explicitement indiqué dans eAccount.

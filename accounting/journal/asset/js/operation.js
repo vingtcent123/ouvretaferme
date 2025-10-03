@@ -118,6 +118,10 @@ document.delegateEventListener('input', '[data-field="document"]', function(e) {
 
 class Operation {
 
+    static hasVat() {
+        return parseBool(qs('#journal-operation-create').dataset.hasVat);
+    }
+
     static highlight(selector) {
         selector.indexOf('linked') > 0
             ? qs('[name-linked="' + selector + '"]').classList.add('row-highlight')
@@ -229,6 +233,11 @@ class Operation {
 
     static refreshVAT(accountDetail) {
 
+        // Non soumis à la TVA
+        if(Operation.hasVat() === false) {
+            return;
+        }
+
         const index = parseInt(accountDetail.input.getAttribute('data-index'));
 
         // Si le taux de TVA était à 0, on va re-calculer le montant HT pour éviter d'avoir à le ressaisir.
@@ -265,6 +274,10 @@ class Operation {
     }
 
     static recalculateVAT(index) {
+
+        if(Operation.hasVat() === false) {
+            return;
+        }
 
         const targetAmount = qs('[name="amount[' + index + ']"');
         const amount = CalculationField.getValue(targetAmount);
@@ -314,6 +327,10 @@ class Operation {
     }
 
     static checkVatConsistency(index) {
+
+        if(Operation.hasVat() === false) {
+            return;
+        }
 
         if(typeof Cashflow !== 'undefined') {
             Cashflow.checkValidationValues();
@@ -386,42 +403,54 @@ class Operation {
             Operation.setIsWrittenAmount('amountIncludingVAT', index);
         }
 
-        const vatRate = qs('[name="vatRate[' + index + ']"]').valueAsNumber;
-        const targetVatValue = qs('[name="vatValue[' + index + ']"');
-        const vatValue = CalculationField.getValue(targetVatValue);
+        // Pas de TVA
+        if(Operation.hasVat() === false) {
 
-        if(isAmountLocked && isNaN(amountIncludingVAT) === false) {
-            let newAmount = null;
-            // Cet ordre doit être conservé et non factorisé (pour ne pas avoir à "deviner" quel champ de TVA utiliser : taux ou valeur)
-            if(lastFieldFilled === 'vatValue') {
-                newAmount = round(amountIncludingVAT - vatValue);
-            } else if(lastFieldFilled === 'vatRate') {
-                newAmount = round(amountIncludingVAT / (1 + vatRate / 100));
-            } else if(isNaN(vatValue) === false) {
-                newAmount = round(amountIncludingVAT - vatValue);
-            } else if(isNaN(vatRate) === false) {
-                newAmount = round(amountIncludingVAT / (1 + vatRate / 100));
+            if(isNaN(targetAmount) === false) {
+                CalculationField.setValue(targetAmountIncludingVAT, amount);
+            } else {
+                CalculationField.setValue(targetAmount, amountIncludingVAT);
             }
-            if(newAmount !== null) {
-                CalculationField.setValue(targetAmount, newAmount);
+
+        } else {
+
+            const vatRate = qs('[name="vatRate[' + index + ']"]')?.valueAsNumber || 0;
+            const targetVatValue = qs('[name="vatValue[' + index + ']"');
+            const vatValue = CalculationField.getValue(targetVatValue);
+
+            if(isAmountLocked && isNaN(amountIncludingVAT) === false) {
+                let newAmount = null;
+                // Cet ordre doit être conservé et non factorisé (pour ne pas avoir à "deviner" quel champ de TVA utiliser : taux ou valeur)
+                if(lastFieldFilled === 'vatValue') {
+                    newAmount = round(amountIncludingVAT - vatValue);
+                } else if(lastFieldFilled === 'vatRate') {
+                    newAmount = round(amountIncludingVAT / (1 + vatRate / 100));
+                } else if(isNaN(vatValue) === false) {
+                    newAmount = round(amountIncludingVAT - vatValue);
+                } else if(isNaN(vatRate) === false) {
+                    newAmount = round(amountIncludingVAT / (1 + vatRate / 100));
+                }
+                if(newAmount !== null) {
+                    CalculationField.setValue(targetAmount, newAmount);
+                }
+            } else if(isAmountIncludingVATLocked && isNaN(amount) === false) {
+                let newAmountIncludingVAT = null;
+                // Cet ordre doit être conservé et non factorisé (pour ne pas avoir à "deviner" quel champ de TVA utiliser : taux ou valeur)
+                if(lastFieldFilled === 'vatValue') {
+                    newAmountIncludingVAT = round(amount + vatValue);
+                } else if(lastFieldFilled === 'vatRate') {
+                    newAmountIncludingVAT = round(amount * (1 + vatRate / 100));
+                } else if(isNaN(vatValue) === false) {
+                    newAmountIncludingVAT = round(amount + vatValue);
+                } else if(isNaN(vatRate) === false) {
+                    newAmountIncludingVAT = round(amount * (1 + vatRate / 100));
+                }
+                if(newAmountIncludingVAT !== null) {
+                    CalculationField.setValue(targetAmountIncludingVAT, newAmountIncludingVAT);
+                }
             }
-        } else if(isAmountIncludingVATLocked && isNaN(amount) === false) {
-            let newAmountIncludingVAT = null;
-            // Cet ordre doit être conservé et non factorisé (pour ne pas avoir à "deviner" quel champ de TVA utiliser : taux ou valeur)
-            if(lastFieldFilled === 'vatValue') {
-                newAmountIncludingVAT = round(amount + vatValue);
-            } else if(lastFieldFilled === 'vatRate') {
-                newAmountIncludingVAT = round(amount * (1 + vatRate / 100));
-            } else if(isNaN(vatValue) === false) {
-                newAmountIncludingVAT = round(amount + vatValue);
-            } else if(isNaN(vatRate) === false) {
-                newAmountIncludingVAT = round(amount * (1 + vatRate / 100));
-            }
-            if(newAmountIncludingVAT !== null) {
-                CalculationField.setValue(targetAmountIncludingVAT, newAmountIncludingVAT);
-            }
+
         }
-
     }
 
     static resetAmount(type, index) {
