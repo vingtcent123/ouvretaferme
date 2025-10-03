@@ -24,6 +24,8 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
+		$siren = mb_substr($eInvoice['farm']['configuration']['invoiceVat'], 4);
+
 		$xml = '<?xml version="1.0" encoding="utf-8"?>
 <rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
 xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
@@ -41,6 +43,18 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<ram:IssueDateTime><!--BT-2-00-->
 			<udt:DateTimeString format="102">'.date('Ymd', strtotime($eInvoice['date'])).'</udt:DateTimeString>
 		</ram:IssueDateTime>
+		<ram:IncludedNote><!--BG-1-->
+			<ram:Content></ram:Content><!--BT-22-->
+			<ram:SubjectCode>AAB</ram:SubjectCode><!--BT-21 AAB = escompte-->
+		</ram:IncludedNote>
+		<ram:IncludedNote><!--BG-1-->
+			<ram:Content></ram:Content><!--BT-22-->
+			<ram:SubjectCode>PMT</ram:SubjectCode><!--BT-21 PMT = frais de recouvrement-->
+		</ram:IncludedNote>
+		<ram:IncludedNote><!--BG-1-->
+			<ram:Content></ram:Content><!--BT-22-->
+			<ram:SubjectCode>PMD</ram:SubjectCode><!--BT-21 PMD = pénalité de retard-->
+		</ram:IncludedNote>
 	</rsm:ExchangedDocument>
 	<rsm:SupplyChainTradeTransaction><!--BG-25-00-->
 		<ram:ApplicableHeaderTradeAgreement><!--BT-10-00-->
@@ -48,11 +62,14 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
 				'.($eInvoice['farm']['configuration']['invoiceVat'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0002">'.encode($eInvoice['farm']['configuration']['invoiceVat']).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode($siren).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>' : '').'
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
 				</ram:PostalTradeAddress>
+				<ram:URIUniversalCommunication><!--BT-34-00-->
+					<ram:URIID schemeID="9957">'.encode($eInvoice['farm']['configuration']['invoiceVat']).'</ram:URIID><!--BT-34-->
+				</ram:URIUniversalCommunication>
 				'.($eInvoice['farm']['configuration']['invoiceVat'] !== NULL ? '
 				<ram:SpecifiedTaxRegistration><!--BT-31-00-->
 					<ram:ID schemeID="VA">'.encode($eInvoice['farm']['configuration']['invoiceVat']).'</ram:ID><!--BT-31-->
@@ -64,6 +81,12 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ram:SpecifiedLegalOrganization><!--BT-47-00-->
 					<ram:ID schemeID="0002">'.encode($eInvoice['customer']['siret']).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>' : '').'
+				<ram:PostalTradeAddress><!--BG-8-->
+					<ram:CountryID>FR</ram:CountryID><!--BT-55-->
+				</ram:PostalTradeAddress>
+				<ram:URIUniversalCommunication><!--BT-49-00-->
+					<ram:URIID schemeID="9957">'.encode($eInvoice['customer']['invoiceVat']).'</ram:URIID><!--BT-49-->
+				</ram:URIUniversalCommunication>
 			</ram:BuyerTradeParty>
 		</ram:ApplicableHeaderTradeAgreement>
 		<ram:ApplicableHeaderTradeDelivery/><!--BG-13-00-->
@@ -81,8 +104,13 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			';
 			}
 		$xml .= '
+			<ram:SpecifiedTradePaymentTerms><!--BT-20 : Payment terms-->
+				<ram:Description>
+					'.encode($eInvoice['farm']['configuration']['invoicePaymentCondition'] ?? '').'
+				</ram:Description>
+			</ram:SpecifiedTradePaymentTerms>
 			<ram:SpecifiedTradeSettlementHeaderMonetarySummation><!--BG-22-->
-        <ram:LineTotalAmount>'.$eInvoice['priceExcludingVat'].'</ram:LineTotalAmount>
+        <ram:LineTotalAmount>'.$eInvoice['priceExcludingVat'].'</ram:LineTotalAmount><!--BT-106-->
 				<ram:TaxBasisTotalAmount>'.$eInvoice['priceExcludingVat'].'</ram:TaxBasisTotalAmount><!--BT-109-->
 				<ram:TaxTotalAmount currencyID="EUR">'.$eInvoice['vat'].'</ram:TaxTotalAmount><!--BT-110-->
 				<ram:GrandTotalAmount>'.$eInvoice['priceIncludingVat'].'</ram:GrandTotalAmount><!--BT-112-->
