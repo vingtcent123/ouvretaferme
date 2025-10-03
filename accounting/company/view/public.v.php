@@ -1,4 +1,27 @@
 <?php
+new AdaptativeView('inactive', function($data, FarmTemplate $t) {
+
+	$t->title = s("Comptabilité");
+	$t->nav = 'settings-accounting';
+
+	$h = '<div class="util-action">';
+
+		$h .= '<h1>';
+			$h .= s("Accès au module de comptabilité");
+		$h .= '</h1>';
+
+	$h .= '</div>';
+
+	$t->mainTitle = $h;
+
+	echo '<div class="util-block-help">';
+		echo '<h4>'.s("Module inactif !").'</h4>';
+		echo '<p>';
+			echo s("Le module de comptabilité n'est pas actif sur votre ferme.");
+		echo '</p>';
+	echo '</div>';
+
+});
 new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	$t->title = s("Comptabilité pour {value}", $data->eFarm['name']);

@@ -9,6 +9,9 @@ new Page(
 		}
 	}
 )
+	->get('inactive', function($data) {
+		throw new ViewAction($data);
+	})
 	->get('create', function ($data) {
 
 		throw new ViewAction($data);

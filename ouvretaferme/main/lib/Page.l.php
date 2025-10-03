@@ -74,16 +74,21 @@ class PageLib {
 				\user\ConnectionLib::checkLogged();
 			}
 
+			// On ne peut pas utiliser le même test que dans Farm.php car la feature est toujours activée en dev
+			$canAccounting = ($data->eFarm->notEmpty() and
+				in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS) and
+				$data->eFarm->hasAccounting());
+
 			if(
-				$data->pageType !== 'remote'
-				and ($data->eFarm->empty() or $data->eFarm->canAccountEntry() === FALSE)
+				$data->pageType !== 'remote' and $canAccounting === FALSE
 			) {
-				$action = new \ViewAction($data, 'error:404');
+				throw new \RedirectAction('/company/public:inactive?farm='.$data->eFarm['id']);
+				$action = new \ViewAction($data, '/error:404');
 				$action->setStatusCode(404);
 				throw $action;
 			}
 
-			if(in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS) and $data->eFarm->hasAccounting()) {
+			if($canAccounting) {
 
 				\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
