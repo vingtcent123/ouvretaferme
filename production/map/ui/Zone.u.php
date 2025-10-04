@@ -104,7 +104,7 @@ class ZoneUi {
 
 		$h = '<style>';
 			$h .= '@page {	size: A4; margin: 0.75cm; }';
-			$h .= 'html { font-size: 10px !important; }';
+			$h .= 'html { font-size: 8px !important; }';
 		$h .= '</style>';
 
 		$h .= '<div id="zone-container" class="zone-printing">';
@@ -154,6 +154,7 @@ class ZoneUi {
 								$h .= '</tr>';
 							$h .= '</tbody>';
 						$h .= '</table>';
+
 					$h .= '</div>';
 				}
 

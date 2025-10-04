@@ -57,10 +57,7 @@ class BedUi {
 			}
 
 			if($eUpdate->notEmpty()) {
-
 				$ePlace = $eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
-
-
 			} else {
 				$ePlace = new \series\Place();
 			}
@@ -136,26 +133,30 @@ class BedUi {
 
 						}
 
+						$name = '<b>'.encode($eBed['name']).'</b>';
+						if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
+							$greenhouse = $eBed->getGreenhouseIcon();
+							if($greenhouse) {
+								$name .= '  '.$greenhouse;
+							}
+						}
+
 						$h .= '<div class="bed-item-content">';
 							$h .= '<div class="bed-item-name">';
 
 								$h .= '<div>';
-									$h .= '<a data-dropdown="bottom-start">';
-										$h .= '<b>'.encode($eBed['name']).'</b>';
-										if($eBed['plotFill'] === FALSE and $eBed['zoneFill'] === FALSE) {
-											$greenhouse = $eBed->getGreenhouseIcon();
-											if($greenhouse) {
-												$h .= '  '.$greenhouse;
-											}
-										}
-									$h .= '</a>';
-									$h .= '<div class="dropdown-list bg-primary">';
-										$h .= '<div class="dropdown-title">';
-											$h .= s("Planche {value}", encode($eBed['name']));
-											$h .= '<div class="font-sm">'.s("{length} mL x {width} cm", $eBed).'</div>';
+									if($print) {
+										$h .= $name;
+									} else {
+										$h .= '<a data-dropdown="bottom-start">'.$name.'</a>';
+										$h .= '<div class="dropdown-list bg-primary">';
+											$h .= '<div class="dropdown-title">';
+												$h .= s("Planche {value}", encode($eBed['name']));
+												$h .= '<div class="font-sm">'.s("{length} mL x {width} cm", $eBed).'</div>';
+											$h .= '</div>';
+											$h .= '<a href="/map/bed:swapSeries?id='.$eBed['id'].'&season='.$season.'" class="dropdown-item">'.s("Échanger les séries").'</a>';
 										$h .= '</div>';
-										$h .= '<a href="/map/bed:swapSeries?id='.$eBed['id'].'&season='.$season.'" class="dropdown-item">'.s("Échanger les séries").'</a>';
-									$h .= '</div>';
+									}
 								$h .= '</div>';
 
 								if(($eBed['test']['rotation'] ?? NULL) > 0) {

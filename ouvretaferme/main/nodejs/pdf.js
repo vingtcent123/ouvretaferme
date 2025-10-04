@@ -33,6 +33,8 @@ const headerFooterArgs = {
 	await page.pdf({
 		path: destination,
 		printBackground: true,
+		preferCSSPageSize: true,
+		scale: 1,
 		format: 'A4',
 		...headerFooterArgs,
 	});

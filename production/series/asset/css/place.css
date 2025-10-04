@@ -212,8 +212,8 @@ div.place-grid-series-timeline-week {
 	position: absolute;
 	height: 0.3rem;
 	border-radius: var(--radius);
-	bottom: -0.1rem;
-	transform: translate(-1px, 0);
+	transform: translate(-1px, -0.2rem);
+	z-index: 2;
 }
 
 div.place-grid-series-timeline-more {

@@ -155,19 +155,24 @@ div.zone-wrapper {
 div.zone-printing div.zone-wrapper {
 	margin-bottom: 2rem;
 	display: grid;
-	grid-template-columns: 5cm 1fr;
+	grid-template-columns: 4cm 1fr;
 }
 
-div.zone-title {
-	z-index: 11;
+@media screen {
+
+	div.zone-title {
+		z-index: 11;
+	}
+
 }
 
 div.zone-printing div.zone-title {
 	border-right: 0.25cm solid #8883;
 	padding: 1rem 0.5rem;
+	width: 4cm;
 }
 
-div.zone-printing div.zone-title h3 {
+div.zone-printing div.zone-title h2 {
 	margin-bottom: 0.5rem;
 	word-break: break-word;
 }
@@ -188,11 +193,6 @@ div.zone-printing div.zone-title h3 {
 }
 
 @media print {
-
-	div.zone-title {
-		position: relative;
-		background-color: white;
-	}
 
 	div.zone-title h2 {
 		font-size: 2rem;
