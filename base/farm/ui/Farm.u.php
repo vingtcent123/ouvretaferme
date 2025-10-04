@@ -1195,6 +1195,11 @@ class FarmUi {
 						) {
 							$h .= '<a href="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle série").'</span></a>';
 						}
+						if($nSeries >= 1) {
+							$h .= ' <a href="/series/series:downloadCultivation?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" class="btn btn-primary">';
+								$h .= \Asset::icon('file-pdf').' '.s("PDF");
+							$h .= '</a> ';
+						}
 						if($nSeries >= 2) {
 							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
 								$h .= \Asset::icon('search');

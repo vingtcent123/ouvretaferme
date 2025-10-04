@@ -77,8 +77,36 @@ new AdaptativeView('getTasksFromSequence', function($data, AjaxTemplate $t) {
 
 });
 
+new AdaptativeView('getCultivation', function($data, PdfTemplate $t) {
+
+	$t->title = s("Plan de culture {value}", $data->season);
+
+	echo '<div class="flex-align-center: flex-justify-space-between mb-2">';
+		echo '<h1>'.$t->title.'</h1>';
+		echo '<h3>';
+			if($data->e['vignette'] !== NULL) {
+				echo \farm\FarmUi::getVignette($data->e, '2rem').'  ';
+			}
+			echo encode($data->e['name']);
+		echo '</h3>';
+	echo '</div>';
+	echo new \series\CultivationUi()->getPrinting($data->season, $data->e, $data->ccCultivation);
+
+});
+
 new AdaptativeView('getSoil', function($data, PdfTemplate $t) {
 
+	$t->title = s("Plan d'assolement {value}", $data->season);
+
+	echo '<div class="flex-align-center: flex-justify-space-between mb-2">';
+		echo '<h1>'.$t->title.'</h1>';
+		echo '<h3>';
+			if($data->e['vignette'] !== NULL) {
+				echo \farm\FarmUi::getVignette($data->e, '2rem').'  ';
+			}
+			echo encode($data->e['name']);
+		echo '</h3>';
+	echo '</div>';
 	echo new \map\ZoneUi()->getPrinting($data->e, $data->cZone, $data->season);
 
 });

@@ -179,7 +179,7 @@ class CultivationUi {
 				}
 			}
 
-			for($month = 1; $month < 12; $month++) {
+			for($month = 1; $month <= 12; $month++) {
 				$width = date('t', strtotime($season.'-'.sprintf('%02d', $month).'-01')) / $days * 100;
 				$h .= '<div class="series-grid-line" style="left: '.$left.'%; width: '.$width.'%"></div>';
 				$left += $width;
@@ -215,6 +215,264 @@ class CultivationUi {
 		} else {
 			return '';
 		}
+
+	}
+
+	public function getPrinting(int $season, \farm\Farm $eFarm, \Collection $ccCultivation) {
+
+		$h = '<style>';
+			$h .= '@page {	size: A4; margin: 0.75cm; }';
+			$h .= 'html { font-size: 8px !important; }';
+		$h .= '</style>';
+
+		$h .= '<table class="series-printing series-item-planning-wrapper">';
+			$h .= '<thead>';
+				$h .= '<tr>';
+					$h .= '<td>';
+						$h .= '<div class="series-item-header series-item-planning">';
+							$h .= '<div class="util-grid-header">';
+								$h .= s("Série");
+							$h .= '</div>';
+							$h .= '<div class="util-grid-header text-end">';
+								$h .= s("Linéaire");
+							$h .= '</div>';
+							$h .= '<div class="util-grid-header text-end">';
+								$h .= s("Objectif de récolte<br/>total");
+							$h .= '</div>';
+							$h .= '<div class="util-grid-header series-item-planning-timeline">';
+								$h .= $this->getListSeason($eFarm, $season);
+							$h .= '</div>';
+						$h .= '</div>';
+					$h .= '</td>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+			$h .= '<tbody>';
+				$h .= '<tr>';
+					$h .= '<td>';
+
+						$hasTargeted = FALSE;
+
+						$h .= '<div class="series-item-body">';
+
+							$h .= $this->getListGrid($eFarm, $season);
+
+							foreach($ccCultivation as $cCultivation) {
+
+								$ePlant = $cCultivation->first()['plant'];
+
+								$cultivations = '';
+
+								$totalHarvestExpected = [];
+								$totalArea = [
+									'length' => 0,
+									'lengthTarget' => 0,
+									'area' => 0,
+									'areaTarget' => 0,
+								];
+
+								foreach($cCultivation as $eCultivation) {
+
+									$eSeries = $eCultivation['series'];
+
+									$eCultivation->expects(['cTask']);
+
+									$cultivations .= '<div class="series-item series-item-planning">';
+
+										$cultivations .= '<a href="/serie/'.$eSeries['id'].'" class="series-item-planning-details">';
+											$cultivations .= $this->getSeriesForDisplay($eSeries, $eCultivation, tag: 'span');
+											$cultivations .= '<span class="series-item-planning-details-variety">'.new \sequence\SliceUi()->getLine($eCultivation, $eCultivation['cSlice']).'</span>';
+										$cultivations .= '</a>';
+
+										[$area, $areaMissing] = $this->getAreaBySeries($eSeries, \farm\Farmer::LENGTH, $totalArea);
+
+										$cultivations .= '<div class="series-item-planning-summary '.($areaMissing ? 'color-warning' : '').'">';
+											$cultivations .= $area;
+										$cultivations .= '</div>';
+
+										$cultivations .= '<div class="series-item-planning-summary">';
+											$cultivations .= $this->getHarvestBySeries($eCultivation, \farm\Farmer::TOTAL, $totalHarvestExpected, $hasTargeted);
+										$cultivations .= '</div>';
+
+										$cultivations .= '<div class="series-item-planning-timeline">';
+											$cultivations .= $this->getTimeline($eFarm, $season, $eSeries, $eCultivation, $eCultivation['cTask']);
+										$cultivations .= '</div>';
+
+									$cultivations .= '</div>';
+
+								}
+
+								$h .= '<div class="series-item series-item-planning series-item-planning-'.Series::ANNUAL.' series-item-title">';
+									$h .= '<div class="series-item-title-plant">';
+										$h .= \plant\PlantUi::getVignette($ePlant, '2.6rem');
+										$h .= '<span class="series-item-title-plant-name">'.encode($ePlant['name']).'</span>';
+									$h .= '</div>';
+
+									$h .= '<div class="series-item-planning-summary">';
+										$h .= $this->getAreaSummary($totalArea);
+									$h .= '</div>';
+
+									$h .= '<div class="series-item-planning-summary">';
+										foreach($totalHarvestExpected as $unit => $value) {
+											$h .= '<div>'.\selling\UnitUi::getValue($value, $unit, short: TRUE).'</div>';
+										}
+									$h .= '</div>';
+
+								$h .= '</div>';
+								$h .= $cultivations;
+
+							}
+
+						$h .= '</div>';
+
+					$h .= '</td>';
+				$h .= '</tr>';
+			$h .= '</tbody>';
+		$h .= '</table>';
+
+		if($hasTargeted) {
+			$h .= $this->getWarningTargeted();
+		}
+
+		return $h;
+
+	}
+
+	protected function getHarvestBySeries(Cultivation $eCultivation, ?string $viewHarvestExpected, array &$totalHarvestExpected, bool &$hasTargeted): string {
+
+		$h = '';
+
+		switch($viewHarvestExpected) {
+
+			case \farm\Farmer::TOTAL :
+
+				if($eCultivation['harvestExpected'] !== NULL) {
+
+					$h .= $eCultivation->format('harvestExpected', ['short' => TRUE]);
+
+					$totalHarvestExpected[$eCultivation['mainUnit']] ??= 0;
+					$totalHarvestExpected[$eCultivation['mainUnit']] += $eCultivation['harvestExpected'];
+
+				} else if($eCultivation['harvestExpectedTarget'] !== NULL) {
+
+					$h .= '<div class="color-warning">';
+						$h .= $eCultivation->format('harvestExpectedTarget', ['short' => TRUE]).'&nbsp;*';
+					$h .= '</div>';
+
+					$totalHarvestExpected[$eCultivation['mainUnit']] ??= 0;
+					$totalHarvestExpected[$eCultivation['mainUnit']] += $eCultivation['harvestExpectedTarget'];
+
+					$hasTargeted = TRUE;
+
+				}
+
+				break;
+
+			case \farm\Farmer::WEEKLY :
+
+				if($eCultivation['harvestExpected'] !== NULL) {
+
+					if($eCultivation['harvestWeeksExpected']) {
+						$h .= \selling\UnitUi::getValue(round($eCultivation['harvestExpected'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE);
+					}
+
+				} else if($eCultivation['harvestExpectedTarget'] !== NULL) {
+
+					$h .= '<div class="color-warning">';
+						if($eCultivation['harvestWeeksExpected']) {
+							$h .= \selling\UnitUi::getValue(round($eCultivation['harvestExpectedTarget'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE).'&nbsp;*';
+						}
+					$h .= '</div>';
+
+					$hasTargeted = TRUE;
+
+				}
+
+				break;
+
+		}
+
+		return $h;
+
+	}
+
+	protected function getAreaBySeries(Series $eSeries, string $viewArea, array &$totalArea): array {
+
+		$area = '';
+		$areaMissing = FALSE;
+
+		if($viewArea === \farm\Farmer::LENGTH and $eSeries['use'] === Series::BED) {
+
+			if($eSeries['length'] !== NULL) {
+				if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] > $eSeries['length']) {
+					$area = s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]);
+					$areaMissing = TRUE;
+				} else if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] < $eSeries['length']) {
+					$area = s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]);
+				} else {
+					$area = s("{value} mL", $eSeries['length']);
+				}
+			} else if($eSeries['lengthTarget'] !== NULL) {
+				$area = s("0 / {value} mL", $eSeries['lengthTarget']);
+				$areaMissing = TRUE;
+			}
+
+			$totalArea['length'] += ($eSeries['length'] ?? 0);
+			$totalArea['lengthTarget'] += ($eSeries['lengthTarget'] ?? $eSeries['length'] ?? 0);
+
+		} else {
+
+			if($eSeries['area'] !== NULL) {
+				if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] > $eSeries['area']) {
+					$area = s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]);
+					$areaMissing = TRUE;
+				} else if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] < $eSeries['area']) {
+					$area = s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]);
+				} else {
+					$area = s("{value} m²", $eSeries['area']);
+				}
+			} else if($eSeries['areaTarget'] !== NULL) {
+				$area = s("0 / {value} m²", $eSeries['areaTarget']);
+				$areaMissing = TRUE;
+			}
+
+			$totalArea['area'] += ($eSeries['area'] ?? 0);
+			$totalArea['areaTarget'] += ($eSeries['areaTarget'] ?? $eSeries['area'] ?? 0);
+
+		}
+
+		return [$area, $areaMissing];
+
+	}
+
+	protected function getAreaSummary(array $totalArea): string {
+
+		$h = '';
+
+		if($totalArea['lengthTarget'] > 0) {
+
+			$h .= '<div>';
+				$h .= $totalArea['length'];
+				if($totalArea['length'] !== $totalArea['lengthTarget']) {
+					$h .= ' / '.$totalArea['lengthTarget'];
+				}
+				$h .= ' '.s("mL");
+			$h .= '</div>';
+
+		}
+
+		if($totalArea['areaTarget'] > 0) {
+
+			$h .= '<div>';
+				$h .= $totalArea['area'];
+				if($totalArea['area'] !== $totalArea['areaTarget']) {
+					$h .= ' / '.$totalArea['areaTarget'];
+				}
+				$h .= ' '.s("m²");
+			$h .= '</div>';
+
+		}
+
+		return $h;
 
 	}
 
@@ -296,7 +554,7 @@ class CultivationUi {
 
 			$h .= '<div class="series-item-body">';
 
-				$h .= $this->getListGrid($eFarm, $season, hasWeeks: TRUE);
+				$h .= $this->getListGrid($eFarm, $season);
 
 				foreach($ccCultivation as $cCultivation) {
 
@@ -363,110 +621,15 @@ class CultivationUi {
 								$cultivations .= '</div>';
 							}
 
-							$area = '';
-							$areaMissing = FALSE;
-
-							if($viewArea === \farm\Farmer::LENGTH and $eSeries['use'] === Series::BED) {
-
-								if($eSeries['length'] !== NULL) {
-									if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] > $eSeries['length']) {
-										$area = s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]);
-										$areaMissing = TRUE;
-									} else if($eSeries['lengthTarget'] !== NULL and $eSeries['lengthTarget'] < $eSeries['length']) {
-										$area = s("{value} / {target} mL", ['value' => $eSeries['length'], 'target' => $eSeries['lengthTarget']]);
-									} else {
-										$area = s("{value} mL", $eSeries['length']);
-									}
-								} else if($eSeries['lengthTarget'] !== NULL) {
-									$area = s("0 / {value} mL", $eSeries['lengthTarget']);
-									$areaMissing = TRUE;
-								}
-
-								$totalArea['length'] += ($eSeries['length'] ?? 0);
-								$totalArea['lengthTarget'] += ($eSeries['lengthTarget'] ?? $eSeries['length'] ?? 0);
-
-							} else {
-
-								if($eSeries['area'] !== NULL) {
-									if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] > $eSeries['area']) {
-										$area = s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]);
-										$areaMissing = TRUE;
-									} else if($eSeries['areaTarget'] !== NULL and $eSeries['areaTarget'] < $eSeries['area']) {
-										$area = s("{value} / {target} m²", ['value' => $eSeries['area'], 'target' => $eSeries['areaTarget']]);
-									} else {
-										$area = s("{value} m²", $eSeries['area']);
-									}
-								} else if($eSeries['areaTarget'] !== NULL) {
-									$area = s("0 / {value} m²", $eSeries['areaTarget']);
-									$areaMissing = TRUE;
-								}
-
-								$totalArea['area'] += ($eSeries['area'] ?? 0);
-								$totalArea['areaTarget'] += ($eSeries['areaTarget'] ?? $eSeries['area'] ?? 0);
-
-							}
+							[$area, $areaMissing] = $this->getAreaBySeries($eSeries, $viewArea, $totalArea);
 
 							$cultivations .= '<div class="series-item-planning-summary '.($areaMissing ? 'color-warning' : '').'">';
 								$cultivations .= $area;
 							$cultivations .= '</div>';
 
-							switch($viewHarvestExpected) {
-
-								case \farm\Farmer::TOTAL :
-
-									if($eCultivation['harvestExpected'] !== NULL) {
-
-										$cultivations .= '<div class="series-item-planning-summary">';
-											$cultivations .= $eCultivation->format('harvestExpected', ['short' => TRUE]);
-										$cultivations .= '</div>';
-
-										$totalHarvestExpected[$eCultivation['mainUnit']] ??= 0;
-										$totalHarvestExpected[$eCultivation['mainUnit']] += $eCultivation['harvestExpected'];
-
-									} else if($eCultivation['harvestExpectedTarget'] !== NULL) {
-
-										$cultivations .= '<div class="series-item-planning-summary color-warning">';
-											$cultivations .= $eCultivation->format('harvestExpectedTarget', ['short' => TRUE]).'&nbsp;*';
-										$cultivations .= '</div>';
-
-										$totalHarvestExpected[$eCultivation['mainUnit']] ??= 0;
-										$totalHarvestExpected[$eCultivation['mainUnit']] += $eCultivation['harvestExpectedTarget'];
-
-										$hasTargeted = TRUE;
-
-									} else {
-										$cultivations .= '<div></div>';
-									}
-
-									break;
-
-								case \farm\Farmer::WEEKLY :
-
-									if($eCultivation['harvestExpected'] !== NULL) {
-
-										$cultivations .= '<div class="series-item-planning-summary">';
-											if($eCultivation['harvestWeeksExpected']) {
-												$cultivations .= \selling\UnitUi::getValue(round($eCultivation['harvestExpected'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE);
-											}
-										$cultivations .= '</div>';
-
-									} else if($eCultivation['harvestExpectedTarget'] !== NULL) {
-
-										$cultivations .= '<div class="series-item-planning-summary color-warning">';
-											if($eCultivation['harvestWeeksExpected']) {
-												$cultivations .= \selling\UnitUi::getValue(round($eCultivation['harvestExpectedTarget'] / count($eCultivation['harvestWeeksExpected'])), $eCultivation['mainUnit'], TRUE).'&nbsp;*';
-											}
-										$cultivations .= '</div>';
-
-										$hasTargeted = TRUE;
-
-									} else {
-										$cultivations .= '<div></div>';
-									}
-
-									break;
-
-							}
+							$cultivations .= '<div class="series-item-planning-summary">';
+								$cultivations .= $this->getHarvestBySeries($eCultivation, $viewHarvestExpected, $totalHarvestExpected, $hasTargeted);
+							$cultivations .= '</div>';
 
 							$cultivations .= '<div class="series-item-planning-timeline">';
 								$cultivations .= $this->getTimeline($eFarm, $season, $eSeries, $eCultivation, $eCultivation['cTask']);
@@ -495,31 +658,7 @@ class CultivationUi {
 					$h .= '</div>';
 
 					$h .= '<div class="series-item-planning-summary">';
-
-						if($totalArea['lengthTarget'] > 0) {
-
-							$h .= '<div>';
-								$h .= $totalArea['length'];
-								if($totalArea['length'] !== $totalArea['lengthTarget']) {
-									$h .= ' / '.$totalArea['lengthTarget'];
-								}
-								$h .= ' '.s("mL");
-							$h .= '</div>';
-
-						}
-
-						if($totalArea['areaTarget'] > 0) {
-
-							$h .= '<div>';
-								$h .= $totalArea['area'];
-								if($totalArea['area'] !== $totalArea['areaTarget']) {
-									$h .= ' / '.$totalArea['areaTarget'];
-								}
-								$h .= ' '.s("m²");
-							$h .= '</div>';
-
-						}
-
+						$h .= $this->getAreaSummary($totalArea);
 					$h .= '</div>';
 
 					if($viewHarvestExpected) {
@@ -1569,10 +1708,10 @@ class CultivationUi {
 		[$minTs, $maxTs] = $this->getTimestampBounds($eSeries, $eCultivation, $cTask);
 
 		// Récolte réalisée
-		$showHarvest = function(bool $expected, bool $letter, int $first, int $last, \Closure $label) use($uiPlace, $eCultivation, $startTs, $stopTs, $minTs, $maxTs) {
+		$showHarvest = function(bool $expected, int $first, int $last, \Closure $label) use($uiPlace, $eCultivation, $startTs, $stopTs, $minTs, $maxTs) {
 
 			if($expected) {
-				$css = 'background: repeating-linear-gradient(135deg, var(--harvest) 0, var(--harvest) 1px, #fff8 1px, #fff8 7px); color: var(--harvest); border-color: var(--harvest)';
+				$css = 'color: var(--harvest); border-color: var(--harvest);';
 				$class = 'series-item-timeline-event-expected';
 			} else {
 				$css = 'background-color: var(--harvest);';
@@ -1591,9 +1730,7 @@ class CultivationUi {
 			$id = uniqid('series-item-');
 
 			$item = '<div id="'.$id.'" class="series-item-timeline-event '.$class.'" style="'.$css.'" title="'.$week.' - '.$label($eCultivation).'">';
-				if($letter) {
-					$item .= '<span>'.s("R").'</span>';
-				}
+				$item .= '<span>'.s("R").'</span>';
 			$item .= '</div>';
 
 			$item .= '<style>';
@@ -1621,7 +1758,7 @@ class CultivationUi {
 					$difference = ($current - $last) / 86400;
 
 					if($difference > 45) {
-						$items[] = $showHarvest(TRUE, ($eCultivation['harvestWeeks'] === NULL), $first, $last, $label);
+						$items[] = $showHarvest(TRUE, $first, $last, $label);
 						$first = NULL;
 					}
 
@@ -1633,7 +1770,7 @@ class CultivationUi {
 			}
 
 			if($first !== NULL and $last !== NULL) {
-				$items[] = $showHarvest(TRUE, ($eCultivation['harvestWeeks'] === NULL), $first, $last, $label);
+				$items[] = $showHarvest(TRUE, $first, $last, $label);
 			}
 
 		}
@@ -1654,7 +1791,7 @@ class CultivationUi {
 					$difference = ($current - $last) / 86400;
 
 					if($difference > 45) {
-						$items[] = $showHarvest(FALSE, TRUE, $first, $last, $label);
+						$items[] = $showHarvest(FALSE, $first, $last, $label);
 						$first = NULL;
 					}
 
@@ -1667,7 +1804,7 @@ class CultivationUi {
 			}
 
 			if($first !== NULL and $last !== NULL) {
-				$items[] = $showHarvest(FALSE, TRUE, $first, $last, $label);
+				$items[] = $showHarvest(FALSE, $first, $last, $label);
 			}
 
 		}

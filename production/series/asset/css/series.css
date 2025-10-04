@@ -124,6 +124,10 @@ div.series-season-weeks > div.series-season-week:last-child {
 	border-right-color: transparent;
 }
 
+table.series-printing td {
+	padding: 0 !important;
+}
+
 div.series-grid-now {
 	position: absolute;
 	border-right: 2px solid var(--secondary);
@@ -221,9 +225,12 @@ div.series-grid-weeks + div.series-grid-months > div.series-grid-line:nth-child(
 
 div.series-item-header {
 	background: var(--background-body);
-	padding-bottom: .5rem;
 	padding-left: 1rem;
 	padding-right: 1rem;
+}
+
+.series-printing div.series-item-header {
+	background: white;
 }
 
 @media (min-width: 768px) {
@@ -357,11 +364,11 @@ a.series-item-title-plant-safety {
 	}
 
 	.series-item-planning-harvest .series-item-planning {
-		grid-template-columns: 3rem 16rem 7rem 7rem 1fr;
+		grid-template-columns: 3rem 15rem 6rem 6rem 1fr;
 	}
 
 	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
-		left: calc(1rem + 3rem + 17rem + 6rem + 6rem);
+		left: calc(1rem + 3rem + 15rem + 6rem + 6rem);
 	}
 
 	.series-item-planning-place {
@@ -381,11 +388,11 @@ a.series-item-title-plant-safety {
 	}
 
 	.series-item-planning-harvest .series-item-planning {
-		grid-template-columns: 3rem 20rem 7rem 7rem 1fr;
+		grid-template-columns: 3rem 17rem 7rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
-		left: calc(1rem + 3rem + 20rem + 7rem + 7rem);
+		left: calc(1rem + 3rem + 17rem + 7rem + 7rem);
 	}
 
 	.series-item-planning-place {
@@ -405,11 +412,11 @@ a.series-item-title-plant-safety {
 	}
 
 	.series-item-planning-harvest .series-item-planning {
-		grid-template-columns: 3rem 20rem 10rem 7rem 7rem 1fr;
+		grid-template-columns: 3rem 17rem 10rem 7rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
-		left: calc(1rem + 3rem + 20rem + 10rem + 7rem + 7rem);
+		left: calc(1rem + 3rem + 17rem + 10rem + 7rem + 7rem);
 	}
 
 }
@@ -425,15 +432,22 @@ a.series-item-title-plant-safety {
 	}
 
 	.series-item-planning-harvest .series-item-planning {
-		grid-template-columns: 3rem 24rem 10rem 7rem 7rem 1fr;
+		grid-template-columns: 3rem 20rem 10rem 7rem 7rem 1fr;
 	}
 
 	.series-item-planning-wrapper.series-item-planning-harvest div.series-grid {
-		left: calc(1rem + 3rem + 24rem + 10rem + 7rem + 7rem);
+		left: calc(1rem + 3rem + 20rem + 10rem + 7rem + 7rem);
 	}
 
 }
 
+.series-printing .series-item-planning {
+	grid-template-columns: 6cm 2cm 1.5cm 1fr;
+}
+
+.series-printing div.series-grid {
+	left: calc(1rem + 6cm + 2cm + 1.5cm);
+}
 
 /* Affichage de la planification */
 
@@ -522,7 +536,6 @@ div.series-item-timeline-event:not(.series-item-timeline-event-full) {
 }
 
 div.series-item-timeline-event.series-item-timeline-event-expected > span {
-	background-color: white;
 	padding: 0.1rem;
 	border-radius: var(--radius);
 }
@@ -562,7 +575,7 @@ div.series-item-planning-timeline {
 }
 
 div.series-item-planning-timeline.util-grid-header {
-	margin-bottom: -.5rem;
+	padding-bottom: 0;
 }
 
 div.series-item:not(.series-item-header) div.series-item-planning-timeline {
@@ -893,11 +906,16 @@ span.series-item-planning-details-variety {
 	line-height: 1.2;
 	font-size: 0.9rem;
 }
+@media screen {
 
-@media (max-width: 1199px) {
-	.series-item-planning-details-variety {
-		display: none;
+	@media (max-width: 1199px) {
+
+		.series-item-planning-details-variety {
+			display: none;
+		}
+
 	}
+
 }
 
 /* Affichage du temps de travail */

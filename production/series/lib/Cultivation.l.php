@@ -128,7 +128,7 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
-	public static function getForArea(\farm\Farm $eFarm, int $season, \Search $search): \Collection {
+	public static function getForArea(\farm\Farm $eFarm, int $season, \Search $search = new \Search()): \Collection {
 
 		$ccCultivation = Cultivation::model()
 			->select(Cultivation::getSelection())

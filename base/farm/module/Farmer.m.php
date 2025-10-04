@@ -187,7 +187,7 @@ class FarmerModel extends \ModuleModel {
 				return Farmer::TOTAL;
 
 			case 'viewPlanningField' :
-				return Farmer::SOIL;
+				return Farmer::VARIETY;
 
 			case 'viewPlanningArea' :
 				return Farmer::LENGTH;

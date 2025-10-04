@@ -316,10 +316,31 @@ new \series\SeriesPage()
 
 
 new \farm\FarmPage()
+	->remote('getCultivation', 'selling', function($data) {
+
+		$data->season = \farm\FarmerLib::getDynamicSeason($data->e, GET('season', 'int'));
+
+		\farm\ActionLib::getMainByFarm($data->e);
+
+		$data->ccCultivation = \series\CultivationLib::getForArea($data->e, $data->season);
+
+
+		throw new ViewAction($data);
+
+	})
+	->read('downloadCultivation', function($data) {
+
+		$season = GET('season', 'int');
+
+		$filename = 'Plan de culture '.$season.'.pdf';
+		$content = \selling\PdfLib::build('/series/series:getCultivation?id='.$data->e['id'].'&season='.$season, $filename);
+
+		throw new PdfAction($content, $filename);
+
+	}, validate: ['canWrite'])
 	->remote('getSoil', 'selling', function($data) {
 
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->e, GET('season', 'int'));
-		\map\SeasonLib::setOnline($data->season);
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->e, season: $data->season);
 
@@ -340,7 +361,7 @@ new \farm\FarmPage()
 
 		$season = GET('season', 'int');
 
-		$filename = 'Assolement '.$season.'.pdf';
+		$filename = 'Plan d\'assolement '.$season.'.pdf';
 		$content = \selling\PdfLib::build('/series/series:getSoil?id='.$data->e['id'].'&season='.$season, $filename);
 
 		throw new PdfAction($content, $filename);
