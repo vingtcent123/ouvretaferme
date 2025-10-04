@@ -1195,15 +1195,15 @@ class FarmUi {
 						) {
 							$h .= '<a href="/series/series:createFrom?farm='.$eFarm['id'].'&season='.$selectedSeason.'" class="btn btn-primary" data-ajax-class="Ajax.Query">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle série").'</span></a>';
 						}
-						if($nSeries >= 1) {
-							$h .= ' <a href="/series/series:downloadCultivation?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" class="btn btn-primary">';
-								$h .= \Asset::icon('file-pdf').' '.s("PDF");
-							$h .= '</a> ';
-						}
 						if($nSeries >= 2) {
 							$h .= ' <a class="btn btn-primary" '.attr('onclick', 'Lime.Search.toggle("#series-search")').'>';
 								$h .= \Asset::icon('search');
 							$h .= '</a>';
+						}
+						if($nSeries >= 1) {
+							$h .= ' <a href="/series/series:downloadCultivation?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" class="btn btn-primary">';
+								$h .= \Asset::icon('file-pdf').' '.s("PDF");
+							$h .= '</a> ';
 						}
 					$h .=  '</div>';
 					break;
@@ -1326,15 +1326,12 @@ class FarmUi {
 						$h .= '<a onclick="SeriesSelector.show()" id="series-selector-button" class="btn btn-primary hide-lateral-down">';
 							$h .= \Asset::icon('bar-chart-steps').'  '.s("Assoler mes séries");
 						$h .= '</a> ';
-						$h .= '<a href="/series/series:downloadSoil?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" class="btn btn-primary">';
-							$h .= \Asset::icon('file-pdf').' '.s("PDF");
-						$h .= '</a> ';
 						$h .= '<div data-alert="'.s("Veuillez utiliser un ordinateur avec un écran plus grand pour assoler vos séries sur cette page. Si vous souhaitez malgré tout réaliser votre assolement, allez directement sur la page des séries à assoler.").'" class="btn btn-primary hide-lateral-up">';
 							$h .= \Asset::icon('bar-chart-steps').'  '.s("Assoler");
 						$h .= '</div> ';
 						$h .= '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end">';
 							$h .= \Asset::icon('palette-fill');
-						$h .= '</a>';
+						$h .= '</a> ';
 						$h .= '<div class="dropdown-list">';
 
 							$h .= match($eFarmer['viewSoilColor']) {
@@ -1354,6 +1351,9 @@ class FarmUi {
 							};
 
 						$h .= '</div>';
+						$h .= '<a href="/series/series:downloadSoil?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" class="btn btn-primary">';
+							$h .= \Asset::icon('file-pdf').' '.s("PDF");
+						$h .= '</a> ';
 
 					}
 					break;
