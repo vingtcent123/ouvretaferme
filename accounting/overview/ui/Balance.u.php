@@ -207,7 +207,7 @@ class BalanceUi {
 
 		$h = '<div class="text-end mb-1">';
 			$h .= '<a href="'.\overview\PdfUi::urlBalance($eFarm, $eFinancialYear).'?type='.$type.'" data-ajax-navigation="never" class="btn btn-primary">';
-				$h .= \Asset::icon('download').'&nbsp;'.s("Télécharger en PDF");
+				$h .= \Asset::icon('file-pdf').'&nbsp;'.s("Télécharger en PDF");
 			$h .= '</a>';
 		$h .= '</div>';
 

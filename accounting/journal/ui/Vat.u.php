@@ -233,7 +233,7 @@ Class VatUi {
 						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['deductibleVat']).'</td>';
 						$h .= '<td class="text-end">'.\util\TextUi::money($eVatDeclaration['dueVat']).'</td>';
 						$h .= '<td>'.VatDeclarationUi::p('type')->values[$eVatDeclaration['type']].'</td>';
-						$h .= '<td><a href="'.PdfUi::urlVatDeclaration($eFarm, $eVatDeclaration).'" data-ajax-navigation="never" >'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a></td>';
+						$h .= '<td><a href="'.PdfUi::urlVatDeclaration($eFarm, $eVatDeclaration).'" data-ajax-navigation="never" >'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a></td>';
 					$h .= '</tr>';
 
 				}
@@ -264,7 +264,7 @@ Class VatUi {
 
 		$h = '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/vat:pdf?type='.$type.'&financialYear='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').'&nbsp;'.s("Télécharger en PDF").'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/vat:pdf?type='.$type.'&financialYear='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').'&nbsp;'.s("Télécharger en PDF").'</a>';
 
 			$h .= $this->getTables($eFarm, $cccOperation, $search);
 

@@ -588,7 +588,7 @@ class DateUi {
 
 								if($eDate['sales']['countValid'] > 0) {
 
-									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('download').'  '.s("PDF").'</a> ';
+									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
 
 								}
 
@@ -834,7 +834,7 @@ class DateUi {
 				$cSale->notEmpty() and
 				($eShop->isPersonal() or $eShop->canWrite() === FALSE) // L'administrateur ne peut pas télécharger de PDF
 			) {
-				$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eFarm['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger en PDF").'</a>';
+				$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eFarm['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
 			}
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
