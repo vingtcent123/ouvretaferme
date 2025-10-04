@@ -3,7 +3,7 @@ new Page(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
-		$data->eFarm->canManage();
+		$data->eFarm->validate('canManage');
 		if($data->eFarm['hasAccounting']) {
 			throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/operations');
 		}
