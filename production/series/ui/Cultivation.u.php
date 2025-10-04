@@ -222,7 +222,7 @@ class CultivationUi {
 
 		$h = '<style>';
 			$h .= '@page {	size: A4; margin: 0.75cm; }';
-			$h .= 'html { font-size: 8px !important; }';
+			$h .= 'html { font-size: 9px !important; }';
 		$h .= '</style>';
 
 		$h .= '<table class="series-printing series-item-planning-wrapper">';
