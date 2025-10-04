@@ -339,6 +339,11 @@ button {
 	cursor: pointer;
 }
 
+.click-waiting {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
 .opacity-100 {
 	opacity: 1;
 }

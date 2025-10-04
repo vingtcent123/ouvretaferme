@@ -1321,7 +1321,7 @@ class FarmUi {
 						$h .= '<a onclick="SeriesSelector.show()" id="series-selector-button" class="btn btn-primary hide-lateral-down">';
 							$h .= \Asset::icon('bar-chart-steps').'  '.s("Assoler mes séries");
 						$h .= '</a> ';
-						$h .= '<a href="/series/series:downloadSoil?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" class="btn btn-primary">';
+						$h .= '<a href="/series/series:downloadSoil?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-waiter="'.s("Création en cours").'" data-ajax-navigation="never" class="btn btn-primary">';
 							$h .= \Asset::icon('file-pdf').' '.s("PDF");
 						$h .= '</a> ';
 						$h .= '<div data-alert="'.s("Veuillez utiliser un ordinateur avec un écran plus grand pour assoler vos séries sur cette page. Si vous souhaitez malgré tout réaliser votre assolement, allez directement sur la page des séries à assoler.").'" class="btn btn-primary hide-lateral-up">';

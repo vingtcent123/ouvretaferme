@@ -662,6 +662,13 @@ Document.prototype.ready = function(listener) {
 	}
 };
 
+document.delegateEventListener('click', '[data-waiter]', function(e) {
+
+	this.innerHTML = this.dataset.waiter;
+	this.classList.add('click-waiting');
+
+});
+
 document.delegateEventListener('click', '[data-confirm]', function(e) {
 
 	if(confirm(this.getAttribute('data-confirm')) === false) {
