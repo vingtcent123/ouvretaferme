@@ -315,6 +315,38 @@ new \series\SeriesPage()
 	);
 
 
+new \farm\FarmPage()
+	->remote('getSoil', 'selling', function($data) {
+
+		$data->season = \farm\FarmerLib::getDynamicSeason($data->e, GET('season', 'int'));
+		\map\SeasonLib::setOnline($data->season);
+
+		$data->cZone = \map\ZoneLib::getByFarm($data->e, season: $data->season);
+
+		\farm\ActionLib::getMainByFarm($data->e);
+
+		\map\GreenhouseLib::putFromZone($data->cZone);
+
+		$seasonsSeries = [$data->season + 1, $data->season, $data->season - 1];
+
+		\map\PlotLib::putFromZoneWithSeries($data->e, $data->cZone, $data->season, $seasonsSeries);
+
+		$data->ccCultivation = \series\CultivationLib::getForSelector($data->e, $data->season);
+
+		throw new ViewAction($data);
+
+	})
+	->read('downloadSoil', function($data) {
+
+		$season = GET('season', 'int');
+
+		$filename = 'Assolement '.$season.'.pdf';
+		$content = \selling\PdfLib::build('/series/series:getSoil?id='.$data->e['id'].'&season='.$season, $filename);
+
+		throw new PdfAction($content, $filename);
+
+	}, validate: ['canWrite']);
+
 (new Page(function($data) {
 
 		$data->c = \series\SeriesLib::getByIds(REQUEST('ids', 'array'), sort: ['name' => SORT_ASC]);

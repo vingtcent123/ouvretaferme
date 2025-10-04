@@ -422,7 +422,7 @@ div.pdf-document-vat-rates > *:nth-child(3n + 3) {
 	font-weight: bold;
 }
 
-@media print{
+@media print {
 	@page {
 		size: landscape
 	}

@@ -656,7 +656,6 @@ new Page(function($data) {
 
 		throw new ViewAction($data, ':soil');
 
-
 	})
 	->get(['/ferme/{id}/rotation', '/ferme/{id}/rotation/{season}'], function($data) {
 

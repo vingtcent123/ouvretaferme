@@ -10,7 +10,7 @@ class PlotUi {
 
 	}
 
-	public function getPlots(\farm\Farm $eFarm, \Collection $cPlot, Zone $eZone, int $season, \series\Series|\series\Task $eUpdate): string {
+	public function getPlots(\farm\Farm $eFarm, \Collection $cPlot, Zone $eZone, int $season, \series\Series|\series\Task $eUpdate, bool $print): string {
 
 		$eZone->expects(['id', 'area']);
 
@@ -18,57 +18,53 @@ class PlotUi {
 			return '';
 		}
 
-		$h = '';
+		$h = new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);
 
 		foreach($cPlot as $ePlot) {
 
+			$h .= '<div class="plot-wrapper '.($ePlot['cBed']->count() <= 20 ? 'plot-wrapper-preserve' : '').'">';
+
 			if($ePlot['zoneFill']) {
-
-				$h .= '<div class="plot-wrapper">';
-					$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate);
-				$h .= '</div>';
-
+				$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate, $print);
 			} else {
 
-				$h .= '<div class="plot-wrapper">';
+				$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-title zone-sticky-left" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
 
-					$h .= '<div data-ref="plot" id="plot-item-'.$ePlot['id'].'" class="plot-title zone-sticky-left" data-name="'.encode(\Asset::icon('chevron-right').' '.encode($ePlot['name'])).'">';
+					$h .= '<div class="util-action">';
+						$h .= '<h4>';
 
-						$h .= '<div class="util-action">';
-							$h .= '<h4>';
+							if($eUpdate->notEmpty()) {
 
-								if($eUpdate->notEmpty()) {
+								$eBed = $ePlot['cBed']->first();
+								$ePlace = $eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
 
-									$eBed = $ePlot['cBed']->first();
-									$ePlace = $eUpdate['cPlace'][$eBed['id']] ?? new \series\Place();
-
-									$h .= '<label class="bed-item-select bed-write">';
-										$h .= new \util\FormUi()->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty(), 'class' => 'plot-title-fill']);
-									$h .= '</label>';
-
-								}
-								$h .= s("Jardin {value}", encode($ePlot['name']));
-								$h .= '<span class="plot-title-area">'.$ePlot->getArea().'</span>';
-							$h .= '</h4>';
-							if(
-								$eUpdate->notEmpty() and
-								$eUpdate['use'] === \series\Series::BED
-							) {
-								$h .= '<label class="bed-item-all bed-write">';
-									$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
-									$h .= '<span class="show-checked">'.s("Tout décocher").'</span>';
-									$h .= '<span class="show-not-checked">'.s("Tout cocher").'</span>';
+								$h .= '<label class="bed-item-select bed-write">';
+									$h .= new \util\FormUi()->inputCheckbox('beds[]', $eBed['id'], ['checked' => $ePlace->notEmpty(), 'class' => 'plot-title-fill']);
 								$h .= '</label>';
+
 							}
-						$h .= '</div>';
-
+							$h .= s("Jardin {value}", encode($ePlot['name']));
+							$h .= '<span class="plot-title-area">'.$ePlot->getArea().'</span>';
+						$h .= '</h4>';
+						if(
+							$eUpdate->notEmpty() and
+							$eUpdate['use'] === \series\Series::BED
+						) {
+							$h .= '<label class="bed-item-all bed-write">';
+								$h .= '<input type="checkbox" onclick="Place.toggleSelection(this)"/>';
+								$h .= '<span class="show-checked">'.s("Tout décocher").'</span>';
+								$h .= '<span class="show-not-checked">'.s("Tout cocher").'</span>';
+							$h .= '</label>';
+						}
 					$h .= '</div>';
-
-					$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate);
 
 				$h .= '</div>';
 
+				$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate, $print);
+
 			}
+
+			$h .= '</div>';
 
 		}
 

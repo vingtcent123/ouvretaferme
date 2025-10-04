@@ -197,7 +197,7 @@ class PlaceUi {
 
 	}
 
-	public function getTimeline(\farm\Farm $eFarm, \map\Bed $eBed, \Collection $cPlace, int $season, Series|Task|\Element $ePlaceholder = new \Element()): string {
+	public function getTimeline(\farm\Farm $eFarm, \map\Bed $eBed, \Collection $cPlace, int $season, Series|Task|\Element $ePlaceholder, bool $print): string {
 
 		$lines = [];
 
@@ -260,10 +260,9 @@ class PlaceUi {
 		if($lines === []) {
 			return '';
 		}
-
-		$baseHeight = 2.2;
-		$basePadding = 0.25;
-		$baseGap = 0.3;
+		$baseHeight = $print ? 1.8 : 2;
+		$basePadding = $print ? ($eFarm->getView('viewSoilTasks') ? 0.2 : 0.1) : 0.25;
+		$baseGap = $print ? 0.2 : 0.3;
 		$totalHeight = (count($lines) * $baseHeight + (count($lines) - 1) * $baseGap + $basePadding * 2);
 
 		$list = '';
@@ -315,7 +314,7 @@ class PlaceUi {
 
 				}
 
-				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'height: '.$baseHeight.'rem; top: calc('.$top.');');
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'height: '.$baseHeight.'rem; top: calc('.$top.');', $print);
 
 			}
 
@@ -334,7 +333,7 @@ class PlaceUi {
 			$this->positionPlace($ePlace, $season, $firstWeekShown, $lastWeekShown);
 
 			if($ePlace['positionStart'] !== NULL and $ePlace['positionStop'] !== NULL) {
-				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'rem; top: 0rem;', );
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'rem; top: 0rem;', $print);
 			}
 
 		}
@@ -447,7 +446,7 @@ class PlaceUi {
 
 	}
 
-	protected function getSeriesTimeline(\farm\Farm $eFarm, \map\Bed $eBed, int $season, Place $ePlace, Series $eSeries, \Collection $cCultivation, bool $isPlaceholder, string $style): string {
+	protected function getSeriesTimeline(\farm\Farm $eFarm, \map\Bed $eBed, int $season, Place $ePlace, Series $eSeries, \Collection $cCultivation, bool $isPlaceholder, string $style, bool $print): string {
 
 		$ePlace->expects(['missing']);
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
@@ -591,7 +590,7 @@ class PlaceUi {
 
 						foreach($cCultivation as $eCultivation) {
 							$h .= '<div class="place-grid-series-timeline-plant">';
-								$h .= \plant\PlantUi::getVignette($eCultivation['plant'], '1.4rem');
+								$h .= \plant\PlantUi::getVignette($eCultivation['plant'], $print ? '1.2rem' : '1.3rem');
 							$h .= '</div>';
 						}
 

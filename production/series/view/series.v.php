@@ -76,4 +76,10 @@ new AdaptativeView('getTasksFromSequence', function($data, AjaxTemplate $t) {
 	);
 
 });
+
+new AdaptativeView('getSoil', function($data, PdfTemplate $t) {
+
+	echo new \map\ZoneUi()->getPrinting($data->e, $data->cZone, $data->season);
+
+});
 ?>

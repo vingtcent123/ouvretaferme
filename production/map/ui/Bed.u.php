@@ -10,7 +10,7 @@ class BedUi {
 
 	}
 
-	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season, \series\Series|\series\Task $eUpdate): string {
+	public function displayBedsFromPlot(\farm\Farm $eFarm, Plot $ePlot, int $season, \series\Series|\series\Task $eUpdate, bool $print): string {
 
 		$form = new \util\FormUi();
 
@@ -20,7 +20,7 @@ class BedUi {
 
 		foreach($cBed as $eBed) {
 
-			$place = $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season, $eUpdate);
+			$place = $this->displayPlaceBySeason($eFarm, $eBed, $eBed['cPlace'], $season, $eUpdate, $print);
 
 			if(
 				$eUpdate->empty() and
@@ -231,9 +231,9 @@ class BedUi {
 
 	}
 
-	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season, \series\Series|\series\Task $ePlaceholder): string {
+	protected function displayPlaceBySeason(\farm\Farm $eFarm, Bed $eBed, \Collection $cPlace, int $season, \series\Series|\series\Task $ePlaceholder, bool $print): string {
 
-		$timeline = new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season, $ePlaceholder);
+		$timeline = new \series\PlaceUi()->getTimeline($eFarm, $eBed, $cPlace, $season, $ePlaceholder, $print);
 
 		if($timeline !== '') {
 			return '<div class="bed-item-places">'.$timeline.'</div>';

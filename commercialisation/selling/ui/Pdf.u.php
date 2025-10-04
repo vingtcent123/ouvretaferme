@@ -236,22 +236,13 @@ class PdfUi {
 
 			}
 
-			$dateDelivered = NULL;
-			if($type === Pdf::ORDER_FORM and $eFarm->getSelling('orderFormDelivery')) {
-				$dateDelivered = '<div class="pdf-document-delivery">'.s("Commande livrable le {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</div>';
-			}
-
-			if($type === Pdf::INVOICE and $eSale['priceExcludingVat'] >= 0) {
-				$dateDelivered = '<div class="pdf-document-delivery">'.s("Commande livrée le {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</div>';
-			}
-
 			$top = match($type) {
 				Pdf::ORDER_FORM => $eFarm->getSelling('orderFormHeader'),
 				Pdf::INVOICE => $eSale['invoice']['header'],
 				Pdf::DELIVERY_NOTE => NULL,
 			};
 
-			$h .= $this->getDocumentTop($type, $eSale, $eFarm, $number, $dateDocument, $dateDelivered, $top);
+			$h .= $this->getDocumentTop($type, $eSale, $eFarm, $number, $dateDocument, $top);
 
 			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 
@@ -329,7 +320,7 @@ class PdfUi {
 			$dateDocument = '<div class="pdf-document-detail-label">'.s("Date").'</div>';
 			$dateDocument .= '<div>'.\util\DateUi::numeric($eInvoice['date']).'</div>';
 
-			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $eInvoice['name'], $dateDocument, NULL, $eInvoice['header']);
+			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $eInvoice['name'], $dateDocument, $eInvoice['header']);
 
 			$h .= '<div class="pdf-document-body">';
 
@@ -639,7 +630,7 @@ class PdfUi {
 		
 	}
 
-	protected function getDocumentTop(string $type, Sale|Invoice $e, \farm\Farm $eFarm, string $number, string $dateDocument, ?string $dateDelivered, ?string $top): string {
+	protected function getDocumentTop(string $type, Sale|Invoice $e, \farm\Farm $eFarm, string $number, string $dateDocument, ?string $top): string {
 
 		$eCustomer = $e['customer'];
 		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
@@ -720,8 +711,6 @@ class PdfUi {
 			$h .= '</div>';
 
 		$h .= '</div>';
-
-		$h .= $dateDelivered;
 
 		if($top !== NULL) {
 			$h .= '<div class="pdf-document-custom-top">'. new \editor\EditorUi()->value($top).'</div>';

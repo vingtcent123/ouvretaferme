@@ -4,6 +4,14 @@ div.plot-title {
 	background-color: #8883;
 }
 
+@media print {
+
+	div.plot-title {
+		padding: .5rem 0.75rem;
+	}
+
+}
+
 body.bed-update div.plot-title {
 	padding-left: 0;
 }

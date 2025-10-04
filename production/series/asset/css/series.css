@@ -57,7 +57,6 @@ div.series-item-wrapper {
 
 div.series-season {
 	display: grid;
-	padding-top: 0.5rem;
 }
 
 div.series-season-year {
@@ -192,19 +191,6 @@ div.series-grid-weeks + div.series-grid-months > div.series-grid-line {
 div.series-grid-weeks + div.series-grid-months > div.series-grid-line:nth-child(even) {
 	background-color: #00000003;
 	border-left: 0;
-}
-
-body[data-touch="yes"] main #zone-content {
-	width: calc(var(--screen-width) - var(--container-padding) * 2 - var(--nav-width));
-	overflow-x: auto;
-}
-
-main  #zone-content > * {
-	min-width: calc(var(--zone-content-months) * 4.5rem + 10rem);
-}
-
-#zone-content [data-hide="1"]:not(.selected) {
-	display: none;
 }
 
 #zone-form-search {

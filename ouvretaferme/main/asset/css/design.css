@@ -211,14 +211,6 @@ html {
 
 }
 
-@media print {
-
-	html {
-		font-size: 10px !important;
-	}
-
-}
-
 
 h1 {
 	font-weight: lighter;
