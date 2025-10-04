@@ -66,7 +66,10 @@ class PageLib {
 
 		$data->logInExternal = \user\ConnectionLib::checkLoginExternal();
 
-		if(REQUEST('app') === 'accounting') {
+		if(
+			REQUEST('app') === 'accounting'
+			or mb_strpos(SERVER('REQUEST_URI'), '/public:create') === 0
+		) {
 
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 
@@ -76,8 +79,8 @@ class PageLib {
 
 			// On ne peut pas utiliser le même test que dans Farm.php car la feature est toujours activée en dev
 			$canAccounting = ($data->eFarm->notEmpty() and
-				in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS) and
-				$data->eFarm->hasAccounting());
+				in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS));
+			$hasAccounting = $canAccounting and	$data->eFarm->hasAccounting();
 
 			if(
 				$data->pageType !== 'remote' and $canAccounting === FALSE
@@ -88,7 +91,7 @@ class PageLib {
 				throw $action;
 			}
 
-			if($canAccounting) {
+			if($hasAccounting) {
 
 				\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
