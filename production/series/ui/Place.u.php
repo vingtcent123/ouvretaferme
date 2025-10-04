@@ -314,7 +314,7 @@ class PlaceUi {
 
 				}
 
-				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, $baseHeight.'rem', $top, $print);
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlace['series'], $ePlace['series']['cCultivation'], FALSE, 'height: '.$baseHeight.'rem; top: calc('.$top.');', $print);
 
 			}
 
@@ -333,7 +333,7 @@ class PlaceUi {
 			$this->positionPlace($ePlace, $season, $firstWeekShown, $lastWeekShown);
 
 			if($ePlace['positionStart'] !== NULL and $ePlace['positionStop'] !== NULL) {
-				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, $totalHeight.'rem', '0rem', $print);
+				$list .= $this->getSeriesTimeline($eFarm, $eBed, $season, $ePlace, $ePlaceholder, $ePlaceholder['cCultivation'], TRUE, 'height: '.$totalHeight.'rem; top: 0rem;', $print);
 			}
 
 		}
@@ -446,7 +446,7 @@ class PlaceUi {
 
 	}
 
-	protected function getSeriesTimeline(\farm\Farm $eFarm, \map\Bed $eBed, int $season, Place $ePlace, Series $eSeries, \Collection $cCultivation, bool $isPlaceholder, string $timelineHeight, string $timelineTop, bool $print): string {
+	protected function getSeriesTimeline(\farm\Farm $eFarm, \map\Bed $eBed, int $season, Place $ePlace, Series $eSeries, \Collection $cCultivation, bool $isPlaceholder, string $style, bool $print): string {
 
 		$ePlace->expects(['missing']);
 		$eFarm->expects(['calendarMonths', 'calendarMonthStart', 'calendarMonthStop']);
@@ -553,8 +553,6 @@ class PlaceUi {
 			$dropdown = '';
 		}
 
-		$style = 'height: calc('.$timelineHeight.'); top: calc('.$timelineTop.'); ';
-
 		if($soilColor === \farm\Farmer::PLANT) {
 
 			$colors = $cCultivation->getColumnCollection('plant')->getColumn('color');
@@ -632,33 +630,33 @@ class PlaceUi {
 
 			}
 
+			if($actions) {
+
+				usort($actions, fn($action1, $action2) => $action1['weekStart'] > $action2['weekStart'] ? -1 : 1);
+
+				$cAction = \farm\FarmSetting::$mainActions;
+
+				foreach($actions as ['action' => $action, 'weekStart' => $startWeek, 'weekStop' => $stopWeek]) {
+
+					$eAction = $cAction[$action];
+
+					$startActionTs = strtotime(week_date_starts($startWeek).' 00:00:00');
+					$stopActionTs = strtotime(week_date_ends($stopWeek).' 23:59:59');
+
+					$left = ($startActionTs - $minTs) / ($maxTs - $minTs) * 100;
+					$width = ($stopActionTs - $minTs) / ($maxTs - $minTs) * 100 - $left;
+
+					$h .= '<div class="place-grid-series-timeline-week" style="left: '.$left.'%; width: '.$width.'%; background-color: '.$eAction['color'].'"></div>';
+
+				}
+
+			}
+
 			$h .= '<style>';
 				$h .= $this->getPositionStyle($id, $startTs, $stopTs, $minTs, $maxTs);
 			$h .= '</style>';
 
 		$h .= '</'.$tag.'>';
-
-		if($actions) {
-
-			usort($actions, fn($action1, $action2) => $action1['weekStart'] > $action2['weekStart'] ? -1 : 1);
-
-			$cAction = \farm\FarmSetting::$mainActions;
-
-			foreach($actions as ['action' => $action, 'weekStart' => $startWeek, 'weekStop' => $stopWeek]) {
-
-				$eAction = $cAction[$action];
-
-				$startActionTs = strtotime(week_date_starts($startWeek).' 00:00:00');
-				$stopActionTs = strtotime(week_date_ends($stopWeek).' 23:59:59');
-
-				$left = ($startActionTs - $startTs) / ($stopTs - $startTs) * 100;
-				$width = ($stopActionTs - $startTs) / ($stopTs - $startTs) * 100 - $left;
-
-				$h .= '<div class="place-grid-series-timeline-week" style="top: calc('.$timelineTop.' + '.$timelineHeight.'); left: '.$left.'%; width: '.$width.'%; background-color: '.$eAction['color'].'"></div>';
-
-			}
-
-		}
 
 		if($details) {
 			$h .= '<div class="place-grid-series-timeline-dropdown dropdown-list dropdown-list-unstyled">';

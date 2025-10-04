@@ -188,8 +188,11 @@ div.series-grid-weeks + div.series-grid-months > div.series-grid-line {
 	border-left: 0;
 }
 
-div.series-grid-weeks + div.series-grid-months > div.series-grid-line:nth-child(even) {
+div.series-grid-months > div.series-grid-line:nth-child(even) {
 	background-color: #00000003;
+}
+
+div.series-grid-weeks + div.series-grid-months > div.series-grid-line:nth-child(even) {
 	border-left: 0;
 }
 

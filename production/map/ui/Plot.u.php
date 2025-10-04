@@ -18,11 +18,11 @@ class PlotUi {
 			return '';
 		}
 
-		$h = new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: TRUE);
+		$h = new \series\CultivationUi()->getListGrid($eFarm, $season, hasWeeks: $print === FALSE);
 
 		foreach($cPlot as $ePlot) {
 
-			$h .= '<div class="plot-wrapper '.($ePlot['cBed']->count() <= 20 ? 'plot-wrapper-preserve' : '').'">';
+			$h .= '<div class="plot-wrapper '.($ePlot['cBed']->count() <= 10 ? 'plot-wrapper-preserve' : '').'">';
 
 			if($ePlot['zoneFill']) {
 				$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate, $print);

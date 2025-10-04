@@ -132,10 +132,9 @@ class ZoneUi {
 
 							$h .= '<thead>';
 								$h .= '<tr>';
-
 									$h .= '<th>';
 										$h .= '<div class="zone-header-season">';
-											$h .= new \series\CultivationUi()->getListSeason($eFarm, $season, hasWeeks: TRUE);
+											$h .= new \series\CultivationUi()->getListSeason($eFarm, $season);
 										$h .= '</div>';
 									$h .= '</th>';
 								$h .= '</tr>';
