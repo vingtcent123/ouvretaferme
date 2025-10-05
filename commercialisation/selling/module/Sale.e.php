@@ -796,7 +796,7 @@ class Sale extends SaleElement {
 
 	public function acceptStatusCanceled(): bool {
 
-		if(in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
+		if(in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
 			return FALSE;
 		}
 
