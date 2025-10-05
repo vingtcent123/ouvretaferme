@@ -278,7 +278,8 @@ class ActionUi {
 			}
 
 			$h .= $form->dynamicGroups($eAction, $properties);
-			$h .= '<div class="action-update-cultivation">';
+			$h .= '<div class="util-block bg-background-light action-update-cultivation">';
+				$h .= $form->group(content: '<h4>'.s("Paramètrage avancé").'</h4>');
 				$h .= $form->dynamicGroup($eAction, 'pace');
 				if($eAction->isProtected() === FALSE) {
 					$h .= $form->dynamicGroup($eAction, 'soil');
