@@ -24,7 +24,11 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
-		$siren = mb_substr($eInvoice['farm']['configuration']['invoiceVat'], 4);
+		if($eInvoice['farm']['configuration']['invoiceVat']) {
+			$siren = mb_substr($eInvoice['farm']['configuration']['invoiceVat'], 4);
+		} else {
+			$siren = '';
+		}
 
 		$xml = '<?xml version="1.0" encoding="utf-8"?>
 <rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
