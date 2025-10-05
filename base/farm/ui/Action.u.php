@@ -308,7 +308,7 @@ class ActionUi {
 			'color' => s("Couleur"),
 			'categories' => s("Catégories"),
 			'pace' => s("Calcul de la productivité de l'intervention"),
-			'soil' => s("Inclure cette intervention pour calculer le début ou la fin de l'assolement des séries"),
+			'soil' => s("Tenir compte de cette intervention pour calculer le début ou la fin de l'assolement des séries"),
 			'series' => s("Activer cette intervention dans les séries")
 		]);
 
