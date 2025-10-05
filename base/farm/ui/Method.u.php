@@ -86,7 +86,7 @@ class MethodUi {
 
 			$h .= $form->hidden('id', $eAction['id']);
 
-			if($eAction['fqn'] === NULL) {
+			if($eAction->isProtected() === FALSE) {
 				$properties = ['name', 'categories', 'color', 'pace'];
 			} else {
 				$properties = ['color', 'pace'];

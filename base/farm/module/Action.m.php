@@ -43,16 +43,17 @@ class ActionModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'fqn' => ['text8', 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'short' => ['text8', 'min' => 1, 'max' => 2, 'null' => TRUE, 'cast' => 'string'],
+			'short' => ['text8', 'min' => 1, 'max' => 1, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'color' => ['color', 'cast' => 'string'],
 			'pace' => ['enum', [\farm\Action::BY_HARVEST, \farm\Action::BY_AREA, \farm\Action::BY_PLANT], 'null' => TRUE, 'cast' => 'enum'],
+			'soil' => ['bool', 'cast' => 'bool'],
 			'categories' => ['json', 'cast' => 'array'],
 			'series' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'short', 'farm', 'color', 'pace', 'categories', 'series'
+			'id', 'name', 'fqn', 'short', 'farm', 'color', 'pace', 'soil', 'categories', 'series'
 		]);
 
 		$this->propertiesToModule += [
@@ -71,6 +72,9 @@ class ActionModel extends \ModuleModel {
 
 			case 'color' :
 				return '#AAAAAA';
+
+			case 'soil' :
+				return FALSE;
 
 			case 'categories' :
 				return [];
@@ -150,6 +154,10 @@ class ActionModel extends \ModuleModel {
 
 	public function wherePace(...$data): ActionModel {
 		return $this->where('pace', ...$data);
+	}
+
+	public function whereSoil(...$data): ActionModel {
+		return $this->where('soil', ...$data);
 	}
 
 	public function whereCategories(...$data): ActionModel {

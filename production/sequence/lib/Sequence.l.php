@@ -448,9 +448,15 @@ class SequenceLib extends SequenceCrud {
 
 		$cAction = \farm\Action::model()
 			->select('id', 'fqn')
-			->whereFqn('IN', [ACTION_PLANTATION, ACTION_SEMIS_DIRECT])
+			->or(
+				fn() => $this->whereFqn('IN', [ACTION_PLANTATION, ACTION_SEMIS_DIRECT]),
+				fn() => $this->whereSoil(TRUE)
+			)
 			->whereFarm($eFarm)
 			->getCollection( index: 'id');
+
+		$e['bedStartCalculated'] = NULL;
+		$e['bedStopCalculated'] = NULL;
 
 		$cCrop = $mCrop
 			->select($selectCrop)
@@ -530,6 +536,13 @@ class SequenceLib extends SequenceCrud {
 
 				}
 
+			}
+
+			if($e['bedStartCalculated'] === NULL or $eFlow['start'] < $e['bedStartCalculated']) {
+				$e['bedStartCalculated'] = $eFlow['start'];
+			}
+			if($e['bedStopCalculated'] === NULL or $eFlow['stop'] > $e['bedStopCalculated']) {
+				$e['bedStopCalculated'] = $eFlow['stop'];
 			}
 
 		}

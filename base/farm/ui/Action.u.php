@@ -206,7 +206,7 @@ class ActionUi {
 
 									$h .= '<div class="dropdown-divider"></div>';
 
-									if($eAction['fqn'] === NULL) {
+									if($eAction->isProtected() === FALSE) {
 										$h .= '<a data-ajax="/farm/action:doDelete" data-confirm="'.s("Supprimer cette intervention ?").'" post-id="'.$eAction['id'].'" class="dropdown-item">';
 											$h .= s("Supprimer l'intervention");
 										$h .= '</a>';
@@ -271,7 +271,7 @@ class ActionUi {
 
 			$h .= $form->hidden('id', $eAction['id']);
 
-			if($eAction['fqn'] === NULL) {
+			if($eAction->isProtected() === FALSE) {
 				$properties = ['name', 'categories', 'color'];
 			} else {
 				$properties = ['color'];
@@ -279,7 +279,10 @@ class ActionUi {
 
 			$h .= $form->dynamicGroups($eAction, $properties);
 			$h .= '<div class="action-update-cultivation">';
-				$h .= $form->dynamicGroups($eAction, ['pace']);
+				$h .= $form->dynamicGroup($eAction, 'pace');
+				if($eAction->isProtected() === FALSE) {
+					$h .= $form->dynamicGroup($eAction, 'soil');
+				}
 			$h .= '</div>';
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -300,11 +303,12 @@ class ActionUi {
 
 		$d = Action::model()->describer($property, [
 			'name' => s("Nom de l'intervention"),
-			'short' => s("Raccourci du nom"),
+			'short' => s("Raccourci du nom de l'intervention"),
 			'fqn' => s("Nom qualifié"),
 			'color' => s("Couleur"),
 			'categories' => s("Catégories"),
-			'pace' => s("Calcul de la productivité de l'intervention").\util\FormUi::info(s("La productivité n'est calculée que pour les interventions réalisées au sein d'une série.")),
+			'pace' => s("Calcul de la productivité de l'intervention"),
+			'soil' => s("Inclure cette intervention pour calculer le début ou la fin de l'assolement des séries"),
 			'series' => s("Activer cette intervention dans les séries")
 		]);
 
@@ -335,14 +339,21 @@ class ActionUi {
 					Action::BY_PLANT => s("En fonction du nombre de plants"),
 				];
 				$d->placeholder = s("Non pertinent");
+				$d->labelAfter = \util\FormUi::info(s("La productivité n'est calculée que pour les interventions réalisées au sein d'une série."));
+				break;
+
+			case 'soil' :
+				$d->field = 'yesNo';
+				$d->after = \util\FormUi::info(s("Si vous modifiez ce paramètre, seul les plans d'assolement des saisons {value} et suivantes de votre ferme seront mis à jour.", currentYear()));
+				break;
+
+			case 'short' :
+				$d->after = \util\FormUi::info(s("Une seule lettre affichée dans le plan d'assolement, réfléchissez bien !"));
+				$d->default = fn($e) => $e['short'] ?? mb_substr($e['name'], 0, 1);
 				break;
 
 			case 'color' :
 				$d->attributes['emptyColor'] = new ActionModel()->getDefaultValue('color');
-				break;
-
-			case 'short' :
-				$d->after = '<small>'.s("Laisser vide si la première lettre du nom convient").'</small>';
 				break;
 
 		}

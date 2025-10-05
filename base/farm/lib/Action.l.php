@@ -10,8 +10,8 @@ class ActionLib extends ActionCrud {
 	public static function getPropertiesUpdate(): \Closure {
 		return function(Action $e) {
 			$e->expects(['fqn']);
-			if($e['fqn'] === NULL) {
-				return ['name', 'categories', 'color', 'pace'];
+			if($e->isProtected() === FALSE) {
+				return ['name', 'categories', 'color', 'pace', 'soil'];
 			} else {
 				return ['color', 'pace'];
 			}
@@ -96,9 +96,12 @@ class ActionLib extends ActionCrud {
 		}
 
 		$cAction = Action::model()
-			->select(['id', 'fqn', 'color', 'categories'])
+			->select(['id', 'fqn', 'color', 'categories', 'soil'])
 			->whereFarm($eFarm)
-			->whereFqn('IN', [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE])
+			->or(
+				fn() => $this->whereFqn('IN', [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE]),
+				fn() => $this->whereSoil(TRUE)
+			)
 			->getCollection(index: 'fqn');
 
 		FarmSetting::$mainActions = $cAction;
@@ -147,11 +150,57 @@ class ActionLib extends ActionCrud {
 
 	}
 
+	public static function update(Action $e, array $properties): void {
+
+		Action::model()->beginTransaction();
+
+			if(
+				in_array('soil', $properties) and
+				$e['oldSoil'] !== $e['soil']
+			) {
+
+				if($e['soil']) {
+					$e['fqn'] = $e['id'];
+				} else {
+					$e['fqn'] = NULL;
+				}
+
+				$properties[] = 'fqn';
+
+			}
+
+			parent::update($e, $properties);
+
+			if(
+				in_array('soil', $properties) and
+				$e['oldSoil'] !== $e['soil']
+			) {
+
+				$cSeries = \series\Task::model()
+					->select([
+						'series' => \series\SeriesElement::getSelection()
+					])
+					->whereFarm($e['farm'])
+					->whereSeason('>=', currentYear())
+					->whereAction($e)
+					->group('series')
+					->getColumn('series');
+
+				foreach($cSeries as $eSeries) {
+					\series\SeriesLib::recalculate($eSeries['farm'], $eSeries);
+				}
+
+			}
+
+		Action::model()->commit();
+
+	}
+
 	public static function delete(Action $e): void {
 
 		$e->expects(['id', 'fqn', 'farm']);
 
-		if($e['fqn'] !== NULL) {
+		if($e->isProtected()) {
 			Action::fail('deleteMandatory');
 			return;
 		}

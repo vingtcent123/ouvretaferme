@@ -1150,37 +1150,24 @@ class SeriesLib extends SeriesCrud {
 			['id', 'plant', 'harvestWeeks', 'harvestWeeksExpected']
 		);
 
-		// Recalculer les données internes à toute la série
-		$e['bedStartCalculated'] = NULL;
-		$e['bedStopCalculated'] = NULL;
+		// On cherche les récoltes attendues
+		$stopHarvest = NULL;
 
-		if($e['bedStartCalculated'] === NULL) {
+		foreach($cCrop as $eCrop) {
 
-			$values = array_filter($cCrop->getColumn('startWeek'));
-			$e['bedStartCalculated'] = $values ? min($values) : NULL;
+			[, $week] = $eCrop->getHarvestBounds();
+
+			if($week === NULL) {
+				continue;
+			}
+
+			$currentStopHarvest = week_number($week) + (week_year($week) - $e['season']) * 100;
+			$stopHarvest = ($stopHarvest === NULL) ? $currentStopHarvest : max($stopHarvest, $currentStopHarvest);
 
 		}
 
-		if($e['bedStopCalculated'] === NULL) {
-
-			// On cherche les récoltes attendues
-			$stopHarvest = NULL;
-
-			foreach($cCrop as $eCrop) {
-
-				[, $week] = $eCrop->getHarvestBounds();
-
-				if($week === NULL) {
-					continue;
-				}
-
-				$currentStopHarvest = week_number($week) + (week_year($week) - $e['season']) * 100;
-				$stopHarvest = ($stopHarvest === NULL) ? $currentStopHarvest : max($stopHarvest, $currentStopHarvest);
-
-			}
-
+		if($e['bedStopCalculated'] === NULL or $e['bedStopCalculated'] < $stopHarvest) {
 			$e['bedStopCalculated'] = $stopHarvest;
-
 		}
 
 		Series::model()

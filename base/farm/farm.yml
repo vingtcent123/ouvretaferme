@@ -2,10 +2,11 @@ Action:
   id: serial32
   name: text8(1, null) @collate(general)
   fqn: ?text8 @charset(ascii)
-  short: ?text8(1, 2)
+  short: ?text8(1, 1)
   farm: ?farm\Farm
   color: color = PHP('#AAAAAA')
   pace: ?enum(BY_HARVEST, BY_AREA, BY_PLANT)
+  soil: bool = FALSE
   categories: json = PHP([])
   series: bool = TRUE
   INDEX: [

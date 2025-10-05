@@ -3,6 +3,16 @@ namespace farm;
 
 class Action extends ActionElement {
 
+	public function isProtected(): bool {
+
+		$this->expects(['fqn']);
+
+		return (
+			$this['fqn'] !== NULL and
+			ctype_digit($this['fqn']) === FALSE
+		);
+	}
+
 	public function canRead(): bool {
 		return $this->canWrite();
 	}
@@ -30,12 +40,15 @@ class Action extends ActionElement {
 
 				array_walk($categories, fn(&$value) => $value = (int)$value);
 
+				$this['cCategory'] = Category::model()
+					->select('id', 'fqn')
+					->whereFarm($this['farm'])
+					->whereId('IN', $categories)
+					->getCollection();
+
 				return (
 					$categories !== [] and
-					Category::model()
-						->whereFarm($this['farm'])
-						->whereId('IN', $categories)
-						->count() === count($categories)
+					$this['cCategory']->count() === count($categories)
 				);
 
 			})
@@ -50,12 +63,28 @@ class Action extends ActionElement {
 			})
 			->setCallback('pace.prepare', function(?string &$pace) use ($p): bool {
 
-				if(Category::model()
-					->whereFarm($this['farm'])
-					->whereId('IN', $this['categories'])
-					->whereFqn(CATEGORIE_CULTURE)
-					->exists() === FALSE) {
+				if(
+					$p->isBuilt('categories') === FALSE or
+					$this['cCategory']->contains(fn($eCategory) => $eCategory['fqn'] === CATEGORIE_CULTURE) === FALSE
+				) {
 					$pace = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('soil.prepare', function(?bool &$soil) use ($p): bool {
+
+				if(
+					$p->isBuilt('categories') === FALSE or
+					$this['cCategory']->contains(fn($eCategory) => $eCategory['fqn'] === CATEGORIE_CULTURE) === FALSE
+				) {
+					$soil = FALSE;
+				}
+
+				if($p->for === 'update') {
+					$this->expects(['soil']);
+					$this['oldSoil'] = $this['soil'];
 				}
 
 				return TRUE;

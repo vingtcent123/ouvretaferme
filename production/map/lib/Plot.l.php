@@ -331,7 +331,9 @@ class PlotLib extends PlotCrud {
 
 		self::putFromZone($value, withBeds: TRUE, season: $season, newSelection: function(&$selection) use($eFarm, $withSeries, $onlySeries) {
 
-			$cAction = \farm\ActionLib::getByFarm($eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_PLANTATION]);
+			$cAction = \farm\ActionLib::getMainByFarm($eFarm);
+			$cActionStart = $cAction->find(fn($eAction) => in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_PLANTATION]));
+			$cActionSoil = \farm\ActionLib::getMainByFarm($eFarm)->find(fn($eAction) => $eAction['soil']);
 
 			$selection['cBed']->select([
 				'cPlace' => \series\Place::model()
@@ -341,6 +343,16 @@ class PlotLib extends PlotCrud {
 						'series' => [
 							'name', 'season', 'use', 'mode', 'cycle', 'perennialSeason', 'perennialLifetime', 'status',
 							'bedStartCalculated', 'bedStopCalculated',
+							'cTaskSoil' => $cActionSoil->empty() ? fn() => new \Collection() : new \series\TaskModel()
+								->select([
+									'series',
+									'action',
+									'minWeek' => new \Sql('MIN(IF(doneWeek IS NOT NULL, doneWeek, plannedWeek))'),
+									'maxWeek' => new \Sql('MAX(IF(doneWeek IS NOT NULL, doneWeek, plannedWeek))'),
+								])
+								->whereAction('IN', $cActionSoil)
+								->group(['action', 'series'])
+								->delegateCollection('series'),
 							'cCultivation' => \series\Cultivation::model()
 								->select([
 									'id',
@@ -353,14 +365,14 @@ class PlotLib extends PlotCrud {
 										'name', 'vignette', 'fqn', 'color',
 										'family' => ['fqn', 'name', 'color']
 									],
-									'cTask' => \series\Task::model()
+									'cTask' => new \series\TaskModel()
 										->select([
 											'cultivation',
 											'action' => \farm\Action::getSelection(),
 											'plannedWeek', 'doneWeek',
 											'status'
 										])
-										->whereAction('IN', $cAction)
+										->whereAction('IN', $cActionStart)
 										->sort(new \Sql('IF(status="'.\series\Task::TODO.'", plannedWeek, doneWeek)'))
 										->delegateCollection('cultivation'),
 									'firstTaskWeek' => function($e) {

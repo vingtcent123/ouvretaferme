@@ -421,7 +421,7 @@ class PlaceUi {
 
 	}
 
-	protected function positionToTimestamp(Series $eSeries, int $position, int $season, int $gap): int {
+	protected function positionToWeek(Series $eSeries, int $position, int $season, int $gap, ?string &$week): int {
 
 		$positionSeason = (int)floor($position / 100);
 		$positionWeek = (int)($position - $positionSeason * 100);
@@ -440,9 +440,9 @@ class PlaceUi {
 
 		}
 
-		$week = sprintf('%02d', $positionWeek);
+		$week = $year.'-W'.sprintf('%02d', $positionWeek);
 
-		return strtotime($year.'-W'.$week.' + '.$gap.' DAYS');
+		return strtotime($week.' + '.$gap.' DAYS');
 
 	}
 
@@ -458,13 +458,48 @@ class PlaceUi {
 
 		$soilColor = $eFarm->getView('viewSoilColor');
 
-		$minTs = $this->positionToTimestamp($eSeries, $ePlace['positionStart'], $season, 0);
-		$maxTs = $this->positionToTimestamp($eSeries, $ePlace['positionStop'], $season, 6);
+		$minWeek = NULL;
+		$maxWeek = NULL;
+		$minTs = $this->positionToWeek($eSeries, $ePlace['positionStart'], $season, 0, $minWeek);
+		$maxTs = $this->positionToWeek($eSeries, $ePlace['positionStop'], $season, 6, $maxWeek);
+
 
 		$h = '';
 
 		$details = '';
 		$actions = [];
+
+		if(
+			$isPlaceholder === FALSE and
+			$eSeries['cycle'] === Series::ANNUAL and
+			$eFarm->getView('viewSoilTasks')
+		) {
+
+			foreach($eSeries['cTaskSoil'] as $eTaskSoil) {
+
+				if($eTaskSoil['minWeek'] === $minWeek) {
+
+					$actions[] = [
+						'action' => $eTaskSoil['action']['id'],
+						'weekStart' => $eTaskSoil['minWeek'],
+						'weekStop' => $eTaskSoil['minWeek']
+					];
+
+				}
+
+				if($eTaskSoil['maxWeek'] === $maxWeek) {
+
+					$actions[] = [
+						'action' => $eTaskSoil['action']['id'],
+						'weekStart' => $eTaskSoil['maxWeek'],
+						'weekStop' => $eTaskSoil['maxWeek']
+					];
+
+				}
+
+			}
+
+		}
 
 		if($isPlaceholder) {
 			$class = 'place-grid-series-timeline-placeholder bed-write';
