@@ -24,3 +24,7 @@ div.action-manage-categories {
 	color: var(--muted);
 	font-size: .9rem;
 }
+
+#panel-action-update:has(input[type="checkbox"][data-fqn="culture"]:not(:checked)) .action-update-cultivation {
+	display: none;
+}

@@ -272,12 +272,15 @@ class ActionUi {
 			$h .= $form->hidden('id', $eAction['id']);
 
 			if($eAction['fqn'] === NULL) {
-				$properties = ['name', 'categories', 'color', 'pace'];
+				$properties = ['name', 'categories', 'color'];
 			} else {
-				$properties = ['color', 'pace'];
+				$properties = ['color'];
 			}
 
 			$h .= $form->dynamicGroups($eAction, $properties);
+			$h .= '<div class="action-update-cultivation">';
+				$h .= $form->dynamicGroups($eAction, ['pace']);
+			$h .= '</div>';
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
 			);
@@ -312,7 +315,12 @@ class ActionUi {
 
 					$cCategory = $e['cCategory'] ?? $e->expects(['cCategory']);
 
-					$h = $form->checkboxes('categories[]', $cCategory, $e['categories'] ?? [], ['all' => FALSE]);
+					$h = $form->checkboxes('categories[]', $cCategory, $e['categories'] ?? [], attributes: [
+							'all' => TRUE,
+							'callbackCheckboxAttributes' => fn($eCategory) => [
+								'data-fqn' => $eCategory['fqn'],
+							]
+						]);
 
 					return $h;
 

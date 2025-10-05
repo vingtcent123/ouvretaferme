@@ -47,6 +47,19 @@ class Action extends ActionElement {
 
 				return TRUE;
 
+			})
+			->setCallback('pace.prepare', function(?string &$pace) use ($p): bool {
+
+				if(Category::model()
+					->whereFarm($this['farm'])
+					->whereId('IN', $this['categories'])
+					->whereFqn(CATEGORIE_CULTURE)
+					->exists() === FALSE) {
+					$pace = NULL;
+				}
+
+				return TRUE;
+
 			});
 
 		parent::build($properties, $input, $p);
