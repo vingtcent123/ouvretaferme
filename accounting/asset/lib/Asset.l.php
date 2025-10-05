@@ -58,7 +58,7 @@ class AssetLib extends \asset\AssetCrud {
 			->whereType('IN', [Asset::LINEAR, Asset::DEGRESSIVE])
 			->whereIsGrant(FALSE)
 			->whereGrant(NULL)
-			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_CLASS.'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
 			->getCollection();
 	}
 
@@ -69,7 +69,7 @@ class AssetLib extends \asset\AssetCrud {
 			->whereAcquisitionDate('>=', $eFinancialYear['startDate'])
 			->whereAcquisitionDate('<=', $eFinancialYear['endDate'])
 			->whereAccountLabel('LIKE', match($type) {
-				'asset' => \account\AccountSetting::ASSET_CLASS.'%',
+				'asset' => \account\AccountSetting::ASSET_GENERAL_CLASS.'%',
 				'subvention' => \account\AccountSetting::GRANT_ASSET_CLASS.'%',
 			})
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
@@ -99,7 +99,7 @@ class AssetLib extends \asset\AssetCrud {
 			)
 			->whereStartDate('<=', $eFinancialYear['endDate'])
 			->whereEndDate('>=', $eFinancialYear['startDate'])
-			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_CLASS.'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
 			->whereIsGrant(FALSE)
 			->whereStatus($status, if: $status !== NULL)
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
@@ -113,7 +113,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		// Ni une immo, ni une sub
 		if(
-			\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::ASSET_CLASS) === FALSE
+			\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::ASSET_GENERAL_CLASS) === FALSE
 			and	\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS) === FALSE
 		) {
 			return NULL;

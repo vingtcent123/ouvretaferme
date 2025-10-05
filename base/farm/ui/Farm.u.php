@@ -807,6 +807,10 @@ class FarmUi {
 				'icon' => \Asset::icon('house'),
 				'label' => s("Immobilisations")
 			],
+			'summary' => [
+				'icon' => \Asset::icon('file-spreadsheet'),
+				'label' => s("Synthèses")
+			],
 			'analyze-accounting' => [
 				'icon' => \Asset::icon('bar-chart'),
 				'label' => s("Analyse")
@@ -841,6 +845,7 @@ class FarmUi {
 			'bank' => \company\CompanyUi::urlBank($eFarm).'/'.$name,
 			'journal' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
 			'analyze-accounting' => \company\CompanyUi::urlOverview($eFarm, $name),
+			'summary' => \company\CompanyUi::urlSummary($eFarm, $name),
 
 		};
 
@@ -915,6 +920,11 @@ class FarmUi {
 			'analyze-accounting' => match($name) {
 				'financials' => s("Situation financière"),
 				'statements' => s("État comptable"),
+			},
+
+			'summary' => match($name) {
+				'incomeStatement' => s("Compte de Résultat"),
+				'balanceSheet' => s("Bilan"),
 			},
 
 		};
@@ -1100,6 +1110,14 @@ class FarmUi {
 					$subNav,
 					'accounting'
 				);
+
+			$h .= '</div>';
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-summary">';
+
+				$h .= $this->getNav('summary', $nav);
+
+				$h .= $this->getSummaryMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 
@@ -1460,6 +1478,16 @@ class FarmUi {
 
 	}
 
+	public function getSummaryMenu(Farm $eFarm, ?string $subNav = NULL): string {
+
+		return $this->getSubNav(
+			$eFarm,
+			'summary',
+			$subNav
+		);
+
+	}
+
 	public function getAssetsMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
 		return $this->getSubNav(
@@ -1745,6 +1773,9 @@ class FarmUi {
 
 			case 'analyze-accounting' :
 				return ['financials', 'statements'];
+
+			case 'summary' :
+				return ['incomeStatement', 'balanceSheet'];
 
 		};
 
