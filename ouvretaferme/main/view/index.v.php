@@ -62,6 +62,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Éditez des devis, bons de livraison et factures").'</li>';
+				echo '<li>'.s("Compatible facturation électronique").'</li>';
 				echo '<li>'.s("Utilisez un logiciel de caisse pour vos marchés").'</li>';
 				echo '<li>'.s("Créez le site internet de votre ferme").'</li>';
 			echo '</ul>';
@@ -292,7 +293,8 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 					echo '<li>'.s("<b>Partagez vos boutiques en ligne avec d'autres producteurs.</b><br/><small>Vendez à plusieurs sur la même boutique pour partager vos créneaux de vente et simplifier l'expérience pour vos clients.</small>").'</li>';
 					echo '<li>'.s("<b>Éditez des mercuriales pour vos clients professionnels.</b><br/><small>Créez des boutiques en ligne exclusivement réservées à vos clients professionnels. Personnalisez les prix et les disponibilités par client.</small>").'</li>';
 					echo '<li>'.s("<b>Pilotez vos stocks.</b><br/><small>Choisissez les produits pour lesquels vous souhaitez avoir un suivi des stocks. Les récoltes et les ventes que vous saisissez impactent automatiquement le stock et vous savez toujours ce qui vous reste à vendre.</small>").'</li>';
-					echo '<li>'.s("<b>Éditez vos documents de vente au format PDF.</b><br/><small>Créez facilement les devis, bons de livraisons et factures de vos ventes. Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients.</small>").'</li>';
+					echo '<li>'.s("<b>Gérez vos devis, bons de livraison et factures.</b><br/><small>Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients. Obtenez-les au format PDF.</small>").'</li>';
+					echo '<li>'.s("<b>Compatible avec la facturation électronique.</b><br/><small>Les factures intègrent le format Factur-X.</small>").'</li>';
 				echo '</ul>';
 			echo '</div>';
 		echo '</div>';
