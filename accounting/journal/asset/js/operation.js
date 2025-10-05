@@ -119,7 +119,7 @@ document.delegateEventListener('input', '[data-field="document"]', function(e) {
 class Operation {
 
     static hasVat() {
-        return parseBool(qs('#journal-operation-create').dataset.hasVat);
+        return parseBool(qs('form[data-has-vat]').dataset.hasVat);
     }
 
     static highlight(selector) {
