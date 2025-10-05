@@ -340,6 +340,14 @@ new \farm\FarmPage()
 	}, validate: ['canWrite'])
 	->remote('getSoil', 'selling', function($data) {
 
+		$eUser = \user\UserLib::getById(GET('user'));
+
+		if($eUser->empty()) {
+			throw new VoidAction();
+		}
+
+		\user\ConnectionLib::setOnline($eUser);
+
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->e, GET('season', 'int'));
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->e, season: $data->season);
@@ -362,7 +370,7 @@ new \farm\FarmPage()
 		$season = GET('season', 'int');
 
 		$filename = 'Plan d\'assolement '.$season.'.pdf';
-		$content = \selling\PdfLib::build('/series/series:getSoil?id='.$data->e['id'].'&season='.$season, $filename);
+		$content = \selling\PdfLib::build('/series/series:getSoil?id='.$data->e['id'].'&season='.$season.'&user='.\user\ConnectionLib::getOnline()['id'], $filename);
 
 		throw new PdfAction($content, $filename);
 

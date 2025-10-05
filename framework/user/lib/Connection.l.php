@@ -70,6 +70,10 @@ class ConnectionLib {
 
 	}
 
+	public static function setOnline(User $eUser): void {
+		self::$eUserOnline = $eUser;
+	}
+
 	/**
 	 * Returns the user currently connected
 	 *

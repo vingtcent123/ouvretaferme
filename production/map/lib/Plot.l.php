@@ -343,7 +343,7 @@ class PlotLib extends PlotCrud {
 						'series' => [
 							'name', 'season', 'use', 'mode', 'cycle', 'perennialSeason', 'perennialLifetime', 'status',
 							'bedStartCalculated', 'bedStopCalculated',
-							'cTaskSoil' => $cActionSoil->empty() ? fn() => new \Collection() : new \series\TaskModel()
+							'cTaskSoil' => new \series\TaskModel()
 								->select([
 									'series',
 									'action',

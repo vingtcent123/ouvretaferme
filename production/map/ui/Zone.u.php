@@ -118,7 +118,7 @@ class ZoneUi {
 
 				foreach($cZone as $eZone) {
 
-					$h .= '<div class="zone-wrapper" data-soil-color="'.\farm\Farmer::WHITE.'">';
+					$h .= '<div class="zone-wrapper" data-soil-color="'.$eFarm->getView('viewSoilColor').'">';
 
 						$h .= '<div class="zone-title">';
 							$h .= '<span class="color-muted">'.s("Parcelle").'</span>';
