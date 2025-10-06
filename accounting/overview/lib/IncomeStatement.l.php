@@ -6,22 +6,56 @@ namespace overview;
  */
 Class IncomeStatementLib {
 
-	public static function getResultOperationsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
+	public static function getResultOperationsByFinancialYear(\account\FinancialYear $eFinancialYear): array {
 
-		return \journal\Operation::model()
+		$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
+		$startDate = $eFinancialYearPrevious['startDate'] ?? $eFinancialYear['startDate'];
+		$endDate = $eFinancialYear['endDate'];
+
+		$cOperations = \journal\Operation::model()
 			->select([
+				'financialYear',
 				'class' => new \Sql('SUBSTRING(accountLabel, 1, 3)'),
 				'amount' => new \Sql('SUM(IF(accountLabel LIKE "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%", 1, -1) * IF(type = "debit", amount, -amount))')
 			])
-			->whereDate('>=', $eFinancialYear['startDate'])
-			->whereDate('<=', $eFinancialYear['endDate'])
+			->where('date BETWEEN '.\journal\Operation::model()->format($startDate).' AND '.\journal\Operation::model()->format($endDate))
 			->or(
 				fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%"')),
 				fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%"')),
 			)
-			->group('class')
+			->group(['class', 'financialYear'])
 			->sort(['class' => SORT_ASC])
 			->getCollection();
+
+		$expenses = [];
+		$incomes = [];
+
+		foreach($cOperations as $eOperation) {
+
+			$isExpense = ((int)mb_substr($eOperation['class'], 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS);
+			$isIncome = ((int)mb_substr($eOperation['class'], 0, 1) === \account\AccountSetting::PRODUCT_ACCOUNT_CLASS);
+
+			if($isExpense) {
+				self::affectResultData($expenses, $eFinancialYear, $eOperation);
+			}
+			if($isIncome) {
+				self::affectResultData($incomes, $eFinancialYear, $eOperation);
+			}
+
+		}
+		return ['expenses' => $expenses, 'incomes' => $incomes];
+
+	}
+
+	private static function affectResultData(array &$array, \account\FinancialYear $eFinancialYear, \journal\Operation $eOperation) {
+		if(isset($array[$eOperation['class']]) === FALSE) {
+			$array[$eOperation['class']] = ['previous' => 0, 'current' => 0, 'class' => $eOperation['class']];
+		}
+		if($eOperation['financialYear']->is($eFinancialYear)) {
+			$array[$eOperation['class']]['current'] = $eOperation['amount'];
+		} else {
+			$array[$eOperation['class']]['previous'] = $eOperation['amount'];
+		}
 
 	}
 

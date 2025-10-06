@@ -17,7 +17,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	echo new \overview\IncomeStatementUi()->getTable($data->eFinancialYear, $data->cOperation, $data->cAccount);
+	echo new \overview\IncomeStatementUi()->getTable($data->eFarm, $data->eFinancialYearPrevious, $data->eFinancialYear, $data->resultData, $data->cAccount);
 
 
 });

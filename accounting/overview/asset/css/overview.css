@@ -1,34 +1,66 @@
 
-.overview_income-statement {
+.overview_income-statement_row-title {
+	background-color: var(--background-highlight) !important;
+}
 
-	.overview_income-statement_row-title {
-		background-color: var(--background-highlight) !important;
+.overview_income-statement_group-title {
+	th {
+		border: 1px solid var(--muted);
+		vertical-align: middle;
+		/*width: 50%;*/
 	}
-	.overview_income-statement_group-title {
-		th {
-			border: 1px solid var(--muted);
-			width: 50%;
-		}
+}
+table.overview_income-statement_has_previous .overview_income-statement_line {
+	td:nth-child(1),
+	td:nth-child(3),
+	td:nth-child(4),
+	td:nth-child(5),
+	td:nth-child(7),
+	td:nth-child(8) {
+		border-left: 1px solid var(--muted);
 	}
-	.overview_income-statement_line {
-		td:nth-child(1),
-		td:nth-child(4) {
-			border-left: 1px solid var(--muted);
-		}
-		td:last-child {
-			border-right: 1px solid var(--muted);
-		}
+	td:last-child {
+		border-right: 1px solid var(--muted);
+	}
+}
+table:not(.overview_income-statement_has_previous) .overview_income-statement_line {
+	td:nth-child(1),
+	td:nth-child(3),
+	td:nth-child(4),
+	td:nth-child(6) {
+		border-left: 1px solid var(--muted);
+	}
+	td:last-child {
+		border-right: 1px solid var(--muted);
+	}
+}
+
+.overview_income-statement_group-total {
+	border-bottom: 1px solid var(--muted);
+
+	:first-child {
+		border-left: 1px solid var(--muted);
+	}
+	:last-child {
+		border-right: 1px solid var(--muted);
 	}
 
-	.overview_income-statement_group-total {
-		border-bottom: 1px solid var(--muted);
+}
 
-		:first-child {
-			border-left: 1px solid var(--muted);
-		}
-		:nth-child(2), :last-child {
-			border-right: 1px solid var(--muted);
-		}
-
+table.overview_income-statement_has_previous .overview_income-statement_group-total {
+	:nth-child(2),
+	:nth-child(3),
+	:nth-child(5) {
+		border-right: 1px solid var(--muted);
+		border-left: 1px solid var(--muted);
 	}
+
+}
+
+table:not(.overview_income-statement_has_previous) .overview_income-statement_group-total {
+	:nth-child(2), :last-child {
+		border-right: 1px solid var(--muted);
+		border-left: 1px solid var(--muted);
+	}
+
 }

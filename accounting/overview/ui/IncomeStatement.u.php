@@ -11,15 +11,17 @@ class IncomeStatementUi {
 		return '<h1>'.s("Compte de Résultat").'</h1>';
 	}
 
-	public function getTable(\account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cAccount): string {
+	public function getTable(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, \account\FinancialYear $eFinancialYear, array $resultData, \Collection $cAccount): string {
+
+		$hasPrevious = $eFinancialYearPrevious->notEmpty();
 
 		$totals = [
-			'operatingExpense' => 0,
-			'financialExpense' => 0,
-			'exceptionalExpense' => 0,
-			'operatingIncome' => 0,
-			'financialIncome' => 0,
-			'exceptionalIncome' => 0,
+			'operatingExpense' => ['current' => 0, 'previous' => 0],
+			'financialExpense' => ['current' => 0, 'previous' => 0],
+			'exceptionalExpense' => ['current' => 0, 'previous' => 0],
+			'operatingIncome' => ['current' => 0, 'previous' => 0],
+			'financialIncome' => ['current' => 0, 'previous' => 0],
+			'exceptionalIncome' => ['current' => 0, 'previous' => 0],
 		];
 		// Charges d'exploitation, financières et exceptionnelles
 		$operatingExpenses = [];
@@ -31,41 +33,47 @@ class IncomeStatementUi {
 		$financialIncomes = [];
 		$exceptionalIncomes = [];
 
-		foreach($cOperation as $eOperation) {
-			switch((int)substr($eOperation['class'], 0, 2)) {
+		foreach(array_merge($resultData['expenses'], $resultData['incomes']) as $data) {
+			switch((int)substr($data['class'], 0, 2)) {
 
 				case \account\AccountSetting::CHARGE_FINANCIAL_ACCOUNT_CLASS:
-					$financialExpenses[] = $eOperation;
-					$totals['financialExpense'] += $eOperation['amount'];
+					$financialExpenses[] = $data;
+					$totals['financialExpense']['current'] += $data['current'];
+					$totals['financialExpense']['previous'] += $data['previous'];
 					break;
 				case \account\AccountSetting::CHARGE_EXCEPTIONAL_ACCOUNT_CLASS:
-					$exceptionalExpenses[] = $eOperation;
-					$totals['exceptionalExpense'] += $eOperation['amount'];
+					$exceptionalExpenses[] = $data;
+					$totals['exceptionalExpense']['current'] += $data['current'];
+					$totals['exceptionalExpense']['previous'] += $data['previous'];
 					break;
 
 				case \account\AccountSetting::PRODUCT_FINANCIAL_ACCOUNT_CLASS:
-					$financialIncomes[] = $eOperation;
-					$totals['financialIncome'] += $eOperation['amount'];
+					$financialIncomes[] = $data;
+					$totals['financialIncome']['current'] += $data['current'];
+					$totals['financialIncome']['previous'] += $data['previous'];
 					break;
 
 				case \account\AccountSetting::PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS:
-					$exceptionalIncomes[] = $eOperation;
-					$totals['exceptionalIncome'] += $eOperation['amount'];
+					$exceptionalIncomes[] = $data;
+					$totals['exceptionalIncome']['current'] += $data['current'];
+					$totals['exceptionalIncome']['previous'] += $data['previous'];
 					break;
 
 				default:
-					if((int)substr($eOperation['class'], 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS) {
-						$operatingExpenses[] = $eOperation;
-						$totals['operatingExpense'] += $eOperation['amount'];
+					if((int)substr($data['class'], 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS) {
+						$operatingExpenses[] = $data;
+						$totals['operatingExpense']['current'] += $data['current'] ?? 0;
+						$totals['operatingExpense']['previous'] += $data['previous'] ?? 0;
 					} else {
-						$operatingIncomes[] = $eOperation;
-						$totals['operatingIncome'] += $eOperation['amount'];
+						$operatingIncomes[] = $data;
+						$totals['operatingIncome']['current'] += $data['current'] ?? 0;
+						$totals['operatingIncome']['previous'] += $data['previous'] ?? 0;
 					}
 
 			}
 		}
 
-		$h = '';
+		$h = '<div class="util-overflow-md stick-xs">';
 
 		if($eFinancialYear['endDate'] > date('Y-m-d')) {
 			$date = date('Y-m-d');
@@ -73,90 +81,124 @@ class IncomeStatementUi {
 			$date = $eFinancialYear['endDate'];
 		}
 
-		$h .= '<table class="overview_income-statement tr-hover">';
+		$h .= '<table class="overview_income-statement tr-hover'.($hasPrevious ? ' overview_income-statement_has_previous' : '').'">';
 
 			$h .= '<tr class="overview_income-statement_row-title">';
-				$h .= '<th class="text-center" colspan="6">'.s("Compte de résultat au {date}", ['date' => \util\DateUi::numeric($date)]).'</th>';
+				$h .= '<th class="text-center" colspan="'.($hasPrevious ? 8 : 6).'">'.s("{farm} - exercice {year}<br />Compte de résultat au {date}", ['farm' => $eFarm['legalName'], 'year' => \account\FinancialYearUi::getYear($eFinancialYear), 'date' => \util\DateUi::numeric($date)]).'</th>';
 			$h .= '</tr>';
 
 			$h .= '<tr class="overview_income-statement_group-title">';
-				$h .= '<th colspan="3">'.s("Charges").'</th>';
-				$h .= '<th colspan="3">'.s("Produits").'</th>';
+				$h .= '<th colspan="2">'.s("Charges").'</th>';
+				$h .= '<th class="text-center">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+				if($hasPrevious) {
+					$h .= '<th class="text-center">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearPrevious)).'</th>';
+				}
+				$h .= '<th colspan="2">'.s("Produits").'</th>';
+				$h .= '<th class="text-center">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+				if($hasPrevious) {
+					$h .= '<th class="text-center">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearPrevious)).'</th>';
+				}
 			$h .= '</tr>';
 
-			$h .= $this->displaySubCategoryLines($operatingExpenses, $operatingIncomes, $cAccount);
+			$h .= $this->displaySubCategoryLines($operatingExpenses, $operatingIncomes, $cAccount, $hasPrevious);
 
-			$h .= '<tr class="overview_income-statement_group-total row-bold">';
+			$h .= $this->displaySubTotal($totals, 'operating', $hasPrevious);
 
-				$h .= '<th colspan="2">'.s("Total charges d'exploitation").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['operatingExpense']).'</td>';
-				$h .= '<th colspan="2">'.s("Total produits d'exploitation").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['operatingIncome']).'</td>';
+			$h .= $this->displaySubCategoryLines($financialExpenses, $financialIncomes, $cAccount, $hasPrevious);
 
-			$h .= '</tr>';
+			$h .= $this->displaySubTotal($totals, 'financial', $hasPrevious);
 
-			$h .= $this->displaySubCategoryLines($financialExpenses, $financialIncomes, $cAccount);
+			$h .= $this->displaySubCategoryLines($exceptionalExpenses, $exceptionalIncomes, $cAccount, $hasPrevious);
 
-			$h .= '<tr class="overview_income-statement_group-total row-bold">';
+			$h .= $this->displaySubTotal($totals, 'exceptional', $hasPrevious);
 
-				$h .= '<th colspan="2">'.s("Total charges financières").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['financialExpense']).'</td>';
-				$h .= '<th colspan="2">'.s("Total produits financiers").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['financialIncome']).'</td>';
+			$totalExpensesCurrent = $totals['operatingExpense']['current'] + $totals['financialExpense']['current'] + $totals['exceptionalExpense']['current'];
+			$totalIncomesCurrent = $totals['operatingIncome']['current'] + $totals['financialIncome']['current'] + $totals['exceptionalIncome']['current'];
+			$differenceCurrent = $totalIncomesCurrent - $totalExpensesCurrent;
 
-			$h .= '</tr>';
-
-			$h .= $this->displaySubCategoryLines($exceptionalExpenses, $exceptionalIncomes, $cAccount);
-
-			$h .= '<tr class="overview_income-statement_group-total row-bold">';
-
-				$h .= '<th colspan="2">'.s("Total charges exceptionnelles").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['exceptionalExpense']).'</td>';
-				$h .= '<th colspan="2">'.s("Total produits exceptionnels").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['exceptionalIncome']).'</td>';
-
-			$h .= '</tr>';
-
-			$totalExpenses = $totals['operatingExpense'] + $totals['financialExpense'] + $totals['exceptionalExpense'];
-			$totalIncomes = $totals['operatingIncome'] + $totals['financialIncome'] + $totals['exceptionalIncome'];
-			$difference = $totalIncomes - $totalExpenses;
+			if($hasPrevious) {
+				$totalExpensesPrevious = $totals['operatingExpense']['previous'] + $totals['financialExpense']['previous'] + $totals['exceptionalExpense']['previous'];
+				$totalIncomesPrevious = $totals['operatingIncome']['previous'] + $totals['financialIncome']['previous'] + $totals['exceptionalIncome']['previous'];
+				$differencePrevious = $totalIncomesPrevious - $totalExpensesPrevious;
+			}
 
 			$h .= '<tr class="overview_income-statement_group-total">';
 
-				if($difference > 0) {
-
-					$h .= '<th colspan="2">'.s("Solde (bénéfice)").'</th>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($difference).'</td>';
-					$h .= '<td colspan="2"></td>';
-					$h .= '<td></td>';
-
-				} else {
-
-					$h .= '<td colspan="2"></td>';
-					$h .= '<td></td>';
-					$h .= '<th colspan="2">'.s("Solde (perte)").'</th>';
-					$h .= '<td class="text-end">'.\util\TextUi::money(abs($difference)).'</td>';
-
-				}
+					$h .= '<th colspan="2">'.s("Résultat d'exploitation (bénéfice)").'</th>';
+					$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent) : '').'</td>';
+					if($hasPrevious) {
+						$h .= '<td class="text-end">'.($differencePrevious > 0 ? \util\TextUi::money($differencePrevious) : '').'</td>';
+					}
+					$h .= '<th colspan="2">'.s("Résultat d'exploitation (perte)").'</th>';
+					$h .= '<td class="text-end">'.($differenceCurrent < 0 ? \util\TextUi::money(abs($differenceCurrent)) : '').'</td>';
+					if($hasPrevious) {
+						$h .= '<td class="text-end">'.($differencePrevious < 0 ? \util\TextUi::money(abs($differencePrevious)) : '').'</td>';
+					}
 
 			$h .= '</tr>';
 
 		$h .= '<tr class="overview_income-statement_group-total row-bold">';
 
 			$h .= '<th colspan="2">'.s("Total général").'</th>';
-			$h .= '<td class="text-end">'.\util\TextUi::money($totalExpenses + ($difference > 0 ? $difference : 0)).'</td>';
-			$h .= '<th colspan="2">'.s("Total produits exceptionnels").'</th>';
-			$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomes + ($difference < 0 ? abs($difference) : 0)).'</td>';
+			$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0)).'</td>';
+			if($hasPrevious) {
+				$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesPrevious + ($differencePrevious > 0 ? $differencePrevious : 0)).'</td>';
+			}
+			$h .= '<th colspan="2">'.s("Total général").'</th>';
+			$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesCurrent + ($differenceCurrent < 0 ? abs($differenceCurrent) : 0)).'</td>';
+			if($hasPrevious) {
+				$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesPrevious + ($differencePrevious < 0 ? abs($differencePrevious) : 0)).'</td>';
+			}
 
 		$h .= '</tr>';
 
 		$h .= '</table>';
 
+		$h .= '</div>';
+
 		return $h;
 
 	}
 
-	private function displaySubCategoryLines(array $expenses, array $incomes, \Collection $cAccount): string {
+	private function displaySubTotal(array $totals, string $type, bool $hasPrevious): string {
+
+		switch($type) {
+			case 'exceptional':
+				$expensesTitle = s("Total charges exceptionnelles");
+				$incomesTitle = s("Total produits exceptionnels");
+				break;
+
+			case 'financial':
+				$expensesTitle = s("Total charges financières");
+				$incomesTitle = s("Total produits financiers");
+				break;
+
+			case 'operating':
+				$expensesTitle = s("Total charges d'exploitation");
+				$incomesTitle = s("Total produits d'exploitation");
+				break;
+		}
+
+		$h = '<tr class="overview_income-statement_group-total row-bold">';
+
+			$h .= '<th colspan="2">'.$expensesTitle.'</th>';
+			$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Expense']['current']).'</td>';
+			if($hasPrevious) {
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Expense']['previous']).'</td>';
+			}
+			$h .= '<th colspan="2">'.$incomesTitle.'</th>';
+			$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Income']['current']).'</td>';
+			if($hasPrevious) {
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Income']['previous']).'</td>';
+			}
+
+		$h .= '</tr>';
+
+		return $h;
+
+	}
+
+	private function displaySubCategoryLines(array $expenses, array $incomes, \Collection $cAccount, bool $hasPrevious): string {
 
 		$h = '';
 
@@ -178,12 +220,18 @@ class IncomeStatementUi {
 						}
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($expense['amount']).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($expense['current']).'</td>';
+					if($hasPrevious) {
+						$h .= '<td class="text-end">'.\util\TextUi::money($expense['previous']).'</td>';
+					}
 
 				} else {
 					$h .= '<td></td>';
 					$h .= '<td></td>';
 					$h .= '<td></td>';
+					if($hasPrevious) {
+						$h .= '<td></td>';
+					}
 				}
 
 				if($income !== null) {
@@ -197,12 +245,18 @@ class IncomeStatementUi {
 						}
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($income['amount']).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($income['current']).'</td>';
+					if($hasPrevious) {
+						$h .= '<td class="text-end">'.\util\TextUi::money($income['previous']).'</td>';
+					}
 
 				} else {
 					$h .= '<td></td>';
 					$h .= '<td></td>';
 					$h .= '<td></td>';
+					if($hasPrevious) {
+						$h .= '<td></td>';
+					}
 				}
 
 			$h .= '</tr>';
