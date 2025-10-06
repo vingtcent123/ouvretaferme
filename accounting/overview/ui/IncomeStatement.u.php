@@ -124,16 +124,27 @@ class IncomeStatementUi {
 
 			$h .= '<tr class="overview_income-statement_group-total">';
 
+				if($differenceCurrent < 0 and ($hasPrevious === FALSE or $differencePrevious < 0)) {
+					$h .= '<th colspan="'.($hasPrevious ? 3 : 2).'"></th>';
+					$h .= '<td></td>';
+				} else {
+
 					$h .= '<th colspan="2">'.s("Résultat d'exploitation (bénéfice)").'</th>';
 					$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent) : '').'</td>';
 					if($hasPrevious) {
 						$h .= '<td class="text-end">'.($differencePrevious > 0 ? \util\TextUi::money($differencePrevious) : '').'</td>';
 					}
+				}
+				if($differenceCurrent > 0 and ($hasPrevious === FALSE or $differencePrevious > 0)) {
+					$h .= '<th colspan="'.($hasPrevious ? 3 : 2).'"></th>';
+					$h .= '<td></td>';
+				} else {
 					$h .= '<th colspan="2">'.s("Résultat d'exploitation (perte)").'</th>';
 					$h .= '<td class="text-end">'.($differenceCurrent < 0 ? \util\TextUi::money(abs($differenceCurrent)) : '').'</td>';
 					if($hasPrevious) {
 						$h .= '<td class="text-end">'.($differencePrevious < 0 ? \util\TextUi::money(abs($differencePrevious)) : '').'</td>';
 					}
+				}
 
 			$h .= '</tr>';
 
