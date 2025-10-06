@@ -30,8 +30,8 @@ Class TrialBalanceLib {
 		$cOperation = \journal\Operation::model()
 			->select([
 				'label' => new \Sql('SUBSTRING(accountLabel, 1, '.$precision.')'),
-				'debit' => new \Sql('SUM(IF(type = "'.\journal\Operation::DEBIT.'", amount, 0))'),
-				'credit' => new \Sql('SUM(IF(type = "'.\journal\Operation::CREDIT.'", amount, 0))'),
+				'debit' => new \Sql('SUM(IF(type = "'.\journal\Operation::DEBIT.'", amount, 0))', 'float'),
+				'credit' => new \Sql('SUM(IF(type = "'.\journal\Operation::CREDIT.'", amount, 0))', 'float'),
 			])
 			->whereDate('BETWEEN', new \Sql(Operation::model()->format($startDate).' AND '.Operation::model()->format($endDate)))
 			->having('debit != 0 OR credit != 0')
@@ -49,28 +49,40 @@ Class TrialBalanceLib {
 			->getCollection(NULL, NULL, 'class');
 
 		$data = [];
+
 		foreach($cOperation as $eOperation) {
+
 			if($cAccountPrecision->offsetExists($eOperation['label'])) {
+
 				$account = $eOperation['label'];
 				$label = $cAccountPrecision[$eOperation['label']]['description'];
+
 			} else {
+
 				$account = NULL;
 				$labelTmp = $eOperation['label'];
+
 				while($account === NULL) {
+
 					$labelTmp = mb_substr($labelTmp, 0, mb_strlen($labelTmp) - 1);
+
 					if($cAccountAll->offsetExists($labelTmp)) {
 						$account = $labelTmp;
 						$label = $cAccountAll[$account]['description'];
 					}
+
 				}
+
 			}
-			$data[] = [
+
+			$data[$account] = [
 				'account' => $account,
 				'accountDetail' => mb_strlen($account) < $precision ? ' ('.$eOperation['label'].')' : '',
 				'debit' => $eOperation['debit'],
 				'credit' => $eOperation['credit'],
 				'label' => $label,
 			];
+
 		}
 
 		return $data;

@@ -81,7 +81,7 @@ class IncomeStatementUi {
 			$date = $eFinancialYear['endDate'];
 		}
 
-		$h .= '<table class="overview_income-statement tr-hover'.($hasPrevious ? ' overview_income-statement_has_previous' : '').'">';
+		$h .= '<table class="tr-even overview_income-statement tr-hover'.($hasPrevious ? ' overview_income-statement_has_previous' : '').'">';
 
 			$h .= '<tr class="overview_income-statement_row-title">';
 				$h .= '<th class="text-center" colspan="'.($hasPrevious ? 8 : 6).'">'.s("{farm} - exercice {year}<br />Compte de résultat au {date}", ['farm' => $eFarm['legalName'], 'year' => \account\FinancialYearUi::getYear($eFinancialYear), 'date' => \util\DateUi::numeric($date)]).'</th>';
