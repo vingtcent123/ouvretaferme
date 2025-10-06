@@ -627,9 +627,11 @@ class CultivationUi {
 								$cultivations .= $area;
 							$cultivations .= '</div>';
 
-							$cultivations .= '<div class="series-item-planning-summary">';
-								$cultivations .= $this->getHarvestBySeries($eCultivation, $viewHarvestExpected, $totalHarvestExpected, $hasTargeted);
-							$cultivations .= '</div>';
+							if($viewHarvestExpected) {
+								$cultivations .= '<div class="series-item-planning-summary">';
+									$cultivations .= $this->getHarvestBySeries($eCultivation, $viewHarvestExpected, $totalHarvestExpected, $hasTargeted);
+								$cultivations .= '</div>';
+							}
 
 							$cultivations .= '<div class="series-item-planning-timeline">';
 								$cultivations .= $this->getTimeline($eFarm, $season, $eSeries, $eCultivation, $eCultivation['cTask']);

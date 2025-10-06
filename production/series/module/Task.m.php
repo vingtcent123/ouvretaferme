@@ -97,8 +97,8 @@ class TaskModel extends \ModuleModel {
 			['farm', 'status', 'plannedWeek'],
 			['farm', 'action'],
 			['repeat'],
-			['series'],
-			['cultivation']
+			['series', 'action'],
+			['cultivation', 'action']
 		]);
 
 	}
