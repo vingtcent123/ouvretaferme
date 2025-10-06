@@ -14,9 +14,7 @@ class FacturXLib {
 
 	public static function generateInvoiceXml(Invoice $eInvoice): string {
 
-		// minimum : 'urn:factur-x.eu:1p0:minimum'
-		// basic wl : 'urn:factur-x.eu:1p0:basicwl'
-		$dataProfile = 'urn:factur-x.eu:1p0:basicwl';
+		$dataProfile = 'urn:cen.eu:en16931:2017';
 
 		if($eInvoice->isCreditNote()) {
 			$typeCode = '381';
@@ -60,8 +58,52 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<ram:SubjectCode>PMD</ram:SubjectCode><!--BT-21 PMD = pénalité de retard-->
 		</ram:IncludedNote>
 	</rsm:ExchangedDocument>
-	<rsm:SupplyChainTradeTransaction><!--BG-25-00-->
-		<ram:ApplicableHeaderTradeAgreement><!--BT-10-00-->
+	<rsm:SupplyChainTradeTransaction><!--BG-25-00-->';
+
+		foreach($eInvoice['cSale'] as $eSale) {
+			foreach($eSale['cItem'] as $eItem) {
+				$xml .= '
+		<ram:IncludedSupplyChainTradeLineItem>
+       <ram:AssociatedDocumentLineDocument>
+          <ram:LineID>'.encode($eItem['id']).'</ram:LineID>  <!-- BT-126 (Identifiant de ligne de facture) -->
+       </ram:AssociatedDocumentLineDocument>
+       <ram:SpecifiedTradeProduct>
+          <ram:Name>'.encode($eItem['name']).'</ram:Name>  <!-- BT-153 (Nom de l‘article) -->
+          <ram:Description></ram:Description>  <!-- BT-154 (Description de l‘article) -->
+       </ram:SpecifiedTradeProduct>
+       <ram:SpecifiedLineTradeAgreement><!-- BG-29 -->
+          <ram:NetPriceProductTradePrice>
+             <ram:ChargeAmount>'.$eItem['unitPrice'].'</ram:ChargeAmount>  <!-- BT-146 (Prix net de l‘article) -->
+             <ram:BasisQuantity unitCode="C62">'.$eItem['number'].'</ram:BasisQuantity>  <!-- BT-149 (Quantité de base du prix de l‘article) -->
+          </ram:NetPriceProductTradePrice>
+       </ram:SpecifiedLineTradeAgreement>
+       <ram:SpecifiedLineTradeDelivery>
+          <ram:BilledQuantity unitCode="C62">'.$eItem['number'].'</ram:BilledQuantity>  <!-- BT-129 (Quantité facturée) -->
+       </ram:SpecifiedLineTradeDelivery>
+       <ram:SpecifiedLineTradeSettlement>
+          <ram:ApplicableTradeTax>
+               <ram:TypeCode>VAT</ram:TypeCode>  <!-- BT-151-0 (Type Taxe en code) : VAT -->
+               <ram:CategoryCode>S</ram:CategoryCode>  <!-- BT-151 (Code de type de TVA de l‘article facturé) : S = standard, Z : zéro, E : exempté -->
+               <ram:RateApplicablePercent>'.$eItem['vatRate'].'</ram:RateApplicablePercent>  <!-- BT-152 (Taux de TVA de l‘article facturé) -->
+          </ram:ApplicableTradeTax>
+          <ram:BillingSpecifiedPeriod>
+               <ram:StartDateTime>
+                    <udt:DateTimeString format="102">'.date('Ymd', strtotime($eInvoice['date'])).'</udt:DateTimeString>  <!-- BT-134 (Date de début de période de facturation d‘une ligne) -->
+               </ram:StartDateTime>
+               <ram:EndDateTime>
+                    <udt:DateTimeString format="102">'.date('Ymd', strtotime($eInvoice['date'].' + 1 month - 1 day')).'</udt:DateTimeString>  <!-- BT-135 (Date de fin de période de facturation d‘une ligne) -->
+               </ram:EndDateTime>
+          </ram:BillingSpecifiedPeriod>
+          <ram:SpecifiedTradeSettlementLineMonetarySummation>
+               <ram:LineTotalAmount>'.$eItem['price'].'</ram:LineTotalAmount>  <!-- BT-131 (Montant net de ligne de facture)  -->
+          </ram:SpecifiedTradeSettlementLineMonetarySummation>
+       </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>';
+			}
+		}
+
+	$xml .= '
+	<ram:ApplicableHeaderTradeAgreement><!--BT-10-00-->
 			<ram:SellerTradeParty><!--BG-4-->
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
 				'.($eInvoice['farm']['configuration']['invoiceVat'] !== NULL ? '
