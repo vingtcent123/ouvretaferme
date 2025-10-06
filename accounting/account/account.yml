@@ -9,10 +9,6 @@ Account:
   custom: bool = FALSE
   vatAccount: ?account\Account
   vatRate: ?decimal(5, 2)
-  # À désactiver si le compte n'est plus en vigueur
-  isActive: bool = TRUE
-  # Date de désactivation
-  deletedAt: ?date
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   INDEX: [

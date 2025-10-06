@@ -5,7 +5,6 @@ GenericAccount:
   visible: bool = TRUE
   vatAccount: ?account\Account
   vatRate: ?decimal(5, 2)
-  isActive: bool = TRUE
   deletedAt: ?date
   type: enum(AGRICULTURAL, ASSOCIATION)
   INDEX: [

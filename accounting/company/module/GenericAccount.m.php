@@ -45,13 +45,12 @@ class GenericAccountModel extends \ModuleModel {
 			'visible' => ['bool', 'cast' => 'bool'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
-			'isActive' => ['bool', 'cast' => 'bool'],
 			'deletedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\company\GenericAccount::AGRICULTURAL, \company\GenericAccount::ASSOCIATION], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'isActive', 'deletedAt', 'type'
+			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'deletedAt', 'type'
 		]);
 
 		$this->propertiesToModule += [
@@ -70,9 +69,6 @@ class GenericAccountModel extends \ModuleModel {
 		switch($property) {
 
 			case 'visible' :
-				return TRUE;
-
-			case 'isActive' :
 				return TRUE;
 
 			default :
@@ -126,10 +122,6 @@ class GenericAccountModel extends \ModuleModel {
 
 	public function whereVatRate(...$data): GenericAccountModel {
 		return $this->where('vatRate', ...$data);
-	}
-
-	public function whereIsActive(...$data): GenericAccountModel {
-		return $this->where('isActive', ...$data);
 	}
 
 	public function whereDeletedAt(...$data): GenericAccountModel {

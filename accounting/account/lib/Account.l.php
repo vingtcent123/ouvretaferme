@@ -102,7 +102,6 @@ class AccountLib extends AccountCrud {
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
 			->where('vatAccount IS NOT NULL', if: $search->get('vatFilter') === TRUE)
-			->whereIsActive($search->get('isActive') ?? TRUE)
 			->getCollection(NULL, NULL, 'id');
 	}
 
