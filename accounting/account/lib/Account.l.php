@@ -10,7 +10,6 @@ class AccountLib extends AccountCrud {
 		Account::model()
 			->select(Account::getSelection())
 			->whereClass($class)
-			->whereIsActive(TRUE)
 			->get($eAccount);
 
 		return $eAccount;
@@ -21,7 +20,6 @@ class AccountLib extends AccountCrud {
 
 		return Account::model()
 			->whereClass($class)
-			->whereIsActive(TRUE)
 			->count();
 
 	}
@@ -35,7 +33,6 @@ class AccountLib extends AccountCrud {
 				+ ['vatAccount' => ['class', 'vatRate', 'description']]
 			)
 			->whereClass('IN', $classes)
-			->whereIsActive(TRUE)
 			->getCollection(NULL, NULL, $index);
 
 	}
@@ -63,7 +60,6 @@ class AccountLib extends AccountCrud {
 				+ ['vatAccount' => ['class', 'vatRate', 'description']]
 			)
 			->whereClass('LIKE', $prefix.'%')
-			->whereIsActive(TRUE)
 			->get($eAccount);
 
 		return $eAccount;
