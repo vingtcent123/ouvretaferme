@@ -56,16 +56,15 @@ Class TrialBalanceLib {
 
 			for($i = 0; $i < mb_strlen($eOperation['label']) - 1; $i++) {
 
-				$labelTmp = mb_substr($labelTmp, 0, mb_strlen($labelTmp) - $i);
-
 				if($cAccountAll->offsetExists($labelTmp)) {
 					$account = $labelTmp;
 					$label = $cAccountAll[$account]['description'];
 					break;
 				}
 
-			}
+				$labelTmp = mb_substr($labelTmp, 0, mb_strlen($labelTmp) - 1);
 
+			}
 			$data[$account] = [
 				'account' => $account,
 				'accountDetail' => mb_strlen($account) < $precision ? ' ('.$eOperation['label'].')' : '',
