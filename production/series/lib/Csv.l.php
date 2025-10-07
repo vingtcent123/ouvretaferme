@@ -821,7 +821,7 @@ class CsvLib {
 
 				// variety
 				foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety, 'part' => $part]) {
-d($variety, $part);
+
 					$input['variety'][$position]['variety'][] = $eVariety->empty() ? 'new' : $eVariety['id'];
 					$input['variety'][$position]['varietyCreate'][] = $eVariety->empty() ? $variety : NULL;
 					$input['variety'][$position][match($cultivation['varieties_unit']) {
