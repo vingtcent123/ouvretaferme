@@ -55,6 +55,8 @@ class AlertUi {
 
 			'Action::created' => s("L'intervention a bien été créée."),
 			'Action::updated' => s("L'intervention a bien été mise à jour."),
+			'Action::updatedActive' => s("L'intervention a bien été réactivée."),
+			'Action::updatedInactive' => s("L'intervention a bien été désactivée."),
 			'Action::deleted' => s("L'intervention a bien été supprimée."),
 
 			'Method::created' => s("La méthode a bien été créée."),

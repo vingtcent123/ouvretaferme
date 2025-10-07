@@ -13,6 +13,10 @@ class Action extends ActionElement {
 		);
 	}
 
+	public function isFree(): bool {
+		return $this->isProtected() === FALSE;
+	}
+
 	public function canRead(): bool {
 		return $this->canWrite();
 	}

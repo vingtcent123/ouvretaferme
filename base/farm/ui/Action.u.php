@@ -124,7 +124,7 @@ class ActionUi {
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cAction, \Collection $cCategory): string {
+	public function getManage(\farm\Farm $eFarm, array $actions, \Collection $cAction, \Collection $cCategory, \Search $search): string {
 
 		$h = '<div class="util-block-gradient">';
 			$h .= '<p>';
@@ -138,6 +138,17 @@ class ActionUi {
 				$h .= '<a href="/farm/category:manage?farm='.$eFarm['id'].'" class="btn btn-outline-secondary">'.s("Personnaliser les catégories ").'</a>';
 		$h .= '</div>';
 
+		if($actions[Action::INACTIVE] > 0) {
+
+			$h .= '<br/>';
+
+			$h .= '<div class="tabs-item">';
+				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'&status='.Action::ACTIVE.'" class="tab-item '.($search->get('status') === Action::ACTIVE ? 'selected' : '').'"><span>'.s("Interventions actives").' <span class="tab-item-count">'.$actions[Action::ACTIVE].'</span></span></a>';
+				$h .= '<a href="/farm/action:manage?farm='.$eFarm['id'].'&status='.Action::INACTIVE.'" class="tab-item '.($search->get('status') === Action::INACTIVE ? 'selected' : '').'"><span>'.s("Interventions désactivées").' <small class="tab-item-count">'.$actions[Action::INACTIVE].'</small></span></a>';
+			$h .= '</div>';
+
+		}
+
 		$methodHelp = $cAction->contains(fn($eAction) => $eAction['cMethod']->notEmpty()) ? '' : '&help';
 
 		$h .= '<div class="stick-xs">';
@@ -148,12 +159,14 @@ class ActionUi {
 					$h .= '<th>'.s("Nom").'</th>';
 					$h .= '<th class="hide-xs-down">'.s("Catégories").'</th>';
 					$h .= '<th>'.s("Méthodes de travail").'</th>';
-					$h .= '<th class="text-center hide-xs-down">'.s("Interventions").'</th>';
+					$h .= '<th class="text-center hide-xs-down">'.s("Utilisations").'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 
 			foreach($cAction as $eAction) {
+
+				$uses = $eAction['tasks'] + $eAction['flows'];
 
 				$categories = array_map(function($category) use($cCategory) {
 					return encode($cCategory[$category]['name']);
@@ -190,7 +203,7 @@ class ActionUi {
 						$h .= '</td>';
 						$h .= '<td class="text-center hide-xs-down">';
 							if($eAction['tasks'] !== NULL) {
-								$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&action='.$eAction['id'].'">'.$eAction['tasks'].'</a>';
+								$h .= '<a href="/series/analyze:tasks?id='.$eFarm['id'].'&action='.$eAction['id'].'">'.$uses.'</a>';
 							} else {
 								$h .= '/';
 							}
@@ -204,16 +217,24 @@ class ActionUi {
 									$h .= '<a href="/farm/action:update?id='.$eAction['id'].'" class="dropdown-item">'.s("Modifier l'intervention").'</a>';
 									$h .= '<a href="/farm/method:create?action='.$eAction['id'].$methodHelp.'" class="dropdown-item">'.s("Ajouter une méthode de travail").'</a>';
 
-									$h .= '<div class="dropdown-divider"></div>';
-
 									if($eAction->isProtected() === FALSE) {
-										$h .= '<a data-ajax="/farm/action:doDelete" data-confirm="'.s("Supprimer cette intervention ?").'" post-id="'.$eAction['id'].'" class="dropdown-item">';
-											$h .= s("Supprimer l'intervention");
-										$h .= '</a>';
-									} else {
-										$h .= '<div class="dropdown-item disabled">';
-											$h .= \Asset::icon('lock-fill').' '.s("Supprimer l'intervention");
-										$h .= '</div>';
+
+										$h .= '<div class="dropdown-divider"></div>';
+
+										if($uses === 0) {
+
+											$h .= '<a data-ajax="/farm/action:doDelete" data-confirm="'.s("Supprimer cette intervention ?").'" post-id="'.$eAction['id'].'" class="dropdown-item">';
+												$h .= s("Supprimer l'intervention");
+											$h .= '</a>';
+
+										} else {
+
+											$h .= match($eAction['status']) {
+												Action::ACTIVE => '<a data-ajax="/farm/action:doUpdateStatus" post-id="'.$eAction['id'].'" post-status="'.Action::INACTIVE.'" data-confirm="'.s("Désactiver cette intervention ?").'" post-id="'.$eAction['id'].'" class="dropdown-item">'.s("Désactiver l'intervention").'</a>',
+												Action::INACTIVE => '<a data-ajax="/farm/action:doUpdateStatus" post-id="'.$eAction['id'].'" post-status="'.Action::ACTIVE.'" post-id="'.$eAction['id'].'" class="dropdown-item">'.s("Réactiver l'intervention").'</a>'
+											};
+										}
+
 									}
 
 							$h .= '</div>';

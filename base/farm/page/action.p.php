@@ -39,6 +39,7 @@ new \farm\ActionPage()
 		throw new ViewAction($data);
 
 	})
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction('farm', 'Action::updated'.ucfirst($data->e['status'])), validate: ['canUpdate', 'isFree'])
 	->doUpdate(fn($data) => throw new ViewAction($data))
 	->doDelete(fn($data) => throw new ViewAction($data));
 
@@ -69,8 +70,23 @@ new Page()
 	->get('manage', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+
+
+		$data->actions = \farm\ActionLib::countByFarm($data->eFarm);
+
+		if(
+			get_exists('status') and
+			$data->actions[\farm\Action::INACTIVE] === 0
+		) {
+			throw new RedirectAction('/farm/action:manage?farm='.$data->eFarm['id']);
+		}
+
+		$data->search = new Search([
+			'status' => GET('status', default: \farm\Action::ACTIVE),
+		]);
+
 		$data->cCategory = \farm\CategoryLib::getByFarm($data->eFarm, index: 'id');
-		$data->cAction = \farm\ActionLib::getForManage($data->eFarm);
+		$data->cAction = \farm\ActionLib::getForManage($data->eFarm, search: $data->search);
 
 
 		throw new \ViewAction($data);

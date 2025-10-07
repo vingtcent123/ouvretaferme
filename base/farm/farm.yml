@@ -9,6 +9,7 @@ Action:
   soil: bool = FALSE
   categories: json = PHP([])
   series: bool = TRUE
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [
     ["farm"]
   ]

@@ -44,7 +44,20 @@ class ActionLib extends ActionCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, array|string|null $fqn = NULL, Category|string $category = new Category(), ?string $index = NULL): \Collection|Action {
+	public static function countByFarm(\farm\Farm $eFarm): array {
+
+		return Action::model()
+			->select([
+				Action::ACTIVE => new \Sql('SUM(status = "'.Action::ACTIVE.'")', 'int'),
+				Action::INACTIVE => new \Sql('SUM(status = "'.Action::INACTIVE.'")', 'int')
+			])
+			->whereFarm($eFarm)
+			->get()
+			->getArrayCopy() ?: [Action::ACTIVE => 0, Action::INACTIVE => 0];
+
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, array|string|null $fqn = NULL, Category|string $category = new Category(), ?string $index = NULL, \Search $search = new \Search()): \Collection|Action {
 
 		$expects = 'collection';
 
@@ -74,6 +87,12 @@ class ActionLib extends ActionCrud {
 			} else {
 				Action::model()->whereFqn('IN', $fqn);
 			}
+		}
+
+		if($search->get('status')) {
+			Action::model()->whereStatus($search->get('status'));
+		} else {
+			Action::model()->whereStatus(Action::ACTIVE);
 		}
 
 		Action::model()
@@ -110,7 +129,7 @@ class ActionLib extends ActionCrud {
 
 	}
 
-	public static function getForManage(\farm\Farm $eFarm): \Collection|Action {
+	public static function getForManage(\farm\Farm $eFarm, \Search $search = new \Search()): \Collection|Action {
 
 		Action::model()
 			->select([
@@ -119,11 +138,14 @@ class ActionLib extends ActionCrud {
 					->delegateCollection('action'),
 				'tasks' => \series\Task::model()
 					->group('action')
+					->delegateProperty('action', new \Sql('COUNT(*)', 'int')),
+				'flows' => \sequence\Flow::model()
+					->group('action')
 					->delegateProperty('action', new \Sql('COUNT(*)', 'int'))
 
 			]);
 
-		return self::getByFarm($eFarm);
+		return self::getByFarm($eFarm, search: $search);
 
 	}
 

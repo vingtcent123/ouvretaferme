@@ -11,6 +11,9 @@ abstract class ActionElement extends \Element {
 	const BY_AREA = 'by-area';
 	const BY_PLANT = 'by-plant';
 
+	const ACTIVE = 'active';
+	const INACTIVE = 'inactive';
+
 	public static function getSelection(): array {
 		return Action::model()->getProperties();
 	}
@@ -50,10 +53,11 @@ class ActionModel extends \ModuleModel {
 			'soil' => ['bool', 'cast' => 'bool'],
 			'categories' => ['json', 'cast' => 'array'],
 			'series' => ['bool', 'cast' => 'bool'],
+			'status' => ['enum', [\farm\Action::ACTIVE, \farm\Action::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'short', 'farm', 'color', 'pace', 'soil', 'categories', 'series'
+			'id', 'name', 'fqn', 'short', 'farm', 'color', 'pace', 'soil', 'categories', 'series', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -82,6 +86,9 @@ class ActionModel extends \ModuleModel {
 			case 'series' :
 				return TRUE;
 
+			case 'status' :
+				return Action::ACTIVE;
+
 			default :
 				return parent::getDefaultValue($property);
 
@@ -98,6 +105,9 @@ class ActionModel extends \ModuleModel {
 
 			case 'categories' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
 				return parent::encode($property, $value);
@@ -166,6 +176,10 @@ class ActionModel extends \ModuleModel {
 
 	public function whereSeries(...$data): ActionModel {
 		return $this->where('series', ...$data);
+	}
+
+	public function whereStatus(...$data): ActionModel {
+		return $this->where('status', ...$data);
 	}
 
 

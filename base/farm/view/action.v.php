@@ -5,7 +5,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 	$t->nav = 'settings-production';
 
 	$t->mainTitle = new \farm\ActionUi()->getManageTitle($data->eFarm);
-	echo new \farm\ActionUi()->getManage($data->eFarm, $data->cAction, $data->cCategory);
+	echo new \farm\ActionUi()->getManage($data->eFarm, $data->actions, $data->cAction, $data->cCategory, $data->search);
 
 });
 
