@@ -75,6 +75,9 @@ Class IncomeStatementLib {
 				->group('class')
 				->getCollection(NULL, NULL, 'class');
 
-			return round($operations[\account\AccountSetting::PRODUCT_ACCOUNT_CLASS]['amount'] - $operations[\account\AccountSetting::CHARGE_ACCOUNT_CLASS]['amount'], 2);
+			return round(
+				$operations[\account\AccountSetting::PRODUCT_ACCOUNT_CLASS]['amount']
+				- $operations[\account\AccountSetting::CHARGE_ACCOUNT_CLASS]['amount'],
+				2);
 	}
 }
