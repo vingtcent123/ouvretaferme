@@ -844,7 +844,7 @@ class FarmUi {
 			'assets' => \company\CompanyUi::urlAsset($eFarm).'/'.$name,
 			'bank' => \company\CompanyUi::urlBank($eFarm).'/'.$name,
 			'journal' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
-			'analyze-accounting' => \company\CompanyUi::urlOverview($eFarm, $name),
+			'analyze-accounting' => \company\CompanyUi::urlAnalyze($eFarm, $name),
 			'summary' => \company\CompanyUi::urlSummary($eFarm, $name),
 
 		};
@@ -918,13 +918,14 @@ class FarmUi {
 			},
 
 			'analyze-accounting' => match($name) {
-				'financials' => s("Situation financière"),
-				'statements' => s("État comptable"),
+				'finance' => s("Trésorerie"),
+				'expenses' => s("Charges"),
+				'income' => s("Résultat"),
 			},
 
 			'summary' => match($name) {
 				'incomeStatement' => s("Compte de Résultat"),
-				'balanceSheet' => s("Bilan"),
+				'statements' => s("Bilan"),
 			},
 
 		};
@@ -1769,13 +1770,13 @@ class FarmUi {
 				return $categories;
 
 			case 'bank' :
-				return ['cashflow', 'import'];
+				return ['cashflow'];
 
 			case 'analyze-accounting' :
-				return ['financials', 'statements'];
+				return ['finance', 'expenses', 'income'];
 
 			case 'summary' :
-				return ['incomeStatement', 'balanceSheet'];
+				return ['incomeStatement', 'statements', /*'balanceSheet'*/];
 
 		};
 

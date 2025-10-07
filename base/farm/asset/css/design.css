@@ -39,6 +39,7 @@ body[data-template~="farm"] .nav-title-member-name {
 
 .farm-tabs.farm-section-accounting {
 	background-color: var(--accounting);
+	padding-bottom: 5rem;
 }
 
 .farm-tab {
@@ -825,12 +826,16 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		grid-area: settings;
 	}
 
+	.farm-nav-summary-accounting {
+		grid-area: summary;
+	}
+
 	@media (min-width: 992px) {
 
 		.farm-section-accounting {
 			display: grid;
 			align-items: start;
-			grid-template: "bank journal assets analyze settings" auto / auto auto auto auto auto;
+			grid-template: "bank journal assets analyze summary settings" auto / auto auto auto auto auto auto;
 		}
 
 
@@ -843,7 +848,8 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 			align-items: start;
 			grid-template:
 				"bank journal assets analyze" auto
-				"bank journal assets settings" 1fr / auto auto auto auto;
+				"settings journal assets summary" 1fr / auto auto auto auto auto;
+				"settings journal assets summary" 1fr / auto auto auto auto auto;
 		}
 
 
@@ -856,7 +862,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 			align-items: start;
 			grid-template:
 				"bank journal analyze" auto
-				"assets journal settings" auto
+				"assets journal summary" auto
 				"assets journal settings" 1fr / auto auto auto;
 		}
 
@@ -871,7 +877,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 			grid-template:
 				"bank assets" auto
 				"journal analyze" auto
-				"journal settings" auto / auto auto;
+				"settings summary" auto / auto auto;
 		}
 
 
