@@ -15,7 +15,7 @@ Class BalanceUi {
 			$h .= '</h1>';
 
 			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
 			$h .= '</div>';
 		$h .= '</div>';
 

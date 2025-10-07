@@ -16,7 +16,7 @@ class IncomeStatementUi {
 			$h .= '</h1>';
 
 			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la syntèse").'</a> ';
 			$h .= '</div>';
 
 		$h .= '</div>';

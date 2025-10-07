@@ -27,26 +27,13 @@ new Page(function($data) {
 		\farm\FarmerLib::setView('viewAccountingStatements', $data->eFarm, $data->selectedView);
 	}
 })
-	->get(['index', 'bilans', 'balances'], function($data) {
+	->get(['index', 'bilans'], function($data) {
 
-		switch($data->selectedView) {
+		$data->balanceOpening = \overview\BalanceLib::getOpeningBalance($data->eFinancialYear);
+		$data->balanceSummarized = \overview\BalanceLib::getSummarizedBalance($data->eFinancialYear);
+		$data->balanceDetailed = \overview\BalanceLib::getDetailedBalance($data->eFinancialYear);
 
-			case \farm\Farmer::BALANCE_SHEET:
-
-				$data->balanceOpening = \overview\BalanceLib::getOpeningBalance($data->eFinancialYear);
-				$data->balanceSummarized = \overview\BalanceLib::getSummarizedBalance($data->eFinancialYear);
-				$data->balanceDetailed = \overview\BalanceLib::getDetailedBalance($data->eFinancialYear);
-
-				throw new ViewAction($data, ':'.\farm\Farmer::BALANCE_SHEET);
-
-			case \farm\Farmer::TRIAL_BALANCE:
-
-				$data->accountingBalanceSheet = \overview\AccountingLib::getAccountingBalanceSheet($data->eFinancialYear);
-				$data->summaryAccountingBalance = \overview\AccountingLib::getSummaryAccountingBalance($data->accountingBalanceSheet);
-
-				throw new ViewAction($data, ':'.\farm\Farmer::TRIAL_BALANCE);
-
-		}
+		throw new ViewAction($data, ':'.\farm\Farmer::BALANCE_SHEET);
 
 	})
 	->get('pdfBalances', function($data) {

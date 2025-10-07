@@ -84,7 +84,7 @@ class BalanceSheetUi {
 			$date = $eFinancialYear['endDate'];
 		}
 
-		$h .= '<table class="overview_income-statement tr-hover">';
+		$h .= '<table class="overview_income-statement tr-hover tr-even">';
 
 			$h .= '<tr class="overview_income-statement_row-title">';
 				$h .= '<th class="text-center" colspan="6">'.s("Bilan au au {date}", ['date' => \util\DateUi::numeric($date)]).'</th>';

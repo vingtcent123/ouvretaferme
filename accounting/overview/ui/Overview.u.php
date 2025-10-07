@@ -16,8 +16,7 @@ class OverviewUi {
 
 	public function getStatementsTitle(\farm\Farm $eFarm, string $selectedView): string {
 
-		$categories = $this->getStatementsCategories($eFarm);
-		return $this->getDropdownMenuTitle($categories, $selectedView);
+		return '<h1>'.s("Les bilans").'</h1>';
 
 	}
 
@@ -50,11 +49,6 @@ class OverviewUi {
 				'url' => \company\CompanyUi::urlOverview($eFarm).'/statements:bilans',
 				'label' => s("Bilans"),
 				'longLabel' => s("Les bilans"),
-			],
-			\farm\Farmer::TRIAL_BALANCE => [
-				'url' => \company\CompanyUi::urlOverview($eFarm).'/statements:balances',
-				'label' => s("Balances"),
-				'longLabel' => s("Les balances"),
 			],
 		];
 
