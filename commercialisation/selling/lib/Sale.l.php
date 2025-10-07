@@ -833,7 +833,9 @@ class SaleLib extends SaleCrud {
 		if($emptyPaymentMethod) {
 
 			$e['paymentStatus'] = NULL;
+			$e['onlinePaymentStatus'] = NULL;
 			$properties[] = 'paymentStatus';
+			$properties[] = 'onlinePaymentStatus';
 
 		}
 
@@ -988,6 +990,20 @@ class SaleLib extends SaleCrud {
 					unset($ePayment['id']);
 					Payment::model()->insert($ePayment);
 				}
+			}
+
+			// Si on a mis à jour et qu'il ne reste plus de paiement en ligne
+			if($e['onlinePaymentStatus'] !== NULL) {
+
+				$cPayment = PaymentLib::getBySale($e);
+
+				$hasValidOnlinePayment = $cPayment->find(fn($ePayment) => $ePayment->isPaid() and $ePayment['method']->isOnline())->count() > 0;
+
+				if($hasValidOnlinePayment === FALSE) {
+					$e['onlinePaymentStatus'] = NULL;
+					Sale::model()->update($e, ['onlinePaymentStatus' => NULL]);
+				}
+
 			}
 
 		}
