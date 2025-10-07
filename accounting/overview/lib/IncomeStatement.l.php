@@ -43,7 +43,41 @@ Class IncomeStatementLib {
 			}
 
 		}
-		return ['expenses' => $expenses, 'incomes' => $incomes];
+
+		$resultData = [
+			'expenses' => ['operating' => [], 'financial' => [], 'exceptional' => []],
+			'incomes' => ['operating' => [], 'financial' => [], 'exceptional' => []],
+			];
+
+		foreach(array_merge($expenses, $incomes) as $data) {
+			switch((int)substr($data['class'], 0, 2)) {
+
+				case \account\AccountSetting::CHARGE_FINANCIAL_ACCOUNT_CLASS:
+					$resultData['expenses']['financial'][] = $data;
+					break;
+				case \account\AccountSetting::CHARGE_EXCEPTIONAL_ACCOUNT_CLASS:
+					$resultData['expenses']['exceptional'][] = $data;
+					break;
+
+				case \account\AccountSetting::PRODUCT_FINANCIAL_ACCOUNT_CLASS:
+					$resultData['incomes']['financial'][] = $data;
+					break;
+
+				case \account\AccountSetting::PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS:
+					$resultData['incomes']['exceptional'][] = $data;
+					break;
+
+				default:
+					if((int)substr($data['class'], 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS) {
+						$resultData['expenses']['operating'][] = $data;
+					} else {
+						$resultData['incomes']['operating'][] = $data;
+					}
+
+			}
+		}
+
+		return $resultData;
 
 	}
 

@@ -13,7 +13,14 @@ new Page(function($data) {
 		$data->resultData = \overview\IncomeStatementLib::getResultOperationsByFinancialYear($data->eFinancialYear);
 		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->eFinancialYear);
 
-		$threeNumbersClasses = array_merge(array_keys($data->resultData['expenses']), array_keys($data->resultData['incomes']));
+		$threeNumbersClasses = array_merge(
+			array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['operating']),
+			array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['financial']),
+			array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['exceptional']),
+			array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['operating']),
+			array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['financial']),
+			array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['exceptional']),
+		);
 		$twoNumbersClasses = array_map(fn($class) => (int)substr($class, 0, 2), $threeNumbersClasses);
 		$classes = array_unique(array_merge($threeNumbersClasses, $twoNumbersClasses));
 

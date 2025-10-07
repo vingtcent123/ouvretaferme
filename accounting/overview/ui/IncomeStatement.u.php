@@ -16,62 +16,31 @@ class IncomeStatementUi {
 		$hasPrevious = $eFinancialYearPrevious->notEmpty();
 
 		$totals = [
-			'operatingExpense' => ['current' => 0, 'previous' => 0],
-			'financialExpense' => ['current' => 0, 'previous' => 0],
-			'exceptionalExpense' => ['current' => 0, 'previous' => 0],
-			'operatingIncome' => ['current' => 0, 'previous' => 0],
-			'financialIncome' => ['current' => 0, 'previous' => 0],
-			'exceptionalIncome' => ['current' => 0, 'previous' => 0],
+			'operatingExpense' => [
+				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['expenses']['operating'])),
+				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['expenses']['operating'])),
+			],
+			'financialExpense' => [
+				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['expenses']['financial'])),
+				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['expenses']['financial'])),
+			],
+			'exceptionalExpense' => [
+				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['expenses']['exceptional'])),
+				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['expenses']['exceptional'])),
+			],
+			'operatingIncome' => [
+				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['incomes']['operating'])),
+				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['incomes']['operating'])),
+			],
+			'financialIncome' => [
+				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['incomes']['financial'])),
+				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['incomes']['financial'])),
+			],
+			'exceptionalIncome' => [
+				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['incomes']['exceptional'])),
+				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['incomes']['exceptional'])),
+			],
 		];
-		// Charges d'exploitation, financières et exceptionnelles
-		$operatingExpenses = [];
-		$financialExpenses = [];
-		$exceptionalExpenses = [];
-
-		// Produits d'exploitation, financiers et exceptionnels
-		$operatingIncomes = [];
-		$financialIncomes = [];
-		$exceptionalIncomes = [];
-
-		foreach(array_merge($resultData['expenses'], $resultData['incomes']) as $data) {
-			switch((int)substr($data['class'], 0, 2)) {
-
-				case \account\AccountSetting::CHARGE_FINANCIAL_ACCOUNT_CLASS:
-					$financialExpenses[] = $data;
-					$totals['financialExpense']['current'] += $data['current'];
-					$totals['financialExpense']['previous'] += $data['previous'];
-					break;
-				case \account\AccountSetting::CHARGE_EXCEPTIONAL_ACCOUNT_CLASS:
-					$exceptionalExpenses[] = $data;
-					$totals['exceptionalExpense']['current'] += $data['current'];
-					$totals['exceptionalExpense']['previous'] += $data['previous'];
-					break;
-
-				case \account\AccountSetting::PRODUCT_FINANCIAL_ACCOUNT_CLASS:
-					$financialIncomes[] = $data;
-					$totals['financialIncome']['current'] += $data['current'];
-					$totals['financialIncome']['previous'] += $data['previous'];
-					break;
-
-				case \account\AccountSetting::PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS:
-					$exceptionalIncomes[] = $data;
-					$totals['exceptionalIncome']['current'] += $data['current'];
-					$totals['exceptionalIncome']['previous'] += $data['previous'];
-					break;
-
-				default:
-					if((int)substr($data['class'], 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS) {
-						$operatingExpenses[] = $data;
-						$totals['operatingExpense']['current'] += $data['current'] ?? 0;
-						$totals['operatingExpense']['previous'] += $data['previous'] ?? 0;
-					} else {
-						$operatingIncomes[] = $data;
-						$totals['operatingIncome']['current'] += $data['current'] ?? 0;
-						$totals['operatingIncome']['previous'] += $data['previous'] ?? 0;
-					}
-
-			}
-		}
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
@@ -100,15 +69,15 @@ class IncomeStatementUi {
 				}
 			$h .= '</tr>';
 
-			$h .= $this->displaySubCategoryLines($operatingExpenses, $operatingIncomes, $cAccount, $hasPrevious);
+			$h .= $this->displaySubCategoryLines($resultData['expenses']['operating'], $resultData['incomes']['operating'], $cAccount, $hasPrevious);
 
 			$h .= $this->displaySubTotal($totals, 'operating', $hasPrevious);
 
-			$h .= $this->displaySubCategoryLines($financialExpenses, $financialIncomes, $cAccount, $hasPrevious);
+			$h .= $this->displaySubCategoryLines($resultData['expenses']['financial'], $resultData['incomes']['financial'], $cAccount, $hasPrevious);
 
 			$h .= $this->displaySubTotal($totals, 'financial', $hasPrevious);
 
-			$h .= $this->displaySubCategoryLines($exceptionalExpenses, $exceptionalIncomes, $cAccount, $hasPrevious);
+			$h .= $this->displaySubCategoryLines($resultData['expenses']['exceptional'], $resultData['incomes']['exceptional'], $cAccount, $hasPrevious);
 
 			$h .= $this->displaySubTotal($totals, 'exceptional', $hasPrevious);
 

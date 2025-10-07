@@ -20,7 +20,7 @@ new AdaptativeView(
 	);
 
 	echo new \journal\BalanceUi()->getSearch($data->search, $data->eFinancialYear);
-	echo new \journal\BalanceUi()->display($data->eFinancialYear, $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search);
+	echo new \journal\BalanceUi()->display($data->eFinancialYear, $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search, $data->searches);
 
 }
 );
