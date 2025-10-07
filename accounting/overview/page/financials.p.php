@@ -40,7 +40,6 @@ new Page(function($data) {
 
 			case \farm\Farmer::RESULTS:
 				$data->cOperation = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFinancialYear);
-				[$data->result, $data->cAccount] = \overview\AnalyzeLib::getResult($data->eFinancialYear);
 				throw new ViewAction($data, ':results');
 		}
 

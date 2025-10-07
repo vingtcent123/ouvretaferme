@@ -146,7 +146,7 @@ Class BalanceLib {
 		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceActifCategories + $balancePassifCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);
 
-		[$resultTable, ] = \overview\AnalyzeLib::getResult($eFinancialYear);
+		$resultTable = \overview\AnalyzeLib::getResult($eFinancialYear);
 
 		if(count($resultTable) === 0) {
 			return [];
@@ -344,7 +344,7 @@ Class BalanceLib {
 		$accountLabels = new BalanceUi()->extractLabelsFromCategories($balanceActifCategories + $balancePassifCategories);
 		$accountLabelsWithDepreciation = self::getAccountLabelsWithDepreciation($accountLabels);
 
-		[$resultTable, ] = \overview\AnalyzeLib::getResult($eFinancialYear);
+		$resultTable = \overview\AnalyzeLib::getResult($eFinancialYear);
 		if(empty($resultTable)) {
 			return [];
 		}

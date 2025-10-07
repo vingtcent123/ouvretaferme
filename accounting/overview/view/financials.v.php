@@ -61,22 +61,7 @@ new AdaptativeView('results', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	echo '<div class="tabs-h" id="analyze-result" onrender="'.encode('Lime.Tab.restore(this, "result-month")').'">';
-
-	echo '<div class="tabs-item">';
-	echo '<a class="tab-item selected" data-tab="result-month" onclick="Lime.Tab.select(this)">'.s("Mois par mois").'</a>';
-	echo '<a class="tab-item" data-tab="result-all" onclick="Lime.Tab.select(this)">'.s("Compte de résultat").'</a>';
-	echo '</div>';
-
-	echo '<div class="tab-panel" data-tab="result-month">';
 	echo new overview\ResultUi()->getByMonth($data->eFinancialYear, $data->cOperation);
-	echo '</div>';
-
-	echo '<div class="tab-panel" data-tab="result-all">';
-	echo new overview\ResultUi()->get($data->result, $data->cAccount);
-	echo '</div>';
-
-	echo '</div>';
 
 
 });
