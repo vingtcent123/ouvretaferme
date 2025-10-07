@@ -543,7 +543,11 @@ class CsvLib {
 			if(in_array($line['variety'], $import[$hash]['cultivations'][0]['varieties_list']) === FALSE) {
 
 				$import[$hash]['cultivations'][0]['varieties_list'][] = $line['variety'];
-				$import[$hash]['cultivations'][0]['varieties'][] = ['variety' => $line['variety'], 'eVariety' => new \plant\Variety(), 'part' => $line['length'] ? (int)$line['length'] : 1];
+				$import[$hash]['cultivations'][0]['varieties'][] = [
+					'variety' => $line['variety'],
+					'eVariety' => new \plant\Variety(),
+					'part' => $import[$hash]['series']['bed_length'] ?: 1
+				];
 
 			}
 
@@ -817,7 +821,7 @@ class CsvLib {
 
 				// variety
 				foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety, 'part' => $part]) {
-
+d($variety, $part);
 					$input['variety'][$position]['variety'][] = $eVariety->empty() ? 'new' : $eVariety['id'];
 					$input['variety'][$position]['varietyCreate'][] = $eVariety->empty() ? $variety : NULL;
 					$input['variety'][$position][match($cultivation['varieties_unit']) {
