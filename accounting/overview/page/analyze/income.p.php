@@ -10,8 +10,7 @@ new Page(function($data) {
 })
 	->get(['index'], function($data) {
 
-		$data->cOperationBank = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'bank');
-		$data->cOperationCash = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'cash');
+		$data->cOperation = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFinancialYear);
 
 		throw new ViewAction($data);
 
