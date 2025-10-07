@@ -8,37 +8,74 @@ class IncomeStatementUi {
 	}
 
 	public function getTitle(): string {
-		return '<h1>'.s("Compte de Résultat").'</h1>';
+
+		$h = '<div class="util-action">';
+
+			$h .= '<h1>';
+				$h .= s("Compte de Résultat");
+			$h .= '</h1>';
+
+			$h .= '<div>';
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
 	}
 
-	public function getTable(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, \account\FinancialYear $eFinancialYear, array $resultData, \Collection $cAccount): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYear): string {
+
+		$h = '<div id="income-statement-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+
+		$form = new \util\FormUi();
+		$url = LIME_REQUEST_PATH;
+
+		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+
+		$h .= '<div>';
+			$h .= $form->checkbox('summary', 1, ['checked' => $search->get('summary'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher la synthèse par classe de compte (sur 2 chiffres)")]);
+			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+		$h .= '</div>';
+
+		$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+
+	public function getTable(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, \account\FinancialYear $eFinancialYear, array $resultData, \Collection $cAccount, bool $displaySummary): string {
 
 		$hasPrevious = $eFinancialYearPrevious->notEmpty();
 
 		$totals = [
 			'operatingExpense' => [
-				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['expenses']['operating'])),
-				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['expenses']['operating'])),
+				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['expenses']['operating'])),
+				'previous' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['previous']), $resultData['expenses']['operating'])),
 			],
 			'financialExpense' => [
-				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['expenses']['financial'])),
-				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['expenses']['financial'])),
+				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['expenses']['financial'])),
+				'previous' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['previous']), $resultData['expenses']['financial'])),
 			],
 			'exceptionalExpense' => [
-				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['expenses']['exceptional'])),
-				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['expenses']['exceptional'])),
+				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['expenses']['exceptional'])),
+				'previous' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['previous']), $resultData['expenses']['exceptional'])),
 			],
 			'operatingIncome' => [
-				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['incomes']['operating'])),
-				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['incomes']['operating'])),
+				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['incomes']['operating'])),
+				'previous' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['previous']), $resultData['incomes']['operating'])),
 			],
 			'financialIncome' => [
-				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['incomes']['financial'])),
-				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['incomes']['financial'])),
+				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['incomes']['financial'])),
+				'previous' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['previous']), $resultData['incomes']['financial'])),
 			],
 			'exceptionalIncome' => [
-				'current' => array_sum(array_map(fn($data) => $data['current'], $resultData['incomes']['exceptional'])),
-				'previous' => array_sum(array_map(fn($data) => $data['previous'], $resultData['incomes']['exceptional'])),
+				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['incomes']['exceptional'])),
+				'previous' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['previous']), $resultData['incomes']['exceptional'])),
 			],
 		];
 
@@ -191,8 +228,10 @@ class IncomeStatementUi {
 
 				if($expense !== null) {
 
-					$h .= '<td class="text-end td-min-content">'.encode($expense['class']).'</td>';
-					$h .= '<td>';
+					$style = ($expense['isSummary'] ?? FALSE) ? ' style="font-weight: bold";' : '';
+
+					$h .= '<td class="text-end td-min-content"'.$style.'>'.encode($expense['class']).'</td>';
+					$h .= '<td'.$style.'>';
 						if($cAccount->offsetExists($expense['class'])) {
 							$eAccount = $cAccount->offsetGet($expense['class']);
 						} else {
@@ -200,9 +239,9 @@ class IncomeStatementUi {
 						}
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($expense['current']).'</td>';
+					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['current']).'</td>';
 					if($hasPrevious) {
-						$h .= '<td class="text-end">'.\util\TextUi::money($expense['previous']).'</td>';
+						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['previous']).'</td>';
 					}
 
 				} else {
@@ -216,8 +255,10 @@ class IncomeStatementUi {
 
 				if($income !== null) {
 
-					$h .= '<td class="text-end td-min-content">'.encode($income['class']).'</td>';
-					$h .= '<td>';
+					$style = ($income['isSummary'] ?? FALSE) ? ' style="font-weight: bold";' : '';
+
+					$h .= '<td class="text-end td-min-content"'.$style.'>'.encode($income['class']).'</td>';
+					$h .= '<td'.$style.'>';
 						if($cAccount->offsetExists($income['class'])) {
 							$eAccount = $cAccount->offsetGet($income['class']);
 						} else {
@@ -225,9 +266,9 @@ class IncomeStatementUi {
 						}
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($income['current']).'</td>';
+					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['current']).'</td>';
 					if($hasPrevious) {
-						$h .= '<td class="text-end">'.\util\TextUi::money($income['previous']).'</td>';
+						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['previous']).'</td>';
 					}
 
 				} else {

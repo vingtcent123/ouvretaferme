@@ -6,7 +6,7 @@ namespace overview;
  */
 Class IncomeStatementLib {
 
-	public static function getResultOperationsByFinancialYear(\account\FinancialYear $eFinancialYear): array {
+	public static function getResultOperationsByFinancialYear(\account\FinancialYear $eFinancialYear, bool $hasSummary): array {
 
 		$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
 		$startDate = $eFinancialYearPrevious['startDate'] ?? $eFinancialYear['startDate'];
@@ -15,7 +15,7 @@ Class IncomeStatementLib {
 		$cOperations = \journal\Operation::model()
 			->select([
 				'financialYear',
-				'class' => new \Sql('SUBSTRING(accountLabel, 1, 3)'),
+				'class' => new \Sql('SUBSTRING(accountLabel, 1, 3)', 'int'),
 				'amount' => new \Sql('SUM(IF(accountLabel LIKE "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%", 1, -1) * IF(type = "debit", amount, -amount))')
 			])
 			->where('date BETWEEN '.\journal\Operation::model()->format($startDate).' AND '.\journal\Operation::model()->format($endDate))
@@ -47,37 +47,79 @@ Class IncomeStatementLib {
 		$resultData = [
 			'expenses' => ['operating' => [], 'financial' => [], 'exceptional' => []],
 			'incomes' => ['operating' => [], 'financial' => [], 'exceptional' => []],
-			];
+		];
+
+		$currentSum = [
+			'previous' => 0,
+			'current' => 0,
+			'class' => NULL,
+			'isSummary' => TRUE,
+		];
+		$currentSumClass = NULL;
 
 		foreach(array_merge($expenses, $incomes) as $data) {
-			switch((int)substr($data['class'], 0, 2)) {
 
-				case \account\AccountSetting::CHARGE_FINANCIAL_ACCOUNT_CLASS:
-					$resultData['expenses']['financial'][] = $data;
-					break;
-				case \account\AccountSetting::CHARGE_EXCEPTIONAL_ACCOUNT_CLASS:
-					$resultData['expenses']['exceptional'][] = $data;
-					break;
+			if($currentSumClass === NULL) {
+				$currentSum['class'] = (int)mb_substr((string)$data['class'], 0, 2);
+			}
 
-				case \account\AccountSetting::PRODUCT_FINANCIAL_ACCOUNT_CLASS:
-					$resultData['incomes']['financial'][] = $data;
-					break;
+			if($hasSummary and $currentSumClass !== NULL and $currentSumClass !== (int)mb_substr((string)$data['class'], 0, 2)) {
 
-				case \account\AccountSetting::PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS:
-					$resultData['incomes']['exceptional'][] = $data;
-					break;
+				list($type, $category) = self::getTypeAndCategory($currentSumClass);
+				$resultData[$type][$category][] = $currentSum;
 
-				default:
-					if((int)substr($data['class'], 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS) {
-						$resultData['expenses']['operating'][] = $data;
-					} else {
-						$resultData['incomes']['operating'][] = $data;
-					}
+				$currentSum = [
+					'previous' => 0,
+					'current' => 0,
+					'class' => (int)mb_substr((string)$data['class'], 0, 2),
+					'isSummary' => TRUE,
+				];
 
 			}
+
+			list($type, $category) = self::getTypeAndCategory($data['class']);
+			$resultData[$type][$category][] = $data;
+			$currentSum['previous'] += $data['previous'];
+			$currentSum['current'] += $data['current'];
+
+			$currentSumClass = (int)mb_substr((string)$data['class'], 0, 2);
+
+		}
+
+		if($hasSummary) {
+			list($type, $category) = self::getTypeAndCategory($currentSumClass);
+			$resultData[$type][$category][] = $currentSum;
 		}
 
 		return $resultData;
+
+	}
+
+	private static function getTypeAndCategory(int $class): array {
+
+		switch((int)mb_substr((string)$class, 0, 2)) {
+
+			case \account\AccountSetting::CHARGE_FINANCIAL_ACCOUNT_CLASS:
+				return ['expenses', 'financial'];
+
+			case \account\AccountSetting::CHARGE_EXCEPTIONAL_ACCOUNT_CLASS:
+				return ['expenses', 'exceptional'];
+
+			case \account\AccountSetting::PRODUCT_FINANCIAL_ACCOUNT_CLASS:
+				return ['incomes', 'financial'];
+
+			case \account\AccountSetting::PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS:
+				return ['incomes', 'exceptional'];
+
+			default:
+				if((int)mb_substr((string)$class, 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS) {
+					return ['expenses', 'operating'];
+				} else {
+					return ['incomes', 'operating'];
+				}
+
+		}
+
 
 	}
 

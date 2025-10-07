@@ -7,10 +7,15 @@ new Page(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
+	$data->search = new Search([
+		'precision' => GET('precision'),
+		'summary' => GET('summary'),
+	], GET('sort'));
+
 })
 	->get('index', function($data) {
 
-		$data->resultData = \overview\IncomeStatementLib::getResultOperationsByFinancialYear($data->eFinancialYear);
+		$data->resultData = \overview\IncomeStatementLib::getResultOperationsByFinancialYear($data->eFinancialYear, (bool)$data->search->get('summary'));
 		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->eFinancialYear);
 
 		$threeNumbersClasses = array_merge(
