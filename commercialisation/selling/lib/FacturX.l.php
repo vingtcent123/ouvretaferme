@@ -22,11 +22,15 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
-		if($eInvoice['farm']['configuration']['invoiceVat']) {
-			$siren = mb_substr($eInvoice['farm']['configuration']['invoiceVat'], 4);
-		} else {
-			$siren = '';
-		}
+		$paymentMean = match($eInvoice['paymentMethod']['fqn']) {
+			\payment\MethodLib::CASH => 10,
+			\payment\MethodLib::CHECK => 20,
+			\payment\MethodLib::TRANSFER => 30,
+			\payment\MethodLib::CARD => 48,
+			\payment\MethodLib::ONLINE_CARD => 48,
+			\payment\MethodLib::DIRECT_DEBIT => 49,
+			default => 'ZZZ',
+		};
 
 		$xml = '<?xml version="1.0" encoding="utf-8"?>
 <rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
@@ -106,10 +110,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ram:ApplicableHeaderTradeAgreement><!--BT-10-00-->
 			<ram:SellerTradeParty><!--BG-4-->
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
-				'.($eInvoice['farm']['configuration']['invoiceVat'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0002">'.encode($siren).'</ram:ID>
-				</ram:SpecifiedLegalOrganization>' : '').'
+					<ram:ID schemeID="0002">'.encode($eInvoice['farm']['siret'] ?? '').'</ram:ID>
+				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
 				</ram:PostalTradeAddress>
@@ -123,10 +126,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			</ram:SellerTradeParty>
 			<ram:BuyerTradeParty><!--BG-7-->
 				<ram:Name>'.encode($eInvoice['customer']['legalName'] ?? $eInvoice['customer']['name']).'</ram:Name><!--BT-44-->
-				'.($eInvoice['customer']['siret'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-47-00-->
-					<ram:ID schemeID="0002">'.encode($eInvoice['customer']['siret']).'</ram:ID>
-				</ram:SpecifiedLegalOrganization>' : '').'
+					<ram:ID schemeID="0002">'.encode($eInvoice['customer']['siret'] ?? '').'</ram:ID>
+				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-8-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-55-->
 				</ram:PostalTradeAddress>
@@ -137,7 +139,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		</ram:ApplicableHeaderTradeAgreement>
 		<ram:ApplicableHeaderTradeDelivery/><!--BG-13-00-->
 		<ram:ApplicableHeaderTradeSettlement><!--BG-19-00-->
-			<ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode><!--BT-5-->';
+			<ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode><!--BT-5-->
+			<ram:SpecifiedTradeSettlementPaymentMeans><!-- BG-16 -->
+				<ram:TypeCode>'.$paymentMean.'</ram:TypeCode>  <!-- BT-81 (Code de type de moyen de paiement) : 30 -->
+				<ram:Information>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</ram:Information>  <!-- BT-82 (Libellé du moyen de paiement) : Virement -->
+			</ram:SpecifiedTradeSettlementPaymentMeans>';
 			foreach($eInvoice['vatByRate'] as $vatByRate) {
 				$xml .= '
 				<ram:ApplicableTradeTax><!--BG-23-->
