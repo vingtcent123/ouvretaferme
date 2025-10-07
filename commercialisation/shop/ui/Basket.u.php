@@ -804,9 +804,10 @@ class BasketUi {
 		$class = '';
 		$content = '';
 
-		if($eShop['hasPayment']) {
+		if($eShop['hasPayment'] and $eSaleReference['cPayment']->notEmpty()) {
 
-			switch($eSaleReference['paymentMethod']['fqn'] ?? NULL) {
+			$ePayment = $eSaleReference['cPayment']->first();
+			switch($ePayment['method']['fqn']) {
 
 				case \payment\MethodLib::ONLINE_CARD :
 
