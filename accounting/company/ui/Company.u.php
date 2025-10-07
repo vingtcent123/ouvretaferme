@@ -27,6 +27,14 @@ class CompanyUi {
 		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview'.($view !== NULL ? '/'.$view : '');
 	}
 
+	public static function urlAnalyze(int|\farm\Farm $farm, ?string $view = NULL): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview/analyze'.($view !== NULL ? '/'.$view : '');
+	}
+
+	public static function urlSummary(int|\farm\Farm $farm, ?string $view = NULL): string {
+		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview/summary'.($view !== NULL ? '/'.$view : '');
+	}
+
 	public static function urlAsset(int|\farm\Farm $farm): string {
 		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/asset';
 	}

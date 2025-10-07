@@ -6,7 +6,7 @@ class BankUi {
 	public function __construct() {
 	}
 
-	public function getBankTitle(\account\FinancialYear $eFinancialYear): string {
+	public function getBankTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
@@ -17,6 +17,7 @@ class BankUi {
 			if($eFinancialYear->notEmpty()) {
 
 				$h .= '<div>';
+					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/import" class="btn btn-primary">'.\Asset::icon('list-check').' '.s("Imports").'</a> ';
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#cashflow-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 				$h .= '</div>';
 

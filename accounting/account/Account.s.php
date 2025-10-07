@@ -13,15 +13,24 @@ class AccountSetting extends \Settings {
 
 	const FIRST_CUSTOM_ID = 100000;
 
-	const ASSET_CLASS = 2;
+	const CAPITAL_GENERAL_CLASS = 1;
+	const RESULT_CLASS = '121';
+	const PROFIT_CLASS = '120';
+	const LOSS_CLASS = '129';
+	const ASSET_GENERAL_CLASS = 2;
 	const GRANT_ASSET_CLASS = '13';
 	const GRANT_DEPRECIATION_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
 
-	const THIRD_ACCOUNT_GENERAL_CLASS = 4;
+	const STOCK_GENERAL_CLASS = 3;
+	const THIRD_PARTY_GENERAL_CLASS = 4;
 	const VAT_CLASS = 445;
-	const BANK_ACCOUNT_GENERAL_CLASS = 5;
+	const FINANCIAL_GENERAL_CLASS = 5;
 	const CHARGE_ACCOUNT_CLASS = 6;
+	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 65;
+	const CHARGE_EXCEPTIONAL_ACCOUNT_CLASS = 67;
 	const PRODUCT_ACCOUNT_CLASS = 7;
+	const PRODUCT_FINANCIAL_ACCOUNT_CLASS = 75;
+	const PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS = 77;
 
 	const BANK_ACCOUNT_CLASS = '512';
 	const CASH_ACCOUNT_CLASS = '5310'; // caisse

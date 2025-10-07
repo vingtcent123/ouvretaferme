@@ -38,9 +38,7 @@ class AnalyzeLib {
 			->sort(['class' => SORT_ASC])
 			->getCollection(NULL, NULL, ['class']);
 
-		$cAccount = \account\AccountLib::getByClasses($cOperation->getColumn('class'), 'class');
-
-		return [$cOperation->getArrayCopy(), $cAccount];
+		return $cOperation->getArrayCopy();
 
 	}
 

@@ -135,11 +135,11 @@ class AccountLib extends AccountCrud {
 
 					switch((int)mb_substr($eAccount['class'], 0, 1)) {
 
-						case AccountSetting::THIRD_ACCOUNT_GENERAL_CLASS:
+						case AccountSetting::THIRD_PARTY_GENERAL_CLASS:
 							$cAccountClassThird->append($eAccount);
 							break;
 
-						case AccountSetting::BANK_ACCOUNT_GENERAL_CLASS:
+						case AccountSetting::FINANCIAL_GENERAL_CLASS:
 							$cAccountClassAfter->append($eAccount);
 							break;
 

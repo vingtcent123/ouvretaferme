@@ -807,6 +807,10 @@ class FarmUi {
 				'icon' => \Asset::icon('house'),
 				'label' => s("Immobilisations")
 			],
+			'summary' => [
+				'icon' => \Asset::icon('file-spreadsheet'),
+				'label' => s("Synthèses")
+			],
 			'analyze-accounting' => [
 				'icon' => \Asset::icon('bar-chart'),
 				'label' => s("Analyse")
@@ -840,7 +844,8 @@ class FarmUi {
 			'assets' => \company\CompanyUi::urlAsset($eFarm).'/'.$name,
 			'bank' => \company\CompanyUi::urlBank($eFarm).'/'.$name,
 			'journal' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
-			'analyze-accounting' => \company\CompanyUi::urlOverview($eFarm, $name),
+			'analyze-accounting' => \company\CompanyUi::urlAnalyze($eFarm, $name),
+			'summary' => \company\CompanyUi::urlSummary($eFarm, $name),
 
 		};
 
@@ -913,8 +918,14 @@ class FarmUi {
 			},
 
 			'analyze-accounting' => match($name) {
-				'financials' => s("Situation financière"),
-				'statements' => s("État comptable"),
+				'finance' => s("Trésorerie"),
+				'expenses' => s("Charges"),
+				'income' => s("Résultat"),
+			},
+
+			'summary' => match($name) {
+				'incomeStatement' => s("Compte de Résultat"),
+				'statements' => s("Bilan"),
 			},
 
 		};
@@ -1100,6 +1111,14 @@ class FarmUi {
 					$subNav,
 					'accounting'
 				);
+
+			$h .= '</div>';
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-summary">';
+
+				$h .= $this->getNav('summary', $nav);
+
+				$h .= $this->getSummaryMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 
@@ -1460,6 +1479,16 @@ class FarmUi {
 
 	}
 
+	public function getSummaryMenu(Farm $eFarm, ?string $subNav = NULL): string {
+
+		return $this->getSubNav(
+			$eFarm,
+			'summary',
+			$subNav
+		);
+
+	}
+
 	public function getAssetsMenu(Farm $eFarm, ?string $subNav = NULL): string {
 
 		return $this->getSubNav(
@@ -1741,10 +1770,13 @@ class FarmUi {
 				return $categories;
 
 			case 'bank' :
-				return ['cashflow', 'import'];
+				return ['cashflow'];
 
 			case 'analyze-accounting' :
-				return ['financials', 'statements'];
+				return ['finance', 'expenses', 'income'];
+
+			case 'summary' :
+				return ['incomeStatement', 'statements', /*'balanceSheet'*/];
 
 		};
 

@@ -32,6 +32,7 @@ tr.row-upper th {
 	text-transform: uppercase;
 }
 
+tr.row-bold > th,
 tr.row-bold > td {
 	font-weight: bold;
 }
