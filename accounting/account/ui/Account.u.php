@@ -99,7 +99,7 @@ class AccountUi {
 
 					$classNumber = strlen($eAccount['class']) - 2;
 
-					$h .= '<tr name="account-'.$eAccount['id'].'">';
+					$h .= '<tr name="account-'.$eAccount['id'].'" class="'.($eAccount['visible'] ? '' : 'account_not-visible').'">';
 
 						$h .= '<td>';
 							$h .= '<span class="ml-'.$classNumber.'">';

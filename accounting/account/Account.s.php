@@ -14,6 +14,7 @@ class AccountSetting extends \Settings {
 	const FIRST_CUSTOM_ID = 100000;
 
 	const CAPITAL_GENERAL_CLASS = 1;
+	const LOANS_CLASS = 16;
 	const RESULT_CLASS = '121';
 	const PROFIT_CLASS = '120';
 	const LOSS_CLASS = '129';

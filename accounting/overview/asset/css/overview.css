@@ -64,3 +64,9 @@ table:not(.overview_income-statement_has_previous) .overview_income-statement_gr
 	}
 
 }
+.overview_income-statement_cell-links a {
+	color: var(--muted);
+}
+.overview_income-statement_cell-summary {
+	font-weight: bold;
+}

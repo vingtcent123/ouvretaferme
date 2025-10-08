@@ -9,9 +9,9 @@ new Page(function($data) {
 })
 	->get('index', function($data) {
 
-		$search = new Search(['financialYear' => $data->eFinancialYear]);
+		$data->search = new Search(['financialYear' => $data->eFinancialYear, 'accountLabel' => GET('accountLabel')]);
 
-		$data->cOperation = \journal\OperationLib::getAllForBook($search);
+		$data->cOperation = \journal\OperationLib::getAllForBook($data->search);
 		$data->cAccount = \account\AccountLib::getAll();
 
 		throw new ViewAction($data);

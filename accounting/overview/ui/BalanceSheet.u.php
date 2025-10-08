@@ -8,10 +8,47 @@ class BalanceSheetUi {
 	}
 
 	public function getTitle(): string {
-		return '<h1>'.s("Bilan").'</h1>';
+
+		$h = '<div class="util-action">';
+
+			$h .= '<h1>';
+				$h .= s("Bilan");
+			$h .= '</h1>';
+
+			$h .= '<div>';
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
 	}
 
-	public function getTable(\account\FinancialYear $eFinancialYear, \Collection $cOperation, float $result, \Collection $cAccount): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYear): string {
+
+		$h = '<div id="balance-sheet-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+
+			$form = new \util\FormUi();
+			$url = LIME_REQUEST_PATH;
+
+			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+
+				$h .= '<div>';
+					$h .= $form->checkbox('detailed', 1, ['checked' => $search->get('detailed'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher le détail")]);
+					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
+					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+
+	public function getTable(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cOperationDetail, ?float $result, \Collection $cAccount): string {
 
 		$h = '';
 
@@ -35,14 +72,19 @@ class BalanceSheetUi {
 				continue;
 			}
 
+			// Recherche des détails d'opération
+			$cOperationSubClasses = $cOperationDetail->find(fn($e) => mb_substr($e['class'], 0, 3) === $eOperation['class'])->getArrayCopy();
+
 			switch((int)substr($eOperation['class'], 0, 1)) {
 
 				case \account\AccountSetting::ASSET_GENERAL_CLASS:
+					$balanceSheetData['fixedAssets'] = array_merge($balanceSheetData['fixedAssets'], $cOperationSubClasses);
 					$balanceSheetData['fixedAssets'][] = $eOperation;
 					$totals['fixedAssets'] += $eOperation['amount'];
 					break;
 
 				case \account\AccountSetting::STOCK_GENERAL_CLASS:
+					$balanceSheetData['currentAssets'] = array_merge($balanceSheetData['currentAssets'], $cOperationSubClasses);
 					$balanceSheetData['currentAssets'][] = $eOperation;
 					$totals['currentAssets'] += $eOperation['amount'];
 					break;
@@ -50,33 +92,44 @@ class BalanceSheetUi {
 				case \account\AccountSetting::THIRD_PARTY_GENERAL_CLASS:
 				case \account\AccountSetting::FINANCIAL_GENERAL_CLASS:
 					if($eOperation['amount'] > 0) { // compte débiteur
+						$balanceSheetData['currentAssets'] = array_merge($balanceSheetData['currentAssets'], $cOperationSubClasses);
 						$balanceSheetData['currentAssets'][] = $eOperation;
 						$totals['currentAssets'] += $eOperation['amount'];
 					} else {
-						$eOperation['amount'] *= -1;
+						$eOperation['amount'] *= -1; // compte créditeur
+						$balanceSheetData['debts'] = array_merge($balanceSheetData['debts'], array_map(function($e) {
+							$e['amount'] *= -1;
+							return $e;
+						}, $cOperationSubClasses));
 						$balanceSheetData['debts'][] = $eOperation;
 						$totals['debts'] += $eOperation['amount'];
 					}
 					break;
 
 				case \account\AccountSetting::CAPITAL_GENERAL_CLASS:
-					$eOperation['amount'] *= -1;
-					if((int)substr($eOperation['class'], 0, 2) < 16) {
+					if((int)substr($eOperation['class'], 0, 2) < \account\AccountSetting::LOANS_CLASS) {
+						$balanceSheetData['equity'] = array_merge($balanceSheetData['equity'], $cOperationSubClasses);
 						$balanceSheetData['equity'][] = $eOperation;
 						$totals['equity'] += $eOperation['amount'];
-					} else {
+					} else { // Les emprunts + dettes + comptes de liaison partent en dettes
+						$balanceSheetData['debts'] = array_merge($balanceSheetData['debts'], array_map(function($e) {
+							$e['amount'] *= -1;
+							return $e;
+						}, $cOperationSubClasses));
 						$balanceSheetData['debts'][] = $eOperation;
 						$totals['debts'] += $eOperation['amount'];
 					}
 			}
 		}
 
-		// On rajoute le résultat
-		$balanceSheetData['equity'][] = [
-			'class' => (string)($result > 0 ? \account\AccountSetting::PROFIT_CLASS : \account\AccountSetting::LOSS_CLASS),
-			'amount' => $result,
-		];
-		$totals['equity'] += $result;
+		// On rajoute le résultat si l'exercice est encore ouvert
+		if($eFinancialYear->canUpdate() and $result !== NULL) {
+			$balanceSheetData['equity'][] = [
+				'class' => (string)($result > 0 ? \account\AccountSetting::PROFIT_CLASS : \account\AccountSetting::LOSS_CLASS),
+				'amount' => $result,
+			];
+			$totals['equity'] += $result;
+		}
 
 		if($eFinancialYear['endDate'] > date('Y-m-d')) {
 			$date = date('Y-m-d');
@@ -87,7 +140,7 @@ class BalanceSheetUi {
 		$h .= '<table class="overview_income-statement tr-hover tr-even">';
 
 			$h .= '<tr class="overview_income-statement_row-title">';
-				$h .= '<th class="text-center" colspan="6">'.s("Bilan au au {date}", ['date' => \util\DateUi::numeric($date)]).'</th>';
+				$h .= '<th class="text-center" colspan="6">'.s("{farm} - exercice {year}<br />Balance au {date}", ['farm' => $eFarm['legalName'], 'year' => \account\FinancialYearUi::getYear($eFinancialYear), 'date' => \util\DateUi::numeric($date)]).'</th>';
 			$h .= '</tr>';
 
 			$h .= '<tr class="overview_income-statement_group-title">';
@@ -95,34 +148,34 @@ class BalanceSheetUi {
 				$h .= '<th colspan="3">'.s("Passif").'</th>';
 			$h .= '</tr>';
 
-			$h .= $this->displaySubCategoryLines($balanceSheetData['fixedAssets'], $balanceSheetData['equity'], $cAccount);
+			$h .= $this->displaySubCategoryLines(eFarm: $eFarm, assets: $balanceSheetData['fixedAssets'], liabilities: $balanceSheetData['equity'],cAccount: $cAccount, hasDetail: $cOperationDetail->notEmpty());
 
 			$h .= '<tr class="overview_income-statement_group-total row-bold">';
 
 				$h .= '<th colspan="2">'.s("Total actif immobilisé").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets'], precision: 0).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets'], precision: 2).'</td>';
 				$h .= '<th colspan="2">'.s("Total capitaux propres").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity'], precision: 0).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity'], precision: 2).'</td>';
 
 			$h .= '</tr>';
 
-			$h .= $this->displaySubCategoryLines($balanceSheetData['currentAssets'], $balanceSheetData['debts'], $cAccount);
+			$h .= $this->displaySubCategoryLines(eFarm: $eFarm, assets: $balanceSheetData['currentAssets'],liabilities: $balanceSheetData['debts'], cAccount: $cAccount, hasDetail: $cOperationDetail->notEmpty());
 
 			$h .= '<tr class="overview_income-statement_group-total row-bold">';
 
 				$h .= '<th colspan="2">'.s("Total actif circulant").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['currentAssets'], precision: 0).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals['currentAssets'], precision: 2).'</td>';
 				$h .= '<th colspan="2">'.s("Total dettes").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts'], precision: 0).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts'], precision: 2).'</td>';
 
 			$h .= '</tr>';
 
 			$h .= '<tr class="overview_income-statement_group-total row-bold">';
 
 				$h .= '<th colspan="2">'.s("Total Actif").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets'] + $totals['currentAssets'], precision: 0).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets'] + $totals['currentAssets'], precision: 2).'</td>';
 				$h .= '<th colspan="2">'.s("Total passif").'</th>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity'] + $totals['debts'], precision: 0).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity'] + $totals['debts'], precision: 2).'</td>';
 
 			$h .= '</tr>';
 
@@ -132,9 +185,10 @@ class BalanceSheetUi {
 
 	}
 
-	private function displaySubCategoryLines(array $assets, array $liabilities, \Collection $cAccount): string {
+	private function displaySubCategoryLines(\farm\Farm $eFarm, array $assets, array $liabilities, \Collection $cAccount, bool $hasDetail): string {
 
 		$h = '';
+		$class = ($hasDetail ? ' overview_income-statement_cell-summary' : '');
 
 		while(count($assets) > 0 or count($liabilities) > 0) {
 
@@ -145,17 +199,37 @@ class BalanceSheetUi {
 
 			if($asset !== null) {
 
-				$h .= '<td class="text-end td-min-content">'.encode($asset['class']).'</td>';
-				$h .= '<td>';
-				if($cAccount->offsetExists($asset['class'])) {
-					$eAccount = $cAccount->offsetGet($asset['class']);
-				} else {
-					$eAccount = $cAccount->offsetGet(substr($asset['class'], 0, 2));
-				}
-				$h .= encode($eAccount['description']);
-				$h .= '</td>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($asset['amount'], precision: 0).'</td>';
+				if($asset['description'] ?? NULL) {
 
+					$h .= '<td class="text-end td-min-content overview_income-statement_cell-links">';
+						$h .= '<small><a title="'.s("Voir les écritures au journal").'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.encode($asset['class']).'">'.\Asset::icon('journal-text').'</a> ';
+						$h .= '<a title="'.s("Voir les enregistrements au grand-livre").'" href="'.\company\CompanyUi::urlJournal($eFarm).'/book?accountLabel='.encode($asset['class']).'">'.\Asset::icon('book').'</a> ';
+						$h .= '<a title="'.s("Voir la balance").'" href="'.\company\CompanyUi::urlJournal($eFarm).'/balance?accountLabel='.encode($asset['class']).'&precision=8">'.\Asset::icon('calculator').'</a></small>';
+					$h .= '</td>';
+					$h .= '<td><i>';
+						$h .= encode($asset['class']).' ';
+						if($cAccount->offsetExists((int)trim($asset['class'], '0'))) {
+							$h .= encode($cAccount[(int)trim($asset['class'], '0')]['description']);
+						} else {
+							$h .= encode($asset['description']);
+						}
+					$h .= '</i></td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($asset['amount'], precision: 2).'</td>';
+
+				} else {
+
+					$h .= '<td class="text-end td-min-content'.$class.'">'.encode($asset['class']).'</td>';
+					$h .= '<td class="'.$class.'">';
+						if($cAccount->offsetExists($asset['class'])) {
+							$eAccount = $cAccount->offsetGet($asset['class']);
+						} else {
+							$eAccount = $cAccount->offsetGet(substr($asset['class'], 0, 2));
+						}
+						$h .= encode($eAccount['description']);
+					$h .= '</td>';
+					$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($asset['amount'], precision: 2).'</td>';
+
+				}
 			} else {
 				$h .= '<td></td>';
 				$h .= '<td></td>';
@@ -164,16 +238,39 @@ class BalanceSheetUi {
 
 			if($liability !== null) {
 
-				$h .= '<td class="text-end td-min-content">'.encode($liability['class']).'</td>';
-				$h .= '<td>';
-				if($cAccount->offsetExists($liability['class'])) {
-					$eAccount = $cAccount->offsetGet($liability['class']);
+				if($liability['description'] ?? NULL) {
+
+					$h .= '<td class="text-end td-min-content overview_income-statement_cell-links">';
+						$h .= '<small><a title="'.s("Voir les écritures au journal").'"href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.encode($liability['class']).'">'.\Asset::icon('journal-text').'</a> ';
+						$h .= '<a title="'.s("Voir les enregistrements au grand-livre").'" href="'.\company\CompanyUi::urlJournal($eFarm).'/book?accountLabel='.encode($liability['class']).'">'.\Asset::icon('book').'</a> ';
+						$h .= '<a title="""'.s("Voir la balance").'" href="'.\company\CompanyUi::urlJournal($eFarm).'/balance?accountLabel='.encode($liability['class']).'&precision=8">'.\Asset::icon('calculator').'</a></small>';
+					$h .= '</td>';
+					$h .= '<td><i>';
+						$h .= encode($liability['class']).' ';
+						if($cAccount->offsetExists((int)trim($liability['class'], '0'))) {
+							$h .= encode($cAccount[(int)trim($liability['class'], '0')]['description']);
+						} else {
+							$h .= encode($liability['description']);
+						}
+					$h .= '</i></td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($liability['amount'], precision: 2).'</td>';
+
 				} else {
-					$eAccount = $cAccount->offsetGet(substr($liability['class'], 0, 2));
+
+					$h .= '<td class="text-end td-min-content'.$class.'">'.encode($liability['class']).'</td>';
+					$h .= '<td class="'.$class.'">';
+
+						if($cAccount->offsetExists($liability['class'])) {
+							$eAccount = $cAccount->offsetGet($liability['class']);
+						} else {
+							$eAccount = $cAccount->offsetGet(substr($liability['class'], 0, 2));
+						}
+						$h .= encode($eAccount['description']);
+
+					$h .= '</td>';
+					$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['amount'], precision: 2).'</td>';
+
 				}
-				$h .= encode($eAccount['description']);
-				$h .= '</td>';
-				$h .= '<td class="text-end">'.\util\TextUi::money($liability['amount'], precision: 0).'</td>';
 
 			} else {
 				$h .= '<td></td>';

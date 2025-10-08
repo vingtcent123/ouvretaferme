@@ -16,7 +16,7 @@ class IncomeStatementUi {
 			$h .= '</h1>';
 
 			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la syntèse").'</a> ';
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -35,7 +35,7 @@ class IncomeStatementUi {
 
 		$h .= '<div>';
 			$h .= $form->checkbox('summary', 1, ['checked' => $search->get('summary'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher la synthèse par classe de compte (sur 2 chiffres)")]);
-			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+			$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
 			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 		$h .= '</div>';
 

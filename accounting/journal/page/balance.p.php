@@ -12,6 +12,7 @@ new Page(function($data) {
 		'endDate' => GET('endDate'),
 		'precision' => GET('precision'),
 		'summary' => GET('summary'),
+		'accountLabel' => GET('accountLabel'),
 	], GET('sort'));
 
 	$data->search = clone $search;

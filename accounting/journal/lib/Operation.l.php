@@ -95,6 +95,7 @@ class OperationLib extends OperationCrud {
 				+ ['account' => ['description']]
 			)
 			->join(\account\Account::model(), 'm1.account = m2.id')
+			->whereAccountLabel($search->get('accountLabel'), if: $search->get('accountLabel'))
 			->sort(['m1_accountLabel' => SORT_ASC, 'date' => SORT_ASC])
 			->getCollection();
 

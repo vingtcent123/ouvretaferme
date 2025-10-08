@@ -41,6 +41,8 @@ new Page(function($data) {
 	if(get_exists('class')) {
 		$data->search->set('class', GET('class', 'array'));
 	}
+	$data->search->set('visible', TRUE);
+
 	$data->cAccount = \account\AccountLib::getAll(query: $query, search: $data->search);
 
 	$data->cAccount = \account\AccountLib::orderAccounts($data->cAccount, $thirdParty, $accountsAlreadyUsed);

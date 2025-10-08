@@ -17,6 +17,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	echo new \journal\BookUi()->getBook($data->eFarm, $data->cOperation, $data->eFinancialYear);
+	echo new \journal\BookUi()->getBook($data->eFarm, $data->cOperation, $data->eFinancialYear, $data->search);
 
 });

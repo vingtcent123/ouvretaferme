@@ -189,7 +189,7 @@ class PdfUi {
 						$h .= BookUi::getBookTheadContent();
 					$h .= '</thead>';
 
-					$h .= BookUi::getBookTbody($eFarm, $cOperation, $eFinancialYear);
+					$h .= BookUi::getBookTbody($eFarm, $cOperation, $eFinancialYear, new \Search());
 
 				$h .= '</table>';
 

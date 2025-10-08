@@ -43,6 +43,7 @@ class BookUi {
 		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYear,
+		\Search $search
 	): string {
 
 		$h = '';
@@ -135,18 +136,25 @@ class BookUi {
 		$totalDebit += $debit;
 
 		$balance = abs($totalDebit - $totalCredit);
-		$h .= '<tr>';
 
-			$h .= '<td colspan="3" class="text-end">';
-				$h .= '<strong>'.s("Solde").'</strong>';
-			$h .= '</td>';
-			$h .= '<td class="text-end highlight-stick-right">';
-				$h .= '<strong>'.($totalDebit > $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
-			$h .= '</td>';
-				$h .= '<td class="text-end highlight-stick-left">';
-				$h .= '<strong>'.($totalDebit <= $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
-			$h .= '</td>';
-		$h .= '</tr>';
+		// On n'affiche pas le solde s'il y a un filtre
+		if($search->get('accountLabel') === FALSE) {
+
+			$h .= '<tr>';
+
+				$h .= '<td colspan="3" class="text-end">';
+					$h .= '<strong>'.s("Solde").'</strong>';
+				$h .= '</td>';
+				$h .= '<td class="text-end highlight-stick-right">';
+					$h .= '<strong>'.($totalDebit > $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
+				$h .= '</td>';
+					$h .= '<td class="text-end highlight-stick-left">';
+					$h .= '<strong>'.($totalDebit <= $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
+				$h .= '</td>';
+			$h .= '</tr>';
+
+		}
+
 		return $h;
 
 	}
@@ -155,6 +163,7 @@ class BookUi {
 		\farm\Farm $eFarm,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYear,
+		\Search $search
 	): string {
 
 		if($cOperation->empty() === TRUE) {
@@ -170,7 +179,7 @@ class BookUi {
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
-					$h .= self::getBookTbody($eFarm, $cOperation, $eFinancialYear);
+					$h .= self::getBookTbody($eFarm, $cOperation, $eFinancialYear, $search);
 				$h .= '</tbody>';
 
 
