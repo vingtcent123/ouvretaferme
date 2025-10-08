@@ -8,33 +8,35 @@ new Page(function($data) {
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 	$data->search = new Search([
-		'detailed' => GET('detailed'),
+		'view' => GET('view', 'string', \overview\BalanceSheetLib::VIEW_BASIC),
+		'financialYearComparison' => GET('financialYearComparison'),
 	], GET('sort'));
+
 
 })
 	->get('index', function($data) {
 
-		$data->cOperation = \overview\BalanceSheetLib::getData($data->eFinancialYear);
-
-		if($data->search->get('detailed')) {
-			$data->cOperationDetail = \overview\BalanceSheetLib::getDetailData($data->eFinancialYear);
+		if($data->search->get('financialYearComparison')) {
+			$data->eFinancialYearComparison = \account\FinancialYearLib::getById($data->search->get('financialYearComparison'));
 		} else {
-			$data->cOperationDetail = new Collection();
+			$data->eFinancialYearComparison = new \account\FinancialYear();
 		}
 
-		// Attention, le résultat doit être calculé en live SI l'exercice comptable n'est pas encore clôturé (= pas d'entrée 12x dans les écritures)
-		if($data->eFinancialYear->canUpdate()) {
-			$data->result = \overview\IncomeStatementLib::computeResult($data->eFinancialYear);
-		} else {
-			$data->result = NULL;
-		}
+		[$data->balanceSheetData, $data->totals] = \overview\BalanceSheetLib::getData(
+			eFinancialYear: $data->eFinancialYear,
+			eFinancialYearComparison: $data->eFinancialYearComparison,
+			isDetailed: $data->search->get('view') === \overview\BalanceSheetLib::VIEW_DETAILED
+		);
 
-		$threeNumbersClasses = $data->cOperation->getColumn('class');
-		$twoNumbersClasses = array_map(fn($class) => substr($class, 0, 2), $threeNumbersClasses);
+		$classes = [];
+		foreach($data->balanceSheetData as $category => $list) {
+			$classes = array_unique(array_merge($classes, array_map(fn($element) => $element['class'], $list)));
+		}
+		$twoNumbersClasses = array_map(fn($class) => substr($class, 0, 2), $classes);
 		// Si certaines classes exactes existent (pour le détail), les prendre
-		$completeNumbersClasses = array_map(fn($class) => trim($class, '0'), $data->cOperationDetail->getColumn('class'));
+		$completeNumbersClasses = array_map(fn($class) => trim($class, '0'), $classes);
 		$classes = array_unique(array_merge(
-			$threeNumbersClasses, $twoNumbersClasses, $completeNumbersClasses,
+			$twoNumbersClasses, $completeNumbersClasses,
 			[\account\AccountSetting::PROFIT_CLASS, \account\AccountSetting::LOSS_CLASS, \account\AccountSetting::RESULT_CLASS])
 		);
 

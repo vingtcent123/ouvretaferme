@@ -17,14 +17,20 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	echo new \overview\BalanceSheetUi()->getSearch($data->search, $data->eFinancialYear);
-	echo new \overview\BalanceSheetUi()->getTable(
-		eFarm: $data->eFarm,
+	echo new \overview\BalanceSheetUi()->getSearch(
+		search        : $data->search,
+		cFinancialYear: $data->cFinancialYear,
 		eFinancialYear: $data->eFinancialYear,
-		cOperation: $data->cOperation,
-		cOperationDetail: $data->cOperationDetail,
-		result: $data->result,
-		cAccount: $data->cAccount
+	);
+
+	echo new \overview\BalanceSheetUi()->getTable(
+		eFarm                   : $data->eFarm,
+		eFinancialYear          : $data->eFinancialYear,
+		eFinancialYearComparison: $data->eFinancialYearComparison,
+		balanceSheetData        : $data->balanceSheetData,
+		totals                  : $data->totals,
+		cAccount                : $data->cAccount,
+		hasDetail               : $data->search->get('view') === \overview\BalanceSheetLib::VIEW_DETAILED,
 	);
 
 });
