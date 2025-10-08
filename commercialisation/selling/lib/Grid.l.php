@@ -49,11 +49,8 @@ class GridLib extends GridCrud {
 		$cGrid = Grid::model()
 			->select(Grid::getSelection())
 			->select([
-				'product' => [
-					'farm', 'name', 'variety', 'vignette', 'composition', 'size', 'origin',
-					'unit' => \selling\Unit::getSelection(),
-					'proPrice', 'proPackaging',
-					'privatePrice',
+				'product' => ProductElement::getSelection() + [
+					'unit' => \selling\Unit::getSelection()
 				]
 			])
 			->whereCustomer($e)

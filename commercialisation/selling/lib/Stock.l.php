@@ -48,17 +48,17 @@ class StockLib extends StockCrud {
 		$cccccProduct = Product::model()
 			->select([
 				'id',
-				'plant', 'name', 'variety', 'size', 'origin',
+				'plant', 'name', 'unprocessedVariety', 'unprocessedSize', 'origin',
 				'unit' => \selling\Unit::getSelection(),
 			])
 			->whereFarm($eFarm)
 			->whereId('NOT IN', $cProduct)
 			->whereStock(NULL)
-			->getCollection(index: ['plant', 'name', 'variety', 'size', NULL]);
+			->getCollection(index: ['plant', 'name', 'unprocessedVariety', 'unprocessedSize', NULL]);
 
 		foreach($cProduct as $eProduct) {
 			$plant = $eProduct['plant']->empty() ? NULL : $eProduct['plant']['id'];
-			$eProduct['cProductSiblings'] = $cccccProduct[$plant][$eProduct['name']][$eProduct['variety']][$eProduct['size']] ?? new \Collection();
+			$eProduct['cProductSiblings'] = $cccccProduct[$plant][$eProduct['name']][$eProduct['unprocessedVariety']][$eProduct['unprocessedSize']] ?? new \Collection();
 		}
 
 		return $cProduct;
@@ -92,10 +92,8 @@ class StockLib extends StockCrud {
 		$eUnit = UnitLib::getByFqn($unit);
 
 		return Product::model()
-			->select([
-				'id', 'name', 'farm', 'variety', 'size', 'origin',
+			->select(ProductElement::getSelection() + [
 				'unit' => \selling\Unit::getSelection(),
-				'vignette', 'composition', 'stock'
 			])
 			->wherePlant($eTask['plant'])
 			->whereUnit($eUnit)

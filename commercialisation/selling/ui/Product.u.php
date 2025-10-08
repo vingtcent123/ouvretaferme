@@ -432,8 +432,8 @@ class ProductUi {
 
 		$more = [];
 
-		if($eProduct['size']) {
-			$more[] = '<span><u>'.encode($eProduct['size']).'</u></span>';
+		if($eProduct['unprocessedSize']) {
+			$more[] = '<span><u>'.encode($eProduct['unprocessedSize']).'</u></span>';
 		}
 
 		if($eProduct['origin']) {
@@ -533,9 +533,9 @@ class ProductUi {
 				}
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
-				if($eProduct['size'] !== NULL) {
-					$h .= '<dt>'.self::p('size')->label.'</dt>';
-					$h .= '<dd>'.($eProduct['size'] ? encode($eProduct['size']) : '').'</dd>';
+				if($eProduct['unprocessedSize'] !== NULL) {
+					$h .= '<dt>'.self::p('unprocessedSize')->label.'</dt>';
+					$h .= '<dd>'.($eProduct['unprocessedSize'] ? encode($eProduct['unprocessedSize']) : '').'</dd>';
 				}
 				if($eProduct['origin'] !== NULL) {
 					$h .= '<dt>'.self::p('origin')->label.'</dt>';
@@ -880,7 +880,7 @@ class ProductUi {
 				if($eProduct['composition']) {
 					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
 				} else {
-					$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin']);
+					$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize', 'origin']);
 				}
 				$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
 			$h .= '</div>';
@@ -939,7 +939,7 @@ class ProductUi {
 				if($eProduct['composition']) {
 					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility']);
 				} else {
-					$h .= $form->dynamicGroups($eProduct, ['variety', 'size', 'origin']);
+					$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize', 'origin']);
 				}
 				$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
 			$h .= '</div>';
@@ -1138,8 +1138,8 @@ class ProductUi {
 			'plant' => s("Espèce"),
 			'vignette' => s("Vignette"),
 			'name' => s("Nom du produit"),
-			'variety' => s("Variété"),
-			'size' => s("Calibre"),
+			'unprocessedVariety' => s("Variété"),
+			'unprocessedSize' => s("Calibre"),
 			'origin' => s("Origine"),
 			'description' => s("Description"),
 			'quality' => s("Signe de qualité"),
@@ -1200,7 +1200,7 @@ class ProductUi {
 					\util\FormUi::info(s("Les unités de vente au poids ne peuvent pas être modifiées par la suite, vous devrez créer un autre produit si vous changez d'avis."));
 				break;
 
-			case 'variety' :
+			case 'unprocessedVariety' :
 				$d->after = \util\FormUi::info(s("N'indiquez la variété que si elle apporte une information supplémentaire utile à vos clients par rapport au nom du produit que vous souhaitez communiquer à vos clients."));
 				$d->placeholder = s("Ex. : Chérie");
 				break;
@@ -1294,7 +1294,7 @@ class ProductUi {
 				$d->placeholder = s("Aucun");
 				break;
 
-			case 'size' :
+			case 'unprocessedSize' :
 				$d->attributes = [
 					'placeholder' => s("Ex. : 14-21 cm"),
 				];

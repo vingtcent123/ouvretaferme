@@ -655,8 +655,8 @@ class ItemUi {
 						$h .= '<td class="td-min-content">'.ProductUi::getVignette($eProduct, '3rem').'</td>';
 						$h .= '<td class="item-day-product-name">';
 							$h .= encode($eProduct->getName());
-							if($eProduct['size']) {
-								$h .= ' <br class="hide-lg-up"/><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small>';
+							if($eProduct['unprocessedSize']) {
+								$h .= ' <br class="hide-lg-up"/><small class="color-muted"><u>'.encode($eProduct['unprocessedSize']).'</u></small>';
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end" style="padding-right: 1rem">';
@@ -693,8 +693,8 @@ class ItemUi {
 					$h .= '<div class="item-day-product-name">';
 						$h .= encode($eProduct->getName());
 						$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\selling\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
-						if($eProduct['size']) {
-							$h .= '<div><small class="color-muted"><u>'.encode($eProduct['size']).'</u></small></div>';
+						if($eProduct['unprocessedSize']) {
+							$h .= '<div><small class="color-muted"><u>'.encode($eProduct['unprocessedSize']).'</u></small></div>';
 						}
 					$h .= '</div>';
 				$h .= '</div>';

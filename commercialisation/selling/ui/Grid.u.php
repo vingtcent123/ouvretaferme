@@ -174,8 +174,8 @@ class GridUi {
 
 								$h .= '<td>';
 									$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
-									if($eProduct['size']) {
-										$h .= '<div><small><u>'.encode($eProduct['size']).'</u></div>';
+									if($eProduct['unprocessedSize']) {
+										$h .= '<div><small><u>'.encode($eProduct['unprocessedSize']).'</u></div>';
 									}
 								$h .= '</td>';
 
@@ -274,8 +274,8 @@ class GridUi {
 
 						$h .= '<td class="customer-price-product">';
 							$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
-							if($eProduct['size']) {
-								$h .= '<div><small><u>'.encode($eProduct['size']).'</u></small></div>';
+							if($eProduct['unprocessedSize']) {
+								$h .= '<div><small><u>'.encode($eProduct['unprocessedSize']).'</u></small></div>';
 							}
 						$h .= '</td>';
 

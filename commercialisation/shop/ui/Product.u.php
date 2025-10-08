@@ -342,9 +342,9 @@ class ProductUi {
 								$h .= $quality;
 							}
 
-							if($eProductSelling['size'] !== NULL) {
+							if($eProductSelling['unprocessedSize'] !== NULL) {
 								$h .= '<div class="shop-product-size">';
-									$h .= encode($eProductSelling['size']);
+									$h .= encode($eProductSelling['unprocessedSize']);
 								$h .= '</div>';
 							}
 						$h .= '</h4>';

@@ -65,20 +65,20 @@ class Product extends ProductElement {
 
 	public function getName(string $mode = 'text'): string {
 
-		$this->expects(['name', 'variety']);
+		$this->expects(['name', 'unprocessedVariety']);
 
 		if($mode === 'text') {
 
 			$h = $this['name'];
-			if($this['variety'] !== NULL) {
-				$h .= ' / '.$this['variety'];
+			if($this['unprocessedVariety'] !== NULL) {
+				$h .= ' / '.$this['unprocessedVariety'];
 			}
 
 		} else {
 
 			$h = encode($this['name']);
-			if($this['variety'] !== NULL) {
-				$h .= '<small title="'.s("Variété").'"> / '.encode($this['variety']).'</small>';
+			if($this['unprocessedVariety'] !== NULL) {
+				$h .= '<small title="'.s("Variété").'"> / '.encode($this['unprocessedVariety']).'</small>';
 			}
 
 		}

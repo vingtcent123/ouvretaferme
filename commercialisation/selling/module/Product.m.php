@@ -7,6 +7,11 @@ abstract class ProductElement extends \Element {
 
 	private static ?ProductModel $model = NULL;
 
+	const UNPROCESSED_PLANT = 'unprocessed-plant';
+	const UNPROCESSED_ANIMAL = 'unprocessed-animal';
+	const PROCESSED_FOOD = 'processed-food';
+	const PROCESSED_PRODUCT = 'processed-product';
+
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
@@ -51,10 +56,11 @@ class ProductModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'profile' => ['enum', [\selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
-			'variety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'size' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'unprocessedSize' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
@@ -79,7 +85,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'category', 'plant', 'variety', 'size', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'profile', 'category', 'plant', 'unprocessedVariety', 'unprocessedSize', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -130,6 +136,9 @@ class ProductModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'profile' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'quality' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -170,6 +179,10 @@ class ProductModel extends \ModuleModel {
 		return $this->where('vignette', ...$data);
 	}
 
+	public function whereProfile(...$data): ProductModel {
+		return $this->where('profile', ...$data);
+	}
+
 	public function whereCategory(...$data): ProductModel {
 		return $this->where('category', ...$data);
 	}
@@ -178,12 +191,12 @@ class ProductModel extends \ModuleModel {
 		return $this->where('plant', ...$data);
 	}
 
-	public function whereVariety(...$data): ProductModel {
-		return $this->where('variety', ...$data);
+	public function whereUnprocessedVariety(...$data): ProductModel {
+		return $this->where('unprocessedVariety', ...$data);
 	}
 
-	public function whereSize(...$data): ProductModel {
-		return $this->where('size', ...$data);
+	public function whereUnprocessedSize(...$data): ProductModel {
+		return $this->where('unprocessedSize', ...$data);
 	}
 
 	public function whereOrigin(...$data): ProductModel {

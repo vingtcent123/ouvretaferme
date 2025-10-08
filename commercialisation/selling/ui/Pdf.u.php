@@ -56,7 +56,7 @@ class PdfUi {
 						$quantity = $eItem['number'];
 					}
 
-					$items[] = $this->getLabel($eFarm, $eSale['customer'], $eItem['name'], $eItem['product']['quality'], $eItem['product']['size'], $quantity, $eItem['unit']);
+					$items[] = $this->getLabel($eFarm, $eSale['customer'], $eItem['name'], $eItem['product']['quality'], $eItem['product']['unprocessedSize'], $quantity, $eItem['unit']);
 
 
 				}
@@ -456,8 +456,8 @@ class PdfUi {
 			$h .= '<td>';
 				$h .= \Asset::icon('chevron-right').' ';
 				$h .= encode($eItem['name']);
-				if($eItem['product']->notEmpty() and $eItem['product']['size']) {
-					$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['size'])).'</small>';
+				if($eItem['product']->notEmpty() and $eItem['product']['unprocessedSize']) {
+					$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['unprocessedSize'])).'</small>';
 				}
 			$h .= '</td>';
 			$h .= '<td class="td-min-content">';
@@ -795,8 +795,8 @@ class PdfUi {
 		$last = ($isLast ? 'pdf-document-item-last' : '');
 
 		$details = [];
-		if($eItem['product']->notEmpty() and $eItem['product']['size']) {
-			$details[] = s("Calibre {value}", encode($eItem['product']['size']));
+		if($eItem['product']->notEmpty() and $eItem['product']['unprocessedSize']) {
+			$details[] = s("Calibre {value}", encode($eItem['product']['unprocessedSize']));
 		}
 		if($eItem['product']->notEmpty() and $eItem['product']['origin']) {
 			$details[] = s("Origine {value}", encode($eItem['product']['origin']));

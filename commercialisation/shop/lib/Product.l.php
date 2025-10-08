@@ -103,10 +103,8 @@ class ProductLib extends ProductCrud {
 
 		$cItem = \selling\Item::model()
 			->select([
-				'product' => [
-					'name', 'vignette', 'category', 'variety', 'quality', 'size', 'origin', 'farm', 'composition', 'status',
+				'product' => \selling\ProductElement::getSelection() + [
 					'unit' => \selling\Unit::getSelection(),
-					'stock', 'stockUpdatedAt',
 					'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
 					'plant' => ['name', 'fqn', 'vignette']
 				],

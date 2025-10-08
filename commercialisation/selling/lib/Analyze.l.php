@@ -498,7 +498,7 @@ class AnalyzeLib {
 				'product' => new \selling\Product([
 					'id' => NULL,
 					'name' => \selling\SaleUi::getShippingName(),
-					'variety' => NULL
+					'unprocessedVariety' => NULL
 				]),
 				'turnover' => $cSaleTurnover[$year]['shipping'],
 				'unit' => new Unit(),
@@ -524,7 +524,7 @@ class AnalyzeLib {
 
 		return Item::model()
 			->select([
-				'product' => ['vignette', 'farm', 'composition', 'name', 'variety'],
+				'product' => ['vignette', 'farm', 'composition', 'name', 'unprocessedVariety'],
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'unit' => \selling\Unit::getSelection(),
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),
@@ -852,7 +852,7 @@ class AnalyzeLib {
 			->select([
 				'id',
 				'name',
-				'product' => ['name', 'variety'],
+				'product' => ['name', 'unprocessedVariety'],
 				'productComposition',
 				'ingredientOf',
 				'sale' => ['document',  'type'],
@@ -940,16 +940,10 @@ class AnalyzeLib {
 	public static function getExportProducts(\farm\Farm $eFarm): array {
 
 		$data = Product::model()
-			->select([
-				'id',
-				'name',
+			->select(ProductElement::getSelection() + [
 				'plant' => ['name'],
 				'category' => ['name'],
-				'variety', 'size', 'origin',
 				'unit' => \selling\Unit::getSelection(),
-				'quality',
-				'privatePrice', 'proPrice',
-				'vat'
 			])
 			->whereFarm($eFarm)
 			->whereStatus(Product::ACTIVE)
@@ -962,8 +956,8 @@ class AnalyzeLib {
 					$eProduct['plant']->empty() ? '' : $eProduct['plant']['name'],
 					$eProduct['category']->empty() ? '' : $eProduct['category']['name'],
 					$eProduct['unit']->empty() ? '' : $eProduct['unit']['singular'],
-					$eProduct['variety'] ?? '',
-					$eProduct['size'] ?? '',
+					$eProduct['unprocessedVariety'] ?? '',
+					$eProduct['unprocessedSize'] ?? '',
 					$eProduct['quality'] ? ProductUi::p('quality')->values[$eProduct['quality']] : '',
 					($eProduct['proPrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['proPrice']) : '',
 					($eProduct['privatePrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['privatePrice']) : '',

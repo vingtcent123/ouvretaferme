@@ -28,7 +28,7 @@ class ItemLib extends ItemCrud {
 		$ccItem = Item::model()
 			->select([
 				'sale',
-				'product' => ['name', 'variety', 'vignette', 'farm', 'composition', 'size'],
+				'product' => ProductElement::getSelection(),
 				'customer' => ['type', 'name'],
 				'packaging', 'number',
 				'unit' => \selling\Unit::getSelection(),

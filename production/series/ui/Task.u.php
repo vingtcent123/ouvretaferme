@@ -4328,8 +4328,8 @@ class TaskUi {
 
 				$confirmText = s("Ajouter automatiquement les quantités récoltées de {value} à ce stock dans le futur ?", $this->getStockText(new \selling\Product([
 					'name' => $eTask['plant']['name'],
-					'variety' => $eTask['variety']->notEmpty() ? $eTask['variety']['name'] : NULL,
-					'size' => $eTask['harvestSize']->notEmpty() ? $eTask['harvestSize']['name'] : NULL,
+					'unprocessedVariety' => $eTask['variety']->notEmpty() ? $eTask['variety']['name'] : NULL,
+					'unprocessedSize' => $eTask['harvestSize']->notEmpty() ? $eTask['harvestSize']['name'] : NULL,
 					'unit' => $eTask['harvestUnit'] ?? 'kg'
 				])));
 
@@ -4362,12 +4362,12 @@ class TaskUi {
 
 		$text = encode($eProduct['name']).' ('.\selling\UnitUi::getSingular($eProduct['unit']).')';
 
-		if($eProduct['variety'] !== NULL) {
-			$text .= ' / '.$eProduct['variety'];
+		if($eProduct['unprocessedVariety'] !== NULL) {
+			$text .= ' / '.$eProduct['unprocessedVariety'];
 		}
 
-		if($eProduct['size'] !== NULL) {
-			$text .= ' '.s("calibre {value}", $eProduct['size']);
+		if($eProduct['unprocessedSize'] !== NULL) {
+			$text .= ' '.s("calibre {value}", $eProduct['unprocessedSize']);
 		}
 		
 		return $text;

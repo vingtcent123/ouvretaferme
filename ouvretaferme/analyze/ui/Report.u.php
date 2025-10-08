@@ -564,8 +564,8 @@ class ReportUi {
 								Product::KG => s("Au kg")
 							};
 						}
-						if($eProduct['product']['size'] !== NULL) {
-							$h .= ' | '.encode($eProduct['product']['size']);
+						if($eProduct['product']['unprocessedSize'] !== NULL) {
+							$h .= ' | '.encode($eProduct['product']['unprocessedSize']);
 						}
 					$h .= '</div>';
 					$h .= '<div class="report-product-turnover">'.\util\TextUi::money($turnover, precision: 0).'</div>';

@@ -52,7 +52,7 @@ class ProductLib extends ProductCrud {
 
 		} else {
 
-			$properties = ['name', 'category', 'variety', 'size', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'vat'];
+			$properties = ['name', 'category', 'unprocessedVariety', 'unprocessedSize', 'origin', 'description', 'quality', 'plant', 'pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'vat'];
 
 			if($for === 'update') {
 				$properties[] = 'privateStep';
@@ -256,12 +256,8 @@ class ProductLib extends ProductCrud {
 		$e->expects(['farm']);
 
 		$cProduct = Product::model()
-			->select([
-				'id', 'name', 'variety', 'vignette', 'farm', 'composition', 'size', 'origin',
+			->select(ProductElement::getSelection() + [
 				'unit' => \selling\Unit::getSelection(),
-				'privatePrice', 'privatePriceInitial', 'privateStep',
-				'proPrice', 'proPriceInitial', 'proPackaging', 'proStep',
-				'vat',
 				'eGrid' => Grid::model()
 					->select(['id', 'price', 'priceInitial', 'packaging'])
 					->whereCustomer($e)

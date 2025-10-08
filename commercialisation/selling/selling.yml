@@ -243,10 +243,11 @@ Product:
   name: text8(1, null) @collate(general)
   description: ?editor24
   vignette: ?textFixed(30, 30) @charset(ascii)
+  profile: ?enum(UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT)
   category: ?selling\Category
   plant: ?plant\Plant
-  variety: ?text8(1, null)
-  size: ?text8(1, null)
+  unprocessedVariety: ?text8(1, null)
+  unprocessedSize: ?text8(1, null)
   origin: ?text8(1, null)
   farm: farm\Farm
   unit: ?selling\Unit = PHP(\selling\SellingSetting::UNIT_DEFAULT_ID)
