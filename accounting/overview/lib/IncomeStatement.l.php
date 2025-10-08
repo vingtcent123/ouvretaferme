@@ -6,11 +6,25 @@ namespace overview;
  */
 Class IncomeStatementLib {
 
-	public static function getResultOperationsByFinancialYear(\account\FinancialYear $eFinancialYear, bool $hasSummary): array {
+	const VIEW_BASIC = 'basic';
+	const VIEW_DETAILED = 'detailed';
 
-		$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
-		$startDate = $eFinancialYearPrevious['startDate'] ?? $eFinancialYear['startDate'];
-		$endDate = $eFinancialYear['endDate'];
+	public static function getResultOperationsByFinancialYear(\account\FinancialYear $eFinancialYear, bool $isDetailed, \account\FinancialYear $eFinancialYearComparison): array {
+
+		$dateWhere = 'date BETWEEN '.\journal\Operation::model()->format($eFinancialYear['startDate']).' AND '.\journal\Operation::model()->format($eFinancialYear['endDate']);
+
+		if($eFinancialYearComparison->empty()) {
+
+			\journal\Operation::model()->where($dateWhere);
+
+		} else {
+
+			\journal\Operation::model()
+				->or(
+					fn() => $this->where('date BETWEEN '.\journal\Operation::model()->format($eFinancialYear['startDate']).' AND '.\journal\Operation::model()->format($eFinancialYear['endDate'])),
+					fn() => $this->where('date BETWEEN '.\journal\Operation::model()->format($eFinancialYearComparison['startDate']).' AND '.\journal\Operation::model()->format($eFinancialYearComparison['endDate']), if: $eFinancialYearComparison->notEmpty()),
+				);
+		}
 
 		$cOperations = \journal\Operation::model()
 			->select([
@@ -18,10 +32,9 @@ Class IncomeStatementLib {
 				'class' => new \Sql('SUBSTRING(accountLabel, 1, 3)', 'int'),
 				'amount' => new \Sql('SUM(IF(accountLabel LIKE "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%", 1, -1) * IF(type = "debit", amount, -amount))')
 			])
-			->where('date BETWEEN '.\journal\Operation::model()->format($startDate).' AND '.\journal\Operation::model()->format($endDate))
 			->or(
-				fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%"')),
-				fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%"')),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%'),
 			)
 			->group(['class', 'financialYear'])
 			->sort(['class' => SORT_ASC])
@@ -50,7 +63,7 @@ Class IncomeStatementLib {
 		];
 
 		$currentSum = [
-			'previous' => 0,
+			'comparison' => 0,
 			'current' => 0,
 			'class' => NULL,
 			'isSummary' => TRUE,
@@ -63,13 +76,13 @@ Class IncomeStatementLib {
 				$currentSum['class'] = (int)mb_substr((string)$data['class'], 0, 2);
 			}
 
-			if($hasSummary and $currentSumClass !== NULL and $currentSumClass !== (int)mb_substr((string)$data['class'], 0, 2)) {
+			if($isDetailed and $currentSumClass !== NULL and $currentSumClass !== (int)mb_substr((string)$data['class'], 0, 2)) {
 
 				list($type, $category) = self::getTypeAndCategory($currentSumClass);
 				$resultData[$type][$category][] = $currentSum;
 
 				$currentSum = [
-					'previous' => 0,
+					'comparison' => 0,
 					'current' => 0,
 					'class' => (int)mb_substr((string)$data['class'], 0, 2),
 					'isSummary' => TRUE,
@@ -79,14 +92,14 @@ Class IncomeStatementLib {
 
 			list($type, $category) = self::getTypeAndCategory($data['class']);
 			$resultData[$type][$category][] = $data;
-			$currentSum['previous'] += $data['previous'];
+			$currentSum['comparison'] += $data['comparison'];
 			$currentSum['current'] += $data['current'];
 
 			$currentSumClass = (int)mb_substr((string)$data['class'], 0, 2);
 
 		}
 
-		if($hasSummary) {
+		if($isDetailed) {
 			list($type, $category) = self::getTypeAndCategory($currentSumClass);
 			$resultData[$type][$category][] = $currentSum;
 		}
@@ -125,12 +138,12 @@ Class IncomeStatementLib {
 
 	private static function affectResultData(array &$array, \account\FinancialYear $eFinancialYear, \journal\Operation $eOperation) {
 		if(isset($array[$eOperation['class']]) === FALSE) {
-			$array[$eOperation['class']] = ['previous' => 0, 'current' => 0, 'class' => $eOperation['class']];
+			$array[$eOperation['class']] = ['comparison' => 0, 'current' => 0, 'class' => $eOperation['class']];
 		}
 		if($eOperation['financialYear']->is($eFinancialYear)) {
 			$array[$eOperation['class']]['current'] = $eOperation['amount'];
 		} else {
-			$array[$eOperation['class']]['previous'] = $eOperation['amount'];
+			$array[$eOperation['class']]['comparison'] = $eOperation['amount'];
 		}
 
 	}

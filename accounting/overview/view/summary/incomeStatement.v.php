@@ -17,8 +17,15 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	echo new \overview\IncomeStatementUi()->getSearch($data->search, $data->eFinancialYear);
-	echo new \overview\IncomeStatementUi()->getTable($data->eFarm, $data->eFinancialYearPrevious, $data->eFinancialYear, $data->resultData, $data->cAccount, (bool)$data->search->get('summary'));
+	echo new \overview\IncomeStatementUi()->getSearch(search: $data->search, cFinancialYear: $data->cFinancialYear, eFinancialYear: $data->eFinancialYear);
+	echo new \overview\IncomeStatementUi()->getTable(
+		eFarm: $data->eFarm,
+		eFinancialYearComparison: $data->eFinancialYearComparison,
+		eFinancialYear: $data->eFinancialYear,
+		resultData: $data->resultData,
+		cAccount: $data->cAccount,
+		displaySummary: (bool)$data->search->get('view') === \overview\IncomeStatementLib::VIEW_DETAILED,
+	);
 
 
 });

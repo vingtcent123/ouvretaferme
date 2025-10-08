@@ -1,8 +1,16 @@
 
-.overview_income-statement_row-title {
-	background-color: var(--background-highlight) !important;
+table.tr-hover thead tr.overview_income-statement_row-title {
+	background-color: var(--primary) !important;
+	color: white;
+}
+table.tr-hover thead tr.overview_income-statement_row-title:hover {
+	background-color: var(--primary) !important;
+	color: white;
 }
 
+.overview_income-statement_row_sizing td {
+	width: 50%;
+}
 .overview_income-statement_group-title {
 	th {
 		border: 1px solid var(--muted);

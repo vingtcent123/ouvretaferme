@@ -9,14 +9,24 @@ new Page(function($data) {
 
 	$data->search = new Search([
 		'precision' => GET('precision'),
-		'summary' => GET('summary'),
+		'view' => GET('view', default: \overview\IncomeStatementLib::VIEW_BASIC),
+		'financialYearComparison' => GET('financialYearComparison'),
 	], GET('sort'));
 
 })
 	->get('index', function($data) {
 
-		$data->resultData = \overview\IncomeStatementLib::getResultOperationsByFinancialYear($data->eFinancialYear, (bool)$data->search->get('summary'));
-		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->eFinancialYear);
+		if($data->search->get('financialYearComparison')) {
+			$data->eFinancialYearComparison = \account\FinancialYearLib::getById($data->search->get('financialYearComparison'));
+		} else {
+			$data->eFinancialYearComparison = new \account\FinancialYear();
+		}
+
+		$data->resultData = \overview\IncomeStatementLib::getResultOperationsByFinancialYear(
+			eFinancialYear: $data->eFinancialYear,
+			isDetailed: $data->search->get('view') === \overview\IncomeStatementLib::VIEW_DETAILED,
+			eFinancialYearComparison: $data->eFinancialYearComparison
+		);
 
 		$threeNumbersClasses = array_merge(
 			array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['operating']),
