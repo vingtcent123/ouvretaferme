@@ -42,7 +42,7 @@ class BalanceSheetUi {
 					$h .= $form->select('view', [
 						BalanceSheetLib::VIEW_BASIC => s("Vue synthétique"),
 						BalanceSheetLib::VIEW_DETAILED => s("Vue détaillée"),
-					], $search->get('view'), ['placeholder' => s("Vue synthétique ou détaillée")]);
+					], $search->get('view'), ['mandatory' => TRUE]);
 					$h .= $form->select('financialYearComparison', $cFinancialYear
 						->filter(fn($e) => !$e->is($eFinancialYear))
 						->makeArray(function($e, &$key) {
@@ -95,14 +95,14 @@ class BalanceSheetUi {
 
 				$h .= '<tr class="overview_income-statement_group-title">';
 					$h .= '<th colspan="2">'.s("Actif").'</th>';
-					$h .= '<th>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+					$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
 					if($hasComparison) {
-						$h .= '<th>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+						$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
 					}
 					$h .= '<th colspan="2">'.s("Passif").'</th>';
-					$h .= '<th>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+					$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
 					if($hasComparison) {
-						$h .= '<th>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+						$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
 					}
 				$h .= '</tr>';
 

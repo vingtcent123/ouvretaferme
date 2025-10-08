@@ -41,7 +41,7 @@ class IncomeStatementUi {
 			$h .= $form->select('view', [
 				IncomeStatementLib::VIEW_BASIC => s("Vue synthétique"),
 				IncomeStatementLib::VIEW_DETAILED => s("Vue détaillée"),
-			], $search->get('view'), ['placeholder' => s("Vue synthétique ou détaillée")]);
+			], $search->get('view'), ['mandatory' => TRUE]);
 			$h .= $form->select('financialYearComparison', $cFinancialYear
 				->filter(fn($e) => !$e->is($eFinancialYear))
 				->makeArray(function($e, &$key) {
