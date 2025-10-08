@@ -24,12 +24,6 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
-		if($eInvoice['farm']['configuration']['invoiceVat']) {
-			$siren = mb_substr($eInvoice['farm']['configuration']['invoiceVat'], 4);
-		} else {
-			$siren = '';
-		}
-
 		$xml = '<?xml version="1.0" encoding="utf-8"?>
 <rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
 xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
@@ -64,10 +58,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<ram:ApplicableHeaderTradeAgreement><!--BT-10-00-->
 			<ram:SellerTradeParty><!--BG-4-->
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
-				'.($eInvoice['farm']['configuration']['invoiceVat'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0002">'.encode($siren).'</ram:ID>
-				</ram:SpecifiedLegalOrganization>' : '').'
+					<ram:ID schemeID="0002">'.encode(str_replace(' ', '', $eInvoice['farm']['siret'])).'</ram:ID>
+				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
 				</ram:PostalTradeAddress>
@@ -83,7 +76,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ram:Name>'.encode($eInvoice['customer']['legalName'] ?? $eInvoice['customer']['name']).'</ram:Name><!--BT-44-->
 				'.($eInvoice['customer']['siret'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-47-00-->
-					<ram:ID schemeID="0002">'.encode($eInvoice['customer']['siret']).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode(str_replace(' ', '', $eInvoice['customer']['siret'])).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>' : '').'
 				<ram:PostalTradeAddress><!--BG-8-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-55-->
