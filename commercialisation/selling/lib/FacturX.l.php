@@ -59,7 +59,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<ram:SellerTradeParty><!--BG-4-->
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0002">'.encode(str_replace(' ', '', $eInvoice['farm']['siret'])).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode(str_replace(' ', '', $eInvoice['farm']['siret'] ?? '')).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
@@ -76,7 +76,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ram:Name>'.encode($eInvoice['customer']['legalName'] ?? $eInvoice['customer']['name']).'</ram:Name><!--BT-44-->
 				'.($eInvoice['customer']['siret'] !== NULL ? '
 				<ram:SpecifiedLegalOrganization><!--BT-47-00-->
-					<ram:ID schemeID="0002">'.encode(str_replace(' ', '', $eInvoice['customer']['siret'])).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode(str_replace(' ', '', $eInvoice['customer']['siret'] ?? '')).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>' : '').'
 				<ram:PostalTradeAddress><!--BG-8-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-55-->
