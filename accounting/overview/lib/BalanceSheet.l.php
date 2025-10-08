@@ -51,8 +51,8 @@ Class BalanceSheetLib {
 				continue;
 			}
 
-			// Recherche des détails d'opération
-			$operationsSubClasses = $cOperationDetail->find(fn($e) => mb_substr($e['class'], 0, 3) === $eOperation['class'])->getArrayCopy();
+			// Recherche des détails d'opération (même exercice comptable + classe de compte)
+			$operationsSubClasses = $cOperationDetail->find(fn($e) => (mb_substr($e['class'], 0, 3) === $eOperation['class'] and $eOperation['financialYear']->is($e['financialYear'])))->getArrayCopy();
 
 			switch((int)substr($eOperation['class'], 0, 1)) {
 
@@ -70,8 +70,9 @@ Class BalanceSheetLib {
 						self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['currentAssets'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['currentAssets']);
 					} else {
 						$eOperation['amount'] *= -1; // compte créditeur
-						array_map(fn($e) => $e['amount'] *= -1, $operationsSubClasses);
-						//$operationsSubClasses->map(fn($e) => $e['amount'] *= -1);
+						foreach($operationsSubClasses as &$operationSubClass) {
+							$operationSubClass['amount'] *= -1;
+						}
 						self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['debts'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['debts']);
 					}
 					break;
@@ -80,7 +81,9 @@ Class BalanceSheetLib {
 					if((int)substr($eOperation['class'], 0, 2) < \account\AccountSetting::LOANS_CLASS) {
 						self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['equity'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['equity']);
 					} else { // Les emprunts + dettes + comptes de liaison partent en dettes
-						array_map(fn($e) => $e['amount'] *= -1, $operationsSubClasses);
+						foreach($operationsSubClasses as &$operationSubClass) {
+							$operationSubClass['amount'] *= -1;
+						}
 						self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['equity'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['debts']);
 					}
 			}
