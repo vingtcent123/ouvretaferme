@@ -80,7 +80,7 @@ class PageLib {
 			// On ne peut pas utiliser le même test que dans Farm.php car la feature est toujours activée en dev
 			$canAccounting = ($data->eFarm->notEmpty() and
 				in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS));
-			$hasAccounting = $canAccounting and	$data->eFarm->hasAccounting();
+			$hasAccounting = ($canAccounting and	$data->eFarm->hasAccounting());
 
 			if(
 				$data->pageType !== 'remote' and $canAccounting === FALSE

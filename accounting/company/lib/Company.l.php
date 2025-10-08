@@ -32,8 +32,6 @@ class CompanyLib {
 
 	public static function initializeAccounting(\farm\Farm $eFarm, array $input): void {
 
-		\farm\Farm::model()->beginTransaction();
-
 		$fw = new \FailWatch();
 
 		$startDate = POST('startDate');
@@ -55,6 +53,8 @@ class CompanyLib {
 		}
 
 		self::createSpecificDatabaseAndTables($eFarm);
+
+		\farm\Farm::model()->beginTransaction();
 
 		$eFinancialYear = new \account\FinancialYear();
 		$eFinancialYear->build(['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'], $input);
@@ -99,9 +99,10 @@ class CompanyLib {
 			\account\Account::model()->insert($eAccount);
 		}
 		// Set next auto-increment to 100000 (for the custom accounts)
-		$db = new Database(new \account\AccountModel()->getPackage());
+		$pdo = new \account\AccountModel()->pdo();
 		$database = new \account\AccountModel()->getDb();
-		$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
+		$pdo->exec('ALTER TABLE '.$pdo->api->field($database).'.'.$pdo->api->field('account').' AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
+
 	}
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {
