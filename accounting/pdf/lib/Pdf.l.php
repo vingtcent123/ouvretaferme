@@ -45,16 +45,6 @@ class PdfLib extends \pdf\PdfCrud {
 	private static function generateContent(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type, ?string $more): string {
 
 		switch($type) {
-			case PdfElement::OVERVIEW_BALANCE_SUMMARY;
-				$url = \company\CompanyUi::urlOverview($eFarm).'/pdf/balance:summary?financialYear='.$eFinancialYear['id'];
-				$title = \overview\PdfUi::getTitle();
-				break;
-
-			case PdfElement::OVERVIEW_BALANCE_OPENING;
-				$url = \company\CompanyUi::urlOverview($eFarm).'/pdf/balance:opening?financialYear='.$eFinancialYear['id'];
-				$title = \overview\PdfUi::getBalanceOpeningTitle();
-				break;
-
 			case PdfElement::JOURNAL_INDEX:
 				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/?financialYear='.$eFinancialYear['id'];
 				$title = \journal\PdfUi::getJournalTitle();

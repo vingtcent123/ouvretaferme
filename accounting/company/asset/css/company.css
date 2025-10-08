@@ -163,3 +163,8 @@ tr.tr-border-bottom {
 	}
 
 }
+
+tr.account_not-visible {
+	color: var(--muted);
+	text-decoration-line: line-through;
+}

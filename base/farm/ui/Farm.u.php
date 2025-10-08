@@ -925,7 +925,7 @@ class FarmUi {
 
 			'summary' => match($name) {
 				'incomeStatement' => s("Compte de Résultat"),
-				'statements' => s("Bilan"),
+				'balanceSheet' => s("Bilan"),
 			},
 
 		};
@@ -1776,7 +1776,7 @@ class FarmUi {
 				return ['finance', 'expenses', 'income'];
 
 			case 'summary' :
-				return ['incomeStatement', 'statements', /*'balanceSheet'*/];
+				return ['incomeStatement', 'balanceSheet'];
 
 		};
 
