@@ -99,8 +99,8 @@ class StockLib extends StockCrud {
 			->whereUnit($eUnit)
 			->whereStock('!=', NULL)
 			->sort(new \Sql('
-				'.($eTask['variety']->notEmpty() ? 'IF(variety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0)' : '0').'
-					+ '.($eTask['harvestSize']->notEmpty() ? 'IF(size = "'.Product::model()->format($eTask['harvestSize']['name']).'", 1, 0)' : '0   ').'
+				'.($eTask['variety']->notEmpty() ? 'IF(unprocessedVariety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0)' : '0').'
+					+ '.($eTask['harvestSize']->notEmpty() ? 'IF(unprocessedSize = "'.Product::model()->format($eTask['harvestSize']['name']).'", 1, 0)' : '0   ').'
 					DESC,
 				name ASC
 			'))
