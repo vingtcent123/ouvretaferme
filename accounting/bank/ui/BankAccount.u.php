@@ -95,7 +95,7 @@ class BankAccountUi {
 	}
 
 	public function getDefaultName(BankAccount $eBankAccount): string {
-		return s("Compte bancaire {value}", $eBankAccount['label']);
+		return s("Compte bancaire {value}", trim($eBankAccount['label'], '0'));
 	}
 	public function getUnknownName(): string {
 		return s("Compte bancaire");
