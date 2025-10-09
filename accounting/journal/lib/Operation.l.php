@@ -63,7 +63,7 @@ class OperationLib extends OperationCrud {
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->wherePaymentDate('LIKE', '%'.$search->get('paymentDate').'%', if: $search->get('paymentDate'))
 			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
-			->whereAccountLabel('LIKE', '%'.$search->get('accountLabel').'%', if: $search->get('accountLabel'))
+			->whereAccountLabel('LIKE', $search->get('accountLabel').'%', if: $search->get('accountLabel'))
 			->where(fn() => 'accountLabel LIKE "'.join('%" OR accountLabel LIKE "', $search->get('accountLabels')).'%"', if: $search->get('accountLabels'))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereDocument($search->get('document'), if: $search->get('document'))
@@ -95,7 +95,7 @@ class OperationLib extends OperationCrud {
 				+ ['account' => ['description']]
 			)
 			->join(\account\Account::model(), 'm1.account = m2.id')
-			->whereAccountLabel($search->get('accountLabel'), if: $search->get('accountLabel'))
+			->whereAccountLabel('LIKE', trim($search->get('accountLabel'), '0').'%', if: $search->get('accountLabel'))
 			->sort(['m1_accountLabel' => SORT_ASC, 'date' => SORT_ASC])
 			->getCollection();
 

@@ -18,7 +18,10 @@ Class TrialBalanceLib {
 			$endDate = $search->get('endDate');
 		}
 
-		if($search->get('precision') === '') {
+		// La taille de compte recherché est prioritaire sur la précision
+		if($search->get('accountLabel')) {
+			$precision = mb_strlen(trim($search->get('accountLabel'), '0'));
+		} else if($search->get('precision') === '') {
 			$precision = 3;
 		} else if($search->get('precision') > 8) {
 			$precision = 8;
@@ -36,7 +39,7 @@ Class TrialBalanceLib {
 				'credit' => new \Sql('SUM(IF(type = "'.\journal\Operation::CREDIT.'", amount, 0))', 'float'),
 			])
 			->whereDate('BETWEEN', new \Sql(Operation::model()->format($startDate).' AND '.Operation::model()->format($endDate)))
-			->whereAccountLabel($search->get('accountLabel'), if: $search->get('accountLabel'))
+			->whereAccountLabel('LIKE', $search->get('accountLabel').'%', if: $search->get('accountLabel'))
 			->having('debit != 0 OR credit != 0')
 			->group('label')
 			->sort(['label' => SORT_ASC])

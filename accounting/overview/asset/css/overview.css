@@ -1,29 +1,48 @@
 
-table.tr-hover thead tr.overview_income-statement_row-title {
+table.tr-hover thead tr.overview_row-title,
+thead.thead-sticky tr.overview_row-title th {
 	background-color: var(--primary) !important;
 	color: white;
 }
-table.tr-hover thead tr.overview_income-statement_row-title:hover {
+table.tr-hover thead tr.overview_row-title:hover,
+thead.thead-sticky tr.overview_row-title:hover th {
 	background-color: var(--primary) !important;
 	color: white;
 }
 
-.overview_income-statement_row_sizing td {
+tr.overview_row_sizing {
+	height: 0;
+}
+tr.overview_row_sizing td {
+	background-color: transparent!important;
 	width: 50%;
+	padding: 0;
+	margin: 0;
+	height: 0;
 }
-.overview_income-statement_group-title {
-	th {
-		border: 1px solid var(--muted);
-		vertical-align: middle;
-		/*width: 50%;*/
-	}
+
+thead.thead-sticky tr.overview_group-title th,
+.overview_group-title th {
+	vertical-align: middle;
 }
-table.overview_income-statement_has_previous .overview_income-statement_line {
+
+table.overview_has_previous .overview_line {
 	td:nth-child(1),
-	td:nth-child(3),
 	td:nth-child(4),
 	td:nth-child(5),
-	td:nth-child(7),
+	td:nth-child(6),
+	td:nth-child(9),
+	td:nth-child(10) {
+		border-left: 1px solid var(--muted);
+	}
+	td:last-child {
+		border-right: 1px solid var(--muted);
+	}
+}
+table:not(.overview_has_previous) .overview_line {
+	td:nth-child(1),
+	td:nth-child(4),
+	td:nth-child(5),
 	td:nth-child(8) {
 		border-left: 1px solid var(--muted);
 	}
@@ -31,19 +50,8 @@ table.overview_income-statement_has_previous .overview_income-statement_line {
 		border-right: 1px solid var(--muted);
 	}
 }
-table:not(.overview_income-statement_has_previous) .overview_income-statement_line {
-	td:nth-child(1),
-	td:nth-child(3),
-	td:nth-child(4),
-	td:nth-child(6) {
-		border-left: 1px solid var(--muted);
-	}
-	td:last-child {
-		border-right: 1px solid var(--muted);
-	}
-}
 
-.overview_income-statement_group-total {
+.overview_group-total {
 	border-bottom: 1px solid var(--muted);
 
 	:first-child {
@@ -55,7 +63,7 @@ table:not(.overview_income-statement_has_previous) .overview_income-statement_li
 
 }
 
-table.overview_income-statement_has_previous .overview_income-statement_group-total {
+table.overview_has_previous .overview_group-total {
 	:nth-child(2),
 	:nth-child(3),
 	:nth-child(5) {
@@ -65,16 +73,20 @@ table.overview_income-statement_has_previous .overview_income-statement_group-to
 
 }
 
-table:not(.overview_income-statement_has_previous) .overview_income-statement_group-total {
+table:not(.overview_has_previous) .overview_group-total {
 	:nth-child(2), :last-child {
 		border-right: 1px solid var(--muted);
 		border-left: 1px solid var(--muted);
 	}
 
 }
-.overview_income-statement_cell-links a {
+.overview_cell-links a {
 	color: var(--muted);
 }
-.overview_income-statement_cell-summary {
+.overview_cell-summary {
 	font-weight: bold;
+}
+
+.overview_class-detail {
+	color: var(--muted);
 }
