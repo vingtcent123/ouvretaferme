@@ -105,7 +105,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 				echo '<div class="util-block bg-success color-white">';
 					echo '<p>';
-						echo s("Merci, votre commande pour le {value} est enregistrée !", \util\DateUi::textual($data->eDateSelected['deliveryDate'], \util\DateUi::DATE_HOUR_MINUTE));
+						echo s("Vous avez une commande enregistrée pour le {value} !", \util\DateUi::textual($data->eDateSelected['deliveryDate'], \util\DateUi::DATE_HOUR_MINUTE));
 						if(
 							$data->cSaleExisting->notEmpty() and
 							$data->cSaleExisting->first()->acceptUpdateByCustomer()

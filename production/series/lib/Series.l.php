@@ -564,7 +564,7 @@ class SeriesLib extends SeriesCrud {
 							$eCultivation['harvestMonthsExpected'][$key] = $month;
 						}
 
-						$eCultivation['harvestWeeksExpected'] = \util\DateLib::convertWeeksToMonths($eCultivation['harvestMonthsExpected']);
+						$eCultivation['harvestWeeksExpected'] = \util\DateLib::convertMonthsToWeeks($eCultivation['harvestMonthsExpected']);
 
 					}
 
