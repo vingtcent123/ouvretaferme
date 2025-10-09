@@ -49,8 +49,9 @@ class BankAccountUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("N° banque").'</th>';
-						$h .= '<th>'.s("N° Compte").'</th>';
-						$h .= '<th>'.s("Libellé de compte").'</th>';
+						$h .= '<th>'.s("N° Compte bancaire").'</th>';
+						$h .= '<th>'.s("N° Compte comptable").'</th>';
+						$h .= '<th>'.s("Nom du compte").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -71,6 +72,15 @@ class BankAccountUi {
 								$h .= encode($eBankAccount['label']);
 							}
 						$h .= '</td>';
+						$h .= '<td>';
+							if($canUpdate === TRUE) {
+								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
+								$eBankAccount->setQuickAttribute('app', 'accounting');
+								$h .= $eBankAccount->quick('description', $eBankAccount['description'] ? encode($eBankAccount['description']) : '<i>'.s("Non défini").'</i>');
+							} else {
+								$h .= encode($eBankAccount['label']);
+							}
+						$h .= '</td>';
 
 					$h .= '</tr>';
 				}
@@ -84,10 +94,18 @@ class BankAccountUi {
 
 	}
 
+	public function getDefaultName(BankAccount $eBankAccount): string {
+		return s("Compte bancaire {value}", $eBankAccount['label']);
+	}
+	public function getUnknownName(): string {
+		return s("Compte bancaire");
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = BankAccount::model()->describer($property, [
-			'label' => s("Libellé de compte"),
+			'label' => s("N° Compte comptable"),
+			'description' => s("Nom du compte"),
 		]);
 
 		return $d;

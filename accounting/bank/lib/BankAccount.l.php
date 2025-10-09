@@ -3,12 +3,12 @@ namespace bank;
 
 class BankAccountLib extends BankAccountCrud {
 
-	public static function getAll(): \Collection {
+	public static function getAll(?string $index = NULL): \Collection {
 
 		return BankAccount::model()
 			->select(BankAccount::getSelection())
 			->sort(['accountId' => SORT_ASC])
-			->getCollection();
+			->getCollection(NULL, NULL,  $index);
 	}
 
 	public static function getDefaultAccount(): BankAccount {

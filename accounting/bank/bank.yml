@@ -3,6 +3,7 @@ BankAccount:
   bankId: text8(1, null)
   accountId: text8(1, null)
   label: ?text8(1, null)
+  description: ?text8(1, null)
   isDefault: bool = FALSE
   UNIQUE: [
     ["accountId"]

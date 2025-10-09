@@ -31,6 +31,8 @@ Class BalanceSheetLib {
 			$cOperationDetail = new \Collection();
 		}
 
+		$cBankAccount = \bank\BankAccountLib::getAll('label');
+
 		$balanceSheetData = [
 			'fixedAssets' => [], // actif immobilisé : 2*
 			'currentAssets' => [], // circulant : 3, 4 (si débiteur), 5 (si débiteur)
@@ -54,7 +56,9 @@ Class BalanceSheetLib {
 			// Recherche des détails d'opération (même exercice comptable + classe de compte)
 			$operationsSubClasses = $cOperationDetail->find(fn($e) => (mb_substr($e['class'], 0, 3) === $eOperation['class'] and $eOperation['financialYear']->is($e['financialYear'])))->getArrayCopy();
 
-			switch((int)substr($eOperation['class'], 0, 1)) {
+			$generalClass = (int)substr($eOperation['class'], 0, 1);
+
+			switch($generalClass) {
 
 				case \account\AccountSetting::ASSET_GENERAL_CLASS:
 					self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['fixedAssets'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['fixedAssets']);
@@ -64,8 +68,24 @@ Class BalanceSheetLib {
 					self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['currentAssets'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['currentAssets']);
 					break;
 
-				case \account\AccountSetting::THIRD_PARTY_GENERAL_CLASS:
 				case \account\AccountSetting::FINANCIAL_GENERAL_CLASS:
+					// On récupère la description du compte bancaire pour le retrouver facilement.
+					if(mb_substr($eOperation['class'], 0, 3) === \account\AccountSetting::BANK_ACCOUNT_CLASS) {
+						foreach($operationsSubClasses as &$operationSubClass) {
+							if($cBankAccount->offsetExists($operationSubClass['class'])) {
+								if($cBankAccount[$operationSubClass['class']]['description']) {
+									$operationSubClass['description'] = $cBankAccount[$operationSubClass['class']]['description'];
+								} else {
+									$operationSubClass['description'] = new \bank\BankAccountUi()->getDefaultName($cBankAccount[$operationSubClass['class']]);
+								}
+							} else {
+								$operationSubClass['description'] = new \bank\BankAccountUi()->getUnknownName();
+							}
+						}
+					}
+					// Pas de break car on utilise aussi ce qui est fait en classe 4
+
+				case \account\AccountSetting::THIRD_PARTY_GENERAL_CLASS:
 					if($eOperation['amount'] > 0) { // compte débiteur
 						self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['currentAssets'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['currentAssets']);
 					} else {

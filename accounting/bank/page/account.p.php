@@ -25,5 +25,5 @@ new \bank\BankAccountPage(
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
-	->quick(['label']);
+	->quick(['label', 'description']);
 ?>
