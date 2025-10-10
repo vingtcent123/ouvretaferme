@@ -38,7 +38,7 @@ class OperationCashflowModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
-			'cashflow' => ['element32', 'journal\Operation', 'cast' => 'element'],
+			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 		]);
 
@@ -48,7 +48,7 @@ class OperationCashflowModel extends \ModuleModel {
 
 		$this->propertiesToModule += [
 			'operation' => 'journal\Operation',
-			'cashflow' => 'journal\Operation',
+			'cashflow' => 'bank\Cashflow',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [

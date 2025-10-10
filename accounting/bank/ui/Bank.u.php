@@ -29,17 +29,5 @@ class BankUi {
 
 	}
 
-	public function bankLabel(): string {
-
-		return s("Banque");
-
-	}
-
-	public function cashLabel(): string {
-
-		return s("Caisse");
-
-	}
-
 }
 ?>

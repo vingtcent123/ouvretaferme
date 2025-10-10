@@ -18,5 +18,14 @@ class OperationCashflowLib extends OperationCrud {
 
 	}
 
+	public static function getOperationsByCashflows(array $ids): \Collection {
+
+		return OperationCashflow::model()
+			->select(['operation' => Operation::getSelection()])
+			->whereCashflow('IN', $ids)
+			->getCollection()
+			->getColumnCollection('operation');
+
+	}
 }
 ?>

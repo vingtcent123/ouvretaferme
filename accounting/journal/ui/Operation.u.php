@@ -79,6 +79,242 @@ class OperationUi {
 		);
 	}
 
+	public function getView(\farm\Farm $eFarm, Operation $eOperation): \Panel {
+
+		\Asset::css('journal', 'operation.css');
+
+		$h = $this->getSummary($eOperation);
+		$h .= $this->getUtil($eFarm, $eOperation);
+		$h .= $this->getLinked($eFarm, $eOperation);
+
+		return new \Panel(
+			id: 'panel-operation-view',
+			title: $this->getTitle($eOperation),
+			body: $h,
+			close: 'reload'
+		);
+	}
+	public function getSummary(Operation $eOperation): string {
+
+		$h = '<div class="util-block stick-xs bg-background-light">';
+
+			$h .= '<dl class="util-presentation util-presentation-2">';
+				$h .= '<dt>'.s("Date d'opération").'</dt>';
+				$h .= '<dd>'.\util\DateUi::numeric($eOperation['date']).' ('.s("Exercice {value}", \account\FinancialYearUi::getYear($eOperation['financialYear'])).')</dd>';
+
+				$h .= '<dt>'.s("Date de paiement").'</dt>';
+				$h .= '<dd>';
+					$h .= $eOperation['paymentDate'] !== NULL ? \util\DateUi::numeric($eOperation['paymentDate']) : '<i>'.s("Non indiqué").'</i>';
+				$h .= '</dd>';
+				$h .= '<dt>'.s("Numéro et libellé de compte").'</dt>';
+				$h .= '<dd>'.encode($eOperation['accountLabel']).' - '.encode($eOperation['account']['description']).'</dd>';
+				$h .= '<dt>'.s("Type") .'</dt>';
+				$h .= '<dd>'.self::p('type')->values[$eOperation['type']].'</dd>';
+				$h .= '<dt>'.s("Tiers").'</dt>';
+				$h .= '<dd>'.encode($eOperation['thirdParty']['name']).'</dd>';
+				$h .= '<dt>'.s("Montant") .'</dt>';
+				$h .= '<dd>'.\util\TextUi::money($eOperation['amount']).'</dd>';
+			$h .= '</dl>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private function pencil(): string {
+		return \Asset::icon('pencil', ['class' => 'operation_view_icon']);
+	}
+
+	public function getUtil(\farm\Farm $eFarm, Operation $eOperation): string {
+
+		if($eOperation->canUpdate()) {
+			$eOperation->setQuickAttribute('farm', $eFarm['id']);
+			$eOperation->setQuickAttribute('app', 'accounting');
+		}
+		$h = '<div class="util-title">';
+			$h .= '<h3>'.s("Informations générales").'</h3>';
+		$h .= '</div>';
+
+		if($eOperation['operation']->notEmpty()) {
+			$h .= '<div class="util-info">'.s("Ces informations ne sont modifiables que depuis <link>l'écriture d'origine</link>.", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['operation']['id'].'">']).'</div>';
+		}
+
+		$h .= '<dl class="util-presentation util-presentation-1">';
+		$h .= '<dt>'.s("Libellé d'opération").'</dt>';
+		$h .= '<dd>';
+		$description = $eOperation['description'] ? $eOperation['description'] : '<i>'.s("Non indiqué").'</i>';
+		if($eOperation->canUpdateQuick()) {
+			$h .= $eOperation->quick('description', $description.$this->pencil());
+		} else {
+			$h .= $description;
+		}
+		$h .= '</dd>';
+
+			$h .= '<dt>'.s("Pièce comptable") .'</dt>';
+			$h .= '<dd>';
+				$document = $eOperation['document'] ? $eOperation['document'] : '<i>'.s("Non indiqué").'</i>';
+				if($eOperation->canUpdateQuick()) {
+					$h .= $eOperation->quick('document', $document.$this->pencil());
+				} else {
+					$h .= $document;
+				}
+			$h .= '</dd>';
+
+			$h .= '<dt>'.s("Journal") .'</dt>';
+			$h .= '<dd>';
+				$journalCode = $eOperation['journalCode'] ? self::p('journalCode')->values[$eOperation['journalCode']] : '<i>'.s("Non indiqué").'</i>';
+				if($eOperation->canUpdateQuick()) {
+					$h .= $eOperation->quick('journalCode', $journalCode.$this->pencil());
+				} else {
+					$h .= $journalCode;
+				}
+			$h .= '</dd>';
+
+			$h .= '<dt>'.s("Moyen de paiement").'</dt>';
+			$h .= '<dd>';
+				$paymentMethod = ($eOperation['paymentMethod']['name'] ?? NULL) !== NULL ? \payment\MethodUi::getName($eOperation['paymentMethod']) : '<i>'.s("Non indiqué").'</i>';
+				if($eOperation->canUpdateQuick()) {
+					$h .= $eOperation->quick('paymentMethod', $paymentMethod.$this->pencil());
+				} else {
+					$h .= $paymentMethod;
+				}
+			$h .= '</dd>';
+
+			$h .= '<dt>'.s("Commentaire").'</dt>';
+			$h .= '<dd>';
+				$comment = ($eOperation['comment'] !== NULL) ? encode($eOperation['comment']) : '<i>-</i>';
+				if($eOperation->canUpdateQuick()) {
+					$h .= $eOperation->quick('comment', $comment.$this->pencil());
+				} else {
+					$h .= $comment;
+				}
+			$h .= '</dd>';
+		$h .= '</dl>';
+
+		return $h;
+	}
+
+	public function getLinked(\farm\Farm $eFarm, Operation $eOperation): string {
+
+		$linkedOperationIds = [$eOperation['id']];
+		if($eOperation['operationLinked']->notEmpty()) {
+			$linkedOperationIds[] = $eOperation['operationLinked']['id'];
+		}
+
+		if($eOperation['operationLinked']->empty() and $eOperation['cOperationCashflow']->empty() and ($eOperation['cOperationLinkedByCashflow'] - $linkedOperationIds) <= 0) {
+			return '';
+		}
+
+		$h = '<div class="util-title mt-2">';
+			$h .= '<h3>'.s("Écritures liées").'</h3>';
+		$h .= '</div>';
+
+		if($eOperation['cOperationCashflow']->notEmpty()) {
+
+			$h .= '<h4>'.p("Opération bancaire", "Opérations bancaires", $eOperation['cOperationCashflow']->count()).'</h4>';
+
+			$h .= '<table class="tr-even tr-hover">';
+				$h .= '<thead>';
+					$h .= '<tr class="tr-title">';
+						$h .= '<th>#</th>';
+						$h .= '<th>'.s("Date d'opération bancaire").'</th>';
+						$h .= '<th>'.s("Description").'</th>';
+						$h .= '<th>'.s("Montant").'</th>';
+						$h .= '<th>'.s("Importée le").'</th>';
+						$h .= '<th>'.s("Importée par").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+					foreach($eOperation['cOperationCashflow'] as $eOperationCashflow) {
+
+						$eCashflow = $eOperationCashflow['cashflow'];
+						$h .= '<tr>';
+							$h .= '<td><a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eCashflow['id'].'">'.encode($eCashflow['id']).'</a></td>';
+							$h .= '<td>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
+							$h .= '<td>'.encode($eCashflow['memo']).'</td>';
+							$h .= '<td>'.\util\TextUi::money($eCashflow['amount']).'</td>';
+							$h .= '<td>'.\util\DateUi::numeric($eCashflow['createdAt']).'</td>';
+							$h .= '<td>'.$eCashflow['createdBy']->getName().'</td>';
+						$h .= '</tr>';
+					}
+
+				$h .= '</tbody>';
+			$h .= '</table>';
+		}
+
+		if($eOperation['operationLinked']->notEmpty() or ($eOperation['cOperationLinkedByCashflow']->count() - count($linkedOperationIds)) > 0) {
+
+			$count = ($eOperation['operationLinked']->notEmpty() ? 1 : 0) + $eOperation['cOperationLinkedByCashflow']->count() - count($linkedOperationIds);
+
+			$h .= '<h4>'.p("Écriture liée", "Écritures liées", $count).'</h4>';
+
+			$h .= '<table class="tr-even tr-hover">';
+				$h .= '<thead>';
+					$h .= '<tr class="tr-title">';
+						$h .= '<th>'.s("Numéro et libellé de compte").'</th>';
+						$h .= '<th>'.s("Date").'</th>';
+						$h .= '<th>'.s("Type").'</th>';
+						$h .= '<th>'.s("Description").'</th>';
+						$h .= '<th>'.s("Montant").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+				if($eOperation['operationLinked']->notEmpty()) {
+					$eOperationLinked = $eOperation['operationLinked'];
+						$h .= '<tr>';
+							$h .= '<td>'.encode($eOperationLinked['accountLabel']).' - '.encode($eOperationLinked['account']['description']).'</td>';
+							$h .= '<td>'.\util\DateUi::numeric($eOperationLinked['date']).'</td>';
+							$h .= '<td>'.self::p('type')->values[$eOperationLinked['type']].'</td>';
+							$h .= '<td>'.encode($eOperationLinked['description']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($eOperationLinked['amount']).'</td>';
+							$h .= '<td><a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperationLinked['id'].'">'.s("Voir").'</a></td>';
+						$h .= '</tr>';
+					}
+
+				foreach($eOperation['cOperationLinkedByCashflow'] as $eOperationLinkedByCashflow) {
+
+					if(in_array($eOperationLinkedByCashflow['id'], $linkedOperationIds)) {
+						continue;
+					}
+
+					$h .= '<tr>';
+						$h .= '<td>'.encode($eOperationLinkedByCashflow['accountLabel']).' - '.encode($eOperationLinkedByCashflow['account']['description']).'</td>';
+						$h .= '<td>'.\util\DateUi::numeric($eOperationLinkedByCashflow['date']).'</td>';
+						$h .= '<td>'.self::p('type')->values[$eOperationLinkedByCashflow['type']].'</td>';
+						$h .= '<td>'.encode($eOperationLinkedByCashflow['description']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($eOperationLinkedByCashflow['amount']).'</td>';
+						$h .= '<td><a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperationLinkedByCashflow['id'].'">'.s("Voir").'</a></td>';
+					$h .= '</tr>';
+				}
+
+				$h .= '</tbody>';
+			$h .= '</table>';
+		}
+
+		return $h;
+
+	}
+
+	public function view(Operation $eOperation): \Panel {
+
+		$h = '';
+
+		return new \Panel(
+			id: 'panel-journal-view',
+			title: s("Détail de l'écriture comptable"),
+			dialogOpen: '',
+			dialogClose: '',
+			body: $h,
+			footer: '',
+		);
+
+	}
+
 	public function createPayment(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Operation $eOperation, \Collection $cBankAccount): \Panel {
 
 		\Asset::css('journal', 'operation.css');
@@ -764,6 +1000,22 @@ class OperationUi {
 	public static function link(\farm\Farm $eFarm, Operation $eOperation, bool $newTab): string {
 
 		return '<a href="'.self::url($eFarm, $eOperation).'" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.$eOperation['id'].'</a>';
+
+	}
+
+	public function getTitle(Operation $eOperation): string {
+
+		if($eOperation['type'] === Operation::CREDIT) {
+			return s(
+				"Crédit du {date} de {amount}",
+				['date' => \util\DateUi::numeric($eOperation['date']), 'amount' => \util\TextUi::money($eOperation['amount'])]
+			);
+		}
+
+		return s(
+			"Débit du {date} de {amount}",
+			['date' => \util\DateUi::numeric($eOperation['date']), 'amount' => \util\TextUi::money($eOperation['amount'])]
+		);
 
 	}
 

@@ -298,6 +298,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['itineraire', '{id}'],
 		],
+		'/journal/operation/{id}' => [
+			'request' => 'journal/operation',
+			'priority' => 5,
+			'route' => ['journal', 'operation', '{id}'],
+		],
 		'/minify/{version}/{filename}' => [
 			'request' => 'dev/minify',
 			'priority' => 5,

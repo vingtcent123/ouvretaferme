@@ -7,6 +7,7 @@ class Cashflow extends CashflowElement {
 
 		return Cashflow::model()->getProperties() + [
 
+			'createdBy' => \user\User::getSelection(),
 			'cInvoice' => CashflowInvoiceLib::delegateByInvoice(),
 
 		];

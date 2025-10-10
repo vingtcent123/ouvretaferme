@@ -6,6 +6,27 @@ new \journal\OperationPage(
 		$data->eFarm->validate('canManage');
 		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
+
+	})
+->read('/journal/operation/{id}', function($data) {
+
+	$data->e['operationLinked'] = $data->e['operation']->empty() ? new \journal\Operation() : \journal\OperationLib::getById($data->e['operation']['id']);
+
+	// Toutes les opérations reliées à cette opération bancaire
+	$data->e['cOperationLinkedByCashflow'] = $data->e['cOperationCashflow']->empty() ? new Collection() : \journal\OperationCashflowLib::getOperationsByCashflows($data->e['cOperationCashflow']->getColumnCollection('cashflow')->getIds());
+
+	throw new ViewAction($data);
+});
+
+new \journal\OperationPage(
+	function($data) {
+		\user\ConnectionLib::checkLogged();
+
+		$data->eFarm->validate('canManage');
+		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 	}

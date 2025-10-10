@@ -205,3 +205,9 @@
 .field-radio-group.operation-payment-type-radio {
 	border: none;
 }
+
+.operation_view_icon {
+	color: var(--muted);
+	margin-left: 0.5rem;
+	font-size: small;
+}

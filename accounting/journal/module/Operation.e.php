@@ -13,6 +13,7 @@ class Operation extends OperationElement {
 			'paymentMethod' => \payment\Method::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
 			'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
+			'operation' => ['id', 'type', 'amount', 'accountLabel', 'description', 'date', 'paymentDate'],
 			'cOperationLinked' => new OperationModel()
 				->select('id', 'operation')
 				->delegateCollection('operation')
@@ -22,9 +23,9 @@ class Operation extends OperationElement {
 
 	public function canUpdate(): bool {
 
-		$this->expects(['vatDeclaration', 'date']);
+		$this->expects(['vatDeclaration', 'date', 'financialYear']);
 
-		return $this['vatDeclaration']->empty() and \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']);
+		return $this['vatDeclaration']->empty() and \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']) and $this['financialYear']->canUpdate();
 	}
 
 	public function canUpdateQuick(): bool {

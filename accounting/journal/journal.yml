@@ -72,7 +72,7 @@ Operation:
 OperationCashflow:
   id: serial32
   operation: journal\Operation
-  cashflow: journal\Operation
+  cashflow: bank\Cashflow
   amount: decimal(8, 2)
   INDEX: [
     ["operation"],

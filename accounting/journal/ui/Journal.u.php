@@ -236,11 +236,7 @@ class JournalUi {
 					foreach($cOperation as $eOperation) {
 
 						$canUpdate = (
-							$eFinancialYearSelected->canUpdate()
-							and $eOperation['date'] <= $eFinancialYearSelected['endDate']
-							and $eOperation['date'] >= $eFinancialYearSelected['startDate']
-							and $eFarm->canManage()
-							and $eOperation->canUpdate()
+							$eOperation->canUpdate()
 							and in_array('actions', $hide) === FALSE
 						);
 
@@ -312,7 +308,7 @@ class JournalUi {
 									}
 
 								$class = ($eOperation['type'] === Operation::CREDIT ? ' ml-3' : '');
-								if($canUpdate === TRUE) {
+								if($eOperation->canUpdate()) {
 									$h .= $eOperation->quick('description', encode($eOperation['description']), 'util-quick'.$class);
 								} else {
 									$h .= '<span class="'.$class.'">'.encode($eOperation['description']).'</span>';
@@ -333,7 +329,7 @@ class JournalUi {
 									Operation::DEBIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
 								};
-								if($canUpdate === TRUE) {
+								if($eOperation->canUpdate()) {
 									$h .= $eOperation->quick('amount', $debitDisplay);
 								} else {
 									$h .= $debitDisplay;
@@ -345,7 +341,7 @@ class JournalUi {
 									Operation::CREDIT => \util\TextUi::money($eOperation['amount']),
 									default => '',
 								};
-								if($canUpdate === TRUE) {
+								if($eOperation->canUpdate()) {
 									$h .= $eOperation->quick('amount', $creditDisplay);
 								} else {
 									$h .= $creditDisplay;
@@ -356,45 +352,6 @@ class JournalUi {
 
 								$h .= '<td class="td-vertical-align-top">';
 									$h .= '<div class="journal-operation-actions">';
-										$h .= '<div class="journal-operation-action-icon" data-dropdown="bottom" data-dropdown-hover="true">';
-											if($eOperation['cOperationCashflow']->notEmpty()) {
-												$title = s("Écriture rattachée à une opération bancaire");
-												$h .= '<span>'.\Asset::icon('piggy-bank').'</span>';
-											} else {
-												$title = s("Pas d'opération bancaire liée");
-												$h .= '<span class="color-muted opacity-50">'.\Asset::icon('piggy-bank').'</a>';
-											}
-										$h .= '</div>';
-										$h .= '<div class="dropdown-list bg-primary">';
-											$h .= '<span class="dropdown-item">'.$title.'</span>';
-										$h .= '</div>';
-
-										$h .= '<div class="journal-operation-action-icon" data-dropdown="bottom" data-dropdown-hover="true">';
-											if($eOperation['document'] !== NULL) {
-												$title = s("Pièce comptable : <em>{document}</em>", ['document' => encode($eOperation['document'])]);
-												$h .= '<span>'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
-											} else {
-												$title = s("Indiquer la pièce comptable");
-												$h .= '<span data-is-updatable class="color-muted opacity-50">'.$eOperation->quick('document', \Asset::icon('paperclip')).'</a>';
-											}
-										$h .= '</div>';
-										$h .= '<div class="dropdown-list bg-primary">';
-											$h .= '<span class="dropdown-item">'.$title.'</span>';
-										$h .= '</div>';
-
-										$h .= '<div class="journal-operation-action-icon" data-dropdown="bottom" data-dropdown-hover="true">';
-											if($eOperation['comment'] !== NULL) {
-												$title = s("Commentaire : <em>{value}</em>", encode($eOperation['comment']));
-												$h .= '<span>'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
-											} else {
-												$title = s("Ajouter un commentaire");
-												$h .= '<span data-is-updatable class="color-muted opacity-50">'.$eOperation->quick('comment', \Asset::icon('chat-text-fill')).'</a>';
-											}
-										$h .= '</div>';
-										$h .= '<div class="dropdown-list bg-primary">';
-											$h .= '<span class="dropdown-item">'.$title.'</span>';
-										$h .= '</div>';
-
 										$h .= $this->displayActions($eFarm, $eOperation, $canUpdate);
 									$h .= '</div>';
 								$h .= '</td>';
@@ -488,141 +445,132 @@ class JournalUi {
 
 	protected function displayActions(\farm\Farm $eFarm, Operation $eOperation, bool $canUpdate): string {
 
-		if($canUpdate === FALSE or $eFarm->canManage() === FALSE) {
-
-			if($eOperation['comment'] === NULL) {
-				return '';
-			}
-
-		}
-
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
-			if($eOperation['type'] === Operation::CREDIT) {
-				$detail = s("Crédit de {value}", \util\TextUi::money($eOperation['amount']));
-			} else {
-				$detail = s("Débit de {value}", \util\TextUi::money($eOperation['amount']));
-			}
+			$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'" class="dropdown-item">'.s("Voir le détail").'</a>';
+			if($canUpdate) {
 
-			$h .= '<div class="dropdown-title">'.s("Modifier une écriture comptable ({value})", $detail).'</div>';
+				$h .= '<div class="dropdown-divider"></div>';
 
-			// COMMENTAIRE
-			if($eOperation['comment'] === NULL) {
-				$title = s("Ajouter un commentaire");
-	 		} else {
-				$title = s("Modifier le commentaire");
-			}
-			$h .= $eOperation->quick('comment', $title, 'dropdown-item');
+				// COMMENTAIRE
+				if($eOperation['comment'] === NULL) {
+					$title = s("Ajouter un commentaire");
+				} else {
+					$title = s("Modifier le commentaire");
+				}
+				$h .= $eOperation->quick('comment', $title, 'dropdown-item');
 
-			// JOURNAL
-			if($eOperation['journalCode'] === NULL) {
-				$title = s("Indiquer le journal");
-	 		} else {
-				$title = s("Modifier le journal ({value})", OperationUi::p('journalCode')->shortValues[$eOperation['journalCode']]);
-			}
-			$h .= $this->action($eOperation, $title, 'journalCode');
+				// JOURNAL
+				if($eOperation['journalCode'] === NULL) {
+					$title = s("Indiquer le journal");
+				} else {
+					$title = s("Modifier le journal ({value})", OperationUi::p('journalCode')->shortValues[$eOperation['journalCode']]);
+				}
+				$h .= $this->action($eOperation, $title, 'journalCode');
 
-			// MOYEN DE PAIEMENT
-			if($eOperation['paymentMethod']->empty()) {
-				$title = s("Indiquer le moyen de paiement");
-	 		} else {
-				$title = s("Modifier le moyen de paiement ({value})", \payment\MethodUi::getName($eOperation['paymentMethod']));
-			}
-			$h .= $this->action($eOperation, $title, 'paymentMethod');
+				// MOYEN DE PAIEMENT
+				if($eOperation['paymentMethod']->empty()) {
+					$title = s("Indiquer le moyen de paiement");
+				} else {
+					$title = s("Modifier le moyen de paiement ({value})", \payment\MethodUi::getName($eOperation['paymentMethod']));
+				}
+				$h .= $this->action($eOperation, $title, 'paymentMethod');
 
-			// PIÈCE COMPTABLE
-			if($eOperation['document'] === NULL) {
-				$title = s("Indiquer le n° de pièce comptable");
-	 		} else {
-				$title = s("Modifier la pièce comptable ({value})", encode($eOperation['document']));
-			}
-			$h .= $this->action($eOperation, $title, 'document');
+				// PIÈCE COMPTABLE
+				if($eOperation['document'] === NULL) {
+					$title = s("Indiquer le n° de pièce comptable");
+				} else {
+					$title = s("Modifier la pièce comptable ({value})", encode($eOperation['document']));
+				}
+				$h .= $this->action($eOperation, $title, 'document');
 
-			if($eOperation['operation']->notEmpty()) {
-
-				$attributes = [
-					'class' => 'dropdown-item inactive',
-					'onclick' => 'void(0);',
-				];
-
-				$more = s("Les actions désactivées doivent être effectuées depuis l'écriture originale.");
-				$title = s("<div><sup>*</sup>({more})</div>", ['div' => '<div class="operations-delete-more" data-highlight="operation-'.$eOperation['operation']['id'].'">', 'more' => $more, 'title' => $title]);
-				$h .= '<a '.attrs($attributes).'>'.$title.'</a>';
-			}
-
-			$h .= '<div class="dropdown-divider"></div>';
-
-			// ACTION "SUPPRIMER"
-			if($eOperation['cOperationCashflow']->empty()) {
-
-				// Cette opération est liée à une autre : on ne peut pas la supprimer.
 				if($eOperation['operation']->notEmpty()) {
 
 					$attributes = [
 						'class' => 'dropdown-item inactive',
 						'onclick' => 'void(0);',
-						'data-highlight' => 'operation-'.$eOperation['operation']['id'],
 					];
 
-					$more = s("Cette écriture est liée à une autre écriture. Supprimez l'autre écriture pour supprimer celle-ci.");
-					$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-					$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+					$more = s("Les actions désactivées doivent être effectuées depuis l'écriture originale.");
+					$title = s("<div><sup>*</sup>({more})</div>", ['div' => '<div class="operations-delete-more" data-highlight="operation-'.$eOperation['operation']['id'].'">', 'more' => $more, 'title' => $title]);
+					$h .= '<a '.attrs($attributes).'>'.$title.'</a>';
+				}
 
-				} else {
+				$h .= '<div class="dropdown-divider"></div>';
 
-					$attributes = [
-						'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
-						'post-id' => $eOperation['id'],
-						'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
-						'class' => 'dropdown-item',
-					];
+				// ACTION "SUPPRIMER"
+				if($eOperation['cOperationCashflow']->empty()) {
 
-					if($eOperation['vatAccount']->notEmpty()) {
-						$attributes += [
-							'data-highlight' => $eOperation['vatAccount']->exists()
-								? 'operation-linked-'.$eOperation['id']
-								: 'operation-'.$eOperation['operation']['id'],
-							'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+					// Cette opération est liée à une autre : on ne peut pas la supprimer.
+					if($eOperation['operation']->notEmpty()) {
+
+						$attributes = [
+							'class' => 'dropdown-item inactive',
+							'onclick' => 'void(0);',
+							'data-highlight' => 'operation-'.$eOperation['operation']['id'],
 						];
-					}
 
-					if($eOperation['asset']->exists() === TRUE) {
+						$more = s("Cette écriture est liée à une autre écriture. Supprimez l'autre écriture pour supprimer celle-ci.");
+						$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+						$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
 
-						if($eOperation['vatAccount']->exists() === TRUE) {
+					} else {
 
-							$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
+						$attributes = [
+							'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
+							'post-id' => $eOperation['id'],
+							'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+							'class' => 'dropdown-item',
+						];
 
-							$more = s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
+						if($eOperation['vatAccount']->notEmpty()) {
+							$attributes += [
+								'data-highlight' => $eOperation['vatAccount']->exists()
+									? 'operation-linked-'.$eOperation['id']
+									: 'operation-'.$eOperation['operation']['id'],
+								'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+							];
+						}
 
-						} else {
+						if($eOperation['asset']->exists() === TRUE) {
 
-							$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
-							$more = s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
+							if($eOperation['vatAccount']->exists() === TRUE) {
+
+								$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
+
+								$more = s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
+
+							} else {
+
+								$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
+								$more = s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
+
+							}
+
+						} elseif($eOperation['vatAccount']->exists() === TRUE) {
+
+							$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
+							$more = s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
 
 						}
 
-					} else if($eOperation['vatAccount']->exists() === TRUE) {
+						if(isset($more)) {
+							$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+						} else {
+							$deleteText = s("Supprimer");
+						}
 
-						$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
-						$more = s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
-
+						$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
 					}
 
-					if(isset($more)) {
-						$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-					} else {
-						$deleteText = s("Supprimer");
-					}
+					$h .= $buttonDelete;
 
-					$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+				} else {
+
+					$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
+					$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 				}
-
-				$h .= $buttonDelete;
-
-			} else {
-
-				$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
-				$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 			}
 
 		$h .= '</div>';
