@@ -13,7 +13,6 @@ class Operation extends OperationElement {
 			'paymentMethod' => \payment\Method::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
 			'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
-			'operation' => ['id', 'type', 'amount', 'accountLabel', 'description', 'date', 'paymentDate'],
 			'cOperationLinked' => new OperationModel()
 				->select('id', 'operation')
 				->delegateCollection('operation')
