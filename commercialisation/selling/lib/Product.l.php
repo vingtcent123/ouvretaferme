@@ -141,7 +141,7 @@ class ProductLib extends ProductCrud {
 
 		return Product::model()
 			->select(Product::getSelection())
-			->wherePlant($ePlant)
+			->whereUnprocessedPlant($ePlant)
 			->sort('name')
 			->getCollection(index: $index);
 
@@ -216,7 +216,7 @@ class ProductLib extends ProductCrud {
 
 		if($search->get('plant')) {
 			$cPlant = \plant\PlantLib::getFromQuery($search->get('plant'), $eFarm);
-			Product::model()->wherePlant('IN', $cPlant);
+			Product::model()->whereUnprocessedPlant('IN', $cPlant);
 		}
 
 	}

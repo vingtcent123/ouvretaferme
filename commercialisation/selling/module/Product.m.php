@@ -58,7 +58,7 @@ class ProductModel extends \ModuleModel {
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'profile' => ['enum', [\selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
-			'plant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
+			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'unprocessedSize' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -85,12 +85,12 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'profile', 'category', 'plant', 'unprocessedVariety', 'unprocessedSize', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'category' => 'selling\Category',
-			'plant' => 'plant\Plant',
+			'unprocessedPlant' => 'plant\Plant',
 			'farm' => 'farm\Farm',
 			'unit' => 'selling\Unit',
 			'stockLast' => 'selling\Stock',
@@ -98,7 +98,7 @@ class ProductModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm'],
-			['plant']
+			['unprocessedPlant']
 		]);
 
 	}
@@ -187,8 +187,8 @@ class ProductModel extends \ModuleModel {
 		return $this->where('category', ...$data);
 	}
 
-	public function wherePlant(...$data): ProductModel {
-		return $this->where('plant', ...$data);
+	public function whereUnprocessedPlant(...$data): ProductModel {
+		return $this->where('unprocessedPlant', ...$data);
 	}
 
 	public function whereUnprocessedVariety(...$data): ProductModel {

@@ -106,7 +106,7 @@ class ProductLib extends ProductCrud {
 				'product' => \selling\ProductElement::getSelection() + [
 					'unit' => \selling\Unit::getSelection(),
 					'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
-					'plant' => ['name', 'fqn', 'vignette']
+					'unprocessedPlant' => ['name', 'fqn', 'vignette']
 				],
 				'farm',
 				'packaging',

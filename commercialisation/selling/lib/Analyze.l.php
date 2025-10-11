@@ -654,7 +654,7 @@ class AnalyzeLib {
 		}
 
 		if($search->get('plant')) {
-			Item::model()->where('m2.plant', $search->get('plant'));
+			Item::model()->where('m2.unprocessedPlant', $search->get('plant'));
 		}
 
 		self::filterItemStats(TRUE);
@@ -670,7 +670,7 @@ class AnalyzeLib {
 			])
 			->join(Product::model()
 				->select([
-					'plant' => ['vignette', 'fqn', 'name'],
+					'unprocessedPlant' => ['vignette', 'fqn', 'name'],
 					'unit' => \selling\Unit::getSelection(),
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
@@ -679,16 +679,16 @@ class AnalyzeLib {
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
 			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->where('m1.product', '!=', NULL)
-			->where('m2.plant', '!=', NULL)
-			->group(new \Sql('m2_plant, m2_unit'))
+			->where('m2.unprocessedPlant', '!=', NULL)
+			->group(new \Sql('m2_unprocessedPlant, m2_unit'))
 			->sort(new \Sql('m1_turnover DESC'))
-			->getCollection(NULL, NULL, ['plant', NULL]);
+			->getCollection(NULL, NULL, ['unprocessedPlant', NULL]);
 
 		$cPlant = new \Collection();
 
 		foreach($ccItemPlant as $cItemPlant) {
 
-			$ePlant = $cItemPlant->first()['plant'];
+			$ePlant = $cItemPlant->first()['unprocessedPlant'];
 			$ePlant['turnover'] = $cItemPlant->sum('turnover');
 			$ePlant['cItem'] = $cItemPlant;
 
@@ -941,7 +941,7 @@ class AnalyzeLib {
 
 		$data = Product::model()
 			->select(ProductElement::getSelection() + [
-				'plant' => ['name'],
+				'unprocessedPlant' => ['name'],
 				'category' => ['name'],
 				'unit' => \selling\Unit::getSelection(),
 			])
@@ -953,7 +953,7 @@ class AnalyzeLib {
 				return [
 					$eProduct['id'],
 					$eProduct['name'],
-					$eProduct['plant']->empty() ? '' : $eProduct['plant']['name'],
+					$eProduct['unprocessedPlant']->empty() ? '' : $eProduct['unprocessedPlant']['name'],
 					$eProduct['category']->empty() ? '' : $eProduct['category']['name'],
 					$eProduct['unit']->empty() ? '' : $eProduct['unit']['singular'],
 					$eProduct['unprocessedVariety'] ?? '',

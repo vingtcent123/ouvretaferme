@@ -275,8 +275,8 @@ class ProductUi {
 					}
 
 					$h .= '<td class="product-item-plant">';
-						if($eProduct['plant']->notEmpty()) {
-							$h .= \plant\PlantUi::link($eProduct['plant']);
+						if($eProduct['unprocessedPlant']->notEmpty()) {
+							$h .= \plant\PlantUi::link($eProduct['unprocessedPlant']);
 						}
 					$h .= '</td>';
 
@@ -529,7 +529,7 @@ class ProductUi {
 					$h .= '<dd>'.($eProduct['compositionVisibility'] === Product::PRIVATE ? s("surprise") : s("visible")).'</dd>';
 				} else {
 					$h .= '<dt>'.self::p('plant')->label.'</dt>';
-					$h .= '<dd>'.($eProduct['plant']->empty() ? '' : \plant\PlantUi::link($eProduct['plant'])).'</dd>';
+					$h .= '<dd>'.($eProduct['unprocessedPlant']->empty() ? '' : \plant\PlantUi::link($eProduct['unprocessedPlant'])).'</dd>';
 				}
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
@@ -1135,9 +1135,9 @@ class ProductUi {
 
 		$d = Product::model()->describer($property, [
 			'category' => s("Catégorie"),
-			'plant' => s("Espèce"),
 			'vignette' => s("Vignette"),
 			'name' => s("Nom du produit"),
+			'unprocessedPlant' => s("Espèce"),
 			'unprocessedVariety' => s("Variété"),
 			'unprocessedSize' => s("Calibre"),
 			'origin' => s("Origine"),

@@ -245,7 +245,7 @@ Product:
   vignette: ?textFixed(30, 30) @charset(ascii)
   profile: ?enum(UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT)
   category: ?selling\Category
-  plant: ?plant\Plant
+  unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null)
   unprocessedSize: ?text8(1, null)
   origin: ?text8(1, null)
@@ -271,7 +271,7 @@ Product:
   status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   INDEX: [
     ["farm"],
-    ["plant"]
+    ["unprocessedPlant"]
   ]
 
 Sale:

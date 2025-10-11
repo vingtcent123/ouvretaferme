@@ -36,7 +36,7 @@ class PdfUi {
 
 				if(
 					$eItem['product']->empty() or
-					$eItem['product']['plant']->empty()
+					$eItem['product']['unprocessedPlant']->empty()
 				) {
 					continue;
 				}

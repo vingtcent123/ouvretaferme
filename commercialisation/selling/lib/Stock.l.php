@@ -57,7 +57,7 @@ class StockLib extends StockCrud {
 			->getCollection(index: ['plant', 'name', 'unprocessedVariety', 'unprocessedSize', NULL]);
 
 		foreach($cProduct as $eProduct) {
-			$plant = $eProduct['plant']->empty() ? NULL : $eProduct['plant']['id'];
+			$plant = $eProduct['unprocessedPlant']->empty() ? NULL : $eProduct['unprocessedPlant']['id'];
 			$eProduct['cProductSiblings'] = $cccccProduct[$plant][$eProduct['name']][$eProduct['unprocessedVariety']][$eProduct['unprocessedSize']] ?? new \Collection();
 		}
 
@@ -95,7 +95,7 @@ class StockLib extends StockCrud {
 			->select(ProductElement::getSelection() + [
 				'unit' => \selling\Unit::getSelection(),
 			])
-			->wherePlant($eTask['plant'])
+			->whereUnprocessedPlant($eTask['plant'])
 			->whereUnit($eUnit)
 			->whereStock('!=', NULL)
 			->sort(new \Sql('
