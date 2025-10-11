@@ -48,13 +48,13 @@ class StockLib extends StockCrud {
 		$cccccProduct = Product::model()
 			->select([
 				'id',
-				'plant', 'name', 'unprocessedVariety', 'unprocessedSize', 'origin',
+				'name', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'origin',
 				'unit' => \selling\Unit::getSelection(),
 			])
 			->whereFarm($eFarm)
 			->whereId('NOT IN', $cProduct)
 			->whereStock(NULL)
-			->getCollection(index: ['plant', 'name', 'unprocessedVariety', 'unprocessedSize', NULL]);
+			->getCollection(index: ['unprocessedPlant', 'name', 'unprocessedVariety', 'unprocessedSize', NULL]);
 
 		foreach($cProduct as $eProduct) {
 			$plant = $eProduct['unprocessedPlant']->empty() ? NULL : $eProduct['unprocessedPlant']['id'];
