@@ -42,12 +42,16 @@ class IncomeStatementUi {
 				IncomeStatementLib::VIEW_BASIC => s("Vue synthétique"),
 				IncomeStatementLib::VIEW_DETAILED => s("Vue détaillée"),
 			], $search->get('view'), ['mandatory' => TRUE]);
-			$h .= $form->select('financialYearComparison', $cFinancialYear
-				->filter(fn($e) => !$e->is($eFinancialYear))
-				->makeArray(function($e, &$key) {
-					$key = $e['id'];
-					return s("Exercice {value}", \account\FinancialYearUi::getYear($e));
-				}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
+
+			if($cFinancialYear->count() > 1) {
+				$h .= $form->select('financialYearComparison', $cFinancialYear
+					->filter(fn($e) => !$e->is($eFinancialYear))
+					->makeArray(function($e, &$key) {
+						$key = $e['id'];
+						return s("Exercice {value}", \account\FinancialYearUi::getYear($e));
+					}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
+			}
+
 			$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
 			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 		$h .= '</div>';
@@ -67,28 +71,28 @@ class IncomeStatementUi {
 
 		$totals = [
 			'operatingExpense' => [
-				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['expenses']['operating'])),
-				'comparison' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['comparison']), $resultData['expenses']['operating'])),
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['expenses']['operating'])),
+				'comparison' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['expenses']['operating'])),
 			],
 			'financialExpense' => [
-				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['expenses']['financial'])),
-				'comparison' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['comparison']), $resultData['expenses']['financial'])),
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['expenses']['financial'])),
+				'comparison' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['expenses']['financial'])),
 			],
 			'exceptionalExpense' => [
-				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['expenses']['exceptional'])),
-				'comparison' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['comparison']), $resultData['expenses']['exceptional'])),
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['expenses']['exceptional'])),
+				'comparison' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['expenses']['exceptional'])),
 			],
 			'operatingIncome' => [
-				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['incomes']['operating'])),
-				'comparison' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['comparison']), $resultData['incomes']['operating'])),
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['incomes']['operating'])),
+				'comparison' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['incomes']['operating'])),
 			],
 			'financialIncome' => [
-				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['incomes']['financial'])),
-				'comparison' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['comparison']), $resultData['incomes']['financial'])),
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['incomes']['financial'])),
+				'comparison' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['incomes']['financial'])),
 			],
 			'exceptionalIncome' => [
-				'current' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['current']), $resultData['incomes']['exceptional'])),
-				'comparison' => array_sum(array_map(fn($data) => (($displaySummary and ($data['isSummary'] ?? FALSE)) ? 0 : $data['comparison']), $resultData['incomes']['exceptional'])),
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['incomes']['exceptional'])),
+				'comparison' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['incomes']['exceptional'])),
 			],
 		];
 

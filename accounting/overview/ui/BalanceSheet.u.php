@@ -43,12 +43,16 @@ class BalanceSheetUi {
 						BalanceSheetLib::VIEW_BASIC => s("Vue synthétique"),
 						BalanceSheetLib::VIEW_DETAILED => s("Vue détaillée"),
 					], $search->get('view'), ['mandatory' => TRUE]);
-					$h .= $form->select('financialYearComparison', $cFinancialYear
-						->filter(fn($e) => !$e->is($eFinancialYear))
-						->makeArray(function($e, &$key) {
-							$key = $e['id'];
-							return s("Exercice {value}", \account\FinancialYearUi::getYear($e));
-						}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
+
+					if($cFinancialYear->count() > 1) {
+						$h .= $form->select('financialYearComparison', $cFinancialYear
+							->filter(fn($e) => !$e->is($eFinancialYear))
+							->makeArray(function($e, &$key) {
+								$key = $e['id'];
+								return s("Exercice {value}", \account\FinancialYearUi::getYear($e));
+							}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
+					}
+
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
