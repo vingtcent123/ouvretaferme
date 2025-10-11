@@ -873,20 +873,13 @@ class ProductUi {
 				];
 			});
 
-			$h .= '<br/>';
-
-			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Caractéristiques").'</h4>');
-				if($eProduct['composition']) {
-					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
-				} else {
-					$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize', 'origin']);
-				}
-				$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
-			$h .= '</div>';
+			$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
 
 			$h .= '<br/>';
-			$h .= self::getFieldPrices($form, $eProduct, 'create');
+			$h .= $this->getFieldProfile($form, $eProduct);
+
+			$h .= '<br/>';
+			$h .= $this->getFieldPrices($form, $eProduct, 'create');
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer le produit"))
@@ -914,13 +907,6 @@ class ProductUi {
 
 			$h .= $form->dynamicGroup($eProduct, 'name');
 
-			$h .= $form->group(
-				self::p('plant')->label,
-				$form->dynamicField($eProduct, 'plant', function($d) {
-					$d->autocompleteDispatch = '#product-update';
-				})
-			);
-
 			if($eProduct['cCategory']->notEmpty()) {
 				$h .= $form->dynamicGroup($eProduct, 'category');
 			}
@@ -932,20 +918,13 @@ class ProductUi {
 					$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
 
-			$h .= '<br/>';
-
-			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Caractéristiques").'</h4>');
-				if($eProduct['composition']) {
-					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility']);
-				} else {
-					$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize', 'origin']);
-				}
-				$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
-			$h .= '</div>';
+			$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
 
 			$h .= '<br/>';
-			$h .= self::getFieldPrices($form, $eProduct, 'update');
+			$h .= $this->getFieldProfile($form, $eProduct);
+
+			$h .= '<br/>';
+			$h .= $this->getFieldPrices($form, $eProduct, 'update');
 
 			$h .= $form->group(
 				content: $form->submit(s("Modifier"))
@@ -961,7 +940,40 @@ class ProductUi {
 
 	}
 
-	private static function getFieldPrices(\util\FormUi $form, Product $eProduct, string $for): string {
+	private function getFieldProfile(\util\FormUi $form, Product $eProduct): string {
+
+		$h = '';
+
+		if($eProduct['composition']) {
+
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->group(content: '<h4>'.s("Panier").'</h4>');
+				$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
+			$h .= '</div>';
+
+		} else {
+
+			$h .= '<div class="util-block bg-background-light product-write-profile">';
+				$h .= $form->group(content: '<h4>'.s("Caractéristiques").'</h4>');
+			//	$h .= $form->dynamicGroup($eProduct, 'profile');
+
+				$h .= $form->group(
+					self::p('unprocessedPlant')->label,
+					$form->dynamicField($eProduct, 'unprocessedPlant', function($d) {
+						$d->autocompleteDispatch = '#product-update';
+					})
+				);
+
+				$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize', 'origin']);
+			$h .= '</div>';
+
+		}
+
+		return $h;
+
+	}
+
+	private function getFieldPrices(\util\FormUi $form, Product $eProduct, string $for): string {
 
 		$h = '<h3>'.s("Grille tarifaire").'</h3>';
 
@@ -1180,7 +1192,15 @@ class ProductUi {
 				];
 				break;
 
-			case 'plant' :
+			case 'profile' :
+				$d->mandatory = TRUE;
+				$d->field = 'radio';
+				$d->values = [
+
+				];
+				break;
+
+			case 'unprocessedPlant' :
 				$d->after = \util\FormUi::info(s("Sélectionnez l'espèce à laquelle est rattaché ce produit s'il est directement tiré du champ."));
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					$e->expects(['farm']);

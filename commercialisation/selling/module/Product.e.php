@@ -152,7 +152,7 @@ class Product extends ProductElement {
 				);
 
 			})
-			->setCallback('plant.check', function(\plant\Plant $ePlant): bool {
+			->setCallback('unprocessedPlant.check', function(\plant\Plant $ePlant): bool {
 
 				return (
 					$ePlant->empty() or (
