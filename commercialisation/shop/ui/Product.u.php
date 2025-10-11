@@ -305,8 +305,8 @@ class ProductUi {
 
 			if($eProductSelling['vignette'] !== NULL) {
 				$url = new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');
-			} else if($eProductSelling['plant']->notEmpty()) {
-				$url = new \media\PlantVignetteUi()->getUrlByElement($eProductSelling['plant'], 'l');
+			} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
+				$url = new \media\PlantVignetteUi()->getUrlByElement($eProductSelling['unprocessedPlant'], 'l');
 			} else {
 				$url = NULL;
 			}
@@ -319,8 +319,8 @@ class ProductUi {
 			}
 			$h .= '>';
 				if($url === NULL) {
-					if($eProductSelling['plant']->notEmpty()) {
-						$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], match($eShop['type']) {
+					if($eProductSelling['unprocessedPlant']->notEmpty()) {
+						$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], match($eShop['type']) {
 							Shop::PRO => '4rem',
 							Shop::PRIVATE => '9rem'
 						});
@@ -822,8 +822,8 @@ class ProductUi {
 									$eProductSelling['composition']
 								) {
 									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
-								} else if($eProductSelling['plant']->notEmpty()) {
-									$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '3rem');
+								} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
+									$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], '3rem');
 								}
 							$h .= '</td>';
 
@@ -966,8 +966,8 @@ class ProductUi {
 							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
 								if($eProductSelling['vignette'] !== NULL) {
 									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
-								} else if($eProductSelling['plant']->notEmpty()) {
-									$h .= \plant\PlantUi::getVignette($eProductSelling['plant'], '3rem');
+								} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
+									$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], '3rem');
 								}
 							$h .= '</td>';
 
