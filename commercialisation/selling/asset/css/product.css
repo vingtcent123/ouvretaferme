@@ -137,3 +137,27 @@ div.product-vignette-composition {
 	justify-content: center;
 	font-size: 75%;
 }
+
+div.product-write-profile [data-profile^="unprocessed-plant"] {
+	display: none;
+}
+
+div.product-write-profile:not(:has(input[name="profile"]:not([value=""]):checked)) div.product-write-profile-details {
+	display: none;
+}
+
+div.product-write-profile:has(input[name="profile"][value="unprocessed-plant"]:checked) [data-profile~="unprocessed-plant"] {
+	display: block;
+}
+
+div.product-write-profile:has(input[name="profile"][value="unprocessed-animal"]:checked) [data-profile~="unprocessed-animal"] {
+	display: block;
+}
+
+div.product-write-profile:has(input[name="profile"][value="processed-food"]:checked) [data-profile~="processed-food"] {
+	display: block;
+}
+
+div.product-write-profile:has(input[name="profile"][value="processed-product"]:checked) [data-profile~="processed-product"] {
+	display: block;
+}

@@ -852,17 +852,6 @@ class ProductUi {
 
 			$h .= $form->dynamicGroup($eProduct, 'name*');
 
-			if($eProduct['composition'] === FALSE) {
-
-				$h .= $form->group(
-					self::p('plant')->label,
-					$form->dynamicField($eProduct, 'plant', function($d) {
-						$d->autocompleteDispatch = '#product-create';
-					})
-				);
-
-			}
-
 			if($eProduct['cCategory']->notEmpty()) {
 				$h .= $form->dynamicGroup($eProduct, 'category');
 			}
@@ -918,7 +907,7 @@ class ProductUi {
 					$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
 
-			$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
+			$h .= $form->dynamicGroups($eProduct, ['description', 'origin', 'quality']);
 
 			$h .= '<br/>';
 			$h .= $this->getFieldProfile($form, $eProduct);
@@ -953,18 +942,24 @@ class ProductUi {
 
 		} else {
 
-			$h .= '<div class="util-block bg-background-light product-write-profile">';
-				$h .= $form->group(content: '<h4>'.s("Caractéristiques").'</h4>');
-			//	$h .= $form->dynamicGroup($eProduct, 'profile');
+			$h .= '<div class="product-write-profile">';
+				$h .= $form->dynamicGroup($eProduct, 'profile');
+				$h .= '<div class="util-block bg-background-light product-write-profile-details">';
+					$h .= '<div data-profile="'.Product::UNPROCESSED_PLANT.' '.Product::UNPROCESSED_ANIMAL.'">';
 
-				$h .= $form->group(
-					self::p('unprocessedPlant')->label,
-					$form->dynamicField($eProduct, 'unprocessedPlant', function($d) {
-						$d->autocompleteDispatch = '#product-update';
-					})
-				);
+						$h .= $form->group(
+							self::p('unprocessedPlant')->label,
+							$form->dynamicField($eProduct, 'unprocessedPlant', function($d) {
+								$d->autocompleteDispatch = '#product-update';
+							})
+						);
 
-				$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize', 'origin']);
+					$h .= '</div>';
+
+					$h .= '<div data-profile="'.Product::UNPROCESSED_PLANT.'">';
+						$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize']);
+					$h .= '</div>';
+				$h .= '</div>';
 			$h .= '</div>';
 
 		}
@@ -1152,6 +1147,7 @@ class ProductUi {
 			'unprocessedPlant' => s("Espèce"),
 			'unprocessedVariety' => s("Variété"),
 			'unprocessedSize' => s("Calibre"),
+			'profile' => '<h3>'.s("Caractéristiques").'</h3>',
 			'origin' => s("Origine"),
 			'description' => s("Description"),
 			'quality' => s("Signe de qualité"),
@@ -1193,15 +1189,17 @@ class ProductUi {
 				break;
 
 			case 'profile' :
-				$d->mandatory = TRUE;
+				$d->placeholder = s("Non concerné");
 				$d->field = 'radio';
 				$d->values = [
-
+					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale").'  <span class="color-muted"><small>'.s("Fruits, légumes, fleurs, plants...").'</small></span>',
+					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
+					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Charcuteries, boissons, confitures, ...").'</small></span>',
+					Product::PROCESSED_PRODUCT => s("Hygiène, santé, entretien ou cosmétique").'  <span class="color-muted"><small>'.s("Savons, lessives, ...").'</small></span>',
 				];
 				break;
 
 			case 'unprocessedPlant' :
-				$d->after = \util\FormUi::info(s("Sélectionnez l'espèce à laquelle est rattaché ce produit s'il est directement tiré du champ."));
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					$e->expects(['farm']);
 					return [
@@ -1221,7 +1219,6 @@ class ProductUi {
 				break;
 
 			case 'unprocessedVariety' :
-				$d->after = \util\FormUi::info(s("N'indiquez la variété que si elle apporte une information supplémentaire utile à vos clients par rapport au nom du produit que vous souhaitez communiquer à vos clients."));
 				$d->placeholder = s("Ex. : Chérie");
 				break;
 
@@ -1335,7 +1332,6 @@ class ProductUi {
 				$d->attributes = [
 					'placeholder' => s("Ex. : Ferme d'à côté (63)"),
 				];
-				$d->after = \util\FormUi::info(s("Indiquez l'origine du produit s'il n'est pas issu de votre production."));
 				break;
 
 			case 'vat' :
