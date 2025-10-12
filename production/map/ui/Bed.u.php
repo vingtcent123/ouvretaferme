@@ -185,7 +185,7 @@ class BedUi {
 									$h .= '<div class="bed-item-size-write">';
 
 										$h .= $form->inputGroup(
-											$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? $ePlace['length'] : $eBed['length'], [
+											$form->number('sizes['.$eBed['id'].']', $ePlace->notEmpty() ? min($ePlace['length'], $eBed['length']) : $eBed['length'], [
 												'min' => 0,
 												'max' => $eBed['length'],
 												'onfocus' => 'this.select()'
