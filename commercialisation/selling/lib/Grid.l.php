@@ -42,10 +42,6 @@ class GridLib extends GridCrud {
 
 		$e->expects(['id', 'type']);
 
-		if($e['type'] === Customer::PRIVATE) {
-			return new \Collection();
-		}
-
 		$cGrid = Grid::model()
 			->select(Grid::getSelection())
 			->select([

@@ -60,17 +60,6 @@ class Customer extends CustomerElement {
 
 	}
 
-	public function canGrid(): bool {
-
-		$this->expects(['type']);
-
-		return (
-			$this->canManage() and
-			$this['type'] === Customer::PRO
-		);
-
-	}
-
 	public function canManage(): bool {
 
 		$this->expects(['farm']);

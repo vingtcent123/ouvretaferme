@@ -54,20 +54,12 @@ new \selling\CustomerPage()
 	})
 	->read('updateGrid', function($data) {
 
-		if($data->e['type'] === \selling\Customer::PRIVATE) {
-			throw new NotExpectedAction('Invalid customer type');
-		}
-
 		$data->cProduct = \selling\ProductLib::getByCustomer($data->e);
 
 		throw new ViewAction($data);
 
 	}, validate: ['canManage'])
 	->write('doUpdateGrid', function($data) {
-
-		if($data->e['type'] === \selling\Customer::PRIVATE) {
-			throw new NotExpectedAction('Invalid customer type');
-		}
 
 		$fw = new FailWatch();
 

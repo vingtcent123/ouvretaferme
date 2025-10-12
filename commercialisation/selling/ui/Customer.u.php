@@ -492,6 +492,9 @@ class CustomerUi {
 				$h .= '<a class="tab-item selected" data-tab="sales" onclick="Lime.Tab.select(this)">';
 					$h .= s("Ventes");
 				$h .= '</a>';
+				$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
+					$h .= s("Grille tarifaire");
+				$h .= '</a>';
 				if($cInvoice->notEmpty()) {
 					$h .= '<a class="tab-item" data-tab="invoices" onclick="Lime.Tab.select(this)">';
 						$h .= s("Factures");
@@ -500,11 +503,6 @@ class CustomerUi {
 				if($eCustomer['contact']->notEmpty()) {
 					$h .= '<a class="tab-item" data-tab="emails" onclick="Lime.Tab.select(this)">';
 						$h .= s("E-mails");
-					$h .= '</a>';
-				}
-				if($eCustomer->canGrid()) {
-					$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
-						$h .= s("Grille tarifaire");
 					$h .= '</a>';
 				}
 			$h .= '</div>';
@@ -527,6 +525,10 @@ class CustomerUi {
 
 				$h .= '</div>';
 
+				$h .= '<div data-tab="grid" class="tab-panel">';
+					$h .= new \selling\GridUi()->getGridByCustomer($eCustomer, $cGrid);
+				$h .= '</div>';
+
 				if($cInvoice->notEmpty()) {
 					$h .= '<div data-tab="invoices" class="tab-panel">';
 						$h .= new \selling\InvoiceUi()->getList($cInvoice, hide: ['customer']);
@@ -546,12 +548,6 @@ class CustomerUi {
 						}
 					$h .= '</div>';
 
-				}
-
-				if($eCustomer->canGrid()) {
-					$h .= '<div data-tab="grid" class="tab-panel">';
-						$h .= new \selling\GridUi()->getGridByCustomer($eCustomer, $cGrid);
-					$h .= '</div>';
 				}
 
 			$h .= '</div>';

@@ -1272,16 +1272,12 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	background: white;
 }
 
-.util-block-bordered {
-	border: 2px solid var(--border);
-}
-
 .util-block-secondary {
 	background: var(--secondary);
 	color: white;
 }
 
-.util-block-secondary a{
+.util-block-secondary a {
 	color: white;
 	text-decoration: underline;
 }

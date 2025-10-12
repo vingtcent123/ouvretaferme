@@ -16,7 +16,7 @@ class GridUi {
 		}
 
 		$h = '<div class="util-title">';
-			$h .= '<h3>'.s("Grille tarifaire personnalisée pour les professionnels").'</h3>';
+			$h .= '<h3>'.s("Grille tarifaire personnalisée").'</h3>';
 			$h .= '<div>';
 				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-primary">'.\Asset::icon('gear-fill').'</a>';
 				$h .= '<div class="dropdown-list">';
@@ -104,23 +104,23 @@ class GridUi {
 
 	public function getGridByCustomer(Customer $eCustomer, \Collection $cGrid): string {
 
-		if($eCustomer['type'] === Customer::PRIVATE) {
-			return '';
+		if($cGrid->empty()) {
+
+			$h = '<div class="util-block-help">';
+				$h .= '<p>'.s("Vous n'avez pas personnalisé de prix pour ce client. Les prix de base s'appliquent donc.").'</p>';
+				$h .= '<a href="/selling/customer:updateGrid?id='.$eCustomer['id'].'" class="btn btn-secondary">'.s("Personnaliser la grille tarifaire").'</a>';
+			$h .= '</div>';
+
+			return $h;
+
 		}
 
 		$h = '<div class="util-title">';
 
-			if($cGrid->empty()) {
+			$h .= '<div class="util-section">';
+				$h .= s("Seuls les prix personnalisés pour ce client et en cours de validité sont affichés.");
+			$h .= '</div>';
 
-				$h .= '<div class="util-empty">'.s("Aucune personnalisation de prix pour ce client.").'</div>';
-
-			} else {
-
-				$h .= '<div class="util-info">';
-					$h .= s("Uniquement les prix personnalisés pour ce client et en cours de validité.");
-				$h .= '</div>';
-
-			}
 			$h .= '<div>';
 				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
@@ -234,7 +234,7 @@ class GridUi {
 
 		$h = $form->hidden('id', $eCustomer['id']);
 
-		$h .= '<div class="util-block-help">'.s("Vous pouvez personnaliser ici les prix et les conditionnements pour votre client {value}. Les informations personnalisées ont la priorité sur les valeurs de base, mais ne s'appliquent pas dans les boutiques en ligne.", encode($eCustomer->getName())).'</div>';
+		$h .= '<div class="util-block-help">'.s("Vous pouvez personnaliser ici les prix et les conditionnements pour votre client {value}.", encode($eCustomer->getName())).'</div>';
 
 		$h .= '<div class="util-overflow-md">';
 
