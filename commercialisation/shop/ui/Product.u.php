@@ -336,18 +336,47 @@ class ProductUi {
 
 				$h .= '<div class="shop-product-header">';
 					$h .= '<div class="shop-product-name">';
-						$h .= '<h4>';
-							$h .= $eProductSelling->getName('html');
-							if($eShop['type'] === Shop::PRO) {
-								$h .= $quality;
-							}
 
-							if($eProductSelling['unprocessedSize'] !== NULL) {
-								$h .= '<div class="shop-product-size">';
-									$h .= encode($eProductSelling['unprocessedSize']);
-								$h .= '</div>';
-							}
-						$h .= '</h4>';
+						$name = $eProductSelling->getName('html');
+
+						if($eShop['type'] === Shop::PRO) {
+							$name .= $quality;
+						}
+
+						if($eProductSelling['unprocessedSize'] !== NULL) {
+							$name .= '<div class="shop-product-size">';
+								$name .= encode($eProductSelling['unprocessedSize']);
+							$name .= '</div>';
+						}
+
+						if(
+							$eProductSelling['processedComposition'] or
+							$eProductSelling['processedAllergen']
+						) {
+
+							$h .= '<h4 class="shop-product-name-link" data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-enter-timeout="0">';
+								$h .= $name;
+								$h .= '<span class="shop-product-name-info">'.\Asset::icon('info-circle').'</span>';
+							$h .= '</h4>';
+
+							$h .= '<div class="dropdown-list dropdown-list-unstyled shop-product-name-dropdown">';
+								if($eProductSelling['processedComposition']) {
+									$h .= '<h5>'.s("Composition").'</h5>';
+									$h .= '<div class="shop-product-name-dropdown-content">'.nl2br(encode($eProductSelling['processedComposition'])).'</div>';
+								}
+								if($eProductSelling['processedAllergen']) {
+									$h .= '<h5>'.s("Allergènes").'</h5>';
+									$h .= '<div class="shop-product-name-dropdown-content">'.nl2br(encode($eProductSelling['processedAllergen'])).'</div>';
+								}
+							$h .= '</div>';
+
+						} else {
+
+							$h .= '<h4 class="shop-product-name-link">';
+								$h .= $name;
+							$h .= '</h4>';
+
+						}
 
 						if($showFarm) {
 							$h .= '<div class="shop-product-farm">';

@@ -29,14 +29,6 @@ td.product-item-year-before {
 	font-size: 0.8rem;
 }
 
-@media (max-width: 1199px) {
-
-	.product-item-plant {
-		display: none;
-	}
-
-}
-
 .product-item-vignette {
 	width: 4rem;
 }
@@ -121,21 +113,23 @@ div.product-item-presentation {
 	margin-bottom: 2rem;
 }
 
+div.product-vignette-plant,
 div.product-vignette-composition {
 	pointer-events: none;
 	position: absolute;
-	width: 50%;
-	height: 50%;
-	top: -5%;
-	left: -5%;
+	width: 40%;
+	height: 40%;
+	top: -8%;
+	left: -8%;
 	z-index: 1;
-	background: var(--primary);
-	color: white;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 75%;
+	font-size: 66%;
+	background-color: var(--background);
+	border: 1px solid var(--border);
+	color: var(--primary);
 }
 
 div.product-write-profile [data-profile] {

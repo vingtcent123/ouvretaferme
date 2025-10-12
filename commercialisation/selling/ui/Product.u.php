@@ -48,7 +48,7 @@ class ProductUi {
 
 		$item = self::getVignette($eProduct, '2.5rem');
 		$item .= '<div>';
-			$item .= encode($eProduct->getName());
+			$item .= $eProduct->getName('html');
 			$item .= \selling\UnitUi::getBy($eProduct['unit']);
 			$item .= '<br/>';
 			if($details) {
@@ -66,7 +66,7 @@ class ProductUi {
 
 	public static function getPanelHeader(Product $eProduct): string {
 
-		return '<div class="panel-header-subtitle">'.self::getVignette($eProduct, '2rem').'  '.encode($eProduct->getName()).'</div>';
+		return '<div class="panel-header-subtitle">'.self::getVignette($eProduct, '2rem').'  '.$eProduct->getName('html').'</div>';
 
 	}
 
@@ -145,7 +145,6 @@ class ProductUi {
 					if($eFarm->getSelling('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
-					$h .= '<th rowspan="2" class="product-item-plant">'.self::p('plant')->label.'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
@@ -274,12 +273,6 @@ class ProductUi {
 
 					}
 
-					$h .= '<td class="product-item-plant">';
-						if($eProduct['unprocessedPlant']->notEmpty()) {
-							$h .= \plant\PlantUi::link($eProduct['unprocessedPlant']);
-						}
-					$h .= '</td>';
-
 					$h .= '<td class="product-item-status td-min-content">';
 						$h .= $this->toggle($eProduct);
 					$h .= '</td>';
@@ -384,9 +377,9 @@ class ProductUi {
 			$h .= '<div>';
 
 				if($link and $eProduct->canWrite()) {
-					$h .= '<a href="/produit/'.$eProduct['id'].'" class="product-item-label-name">'.encode($eProduct->getName()).'</a>';
+					$h .= '<a href="/produit/'.$eProduct['id'].'" class="product-item-label-name">'.$eProduct->getName('html').'</a>';
 				} else {
-					$h .= '<span class="product-item-label-name">'.encode($eProduct->getName()).'</span>';
+					$h .= '<span class="product-item-label-name">'.$eProduct->getName('html').'</span>';
 				}
 
 				if($includeUnit) {
@@ -444,7 +437,7 @@ class ProductUi {
 
 	}
 
-	public static function getVignette(Product $eProduct, string $size, bool $public = FALSE): string {
+	public static function getVignette(Product $eProduct, string $size, bool $public = FALSE, bool $withPlant = FALSE): string {
 
 		$eProduct->expects(['id', 'vignette', 'composition']);
 
@@ -467,14 +460,25 @@ class ProductUi {
 
 		}
 
-		if(
-			$eProduct['composition'] and
-			$public === FALSE
-		) {
-			$content .= self::getVignetteComposition();
+		if($public === FALSE) {
+			$content .= self::getVignetteComplement($eProduct, $withPlant);
 		}
 
 		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.$content.'</div>';
+
+	}
+
+	public static function getVignetteComplement(Product $eProduct, bool $withPlant = FALSE): string {
+
+		if($eProduct['composition']) {
+			return self::getVignetteComposition();
+		}
+
+		if($withPlant and $eProduct['unprocessedPlant']->notEmpty()) {
+			return self::getVignettePlant($eProduct['unprocessedPlant']);
+		}
+
+		return '';
 
 	}
 
@@ -483,6 +487,12 @@ class ProductUi {
 		\Asset::css('selling', 'product.css');
 
 		return '<div class="product-vignette-composition">'.\Asset::icon('puzzle-fill').'</div>';
+
+	}
+
+	public static function getVignettePlant(\plant\Plant $ePlant): string {
+
+		return '<div class="product-vignette-plant">'.\plant\PlantUi::getVignette($ePlant, '1.25rem').'</div>';
 
 	}
 
@@ -504,7 +514,9 @@ class ProductUi {
 			$h .= '<div class="util-vignette">';
 				$h .= new \media\ProductVignetteUi()->getCamera($eProduct, size: '5rem');
 				$h .= '<div>';
-					$h .= '<h1 style="margin-bottom: 0.25rem">'.encode($eProduct->getName()).'</h1>';
+					$h .= '<h1 style="margin-bottom: 0.25rem">';
+						$h .= $eProduct->getName('html');
+					$h .= '</h1>';
 					$h .= $this->toggle($eProduct);
 				$h .= '</div>';
 			$h .= '</div>';
@@ -524,19 +536,8 @@ class ProductUi {
 
 		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
-				if($eProduct['composition']) {
-					$h .= '<dt>'.s("Composition").'</dt>';
-					$h .= '<dd>'.($eProduct['compositionVisibility'] === Product::PRIVATE ? s("surprise") : s("visible")).'</dd>';
-				} else {
-					$h .= '<dt>'.self::p('plant')->label.'</dt>';
-					$h .= '<dd>'.($eProduct['unprocessedPlant']->empty() ? '' : \plant\PlantUi::link($eProduct['unprocessedPlant'])).'</dd>';
-				}
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
-				if($eProduct['unprocessedSize'] !== NULL) {
-					$h .= '<dt>'.self::p('unprocessedSize')->label.'</dt>';
-					$h .= '<dd>'.($eProduct['unprocessedSize'] ? encode($eProduct['unprocessedSize']) : '').'</dd>';
-				}
 				if($eProduct['origin'] !== NULL) {
 					$h .= '<dt>'.self::p('origin')->label.'</dt>';
 					$h .= '<dd>'.($eProduct['origin'] ? encode($eProduct['origin']) : '').'</dd>';
@@ -550,6 +551,26 @@ class ProductUi {
 				if($eProduct['farm']->getSelling('hasVat')) {
 					$h .= '<dt>'.self::p('vat')->label.'</dt>';
 					$h .= '<dd>'.s("{value} %", SellingSetting::VAT_RATES[$eProduct['vat']]).'</dd>';
+				}
+				if($eProduct['composition']) {
+					$h .= '<dt>'.s("Composition").'</dt>';
+					$h .= '<dd>'.($eProduct['compositionVisibility'] === Product::PRIVATE ? s("surprise") : s("visible")).'</dd>';
+				}
+				if($eProduct['unprocessedPlant']->notEmpty()) {
+					$h .= '<dt>'.self::p('unprocessedPlant')->label.'</dt>';
+					$h .= '<dd>'.\plant\PlantUi::link($eProduct['unprocessedPlant']).'</dd>';
+				}
+				if($eProduct['unprocessedSize'] !== NULL) {
+					$h .= '<dt>'.self::p('unprocessedSize')->label.'</dt>';
+					$h .= '<dd>'.encode($eProduct['unprocessedSize']).'</dd>';
+				}
+				if($eProduct['processedComposition'] !== NULL) {
+					$h .= '<dt>'.self::p('processedComposition')->label.'</dt>';
+					$h .= '<dd>'.nl2br(encode($eProduct['processedComposition'])).'</dd>';
+				}
+				if($eProduct['processedAllergen'] !== NULL) {
+					$h .= '<dt>'.self::p('processedAllergen')->label.'</dt>';
+					$h .= '<dd>'.nl2br(encode($eProduct['processedAllergen'])).'</dd>';
 				}
 			$h .= '</dl>';
 		$h .= '</div>';
@@ -1157,7 +1178,6 @@ class ProductUi {
 			'unprocessedVariety' => s("Variété"),
 			'unprocessedSize' => s("Calibre"),
 			'mixedFrozen' => s("Surgelé").'  '.self::getFrozenIcon(),
-			'processedIngredients' => s("Composition"),
 			'processedComposition' => s("Composition"),
 			'processedAllergen' => s("Allergènes"),
 			'profile' => '<h3>'.s("Caractéristiques").'</h3>',

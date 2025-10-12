@@ -293,6 +293,10 @@ class ItemUi {
 				} else {
 					$product = encode($eItem['name']);
 				}
+				if($eItem['product']['mixedFrozen']) {
+					$product .= ' '.ProductUi::getFrozenIcon();
+				}
+
 				$details = ProductUi::getDetails($eItem['product']);
 
 				if($details) {

@@ -524,7 +524,7 @@ class AnalyzeLib {
 
 		return Item::model()
 			->select([
-				'product' => ['vignette', 'farm', 'composition', 'name', 'unprocessedVariety'],
+				'product' => ProductElement::getSelection(),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'unit' => \selling\Unit::getSelection(),
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),
@@ -852,7 +852,7 @@ class AnalyzeLib {
 			->select([
 				'id',
 				'name',
-				'product' => ['name', 'unprocessedVariety'],
+				'product' => ProductElement::getSelection(),
 				'productComposition',
 				'ingredientOf',
 				'sale' => ['document',  'type'],

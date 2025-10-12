@@ -83,7 +83,7 @@ class Item extends ItemElement {
 
 					return (
 						Product::model()
-							->select('id', 'name', 'unprocessedVariety', 'farm', 'composition')
+							->select(ProductElement::getSelection())
 							->whereStatus(Product::ACTIVE)
 							->get($eProduct) and
 						$eProduct->validateProperty('farm', $this['farm'])

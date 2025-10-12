@@ -456,6 +456,9 @@ class PdfUi {
 			$h .= '<td>';
 				$h .= \Asset::icon('chevron-right').' ';
 				$h .= encode($eItem['name']);
+				if($eItem['product']['mixedFrozen']) {
+					$h .= ' '.ProductUi::getFrozenIcon();
+				}
 				if($eItem['product']->notEmpty() and $eItem['product']['unprocessedSize']) {
 					$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['unprocessedSize'])).'</small>';
 				}
@@ -808,6 +811,9 @@ class PdfUi {
 		$h = '<tr class="pdf-document-item '.$last.'">';
 			$h .= '<td class=" pdf-document-product">';
 				$h .= encode($eItem['name']);
+				if($eItem['product']['mixedFrozen']) {
+					$h .= ' '.ProductUi::getFrozenIcon();
+				}
 				if($details) {
 					$h .= '<div class="pdf-document-product-details">';
 						$h .= implode(' / ', $details);

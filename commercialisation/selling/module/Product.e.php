@@ -65,7 +65,7 @@ class Product extends ProductElement {
 
 	public function getName(string $mode = 'text'): string {
 
-		$this->expects(['name', 'unprocessedVariety']);
+		$this->expects(['name', 'unprocessedVariety', 'mixedFrozen']);
 
 		if($mode === 'text') {
 
@@ -77,6 +77,9 @@ class Product extends ProductElement {
 		} else {
 
 			$h = encode($this['name']);
+			if($this['mixedFrozen']) {
+				$h .= ' '.ProductUi::getFrozenIcon();
+			}
 			if($this['unprocessedVariety'] !== NULL) {
 				$h .= '<small title="'.s("Variété").'"> / '.encode($this['unprocessedVariety']).'</small>';
 			}
