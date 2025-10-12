@@ -12,7 +12,8 @@ div.plot-title {
 
 }
 
-body.bed-update div.plot-title {
+body.bed-updating div.plot-title,
+body.panel-open div.plot-title {
 	padding-left: 0;
 }
 
