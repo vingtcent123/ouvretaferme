@@ -456,11 +456,13 @@ class PdfUi {
 			$h .= '<td>';
 				$h .= \Asset::icon('chevron-right').' ';
 				$h .= encode($eItem['name']);
-				if($eItem['product']['mixedFrozen']) {
-					$h .= ' '.ProductUi::getFrozenIcon();
-				}
-				if($eItem['product']->notEmpty() and $eItem['product']['unprocessedSize']) {
-					$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['unprocessedSize'])).'</small>';
+				if($eItem['product']->notEmpty()) {
+					if($eItem['product']['mixedFrozen']) {
+						$h .= ' '.ProductUi::getFrozenIcon();
+					}
+					if($eItem['product']['unprocessedSize']) {
+						$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['unprocessedSize'])).'</small>';
+					}
 				}
 			$h .= '</td>';
 			$h .= '<td class="td-min-content">';
@@ -811,7 +813,7 @@ class PdfUi {
 		$h = '<tr class="pdf-document-item '.$last.'">';
 			$h .= '<td class=" pdf-document-product">';
 				$h .= encode($eItem['name']);
-				if($eItem['product']['mixedFrozen']) {
+				if($eItem['product']->notEmpty() and $eItem['product']['mixedFrozen']) {
 					$h .= ' '.ProductUi::getFrozenIcon();
 				}
 				if($details) {
