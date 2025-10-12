@@ -387,11 +387,12 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
-	$t->nav = 'selling';
-	$t->subNav = 'customer';
-
 	$t->title = s("Clients de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingCustomers($data->eFarm);
+
+	$t->nav = 'selling';
+	$t->subNav = 'customer';
+	$t->subNavTarget = $t->canonical;
 
 	if(
 		$data->cCustomer->empty() and
@@ -419,18 +420,8 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 		echo new \selling\CustomerUi()->create($eCustomer)->body;
 
 	} else {
-
-		$h = '<div class="util-action">';
-			$h .= '<h1>'.s("Clients").' <span class="util-counter">'.$data->nCustomer.'</span></h1>';
-			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#customer-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				if(new \selling\Customer(['farm' => $data->eFarm])->canCreate()) {
-					$h .= '<a href="/selling/customer:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau client").'</span></a>';
-				}
-			$h .= '</div>';
-		$h .= '</div>';
 		
-		$t->mainTitle = $h;
+		$t->mainTitle = new \farm\FarmUi()->getSellingCustomersTitle($data->eFarm, \farm\Farmer::CUSTOMER, $data->nCustomer);
 
 		echo new \selling\CustomerUi()->getSearch($data->eFarm, $data->search);
 		echo new \selling\CustomerUi()->getList($data->eFarm, $data->cCustomer, $data->cGroup, $data->nCustomer, $data->search, $data->page);

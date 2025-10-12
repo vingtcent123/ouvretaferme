@@ -57,29 +57,6 @@ class GroupUi {
 
 	}
 
-	public function getManageTitle(\farm\Farm $eFarm, \Collection $cGroup): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
-				$h .= s("Les groupes de clients");
-			$h .= '</h1>';
-
-			if($cGroup->notEmpty()) {
-
-				$h .= '<div>';
-					$h .= '<a href="/selling/group:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau groupe").'</a>';
-				$h .= '</div>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function getManage(\farm\Farm $eFarm, \Collection $cGroup): string {
 
 		$h = '';

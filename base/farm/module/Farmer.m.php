@@ -58,6 +58,7 @@ abstract class FarmerElement extends \Element {
 	const CATEGORY = 'category';
 
 	const CUSTOMER = 'customer';
+	const GROUP = 'group';
 
 	const ITEM = 'item';
 	const SHOP = 'shop';
@@ -133,7 +134,7 @@ class FarmerModel extends \ModuleModel {
 			'viewSoilTasks' => ['bool', 'cast' => 'bool'],
 			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::LABEL], 'cast' => 'enum'],
 			'viewSellingProducts' => ['enum', [\farm\Farmer::PRODUCT, \farm\Farmer::CATEGORY], 'cast' => 'enum'],
-			'viewSellingCustomers' => ['enum', [\farm\Farmer::CUSTOMER, \farm\Farmer::CATEGORY], 'cast' => 'enum'],
+			'viewSellingCustomers' => ['enum', [\farm\Farmer::CUSTOMER, \farm\Farmer::GROUP], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewSellingCategoryCurrent' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'viewMailingCategory' => ['enum', [\farm\Farmer::CAMPAIGN, \farm\Farmer::CONTACT], 'cast' => 'enum'],

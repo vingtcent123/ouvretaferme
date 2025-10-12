@@ -10,11 +10,14 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
-	$t->title = s("Les catégories de produits de {value}", $data->eFarm['name']);
-	$t->nav = 'selling';
-	$t->subNav = 'product';
+	$t->title = s("Les groupes de clients de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSellingCustomersGroups($data->eFarm);
 
-	$t->mainTitle = new \selling\GroupUi()->getManageTitle($data->eFarm, $data->cGroup);
+	$t->nav = 'selling';
+	$t->subNav = 'customer';
+	$t->subNavTarget = $t->canonical;
+
+	$t->mainTitle = new \farm\FarmUi()->getSellingCustomersTitle($data->eFarm, \farm\Farmer::GROUP);
 
 	echo new \selling\GroupUi()->getManage($data->eFarm, $data->cGroup);
 
