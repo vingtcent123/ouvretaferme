@@ -958,7 +958,7 @@ class BasketUi {
 				if($eShop['shared']) {
 					$h .= '<h5 class="mt-2">'.encode($eSale['farm']['name']).'</h5>';
 				}
-				$h .= new \selling\OrderUi()->getItemsBySale($eSale, $ccItemBySale[$eSale['id']], $eShop->isApproximate());
+				$h .= new \selling\OrderUi()->getItemsBySale($eSale, $ccItemBySale[$eSale['id']] ?? new \Collection(), $eShop->isApproximate());
 			}
 
 		$h .= '</div>';

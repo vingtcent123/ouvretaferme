@@ -1306,6 +1306,7 @@ class SaleLib extends SaleCrud {
 				'vat' => NULL,
 				'vatByRate' => NULL,
 				'organic' => FALSE,
+				'priceGross' => NULL,
 				'priceIncludingVat' => NULL,
 				'priceExcludingVat' => NULL,
 			];

@@ -487,7 +487,7 @@ class OrderUi {
 
 				}
 
-				$h .= $this->getItemTotal($eSale, $withPackaging, s("Total"), \util\TextUi::money($eSale['price']));
+				$h .= $this->getItemTotal($eSale, $withPackaging, s("Total"), \util\TextUi::money($eSale['price'] ?? 0.0));
 
 			$h .= '</tbody>';
 
