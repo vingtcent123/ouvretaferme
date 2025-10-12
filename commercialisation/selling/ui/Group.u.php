@@ -62,7 +62,7 @@ class GroupUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Les groupes de clients");
 			$h .= '</h1>';
 
@@ -120,7 +120,7 @@ class GroupUi {
 							$h .= self::getColorCircle($eGroup);
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
-							$h .= '<a href="'.\farm\FarmUi::urlSellingCustomer($eFarm).'?group='.$eGroup['id'].'">';
+							$h .= '<a href="'.\farm\FarmUi::urlSellingCustomers($eFarm).'?group='.$eGroup['id'].'">';
 								$h .= $eGroup['customers'];
 							$h .= '</a> ';
 						$h .= '</td>';

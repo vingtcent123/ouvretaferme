@@ -91,6 +91,8 @@ Farmer:
   viewSoilOverlay: bool = TRUE
   viewSoilTasks: bool = FALSE
   viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
+  viewSellingProducts: enum(PRODUCT, CATEGORY) = PRODUCT
+  viewSellingCustomers: enum(CUSTOMER, CATEGORY) = CUSTOMER
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingCategoryCurrent: ?selling\Category
   viewMailingCategory: enum(CAMPAIGN, CONTACT) = CAMPAIGN

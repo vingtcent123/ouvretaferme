@@ -166,28 +166,43 @@ class FarmUi {
 
 		return match($view) {
 			'sale' => self::urlSellingSales($eFarm),
-			'product' => self::urlSellingProduct($eFarm),
+			'product' => self::urlSellingProducts($eFarm),
 			'stock' => self::urlSellingStock($eFarm),
-			'customer' => self::urlSellingCustomer($eFarm),
-			'invoice' => self::urlSellingInvoice($eFarm)
+			'customer' => self::urlSellingCustomers($eFarm),
+			'invoice' => self::urlSellingInvoices($eFarm)
 		};
 
 	}
 
-	public static function urlSellingCustomer(Farm $eFarm): string {
+	public static function urlSellingCustomers(Farm $eFarm): string {
 		return self::url($eFarm).'/clients';
-	}
-
-	public static function urlSellingProduct(Farm $eFarm): string {
-		return self::url($eFarm).'/produits';
 	}
 
 	public static function urlSellingStock(Farm $eFarm): string {
 		return self::url($eFarm).'/stocks';
 	}
 
-	public static function urlSellingInvoice(Farm $eFarm): string {
+	public static function urlSellingInvoices(Farm $eFarm): string {
 		return self::url($eFarm).'/factures';
+	}
+
+	public static function urlSellingProducts(Farm $eFarm, ?string $view = NULL): string {
+
+		$view ??= $eFarm->getView('viewSellingProducts');
+
+		return match($view) {
+			Farmer::PRODUCT => self::urlSellingProductsAll($eFarm),
+			Farmer::CATEGORY => self::urlSellingProductsCategories($eFarm),
+		};
+
+	}
+
+	public static function urlSellingProductsAll(Farm $eFarm): string {
+		return self::url($eFarm).'/produits';
+	}
+
+	public static function urlSellingProductsCategories(Farm $eFarm): string {
+		return '/selling/category:manage?farm='.$eFarm['id'];
 	}
 
 	public static function urlSellingSales(Farm $eFarm, ?string $view = NULL): string {
@@ -1578,6 +1593,70 @@ class FarmUi {
 			Farmer::PRIVATE => s("Ventes aux particuliers"),
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
+		];
+	}
+
+	public function getSellingProductsTitle(Farm $eFarm, string $selectedView, int $number = 0): string {
+
+		$categories = $this->getSellingProductsCategories();
+
+		$title = $categories[$selectedView];
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">';
+						$h .= $title;
+						if($number > 0) {
+							$h .= ' <span class="util-counter">'.$number.'</span>';
+						}
+					$h .= '</span>';
+				$h .= '</a>';
+				$h .= '<div class="dropdown-list bg-primary">';
+					foreach($categories as $key => $value) {
+						if($value === NULL) {
+							$h .= '<div class="dropdown-divider"></div>';
+						} else {
+							$h .= '<a href="'.self::urlSellingProducts($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a>';
+						}
+					}
+				$h .= '</div>';
+			$h .= '</h1>';
+
+			$canCreate = new \selling\Product(['farm' => $eFarm])->canCreate();
+
+			switch($selectedView) {
+
+				case Farmer::PRODUCT :
+					$h .= '<div>';
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#product-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+						if($canCreate) {
+							$h .= '<a href="/selling/product:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
+						}
+					$h .= '</div>';
+					break;
+
+				case Farmer::CATEGORY :
+					$h .= '<div>';
+						if($canCreate) {
+							$h .= '<a href="/selling/category:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle catégorie").'</span></a>';
+						}
+					$h .= '</div>';
+					break;
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected static function getSellingProductsCategories(): array {
+		return [
+			Farmer::PRODUCT => s("Produits"),
+			Farmer::CATEGORY => s("Catégories de produits"),
 		];
 	}
 

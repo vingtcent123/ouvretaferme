@@ -355,13 +355,13 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 			echo '<h4>'.s("Vous êtes sur la page pour gérer vos ventes").'</h4>';
 			echo '<p>'.s("Avec {siteName}, vous allez gérer plus facilement la commercialisation dans votre ferme, en réduisant le temps que vous y passez et en limitant le risque d'erreurs.").'</p>';
 			echo '<ul>';
-				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProduct($data->eFarm).'">']).'</li>';
-				echo '<li>'.s("Créez les ventes de vos <link>clients particuliers et professionnels</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingCustomer($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Créez les ventes de vos <link>clients particuliers et professionnels</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">']).'</li>';
 				echo '<li>'.s("Éditez vos devis, bons de livraisons et factures au format PDF").'</li>';
 				echo '<li>'.s("Ouvrez <link>des boutiques en ligne</link> avec en option le paiement par carte bancaire", ['link' => '<a href="'.\farm\FarmUi::urlShopList($data->eFarm).'">']).'</li>';
 				echo '<li>'.s("Analysez vos ventes avec graphiques et statistiques").'</li>';
 			echo '</ul>';
-			echo '<p>'.s("Avant de créer votre première vente, regardez au préalable comment <customer>créer des clients</customer> et <items>référencer vos produits</items>. Une fois que c'est fait, c'est parti !", ['customer' => '<a href="'.\farm\FarmUi::urlSellingCustomer($data->eFarm).'">', 'items' => '<a href="'.\farm\FarmUi::urlSellingProduct($data->eFarm).'">']).'</p>';
+			echo '<p>'.s("Avant de créer votre première vente, regardez au préalable comment <customer>créer des clients</customer> et <items>référencer vos produits</items>. Une fois que c'est fait, c'est parti !", ['customer' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">', 'items' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</p>';
 			echo '<a href="/presentation/producteur" class="btn btn-secondary">'.s("En savoir plus").'</a>';
 		echo '</div>';
 
@@ -391,7 +391,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 	$t->subNav = 'customer';
 
 	$t->title = s("Clients de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlSellingCustomer($data->eFarm);
+	$t->canonical = \farm\FarmUi::urlSellingCustomers($data->eFarm);
 
 	if(
 		$data->cCustomer->empty() and
@@ -442,11 +442,12 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
+	$t->title = s("Produits de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSellingProducts($data->eFarm);
+
 	$t->nav = 'selling';
 	$t->subNav = 'product';
-
-	$t->title = s("Produits de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlSellingProduct($data->eFarm);
+	$t->subNavTarget = $t->canonical;
 
 	if(
 		array_sum($data->products) === 0 and
@@ -475,29 +476,8 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 		]), TRUE)->body;
 
 	} else {
-
-		$h = '<div class="util-action">';
-			$h .= '<h1>'.s("Produits").' <span class="util-counter">'.$data->nProduct.'</span></h1>';
-			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#product-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				if(new \selling\Product(['farm' => $data->eFarm])->canCreate()) {
-
-					if(array_sum($data->products) > 5) {
-						$h .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('gear-fill').'</a>';
-						$h .= '<div class="dropdown-list">';
-							$h .= '<div class="dropdown-title">'.s("Produits").'</div>';
-							$h .= '<a href="/selling/product:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Ajouter un produit").'</a>';
-							$h .= '<a href="/selling/category:manage?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("Paramétrer des catégories de produits").'</a>';
-						$h .= '</div>';
-					} else {
-						$h .= '<a href="/selling/product:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
-					}
-
-				}
-			$h .= '</div>';
-		$h .= '</div>';
 		
-		$t->mainTitle = $h;
+		$t->mainTitle = new \farm\FarmUi()->getSellingProductsTitle($data->eFarm, \farm\Farmer::PRODUCT, $data->nProduct);
 
 		echo new \selling\ProductUi()->getSearch($data->eFarm, $data->search);
 		echo new \selling\ProductUi()->getList($data->eFarm, $data->cProduct, $data->products, $data->cCategory, $data->search);
@@ -538,7 +518,7 @@ new AdaptativeView('/ferme/{id}/stocks', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-help">';
 			echo '<p>'.s("Le suivi des stocks permet de connaître le stock de vos différents produits en collectant les informations liées aux entrées et sorties. Cette fonctionnalité est partiellement automatisée, elle est reliée à vos saisies de récoltes pour les entrées de stock, et à vos ventes pour les sorties de stocks !").'</p>';
 			echo '<p>'.s("Cette page sera disponible lorsque vous aurez activé le suivi des stocks sur au moins un produit de votre gamme !").'</p>';
-			echo '<a href="'.\farm\FarmUi::urlSellingProduct($data->eFarm).'" class="btn btn-secondary">'.s("Voir mes produits").'</a>';
+			echo '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'" class="btn btn-secondary">'.s("Voir mes produits").'</a>';
 		echo '</div>';
 
 	} else {

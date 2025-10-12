@@ -728,7 +728,7 @@ class SaleUi {
 						$document .= '</div>';
 
 						if($type === Pdf::INVOICE) {
-							$document .= '<a href="'.\farm\FarmUi::urlSellingInvoice($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.s("Consulter la facture").'</a>';
+							$document .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.s("Consulter la facture").'</a>';
 						}
 
 						if($ePdf['content']->notEmpty()) {
@@ -1952,7 +1952,7 @@ class SaleUi {
 						'invoiceNumber' => encode($eSale['invoice']['name']),
 					]);
 					$paymentInfo .= '</p>';
-					$paymentInfo .= '<a href="'.\farm\FarmUi::urlSellingInvoice($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-secondary">';
+					$paymentInfo .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-secondary">';
 						$paymentInfo .= s("Consulter la facture");
 					$paymentInfo .= '</a>';
 				$paymentInfo .= '</div>';

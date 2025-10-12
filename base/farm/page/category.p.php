@@ -35,7 +35,6 @@ new Page()
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 		$data->cCategory = \farm\CategoryLib::getByFarm($data->eFarm);
 
-
 		throw new ViewAction($data);
 
 	});

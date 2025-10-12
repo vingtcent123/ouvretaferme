@@ -144,7 +144,7 @@ new \selling\ProductPage()
 
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProduct($data->e['farm']).'?success=selling:Product::deleted'));
+	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProducts($data->e['farm']).'?success=selling:Product::deleted'));
 
 new \selling\ProductPage()
 	->applyElement(function($data, \selling\Product $eProduct) {

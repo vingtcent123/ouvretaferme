@@ -112,6 +112,8 @@ new Page(function($data) {
 
 		$data->eFarm->validate('canSelling');
 
+		\farm\FarmerLib::setView('viewSellingProducts', $data->eFarm, \farm\Farmer::PRODUCT);
+
 		$data->cCategory = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 
 		if(get_exists('category')) {
@@ -665,7 +667,6 @@ new Page(function($data) {
 		\map\SeasonLib::setOnline($data->season);
 
 		$data->selectedSeasons = $data->eFarm->getRotationSeasons($data->season);
-
 
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm, season: $data->season);
 

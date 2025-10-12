@@ -142,7 +142,7 @@ class CustomerUi {
 		$h = '<div id="customer-search" class="util-block-search '.($search->empty(['cGroup']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
-			$url = \farm\FarmUi::urlSellingCustomer($eFarm);
+			$url = \farm\FarmUi::urlSellingCustomers($eFarm);
 
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 				$h .= '<div>';
@@ -842,7 +842,7 @@ class CustomerUi {
 		$h = '';
 
 		foreach($eCustomer['cGroup?']() as $eGroup) {
-			$h .= ' <a href="'.\farm\FarmUi::urlSellingCustomer($eCustomer['farm']).'?group='.$eGroup['id'].'" class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a> ';
+			$h .= ' <a href="'.\farm\FarmUi::urlSellingCustomers($eCustomer['farm']).'?group='.$eGroup['id'].'" class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a> ';
 		}
 
 		return $h;

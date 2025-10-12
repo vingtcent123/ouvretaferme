@@ -54,8 +54,12 @@ abstract class FarmerElement extends \Element {
 	const PRO = 'pro';
 	const LABEL = 'label';
 
-	const ITEM = 'item';
+	const PRODUCT = 'product';
+	const CATEGORY = 'category';
+
 	const CUSTOMER = 'customer';
+
+	const ITEM = 'item';
 	const SHOP = 'shop';
 
 	const CAMPAIGN = 'campaign';
@@ -128,6 +132,8 @@ class FarmerModel extends \ModuleModel {
 			'viewSoilOverlay' => ['bool', 'cast' => 'bool'],
 			'viewSoilTasks' => ['bool', 'cast' => 'bool'],
 			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::LABEL], 'cast' => 'enum'],
+			'viewSellingProducts' => ['enum', [\farm\Farmer::PRODUCT, \farm\Farmer::CATEGORY], 'cast' => 'enum'],
+			'viewSellingCustomers' => ['enum', [\farm\Farmer::CUSTOMER, \farm\Farmer::CATEGORY], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewSellingCategoryCurrent' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'viewMailingCategory' => ['enum', [\farm\Farmer::CAMPAIGN, \farm\Farmer::CONTACT], 'cast' => 'enum'],
@@ -146,7 +152,7 @@ class FarmerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingType', 'viewAccountingHasVat', 'viewAccountingFinancials', 'viewAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingType', 'viewAccountingHasVat', 'viewAccountingFinancials', 'viewAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -212,6 +218,12 @@ class FarmerModel extends \ModuleModel {
 
 			case 'viewSellingSales' :
 				return Farmer::ALL;
+
+			case 'viewSellingProducts' :
+				return Farmer::PRODUCT;
+
+			case 'viewSellingCustomers' :
+				return Farmer::CUSTOMER;
 
 			case 'viewSellingCategory' :
 				return Farmer::ITEM;
@@ -288,6 +300,12 @@ class FarmerModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewSellingSales' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'viewSellingProducts' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'viewSellingCustomers' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewSellingCategory' :
@@ -426,6 +444,14 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewSellingSales(...$data): FarmerModel {
 		return $this->where('viewSellingSales', ...$data);
+	}
+
+	public function whereViewSellingProducts(...$data): FarmerModel {
+		return $this->where('viewSellingProducts', ...$data);
+	}
+
+	public function whereViewSellingCustomers(...$data): FarmerModel {
+		return $this->where('viewSellingCustomers', ...$data);
 	}
 
 	public function whereViewSellingCategory(...$data): FarmerModel {

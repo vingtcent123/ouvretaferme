@@ -3,29 +3,6 @@ namespace selling;
 
 class CategoryUi {
 
-	public function getManageTitle(\farm\Farm $eFarm, \Collection $cCategory): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="h-back">'.\Asset::icon('arrow-left').'</a>';
-				$h .= s("Les catégories de produits");
-			$h .= '</h1>';
-
-			if($cCategory->notEmpty()) {
-
-				$h .= '<div>';
-					$h .= '<a href="/selling/category:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle catégorie").'</a>';
-				$h .= '</div>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function getManage(\farm\Farm $eFarm, \Collection $cCategory): string {
 
 		$h = '';

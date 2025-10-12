@@ -810,7 +810,7 @@ class ItemUi {
 
 			$h = '<div class="util-block-help">';
 				$h .= '<p>'.s("Vous devez d'abord renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
-				$h .= '<a href="'.\farm\FarmUi::urlSellingProduct($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
 			$h .= '</div>';
 
 			return new \Panel(

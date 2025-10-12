@@ -76,7 +76,7 @@ new AdaptativeView('start', function($data, MainTemplate $t) {
 				echo '<li>'.s("J'envoie automatiquement ces documents par e-mail").'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\farm\FarmUi::urlSellingCustomer($data->e).'" class="btn btn-commercialisation"><p>'.Asset::icon('person-fill').'</p>'.s("Ajouter un client").'</a>';
+				echo '<a href="'.\farm\FarmUi::urlSellingCustomers($data->e).'" class="btn btn-commercialisation"><p>'.Asset::icon('person-fill').'</p>'.s("Ajouter un client").'</a>';
 			echo '</div>';
 
 		echo '</div>';
@@ -93,7 +93,7 @@ new AdaptativeView('start', function($data, MainTemplate $t) {
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';
 				echo '<p class="home-feature-description">'.s("La première étape est de créer un point de vente pour utiliser le logiciel de caisse !").'</p>';
-				echo '<a href="'.\farm\FarmUi::urlSellingCustomer($data->e).'" class="btn btn-commercialisation"><p>'.Asset::icon('person-fill').'</p>'.s("Ajouter un point de vente").'</a>';
+				echo '<a href="'.\farm\FarmUi::urlSellingCustomers($data->e).'" class="btn btn-commercialisation"><p>'.Asset::icon('person-fill').'</p>'.s("Ajouter un point de vente").'</a>';
 			echo '</div>';
 
 		echo '</div>';
