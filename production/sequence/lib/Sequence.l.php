@@ -94,9 +94,17 @@ class SequenceLib extends SequenceCrud {
 			foreach($cCultivation as $eCultivation) {
 
 				$eCrop = new Crop([
-					'sequence' => $eSequence
+					'sequence' => $eSequence,
+					'seedling' => match($eCultivation['seedling']) {
+						\series\Cultivation::YOUNG_PLANT, \series\Cultivation::YOUNG_PLANT_BOUGHT => Crop::YOUNG_PLANT,
+						\series\Cultivation::SOWING => Crop::SOWING,
+					},
+					'seedlingSeeds' => match($eCultivation['seedling']) {
+						\series\Cultivation::YOUNG_PLANT, \series\Cultivation::SOWING => $eCultivation['seedlingSeeds'],
+						\series\Cultivation::YOUNG_PLANT_BOUGHT => 1,
+					}
 				]);
-				$eCrop->merge($eCultivation->extracts(['plant', 'farm', 'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'mainUnit', 'seedling', 'seedlingSeeds', 'yieldExpected']));
+				$eCrop->merge($eCultivation->extracts(['plant', 'farm', 'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'mainUnit', 'yieldExpected']));
 
 				$cCrop[$eCultivation['id']] = $eCrop;
 

@@ -138,7 +138,7 @@ div.product-vignette-composition {
 	font-size: 75%;
 }
 
-div.product-write-profile [data-profile^="unprocessed-plant"] {
+div.product-write-profile [data-profile] {
 	display: none;
 }
 

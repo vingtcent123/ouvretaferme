@@ -135,6 +135,17 @@ class Product extends ProductElement {
 
 	}
 
+	public static function getProfiles(string $property): array {
+		return match($property) {
+			'unprocessedPlant' => [Product::UNPROCESSED_PLANT],
+			'unprocessedVariety' => [Product::UNPROCESSED_PLANT],
+			'unprocessedSize' => [Product::UNPROCESSED_PLANT],
+			'mixedFrozen' => [Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD],
+			'processedAllergen' => [Product::PROCESSED_FOOD],
+			'processedComposition' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
+		};
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
@@ -150,6 +161,60 @@ class Product extends ProductElement {
 						$eCategory->canRead()
 					)
 				);
+
+			})
+			->setCallback('processedComposition.prepare', function(?string &$composition): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('processedComposition')) === FALSE) {
+					$composition = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('processedAllergen.prepare', function(?string &$allergen): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('processedAllergen')) === FALSE) {
+					$allergen = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('mixedFrozen.prepare', function(?bool &$frozen): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('mixedFrozen')) === FALSE) {
+					$frozen = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('unprocessedSize.prepare', function(?string &$size): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('unprocessedSize')) === FALSE) {
+					$size = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('unprocessedVariety.prepare', function(?string &$variety): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('unprocessedVariety')) === FALSE) {
+					$variety = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('unprocessedPlant.prepare', function(\plant\Plant &$ePlant): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('unprocessedPlant')) === FALSE) {
+					$ePlant = new \plant\Plant();
+				}
+
+				return TRUE;
 
 			})
 			->setCallback('unprocessedPlant.check', function(\plant\Plant $ePlant): bool {

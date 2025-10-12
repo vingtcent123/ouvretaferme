@@ -52,7 +52,7 @@ class ProductLib extends ProductCrud {
 
 		} else {
 
-			$properties = ['name', 'category', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'origin', 'description', 'quality', 'pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'vat'];
+			$properties = ['name', 'category', 'profile', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen', 'origin', 'description', 'quality', 'pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'vat'];
 
 			if($for === 'update') {
 				$properties[] = 'privateStep';

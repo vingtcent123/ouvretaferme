@@ -61,6 +61,9 @@ class ProductModel extends \ModuleModel {
 			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'unprocessedSize' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'mixedFrozen' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'processedAllergen' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'processedComposition' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
@@ -85,7 +88,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'mixedFrozen', 'processedAllergen', 'processedComposition', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'composition', 'compositionVisibility', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -197,6 +200,18 @@ class ProductModel extends \ModuleModel {
 
 	public function whereUnprocessedSize(...$data): ProductModel {
 		return $this->where('unprocessedSize', ...$data);
+	}
+
+	public function whereMixedFrozen(...$data): ProductModel {
+		return $this->where('mixedFrozen', ...$data);
+	}
+
+	public function whereProcessedAllergen(...$data): ProductModel {
+		return $this->where('processedAllergen', ...$data);
+	}
+
+	public function whereProcessedComposition(...$data): ProductModel {
+		return $this->where('processedComposition', ...$data);
 	}
 
 	public function whereOrigin(...$data): ProductModel {

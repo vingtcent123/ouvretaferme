@@ -248,7 +248,7 @@ Product:
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null)
   unprocessedSize: ?text8(1, null)
-  processedFrozen: ?bool
+  mixedFrozen: ?bool
   processedAllergen: ?text8(1, null)
   processedComposition: ?text16(1, null)
   origin: ?text8(1, null)

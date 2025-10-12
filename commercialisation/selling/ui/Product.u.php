@@ -945,7 +945,7 @@ class ProductUi {
 			$h .= '<div class="product-write-profile">';
 				$h .= $form->dynamicGroup($eProduct, 'profile');
 				$h .= '<div class="util-block bg-background-light product-write-profile-details">';
-					$h .= '<div data-profile="'.Product::UNPROCESSED_PLANT.' '.Product::UNPROCESSED_ANIMAL.'">';
+					$h .= '<div data-profile="'.implode(' ', Product::getProfiles('unprocessedPlant')).'">';
 
 						$h .= $form->group(
 							self::p('unprocessedPlant')->label,
@@ -956,9 +956,14 @@ class ProductUi {
 
 					$h .= '</div>';
 
-					$h .= '<div data-profile="'.Product::UNPROCESSED_PLANT.'">';
-						$h .= $form->dynamicGroups($eProduct, ['unprocessedVariety', 'unprocessedSize']);
-					$h .= '</div>';
+					foreach(['unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
+
+						$h .= '<div data-profile="'.implode(' ', Product::getProfiles($property)).'">';
+							$h .= $form->dynamicGroup($eProduct, $property);
+						$h .= '</div>';
+
+					}
+
 				$h .= '</div>';
 			$h .= '</div>';
 
@@ -1138,6 +1143,10 @@ class ProductUi {
 
 	}
 
+	public static function getFrozenIcon(): string {
+		return \Asset::icon('snow', ['style' => 'color: dodgerblue']);
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Product::model()->describer($property, [
@@ -1147,6 +1156,10 @@ class ProductUi {
 			'unprocessedPlant' => s("Espèce"),
 			'unprocessedVariety' => s("Variété"),
 			'unprocessedSize' => s("Calibre"),
+			'mixedFrozen' => s("Surgelé").'  '.self::getFrozenIcon(),
+			'processedIngredients' => s("Composition"),
+			'processedComposition' => s("Composition"),
+			'processedAllergen' => s("Allergènes"),
 			'profile' => '<h3>'.s("Caractéristiques").'</h3>',
 			'origin' => s("Origine"),
 			'description' => s("Description"),
@@ -1194,7 +1207,7 @@ class ProductUi {
 				$d->values = [
 					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale").'  <span class="color-muted"><small>'.s("Fruits, légumes, fleurs, plants...").'</small></span>',
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
-					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Charcuteries, boissons, confitures, ...").'</small></span>',
+					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pain, charcuteries, boissons, confitures, ...").'</small></span>',
 					Product::PROCESSED_PRODUCT => s("Hygiène, santé, entretien ou cosmétique").'  <span class="color-muted"><small>'.s("Savons, lessives, ...").'</small></span>',
 				];
 				break;
@@ -1209,6 +1222,14 @@ class ProductUi {
 				new \plant\PlantUi()->query($d);
 				break;
 
+			case 'unprocessedVariety' :
+				$d->placeholder = s("Ex. : Chérie");
+				break;
+
+			case 'mixedFrozen' :
+				$d->field = 'switch';
+				break;
+
 			case 'unit' :
 				$d->values = fn(Product $e) => isset($e['cUnit']) ? UnitUi::getField($e['cUnit']) : $e->expects(['cUnit']);
 				$d->attributes = ['group' => TRUE];
@@ -1216,10 +1237,6 @@ class ProductUi {
 				$d->after = fn(\util\FormUi $form, Product $e) => $e->exists() ?
 					\util\FormUi::info(s("L'unité de vente ne peut être modifiée que pour une autre unité de vente à l'unité.")) :
 					\util\FormUi::info(s("Les unités de vente au poids ne peuvent pas être modifiées par la suite, vous devrez créer un autre produit si vous changez d'avis."));
-				break;
-
-			case 'unprocessedVariety' :
-				$d->placeholder = s("Ex. : Chérie");
 				break;
 
 			case 'private' :
