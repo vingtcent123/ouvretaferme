@@ -480,7 +480,11 @@ class OrderUi {
 			}
 			$h .= '<tbody>';
 
-				if($eSale['discount'] > 0) {
+				if(
+					$eSale['discount'] > 0 and
+					$eSale['price'] !== NULL
+				) {
+
 					$discountAmount = -1 * ($eSale['priceGross'] - $eSale['price']);
 					$h .= $this->getItemTotal($eSale, $withPackaging, s("Total avant remise"), \util\TextUi::money($eSale['priceGross']));
 					$h .= $this->getItemTotal($eSale, $withPackaging, s("Remise <i>- {value} %</i>", $eSale['discount']), \util\TextUi::money($discountAmount));
