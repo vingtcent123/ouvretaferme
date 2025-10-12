@@ -1227,8 +1227,8 @@ class ProductUi {
 				$d->values = [
 					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale").'  <span class="color-muted"><small>'.s("Fruits, légumes, fleurs, plants...").'</small></span>',
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
-					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, boissons, confitures, ...").'</small></span>',
-					Product::PROCESSED_PRODUCT => s("Hygiène, santé, entretien ou cosmétique").'  <span class="color-muted"><small>'.s("Savons, lessives, ...").'</small></span>',
+					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, boissons, confitures...").'</small></span>',
+					Product::PROCESSED_PRODUCT => s("Hygiène, santé, entretien ou cosmétique").'  <span class="color-muted"><small>'.s("Savons, lessives...").'</small></span>',
 				];
 				break;
 
