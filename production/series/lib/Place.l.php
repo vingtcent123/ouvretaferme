@@ -123,11 +123,13 @@ class PlaceLib extends PlaceCrud {
 
 						case Series::BED :
 
-							if(
-								$size < 0 or
-								($eBed['length'] !== NULL and $size > $eBed['length'])
-							) {
+							if($size < 0) {
 								Place::fail('bedsSize');
+								return new \Collection();
+							}
+
+							if($eBed['length'] !== NULL and $size > $eBed['length']) {
+								Place::fail('bedsExceeded');
 								return new \Collection();
 							}
 

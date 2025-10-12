@@ -33,6 +33,7 @@ class AlertUi {
 			'Place::bedsDuplicate' => s("Vous avez sélectionné des emplacements en doublon."),
 			'Place::bedsCheck' => s("Veuillez sélectionner au moins un emplacement pour cette série !"),
 			'Place::bedsSize' => s("Vous avez choisi une utilisation incorrecte sur certains emplacements !"),
+			'Place::bedsExceeded' => s("Vous avez choisi un linéaire supérieur à la longueur de la planche sur certains emplacements !"),
 
 			'Repeat::stop.future' => s("La fin de répétition de l'intervention doit être dans le futur"),
 			'Repeat::stop.season' => s("Vous devez indiquer une fin de répétition qui corresponde à l'année de la saison de la série, l'année précédente ou l'année suivante"),
