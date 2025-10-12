@@ -1106,7 +1106,7 @@ class ItemUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/selling/item:doCreateCollection');
+		$h = $form->openAjax('/selling/item:doCreateCollection', ['onrender' => 'this.qs("[name^=\'number\']").focus()']);
 
 			$h .= $form->hidden('sale', $eSale['id']);
 
@@ -1153,11 +1153,11 @@ class ItemUi {
 									$d->default = fn() => $eItem['unitPriceInitial'];
 								}
 							},
-						'unitPriceDiscount[0]' => function(\PropertyDescriber $d) use($eItem) {
-							if($eItem['unitPriceInitial'] === NULL) {
-								$d->group = ['class' => 'hide', 'data-price-discount' => $eItem['id'] ?? $eItem['product']['id'] ?? 0];
+							'unitPriceDiscount[0]' => function(\PropertyDescriber $d) use($eItem) {
+								if($eItem['unitPriceInitial'] === NULL) {
+									$d->group = ['class' => 'hide', 'data-price-discount' => $eItem['id'] ?? $eItem['product']['id'] ?? 0];
+								}
 							}
-						}
 					]);
 
 				$h .= '</div>';
