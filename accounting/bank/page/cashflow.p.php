@@ -20,7 +20,13 @@ new Page(
 			'fitid' => GET('fitid'),
 			'memo' => GET('memo'),
 			'status' => GET('status'),
+			'amount' => GET('amount'),
+			'margin' => GET('margin'),
 		], GET('sort'));
+		if(GET('amount')) {
+			$search->set('amountMin', GET('amount', 'float') - GET('margin', 'float', 0));
+			$search->set('amountMax', GET('amount', 'float') + GET('margin', 'float', 0));
+		}
 		if($search->get('status') === '') {
 			$search->set('statusWithDeleted', GET('statusWithDeleted', 'bool', FALSE));
 		}

@@ -23,6 +23,19 @@ class CashflowUi {
 			$h .= $form->month('date', $search->get('date'), ['placeholder' => s("Mois")]);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut")]);
+			$h .= $form->inputGroup($form->addon(s('Montant'))
+					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px'])
+					.$form->addon(s('+/-'))
+					.$form->number('margin', $search->get('margin', 1))
+					.$form->addon(s('€'))
+			);
+			/*
+		$h .= $form->inputGroup($form->addon(s('Du'))
+			.$form->date('startDate', $search->get('startDate'), ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
+			.$form->addon(s('au'))
+			.$form->date('endDate', $search->get('endDate'), ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]));
+			$h .= $form->inputGroup($form->addon(s("Précision du compte en chiffres")).$form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 2, 'max' => 8]));
+		*/
 			$h .= $form->checkbox('statusWithDeleted', 1, ['checked' => $search->get('statusWithDeleted'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher aussi les opérations supprimées")]);
 		$h .= '</div>';
 		$h .= '<div>';
