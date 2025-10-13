@@ -94,8 +94,16 @@ class JournalUi {
 						$d->attributes['data-third-party'] = 'form-search';
 					});
 					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Pièce comptable")]);
-					$h .= $form->checkbox('cashflowFilter', 1, ['checked' => $search->get('cashflowFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Filtrer les écritures non rattachées")]);
-				$h .= '</div>';
+					$h .= $form->select('cashflowFilter', [
+						0 => s("Toutes les écritures"),
+						1 => s("Écritures non rattachées à une opération bancaire"),
+					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
+					$h .= $form->select('hasDocument', [
+						0 => s("Avec ou sans pièce comptable"),
+						1 => s("Sans pièce comptable"),
+					], $search->get('hasDocument', 'int', 0), ['mandatory' => TRUE]);
+
+		$h .= '</div>';
 				$h .= '<div>';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';

@@ -69,7 +69,8 @@ class OperationLib extends OperationCrud {
 			->whereDocument($search->get('document'), if: $search->get('document'))
 			->whereType($search->get('type'), if: $search->get('type'))
 			->whereAsset($search->get('asset'), if: $search->get('asset'))
-			->whereThirdParty('=', $search->get('thirdParty'), if: $search->get('thirdParty'));
+			->whereThirdParty('=', $search->get('thirdParty'), if: $search->get('thirdParty'))
+			->whereDocument(NULL, if: $search->has('hasDocument'));
 
 	}
 
