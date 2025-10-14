@@ -162,7 +162,14 @@ class OperationUi {
 
 			$h .= '<dt>'.s("Journal") .'</dt>';
 			$h .= '<dd>';
-				$journalCode = $eOperation['journalCode'] ? self::p('journalCode')->values[$eOperation['journalCode']] : '<i>'.s("Non indiqué").'</i>';
+
+				if($eOperation['journalCode'] !== NULL) {
+					$journalCode = self::getShortJournal($eOperation['journalCode']);
+					$journalCode .= ' ';
+					$journalCode .= '<span class="journal-'.$eOperation['journalCode'].'">'.($eOperation['journalCode'] ? self::p('journalCode')->values[$eOperation['journalCode']] : '');
+				} else {
+					$journalCode = '<i>'.s("Non indiqué").'</i>';
+				}
 				if($eOperation->canUpdateQuick()) {
 					$h .= $eOperation->quick('journalCode', $journalCode.$this->pencil());
 				} else {
@@ -201,7 +208,7 @@ class OperationUi {
 			$linkedOperationIds[] = $eOperation['operationLinked']['id'];
 		}
 
-		if($eOperation['operationLinked']->empty() and $eOperation['cOperationCashflow']->empty() and ($eOperation['cOperationLinkedByCashflow'] - $linkedOperationIds) <= 0) {
+		if($eOperation['operationLinked']->empty() and $eOperation['cOperationCashflow']->empty() and ($eOperation['cOperationLinkedByCashflow']->count() - count($linkedOperationIds)) <= 0) {
 			return '';
 		}
 
@@ -1016,6 +1023,12 @@ class OperationUi {
 			"Débit du {date} de {amount}",
 			['date' => \util\DateUi::numeric($eOperation['date']), 'amount' => \util\TextUi::money($eOperation['amount'])]
 		);
+
+	}
+
+	public static function getShortJournal(string $journalCode): string {
+
+		return '<span class="btn btn-xs journal-button journal-'.$journalCode.'-button">'.self::p('journalCode')->shortValues[$journalCode].'</span>';
 
 	}
 

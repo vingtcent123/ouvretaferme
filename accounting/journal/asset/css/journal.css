@@ -72,3 +72,47 @@ tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 	color: white !important;
 	font-weight: bold;
 }
+
+.btn.journal-button {
+	color: white !important;
+}
+.tab-item:hover[data-tab="journal-ach"],
+.tab-item.selected[data-tab="journal-ach"],
+.btn.journal-ach-button {
+	background-color: var(--ach);
+}
+.tab-item:hover[data-tab="journal-ven"],
+.tab-item.selected[data-tab="journal-ven"],
+.btn.journal-ven-button {
+	background-color: var(--ven);
+}
+.tab-item:hover[data-tab="journal-ks"],
+.tab-item.selected[data-tab="journal-ks"],
+.btn.journal-ks-button {
+	background-color: var(--ks);
+}
+.tab-item:hover[data-tab="journal-ban"],
+.tab-item.selected[data-tab="journal-ban"],
+.btn.journal-ban-button {
+	background-color: var(--ban);
+}
+.tab-item:hover[data-tab="journal-od"],
+.tab-item.selected[data-tab="journal-od"],
+.btn.journal-od-button {
+	background-color: var(--od);
+}
+.journal-ach {
+	color: var(--ach);
+}
+.journal-ven {
+	color: var(--ven);
+}
+.journal-ks {
+	color: var(--ks);
+}
+.journal-ban {
+	color: var(--ban);
+}
+.journal-od {
+	color: var(--od);
+}

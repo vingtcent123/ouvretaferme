@@ -33,6 +33,12 @@
 	--confirmed: var(--order);
 	--prepared: var(--done);
 	--delivered: var(--success);
+
+	--ach: var(--todo);
+	--ven: var(--order);
+	--ban: var(--done);
+	--ks: var(--success);
+	--od: var(--harvest);
 }
 
 :root:has(body[data-template~="farm-production"]) {

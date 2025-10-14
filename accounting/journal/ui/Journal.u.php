@@ -165,12 +165,12 @@ class JournalUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal">';
-				$h .= $this->getTableContainer($eFarm, (string)$selectedJournalCode, $cOperation, $eFinancialYearSelected, $search);
+				$h .= $this->getTableContainer($eFarm, (string)$selectedJournalCode, $cOperation, $eFinancialYearSelected, $search, selectedJournalCode: $selectedJournalCode);
 			$h .= '</div>';
 
 			foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
 				$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
-					$h .= $this->getTableContainer($eFarm, $journalCode, $cOperation, $eFinancialYearSelected, $search);
+					$h .= $this->getTableContainer($eFarm, $journalCode, $cOperation, $eFinancialYearSelected, $search, selectedJournalCode: $selectedJournalCode);
 				$h .= '</div>';
 			}
 
@@ -190,6 +190,7 @@ class JournalUi {
 		\Search $search = new \Search(),
 		array $hide = [],
 		array $show = [],
+		?string $selectedJournalCode = NULL,
 	): string {
 
 		if($cOperation->empty() === TRUE) {
@@ -220,11 +221,18 @@ class JournalUi {
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
+
 						if($eFinancialYearSelected->canUpdate()) {
 							$h .= '<th>';
 							$h .= '</th>';
 						}
+
 						$h .= '<th>'.s("Compte").'</th>';
+
+						if($selectedJournalCode === NULL) {
+							$h .= '<th></th>';
+						}
+
 						$h .= '<th>'.s("Libellé").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
@@ -266,26 +274,26 @@ class JournalUi {
 
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
-						if($eFinancialYearSelected->canUpdate()) {
-							$h .= '<td class="td-checkbox">';
-							$attributesCheckbox = [
-								'data-batch-type' => $eOperation['type'],
-								'data-batch-amount' => $eOperation['amount'],
-								'data-journal-code' => (string)$journalCode,
-							];
-							if($eOperation['operation']->notEmpty()) {
-								$attributesCheckbox['class'] = 'hide';
-								$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
-							} else {
-								$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$journalCode.'")';
+							if($eFinancialYearSelected->canUpdate()) {
+								$h .= '<td class="td-checkbox">';
+								$attributesCheckbox = [
+									'data-batch-type' => $eOperation['type'],
+									'data-batch-amount' => $eOperation['amount'],
+									'data-journal-code' => (string)$journalCode,
+								];
+								if($eOperation['operation']->notEmpty()) {
+									$attributesCheckbox['class'] = 'hide';
+									$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
+								} else {
+									$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$journalCode.'")';
+								}
+								if($canUpdate) {
+									$h .= '<label>';
+										$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
+									$h .= '</label>';
+								}
+								$h .= '</td>';
 							}
-							if($canUpdate) {
-								$h .= '<label>';
-									$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
-								$h .= '</label>';
-							}
-							$h .= '</td>';
-						}
 							$h .= '<td>';
 								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
 									if($eOperation['accountLabel'] !== NULL) {
@@ -298,6 +306,12 @@ class JournalUi {
 									$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
 								$h .= '</div>';
 							$h .= '</td>';
+
+							if($selectedJournalCode === NULL) {
+								$h .= '<td>';
+									$h .= $eOperation['journalCode'] === NULL ? '' : OperationUi::getShortJournal($eOperation['journalCode']);
+								$h .= '</td>';
+							}
 
 							$h .= '<td>';
 								$h .= '<div class="description">';
