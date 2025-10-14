@@ -23,8 +23,8 @@ class Cashflow {
             const targetAmount = qs('[name="amount[' + index + ']"');
             const amount = CalculationField.getValue(targetAmount);
 
-            const targetVatValue = qs('[name="vatValue[' + index + ']"');
-            const vatValue = CalculationField.getValue(targetVatValue);
+            const targetVatValue = Operation.hasVat() ? qs('[name="vatValue[' + index + ']"') : 0;
+            const vatValue = Operation.hasVat() ? CalculationField.getValue(targetVatValue) : 0;
 
             const type = Array.from(qsa('#operation-create-list [name="type[' + index + ']"]')).find((checkboxType) => checkboxType.checked === true);
 
@@ -53,13 +53,15 @@ class Cashflow {
         CalculationField.setValue(targetAmountIncludingVAT, Math.abs(missingAmountIncludingVATValue));
 
         const targetAmount = qs('[name="amount[' + index + ']"');
-        const vatRate = qs('[name="vatRate[' + index + ']"]').valueAsNumber;
+        const vatRate = Operation.hasVat() ? qs('[name="vatRate[' + index + ']"]').valueAsNumber : 0;
         const missingAmountValue = round(missingAmountIncludingVATValue / (1 + vatRate / 100));
         CalculationField.setValue(targetAmount, Math.abs(missingAmountValue));
 
-        const missingVatValue = round(missingAmountIncludingVATValue - missingAmountValue);
-        const targetVatValue = qs('[name="vatValue[' + index + ']"');
-        CalculationField.setValue(targetVatValue, Math.abs(missingVatValue));
+        if(Operation.hasVat()) {
+            const missingVatValue = round(missingAmountIncludingVATValue - missingAmountValue);
+            const targetVatValue = qs('[name="vatValue[' + index + ']"');
+            CalculationField.setValue(targetVatValue, Math.abs(missingVatValue));
+        }
 
         if(missingAmountValue > 0) {
             qs('[name="type[' + index + ']"][value="credit"]').setAttribute('checked', true);
@@ -179,9 +181,11 @@ class Cashflow {
         }).filter(asset => asset)
             .reduce((acc, value) => acc + parseFloat(value.value || 0), 0);
 
+        if(Operation.hasVat()) {
+            qs('.cashflow-create-operation-validate[data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
+        }
         qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
         qs('.cashflow-create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
-        qs('.cashflow-create-operation-validate[data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
         qs('.cashflow-create-operation-validate[data-field="assetValue"] [data-type="value"]').innerHTML = money(assetValue);
 
         if(sum !== totalAmount) {
