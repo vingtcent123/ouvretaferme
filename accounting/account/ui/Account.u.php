@@ -162,10 +162,13 @@ class AccountUi {
 		\Asset::css('media', 'media.css');
 
 		$vatRate = 0.0;
+		$vatClass = '';
 		if($eAccount['vatRate'] !== NULL) {
 			$vatRate = $eAccount['vatRate'];
+			$vatClass = $eAccount['class'];
 		} elseif($eAccount['vatAccount']->exists() === TRUE) {
 			$vatRate = $eAccount['vatAccount']['vatRate'];
+			$vatClass = $eAccount['vatAccount']['class'];
 		}
 
 		$itemHtml = encode($eAccount['class'].' '.$eAccount['description']);
@@ -182,6 +185,7 @@ class AccountUi {
 			'class' => encode($eAccount['class']),
 			'description' => $eAccount['description'],
 			'vatRate' => $vatRate,
+			'vatClass' => $vatClass,
 			'farm' => $farm,
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAccount['class'].' '.$eAccount['description']

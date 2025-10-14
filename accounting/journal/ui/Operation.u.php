@@ -877,7 +877,9 @@ class OperationUi {
 							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1],
 						)
 						.$form->addon('% '))
-						.\util\FormUi::info(s("Les taux de TVA habituels en vigueur en France sont : 20%, 10% et 5.5% (<link>en savoir plus</link>)", ['link' => '<a href="https://www.economie.gouv.fr/cedef/les-fiches-pratiques/quels-sont-les-taux-de-tva-en-vigueur-en-france-et-dans-lunion" target="_blank">']));
+						.\util\FormUi::info('<div data-index="'.$index.'" data-vat="account-info" class="hide">'.s("Le compte de TVA utilisé est le <b>{value}</b>. Si vous souhaitez en spécifier un autre, indiquez 0% ici et créez une autre écriture.", ['value' => '<span data-index="'.$index.'" data-vat="account-value"></span>']).'</div>'
+						.'<div>'.s("Les taux de TVA habituels en vigueur en France sont : 20%, 10% et 5.5% (<link>en savoir plus</link>)", ['link' => '<a href="https://www.economie.gouv.fr/cedef/les-fiches-pratiques/quels-sont-les-taux-de-tva-en-vigueur-en-france-et-dans-lunion" target="_blank">']).'</div>')
+					;
 						$h .= '<div class="warning hide mt-1" data-vat-rate-warning data-index="'.$index.'">';
 							$h .= s(
 								"Attention : Habituellement, pour la classe <b>{class}</b> le taux de <b>{vatRate}%</b> est utilisé. Souhaitez-vous <link>l'utiliser</link> ?",

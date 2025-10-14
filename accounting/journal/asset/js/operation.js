@@ -35,6 +35,15 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="
 document.delegateEventListener('autocompleteSelect', '[data-account="journal-operation-create"], [data-account="bank-cashflow-allocate"]', function(e) {
 
     if(e.detail.value.length !== 0) { // Else : l'utilisateur a supprimé la classe
+
+        const index = e.detail.input.getAttribute('data-index');
+
+        if(e.detail.vatClass) {
+            qs('[data-index="' + index + '"][data-vat="account-info"]').removeHide();
+            qs('[data-index="' + index + '"][data-vat="account-value"]').innerHTML = e.detail.vatClass;
+        } else {
+            qs('[data-index="' + index + '"][data-vat="account-info"]').hide();
+        }
         Operation.updateType(e.detail);
         Operation.refreshVAT(e.detail);
     }
