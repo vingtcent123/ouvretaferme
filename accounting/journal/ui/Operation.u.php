@@ -164,7 +164,7 @@ class OperationUi {
 			$h .= '<dd>';
 
 				if($eOperation['journalCode'] !== NULL) {
-					$journalCode = self::getShortJournal($eOperation['journalCode']);
+					$journalCode = self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE);
 					$journalCode .= ' ';
 					$journalCode .= '<span class="journal-'.$eOperation['journalCode'].'">'.($eOperation['journalCode'] ? self::p('journalCode')->values[$eOperation['journalCode']] : '');
 				} else {
@@ -260,6 +260,7 @@ class OperationUi {
 			$h .= '<table class="tr-even tr-hover">';
 				$h .= '<thead>';
 					$h .= '<tr class="tr-title">';
+						$h .= '<th></th>';
 						$h .= '<th>'.s("Numéro et libellé de compte").'</th>';
 						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th>'.s("Type").'</th>';
@@ -274,6 +275,7 @@ class OperationUi {
 				if($eOperation['operationLinked']->notEmpty()) {
 					$eOperationLinked = $eOperation['operationLinked'];
 						$h .= '<tr>';
+							$h .= '<td>'.self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE).'</td>';
 							$h .= '<td>'.encode($eOperationLinked['accountLabel']).' - '.encode($eOperationLinked['account']['description']).'</td>';
 							$h .= '<td>'.\util\DateUi::numeric($eOperationLinked['date']).'</td>';
 							$h .= '<td>'.self::p('type')->values[$eOperationLinked['type']].'</td>';
@@ -290,6 +292,7 @@ class OperationUi {
 					}
 
 					$h .= '<tr>';
+						$h .= '<td>'.self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE).'</td>';
 						$h .= '<td>'.encode($eOperationLinkedByCashflow['accountLabel']).' - '.encode($eOperationLinkedByCashflow['account']['description']).'</td>';
 						$h .= '<td>'.\util\DateUi::numeric($eOperationLinkedByCashflow['date']).'</td>';
 						$h .= '<td>'.self::p('type')->values[$eOperationLinkedByCashflow['type']].'</td>';
@@ -1026,9 +1029,23 @@ class OperationUi {
 
 	}
 
-	public static function getShortJournal(string $journalCode): string {
+	public static function getShortJournal(\farm\Farm $eFarm, string $journalCode, bool $link): string {
 
-		return '<span class="btn btn-xs journal-button journal-'.$journalCode.'-button">'.self::p('journalCode')->shortValues[$journalCode].'</span>';
+		$code = self::p('journalCode')->shortValues[$journalCode];
+
+		$journalName = match($journalCode) {
+			Operation::ACH => s("Journal des achats"),
+			Operation::VEN => s("Journal des ventes"),
+			Operation::KS => s("Journal de caisse"),
+			Operation::BAN => s("Journal de banque"),
+			Operation::OD => s("Journal des opérations diverses"),
+		};
+
+		if($link) {
+			return '<a class="btn btn-xs journal-button journal-'.$journalCode.'-button" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'" title="'.s("Filtrer sur le {value}", mb_strtolower($journalName)).'">'.$code.'</a>';
+		}
+
+		return '<span class="btn btn-xs journal-button journal-'.$journalCode.'-button" title="'.$journalName.'">'.$code.'</span>';
 
 	}
 
@@ -1079,7 +1096,7 @@ class OperationUi {
 					OperationElement::ACH => s("JA"),
 					OperationElement::VEN => s("JV"),
 					OperationElement::BAN => s("JB"),
-					OperationElement::KS => s("JK"),
+					OperationElement::KS => s("JC"),
 					OperationElement::OD => s("JOD"),
 				];
 				$d->field = 'select';

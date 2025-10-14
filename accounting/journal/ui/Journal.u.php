@@ -309,7 +309,7 @@ class JournalUi {
 
 							if($selectedJournalCode === NULL) {
 								$h .= '<td>';
-									$h .= $eOperation['journalCode'] === NULL ? '' : OperationUi::getShortJournal($eOperation['journalCode']);
+									$h .= $eOperation['journalCode'] === NULL ? '' : OperationUi::getShortJournal($eFarm, $eOperation['journalCode'], link: TRUE);
 								$h .= '</td>';
 							}
 

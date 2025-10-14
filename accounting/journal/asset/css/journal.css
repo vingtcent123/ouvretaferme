@@ -104,6 +104,9 @@ tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 .journal-ach {
 	color: var(--ach);
 }
+span.journal-button {
+	cursor: initial !important;
+}
 .journal-ven {
 	color: var(--ven);
 }
