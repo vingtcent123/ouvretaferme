@@ -68,27 +68,23 @@ class PageLib {
 
 		if(
 			REQUEST('app') === 'accounting'
-			or mb_strpos(SERVER('REQUEST_URI'), '/public:create') === 0
+			and mb_strpos(SERVER('REQUEST_URI'), '/company/public:create') === FALSE
+			and mb_strpos(SERVER('REQUEST_URI'), '/company/public:inactive') === FALSE
 		) {
 
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
-
 			if($data->pageType !== 'remote') {
 				\user\ConnectionLib::checkLogged();
 			}
 
 			// On ne peut pas utiliser le même test que dans Farm.php car la feature est toujours activée en dev
-			$canAccounting = ($data->eFarm->notEmpty() and
-				in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_BETA_TEST_FARMS));
+			$canAccounting = ($data->eFarm->notEmpty() and in_array($data->eFarm['id'], \company\CompanySetting::$accountingBetaTestFarms));
 			$hasAccounting = ($canAccounting and	$data->eFarm->hasAccounting());
 
 			if(
 				$data->pageType !== 'remote' and $canAccounting === FALSE
 			) {
 				throw new \RedirectAction('/company/public:inactive?farm='.$data->eFarm['id']);
-				$action = new \ViewAction($data, '/error:404');
-				$action->setStatusCode(404);
-				throw $action;
 			}
 
 			if($hasAccounting) {
@@ -97,7 +93,7 @@ class PageLib {
 
 			} else if(mb_strpos(SERVER('REQUEST_URI'), '/public:') === FALSE) {
 
-				throw new \RedirectAction('/public:create?farm='.$data->eFarm['id']);
+				throw new \RedirectAction('/company/public:create?farm='.$data->eFarm['id']);
 
 			}
 		}

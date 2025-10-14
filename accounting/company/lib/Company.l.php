@@ -20,7 +20,7 @@ class CompanyLib {
 	public static function getDatabaseName(\farm\Farm $eFarm): string {
 
 		if(OTF_DEMO) {
-			return 'ouvretaferme';
+			return 'demo_ouvretaferme';
 		}
 
 		if(LIME_ENV === 'prod') {
@@ -52,7 +52,9 @@ class CompanyLib {
 			return;
 		}
 
-		self::createSpecificDatabaseAndTables($eFarm);
+		if(OTF_DEMO === FALSE) {
+			self::createSpecificDatabaseAndTables($eFarm);
+		}
 
 		\farm\Farm::model()->beginTransaction();
 

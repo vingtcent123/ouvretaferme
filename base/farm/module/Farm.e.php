@@ -116,9 +116,7 @@ class Farm extends FarmElement {
 
 	// Est-ce que la ferme a la comptabilité d'activée ?
 	public function hasAccounting(): bool {
-		return (
-			!OTF_DEMO and $this['hasAccounting']
-		);
+		return (!OTF_DEMO and $this['hasAccounting']);
 	}
 
 	public function canSection(string $section): bool {
@@ -156,8 +154,9 @@ class Farm extends FarmElement {
 
 	public function canAccounting(): bool {
 		return (
-			$this->canAccountEntry() or
-			$this->canManage()
+			!OTF_DEMO and
+			($this->canAccountEntry() or
+			$this->canManage())
 		);
 	}
 

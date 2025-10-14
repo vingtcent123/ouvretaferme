@@ -16,11 +16,13 @@ class DemoLib {
 
 	const COPY_MODULE_EXCLUDE = [
 		'account\Account',
+		'account\FinancialYear',
 		'account\Log',
 		'account\Partner',
 		'account\ThirdParty',
 		'asset\Asset',
 		'asset\Depreciation',
+		'association\History',
 		'bank\BankAccount',
 		'bank\Cashflow',
 		'bank\Import',
@@ -30,6 +32,8 @@ class DemoLib {
 		'farm\Invite',
 		'farm\Tip',
 		'payment\StripeFarm',
+		'pdf\Pdf',
+		'pdf\Content',
 		'selling\Grid',
 		'selling\History',
 		'selling\Invoice',
@@ -267,6 +271,16 @@ class DemoLib {
 
 	public static function anonymizeFarm(): void {
 
+		Farmer::model()
+			->whereId(Farm::DEMO)
+			->update([
+				'viewAccountingYear' => NULL,
+				'viewAccountingHasVat' => NULL,
+				'viewAccountingType' => NULL,
+				'viewAccountingFinancials' => NULL,
+				'viewAccountingStatements' => NULL,
+			]);
+
 		Farm::model()
 			->whereId(Farm::DEMO)
 			->update([
@@ -282,6 +296,7 @@ class DemoLib {
 				'legalCity' => NULL,
 				'siret' => NULL,
 				'url' => NULL,
+				'hasAccounting' => FALSE,
 			]);
 
 		\selling\Configuration::model()
@@ -292,6 +307,17 @@ class DemoLib {
 				'invoiceHeader' => NULL,
 				'invoiceFooter' => NULL
 			]);
+
+		$cGenericAccount = \company\GenericAccount::model()
+			->select(\company\GenericAccount::getSelection())
+			->whereType(\company\GenericAccount::AGRICULTURAL)
+			->getCollection();
+		foreach($cGenericAccount as $eGenericAccount) {
+			$eUser = new \user\User(['id' => 1]);
+			$eAccount = clone $eGenericAccount;
+			$eAccount['createdBy'] = $eUser;
+			\account\Account::model()->insert($eAccount);
+		}
 
 	}
 

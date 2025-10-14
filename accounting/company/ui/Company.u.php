@@ -12,7 +12,7 @@ class CompanyUi {
 	}
 
 	public static function url(\farm\Farm $eFarm): string {
-		return \Lime::getUrl().'/'.$eFarm['id'].'/company';
+		return '/'.$eFarm['id'].'/company';
 	}
 
 	public static function urlSettings(\farm\Farm $eFarm): string {
@@ -20,31 +20,31 @@ class CompanyUi {
 	}
 
 	public static function urlJournal(int|\farm\Farm $farm): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/journal';
+		return '/'.(is_int($farm) ? $farm : $farm['id']).'/journal';
 	}
 
 	public static function urlOverview(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview'.($view !== NULL ? '/'.$view : '');
+		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview'.($view !== NULL ? '/'.$view : '');
 	}
 
 	public static function urlAnalyze(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview/analyze'.($view !== NULL ? '/'.$view : '');
+		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview/analyze'.($view !== NULL ? '/'.$view : '');
 	}
 
 	public static function urlSummary(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/overview/summary'.($view !== NULL ? '/'.$view : '');
+		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview/summary'.($view !== NULL ? '/'.$view : '');
 	}
 
 	public static function urlAsset(int|\farm\Farm $farm): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/asset';
+		return '/'.(is_int($farm) ? $farm : $farm['id']).'/asset';
 	}
 
 	public static function urlBank(int|\farm\Farm $farm): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/bank';
+		return '/'.(is_int($farm) ? $farm : $farm['id']).'/bank';
 	}
 
 	public static function urlAccount(int|\farm\Farm $farm): string {
-		return \Lime::getUrl().'/'.(is_int($farm) ? $farm : $farm['id']).'/account';
+		return '/'.(is_int($farm) ? $farm : $farm['id']).'/account';
 	}
 
 	public function warnFinancialYear(\farm\Farm $eFarm, \Collection $cFinancialYear): string {

@@ -275,7 +275,7 @@ class OperationUi {
 				if($eOperation['operationLinked']->notEmpty()) {
 					$eOperationLinked = $eOperation['operationLinked'];
 						$h .= '<tr>';
-							$h .= '<td>'.self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE).'</td>';
+							$h .= '<td>'.self::getShortJournal($eFarm, $eOperationLinked['journalCode'], link: FALSE).'</td>';
 							$h .= '<td>'.encode($eOperationLinked['accountLabel']).' - '.encode($eOperationLinked['account']['description']).'</td>';
 							$h .= '<td>'.\util\DateUi::numeric($eOperationLinked['date']).'</td>';
 							$h .= '<td>'.self::p('type')->values[$eOperationLinked['type']].'</td>';
@@ -292,7 +292,7 @@ class OperationUi {
 					}
 
 					$h .= '<tr>';
-						$h .= '<td>'.self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE).'</td>';
+						$h .= '<td>'.self::getShortJournal($eFarm, $eOperationLinkedByCashflow['journalCode'], link: FALSE).'</td>';
 						$h .= '<td>'.encode($eOperationLinkedByCashflow['accountLabel']).' - '.encode($eOperationLinkedByCashflow['account']['description']).'</td>';
 						$h .= '<td>'.\util\DateUi::numeric($eOperationLinkedByCashflow['date']).'</td>';
 						$h .= '<td>'.self::p('type')->values[$eOperationLinkedByCashflow['type']].'</td>';
