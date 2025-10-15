@@ -91,8 +91,9 @@ class AnalyzeLib {
 
 		$accountClass = $type === 'bank' ? \account\AccountSetting::BANK_ACCOUNT_CLASS : \account\AccountSetting::CASH_ACCOUNT_CLASS;
 
-		$cOperation = \journal\Operation::model()
+		$ccOperation = \journal\Operation::model()
 			->select([
+				'accountLabel',
 				'month' => new \Sql('DATE_FORMAT(date, "%Y-%m")'),
 				'credit' => new \Sql('SUM(IF(type = "credit", amount, 0))'),
 				'debit' => new \Sql('SUM(IF(type = "debit", amount, 0))'),
@@ -101,18 +102,20 @@ class AnalyzeLib {
 			->whereDate('>=', $eFinancialYear['startDate'])
 			->whereDate('<=', $eFinancialYear['endDate'])
 			->where('SUBSTRING(accountLabel, 1, '.strlen((string)$accountClass).') = "'.$accountClass.'"')
-			->group(['month'])
-			->sort(['month' => SORT_ASC])
-			->getCollection();
+			->group(['accountLabel', 'month'])
+			->sort(['accountLabel' => SORT_ASC, 'month' => SORT_ASC])
+			->getCollection(NULL, NULL, ['accountLabel', 'month']);
 
 		// Total en cumulatif
-		$lastSolde = 0;
-		foreach($cOperation as &$eOperation) {
-			$eOperation['total'] += $lastSolde;
-			$lastSolde = $eOperation['total'];
+		foreach($ccOperation as $cOperation) {
+			$lastSolde = 0;
+			foreach($cOperation as &$eOperation) {
+				$eOperation['total'] += $lastSolde;
+				$lastSolde = $eOperation['total'];
+			}
 		}
 
-		return $cOperation;
+		return $ccOperation;
 	}
 
 }

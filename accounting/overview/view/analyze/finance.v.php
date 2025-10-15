@@ -17,6 +17,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	echo new overview\BankUi()->get([$data->cOperationBank, $data->cOperationCash]);
+	echo new overview\BankUi()->get($data->ccOperationBank, $data->ccOperationCash);
 
 });

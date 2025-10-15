@@ -147,3 +147,24 @@ td.analyze-month-value {
 	}
 
 }
+
+.analyze-account {
+	font-weight: normal;
+	font-size: small;
+	margin-top: 0.25rem;
+}
+.analyze-tab {
+	display: block;
+}
+.analyze-tab:hover,
+.analyze-tab.selected {
+	color: white !important;
+}
+.analyze-tab-ban:hover,
+.analyze-tab-ban.selected {
+	background-color: var(--ban);
+}
+.analyze-tab-ks:hover,
+.analyze-tab-ks.selected {
+	background-color: var(--ks);
+}

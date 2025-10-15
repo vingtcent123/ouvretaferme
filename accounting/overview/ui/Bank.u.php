@@ -8,11 +8,9 @@ class BankUi {
 		\Asset::js('overview', 'analyze.js');
 	}
 
-	public function get(array $operations): string {
+	public function get(\Collection $ccOperationBank, \Collection $ccOperationCash): string {
 
-		[$cOperationBank, $cOperationCash] = $operations;
-
-		if($cOperationBank->empty() === TRUE) {
+		if($ccOperationBank->empty() === TRUE) {
 
 			$h = '<div class="util-info">';
 				$h .= s("Le suivi de la trésorerie sera disponible lorsque vous aurez attribué des écritures à vos opérations bancaires pour cet exercice.");
@@ -24,41 +22,50 @@ class BankUi {
 		$h = '<div class="tabs-h" id="analyze-bank" onrender="'.encode('Lime.Tab.restore(this, "bank")').'">';
 
 			$h .= '<div class="tabs-item">';
-				$h .= '<a class="tab-item selected" data-tab="bank" onclick="Lime.Tab.select(this)">'.s("Compte bancaire").'</a>';
-				$h .= '<a class="tab-item" data-tab="cash" onclick="Lime.Tab.select(this)">'.s("Caisse").'</a>';
+			$accountLabelBank = $ccOperationBank->getKeys();
+			$selected = first($accountLabelBank);
+			foreach($accountLabelBank as $accountLabel) {
+				$h .= '<a class="tab-item analyze-tab analyze-tab-ban '.($selected === $accountLabelBank ? 'selected' : '').' text-center" data-tab="bank-'.encode($accountLabel).'" onclick="Lime.Tab.select(this)">'.s("Banque<br />{value}", '<div class="analyze-account">'.encode($accountLabel).'</div>').'</a>';
+			}
+			$accountLabelCash = $ccOperationCash->getKeys();
+			foreach($accountLabelCash as $accountLabel) {
+				$h .= '<a class="tab-item analyze-tab analyze-tab-ks text-center" data-tab="cash-'.encode($accountLabel).'" onclick="Lime.Tab.select(this)">'.s("Caisse<br />{value}", '<div class="analyze-account">'.encode($accountLabel).'</div>').'</a>';
+			}
 			$h .= '</div>';
 
-			$h .= '<div class="tab-panel" data-tab="bank">';
-
-				$h .= '<div class="analyze-chart-table">';
-
-					$h .= $this->getChart($cOperationBank);
-					$h .= $this->getTable($cOperationBank);
-
-				$h .= '</div>';
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="cash">';
-
-				if($cOperationCash->notEmpty()) {
+			foreach($ccOperationBank as $accountLabel => $cOperationBank) {
+				$h .= '<div class="tab-panel" data-tab="bank-'.encode($accountLabel).'">';
 
 					$h .= '<div class="analyze-chart-table">';
+
+						$h .= $this->getChart($cOperationBank);
+						$h .= $this->getTable($cOperationBank);
+
+					$h .= '</div>';
+				$h .= '</div>';
+			}
+
+			foreach($ccOperationCash as $accountLabel => $cOperationCash) {
+				$h .= '<div class="tab-panel" data-tab="cash-'.encode($accountLabel).'">';
+
+					if($cOperationCash->notEmpty()) {
+
+						$h .= '<div class="analyze-chart-table">';
 
 						$h .= $this->getChart($cOperationCash);
 						$h .= $this->getTable($cOperationCash);
 
-					$h .= '</div>';
+						$h .= '</div>';
 
-				} else {
+					} else {
 
-					$h .= '<div class="util-info">';
-						$h .= s("Il n'y a aucun mouvement de caisse pour cet exercice.");
-					$h .= '</div>';
-				}
+						$h .= '<div class="util-info">';
+							$h .= s("Il n'y a aucun mouvement de caisse avec le compte {value} pour cet exercice.", encode($accountLabel));
+						$h .= '</div>';
+					}
 
-
-			$h .= '</div>';
-
+				$h .= '</div>';
+			}
 		$h .= '</div>';
 
 		return $h;
