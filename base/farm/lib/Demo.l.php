@@ -276,7 +276,6 @@ class DemoLib {
 			->update([
 				'viewAccountingYear' => NULL,
 				'viewAccountingHasVat' => NULL,
-				'viewAccountingType' => NULL,
 				'viewAccountingFinancials' => NULL,
 				'viewAccountingStatements' => NULL,
 			]);
