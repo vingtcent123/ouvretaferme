@@ -151,7 +151,7 @@ Class SigUi {
 							$h .= '<td class="sig-category-name">'.$this->name($account, '=').'</td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
 							$h .= '<td class="text-center highlight-stick-left">';
-								if($isPercentedCategory) {
+								if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
 									$h .= round(($valuesCurrent[$account] / $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
 								}
 							$h .= '</td>';
@@ -159,7 +159,7 @@ Class SigUi {
 								list($value, $percent) = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
 								$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
 								$h .= '<td class="text-center highlight-stick-left">';
-									if($isPercentedCategory) {
+									if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
 										$h .= round(($valuesComparison[$account] / $valuesComparison[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
 									}
 								$h .= '</td>';
