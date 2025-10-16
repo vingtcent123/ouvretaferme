@@ -111,7 +111,7 @@ class OperationUi {
 				$h .= '<dt>'.s("Type") .'</dt>';
 				$h .= '<dd>'.self::p('type')->values[$eOperation['type']].'</dd>';
 				$h .= '<dt>'.s("Tiers").'</dt>';
-				$h .= '<dd>'.encode($eOperation['thirdParty']['name']).'</dd>';
+				$h .= '<dd>'.encode($eOperation['thirdParty']['name'] ?? '').'</dd>';
 				$h .= '<dt>'.s("Montant") .'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eOperation['amount']).'</dd>';
 			$h .= '</dl>';

@@ -96,7 +96,7 @@ class SigLib {
 	];
 
 	 public static function isCharge(string $account): bool {
-		 return mb_substr($account, 0, 1) === '6';
+		 return mb_substr($account, 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS;
 	 }
 
 	 public static function getAmountSql(string $account): string {
@@ -110,7 +110,7 @@ class SigLib {
 	 }
 	public static function compute(\account\FinancialYear $eFinancialYear): array {
 
-		// Si 6 : debit - credit / Si 7 : credit - debit
+		// Si CHARGE_ACCOUNT_CLASS : debit - credit / Sinon : credit - debit
 		$indexes = [];
 		$select = [];
 		$index = 0;
