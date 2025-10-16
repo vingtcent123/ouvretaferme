@@ -19,7 +19,7 @@ new Page(function($data) {
 			$data->eFinancialYear['id'] => $values
 		];
 
-		if($data->search->get('financialYearComparison')) {
+		if($data->search->get('financialYearComparison') and (int)$data->search->get('financialYearComparison') !== $data->eFinancialYear['id']) {
 			$data->eFinancialYearComparison = \account\FinancialYearLib::getById($data->search->get('financialYearComparison'));
 			if($data->eFinancialYearComparison->notEmpty()) {
 				$data->values[$data->eFinancialYearComparison['id']] = \overview\SigLib::compute($data->eFinancialYearComparison);

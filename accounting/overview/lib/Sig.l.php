@@ -96,7 +96,7 @@ class SigLib {
 	];
 
 	 public static function isCharge(string $account): bool {
-		 return mb_substr($account, 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS;
+		 return (int)mb_substr($account, 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS;
 	 }
 
 	 public static function getAmountSql(string $account): string {
