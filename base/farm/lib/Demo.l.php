@@ -276,8 +276,6 @@ class DemoLib {
 			->update([
 				'viewAccountingYear' => NULL,
 				'viewAccountingHasVat' => NULL,
-				'viewAccountingFinancials' => NULL,
-				'viewAccountingStatements' => NULL,
 			]);
 
 		Farm::model()
