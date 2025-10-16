@@ -949,8 +949,8 @@ class FarmUi {
 
 			'analyze-accounting' => match($name) {
 				'finance' => s("Trésorerie"),
-				'expenses' => s("Charges"),
-				'income' => s("Résultat"),
+				'expenses' => s("Charges et résultat"),
+				'sig' => s("SIG"),
 			},
 
 			'summary' => match($name) {
@@ -1931,7 +1931,7 @@ class FarmUi {
 				return ['cashflow'];
 
 			case 'analyze-accounting' :
-				return ['finance', 'expenses', 'income'];
+				return ['finance', 'expenses', 'sig'];
 
 			case 'summary' :
 				return ['incomeStatement', 'balanceSheet'];

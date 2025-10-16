@@ -1,0 +1,16 @@
+
+table.tr-hover thead tr.sig-table-title,
+thead.thead-sticky tr.sig-table-title th,
+table.tr-hover thead tr.sig-table-title:hover,
+thead.thead-sticky tr.sig-table-title:hover th {
+	background-color: var(--primary) !important;
+	color: white;
+}
+
+.sig-title {
+	font-weight: bold;
+	background-color: rgba(0, 0, 0, 0.01) !important;
+}
+.sig-content > td.sig-category-name {
+	padding-left: 2rem;
+}

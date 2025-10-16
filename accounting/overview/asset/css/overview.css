@@ -1,9 +1,6 @@
 
 table.tr-hover thead tr.overview_row-title,
-thead.thead-sticky tr.overview_row-title th {
-	background-color: var(--primary) !important;
-	color: white;
-}
+thead.thead-sticky tr.overview_row-title th,
 table.tr-hover thead tr.overview_row-title:hover,
 thead.thead-sticky tr.overview_row-title:hover th {
 	background-color: var(--primary) !important;

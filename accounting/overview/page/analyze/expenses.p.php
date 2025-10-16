@@ -12,6 +12,8 @@ new Page(function($data) {
 
 		[$data->cOperation, $data->cAccount] = \overview\AnalyzeLib::getChargeOperationsByMonth($data->eFinancialYear);
 
+		$data->cOperationResult = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFinancialYear);
+
 		throw new ViewAction($data);
 
 	});

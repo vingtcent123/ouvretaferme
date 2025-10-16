@@ -19,11 +19,11 @@ class BankUi {
 			return $h;
 		}
 
-		$h = '<div class="tabs-h" id="analyze-bank" onrender="'.encode('Lime.Tab.restore(this, "bank")').'">';
+		$accountLabelBank = $ccOperationBank->getKeys();
+		$selected = first($accountLabelBank);
+		$h = '<div class="tabs-h" id="analyze-bank" onrender="'.encode('Lime.Tab.restore(this, "bank-'.encode($selected).'")').'">';
 
 			$h .= '<div class="tabs-item">';
-			$accountLabelBank = $ccOperationBank->getKeys();
-			$selected = first($accountLabelBank);
 			foreach($accountLabelBank as $accountLabel) {
 				$h .= '<a class="tab-item analyze-tab analyze-tab-ban '.($selected === $accountLabelBank ? 'selected' : '').' text-center" data-tab="bank-'.encode($accountLabel).'" onclick="Lime.Tab.select(this)">'.s("Banque<br />{value}", '<div class="analyze-account">'.encode($accountLabel).'</div>').'</a>';
 			}
