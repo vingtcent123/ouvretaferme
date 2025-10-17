@@ -52,6 +52,7 @@ new \account\FinancialYearPage(
 	->applyElement(function($data, \account\FinancialYear $e) {
 
 		$e->validate('canUpdate');
+		$data->eOld = clone $e;
 
 	})
 	->update(function($data) {
@@ -61,6 +62,7 @@ new \account\FinancialYearPage(
 	})
 	->doUpdate(function($data) {
 
+		\account\FinancialYearLib::cbUpdate($data->e, $data->eOld);
 		throw new ReloadAction('account', 'FinancialYear::updated');
 
 	})

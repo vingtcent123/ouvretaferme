@@ -296,6 +296,18 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function cbUpdate(FinancialYear $e, FinancialYear $eOld): void {
+
+		$changes = [];
+		foreach($eOld as $property => $value) {
+			if($e[$property] !== $value) {
+				$changes[$property] = ['old' => $value, 'new' => $e[$property]];
+			}
+		}
+		LogLib::save('update', 'financialYear', ['id' => $e['id'], 'changes' => $changes]);
+
+	}
+
 	private static function setDefaultView(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
 
 		\farm\FarmerLib::setView('viewAccountingYear', $eFarm, $eFinancialYear['id']);
