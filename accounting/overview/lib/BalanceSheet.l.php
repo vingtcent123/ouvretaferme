@@ -104,7 +104,7 @@ Class BalanceSheetLib {
 						foreach($operationsSubClasses as &$operationSubClass) {
 							$operationSubClass['amount'] *= -1;
 						}
-						self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['equity'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['debts']);
+						self::affectOperation(operationsSubClasses: $operationsSubClasses, balanceSheetDataCategory:  $balanceSheetData['debts'], eFinancialYear: $eFinancialYear, eOperation: $eOperation, totals: $totals['debts']);
 					}
 			}
 		}
