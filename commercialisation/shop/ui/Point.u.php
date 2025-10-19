@@ -331,15 +331,15 @@ class PointUi {
 				$badges = '';
 
 				if($orderMin > 0) {
-					$badges .= '<span class="point-order-min util-badge">'.s("Minimum de commande : {value} €", $orderMin).'</span>';
+					$badges .= '<span class="point-order-min util-badge color-text">'.s("Minimum de commande : {value} €", $orderMin).'</span>';
 				}
 
 				if($shipping > 0) {
 					if($shippingUntil > 0) {
-						$badges .= ' <span class="point-shipping util-badge">';
+						$badges .= ' <span class="point-shipping util-badge color-text">';
 							$badges .= s("Frais de livraison : <charged>{value} €</charged> et <free>offerts au delà de {until} € de commande</free>", ['value' => $shipping, 'until' => $shippingUntil, 'charged' => ($mode === 'write') ? '<span>' : '<span class="point-shipping-charged">', 'free' => ($mode === 'write') ? '<span>' : '<span class="point-shipping-free">']);
 					} else {
-						$badges .= ' <span class="point-shipping util-badge">';
+						$badges .= ' <span class="point-shipping util-badge color-text">';
 							$badges .= s("Frais de livraison : {value} €", $shipping);
 						$badges .= '</span>';
 					}
