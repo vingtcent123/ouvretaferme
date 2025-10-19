@@ -14,7 +14,7 @@ new \selling\GroupPage(function($data) {
 
 	})
 	->create()
-	->doCreate(fn($data) => throw new ViewAction($data));
+	->doCreate(fn($data) => throw new ReloadAction('selling', 'Group::created'));
 
 new \selling\GroupPage()
 	->read('get', function($data) {
