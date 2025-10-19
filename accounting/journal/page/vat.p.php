@@ -29,12 +29,14 @@ new Page(function($data) {
 	$data->search = clone $search;
 
 })
+	// TODO : page à supprimer
 	->get('index', function($data) {
 
 		$hasSort = get_exists('sort') === TRUE;
 		// Ne pas ouvrir le bloc de recherche
 		$search = clone $data->search;
 		$search->set('financialYear', $data->eFinancialYear);
+
 		$data->operations = [
 			'buy' => \journal\OperationLib::getAllForVatJournal('buy', $search, $hasSort),
 			'sell' => \journal\OperationLib::getAllForVatJournal('sell', $search, $hasSort),

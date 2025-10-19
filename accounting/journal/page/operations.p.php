@@ -40,13 +40,21 @@ new Page(function($data) {
 		}
 
 		$code = GET('code');
-		if(in_array($code, \journal\Operation::model()->getProperty('journalCode')) === FALSE) {
+		if(in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
 			$code = NULL;
 		}
 		$search->set('journalCode', $code);
 
 		$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 		$data->cAccount = \account\AccountLib::getAll();
+
+		// Journaux de TVA
+		if($data->eFinancialYear['hasVat']) {
+			$data->operationsVat = [
+				'buy' => \journal\OperationLib::getAllForVatJournal('buy', $search, $hasSort),
+				'sell' => \journal\OperationLib::getAllForVatJournal('sell', $search, $hasSort),
+			];
+		}
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);

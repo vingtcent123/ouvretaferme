@@ -132,26 +132,14 @@ class JournalUi {
 
 	}
 
-	public function getJournal(
-		\farm\Farm $eFarm,
-		\Collection $cOperation,
-		\account\FinancialYear $eFinancialYearSelected,
-		\Search $search = new \Search(),
-		\Collection $cPaymentMethod = new \Collection()
-	): string {
+	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, ?string $selectedJournalCode): string {
 
-		$selectedJournalCode = GET('code');
-		if(in_array($selectedJournalCode, Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
-			$selectedJournalCode = NULL;
-		}
 
-		$h = '<div class="tabs-h" id="journals">';
+		$h = '<div class="tabs-item">';
 
-			$h .= '<div class="tabs-item">';
+			$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations">'.s("Général").'</a>';
 
-				$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations">'.s("Général").'</a>';
-
-				foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
+			foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
 
 					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">';
 						$h .= '<div class="text-center">';
@@ -160,21 +148,66 @@ class JournalUi {
 						$h .= '</div>';
 					$h .= '</a>';
 
-				}
+			}
 
-			$h .= '</div>';
+			// Journaux de TVA
+			if($eFinancialYear['hasVat']) {
 
-			$h .= '<div class="tab-panel'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal">';
-				$h .= $this->getTableContainer($eFarm, (string)$selectedJournalCode, $cOperation, $eFinancialYearSelected, $search, selectedJournalCode: $selectedJournalCode);
-			$h .= '</div>';
+				$journalCode = 'vat-buy';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">';
+					$h .= '<div class="text-center">';
+						$h .= s("TVA");
+						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Achats").')</span></small>';
+					$h .= '</div>';
+				$h .= '</a>';
 
-			foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
-				$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
-					$h .= $this->getTableContainer($eFarm, $journalCode, $cOperation, $eFinancialYearSelected, $search, selectedJournalCode: $selectedJournalCode);
-				$h .= '</div>';
+				$journalCode = 'vat-sell';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">';
+					$h .= '<div class="text-center">';
+						$h .= s("TVA");
+						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Ventes").')</span></small>';
+					$h .= '</div>';
+				$h .= '</a>';
+
 			}
 
 		$h .= '</div>';
+
+		return $h;
+	}
+
+	public function getJournal(
+		\farm\Farm $eFarm,
+		\Collection $cOperation,
+		\account\FinancialYear $eFinancialYearSelected,
+		?string $selectedJournalCode,
+		array $operationsVat = [],
+		\Search $search = new \Search(),
+		\Collection $cPaymentMethod = new \Collection(),
+	): string {
+
+		$h = '<div class="tab-panel'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal">';
+			$h .= $this->getTableContainer($eFarm, (string)$selectedJournalCode, $cOperation, $eFinancialYearSelected, $search, selectedJournalCode: $selectedJournalCode);
+		$h .= '</div>';
+
+		foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
+			$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
+				$h .= $this->getTableContainer($eFarm, $journalCode, $cOperation, $eFinancialYearSelected, $search, selectedJournalCode: $selectedJournalCode);
+			$h .= '</div>';
+		}
+
+		if($eFinancialYearSelected['hasVat']) {
+			$journalCode = 'vat-buy';
+			$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
+				$h .= new VatUi()->getTableContainer($eFarm, $eFinancialYearSelected, $operationsVat['buy'] ?? new \Collection(), 'buy', $search);
+			$h .= '</div>';
+
+			$journalCode = 'vat-sell';
+			$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
+				$h .= new VatUi()->getTableContainer($eFarm, $eFinancialYearSelected, $operationsVat['sell'] ?? new \Collection(), 'sell', $search);
+			$h .= '</div>';
+
+		}
 
 		$h .= $this->getBatch($eFarm, $cPaymentMethod);
 

@@ -951,7 +951,6 @@ class FarmUi {
 				'accounts' => s("Comptes"),
 				'book' => s("Grand-livre"),
 				'balance' => s("Balance comptable"),
-				'vat' => s("Journaux de TVA"),
 			},
 
 			'analyze-accounting' => match($name) {
@@ -1928,9 +1927,6 @@ class FarmUi {
 
 				$categories[] = 'book';
 				$categories[] = 'balance';
-				if($eFarm->getView('viewAccountingHasVat')) {
-					$categories[] = 'vat';
-				}
 
 				return $categories;
 
