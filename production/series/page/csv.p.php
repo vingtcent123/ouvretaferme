@@ -1,5 +1,17 @@
 <?php
 new \farm\FarmPage()
+	->read('exportTimesheet', function($data) {
+
+		$data->e->validate('canAnalyze', 'canPersonalData');
+
+		$year = GET('year', 'int');
+
+		$export = \series\CsvLib::getExportTimesheet($data->e, $year);
+		array_unshift($export, new \series\CsvUi()->getExportTimesheetHeader());
+
+		throw new CsvAction($export, 'timesheet-'.$year.'.csv');
+
+	})
 	->read('exportTasks', function($data) {
 
 		$data->e->validate('canAnalyze', 'canPersonalData');

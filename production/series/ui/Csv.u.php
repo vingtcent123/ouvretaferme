@@ -31,11 +31,30 @@ class CsvUi {
 
 	}
 
-	public function getExportTasksHeader(): array {
+	public function getExportTimesheetHeader(): array {
 
 		return [
 			'date',
 			'user',
+			'category',
+			'action',
+			'time',
+			'series_id',
+			'series_name',
+			'species',
+			'variety',
+			'harvest_quantity',
+			'harvest_unit',
+			'harvest_size',
+		];
+
+	}
+
+	public function getExportTaskHeader(): array {
+
+		return [
+			'week_planned',
+			'week_done',
 			'category',
 			'action',
 			'time',

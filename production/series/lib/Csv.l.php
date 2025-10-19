@@ -3,6 +3,74 @@ namespace series;
 
 class CsvLib {
 
+	public static function getExportTimesheet(\farm\Farm $eFarm, int $year): array {
+
+		$ccTimesheet = Timesheet::model()
+			->select([
+				'user' => ['firstName', 'lastName', 'visibility'],
+				'time',
+				'date'
+			])
+			->join(Task::model()
+				->select([
+					'task' => new \Sql('m2.id'),
+					'action' => ['name'],
+					'category' => ['name'],
+					'series' => ['name', 'mode'],
+					'plant' => ['name'],
+					'variety' => ['name'],
+					'description',
+					'harvestUser' => new \Sql('IF(harvest IS NOT NULL, IF(m2.time > 0, FLOOR(harvest * m1.time / m2.time * 100) / 100, 0), NULL)', 'float'),
+					'harvest',
+					'harvestUnit',
+					'harvestSize' => ['name']
+				]), 'm2.id = m1.task')
+			->where('m1.farm', $eFarm)
+			->where('EXTRACT(YEAR FROM date) = '.$year)
+			->getCollection(index: ['task', NULL]);
+
+		$output = [];
+
+		foreach($ccTimesheet as $cTimesheet) {
+
+			$eTimesheetFirst = $cTimesheet->first();
+
+			if($eTimesheetFirst['harvest'] !== NULL) {
+
+				$harvestUser = $cTimesheet->sum('harvestUser');
+				$harvestTotal = $eTimesheetFirst['harvest'];
+
+				if($harvestUser < $harvestTotal) {
+					$eTimesheetFirst['harvestUser'] += round($harvestTotal - $harvestUser, 2);
+				}
+
+			}
+
+			foreach($cTimesheet as $eTimesheet) {
+
+				$output[] = [
+					\util\DateUi::numeric($eTimesheet['date']),
+					($eTimesheet['user']['firstName'] === NULL) ? $eTimesheet['user']['lastName'] : $eTimesheet['user']['firstName'].' '.$eTimesheet['user']['lastName'],
+					$eTimesheet['category']['name'],
+					$eTimesheet['action']['name'],
+					\util\TextUi::csvNumber($eTimesheet['time']),
+					$eTimesheet['series']->empty() ? '' : $eTimesheet['series']['id'],
+					$eTimesheet['series']->empty() ? '' : $eTimesheet['series']['name'],
+					$eTimesheet['plant']->empty() ? '' : $eTimesheet['plant']['name'],
+					$eTimesheet['variety']->empty() ? '' : $eTimesheet['variety']['name'],
+					$eTimesheet['harvestUser'] ? \util\TextUi::csvNumber($eTimesheet['harvestUser']) : '',
+					($eTimesheet['harvestUser'] and $eTimesheet['harvestUnit']) ? \selling\UnitUi::getSingular($eTimesheet['harvestUnit']) : '',
+					$eTimesheet['harvestSize']->empty() ? '' : $eTimesheet['harvestSize']['name'],
+				];
+
+			}
+
+		}
+
+		return $output;
+
+	}
+
 	public static function getExportTasks(\farm\Farm $eFarm, int $year): array {
 
 		$ccTimesheet = Timesheet::model()

@@ -617,7 +617,10 @@ class BasketManage {
 	static transfer(target, dateId) {
 
 		const products = this.getBasket(dateId).products;
-		window.parent.location = target.dataset.url + JSON.stringify(products);
+
+		window.parent.postMessage({
+			 redirect: target.dataset.url + JSON.stringify(products)
+		},'*');
 
 	}
 

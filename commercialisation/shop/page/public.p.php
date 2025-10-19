@@ -138,6 +138,10 @@ END;
 					 otfIframeHeight$key = message.height;
 			  }
 		
+			  if (message.redirect) {
+					window.location = message.redirect;
+			  }
+		
 		},false);
 END;
 
