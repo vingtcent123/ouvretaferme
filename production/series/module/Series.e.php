@@ -6,7 +6,7 @@ class Series extends SeriesElement {
 	public function getBedStart(): ?string {
 
 		if($this['bedStartCalculated'] !== NULL) {
-			return $this->calculatedBed($this['bedStartCalculated'], $this['season'], 1);
+			return $this->calculatedBed($this['bedStartCalculated'], 1);
 		} else {
 			return NULL;
 		}
@@ -16,7 +16,7 @@ class Series extends SeriesElement {
 	public function getBedStop(): ?string {
 
 		if($this['bedStopCalculated'] !== NULL) {
-			return $this->calculatedBed($this['bedStopCalculated'], $this['season'], 7);
+			return $this->calculatedBed($this['bedStopCalculated'], 7);
 		} else {
 			return NULL;
 		}
@@ -28,9 +28,9 @@ class Series extends SeriesElement {
 		if($value === NULL) {
 			return '';
 		} else if($value < 0) {
-			return week_date_day(($this['season'] - 1).'-W'.(100 + $value), $day);
+			return week_date_day(($this['season'] - 1).'-W'.sprintf('%02d',100 + $value), $day);
 		} else if($value >= 100) {
-			return week_date_day(($this['season'] + 1).'-W'.($value - 100), $day);
+			return week_date_day(($this['season'] + 1).'-W'.sprintf('%02d', $value - 100), $day);
 		} else {
 			return week_date_day($this['season'].'-W'.sprintf('%02d', $value), $day);
 		}
