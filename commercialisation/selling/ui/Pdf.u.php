@@ -379,6 +379,7 @@ class PdfUi {
 							if($eSale['shipping']) {
 								$h .= $this->getDetailTableItem($eSale, new Item([
 									'name' => SaleUi::getShippingName(),
+									'mixedFrozen' => FALSE,
 									'product' => new Product(),
 									'quality' => NULL,
 									'number' => NULL,

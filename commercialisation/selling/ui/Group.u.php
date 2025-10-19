@@ -10,6 +10,10 @@ class GroupUi {
 
 	}
 
+	public static function link(Group $eGroup): string {
+		return '<a href="/selling/group:get?id='.$eGroup['id'].'" class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a>';
+	}
+
 	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
 
 		$d->prepend = \Asset::icon('people-fill');
@@ -57,6 +61,53 @@ class GroupUi {
 
 	}
 
+	public function getOne(Group $eGroup, \Collection $cCustomer, \Collection $cGrid, \Collection $cGroup): string {
+
+		$h = '<div class="tabs-h" id="group-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "group")').'">';
+
+			$h .= '<div class="tabs-item">';
+				$h .= '<a class="tab-item selected" data-tab="sales" onclick="Lime.Tab.select(this)">';
+					$h .= s("Clients").' <span class="tab-item-count">'.$cCustomer->count().'</span>';
+				$h .= '</a>';
+				$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
+					$h .= s("Prix personnalisés").' <span class="tab-item-count">'.$cGrid->count().'</span>';
+				$h .= '</a>';
+			$h .= '</div>';
+
+			$h .= '<div>';
+				$h .= '<div data-tab="sales" class="tab-panel selected">';
+					$h .= new CustomerUi()->getList($eGroup['farm'], $cCustomer, $cGroup, hide: ['more', 'sales', 'prices', 'actions']);
+				$h .= '</div>';
+
+				$h .= '<div data-tab="grid" class="tab-panel">';
+					$h .= new \selling\GridUi()->getGridByGroup($eGroup, $cGrid);
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getMenu(Group $eGroup, string $btn): string {
+
+		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
+		$h .= '<div class="dropdown-list">';
+
+			$h .= '<div class="dropdown-title">'.encode($eGroup['name']).'</div>';
+
+			$h .= '<a href="/selling/group:update?id='.$eGroup['id'].'" class="dropdown-item">'.s("Modifier le groupe").'</a> ';
+			$h .= '<div class="dropdown-divider"></div>';
+			$h .= '<a data-ajax="/selling/group:doDelete" post-id="'.$eGroup['id'].'" data-confirm="'.s("Voulez-vous réellement supprimer ce groupe de clients. Continuer ?").'" class="dropdown-item">'.s("Supprimer le groupe").'</a>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getManage(\farm\Farm $eFarm, \Collection $cGroup): string {
 
 		$h = '';
@@ -76,8 +127,8 @@ class GroupUi {
 					$h .= '<tr>';
 						$h .= '<th>'.self::p('name')->label.'</th>';
 						$h .= '<th>'.self::p('type')->label.'</th>';
-						$h .= '<th class="td-min-content">'.self::p('color')->label.'</th>';
 						$h .= '<th class="text-center">'.s("Clients").'</th>';
+						$h .= '<th class="text-center hide-xs-down">'.s("Prix personnalisés").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -87,30 +138,24 @@ class GroupUi {
 				foreach($cGroup as $eGroup) {
 
 					$h .= '<tr>';
-						$h .= '<td>';
-							$h .= encode($eGroup['name']);
+						$h .= '<td class="td-min-content">';
+							$h .= self::link($eGroup);
 						$h .= '</td>';
 						$h .= '<td>';
 							$h .= self::p('type')->values[$eGroup['type']];
 						$h .= '</td>';
-						$h .= '<td class="td-min-content text-center">';
-							$h .= self::getColorCircle($eGroup);
-						$h .= '</td>';
 						$h .= '<td class="text-center">';
-							$h .= '<a href="'.\farm\FarmUi::urlSellingCustomers($eFarm).'?group='.$eGroup['id'].'">';
-								$h .= $eGroup['customers'];
-							$h .= '</a> ';
+							$h .= $eGroup['customers'];
+						$h .= '</td>';
+						$h .= '<td class="text-center hide-xs-down">';
+							if($eGroup['prices'] > 0) {
+								$h .= p("{value} prix", "{value} prix", $eGroup['prices']);
+							} else {
+								$h .= '-';
+							}
 						$h .= '</td>';
 						$h .= '<td class="text-end" style="white-space: nowrap">';
-
-							$h .= '<a href="/selling/group:update?id='.$eGroup['id'].'" class="btn btn-outline-secondary">';
-								$h .= \Asset::icon('gear-fill');
-							$h .= '</a> ';
-
-							$h .= '<a data-ajax="/selling/group:doDelete" data-confirm="'.s("Voulez-vous réellement supprimer ce groupe de clients. Continuer ?").'" post-id="'.$eGroup['id'].'" class="btn btn-outline-secondary">';
-								$h .= \Asset::icon('trash-fill');
-							$h .= '</a>';
-
+							$h .= $this->getMenu($eGroup, 'btn-primary');
 						$h .= '</td>';
 					$h .= '</tr>';
 				}
@@ -120,20 +165,6 @@ class GroupUi {
 		}
 
 		return $h;
-
-	}
-
-	public static function getColorCircle(Group $eGroup, ?string $size = NULL): string {
-
-		\Asset::css('selling', 'customer.css');
-
-		$eGroup->expects(['color']);
-
-		if($eGroup['color'] !== NULL) {
-			return '<div class="customer-color-circle" style="background-color: '.$eGroup['color'].'; '.($size ? 'width: '.$size.'; height: '.$size.';' : '').'"></div>';
-		} else {
-			return '';
-		}
 
 	}
 
@@ -158,8 +189,7 @@ class GroupUi {
 		return new \Panel(
 			id: 'panel-group-create',
 			title: s("Ajouter un nouveau groupe de clients"),
-			body: $h,
-			close: 'reload'
+			body: $h
 		);
 
 	}
@@ -181,8 +211,7 @@ class GroupUi {
 		return new \Panel(
 			id: 'panel-group-update',
 			title: s("Modifier un groupe de clients"),
-			body: $h,
-			close: 'reload'
+			body: $h
 		);
 
 	}

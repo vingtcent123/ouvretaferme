@@ -8,6 +8,26 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 });
 
+new AdaptativeView('get', function($data, FarmTemplate $t) {
+
+	$t->nav = 'selling';
+	$t->subNav = 'customer';
+
+	$t->title = encode($data->e['name']);
+
+	$h = '<div class="util-action">';
+		$h .= '<h1>';
+			$h .= '<a href="'.\farm\FarmUi::urlSellingCustomersGroups($data->e['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= $t->title;
+		$h .= '</h1>';
+		$h .= new \selling\GroupUi()->getMenu($data->e, 'btn-primary');
+	$h .= '</div>';
+
+	$t->mainTitle = $h;
+
+	echo new \selling\GroupUi()->getOne($data->e, $data->cCustomer, $data->cGrid, $data->cGroup);
+});
+
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les groupes de clients de {value}", $data->eFarm['name']);

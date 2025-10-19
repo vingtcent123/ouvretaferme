@@ -87,19 +87,20 @@ Event:
 
 Grid:
   id: serial32
-  customer: selling\Customer
   farm: farm\Farm
+  customer: ?selling\Customer
+  group: ?selling\Group
   product: selling\Product
-  price: ?decimal(8, 2, 0.0, null)
+  price: decimal(8, 2, 0.0, null)
   priceInitial: ?decimal(8, 2, 0.0, null)
-  packaging: ?decimal(6, 2, 0.01, null)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   INDEX: [
     ["product"]
   ]
   UNIQUE: [
-    ["customer", "product"]
+    ["customer", "product"],
+    ["group", "product"]
   ]
 
 Group:

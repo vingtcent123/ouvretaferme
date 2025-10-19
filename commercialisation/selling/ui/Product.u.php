@@ -1,8 +1,6 @@
 <?php
 namespace selling;
 
-use util\DateUi;
-
 class ProductUi {
 
 	public function __construct() {
@@ -141,7 +139,7 @@ class ProductUi {
 					}
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Ventes").'</th>';
-					$h .= '<th colspan="2" class="text-center highlight">'.s("Grille tarifaire").'</th>';
+					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix personnalisés").'</th>';
 					if($eFarm->getSelling('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
@@ -218,11 +216,9 @@ class ProductUi {
 
 							$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 
-							$field = 'privatePrice';
 							if($eProduct['privatePrice'] !== NULL) {
 								$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
 								if($eProduct['privatePriceInitial'] !== NULL) {
-									$field = 'privatePriceDiscount';
 									$h .= new PriceUi()->priceWithoutDiscount($eProduct['privatePriceInitial'], unit: $taxes);
 								}
 							} else if($eProduct['proPrice'] !== NULL) {
@@ -233,7 +229,7 @@ class ProductUi {
 								$value = \Asset::icon('question');
 							}
 
-							$h .= $eProduct->quick($field, $value);
+							$h .= $eProduct->quick('privatePrice', $value);
 
 						}
 					$h .= '</td>';
@@ -245,11 +241,9 @@ class ProductUi {
 
 							$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
 
-							$field = 'proPrice';
 							if($eProduct['proPrice']) {
 								$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
 								if($eProduct['proPriceInitial'] !== NULL) {
-									$field = 'proPriceDiscount';
 									$h .= new PriceUi()->priceWithoutDiscount($eProduct['proPriceInitial'], unit: $taxes);
 								}
 							} else if($eProduct['privatePrice']) {
@@ -260,7 +254,7 @@ class ProductUi {
 								$value = \Asset::icon('question');
 							}
 
-							$h .= $eProduct->quick($field, $value);
+							$h .= $eProduct->quick('proPrice', $value);
 
 						}
 					$h .= '</td>';
@@ -596,7 +590,7 @@ class ProductUi {
 				if($eProduct['composition']) {
 					$h .= '<a class="tab-item '.($eProduct['composition'] ? 'selected' : '').'" data-tab="product-composition" onclick="Lime.Tab.select(this)">'.s("Composition").'</a>';
 				}
-				$h .= '<a class="tab-item '.($eProduct['composition'] ? '' : 'selected').'" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Grille tarifaire").'</a>';
+				$h .= '<a class="tab-item '.($eProduct['composition'] ? '' : 'selected').'" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Prix").'</a>';
 				$h .= '<a class="tab-item" data-tab="product-sales" onclick="Lime.Tab.select(this)">'.s("Dernières ventes").'</a>';
 			$h .= '</div>';
 
@@ -661,7 +655,7 @@ class ProductUi {
 
 			$h .= '<div class="product-item-presentation">';
 
-				$h .= '<h3>'.s("Particuliers").'</h3>';
+				$h .= '<h3>'.s("Vente aux particuliers").'</h3>';
 
 				$h .= '<dl class="util-presentation util-presentation-1">';
 
@@ -671,11 +665,9 @@ class ProductUi {
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
-						$field = 'privatePrice';
 						if($eProduct['privatePrice']) {
 							if($eProduct['privatePriceInitial']) {
 								$value = \util\TextUi::money($eProduct['privatePriceInitial']);
-								$field = 'privatePriceInitial';
 							} else {
 								$value = \util\TextUi::money($eProduct['privatePrice']);
 							}
@@ -689,9 +681,9 @@ class ProductUi {
 							$value = '/';
 						}
 						if($eProduct['privatePrice'] and $eProduct['privatePriceInitial']) {
-							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick($field, $value), isSmall: FALSE);
+							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick('privatePrice', $value), isSmall: FALSE);
 						} else {
-							$h .= $eProduct->quick($field, $value);
+							$h .= $eProduct->quick('privatePrice', $value);
 						}
 					$h .= '</dd>';
 
@@ -702,7 +694,7 @@ class ProductUi {
 						$h .= '<dd>';
 							$value = \util\TextUi::money($eProduct['privatePrice']);
 							$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
-							$h .= $eProduct->quick('privatePriceDiscount', $value);
+							$h .= $eProduct->quick('privatePrice', $value);
 						$h .= '</dd>';
 
 					}
@@ -723,7 +715,7 @@ class ProductUi {
 
 			$h .= '<div class="product-item-presentation">';
 
-				$h .= '<h3>'.s("Pros").'</h3>';
+				$h .= '<h3>'.s("Vente aux professionnels").'</h3>';
 
 				$h .= '<dl class="util-presentation util-presentation-1">';
 
@@ -733,11 +725,9 @@ class ProductUi {
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
-						$field = 'proPrice';
 						if($eProduct['proPrice']) {
 							if($eProduct['proPriceInitial']) {
 								$value = \util\TextUi::money($eProduct['proPriceInitial']);
-								$field = 'proPriceInitial';
 							} else {
 								$value = \util\TextUi::money($eProduct['proPrice']);
 							}
@@ -751,9 +741,9 @@ class ProductUi {
 							$value = '/';
 						}
 						if($eProduct['proPrice'] and $eProduct['proPriceInitial']) {
-							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick($field, $value), isSmall: FALSE);
+							$h .= new PriceUi()->priceWithoutDiscount($eProduct->quick('proPrice', $value), isSmall: FALSE);
 						} else {
-							$h .= $eProduct->quick($field, $value);
+							$h .= $eProduct->quick('proPrice', $value);
 						}
 					$h .= '</dd>';
 
@@ -765,7 +755,7 @@ class ProductUi {
 						$h .= '<dd>';
 							$value = \util\TextUi::money($eProduct['proPrice']);
 							$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
-							$h .= $eProduct->quick('proPriceDiscount', $value);
+							$h .= $eProduct->quick('proPrice', $value);
 						$h .= '</dd>';
 
 					}
@@ -996,7 +986,7 @@ class ProductUi {
 
 	private function getFieldPrices(\util\FormUi $form, Product $eProduct, string $for): string {
 
-		$h = '<h3>'.s("Grille tarifaire").'</h3>';
+		$h = '<h3>'.s("Prix").'</h3>';
 
 		if($eProduct['composition']) {
 
@@ -1007,6 +997,8 @@ class ProductUi {
 		} else {
 			$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
 		}
+
+		$h .= '<div class="mb-2">'.\Asset::icon('exclamation-circle').' '.s("Les prix de base que vous donnez à vos produits ne sont pas prioritaires par rapport aux prix indiqués dans les catalogues et aux prix personnalisés de vos clients (<link>en savoir plus</link>).", ['link' => '<a href="/doc/selling:pricing">']).'</div>';
 
 		$h .= $form->dynamicGroup($eProduct, 'vat');
 		$h .= '<br/>';
@@ -1042,38 +1034,12 @@ class ProductUi {
 				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'pro') : ''
 			);
 
-			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
-			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
-			$taxesAndUnit = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
-
-			$hasDiscountPrice = ($eProduct['proPriceInitial'] ?? NULL) !== NULL;
-
-			$inputGroup = $form->inputGroup(
-				$form->dynamicField($eProduct, 'proPrice', function($d) use($eProduct, $form, $hasDiscountPrice) {
-					if($hasDiscountPrice) {
-						$d->default = fn() => $eProduct['proPriceInitial'];
-					}
-				}).
-				$taxesAndUnit
-			);
-			$discountAddon = new PriceUi()->getDiscountLink(($eProduct['id'] ?? '').'-pro', $hasDiscountPrice);
-
 			$h .= $form->group(
 				s("Prix de base"),
-				content: $inputGroup.$discountAddon,
-				attributes: ['wrapper' => 'proTaxes proPrice proOrPrivatePrice']
+				content: $form->dynamicField($eProduct, 'proPrice')
 			);
 
-			$h .= $form->group(
-				content: $form->inputGroup(
-					$form->dynamicField($eProduct, 'proPriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
-						if($hasDiscountPrice) {
-							$d->default = fn() => $eProduct['proPrice'];
-						}
-					})
-				),
-				attributes: ['wrapper' => 'proPriceDiscount', 'data-price-discount' => ($eProduct['id'] ?? '').'-pro'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
-			);
+			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
 			$h .= $form->group(
 				s("Colis de base"),
@@ -1112,37 +1078,14 @@ class ProductUi {
 				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'private') : ''
 			);
 
-			$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
-			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
-
-			$hasDiscountPrice = ($eProduct['privatePriceInitial'] ?? NULL) !== NULL;
-
-			$inputGroup = $form->inputGroup(
-				$form->dynamicField($eProduct, 'privatePrice', function($d) use($eProduct, $form, $hasDiscountPrice) {
-					if($hasDiscountPrice) {
-						$d->default = fn() => $eProduct['privatePriceInitial'];
-					}
-				}).
-				'<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>',
-			);
-			$discountAddon = new PriceUi()->getDiscountLink(($eProduct['id'] ?? '').'-private', $hasDiscountPrice);
-
 			$h .= $form->group(
 				s("Prix de base"),
-				content: $inputGroup.$discountAddon,
-				attributes: ['wrapper' => 'privatePrice proOrPrivatePrice']
-			);
-
-			$h .= $form->group(
-				content: $form->dynamicField($eProduct, 'privatePriceDiscount', function($d) use($eProduct, $form, $hasDiscountPrice) {
-					if($hasDiscountPrice) {
-						$d->default = fn() => $eProduct['privatePrice'];
-					}
-				}),
-				attributes: ['wrapper' => 'privatePriceDiscount', 'data-price-discount' => ($eProduct['id'] ?? '').'-private'] + ($hasDiscountPrice ? [] : ['class' => 'hide']),
+				content: $form->dynamicField($eProduct, 'privatePrice')
 			);
 
 			if($for === 'update') {
+
+				$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
 				$h .= $form->group(
 					self::p('privateStep')->label,
@@ -1227,8 +1170,8 @@ class ProductUi {
 				$d->values = [
 					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale").'  <span class="color-muted"><small>'.s("Fruits, légumes, fleurs, plants...").'</small></span>',
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
-					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, boissons, confitures...").'</small></span>',
-					Product::PROCESSED_PRODUCT => s("Hygiène, santé, entretien ou cosmétique").'  <span class="color-muted"><small>'.s("Savons, lessives...").'</small></span>',
+					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, confitures...").'</small></span>',
+					Product::PROCESSED_PRODUCT => s("Produit non alimentaire").'  <span class="color-muted"><small>'.s("Savons, lessives...").'</small></span>',
 				];
 				break;
 
@@ -1267,7 +1210,6 @@ class ProductUi {
 				];
 				break;
 
-			case 'privatePrice' :
 			case 'privateStep' :
 				$d->attributes += [
 					'disabled' => function(\util\FormUi $form, Product $e) {
@@ -1276,34 +1218,49 @@ class ProductUi {
 				];
 				break;
 
-			case 'privatePriceDiscount':
-				$d->field = function(\util\FormUi $form, Product $eProduct) {
-					return $form->number(
-						$this->name,
-						($eProduct['privatePriceInitial'] ?? NULL) !== NULL ? $eProduct['privatePrice'] : NULL,
-						['step' => 0.01, 'disabled' => $eProduct['private'] ? NULL : 'disabled'],
-					);
-				};
-				$d->groupLabel = FALSE;
-				$d->group = function(Product $e) {
-					return ['data-price-discount' => $e['product']['id'], 'class' => $e['privatePriceInitial'] !== NULL ? '' : 'hide'];
-				};
-				$d->prepend = s("Prix remisé");
-				$d->append = function(\util\FormUi $form, Product $eProduct) {
-					if($eProduct->isQuick()) {
-						return NULL;
-					}
-					$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRIVATE) : '';
-					$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
-					$h = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
+			case 'privatePrice' :
 
-					$trash = new PriceUi()->getDiscountTrashAddon(($eProduct['id'] ?? '').'-private');
-					$h .= '<div class="input-group-addon">'.$trash.'</div>';
+				$d->field = function(\util\FormUi $form, Product $e) {
+
+					$taxes = $e['farm']->getSelling('hasVat') ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
+					$unit = ($e['unit']->notEmpty() ? encode($e['unit']['singular']) : self::p('unit')->placeholder);
+					$suffix = '€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span>';
+
+					$price = ($e['privatePriceInitial'] ?? NULL) !== NULL ? $e['privatePriceInitial'] : $e['privatePrice'] ?? '';
+					$priceDiscount = ($e['privatePriceInitial'] ?? NULL) !== NULL ? $e['privatePrice'] ?? '' : '';
+
+					$identifier = ($e['id'] ?? '').'-private';
+
+					$h = $form->inputGroup(
+						$form->number('privatePrice', $price, [
+							'step' => 0.01,
+							'onfocus' => 'this.select()'
+						]).
+						$form->addon($suffix),
+					);
+					$h .= new PriceUi()->getDiscountLink($identifier, hasDiscountPrice: empty($priceDiscount) === FALSE);
+
+
+					$h .= $form->inputGroup(
+						$form->addon(s("Prix remisé")).
+						$form->number('privatePriceDiscount', $priceDiscount, ['step' => 0.01]).
+						$form->addon($suffix).
+						$form->addon(new PriceUi()->getDiscountTrashAddon($identifier)),
+						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $identifier, 'data-wrapper' => 'privatePriceDiscount']
+					);
+
 					return $h;
+
 				};
+
+				$d->attributes += [
+					'wrapper' => 'privatePrice proOrPrivatePrice',
+					'disabled' => function(\util\FormUi $form, Product $e) {
+						return $e['private'] ? NULL : 'disabled';
+					}
+				];
 				break;
 
-			case 'proPrice' :
 			case 'proPackaging' :
 			case 'proStep' :
 				$d->attributes += [
@@ -1313,33 +1270,47 @@ class ProductUi {
 				];
 				break;
 
-			case 'proPriceDiscount':
-				$d->field = function(\util\FormUi $form, Product $eProduct) {
-					return $form->number(
-						$this->name,
-						($eProduct['proPriceInitial'] ?? NULL) !== NULL ? $eProduct['proPrice'] : NULL,
-						['step' => 0.01, 'disabled' => $eProduct['pro'] ? NULL : 'disabled'],
+			case 'proPrice' :
+
+				$d->field = function(\util\FormUi $form, Product $e) {
+
+					$taxes = $e['farm']->getSelling('hasVat') ? CustomerUi::getTaxes(Customer::PRO) : '';
+					$unit = ($e['unit']->notEmpty() ? encode($e['unit']['singular']) : self::p('unit')->placeholder);
+					$suffix = '€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span>';
+
+					$price = ($e['proPriceInitial'] ?? NULL) !== NULL ? $e['proPriceInitial'] : $e['proPrice'] ?? '';
+					$priceDiscount = ($e['proPriceInitial'] ?? NULL) !== NULL ? $e['proPrice'] ?? '' : '';
+
+					$identifier = ($e['id'] ?? '').'-pro';
+
+					$h = $form->inputGroup(
+						$form->number('proPrice', $price, [
+							'step' => 0.01,
+							'onfocus' => 'this.select()'
+						]).
+						$form->addon($suffix),
 					);
-				};
-				$d->groupLabel = FALSE;
-				$d->group = function(Product $e) {
-					return ['data-price-discount' => $e['product']['id'], 'class' => $e['proPriceInitial'] !== NULL ? '' : 'hide'];
-				};
-				$d->prepend = s("Prix remisé");
-				$d->append = function(\util\FormUi $form, Product $eProduct) {
-					if($eProduct->isQuick()) {
-						return NULL;
-					}
+					$h .= new PriceUi()->getDiscountLink($identifier, hasDiscountPrice: empty($priceDiscount) === FALSE);
 
-					$taxes = $eProduct['farm']->getSelling('hasVat') ? '/ '.CustomerUi::getTaxes(Customer::PRO) : '';
-					$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
-					$h = '<div class="input-group-addon">€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span></div>';
 
-					$trash = new PriceUi()->getDiscountTrashAddon(($eProduct['id'] ?? '').'-pro');
-					$h .= '<div class="input-group-addon">'.$trash.'</div>';
+					$h .= $form->inputGroup(
+						$form->addon(s("Prix remisé")).
+						$form->number('proPriceDiscount', $priceDiscount, ['step' => 0.01]).
+						$form->addon($suffix).
+						$form->addon(new PriceUi()->getDiscountTrashAddon($identifier)),
+						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $identifier, 'data-wrapper' => 'proPriceDiscount']
+					);
 
 					return $h;
+
 				};
+
+				$d->attributes += [
+					'wrapper' => 'proPrice privateOrProPrice',
+					'disabled' => function(\util\FormUi $form, Product $e) {
+						return $e['pro'] ? NULL : 'disabled';
+					}
+				];
 				break;
 
 			case 'quality' :

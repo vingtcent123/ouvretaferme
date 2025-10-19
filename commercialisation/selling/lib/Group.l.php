@@ -72,6 +72,13 @@ class GroupLib extends GroupCrud {
 
 	public static function getForManage(\farm\Farm $eFarm): \Collection|Group {
 
+		Group::model()
+			->select([
+				'prices' => Grid::model()
+					->group(['group'])
+					->delegateProperty('group', new \Sql('COUNT(*)', 'int'), fn($value) => $value ?? 0)
+			]);
+
 		$cGroup = self::getByFarm($eFarm);
 
 		foreach($cGroup as $eGroup) {

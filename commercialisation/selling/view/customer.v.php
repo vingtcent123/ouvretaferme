@@ -8,8 +8,8 @@ new AdaptativeView('/client/{id}', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \selling\CustomerUi()->displayTitle($data->e);
 
-	echo new \selling\CustomerUi()->display($data->e);
-	echo new \selling\CustomerUi()->getTabs($data->e, $data->cSaleTurnover, $data->cGrid, $data->cSale, $data->cEmail, $data->cInvoice, $data->cPaymentMethod);
+	echo new \selling\CustomerUi()->getOne($data->e);
+	echo new \selling\CustomerUi()->getTabs($data->e, $data->cSaleTurnover, $data->cGrid, $data->cGridGroup, $data->cSale, $data->cEmail, $data->cInvoice, $data->cPaymentMethod);
 
 });
 
@@ -32,14 +32,6 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \selling\CustomerUi()->update($data->e);
-});
-
-new AdaptativeView('updateGrid', function($data, PanelTemplate $t) {
-	return new \selling\GridUi()->updateByCustomer($data->e, $data->cProduct);
-});
-
-new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {
-	$t->js()->moveHistory(-1);
 });
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {

@@ -1231,7 +1231,7 @@ h1 .util-counter {
 	display: inline-block;
 	padding: calc(0.375rem / 2) 0.375rem;
 	border-radius: calc(var(--radius) / 2);
-	color: white;
+	color: white !important;
 }
 
 a.util-badge {

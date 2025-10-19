@@ -5328,10 +5328,14 @@ abstract class ModulePage extends Page {
 
 			$property = POST('property');
 
-			if(in_array($property, $propertiesAllowed) === FALSE) {
+			if(
+				in_array($property, $propertiesAllowed, TRUE) === FALSE and
+				array_key_exists($property, $propertiesAllowed) === FALSE
+			) {
 				throw new NotAllowedAction('Property '.$this->module.'::'.$property.' not allowed for quick update');
 			}
 
+			$data->property = $property;
 			$data->e = $this->element->call($this, $data);
 
 			if($data->e === NULL) {
@@ -5353,9 +5357,11 @@ abstract class ModulePage extends Page {
 				$callbacks[$property]($data);
 			}
 
-			throw new JsonAction([
-				'field' => new \util\FormUi()->quick($data->e, $property)
-			]);
+			throw new ViewAction($data, view: new JsonView(NULL, function($data, AjaxTemplate $t) {
+
+				$t->push('field', new \util\FormUi()->quick($data->e, $data->property));
+
+			}));
 
 		});
 
@@ -5363,7 +5369,10 @@ abstract class ModulePage extends Page {
 
 			$property = POST('property');
 
-			if(in_array($property, $propertiesAllowed) === FALSE) {
+			if(
+				in_array($property, $propertiesAllowed, TRUE) === FALSE and
+				array_key_exists($property, $propertiesAllowed) === FALSE
+			) {
 				throw new NotAllowedAction('Property '.$this->module.'::'.$property.' not allowed for quick update');
 			}
 
@@ -5386,8 +5395,9 @@ abstract class ModulePage extends Page {
 
 			$fw = new \FailWatch();
 
+			$build = in_array($property, $propertiesAllowed, TRUE) ? [$property] : $propertiesAllowed[$property];
 			$properties = new \Properties('update');
-			$data->e->build([$property], $_POST, $properties);
+			$data->e->build($build, $_POST, $properties);
 			$fw->validate();
 
 			($this->module.'Lib')::update($data->e, $properties->getBuilt());

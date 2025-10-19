@@ -871,7 +871,8 @@ class ViewAction extends Action {
 
 	public function __construct(
 		private ?stdClass $data = NULL,
-		protected ?string $path = NULL
+		protected ?string $path = NULL,
+		protected ?View $view = NULL,
 	) {
 
 		if($this->data === NULL) {
@@ -890,61 +891,73 @@ class ViewAction extends Action {
 
 	public function run(): void {
 
-		if($this->path === NULL) {
-
-			$request = Page::getRequest();
-
-			$this->viewFile = Package::getFileFromUri($request, 'view');
-			$this->viewName = Page::getName();
-
+		if($this->view !== NULL) {
+			$view = $this->view;
 		} else {
 
-			if(strpos($this->path, ':') === 0) {
+			if($this->path === NULL) {
 
 				$request = Page::getRequest();
 
 				$this->viewFile = Package::getFileFromUri($request, 'view');
-				$this->viewName = substr($this->path, 1);
+				$this->viewName = Page::getName();
 
 			} else {
 
-				if(strpos($this->path, ':') !== FALSE) {
+				if(strpos($this->path, ':') === 0) {
 
-					$request = strstr($this->path, ':', TRUE);
+					$request = Page::getRequest();
 
 					$this->viewFile = Package::getFileFromUri($request, 'view');
-					$this->viewName = substr($this->path, strpos($this->path, ':') + 1);
+					$this->viewName = substr($this->path, 1);
 
 				} else {
 
-					$request = $this->path;
+					if(strpos($this->path, ':') !== FALSE) {
 
-					$this->viewFile = Package::getFileFromUri($request, 'view');
-					$this->viewName = 'index';
+						$request = strstr($this->path, ':', TRUE);
+
+						$this->viewFile = Package::getFileFromUri($request, 'view');
+						$this->viewName = substr($this->path, strpos($this->path, ':') + 1);
+
+					} else {
+
+						$request = $this->path;
+
+						$this->viewFile = Package::getFileFromUri($request, 'view');
+						$this->viewName = 'index';
+
+					}
 
 				}
 
 			}
 
+			if($this->viewFile === NULL) {
+
+				throw new Exception("View '".$this->path."' does not exist");
+
+			} else {
+
+				require_once $this->viewFile;
+
+			}
+
+			if($this->gzip) {
+				ob_start('ob_gzhandler');
+			} else {
+				ob_start();
+			}
+
+			$view = View::get($this->viewName, $this);
+
 		}
 
-		if($this->viewFile === NULL) {
+		$this->render($view);
 
-			throw new Exception("View '".$this->path."' does not exist");
+	}
 
-		} else {
-
-			require_once $this->viewFile;
-
-		}
-
-		if($this->gzip) {
-			ob_start('ob_gzhandler');
-		} else {
-			ob_start();
-		}
-
-		$view = View::get($this->viewName, $this);
+	public function render(View $view): void {
 
 		if($this->hasContentType() === FALSE) {
 			$this->setContentType($view->getContentType());

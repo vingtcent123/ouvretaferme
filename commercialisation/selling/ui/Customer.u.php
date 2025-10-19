@@ -34,7 +34,7 @@ class CustomerUi {
 
 	}
 
-	public static function getType(Customer|Sale $eCustomer): string {
+	public static function getType(Customer|Sale|Group $eCustomer): string {
 
 		return match($eCustomer['type']) {
 
@@ -163,7 +163,7 @@ class CustomerUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, \Collection $cGroup, ?int $nCustomer = NULL, \Search $search = new \Search(), ?int $page = NULL) {
+	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, \Collection $cGroup, ?int $nCustomer = NULL, \Search $search = new \Search(), array $hide = [], ?int $page = NULL) {
 
 		if($cCustomer->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucun client à afficher.").'</div>';
@@ -187,22 +187,28 @@ class CustomerUi {
 						$label = s("Nom");
 						$h .= ($search ? $search->linkSort('lastName', $label) : $label);
 					$h .= '</th>';
-					$h .= '<th colspan="2" class="text-center hide-xs-down highlight">'.s("Ventes").'</th>';
-					$h .= '<th rowspan="2" class="customer-item-grid">'.s("Grille tarifaire").'</th>';
+					if(in_array('sales', $hide) === FALSE) {
+						$h .= '<th colspan="2" class="text-center hide-xs-down highlight">'.s("Ventes").'</th>';
+					}
+					if(in_array('prices', $hide) === FALSE) {
+						$h .= '<th rowspan="2" class="customer-item-grid">'.s("Prix personnalisés").'</th>';
+					}
 					$h .= '<th rowspan="2" class="customer-item-contact">'.s("Contact").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
-					$h .= '<th rowspan="2"></th>';
+					if(in_array('actions', $hide) === FALSE) {
+						$h .= '<th rowspan="2"></th>';
+					}
 				$h .= '</tr>';
-				$h .= '<tr>';
-					$h .= '<th class="text-end hide-xs-down highlight-stick-right">'.$year.'</th>';
-					$h .= '<th class="text-end hide-xs-down customer-item-year-before highlight-stick-left">'.$yearBefore.'</th>';
-				$h .= '</tr>';
+				if(in_array('sales', $hide) === FALSE) {
+					$h .= '<tr>';
+						$h .= '<th class="text-end hide-xs-down highlight-stick-right">'.$year.'</th>';
+						$h .= '<th class="text-end hide-xs-down customer-item-year-before highlight-stick-left">'.$yearBefore.'</th>';
+					$h .= '</tr>';
+				}
 			$h .= '</thead>';
 			$h .= '<tbody>';
 
 				foreach($cCustomer as $eCustomer) {
-
-					$eSaleTotal = $eCustomer['eSaleTotal'];
 
 					$batch = [];
 
@@ -247,8 +253,9 @@ class CustomerUi {
 									$h .= '</div>';
 
 								$h .= '</div>';
+
 								$h .= '<div class="customer-item-label">';
-									if($eCustomer['invite']->notEmpty()) {
+									if(in_array('actions', $hide) === FALSE and $eCustomer['invite']->notEmpty()) {
 										$h .= '<span class="util-badge bg-primary">'.\Asset::icon('person-fill').' '.s("invitation envoyée").'</span> ';
 									}
 									$h .= $this->getGroups($eCustomer);
@@ -258,31 +265,41 @@ class CustomerUi {
 
 						$h .= '</td>';
 
-						$h .= '<td class="text-end hide-xs-down highlight-stick-right">';
-							if($eSaleTotal->notEmpty() and $eSaleTotal['year']) {
-								$amount = \util\TextUi::money($eSaleTotal['year'], precision: 0);
-								$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
-							} else {
-								$h .= '-';
-							}
-						$h .= '</td>';
+						if(in_array('sales', $hide) === FALSE) {
 
-						$h .= '<td class="text-end hide-xs-down customer-item-year-before highlight-stick-left">';
-							if($eSaleTotal->notEmpty() and $eSaleTotal['yearBefore']) {
-								$amount = \util\TextUi::money($eSaleTotal['yearBefore'], precision: 0);
-								$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
-							} else {
-								$h .= '-';
-							}
-						$h .= '</td>';
+							$eSaleTotal = $eCustomer['eSaleTotal'];
 
-						$h .= '<td class="customer-item-grid">';
-							if($eCustomer['prices'] > 0) {
-								$h .= p("{value} prix", "{value} prix", $eCustomer['prices']);
-							} else {
-								$h .= '-';
-							}
-						$h .= '</td>';
+							$h .= '<td class="text-end hide-xs-down highlight-stick-right">';
+								if($eSaleTotal->notEmpty() and $eSaleTotal['year']) {
+									$amount = \util\TextUi::money($eSaleTotal['year'], precision: 0);
+									$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
+								} else {
+									$h .= '-';
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="text-end hide-xs-down customer-item-year-before highlight-stick-left">';
+								if($eSaleTotal->notEmpty() and $eSaleTotal['yearBefore']) {
+									$amount = \util\TextUi::money($eSaleTotal['yearBefore'], precision: 0);
+									$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
+								} else {
+									$h .= '-';
+								}
+							$h .= '</td>';
+
+						}
+
+						if(in_array('prices', $hide) === FALSE) {
+
+							$h .= '<td class="customer-item-grid">';
+								if($eCustomer['prices'] > 0) {
+									$h .= p("{value} prix", "{value} prix", $eCustomer['prices']);
+								} else {
+									$h .= '-';
+								}
+							$h .= '</td>';
+
+						}
 
 						$h .= '<td class="customer-item-contact">';
 							if($eCustomer['phone']) {
@@ -298,9 +315,11 @@ class CustomerUi {
 							$h .= $this->toggle($eCustomer);
 						$h .= '</td>';
 
-						$h .= '<td class="customer-item-actions">';
-							$h .= $this->getUpdate($eCustomer, 'btn-outline-secondary');
-						$h .= '</td>';
+						if(in_array('actions', $hide) === FALSE) {
+							$h .= '<td class="customer-item-actions">';
+								$h .= $this->getUpdate($eCustomer, 'btn-outline-secondary');
+							$h .= '</td>';
+						}
 
 					$h .= '</tr>';
 
@@ -405,7 +424,7 @@ class CustomerUi {
 
 	}
 
-	public function display(Customer $eCustomer): string {
+	public function getOne(Customer $eCustomer): string {
 
 		$eCustomer->expects(['invite']);
 
@@ -471,8 +490,18 @@ class CustomerUi {
 						$h .= '</dd>';
 
 					}
-					$h .= '<dt>'.s("Remise commerciale").'</dt>';
-					$h .= '<dd>'.($eCustomer['discount'] > 0 ? s("{value} %", $eCustomer['discount']) : '').'</dd>';
+
+					if($eCustomer['discount'] > 0) {
+						$h .= '<dt>'.s("Remise commerciale").'</dt>';
+						$h .= '<dd>'.s("{value} %", $eCustomer['discount']).'</dd>';
+					}
+
+					if($eCustomer['groups']) {
+						$h .= '<dt>'.p("Groupe", "Groupes", count($eCustomer['groups'])).'</dt>';
+						$h .= '<dd>';
+							$h .= $this->getGroups($eCustomer);
+						$h .= '</dd>';
+					}
 				$h .= '</dl>';
 			$h .= '</div>';
 
@@ -484,20 +513,23 @@ class CustomerUi {
 
 	}
 
-	public function getTabs(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
+	public function getTabs(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cGridGroup, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
 
 		$h = '<div class="tabs-h" id="customer-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "sales")').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="sales" onclick="Lime.Tab.select(this)">';
-					$h .= s("Ventes");
+					$h .= s("Ventes").' <span class="tab-item-count">'.$cSale->count().'</span>';
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
-					$h .= s("Grille tarifaire");
+					$h .= s("Prix personnalisés").' <span class="tab-item-count">'.$cGrid->count().'</span>';
+					if($cGridGroup->count() > 0) {
+						$h .= '  +<span class="tab-item-count">'.$cGridGroup->count().'</span>';
+					}
 				$h .= '</a>';
 				if($cInvoice->notEmpty()) {
 					$h .= '<a class="tab-item" data-tab="invoices" onclick="Lime.Tab.select(this)">';
-						$h .= s("Factures");
+						$h .= s("Factures").' <span class="tab-item-count">'.$cInvoice->count().'</span>';
 					$h .= '</a>';
 				}
 				if($eCustomer['contact']->notEmpty()) {
@@ -526,7 +558,7 @@ class CustomerUi {
 				$h .= '</div>';
 
 				$h .= '<div data-tab="grid" class="tab-panel">';
-					$h .= new \selling\GridUi()->getGridByCustomer($eCustomer, $cGrid);
+					$h .= new \selling\GridUi()->getGridByCustomer($eCustomer, $cGrid, $cGridGroup);
 				$h .= '</div>';
 
 				if($cInvoice->notEmpty()) {
@@ -580,10 +612,6 @@ class CustomerUi {
 					$eCustomer['invite']->empty()
 				) {
 					$h .= '<a href="/farm/invite:createCustomer?customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Inviter à créer un compte client").'</a>';
-				}
-
-				if($eCustomer['type'] === Customer::PRO) {
-					$h .= '<a href="/selling/customer:updateGrid?id='.$eCustomer['id'].'" class="dropdown-item">'.s("Personnaliser la grille tarifaire").'</a>';
 				}
 
 			}
@@ -838,7 +866,8 @@ class CustomerUi {
 		$h = '';
 
 		foreach($eCustomer['cGroup?']() as $eGroup) {
-			$h .= ' <a href="'.\farm\FarmUi::urlSellingCustomers($eCustomer['farm']).'?group='.$eGroup['id'].'" class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a> ';
+			$eGroup['farm'] = $eCustomer['farm'];
+			$h .= ' '.GroupUi::link($eGroup).' ';
 		}
 
 		return $h;

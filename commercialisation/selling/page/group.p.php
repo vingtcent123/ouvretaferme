@@ -17,6 +17,19 @@ new \selling\GroupPage(function($data) {
 	->doCreate(fn($data) => throw new ViewAction($data));
 
 new \selling\GroupPage()
+	->read('get', function($data) {
+
+		$data->e['farm'] = \farm\FarmLib::getById($data->e['farm']);
+
+		$data->cGrid = \selling\GridLib::getByGroup($data->e);
+		$data->cCustomer = \selling\CustomerLib::getByGroup($data->e);
+		$data->cGroup = \selling\GroupLib::getByFarm($data->e['farm']);
+
+		$data->eFarm = $data->e['farm'];
+
+		throw new ViewAction($data);
+
+	})
 	->update()
 	->doUpdate(fn($data) => throw new ViewAction($data))
 	->write('doIncrementPosition', function($data) {

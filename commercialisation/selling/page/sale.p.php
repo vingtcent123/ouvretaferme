@@ -66,8 +66,10 @@ new \selling\SalePage()
 				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type'], excludeComposition: $data->e->isComposition()) :
 				\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'], public: TRUE)->getColumnCollection('product');
 
-			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
+			$data->e['nGrid'] = \selling\ProductLib::generateItemsByCustomer($data->e['cProduct'], $data->e['customer'], $data->e);
 
+		} else {
+			$data->e['nGrid'] = 0;
 		}
 
 		throw new \ViewAction($data);
@@ -101,6 +103,9 @@ new Page(function($data) {
 				$eCustomer = $cCustomer->first();
 			}
 
+			$sourceType = 'group';
+			$sourceValue = $eGroup;
+
 		} else if(get_exists('customers')) {
 
 			$cCustomer = \selling\CustomerLib::getByIds(GET('customers', 'array'));
@@ -111,6 +116,9 @@ new Page(function($data) {
 				$eCustomer = $cCustomer->first();
 			}
 
+			$sourceType = 'customers';
+			$sourceValue = $cCustomer;
+
 		} else if(get_exists('customer')) {
 
 			$eCustomer = \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm);
@@ -119,6 +127,12 @@ new Page(function($data) {
 				$cCustomer[] = $eCustomer;
 			}
 
+			$sourceType = 'customer';
+			$sourceValue = $eCustomer;
+
+		} else {
+			$sourceType = NULL;
+			$sourceValue = NULL;
 		}
 
 		if(
@@ -150,13 +164,28 @@ new Page(function($data) {
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
 
 			$data->e['cProduct'] = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
-			\selling\ProductLib::applyItemsForSale($data->e['cProduct'], $data->e);
 
 			$data->cGroup = new Collection();
 
 		} else {
 			$data->cGroup = \selling\GroupLib::getByFarm($data->eFarm);
 		}
+
+		$data->e['gridSource'] = $sourceType;
+		$data->e['gridValue'] = $sourceValue;
+
+		switch($sourceType) {
+
+			case 'customer' :
+				$data->e['nGrid'] = \selling\ProductLib::generateItemsByCustomer($data->e['cProduct'], $sourceValue, $data->e);
+				break;
+
+			case 'group' :
+				$data->e['nGrid'] = \selling\ProductLib::generateItemsByGroup($data->e['cProduct'], $sourceValue, $data->e);
+				break;
+
+		}
+
 
 		throw new \ViewAction($data);
 

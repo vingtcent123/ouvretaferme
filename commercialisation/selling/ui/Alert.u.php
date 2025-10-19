@@ -21,7 +21,9 @@ class AlertUi {
 			'Customer::firstName.empty' => s("Veuillez indiquer le prénom de votre client."),
 			'Customer::lastName.empty' => s("Veuillez indiquer le nom de votre client."),
 
-			'Grid::packaging.check' => s("Merci d'indiquer un conditionnement valide."),
+			'Grid::group.orCustomer' => s("Merci d'indiquer un groupe de clients ou un client valide."),
+			'Grid::group.duplicate' => s("Il y a déjà un prix personnalisé pour ce groupe de clients."),
+			'Grid::customer.duplicate' => s("Il y a déjà un prix personnalisé pour ce client."),
 			'Grid::price.check' => s("Merci d'indiquer un prix valide."),
 			'Grid::priceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base."),
 			'Grid::priceDiscount.noInitial' => s("Le prix de base doit être renseigné."),

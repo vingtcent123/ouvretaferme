@@ -842,6 +842,8 @@ history.updateArgument = function(name, value, state) {
 		Lime.History.replaceState(location);
 	}
 
+	return location;
+
 }
 
 let isMouseDown = false;

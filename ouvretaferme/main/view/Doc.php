@@ -21,6 +21,8 @@ class DocTemplate extends MainTemplate {
 
 		$h = '<div class="doc-wrapper">';
 			$h .= '<div class="doc-menu">';
+				$h .= '<div class="doc-menu-title">'.s("Commercialisation").'</div>';
+				$h .= '<a href="/doc/selling:pricing" '.$this->menuSelected('sellingPricing').'>'.s("La gestion des prix").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Boutiques en ligne").'</div>';
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';

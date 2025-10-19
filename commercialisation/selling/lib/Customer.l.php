@@ -282,28 +282,6 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getForGrid(Product $e): \Collection {
-
-		$e->expects(['farm']);
-
-		$cCustomer = Customer::model()
-			->select([
-				'id', 'name', 'type',
-				'eGrid' => Grid::model()
-					->select(['id', 'price', 'priceInitial', 'packaging'])
-					->whereProduct($e)
-					->delegateElement('customer')
-			])
-			->whereFarm($e['farm'])
-			->whereStatus(Customer::ACTIVE)
-			->whereType(Customer::PRO)
-			->sort(['name' => SORT_ASC])
-			->getCollection();
-
-		return $cCustomer;
-
-	}
-
 	public static function createFromUser(\user\User $eUser, \farm\Farm $eFarm, string $type): Customer {
 
 		$eUser->expects(['email']);

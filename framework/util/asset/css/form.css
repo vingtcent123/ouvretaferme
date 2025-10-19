@@ -218,16 +218,15 @@ input[type="checkbox"] {
 	font-size: .9rem;
 	padding: 0.25rem 0 0 0;
 	text-align: right;
-	color: var(--secondary);
+}
+
+.util-quick-form .field-action a {
+	color: white;
 }
 
 .field-action.columns-2 {
 	display: flex;
 	justify-content: space-between;
-}
-
-.field-action a {
-	color: var(--secondary);
 }
 
 .form-control + .form-info,

@@ -307,16 +307,32 @@ td.item-item-composition-number {
 		grid-template-columns: 12rem;
 	}
 
+	.items-products-0.items-products-with-stock .items-products-fields {
+		grid-template-columns: 12rem 5rem;
+	}
+
 	.items-products-1 .items-products-fields {
 		grid-template-columns: 20rem 12rem;
+	}
+
+	.items-products-1.items-products-with-stock .items-products-fields {
+		grid-template-columns: 20rem 12rem 5rem;
 	}
 
 	.items-products-2 .items-products-fields {
 		grid-template-columns: 20rem 12rem 12rem;
 	}
 
+	.items-products-2.items-products-with-stock .items-products-fields {
+		grid-template-columns: 20rem 12rem 12rem 5rem;
+	}
+
 	.items-products-3 .items-products-fields {
 		grid-template-columns: 20rem 12rem 10rem 12rem;
+	}
+
+	.items-products-3.items-products-with-stock .items-products-fields {
+		grid-template-columns: 20rem 12rem 10rem 12rem 5rem;
 	}
 
 }

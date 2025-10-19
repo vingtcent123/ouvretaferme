@@ -5,66 +5,96 @@ class Grid extends GridElement {
 
 	public static function getSelection(): array {
 
-		return [
-			'id',
-			'product', 'customer',
-			'price', 'priceInitial', 'packaging',
-			'createdAt', 'updatedAt'
+		return parent::getSelection() + [
+			'product' => ProductElement::getSelection() + [
+				'unit' => \selling\Unit::getSelection()
+			],
+			'customer' => ['name', 'type', 'destination'],
+			'group' => ['name', 'type', 'farm', 'color'],
 		];
+
+	}
+
+	public function getType(): ?string {
+
+		$this->expects(['customer', 'group']);
+
+		if($this['customer']->notEmpty()) {
+			return $this['customer']['type'];
+		} else if($this['group']->notEmpty()) {
+			return $this['group']['type'];
+		} else {
+			return NULL;
+		}
 
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('price.value', function(?float $price) use($input): bool {
+			->setCallback('customer.check', function(Customer $eCustomer): bool {
 
-				$this->setQuick((($input['property'] ?? NULL) === 'price'));
+				return $eCustomer->empty() or Customer::model()
+					->select(Customer::getSelection())
+					->whereStatus(Customer::ACTIVE)
+					->whereFarm($this['farm'])
+					->get($eCustomer);
 
-				if($this->isQuick() === FALSE or $this['priceInitial'] === NULL) {
+			})
+			->setCallback('group.check', function(Group $eGroup): bool {
+
+				return $eGroup->empty() or Group::model()
+					->select(Group::getSelection())
+					->whereFarm($this['farm'])
+					->get($eGroup);
+
+			})
+			->setCallback('group.orCustomer', function(Group $eGroup) use ($p): bool {
+
+				if($p->isNew('customer') === FALSE) {
+					throw new \Exception('Missing customer');
+				}
+
+				if($p->isBuilt('customer') === FALSE) {
 					return TRUE;
 				}
 
-				return $price < $this['priceInitial'];
+				return (
+					$this['customer']->notEmpty() or
+					$eGroup->notEmpty()
+				);
 
 			})
-			->setCallback('priceDiscount.check', function (?string &$priceDiscount) use($input): bool {
+			->setCallback('product.check', function(Product $eProduct): bool {
 
-				$this->setQuick((($input['property'] ?? NULL) === 'priceDiscount'));
+				if($eProduct->notEmpty()) {
 
-				if(empty($priceDiscount)) {
-
-					$priceDiscount = NULL;
+					return (
+						Product::model()
+							->select(ProductElement::getSelection())
+							->whereStatus(Product::ACTIVE)
+							->get($eProduct) and
+						$eProduct->validateProperty('farm', $this['farm'])
+					);
 
 				} else {
+					return FALSE;
+				}
 
+
+			})
+			->setCallback('priceDiscount.prepare', function (?string &$priceDiscount): bool {
+
+				if($priceDiscount === '') {
+					$priceDiscount = NULL;
+				} else {
 					$priceDiscount = (float)$priceDiscount;
-
 				}
 
 				return TRUE;
 
 			})
-			->setCallback('priceDiscount.noInitial', function (?float $priceDiscount) use($p): bool {
-
-				if($this->isQuick() or $p->isBuilt('price') === FALSE or $priceDiscount === NULL) {
-					return TRUE;
-				}
-
-				return $this['price'] !== NULL;
-
-			})
 			->setCallback('priceDiscount.value', function (?float $priceDiscount) use($p): bool {
-
-				// Si Quick
-				if($this->isQuick()) {
-
-					if($priceDiscount === NULL) {
-						return TRUE;
-					}
-
-					return $this['priceInitial'] > $priceDiscount;
-				}
 
 				// Si pas quick
 				if($p->isBuilt('price') === FALSE) {
@@ -79,31 +109,7 @@ class Grid extends GridElement {
 			})
 			->setCallback('priceDiscount.setValue', function (?float $priceDiscount) use($p): bool {
 
-				// Si Quick
-				if($this->isQuick()) {
-
-					// Reset du prix remisé
-					if($priceDiscount === NULL and $this['priceInitial'] !== NULL) {
-
-						$this['price'] = $this['priceInitial'];
-						$this['priceInitial'] = NULL;
-						$p->addBuilt('priceInitial');
-						$p->addBuilt('price');
-						throw new \PropertySkip();
-
-					}
-
-					// Modif du prix remisé
-					if($priceDiscount !== NULL) {
-
-						$this['price'] = $priceDiscount;
-						$p->addBuilt('price');
-						throw new \PropertySkip();
-
-					}
-				}
-
-				if($this->isQuick() === FALSE and $p->isBuilt('price') === FALSE) {
+				if($p->isBuilt('price') === FALSE) {
 					throw new \PropertySkip();
 				}
 

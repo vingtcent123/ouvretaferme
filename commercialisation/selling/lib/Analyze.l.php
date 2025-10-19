@@ -498,7 +498,8 @@ class AnalyzeLib {
 				'product' => new \selling\Product([
 					'id' => NULL,
 					'name' => \selling\SaleUi::getShippingName(),
-					'unprocessedVariety' => NULL
+					'unprocessedVariety' => NULL,
+					'mixedFrozen' => FALSE
 				]),
 				'turnover' => $cSaleTurnover[$year]['shipping'],
 				'unit' => new Unit(),
@@ -735,16 +736,16 @@ class AnalyzeLib {
 			])
 			->join(Product::model()
 				->select([
-					'plant',
+					'unprocessedPlant',
 					'unit' => \selling\Unit::getSelection(),
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
 			->where('number != 0')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->where('m1.product', '!=', NULL)
-			->where('m2.plant', '!=', NULL)
-			->group(new \Sql('m2_plant, m2_unit, m1_month'))
-			->getCollection(NULL, NULL, ['plant', 'month', 'unit']);
+			->where('m2.unprocessedPlant', '!=', NULL)
+			->group(new \Sql('m2_unprocessedPlant, m2_unit, m1_month'))
+			->getCollection(NULL, NULL, ['unprocessedPlant', 'month', 'unit']);
 
 		return $cccItemPlant;
 

@@ -1694,7 +1694,7 @@ class SaleUi {
 
 	public function createCustomer(Sale $eSale): \Panel {
 
-		$eSale->expects(['farm', 'shopDate']);
+		$eSale->expects(['farm', 'shopDate', 'nGrid']);
 
 		$form = new \util\FormUi();
 
@@ -1745,8 +1745,10 @@ class SaleUi {
 
 				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
 
-				if($eSale['discount'] > 0) {
-					$h .= '<div class="util-info">'.s("Les prix indiqués tiennent compte de la réduction de {value} % dont bénéficie ce client.", $eSale['discount']).'</div>';
+				if($eSale['nGrid'] > 0) {
+					$h .= '<div class="util-info">';
+						$h .= s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour ce client");
+					$h .= '</div>';
 				}
 
 				$h .= $form->dynamicField($eSale, 'productsList');
@@ -1807,8 +1809,15 @@ class SaleUi {
 
 				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
 
-				if($eSale['discount'] > 0) {
-					$h .= '<div class="util-info">'.s("Les prix unitaires affichés incluent la remise de {discount} % applicable à {customer}. La remise sera également appliquée aux autres clients que vous pourriez ajouter à cette vente.", ['discount' => $eSale['discount'], 'customer' => encode($eSale['customer']->getName())]).'</div>';
+				if($eSale['nGrid'] > 0) {
+
+					$h .= '<div class="util-info">';
+						$h .= match($eSale['gridSource']) {
+							'customer' => s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour {value}.", '<b>'.encode($eSale['gridValue']->getName()).'</b>'),
+							'group' => s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour {value}.", GroupUi::link($eSale['gridValue']))
+						};
+					$h .= '</div>';
+
 				}
 
 				$h .= $form->dynamicField($eSale, 'productsList');

@@ -37,23 +37,24 @@ class GridModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
+			'group' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
-			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'priceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
-			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'customer', 'farm', 'product', 'price', 'priceInitial', 'packaging', 'createdAt', 'updatedAt'
+			'id', 'farm', 'customer', 'group', 'product', 'price', 'priceInitial', 'createdAt', 'updatedAt'
 		]);
 
 		$this->propertiesToModule += [
-			'customer' => 'selling\Customer',
 			'farm' => 'farm\Farm',
+			'customer' => 'selling\Customer',
+			'group' => 'selling\Group',
 			'product' => 'selling\Product',
 		];
 
@@ -62,7 +63,8 @@ class GridModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['customer', 'product']
+			['customer', 'product'],
+			['group', 'product']
 		]);
 
 	}
@@ -96,12 +98,16 @@ class GridModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
+	public function whereFarm(...$data): GridModel {
+		return $this->where('farm', ...$data);
+	}
+
 	public function whereCustomer(...$data): GridModel {
 		return $this->where('customer', ...$data);
 	}
 
-	public function whereFarm(...$data): GridModel {
-		return $this->where('farm', ...$data);
+	public function whereGroup(...$data): GridModel {
+		return $this->where('group', ...$data);
 	}
 
 	public function whereProduct(...$data): GridModel {
@@ -114,10 +120,6 @@ class GridModel extends \ModuleModel {
 
 	public function wherePriceInitial(...$data): GridModel {
 		return $this->where('priceInitial', ...$data);
-	}
-
-	public function wherePackaging(...$data): GridModel {
-		return $this->where('packaging', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): GridModel {

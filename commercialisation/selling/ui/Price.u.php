@@ -12,9 +12,9 @@ class PriceUi {
 	public function getDiscountLink(string|int $identifier, bool $hasDiscountPrice, ?string $onHide = null): string {
 
 		$attributes = [
-			'onclick' => 'PriceInitial.showUnitPriceDiscountField("'.$identifier.'", '.$onHide.');',
+			'onclick' => 'PriceInitial.showUnitPriceDiscountField("'.$identifier.'"'.($onHide ? ', '.$onHide : '').');',
 			'data-price-discount-link' => $identifier,
-			'class' => $hasDiscountPrice ? 'hide' : '',
+			'class' => ($hasDiscountPrice ? 'hide' : ''),
 		];
 
 		return \util\FormUi::getFieldAction('<a '.attrs($attributes).'>'.s("Ajouter une remise").' '.\Asset::icon('caret-down-fill').'</a>');

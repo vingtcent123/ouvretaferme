@@ -204,7 +204,7 @@ class ProductLib extends ProductCrud {
 		if($eCustomer->empty()) {
 			$cGrid = new \Collection();
 		} else {
-			$cGrid = \selling\GridLib::getByCustomer($eCustomer, index: 'product');
+			$cGrid = \selling\GridLib::calculateByCustomer($eCustomer);
 		}
 
 		$cProduct = Product::model()
@@ -361,8 +361,8 @@ class ProductLib extends ProductCrud {
 	public static function applyGrid(Product $eProduct, \selling\Grid $eGrid): void {
 
 		if($eGrid->notEmpty()) {
-			$eProduct['packaging'] = $eGrid['packaging'];
 			$eProduct['price'] = $eGrid['price'];
+			$eProduct['priceInitial'] = $eGrid['priceInitial'];
 		}
 
 	}

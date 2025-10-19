@@ -537,7 +537,7 @@ class ProductUi {
 							$h .= ' <span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>';
 						}
 					$h .= '</div>';
-					$h .= '<div>'.s("Disponible").'</div>';
+					$h .= '<div>'.s("Disponible à la vente").'</div>';
 					if($displayStock) {
 						$h .= '<div>';
 							$h .= s("Stock");
@@ -966,7 +966,7 @@ class ProductUi {
 							$h .= '<th>'.s("Colisage").'</th>';
 						}
 						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
-						$h .= '<th class="highlight">'.s("Disponible").'</th>';
+						$h .= '<th class="highlight">'.s("Disponible à la vente").'</th>';
 						$h .= '<th class="text-center">';
 							$h .= s("En vente");
 						$h .= '</th>';
@@ -1255,9 +1255,22 @@ class ProductUi {
 
 			$h .= $form->hidden('id', $e['id']);
 
+			if($e['catalog']->notEmpty()) {
+				$info = s("Le prix que vous donnez ici ne s'applique qu'à ce catalogue et n'est pas prioritaire par rapport aux prix personnalisés de vos clients");
+			} else {
+				$info = s("Le prix que vous donnez ici ne s'applique qu'à cette boutique et n'est pas prioritaire par rapport aux prix personnalisés de vos clients");
+			}
+
+			$info .= ' '.s("(<link>en savoir plus</link>)", ['link' => '<a href="/doc/selling:pricing">']);
+
+			$h .= $form->group(
+				(self::p('price')->label)($e).\util\FormUi::info($info),
+				$form->dynamicField($e, 'price').$form->dynamicField($e, 'priceDiscount')
+			);
+
 			$h .= $form->dynamicGroups($e, match($e['type']) {
-				Product::PRO => ['price', 'priceDiscount', 'packaging', 'available'],
-				Product::PRIVATE => ['price', 'priceDiscount', 'available']
+				Product::PRO => ['packaging', 'available'],
+				Product::PRIVATE => ['available']
 			});
 
 			$h .= '<br/>';

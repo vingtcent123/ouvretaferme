@@ -30,14 +30,6 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \selling\ProductUi()->update($data->e);
 });
 
-new AdaptativeView('updateGrid', function($data, PanelTemplate $t) {
-	return new \selling\GridUi()->updateByProduct($data->e, $data->cCustomer);
-});
-
-new JsonView('doUpdateGrid', function($data, AjaxTemplate $t) {
-	$t->js()->moveHistory(-1);
-});
-
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
 	$t->qs('#product-switch-'.$data->e['id'])->toggleSwitch('post-status', [\selling\Product::ACTIVE, \selling\Product::INACTIVE]);

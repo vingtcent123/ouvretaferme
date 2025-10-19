@@ -98,33 +98,6 @@ new \selling\ProductPage()
 		throw new ViewAction($data);
 
 	})
-	->read('updateGrid', function($data) {
-
-		$data->cCustomer = \selling\CustomerLib::getForGrid($data->e);
-
-		throw new ViewAction($data);
-
-	})
-	->write('doUpdateGrid', function($data) {
-
-		$fw = new FailWatch();
-
-		$data->cGrid = \selling\GridLib::prepareByProduct($data->e, $_POST);
-
-		$fw->validate();
-
-		\selling\GridLib::updateGrid($data->cGrid);
-
-		throw new ViewAction();
-
-	})
-	->write('doDeleteGrid', function($data) {
-
-		\selling\GridLib::deleteByProduct($data->e);
-
-		throw new ReloadLayerAction();
-
-	})
 	->write('doEnableStock', function($data) {
 
 		$data->e->validate('acceptEnableStock');
@@ -157,7 +130,13 @@ new \selling\ProductPage()
 		}
 
 	})
-	->quick(['privatePrice', 'privatePriceInitial', 'privatePriceDiscount', 'privateStep', 'proPrice', 'proPriceInitial', 'proPriceDiscount', 'proPackaging', 'proStep']);
+	->quick([
+		'privatePrice' => ['privatePrice', 'privatePriceDiscount'],
+		'privateStep',
+		'proPrice' => ['proPrice', 'proPriceDiscount'],
+		'proPackaging',
+		'proStep'
+	]);
 
 new \selling\ProductPage()
 	->applyCollection(function($data, Collection $c) {

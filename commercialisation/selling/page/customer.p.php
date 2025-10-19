@@ -22,6 +22,7 @@ new \selling\CustomerPage()
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		$data->cGrid = \selling\GridLib::getByCustomer($data->e);
+		$data->cGridGroup = \selling\GridLib::getByGroups($data->e['groups']);
 		$data->cSale = \selling\SaleLib::getByCustomer($data->e);
 		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->e, selectSales: TRUE);
 
@@ -52,33 +53,6 @@ new \selling\CustomerPage()
 		throw new ViewAction($data);
 
 	})
-	->read('updateGrid', function($data) {
-
-		$data->cProduct = \selling\ProductLib::getByCustomer($data->e);
-
-		throw new ViewAction($data);
-
-	}, validate: ['canManage'])
-	->write('doUpdateGrid', function($data) {
-
-		$fw = new FailWatch();
-
-		$data->cGrid = \selling\GridLib::prepareByCustomer($data->e, $_POST);
-
-		$fw->validate();
-
-		\selling\GridLib::updateGrid($data->cGrid);
-
-		throw new ViewAction();
-
-	}, validate: ['canManage'])
-	->write('doDeleteGrid', function($data) {
-
-		\selling\GridLib::deleteByCustomer($data->e);
-
-		throw new ReloadLayerAction();
-
-	}, validate: ['canManage'])
 	->update(function($data) {
 
 		$data->e['nGroup'] = \selling\GroupLib::countByFarm($data->e['farm']);

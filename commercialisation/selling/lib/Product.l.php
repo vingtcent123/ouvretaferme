@@ -235,19 +235,50 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function applyItemsForSale(\Collection $cProduct, Sale $eSale): void {
+	public static function generateItemsByGroup(\Collection $cProduct, Group $eGroup, Sale $eSale): int {
 
 		$eSale->expects(['farm', 'type', 'customer', 'discount']);
 
 		if($eSale->isComposition() === FALSE) {
-			$cGrid = \selling\GridLib::getByCustomer($eSale['customer'], index: 'product');
+			$cGrid = \selling\GridLib::calculateByGroup($eGroup);
 		} else {
 			$cGrid = new \Collection();
 		}
 
-		foreach($cProduct as $eProduct) {
-			$eProduct['item'] = \selling\ItemLib::getNew($eSale, $eProduct, $cGrid[$eProduct['id']] ?? new \selling\Grid());
+		return self::generateItems($cProduct, $eSale, $cGrid);
+
+	}
+
+	public static function generateItemsByCustomer(\Collection $cProduct, Customer $eCustomer, Sale $eSale): int {
+
+		$eSale->expects(['farm', 'type', 'customer', 'discount']);
+
+		if($eSale->isComposition() === FALSE) {
+			$cGrid = \selling\GridLib::calculateByCustomer($eCustomer);
+		} else {
+			$cGrid = new \Collection();
 		}
+
+		return self::generateItems($cProduct, $eSale, $cGrid);
+
+	}
+
+	public static function generateItems(\Collection $cProduct, Sale $eSale, \Collection $cGrid): int {
+
+		$eSale->expects(['farm', 'type', 'customer', 'discount']);
+
+		$grids = 0;
+
+		foreach($cProduct as $eProduct) {
+			$eGrid = $cGrid[$eProduct['id']] ?? new \selling\Grid();
+			$eProduct['item'] = \selling\ItemLib::getNew($eSale, $eProduct, $eGrid);
+			$eProduct['item']['grid'] = $eGrid;
+			if($eGrid->notEmpty()) {
+				$grids++;
+			}
+		}
+
+		return $grids;
 
 	}
 
@@ -259,7 +290,7 @@ class ProductLib extends ProductCrud {
 			->select(ProductElement::getSelection() + [
 				'unit' => \selling\Unit::getSelection(),
 				'eGrid' => Grid::model()
-					->select(['id', 'price', 'priceInitial', 'packaging'])
+					->select(['id', 'price', 'priceInitial'])
 					->whereCustomer($e)
 					->delegateElement('product')
 			])

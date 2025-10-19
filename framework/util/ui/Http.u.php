@@ -10,7 +10,7 @@ class HttpUi {
 	 * Remove an argument from a query string
 	 *
 	 * @param string $request
-	 * @param string $argument
+	 * @param string|array $arguments
 	 * @return string
 	 */
 	public static function removeArgument(string $request, string $argument): string {

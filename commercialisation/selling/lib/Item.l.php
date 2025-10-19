@@ -56,7 +56,6 @@ class ItemLib extends ItemCrud {
 	public static function applyGrid(Item $eItem, Grid $eGrid): void {
 
 		if($eGrid->notEmpty()) {
-			$eItem['packaging'] = $eGrid['packaging'];
 			$eItem['unitPrice'] = $eGrid['price'];
 			$eItem['unitPriceInitial'] = $eGrid['priceInitial'];
 		}

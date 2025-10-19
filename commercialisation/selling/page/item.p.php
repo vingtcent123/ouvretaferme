@@ -22,12 +22,13 @@ new Page(function($data) {
 		}
 
 		if($data->eProduct->notEmpty() and $data->eSale['customer']->notEmpty()) {
-			$eGrid = \selling\GridLib::getOne($data->eSale['customer'], $data->eProduct);
+			$eGrid = \selling\GridLib::calculateByCustomer($data->eSale['customer'], $data->eProduct);
 		} else {
 			$eGrid = new \selling\Grid();
 		}
 
 		$data->eItem = \selling\ItemLib::getNew($data->eSale, $data->eProduct, $eGrid);
+		$data->eItem['grid'] = $eGrid;
 
 		$data->eItem['cUnit'] = $data->eProduct->empty() ?
 			\selling\UnitLib::getByFarm($data->eSale['farm']) :
@@ -40,7 +41,8 @@ new Page(function($data) {
 
 		$data->eSale['cCategory'] = \selling\CategoryLib::getByFarm($data->eSale['farm'], index: 'id');
 		$data->eSale['cProduct'] = \selling\ProductLib::getForSale($data->eSale['farm'], $data->eSale['type'], excludeComposition: $data->eSale->isComposition());
-		\selling\ProductLib::applyItemsForSale($data->eSale['cProduct'], $data->eSale);
+		
+		\selling\ProductLib::generateItemsByCustomer($data->eSale['cProduct'], $data->eSale['customer'], $data->eSale);
 
 		throw new ViewAction($data);
 
