@@ -739,6 +739,7 @@ class ShopUi {
 			$h .= '<ul>';
 				$h .= '<li>'.s("À moins que votre client n'ait activé les cookies tiers, il ne verra pas sur votre site sa commande en cours ou les réductions auxquelles il a droit, mais celles-ci seront bien prises en compte sur la page de confirmation de commande.").'</li>';
 				$h .= '<li>'.s("Cette intégration ne fonctionnera pas avec les boutiques dont l'accès a été limité à certains clients seulement.").'</li>';
+				$h .= '<li>'.s("Cette intégration peut ne pas fonctionner si vous l'intégrez dans une iframe.").'</li>';
 			$h .= '</ul>';
 
 			$h .= '<br/>';
