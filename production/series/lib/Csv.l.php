@@ -73,65 +73,44 @@ class CsvLib {
 
 	public static function getExportTasks(\farm\Farm $eFarm, int $year): array {
 
-		$ccTimesheet = Timesheet::model()
-			->select([
-				'user' => ['firstName', 'lastName', 'visibility'],
-				'time',
-				'date'
-			])
-			->join(Task::model()
+		$cTask = Task::model()
 				->select([
-					'task' => new \Sql('m2.id'),
+					'id',
+					'plannedWeek', 'doneWeek',
+					'time',
 					'action' => ['name'],
 					'category' => ['name'],
 					'series' => ['name', 'mode'],
 					'plant' => ['name'],
 					'variety' => ['name'],
 					'description',
-					'harvestUser' => new \Sql('IF(harvest IS NOT NULL, IF(m2.time > 0, FLOOR(harvest * m1.time / m2.time * 100) / 100, 0), NULL)', 'float'),
 					'harvest',
 					'harvestUnit',
 					'harvestSize' => ['name']
-				]), 'm2.id = m1.task')
-			->where('m1.farm', $eFarm)
-			->where('EXTRACT(YEAR FROM date) = '.$year)
-			->getCollection(index: ['task', NULL]);
+				])
+			->whereFarm($eFarm)
+			->where(new \Sql('IF(doneWeek IS NULL, plannedWeek, doneWeek) LIKE "'.$year.'%"'))
+			->sort(new \Sql('IF(doneWeek IS NULL, plannedWeek, doneWeek), id'))
+			->getCollection();
 
 		$output = [];
 
-		foreach($ccTimesheet as $cTimesheet) {
+		foreach($cTask as $eTask) {
 
-			$eTimesheetFirst = $cTimesheet->first();
-
-			if($eTimesheetFirst['harvest'] !== NULL) {
-
-				$harvestUser = $cTimesheet->sum('harvestUser');
-				$harvestTotal = $eTimesheetFirst['harvest'];
-
-				if($harvestUser < $harvestTotal) {
-					$eTimesheetFirst['harvestUser'] += round($harvestTotal - $harvestUser, 2);
-				}
-
-			}
-
-			foreach($cTimesheet as $eTimesheet) {
-
-				$output[] = [
-					\util\DateUi::numeric($eTimesheet['date']),
-					($eTimesheet['user']['firstName'] === NULL) ? $eTimesheet['user']['lastName'] : $eTimesheet['user']['firstName'].' '.$eTimesheet['user']['lastName'],
-					$eTimesheet['category']['name'],
-					$eTimesheet['action']['name'],
-					\util\TextUi::csvNumber($eTimesheet['time']),
-					$eTimesheet['series']->empty() ? '' : $eTimesheet['series']['id'],
-					$eTimesheet['series']->empty() ? '' : $eTimesheet['series']['name'],
-					$eTimesheet['plant']->empty() ? '' : $eTimesheet['plant']['name'],
-					$eTimesheet['variety']->empty() ? '' : $eTimesheet['variety']['name'],
-					$eTimesheet['harvestUser'] ? \util\TextUi::csvNumber($eTimesheet['harvestUser']) : '',
-					($eTimesheet['harvestUser'] and $eTimesheet['harvestUnit']) ? \selling\UnitUi::getSingular($eTimesheet['harvestUnit']) : '',
-					$eTimesheet['harvestSize']->empty() ? '' : $eTimesheet['harvestSize']['name'],
-				];
-
-			}
+			$output[] = [
+				$eTask['plannedWeek'],
+				$eTask['doneWeek'],
+				$eTask['category']['name'],
+				$eTask['action']['name'],
+				\util\TextUi::csvNumber($eTask['time']),
+				$eTask['series']->empty() ? '' : $eTask['series']['id'],
+				$eTask['series']->empty() ? '' : $eTask['series']['name'],
+				$eTask['plant']->empty() ? '' : $eTask['plant']['name'],
+				$eTask['variety']->empty() ? '' : $eTask['variety']['name'],
+				\util\TextUi::csvNumber($eTask['harvest']),
+				($eTask['harvest'] and $eTask['harvestUnit']) ? \selling\UnitUi::getSingular($eTask['harvestUnit']) : '',
+				$eTask['harvestSize']->empty() ? '' : $eTask['harvestSize']['name'],
+			];
 
 		}
 

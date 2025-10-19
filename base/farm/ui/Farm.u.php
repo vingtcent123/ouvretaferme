@@ -626,7 +626,7 @@ class FarmUi {
 				$h .= \Asset::icon('clock');
 			$h .= '</a>';
 
-			$h .= '<a href="/series/csv:exportTask?id='.$eFarm['id'].'&year='.$year.'" class="util-button" data-ajax-navigation="never">';
+			$h .= '<a href="/series/csv:exportTasks?id='.$eFarm['id'].'&year='.$year.'" class="util-button" data-ajax-navigation="never">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter les interventions").'</h4>';
 				$h .= '</div>';

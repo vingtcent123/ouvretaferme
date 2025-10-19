@@ -50,7 +50,7 @@ class CsvUi {
 
 	}
 
-	public function getExportTaskHeader(): array {
+	public function getExportTasksHeader(): array {
 
 		return [
 			'week_planned',
