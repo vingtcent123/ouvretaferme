@@ -431,11 +431,11 @@ class PlaceUi {
 		if($eSeries['cycle'] === Series::PERENNIAL) {
 
 			if($positionWeek === 1) {
-				return strtotime($year.'-01-01');
+				return strtotime($year.'-01-01 + '.$gap.' DAYS');
 			}
 
 			if($positionWeek >= 52) {
-				return strtotime($year.'-12-31');
+				return strtotime($year.'-12-25 + '.$gap.' DAYS');
 			}
 
 		}
@@ -462,7 +462,6 @@ class PlaceUi {
 		$maxWeek = NULL;
 		$minTs = $this->positionToWeek($eSeries, $ePlace['positionStart'], $season, 0, $minWeek);
 		$maxTs = $this->positionToWeek($eSeries, $ePlace['positionStop'], $season, 6, $maxWeek);
-
 
 		$h = '';
 
