@@ -237,7 +237,7 @@ class SliceUi {
 
 	}
 
-	protected function getLimit(int $value, ?int $limit, string $suffix): string {
+	protected function getLimit(float $value, ?int $limit, string $suffix): string {
 
 		$h = '<span class="slice-item-sum">'.$value.'</span>';
 		$h .= '<span class="slice-item-by">';
@@ -250,7 +250,7 @@ class SliceUi {
 
 	}
 
-	protected function getColor(int $value, ?int $limit): string {
+	protected function getColor(float $value, ?int $limit): string {
 
 		if($limit === NULL) {
 			return '';
@@ -329,7 +329,7 @@ class SliceUi {
 
 							$h .= '<div class="slice-item-part '.($visible ? '' : 'hide').'" data-unit="'.\series\Cultivation::TRAY.'" data-tool="'.$eTray['id'].'">';
 								$h .= $form->inputGroup(
-									$form->number($name.'[varietyPartTray]['.$eTray['id'].'][]', $eSlice['partTray'] ?? 0, ['min' => 0, 'onfocus' => 'this.select()']).
+									$form->number($name.'[varietyPartTray]['.$eTray['id'].'][]', $eSlice['partTray'] ?? 0, ['min' => 0.0, 'step' => 0.1, 'onfocus' => 'this.select()']).
 									$form->addon(s("plateaux"))
 								);
 							$h .= '</div>';

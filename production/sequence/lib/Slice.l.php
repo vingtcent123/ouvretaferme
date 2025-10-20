@@ -148,7 +148,7 @@ class SliceLib extends SliceCrud {
 			}
 
 			if($unit === \series\Cultivation::TRAY) {
-				$part = (int)($input['varietyPartTray'][$eCrop['sliceTool']['id']][$key] ?? 0);
+				$part = (float)($input['varietyPartTray'][$eCrop['sliceTool']['id']][$key] ?? 0.0);
 			} else {
 				$part = (int)($input['varietyPart'.ucfirst($unit)][$key] ?? 0);
 			}

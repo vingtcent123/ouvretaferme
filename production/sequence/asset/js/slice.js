@@ -292,7 +292,7 @@ class Slice {
 		let sum = 0;
 
 		this.getVarietiesParts(wrapper).forEach(node => {
-			const value = parseInt(node.value);
+			const value = parseFloat(node.value);
 			if(isNaN(value) === false) {
 				sum += value;
 			}
@@ -305,13 +305,13 @@ class Slice {
 	// Mise à jour des valeurs par défaut quand on passe d'une unité à une autre
 	static convertSum(wrapper, currentLimit, currentVarieties, newLimit, newVarieties) {
 
-		const newSum = parseInt(newLimit.qs('.slice-item-sum').innerHTML);
+		const newSum = parseFloat(newLimit.qs('.slice-item-sum').innerHTML);
 
 		if(newSum > 0) {
 			return;
 		}
 
-		const currentSum = parseInt(currentLimit.qs('.slice-item-sum').innerHTML);
+		const currentSum = parseFloat(currentLimit.qs('.slice-item-sum').innerHTML);
 
 		if(currentSum === 0) {
 			return;
