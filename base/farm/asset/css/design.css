@@ -1064,6 +1064,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		padding-left: max(1rem, var(--container-padding));
 		z-index: 2;
 		pointer-events: none;
+		opacity: 0.66;
 	}
 
 	.farm-breadcrumbs-categories {
