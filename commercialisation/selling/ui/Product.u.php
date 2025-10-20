@@ -998,7 +998,7 @@ class ProductUi {
 			$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
 		}
 
-		$h .= '<div class="mb-2">'.\Asset::icon('exclamation-circle').' '.s("Les prix de base que vous donnez à vos produits ne sont pas prioritaires par rapport aux prix indiqués dans les catalogues et aux prix personnalisés de vos clients (<link>en savoir plus</link>).", ['link' => '<a href="/doc/selling:pricing">']).'</div>';
+		$h .= '<div class="hide-panel-out mb-2">'.\Asset::icon('exclamation-circle').' '.s("Les prix de base que vous donnez à vos produits ne sont pas prioritaires par rapport aux prix indiqués dans les catalogues et aux prix personnalisés de vos clients (<link>en savoir plus</link>).", ['link' => '<a href="/doc/selling:pricing">']).'</div>';
 
 		$h .= $form->dynamicGroup($eProduct, 'vat');
 		$h .= '<br/>';

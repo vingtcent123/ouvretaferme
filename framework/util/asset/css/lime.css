@@ -868,6 +868,14 @@ div.input-group > .field-checkbox {
 	display: none !important;
 }
 
+.panel-dialog .hide-panel-in {
+	display: none !important;
+}
+
+:not(.panel-dialog) .hide-panel-out {
+	display: none !important;
+}
+
 .not-visible {
 	visibility: hidden;
 }
