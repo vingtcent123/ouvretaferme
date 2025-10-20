@@ -1275,7 +1275,7 @@ class ProductUi {
 				$d->field = function(\util\FormUi $form, Product $e) {
 
 					$taxes = $e['farm']->getSelling('hasVat') ? CustomerUi::getTaxes(Customer::PRO) : '';
-					$unit = ($e['unit']->notEmpty() ? encode($e['unit']['singular']) : self::p('unit')->placeholder);
+					$unit = ($e['unit']->notEmpty() ? encode($e['unit']['singular']) : ProductUi::p('unit')->placeholder);
 					$suffix = '€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span>';
 
 					$price = ($e['proPriceInitial'] ?? NULL) !== NULL ? $e['proPriceInitial'] : $e['proPrice'] ?? '';
