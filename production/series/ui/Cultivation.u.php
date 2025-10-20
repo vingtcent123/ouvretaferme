@@ -2192,7 +2192,7 @@ class CultivationUi {
 
 			case Cultivation::TRAY :
 
-				$sum = $eCultivation['cSlice']->sum('partTray');
+				$sum = (int)ceil($eCultivation['cSlice']->sum('partTray'));
 
 				if($eCultivation['seedling'] === Cultivation::SOWING) {
 					$infos[] = \Asset::icon('exclamation-circle').'  '.s("Vous avez réparti les variétés en nombre de plateaux de semis alors que la production est implantée en semis direct.");
