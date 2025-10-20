@@ -4,7 +4,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->nav = 'journal';
 	$t->subNav = 'operations';
 
-	$t->title = s("Le journal comptable de {farm}", ['farm' => encode($data->eFarm['name'])]);
+	$t->title = s("Le livre journal de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/operations';
 
 	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, $data->eFinancialYear);

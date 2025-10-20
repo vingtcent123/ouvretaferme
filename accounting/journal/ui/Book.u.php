@@ -13,7 +13,7 @@ class BookUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= s("Le Grand Livre des comptes");
+				$h .= s("Le Grand livre");
 			$h .= '</h1>';
 
 			$h .= '<div>';

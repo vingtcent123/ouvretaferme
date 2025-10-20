@@ -11,7 +11,7 @@ Class BalanceUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= s("La balance comptable");
+				$h .= s("La balance");
 			$h .= '</h1>';
 
 			$h .= '<div>';

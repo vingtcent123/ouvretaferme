@@ -13,12 +13,7 @@ class JournalUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				if($eFinancialYear->isCashAccounting()) {
-					$h .= s("Le journal comptable");
-				} else {
-					$h .= s("Les journaux");
-				}
-
+				$h .= s("Le livre journal");
 			$h .= '</h1>';
 
 			if($eFinancialYear->notEmpty()) {

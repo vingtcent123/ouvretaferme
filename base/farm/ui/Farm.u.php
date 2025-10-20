@@ -850,7 +850,7 @@ class FarmUi {
 			],
 			'analyze-accounting' => [
 				'icon' => \Asset::icon('bar-chart'),
-				'label' => s("Analyse")
+				'label' => s("Gestion")
 			],
 			'settings-accounting' => [
 				'icon' => \Asset::icon('gear-fill'),
@@ -947,19 +947,20 @@ class FarmUi {
 			},
 
 			'journal' => match($name) {
-				'operations' => ($eFarm->getView('viewAccountingType') === \account\FinancialYear::CASH) ? s("Journal comptable") : s("Journaux"),
+				'operations' => s("Livre journal"),
 				'accounts' => s("Comptes"),
-				'book' => s("Grand-livre"),
-				'balance' => s("Balance comptable"),
+				'book' => s("Grand livre"),
+				'balance' => s("Balance"),
 			},
 
 			'analyze-accounting' => match($name) {
 				'finance' => s("Trésorerie"),
 				'expenses' => s("Charges et résultat"),
-				'sig' => s("SIG"),
+				'sig' => s("Soldes Intermédiaires de Gestion"),
 			},
 
 			'summary' => match($name) {
+				'vat/' => s("Déclarations de TVA"),
 				'incomeStatement' => s("Compte de Résultat"),
 				'balanceSheet' => s("Bilan"),
 			},
@@ -1114,11 +1115,9 @@ class FarmUi {
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-bank">';
 
-				$h .= $this->getNav('bank', $nav);
+				$h .= $this->getNav('bank', $nav, link: \company\CompanyUi::urlBank($eFarm).'/cashflow');
 
-				$h .= $this->getBankMenu($eFarm, subNav: $subNav);
-
-			$h .= '</div>';
+				$h .= '</div>';
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-journal">';
 
@@ -1545,16 +1544,6 @@ class FarmUi {
 
 	}
 
-	public function getBankMenu(Farm $eFarm, string $prefix = '', ?string $subNav = NULL): string {
-
-		return $this->getSubNav(
-			$eFarm,
-			'bank',
-			$subNav
-		);
-
-	}
-
 	public function getSellingMenu(Farm $eFarm, ?int $season = NULL, string $prefix = '', ?string $subNav = NULL): string {
 
 		return $this->getSubNav(
@@ -1937,6 +1926,9 @@ class FarmUi {
 				return ['finance', 'expenses', 'sig'];
 
 			case 'summary' :
+				if(LIME_ENV === 'dev') {
+					return ['vat/', 'incomeStatement', 'balanceSheet'];
+				}
 				return ['incomeStatement', 'balanceSheet'];
 
 		};
