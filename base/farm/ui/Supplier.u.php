@@ -147,7 +147,7 @@ class SupplierUi {
 			$h .= $form->hidden('id', $eSupplier['id']);
 			$h .= $form->dynamicGroups($eSupplier, ['name']);
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

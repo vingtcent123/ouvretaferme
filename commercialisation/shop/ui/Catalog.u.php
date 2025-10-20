@@ -131,7 +131,7 @@ class CatalogUi {
 			$h .= $form->hidden('id', $eCatalog['id']);
 			$h .= $form->dynamicGroups($eCatalog, ['name', 'comment']);
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

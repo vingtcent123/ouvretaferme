@@ -294,7 +294,7 @@ class PlotUi {
 			$h .= $this->drawMap($form, $eZone, $ePlot, $label);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

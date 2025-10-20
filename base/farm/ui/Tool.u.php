@@ -415,7 +415,7 @@ class ToolUi {
 			$h .= $form->dynamicGroups($eTool, ['stock', 'comment']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -458,7 +458,7 @@ class PlantUi {
 			$h .= $form->dynamicGroups($ePlant, ['plantsSafetyMargin', 'seedsSafetyMargin']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

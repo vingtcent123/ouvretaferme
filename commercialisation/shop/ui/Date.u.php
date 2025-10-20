@@ -396,7 +396,7 @@ class DateUi {
 		$h .= $form->dynamicGroup($eDate, 'description');
 
 		$h .= $form->group(
-			content: $form->submit(s("Modifier"))
+			content: $form->submit(s("Enregistrer"))
 		);
 
 		$h .= $form->close();

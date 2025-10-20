@@ -186,7 +186,7 @@ class VarietyUi {
 			$h .= $form->dynamicGroups($eVariety, ['weightSeed1000', 'numberPlantKilogram']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -641,7 +641,7 @@ class BedUi {
 				);
 
 				$h .= $form->group(
-					content: $form->submit(s("Modifier"))
+					content: $form->submit(s("Enregistrer"))
 				);
 
 		$h .= $form->close();
@@ -678,7 +678,7 @@ class BedUi {
 			);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"), ['class' => 'btn btn-secondary'])
+				content: $form->submit(s("Enregistrer"), ['class' => 'btn btn-secondary'])
 			);
 
 		$h .= $form->close();
@@ -755,7 +755,7 @@ class BedUi {
 			);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"), ['class' => 'btn btn-secondary'])
+				content: $form->submit(s("Enregistrer"), ['class' => 'btn btn-secondary'])
 			);
 
 		$h .= $form->close();
@@ -817,7 +817,7 @@ class BedUi {
 			);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"), ['class' => 'btn btn-secondary'])
+				content: $form->submit(s("Enregistrer"), ['class' => 'btn btn-secondary'])
 			);
 
 		$h .= $form->close();

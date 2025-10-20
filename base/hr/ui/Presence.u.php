@@ -171,7 +171,7 @@ class PresenceUi {
 			$h .= $form->dynamicGroups($ePresence, ['from', 'to']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

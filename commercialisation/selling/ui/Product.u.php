@@ -927,7 +927,7 @@ class ProductUi {
 			$h .= $this->getFieldPrices($form, $eProduct, 'update');
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -152,7 +152,7 @@ class PhotoUi {
 			$h .= $form->dynamicGroup($ePhoto, 'takenAt');
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -203,7 +203,7 @@ class GroupUi {
 			$h .= $form->hidden('id', $eGroup['id']);
 			$h .= $form->dynamicGroups($eGroup, ['name', 'color']);
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

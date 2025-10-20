@@ -200,7 +200,7 @@ class CategoryUi {
 			$h .= $form->hidden('id', $eCategory['id']);
 			$h .= $form->dynamicGroups($eCategory, ['name']);
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

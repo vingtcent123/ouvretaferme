@@ -467,7 +467,7 @@ class FarmUi {
 			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'place', 'placeLngLat', 'url', 'quality']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();
@@ -507,7 +507,7 @@ class FarmUi {
 				$d->attributes['style'] = 'height: 20rem';
 			});
 			$h .= '<br/>';
-			$h .= $form->submit(s("Modifier"));
+			$h .= $form->submit(s("Enregistrer"));
 
 		$h .= $form->close();
 

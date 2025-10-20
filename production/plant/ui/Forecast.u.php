@@ -62,7 +62,7 @@ class ForecastUi {
 			$h .= $this->write($form, $eForecast);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -131,7 +131,7 @@ class AbsenceUi {
 			$h .= $form->dynamicGroups($eAbsence, ['type', 'from', 'to', 'duration']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -2044,7 +2044,7 @@ class SaleUi {
 			$h .= $form->dynamicGroup($eSale, 'comment');
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();
@@ -2077,7 +2077,7 @@ class SaleUi {
 			$h .= $form->dynamicGroup($eSale, 'shopDate');
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();
@@ -2103,7 +2103,7 @@ class SaleUi {
 			$h .= $form->dynamicGroup($eSale, 'customer');
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -191,7 +191,7 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 		$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
 
 		$h .= $form->group(
-			content: $form->submit(s("Modifier"), ['class' => 'btn btn-primary'])
+			content: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary'])
 		);
 
 		$h .= $form->close();

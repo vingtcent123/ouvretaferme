@@ -145,7 +145,7 @@ class DepartmentUi {
 			$h .= $form->hidden('id', $eDepartment['id']);
 			$h .= $form->dynamicGroups($eDepartment, ['name', 'icon']);
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

@@ -247,7 +247,7 @@ class UnitUi {
 			$h .= $form->hidden('id', $eUnit['id']);
 			$h .= $form->dynamicGroups($eUnit, ['singular', 'plural', 'short', 'type', 'approximate']);
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();

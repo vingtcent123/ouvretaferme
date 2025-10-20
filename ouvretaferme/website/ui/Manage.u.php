@@ -59,7 +59,7 @@ class ManageUi {
 			$h .= $form->dynamicGroups($eWebsite, ['internalDomain', 'domain', 'name', 'description', 'footer']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier"))
+				content: $form->submit(s("Enregistrer"))
 			);
 
 		$h .= $form->close();
