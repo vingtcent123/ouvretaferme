@@ -127,16 +127,17 @@ class JournalUi {
 
 	}
 
-	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, ?string $selectedJournalCode): string {
+	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search, ?string $selectedJournalCode): string {
 
+		$args = $search->toQuery(exclude: ['code']);
 
 		$h = '<div class="tabs-item">';
 
-			$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations">'.s("Général").'</a>';
+			$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?'.$args.'">'.s("Général").'</a>';
 
 			foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
 
-					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">';
+					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'&'.$args.'">';
 						$h .= '<div class="text-center">';
 							$h .= OperationUi::p('journalCode')->values[$journalCode];
 							$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.OperationUi::p('journalCode')->shortValues[$journalCode].')</span></small>';
@@ -149,7 +150,7 @@ class JournalUi {
 			if($eFinancialYear['hasVat']) {
 
 				$journalCode = 'vat-buy';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Achats").')</span></small>';
@@ -157,7 +158,7 @@ class JournalUi {
 				$h .= '</a>';
 
 				$journalCode = 'vat-sell';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'">';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Ventes").')</span></small>';

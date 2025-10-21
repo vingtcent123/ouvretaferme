@@ -39,25 +39,44 @@ new Page(function($data) {
 			$search->set('cashflow', GET('cashflow'));
 		}
 
+		$journalCode = GET('code');
+
+		if(in_array($journalCode, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
+			$journalCode = NULL;
+		}
+		$search->set('journalCode', $journalCode);
+
 		$code = GET('code');
-		if(in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
+		if(in_array($code, ['vat-buy', 'vat-sell']) === FALSE and in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
 			$code = NULL;
 		}
-		$search->set('journalCode', $code);
 
-		$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
-		$data->cAccount = \account\AccountLib::getAll();
+		$data->cOperation = new Collection();
+		$data->operationsVat = [];
 
-		// Journaux de TVA
-		if($data->eFinancialYear['hasVat']) {
-			$data->operationsVat = [
-				'buy' => \journal\OperationLib::getAllForVatJournal('buy', $search, $hasSort),
-				'sell' => \journal\OperationLib::getAllForVatJournal('sell', $search, $hasSort),
-			];
+		if(in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) or $code === NULL) {
+
+			$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
+
+		} else if(mb_substr($code, 0, 3) === 'vat') {
+
+			// Journaux de TVA
+			if($data->eFinancialYear['hasVat']) {
+
+				$data->operationsVat = [
+					'buy' => \journal\OperationLib::getAllForVatJournal('buy', $search, $hasSort),
+					'sell' => \journal\OperationLib::getAllForVatJournal('sell', $search, $hasSort),
+				];
+
+			}
+
 		}
+
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+
+		$data->cAccount = \account\AccountLib::getAll();
 
 		throw new ViewAction($data);
 

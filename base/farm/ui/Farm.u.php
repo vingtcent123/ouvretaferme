@@ -1926,10 +1926,11 @@ class FarmUi {
 				return ['finance', 'expenses', 'sig'];
 
 			case 'summary' :
-				if(LIME_ENV === 'dev') {
-					return ['vat/', 'incomeStatement', 'balanceSheet'];
+				$categories = [];
+				if(false and LIME_ENV === 'dev' and $eFarm->getSelling('hasVat')) {
+					$categories[] = 'vat/';
 				}
-				return ['incomeStatement', 'balanceSheet'];
+				return array_merge($categories, ['incomeStatement', 'balanceSheet']);
 
 		};
 

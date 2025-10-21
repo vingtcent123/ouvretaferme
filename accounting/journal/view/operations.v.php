@@ -30,7 +30,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	}
 
 	echo '<div class="tabs-h" id="journals">';
-		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $selectedJournalCode);
+		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode);
 		echo new \journal\JournalUi()->getJournal($data->eFarm, $data->cOperation, $data->eFinancialYear, selectedJournalCode: $selectedJournalCode, operationsVat: $data->operationsVat, search: $data->search, cPaymentMethod: $data->cPaymentMethod);
 	echo '</div>';
 

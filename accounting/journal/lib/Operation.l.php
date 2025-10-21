@@ -173,7 +173,8 @@ class OperationLib extends OperationCrud {
 			->getCollection();
 	}
 
-	public static function getAllForVatJournal(string $type, \Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
+	public static function getAllForVatJournal(string $type, \Search $search = new \Search(), bool $hasSort = FALSE,
+		?array $index = ['accountLabel', 'month', NULL]): \Collection {
 
 		return self::applySearch($search)
 			->select(
@@ -188,11 +189,12 @@ class OperationLib extends OperationCrud {
 				+ ['account' => ['class', 'description']]
 				+ ['thirdParty' => ['id', 'name']]
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
+				+ ['amount' => new \Sql('IF(SUBSTRING(accountLabel, 1, 4) = "'.\account\AccountSetting::VAT_BUY_CLASS_PREFIX.'", IF(type = "credit", -1 * amount, amount), IF(type = "debit", -1 * amount, amount))')]
 			)
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
 			->where(new \Sql('operation IS NOT NULL'))
-			->getCollection(NULL, NULL, ['accountLabel', 'month', NULL]);
+			->getCollection(NULL, NULL, $index);
 
 	}
 

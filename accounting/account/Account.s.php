@@ -28,8 +28,10 @@ class AccountSetting extends \Settings {
 	const FINANCIAL_GENERAL_CLASS = 5;
 	const CHARGE_ACCOUNT_CLASS = 6;
 	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 65;
+	const CHARGE_ESCOMPTES_ACCOUNT_CLASS = 665;
 	const CHARGE_EXCEPTIONAL_ACCOUNT_CLASS = 67;
 	const PRODUCT_ACCOUNT_CLASS = 7;
+	const PRODUCT_SOLD_ACCOUNT_CLASS = 70;
 	const PRODUCT_FINANCIAL_ACCOUNT_CLASS = 75;
 	const PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS = 77;
 
@@ -61,8 +63,12 @@ class AccountSetting extends \Settings {
 	public static $balanceActifCategories;
 	public static $balancePassifCategories;
 
-	const VAT_BUY_CLASS_PREFIX = '4456'; // TVA déductible (sur les ventes)
-	const VAT_SELL_CLASS_PREFIX = '4457'; // TVA collectée (sur les achats)
+	const VAT_BUY_CLASS_PREFIX = '4456'; // TVA déductible
+	const VAT_BUY_CLASS_ACCOUNT = '44566'; // TVA déductible s/ABS
+	const VAT_ASSET_CLASS_ACCOUNT = '44562'; // TVA déductible s/immo
+	const VAT_CREDIT_CLASS_ACCOUNT = '44567'; // Crédit de TVA à reporter
+	const VAT_SELL_CLASS_PREFIX = '4457'; // TVA collectée
+	const VAT_DEPOSIT_CLASS_PREFIX = '44581'; // Acompte de TVA
 
 	const COLLECTED_VAT_CLASS = '44571'; // TVA collectée
 	const PAYABLE_VAT_CLASS = '44571'; // TVA à décaisser
