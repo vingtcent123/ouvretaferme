@@ -1747,7 +1747,16 @@ class SaleUi {
 
 				if($eSale['nGrid'] > 0) {
 					$h .= '<div class="util-info">';
-						$h .= s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour ce client");
+						$h .= \Asset::icon('info-circle').' '.s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour ce client");
+					$h .= '</div>';
+				}
+
+				if(
+					$eSale['shopProducts'] and
+					$eSale['cProduct']->contains(fn($eProduct) => $eProduct['shopProduct']['available'] !== NULL)
+				) {
+					$h .= '<div class="util-info">';
+						$h .= \Asset::icon('exclamation-circle').' '.s("La création de cette vente n'imputera pas les quantités disponibles à la vente des produits proposés en quantités limitées.");
 					$h .= '</div>';
 				}
 
@@ -2199,11 +2208,19 @@ class SaleUi {
 
 			case 'customer' :
 				$d->autocompleteBody = function(\util\FormUi $form, Sale $e) {
+
 					$e->expects(['farm']);
-					return [
+
+					$body = [
 						'farm' => $e['farm']['id'],
 						'new' => TRUE
 					];
+
+					if($e['type'] !== NULL) {
+						$body['type'] = $e['type'];
+					}
+
+					return $body;
 				};
 				new CustomerUi()->query($d);
 				break;

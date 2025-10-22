@@ -285,6 +285,26 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function exportAsSelling(\Collection $cProduct): \Collection {
+
+		$cProductSelling = new \Collection();
+
+		foreach($cProduct as $eProduct) {
+
+			$eProductSelling = $eProduct['product'];
+			$eProductSelling['shopProduct'] = $eProduct;
+			$eProductSelling['packaging'] = $eProduct['packaging'];
+			$eProductSelling[$eProduct['type'].'Price'] = $eProduct['price'];
+			$eProductSelling[$eProduct['type'].'PriceInitial'] = $eProduct['priceInitial'];
+
+			$cProductSelling[] = $eProductSelling;
+
+		}
+
+		return $cProductSelling;
+
+	}
+
 	public static function applySold(Date $eDate, \Collection $cProduct, \Collection $cGrid, \Collection $cSaleExclude = new \Collection()): \Collection {
 
 		$cItem = SaleLib::getProductsByDate($eDate, $cSaleExclude);

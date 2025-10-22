@@ -28,8 +28,11 @@ new \selling\SalePage()
 
 		if($data->e->isComposition()) {
 
+			$eCatalog = new \shop\Catalog();
+
 			$data->e['shop'] = new \shop\Shop();
 			$data->e['shopDate'] = new \shop\Date();
+			$data->e['shopProducts'] = FALSE;
 			$data->e['customer'] = new \selling\Customer();
 			$data->e['type'] = $data->e['compositionOf']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;
 			$data->e['discount'] = 0;
@@ -38,8 +41,12 @@ new \selling\SalePage()
 
 			$eDate = get_exists('shopDate') ? \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])->validateProperty('farm', $data->eFarm)->validate('acceptOrder', 'acceptNotShared') : new \shop\Date();
 
+			$eCatalog = get_exists('catalog') ? \shop\CatalogLib::getById(GET('catalog'))->validateProperty('farm', $data->eFarm) : new \shop\Catalog();
+
 			$data->e->merge([
+				'type' => NULL,
 				'shopDate' => $eDate,
+				'shopProducts' => FALSE,
 				'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop']
 			]);
 
@@ -48,6 +55,10 @@ new \selling\SalePage()
 			if($data->e['customer']->notEmpty()) {
 				$data->e['type'] = $data->e['customer']['type'];
 				$data->e['discount'] = $data->e['customer']['discount'];
+			} else if($data->e['shopDate']->notEmpty()) {
+				$data->e['type'] = $data->e['shopDate']['type'];
+			} else if($eCatalog->notEmpty()) {
+				$data->e['type'] = $eCatalog['type'];
 			}
 
 		}
@@ -62,9 +73,15 @@ new \selling\SalePage()
 
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
 
-			$data->e['cProduct'] = $data->e['shopDate']->empty() ?
-				\selling\ProductLib::getForSale($data->e['farm'], $data->e['type'], excludeComposition: $data->e->isComposition()) :
-				\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'], public: TRUE)->getColumnCollection('product');
+			if($data->e['shopDate']->notEmpty()) {
+				$data->e['cProduct'] = \shop\ProductLib::exportAsSelling(\shop\ProductLib::getByDate($data->e['shopDate'], $data->e['customer'], public: TRUE));
+				$data->e['shopProducts'] = TRUE;
+			} else if($eCatalog->notEmpty()) {
+				$data->e['cProduct'] = \shop\ProductLib::exportAsSelling(\shop\ProductLib::getByCatalog($eCatalog));
+				$data->e['shopProducts'] = TRUE;
+			} else {
+				$data->e['cProduct'] = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type'], excludeComposition: $data->e->isComposition());
+			}
 
 			$data->e['nGrid'] = \selling\ProductLib::generateItemsByCustomer($data->e['cProduct'], $data->e['customer'], $data->e);
 
@@ -144,6 +161,7 @@ new Page(function($data) {
 
 		$data->e = new \selling\Sale([
 			'farm' => $data->eFarm,
+			'type' => NULL,
 			'shop' => new \shop\Shop(),
 			'shopDate' => new \shop\Date(),
 			'origin' => \selling\Sale::SALE,
@@ -168,7 +186,9 @@ new Page(function($data) {
 			$data->cGroup = new Collection();
 
 		} else {
+
 			$data->cGroup = \selling\GroupLib::getByFarm($data->eFarm);
+
 		}
 
 		$data->e['gridSource'] = $sourceType;
