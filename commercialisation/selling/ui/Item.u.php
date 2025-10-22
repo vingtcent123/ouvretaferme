@@ -279,10 +279,10 @@ class ItemUi {
 				$vignette = '';
 			}
 
-			$description = [];
-
 			if($eItem['quality']) {
-				$description[] = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
+				$quality = \farm\FarmUi::getQualityLogo($eItem['quality'], '1.5rem');
+			} else {
+				$quality = '';
 			}
 
 
@@ -300,13 +300,17 @@ class ItemUi {
 				$details = ProductUi::getDetails($eItem['product']);
 
 				if($details) {
-					$product .= '<div>';
-						$product .= '<small class="color-muted">'.implode(' | ', $details).'</small>';
+					$product .= '<div class="item-item-product-description">';
+						$product .= implode(' | ', $details);
 					$product .= '</div>';
 				}
 
 			} else {
 				$product = encode($eItem['name']);
+			}
+
+			if($eItem['description'] !== NULL) {
+				$product .= '<div class="item-item-product-description">'.$eItem->quick('description', encode($eItem['description'])).'</div>';
 			}
 
 			$h .= '<tbody>';
@@ -316,8 +320,8 @@ class ItemUi {
 					$h .= '<td class="hide-md-up" colspan="'.($columns - 3).'" style="border-bottom: 1px dashed var(--border)">';
 						$h .= '<div class="item-item-product">';
 							$h .= '<div>'.$product.'</div>';
-							if($description) {
-								$h .= '<span class="item-item-product-description">'.implode('', $description).'</span>';
+							if($quality) {
+								$h .= '<span class="item-item-product-quality">'.$quality.'</span>';
 							}
 						$h .= '</div>';
 					$h .= '</td>';
@@ -333,7 +337,9 @@ class ItemUi {
 				$h .= '<tr class="item-item-line-2">';
 
 					$h .= '<td class="td-min-content hide-sm-down" style="line-height: 1.2">'.$product.'</td>';
-					$h .= '<td class="hide-sm-down">'.implode('  ', $description).'</td>';
+					$h .= '<td class="hide-sm-down">';
+						$h .= $quality;
+					$h .= '</td>';
 
 					if($withPackaging) {
 
@@ -1219,7 +1225,7 @@ class ItemUi {
 				);
 			}
 
-			$h .= $form->dynamicGroups($eItem, ['name', 'quality']);
+			$h .= $form->dynamicGroups($eItem, ['name', 'description', 'quality']);
 
 			if($eItem['sale']->isPro()) {
 				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
@@ -1312,7 +1318,7 @@ class ItemUi {
 
 		$d = Item::model()->describer($property, [
 			'name' => s("Désignation"),
-			'description' => s("Description"),
+			'description' => s("Complément d'information"),
 			'product' => s("Produit"),
 			'quality' => s("Signe de qualité"),
 			'packaging' => s("Colisage"),
@@ -1338,6 +1344,10 @@ class ItemUi {
 					];
 				};
 				new ProductUi()->query($d);
+				break;
+
+			case 'description' :
+				$d->after = \util\FormUi::info(s("Le complément d'information est affiché sur les documents de vente."));
 				break;
 
 			case 'quality' :

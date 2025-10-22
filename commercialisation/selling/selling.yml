@@ -166,6 +166,7 @@ Item:
   sale: selling\Sale
   customer: ?selling\Customer
   type: enum(PRIVATE, PRO)
+  description: ?text8
   farm: farm\Farm
   shop: ?shop\Shop
   shopDate: ?shop\Date

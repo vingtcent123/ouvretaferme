@@ -52,6 +52,7 @@ class ItemModel extends \ModuleModel {
 			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\selling\Item::PRIVATE, \selling\Item::PRO], 'cast' => 'enum'],
+			'description' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'shopDate' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
@@ -78,7 +79,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'description', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -177,6 +178,10 @@ class ItemModel extends \ModuleModel {
 
 	public function whereType(...$data): ItemModel {
 		return $this->where('type', ...$data);
+	}
+
+	public function whereDescription(...$data): ItemModel {
+		return $this->where('description', ...$data);
 	}
 
 	public function whereFarm(...$data): ItemModel {

@@ -62,6 +62,12 @@ a.item-item-product-link {
 }
 
 .item-item-product-description {
+	font-size: 0.85rem;
+	color: var(--muted);
+	margin-top: 0.125rem;
+}
+
+.item-item-product-quality {
 	display: inline-flex;
 	gap: 0.5rem;
 	align-items: center;

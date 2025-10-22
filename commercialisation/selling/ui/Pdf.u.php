@@ -465,6 +465,9 @@ class PdfUi {
 						$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['unprocessedSize'])).'</small>';
 					}
 				}
+				if($eItem['description'] !== NULL) {
+					$h .= '<div style="margin-left: 1.25rem"><small>'.encode($eItem['description']).'</small></div>';
+				}
 			$h .= '</td>';
 			$h .= '<td class="td-min-content">';
 				if($eItem['quality']) {
@@ -820,6 +823,11 @@ class PdfUi {
 				if($details) {
 					$h .= '<div class="pdf-document-product-details">';
 						$h .= implode(' / ', $details);
+					$h .= '</div>';
+				}
+				if($eItem['description'] !== NULL) {
+					$h .= '<div class="pdf-document-product-details">';
+						$h .= encode($eItem['description']);
 					$h .= '</div>';
 				}
 			$h .= '</td>';
