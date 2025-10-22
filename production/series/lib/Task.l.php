@@ -1215,6 +1215,7 @@ class TaskLib extends TaskCrud {
 	public static function create(Task $e): void {
 
 		$e->expects([
+			'action',
 			'series',
 			'farm',
 			'category',
@@ -1259,6 +1260,10 @@ class TaskLib extends TaskCrud {
 		}
 
 		parent::create($e);
+
+		if($e['action']['fqn'] === ACTION_RECOLTE) {
+			self::recalculateHarvest($e['farm'], $e['cultivation'], $e['plant']);
+		}
 
 		SeriesLib::recalculate($e['farm'], $e['series'], $e['action']);
 
