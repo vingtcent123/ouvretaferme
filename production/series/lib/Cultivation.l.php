@@ -479,9 +479,9 @@ class CultivationLib extends CultivationCrud {
 
 	}
 
-	public static function getArea(Series $eSeries, Cultivation $eCultivation, Slice $eSlice): ?int {
+	public static function getArea(Series $eSeries, Cultivation $eCultivation, Slice $eSlice): ?float {
 
-		$area = $eSeries['areaTarget'] ?? $eSeries['area'];
+		$area = $eSeries['area'] ?? $eSeries['areaTarget'];
 
 		if($area === NULL) {
 			return NULL;
@@ -506,9 +506,9 @@ class CultivationLib extends CultivationCrud {
 		}
 
 		return match($eCultivation['sliceUnit']) {
-			Cultivation::PERCENT => (int)($eSlice['partPercent'] / 100 * $area),
-			Cultivation::LENGTH => ($eSeries['use'] === Series::BED) ? (int)($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area) : NULL,
-			Cultivation::AREA => ($eSeries['use'] === Series::BLOCK) ? (int)($eSlice['partArea']) : NULL,
+			Cultivation::PERCENT => ($eSlice['partPercent'] / 100 * $area),
+			Cultivation::LENGTH => ($eSeries['use'] === Series::BED) ? ($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area) : NULL,
+			Cultivation::AREA => ($eSeries['use'] === Series::BLOCK) ? ($eSlice['partArea']) : NULL,
 		};
 
 	}
