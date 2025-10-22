@@ -122,6 +122,15 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 			} else {
 
+				if($data->eUserOnline->empty()) {
+
+					echo '<div class="util-block" style="box-shadow: 1px 1px 1px var(--border)">';
+						echo '<h3>'.s("Vous avez déjà commandé sur la boutique ?").'  <a href="/user/log:form" class="btn btn-secondary" style="margin: 0.25rem 0">'.s("Connectez-vous maintenant").'</a></h3>';
+						echo '<p>'.s("Si c'est votre première commande, ajoutez librement les articles à votre panier et renseignez les informations qui permettront de vous contacter à l'étape suivante !").'</p>';
+					echo '</div>';
+
+				}
+
 				$orderPeriod = new \shop\DateUi()->getOrderPeriod($data->eDateSelected);
 				$orderLimits = new \shop\DateUi()->getOrderLimits($data->eShop, $data->eDateSelected['ccPoint']);
 
