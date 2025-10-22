@@ -103,30 +103,50 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 				$data->isModifying === FALSE
 			) {
 
-				echo '<div class="util-block bg-success color-white">';
+				echo '<div class="util-block" style="box-shadow: 1px 1px 1px var(--border)">';
+					echo '<h3>'.s("Bonjour {name} !", ['name' => \user\ConnectionLib::getOnline()->getName()]).'</h3>';
 					echo '<p>';
-						echo s("Vous avez une commande enregistrée pour le {value} !", \util\DateUi::textual($data->eDateSelected['deliveryDate'], \util\DateUi::DATE_HOUR_MINUTE));
+						echo s("Vous avez une <link>commande enregistrée</link> pour le {date} :", ['link' => '<a href="'.\shop\ShopUi::confirmationUrl($data->eShop, $data->eDateSelected).'">', 'date' => \util\DateUi::textual($data->eDateSelected['deliveryDate'], \util\DateUi::DATE_HOUR_MINUTE)]);
+
+						echo \mail\CustomizeUi::getShopProducts($data->cItemExisting, mode: 'html');
+
 						if(
 							$data->cSaleExisting->notEmpty() and
 							$data->cSaleExisting->first()->acceptUpdateByCustomer()
 						) {
-							echo '<br/>'.s("Cette commande est modifiable et annulable jusqu'au {value}.", \util\DateUi::textual($data->eDateSelected['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
+							echo s("Cette commande est modifiable et annulable jusqu'au {value}.", \util\DateUi::textual($data->eDateSelected['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
 						}
 					echo '</p>';
-					echo '<a href="'.\shop\ShopUi::confirmationUrl($data->eShop, $data->eDateSelected).'" '.(\shop\Shop::isEmbed() ? 'target="_blank"' : '').' class="btn btn-transparent">'.s("Consulter ma commande").'</a>';
+					echo \shop\DateUi::getUpdateLinks($data->eDateSelected);
 				echo '</div>';
 
-			}
+			} else {
 
-			$orderPeriod = new \shop\DateUi()->getOrderPeriod($data->eDateSelected);
-			$orderLimits = new \shop\DateUi()->getOrderLimits($data->eShop, $data->eDateSelected['ccPoint']);
+				$orderPeriod = new \shop\DateUi()->getOrderPeriod($data->eDateSelected);
+				$orderLimits = new \shop\DateUi()->getOrderLimits($data->eShop, $data->eDateSelected['ccPoint']);
 
-			if($orderPeriod) {
-				$details[] = Asset::icon('clock').'  '.$orderPeriod;
-			}
+				if($orderPeriod) {
+					$details[] = Asset::icon('clock').'  '.$orderPeriod;
+				}
 
-			if($orderLimits) {
-				$details[] = Asset::icon('cart').'  '.$orderLimits;
+				if($orderLimits) {
+					$details[] = Asset::icon('cart').'  '.$orderLimits;
+				}
+
+				if(array_sum($data->discounts) > 0) {
+
+					if($data->eShop['shared']) {
+						$details[] = Asset::icon('check-lg').'  '.s("Vos remises commerciales chez certains producteurs seront prises en compte à l'étape suivante");
+					} else {
+						$discount = $data->discounts[$data->eShop['farm']['id']];
+						$details[] = Asset::icon('check-lg').'  '.s("Votre remise commerciale de {value} % sera prise en compte à l'étape suivante", $discount);
+					}
+				}
+
+				if($data->eDateSelected['productsApproximate']) {
+					$details[] = Asset::icon('pen').'  '.s("Certains produits en vente nécessitent une pesée et le montant de votre commande est donc approximatif");
+				}
+
 			}
 
 		} else if(
@@ -144,20 +164,6 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 			$details[] = Asset::icon('lock-fill').'  '.s("Cette vente est désormais terminée !");
 
-		}
-
-		if(array_sum($data->discounts) > 0) {
-
-			if($data->eShop['shared']) {
-				$details[] = Asset::icon('check-lg').'  '.s("Vos remises commerciales chez certains producteurs seront prises en compte à l'étape suivante");
-			} else {
-				$discount = $data->discounts[$data->eShop['farm']['id']];
-				$details[] = Asset::icon('check-lg').'  '.s("Votre remise commerciale de {value} % sera prise en compte à l'étape suivante", $discount);
-			}
-		}
-
-		if($data->eDateSelected['productsApproximate']) {
-			$details[] = Asset::icon('pen').'  '.s("Certains produits en vente nécessitent une pesée et le montant de votre commande est donc approximatif");
 		}
 
 		if($details) {

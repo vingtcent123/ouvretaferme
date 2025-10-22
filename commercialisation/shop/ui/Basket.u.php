@@ -738,7 +738,7 @@ class BasketUi {
 			$h .= '<br/>';
 			$h .= '<div class="util-block-gradient">';
 				$h .= '<h4>'.s("Vous ne souhaitez plus commander ?").'</h4>';
-				$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eDate['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'">'.s("Annuler la commande").'</a>';
+				$h .= '<a data-ajax="'.ShopUi::dateUrl($eShop, $eDate).'/:doCancelCustomer" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'">'.s("Annuler la commande").'</a>';
 			$h .= '</div>';
 		}
 
@@ -863,13 +863,12 @@ class BasketUi {
 				$h .= '<a href="'.encode($eShop['embedUrl']).'" class="color-white"><u>'.s("Retourner sur le site du producteur").'</u></a>';
 			$h .= '</div>';
 		}
+
 		$h .= '</div>';
 
 		if($eSaleReference->acceptUpdateByCustomer()) {
 			$h .= '<div>';
-				$h .= '<a href="'.ShopUi::dateUrl($eDate['shop'], $eDate).'?modify=1" target="_parent" class="btn btn-secondary" title="'.s("Cette commande est modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Modifier ma commande").'</a>';
-				$h .= '&nbsp;';
-				$h .= '<a '.attr('onclick', 'BasketManage.doCancel('.$eDate['id'].')').'" class="btn btn-outline-secondary" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'" title="'.s("Cette commande est annulable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Annuler ma commande").'</a>';
+				$h .= DateUi::getUpdateLinks($eDate);
 			$h .= '</div>';
 			$h .= '<br/>';
 		}

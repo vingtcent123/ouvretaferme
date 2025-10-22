@@ -200,19 +200,6 @@ class BasketManage {
 			.fetch();
 	}
 
-	static doCancel(dateId) {
-
-		const pathname = location.pathname;
-		const shopAndDatePathname = pathname.substr(1, pathname.lastIndexOf('/') - 1);
-
-		new Ajax.Query()
-			.url('/'+ shopAndDatePathname +'/:doCancelCustomer')
-			.fetch()
-			.then(() => {
-				this.deleteBasket(dateId);
-			});
-	}
-
 	static checkBasketButtons(dateId) {
 
 		const basket = this.getBasket(dateId);

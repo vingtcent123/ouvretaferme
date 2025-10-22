@@ -397,9 +397,13 @@ class CustomizeUi {
 
 	}
 
-	protected static function getShopProducts(\Collection $cItem): string {
+	public static function getShopProducts(\Collection $cItem, string $mode = 'text'): string {
 
 		$products = '';
+
+		if($mode === 'html') {
+			$products .= '<ul>';
+		}
 
 		foreach($cItem as $eItem) {
 
@@ -409,8 +413,28 @@ class CustomizeUi {
 				$number = p("{value} colis de {quantity}", "{value} colis de {quantity}", $eItem['number'], ['quantity' => \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'])]);
 			}
 
-			$products .= '- '.s("{name} : {number}", ['name' => encode($eItem['name']), 'number' => $number])."\n";
 
+			if($mode === 'html') {
+				$products .= '<li>';
+				if($eItem['product']->notEmpty()) {
+					$products .= \selling\ProductUi::getVignette($eItem['product'], '1.5rem').'  ';
+				}
+			} else {
+				$products .= '- ';
+			}
+
+			$products .= s("{name} : {number}", ['name' => encode($eItem['name']), 'number' => $number]);
+
+			if($mode === 'html') {
+				$products .= '</li>';
+			} else {
+				$products .= "\n";
+			}
+
+		}
+
+		if($mode === 'html') {
+			$products .= '</ul>';
 		}
 
 		return $products;

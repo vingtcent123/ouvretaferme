@@ -192,6 +192,7 @@ END;
 		if($data->cDate->notEmpty()) {
 
 			$data->eDateSelected = $data->cDate[GET('date', 'int')] ?? $data->cDate->first();
+			$data->eDateSelected['shop'] = $data->eShop;
 
 			$data->cSaleExisting = \shop\SaleLib::getByCustomersForDate($data->eShop, $data->eDateSelected, $data->cCustomerExisting);
 			$data->eSaleReference = $data->cSaleExisting->notEmpty() ? $data->cSaleExisting->first() : new \selling\Sale();

@@ -16,6 +16,12 @@ class DateUi {
 		return s("Livraison du {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($e['deliveryDate'])))).' '.\util\DateUi::textual($e['deliveryDate']));
 	}
 
+	public static function getUpdateLinks(Date $eDate): string {
+		$h = '<a href="'.ShopUi::dateUrl($eDate['shop'], $eDate).'?modify=1" class="btn btn-secondary">'.s("Modifier ma commande").'</a> ';
+		$h .= '<a data-ajax="'.ShopUi::dateUrl($eDate['shop'], $eDate).'/:doCancelCustomer" data-confirm="'.s("Êtes-vous sûr de vouloir annuler cette commande ?").'" class="btn btn-outline-secondary" title="'.s("Cette commande est annulable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'">'.s("Annuler ma commande").'</a>';
+		return $h;
+	}
+
 	public function toggle(Date $eDate) {
 
 		return \util\TextUi::switch([
