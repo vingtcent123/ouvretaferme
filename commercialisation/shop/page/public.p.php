@@ -139,7 +139,12 @@ END;
 			  }
 		
 			  if (message.redirect) {
-					window.location = message.redirect;
+			  		if(window.self === window.top) {
+						window.location = message.redirect;
+					} else {
+						window.parent.location = message.redirect;
+					}
+			  		
 			  }
 		
 		},false);
