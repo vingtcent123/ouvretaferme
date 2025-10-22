@@ -3,7 +3,7 @@ namespace farm;
 
 class FarmSetting extends \Settings {
 
-	const SEASON_BEGIN = '01-01-';
+	const SEASON_BEGIN = '01-01';
 
 	const INVITE_DELAY = 7;
 
