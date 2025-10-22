@@ -493,22 +493,22 @@ class CultivationLib extends CultivationCrud {
 				if($eCultivation['density'] === NULL) {
 					return NULL;
 				} else {
-					return (int)($eSlice['partPlant'] / $eCultivation['density']);
+					return round($eSlice['partPlant'] / $eCultivation['density'], 1);
 				}
 
 			case Cultivation::TRAY :
 				if($eCultivation['density'] === NULL) {
 					return NULL;
 				} else {
-					return (int)($eSlice['partTray'] * $eCultivation['sliceTool']['routineValue']['value'] / $eCultivation['density']);
+					return round($eSlice['partTray'] * $eCultivation['sliceTool']['routineValue']['value'] / $eCultivation['density'], 1);
 				}
 
 		}
 
 		return match($eCultivation['sliceUnit']) {
-			Cultivation::PERCENT => ($eSlice['partPercent'] / 100 * $area),
-			Cultivation::LENGTH => ($eSeries['use'] === Series::BED) ? ($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area) : NULL,
-			Cultivation::AREA => ($eSeries['use'] === Series::BLOCK) ? ($eSlice['partArea']) : NULL,
+			Cultivation::PERCENT => round($eSlice['partPercent'] / 100 * $area, 1),
+			Cultivation::LENGTH => round(($eSeries['use'] === Series::BED) ? ($eSlice['partLength'] / ($eSeries['length'] ?? $eSeries['lengthTarget']) * $area) : NULL, 1),
+			Cultivation::AREA => round(($eSeries['use'] === Series::BLOCK) ? ($eSlice['partArea']) : NULL, 1),
 		};
 
 	}
