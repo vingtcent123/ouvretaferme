@@ -1173,10 +1173,6 @@ class SaleUi {
 	}
 	public static function getPayment(Sale $eSale): string {
 
-		if($eSale->isMarket()) {
-			return '';
-		}
-
 		$paymentList = [];
 
 		if($eSale['invoice']->notEmpty()) {
@@ -1187,6 +1183,10 @@ class SaleUi {
 				$paymentList[] = s("Facture").' '.InvoiceUi::getPaymentStatus($eSale['invoice']);
 			}
 		} else {
+
+			if($eSale['cPayment']->empty()) {
+				return '';
+			}
 
 			$payment = self::getPaymentMethodName($eSale);
 
@@ -1248,9 +1248,7 @@ class SaleUi {
 
 				$update = fn($content) => $eSale->acceptUpdateDeliveredAt() ? $eSale->quick('deliveredAt', $content) : $content;
 
-				$h .= $eSale['preparationStatus'] === Sale::DELIVERED ?
-					$update(\util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE)) :
-					$update($eSale['deliveredAt'] ? s("Planifié le {value}", \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE)) : s("Non planifié"));
+				$h .= $update($eSale['deliveredAt'] ? \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE) : s("Non planifié"));
 				$h .= '</dd>';
 
 				if($eSale->acceptAnyDocument()) {
