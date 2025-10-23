@@ -2210,16 +2210,25 @@ class TaskUi {
 
 		$h .= '</div>';
 
-		if($eTask['cultivation']->notEmpty()) {
+		if(in_array($eTask['action']['fqn'], [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION])) {
 
-			$h .= match($eTask['action']['fqn']) {
+			foreach($eTask['cCultivation'] as $eCultivation) {
 
-				ACTION_SEMIS_DIRECT => $this->displaySowing($eTask),
-				ACTION_SEMIS_PEPINIERE => $this->displayYoungPlant($eTask),
-				ACTION_PLANTATION => $this->displayPlanting($eTask),
-				default => ''
+				$eTaskSelected = (clone $eTask)->merge([
+					'cultivation' => $eCultivation,
+					'plant' => $eCultivation['plant']
+				]);
 
-			};
+				$h .= match($eTaskSelected['action']['fqn']) {
+
+					ACTION_SEMIS_DIRECT => $this->displaySowing($eTaskSelected),
+					ACTION_SEMIS_PEPINIERE => $this->displayYoungPlant($eTaskSelected),
+					ACTION_PLANTATION => $this->displayPlanting($eTaskSelected),
+					default => ''
+
+				};
+
+			}
 
 		}
 
@@ -2853,11 +2862,11 @@ class TaskUi {
 
 	protected function displayAction(Task $eTask, string $content): string {
 
-		$h = '<h3>'.encode($eTask['action']['name']).'</h3>';
+		$ePlant = $eTask['plant'];
+
+		$h = '<h3>'.\plant\PlantUi::getVignette($ePlant, '2rem').'  '.encode($ePlant['name']).'</h3>';
 
 		if($eTask['cultivation']->notEmpty()) {
-
-			$ePlant = $eTask['plant'];
 
 			$info = [
 				'plant' => \plant\PlantUi::getVignette($ePlant, '1.5rem').' <a href="/plant/plant:update?id='.$ePlant['id'].'">'.encode($ePlant['name']).'</a>'

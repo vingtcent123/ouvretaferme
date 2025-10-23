@@ -336,7 +336,6 @@ new \series\TaskPage()
 
 		$data->e['cultivation'] = \series\CultivationLib::getById($data->e['cultivation']);
 
-		\series\CultivationLib::fillSliceStats($data->e['cultivation']);
 		\series\TaskLib::fillHarvestDates($data->e);
 
 		if($data->e['series']->empty()) {
@@ -349,6 +348,19 @@ new \series\TaskPage()
 
 			case ACTION_FERTILISATION :
 				$data->e['cToolFertilizer'] = \farm\ToolLib::getByFarm($data->eFarm, routineName: 'fertilizer', search: new Search(['status' => \farm\Tool::ACTIVE]));
+				break;
+
+			case ACTION_SEMIS_DIRECT :
+			case ACTION_SEMIS_PEPINIERE :
+			case ACTION_PLANTATION :
+				if($data->e['cultivation']->empty()) {
+					$data->e['cCultivation'] = \series\CultivationLib::getBySeries($data->e['series']);
+				} else {
+					$data->e['cCultivation'] = new Collection([$data->e['cultivation']]);
+				}
+				foreach($data->e['cCultivation'] as $eCultivation) {
+					\series\CultivationLib::fillSliceStats($eCultivation);
+				}
 				break;
 
 		}
