@@ -511,7 +511,9 @@ class ProductUi {
 					$h .= '<h1 style="margin-bottom: 0.25rem">';
 						$h .= $eProduct->getName('html');
 					$h .= '</h1>';
-					$h .= $this->toggle($eProduct);
+					if($eProduct['status'] !== \selling\Product::DELETED) {
+						$h .= $this->toggle($eProduct);
+					}
 				$h .= '</div>';
 			$h .= '</div>';
 			$h .= '<div>';
