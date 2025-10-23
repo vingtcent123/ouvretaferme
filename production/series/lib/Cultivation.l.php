@@ -145,7 +145,7 @@ class CultivationLib extends CultivationCrud {
 					])
 					->whereAction('IN', \farm\ActionLib::getByFarm($eFarm, fqn: [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]))
 					->sort(new \Sql('IF(status="'.\series\Task::TODO.'", plannedWeek, doneWeek), id'))
-					->delegateCollection('cultivation'),
+					->delegateCollection('series', callback: fn(\Collection $cTask, Cultivation $eCultivation) => $cTask->find(fn($eTask) => $eTask['cultivation']->empty() or $eTask['cultivation']->is($eCultivation)), propertyParent: 'series'),
 				'firstTaskWeek' => function($e) {
 
 					if($e['cTask']->empty()) {

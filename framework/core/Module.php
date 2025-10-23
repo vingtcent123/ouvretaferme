@@ -2541,7 +2541,7 @@ abstract class ModuleModel {
 				}
 
 				if($callback !== NULL) {
-					$value = $callback($value);
+					$value = $callback($value, $mixed);
 				}
 
 				$mixed[$destination] = $value;
