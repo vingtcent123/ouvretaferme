@@ -377,18 +377,7 @@ class PdfUi {
 							}
 
 							if($eSale['shipping']) {
-								$h .= $this->getDetailTableItem($eSale, new Item([
-									'name' => SaleUi::getShippingName(),
-									'mixedFrozen' => FALSE,
-									'product' => new Product(),
-									'quality' => NULL,
-									'number' => NULL,
-									'packaging' => NULL,
-									'unit' => new Unit(),
-									'unitPrice' => NULL,
-									'price' => $eSale['shipping'],
-									'vatRate' => $eSale['shippingVatRate']
-								]));
+								$h .= $this->getDetailTableItem($eSale, $this->getItemShipping($eSale));
 							}
 
 							if($eSale['discount'] > 0) {
@@ -448,6 +437,23 @@ class PdfUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	protected function getItemShipping(Sale $eSale): Item {
+
+		return new Item([
+			'name' => SaleUi::getShippingName(),
+			'mixedFrozen' => FALSE,
+			'product' => new Product(),
+			'quality' => NULL,
+			'number' => NULL,
+			'packaging' => NULL,
+			'unit' => new Unit(),
+			'unitPrice' => NULL,
+			'price' => $eSale['shipping'],
+			'vatRate' => $eSale['shippingVatRate']
+		]);
 
 	}
 
@@ -1168,7 +1174,13 @@ class PdfUi {
 
 		$itemsList = [];
 
-		foreach($eSale['cItem'] as $eItem) {
+		$cItem = clone $eSale['cItem'];
+
+		if($eSale['shipping']) {
+			$cItem[] = $this->getItemShipping($eSale);
+		}
+
+		foreach($cItem as $eItem) {
 
 			if($eItem['packaging'] !== NULL) {
 				// Gérer les colis en nombre entier
@@ -1189,11 +1201,14 @@ class PdfUi {
 						$item .= '<span class="pdf-sales-label-content-size">'.encode($eItem['product']['unprocessedSize']).'</span>';
 					}
 				$item .= '</div>';
-				$item .= '<div class="pdf-sales-label-content-border">';
-				$item .= '</div>';
+				if($quantity !== NULL) {
+					$item .= '<div class="pdf-sales-label-content-border"></div>';
+				}
 			$item .= '</div>';
 			$item .= '<div class="pdf-sales-label-content-quantity">';
-				$item .= \selling\UnitUi::getValue($quantity, $eItem['unit'], short: TRUE);
+				if($quantity !== NULL) {
+					$item .= \selling\UnitUi::getValue($quantity, $eItem['unit'], short: TRUE);
+				}
 			$item .= '</div>';
 			$item .= '<div class="pdf-sales-label-content-price">';
 				if($eItem['price'] !== NULL) {
