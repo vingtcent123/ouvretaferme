@@ -209,7 +209,7 @@ class ItemLib extends ItemCrud {
 				'unit' => \selling\Unit::getSelection(),
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette', 'farm', 'composition'],
+				'product' => ProductElement::getSelection(),
 				'productComposition' => fn() => FALSE
 			])
 			->whereIngredientOf(NULL)

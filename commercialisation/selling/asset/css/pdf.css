@@ -480,12 +480,12 @@ table.pdf-sales-summary {
 	background-color: white;
 	line-height: 1.2;
 	display: grid;
-	grid-template-columns: 9fr 20fr;
+	grid-template-columns: 8fr 20fr;
 	grid-template-rows: min-content auto;
 }
 
 .pdf-sales-label-address {
-	font-size: 1rem;
+	font-size: 0.8rem;
 }
 
 .pdf-sales-label-details {
@@ -496,10 +496,12 @@ table.pdf-sales-summary {
 }
 
 .pdf-sales-label-details-next {
-	background-color: var(--background);
+	background-color: var(--background-light);
 }
 
 .pdf-sales-label-customer {
+	display: flex;
+	justify-content: space-between;
 	grid-column: span 2;
 	height: 1.5cm;
 	font-size: 1.4rem;
@@ -513,31 +515,22 @@ table.pdf-sales-summary {
 	font-size: 1.1rem;
 }
 
-.pdf-sales-label-customer:not(.pdf-sales-label-customer-with-comment) {
-	display: flex;
-	justify-content: space-between;
-}
-
-.pdf-sales-label-customer.pdf-sales-label-customer-with-comment {
-	font-size: 1.2rem;
-	display: grid;
-	grid-column-gap: 0.25cm;
-	grid-template-columns: 4.75cm 1fr max-content;
-
-}
-
 .pdf-sales-label-comment {
 	font-style: italic;
 	font-size: 1rem;
 }
 
 .pdf-sales-label-page {
-	margin-left: 0.5rem;
+	grid-column: span 4;
+	margin-bottom: 0.2cm;
+}
+
+.pdf-sales-label-page span {
 	padding: 0.25rem 0.5rem;
 	border-radius: var(--radius);
 	background-color: black;
 	color: white;
-	font-size: 80%;
+	font-size: 1rem;
 }
 
 .pdf-sales-label-detail {
@@ -546,8 +539,8 @@ table.pdf-sales-summary {
 	justify-content: center;
 }
 
-.pdf-sales-label-detail:not(:last-child) {
-	border-bottom: 1px dashed var(--border);
+.pdf-sales-label-details-next .pdf-sales-label-detail:not(:first-child) {
+	opacity: 0;
 }
 
 .pdf-sales-label-detail-title {
@@ -562,25 +555,72 @@ table.pdf-sales-summary {
 	text-align: center;
 }
 
+.pdf-sales-label-products {
+	text-transform: uppercase;
+	font-size: 0.8rem;
+	text-align: center;
+	margin-bottom: -0.5rem;
+	z-index: 1;
+	position: relative;
+}
+
+.pdf-sales-label-products span {
+	background-color: white;
+	padding: 0 0.25rem;
+	border-radius: 0.1cm;
+}
+
+.pdf-sales-label-count {
+	text-align: center;
+	font-weight: bold;
+	padding-top: 0.25rem;
+	font-size: 1.75rem;
+	line-height: 1;
+	width: 6rem;
+	height: 3rem;
+	border-radius: 0.1cm;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--background-light);
+	margin: auto;
+}
+
 .pdf-sales-label-content {
 	align-self: start;
 	display: grid;
-	grid-template-columns: auto auto max-content;
+	grid-template-columns: min-content auto auto max-content;
 	grid-template-rows: auto;
-	grid-row-gap: 0.15cm;
+	grid-row-gap: 0.125cm;
+	grid-column-gap: 0.25cm;
 	align-items: stretch;
 	width: 100%;
-	font-size: 0.8rem;
+	font-size: 0.9rem;
 	padding: 0.25cm 0.25cm 0 0.25cm;
 }
 
-.pdf-sales-label-content-15 {
-	grid-row-gap: 0.13cm;
+.pdf-sales-label-content-item {
+	display: grid;
+	grid-template-columns: min-content 1fr;
+	overflow: hidden;
 }
 
-.pdf-sales-label-content > * {
-	border-bottom: 1px solid var(--border);
-	padding-bottom: 0.05cm;
+.pdf-sales-label-content-border {
+	border-bottom: 1px dotted var(--border);
+	transform: translate(0, -3px);
+}
+
+.pdf-sales-label-content-value {
+	display: inline-block;
+	background-color: white;
+	padding-right: 0.15cm;
+	white-space: nowrap;
+}
+
+.pdf-sales-label-content-size {
+	color: var(--muted);
+	margin-left: 0.25cm;
+	font-size: 0.8rem;
 }
 
 .pdf-sales-label-content-shrink {
@@ -591,7 +631,13 @@ table.pdf-sales-summary {
 	letter-spacing: -0.3px;
 }
 
-.pdf-sales-label-content > *:nth-child(3n + 2) {
+.pdf-sales-label-content-quantity {
 	font-weight: bold;
-	padding-left: 0.5cm;
+	padding-left: 0.1cm;
+}
+
+
+.pdf-sales-label-content-price {
+	text-align: right;
+	color: var(--muted);
 }

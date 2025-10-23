@@ -1177,17 +1177,25 @@ class PdfUi {
 				$quantity = $eItem['number'];
 			}
 
-			$item = '<div class="'.(mb_strlen($eItem['name']) > 50 ? 'pdf-sales-label-content-shrink-strong' : (mb_strlen($eItem['name']) > 40 ? 'pdf-sales-label-content-shrink' : '')).'">';
-				if(mb_strlen($eItem['name']) >= 60) {
-					$item .= mb_substr($eItem['name'], 0, 55).'...';
-				} else {
-					$item .= encode($eItem['name'] ?? '');
-				}
+			$item = \Asset::icon('circle', ['class' => 'font-lg']);
+			$item .= '<div class="pdf-sales-label-content-item '.(mb_strlen($eItem['name']) > 50 ? 'pdf-sales-label-content-shrink-strong' : (mb_strlen($eItem['name']) > 40 ? 'pdf-sales-label-content-shrink' : '')).'">';
+				$item .= '<div class="pdf-sales-label-content-value">';
+					if(mb_strlen($eItem['name']) >= 60) {
+						$item .= encode(mb_substr($eItem['name'], 0, 55)).'...';
+					} else {
+						$item .= encode($eItem['name'] ?? '');
+					}
+					if($eItem['product']->notEmpty() and $eItem['product']['unprocessedSize']) {
+						$item .= '<span class="pdf-sales-label-content-size">'.encode($eItem['product']['unprocessedSize']).'</span>';
+					}
+				$item .= '</div>';
+				$item .= '<div class="pdf-sales-label-content-border">';
+				$item .= '</div>';
 			$item .= '</div>';
-			$item .= '<div>';
+			$item .= '<div class="pdf-sales-label-content-quantity">';
 				$item .= \selling\UnitUi::getValue($quantity, $eItem['unit'], short: TRUE);
 			$item .= '</div>';
-			$item .= '<div>';
+			$item .= '<div class="pdf-sales-label-content-price">';
 				if($eItem['price'] !== NULL) {
 					$item .= \util\TextUi::money($eItem['price']);
 				}
@@ -1208,22 +1216,26 @@ class PdfUi {
 
 			$entry = '<div class="pdf-sales-label-item">';
 
-				$entry .= '<div class="pdf-sales-label-customer '.($showComment ? 'pdf-sales-label-customer-with-comment' : '').'">';
-					$entry .= '<span '.(mb_strlen($eCustomer->getName()) > 50 ? 'pdf-sales-label-customer-large' : '').'>'.encode($eCustomer->getName()).'</span>';
-
-					if($showComment) {
-						$entry .= '<span class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</span>';
-					}
-
-					if(count($itemsChunk) > 1) {
-						$entry .= '<span class="pdf-sales-label-page">'.($position + 1).' / '.$pages.'</span>';
-					} else {
-						$entry .= '<span></span>';
-					}
+				$entry .= '<div class="pdf-sales-label-customer">';
+					$entry .= '<div>';
+						$entry .= '<div '.(mb_strlen($eCustomer->getName()) > 50 ? 'pdf-sales-label-customer-large' : '').'>'.encode($eCustomer->getName()).'</div>';
+						if($showComment) {
+							$entry .= '<div class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</div>';
+						}
+					$entry .= '</div>';
+					$entry .= '<div>';
+						$entry .= '<div class="pdf-sales-label-products"><span>'.s("Articles").'</span></div>';
+						$entry .= '<div class="pdf-sales-label-count">'.$eSale['cItem']->count().'</div>';
+					$entry .= '</div>';
 
 				$entry.= '</div>';
 
 				$entry .= '<div class="pdf-sales-label-details '.($position > 0 ? 'pdf-sales-label-details-next' : '').'">';
+
+					$entry .= '<div class="pdf-sales-label-detail">';
+						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
+						$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale->getNumber().'</div>';
+					$entry .= '</div>';
 
 					if(count($farms) > 1) {
 
@@ -1234,81 +1246,73 @@ class PdfUi {
 
 					}
 
-					if($position === 0) {
+					if(in_array($eSale['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET])) {
+
+						\Asset::css('selling', 'sale.css');
 
 						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale->getNumber().'</div>';
-						$entry .= '</div>';
-
-						if(in_array($eSale['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET])) {
-
-							\Asset::css('selling', 'sale.css');
-
-							$entry .= '<div class="pdf-sales-label-detail">';
-								$entry .= '<div class="pdf-sales-label-detail-title">'.s("État").'</div>';
-								$entry .= '<div class="pdf-sales-label-detail-value">';
-									$entry .= '<span class="btn sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
-								$entry .= '</div>';
+							$entry .= '<div class="pdf-sales-label-detail-title">'.s("État").'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value">';
+								$entry .= '<span class="btn sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 							$entry .= '</div>';
-
-						}
-
-						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Date de retrait").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">'.\util\DateUi::numeric($eSale['deliveredAt']).'</div>';
-						$entry .= '</div>';
-						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Produits").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale['cItem']->count().'</div>';
-						$entry .= '</div>';
-						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Montant").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">'.\util\TextUi::money($eSale['priceIncludingVat']).'</div>';
 						$entry .= '</div>';
 
-						if($eSale['cPayment']->notEmpty()) {
-							$entry .= '<div class="pdf-sales-label-detail">';
-								$entry .= '<div class="pdf-sales-label-detail-title">'.s("Moyen de paiement").'</div>';
-								$entry .= '<div class="pdf-sales-label-detail-value">';
-									$entry .= SaleUi::getPaymentMethodName($eSale);
-								$entry .= '</div>';
+					}
+
+					$entry .= '<div class="pdf-sales-label-detail">';
+						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Date de retrait").'</div>';
+						$entry .= '<div class="pdf-sales-label-detail-value">'.\util\DateUi::numeric($eSale['deliveredAt']).'</div>';
+					$entry .= '</div>';
+					$entry .= '<div class="pdf-sales-label-detail">';
+						$entry .= '<div class="pdf-sales-label-detail-title">';
+							$entry .= s("Total");
+						$entry .= '</div>';
+						$entry .= '<div class="pdf-sales-label-detail-value">';
+							$entry .= \util\TextUi::money($eSale['priceIncludingVat']);
+							if($eSale['discount']) {
+								$entry .= '<br/><small style="font-weight: normal">'.s("(avec remise de {value} %)", $eSale['discount']).'</small>';
+							}
+						$entry .= '</div>';
+					$entry .= '</div>';
+
+					if($eSale['cPayment']->notEmpty()) {
+						$entry .= '<div class="pdf-sales-label-detail">';
+							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Moyen de paiement").'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value">';
+								$entry .= SaleUi::getPaymentMethodName($eSale);
 							$entry .= '</div>';
-						}
-
-						if($eSale->isPaymentOnline()) {
-							$entry .= '<div class="pdf-sales-label-detail">';
-								$entry .= '<div class="pdf-sales-label-detail-title">'.s("Paiement").'</div>';
-								$entry .= '<div class="pdf-sales-label-detail-value">';
-									$entry .= \selling\SaleUi::getPaymentStatusForCustomer($eSale, withColors: TRUE);
-								$entry .= '</div>';
-							$entry .= '</div>';
-						}
-
-						if($eSale['shopPoint']->notEmpty()) {
-							$entry .= '<div class="pdf-sales-label-detail">';
-								$entry .= '<div class="pdf-sales-label-detail-title">'.\shop\PointUi::p('type')->values[$eSale['shopPoint']['type']].'</div>';
-								$entry .= '<div class="pdf-sales-label-detail-value">';
-									$entry .= match($eSale['shopPoint']['type']) {
-										\shop\Point::HOME => '<div class="pdf-sales-label-address">'.$eSale->getDeliveryAddress('html').'</div>',
-										\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
-									};
-								$entry .= '</div>';
-							$entry .= '</div>';
-						}
-
-					} else {
-
-						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Suite de commande").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale['id'].'</div>';
 						$entry .= '</div>';
+					}
 
+					if($eSale->isPaymentOnline()) {
+						$entry .= '<div class="pdf-sales-label-detail">';
+							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Paiement").'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value">';
+								$entry .= \selling\SaleUi::getPaymentStatusForCustomer($eSale, withColors: TRUE);
+							$entry .= '</div>';
+						$entry .= '</div>';
+					}
+
+					if($eSale['shopPoint']->notEmpty()) {
+						$entry .= '<div class="pdf-sales-label-detail">';
+							$entry .= '<div class="pdf-sales-label-detail-title">'.\shop\PointUi::p('type')->values[$eSale['shopPoint']['type']].'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value">';
+								$entry .= match($eSale['shopPoint']['type']) {
+									\shop\Point::HOME => '<div class="pdf-sales-label-address">'.$eSale->getDeliveryAddress('html').'</div>',
+									\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
+								};
+							$entry .= '</div>';
+						$entry .= '</div>';
 					}
 
 				$entry .= '</div>';
 
 				$entry .= '<div class="pdf-sales-label-content pdf-sales-label-content-'.count($items).'">';
+
+					if(count($itemsChunk) > 1) {
+						$entry .= '<div class="pdf-sales-label-page"><span>'.s("Page {value}", ($position + 1).' / '.$pages).'</span></div>';
+					}
+
 					$entry .= implode('', $items);
 				$entry .= '</div>';
 
