@@ -2486,18 +2486,22 @@ class TaskUi {
 
 		foreach($cTask as $eTask) {
 
-			if($eTask['cultivation']->empty()) {
+			$eSeries = $eTask['series'];
+
+			if(
+				$eSeries->empty() or
+				$eTask['cCultivation']->empty()
+			) {
 				continue;
 			}
 
-			$ePlant = $eTask['plant'];
-			$eSeries = $eTask['series'];
+			foreach($eTask['cCultivation'] as $eCultivation) {
 
-			$ccVariety[$ePlant['id']] ??= new \Collection();
+				$ePlant = $eCultivation['plant'];
 
-			if($eSeries->notEmpty()) {
+				$ccVariety[$ePlant['id']] ??= new \Collection();
 
-				foreach($eTask['cultivation']['cSlice'] as $eSlice) {
+				foreach($eCultivation['cSlice'] as $eSlice) {
 
 					$eVariety = $eSlice['variety'];
 
@@ -2714,6 +2718,10 @@ class TaskUi {
 
 			$eSeries = $eTask['series'];
 
+			if($eSeries->empty()) {
+				continue;
+			}
+
 			foreach($eTask['cTool?']() as $eTool) {
 
 				$cTool[$eTool['id']] ??= $eTool->merge([
@@ -2724,14 +2732,14 @@ class TaskUi {
 					'targeted' => FALSE,
 				]);
 
-				if($eSeries->notEmpty()) {
+				if(
+					in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]) and
+					$eTask['cCultivation']->notEmpty()
+				) {
 
-					if(
-						in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]) and
-						$eTask['cultivation']->notEmpty()
-					) {
+					foreach($eTask['cCultivation'] as $eCultivation) {
 
-						foreach($eTask['cultivation']['cSlice'] as $eSlice) {
+						foreach($eCultivation['cSlice'] as $eSlice) {
 
 							if($eSlice['youngPlants'] !== NULL) {
 								$cTool[$eTool['id']]['youngPlants'] += $eSlice['youngPlants'];
@@ -2745,14 +2753,14 @@ class TaskUi {
 
 					}
 
-					$cTool[$eTool['id']]['area'] += ($eSeries['area'] ?? $eSeries['areaTarget']);
-					$cTool[$eTool['id']]['length'] += ($eSeries['length'] ?? $eSeries['lengthTarget']);
+				}
 
-					if($eSeries->isTargeted()) {
-						$cTool[$eTool['id']]['targeted'] = TRUE;
-						$targeted = TRUE;
-					}
+				$cTool[$eTool['id']]['area'] += ($eSeries['area'] ?? $eSeries['areaTarget']);
+				$cTool[$eTool['id']]['length'] += ($eSeries['length'] ?? $eSeries['lengthTarget']);
 
+				if($eSeries->isTargeted()) {
+					$cTool[$eTool['id']]['targeted'] = TRUE;
+					$targeted = TRUE;
 				}
 
 			}

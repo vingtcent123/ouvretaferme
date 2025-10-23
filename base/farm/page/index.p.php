@@ -486,13 +486,16 @@ new Page(function($data) {
 
 		foreach($data->cTask as $eTask) {
 
-			if($eTask['cultivation']->notEmpty()) {
-
-				$eTask['cultivation']['series'] = $eTask['series'];
-				$eTask['cultivation']['plant'] = $eTask['plant'];
-
-				\series\CultivationLib::fillSliceStats($eTask['cultivation']);
-
+			if($eTask['cultivation']->empty()) {
+				$eTask['cCultivation'] = \series\CultivationLib::getBySeries($eTask['series']);
+			} else {
+				$eTask['cCultivation'] = new Collection([$eTask['cultivation']->merge([
+					'series' => $eTask['series'],
+					'plant' => $eTask['plant']
+				])]);
+			}
+			foreach($eTask['cCultivation'] as $eCultivation) {
+				\series\CultivationLib::fillSliceStats($eCultivation);
 			}
 
 		}
