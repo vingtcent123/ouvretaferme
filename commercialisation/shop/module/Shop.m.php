@@ -24,6 +24,7 @@ abstract class ShopElement extends \Element {
 
 	const OPEN = 'open';
 	const CLOSED = 'closed';
+	const DELETED = 'deleted';
 
 	public static function getSelection(): array {
 		return Shop::model()->getProperties();
@@ -92,7 +93,7 @@ class ShopModel extends \ModuleModel {
 			'commentCaption' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'emailNewSale' => ['bool', 'cast' => 'bool'],
 			'emailEndDate' => ['bool', 'cast' => 'bool'],
-			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED], 'cast' => 'enum'],
+			'status' => ['enum', [\shop\Shop::OPEN, \shop\Shop::CLOSED, \shop\Shop::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);

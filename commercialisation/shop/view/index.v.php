@@ -11,19 +11,25 @@ new AdaptativeView('/ferme/{id}/boutique/{shop}', function($data, FarmTemplate $
 
 	$t->mainTitle = $uiShopManage->getHeader($data->e, $data->eShop, $data->ccShop);
 
-	echo new \shop\ShopUi()->getDetails($data->eShop);
-
-	if($data->eShop['shared']) {
-		echo $uiShopManage->getSharedContent($data->e, $data->eShop);
+	if($data->eShop['status'] === \shop\Shop::DELETED) {
+		echo '<div class="util-danger mb-1">'.s("Cette boutique a été supprimée et n'est plus disponible.").'</div>';
 	} else {
 
-		if(
-			$data->eShop['ccPoint']->notEmpty() and
-			$data->eShop['cDate']->notEmpty()
-		) {
-			echo $uiShopManage->getDateList($data->e, $data->eShop);
+		echo new \shop\ShopUi()->getDetails($data->eShop);
+
+		if($data->eShop['shared']) {
+			echo $uiShopManage->getSharedContent($data->e, $data->eShop);
 		} else {
-			echo $uiShopManage->getInlineContent($data->e, $data->eShop);
+
+			if(
+				$data->eShop['ccPoint']->notEmpty() and
+				$data->eShop['cDate']->notEmpty()
+			) {
+				echo $uiShopManage->getDateList($data->e, $data->eShop);
+			} else {
+				echo $uiShopManage->getInlineContent($data->e, $data->eShop);
+			}
+
 		}
 
 	}

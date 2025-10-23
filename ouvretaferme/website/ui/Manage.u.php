@@ -192,6 +192,7 @@ class ManageUi {
 					$h .= '<a href="/website/manage:contact?id='.$eWebsite['id'].'" class="dropdown-item">'.\Asset::icon('arrow-right').' '.s("Formulaire de contact").'</a>';
 					$h .= '<a href="/website/manage:newsletter?id='.$eWebsite['id'].'" class="dropdown-item">'.\Asset::icon('arrow-right').' '.s("Formulaire d'inscription à votre lettre d'information").'</a>';
 					$h .= '<div class="dropdown-divider"></div>';
+					$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
 					$h .= '<a data-ajax="/website/manage:doDelete" post-id="'.$eWebsite['id'].'" class="dropdown-item" data-confirm="'.s("Le site ainsi que toutes les données seront supprimées, êtes-vous sûr de vouloir continuer ?").'">'.s("Supprimer définitivement le site").'</a>';
 				$h .= '</div>';
 			$h .= '</div>';

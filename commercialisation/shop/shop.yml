@@ -163,7 +163,7 @@ Shop:
   commentCaption: ?text8
   emailNewSale: bool = FALSE
   emailEndDate: bool = TRUE
-  status: enum(OPEN, CLOSED) = OPEN
+  status: enum(OPEN, CLOSED, DELETED) = OPEN
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [

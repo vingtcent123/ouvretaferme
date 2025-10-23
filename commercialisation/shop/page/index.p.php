@@ -3,7 +3,7 @@ new \farm\FarmPage()
 	->read('/ferme/{id}/boutique/{shop}', function($data) {
 
 		// Liste des boutiques
-		$data->ccShop = \shop\ShopLib::getList($data->e);
+		$data->ccShop = \shop\ShopLib::getList($data->e, withDeleted: TRUE);
 
 		$eShop = GET('shop', 'shop\Shop');
 		$data->eShop = $data->ccShop['selling'][$eShop['id']] ?? $data->ccShop['admin'][$eShop['id']] ?? throw new NotExistsAction();

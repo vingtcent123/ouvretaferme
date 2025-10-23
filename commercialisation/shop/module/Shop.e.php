@@ -84,6 +84,13 @@ class Shop extends ShopElement {
 
 	}
 
+	public function isDeleted(): bool {
+
+		$this->expects(['status']);
+		return $this['status'] === Shop::DELETED;
+
+	}
+
 	public function canShareRead(\farm\Farm $e): bool {
 
 		return (
@@ -112,11 +119,24 @@ class Shop extends ShopElement {
 
 	}
 
-	public function canWrite(): bool {
+	public function canCreate(): bool {
 
 		$this->expects(['farm']);
 
-		return $this['farm']->canManage();
+		return (
+			$this['farm']->canManage()
+		);
+
+	}
+
+	public function canWrite(): bool {
+
+		$this->expects(['farm', 'status']);
+
+		return (
+			$this['farm']->canManage() and
+			$this['status'] !== Shop::DELETED
+		);
 
 	}
 

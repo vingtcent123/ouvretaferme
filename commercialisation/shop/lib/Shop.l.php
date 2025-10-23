@@ -34,13 +34,14 @@ class ShopLib extends ShopCrud {
 		return Shop::model()
 			->select(Shop::getSelection())
 			->whereFarm($eFarm)
+			->whereStatus('!=', Shop::DELETED)
 			->whereType($type, if: $type !== NULL)
 			->sort(['name' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 
 	}
 
-	public static function getList(\farm\Farm $eFarm): \Collection {
+	public static function getList(\farm\Farm $eFarm, bool $withDeleted = FALSE): \Collection {
 
 		$cShare = Share::model()
 			->select(Share::getSelection())
@@ -57,6 +58,7 @@ class ShopLib extends ShopCrud {
 				fn() => $this->whereFarm($eFarm),
 				fn() => $this->whereId('IN', $cShare->getColumnCollection('shop')),
 			)
+			->whereStatus('!=', Shop::DELETED, if: $withDeleted === FALSE)
 			->sort(['name' => SORT_ASC])
 			->getCollection(index: 'id');
 
@@ -92,6 +94,7 @@ class ShopLib extends ShopCrud {
 		return Shop::model()
 			->select(Shop::getSelection())
 			->whereId((int)$id)
+			->whereStatus('!=', Shop::DELETED)
 			->whereShared(TRUE)
 			->whereSharedHash($hash)
 			->whereSharedHashExpiresAt('>=', new \Sql('CURDATE()'))
@@ -285,12 +288,6 @@ class ShopLib extends ShopCrud {
 
 		$e->expects(['farm']);
 
-		if(Date::model()
-			->whereShop($e)
-			->exists()) {
-			throw new \NotExpectedAction('Existing dates.');
-		}
-
 		Shop::model()->beginTransaction();
 
 			Redirect::model()
@@ -309,7 +306,31 @@ class ShopLib extends ShopCrud {
 				->whereShop($e)
 				->delete();
 
-			Shop::model()->delete($e);
+
+			if(Date::model()
+				->whereShop($e)
+				->exists()) {
+
+				$e['status'] = Shop::DELETED;
+
+				Shop::model()
+					->select('status')
+					->update($e);
+
+				$cDate = Date::model()
+					->select(Date::getSelection() + [
+						'shop' => ['shared']
+					])
+					->whereStatus('!=', Date::CLOSED)
+					->getCollection();
+
+				foreach($cDate as $eDate) {
+					DateLib::close($eDate);
+				}
+
+			} else {
+				Shop::model()->delete($e);
+			}
 
 			self::updateHasShop($e['farm']);
 
@@ -323,6 +344,7 @@ class ShopLib extends ShopCrud {
 			'hasShops' => $newValue ?? (
 				Shop::model()
 					->whereFarm($eFarm)
+					->whereStatus('!=', Shop::DELETED)
 					->exists() or
 				Share::model()
 					->whereFarm($eFarm)

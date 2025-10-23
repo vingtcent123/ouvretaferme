@@ -8,7 +8,6 @@ new AdaptativeView('/produit/{id}', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \selling\ProductUi()->displayTitle($data->e, $data->switchComposition);
 
-
 	if($data->e['status'] === \selling\Product::DELETED) {
 		echo '<div class="util-danger mb-1">'.s("Ce produit a été supprimé et n'est plus disponible.").'</div>';
 	} else {

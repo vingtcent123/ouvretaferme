@@ -79,6 +79,11 @@ class ShopManageUi {
 								}
 
 								foreach($cShop as $eShop) {
+
+									if($eShop['status'] === Shop::DELETED) {
+										continue;
+									}
+
 									$h .= '<a href="'.ShopUi::adminUrl($eFarm, $eShop).'" class="dropdown-item '.($eShop['id'] === $eShopCurrent['id'] ? 'selected' : '').'">';
 										$h .= encode($eShop['name']);
 										if($eShop['shared']) {
@@ -110,12 +115,10 @@ class ShopManageUi {
 						$h .= '<a href="/shop/:website?id='.$eShopCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer la boutique sur un site internet").'</a>';
 						$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'?shop='.$eShopCurrent['id'].'&source=shop" class="dropdown-item">'.s("Obtenir les adresses e-mail des clients").'</a>';
 
-						if(
-							$eShopCurrent->canDelete() and
-							$eShopCurrent['cDate']->empty()
-						) {
+						if($eShopCurrent->canDelete()) {
 							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<a data-ajax="/shop/:doDelete" post-id="'.$eShopCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer définitivement cette boutique ?").'">'.s("Supprimer la boutique").'</a>';
+							$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
+							$h .= '<a data-ajax="/shop/:doDelete" post-id="'.$eShopCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer de manière irréversible cette boutique ? Les ventes qui ont eu lieu dans la boutique ne seront pas supprimées.").'">'.s("Supprimer la boutique").'</a>';
 						}
 
 					$h .= '</div>';

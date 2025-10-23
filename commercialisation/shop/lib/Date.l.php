@@ -406,30 +406,34 @@ class DateLib extends DateCrud {
 			->getCollection();
 
 		foreach($cDate as $eDate) {
-
-			Date::model()->beginTransaction();
-
-				$affected = Date::model()
-					->whereStatus('!=', Date::CLOSED)
-					->update($eDate, [
-						'status' => Date::CLOSED
-					]);
-
-				if($affected > 0) {
-
-					$cSale = \selling\Sale::model()
-						->select(\selling\Sale::getSelection())
-						->whereShopDate($eDate)
-						->wherePreparationStatus('IN', [\selling\Sale::BASKET, \selling\Sale::EXPIRED])
-						->getCollection();
-
-					\selling\SaleLib::updatePreparationStatusCollection($cSale, \selling\Sale::CANCELED);
-
-				}
-
-			Date::model()->commit();
-
+			self::close($eDate);
 		}
+
+	}
+
+	public static function close(Date $eDate): void {
+
+		Date::model()->beginTransaction();
+
+			$affected = Date::model()
+				->whereStatus('!=', Date::CLOSED)
+				->update($eDate, [
+					'status' => Date::CLOSED
+				]);
+
+			if($affected > 0) {
+
+				$cSale = \selling\Sale::model()
+					->select(\selling\Sale::getSelection())
+					->whereShopDate($eDate)
+					->wherePreparationStatus('IN', [\selling\Sale::BASKET, \selling\Sale::EXPIRED])
+					->getCollection();
+
+				\selling\SaleLib::updatePreparationStatusCollection($cSale, \selling\Sale::CANCELED);
+
+			}
+
+		Date::model()->commit();
 
 	}
 

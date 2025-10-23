@@ -57,7 +57,10 @@ new Page(function($data) {
 			$data->eShop = new \shop\Shop();
 		}
 
-		if($data->eShop->empty()) {
+		if(
+			$data->eShop->empty() or
+			$data->eShop->isDeleted()
+		) {
 			$action = new ViewAction($data, '/error:404');
 			$action->setStatusCode(404);
 			throw $action;
