@@ -26,8 +26,7 @@ new \account\FinancialYearPage(
 		throw new DataAction(
 			$fecData,
 			'text/txt',
-			// TODO SIRET 
-			$data->eFarm['id'].'FEC'.date('Ymd', strtotime($data->eFinancialYear['closeDate'])).'.txt',
+			$data->eFarm['siret'].'FEC'.date('Ymd', strtotime($data->eFinancialYear['closeDate'])).'.txt',
 		);
 
 	})
