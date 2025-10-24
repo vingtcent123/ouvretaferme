@@ -9,7 +9,7 @@ new \series\TaskPage()
 			'farm' => $data->eFarm,
 			'series' => new \series\Series(),
 			'season' => NULL,
-			'cultivation' => new \series\Series(),
+			'cultivation' => new \series\Cultivation(),
 			'status' => \series\Task::INPUT('status', 'status', \series\Task::TODO),
 			'category' => \farm\CategoryLib::getByFarm($data->eFarm, id: INPUT('category')),
 		]);
