@@ -22,9 +22,9 @@ class Operation extends OperationElement {
 
 	public function canUpdate(): bool {
 
-		$this->expects(['vatDeclaration', 'date', 'financialYear']);
+		$this->expects(['date', 'financialYear']);
 
-		return $this['vatDeclaration']->empty() and \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']) and $this['financialYear']->canUpdate();
+		return \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']) and $this['financialYear']->canUpdate();
 	}
 
 	public function canUpdateQuick(): bool {

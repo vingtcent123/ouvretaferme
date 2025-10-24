@@ -3,7 +3,7 @@ namespace company;
 
 class CompanyLib {
 
-	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'pdf'];
+	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'pdf'];
 
 	public static function connectSpecificDatabaseAndServer(\farm\Farm $eFarm): void {
 

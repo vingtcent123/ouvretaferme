@@ -7,6 +7,11 @@ class CompanySetting extends \Settings {
 
 	public static $accountingBetaTestFarms = [];
 
+	public static $inseeApiKey;
+
+	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
+	const CATEGORIE_JURIDIQUE_SOCIETE_ANONYME = ['from' => 5410, 'to' => 5710];
+
 }
 
 CompanySetting::$mindeeApiKey = fn() => throw new \Exception("No Mindee Api Key set.");
