@@ -3,7 +3,6 @@ new AdaptativeView('salePanel', function($data, PanelTemplate $t) {
 
 		$h = '';
 
-		$h .= new \selling\SaleUi()->getRelativeSales($data->e, $data->relativeSales);
 		$h .= new \selling\SaleUi()->getContent($data->e, $data->cPdf);
 		$h .= new \selling\ItemUi()->getBySale($data->e, $data->cItem);
 		$h .= new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
@@ -27,9 +26,28 @@ new AdaptativeView('salePlain', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 
-	echo new \selling\SaleUi()->getRelativeSales($data->e, $data->relativeSales);
 	echo new \selling\SaleUi()->getContent($data->e, $data->cPdf);
 	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem);
+	echo new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
+	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
+
+});
+
+new AdaptativeView('salePreparing', function($data, FarmTemplate $t) {
+
+	$t->title = \selling\SaleUi::getName($data->e);
+
+	$t->nav = 'selling';
+	$t->subNav = 'sale';
+
+	$t->template .= ' farm-preparing';
+
+	$t->mainTitle = new \selling\PreparationUi()->getHeader($data->e, $data->preparing);
+
+	echo new \selling\SaleUi()->getHeader($data->e);
+	echo new \selling\SaleUi()->getPresentation($data->e, $data->cPdf);
+	echo new \selling\PreparationUi()->getSummary($data->e, $data->cItem, $data->preparing);
+	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem, isPreparing: $data->e['preparationStatus'] === \selling\Sale::CONFIRMED);
 	echo new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
 
@@ -78,16 +96,6 @@ new AdaptativeView('updateShop', function($data, PanelTemplate $t) {
 
 new AdaptativeView('updateCustomer', function($data, PanelTemplate $t) {
 	return new \selling\SaleUi()->updateCustomer($data->e);
-});
-
-new JsonView('doUpdatePreparationStatus', function($data, AjaxTemplate $t) {
-
-	if($data->e['preparationStatus'] === \selling\Sale::SELLING) {
-		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e));
-	} else {
-		$t->ajaxReload();
-	}
-
 });
 
 new HtmlView('getExport', function($data, PdfTemplate $t) {

@@ -37,7 +37,7 @@
 .batch-menu-main {
 	display: flex;
 	justify-content: start;
-	align-items: end;
+	align-items: stretch;
 	width: max-content;
 }
 
@@ -53,7 +53,7 @@
 a.batch-menu-item {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: end;
 	flex-direction: column;
 	white-space: nowrap;
 	background-color: var(--secondary);
@@ -98,6 +98,12 @@ a.batch-menu-item:hover {
 a.batch-menu-item svg {
 	margin-bottom: 0.5rem;
 	font-size: 1.2rem;
+}
+
+a.batch-menu-item span {
+	line-height: 1.2;
+	text-align: center;
+	margin-top: 0.125rem;
 }
 
 a.batch-menu-item:hover span:last-child {

@@ -95,6 +95,7 @@ Farmer:
   viewSellingCustomers: enum(CUSTOMER, GROUP) = CUSTOMER
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingCategoryCurrent: ?selling\Category
+  viewSellingPreparing: ?json
   viewMailingCategory: enum(CAMPAIGN, CONTACT) = CAMPAIGN
   viewShopCatalogCurrent: ?shop\Catalog
   viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER

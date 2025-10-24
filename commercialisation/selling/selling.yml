@@ -187,6 +187,7 @@ Item:
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
   vatRate: ?decimal(4, 2, 0.0, 100)
   stats: bool = TRUE
+  prepared: bool = FALSE
   status: enum(PHP(Sale::model()->getPropertyEnum('preparationStatus')))
   createdAt: datetime = SPECIAL(now)
   deliveredAt: date

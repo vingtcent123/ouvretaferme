@@ -759,6 +759,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePreparationStatus() and
+			$this->isMarket() === FALSE and
 			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED, Sale::DRAFT])
 		);
 

@@ -301,7 +301,7 @@ class MarketUi {
 
 				if($eSaleMarket->isMarketSelling()) {
 
-					$reopenButton = '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::DRAFT.'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
+					$reopenButton = '<a data-ajax="/selling/sale:doUpdateDraftCollection" post-ids="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
 
 					switch($eSale['preparationStatus']) {
 
@@ -319,7 +319,7 @@ class MarketUi {
 									} else {
 										$more .= '<a data-ajax="/selling/market:doNotPaidMarketSale" post-id="'.$eSale['id'].'" data-confirm="'.s("Cette vente sera sortie du logiciel de caisse et vous pourrez la gérer directement depuis la page de vos ventes. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Vente en paiement différé").'</a>';
 									}
-									$more .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::CANCELED.'" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'" class="dropdown-item">'.s("Vente annulée").'</a>';
+									$more .= '<a data-ajax="/selling/sale:doUpdateCanceledCollection" post-ids="'.$eSale['id'].'" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'" class="dropdown-item">'.s("Vente annulée").'</a>';
 								$more .= '</div>';
 
 								$buttons[] = $more;

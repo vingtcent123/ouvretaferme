@@ -547,6 +547,25 @@ class DateUi {
 									$h .= '<span class="color-danger">'.s("Vente hors ligne").'</span>';
 								} else {
 									$h .= $this->getStatus($eShop, $eDate);
+
+									if(
+										$eDate['orderEndAt'] < currentDatetime() and
+										currentDate() <= $eDate['deliveryDate'] and
+										$eDate['sales']['countConfirmed'] > 0
+									) {
+
+										\Asset::css('selling', 'sale.css');
+
+										$eSale = new \selling\Sale([
+											'id' => explode(',', $eDate['sales']['listConfirmed'])[0]
+										]);
+
+										$h .= '<div style="margin-top: 0.25rem">';
+											$h .= '<a href="'.\selling\SaleUi::url($eSale).'?prepare='.$eDate['sales']['listConfirmed'].'" data-ajax-navigation="never" class="btn btn-xs sale-preparation-status-prepared-button" data-confirm="'.p("Il y a {value} commande confirmée à préparer. Démarrer la préparation de la commande ?", "Il y a {value} commandes confirmées à préparer. Démarrer la préparation des commandes ?", $eDate['sales']['countConfirmed']).'">'.\Asset::icon('person-workspace').' '.s("Préparer les commandes").'</a> ';
+										$h .= '</div>';
+
+									}
+
 								}
 							$h .= '</td>';
 
@@ -837,11 +856,13 @@ class DateUi {
 						$eShop['eFarmSelected']->is($eFarm)
 					) {
 
-						if(
-							$eDate->acceptOrder() === FALSE and
-							$cSale->contains(fn($eSale) => $eSale['preparationStatus'] === \selling\Sale::CONFIRMED)
-						) {
-					//		$actions .= '<a href="/selling/sale:create?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn sale-preparation-status-prepared-button">'.\Asset::icon('person-workspace').' '.s("Préparer les commandes").'</a> ';
+						if($eDate->acceptOrder() === FALSE) {
+
+							$cSaleConfirmed = $cSale->find(fn($eSale) => $eSale['preparationStatus'] === \selling\Sale::CONFIRMED);
+
+							if($cSaleConfirmed->notEmpty()) {
+								$actions .= '<a href="'.\selling\SaleUi::url($cSaleConfirmed->first()).'?prepare='.implode(',', $cSaleConfirmed->getIds()).'" data-ajax-navigation="never" class="btn sale-preparation-status-prepared-button" data-confirm="'.p("Il y a {value} commande confirmée à préparer. Démarrer la préparation de la commande ?", "Il y a {value} commandes confirmées à préparer. Démarrer la préparation des commandes ?", $cSaleConfirmed->count()).'">'.\Asset::icon('person-workspace').' '.s("Préparer les commandes").'</a> ';
+							}
 						}
 
 						if(

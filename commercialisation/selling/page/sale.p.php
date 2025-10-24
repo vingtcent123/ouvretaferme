@@ -292,14 +292,19 @@ new \selling\SalePage()
 		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice'], properties: \selling\InvoiceElement::getSelection());
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
 
-		if($data->e['shop']->notEmpty()) {
-			$data->relativeSales = \shop\DateLib::getRelativeSales($data->e['shopDate'], $data->e);
-		} else {
-			$data->relativeSales = NULL;
+		if(get_exists('prepare')) {
+			\selling\PreparationLib::start($data->eFarm, GET('prepare'));
 		}
+
+		$data->preparing = \selling\PreparationLib::getPreparing($data->eFarm, $data->e);
+
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 
-		throw new ViewAction($data, $data->eFarm->canSelling() ? ':salePlain' :  ':salePanel');
+		if($data->preparing) {
+			throw new ViewAction($data, ':salePreparing');
+		} else {
+			throw new ViewAction($data, $data->eFarm->canSelling() ? ':salePlain' :  ':salePanel');
+		}
 
 	})
 	->read('/vente/{id}/devis', function($data) {
@@ -514,11 +519,6 @@ new \selling\SalePage()
 		throw new ReloadLayerAction();
 
 	}, validate: ['canWrite', 'acceptEmptyOnlinePayment'])
-	->doUpdateProperties('doUpdatePreparationStatus', ['preparationStatus'], function($data) {
-
-		throw new ViewAction($data);
-
-		}, validate: ['canUpdatePreparationStatus'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {

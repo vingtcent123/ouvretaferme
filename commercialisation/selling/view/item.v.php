@@ -15,6 +15,11 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \selling\ItemUi()->update($data->e);
 });
 
+new JsonView('doUpdatePrepared', function($data, AjaxTemplate $t) {
+	$t->qs('#item-prepared-switch-'.$data->e['id'])->toggleSwitch('post-prepared', [TRUE, FALSE]);
+	$t->qs('#item-count')->innerHtml($data->remaining);
+});
+
 new AdaptativeView('summary', function($data, PanelTemplate $t) {
 	return new \selling\ItemUi()->getSummary($data->eFarm, $data->date, $data->cSale, $data->ccItemProduct, $data->ccItemSale, $data->cPaymentMethod);
 });

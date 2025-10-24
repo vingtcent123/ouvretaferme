@@ -347,8 +347,7 @@ class SaleLib extends SaleCrud {
 		\shop\Date $eDate,
 		?array $preparationStatus = NULL,
 		\farm\Farm $eFarm = new \farm\Farm(),
-		?array $select = NULL,
-		mixed $sort = new \Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName, m1.id')
+		?array $select = NULL
 	): \Collection {
 
 		return Sale::model()
@@ -357,7 +356,7 @@ class SaleLib extends SaleCrud {
 			->whereShopDate($eDate)
 			->where('m1.farm', $eFarm, if: $eFarm->notEmpty())
 			->wherePreparationStatus('IN', $preparationStatus, if: $preparationStatus !== NULL)
-			->sort($sort)
+			->sort(new \Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName, m1.id'))
 			->getCollection(NULL, NULL, 'id');
 
 	}
@@ -531,7 +530,6 @@ class SaleLib extends SaleCrud {
 			$e['stats'] = FALSE;
 
 		} else {
-			$e['preparationStatus'] ??= Sale::DRAFT;
 		}
 
 		$ePaymentMethod = new \payment\Method();
@@ -551,6 +549,9 @@ class SaleLib extends SaleCrud {
 		if($e->isMarket()) {
 			$e['marketSales'] = 0;
 			$e['paymentStatus'] = NULL;
+			$e['preparationStatus'] ??= Sale::CONFIRMED;
+		} else {
+			$e['preparationStatus'] ??= Sale::DRAFT;
 		}
 
 		if($e['preparationStatus'] === Sale::BASKET) {

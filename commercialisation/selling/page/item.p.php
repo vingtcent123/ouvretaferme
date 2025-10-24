@@ -87,6 +87,13 @@ new \selling\ItemPage()
 	->doUpdate(function($data) {
 		throw new ReloadAction('selling', 'Item::updated');
 	})
+	->doUpdateProperties('doUpdatePrepared', ['prepared'], function($data) {
+
+		$data->remaining = \selling\PreparationLib::getRemaining($data->e['sale']);
+
+		throw new ViewAction($data);
+
+	})
 	->doDelete(function($data) {
 
 		if($data->e['sale']->isMarketSale() === FALSE) {

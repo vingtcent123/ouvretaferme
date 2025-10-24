@@ -14,7 +14,7 @@ class ItemUi {
 		return p('{value} article', '{value} articles', $cItem->count());
 	}
 
-	public function getBySale(Sale $eSale, \Collection $cItem) {
+	public function getBySale(Sale $eSale, \Collection $cItem, bool $isPreparing = FALSE) {
 
 		$eItemCreate = new Item([
 			'sale' => $eSale,
@@ -110,13 +110,17 @@ class ItemUi {
 
 					if($eSale->isMarketPreparing()) {
 						$h .= s("Articles disponibles dans la caisse");
+						$articles = $cItem->count();
+					} else if($isPreparing) {
+						$h .= s("Articles à préparer");
+						$articles = $cItem->find(fn($eItem) => $eItem['prepared'] === FALSE)->count();
 					} else {
 						$h .= s("Articles");
+						$articles = $cItem->count() + ($eSale['shipping'] !== NULL ? 1 : 0);
 					}
 
-					$articles = $cItem->count() + ($eSale['shipping'] !== NULL ? 1 : 0);
 
-					$h .= '  <span class="util-badge bg-primary">'.$articles.'</span>';
+					$h .= '  <span class="util-badge bg-primary" id="item-count">'.$articles.'</span>';
 
 				$h .= '</h3>';
 
@@ -160,7 +164,11 @@ class ItemUi {
 
 		} else {
 
-
+			$withVat = (
+				$isPreparing === FALSE and
+				$eSale['hasVat'] and
+				$eSale->isComposition() === FALSE
+			);
 			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 			$columns = 0;
 
@@ -170,11 +178,15 @@ class ItemUi {
 
 			$h .= '<div class="stick-xs">';
 
-				$h .= '<table class="tbody-even">';
+				$h .= '<table class="tbody-even item-item-wrapper">';
 
 					$h .= '<thead>';
 						$h .= '<tr>';
-							$h .= '<th class="item-item-vignette"></th>';
+							$h .= '<th class="item-item-vignette">';
+								if($isPreparing) {
+									$h .= s("Préparé");
+								}
+							$h .= '</th>';
 
 							$columns++;
 							$h .= '<th class="hide-sm-down">'.ItemUi::p('name')->label.'</th>';
@@ -210,7 +222,7 @@ class ItemUi {
 									}
 								$h .= '</th>';
 							}
-							if($eSale['hasVat'] and $eSale->isComposition() === FALSE) {
+							if($withVat) {
 								$columns++;
 								$h .= '<th class="item-item-vat text-center hide-sm-down">'.s("TVA").'</th>';
 							}
@@ -219,14 +231,14 @@ class ItemUi {
 						$h .= '</tr>';
 					$h .= '</thead>';
 
-					$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging);
+					$h .= $this->getItemsBody($eSale, $cItem, $isPreparing, $columns, $withPackaging, $withVat);
 
 					if($eSale['shipping'] !== NULL) {
 
 						$h .= '<tbody>';
 							$h .= '<tr>';
 								$h .= '<td class="item-item-vignette">'.\Asset::icon('truck').'</td>';
-								$h .= '<td colspan="'.($withPackaging ? 3 : 2).'">'.SaleUi::getShippingName().'</td>';
+								$h .= '<td colspan="'.(2 + (int)$withPackaging).'">'.SaleUi::getShippingName().'</td>';
 								$h .= '<td class="hide-sm-down" colspan="2"></td>';
 
 								$h .= '<td class="item-item-price text-end">';
@@ -239,7 +251,7 @@ class ItemUi {
 									}
 								$h .= '</td>';
 
-								if($eSale['hasVat']) {
+								if($withVat) {
 									$h .= '<td class="item-item-vat text-center hide-sm-down">';
 										$h .= s("{value} %", $eSale['shippingVatRate']);
 									$h .= '</td>';
@@ -267,16 +279,37 @@ class ItemUi {
 
 	}
 
-	protected function getItemsBody(Sale $eSale, \Collection $cItem, int $columns, bool $withPackaging): string {
+	protected function getItemsBody(Sale $eSale, \Collection $cItem, bool $isPreparing, int $columns, bool $withPackaging, bool $withVat): string {
 
 		$h = '';
 
 		foreach($cItem as $eItem) {
 
-			if($eItem['product']->notEmpty()) {
-				$vignette = ProductUi::getVignette($eItem['product'], '2.75rem');
+			if($isPreparing) {
+
+				$vignetteBig = \util\TextUi::switch([
+					'id' => 'item-prepared-switch-'.$eItem['id'],
+					'data-ajax' => '/selling/item:doUpdatePrepared',
+					'post-id' => $eItem['id'],
+					'post-prepared' => $eItem['prepared'] ? FALSE : TRUE
+				], $eItem['prepared']);
+
+				if($eItem['product']->notEmpty()) {
+					$vignetteSmall = ProductUi::getVignette($eItem['product'], '1.5rem');
+				} else {
+					$vignetteSmall = '';
+				}
+
 			} else {
-				$vignette = '';
+
+				if($eItem['product']->notEmpty()) {
+					$vignetteBig = ProductUi::getVignette($eItem['product'], '2.75rem');
+				} else {
+					$vignetteBig = '';
+				}
+
+				$vignetteSmall = '';
+
 			}
 
 			if($eItem['quality']) {
@@ -288,11 +321,14 @@ class ItemUi {
 
 			if($eItem['product']->notEmpty()) {
 
+				$product = $vignetteSmall.' ';
+
 				if($eItem['product']->canRead()) {
-					$product = '<a href="'.ProductUi::url($eItem['product']).'" class="item-item-product-link">'.encode($eItem['name']).'</a>';
+					$product .= '<a href="'.ProductUi::url($eItem['product']).'" class="item-item-product-link">'.encode($eItem['name']).'</a>';
 				} else {
-					$product = encode($eItem['name']);
+					$product .= encode($eItem['name']);
 				}
+
 				if($eItem['product']['mixedFrozen']) {
 					$product .= ' '.ProductUi::getFrozenIcon();
 				}
@@ -316,10 +352,10 @@ class ItemUi {
 			$h .= '<tbody>';
 
 				$h .= '<tr class="item-item-line-1">';
-					$h .= '<td class="item-item-vignette" rowspan="2">'.$vignette.'</td>';
-					$h .= '<td class="hide-md-up" colspan="'.($columns - 3).'" style="border-bottom: 1px dashed var(--border)">';
+					$h .= '<td class="item-item-vignette" rowspan="2">'.$vignetteBig.'</td>';
+					$h .= '<td class="hide-md-up" colspan="'.($columns - 2 - (int)$withVat).'" style="border-bottom: 1px dashed var(--border)">';
 						$h .= '<div class="item-item-product">';
-							$h .= '<div>'.$product.'</div>';
+							$h .= '<div>'.$vignetteSmall.' '.$product.'</div>';
 							if($quality) {
 								$h .= '<span class="item-item-product-quality">'.$quality.'</span>';
 							}
@@ -449,7 +485,7 @@ class ItemUi {
 						$h .= '</td>';
 					}
 
-					if($eSale['hasVat'] and $eSale->isComposition() === FALSE) {
+					if($withVat) {
 
 						$h .= '<td class="item-item-vat text-center hide-sm-down">';
 							$h .= $eItem->quick('vatRate', s('{value} %', $eItem['vatRate']));

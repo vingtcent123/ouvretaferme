@@ -329,6 +329,13 @@ class SaleUi {
 
 					if(
 						$eSale->canWrite() === FALSE or
+						$eSale['preparationStatus'] !== Sale::CONFIRMED
+					) {
+						$batch[] = 'not-prepare';
+					}
+
+					if(
+						$eSale->canWrite() === FALSE or
 						$eSale->acceptStatusConfirmed() === FALSE
 					) {
 						$batch[] = 'not-confirmed';
@@ -570,22 +577,22 @@ class SaleUi {
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
-			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-confirmed-button">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
+			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-confirmed-button">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
 			$menu .= '<span>'.s("Confirmé").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePreparedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-prepared batch-menu-item">';
-			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-prepared-button">'.self::p('preparationStatus')->shortValues[Sale::PREPARED].'</span>';
+			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-prepared-button">'.self::p('preparationStatus')->shortValues[Sale::PREPARED].'</span>';
 			$menu .= '<span>'.s("Préparé").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered batch-menu-item">';
-			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-delivered-button">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
+			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-delivered-button">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
 			$menu .= '<span>'.s("Livré").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel batch-menu-item">';
-			$menu .= '<span class="btn btn-sm sale-preparation-status-batch sale-preparation-status-draft-button">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
+			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-draft-button">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
 			$menu .= '<span>'.s("Annuler").'</span>';
 		$menu .= '</a>';
 
@@ -596,7 +603,7 @@ class SaleUi {
 
 		$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
 			$menu .= \Asset::icon('cash-coin');
-			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de paiement").'</span>';
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Changer de moyen<br/>de paiement").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<div class="dropdown-list bg-secondary">';
@@ -608,6 +615,11 @@ class SaleUi {
 			}
 			$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-group-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
 		$menu .= '</div>';
+
+		$menu .= '<a data-url="/vente/" data-confirm="'.s("Vous allez entrer dans le mode de préparation de commandes. Voulez-vous continuer ?").'" class="batch-menu-prepare batch-menu-item">';
+			$menu .= \Asset::icon('person-workspace');
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Préparer<br/>les commandes").'</span>';
+		$menu .= '</a>';
 
 		$danger = '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
 			$danger .= \Asset::icon('trash');
@@ -1071,11 +1083,10 @@ class SaleUi {
 
 	public function getHeader(Sale $eSale): string {
 
-		$h = '<div class="util-action">';
+		$h = '<div class="util-title">';
 			$h .= '<div>';
 				if($eSale->isComposition() === FALSE) {
-					$h .= '<h1 style="margin-bottom: 0.5rem">'.SaleUi::getName($eSale).'</h1>';
-					$h .= $this->getPreparationStatusForUpdate($eSale);
+					$h .= '<h1 style="margin-bottom: 0.5rem">'.SaleUi::getName($eSale).'  '.$this->getPreparationStatusForUpdate($eSale).'</h1>';
 				} else {
 					$h .= '<h1 class="mb-0">'.encode($eSale['compositionOf']['name']).'</h1>';
 				}
@@ -1084,57 +1095,6 @@ class SaleUi {
 				$h .= '<div>';
 					$h .= $this->getUpdate($eSale, 'btn-primary');
 				$h .= '</div>';
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getRelativeSales(Sale $e, ?array $relativeSales): string {
-
-		if($relativeSales === NULL) {
-			return '';
-		}
-
-		[
-			'count' => $count,
-			'position' => $position,
-			'before' => $eSaleBefore,
-			'after' => $eSaleAfter
-		] = $relativeSales;
-
-		$h = '<div class="sale-relative-wrapper stick-xs">';
-
-			if($eSaleBefore->notEmpty()) {
-				$h .= '<a href="'.SaleUi::url($eSaleBefore).'" class="sale-relative-before">';
-					$h .= '<div class="sale-relative-customer">'.encode($eSaleBefore['customer']->getName()).'</div>';
-					$h .= '<div class="sale-relative-arrow">';
-						$h .= \Asset::icon('chevron-left');
-					$h .= '</div>';
-				$h .= '</a>';
-			} else {
-				$h .= '<div class="sale-relative-before"></div>';
-			}
-
-			$h .= '<div class="sale-relative-title">';
-				$h .= '<h4>'.encode($e['shop']['name']).'</h4>';
-				$h .= '<a href="'.\shop\ShopUi::adminDateUrl($e['farm'], $e['shopDate']).'" class="sale-relative-date">'.s("Livraison du {value}", \util\DateUi::numeric($e['shopDate']['deliveryDate'])).'</a>';
-				$h .= '<div class="sale-relative-current">';
-					$h .= s("Commande {position} / {count}", ['position' => $position, 'count' => $count]);
-				$h .= '</div>';
-			$h .= '</div>';
-
-			if($eSaleAfter->notEmpty()) {
-				$h .= '<a href="'.SaleUi::url($eSaleAfter).'" class="sale-relative-after">';
-					$h .= '<div class="sale-relative-arrow">';
-						$h .= \Asset::icon('chevron-right');
-					$h .= '</div>';
-					$h .= '<div class="sale-relative-customer">'.encode($eSaleAfter['customer']->getName()).'</div>';
-				$h .= '</a>';
-			} else {
-				$h .= '<div class="sale-relative-after"></div>';
 			}
 
 		$h .= '</div>';
@@ -1210,10 +1170,37 @@ class SaleUi {
 			return '';
 		}
 
-		$h = '<div class="util-block stick-xs">';
+		$h = $this->getPresentation($eSale, $cPdf);
+
+		if(
+			(
+				($eSale->isMarket() and $eSale->isMarketPreparing() === FALSE) or
+				($eSale->isMarket() === FALSE and $eSale['items'] > 0)
+			)
+		) {
+			$h .= $this->getSummary($eSale);
+		}
+
+		return $h;
+
+	}
+
+	public function getPresentation(Sale $eSale, \Collection $cPdf): string {
+
+		$h = '<div class="sale-presentation util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eSale['customer']).'</dd>';
+
+
+				$h .= '<dt>'.s("Date de vente").'</dt>';
+				$h .= '<dd>';
+
+				$update = fn($content) => $eSale->acceptUpdateDeliveredAt() ? $eSale->quick('deliveredAt', $content) : $content;
+
+				$h .= $update($eSale['deliveredAt'] ? \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE) : s("Non planifié"));
+				$h .= '</dd>';
+
 				if($eSale->isMarket() === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
@@ -1223,9 +1210,13 @@ class SaleUi {
 
 				if($eSale['shop']->notEmpty()) {
 
-					$h .= '<dt>'.s("Origine").'</dt>';
+					$h .= '<dt>'.s("Boutique").'</dt>';
 					$h .= '<dd>';
-						$h .= \shop\ShopUi::link($eSale['shop']);
+						if($eSale['shopDate']->notEmpty()) {
+							$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
+						} else {
+							$h .= '<a href="'.\shop\ShopUi::adminUrl($eSale['farm'], $eSale['shop']).'">'.encode($eSale['shop']['name']).'</a>';
+						}
 					$h .= '</dd>';
 
 					$h .= '<dt>'.s("Mode de livraison").'</dt>';
@@ -1242,14 +1233,6 @@ class SaleUi {
 					$h .= '</dd>';
 
 				}
-
-				$h .= '<dt>'.s("Date de vente").'</dt>';
-				$h .= '<dd>';
-
-				$update = fn($content) => $eSale->acceptUpdateDeliveredAt() ? $eSale->quick('deliveredAt', $content) : $content;
-
-				$h .= $update($eSale['deliveredAt'] ? \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE) : s("Non planifié"));
-				$h .= '</dd>';
 
 				if($eSale->acceptAnyDocument()) {
 
@@ -1273,15 +1256,6 @@ class SaleUi {
 			$h .= '</dl>';
 
 		$h .= '</div>';
-
-		if(
-			(
-				($eSale->isMarket() and $eSale->isMarketPreparing() === FALSE) or
-				($eSale->isMarket() === FALSE and $eSale['items'] > 0)
-			)
-		) {
-			$h .= $this->getSummary($eSale);
-		}
 
 		return $h;
 
@@ -1311,7 +1285,7 @@ class SaleUi {
 				$h .= '<div class="util-block color-white bg-selling mb-2">';
 					$h .= '<h4>'.s("Votre vente va démarrer ?").'</h4>';
 					$h .= '<p>'.s("Vous pouvez commencer à prendre les commandes avec la caisse virtuelle !").'<br/>'.s("Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro.").'</p>';
-					$h .= '<a data-ajax="/selling/sale:doUpdatePreparationStatus" post-id="'.$eSale['id'].'" post-preparation-status="'.Sale::SELLING.'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
+					$h .= '<a data-ajax="/selling/sale:doUpdateSellingCollection" post-ids="'.$eSale['id'].'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
 				$h .= '</div>';
 
 			} else if($eSale['preparationStatus'] === Sale::SELLING) {
@@ -1573,7 +1547,7 @@ class SaleUi {
 
 		$h = '<h3>'.s("Historique").'</h3>';
 
-		$h .= '<div class="util-overflow-md stick-xs">';
+		$h .= '<div class="util-overflow-sm stick-xs">';
 
 			$h .= '<table>';
 

@@ -73,13 +73,14 @@ class ItemModel extends \ModuleModel {
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 100, 'null' => TRUE, 'cast' => 'float'],
 			'stats' => ['bool', 'cast' => 'bool'],
+			'prepared' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', Sale::model()->getPropertyEnum('preparationStatus'), 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'deliveredAt' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'description', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'description', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -118,6 +119,9 @@ class ItemModel extends \ModuleModel {
 
 			case 'stats' :
 				return TRUE;
+
+			case 'prepared' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -262,6 +266,10 @@ class ItemModel extends \ModuleModel {
 
 	public function whereStats(...$data): ItemModel {
 		return $this->where('stats', ...$data);
+	}
+
+	public function wherePrepared(...$data): ItemModel {
+		return $this->where('prepared', ...$data);
 	}
 
 	public function whereStatus(...$data): ItemModel {

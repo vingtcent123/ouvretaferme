@@ -62,6 +62,7 @@ class Sale {
 			let amountIncluding = 0.0;
 			let amountExcluding = 0.0;
 			let ids = '';
+			let idsList = [];
 
 			selection.forEach(node => {
 
@@ -79,6 +80,7 @@ class Sale {
 				}
 
 				ids += '&ids[]='+ node.value;
+				idsList[idsList.length] = node.value;
 
 			});
 
@@ -155,6 +157,18 @@ class Sale {
 					node => node.hide() :
 					node => {
 						node.removeHide();
+						actions++;
+					}
+			);
+
+			qs(
+				'.batch-menu-prepare',
+				selection.filter('[data-batch~="not-prepare"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+
+						node.setAttribute('href', node.dataset.url + idsList[0] +'?prepare='+ idsList.join(','));
 						actions++;
 					}
 			);

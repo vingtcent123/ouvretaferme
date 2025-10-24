@@ -62,7 +62,7 @@ class DateLib extends DateCrud {
 			->select([
 				'sales' => self::countSales()
 					->group('shopDate')
-					->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'amount' => 0.0])
+					->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'countConfirmed' => 0, 'listConfirmed' => '', 'amount' => 0.0])
 
 			])
 			->whereShop($eShop)
@@ -81,7 +81,7 @@ class DateLib extends DateCrud {
 			->getArrayCopy();
 
 		if($sales['count'] === 0) {
-			$sales = ['count' => 0, 'countValid' => 0, 'amount' => 0.0];
+			$sales = ['count' => 0, 'countValid' => 0, 'countConfirmed' => 0, 'listConfirmed' => '', 'amount' => 0.0];
 		}
 
 		$eDate['sales'] = $sales;
@@ -96,46 +96,12 @@ class DateLib extends DateCrud {
 				->select([
 					'count' => new \Sql('COUNT(*)', 'int'),
 					'countValid' => new \Sql('SUM('.$isValid.')', 'int'),
+					'countConfirmed' => new \Sql('SUM(preparationStatus = \''.\selling\Sale::CONFIRMED.'\')', 'int'),
+					'listConfirmed' => new \Sql('GROUP_CONCAT(IF(preparationStatus = \''.\selling\Sale::CONFIRMED.'\', id, NULL))'),
 					'amountIncludingVat' => new \Sql('SUM(priceIncludingVat)'),
 					'amountValidIncludingVat' => new \Sql('SUM(IF('.$isValid.', priceIncludingVat, 0))'),
 					'amountValidExcludingVat' => new \Sql('SUM(IF('.$isValid.', priceExcludingVat, 0))'),
 				]);
-
-	}
-
-	public static function getRelativeSales(Date $e, \selling\Sale $eSaleSelected): ?array {
-
-		$cSale = \selling\SaleLib::getByDate($e, [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED], eFarm: $eSaleSelected['farm'], select: [
-			'id', 'document',
-			'customer' => ['type', 'name']
-		]);
-
-		$eSaleBefore = new \selling\Sale();
-		$position = 0;
-
-		foreach($cSale as $eSale) {
-
-			$position++;
-
-			if($eSale['id'] === $eSaleSelected['id']) {
-
-				$cSale->next();
-				$eSaleAfter = $cSale->current() ?? new \selling\Sale();
-
-				return [
-					'count' => $cSale->count(),
-					'position' => $position,
-					'before' => $eSaleBefore,
-					'after' => $eSaleAfter
-				];
-
-			}
-
-			$eSaleBefore = $eSale;
-
-		}
-
-		return NULL;
 
 	}
 
@@ -269,7 +235,7 @@ class DateLib extends DateCrud {
 
 			$select['sales'] = self::countSales()
 				->group('shopDate')
-				->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'amount' => 0.0]);
+				->delegateArray('shopDate', callback: fn($value) => $value ?? ['count' => 0, 'countValid' => 0, 'countConfirmed' => 0, 'listConfirmed' => '', 'amount' => 0.0]);
 
 		}
 
