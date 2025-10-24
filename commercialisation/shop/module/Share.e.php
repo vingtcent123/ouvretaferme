@@ -16,7 +16,7 @@ class Share extends ShareElement {
 
 		$this->expects(['farm']);
 
-		return new Shop(['farm' => $this['farm']])->canWrite();
+		return $this['farm']->canManage();
 
 	}
 

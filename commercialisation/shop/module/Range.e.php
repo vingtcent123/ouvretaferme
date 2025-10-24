@@ -29,7 +29,7 @@ class Range extends RangeElement {
 				$this['farm']->canWrite() and
 				$this['shop']->canShareRead($this['farm'])
 			) or
-			$this['shop']->canWrite()
+			$this['farm']->canManage()
 		);
 
 	}

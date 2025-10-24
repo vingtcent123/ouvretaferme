@@ -1684,6 +1684,10 @@ td.util-manage-vignette {
 }
 
 /* Flex */
+.flex-wrap {
+	flex-wrap: wrap;
+}
+
 .flex-align-center {
 	display: flex;
 	align-items: center;

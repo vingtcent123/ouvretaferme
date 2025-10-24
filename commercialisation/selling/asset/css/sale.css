@@ -133,7 +133,6 @@ div.selling-label-example > * {
 .sale-preparation-status-draft-button {
 	color: white !important;
 	background-color: var(--draft);
-	font-weight: bold;
 }
 
 .sale-preparation-status-confirmed {
@@ -143,7 +142,6 @@ div.selling-label-example > * {
 .sale-preparation-status-confirmed-button {
 	background-color: var(--confirmed);
 	color: white !important;
-	font-weight: bold;
 }
 
 .sale-preparation-status-selling {
@@ -154,7 +152,6 @@ div.selling-label-example > * {
 .sale-preparation-status-selling-button {
 	background-color: var(--selling);
 	color: white !important;
-	font-weight: bold;
 }
 
 .sale-preparation-status-prepared {
@@ -164,7 +161,6 @@ div.selling-label-example > * {
 .sale-preparation-status-prepared-button {
 	background-color: var(--prepared);
 	color: white !important;
-	font-weight: bold;
 }
 
 .sale-preparation-status-delivered {
@@ -174,7 +170,6 @@ div.selling-label-example > * {
 .sale-preparation-status-delivered-button {
 	background-color: var(--delivered);
 	color: white !important;
-	font-weight: bold;
 }
 
 .sale-preparation-status-closed {
@@ -184,7 +179,6 @@ div.selling-label-example > * {
 .sale-preparation-status-closed-button {
 	background-color: var(--primary);
 	color: white !important;
-	font-weight: bold;
 }
 
 .sale-preparation-status-basket {
@@ -194,7 +188,6 @@ div.selling-label-example > * {
 .sale-preparation-status-basket-button {
 	background-color: var(--basket);
 	color: white !important;
-	font-weight: bold;
 }
 
 .sale-preparation-status-expired,

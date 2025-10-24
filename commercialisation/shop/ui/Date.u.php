@@ -821,39 +821,55 @@ class DateUi {
 
 			}
 
-			$actions = '';
+			$actions = '<div class="data-actions">';
 
-			$eDate['shop'] = $eShop;
+				$eDate['shop'] = $eShop;
 
-			if($eShop['shared']) {
-				$actions .= self::getSearchFarm($eFarm, $eShop, $eDate);
-			}
+				$actions .= '<div>';
+					if($eShop['shared']) {
+						$actions .= self::getSearchFarm($eFarm, $eShop, $eDate);
+					}
+				$actions .= '</div>';
+				$actions .= '<div>';
 
-			if(
-				$eDate->acceptOrder() and
-				$eDate->acceptNotShared()
-			) {
-				$actions .= '<a href="/selling/sale:create?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une commande").'</a> ';
-			}
+					if(
+						$eShop['shared'] === FALSE or
+						$eShop['eFarmSelected']->is($eFarm)
+					) {
 
-			if(
-				$cSale->notEmpty() and
-				($eShop->isPersonal() or $eShop->canWrite() === FALSE) // L'administrateur ne peut pas télécharger de PDF
-			) {
-				$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eFarm['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
-			}
+						if(
+							$eDate->acceptOrder() === FALSE and
+							$cSale->contains(fn($eSale) => $eSale['preparationStatus'] === \selling\Sale::CONFIRMED)
+						) {
+					//		$actions .= '<a href="/selling/sale:create?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn sale-preparation-status-prepared-button">'.\Asset::icon('person-workspace').' '.s("Préparer les commandes").'</a> ';
+						}
+
+						if(
+							$eDate->acceptOrder() and
+							$eDate->acceptNotShared()
+						) {
+							$actions .= '<a href="/selling/sale:create?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une commande").'</a> ';
+						}
+
+						if(
+							$cSale->notEmpty() and
+							($eShop->isPersonal() or $eShop->canWrite() === FALSE) // L'administrateur ne peut pas télécharger de PDF
+						) {
+							$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eFarm['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
+						}
+
+					}
+
+				$actions .= '</div>';
+
+			$actions .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
 
 				if($actions) {
 
-					$h .= '<div class="util-title">';
-
-						$h .= '<div></div>';
-						$h .= '<div class="flex-align-center">';
-							$h .= $actions;
-						$h .= '</div>';
-
+					$h .= '<div class="data-actions">';
+						$h .= $actions;
 					$h .= '</div>';
 
 				}
