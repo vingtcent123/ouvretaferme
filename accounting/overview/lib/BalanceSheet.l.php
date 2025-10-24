@@ -123,7 +123,7 @@ Class BalanceSheetLib {
 				];
 			}
 			$balanceSheetData['equity'][$class]['current'] = $result;
-			$totals['equity']['current'] = $result;
+			$totals['equity']['current'] += $result;
 		}
 		if($eFinancialYearComparison->notEmpty() and $eFinancialYearComparison->canUpdate()) {
 			$result = \overview\IncomeStatementLib::computeResult($eFinancialYearComparison);
@@ -136,7 +136,7 @@ Class BalanceSheetLib {
 				];
 			}
 			$balanceSheetData['equity'][$class]['comparison'] = $result;
-			$totals['equity']['comparison'] = $result;
+			$totals['equity']['comparison'] += $result;
 		}
 
 		return [$balanceSheetData, $totals];
