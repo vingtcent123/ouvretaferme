@@ -65,7 +65,7 @@ class PreparationUi {
 					$h .= '<h4>'.s("Articles").'</h4>';
 					$h .= '<span>'.$cItem->count().'</span>';
 				} else if($preparing['before']->notEmpty()) {
-					$h .= '<a href="'.SaleUi::url($preparing['before']).'" class="btn btn-preparation-status-confirmed-button"><div class="sale-preparing-arrow mt-1" style="border-color: var(--text)">'.\Asset::icon('chevron-left').'</div></a>';
+					$h .= '<a href="'.SaleUi::url($preparing['before']).'" class="btn btn-preparation-status-confirmed-button"><div class="sale-preparing-arrow" style="border-color: var(--text)">'.\Asset::icon('chevron-left').'</div></a>';
 				}
 			$h .= '</div>';
 
@@ -112,7 +112,7 @@ class PreparationUi {
 					}
 
 				} else if($preparing['after']->notEmpty()) {
-					$h .= '<a href="'.SaleUi::url($preparing['after']).'" class="btn btn-preparation-status-confirmed-button"><div class="sale-preparing-arrow mt-1" style="border-color: var(--text)">'.\Asset::icon('chevron-left').'</div></a>';
+					$h .= '<a href="'.SaleUi::url($preparing['after']).'" class="btn btn-preparation-status-confirmed-button"><div class="sale-preparing-arrow" style="border-color: var(--text)">'.\Asset::icon('chevron-right').'</div></a>';
 				}
 			$h .= '</div>';
 
