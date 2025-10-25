@@ -15,7 +15,7 @@ class MarketLib {
 				'hasVat', 'taxes',
 				'deliveredAt'
 			])
-			->whereOrigin(Sale::MARKET)
+			->whereProfile(Sale::MARKET)
 			->wherePriceIncludingVat('!=', NULL)
 			->wherePreparationStatus('IN', [Sale::CLOSED, Sale::SELLING])
 			->whereDeliveredAt($comparator, $eSale['deliveredAt'])
@@ -253,12 +253,12 @@ class MarketLib {
 			}
 
 			// On sort la vente du logiciel de caisse
-			$eSale['origin'] = Sale::SALE;
+			$eSale['profile'] = Sale::SALE;
 			$eSale['marketParent'] = new Sale();
 			$eSale['stats'] = TRUE;
 
 			Sale::model()
-				->select('origin', 'marketParent', 'stats')
+				->select('profile', 'marketParent', 'stats')
 				->update($eSale);
 
 			Item::model()

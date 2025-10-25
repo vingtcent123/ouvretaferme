@@ -611,7 +611,7 @@ class ItemLib extends ItemCrud {
 	private static function preparePricing(Item $e, array &$properties = []): void {
 
 		$e->expects([
-			'sale' => ['farm', 'taxes', 'origin'],
+			'sale' => ['farm', 'taxes', 'profile'],
 			'locked',
 			'unitPrice', 'number', 'packaging', 'vatRate', 'discount'
 		]);
@@ -766,7 +766,7 @@ class ItemLib extends ItemCrud {
 
 	protected static function checkMarketDuplicate(Sale $eSale, \Collection $cItem) {
 
-		$eSale->expects(['origin']);
+		$eSale->expects(['profile']);
 
 		if($eSale->isMarket() === FALSE) {
 			return;

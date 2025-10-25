@@ -395,7 +395,7 @@ class MembershipLib {
 		$eSale = new \selling\Sale([
 			'farm' => $eFarmOtf,
 			'customer'=> $eCustomer,
-			'origin' => \selling\Sale::SALE,
+			'profile' => \selling\Sale::SALE,
 			'shop' => new \shop\Shop(),
 			'taxes' => \selling\Sale::EXCLUDING,
 			'type' => \selling\Sale::PRO,

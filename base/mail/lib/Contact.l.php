@@ -311,7 +311,7 @@ class ContactLib extends ContactCrud {
             ->select([
 					'customer' => ['type', 'email']
 				])
-				->whereOrigin('IN', [\selling\Sale::SALE_MARKET, \selling\Sale::SALE])
+				->whereProfile('IN', [\selling\Sale::SALE_MARKET, \selling\Sale::SALE])
 				->whereCustomer('!=', NULL)
 			  	->whereDeliveredAt('>', new \Sql('NOW() - INTERVAL '.(int)$search->get('period').' MONTH'))
             ->wherePreparationStatus(\selling\Sale::DELIVERED)

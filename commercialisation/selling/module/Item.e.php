@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'origin', 'type', 'taxes', 'discount', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt', 'customer'],
+			'sale' => ['farm', 'hasVat', 'profile', 'type', 'taxes', 'discount', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt', 'customer'],
 			'customer' => ['name', 'type'],
 			'farm' => ['name'],
 			'unit' => \selling\Unit::getSelection(),
@@ -53,7 +53,7 @@ class Item extends ItemElement {
 	public function canDelete(): bool {
 
 		$this->expects([
-			'sale' => ['origin']
+			'sale' => ['profile']
 		]);
 
 		if($this['sale']->isMarketSale() === FALSE) {
@@ -123,7 +123,7 @@ class Item extends ItemElement {
 			->setCallback('number.empty', function(?float $number) use($p): bool {
 
 				$this->expects([
-					'sale' => ['origin'],
+					'sale' => ['profile'],
 				]);
 
 				if(($p->isBuilt('locked') and $this['locked'] === Item::NUMBER) or $this['sale']->isMarket()) {

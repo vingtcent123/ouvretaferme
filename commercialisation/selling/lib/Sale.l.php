@@ -208,7 +208,7 @@ class SaleLib extends SaleCrud {
 		if($search->get('invoicing')) {
 			Sale::model()
 				->whereInvoice(NULL)
-				->whereOrigin('!=', Sale::MARKET)
+				->whereProfile('!=', Sale::MARKET)
 				->whereItems('>', 0)
 				->wherePreparationStatus(Sale::DELIVERED);
 		}
@@ -400,7 +400,7 @@ class SaleLib extends SaleCrud {
 			->whereId('IN', $ids)
 			->whereItems('>', 0)
 			->whereInvoice(NULL, if: $checkInvoice)
-			->whereOrigin('!=', Sale::MARKET)
+			->whereProfile('!=', Sale::MARKET)
 			->wherePreparationStatus(Sale::DELIVERED)
 			->sort(['id' => SORT_ASC])
 			->getCollection();
@@ -426,7 +426,7 @@ class SaleLib extends SaleCrud {
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
-			->whereOrigin('IN', [Sale::SALE, Sale::SALE_MARKET])
+			->whereProfile('IN', [Sale::SALE, Sale::SALE_MARKET])
 			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
 			->or(
 			fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
@@ -514,7 +514,7 @@ class SaleLib extends SaleCrud {
 
 		$e->expects([
 			'farm' => ['hasSales'],
-			'origin',
+			'profile',
 			'type', 'taxes', 'hasVat',
 			'customer',
 		]);
@@ -684,7 +684,7 @@ class SaleLib extends SaleCrud {
 
 	public static function createFromMarket(Sale $eSale): Sale {
 
-		$eSale->expects(['id', 'farm', 'origin']);
+		$eSale->expects(['id', 'farm', 'profile']);
 
 		if($eSale->isMarket() === FALSE) {
 			throw new \Exception('Invalid sale');
@@ -694,7 +694,7 @@ class SaleLib extends SaleCrud {
 
 		$e['customer'] = new Customer();
 		$e['farm'] = $eSale['farm'];
-		$e['origin'] = Sale::SALE_MARKET;
+		$e['profile'] = Sale::SALE_MARKET;
 		$e['type'] = Customer::PRIVATE;
 		$e['taxes'] = $e->getTaxesFromType();
 		$e['hasVat'] = $e['farm']->getSelling('hasVat');
@@ -1129,7 +1129,7 @@ class SaleLib extends SaleCrud {
 	public static function delete(Sale $e): void {
 
 		$e->expects([
-			'id', 'origin',
+			'id', 'profile',
 			'shopDate',
 			'preparationStatus',
 		]);
@@ -1161,7 +1161,7 @@ class SaleLib extends SaleCrud {
 				Sale::model()
 					->whereId('IN', $cSaleMarket)
 					->update([
-						'origin' => Sale::SALE,
+						'profile' => Sale::SALE,
 						'marketParent' => NULL
 					]);
 

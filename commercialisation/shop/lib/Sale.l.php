@@ -222,7 +222,7 @@ class SaleLib {
 	public static function buildReference(\selling\Sale $eSaleReference, \user\User $eUser, array &$properties = []): void {
 
 		$eSaleReference->merge([
-			'origin' => \selling\Sale::SALE,
+			'profile' => \selling\Sale::SALE,
 			'type' => $eSaleReference['shopDate']['type'],
 			'deliveredAt' => $eSaleReference['shopDate']['deliveryDate'],
 			'shopPoint' => PointLib::getById($eSaleReference['shopPoint'])

@@ -68,7 +68,7 @@ class SaleModel extends \ModuleModel {
 			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
-			'origin' => ['enum', [\selling\Sale::SALE, \selling\Sale::SALE_MARKET, \selling\Sale::MARKET, \selling\Sale::COMPOSITION], 'cast' => 'enum'],
+			'profile' => ['enum', [\selling\Sale::SALE, \selling\Sale::SALE_MARKET, \selling\Sale::MARKET, \selling\Sale::COMPOSITION], 'cast' => 'enum'],
 			'taxes' => ['enum', [\selling\Sale::INCLUDING, \selling\Sale::EXCLUDING], 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
 			'conversion' => ['bool', 'cast' => 'bool'],
@@ -117,7 +117,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'origin', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -150,7 +150,7 @@ class SaleModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'origin' :
+			case 'profile' :
 				return Sale::SALE;
 
 			case 'organic' :
@@ -200,7 +200,7 @@ class SaleModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'origin' :
+			case 'profile' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'taxes' :
@@ -266,8 +266,8 @@ class SaleModel extends \ModuleModel {
 		return $this->where('customer', ...$data);
 	}
 
-	public function whereOrigin(...$data): SaleModel {
-		return $this->where('origin', ...$data);
+	public function whereProfile(...$data): SaleModel {
+		return $this->where('profile', ...$data);
 	}
 
 	public function whereTaxes(...$data): SaleModel {

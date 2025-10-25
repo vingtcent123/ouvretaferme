@@ -33,25 +33,25 @@ class Sale extends SaleElement {
 
 	public function isSale(): bool {
 
-		$this->expects(['origin']);
+		$this->expects(['profile']);
 
-		return $this['origin'] === Sale::SALE;
+		return $this['profile'] === Sale::SALE;
 
 	}
 
 	public function isMarket(): bool {
 
-		$this->expects(['origin']);
+		$this->expects(['profile']);
 
-		return $this['origin'] === Sale::MARKET;
+		return $this['profile'] === Sale::MARKET;
 
 	}
 
 	public function isMarketSale(): bool {
 
-		$this->expects(['origin']);
+		$this->expects(['profile']);
 
-		return $this['origin'] === Sale::SALE_MARKET;
+		return $this['profile'] === Sale::SALE_MARKET;
 
 	}
 
@@ -65,15 +65,15 @@ class Sale extends SaleElement {
 
 	public function isComposition(): bool {
 
-		$this->expects(['origin']);
+		$this->expects(['profile']);
 
-		return $this['origin'] === Sale::COMPOSITION;
+		return $this['profile'] === Sale::COMPOSITION;
 
 	}
 
 	public function canSendTicket(): bool {
 
-		$this->expects(['origin', 'price', 'preparationStatus']);
+		$this->expects(['profile', 'price', 'preparationStatus']);
 
 		return $this->isMarketSale() and $this['price'] > 0 and $this['preparationStatus'] === Sale::DELIVERED;
 
@@ -233,7 +233,7 @@ class Sale extends SaleElement {
 
 	public function acceptUpdateMarketSalePayment(): bool {
 
-		$this->expects(['origin']);
+		$this->expects(['profile']);
 
 		return (
 			$this->isMarketSale() and
@@ -931,7 +931,7 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-				$this->expects(['origin']);
+				$this->expects(['profile']);
 
 				if($fw->has('Sale::customer.check')) { // L'action génère déjà une erreur
 					return TRUE;
@@ -961,7 +961,7 @@ class Sale extends SaleElement {
 
 					case 'update' :
 
-						$this->expects(['preparationStatus', 'deliveredAt', 'origin', 'marketParent']);
+						$this->expects(['preparationStatus', 'deliveredAt', 'profile', 'marketParent']);
 
 						if($this->acceptUpdatePreparationStatus() === FALSE) {
 							return FALSE;
@@ -988,7 +988,7 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-				$this->expects(['farm', 'origin']);
+				$this->expects(['farm', 'profile']);
 
 				if($this->isMarket() === FALSE) {
 					return TRUE;

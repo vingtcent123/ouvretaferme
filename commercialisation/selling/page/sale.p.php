@@ -5,16 +5,16 @@ new \selling\SalePage()
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
 		if(input_exists('compositionOf')) {
-			$origin = \selling\Sale::COMPOSITION;
+			$profile = \selling\Sale::COMPOSITION;
 		} else if(INPUT('market', 'bool')) {
-			$origin = \selling\Sale::MARKET;
+			$profile = \selling\Sale::MARKET;
 		} else {
-			$origin = \selling\Sale::SALE;
+			$profile = \selling\Sale::SALE;
 		}
 
 		$eSale = new \selling\Sale([
 			'farm' => $data->eFarm,
-			'origin' => $origin,
+			'profile' => $profile,
 		]);
 
 		if($eSale->isComposition()) {
@@ -164,7 +164,7 @@ new Page(function($data) {
 			'type' => NULL,
 			'shop' => new \shop\Shop(),
 			'shopDate' => new \shop\Date(),
-			'origin' => \selling\Sale::SALE,
+			'profile' => \selling\Sale::SALE,
 			'customer' => $eCustomer,
 			'cCustomer' => $cCustomer
 		]);
@@ -214,7 +214,7 @@ new Page(function($data) {
 
 		$eSaleReference = new \selling\Sale([
 			'farm' => $data->eFarm,
-			'origin' => \selling\Sale::SALE,
+			'profile' => \selling\Sale::SALE,
 		]);
 
 		$eSaleReference->validate('canCreate');

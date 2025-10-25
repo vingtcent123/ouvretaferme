@@ -32,7 +32,7 @@ class SaleUi {
 
 	public static function getName(Sale $eSale): string {
 
-		$eSale->expects(['id', 'origin', 'priceExcludingVat', 'compositionEndAt']);
+		$eSale->expects(['id', 'profile', 'priceExcludingVat', 'compositionEndAt']);
 
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
@@ -1597,7 +1597,7 @@ class SaleUi {
 
 	public function create(Sale $eSale): \Panel {
 
-		if($eSale['origin'] === Sale::COMPOSITION) {
+		if($eSale['profile'] === Sale::COMPOSITION) {
 			return $this->createComposition($eSale);
 		} else {
 			return $this->createCustomer($eSale);
