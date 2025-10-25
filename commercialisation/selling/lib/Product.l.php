@@ -3,8 +3,15 @@ namespace selling;
 
 class ProductLib extends ProductCrud {
 
-	public static function getPropertiesCreate(): \Closure {
-		return fn($eProduct) => array_merge(['unit'], ProductLib::getPropertiesWrite($eProduct, 'create'));
+	public static function getPropertiesCreate(): array {
+		return [
+			'unit', 'name', 'category', 'profile',
+			'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen',
+			'origin', 'description', 'quality',
+			'pro', 'private', 'proOrPrivate',
+			'proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat',
+			'proOrPrivatePrice'
+		];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
@@ -22,39 +29,26 @@ class ProductLib extends ProductCrud {
 				$properties[] = 'unit';
 			}
 
-			return array_merge($properties, ProductLib::getPropertiesWrite($eProduct, 'update'));
+			if($eProduct['profile'] !== Product::COMPOSITION) {
+				$properties[] = 'profile';
+				$properties[] = 'pro';
+				$properties[] = 'private';
+			}
+
+			$properties = array_merge($properties, [
+				'name', 'category',
+				'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen',
+				'origin', 'description', 'quality',
+				'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep', 'privatePrice', 'privatePriceDiscount', 'privateStep', 'vat',
+				'proOrPrivatePrice'
+			]);
+
+			return $properties;
 
 		};
 
 	}
 
-	public static function getPropertiesWrite(Product $eProduct, string $for): array {
-
-		$properties = ['name', 'category', 'profile', 'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen', 'origin', 'description', 'quality'];
-
-		if($for === 'create') {
-			$properties = array_merge($properties, ['pro', 'private', 'proOrPrivate']);
-		}
-
-		if(
-			$for === 'update' and
-			$eProduct['profile'] !== Product::COMPOSITION
-		) {
-			$properties = array_merge($properties, ['pro', 'private']);
-		}
-
-		$properties = array_merge($properties, ['proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat']);
-
-		if($for === 'update') {
-			$properties[] = 'privateStep';
-			$properties[] = 'proStep';
-		}
-
-		$properties[] = 'proOrPrivatePrice';
-
-		return $properties;
-
-	}
 	public static function update(Product $e, array $properties): void {
 
 		if(array_delete($properties, 'privatePriceDiscount')) {

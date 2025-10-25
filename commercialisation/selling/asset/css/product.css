@@ -179,3 +179,7 @@ div.product-vignette-composition {
 .product-write-profile:has(input[name="profile"][value="composition"]:checked) [data-not-profile~="composition"] {
 	display: none;
 }
+
+#product-update.product-write-profile [data-field="profile"]:has(input[name="profile"][value="composition"]:checked) {
+	display: none;
+}

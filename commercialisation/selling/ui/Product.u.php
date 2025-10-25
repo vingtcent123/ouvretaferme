@@ -922,14 +922,18 @@ class ProductUi {
 	private function getFieldProfile(\util\FormUi $form, Product $eProduct): string {
 
 		$h = $form->dynamicGroup($eProduct, 'profile');
+
 		$h .= '<div class="util-block bg-background-light product-write-profile-details">';
 
 			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('compositionVisibility')).'">';
-				$h .= '<div class="util-block-help">';
-					$h .= '<h3>'.s("Qu'est-ce qu'un produit composé ?").'</h3>';
-					$h .= '<p>'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</p>';
-					$h .= '<p>'.s("Vous pouvez choisir la composition de votre produit à l'étape suivante.").'</p>';
-				$h .= '</div>';
+
+				if($eProduct->exists() === FALSE) {
+					$h .= '<div class="util-block-help">';
+						$h .= '<h3>'.s("Qu'est-ce qu'un produit composé ?").'</h3>';
+						$h .= '<p>'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</p>';
+						$h .= '<p>'.s("Vous pouvez choisir la composition de votre produit à l'étape suivante.").'</p>';
+					$h .= '</div>';
+				}
 				$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
 			$h .= '</div>';
 
@@ -1135,7 +1139,7 @@ class ProductUi {
 			case 'profile' :
 				$d->placeholder = s("Non concerné");
 				$d->field = 'radio';
-				$d->values = [
+				$d->values = fn(Product $e) => [
 					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale").'  <span class="color-muted"><small>'.s("Fruits, légumes, fleurs, plants...").'</small></span>',
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
 					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, confitures...").'</small></span>',
