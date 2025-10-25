@@ -47,11 +47,16 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 
 	echo '<br/><br/>';
 
+	// Première étape : les infos légales
 	if($data->eFarm->isLegalComplete() === FALSE) {
+
 		echo '<h3>'.s("Informations requises sur votre ferme").'</h3>';
 		echo new \farm\FarmUi()->updateLegal($data->eFarm);
-	} else {
+
+	} else { // 2è étape : l'exercice
+
 		echo new \company\CompanyUi()->create($data->eFarm);
+
 	}
 
 });

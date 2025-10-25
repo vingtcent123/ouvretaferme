@@ -5,10 +5,10 @@ class FinancialYearLib extends FinancialYearCrud {
 	private static ?\Collection $cOpenFinancialYear = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
+		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem', 'legalCategory', 'associates'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
+		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem', 'legalCategory', 'associates'];
 	}
 
 	public static function getPreviousFinancialYear(FinancialYear $eFinancialYear): FinancialYear {

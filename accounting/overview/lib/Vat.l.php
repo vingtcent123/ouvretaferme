@@ -221,26 +221,16 @@ Class VatLib {
 			case \account\FinancialYear::MONTHLY:
 				$isRegionParisienne = in_array(mb_substr($eFarm['legalPostcode'], 0, 2), ['75', '92', '93', '94']);
 
-				// TODO Émilie: changer pour récupérer cette donnée et la stocker dans les données de la ferme
-				$curl = new \util\CurlLib();
-				$options = [
-					CURLOPT_HTTPHEADER => [
-						'X-INSEE-Api-Key-Integration: '.\company\CompanySetting::$inseeApiKey,
-					],
-					CURLOPT_RETURNTRANSFER => TRUE,
-				];
-				$data = json_decode($curl->exec('https://api.insee.fr/api-sirene/3.11/siren/'.mb_substr(str_replace(' ', '', $eFarm['siret']), 0, 9), [], 'GET', $options));
 				$firstLetter = mb_strtolower(mb_substr($eFarm['legalName'], 0, 1));
-				$categorieJuridique = (int)$data->uniteLegale->periodesUniteLegale[0]->categorieJuridiqueUniteLegale ?? NULL;
 
 				if($isRegionParisienne) {
-					if($categorieJuridique === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
+					if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
 						if($firstLetter <= 'h') {
 							$day = 15;
 						} else {
 							$day = 17;
 						}
-					} else if($categorieJuridique >= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $categorieJuridique <= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
+					} else if($eFinancialYear['legalCategory'] >= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $eFinancialYear['legalCategory'] <= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
 						if((int)mb_substr($eFarm['siret'], 0, 2) <= 74) {
 							$day = 23;
 						} else {
@@ -256,13 +246,13 @@ Class VatLib {
 						}
 					} // Autres redevables : 24 (qui ?)
 				} else { // Autres départements
-					if($categorieJuridique === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
+					if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
 						if($firstLetter <= 'h') {
 							$day = 16;
 						} else {
 							$day = 19;
 						}
-					} else if($categorieJuridique >= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $categorieJuridique <= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
+					} else if($eFinancialYear['legalCategory'] >= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $eFinancialYear['legalCategory'] <= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
 						$day = 24;
 					} else { // Autres sociétés
 						$day = 21;
@@ -371,9 +361,8 @@ Class VatLib {
 		}
 
 		// Taxe ADAR
-		// TODO Émilie : récupérer si cest un GAEC (catégorie juridique 6533) et le nombre d'associés
 		$turnover = round(array_sum(array_filter($vatData, fn($index, $key) => in_array($key, ['0033', '0207-base', '0151-base', '0105-base', '0100-base', '0201-base', '0900-base', '0950-base', '0210-base', '0211-base', '0212-base', '0213-base', '0214-base', '0215-base', '0970-base', '0981-base']), ARRAY_FILTER_USE_BOTH)), $precision);
-		$associates = 3;
+		$associates = $eFinancialYear['associates'];
 		$fixedUnit = 90;
 		$fixed = $fixedUnit * $associates;
 
