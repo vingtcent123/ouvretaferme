@@ -55,7 +55,8 @@ class FinancialYear extends FinancialYearElement {
 			->setCallback('startDate.check', function(string $date) use($input): bool {
 
 				// Si on est en création de module de compta (= la BD n'existe pas encore)
-				if(($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] === FALSE) {
+				$hasAccounting = ($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] ?? TRUE;
+				if($hasAccounting === FALSE) {
 					return mb_strlen($date) > 0 and \util\DateLib::isValid($date);
 				}
 
@@ -76,7 +77,8 @@ class FinancialYear extends FinancialYearElement {
 			->setCallback('endDate.check', function(string $date) use($input): bool {
 
 				// Si on est en création de module de compta (= la BD n'existe pas encore)
-				if(($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] === FALSE) {
+				$hasAccounting = ($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] ?? TRUE;
+				if($hasAccounting === FALSE) {
 					return mb_strlen($date) > 0 and \util\DateLib::isValid($date);
 				}
 
