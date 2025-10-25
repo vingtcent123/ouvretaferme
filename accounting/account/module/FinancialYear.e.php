@@ -52,11 +52,16 @@ class FinancialYear extends FinancialYearElement {
 
 				return TRUE;
 			})
-			->setCallback('startDate.check', function(string $date): bool {
+			->setCallback('startDate.check', function(string $date) use($input): bool {
+
+				// Si on est en création de module de compta (= la BD n'existe pas encore)
+				if(($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] === FALSE) {
+					return mb_strlen($date) > 0 and \util\DateLib::isValid($date);
+				}
 
 				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id'] ?? NULL);
 
-				return $eFinancialYear->exists() === FALSE;
+				return $eFinancialYear->exists() === FALSE and \util\DateLib::isValid($date);
 
 			})
 			->setCallback('endDate.loseOperations', function(string $date) use($p): bool {
@@ -68,11 +73,30 @@ class FinancialYear extends FinancialYearElement {
 				return TRUE;
 
 			})
-			->setCallback('endDate.check', function(string $date) use($p): bool {
+			->setCallback('endDate.check', function(string $date) use($input): bool {
+
+				// Si on est en création de module de compta (= la BD n'existe pas encore)
+				if(($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] === FALSE) {
+					return mb_strlen($date) > 0 and \util\DateLib::isValid($date);
+				}
 
 				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id'] ?? NULL);
 
-				return $eFinancialYear->exists() === FALSE;
+				return $eFinancialYear->exists() === FALSE and \util\DateLib::isValid($date);
+
+			})
+			->setCallback('dates.inconsistency', function(?string $endDate) use ($p): bool {
+
+				if($p->isBuilt('startDate') === FALSE or $p->isBuilt('endDate') === FALSE) {
+					return TRUE;
+				}
+
+				return $this['startDate'] < $this['endDate'];
+
+			})
+			->setCallback('hasVat.check', function(?bool $hasVat) use($p, $input): bool {
+
+				return array_key_exists('hasVat', $input);
 
 			})
 			->setCallback('vatFrequency.check', function(?string $vatFrequency) use($p): bool {
@@ -81,7 +105,24 @@ class FinancialYear extends FinancialYearElement {
 					return TRUE;
 				}
 
-				return $vatFrequency !== NULL;
+				return in_array($vatFrequency, FinancialYear::model()->getPropertyEnum('vatFrequency'));
+			})
+			->setCallback('legalCategory.check', function(?int $legalCategory) use ($p): bool {
+
+				if($p->isBuilt('hasVat') === FALSE or $this['hasVat'] === FALSE) {
+					return TRUE;
+				}
+
+				return in_array($legalCategory, array_keys(FinancialYearUi::p('legalCategory')->values));
+
+			})
+			->setCallback('associates.check', function(?int $associates) use ($p): bool {
+
+				if($p->isBuilt('legalCategory') === FALSE or $this['legalCategory'] !== \company\CompanySetting::CATEGORIE_GAEC) {
+					return TRUE;
+				}
+
+				return (is_int($associates) and $associates > 0);
 
 			});
 

@@ -34,38 +34,21 @@ class CompanyLib {
 
 		$fw = new \FailWatch();
 
-		$startDate = POST('startDate');
-		if(mb_strlen($startDate) === 0 or \util\DateLib::isValid($startDate) === FALSE) {
-			\Fail::log('FinancialYear::startDate.check');
-		}
+		$eFinancialYear = new \account\FinancialYear();
 
-		$endDate = POST('endDate');
-		if(mb_strlen($endDate) === 0 or \util\DateLib::isValid($endDate) === FALSE) {
-			\Fail::log('FinancialYear::endDate.check');
-		}
+		$input['eFarm'] = $eFarm;
+		$eFinancialYear->build(['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem', 'legalCategory', 'associates'], $input);
 
-		if($startDate >= $endDate) {
-			\Fail::log('FinancialYear::dates.inconsistency');
-		}
-
-		if($fw->ko()) {
-			return;
-		}
+		$fw->validate();
 
 		if(OTF_DEMO === FALSE) {
 			self::createSpecificDatabaseAndTables($eFarm);
 		}
 
-		\farm\Farm::model()->beginTransaction();
-
-		$eFinancialYear = new \account\FinancialYear();
-		$eFinancialYear->build(['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'], $input);
-
-		\account\FinancialYear::model()->insert($eFinancialYear);
+		// Réinstanciation nécessaire car il a été précédemment instancié avec une mauvaise connexion.
+		new \account\FinancialYearModel()->insert($eFinancialYear);
 
 		\farm\Farm::model()->update($eFarm, ['hasAccounting' => TRUE]);
-
-		\farm\Farm::model()->commit();
 
 	}
 

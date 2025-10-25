@@ -239,7 +239,21 @@ class FinancialYearUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'taxSystem*']);
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency', 'legalCategory*', 'associates*', 'taxSystem*'],  [
+				'hasVat*' => function($d) use($form) {
+					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
+				},
+				'vatFrequency' => function($d) use($form, $eFinancialYear) {
+					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+				},
+				'legalCategory*' => function($d) use($form, $eFinancialYear) {
+					$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
+					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+				},
+				'associates*' => function($d) use($form, $eFinancialYear) {
+					$d->group['class'] = $eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC ? '' : 'hide';
+				},
+			]);
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer l'exercice"))
@@ -273,12 +287,19 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['accountingType*', 'startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'taxSystem*'], [
-				'hasVat' => function($d) use($form) {
+			$h .= $form->dynamicGroups($eFinancialYear, ['accountingType*', 'startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*'], [
+				'hasVat*' => function($d) use($form) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},
 				'vatFrequency' => function($d) use($form, $eFinancialYear) {
 					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+				},
+				'legalCategory*' => function($d) use($form, $eFinancialYear) {
+					$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
+					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+				},
+				'associates*' => function($d) use($form, $eFinancialYear) {
+					$d->group['class'] = $eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC ? '' : 'hide';
 				},
 			]);
 
@@ -568,6 +589,8 @@ class FinancialYearUi {
 			'vatFrequency' => s("Fréquence de déclaration de TVA"),
 			'taxSystem' => s("Régime fiscal"),
 			'accountingType' => s("Type de comptabilité"),
+			'legalCategory' => s("Catégorie juridique"),
+			'associates' => s("Nombre d'associé·e·s"),
 		]);
 
 		switch($property) {
@@ -607,6 +630,33 @@ class FinancialYearUi {
 					FinancialYear::AUTRE_BNC => s("BNC"),
 				];
 				$d->attributes['mandatory'] = TRUE;
+				break;
+
+			case 'legalCategory':
+				$d->field = 'select';
+				$d->values = [
+					1000 => s("Entreprise individuelle"),
+					6533 => s("Groupement agricole d'exploitation en commun (GAEC)"),
+					6597 => s("Société civile d'exploitation agricole (SCEA)"),
+					6598 => s("Exploitation agricole à responsabilité limitée (EARL)"),
+					6317 => s("Société coopérative agricole (SCA)"),
+					6318 => s("Union de sociétés coopératives agricoles"),
+					2200 => s("Société de fait"),
+					2300 => s("Société en participation"),
+					5710 => s("SAS"),
+					5500 => s("Société Anonyme"),
+					9999 => s("Autre"),
+				];
+				break;
+
+			case 'associates':
+				$d->field = 'select';
+				$d->attributes['mandatory'] = TRUE;
+				$d->values = [];
+				for($i = 1; $i < 10; $i++) {
+					$d->values[$i] = $i;
+				}
+				break;
 		}
 
 		return $d;

@@ -62,13 +62,15 @@ class FinancialYearModel extends \ModuleModel {
 			'balanceSheetOpen' => ['bool', 'cast' => 'bool'],
 			'balanceSheetClose' => ['bool', 'cast' => 'bool'],
 			'accountingType' => ['enum', [\account\FinancialYear::ACCRUAL, \account\FinancialYear::CASH], 'cast' => 'enum'],
+			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'null' => TRUE, 'cast' => 'int'],
+			'associates' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'balanceSheetOpen', 'balanceSheetClose', 'accountingType', 'closeDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'balanceSheetOpen', 'balanceSheetClose', 'accountingType', 'legalCategory', 'associates', 'closeDate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -175,6 +177,14 @@ class FinancialYearModel extends \ModuleModel {
 
 	public function whereAccountingType(...$data): FinancialYearModel {
 		return $this->where('accountingType', ...$data);
+	}
+
+	public function whereLegalCategory(...$data): FinancialYearModel {
+		return $this->where('legalCategory', ...$data);
+	}
+
+	public function whereAssociates(...$data): FinancialYearModel {
+		return $this->where('associates', ...$data);
 	}
 
 	public function whereCloseDate(...$data): FinancialYearModel {
