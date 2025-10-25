@@ -949,7 +949,7 @@ class ProductUi {
 		if($eProduct['composition']) {
 
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Panier").'</h4>');
+				$h .= $form->group(content: '<h4>'.s("Produit composé").'</h4>');
 				$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
 			$h .= '</div>';
 
