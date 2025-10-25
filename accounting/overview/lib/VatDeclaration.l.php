@@ -57,7 +57,7 @@ Class VatDeclarationLib extends VatDeclarationCrud {
 		]);
 
 		$affected = VatDeclaration::model()
-			->select('cerfa', 'data', 'updatedAt', 'updatedBy')
+			->select('associates', 'cerfa', 'data', 'updatedAt', 'updatedBy')
 			->whereStatus(VatDeclaration::DRAFT)
 			->whereFrom($eVatDeclaration['from'])
 			->whereTo($eVatDeclaration['to'])
