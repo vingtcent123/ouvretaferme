@@ -47,7 +47,8 @@ Class VatDeclarationLib extends VatDeclarationCrud {
 		$eVatDeclaration = new VatDeclaration([
 			'from' => $from,
 			'to' => $to,
-			'limit' => $limit,
+			'associates' => $eFinancialYear['associates'],
+			'limit' => $limit, // Sauvegardé à titre historique
 			'cerfa' => $type,
 			'data' => $data,
 			'financialYear' => $eFinancialYear,

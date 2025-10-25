@@ -48,6 +48,7 @@ class VatDeclarationModel extends \ModuleModel {
 			'to' => ['date', 'cast' => 'string'],
 			'limit' => ['date', 'cast' => 'string'],
 			'status' => ['enum', [\overview\VatDeclaration::DRAFT, \overview\VatDeclaration::DECLARED, \overview\VatDeclaration::DELETED], 'cast' => 'enum'],
+			'associates' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'cerfa' => ['enum', [\overview\VatDeclaration::CA3, \overview\VatDeclaration::CA12], 'cast' => 'enum'],
 			'data' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
@@ -60,7 +61,7 @@ class VatDeclarationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'from', 'to', 'limit', 'status', 'cerfa', 'data', 'financialYear', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'declaredAt', 'declaredBy'
+			'id', 'from', 'to', 'limit', 'status', 'associates', 'cerfa', 'data', 'financialYear', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'declaredAt', 'declaredBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -169,6 +170,10 @@ class VatDeclarationModel extends \ModuleModel {
 
 	public function whereStatus(...$data): VatDeclarationModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereAssociates(...$data): VatDeclarationModel {
+		return $this->where('associates', ...$data);
 	}
 
 	public function whereCerfa(...$data): VatDeclarationModel {
