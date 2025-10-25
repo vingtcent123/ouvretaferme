@@ -140,6 +140,7 @@ class Product extends ProductElement {
 
 	public static function getProfiles(string $property): array {
 		return match($property) {
+			'compositionVisibility' => [Product::COMPOSITION],
 			'unprocessedPlant' => [Product::UNPROCESSED_PLANT],
 			'unprocessedVariety' => [Product::UNPROCESSED_PLANT],
 			'unprocessedSize' => [Product::UNPROCESSED_PLANT],
@@ -232,6 +233,16 @@ class Product extends ProductElement {
 				);
 
 			})
+			->setCallback('compositionVisibility.check', function(?string &$visibility): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('compositionVisibility')) === FALSE) {
+					$visibility = NULL;
+					return TRUE;
+				} else {
+					return in_array($visibility, [Product::PUBLIC, Product::PRIVATE]);
+				}
+
+			})
 			->setCallback('unit.check', function(Unit $eUnit) use($p): bool {
 
 				$this->expects(['farm']);
@@ -258,23 +269,22 @@ class Product extends ProductElement {
 				}
 
 			})
-			->setCallback('compositionVisibility.check', function(?string &$visibility): bool {
+			->setCallback('vat.check', function(int $vat): bool {
+				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
+			})
+			->setCallback('proOrPrivate.check', function() use ($p): bool {
 
-				$this->expects(['composition']);
+				if($p->isBuilt('profile') === FALSE) {
+					throw new \PropertySkip();
+				}
 
-				if($this['composition']) {
-					return in_array($visibility, [Product::PUBLIC, Product::PRIVATE]);
+				if($this['profile'] === Product::COMPOSITION) {
+					return ((int)$this['pro'] + (int)$this['private']) === 1;
 				} else {
-					$visibility = NULL;
 					return TRUE;
 				}
 
 			})
-			->setCallback('vat.check', function(int $vat): bool {
-				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
-			})
-			->setCallback('proOrPrivate.check', fn() => ((int)$this['pro'] + (int)$this['private']) === 1)
-
 			->setCallback('privatePrice.prepare', function (?float &$privatePrice): bool {
 
 				if($this['private'] === FALSE) {
@@ -407,10 +417,15 @@ class Product extends ProductElement {
 			})
 			->setCallback('privatePrice.empty', function(?float &$value) use ($p) {
 
-				$this->expects(['composition']);
+				if(
+					$p->isBuilt('profile') === FALSE or
+					$p->isInvalid('proOrPrivate')
+				) {
+					throw new \PropertySkip();
+				}
 
 				if(
-					$this['composition'] === FALSE or
+					$this['profile'] !== Product::COMPOSITION or
 					$this['private'] === FALSE
 				) {
 					return TRUE;
@@ -421,10 +436,15 @@ class Product extends ProductElement {
 			})
 			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
 
-				$this->expects(['composition']);
+				if(
+					$p->isBuilt('profile') === FALSE or
+					$p->isInvalid('proOrPrivate')
+				) {
+					throw new \PropertySkip();
+				}
 
 				if(
-					$this['composition'] === FALSE or
+					$this['profile'] !== Product::COMPOSITION or
 					$this['pro'] === FALSE
 				) {
 					return TRUE;
@@ -440,6 +460,7 @@ class Product extends ProductElement {
 				if(
 					$p->isBuilt('proPrice') and
 					$p->isBuilt('privatePrice') and
+					$p->isBuilt('proOrPrivate') and
 					($this['pro'] or $this['private'])
 				) {
 					return $this['proPrice'] !== NULL or $this['privatePrice'] !== NULL;

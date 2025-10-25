@@ -72,7 +72,7 @@ new \analyze\ReportPage(function($data) {
 			$data->cProduct = \selling\ProductLib::getByPlant($ePlant);
 
 			$data->switchComposition = (
-				$data->cProduct->contains(fn($eProduct) => $eProduct['composition']) or
+				$data->cProduct->contains(fn($eProduct) => $eProduct['profile'] === Product::COMPOSITION) or
 				\selling\ItemLib::containsProductsIngredient($data->cProduct)
 			);
 
@@ -120,7 +120,7 @@ new Page()
 		$data->cProduct = \selling\ProductLib::getByPlant($data->ePlant);
 
 		$data->switchComposition = (
-			$data->cProduct->contains(fn($eProduct) => $eProduct['composition']) or
+			$data->cProduct->contains(fn($eProduct) => $eProduct['profile'] === Product::COMPOSITION) or
 			\selling\ItemLib::containsProductsIngredient($data->cProduct)
 		);
 

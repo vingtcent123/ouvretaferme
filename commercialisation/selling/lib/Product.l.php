@@ -30,40 +30,29 @@ class ProductLib extends ProductCrud {
 
 	public static function getPropertiesWrite(Product $eProduct, string $for): array {
 
-		if($eProduct['composition']) {
+		$properties = ['name', 'category', 'profile', 'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen', 'origin', 'description', 'quality'];
 
-			$properties = ['name', 'category', 'description', 'quality', 'vat', 'compositionVisibility'];
-
-			if($for === 'update') {
-
-				if($eProduct['private']) {
-					$properties = array_merge($properties, ['privatePrice', 'privateStep', 'privatePriceDiscount']);
-				} else if($eProduct['pro']) {
-					$properties = array_merge($properties, ['proPrice', 'proPackaging', 'proStep', 'proPriceDiscount']);
-				}
-
-			} else if($for === 'create') {
-
-				$properties = array_merge($properties, ['pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'proOrPrivate']);
-
-			}
-
-			return $properties;
-
-		} else {
-
-			$properties = ['name', 'category', 'profile', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen', 'origin', 'description', 'quality', 'pro', 'proPrice', 'proPriceDiscount', 'proPackaging', 'private', 'privatePrice', 'privatePriceDiscount', 'vat'];
-
-			if($for === 'update') {
-				$properties[] = 'privateStep';
-				$properties[] = 'proStep';
-			}
-
-			$properties[] = 'proOrPrivatePrice';
-
-			return $properties;
-
+		if($for === 'create') {
+			$properties = array_merge($properties, ['pro', 'private', 'proOrPrivate']);
 		}
+
+		if(
+			$for === 'update' and
+			$eProduct['profile'] !== Product::COMPOSITION
+		) {
+			$properties = array_merge($properties, ['pro', 'private']);
+		}
+
+		$properties = array_merge($properties, ['proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat']);
+
+		if($for === 'update') {
+			$properties[] = 'privateStep';
+			$properties[] = 'proStep';
+		}
+
+		$properties[] = 'proOrPrivatePrice';
+
+		return $properties;
 
 	}
 	public static function update(Product $e, array $properties): void {
@@ -84,7 +73,7 @@ class ProductLib extends ProductCrud {
 
 	public static function getCompositionById(mixed $id, array $properties = []): Product {
 
-		Product::model()->whereComposition(TRUE);
+		Product::model()->whereProfile(Product::COMPOSITION);
 
 		return self::getById($id, $properties);
 
@@ -157,8 +146,6 @@ class ProductLib extends ProductCrud {
 				'count' => new \Sql('COUNT(*)', 'int')
 			])
 			->whereFarm($eFarm)
-			->whereComposition(FALSE, if: $search->get('composition') === 'simple')
-			->whereComposition(TRUE, if: $search->get('composition') === 'composed')
 			->group('category')
 			->getCollection()
 			->toArray(fn($eProduct) => [$eProduct['category']->empty() ? NULL : $eProduct['category']['id'], $eProduct['count']], TRUE);
@@ -195,8 +182,6 @@ class ProductLib extends ProductCrud {
 		return Product::model()
 			->select(Product::getSelection())
 			->whereCategory($eCategory, if: $eCategory !== NULL)
-			->whereComposition(FALSE, if: $search->get('composition') === 'simple')
-			->whereComposition(TRUE, if: $search->get('composition') === 'composed')
 			->whereFarm($eFarm)
 			->whereStatus('!=', Product::DELETED)
 			->sort($search->buildSort())
@@ -214,6 +199,10 @@ class ProductLib extends ProductCrud {
 			Product::model()->whereStock('!=', NULL);
 		}
 
+		if($search->get('profile')) {
+			Product::model()->whereProfile($search->get('profile'));
+		}
+
 		if($search->get('plant')) {
 			$cPlant = \plant\PlantLib::getFromQuery($search->get('plant'), $eFarm);
 			Product::model()->whereUnprocessedPlant('IN', $cPlant);
@@ -229,7 +218,11 @@ class ProductLib extends ProductCrud {
 			->whereId('IN', $ids, if: $ids)
 			->where($type, TRUE)
 			->whereStatus(Product::ACTIVE)
-			->whereComposition(FALSE, if: $excludeComposition)
+			->or(
+				fn() => $this->whereProfile(NULL),
+				fn() => $this->whereProfile('!=', Product::COMPOSITION),
+				if: $excludeComposition
+			)
 			->sort(['name' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 

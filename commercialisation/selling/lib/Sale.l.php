@@ -492,7 +492,7 @@ class SaleLib extends SaleCrud {
 
 	public static function getByComposition(Product $eProduct): \Collection {
 
-		if($eProduct['composition'] === FALSE) {
+		if($eProduct['profile'] !== PRODUCT::COMPOSITION) {
 			return new \Collection();
 		}
 

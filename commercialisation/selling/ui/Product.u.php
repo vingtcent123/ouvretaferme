@@ -77,10 +77,7 @@ class ProductUi {
 			$h .= $form->openAjax(\farm\FarmUi::urlSellingProducts($eFarm), ['method' => 'get', 'id' => 'form-search']);
 				$h .= $form->hidden('category', $search->get('category'));
 				$h .= '<div>';
-					$h .= $form->select('composition', [
-						'simple' => s("Produits simples"),
-						'composed' => s("Produits composés")
-					], $search->get('composition'), ['placeholder' => s("Type")]);
+					$h .= $form->select('profile', self::p('profile')->shortValues, $search->get('profile'), ['placeholder' => s("Caractéristiques")]);
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -139,7 +136,7 @@ class ProductUi {
 					}
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Ventes").'</th>';
-					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix personnalisés").'</th>';
+					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix de base").'</th>';
 					if($eFarm->getSelling('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
@@ -433,7 +430,7 @@ class ProductUi {
 
 	public static function getVignette(Product $eProduct, string $size, bool $public = FALSE, bool $withPlant = FALSE): string {
 
-		$eProduct->expects(['id', 'vignette', 'composition']);
+		$eProduct->expects(['id', 'vignette', 'profile']);
 
 		$ui = new \media\ProductVignetteUi();
 
@@ -464,7 +461,7 @@ class ProductUi {
 
 	public static function getVignetteComplement(Product $eProduct, bool $withPlant = FALSE): string {
 
-		if($eProduct['composition']) {
+		if($eProduct['profile'] === Product::COMPOSITION) {
 			return self::getVignetteComposition();
 		}
 
@@ -548,7 +545,7 @@ class ProductUi {
 					$h .= '<dt>'.self::p('vat')->label.'</dt>';
 					$h .= '<dd>'.s("{value} %", SellingSetting::VAT_RATES[$eProduct['vat']]).'</dd>';
 				}
-				if($eProduct['composition']) {
+				if($eProduct['profile'] === Product::COMPOSITION) {
 					$h .= '<dt>'.s("Composition").'</dt>';
 					$h .= '<dd>'.($eProduct['compositionVisibility'] === Product::PRIVATE ? s("surprise") : s("visible")).'</dd>';
 				}
@@ -589,15 +586,15 @@ class ProductUi {
 		$h = '<div class="tabs-h" id="product-tabs" onrender="'.encode('Lime.Tab.restore(this, "product-grid")').'">';
 
 			$h .= '<div class="tabs-item">';
-				if($eProduct['composition']) {
-					$h .= '<a class="tab-item '.($eProduct['composition'] ? 'selected' : '').'" data-tab="product-composition" onclick="Lime.Tab.select(this)">'.s("Composition").'</a>';
+				if($eProduct['profile'] === Product::COMPOSITION) {
+					$h .= '<a class="tab-item '.($eProduct['profile'] === Product::COMPOSITION ? 'selected' : '').'" data-tab="product-composition" onclick="Lime.Tab.select(this)">'.s("Composition").'</a>';
 				}
-				$h .= '<a class="tab-item '.($eProduct['composition'] ? '' : 'selected').'" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Prix").'</a>';
+				$h .= '<a class="tab-item '.($eProduct['profile'] === Product::COMPOSITION ? '' : 'selected').'" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Prix").'</a>';
 				$h .= '<a class="tab-item" data-tab="product-sales" onclick="Lime.Tab.select(this)">'.s("Dernières ventes").'</a>';
 			$h .= '</div>';
 
-			if($eProduct['composition']) {
-				$h .= '<div class="tab-panel '.($eProduct['composition'] ? 'selected' : '').'" data-tab="product-composition">';
+			if($eProduct['profile'] === Product::COMPOSITION) {
+				$h .= '<div class="tab-panel '.($eProduct['profile'] === Product::COMPOSITION ? 'selected' : '').'" data-tab="product-composition">';
 					if($cSaleComposition->empty()) {
 						$h .= $this->getEmptyComposition($eProduct);
 					} else {
@@ -606,7 +603,7 @@ class ProductUi {
 				$h .= '</div>';
 			}
 
-			$h .= '<div class="tab-panel '.($eProduct['composition'] ? '' : 'selected').'" data-tab="product-grid">';
+			$h .= '<div class="tab-panel '.($eProduct['profile'] === Product::COMPOSITION ? '' : 'selected').'" data-tab="product-grid">';
 				$h .= $this->getBaseGrid($eProduct);
 				$h .= new \selling\GridUi()->getGridByProduct($eProduct, $cGrid);
 			$h .= '</div>';
@@ -802,7 +799,7 @@ class ProductUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
-			if($eProduct['composition']) {
+			if($eProduct['profile'] === Product::COMPOSITION) {
 				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&compositionOf='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
 			}
 			$h .= '<div class="dropdown-divider"></div>';
@@ -831,37 +828,17 @@ class ProductUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/selling/product:doCreate', ['id' => 'product-create']);
+		$h = $form->openAjax('/selling/product:doCreate', ['id' => 'product-create', 'class' => 'product-write-profile']);
 
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->hidden('composition', $eProduct['composition']);
 
 			if($eProduct->exists()) {
 				$h .= '<div class="util-block-help">';
 					$h .= s("Vous pouvez maintenant paramétrer le nouveau produit que vous vous apprêtez à créer sur la base de <u>{product}</u>.", ['product' => encode($eProduct['name'])]);
 				$h .= '</div>';
 			}
-
-			if($createFirst === FALSE) {
-
-				$tabs = '<div class="tabs-item">';
-					$tabs .= '<a data-ajax="/selling/product:create?farm='.$eFarm['id'].'" data-ajax-method="get" class="tab-item '.($eProduct['composition'] ? '' : 'selected').'">'.s("Produit simple").'</a>';
-					$tabs .= '<a data-ajax="/selling/product:create?farm=' . $eFarm['id'] . '&composition=1" data-ajax-method="get" class="tab-item ' . ($eProduct['composition'] ? 'selected' : '') . '" xmlns="http://www.w3.org/1999/html"><span><big>'.\Asset::icon('puzzle-fill').'</big> '.s("Produit composé").'</span></a>';
-				$tabs .= '</div>';
-
-				if($eProduct['composition']) {
-					$tabs .= '<div class="util-block-help">'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</div>';
-				}
-
-			} else {
-				$tabs = '';
-			}
-
-			$h .= $form->group(
-				content: $tabs
-			);
 
 			$h .= $form->dynamicGroup($eProduct, 'name*');
 
@@ -875,7 +852,7 @@ class ProductUi {
 				];
 			});
 
-			$h .= $form->dynamicGroups($eProduct, ['description', 'quality']);
+			$h .= $form->dynamicGroups($eProduct, ['quality']);
 
 			$h .= '<br/>';
 			$h .= $this->getFieldProfile($form, $eProduct);
@@ -903,7 +880,7 @@ class ProductUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/product:doUpdate', ['id' => 'product-update']);
+		$h .= $form->openAjax('/selling/product:doUpdate', ['id' => 'product-update', 'class' => 'product-write-profile']);
 
 			$h .= $form->hidden('id', $eProduct['id']);
 
@@ -944,43 +921,38 @@ class ProductUi {
 
 	private function getFieldProfile(\util\FormUi $form, Product $eProduct): string {
 
-		$h = '';
+		$h = $form->dynamicGroup($eProduct, 'profile');
+		$h .= '<div class="util-block bg-background-light product-write-profile-details">';
 
-		if($eProduct['composition']) {
-
-			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Produit composé").'</h4>');
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('compositionVisibility')).'">';
+				$h .= '<div class="util-block-help">';
+					$h .= '<h3>'.s("Qu'est-ce qu'un produit composé ?").'</h3>';
+					$h .= '<p>'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</p>';
+					$h .= '<p>'.s("Vous pouvez choisir la composition de votre produit à l'étape suivante.").'</p>';
+				$h .= '</div>';
 				$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
 			$h .= '</div>';
 
-		} else {
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('unprocessedPlant')).'">';
 
-			$h .= '<div class="product-write-profile">';
-				$h .= $form->dynamicGroup($eProduct, 'profile');
-				$h .= '<div class="util-block bg-background-light product-write-profile-details">';
-					$h .= '<div data-profile="'.implode(' ', Product::getProfiles('unprocessedPlant')).'">';
+				$h .= $form->group(
+					self::p('unprocessedPlant')->label,
+					$form->dynamicField($eProduct, 'unprocessedPlant', function($d) {
+						$d->autocompleteDispatch = '#product-update';
+					})
+				);
 
-						$h .= $form->group(
-							self::p('unprocessedPlant')->label,
-							$form->dynamicField($eProduct, 'unprocessedPlant', function($d) {
-								$d->autocompleteDispatch = '#product-update';
-							})
-						);
-
-					$h .= '</div>';
-
-					foreach(['unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
-
-						$h .= '<div data-profile="'.implode(' ', Product::getProfiles($property)).'">';
-							$h .= $form->dynamicGroup($eProduct, $property);
-						$h .= '</div>';
-
-					}
-
-				$h .= '</div>';
 			$h .= '</div>';
 
-		}
+			foreach(['unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
+
+				$h .= '<div data-profile="'.implode(' ', Product::getProfiles($property)).'">';
+					$h .= $form->dynamicGroup($eProduct, $property);
+				$h .= '</div>';
+
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -990,15 +962,11 @@ class ProductUi {
 
 		$h = '<h3>'.s("Prix").'</h3>';
 
-		if($eProduct['composition']) {
-
-			if($for === 'create') {
-				$h .= '<div class="util-block-help">'.s("Un produit composé peut être vendu soit aux particuliers, soit aux professionnels, mais pas simultanément aux deux. Le choix que vous faites maintenant ne pourra pas être modifié par la suite, et votre produit ne pourra être composé que de produits également vendus à ce type de clientèle.").'</div>';
-			}
-
-		} else {
-			$h .= '<div class="util-info">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
+		if($for === 'create') {
+			$h .= '<div class="util-block-help" data-profile="'.Product::COMPOSITION.'">'.s("Un produit composé peut être vendu soit aux particuliers, soit aux professionnels, mais pas simultanément aux deux. Le choix que vous faites maintenant ne pourra pas être modifié par la suite, et votre produit ne pourra être composé que de produits également vendus à ce type de clientèle.").'</div>';
 		}
+
+		$h .= '<div class="util-info" data-not-profile="'.Product::COMPOSITION.'">'.s("Pour une vente aux particuliers et si aucun prix de vente n'a été saisi, le prix de vente pro augmenté de la TVA sera utilisé dans ce cas, et vice-versa pour une vente aux professionnels. Ces données de base pourront toujours être personnalisées pour chaque client et vente.").'</div>';
 
 		$h .= '<div class="hide-panel-out mb-2">'.\Asset::icon('exclamation-circle').' '.s("Les prix de base que vous donnez à vos produits ne sont pas prioritaires par rapport aux prix indiqués dans les catalogues et aux prix personnalisés de vos clients (<link>en savoir plus</link>).", ['link' => '<a href="/doc/selling:pricing">']).'</div>';
 
@@ -1007,7 +975,7 @@ class ProductUi {
 
 		if(
 			$for === 'create' or
-			$eProduct['composition'] === FALSE or
+			$eProduct['profile'] !== PRODUCT::COMPOSITION or
 			$eProduct['private']
 		) {
 			$h .= self::getFieldPrivate($form, $eProduct, $for);
@@ -1016,7 +984,7 @@ class ProductUi {
 
 		if(
 			$for === 'create' or
-			$eProduct['composition'] === FALSE or
+			$eProduct['profile'] !== PRODUCT::COMPOSITION or
 			$eProduct['pro']
 		) {
 			$h .= self::getFieldPro($form, $eProduct, $for);
@@ -1033,12 +1001,13 @@ class ProductUi {
 
 			$h .= $form->group(
 				'<h4>'.self::p('pro')->label.'</h4>',
-				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'pro') : ''
+				($for === 'create' or $eProduct['profile'] !== Product::COMPOSITION) ? $form->dynamicField($eProduct, 'pro') : ''
 			);
 
 			$h .= $form->group(
 				s("Prix de base"),
-				content: $form->dynamicField($eProduct, 'proPrice')
+				$form->dynamicField($eProduct, 'proPrice'),
+				['wrapper' => 'proPrice proPriceDiscount']
 			);
 
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
@@ -1077,12 +1046,13 @@ class ProductUi {
 
 			$h .= $form->group(
 				'<h4>'.self::p('private')->label.'</h4>',
-				($eProduct['composition'] === FALSE or $for === 'create') ? $form->dynamicField($eProduct, 'private') : ''
+				($for === 'create' or $eProduct['profile'] !== Product::COMPOSITION) ? $form->dynamicField($eProduct, 'private') : ''
 			);
 
 			$h .= $form->group(
 				s("Prix de base"),
-				content: $form->dynamicField($eProduct, 'privatePrice')
+				$form->dynamicField($eProduct, 'privatePrice'),
+				['wrapper' => 'privatePrice privatePriceDiscount']
 			);
 
 			if($for === 'update') {
@@ -1153,10 +1123,6 @@ class ProductUi {
 				new ProductUi()->query($d);
 				break;
 
-			case 'name' :
-				$d->placeholder = fn($eProduct) => $eProduct['composition'] ? s("Ex. : Panier familial") : s("Ex. : Pomme de terre");
-				break;
-
 			case 'category' :
 				$d->placeholder = s("Non catégorisé");
 				$d->field = 'radio';
@@ -1174,6 +1140,14 @@ class ProductUi {
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
 					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, confitures...").'</small></span>',
 					Product::PROCESSED_PRODUCT => s("Produit non alimentaire").'  <span class="color-muted"><small>'.s("Savons, lessives...").'</small></span>',
+					Product::COMPOSITION => \Asset::icon('puzzle-fill').' '.s("Produit composé").'  <span class="color-muted"><small>'.s("Panier de légume, bouquet de fleurs...").'</small></span>',
+				];
+				$d->shortValues = [
+					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale"),
+					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale"),
+					Product::PROCESSED_FOOD => s("Produit alimentaire transformé"),
+					Product::PROCESSED_PRODUCT => s("Produit non alimentaire"),
+					Product::COMPOSITION => s("Produit composé"),
 				];
 				break;
 
@@ -1201,7 +1175,7 @@ class ProductUi {
 				$d->placeholder = s("&lt; Non applicable &gt;");
 				$d->after = fn(\util\FormUi $form, Product $e) => $e->exists() ?
 					\util\FormUi::info(s("L'unité de vente ne peut être modifiée que pour une autre unité de vente à l'unité.")) :
-					\util\FormUi::info(s("Les unités de vente au poids ne peuvent pas être modifiées par la suite, vous devrez créer un autre produit si vous changez d'avis."));
+					\util\FormUi::info(s("Les unités de vente à la quantité ne peuvent pas être modifiées par la suite, vous devrez créer un autre produit si vous changez d'avis."));
 				break;
 
 			case 'private' :
@@ -1236,7 +1210,8 @@ class ProductUi {
 					$h = $form->inputGroup(
 						$form->number('privatePrice', $price, [
 							'step' => 0.01,
-							'onfocus' => 'this.select()'
+							'onfocus' => 'this.select()',
+							'disabled' => $e['private'] ? NULL : 'disabled'
 						]).
 						$form->addon($suffix),
 					);
@@ -1245,7 +1220,10 @@ class ProductUi {
 
 					$h .= $form->inputGroup(
 						$form->addon(s("Prix remisé")).
-						$form->number('privatePriceDiscount', $priceDiscount, ['step' => 0.01]).
+						$form->number('privatePriceDiscount', $priceDiscount, [
+							'step' => 0.01,
+							'disabled' => $e['private'] ? NULL : 'disabled'
+						]).
 						$form->addon($suffix).
 						$form->addon(new PriceUi()->getDiscountTrashAddon($identifier)),
 						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $identifier, 'data-wrapper' => 'privatePriceDiscount']
@@ -1288,7 +1266,8 @@ class ProductUi {
 					$h = $form->inputGroup(
 						$form->number('proPrice', $price, [
 							'step' => 0.01,
-							'onfocus' => 'this.select()'
+							'onfocus' => 'this.select()',
+							'disabled' => $e['pro'] ? NULL : 'disabled'
 						]).
 						$form->addon($suffix),
 					);
@@ -1297,7 +1276,10 @@ class ProductUi {
 
 					$h .= $form->inputGroup(
 						$form->addon(s("Prix remisé")).
-						$form->number('proPriceDiscount', $priceDiscount, ['step' => 0.01]).
+						$form->number('proPriceDiscount', $priceDiscount, [
+							'step' => 0.01,
+							'disabled' => $e['pro'] ? NULL : 'disabled'
+						]).
 						$form->addon($suffix).
 						$form->addon(new PriceUi()->getDiscountTrashAddon($identifier)),
 						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $identifier, 'data-wrapper' => 'proPriceDiscount']

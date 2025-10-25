@@ -132,7 +132,7 @@ new Page(function($data) {
 
 		$data->search = new Search([
 			'category' => $data->eCategory,
-			'composition' => GET('composition'),
+			'profile' => GET('profile'),
 			'name' => GET('name'),
 			'plant' => GET('plant')
 		], GET('sort', default: 'name'));

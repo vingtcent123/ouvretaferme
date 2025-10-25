@@ -216,7 +216,7 @@ class ProductLib extends ProductCrud {
 
 			$cProductSellingComposition = $cProduct
 				->find(fn($eProduct) => (
-					$eProduct['product']['composition'] and
+					$eProduct['product']['profile'] === \selling\Product::COMPOSITION and
 					($public === FALSE or $eProduct['product']['compositionVisibility'] === \selling\Product::PUBLIC)
 				), clone: FALSE)
 				->getColumnCollection('product');

@@ -21,7 +21,7 @@ class AnalyzeLib {
 
 	public static function getProductMonths(Product $eProduct, int $year, \Search $search = new \Search()): \Collection {
 
-		if($eProduct['composition']) {
+		if($eProduct['profile'] === Product::COMPOSITION) {
 			$search->set('doNotFilterComposition', TRUE);
 		}
 
@@ -123,7 +123,7 @@ class AnalyzeLib {
 
 	public static function getProductWeeks(Product $eProduct, int $year, \Search $search = new \Search()): \Collection {
 
-		if($eProduct['composition']) {
+		if($eProduct['profile'] === Product::COMPOSITION) {
 			$search->set('doNotFilterComposition', TRUE);
 		}
 
@@ -191,7 +191,7 @@ class AnalyzeLib {
 
 	public static function getProductCustomers(Product $eProduct, int $year, \Search $search = new \Search()): \Collection {
 
-		if($eProduct['composition']) {
+		if($eProduct['profile'] === Product::COMPOSITION) {
 			$search->set('doNotFilterComposition', TRUE);
 		}
 
@@ -380,7 +380,7 @@ class AnalyzeLib {
 
 	public static function getProductYear(\farm\Farm $eFarm, Product $eProduct, ?int $year = NULL, \Search $search = new \Search()): \Collection {
 
-		if($eProduct['composition']) {
+		if($eProduct['profile'] === Product::COMPOSITION) {
 			$search->set('doNotFilterComposition', TRUE);
 		}
 

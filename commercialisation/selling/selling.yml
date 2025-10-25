@@ -246,7 +246,7 @@ Product:
   name: text8(1, null) @collate(general)
   description: ?editor24
   vignette: ?textFixed(30, 30) @charset(ascii)
-  profile: ?enum(UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT)
+  profile: ?enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT)
   category: ?selling\Category
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null)
@@ -254,6 +254,7 @@ Product:
   mixedFrozen: ?bool
   processedAllergen: ?text8(1, null)
   processedComposition: ?text16(1, null)
+  compositionVisibility: ?enum(PUBLIC, PRIVATE)
   origin: ?text8(1, null)
   farm: farm\Farm
   unit: ?selling\Unit = PHP(\selling\SellingSetting::UNIT_DEFAULT_ID)
@@ -268,8 +269,6 @@ Product:
   proStep: ?decimal(6, 2, 0.01, null)
   vat: int8(1, null)
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
-  composition: bool = FALSE
-  compositionVisibility: ?enum(PUBLIC, PRIVATE)
   stock: ?decimal(8, 2, 0.0, null)
   stockLast: ?selling\Stock
   stockUpdatedAt: ?datetime

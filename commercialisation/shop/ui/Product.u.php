@@ -848,7 +848,7 @@ class ProductUi {
 							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
 								if(
 									$eProductSelling['vignette'] !== NULL or
-									$eProductSelling['composition']
+									$eProductSelling['profile'] === \selling\Product::COMPOSITION
 								) {
 									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
 								} else if($eProductSelling['unprocessedPlant']->notEmpty()) {

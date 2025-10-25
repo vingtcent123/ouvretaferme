@@ -154,7 +154,7 @@ class ItemLib extends ItemCrud {
 
 	public static function getByProduct(Product $eProduct): \Collection {
 
-		if($eProduct['composition'] === FALSE) {
+		if($eProduct['profile'] !== PRODUCT::COMPOSITION) {
 			AnalyzeLib::filterItemComposition($eProduct['farm']);
 		}
 
@@ -186,7 +186,7 @@ class ItemLib extends ItemCrud {
 				'number' => new \Sql('SUM(number)', 'float'),
 				'packaging',
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette', 'farm', 'composition'],
+				'product' => ['vignette', 'farm', 'profile'],
 				'productComposition',
 				'deliveredAt' => fn() => $eDate['deliveryDate'],
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
@@ -585,7 +585,7 @@ class ItemLib extends ItemCrud {
 		]);
 
 		if($e['product']->notEmpty()) {
-			$e['product']->expects(['composition']);
+			$e['product']->expects(['profile']);
 		}
 		
 		$eSale = $e['sale'];
@@ -598,7 +598,7 @@ class ItemLib extends ItemCrud {
 		$e['discount'] = $eSale['discount'];
 		$e['stats'] = $eSale['stats'];
 		$e['status'] = $eSale['preparationStatus'];
-		$e['productComposition'] = $e['product']->notEmpty() ? $e['product']['composition'] : FALSE;
+		$e['productComposition'] = $e['product']->notEmpty() ? ($e['product']['profile'] === Product::COMPOSITION) : FALSE;
 
 		if($eSale['hasVat'] === FALSE) {
 			$e['vatRate'] = 0.0;

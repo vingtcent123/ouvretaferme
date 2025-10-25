@@ -132,26 +132,50 @@ div.product-vignette-composition {
 	color: var(--primary);
 }
 
-div.product-write-profile [data-profile] {
+.product-write-profile [data-profile] {
 	display: none;
 }
 
-div.product-write-profile:not(:has(input[name="profile"]:not([value=""]):checked)) div.product-write-profile-details {
+.product-write-profile:not(:has(input[name="profile"]:not([value=""]):checked)) .product-write-profile-details {
 	display: none;
 }
 
-div.product-write-profile:has(input[name="profile"][value="unprocessed-plant"]:checked) [data-profile~="unprocessed-plant"] {
+.product-write-profile:has(input[name="profile"][value="unprocessed-plant"]:checked) [data-profile~="unprocessed-plant"] {
 	display: block;
 }
 
-div.product-write-profile:has(input[name="profile"][value="unprocessed-animal"]:checked) [data-profile~="unprocessed-animal"] {
+.product-write-profile:has(input[name="profile"][value="unprocessed-plant"]:checked) [data-not-profile~="unprocessed-plant"] {
+	display: none;
+}
+
+.product-write-profile:has(input[name="profile"][value="unprocessed-animal"]:checked) [data-profile~="unprocessed-animal"] {
 	display: block;
 }
 
-div.product-write-profile:has(input[name="profile"][value="processed-food"]:checked) [data-profile~="processed-food"] {
+.product-write-profile:has(input[name="profile"][value="unprocessed-animal"]:checked) [data-not-profile~="unprocessed-animal"] {
+	display: none;
+}
+
+.product-write-profile:has(input[name="profile"][value="processed-food"]:checked) [data-profile~="processed-food"] {
 	display: block;
 }
 
-div.product-write-profile:has(input[name="profile"][value="processed-product"]:checked) [data-profile~="processed-product"] {
+.product-write-profile:has(input[name="profile"][value="processed-food"]:checked) [data-not-profile~="processed-food"] {
+	display: none;
+}
+
+.product-write-profile:has(input[name="profile"][value="processed-product"]:checked) [data-profile~="processed-product"] {
 	display: block;
+}
+
+.product-write-profile:has(input[name="profile"][value="processed-product"]:checked) [data-not-profile~="processed-product"] {
+	display: none;
+}
+
+.product-write-profile:has(input[name="profile"][value="composition"]:checked) [data-profile~="composition"] {
+	display: block;
+}
+
+.product-write-profile:has(input[name="profile"][value="composition"]:checked) [data-not-profile~="composition"] {
+	display: none;
 }
