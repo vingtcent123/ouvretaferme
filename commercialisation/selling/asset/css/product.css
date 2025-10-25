@@ -183,3 +183,8 @@ div.product-vignette-composition {
 #product-update.product-write-profile [data-field="profile"]:has(input[name="profile"][value="composition"]:checked) {
 	display: none;
 }
+
+/* Pas d'affichage de composition à l'update*/
+#product-update.product-write-profile [data-field="profile"] label:has(input[name="profile"][value="composition"]) {
+	display: none;
+}

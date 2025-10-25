@@ -302,6 +302,20 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
+			->setCallback('privatePrice.empty', function(?float &$value) use ($p) {
+
+				if(
+					$p->isBuilt('profile') === FALSE or
+					$this['private'] === FALSE or
+					$this['profile'] === Product::COMPOSITION or
+					$p->isInvalid('proOrPrivate')
+				) {
+					return TRUE;
+				}
+
+				return ($value !== NULL);
+
+			})
 			->setCallback('privatePriceDiscount.prepare', function (?string &$privatePriceDiscount): bool {
 
 				if(
@@ -423,37 +437,13 @@ class Product extends ProductElement {
 				throw new \PropertySkip();
 
 			})
-			->setCallback('privatePrice.empty', function(?float &$value) use ($p) {
-
-				if(
-					$p->isBuilt('profile') === FALSE or
-					$p->isInvalid('proOrPrivate')
-				) {
-					throw new \PropertySkip();
-				}
-
-				if(
-					$this['profile'] !== Product::COMPOSITION or
-					$this['private'] === FALSE
-				) {
-					return TRUE;
-				}
-
-				return ($value !== NULL);
-
-			})
 			->setCallback('proPrice.empty', function(?float &$value) use ($p) {
 
 				if(
 					$p->isBuilt('profile') === FALSE or
+					$this['pro'] === FALSE or
+					$this['profile'] === Product::COMPOSITION or
 					$p->isInvalid('proOrPrivate')
-				) {
-					throw new \PropertySkip();
-				}
-
-				if(
-					$this['profile'] !== Product::COMPOSITION or
-					$this['pro'] === FALSE
 				) {
 					return TRUE;
 				}
