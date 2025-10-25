@@ -1143,9 +1143,8 @@ class ProductUi {
 					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale").'  <span class="color-muted"><small>'.s("Fruits, légumes, fleurs, plants...").'</small></span>',
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
 					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, confitures...").'</small></span>',
-					Product::PROCESSED_PRODUCT => s("Produit non alimentaire").'  <span class="color-muted"><small>'.s("Savons, lessives...").'</small></span>',
-					Product::COMPOSITION => \Asset::icon('puzzle-fill').' '.s("Produit composé").'  <span class="color-muted"><small>'.s("Panier de légume, bouquet de fleurs...").'</small></span>',
-				];
+					Product::PROCESSED_PRODUCT => s("Produit non alimentaire").'  <span class="color-muted"><small>'.s("Savons, lessives...").'</small></span>'
+					] + ($e->exists() ? [] : [Product::COMPOSITION => \Asset::icon('puzzle-fill').' '.s("Produit composé").'  <span class="color-muted"><small>'.s("Panier de légume, bouquet de fleurs...").'</small></span>']);
 				$d->shortValues = [
 					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale"),
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale"),

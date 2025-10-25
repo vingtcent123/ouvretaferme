@@ -185,6 +185,14 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
+			->setCallback('profile.composition', function(?string $profile) use ($p): bool {
+
+				return (
+					$p->for === 'create' or
+					$profile !== Product::COMPOSITION
+				);
+
+			})
 			->setCallback('mixedFrozen.prepare', function(?bool &$frozen): bool {
 
 				if(in_array($this['profile'], Product::getProfiles('mixedFrozen')) === FALSE) {
