@@ -252,6 +252,7 @@ Product:
   unprocessedVariety: ?text8(1, null)
   unprocessedSize: ?text8(1, null)
   mixedFrozen: ?bool
+  processedPackaging: ?text8(1, null)
   processedAllergen: ?text8(1, null)
   processedComposition: ?text16(1, null)
   compositionVisibility: ?enum(PUBLIC, PRIVATE)

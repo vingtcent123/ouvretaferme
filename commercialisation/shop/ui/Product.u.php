@@ -349,6 +349,13 @@ class ProductUi {
 							$name .= '</div>';
 						}
 
+
+						if($eProductSelling['processedPackaging'] !== NULL) {
+							$name .= '<div class="shop-product-size">';
+								$name .= encode($eProductSelling['processedPackaging']);
+							$name .= '</div>';
+						}
+
 						if(
 							$eProductSelling['processedComposition'] or
 							$eProductSelling['processedAllergen']

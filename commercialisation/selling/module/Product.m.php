@@ -63,6 +63,7 @@ class ProductModel extends \ModuleModel {
 			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'unprocessedSize' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'mixedFrozen' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'processedPackaging' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'processedAllergen' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'processedComposition' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'compositionVisibility' => ['enum', [\selling\Product::PUBLIC, \selling\Product::PRIVATE], 'null' => TRUE, 'cast' => 'enum'],
@@ -88,7 +89,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'mixedFrozen', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -201,6 +202,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereMixedFrozen(...$data): ProductModel {
 		return $this->where('mixedFrozen', ...$data);
+	}
+
+	public function whereProcessedPackaging(...$data): ProductModel {
+		return $this->where('processedPackaging', ...$data);
 	}
 
 	public function whereProcessedAllergen(...$data): ProductModel {

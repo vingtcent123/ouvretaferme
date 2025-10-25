@@ -561,6 +561,10 @@ class ProductUi {
 					$h .= '<dt>'.self::p('processedComposition')->label.'</dt>';
 					$h .= '<dd>'.nl2br(encode($eProduct['processedComposition'])).'</dd>';
 				}
+				if($eProduct['processedPackaging'] !== NULL) {
+					$h .= '<dt>'.self::p('processedPackaging')->label.'</dt>';
+					$h .= '<dd>'.encode($eProduct['processedPackaging']).'</dd>';
+				}
 				if($eProduct['processedAllergen'] !== NULL) {
 					$h .= '<dt>'.self::p('processedAllergen')->label.'</dt>';
 					$h .= '<dd>'.nl2br(encode($eProduct['processedAllergen'])).'</dd>';
@@ -948,7 +952,7 @@ class ProductUi {
 
 			$h .= '</div>';
 
-			foreach(['unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
+			foreach(['unprocessedVariety', 'unprocessedSize', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
 
 				$h .= '<div data-profile="'.implode(' ', Product::getProfiles($property)).'">';
 					$h .= $form->dynamicGroup($eProduct, $property);
@@ -1098,6 +1102,7 @@ class ProductUi {
 			'unprocessedSize' => s("Calibre"),
 			'mixedFrozen' => s("Surgelé").'  '.self::getFrozenIcon(),
 			'processedComposition' => s("Composition"),
+			'processedPackaging' => s("Conditionnement"),
 			'processedAllergen' => s("Allergènes"),
 			'profile' => '<h3>'.s("Caractéristiques").'</h3>',
 			'origin' => s("Origine"),

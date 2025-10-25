@@ -145,6 +145,7 @@ class Product extends ProductElement {
 			'unprocessedVariety' => [Product::UNPROCESSED_PLANT],
 			'unprocessedSize' => [Product::UNPROCESSED_PLANT],
 			'mixedFrozen' => [Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD],
+			'processedPackaging' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 			'processedAllergen' => [Product::PROCESSED_FOOD],
 			'processedComposition' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 		};
@@ -180,6 +181,15 @@ class Product extends ProductElement {
 
 				if(in_array($this['profile'], Product::getProfiles('processedAllergen')) === FALSE) {
 					$allergen = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('processedPackaging.prepare', function(?string &$packaging): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('processedPackaging')) === FALSE) {
+					$packaging = NULL;
 				}
 
 				return TRUE;

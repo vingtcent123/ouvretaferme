@@ -6,7 +6,7 @@ class ProductLib extends ProductCrud {
 	public static function getPropertiesCreate(): array {
 		return [
 			'unit', 'name', 'category', 'profile',
-			'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen',
+			'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen',
 			'origin', 'description', 'quality',
 			'pro', 'private', 'proOrPrivate',
 			'proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat',
@@ -37,7 +37,7 @@ class ProductLib extends ProductCrud {
 
 			$properties = array_merge($properties, [
 				'name', 'category',
-				'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedAllergen',
+				'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'processedComposition', 'mixedFrozen', 'processedPackaging', 'processedAllergen',
 				'origin', 'description', 'quality',
 				'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep', 'privatePrice', 'privatePriceDiscount', 'privateStep', 'vat',
 				'proOrPrivatePrice'
