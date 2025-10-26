@@ -72,7 +72,7 @@ new \plant\PlantPage()
 		$data->cProduct = \selling\ProductLib::getByPlant($data->e, index: 'id');
 
 		$data->switchComposition = (
-			$data->cProduct->contains(fn($eProduct) => $eProduct['profile'] === Product::COMPOSITION) or
+			$data->cProduct->contains(fn($eProduct) => $eProduct['profile'] === \selling\Product::COMPOSITION) or
 			\selling\ItemLib::containsProductsIngredient($data->cProduct)
 		);
 
