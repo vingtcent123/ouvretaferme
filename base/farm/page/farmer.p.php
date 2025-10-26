@@ -149,7 +149,7 @@ new \farm\FarmerPage(function($data) {
 	->doUpdateProperties('doUpdateSoilColor', ['viewSoilColor'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
 	->doUpdateProperties('doUpdateSoilOverlay', ['viewSoilOverlay'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
 	->doUpdateProperties('doUpdateSoilTasks', ['viewSoilTasks'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
-	->doUpdateProperties('doUpdateSellingPreparing', ['viewSellingPreparing'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
+	->doUpdateProperties('doUpdateSellingPreparing', ['viewSellingPreparing'], fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingSalesAll($data->e['farm'])), validate: ['canSelf'])
 	->quick(['viewAnalyzeComposition'], [
 		'viewAnalyzeComposition' => fn() => throw new ReloadAction()
 	])
