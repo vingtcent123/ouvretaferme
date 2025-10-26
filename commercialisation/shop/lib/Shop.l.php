@@ -321,6 +321,7 @@ class ShopLib extends ShopCrud {
 					->select(Date::getSelection() + [
 						'shop' => ['shared']
 					])
+					->whereShop($e)
 					->whereStatus('!=', Date::CLOSED)
 					->getCollection();
 
