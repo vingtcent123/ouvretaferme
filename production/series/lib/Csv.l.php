@@ -591,7 +591,10 @@ class CsvLib {
 
 			$import[$hash]['series']['bed_length'] += $line['length'] ? (int)$line['length'] : NULL;
 
-			if(in_array($line['variety'], $import[$hash]['cultivations'][0]['varieties_list']) === FALSE) {
+			if(
+				$line['variety'] !== '' and
+				in_array($line['variety'], $import[$hash]['cultivations'][0]['varieties_list']) === FALSE
+			) {
 
 				$import[$hash]['cultivations'][0]['varieties_list'][] = $line['variety'];
 				$import[$hash]['cultivations'][0]['varieties'][] = [
@@ -676,7 +679,7 @@ class CsvLib {
 
 			foreach($varietiesIndex as $varietyIndex) {
 
-				if($cultivation[$varietyIndex]) {
+				if($cultivation[$varietyIndex] !== '') {
 
 					$varieties[] = [
 						'variety' => $cultivation[$varietyIndex],
