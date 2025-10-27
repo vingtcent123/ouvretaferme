@@ -14,7 +14,7 @@ class Task extends TaskElement {
 			'variety' => ['name'],
 			'category' => ['fqn', 'name'],
 			'series' => ['name', 'cycle', 'mode', 'season', 'area', 'areaTarget', 'length', 'lengthTarget', 'bedWidth', 'alleyWidth', 'use'],
-			'action' => ['fqn', 'name', 'short', 'categories', 'color', 'pace', 'series'],
+			'action' => \farm\ActionElement::getSelection(),
 			'repeat' => ['frequency', 'current', 'stop', 'completed'],
 			'delayed' => function(Task $e): bool {
 

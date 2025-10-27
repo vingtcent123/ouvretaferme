@@ -1123,7 +1123,10 @@ class SeriesLib extends SeriesCrud {
 
 			$eAction->expects(['fqn']);
 
-			if(in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE]) === FALSE) {
+			if(
+				in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE]) === FALSE and
+				$eAction['soil'] === FALSE
+			) {
 				return;
 			}
 
