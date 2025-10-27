@@ -464,7 +464,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 			'private' => TRUE,
 			'pro' => FALSE,
 			'vat' => $data->eFarm->getSelling('defaultVat'),
-		]), TRUE)->body;
+		]))->body;
 
 	} else {
 		

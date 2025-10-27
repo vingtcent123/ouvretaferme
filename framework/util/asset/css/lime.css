@@ -2690,6 +2690,13 @@ body[data-touch="yes"] .dropdown-item {
 	opacity: 0.5;
 }
 
+.dropdown-item-icon {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	column-gap: 1rem;
+	align-items: center;
+}
+
 .dropdown-item-status {
 	font-size: 1.2rem;
 	margin-left: 1.5rem;
@@ -2973,11 +2980,20 @@ div.util-buttons > .util-button {
 	display: grid;
 	grid-template-columns: 1fr auto;
 	grid-column-gap: 1rem;
-	background-color: var(--background-light);
 	grid-template-rows: 1fr auto;
 	transition: color 0.25s, background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
 	text-decoration: none;
-	border: 3px solid var(--secondary);
+}
+
+div.util-buttons:not(.util-buttons-dark) > .util-button {
+	background-color: white;
+	border: 3px solid var(--primary);
+}
+
+div.util-buttons.util-buttons-dark > .util-button {
+	color: white;
+	background-color: var(--primary);
+	transition: opacity 0.5s;
 }
 
 div.util-buttons > .util-button.util-button-danger {
@@ -2985,9 +3001,13 @@ div.util-buttons > .util-button.util-button-danger {
 	color: var(--danger);
 }
 
-div.util-buttons > .util-button:hover {
+div.util-buttons:not(.util-buttons-dark) > .util-button:hover {
 	border-color: var(--text);
 	color: var(--text);
+}
+
+div.util-buttons.util-buttons-dark > .util-button:hover {
+	opacity: 0.9;
 }
 
 div.util-buttons > .util-button.disabled {
@@ -3004,6 +3024,10 @@ div.util-buttons > .util-button div.util-button-text {
 	font-size: 0.9rem;
 	grid-column: span 2;
 	grid-column-start: 1;
+}
+
+div.util-buttons.util-buttons-dark > .util-button div.util-button-text {
+	opacity: 0.7;
 }
 
 div.util-buttons > .util-button h4 {

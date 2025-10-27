@@ -21,13 +21,35 @@ new \selling\ProductPage()
 			$data->e['status'] = \shop\Product::ACTIVE;
 
 		} else {
+
 			$data->e->merge([
+				'profile' => \selling\Product::GET('profile', 'profile'),
 				'quality' => $data->eFarm['quality'],
 				'vat' => $data->eFarm->getSelling('defaultVat'),
 				'private' => TRUE,
 				'pro' => TRUE,
 				'unit' => new \selling\Unit(),
 			]);
+
+			switch($data->e['profile']) {
+
+				case \selling\Product::UNPROCESSED_PLANT :
+					$data->e['unit'] = \selling\UnitLib::getByFqn('kg');
+					break;
+
+				case \selling\Product::PROCESSED_PRODUCT :
+				case \selling\Product::PROCESSED_FOOD :
+					$data->e['unit'] = \selling\UnitLib::getByFqn('unit');
+					break;
+
+				case \selling\Product::COMPOSITION :
+					$data->e['unit'] = \selling\UnitLib::getByFqn('unit');
+					$data->e['private'] = FALSE;
+					$data->e['pro'] = FALSE;
+					break;
+
+			}
+
 		}
 
 		throw new ViewAction($data);

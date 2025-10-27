@@ -34,6 +34,13 @@
 	--prepared: var(--done);
 	--delivered: var(--success);
 
+	--unprocessed-plant: var(--success);
+	--unprocessed-animal: #ada779;
+	--processed-food: #b17e2f;
+	--processed-product: var(--prepared);
+	--composition: var(--order);
+	--other: black;
+
 	--ach: var(--todo);
 	--ven: var(--order);
 	--ban: var(--done);

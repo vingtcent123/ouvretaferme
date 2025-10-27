@@ -16,6 +16,20 @@ class Product {
 
 	}
 
+	static changeProfile(target) {
+
+		const profile = target.dataset.profile;
+
+		const wrapper = qs('.product-write-profile [data-wrapper="profile"]');
+
+		wrapper.qs('[data-dropdown] .product-profile-icon').outerHTML = target.qs('.product-profile-icon').outerHTML;
+		wrapper.qs('[data-dropdown] .product-profile-name').innerHTML = target.qs('.product-profile-name').innerHTML;
+		wrapper.qs('input').value = profile;
+
+		Lime.Dropdown.purge();
+
+	}
+
 	static changeType(target, type) {
 
 		const wrapper = target.firstParent('[data-wrapper="'+ type +'-block"]');

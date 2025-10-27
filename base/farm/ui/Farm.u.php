@@ -1634,7 +1634,8 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			$canCreate = new \selling\Product(['farm' => $eFarm])->canCreate();
+			$eProduct = new \selling\Product(['farm' => $eFarm]);
+			$canCreate = $eProduct->canCreate();
 
 			switch($selectedView) {
 
@@ -1642,7 +1643,8 @@ class FarmUi {
 					$h .= '<div>';
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#product-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 						if($canCreate) {
-							$h .= '<a href="/selling/product:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
+							$h .= '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end" data-dropdown-hover="true">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau produit").'</span></a>';
+							$h .= \selling\ProductUi::getProfileDropdown($eProduct);
 						}
 					$h .= '</div>';
 					break;

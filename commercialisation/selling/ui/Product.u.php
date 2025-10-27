@@ -68,6 +68,46 @@ class ProductUi {
 
 	}
 
+	public static function getProfileIcon(?string $profile, string $size = '2.5rem'): string {
+
+		return '<div class="product-profile-icon" style="background-color: var(--'.$profile.'); width: '.$size.'; height: '.$size.'; font-size: calc('.$size.' / 2)">'.self::p('profile')->icons[$profile].'</div>';
+
+	}
+
+	public static function getProfileDropdown(Product $eProduct, ?\Closure $destination = NULL): string {
+
+		$eProduct->expects(['farm']);
+
+		$destination ??= fn($profile) => 'href="/selling/product:create?farm='.$eProduct['farm']['id'].'&profile='.$profile.'"';
+
+		$h = '<div class="dropdown-list">';
+
+			foreach(\selling\ProductUi::p('profile')->values as $profile => $value) {
+
+				if($profile === Product::COMPOSITION and $eProduct->exists()) {
+					continue;
+				}
+
+				$examples = \selling\ProductUi::p('profile')->examples[$profile];
+
+				$h .= '<a '.$destination($profile).' class="dropdown-item dropdown-item-icon" data-profile="'.$profile.'">';
+					$h .= self::getProfileIcon($profile);
+					$h .= '<div>';
+						$h .= '<span class="product-profile-name">'.$value.'</span>';
+						if($examples) {
+							$h .= '<br/><small style="color: #fff8">'.$examples.'</small>';
+						}
+					$h .= '</div>';
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
 		$form = new \util\FormUi();
@@ -77,7 +117,7 @@ class ProductUi {
 			$h .= $form->openAjax(\farm\FarmUi::urlSellingProducts($eFarm), ['method' => 'get', 'id' => 'form-search']);
 				$h .= $form->hidden('category', $search->get('category'));
 				$h .= '<div>';
-					$h .= $form->select('profile', self::p('profile')->shortValues, $search->get('profile'), ['placeholder' => s("Caractéristiques")]);
+					$h .= $form->select('profile', self::p('profile')->values, $search->get('profile'), ['placeholder' => s("Type")]);
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -428,7 +468,7 @@ class ProductUi {
 
 	}
 
-	public static function getVignette(Product $eProduct, string $size, bool $public = FALSE, bool $withPlant = FALSE): string {
+	public static function getVignette(Product $eProduct, string $size, bool $public = FALSE, bool $withComplement = FALSE): string {
 
 		$eProduct->expects(['id', 'vignette', 'profile']);
 
@@ -451,39 +491,39 @@ class ProductUi {
 
 		}
 
-		if($public === FALSE) {
-			$content .= self::getVignetteComplement($eProduct, $withPlant);
+		if($public === FALSE and $withComplement) {
+
+			$content .= self::getVignetteComplement($eProduct);
 		}
 
 		return '<div class="'.$class.'" style="'.$ui->getSquareCss($size).'; '.$style.'">'.$content.'</div>';
 
 	}
 
-	public static function getVignetteComplement(Product $eProduct, bool $withPlant = FALSE): string {
+	public static function getVignetteComplement(Product $eProduct): string {
 
-		if($eProduct['profile'] === Product::COMPOSITION) {
-			return self::getVignetteComposition();
+		if(
+			$eProduct['unprocessedPlant']->notEmpty() and
+			($eProduct['unprocessedPlant']['fqn'] !== NULL or $eProduct['unprocessedPlant']['vignette'] !== NULL)
+		) {
+			return self::getVignettePlant($eProduct);
+		} else {
+			return self::getVignetteProfile($eProduct);
 		}
-
-		if($withPlant and $eProduct['unprocessedPlant']->notEmpty()) {
-			return self::getVignettePlant($eProduct['unprocessedPlant']);
-		}
-
-		return '';
 
 	}
 
-	public static function getVignetteComposition(): string {
+	public static function getVignettePlant(Product $eProduct): string {
+
+		return '<div class="product-vignette-plant" style="border-color: var(--unprocessed-plant);">'.\plant\PlantUi::getVignette($eProduct['unprocessedPlant'], '1.25rem').'</div>';
+
+	}
+
+	public static function getVignetteProfile(Product $eProduct): string {
 
 		\Asset::css('selling', 'product.css');
 
-		return '<div class="product-vignette-composition">'.\Asset::icon('puzzle-fill').'</div>';
-
-	}
-
-	public static function getVignettePlant(\plant\Plant $ePlant): string {
-
-		return '<div class="product-vignette-plant">'.\plant\PlantUi::getVignette($ePlant, '1.25rem').'</div>';
+		return '<div class="product-vignette-profile" style="border-coloir: var(--'.$eProduct['profile'].'); color: var(--'.$eProduct['profile'].');" title="'.self::p('profile')->values[$eProduct['profile']].'">'.self::p('profile')->icons[$eProduct['profile']].'</div>';
 
 	}
 
@@ -824,13 +864,17 @@ class ProductUi {
 
 	}
 
-	public function create(Product $eProduct, bool $createFirst = FALSE): \Panel {
+	public function create(Product $eProduct): \Panel {
 
 		$eProduct->expects(['cCategory', 'cUnit']);
 
 		$eFarm = $eProduct['farm'];
 
 		$form = new \util\FormUi();
+
+		if($eProduct['profile'] === NULL) {
+			return $this->createProfile($eProduct);
+		}
 
 		$h = $form->openAjax('/selling/product:doCreate', ['id' => 'product-create', 'class' => 'product-write-profile']);
 
@@ -844,6 +888,8 @@ class ProductUi {
 				$h .= '</div>';
 			}
 
+
+			$h .= $form->dynamicGroup($eProduct, 'profile');
 			$h .= $form->dynamicGroup($eProduct, 'name*');
 
 			if($eProduct['cCategory']->notEmpty()) {
@@ -857,6 +903,7 @@ class ProductUi {
 			});
 
 			$h .= $form->dynamicGroups($eProduct, ['quality']);
+			$h .= $form->dynamicGroup($eProduct, 'vat');
 
 			$h .= '<br/>';
 			$h .= $this->getFieldProfile($form, $eProduct);
@@ -878,6 +925,38 @@ class ProductUi {
 
 	}
 
+	public function createProfile(Product $eProduct): \Panel {
+
+		$h = '<div class="util-buttons util-buttons-dark">';
+
+			foreach(self::p('profile')->values as $profile => $value) {
+
+				$examples = self::p('profile')->examples[$profile];
+
+				$h .= '<a href="/selling/product:create?farm='.$eProduct['farm']['id'].'&profile='.$profile.'" class="util-button" style="border-color: var(--'.$profile.')">';
+
+					$h .= '<div>';
+						$h .= '<h4>'.$value.'</h4>';
+						if($examples) {
+							$h .= '<div class="util-button-text">'.$examples.'</div>';
+						}
+					$h .= '</div>';
+					$h .= self::getProfileIcon($profile, '4rem');
+
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return new \Panel(
+			id: 'panel-product-create',
+			title: s("Ajouter un produit"),
+			body: $h
+		);
+
+	}
+
 	public function update(Product $eProduct): \Panel {
 
 		$form = new \util\FormUi();
@@ -888,6 +967,7 @@ class ProductUi {
 
 			$h .= $form->hidden('id', $eProduct['id']);
 
+			$h .= $form->dynamicGroup($eProduct, 'profile');
 			$h .= $form->dynamicGroup($eProduct, 'name');
 
 			if($eProduct['cCategory']->notEmpty()) {
@@ -902,6 +982,7 @@ class ProductUi {
 			);
 
 			$h .= $form->dynamicGroups($eProduct, ['description', 'origin', 'quality']);
+			$h .= $form->dynamicGroup($eProduct, 'vat');
 
 			$h .= '<br/>';
 			$h .= $this->getFieldProfile($form, $eProduct);
@@ -925,40 +1006,38 @@ class ProductUi {
 
 	private function getFieldProfile(\util\FormUi $form, Product $eProduct): string {
 
-		$h = $form->dynamicGroup($eProduct, 'profile');
+		$h = '';
 
-		$h .= '<div class="util-block bg-background-light product-write-profile-details">';
+		$h .= '<div class="product-write-profile-details">';
 
-			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('compositionVisibility')).'">';
+			$h .= '<h3>'.s("Caractéristiques").'</h3>';
 
-				if($eProduct->exists() === FALSE) {
-					$h .= '<div class="util-block-help">';
-						$h .= '<h3>'.s("Qu'est-ce qu'un produit composé ?").'</h3>';
-						$h .= '<p>'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</p>';
-						$h .= '<p>'.s("Vous pouvez choisir la composition de votre produit à l'étape suivante.").'</p>';
-					$h .= '</div>';
-				}
-				$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
-			$h .= '</div>';
+			$h .= '<div class="util-block bg-background-light">';
 
-			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('unprocessedPlant')).'">';
-
-				$h .= $form->group(
-					self::p('unprocessedPlant')->label,
-					$form->dynamicField($eProduct, 'unprocessedPlant', function($d) {
-						$d->autocompleteDispatch = '#product-update';
-					})
-				);
-
-			$h .= '</div>';
-
-			foreach(['unprocessedVariety', 'unprocessedSize', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
-
-				$h .= '<div data-profile="'.implode(' ', Product::getProfiles($property)).'">';
-					$h .= $form->dynamicGroup($eProduct, $property);
+				$h .= '<div data-profile="'.implode(' ', Product::getProfiles('compositionVisibility')).'">';
+					$h .= $form->dynamicGroups($eProduct, ['compositionVisibility*']);
 				$h .= '</div>';
 
-			}
+				$h .= '<div data-profile="'.implode(' ', Product::getProfiles('unprocessedPlant')).'">';
+
+					$h .= $form->group(
+						self::p('unprocessedPlant')->label,
+						$form->dynamicField($eProduct, 'unprocessedPlant', function($d) {
+							$d->autocompleteDispatch = '#product-update';
+						})
+					);
+
+				$h .= '</div>';
+
+				foreach(['unprocessedVariety', 'unprocessedSize', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
+
+					$h .= '<div data-profile="'.implode(' ', Product::getProfiles($property)).'">';
+						$h .= $form->dynamicGroup($eProduct, $property);
+					$h .= '</div>';
+
+				}
+
+			$h .= '</div>';
 
 		$h .= '</div>';
 
@@ -978,7 +1057,6 @@ class ProductUi {
 
 		$h .= '<div class="hide-panel-out mb-2">'.\Asset::icon('exclamation-circle').' '.s("Les prix de base que vous donnez à vos produits ne sont pas prioritaires par rapport aux prix indiqués dans les catalogues et aux prix personnalisés de vos clients (<link>en savoir plus</link>).", ['link' => '<a href="/doc/selling:pricing">']).'</div>';
 
-		$h .= $form->dynamicGroup($eProduct, 'vat');
 		$h .= '<br/>';
 
 		if(
@@ -1104,7 +1182,7 @@ class ProductUi {
 			'processedComposition' => s("Composition"),
 			'processedPackaging' => s("Conditionnement"),
 			'processedAllergen' => s("Allergènes"),
-			'profile' => '<h3>'.s("Caractéristiques").'</h3>',
+			'profile' => s("Type"),
 			'origin' => s("Origine"),
 			'description' => s("Description"),
 			'quality' => s("Signe de qualité"),
@@ -1142,21 +1220,54 @@ class ProductUi {
 				break;
 
 			case 'profile' :
-				$d->placeholder = s("Non concerné");
-				$d->field = 'radio';
-				$d->values = fn(Product $e) => [
-					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale").'  <span class="color-muted"><small>'.s("Fruits, légumes, fleurs, plants...").'</small></span>',
-					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale").'  <span class="color-muted"><small>'.s("Viandes, oeufs, animaux vivants...").'</small></span>',
-					Product::PROCESSED_FOOD => s("Produit alimentaire transformé").'  <span class="color-muted"><small>'.s("Pains, charcuteries, confitures...").'</small></span>',
-					Product::PROCESSED_PRODUCT => s("Produit non alimentaire").'  <span class="color-muted"><small>'.s("Savons, lessives...").'</small></span>',
-					Product::COMPOSITION => \Asset::icon('puzzle-fill').' '.s("Produit composé").'  <span class="color-muted"><small>'.s("Panier de légume, bouquet de fleurs...").'</small></span>'
-				];
-				$d->shortValues = [
+				$d->field = function(\util\FormUi $form, Product $eProduct) use ($d) {
+
+					$h = '<a data-dropdown="bottom-start" class="btn btn-primary dropdown-toggle" data-dropdown-hover="true">';
+						$h .= ProductUi::getProfileIcon($eProduct['profile']).'  ';
+						$h .= $form->inputRadio('profile', $eProduct['profile'], attributes: ['checked' => 'checked', 'class' => 'hide']);
+						$h .= '<span class="product-profile-name">'.$d->values[$eProduct['profile']].'</span>';
+					$h .= '</a>';
+					$h .= ProductUi::getProfileDropdown($eProduct, fn($h) => attr('onclick', 'Product.changeProfile(this)'));
+
+					if($eProduct->exists() === FALSE) {
+						$h .= '<div class="mt-1" data-profile="'.Product::COMPOSITION.'">';
+							$h .= '<div class="util-block-help">';
+								$h .= '<h3>'.s("Qu'est-ce qu'un produit composé ?").'</h3>';
+								$h .= '<p>'.s("Un produit composé est un produit qui rassemble plusieurs autres produits. Cela peut être par exemple un panier de légumes dont vous modifiez la composition toutes les semaines, un bouquet de fleurs que vous cultivez, une cagette de légumes pour la ratatouille...").'</p>';
+								$h .= '<p>'.s("Vous pouvez choisir la composition de votre produit à l'étape suivante.").'</p>';
+							$h .= '</div>';
+						$h .= '</div>';
+					}
+
+					return $h;
+					
+				};
+
+				$d->values = [
 					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale"),
 					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale"),
 					Product::PROCESSED_FOOD => s("Produit alimentaire transformé"),
 					Product::PROCESSED_PRODUCT => s("Produit non alimentaire"),
 					Product::COMPOSITION => s("Produit composé"),
+					Product::OTHER => s("Autre produit"),
+				];
+
+				$d->examples = [
+					Product::UNPROCESSED_PLANT => s("Fruit, légume, fleur, plant..."),
+					Product::UNPROCESSED_ANIMAL => s("Viande, oeuf, lait, animal vivant..."),
+					Product::PROCESSED_FOOD => s("Pain, crèmerie, confiture..."),
+					Product::PROCESSED_PRODUCT => s("Savon, lessive..."),
+					Product::COMPOSITION => s("Panier de légumes, bouquet de fleurs..."),
+					Product::OTHER => NULL,
+				];
+
+				$d->icons = [
+					Product::UNPROCESSED_PLANT => \Asset::icon('leaf'),
+					Product::UNPROCESSED_ANIMAL => \Asset::icon('egg'),
+					Product::PROCESSED_FOOD => \Asset::icon('fork-knife'),
+					Product::PROCESSED_PRODUCT => \Asset::icon('box'),
+					Product::COMPOSITION => \Asset::icon('puzzle-fill'),
+					Product::OTHER => \Asset::icon('three-dots'),
 				];
 				break;
 
