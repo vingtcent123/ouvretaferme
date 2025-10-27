@@ -17,14 +17,14 @@ class VatDeclarationUi {
 
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<th>'.s("Période").'</th>';
+					$h .= '<th>'.s("Période déclarée").'</th>';
 					$h .= '<th>'.s("Date limite").'</th>';
 					$h .= '<th>'.s("Statut").'</th>';
 					$h .= '<th>'.s("Création").'</th>';
 					$h .= '<th>'.s("Crédit ou TVA à payer").'</th>';
 					$h .= '<th>'.s("Résultat net").'</th>';
 					$h .= '<th>'.s("Déclaration").'</th>';
-					$h .= '<th></th>';
+					$h .= '<th>'.s("Comptabilisée").'</th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 
@@ -33,9 +33,13 @@ class VatDeclarationUi {
 				foreach($cVatDeclaration as $eVatDeclaration) {
 
 					$h .= '<tr>';
-						$h .= '<td>'.s("{startDate} au {endDate}",
-								['startDate' => \util\DateUi::numeric($eVatDeclaration['from']), 'endDate' => \util\DateUi::numeric($eVatDeclaration['to'])]
-							).'</td>';
+						$h .= '<td>';
+							$h .= '<a href="'.\company\CompanyUi::urlSummary($eFarm).'/vat:?tab=cerfa&id='.$eVatDeclaration['id'].'">';
+								$h .= s("{startDate} au {endDate}",
+										['startDate' => \util\DateUi::numeric($eVatDeclaration['from']), 'endDate' => \util\DateUi::numeric($eVatDeclaration['to'])]
+									);
+							$h .= '</a>';
+						$h .= '</td>';
 						$h .= '<td class="';
 							if($eVatDeclaration['limit'] < date('Y-m-d') and $eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
 								$h .= 'color-danger';
@@ -71,7 +75,15 @@ class VatDeclarationUi {
 							}
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= '<a href="'.\company\CompanyUi::urlSummary($eFarm).'/vat:?tab=cerfa&id='.$eVatDeclaration['id'].'">'.s("Voir").'</a>';
+							if($eVatDeclaration['accountedAt'] === NULL) {
+								$h .= s("Non");
+								if($eVatDeclaration['declaredAt'] !== NULL) {
+									$h .= '<br /><a class="font-sm" href="'.\company\CompanyUi::urlSummary($eFarm).'/vat:operations?id='.$eVatDeclaration['id'].'">'.s("Voir les écritures proposées").'</a>';
+								}
+							} else {
+								$h .= \util\DateUi::numeric($eVatDeclaration['accountedAt']);
+								$h .= '<div class="font-sm">('.s("par {value}", $eVatDeclaration['accountedBy']->getName()).')</div>';
+							}
 						$h .= '</td>';
 					$h .= '</tr>';
 

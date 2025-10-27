@@ -17,6 +17,8 @@ VatDeclaration:
   updatedBy: user\User = SPECIAL(user)
   declaredAt: ?datetime
   declaredBy: ?user\User
+  accountedAt: ?datetime
+  accountedBy: ?user\User
   UNIQUE: [
     ["from", "to"],
   ]

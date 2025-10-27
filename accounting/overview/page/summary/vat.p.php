@@ -49,11 +49,18 @@ new Page(function($data) {
 
 			case 'cerfa':
 				$data->precision = 0;
+				// On tente par l'ID
 				$eVatDeclaration = \overview\VatDeclarationLib::getById(GET('id'));
 				if($eVatDeclaration->empty()) {
-					$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFarm, $data->eFinancialYear, $search, precision: $data->precision);
+					// On tente par les dates
+					$eVatDeclaration = \overview\VatDeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
+				}
+				// On a trouvé
+				if($eVatDeclaration->notEmpty()) {
+					$data->cerfa = $eVatDeclaration->getArrayCopy()['data'] + ['eVatDeclaration' => $eVatDeclaration];
 				} else {
-					$data->cerfa = $eVatDeclaration->getArrayCopy() + ['eVatDeclaration' => $eVatDeclaration];
+					// On génère
+					$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFinancialYear, $search, precision: $data->precision);
 				}
 				break;
 
@@ -101,6 +108,22 @@ new Page(function($data) {
 		\overview\VatDeclarationLib::declare($eVatDeclaration);
 
 		throw new ReloadAction('overview', 'VatDeclaration::declared');
+
+	})
+	->get('operations', function($data) {
+
+		$data->eVatDeclaration = \overview\VatDeclarationLib::getById(GET('id'));
+
+		if($data->eVatDeclaration->empty()) {
+			throw new NotExistsAction('Unknown declaration');
+		}
+
+		$dataFromDeclaration = \overview\VatLib::generateOperationsFromDeclaration($data->eVatDeclaration, $data->eFinancialYear);
+		$data->cerfaCalculated = $dataFromDeclaration['cerfaCalculated'];
+		$data->cerfaDeclared = $dataFromDeclaration['cerfaDeclared'];
+		$data->cOperation = $dataFromDeclaration['cOperation'];
+
+		throw new ViewAction($data);
 
 	});
 ?>

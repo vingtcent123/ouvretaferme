@@ -58,10 +58,12 @@ class VatDeclarationModel extends \ModuleModel {
 			'updatedBy' => ['element32', 'user\User', 'cast' => 'element'],
 			'declaredAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'declaredBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'accountedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'accountedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'from', 'to', 'limit', 'status', 'associates', 'cerfa', 'data', 'financialYear', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'declaredAt', 'declaredBy'
+			'id', 'from', 'to', 'limit', 'status', 'associates', 'cerfa', 'data', 'financialYear', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'declaredAt', 'declaredBy', 'accountedAt', 'accountedBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -69,6 +71,7 @@ class VatDeclarationModel extends \ModuleModel {
 			'createdBy' => 'user\User',
 			'updatedBy' => 'user\User',
 			'declaredBy' => 'user\User',
+			'accountedBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -210,6 +213,14 @@ class VatDeclarationModel extends \ModuleModel {
 
 	public function whereDeclaredBy(...$data): VatDeclarationModel {
 		return $this->where('declaredBy', ...$data);
+	}
+
+	public function whereAccountedAt(...$data): VatDeclarationModel {
+		return $this->where('accountedAt', ...$data);
+	}
+
+	public function whereAccountedBy(...$data): VatDeclarationModel {
+		return $this->where('accountedBy', ...$data);
 	}
 
 

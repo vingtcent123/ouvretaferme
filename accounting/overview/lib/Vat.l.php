@@ -48,6 +48,7 @@ Class VatLib {
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_BUY_CLASS_PREFIX.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_SELL_CLASS_PREFIX.'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_TO_PAY_INTRACOM_PREFIX.'%'),
 			)
 			->whereAccountLabel('NOT LIKE', \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT.'%')
 			->whereOperation('!=', NULL)
@@ -76,13 +77,13 @@ Class VatLib {
 				} else {
 					$taxes[$eOperation['compte']][$key]['amount'] -= $eOperation['amount'];
 				}
-			} else {
+			} else if(mb_strpos($eOperation['compte'], (string)\account\AccountSetting::VAT_SELL_CLASS_PREFIX) !== FALSE) {
 				if($eOperation['type'] === \journal\Operation::CREDIT) {
 					$taxes[$eOperation['compte']][$key]['amount'] += $eOperation['amount'];
 				} else {
 					$taxes[$eOperation['compte']][$key]['amount'] -= $eOperation['amount'];
 				}
-			}
+			} // On ne fait rien de la TVA intracom (autoliquidée)
 
 		}
 
@@ -276,19 +277,7 @@ Class VatLib {
 		];
 
 	}
-	public static function getVatDataDeclaration(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search = new \Search(), int $precision = 0): array {
-
-		// On vérifie si on a une entrée en base de données
-		$eVatDeclaration = VatDeclaration::model()
-			->select(VatDeclaration::getSelection())
-			->whereFrom($search->get('minDate'))
-			->whereTo($search->get('maxDate'))
-			->whereStatus('IN', [VatDeclaration::DRAFT, VatDeclaration::DECLARED])
-			->get();
-
-		if($eVatDeclaration->notEmpty()) {
-			return $eVatDeclaration['data'] + ['eVatDeclaration' => $eVatDeclaration];
-		}
+	public static function getVatDataDeclaration(\account\FinancialYear $eFinancialYear, \Search $search = new \Search(), int $precision = 0): array {
 
 		$checkData = self::getForCheck($search);
 		$sales = $checkData['sales'];
@@ -316,19 +305,27 @@ Class VatLib {
 		// Ventes (comptes 70*) :
 		// 0207 => Ventes à 20%
 		$vatData['0207-base'] = round($sales[20]['amount'] ?? 0, $precision);
-		$vatData['0207-tax'] = round($taxes[44571]['20']['amount'] ?? 0, $precision);
+		$vatData['0207-tax'] = round($taxes[\account\AccountSetting::COLLECTED_VAT_CLASS]['20']['amount'] ?? 0, $precision);
 		// 0105 => Ventes à 5.5%
 		$vatData['0105-base'] = round($sales['5.5']['amount'] ?? 0, $precision);
-		$vatData['0105-tax'] = round($taxes[44571]['5.5']['amount'] ?? 0, $precision);
+		$vatData['0105-tax'] = round($taxes[\account\AccountSetting::COLLECTED_VAT_CLASS]['5.5']['amount'] ?? 0, $precision);
 		// 0151 => Ventes à 10%
 		$vatData['0151-base'] = round($sales['10']['amount'] ?? 0, $precision);
-		$vatData['0151-tax'] = round($taxes[44571]['10']['amount'] ?? 0, $precision);
+		$vatData['0151-tax'] = round($taxes[\account\AccountSetting::COLLECTED_VAT_CLASS]['10']['amount'] ?? 0, $precision);
 
 		// TVA s/ immos
-		$vatData['0703'] = round(array_sum(array_column($taxes['44562'] ?? [], 'amount')), $precision);
+		$vatData['0703'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_ASSET_CLASS_ACCOUNT] ?? [], 'amount')), $precision);
+
+		// TVA due intracom (achat autoliquidé)
+		$vatData['0044'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_PREFIX] ?? [], 'amount')), $precision);
+		$vatData['0044-tax'] = round($vatData['0044'] * 0.2, $precision);
+
+		// TVA déductible intracom (achat auto liquidé)
+		$vatData['0034'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_PREFIX] ?? [], 'amount')), $precision);
+		$vatData['0034-tax'] = round($vatData['0034'] * 0.2, $precision);
 
 		// TVA s/ ABS
-		$vatData['0702'] = round(array_sum(array_column($taxes['44566'] ?? [], 'amount')), $precision);
+		$vatData['0702'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT] ?? [], 'amount')), $precision);
 
 		$vatData['16-number'] = round(array_sum(array_filter($vatData, fn($item, $index) => in_array($index, ['0207-tax', '0208-tax', '0105-tax', '0151-tax', '0201-tax', '0100-tax', '0950-tax', '0152-tax', '0900-tax', '0030-tax', '0040-tax', '0044-tax', '0970-tax', '0980-tax', '0981-tax']), ARRAY_FILTER_USE_BOTH)), $precision);
 		$vatData['19-number'] = round(($vatData['16-number'] ?? 0) + ($vatData['0983'] ?? 0) + ($vatData['0600'] ?? 0) + ($vatData['0602'] ?? 0), $precision);
@@ -397,6 +394,214 @@ Class VatLib {
 			->whereFinancialYear($eFinancialYear)
 			->sort(['from' => SORT_ASC, 'createdAt' => SORT_ASC])
 			->getCollection();
+
+	}
+
+	/**
+	 * Étape 1 - Débiter :
+	 *    - 44571 (TVA collectée),
+	 *    - 4452 (TVA due intracom autoliquidée),
+	 *    - 44567 SI crédit de TVA
+	 * puis ajuster 44571 / 4452 par 658 ou 758
+	 *
+	 * Étape 2 - Créditer :
+	 *    - 44562 (TVA sur immos),
+	 *    - 44566 (TVA déductible),
+	 *    - 445662 (TVA déductible intracom),
+	 *    - 44551 SI TVA à décaisser
+	 * puis ajuster 44562 / 44566 / 445662 par 658 ou 758
+	 *
+	 */
+	public static function generateOperationsFromDeclaration(VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): array {
+
+		$cOperation = new \Collection();
+
+		// On part des écritures
+		$search = new \Search([
+			'financialYear' => $eFinancialYear,
+			'minDate' => $eVatDeclaration['from'],
+			'maxDate' => $eVatDeclaration['to'],
+		]);
+		$cerfaFromOperations = self::getVatDataDeclaration($eFinancialYear, $search, precision: 2);
+
+		// On récupère les données de la déclaration
+		$cerfa = $eVatDeclaration['data'];
+
+		$cAccount = \account\Account::model()
+			->select(\account\Account::getSelection())
+			->or(
+				fn() => $this->whereClass('LIKE', \account\AccountSetting::VAT_BUY_CLASS_PREFIX.'%'),
+				fn() => $this->whereClass('LIKE', \account\AccountSetting::VAT_SELL_CLASS_PREFIX.'%'),
+				fn() => $this->whereClass('LIKE', \account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT.'%'),
+				fn() => $this->whereClass('LIKE', \account\AccountSetting::VAT_TO_PAY_INTRACOM_PREFIX.'%'),
+				fn() => $this->whereClass('LIKE', \account\AccountSetting::CHARGES_OTHER.'%'),
+				fn() => $this->whereClass('LIKE', \account\AccountSetting::PRODUCT_OTHER.'%'),
+			)
+			->getCollection(NULL, NULL, 'class');
+
+		$eThirdParty = \account\ThirdPartyLib::getByName(VatUi::getTranslations('tresor-public'));
+		$document = VatUi::getTranslations('document', $eVatDeclaration->getArrayCopy());
+
+		// Étape 1
+		// 44571 - TVA collectée
+		$vat44571Declared = round($cerfa['0105'], 2);
+		$vat44571Calculated = round($cerfaFromOperations['0105-tax'], 2);
+		if($vat44571Calculated > 0) {
+			$eOperation44571 = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::COLLECTED_VAT_CLASS],
+				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::COLLECTED_VAT_CLASS),
+				'amount' => $vat44571Calculated,
+				'type' => \journal\Operation::DEBIT,
+				'description' => VatUi::getTranslations('tva-sur-ventes'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet(\account\AccountSetting::COLLECTED_VAT_CLASS, $eOperation44571);
+		}
+
+		// 4452 - TVA due intracom
+		$vat4452Declared = round($cerfa['0044'], 2);
+		$vat4452Calculated = round($cerfaFromOperations['0044-tax'], 2);
+		if($vat4452Calculated > 0) {
+			$eOperation44571 = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::VAT_TO_PAY_INTRACOM_PREFIX],
+				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_TO_PAY_INTRACOM_PREFIX),
+				'amount' => $vat4452Calculated,
+				'type' => \journal\Operation::DEBIT,
+				'description' => VatUi::getTranslations('tva-sur-ventes'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet(\account\AccountSetting::VAT_TO_PAY_INTRACOM_PREFIX, $eOperation44571);
+		}
+
+		// Solde : crédit de TVA
+		$amountVatCredit = $cerfa['0020'];
+		if($amountVatCredit > 0) {
+			$eOperation44567 = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT],
+				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT),
+				'amount' => $amountVatCredit,
+				'type' => \journal\Operation::DEBIT,
+				'description' => VatUi::getTranslations('tva-credit'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet(\account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT, $eOperation44567);
+		}
+
+		$differenceDeclaredAndCalculated = round($vat44571Declared + $vat4452Declared - $vat44571Calculated - $vat4452Calculated, 2);
+		// Si on a déclaré + => Perte (758) sinon => Gain (658)
+		if($differenceDeclaredAndCalculated > 0) {
+			$class = \account\AccountSetting::CHARGES_OTHER;
+			$type = \journal\Operation::DEBIT;
+		} else {
+			$class = \account\AccountSetting::PRODUCT_OTHER;
+			$type = \journal\Operation::CREDIT;
+		}
+		if($differenceDeclaredAndCalculated !== 0.0) {
+			$eOperationDifference = new \journal\Operation([
+				'account' => $cAccount[$class],
+				'accountLabel' => \account\ClassLib::pad($class),
+				'amount' => abs($differenceDeclaredAndCalculated),
+				'type' => $type,
+				'description' => VatUi::getTranslations('tva-sur-ventes'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet($class, $eOperationDifference);
+		}
+
+		// Étape 2 | Créditer : 44562 (TVA sur immos), 44566 (TVA déductible), 445662 (TVA déductible intracom), 44551 SI TVA à décaisser + ajuster 44562 / 44566 / 445662 par 658 ou 758
+
+		// TVA sur immos
+		$vat44562Declared = round($cerfa['0703'], 2);
+		$vat44562Calculated = round($cerfaFromOperations['0703'], 2);
+		if($vat44562Calculated > 0) {
+			$eOperation44562 = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::VAT_ASSET_CLASS_ACCOUNT],
+				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_ASSET_CLASS_ACCOUNT),
+				'amount' => $vat44562Calculated,
+				'type' => \journal\Operation::CREDIT,
+				'description' => VatUi::getTranslations('tva-versee'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet(\account\AccountSetting::VAT_ASSET_CLASS_ACCOUNT, $eOperation44562);
+		}
+
+		// TVA sur ABS
+		$vat44566Declared = round($cerfa['0702'], 2);
+		$vat44566Calculated = round($cerfaFromOperations['0702'], 2);
+		if($vat44566Calculated > 0) {
+			$eOperation44566 = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT],
+				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT),
+				'amount' => $vat44566Calculated,
+				'type' => \journal\Operation::CREDIT,
+				'description' => VatUi::getTranslations('tva-versee'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT, $eOperation44566);
+		}
+
+		// TVA déductible intracom (on ne déclare que le montant total sur le CERFA, pas la taxe due)
+		$vat445662Declared = round($cerfa['0034'], 2) * 0.3;
+		$vat445662Calculated = round($cerfaFromOperations['0034'], 2) * 0.2;
+		if($vat445662Calculated > 0) {
+			$eOperation445662 = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_PREFIX],
+				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_PREFIX),
+				'amount' => $vat445662Calculated,
+				'type' => \journal\Operation::CREDIT,
+				'description' => VatUi::getTranslations('tva-versee'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet(\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_PREFIX, $eOperation445662);
+		}
+
+		// Solde : TVA à décaisser
+		$amountVatToPay = $cerfaFromOperations['8901'];
+		if($amountVatToPay > 0) {
+			$eOperation44551 = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT],
+				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT),
+				'amount' => $amountVatToPay,
+				'type' => \journal\Operation::CREDIT,
+				'description' => VatUi::getTranslations('tva-debit'),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->offsetSet(\account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT, $eOperation44551);
+		}
+
+		$differenceDeclaredAndCalculated = round($vat44562Declared + $vat44566Declared + $vat445662Declared - $vat44562Calculated - $vat44566Calculated - $vat445662Calculated, 2);
+		// Si on a déclaré + => Gain (658) sinon => Perte (758)
+		if($differenceDeclaredAndCalculated > 0) {
+			$class = \account\AccountSetting::PRODUCT_OTHER;
+			$type = \journal\Operation::CREDIT;
+		} else {
+			$class = \account\AccountSetting::CHARGES_OTHER;
+			$type = \journal\Operation::DEBIT;
+		}
+		$eOperationDifference = new \journal\Operation([
+			'account' => $cAccount[$class],
+			'accountLabel' => \account\ClassLib::pad($class),
+			'amount' => abs($differenceDeclaredAndCalculated),
+			'type' => $type,
+			'description' => VatUi::getTranslations('tva-versee'),
+			'thirdParty' => $eThirdParty,
+			'document' => $document,
+		]);
+		$cOperation->append($eOperationDifference);
+
+		return [
+			'cerfaCalculated' => $cerfaFromOperations,
+			'cerfaDeclared' => $cerfa,
+			'cOperation' => $cOperation,
+		];
 
 	}
 }

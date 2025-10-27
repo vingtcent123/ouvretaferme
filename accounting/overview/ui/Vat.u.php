@@ -481,7 +481,7 @@ Class VatUi {
 
 		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration();
 		$notAvailableAnymore = $eVatDeclaration->notEmpty() and $eVatDeclaration['limit'] < date('Y-m-d', strtotime(VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days ago'));
-		$notAvailableYet = $eVatDeclaration->empty() and date('Y-m-d', strtotime($vatParameters['limit'].' - 15 days')) > date('Y-m-d');
+		$notAvailableYet = ($eVatDeclaration->empty() and date('Y-m-d', strtotime($vatParameters['limit'].' - 15 days')) > date('Y-m-d'));
 
 		$isDisabled = ($notAvailableAnymore or $notAvailableYet);
 		$attributes = $isDisabled ? ['disabled' => 'disabled'] : [];
@@ -2400,6 +2400,167 @@ Class VatUi {
 
 	}
 
+	public function showSuggestedOperations(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, VatDeclaration $eVatDeclaration, \Collection $cOperation, array $cerfaCalculated, array $cerfaDeclared): \Panel {
+
+		$title = s("Créer les écritures suite à une déclaration de TVA");
+		$panelId = 'panel-create-operations-from-vat-declaration';
+
+		if($eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
+
+			$h = '<div class="util-warning-outline">'.s("Marquez d'abord votre déclaration comme déclarée.").'</div>';
+
+			return new \Panel(
+				id: $panelId,
+				title: $title,
+				body: $h,
+			);
+
+		}
+
+		$form = new \util\FormUi();
+
+		$dialogOpen = $form->openAjax(
+			\company\CompanyUi::urlSummary($eFarm).'/vat:doCreateOperations',
+			[
+				'id' => 'vat-declaration-create-operations',
+				'class' => 'panel-dialog',
+			]
+		);
+
+		$h = $form->hidden('farm', $eFarm['id']);
+		$h .= $form->hidden('id', $eVatDeclaration['id']);
+
+		$h .= '<div class="util-info">';
+			$h .= '<p>'.s("{siteName} vous propose les écritures comptables suivantes pour enregistrer votre déclaration de TVA").'</p>';
+			$h .= s("Ces écritures sont basées sur : ");
+			$h .= '<ul>';
+				$h .= '<li>'.s("Les écritures enregistrées au débit et au crédit sur les comptes de TVA (comptes commençant par {value})", \account\AccountSetting::VAT_CLASS).'</li>';
+				$h .= '<li>'.s("La présente déclaration de TVA").'</li>';
+			$h .= '</ul>';
+			$h .= \Asset::icon('exclamation-square', ['class' => 'mr-1']).s("Vérifiez que <link>vos écritures comptables {icon}</link> correspondent bien à <link2>ce que vous avez déclaré {icon}</link2> pour que les écritures proposées soient correctes.",
+				[
+					'link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.\account\AccountSetting::VAT_CLASS.'" target="_blank">',
+					'link2' => '<a href="'.\company\CompanyUi::urlSummary($eFarm).'/vat?tab=cerfa&id='.$eVatDeclaration['id'].'" target="_blank">',
+					'icon' => \Asset::icon('box-arrow-up-right'),
+				]);
+		$h .= '</div>';
+
+		$h .= '<h3 class="mt-2">'.s("Écritures comptables suggérées d'après vos écritures et votre déclaration").'</h3>';
+
+		$h .= '<table class="tr-even tr-hover">';
+			$h .= '<thead>';
+				$h .= '<tr>';
+					$h .= '<th>'.s("Compte").'</th>';
+					$h .= '<th>'.s("Libellé").'</th>';
+					$h .= '<th>'.s("Tiers").'</th>';
+					$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
+					$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+			$h .= '<tbody>';
+				foreach($cOperation as $eOperation) {
+					$h .= '<tr>';
+						$h .= '<td>';
+							$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">'.encode($eOperation['accountLabel']).'</div>';
+							'<div class="dropdown-list bg-primary"><span class="dropdown-item">'.encode($eOperation['account']['description']).'</span></div>';
+						$h .= '</td>';
+						$h .= '<td><div class="description"><span class=" ml-3">'.encode($eOperation['description']).'</span></div></td>';
+						$h .= '<td>'.encode($eOperation['thirdParty']['name']).'</td>';
+						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::DEBIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
+						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::CREDIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
+					$h .= '</tr>';
+				}
+			$h .= '</tbody>';
+		$h .= '</table>';
+
+		$h .= '<h3 class="mt-2">'.s("Et après ?").'</h3>';
+
+		if($cOperation->offsetExists(\account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT)) {
+
+			$h .= '<ul>';
+
+				$h .= '<li>'.s("Comme vous avez un <b>crédit de TVA</b> (compte {account}), vous pouvez soit demander un remboursement (<link>voir les conditions {icon}</link>), soit le déduire dans votre prochaine déclaration.", [
+					'account' => \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT,
+					'link' => '<a href="https://www.impots.gouv.fr/professionnel/remboursement-de-credit-de-tva-0" target="_blank">',
+					'icon' => \Asset::icon('box-arrow-up-right'),
+				]).'</li>';
+
+				if((int)$cerfaDeclared['8003'] > 0) { // Demande de remboursement
+
+					$h .= '<li>';
+
+						$h .= s("Vous avez demandé, d'après votre déclaration, un remboursement.");
+
+						if($eFinancialYear->isCashAccounting()) {
+
+							$h .= ' '.s("Lorsque celui-ci arrivera sur votre compte, vous pourrez l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant votre compte bancaire {bankAccount} (ceci peut être fait plus facilement lorsque vous aurez importé votre relevé bancaire)", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+
+						} else {
+
+							$h .= ' '.s("Vous pouvez déjà l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant le compte de tiers Trésor Public. Il s'agira ensuite d'enregistrer le remboursement lorsque le mouvement apparaîtra sur votre relevé bancaire.", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT]);
+
+						}
+
+					$h .= '</li>';
+
+				} else {
+
+					$h .= '<li>';
+
+						$h .= s("D'après votre déclaration, vous n'avez pas demandé de remboursement. Ce montant sera donc automatiquement déduit lors de votre prochaine déclaration de TVA.");
+
+					$h .= '</li>';
+
+				}
+
+			$h .= '</ul>';
+
+		} else if($cOperation->offsetExists(\account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT)) {
+
+			$h .= '<ul>';
+
+				$h .= '<li>'.s("Comme vous avez de la <b>TVA à décaisser</b> (compte {account}), vous devez faire un télérèglement.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT]).'</li>';
+
+				if($eFinancialYear->isCashAccounting()) {
+
+					$h .= '<li>'.s("Une fois que ce règlement apparaîtra dans votre compte bancaire, vous pourrez créditer le compte {account} (TVA à décaisser) pour le solder, et débiter votre compte bancaire (compte {bankAccount} ou l'un de ses sous-comptes si vous en avez créé).", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
+
+				} else {
+
+					$h .= '<li>'.s("Vous pouvez dès maintenant créditer le compte {account} (TVA à décaisser) pour le solder, et débiter le compte de tiers Trésor Public pour enregistrer l'opération dans votre comptabilité. Il s'agira ensuite d'enregistrer le règlement lorsque le mouvement aura été enregistré.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT]).'</li>';
+
+				}
+
+			$h .= '</ul>';
+
+		}
+
+		$saveButton = '<div class="text-end">'.$form->button(s("Bien compris, je créerai les écritures moi-même"), ['class' => 'btn btn-outline-secondary mr-2', 'onclick' => 'Lime.Panel.closeLast()']).$form->submit(s("Créer les écritures")).'</div>';
+
+		return new \Panel(
+			id         : $panelId,
+			title      : $title,
+			dialogOpen : $dialogOpen,
+			dialogClose: $form->close(),
+			body       : $h,
+			header     : '<h2>'.$title.'</h2>',
+			footer     : $saveButton,
+		);
+
+	}
+
+	public static function getTranslations(string $code, array $params = []): string {
+
+		return match($code) {
+			'tva-versee' => s("TVA VERSÉE"),
+			'tva-sur-ventes' => s("TVA / VENTES"),
+			'tva-credit' => s("Crédit de TVA"),
+			'tva-debit' => s("TVA à décaisser"),
+			'document' => s("Déclaration TVA du {from} au {to}", $params),
+			'tresor-public' => s("Trésor public"),
+		};
+
+	}
 
 }
 

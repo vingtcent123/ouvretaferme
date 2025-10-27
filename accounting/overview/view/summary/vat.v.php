@@ -75,3 +75,11 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	echo '</div>';
 
 });
+
+new AdaptativeView('operations', function($data, PanelTemplate $t) {
+
+	return new \overview\VatUi()->showSuggestedOperations(
+		$data->eFarm, $data->eFinancialYear, $data->eVatDeclaration, $data->cOperation, $data->cerfaCalculated, $data->cerfaDeclared,
+	);
+
+});
