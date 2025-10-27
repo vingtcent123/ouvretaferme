@@ -5,51 +5,10 @@ new Page()
 		$cPlant = new Collection();
 
 		$cPlant[] = new \plant\Plant([
-			'name' => 'Amarante',
-			'fqn' => 'amarante',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('amaranthaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Chanvre',
-			'fqn' => 'chanvre',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('cannabaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Chrysanthème',
-			'fqn' => 'chrysantheme',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('asteraceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Curcuma',
-			'fqn' => 'curcuma',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('zingiberaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Delphinium',
-			'fqn' => 'delphinium',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('ranunculaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Gombo',
-			'fqn' => 'gombo',
-			'cycle' => \plant\Plant::ANNUAL,
-			'family' => \plant\FamilyLib::getByFqn('malvaceae')
-		]);
-
-		$cPlant[] = new \plant\Plant([
-			'name' => 'Engrais vert',
-			'fqn' => 'engrais-vert',
-			'cycle' => \plant\Plant::ANNUAL
+			'name' => 'Coing',
+			'fqn' => 'coing',
+			'cycle' => \plant\Plant::PERENNIAL,
+			'family' => \plant\FamilyLib::getByFqn('rosaceae')
 		]);
 
 		$cFarm = \plant\Plant::model()
