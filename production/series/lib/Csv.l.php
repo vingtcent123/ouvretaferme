@@ -407,6 +407,10 @@ class CsvLib {
 
 		$file = $_FILES['csv']['tmp_name'];
 
+		if(empty($file)) {
+			return FALSE;
+		}
+
 		// Vérification de la taille (max 1 Mo)
 		if(filesize($file) > 1024 * 1024) {
 			\Fail::log('csvSize');
