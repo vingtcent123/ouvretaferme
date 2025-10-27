@@ -111,7 +111,7 @@ Class VatLib {
 
 	}
 
-	public static function getVatDeclarationParameters(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $period = 'current'): array {
+	public static function getVatDeclarationParameters(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $period = 'last'): array {
 
 		// $period peut être
 		//  "current" (on se base sur la date courante),
@@ -164,7 +164,7 @@ Class VatLib {
 					$periodTo = date('Y-m-d', strtotime($periodTo.' - 3 month'));
 				} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::MONTHLY) {
 					$periodFrom = date('Y-m-d', strtotime($periodFrom.' - 1 month'));
-					$periodTo = date('Y-m-d', strtotime($periodTo.' - 1 month'));
+					$periodTo = date('Y-m-d', strtotime($periodFrom.' + 1 month - 1 day'));
 				}
 				break;
 
@@ -177,7 +177,7 @@ Class VatLib {
 					$periodTo = date('Y-m-d', strtotime($periodTo.' + 3 month'));
 				} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::MONTHLY) {
 					$periodFrom = date('Y-m-d', strtotime($periodFrom.' + 1 month'));
-					$periodTo = date('Y-m-d', strtotime($periodTo.' + 1 month'));
+					$periodTo = date('Y-m-d', strtotime($periodFrom.' + 1 month + 1 day'));
 				}
 				break;
 		}
@@ -357,15 +357,16 @@ Class VatLib {
 			$vatData['0020'] = round(($vatData['0705'] ?? 0 - $vatData['34-number'] ?? 0), $precision);
 		}
 
-		// Taxe ADAR
+		// Taxe ADAR (calcul pour valeur annuelle)
 		$turnover = round(array_sum(array_filter($vatData, fn($index, $key) => in_array($key, ['0033', '0207-base', '0151-base', '0105-base', '0100-base', '0201-base', '0900-base', '0950-base', '0210-base', '0211-base', '0212-base', '0213-base', '0214-base', '0215-base', '0970-base', '0981-base']), ARRAY_FILTER_USE_BOTH)), $precision);
 		$associates = $eFinancialYear['associates'];
 		$fixedUnit = 90;
 		$fixed = $fixedUnit * $associates;
 
 		$adarRate = 0.19 / 100;
+		$threshold = 370000;
 		$adarRate2 = 0.05 / 100;
-		$adarTax = round($fixed + min(370000, $turnover) * $adarRate + max(0, $turnover - 370000) * $adarRate2, $precision);
+		$adarTax = round($fixed + min($threshold, $turnover) * $adarRate + max(0, $turnover - $threshold) * $adarRate2, $precision);
 
 		$vatData['4220'] = $adarTax;
 

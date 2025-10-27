@@ -10,10 +10,6 @@ new Page(function($data) {
 })
 	->get('index', function($data) {
 
-		if($data->eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
-			// TODO DEV throw new RedirectAction(\company\CompanyUi::urlSummary($data->eFarm).'/vathistory');
-		}
-
 		if($data->eFinancialYear['hasVat'] === FALSE) {
 			throw new ViewAction($data, ':noVat');
 		}
@@ -28,6 +24,7 @@ new Page(function($data) {
 		$search->set('financialYear', $data->eFinancialYear);
 
 		$data->vatParameters = \overview\VatLib::getVatDeclarationParameters($data->eFarm, $data->eFinancialYear);
+
 		$search->set('minDate', $data->vatParameters['from']);
 		$search->set('maxDate', $data->vatParameters['to']);
 

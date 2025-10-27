@@ -114,7 +114,8 @@ class OperationLib extends OperationCrud {
 	       + ['operation' => Operation::getSelection()]
        )
 			->whereVatDeclaration(NULL, if: $search->has('vatDeclaration') === FALSE)
-			->whereDate('<', fn() => $search->get('maxDate'), if: $search->has('maxDate'))
+			->whereDate('<=', fn() => $search->get('maxDate'), if: $search->has('maxDate'))
+			->whereDate('>=', fn() => $search->get('minDate'), if: $search->has('minDate'))
 			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection();
 
@@ -194,6 +195,8 @@ class OperationLib extends OperationCrud {
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
 			->where(new \Sql('operation IS NOT NULL'))
+			->whereDate('<=', fn() => $search->get('maxDate'), if: $search->has('maxDate'))
+			->whereDate('>=', fn() => $search->get('minDate'), if: $search->has('minDate'))
 			->getCollection(NULL, NULL, $index);
 
 	}

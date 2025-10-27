@@ -99,9 +99,9 @@ Class VatUi {
 
 				$h .= '<h2>'.s("Ma déclaration").'</h2>';
 
-				$h .= '<h3>'.s("Quand puis-je la consulter / l'ajuster ?").'</h3>';
+				$h .= '<h3>'.s("Quel est le planning ?").'</h3>';
 				$h .= '<div>'.s(
-					"Votre déclaration sera ouverte sur {siteName} {days} jours avant la limite de déclaration, soit le <b>{date}</b>, et vous pouvez la modifier sur {siteName} jusqu'à 5 jours après la date limite (soit le {closeDate}). Mais pensez à la déclarer à l'administration fiscale avant la date limite !",
+					"Votre déclaration est ouverte sur {siteName} {days} jours avant la limite de déclaration, soit le <b>{date}</b>, et vous pouvez la modifier sur {siteName} jusqu'à 5 jours après la date limite (soit le {closeDate}). Mais pensez à la déclarer à l'administration fiscale avant la date limite !",
 					[
 						'days' => VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS,
 						'date' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' - '.VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS.' days'))),
