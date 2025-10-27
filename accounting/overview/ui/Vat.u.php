@@ -497,12 +497,24 @@ Class VatUi {
 		} else if($eVatDeclaration->notEmpty()) {
 			if($eVatDeclaration['declaredAt'] !== NULL) {
 
-				$h .= '<div class="util-info">'.s("Déclaration pour la période du {from} au {to}, enregistrée comme déclarée le {date}.", [
-					'date' => \util\DateUi::numeric($eVatDeclaration['declaredAt']),
-					'from' => \util\DateUi::numeric($eVatDeclaration['from']),
-					'to' => \util\DateUi::numeric($eVatDeclaration['to']),
-				]).'</div>';
+				if($eVatDeclaration['accountedAt'] !== NULL) {
 
+					$h .= '<div class="util-info">'.s("Déclaration pour la période du {from} au {to}, déclarée le {date} et enregistrée en comptabilité le {accountedAt}.", [
+						'date' => \util\DateUi::numeric($eVatDeclaration['declaredAt']),
+						'from' => \util\DateUi::numeric($eVatDeclaration['from']),
+						'to' => \util\DateUi::numeric($eVatDeclaration['to']),
+						'accountedAt' => \util\DateUi::numeric($eVatDeclaration['accountedAt']),
+					]).'</div>';
+
+				} else {
+
+					$h .= '<div class="util-info">'.s("Déclaration pour la période du {from} au {to}, déclarée le {date}.", [
+						'date' => \util\DateUi::numeric($eVatDeclaration['declaredAt']),
+						'from' => \util\DateUi::numeric($eVatDeclaration['from']),
+						'to' => \util\DateUi::numeric($eVatDeclaration['to']),
+					]).'</div>';
+
+				}
 
 			} else if($eVatDeclaration['limit'] < date('Y-m-d')) {
 

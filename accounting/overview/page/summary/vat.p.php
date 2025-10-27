@@ -125,5 +125,18 @@ new Page(function($data) {
 
 		throw new ViewAction($data);
 
+	})
+	->post('doCreateOperations', function($data) {
+
+		$eVatDeclaration = \overview\VatDeclarationLib::getById(POST('id'));
+
+		if($eVatDeclaration['status'] !== \overview\VatDeclaration::DECLARED) {
+			throw new NotExpectedAction('Unable to create operations from non-declared vat declaration');
+		}
+
+		\overview\VatLib::createOperations($data->eFarm, $eVatDeclaration, $data->eFinancialYear);
+
+		throw new ReloadAction('overview', 'VatDeclaration::operationsCreated');
+
 	});
 ?>

@@ -440,7 +440,7 @@ Class VatLib {
 			->getCollection(NULL, NULL, 'class');
 
 		$eThirdParty = \account\ThirdPartyLib::getByName(VatUi::getTranslations('tresor-public'));
-		$document = VatUi::getTranslations('document', $eVatDeclaration->getArrayCopy());
+		$document = VatUi::getTranslations('document', ['from' => \util\DateUi::numeric($eVatDeclaration['from']), 'to' => \util\DateUi::numeric($eVatDeclaration['to'])]);
 
 		// Étape 1
 		// 44571 - TVA collectée
@@ -602,6 +602,58 @@ Class VatLib {
 			'cerfaDeclared' => $cerfa,
 			'cOperation' => $cOperation,
 		];
+
+	}
+	public static function createOperations(\farm\Farm $eFarm, VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): void {
+
+		$data = self::generateOperationsFromDeclaration($eVatDeclaration, $eFinancialYear);
+
+		$eFinancialYear['status'] = \account\FinancialYear::OPEN; // pour pouvoir gérer les écritures
+		$input = [
+			'financialYear' => $eFinancialYear['id'],
+			'account' => [],
+			'accountLabel' => [],
+			'description' => [],
+			'amount' => [],
+			'type' => [],
+			'document' => [],
+			'vatRate' => [],
+			'comment' => [],
+			'thirdParty' => [],
+		];
+
+		$index = 0;
+		foreach($data['cOperation'] as $eOperation) {
+
+			$input['account'][$index] = $eOperation['account']['id'];
+			$input['thirdParty'][$index] = $eOperation['thirdParty']['id'];
+			$input['date'][$index] = $eFinancialYear['endDate'];
+			$input['paymentDate'][$index] = $eFinancialYear['endDate'];
+
+			foreach(['accountLabel', 'description', 'amount', 'type', 'document'] as $field) {
+				$input[$field][$index] = $eOperation[$field];
+			}
+
+			$index++;
+		}
+
+		$fw = new \FailWatch();
+
+		\journal\Operation::model()->beginTransaction();
+
+		\journal\OperationLib::prepareOperations($eFarm, $input, new \journal\Operation());
+
+		$fw->validate();
+
+		VatDeclaration::model()
+			->update($eVatDeclaration, [
+				'accountedAt' => new \Sql('NOW()'),
+				'accountedBy' => \user\ConnectionLib::getOnline(),
+				'updatedAt' => new \Sql('NOW()'),
+				'updatedBy' => \user\ConnectionLib::getOnline()
+			]);
+
+		\journal\Operation::model()->commit();
 
 	}
 }

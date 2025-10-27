@@ -16,6 +16,7 @@ class VatDeclaration extends VatDeclarationElement {
 		return parent::getSelection() + [
 			'createdBy' => \user\User::getSelection(),
 			'declaredBy' => \user\User::getSelection(),
+			'accountedBy' => \user\User::getSelection(),
 		];
 
 	}
