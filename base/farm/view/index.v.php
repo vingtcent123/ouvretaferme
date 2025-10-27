@@ -449,7 +449,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer votre gamme de produits").'</h4>';
-			echo '<p>'.s("Pour vendre, vous devez définir vos produits et c'est ici que ça se passe pour créer un premier produit. Tous les champs du formulaire sont facultatifs à l'exception bien sûr du nom du produit.").'</p>';
+			echo '<p>'.s("Pour vendre, vous devez définir vos produits et c'est ici que ça se passe pour créer un premier produit. Pour commencer, sélectionnez le type de votre produit parmi les 6 disponibles !").'</p>';
 		echo '</div>';
 
 		echo '<br/>';
@@ -458,6 +458,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 		echo new \selling\ProductUi()->create(new \selling\Product([
 			'farm' => $data->eFarm,
+			'profile' => NULL,
 			'cCategory' => $data->cCategory,
 			'cUnit' => $data->cUnit,
 			'unit' => new \selling\Unit(),
