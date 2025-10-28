@@ -649,7 +649,9 @@ class SaleLib {
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 
+		// Récupération des données actualisées
 		$cItem = \selling\SaleLib::getItems($eSale);
+		$eSale['cPayment'] = \selling\PaymentLib::getBySale($eSale);
 
 		self::notify('salePaid', $eSale, $cItem);
 
