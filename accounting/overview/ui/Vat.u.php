@@ -469,7 +469,7 @@ Class VatUi {
 
 		} else {
 
-			$h .= new VatUi()->getCerfaCA3($cerfaData);
+			$h .= new VatUi()->getCerfaCA3($eFarm, $eFinancialYear, $cerfaData, $precision, $vatParameters);
 
 		}
 
@@ -526,7 +526,8 @@ Class VatUi {
 
 			}
 		}
-		$h .= $form->openAjax(\company\CompanyUi::urlSummary($eFarm).'/vat:saveCerfa', ['id' => 'cerfa-12', 'data-precision' => $precision, 'onrender' => 'Vat.recalculateAll();']);
+
+		$h .= $form->openAjax(\company\CompanyUi::urlSummary($eFarm).'/vat:saveCerfa', ['id' => 'cerfa-12', 'data-precision' => $precision, 'onrender' => 'Vat12.recalculateAll();']);
 
 			$h .= $form->hidden('from', $vatParameters['from']);
 			$h .= $form->hidden('to', $vatParameters['to']);
@@ -2404,9 +2405,1003 @@ Class VatUi {
 
 	}
 
-	private function getCerfaCA3(array $data): string {
+	private function getCerfaCA3(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $data, int $precision, array $vatParameters): string {
 
 		$h = '';
+		$isDisabled = FALSE;
+		$attributes = $isDisabled ? ['disabled' => 'disabled'] : [];
+
+		$form = new \util\FormUi();
+
+		$h .= $form->openAjax(\company\CompanyUi::urlSummary($eFarm).'/vat:saveCerfa', ['id' => 'cerfa-3', 'data-precision' => $precision, 'onrender' => 'Vat3.recalculateAll();']);
+
+			$h .= $form->hidden('from', $vatParameters['from']);
+			$h .= $form->hidden('to', $vatParameters['to']);
+			$h .= '<table class="vat-cerfa">';
+
+				$h .= '<thead>';
+
+					$h .= '<tr>';
+						$h .= '<th class="vat-cerfa-chapter-title" colspan="8">'.s("A - Montant des opérations réalisées").'</th>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						$h .= '<th class="vat-cerfa-title vat-upper" colspan="4">'.s("Opérations taxées (HT)").'</th>';
+						$h .= '<th class="vat-cerfa-title vat-upper" colspan="4">'.s("Opérations non taxées").'</th>';
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("A1").'</td>';
+						$h .= '<td>'.s("Ventes, prestations de services").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0979").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0979', $data['0979'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("E1").'</td>';
+						$h .= '<td>'.s("Exportations hors UE").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0032").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0032', $data['0032'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("A2").'</td>';
+						$h .= '<td>'.s("Autres opérations imposables").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0981").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0981', $data['0981'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("E2").'</td>';
+						$h .= '<td>'.s("Autres opérations non imposables").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0033").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0033', $data['0033'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("A3").'</td>';
+						$h .= '<td>'.s("Achats de prestations de services réalisés auprès d’un assujetti non établi en France (article 283-2 du code général des impôts)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0044").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0044', $data['0044'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("E3").'</td>';
+						$h .= '<td>'.s("Ventes à distance taxables dans un autre État membre au profit des personnes non assujetties – Ventes B to C").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0047").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0047', $data['0047'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("A4").'</td>';
+						$h .= '<td>'.s("Importations (autres que les produits pétroliers)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0056").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0056', $data['0056'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("E4").'</td>';
+						$h .= '<td>'.s("Importations (autres que les produits pétroliers)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0052").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0052', $data['0052'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("A5").'</td>';
+						$h .= '<td>'.s("Sorties de régime fiscal suspensif (autres que les produits pétroliers) et sorties de régime particulier douanier uniquement lorsque des livraisons ont eu lieu en cours de régime").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0051").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0051', $data['0051'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("E5").'</td>';
+						$h .= '<td>'.s("Sorties de régime fiscal suspensif (autres que les produits pétroliers)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0053").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0053', $data['0053'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("B1").'</td>';
+						$h .= '<td>'.s("Mises à la consommation de produits pétroliers").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0048").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0048', $data['0048'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("E6").'</td>';
+						$h .= '<td>'.s("Importations placées sous régime fiscal suspensif (autres que les produits pétroliers)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0054").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0054', $data['0054'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("B2").'</td>';
+						$h .= '<td>'.s("Acquisitions intracommunautaires").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0031").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0031', $data['0031'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F1").'</td>';
+						$h .= '<td>'.s("Acquisitions intracommunautaires").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0055").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0055', $data['0055'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("B3").'</td>';
+						$h .= '<td>'.s("Achats d’électricité, de gaz naturel, de chaleur ou de froid imposables en France").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0030").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0030', $data['0030'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F2").'</td>';
+						$h .= '<td>'.s("Livraisons intracommunautaires à destination d'une personne assujettie – Ventes B to B").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0034").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0034', $data['0034'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("B4").'</td>';
+						$h .= '<td>'.s("Achats de biens ou de prestations de services réalisés auprès d’un assujetti non établi en France (article 283-1 du code général des impôts) ").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0040").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0040', $data['0040'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F3").'</td>';
+						$h .= '<td>'.s("Livraisons d’électricité, de gaz naturel, de chaleur ou de froid non imposables en France").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0029").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0029', $data['0029'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("B5").'</td>';
+						$h .= '<td>'.s("Régularisations (important : cf. notice)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0036").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0036', $data['0036'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F4").'</td>';
+						$h .= '<td>'.s("Mises à la consommation de produits pétroliers").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0049").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0049', $data['0049'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td></td>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F5").'</td>';
+						$h .= '<td>'.s("Importations de produits pétroliers placées sous régime fiscal suspensif").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0050").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0050', $data['0050'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td></td>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F6").'</td>';
+						$h .= '<td>'.s("Achats en franchise").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0037").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0037', $data['0037'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td></td>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F7").'</td>';
+						$h .= '<td>'.s("Ventes de biens ou prestations de services réalisées par un assujetti non établi en France (article 283-1 du code général des impôts)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0043").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0043', $data['0043'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td></td>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F8").'</td>';
+						$h .= '<td>'.s("Régularisations (important : cf. notice)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0039").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0039', $data['0039'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td></td>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("F9").'</td>';
+						$h .= '<td>'.s("Opérations internes réalisées entre membres d’un assujetti unique").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0061").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0061', $data['0061'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+			$h .= '<table class="vat-cerfa" data-chapter="B">';
+
+				$h .= '<thead>';
+
+					$h .= '<tr>';
+						$h .= '<th class="vat-cerfa-chapter-title" colspan="8">'.s("B - Décompte de la TVA à payer").'</th>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<th class="vat-cerfa-title vat-upper" colspan="2">'.s("TVA brute").'</th>';
+						$h .= '<th class="vat-cerfa-title">'.s("Base HT").'</th>';
+						$h .= '<th class="vat-cerfa-title">'.s("Taxe due").'</th>';
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<th class="vat-cerfa-title vat-upper">'.s("Opérations réalisées en France métropolitaine").'</th>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("08").'</td>';
+						$h .= '<td>'.s("Taux normal 20 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0207").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0207-base', $data['0207-base'] ?? 0, $attributes + ['data-rate' => '20']).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0207', $data['0207'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("09").'</td>';
+						$h .= '<td>'.s("Taux normal 5.5 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0105").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0105-base', $data['0105-base'] ?? 0, $attributes + ['data-rate' => '5.5']).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0105', $data['0105'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("9B").'</td>';
+						$h .= '<td>'.s("Taux normal 10 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0151").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0151-base', $data['0151-base'] ?? 0, $attributes + ['data-rate' => '10']).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0151', $data['0151'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<th class="vat-cerfa-title vat-upper">'.s("Opérations réalisées dans les DOM").'</th>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("10").'</td>';
+						$h .= '<td>'.s("Taux normal 8,5 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0201").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0201-base', $data['0201-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0201', $data['0201'] ?? 0, $attributes + ['data-rate' => '8.5']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("11").'</td>';
+						$h .= '<td>'.s("Taux réduit 2,1 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0100").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0100-base', $data['0100-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0100', $data['0100'] ?? 0, $attributes + ['data-rate' => '2.1']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<th class="vat-cerfa-title vat-upper">'.s("Opérations imposables à un taux particulier").'</th>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("T1").'</td>';
+						$h .= '<td>'.s("Opérations réalisées dans les DOM et imposables au taux de 1,75 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("1120").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1120-base', $data['1120-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1120', $data['1120'] ?? 0, $attributes + ['data-rate' => '1.75']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("T2").'</td>';
+						$h .= '<td>'.s("Opérations réalisées dans les DOM et imposables au taux de 1,05 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("1110").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1110-base', $data['1110-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1110', $data['1110'] ?? 0, $attributes + ['data-rate' => '1.05']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("TC").'</td>';
+						$h .= '<td>'.s("Opérations réalisées en Corse et imposables au taux de 13 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("1090").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1090-base', $data['1090-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1090', $data['1090'] ?? 0, $attributes + ['data-rate' => '13']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("T3").'</td>';
+						$h .= '<td>'.s("Opérations réalisées en Corse et imposables au taux de 13 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("1081").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1081-base', $data['1081-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1081', $data['1081'] ?? 0, $attributes + ['data-rate' => '13']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("T4").'</td>';
+						$h .= '<td>'.s("Opérations réalisées en Corse et imposables au taux de 2,1 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("1050").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1050-base', $data['1050-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1050', $data['1050'] ?? 0, $attributes + ['data-rate' => '2.1']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("T5").'</td>';
+						$h .= '<td>'.s("Opérations réalisées en Corse et imposables au taux de 0,9 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("1040").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1040-base', $data['1040-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1040', $data['1040'] ?? 0, $attributes + ['data-rate' => '0.9']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("T6").'</td>';
+						$h .= '<td>'.s("Opérations réalisées en Corse et imposables au taux de 2,1 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("1010").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1010-base', $data['1010-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('1010', $data['1010'] ?? 0, $attributes + ['data-rate' => '2.1']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("T7").'</td>';
+						$h .= '<td>'.s("Retenue de TVA sur droits d’auteur").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0990").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0990-base', $data['0990-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0990', $data['0990'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("13").'</td>';
+						$h .= '<td>'.s("Anciens taux").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0900").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0900-base', $data['0900-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0900', $data['0900'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<th class="vat-cerfa-title vat-upper">'.s("Produits pétroliers").'</th>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("P1").'</td>';
+						$h .= '<td>'.s("Taux normal 20 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0208").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0208-base', $data['0208-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0208', $data['0208'] ?? 0, $attributes + ['data-rate' => '20']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("P2").'</td>';
+						$h .= '<td>'.s("Taux réduit 13 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0152").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0152-base', $data['0152-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0152', $data['0152'] ?? 0, $attributes + ['data-rate' => '13']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<th class="vat-cerfa-title vat-upper">'.s("Importations").'</th>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+						$h .= '<td class="vat-cerfa-input"></td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("I1").'</td>';
+						$h .= '<td>'.s("Taux normal 20 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0210").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0210-base', $data['0210-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0210', $data['0210'] ?? 0, $attributes + ['data-rate' => '20']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("I2").'</td>';
+						$h .= '<td>'.s("Taux réduit 10 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0211").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0211-base', $data['0211-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0211', $data['0211'] ?? 0, $attributes + ['data-rate' => '10']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("I3").'</td>';
+						$h .= '<td>'.s("Taux réduit 8,5 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0212").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0212-base', $data['0212-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0212', $data['0212'] ?? 0, $attributes + ['data-rate' => '8.5']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("I4").'</td>';
+						$h .= '<td>'.s("Taux réduit 5,5 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0213").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0213-base', $data['0213-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0213', $data['0213'] ?? 0, $attributes + ['data-rate' => '5.5']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("I5").'</td>';
+						$h .= '<td>'.s("Taux réduit 2,1 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0214").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0214-base', $data['0214-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0214', $data['0214'] ?? 0, $attributes + ['data-rate' => '2.1']).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("I6").'</td>';
+						$h .= '<td>'.s("Taux réduit 1,05 %").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0215").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0215-base', $data['0215-base'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0215', $data['0215'] ?? 0, $attributes + ['data-rate' => '1.05']).'</td>';
+
+					$h .= '</tr>';
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+			$h .= '<table class="vat-cerfa">';
+
+				$h .= '<tbody>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("15").'</td>';
+						$h .= '<td colspan="3">';
+							$h .= '<div style="display: flex; align-items: center">';
+								$h .= s("TVA antérieurement déduite à reverser");
+								$h .= '<div>';
+									$h .= '<div style="display: flex;">';
+										$h .= s("dont TVA sur les produits pétroliers");
+										$h .= $form->number('0600-petrol', $data['0600-petrol'] ?? 0, $attributes);
+									$h .= '</div>';
+									$h .= '<div style="display: flex;">';
+										$h .= s("dont TVA sur les produits importés hors produits pétroliers");
+										$h .= $form->number('0600-not-petrol', $data['0600-not-petrol'] ?? 0, $attributes);
+									$h .= '</div>';
+								$h .= '</div>';
+							$h .= '</div>';
+						$h .= '</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0600").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0600', $data['0600'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("5B").'</td>';
+						$h .= '<td colspan="3">';
+								$h .= s("Sommes à ajouter, y compris acompte congés");
+						$h .= '</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0602").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0602', $data['0602'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td style="min-width: 40%;"></td>';
+						$h .= '<td class="vat-cerfa-number">'.s("16").'</td>';
+						$h .= '<td>'.s("Total de la TVA brute due (lignes 08 à 5B)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('16-number', $data['16-number'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td></td>';
+						$h .= '<td class="vat-cerfa-number">'.s("17").'</td>';
+						$h .= '<td>'.s("Dont TVA sur acquisitions intracommunautaires").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0035").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0035', $data['0035'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<td></td>';
+						$h .= '<td class="vat-cerfa-number">'.s("18").'</td>';
+						$h .= '<td>'.s("Dont TVA sur opérations à destination de Monaco").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0038").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0038', $data['0038'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number"></td>';
+						$h .= '<th class="vat-cerfa-title vat-upper" colspan="5">'.s("TVA Déductible").'</th>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("19").'</td>';
+						$h .= '<td colspan="3">'.s("Biens constituant des immobilisations").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0703").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0703', $data['0703'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("20").'</td>';
+						$h .= '<td colspan="3">'.s("Autres biens et services ").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0702").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0702', $data['0702'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("21").'</td>';
+						$h .= '<td colspan="3">';
+							$h .= s("Autre TVA à déduire");
+							$h .= '<ul>';
+								$h .= '<li style="display: flex;">'.s("(dont régularisation de TVA sur les produits pétroliers : {input})", ['input' => $form->number('0059-petrol', $data['0059-petrol'] ?? 0, $attributes)]).'</li>';
+								$h .= '<li style="display: flex;">'.s("(dont régularisation de TVA sur les produits importés hors produits pétroliers : {input})", ['input' => $form->number('0059-not-petrol', $data['0059-not-petrol'] ?? 0, $attributes)]).'</li>';
+								$h .= '<li style="display: flex;">'.s("(dont régularisation de TVA collectée sur autres produits ou PS [cf. notice] ou de TVA déductible : {input})", ['input' => $form->number('0059-other', $data['0059-other'] ?? 0, $attributes)]).'</li>';
+							$h .= '</ul>';
+						$h .= '</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0059").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0059', $data['0059'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("22").'</td>';
+						$h .= '<td colspan="3">';
+							$h .= s("Report du crédit apparaissant ligne 27 de la précédente déclaration");
+						$h .= '</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("8001").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('8001', $data['8001'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("2C").'</td>';
+						$h .= '<td colspan="3">';
+							$h .= s("Sommes à imputer, y compris acompte congés");
+						$h .= '</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0603").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0603', $data['0603'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number" rowspan="3">'.s("22A").'</td>';
+						$h .= '<td rowspan="3">';
+							$h .= s("Indiquer le coefficient de taxation unique applicable pour la période
+s'il est différent de 100 %");
+							$h .= $form->number('22a', $data['22a'] ?? 0, $attributes);
+						$h .= '</td>';
+						$h .= '<td class="vat-cerfa-number">'.s("23").'</td>';
+						$h .= '<td>'.s("Total TVA déductible (ligne 19 à 2C)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier"></td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('23-number', $data['23-number'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("24").'</td>';
+						$h .= '<td>'.s("Dont TVA déductible sur importations hors produits pétroliers").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0710").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0710', $data['0710'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("2E").'</td>';
+						$h .= '<td>'.s("Dont TVA déductible sur les produits pétroliers").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0711").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0711', $data['0711'] ?? 0, $attributes).'</td>';
+
+					$h .= '</tr>';
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+			$h .= '<table class="vat-cerfa">';
+
+				$h .= '<tbody>';
+
+					$h .= '<tr>';
+						$h .= '<th class="vat-cerfa-chapter-title"></th>';
+						$h .= '<th class="vat-cerfa-chapter-title" colspan="7">'.s("TVA due ou crédit de TVA").'</th>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						$h .= '<td class="vat-cerfa-number">'.s("25").'</td>';
+						$h .= '<td>'.s("Crédit de TVA (ligne 23 – ligne 16)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("0705").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('0705', $data['0705'] ?? 0, $attributes).'</td>';
+
+						$h .= '<td class="vat-cerfa-number">'.s("TD").'</td>';
+						$h .= '<td>'.s("TVA due (ligne 16 – ligne 23)").'</td>';
+						$h .= '<td class="vat-cerfa-identifier">'.s("8900").'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('8900', $data['8900'] ?? 0, $attributes).'</td>';
+
+						$h .= '</tr>';
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+			$h .= '<table class="vat-cerfa" data-chapter="5">';
+
+				$h .= '<tr>';
+					$h .= '<th class="vat-cerfa-chapter-title"></th>';
+					$h .= '<th class="vat-cerfa-chapter-title" colspan="11">'.s(" CONSOMMATEURS D'ÉNERGIE : RÉGULARISATION D'ACCISE SUR LES ÉNERGIES").'</th>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<th></th>';
+					$h .= '<th colspan="7">'.s("Crédit d'accise sur les énergies").'</th>';
+					$h .= '<th colspan="3">'.s("Versement d'accise sur les énergies").'</th>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td></td>';
+					$h .= '<td class="font-sm text-center">'.s("Crédit constaté (a)").'</td>';
+					$h .= '<td class="font-sm text-center" colspan="3">'.s("Crédit imputé sur la TVA (dans la limite de la ligne 33) (b)").'</td>';
+					$h .= '<td class="font-sm text-center" colspan="3">'.s("Reliquat de crédit à rembourser<br />(a-b)").'</td>';
+					$h .= '<td class="font-sm text-center" colspan="3">'.s("Taxe due").'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td></td>';
+					$h .= '<td class="font-sm text-center">'.s("Montant").'</td>';
+					$h .= '<td></td>';
+					$h .= '<td></td>';
+					$h .= '<td class="font-sm text-center">'.s("Montant").'</td>';
+					$h .= '<td></td>';
+					$h .= '<td></td>';
+					$h .= '<td class="font-sm text-center">'.s("Montant").'</td>';
+					$h .= '<td></td>';
+					$h .= '<td></td>';
+					$h .= '<td class="font-sm text-center">'.s("Montant").'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td>'.s("Accise sur l'électricité").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('electricite', $data['electricite'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("X1").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8100").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('X1', $data['X1'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("Y1").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8110").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Y1', $data['Y1'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("Z1").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8120").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Z1', $data['Z1'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td><b>'.s("Majoration de l’accise sur l’électricité").'</b></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('electricite-majoration', $data['electricite-majoration'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M1").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8200").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M1', $data['M1'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M4").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8210").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M4', $data['M4'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M7").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8220").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M7', $data['M7'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td>'.s("Accise sur les gaz naturels").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('gaz', $data['gaz'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("X2").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8101").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('X2', $data['X2'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("Y2").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8111").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Y2', $data['Y2'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("Z2").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8121").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Z2', $data['Z2'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td><b>'.s("Majoration de l’accise sur les gaz naturels").'</b></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('gaz-majoration', $data['gaz-majoration'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M2").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8201").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M2', $data['M2'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M5").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8211").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M5', $data['M5'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M8").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8221").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M8', $data['M8'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td>'.s("Accise sur les charbons").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('charbon', $data['charbon'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("X3").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8102").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('X3', $data['X3'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("Y3").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8112").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Y3', $data['Y3'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("Z3").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8122").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Z3', $data['Z3'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td><b>'.s("Majoration de l’accise sur les charbons").'</b></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('charbon-majoration', $data['charbon-majoration'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M3").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8202").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M3', $data['M3'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M6").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8212").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M6', $data['M6'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("M9").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8222").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('M9', $data['M9'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td><b>'.s("Accise sur les autres produits énergétiques").'</b></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('others', $data['others'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("XA").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8105").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('XA', $data['XA'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("YA").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8115").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('YA', $data['YA'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number" colspan="3"></td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td><b>'.s("Accise sur le gazole non routier agricole").'</b></td>';
+					$h .= '<td class="vat-cerfa-number" colspan="7"></td>';
+					$h .= '<td class="vat-cerfa-number">'.s("ZB").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8125").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('ZB', $data['ZB'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<td class="vat-cerfa-number"></td>';
+					$h .= '<td><b>'.s("TOTAL").'</b></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('total', $data['total'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number" colspan="2">'.s("X4").'<div class="font-sm text-center">'.s("(X1+X2+X3+M1+<br />M2+M3+XA)<br /> à reporter ligne<br /> X5").'</div></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('X4', $data['X4'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number" colspan="2">'.s("Y4").'<div class="font-sm text-center">'.s("Y1+Y2+Y3+M4+<br /> M5+M6+YA)<br /> à reporter ligne<br /> Y5").'</div></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Y4', $data['Y4'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number" colspan="2">'.s("Z4").'<div class="font-sm text-center">'.s("(Z1+Z2+Z3+M7+<br /> M8+M9+ZB)<br /> à reporter ligne<br /> Z5").'</div></td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('Z4', $data['Z4'] ?? 0, $attributes).'</td>';
+				$h .= '</tr>';
+
+			$h .= '</table>';
+
+			$h .= '<table class="vat-cerfa">';
+
+				$h .= '<tr>';
+					$h .= '<th class="vat-cerfa-chapter-title"></th>';
+					$h .= '<th class="vat-cerfa-chapter-title" colspan="7">'.s("Détermination du montant à payer et/ou des crédits de TVA et/ou des crédits d'accise sur les énergies").'</th>';
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("26").'</td>';
+					$h .= '<td>'.s("Remboursement de crédit de TVA demandé sur formulaire n°3519").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8002").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8002', $data['8002'] ?? 0, $attributes).'</td>';
+					$h .= '<td class="vat-cerfa-number">'.s("X5").'</td>';
+					$h .= '<td>'.s("Crédit d’accise sur les énergies des consommateurs imputé sur la TVA (report de la ligne X4)").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8103").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8103', $data['8103'] ?? 0, $attributes).'</td>';
+
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("AA").'</td>';
+					$h .= '<td>'.s("Crédit de TVA transféré à la société tête de groupe sur la déclaration récapitulative 3310 CA3G").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8005").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8005', $data['8005'] ?? 0, $attributes).'</td>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("28").'</td>';
+					$h .= '<td>'.s("TVA nette due (ligne TD – ligne X5)").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8901").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8901', $vatData['8901'] ?? 0, $attributes).'</td>';
+
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("27").'</td>';
+					$h .= '<td>'.s("Crédit de TVA à reporter (ligne 25 – ligne 26) (Cette somme est à reporter ligne 22 de la prochaine déclaration)").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8003").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8003', $data['8003'] ?? 0, $attributes).'</td>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("29").'</td>';
+					$h .= '<td>'.s("Taxes assimilées calculées sur l’annexe n° 3310 A").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("9979").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('9979', $data['9979'] ?? 0, $attributes).'</td>';
+
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("Y5").'</td>';
+					$h .= '<td>'.s("Remboursement de reliquat d’accise sur les énergies demandé par les consommateurs (report de la ligne Y4)").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8113").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8113', $data['8113'] ?? 0, $attributes).'</td>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("Z5").'</td>';
+					$h .= '<td>'.s("Total de l’accise sur les énergies dû par les consommateurs (report de la ligne Z4)").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8123").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8123', $data['8123'] ?? 0, $attributes).'</td>';
+
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("Y6").'</td>';
+					$h .= '<td>'.s("Remboursement de reliquat d’accise sur les énergies demandé par les consommateurs, transféré à la société tête de groupe sur la déclaration récapitulative 3310-CA3G (report de la ligne Y4)").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("8114").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('8114', $data['8114'] ?? 0, $attributes).'</td>';
+
+					$h .= '<td class="vat-cerfa-number">'.s("AB").'</td>';
+					$h .= '<td>'.s("Total à payer acquitté par la société tête de groupe sur la déclaration récapitulative 3310- CA3G (lignes 28 + 29 + Z5)").'</td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("9991").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('9991', $data['9991'] ?? 0, $attributes).'</td>';
+
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+
+					$h .= '<td colspan="4"></td>';
+					$h .= '<td class="vat-cerfa-number">'.s("32").'</td>';
+					$h .= '<td>'.s("Total à payer (lignes 28 + 29 + Z5 – AB)").'<br /><small>'.s("(N’oubliez pas d’effectuer le règlement correspondant)").'</small></td>';
+					$h .= '<td class="vat-cerfa-identifier">'.s("9992").'</td>';
+					$h .= '<td class="vat-cerfa-input">'.$form->number('9992', $data['9992'] ?? 0, $attributes).'</td>';
+
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+
+					$h .= '<td colspan="8" class="text-center">'.s("Attention ! Une situation de TVA créditrice (ligne 25 servie) ne dispense pas du paiement des taxes assimilées déclarées ligne 29 et de l’accise sur les
+énergies déclarée ligne Z5.").'</td>';
+
+				$h .= '</tr>';
+
+				$h .= '<tr>';
+					$h .= '<th class="vat-cerfa-title vat-upper" colspan="8">'.s("BASE DE CALCUL DES ACOMPTES DUS AU TITRE DE L’EXERCICE SUIVANT").'</th>';
+				$h .= '</tr>';
+
+			$h .= '</table>';
+
+		$h .= $form->close();
 
 		return $h;
 
@@ -2474,7 +3469,7 @@ Class VatUi {
 					$h .= '<tr>';
 						$h .= '<td>';
 							$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">'.encode($eOperation['accountLabel']).'</div>';
-							'<div class="dropdown-list bg-primary"><span class="dropdown-item">'.encode($eOperation['account']['description']).'</span></div>';
+							$h .= '<div class="dropdown-list bg-primary"><span class="dropdown-item">'.encode($eOperation['account']['description']).'</span></div>';
 						$h .= '</td>';
 						$h .= '<td><div class="description"><span class=" ml-3">'.encode($eOperation['description']).'</span></div></td>';
 						$h .= '<td>'.encode($eOperation['thirdParty']['name']).'</td>';
