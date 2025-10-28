@@ -6,7 +6,7 @@ class Flow extends FlowElement {
 	public static function getSelection(): array {
 
 		return [
-			'action' => ['fqn', 'name', 'color', 'series'],
+			'action' => \farm\ActionElement::getSelection(),
 			'cTool?' => fn($e) => fn() => \farm\ToolLib::askByFarm($e['farm'], $e['tools']),
 			'cMethod?' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
 		] + parent::getSelection();
