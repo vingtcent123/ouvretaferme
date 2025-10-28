@@ -166,7 +166,7 @@ class MembershipUi {
 				$h .= $form->hidden('farm', $eFarm['id']);
 
 				$h .= '<p>';
-					$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b>. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);
+					$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b> jusqu'au 31 décembre 2025 pour accompagner le démarrage de l'association. À partir du 1<sup>er</sup> janvier 2026, le montant minimal pour l'adhésion sera fixé à 100 €. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);
 				$h .= '</p>';
 
 				$h .= '<p>';
