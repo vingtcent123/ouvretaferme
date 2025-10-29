@@ -444,6 +444,7 @@ class PdfUi {
 
 		return new Item([
 			'name' => SaleUi::getShippingName(),
+			'description' => NULL,
 			'mixedFrozen' => FALSE,
 			'product' => new Product(),
 			'quality' => NULL,
