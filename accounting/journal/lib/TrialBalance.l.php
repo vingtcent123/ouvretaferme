@@ -18,10 +18,7 @@ Class TrialBalanceLib {
 			$endDate = $search->get('endDate');
 		}
 
-		// La taille de compte recherché est prioritaire sur la précision
-		if($search->get('accountLabel')) {
-			$precision = mb_strlen(trim($search->get('accountLabel'), '0'));
-		} else if($search->get('precision') === '') {
+		if($search->get('precision') === '') {
 			$precision = 3;
 		} else if($search->get('precision') > 8) {
 			$precision = 8;
@@ -29,6 +26,13 @@ Class TrialBalanceLib {
 			$precision = 2;
 		} else {
 			$precision = $search->get('precision');
+		}
+		// La taille de compte recherché est prioritaire sur la précision si plus précise
+		if($search->get('accountLabel')) {
+			$accountLabelSize = mb_strlen(trim($search->get('accountLabel'), '0'));
+			if($accountLabelSize > $precision) {
+				$precision = $accountLabelSize;
+			}
 		}
 
 		// Récupération des opérations

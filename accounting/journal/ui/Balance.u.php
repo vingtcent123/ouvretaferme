@@ -33,10 +33,11 @@ Class BalanceUi {
 		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 		$h .= '<div>';
-		$h .= $form->inputGroup($form->addon(s('Du'))
-			.$form->date('startDate', $search->get('startDate'), ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
-			.$form->addon(s('au'))
-			.$form->date('endDate', $search->get('endDate'), ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]));
+			$h .= $form->text('accountLabel', $search->get('accountLabel') !== '' ? $search->get('accountLabel') : '', ['placeholder' => s("Classe de compte")]);
+			$h .= $form->inputGroup($form->addon(s('Du'))
+				.$form->date('startDate', $search->get('startDate'), ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
+				.$form->addon(s('au'))
+				.$form->date('endDate', $search->get('endDate'), ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]));
 			$h .= $form->inputGroup($form->addon(s("Précision du compte en chiffres")).$form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 2, 'max' => 8]));
 		$h .= '</div>';
 		$h .= '<div class="mb-1">';
