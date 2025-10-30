@@ -359,7 +359,7 @@ class Operation {
 
         const expectedVatValue = round(amount * vatRate / 100);
 
-        if(Math.abs(vatValue - expectedVatValue) > 0.01) {
+        if(Math.abs(round(vatValue - expectedVatValue)) > 0.01) {
             qs('[data-vat-warning][data-index="' + index + '"]').removeHide();
             qs('[data-wrapper="vatValue[' + index + ']"]', node => node.classList.add('form-warning-wrapper'));
             qs('[data-vat-warning-value][data-index="' + index + '"]').innerHTML = money(expectedVatValue);
