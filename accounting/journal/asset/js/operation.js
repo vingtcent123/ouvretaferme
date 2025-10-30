@@ -87,6 +87,7 @@ document.delegateEventListener('change', '[data-field="amountIncludingVAT"], [da
     Operation.updateAmountValue(index, this.dataset.field);
     Asset.initializeData(index);
 
+    Operation.updateVatValue(index);
     Operation.checkVatConsistency(index);
 });
 
@@ -95,6 +96,7 @@ document.delegateEventListener('change', '[data-field="vatRate"]', function() {
     const index = this.dataset.index;
     Operation.setIsWrittenAmount(this.dataset.field, index);
     Operation.updateAmountValue(index, this.dataset.field);
+    Operation.updateVatValue(index);
     Operation.checkVatConsistency(index);
 
 });
