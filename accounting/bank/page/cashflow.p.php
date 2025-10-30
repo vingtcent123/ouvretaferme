@@ -27,9 +27,7 @@ new Page(
 			$search->set('amountMin', GET('amount', 'float') - GET('margin', 'float', 0));
 			$search->set('amountMax', GET('amount', 'float') + GET('margin', 'float', 0));
 		}
-		if($search->get('status') === '') {
-			$search->set('statusWithDeleted', GET('statusWithDeleted', 'bool', FALSE));
-		}
+		$search->set('statusWithDeleted', GET('statusWithDeleted', 'bool', FALSE));
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 
@@ -47,6 +45,7 @@ new Page(
 		}
 
 		$data->nCashflow = \bank\CashflowLib::countByStatus($search);
+		$data->nCashflow->offsetSet('all', new \bank\Cashflow(['count' => array_sum($data->nCashflow->getColumn('count'))]));
 		$data->cCashflow = \bank\CashflowLib::getAll($search, $hasSort);
 
 		throw new ViewAction($data);

@@ -29,13 +29,6 @@ class CashflowUi {
 					.$form->number('margin', $search->get('margin', 1))
 					.$form->addon(s('€'))
 			);
-			/*
-		$h .= $form->inputGroup($form->addon(s('Du'))
-			.$form->date('startDate', $search->get('startDate'), ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
-			.$form->addon(s('au'))
-			.$form->date('endDate', $search->get('endDate'), ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]));
-			$h .= $form->inputGroup($form->addon(s("Précision du compte en chiffres")).$form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 2, 'max' => 8]));
-		*/
 			$h .= $form->checkbox('statusWithDeleted', 1, ['checked' => $search->get('statusWithDeleted'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher aussi les opérations supprimées")]);
 		$h .= '</div>';
 		$h .= '<div>';
@@ -57,40 +50,20 @@ class CashflowUi {
 		\Search $search
 	): string {
 
-		$h = '<ul class="util-summarize util-summarize-overflow">';
+		if(($nCashflow[Cashflow::WAITING]['count'] ?? 0) === 0) {
+			return '';
+		}
 
-			foreach(CashflowUi::p('status')->translation as $status => $translation) {
+		$form = new \util\FormUi();
 
-				if($status === Cashflow::DELETED) {
-					continue;
-				}
-				$count = $nCashflow[$status]['count'] ?? 0;
+		$h = $form->openUrl(\company\CompanyUi::urlBank($eFarm).'/cashflow', ['method' => 'get', 'class' => 'mb-1']);
+		$h .= $form->checkbox('status', Cashflow::WAITING, [
+			'checked' => $search->get('status') === Cashflow::WAITING,
+			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non comptabilisées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
+			'onchange' => 'this.form.submit()',
+		]);
+		$h .= $form->close();
 
-				$h .= '<li '.($search->get('status') === $status ? 'class="selected"' : '').'>';
-
-					if($search->get('status') !== $status) {
-						$link = 'status='.$status;
-					} else {
-						$link = '';
-					}
-					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?'.$search->toQuery(['status']).'&'.$link.'">';
-
-						$h .= '<h5>';
-							if($count > 1) {
-								$h .= $translation['plural'];
-							} else {
-								$h .= $translation['singular'];
-							}
-						$h .='</h5>';
-
-						$h .= '<div>'.$count.'</div>';
-
-					$h .= '</a>';
-
-				$h .= '</li>';
-
-			}
-		$h .= '</ul>';
 		return $h;
 	}
 
@@ -220,11 +193,9 @@ class CashflowUi {
 						$h .= '</td>';
 
 					$h .= '<td class="td-min-content text-center">';
-						$h .= match($eCashflow['status']) {
-							CashflowElement::ALLOCATED => '<a class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">'.CashflowUi::p('status')->values[$eCashflow['status']].'</a>',
-							CashflowElement::WAITING => '<div class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'">'.CashflowUi::p('status')->values[$eCashflow['status']].'</div>',
-							CashflowElement::DELETED => '',
-						};
+						if($eCashflow['status'] === Cashflow::WAITING) {
+							$h .= '<div class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'">'.CashflowUi::p('status')->values[$eCashflow['status']].'</div>';
+						}
 					$h .= '</td>';
 
 					$h .= '<td>';
@@ -257,6 +228,13 @@ class CashflowUi {
 		$h .= '<div class="dropdown-list">';
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
+
+				$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
+					$h .= s("Voir les écritures");
+				$h .= '</a>';
+
+				$h .= '<div class="dropdown-divider"></div>';
 
 				$h .= '<div class="dropdown-title">'.s("Actions sur les écritures comptables liées").'</div>';
 
@@ -793,12 +771,12 @@ class CashflowUi {
 				$d->values = [
 					CashflowElement::ALLOCATED => s("Attribuée"),
 					CashflowElement::DELETED => s("Supprimée"),
-					CashflowElement::WAITING => s("Attente"),
+					CashflowElement::WAITING => s("À traiter"),
 				];
 				$d->translation = [
 					CashflowElement::ALLOCATED => ['singular' => s("Attribuée"), 'plural' => s("Attribuées")],
 					CashflowElement::DELETED => ['singular' => s("Supprimée"), 'plural' => s("Supprimées")],
-					CashflowElement::WAITING => ['singular' => s("En attente"), 'plural' => s("En attente")],
+					CashflowElement::WAITING => ['singular' => s("À traiter"), 'plural' => s("À traiter")],
 				];
 				$d->shortValues = [
 					CashflowElement::ALLOCATED => s("I"),

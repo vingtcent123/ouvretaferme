@@ -7,7 +7,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->title = s("Les opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlBank($data->eFarm).'/cashflow';
 
-	$t->mainTitle = new \bank\BankUi()->getBankTitle($data->eFarm, $data->eFinancialYear);
+	$t->mainTitle = new \bank\BankUi()->getBankTitle($data->eFarm, $data->eFinancialYear, $data->nCashflow['all']['count']);
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

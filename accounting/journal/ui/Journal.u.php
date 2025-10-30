@@ -109,7 +109,7 @@ class JournalUi {
 		$h .= '</div>';
 
 		if($eCashflow->exists() === TRUE) {
-			$h .= '<div class="util-block-search">';
+			$h .= '<div class="util-info">';
 				$h .= s(
 					"Vous visualisez actuellement les écritures correspondant à l'opération bancaire du {date}, \"{memo}\" d'un {type} de {amount} (<link>annuler le filtre</link>).",
 					[

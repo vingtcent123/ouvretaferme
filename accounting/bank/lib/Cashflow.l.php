@@ -34,7 +34,7 @@ class CashflowLib extends CashflowCrud {
 		$searchWithoutStatus = new \Search($search->getFiltered(['status']));
 
 			return self::applySearch($searchWithoutStatus)
-				->select(['count' => new \Sql('COUNT(*)'), 'status'])
+				->select(['count' => new \Sql('COUNT(*)', 'int'), 'status'])
 				->group(['status'])
 				->getCollection(NULL, NULL, 'status');
 	}

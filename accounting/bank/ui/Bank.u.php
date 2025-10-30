@@ -6,12 +6,13 @@ class BankUi {
 	public function __construct() {
 	}
 
-	public function getBankTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
+	public function getBankTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $total): string {
 
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
 				$h .= s("Les opérations bancaires");
+				$h .= '<span class="util-counter ml-1">'.$total.'</span>';
 			$h .= '</h1>';
 
 			if($eFinancialYear->notEmpty()) {
