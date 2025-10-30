@@ -38,7 +38,7 @@ new \selling\SalePage()
 
 		} else {
 
-			$eSale['customer'] = get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->e['farm']) : new \selling\Customer();
+			$data->e['customer'] = get_exists('customer') ? \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->e['farm']) : new \selling\Customer();
 
 			\selling\SaleLib::fillForCreate($data->e);
 
