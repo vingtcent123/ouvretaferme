@@ -1825,7 +1825,7 @@ class SaleUi {
 					$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.s("Créer une vente pour un groupe de clients").'</a>';
 					$h .= '<div class="dropdown-list bg-primary">';
 					foreach($cGroup as $eGroup) {
-						$h .= '<a href="/selling/sale:createCollection?farm='.$eSale['farm']['id'].'&group='.$eGroup['id'].'" class="dropdown-item">';
+						$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'group', $eGroup['id']).'" class="dropdown-item">';
 							$h .= '<span class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</span>';
 						$h .= '</a>';
 					}

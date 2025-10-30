@@ -25,7 +25,7 @@ class CatalogUi {
 			$h .= '<div class="dropdown-list">';
 				$h .= '<div class="dropdown-title">'.encode($eCatalogSelected['name']).'</div>';
 				$h .= '<a href="/shop/catalog:update?id='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Modifier le catalogue").'</a>';
-				$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&catalog='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Créer une vente depuis le catalogue").'</a>';
+				$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'&catalog='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Créer une vente depuis le catalogue").'</a>';
 				$h .= '<div class="dropdown-divider"></div>';
 				$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
 				$h .= '<a data-ajax="/shop/catalog:doDelete" post-id="'.$eCatalogSelected['id'].'" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer définitivement ce catalogue ? Vous ne pourrez plus y accéder mais il restera actif sur les ventes où il est actuellement configuré.").'" class="dropdown-item">'.s("Supprimer le catalogue").'</a>';

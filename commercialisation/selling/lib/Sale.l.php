@@ -176,6 +176,74 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function fillForCreate(Sale $eSale): void {
+
+		$eSale->expects(['farm', 'customer']);
+
+		if(get_exists('shopDate')) {
+
+			$eDate = \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])
+				->validateProperty('farm', $eSale['farm'])
+				->validate('acceptOrder', 'acceptNotShared');
+
+		} else {
+			$eDate = new \shop\Date();
+		}
+
+		if(get_exists('catalog')) {
+			$eCatalog = \shop\CatalogLib::getById(GET('catalog'))
+				->validateProperty('farm', $eSale['farm']);
+		} else {
+			$eCatalog = new \shop\Catalog();
+		}
+
+		if($eSale['customer']->empty()) {
+
+			$eSale->merge([
+				'type' => NULL,
+				'shopDate' => $eDate,
+				'shopProducts' => FALSE,
+				'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop']
+			]);
+
+			if($eSale['shopDate']->notEmpty()) {
+				$eSale['type'] = $eSale['shopDate']['type'];
+			} else if($eCatalog->notEmpty()) {
+				$eSale['type'] = $eCatalog['type'];
+			}
+
+		} else {
+
+			$eSale->merge([
+				'type' => $eSale['customer']['type'],
+				'discount' => $eSale['customer']['discount'],
+				'shopDate' => $eDate,
+				'shopProducts' => FALSE,
+				'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop']
+			]);
+
+			if($eDate->notEmpty()) {
+				$eDate->validateProperty('type', $eSale['type']);
+			}
+
+			if($eCatalog->notEmpty()) {
+				$eCatalog->validateProperty('type', $eSale['type']);
+			}
+
+			if($eSale['shopDate']->notEmpty()) {
+				$eSale['cProduct'] = \shop\ProductLib::exportAsSelling(\shop\ProductLib::getByDate($eSale['shopDate'], $eSale['customer'], public: TRUE));
+				$eSale['shopProducts'] = TRUE;
+			} else if($eCatalog->notEmpty()) {
+				$eSale['cProduct'] = \shop\ProductLib::exportAsSelling(\shop\ProductLib::getByCatalog($eCatalog));
+				$eSale['shopProducts'] = TRUE;
+			} else {
+				$eSale['cProduct'] = \selling\ProductLib::getForSale($eSale['farm'], $eSale['type']);
+			}
+
+		}
+
+	}
+
 	private static function getForLabels(\farm\Farm $eFarm, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
 
 		if($selectPoint) {
