@@ -163,12 +163,13 @@ class AccountUi {
 
 		$vatRate = 0.0;
 		$vatClass = '';
-		if($eAccount['vatRate'] !== NULL) {
-			$vatRate = $eAccount['vatRate'];
-			$vatClass = $eAccount['class'];
-		} elseif($eAccount['vatAccount']->exists() === TRUE) {
-			$vatRate = $eAccount['vatAccount']['vatRate'];
+		if($eAccount['vatAccount']->exists() === TRUE) {
 			$vatClass = $eAccount['vatAccount']['class'];
+			if($eAccount['vatRate'] !== NULL) {
+				$vatRate = $eAccount['vatRate'];
+			} else {
+				$vatRate = $eAccount['vatAccount']['vatRate'];
+			}
 		}
 
 		$itemHtml = encode($eAccount['class'].' '.$eAccount['description']);
