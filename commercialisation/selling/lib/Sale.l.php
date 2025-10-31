@@ -1142,8 +1142,8 @@ class SaleLib extends SaleCrud {
 						'amountIncludingVat' => $e['priceIncludingVat'],
 						'onlineStatus' => NULL,
 					])
-			);
-			$e['paymentStatus'] = Sale::NOT_PAID;
+				);
+				$e['paymentStatus'] = Sale::NOT_PAID;
 			}
 
 			self::update($e, ['paymentMethod', 'paymentStatus']);
