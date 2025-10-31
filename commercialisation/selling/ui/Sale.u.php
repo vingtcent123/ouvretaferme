@@ -66,9 +66,30 @@ class SaleUi {
 		}
 
 		return match($eSale['taxes']) {
-			Sale::EXCLUDING => $eSale['priceExcludingVat'] ? \util\TextUi::money($eSale['priceExcludingVat']).$taxes : '-',
-			Sale::INCLUDING => $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat']).$taxes : '-'
+			Sale::EXCLUDING => $eSale['priceExcludingVat'] ? \util\TextUi::money($eSale['priceExcludingVat']).$taxes : '',
+			Sale::INCLUDING => $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat']).$taxes : ''
 		};
+
+	}
+
+	public static function getAverage(Sale $eSale, bool $displayIncludingTaxes = TRUE): string {
+
+		if($eSale['marketSales'] > 0) {
+
+			if($eSale['taxes'] === Sale::INCLUDING) {
+				$taxes = $displayIncludingTaxes ? ' <span class="util-annotation">'.$eSale->getTaxes().'</span>' : '';
+			} else {
+				$taxes = ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
+			}
+
+			return match($eSale['taxes']) {
+				Sale::EXCLUDING => $eSale['priceExcludingVat'] ? \util\TextUi::money($eSale['priceExcludingVat'] / $eSale['marketSales']).$taxes : '',
+				Sale::INCLUDING => $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat'] / $eSale['marketSales']).$taxes : ''
+			};
+
+		} else {
+			return '';
+		}
 
 	}
 
@@ -175,6 +196,8 @@ class SaleUi {
 		}
 
 		$hasFarm = count(array_count_values($cSale->getColumnCollection('farm')->getIds())) > 1;
+		$hasAverage = $cSale->contains(fn($eSale) => $eSale->isMarket());
+		$hasDocuments = $cSale->contains(fn($eSale) => $eSale->isMarket() === FALSE);
 
 		$previousSubtitle = NULL;
 
@@ -230,7 +253,10 @@ class SaleUi {
 					}
 					$label = s("Montant");
 					$h .= '<th class="text-end">'.($search ? $search->linkSort('priceExcludingVat', $label, SORT_DESC) : $label).'</th>';
-					if(in_array('documents', $hide) === FALSE) {
+					if($hasAverage) {
+						$h .= '<th class="text-end">'.s("Panier moyen").'</th>';
+					}
+					if($hasDocuments and in_array('documents', $hide) === FALSE) {
 						$h .= '<th class="text-center"  colspan="3">'.s("Documents").'</th>';
 						$columns++;
 					}
@@ -238,7 +264,7 @@ class SaleUi {
 						$h .= '<th>'.s("Mode de livraison").'</th>';
 						$columns++;
 					}
-					if(in_array('paymentMethod', $hide) === FALSE) {
+					if($hasDocuments and in_array('paymentMethod', $hide) === FALSE) {
 						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">'.s("Règlement").'</th>';
 						$columns++;
 					}
@@ -476,7 +502,13 @@ class SaleUi {
 							$h .= SaleUi::getTotal($eSale);
 						$h .= '</td>';
 
-						if(in_array('documents', $hide) === FALSE) {
+						if($hasAverage) {
+							$h .= '<td class="sale-item-price text-end">';
+								$h .= SaleUi::getAverage($eSale);
+							$h .= '</td>';
+						}
+
+						if($hasDocuments and in_array('documents', $hide) === FALSE) {
 
 							if($eSale['preparationStatus'] === Sale::BASKET) {
 
@@ -524,7 +556,7 @@ class SaleUi {
 
 						}
 
-						if(in_array('paymentMethod', $hide) === FALSE) {
+						if($hasDocuments and in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
 
