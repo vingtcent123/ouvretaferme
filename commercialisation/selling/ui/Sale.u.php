@@ -196,7 +196,7 @@ class SaleUi {
 		}
 
 		$hasFarm = count(array_count_values($cSale->getColumnCollection('farm')->getIds())) > 1;
-		$hasAverage = $cSale->contains(fn($eSale) => $eSale->isMarket());
+		$hasAverage = (in_array('average', $show) and $cSale->contains(fn($eSale) => $eSale->isMarket()));
 		$hasDocuments = $cSale->contains(fn($eSale) => $eSale->isMarket() === FALSE);
 
 		$previousSubtitle = NULL;
