@@ -1124,15 +1124,26 @@ class SaleLib extends SaleCrud {
 		foreach($c as $e) {
 
 			if(
-				($e['paymentMethod']->empty() and $methodId === NULL) or
-				($e['paymentMethod']->notEmpty() and $e['paymentMethod']['id'] === $methodId)
+				($e['cPayment']->empty() and $methodId === NULL) or
+				($e['cPayment']->notEmpty() and in_array($methodId, $e['cPayment']->getColumnCollection('method')->getIds()))
 			) {
 				continue;
 			}
 
-			$e['paymentMethod'] = $eMethod;
-			if($methodId !== NULL and $e['paymentStatus'] === NULL) {
-				$e['paymentStatus'] = Sale::NOT_PAID;
+			$e['cPayment'] = new Payment();
+			if($methodId !== NULL and ($e['paymentStatus'] === NULL or $e['paymentStatus'] === Sale::NOT_PAID)) {
+				$e['cPayment']->append(
+					new Payment([
+						'sale' => $e,
+						'customer' => $e['customer'],
+						'farm' => $e['farm'],
+						'checkoutId' => NULL,
+						'method' => $eMethod,
+						'amountIncludingVat' => $e['priceIncludingVat'],
+						'onlineStatus' => NULL,
+					])
+			);
+			$e['paymentStatus'] = Sale::NOT_PAID;
 			}
 
 			self::update($e, ['paymentMethod', 'paymentStatus']);
