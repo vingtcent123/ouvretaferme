@@ -55,15 +55,17 @@ class ProductModel extends \ModuleModel {
 			'limitMin' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'limitMax' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'limitCustomers' => ['json', 'cast' => 'array'],
+			'limitGroups' => ['json', 'cast' => 'array'],
 			'limitStartAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'limitEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'excludeCustomers' => ['json', 'cast' => 'array'],
+			'excludeGroups' => ['json', 'cast' => 'array'],
 			'available' => ['decimal', 'digits' => 9, 'decimal' => 2, 'min' => 0.0, 'max' => 999999, 'null' => TRUE, 'cast' => 'float'],
 			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -94,7 +96,13 @@ class ProductModel extends \ModuleModel {
 			case 'limitCustomers' :
 				return [];
 
+			case 'limitGroups' :
+				return [];
+
 			case 'excludeCustomers' :
+				return [];
+
+			case 'excludeGroups' :
 				return [];
 
 			case 'status' :
@@ -117,7 +125,13 @@ class ProductModel extends \ModuleModel {
 			case 'limitCustomers' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
+			case 'limitGroups' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			case 'excludeCustomers' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
+			case 'excludeGroups' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'status' :
@@ -137,7 +151,13 @@ class ProductModel extends \ModuleModel {
 			case 'limitCustomers' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
+			case 'limitGroups' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
 			case 'excludeCustomers' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'excludeGroups' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			default :
@@ -207,6 +227,10 @@ class ProductModel extends \ModuleModel {
 		return $this->where('limitCustomers', ...$data);
 	}
 
+	public function whereLimitGroups(...$data): ProductModel {
+		return $this->where('limitGroups', ...$data);
+	}
+
 	public function whereLimitStartAt(...$data): ProductModel {
 		return $this->where('limitStartAt', ...$data);
 	}
@@ -217,6 +241,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereExcludeCustomers(...$data): ProductModel {
 		return $this->where('excludeCustomers', ...$data);
+	}
+
+	public function whereExcludeGroups(...$data): ProductModel {
+		return $this->where('excludeGroups', ...$data);
 	}
 
 	public function whereAvailable(...$data): ProductModel {

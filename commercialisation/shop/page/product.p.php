@@ -5,6 +5,9 @@ new \shop\ProductPage()
 		$data->e['cCustomerLimit'] = \selling\CustomerLib::getByIds($data->e['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
 		$data->e['cCustomerExclude'] = \selling\CustomerLib::getByIds($data->e['excludeCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
 
+		$data->e['cGroupLimit'] = \selling\GroupLib::getByIds($data->e['limitGroups'], sort: ['name' => SORT_ASC]);
+		$data->e['cGroupExclude'] = \selling\GroupLib::getByIds($data->e['excludeGroups'], sort: ['name' => SORT_ASC]);
+
 		throw new ViewAction($data);
 
 	})

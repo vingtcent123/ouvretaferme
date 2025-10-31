@@ -7,7 +7,7 @@ class ProductLib extends ProductCrud {
 
 		return function(Product $eProduct) {
 
-			$properties = ['price', 'priceDiscount', 'available', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
+			$properties = ['price', 'priceDiscount', 'available', 'limitGroups', 'excludeGroups', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
 
 			if($eProduct['type'] === Product::PRO) {
 				$properties[] = 'packaging';
@@ -136,9 +136,11 @@ class ProductLib extends ProductCrud {
 				'date' => new Date(),
 				'limitMax' => NULL,
 				'limitCustomers' => [],
+				'limitGroups' => [],
 				'limitStartAt' => NULL,
 				'limitEndAt' => NULL,
 				'excludeCustomers' => NULL,
+				'excludeGroups' => NULL,
 				'available' => NULL,
 				'status' => Product::INACTIVE,
 			]);
@@ -189,11 +191,33 @@ class ProductLib extends ProductCrud {
 
 			$m
 				->whereStatus(Product::ACTIVE, if: $public)
-				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 OR JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')', if: ($public and $eCustomer->notEmpty()))
-				->where(fn() => 'JSON_LENGTH(limitCustomers) = 0', if: ($public and $eCustomer->empty()))
-				->where(fn() => 'JSON_LENGTH(excludeCustomers) = 0 OR JSON_CONTAINS(excludeCustomers, \''.$eCustomer['id'].'\') = 0', if: ($public and $eCustomer->notEmpty()))
 				->where('limitStartAt IS NULL OR '.$m->format($eDate['deliveryDate']).' >= limitStartAt')
 				->where('limitEndAt IS NULL OR '.$m->format($eDate['deliveryDate']).' <= limitEndAt');
+
+			if($public) {
+
+				if($eCustomer->notEmpty()) {
+
+					$eCustomer->expects(['groups']);
+
+					$m
+						->or(
+							fn() => $this->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 AND JSON_LENGTH(limitGroups) = 0'),
+							fn() => $this->where(fn() => 'JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')'),
+							fn() => $this->where(fn() => 'JSON_OVERLAPS(limitGroups, "['.implode(', ', $eCustomer['groups']).']")')
+						)
+						->where(fn() => 'JSON_LENGTH(excludeCustomers) = 0 OR JSON_CONTAINS(excludeCustomers, \''.$eCustomer['id'].'\') = 0')
+						->where(fn() => 'JSON_LENGTH(excludeGroups) = 0 OR JSON_OVERLAPS(excludeGroups, "['.implode(', ', $eCustomer['groups']).']") = 0');
+
+				} else {
+
+					$m
+						->where(fn() => 'JSON_LENGTH(limitCustomers) = 0')
+						->where(fn() => 'JSON_LENGTH(limitGroups) = 0');
+
+				}
+
+			}
 
 		});
 

@@ -11,6 +11,17 @@ class GroupLib extends GroupCrud {
 		return ['name', 'color'];
 	}
 
+	public static function getLimitedByProducts(\Collection $cProduct): \Collection {
+
+		$groups = array_merge(...$cProduct->getColumn('limitGroups'), ...$cProduct->getColumn('excludeGroups'));
+
+		return Group::model()
+			->select(Group::getSelection())
+			->whereId('IN', $groups)
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $properties = []): \Collection {
 
 		if($query !== '') {

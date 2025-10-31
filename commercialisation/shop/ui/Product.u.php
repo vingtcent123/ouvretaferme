@@ -838,7 +838,9 @@ class ProductUi {
 
 					$hasLimits = (
 						$eProduct['limitCustomers'] or
+						$eProduct['limitGroups'] or
 						$eProduct['excludeCustomers'] or
+						$eProduct['excludeGroups'] or
 						$eProduct['limitMax'] or
 						$outCatalog
 					);
@@ -944,7 +946,7 @@ class ProductUi {
 						$h .= '</tr>';
 
 						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $eDate['cCustomer'], excludeAt: TRUE, outCatalog: $outCatalog);
+							$h .= $this->getLimits($columns, $eProduct, $eDate['cCustomer'], $eDate['cGroup'], excludeAt: TRUE, outCatalog: $outCatalog);
 						}
 
 					$h .= '</tbody>';
@@ -990,7 +992,9 @@ class ProductUi {
 
 					$hasLimits = (
 						$eProduct['limitCustomers'] or
+						$eProduct['limitGroups'] or
 						$eProduct['excludeCustomers'] or
+						$eProduct['excludeGroups'] or
 						$eProduct['limitMax'] or
 						$eProduct['limitStartAt'] or
 						$eProduct['limitEndAt']
@@ -1053,7 +1057,7 @@ class ProductUi {
 						$h .= '</tr>';
 
 						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $eCatalog['cCustomer']);
+							$h .= $this->getLimits($columns, $eProduct, $eCatalog['cCustomer'], $eCatalog['cGroup']);
 						}
 
 					$h .= '</tbody>';
@@ -1067,7 +1071,7 @@ class ProductUi {
 
 	}
 
-	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
+	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, \Collection $cGroup, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
 
 		$h = '<tr>';
 
@@ -1101,34 +1105,52 @@ class ProductUi {
 						$h .= '<span>'.s("Maximum autorisé par commande {value}", '<u>'.$value.'</u>').'</span>';
 					}
 
-					if($eProduct['limitCustomers']) {
+					if($eProduct['limitCustomers'] or $eProduct['limitGroups']) {
 
-						$customers = [];
+						$for = [];
 
 						foreach($eProduct['limitCustomers'] as $customer) {
 
 							if($cCustomer->offsetExists($customer)) {
-								$customers[] = '<u>'.encode($cCustomer[$customer]->getName()).'</u>';
+								$for[] = '<u>'.encode($cCustomer[$customer]->getName()).'</u>';
 							}
 
 						}
 
-						$h .= '<span>'.s("Uniquement pour {value}", implode(', ', $customers)).'</span>';
+						foreach($eProduct['limitGroups'] as $group) {
+
+							if($cGroup->offsetExists($group)) {
+								$for[] = '<u>'.\selling\GroupUi::link($cGroup[$group]).'</u>';
+							}
+
+						}
+
+						$h .= '<span>'.s("Uniquement pour {value}", implode(', ', $for)).'</span>';
+
 					}
 
-					if($eProduct['excludeCustomers']) {
+					if($eProduct['excludeCustomers'] or $eProduct['excludeGroups']) {
 
-						$customers = [];
+						$for = [];
 
 						foreach($eProduct['excludeCustomers'] as $customer) {
 
 							if($cCustomer->offsetExists($customer)) {
-								$customers[] = '<u>'.encode($cCustomer[$customer]->getName()).'</u>';
+								$for[] = '<u>'.encode($cCustomer[$customer]->getName()).'</u>';
 							}
 
 						}
 
-						$h .= '<span>'.s("Non vendu à {value}", implode(', ', $customers)).'</span>';
+						foreach($eProduct['excludeGroups'] as $group) {
+
+							if($cGroup->offsetExists($group)) {
+								$for[] = '<u>'.\selling\GroupUi::link($cGroup[$group]).'</u>';
+							}
+
+						}
+
+						$h .= '<span>'.s("Non vendu à {value}", implode(', ', $for)).'</span>';
+
 					}
 
 					if($excludeAt === FALSE) {
@@ -1258,7 +1280,7 @@ class ProductUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/shop/product:doUpdate', ['id' => 'product-update']);
+		$h .= $form->openAjax('/shop/product:doUpdate');
 
 			$h .= $form->hidden('id', $e['id']);
 
@@ -1281,10 +1303,10 @@ class ProductUi {
 			});
 
 			$h .= '<br/>';
+			$h .= '<h3>'.\Asset::icon('lock-fill').'  '.s("Limitations de commande").'</h3>';
 			$h .= '<div class="util-block bg-background-light">';
 
 				$h .= $form->group(
-					'<h4>'.\Asset::icon('lock-fill').' '.s("Restrictions de commande").'</h4>'
 				);
 
 				if($e['catalog']->notEmpty()) {
@@ -1293,7 +1315,54 @@ class ProductUi {
 
 				$h .= $form->dynamicGroups($e, ['limitMin', 'limitMax']);
 
-				$h .= $form->dynamicGroups($e, ['limitCustomers', 'excludeCustomers']);
+			$h .= '</div>';
+
+			$h .= '<br/>';
+			$h .= '<h3>'.\Asset::icon('person-circle').'  '.s("Autorisations et interdictions à certains clients").'</h3>';
+
+			$h .= '<p class="util-helper">'.s("Vous pouvez laisser ces champs vides si vous souhaitez que ce produit soit accessible à tous vos clients. Vous ne pouvez pas à la fois autoriser et interdire les commandes d'un produit à certains clients.").'</pa>';
+
+			$h .= '<div class="util-block bg-background-light">';
+
+				$limit = '<div class="shop-product-update-restriction">';
+					$limit .= '<div>';
+						$limit .= '<fieldset>';
+							$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Clients").'</legend>';
+							$limit .= $form->dynamicField($e, 'limitCustomers');
+						$limit .= '</fieldset>';
+					$limit .= '</div>';
+					$limit .= '<div>';
+						$limit .= '<fieldset>';
+							$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Groupes de clients").'</legend>';
+							$limit .= $form->dynamicField($e, 'limitGroups');
+						$limit .= '</fieldset>';
+					$limit .= '</div>';
+				$limit .= '</div>';
+
+				$h .= $form->group(
+					s("Autoriser uniquement les commandes de ce produit à :"),
+					$limit
+				);
+
+				$limit = '<div class="shop-product-update-restriction">';
+					$limit .= '<div>';
+						$limit .= '<fieldset>';
+							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Des clients").'</legend>';
+							$limit .= $form->dynamicField($e, 'excludeCustomers');
+						$limit .= '</fieldset>';
+					$limit .= '</div>';
+					$limit .= '<div>';
+						$limit .= '<fieldset>';
+							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Des groupes de clients").'</legend>';
+							$limit .= $form->dynamicField($e, 'excludeGroups');
+						$limit .= '</fieldset>';
+					$limit .= '</div>';
+				$limit .= '</div>';
+
+				$h .= $form->group(
+					s("Interdire les commandes de ce produit à :").\util\FormUi::info(s("Nous vous recommandons d'utiliser l'interdiction avec précaution car vos clients pourraient voir qu'ils ne peuvent pas acheter ce produit s'ils consultent votre boutique sans être connecté.")),
+					$limit
+				);
 
 			$h .= '</div>';
 
@@ -1375,12 +1444,12 @@ class ProductUi {
 				$d->placeholder = s("Taper un nom de client à autoriser");
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'type' => $e['type']
 					];
 				};
 				new \selling\CustomerUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'limitCustomers'];
-				$d->labelAfter = \util\FormUi::info(s("Incompatible avec l'interdiction à certains clients"));
 				break;
 
 			case 'excludeCustomers' :
@@ -1388,13 +1457,38 @@ class ProductUi {
 				$d->placeholder = s("Taper un nom de client à interdire");
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
-						'farm' => $e['farm']['id']
+						'farm' => $e['farm']['id'],
+						'type' => $e['type']
 					];
 				};
 				new \selling\CustomerUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'excludeCustomers'];
-				$d->labelAfter = \util\FormUi::info(s("Incompatible avec l'autorisation à certains clients"));
-				$d->after = \util\FormUi::info(s("Nous vous recommandons d'utiliser l'interdiction avec précaution car vos clients pourraient voir qu'ils ne peuvent pas acheter ce produit s'ils consultent votre boutique sans être connecté."));
+				break;
+
+			case 'limitGroups' :
+				$d->autocompleteDefault = fn(Product $e) => $e['cGroupLimit'] ?? $e->expects(['cGroupLimit']);
+				$d->placeholder = s("Taper un nom de groupe de clients à autoriser");
+				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+					return [
+						'farm' => $e['farm']['id'],
+						'type' => $e['type']
+					];
+				};
+				new \selling\GroupUi()->query($d, TRUE);
+				$d->group = ['wrapper' => 'limitGroups'];
+				break;
+
+			case 'excludeGroups' :
+				$d->autocompleteDefault = fn(Product $e) => $e['cGroupExclude'] ?? $e->expects(['cGroupExclude']);
+				$d->placeholder = s("Taper un nom de groupe de clients à interdire");
+				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+					return [
+						'farm' => $e['farm']['id'],
+						'type' => $e['type']
+					];
+				};
+				new \selling\GroupUi()->query($d, TRUE);
+				$d->group = ['wrapper' => 'excludeGroups'];
 				break;
 
 			case 'available' :

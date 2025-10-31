@@ -793,3 +793,17 @@ a.shop-department-item .department-vignette {
 	}
 
 }
+
+.shop-product-update-restriction {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+@media (max-width: 575px) {
+
+	.shop-product-update-restriction {
+		grid-template-columns: 1fr;
+	}
+
+}

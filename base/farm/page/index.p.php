@@ -265,6 +265,7 @@ new Page(function($data) {
 			$data->eCatalogSelected['cProduct'] = \shop\ProductLib::getByCatalog($data->eCatalogSelected, onlyActive: FALSE);
 			$data->eCatalogSelected['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 			$data->eCatalogSelected['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->eCatalogSelected['cProduct']);
+			$data->eCatalogSelected['cGroup'] = \selling\GroupLib::getLimitedByProducts($data->eCatalogSelected['cProduct']);
 		}
 
 		throw new ViewAction($data);

@@ -75,9 +75,11 @@ Product:
   limitMin: ?decimal(8, 2, 0.0, null)
   limitMax: ?decimal(8, 2, 0.0, null)
   limitCustomers: json = PHP([])
+  limitGroups: json = PHP([])
   limitStartAt: ?date
   limitEndAt: ?date
   excludeCustomers: json = PHP([])
+  excludeGroups: json = PHP([])
   available: ?decimal(9, 2, 0.0, 999999)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   INDEX: [

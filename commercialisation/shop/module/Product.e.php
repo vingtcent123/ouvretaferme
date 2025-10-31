@@ -43,12 +43,11 @@ class Product extends ProductElement {
 
 				$this->expects(['farm']);
 
-				$customers = (array)($customers ?? []);
-
 				$customers = \selling\Customer::model()
 					->select('id')
-					->whereId('IN', $customers)
+					->whereId('IN', (array)($customers ?? []))
 					->whereFarm($this['farm'])
+					->whereType($this['type'])
 					->getColumn('id');
 
 				return TRUE;
@@ -58,12 +57,39 @@ class Product extends ProductElement {
 
 				$this->expects(['farm']);
 
-				$customers = (array)($customers ?? []);
-
 				$customers = \selling\Customer::model()
 					->select('id')
-					->whereId('IN', $customers)
+					->whereId('IN', (array)($customers ?? []))
 					->whereFarm($this['farm'])
+					->whereType($this['type'])
+					->getColumn('id');
+
+				return TRUE;
+
+			})
+			->setCallback('limitGroups.prepare', function(mixed &$groups): bool {
+
+				$this->expects(['farm']);
+
+				$groups = \selling\Group::model()
+					->select('id')
+					->whereId('IN', (array)($groups ?? []))
+					->whereFarm($this['farm'])
+					->whereType($this['type'])
+					->getColumn('id');
+
+				return TRUE;
+
+			})
+			->setCallback('excludeGroups.prepare', function(mixed &$groups): bool {
+
+				$this->expects(['farm']);
+
+				$groups = \selling\Group::model()
+					->select('id')
+					->whereId('IN', (array)($groups ?? []))
+					->whereFarm($this['farm'])
+					->whereType($this['type'])
 					->getColumn('id');
 
 				return TRUE;
@@ -72,12 +98,11 @@ class Product extends ProductElement {
 			->setCallback('excludeCustomers.consistency', function($customers): bool {
 
 				if(
-					($this['limitCustomers'] === [] and $customers === []) or
-					$this['limitCustomers'] xor $customers
+					($this['limitCustomers'] === [] and $this['limitGroups'] === [] and $this['excludeGroups'] === [] and $customers === []) or
+					($this['limitCustomers'] or $this['limitGroups']) xor ($this['excludeGroups'] or $customers)
 				) {
 					return TRUE;
 				} else {
-					\Fail::log('limitCustomers.consistency');
 					return FALSE;
 				}
 

@@ -1,3 +1,12 @@
+fieldset {
+	border-radius: var(--radius);
+	border-color: var(--border);
+}
+
+fieldset legend {
+	padding: 0rem 0.75rem;
+}
+
 input[type="number"] {
 	width: 5rem;
 }
