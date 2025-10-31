@@ -103,6 +103,8 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 				$data->isModifying === FALSE
 			) {
 
+				$acceptUpdate = $data->cSaleExisting->first()->acceptUpdateByCustomer();
+
 				echo '<div class="util-block" style="box-shadow: 1px 1px 1px var(--border)">';
 					echo '<h3>'.s("Bonjour {name} !", ['name' => \user\ConnectionLib::getOnline()->getName()]).'</h3>';
 					echo '<p>';
@@ -110,14 +112,13 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 						echo \mail\CustomizeUi::getShopProducts($data->cItemExisting, mode: 'html');
 
-						if(
-							$data->cSaleExisting->notEmpty() and
-							$data->cSaleExisting->first()->acceptUpdateByCustomer()
-						) {
+						if($acceptUpdate) {
 							echo s("Cette commande est modifiable et annulable jusqu'au {value}.", \util\DateUi::textual($data->eDateSelected['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
 						}
 					echo '</p>';
-					echo \shop\DateUi::getUpdateLinks($data->eDateSelected);
+					if($acceptUpdate) {
+						echo \shop\DateUi::getUpdateLinks($data->eDateSelected);
+					}
 				echo '</div>';
 
 			} else {

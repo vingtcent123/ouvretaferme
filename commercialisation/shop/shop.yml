@@ -144,6 +144,7 @@ Shop:
   paymentTransferHow: ?text8(1, null)
   paymentOffline: bool = TRUE
   paymentOfflineHow: ?text8(1, null)
+  paymentMethod: ?payment\Method
   description: ?editor24
   terms: ?editor24
   termsField: bool = FALSE

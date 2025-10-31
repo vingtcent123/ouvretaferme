@@ -388,8 +388,26 @@ class ShopUi {
 			}
 		$h .= '</div>';
 
+		$form = new \util\FormUi();
+
+		$h .= '<br/>';
+
+		$h .= '<h3>'.s("Définir un moyen de paiement par défaut pour la boutique").'</h3>';
+
+		$h .= self::getPaymentMethodInfo();
+
+		$h .= $form->openAjax('/shop/configuration:doUpdatePaymentMethod');
+			$h .= $form->hidden('id', $eShop['id']);
+			$h .= $form->dynamicGroup($eShop, 'paymentMethod');
+			$h .= $form->group(content: $form->submit(s("Enregistrer")));
+		$h .= $form->close();
+
 		return $h;
 
+	}
+
+	public static function getPaymentMethodInfo(): string {
+		return '<p class="util-helper">'.s("Vous pouvez choisir un moyen de paiement qui sera appliqué aux ventes que vous réaliserez dans cette boutique. Attention, les moyens de paiement par défaut des clients sont prioritaires par rapport au moyen de paiement choisi pour la boutique.").'</p>';
 	}
 
 	protected function updateTerms(Shop $eShop): string {
@@ -1143,6 +1161,7 @@ class ShopUi {
 			'paymentOfflineHow' => s("Modalités du paiement en direct"),
 			'paymentTransfer' => s("Activer le choix du paiement par virement bancaire"),
 			'paymentTransferHow' => s("Modalités du paiement par virement bancaire"),
+			'paymentMethod' => s("Moyen de paiement"),
 			'sharedGroup' => s("Groupage des produits sur la boutique"),
 			'orderMin' => s("Montant minimal de commande"),
 			'limitCustomers' => s("Limiter l'accès à cette boutique à certains clients seulement"),
@@ -1284,6 +1303,11 @@ class ShopUi {
 			case 'paymentTransferHow' :
 				$d->placeholder = s("Exemple : Règlement des commandes par virement bancaire chaque début de mois à réception de facture.");
 				$d->after = \util\FormUi::info(s("Indiquez ici comment vous comptez facturer vos clients pour qu'ils vous règlent par virement."));
+				break;
+
+			case 'paymentMethod' ;
+				$d->values = fn(Shop $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
+				$d->placeholder = s("Non défini");
 				break;
 
 			case 'orderMin' :

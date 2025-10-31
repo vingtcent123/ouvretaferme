@@ -289,6 +289,21 @@ class Shop extends ShopElement {
 				);
 
 			})
+			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {
+
+				if($eMethod->empty()) {
+					return TRUE;
+				}
+
+				$this->expects(['farm', 'hasPayment']);
+
+				if($this['hasPayment']) {
+					return FALSE;
+				}
+
+				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
+
+			})
 			->setCallback('limitCustomers.prepare', function(mixed &$customers): bool {
 
 				$this->expects(['farm']);

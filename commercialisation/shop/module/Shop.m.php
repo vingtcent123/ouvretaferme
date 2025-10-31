@@ -74,6 +74,7 @@ class ShopModel extends \ModuleModel {
 			'paymentTransferHow' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'paymentOffline' => ['bool', 'cast' => 'bool'],
 			'paymentOfflineHow' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'terms' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'termsField' => ['bool', 'cast' => 'bool'],
@@ -99,11 +100,12 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
+			'paymentMethod' => 'payment\Method',
 			'createdBy' => 'user\User',
 		];
 
@@ -301,6 +303,10 @@ class ShopModel extends \ModuleModel {
 
 	public function wherePaymentOfflineHow(...$data): ShopModel {
 		return $this->where('paymentOfflineHow', ...$data);
+	}
+
+	public function wherePaymentMethod(...$data): ShopModel {
+		return $this->where('paymentMethod', ...$data);
 	}
 
 	public function whereDescription(...$data): ShopModel {

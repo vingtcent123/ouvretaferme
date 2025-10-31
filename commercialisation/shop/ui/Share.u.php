@@ -243,6 +243,7 @@ class ShareUi {
 		$h .= $form->hidden('id', $eShare['id']);
 
 		if($eShare->isSelf()) {
+			$h .= ShopUi::getPaymentMethodInfo();
 			$h .= $form->dynamicGroup($eShare, 'paymentMethod');
 		} else {
 			$h .= $form->dynamicGroup($eShare, 'label');
@@ -278,7 +279,6 @@ class ShareUi {
 			case 'paymentMethod' ;
 				$d->values = fn(Share $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
 				$d->placeholder = s("Non défini");
-				$d->labelAfter = \util\FormUi::info(s("Vous pouvez choisir un moyen de paiement qui sera appliqué aux ventes que vous réaliserez dans cette boutique."));
 				break;
 
 		}

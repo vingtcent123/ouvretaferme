@@ -229,6 +229,17 @@ class ShopLib extends ShopCrud {
 
 		}
 
+		if(in_array('hasPayment', $properties)) {
+
+			if($e['hasPayment']) {
+
+				$e['paymentMethod'] = new \payment\Method();
+				$properties[] = 'paymentMethod';
+
+			}
+
+		}
+
 		try {
 
 			parent::update($e, $properties);

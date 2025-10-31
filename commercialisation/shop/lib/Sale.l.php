@@ -203,16 +203,24 @@ class SaleLib {
 
 				$eShare = $eShop['cShare'][$eFarm['id']];
 
-				if($eShare['paymentMethod']->notEmpty()) {
-					$eMethod = $eShare['paymentMethod'];
-				} else {
+				if($eSale['customer']['defaultPaymentMethod']->notEmpty()) {
 					$eMethod = $eSale['customer']['defaultPaymentMethod'];
+				} else {
+					$eMethod = $eShare['paymentMethod'];
 				}
 
 				self::createDirectPayment($eMethod, $eSale);
 
 			} else {
-				self::createDirectPayment($eSale['customer']['defaultPaymentMethod'], $eSale);
+
+				if($eSale['customer']['defaultPaymentMethod']->notEmpty()) {
+					$eMethod = $eSale['customer']['defaultPaymentMethod'];
+				} else {
+					$eMethod = $eShop['paymentMethod'];
+				}
+
+				self::createDirectPayment($eMethod, $eSale);
+
 			}
 
 		}
