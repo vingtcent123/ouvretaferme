@@ -343,27 +343,27 @@ input.shop-product-number-display {
 	margin-bottom: 1rem;
 }
 
-.shop-product-size {
+.shop-product-additional {
 	text-decoration: underline;
 	display: inline;
 	margin-left: 0.5rem;
 }
 
-.shop-product-size,
+.shop-product-additional,
 .shop-product-origin,
 .shop-product-description {
 	line-height: 1.3;
 	color: var(--muted);
 }
 
-.shop-product-private .shop-product-size,
+.shop-product-private .shop-product-additional,
 .shop-product-private .shop-product-origin,
 .shop-product-private .shop-product-description,
 .shop-product-private .shop-product-farm {
 	font-size: 0.8rem;
 }
 
-.shop-product-pro .shop-product-size,
+.shop-product-pro .shop-product-additional,
 .shop-product-pro .shop-product-origin,
 .shop-product-pro .shop-product-description,
 .shop-product-pro .shop-product-farm {

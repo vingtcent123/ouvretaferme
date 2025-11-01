@@ -91,10 +91,6 @@ div.product-item-infos {
 	}
 }
 
-div.product-item-infos > *:not(:last-child) {
-	margin-right: .5rem;
-}
-
 div.product-item-presentation-wrapper {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

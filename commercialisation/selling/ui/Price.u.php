@@ -17,7 +17,7 @@ class PriceUi {
 			'class' => ($hasDiscountPrice ? 'hide' : ''),
 		];
 
-		return \util\FormUi::getFieldAction('<a '.attrs($attributes).'>'.s("Ajouter une remise").' '.\Asset::icon('caret-down-fill').'</a>');
+		return \util\FormUi::getFieldAction(''.\Asset::icon('plus-circle').' <a '.attrs($attributes).'>'.s("Ajouter une remise").'</a>');
 
 	}
 

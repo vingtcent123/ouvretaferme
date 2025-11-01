@@ -343,15 +343,15 @@ class ProductUi {
 							$name .= $quality;
 						}
 
-						if($eProductSelling['unprocessedSize'] !== NULL) {
-							$name .= '<div class="shop-product-size">';
-								$name .= encode($eProductSelling['unprocessedSize']);
+						if($eProductSelling['additional'] !== NULL) {
+							$name .= '<div class="shop-product-additional">';
+								$name .= encode($eProductSelling['additional']);
 							$name .= '</div>';
 						}
 
 
 						if($eProductSelling['processedPackaging'] !== NULL) {
-							$name .= '<div class="shop-product-size">';
+							$name .= '<div class="shop-product-additional">';
 								$name .= encode($eProductSelling['processedPackaging']);
 							$name .= '</div>';
 						}

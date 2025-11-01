@@ -444,7 +444,7 @@ class ProductUi {
 		}
 
 		if($more) {
-			$h .= '<div class="product-item-infos">'.implode('', $more).'</div>';
+			$h .= '<div class="product-item-infos">'.implode(' | ', $more).'</div>';
 		}
 
 		return $h;
@@ -456,8 +456,8 @@ class ProductUi {
 
 		$more = [];
 
-		if($eProduct['unprocessedSize']) {
-			$more[] = '<span><u>'.encode($eProduct['unprocessedSize']).'</u></span>';
+		if($eProduct['additional']) {
+			$more[] = '<span><u>'.encode($eProduct['additional']).'</u></span>';
 		}
 
 		if($eProduct['origin']) {
@@ -571,6 +571,10 @@ class ProductUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
+				if($eProduct['additional'] !== NULL) {
+					$h .= '<dt>'.s("Complément d'information").'</dt>';
+					$h .= '<dd>'.encode($eProduct['additional']).'</dd>';
+				}
 				if($eProduct['origin'] !== NULL) {
 					$h .= '<dt>'.self::p('origin')->label.'</dt>';
 					$h .= '<dd>'.($eProduct['origin'] ? encode($eProduct['origin']) : '').'</dd>';
@@ -592,10 +596,6 @@ class ProductUi {
 				if($eProduct['unprocessedPlant']->notEmpty()) {
 					$h .= '<dt>'.self::p('unprocessedPlant')->label.'</dt>';
 					$h .= '<dd>'.\plant\PlantUi::link($eProduct['unprocessedPlant']).'</dd>';
-				}
-				if($eProduct['unprocessedSize'] !== NULL) {
-					$h .= '<dt>'.self::p('unprocessedSize')->label.'</dt>';
-					$h .= '<dd>'.encode($eProduct['unprocessedSize']).'</dd>';
 				}
 				if($eProduct['processedComposition'] !== NULL) {
 					$h .= '<dt>'.self::p('processedComposition')->label.'</dt>';
@@ -890,7 +890,7 @@ class ProductUi {
 
 
 			$h .= $form->dynamicGroup($eProduct, 'profile');
-			$h .= $form->dynamicGroup($eProduct, 'name*');
+			$h .= $form->dynamicGroups($eProduct, ['name*']);
 
 			if($eProduct['cCategory']->notEmpty()) {
 				$h .= $form->dynamicGroup($eProduct, 'category');
@@ -981,8 +981,14 @@ class ProductUi {
 					$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
 
-			$h .= $form->dynamicGroups($eProduct, ['description', 'origin', 'quality']);
+			$h .= $form->dynamicGroups($eProduct, ['origin', 'quality']);
 			$h .= $form->dynamicGroup($eProduct, 'vat');
+
+			$h .= '<br/>';
+			$h .= '<h3>'.s("Description").'</h3>';
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->dynamicGroups($eProduct, ['additional', 'description']);
+			$h .= '</div>';
 
 			$h .= '<br/>';
 			$h .= $this->getFieldProfile($form, $eProduct);
@@ -1029,7 +1035,7 @@ class ProductUi {
 
 				$h .= '</div>';
 
-				foreach(['unprocessedVariety', 'unprocessedSize', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
+				foreach(['unprocessedVariety', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen'] as $property) {
 
 					$h .= '<div data-profile="'.implode(' ', Product::getProfiles($property)).'">';
 						$h .= $form->dynamicGroup($eProduct, $property);
@@ -1175,16 +1181,16 @@ class ProductUi {
 			'category' => s("Catégorie"),
 			'vignette' => s("Vignette"),
 			'name' => s("Nom du produit"),
+			'additional' => s("Complément d'information sur le produit"),
 			'unprocessedPlant' => s("Espèce"),
 			'unprocessedVariety' => s("Variété"),
-			'unprocessedSize' => s("Calibre"),
 			'mixedFrozen' => s("Surgelé").'  '.self::getFrozenIcon(),
 			'processedComposition' => s("Composition"),
 			'processedPackaging' => s("Conditionnement"),
 			'processedAllergen' => s("Allergènes"),
 			'profile' => s("Type"),
 			'origin' => s("Origine"),
-			'description' => s("Description"),
+			'description' => s("Présentation du produit"),
 			'quality' => s("Signe de qualité"),
 			'farm' => s("Ferme"),
 			'unit' => s("Unité de vente"),
@@ -1208,6 +1214,10 @@ class ProductUi {
 
 			case 'id' :
 				new ProductUi()->query($d);
+				break;
+
+			case 'additional' :
+				$d->placeholder = s("Ex. : calibrage, version...");
 				break;
 
 			case 'category' :
@@ -1244,8 +1254,8 @@ class ProductUi {
 				};
 
 				$d->values = [
-					Product::UNPROCESSED_PLANT => s("Produit brut d'origine végétale"),
-					Product::UNPROCESSED_ANIMAL => s("Produit brut d'origine animale"),
+					Product::UNPROCESSED_PLANT => s("Produit d'origine végétale"),
+					Product::UNPROCESSED_ANIMAL => s("Produit d'origine animale"),
 					Product::PROCESSED_FOOD => s("Produit alimentaire transformé"),
 					Product::PROCESSED_PRODUCT => s("Produit non alimentaire"),
 					Product::COMPOSITION => s("Produit composé"),
@@ -1421,12 +1431,6 @@ class ProductUi {
 				$d->field = 'select';
 				$d->values = \farm\FarmUi::getQualities();
 				$d->placeholder = s("Aucun");
-				break;
-
-			case 'unprocessedSize' :
-				$d->attributes = [
-					'placeholder' => s("Ex. : 14-21 cm"),
-				];
 				break;
 
 			case 'compositionVisibility' :

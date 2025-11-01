@@ -143,7 +143,6 @@ class Product extends ProductElement {
 			'compositionVisibility' => [Product::COMPOSITION],
 			'unprocessedPlant' => [Product::UNPROCESSED_PLANT],
 			'unprocessedVariety' => [Product::UNPROCESSED_PLANT],
-			'unprocessedSize' => [Product::UNPROCESSED_PLANT],
 			'mixedFrozen' => [Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD],
 			'processedPackaging' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 			'processedAllergen' => [Product::PROCESSED_FOOD],
@@ -207,15 +206,6 @@ class Product extends ProductElement {
 
 				if(in_array($this['profile'], Product::getProfiles('mixedFrozen')) === FALSE) {
 					$frozen = NULL;
-				}
-
-				return TRUE;
-
-			})
-			->setCallback('unprocessedSize.prepare', function(?string &$size): bool {
-
-				if(in_array($this['profile'], Product::getProfiles('unprocessedSize')) === FALSE) {
-					$size = NULL;
 				}
 
 				return TRUE;

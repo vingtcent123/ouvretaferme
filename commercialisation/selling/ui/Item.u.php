@@ -333,20 +333,16 @@ class ItemUi {
 					$product .= ' '.ProductUi::getFrozenIcon();
 				}
 
-				$details = ProductUi::getDetails($eItem['product']);
-
-				if($details) {
-					$product .= '<div class="item-item-product-description">';
-						$product .= implode(' | ', $details);
-					$product .= '</div>';
-				}
-
 			} else {
 				$product = encode($eItem['name']);
 			}
 
-			if($eItem['additional'] !== NULL) {
-				$product .= '<div class="item-item-product-description">'.$eItem->quick('additional', encode($eItem['additional'])).'</div>';
+			$details = self::getDetails($eItem);
+
+			if($details) {
+				$product .= '<div class="item-item-product-description">';
+					$product .= implode(' | ', $details);
+				$product .= '</div>';
 			}
 
 			$h .= '<tbody>';
@@ -504,6 +500,22 @@ class ItemUi {
 		}
 
 		return $h;
+
+	}
+
+	public static function getDetails(Item $eItem): array {
+
+		$more = [];
+
+		if($eItem['additional']) {
+			$more[] = '<span><u>'.encode($eItem['additional']).'</u></span>';
+		}
+
+		if($eItem['origin']) {
+			$more[] = '<span>'.s("Origine {value}", '<u>'.encode($eItem['origin']).'</u>').'</span>';
+		}
+
+		return $more;
 
 	}
 
@@ -701,8 +713,8 @@ class ItemUi {
 						$h .= '<td class="td-min-content">'.ProductUi::getVignette($eProduct, '3rem').'</td>';
 						$h .= '<td class="item-day-product-name">';
 							$h .= encode($eProduct->getName());
-							if($eProduct['unprocessedSize']) {
-								$h .= ' <br class="hide-lg-up"/><small class="color-muted"><u>'.encode($eProduct['unprocessedSize']).'</u></small>';
+							if($eProduct['additional']) {
+								$h .= ' <br class="hide-lg-up"/><small class="color-muted"><u>'.encode($eProduct['additional']).'</u></small>';
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end" style="padding-right: 1rem">';
@@ -739,8 +751,8 @@ class ItemUi {
 					$h .= '<div class="item-day-product-name">';
 						$h .= encode($eProduct->getName());
 						$h .= '&nbsp;<span class="annotation" style="color: var(--order)">'.\selling\UnitUi::getValue($total, $cItem->first()['unit'], TRUE).'</span>';
-						if($eProduct['unprocessedSize']) {
-							$h .= '<div><small class="color-muted"><u>'.encode($eProduct['unprocessedSize']).'</u></small></div>';
+						if($eProduct['additional']) {
+							$h .= '<div><small class="color-muted"><u>'.encode($eProduct['additional']).'</u></small></div>';
 						}
 					$h .= '</div>';
 				$h .= '</div>';
@@ -1261,7 +1273,7 @@ class ItemUi {
 				);
 			}
 
-			$h .= $form->dynamicGroups($eItem, ['name', 'additional', 'quality']);
+			$h .= $form->dynamicGroups($eItem, ['name', 'additional', 'origin', 'quality']);
 
 			if($eItem['sale']->isPro()) {
 				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
@@ -1355,6 +1367,7 @@ class ItemUi {
 		$d = Item::model()->describer($property, [
 			'name' => s("Désignation"),
 			'additional' => s("Complément d'information"),
+			'origin' => s("Origine"),
 			'product' => s("Produit"),
 			'quality' => s("Signe de qualité"),
 			'packaging' => s("Colisage"),
@@ -1382,8 +1395,14 @@ class ItemUi {
 				new ProductUi()->query($d);
 				break;
 
+			case 'origin' :
+				$d->attributes = [
+					'placeholder' => s("Ex. : Ferme d'à côté (63)"),
+				];
+				break;
+
 			case 'additional' :
-				$d->after = \util\FormUi::info(s("Le complément d'information est affiché sur les documents de vente."));
+				$d->placeholder = s("Ex. : calibrage, version...");
 				break;
 
 			case 'quality' :

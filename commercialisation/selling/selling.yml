@@ -167,6 +167,7 @@ Item:
   customer: ?selling\Customer
   type: enum(PRIVATE, PRO)
   additional: ?text8
+  origin: ?text8(1, null)
   farm: farm\Farm
   shop: ?shop\Shop
   shopDate: ?shop\Date
@@ -244,13 +245,17 @@ PdfContent:
 Product:
   id: serial32
   name: text8(1, null) @collate(general)
+  additional: ?text8(1, null) @collate(general)
   description: ?editor24
+  reference: ?text8(1, null) @collate(general)
   vignette: ?textFixed(30, 30) @charset(ascii)
   profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER)
   category: ?selling\Category
+  variantMaster: bool = FALSE
+  variantParent: ?selling\Product
+  variantName: ?text8(1, null) @collate(general)
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null)
-  unprocessedSize: ?text8(1, null)
   mixedFrozen: ?bool
   processedPackaging: ?text8(1, null)
   processedAllergen: ?text8(1, null)
@@ -360,7 +365,6 @@ StockBookmark:
   product: selling\Product
   plant: plant\Plant
   unit: enum(KG, UNIT, BUNCH)
-  size: ?plant\Size
   variety: ?plant\Variety
   createdAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)

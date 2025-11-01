@@ -62,12 +62,11 @@ td.selling-label-checkbox input {
 
 div.selling-label-example {
 	margin-bottom: 1rem;
-	overflow-y: auto;
 }
 
 div.selling-label-example > * {
-	width: calc((21cm - 2.25rem) / 2);
-	height: calc((21cm - 2.25rem) / 2 / 2.16);
+	width: 28rem;
+	height: calc(28rem / 2.16);
 }
 
 .sale-field-preparation-status:has(option[value="draft"]:checked) {

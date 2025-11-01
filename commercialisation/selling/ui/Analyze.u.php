@@ -2120,11 +2120,11 @@ class AnalyzeUi {
 		return [
 			'product_id',
 			'name',
+			'additional',
 			'species',
 			'category',
 			'unit',
 			'variety',
-			'size',
 			'quality',
 			'price_pro',
 			'price_private',

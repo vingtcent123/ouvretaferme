@@ -10,7 +10,7 @@ class ItemLib extends ItemCrud {
 				'sale' => ['hasVat']
 			]);
 
-			$properties = ['name', 'additional', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'unitPriceDiscount', 'price'];
+			$properties = ['name', 'additional', 'origin', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'unitPriceDiscount', 'price'];
 
 			if($e['sale']['hasVat']) {
 				$properties[] = 'vatRate';
@@ -585,7 +585,9 @@ class ItemLib extends ItemCrud {
 		]);
 
 		if($e['product']->notEmpty()) {
-			$e['product']->expects(['profile']);
+
+			$e['product']->expects(['profile', 'origin', 'additional']);
+
 		}
 		
 		$eSale = $e['sale'];
@@ -599,6 +601,13 @@ class ItemLib extends ItemCrud {
 		$e['stats'] = $eSale['stats'];
 		$e['status'] = $eSale['preparationStatus'];
 		$e['productComposition'] = $e['product']->notEmpty() ? ($e['product']['profile'] === Product::COMPOSITION) : FALSE;
+
+		if($e['product']->notEmpty()) {
+
+			$e['additional'] = $e['product']['additional'];
+			$e['origin'] = $e['product']['origin'];
+
+		}
 
 		if($eSale['hasVat'] === FALSE) {
 			$e['vatRate'] = 0.0;

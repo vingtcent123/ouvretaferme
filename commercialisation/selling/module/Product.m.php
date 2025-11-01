@@ -56,13 +56,17 @@ class ProductModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'additional' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
+			'reference' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'profile' => ['enum', [\selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER], 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
+			'variantMaster' => ['bool', 'cast' => 'bool'],
+			'variantParent' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
+			'variantName' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'unprocessedSize' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'mixedFrozen' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'processedPackaging' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'processedAllergen' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -90,11 +94,12 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'additional', 'description', 'reference', 'vignette', 'profile', 'category', 'variantMaster', 'variantParent', 'variantName', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'category' => 'selling\Category',
+			'variantParent' => 'selling\Product',
 			'unprocessedPlant' => 'plant\Plant',
 			'farm' => 'farm\Farm',
 			'unit' => 'selling\Unit',
@@ -111,6 +116,9 @@ class ProductModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'variantMaster' :
+				return FALSE;
 
 			case 'unit' :
 				return \selling\SellingSetting::UNIT_DEFAULT_ID;
@@ -173,8 +181,16 @@ class ProductModel extends \ModuleModel {
 		return $this->where('name', ...$data);
 	}
 
+	public function whereAdditional(...$data): ProductModel {
+		return $this->where('additional', ...$data);
+	}
+
 	public function whereDescription(...$data): ProductModel {
 		return $this->where('description', ...$data);
+	}
+
+	public function whereReference(...$data): ProductModel {
+		return $this->where('reference', ...$data);
 	}
 
 	public function whereVignette(...$data): ProductModel {
@@ -189,16 +205,24 @@ class ProductModel extends \ModuleModel {
 		return $this->where('category', ...$data);
 	}
 
+	public function whereVariantMaster(...$data): ProductModel {
+		return $this->where('variantMaster', ...$data);
+	}
+
+	public function whereVariantParent(...$data): ProductModel {
+		return $this->where('variantParent', ...$data);
+	}
+
+	public function whereVariantName(...$data): ProductModel {
+		return $this->where('variantName', ...$data);
+	}
+
 	public function whereUnprocessedPlant(...$data): ProductModel {
 		return $this->where('unprocessedPlant', ...$data);
 	}
 
 	public function whereUnprocessedVariety(...$data): ProductModel {
 		return $this->where('unprocessedVariety', ...$data);
-	}
-
-	public function whereUnprocessedSize(...$data): ProductModel {
-		return $this->where('unprocessedSize', ...$data);
 	}
 
 	public function whereMixedFrozen(...$data): ProductModel {

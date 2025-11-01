@@ -56,7 +56,7 @@ class PdfUi {
 						$quantity = $eItem['number'];
 					}
 
-					$items[] = $this->getLabel($eFarm, $eSale['customer'], $eItem['name'], $eItem['product']['quality'], $eItem['product']['unprocessedSize'], $quantity, $eItem['unit']);
+					$items[] = $this->getLabel($eFarm, $eSale['customer'], $eItem['name'], $eItem['product']['quality'], $eItem['additional'], $quantity, $eItem['unit']);
 
 
 				}
@@ -124,7 +124,7 @@ class PdfUi {
 
 	}
 
-	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, ?string $quality = NULL, ?string $size = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
+	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, ?string $quality = NULL, ?string $additional = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
 
 		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
 		$colorCustomer = ($eCustomer->notEmpty() and $eCustomer['color']);
@@ -158,17 +158,34 @@ class PdfUi {
 			$h .= '</div>';
 
 			$h .= '<div class="pdf-label-content">';
-				$h .= '<div>'.s("Agriculture").'</div>';
-				$h .= '<div>'.s("France").'</div>';
-				$h .= '<div>'.s("Produit").'</div>';
-				$h .= '<div>'.encode($name ?? '').'</div>';
-				$h .= '<div>'.s("Calibre").'</div>';
-				$h .= '<div>'.encode($size ?? '').'</div>';
-				$h .= '<div class="pdf-label-content-last">'.s("Nombre<br/>ou masse nette").'</div>';
-				$h .= '<div class="pdf-label-content-last">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Agriculture").'</h4>';
+					$h .= '<div class="pdf-label-value">'.s("France").'</div>';
+				$h .= '</div>';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Produit").'</h4>';
+					$h .= '<div class="pdf-label-value">';
+					if($name or $additional) {
+						if($name) {
+							$h .= '<div>'.encode($name).'</div>';
+						}
+						if($additional) {
+							$h .= '<div style="font-weight: normal">'.encode($additional).'</div>';
+						}
+					} else {
+						$h .= ' ';
+					}
+					$h .= '</div>';
+				$h .= '</div>';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Nombre ou masse nette").'</h4>';
+					$h .= '<div class="pdf-label-value">';
 					if($quantity !== NULL and $unit !== NULL) {
 						$h .= \selling\UnitUi::getValue($quantity, $unit);
+					} else {
+						$h .= ' ';
 					}
+					$h .= '</div>';
 				$h .= '</div>';
 			$h .= '</div>';
 
@@ -468,12 +485,9 @@ class PdfUi {
 					if($eItem['product']['mixedFrozen']) {
 						$h .= ' '.ProductUi::getFrozenIcon();
 					}
-					if($eItem['product']['unprocessedSize']) {
-						$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['unprocessedSize'])).'</small>';
+					if($eItem['additional']) {
+						$h .= '<small> / '.encode($eItem['additional']).'</small>';
 					}
-				}
-				if($eItem['additional'] !== NULL) {
-					$h .= '<div style="margin-left: 1.25rem"><small>'.encode($eItem['additional']).'</small></div>';
 				}
 			$h .= '</td>';
 			$h .= '<td class="td-min-content">';
@@ -810,13 +824,8 @@ class PdfUi {
 
 		$last = ($isLast ? 'pdf-document-item-last' : '');
 
-		$details = [];
-		if($eItem['product']->notEmpty() and $eItem['product']['unprocessedSize']) {
-			$details[] = s("Calibre {value}", encode($eItem['product']['unprocessedSize']));
-		}
-		if($eItem['product']->notEmpty() and $eItem['product']['origin']) {
-			$details[] = s("Origine {value}", encode($eItem['product']['origin']));
-		}
+		$details = ItemUi::getDetails($eItem);
+
 		if($eItem['packaging']) {
 			$details[] = s("Colis de {value}", \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE));
 		}
@@ -829,12 +838,7 @@ class PdfUi {
 				}
 				if($details) {
 					$h .= '<div class="pdf-document-product-details">';
-						$h .= implode(' / ', $details);
-					$h .= '</div>';
-				}
-				if($eItem['additional'] !== NULL) {
-					$h .= '<div class="pdf-document-product-details">';
-						$h .= encode($eItem['additional']);
+						$h .= implode(' | ', $details);
 					$h .= '</div>';
 				}
 			$h .= '</td>';
@@ -1198,8 +1202,8 @@ class PdfUi {
 					} else {
 						$item .= encode($eItem['name'] ?? '');
 					}
-					if($eItem['product']->notEmpty() and $eItem['product']['unprocessedSize']) {
-						$item .= '<span class="pdf-sales-label-content-size">'.encode($eItem['product']['unprocessedSize']).'</span>';
+					if($eItem['additional'] !== NULL) {
+						$item .= '<span class="pdf-sales-label-content-size">'.encode($eItem['additional']).'</span>';
 					}
 				$item .= '</div>';
 				if($quantity !== NULL) {

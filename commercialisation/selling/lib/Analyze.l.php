@@ -954,11 +954,11 @@ class AnalyzeLib {
 				return [
 					$eProduct['id'],
 					$eProduct['name'],
+					$eProduct['additional'],
 					$eProduct['unprocessedPlant']->empty() ? '' : $eProduct['unprocessedPlant']['name'],
 					$eProduct['category']->empty() ? '' : $eProduct['category']['name'],
 					$eProduct['unit']->empty() ? '' : $eProduct['unit']['singular'],
 					$eProduct['unprocessedVariety'] ?? '',
-					$eProduct['unprocessedSize'] ?? '',
 					$eProduct['quality'] ? ProductUi::p('quality')->values[$eProduct['quality']] : '',
 					($eProduct['proPrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['proPrice']) : '',
 					($eProduct['privatePrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['privatePrice']) : '',

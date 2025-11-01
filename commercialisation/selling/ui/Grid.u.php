@@ -293,8 +293,8 @@ class GridUi {
 
 							$h .= '<td>';
 								$h .= '<a href="/produit/'.$eProduct['id'].'">'.encode($eProduct->getName()).'</a>';
-								if($eProduct['unprocessedSize']) {
-									$h .= '<div><small><u>'.encode($eProduct['unprocessedSize']).'</u></div>';
+								if($eProduct['additional']) {
+									$h .= '<div><small><u>'.encode($eProduct['additional']).'</u></div>';
 								}
 							$h .= '</td>';
 

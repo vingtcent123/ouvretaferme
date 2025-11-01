@@ -45,20 +45,20 @@ class StockLib extends StockCrud {
 		$cProduct = \selling\ProductLib::getByFarm($eFarm, search: $search);
 
 		// Association des produits avec même nom, variété, calibre mais avec unité différente
-		$cccccProduct = Product::model()
+		$ccccProduct = Product::model()
 			->select([
 				'id',
-				'name', 'unprocessedPlant', 'unprocessedVariety', 'unprocessedSize', 'origin',
+				'name', 'unprocessedPlant', 'unprocessedVariety', 'origin',
 				'unit' => \selling\Unit::getSelection(),
 			])
 			->whereFarm($eFarm)
 			->whereId('NOT IN', $cProduct)
 			->whereStock(NULL)
-			->getCollection(index: ['unprocessedPlant', 'name', 'unprocessedVariety', 'unprocessedSize', NULL]);
+			->getCollection(index: ['unprocessedPlant', 'name', 'unprocessedVariety', NULL]);
 
 		foreach($cProduct as $eProduct) {
 			$plant = $eProduct['unprocessedPlant']->empty() ? NULL : $eProduct['unprocessedPlant']['id'];
-			$eProduct['cProductSiblings'] = $cccccProduct[$plant][$eProduct['name']][$eProduct['unprocessedVariety']][$eProduct['unprocessedSize']] ?? new \Collection();
+			$eProduct['cProductSiblings'] = $ccccProduct[$plant][$eProduct['name']][$eProduct['unprocessedVariety']] ?? new \Collection();
 		}
 
 		return $cProduct;
@@ -99,9 +99,7 @@ class StockLib extends StockCrud {
 			->whereUnit($eUnit)
 			->whereStock('!=', NULL)
 			->sort(new \Sql('
-				'.($eTask['variety']->notEmpty() ? 'IF(unprocessedVariety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0)' : '0').'
-					+ '.($eTask['harvestSize']->notEmpty() ? 'IF(unprocessedSize = "'.Product::model()->format($eTask['harvestSize']['name']).'", 1, 0)' : '0   ').'
-					DESC,
+				'.($eTask['variety']->notEmpty() ? 'IF(unprocessedVariety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0)' : '0').' DESC,
 				name ASC
 			'))
 			->getCollection();

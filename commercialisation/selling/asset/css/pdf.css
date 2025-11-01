@@ -318,7 +318,7 @@ div.pdf-document-vat-rates > *:nth-child(3n + 3) {
 	background-color: white;
 	line-height: 1.2;
 	display: grid;
-	grid-template-columns: 11fr 20fr;
+	grid-template-columns: 12fr 20fr;
 }
 
 .pdf-label-item:nth-child(even) {
@@ -395,31 +395,36 @@ div.pdf-document-vat-rates > *:nth-child(3n + 3) {
 
 .pdf-label-content {
 	display: grid;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: 1fr;
 	grid-template-rows: auto;
 	align-items: stretch;
 	width: 100%;
 	font-size: 0.8rem;
 	letter-spacing: -0.3px;
+	padding: 0;
+	margin: 0;
 }
 
-.pdf-label-content > * {
+.pdf-label-content > div {
 	background-color: white;
+	padding: 0.2cm;
 	display: flex;
-	align-items: center;
+	flex-direction: column;
+	justify-content: center;
 }
 
-.pdf-label-content > *:not(.pdf-label-content-last) {
-	border-bottom: 2px solid var(--text);
+.pdf-label-content > div > h4 {
+	font-size: 0.9rem;
+	margin-bottom: 0.15cm;
 }
 
-.pdf-label-content > *:nth-child(odd) {
-	padding-right: 0.5cm;
-	padding-left: 0.25cm;
-}
-
-.pdf-label-content > *:nth-child(even) {
+.pdf-label-content > div > .pdf-label-value {
 	font-weight: bold;
+	font-size: 1rem;
+}
+
+.pdf-label-content > div:not(:last-child) {
+	border-bottom: 2px solid var(--text);
 }
 
 @media print {

@@ -45,21 +45,19 @@ class StockBookmarkModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'plant' => ['element32', 'plant\Plant', 'cast' => 'element'],
 			'unit' => ['enum', [\selling\StockBookmark::KG, \selling\StockBookmark::UNIT, \selling\StockBookmark::BUNCH], 'cast' => 'enum'],
-			'size' => ['element32', 'plant\Size', 'null' => TRUE, 'cast' => 'element'],
 			'variety' => ['element32', 'plant\Variety', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'product', 'plant', 'unit', 'size', 'variety', 'createdAt', 'createdBy'
+			'id', 'farm', 'product', 'plant', 'unit', 'variety', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'product' => 'selling\Product',
 			'plant' => 'plant\Plant',
-			'size' => 'plant\Size',
 			'variety' => 'plant\Variety',
 			'createdBy' => 'user\User',
 		];
@@ -128,10 +126,6 @@ class StockBookmarkModel extends \ModuleModel {
 
 	public function whereUnit(...$data): StockBookmarkModel {
 		return $this->where('unit', ...$data);
-	}
-
-	public function whereSize(...$data): StockBookmarkModel {
-		return $this->where('size', ...$data);
 	}
 
 	public function whereVariety(...$data): StockBookmarkModel {
