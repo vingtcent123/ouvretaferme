@@ -23,9 +23,16 @@ new Page(
 			'amount' => GET('amount'),
 			'margin' => GET('margin'),
 		], GET('sort'));
+
 		if(GET('amount')) {
-			$search->set('amountMin', GET('amount', 'float') - GET('margin', 'float', 0));
-			$search->set('amountMax', GET('amount', 'float') + GET('margin', 'float', 0));
+
+			$search->set('amountMin', GET('amount','float') - GET('margin', 'float', 0));
+
+			if(GET('margin', 'float', 0)) {
+				$search->set('amountMax', GET('amount', 'float') + GET('margin', 'float', 0));
+			} else {
+				$search->set('amountMax', GET('amount', 'int') + 1);
+			}
 		}
 		$search->set('statusWithDeleted', GET('statusWithDeleted', 'bool', FALSE));
 		$hasSort = get_exists('sort') === TRUE;
