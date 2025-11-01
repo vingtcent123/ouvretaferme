@@ -101,10 +101,11 @@ Class VatUi {
 
 				$h .= '<h3>'.s("Quel est le planning ?").'</h3>';
 				$h .= '<div>'.s(
-					"Votre déclaration est ouverte sur {siteName} {days} jours avant la limite de déclaration, soit le <b>{date}</b>, et vous pouvez la modifier sur {siteName} jusqu'à 5 jours après la date limite (soit le {closeDate}). Mais pensez à la déclarer à l'administration fiscale avant la date limite !",
+					"Votre déclaration est ouverte sur {siteName} dès la fin de la période à déclarer, soit le <b>{date}</b>, et vous pouvez la modifier sur {siteName} jusqu'à 5 jours après la date limite (soit le {closeDate}). Mais pensez à la déclarer à l'administration fiscale avant la date limite qui est le <b>{limit}</b> !",
 					[
 						'days' => VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS,
-						'date' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' - '.VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS.' days'))),
+						'date' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to'].' + 1 day'))),
+						'limit' => \util\DateUi::numeric($vatParameters['limit']),
 						'closeDate' => \util\DateUi::numeric(mb_substr($vatParameters['limit'], 0, 7).'-'.((int)mb_substr($vatParameters['limit'], -2) + 5)),
 					]
 				).'</div>';
@@ -156,99 +157,101 @@ Class VatUi {
 
 	}
 
-	public function getOperationsTab(\farm\Farm $eFarm, string $type, \Collection $cOperation, bool $isSelected): string {
+	public function getOperationsTab(\farm\Farm $eFarm, string $type, \Collection $cOperation, array $vatParameters): string {
 
-		$h = '<div class="tab-panel'.($isSelected ? ' selected' : '').'" data-tab="journal-'.$type.'">';
+		$h = '<div class="tab-panel selected" data-tab="journal-'.$type.'">';
 
-		$h .= '<table class="tr-even tr-hover">';
+			$h .= $this->displayPeriod($vatParameters);
 
-			$h .= '<thead class="thead-sticky">';
-				$h .= '<tr>';
-					$h .= '<th rowspan="2">'.s("Date").'</th>';
-					$h .= '<th rowspan="2">'.s("N° compte").'</th>';
-					$h .= '<th rowspan="2">'.s("Pièce comptable").'</th>';
-					$h .= '<th rowspan="2">'.s("Description").'</th>';
-					$h .= '<th rowspan="2">'.s("Tiers").'</th>';
-					$h .= '<th colspan="2" class="text-center">'.s("Taux TVA (%)").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Montant (TTC)").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Montant (HT)").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("TVA (€)").'</th>';
-				$h .= '</tr>';
-				$h .= '<tr>';
-					$h .= '<th class="td-min-content text-end rowspaned-center">'.s("déclaré").'</th>';
-					$h .= '<th class="td-min-content text-end rowspaned-center">'.s("calculé").'</th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
+			$h .= '<table class="tr-even tr-hover">';
 
-			$h .= '<tbody>';
-				foreach($cOperation as $eOperation) {
-
-					$eOperationInitial = $eOperation['operation'];
-
-					$h .= '<tr class="">';
-
-						$h .= '<td>';
-							$h .= \util\DateUi::numeric($eOperationInitial['date']);
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
-							if($eOperation['accountLabel'] !== NULL) {
-								$h .= encode(trim($eOperation['accountLabel'], '0'));
-							} else {
-								$h .= encode($eOperation['account']['class'], 8, 0);
-							}
-							$h .= '</div>';
-							$h .= '<div class="dropdown-list bg-primary">';
-							$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
-							$h .= '</div>';
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= '<div class="operation-info">';
-								if($eOperationInitial['document'] !== NULL) {
-									$h .= '<a href="'.new \journal\JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
-							}
-							$h .= '</div>';
-						$h .= '</td>';
-
-						$h .= '<td class="td-description">';
-							$h .= '<div class="description">';
-								$h .= encode($eOperationInitial['description']);
-							$h .= '</div>';
-						$h .= '</td>';
-
-						$h .= '<td>';
-							if($eOperationInitial['thirdParty']->exists() === TRUE) {
-								$h .= encode($eOperationInitial['thirdParty']['name']);
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="td-min-content text-end">';
-							$h .= $eOperationInitial['vatRate'];
-						$h .= '</td>';
-
-						$calculatedVatRate = round(($eOperation['amount'] / $eOperationInitial['amount']) * 100, 1);
-						$h .= '<td class="td-min-content text-end '.($eOperationInitial['vatRate'] !== $calculatedVatRate ? 'color-danger' : '').'">';
-							$h .= $calculatedVatRate;
-						$h .= '</td>';
-
-						$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-							$h .= \util\TextUi::money($eOperationInitial['amount'] + $eOperation['amount']);
-						$h .= '</td>';
-
-						$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
-							$h .= \util\TextUi::money($eOperationInitial['amount']);
-						$h .= '</td>';
-
-						$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-							$h .= \util\TextUi::money($eOperation['amount']);
-						$h .= '</td>';
-
+				$h .= '<thead class="thead-sticky">';
+					$h .= '<tr>';
+						$h .= '<th rowspan="2">'.s("Date").'</th>';
+						$h .= '<th rowspan="2">'.s("N° compte").'</th>';
+						$h .= '<th rowspan="2">'.s("Pièce comptable").'</th>';
+						$h .= '<th rowspan="2">'.s("Description").'</th>';
+						$h .= '<th rowspan="2">'.s("Tiers").'</th>';
+						$h .= '<th colspan="2" class="text-center">'.s("Taux TVA (%)").'</th>';
+						$h .= '<th rowspan="2" class="text-center">'.s("Montant (TTC)").'</th>';
+						$h .= '<th rowspan="2" class="text-center">'.s("Montant (HT)").'</th>';
+						$h .= '<th rowspan="2" class="text-center">'.s("TVA (€)").'</th>';
 					$h .= '</tr>';
+					$h .= '<tr>';
+						$h .= '<th class="td-min-content text-end rowspaned-center">'.s("déclaré").'</th>';
+						$h .= '<th class="td-min-content text-end rowspaned-center">'.s("calculé").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
 
-				}
-			$h .= '</tbody>';
+				$h .= '<tbody>';
+					foreach($cOperation as $eOperation) {
+
+						$eOperationInitial = $eOperation['operation'];
+
+						$h .= '<tr class="">';
+
+							$h .= '<td>';
+								$h .= \util\DateUi::numeric($eOperationInitial['date']);
+							$h .= '</td>';
+
+							$h .= '<td>';
+								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
+								if($eOperation['accountLabel'] !== NULL) {
+									$h .= encode(trim($eOperation['accountLabel'], '0'));
+								} else {
+									$h .= encode($eOperation['account']['class'], 8, 0);
+								}
+								$h .= '</div>';
+								$h .= '<div class="dropdown-list bg-primary">';
+								$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
+								$h .= '</div>';
+							$h .= '</td>';
+
+							$h .= '<td>';
+								$h .= '<div class="operation-info">';
+									if($eOperationInitial['document'] !== NULL) {
+										$h .= '<a href="'.new \journal\JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+								}
+								$h .= '</div>';
+							$h .= '</td>';
+
+							$h .= '<td class="td-description">';
+								$h .= '<div class="description">';
+									$h .= encode($eOperationInitial['description']);
+								$h .= '</div>';
+							$h .= '</td>';
+
+							$h .= '<td>';
+								if($eOperationInitial['thirdParty']->exists() === TRUE) {
+									$h .= encode($eOperationInitial['thirdParty']['name']);
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="td-min-content text-end">';
+								$h .= $eOperationInitial['vatRate'];
+							$h .= '</td>';
+
+							$calculatedVatRate = round(($eOperation['amount'] / $eOperationInitial['amount']) * 100, 1);
+							$h .= '<td class="td-min-content text-end '.($eOperationInitial['vatRate'] !== $calculatedVatRate ? 'color-danger' : '').'">';
+								$h .= $calculatedVatRate;
+							$h .= '</td>';
+
+							$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+								$h .= \util\TextUi::money($eOperationInitial['amount'] + $eOperation['amount']);
+							$h .= '</td>';
+
+							$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
+								$h .= \util\TextUi::money($eOperationInitial['amount']);
+							$h .= '</td>';
+
+							$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+								$h .= \util\TextUi::money($eOperation['amount']);
+							$h .= '</td>';
+
+						$h .= '</tr>';
+
+					}
+				$h .= '</tbody>';
 
 			$h .= '</table>';
 
@@ -258,7 +261,18 @@ Class VatUi {
 
 	}
 
-	public function getCheck(\farm\Farm $eFarm, array $check): string {
+	private function displayPeriod(array $vatParameters): string {
+
+		return '<div class="vat-period-block">'.
+				'<h3>'.s(
+				"Période du {from} au {to}",
+				['from' => \util\DateUi::numeric($vatParameters['from']), 'to' => \util\DateUi::numeric($vatParameters['to'])]
+			).'</h3>'.
+		'</div>';
+
+	}
+
+	public function getCheck(\farm\Farm $eFarm, array $check, array $vatParameters): string {
 
 		$taxes = $check['taxes'];
 		$sales = $check['sales'];
@@ -267,6 +281,9 @@ Class VatUi {
 		$hasIncoherence = FALSE;
 
 		$h = '<div class="tab-panel selected" data-tab="check">';
+
+			$h .= $this->displayPeriod($vatParameters);
+
 			$h .= '<h3>'.s("Contrôles de cohérence").'</h3>';
 
 			$h .= '<table class="tr-even tr-hover">';
@@ -348,7 +365,7 @@ Class VatUi {
 
 				$h .= '<div class="util-warning-outline">'.s("Il y a une incohérence entre les opérations de vente et les opérations de TVA enregistrées dans votre journal : la somme de la TVA sur le compte {value} ne correspond pas avec le montant de TVA qui est calculé.", \account\AccountSetting::COLLECTED_VAT_CLASS).'</div>';
 
-			} else {
+			} else if($totalCalculated !== 0) {
 
 				$h .= '<div class="util-success">'.s("Félicitations ! Vos écritures de TVA sont cohérentes avec vos écritures de ventes, vous pouvez passer à l'étape suivante.").'</div>';
 
@@ -463,6 +480,8 @@ Class VatUi {
 
 		$h = '<div class="tab-panel selected" data-tab="cerfa">';
 
+		$h .= $this->displayPeriod($vatParameters);
+
 		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
 
 			$h .= new VatUi()->getCerfaCA12($eFarm, $eFinancialYear, $cerfaData, $precision, $vatParameters);
@@ -499,7 +518,7 @@ Class VatUi {
 
 				if($eVatDeclaration['accountedAt'] !== NULL) {
 
-					$h .= '<div class="util-info">'.s("Déclaration pour la période du {from} au {to}, déclarée le {date} et enregistrée en comptabilité le {accountedAt}.", [
+					$h .= '<div class="util-info">'.s("Déclaration faite le {date} et enregistrée en comptabilité le {accountedAt}.", [
 						'date' => \util\DateUi::numeric($eVatDeclaration['declaredAt']),
 						'from' => \util\DateUi::numeric($eVatDeclaration['from']),
 						'to' => \util\DateUi::numeric($eVatDeclaration['to']),
@@ -508,7 +527,7 @@ Class VatUi {
 
 				} else {
 
-					$h .= '<div class="util-info">'.s("Déclaration pour la période du {from} au {to}, déclarée le {date}.", [
+					$h .= '<div class="util-info">'.s("Déclaration faite le {date}.", [
 						'date' => \util\DateUi::numeric($eVatDeclaration['declaredAt']),
 						'from' => \util\DateUi::numeric($eVatDeclaration['from']),
 						'to' => \util\DateUi::numeric($eVatDeclaration['to']),
@@ -2410,6 +2429,7 @@ Class VatUi {
 		$h = '';
 		$isDisabled = FALSE;
 		$attributes = $isDisabled ? ['disabled' => 'disabled'] : [];
+		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration();
 
 		$form = new \util\FormUi();
 
@@ -3079,8 +3099,7 @@ Class VatUi {
 
 						$h .= '<td class="vat-cerfa-number" rowspan="3">'.s("22A").'</td>';
 						$h .= '<td rowspan="3">';
-							$h .= s("Indiquer le coefficient de taxation unique applicable pour la période
-s'il est différent de 100 %");
+							$h .= s("Indiquer le coefficient de taxation unique applicable pour la période s'il est différent de 100 %");
 							$h .= $form->number('22a', $data['22a'] ?? 0, $attributes);
 						$h .= '</td>';
 						$h .= '<td class="vat-cerfa-number">'.s("23").'</td>';
@@ -3395,11 +3414,29 @@ s'il est différent de 100 %");
 
 				$h .= '</tr>';
 
-				$h .= '<tr>';
-					$h .= '<th class="vat-cerfa-title vat-upper" colspan="8">'.s("BASE DE CALCUL DES ACOMPTES DUS AU TITRE DE L’EXERCICE SUIVANT").'</th>';
-				$h .= '</tr>';
-
 			$h .= '</table>';
+
+			$h .= '<div style="position: sticky; bottom: 0; padding: 2rem 0 2rem; background-color: var(--background-body); text-align: right">';
+
+			if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
+
+				$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \company\CompanyUi::urlSummary($eFarm).'/vat:reset', 'post-from' => $vatParameters['from'], 'post-to' => $vatParameters['to'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
+
+			}
+
+			if($eVatDeclaration->empty() or $eVatDeclaration->canUpdate()) {
+
+				$h .= $form->submit(s("Sauvegarder"));
+
+			}
+
+			if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate() and $eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
+
+				$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \company\CompanyUi::urlSummary($eFarm).'/vat:doDeclare', 'post-id' => $eVatDeclaration['id']]);
+
+			}
+
+			$h .= '</div>';
 
 		$h .= $form->close();
 

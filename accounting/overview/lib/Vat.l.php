@@ -3,6 +3,72 @@ namespace overview;
 
 Class VatLib {
 
+	/**
+	 * Récupère la période par défaut de la déclaration de TVA
+	 * (celle qui est actuellement modifiable ou la dernière déclarée)
+	 *
+	 * @param \account\FinancialYear $eFinancialYear
+	 * @return array
+	 */
+	public static function getDefaultPeriod(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
+
+		$allPeriods = self::getAllPeriodForFinancialYear($eFarm, $eFinancialYear);
+
+		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+			return first($allPeriods);
+		}
+
+		$last = NULL;
+		foreach($allPeriods as $period) {
+			$eVatDeclaration = new VatDeclaration($period);
+			if($eVatDeclaration->canUpdate()) {
+				return $period;
+			}
+			if($period['from'] < date('Y-m-d')) {
+				$last = $period;
+			}
+		}
+
+		// On n'a pas trouvé de période modifiable => On prend la dernière de l'exercice
+		if($last !== NULL) {
+			return $period;
+		}
+
+		// On n'a pas trouvé de période déjà passée => On prend la premièer de l'exercice
+		return first($period);
+
+	}
+
+	public static function getAllPeriodForFinancialYear(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
+
+		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+			$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $eFinancialYear['startDate']);
+			return [$period['from'].'|'.$period['to'] => self::getVatDeclarationParameters($eFarm, $eFinancialYear, $eFinancialYear['startDate'])];
+		}
+
+		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
+			$periods = [];
+			$referenceDate = $eFinancialYear['startDate'];
+			for($i = 0; $i < 4; $i++) {
+				$date = mb_substr($referenceDate, 0, 5).((int)mb_substr($referenceDate, 5, 2) + $i * 3).mb_substr($referenceDate, -2);
+				$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $date);
+				$periods[$period['from'].'|'.$period['to']] = $period;
+			}
+			return $periods;
+		}
+
+		$periods = [];
+		$referenceDate = $eFinancialYear['startDate'];
+		for($i = 0; $i < 12; $i++) {
+			$date = mb_substr($referenceDate, 0, 5).mb_str_pad((int)mb_substr($referenceDate, 5, 2) + $i, 2, '0', STR_PAD_LEFT).mb_substr($referenceDate, -3);
+			$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $date);
+			$periods[$period['from'].'|'.$period['to']] = $period;
+		}
+		return $periods;
+
+
+	}
+
 
 	public static function getForCheck(\Search $search = new \Search()): array {
 
@@ -111,16 +177,10 @@ Class VatLib {
 
 	}
 
-	public static function getVatDeclarationParameters(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $period = 'last'): array {
+	public static function getVatDeclarationParameters(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $referenceDate): array {
 
-		// $period peut être
-		//  "current" (on se base sur la date courante),
-		//  "last" (la dernière période avant la date courante)
-		//  "next "la prochaine période après la date courante)
-
-		if(in_array($period, ['current', 'last', 'next']) === FALSE) {
-			throw new \NotExpectedAction('Unknown period for the VAT declaration');
-		}
+		$year = (int)mb_substr($referenceDate, 0, 4);
+		$month = (int)mb_substr($referenceDate, 5, 2);
 
 		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
 
@@ -129,7 +189,7 @@ Class VatLib {
 
 		} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
 
-			$currentMonth = (int)date('m');
+			$currentMonth = $month;
 
 			if($currentMonth < 3) {
 				$trimestre = 1;
@@ -141,17 +201,17 @@ Class VatLib {
 				$trimestre = 4;
 			}
 
-			$periodFrom = date('Y-m-01', mktime(0, 0, 0, ($trimestre - 1) * 3 + 1, 1, date('Y')));
-			$periodTo = date('Y-m-d', mktime(0, 0, 0, $trimestre * 3 + 1, 0, date('Y')));
+			$periodFrom = date('Y-m-01', mktime(0, 0, 0, ($trimestre - 1) * 3 + 1, 1, $year));
+			$periodTo = date('Y-m-d', mktime(0, 0, 0, $trimestre * 3 + 1, 0, $year));
 
 		} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::MONTHLY) {
 
-			$periodFrom = date('Y-m-01');
-			$periodTo = date('Y-m-d', mktime(0, 0, 0, date('m') + 1, 0, date('Y')));
+			$periodFrom = mb_substr($referenceDate, 0, 8).'01';;
+			$periodTo = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
 
 		}
 
-		switch($period) {
+		/*switch($period) {
 			case 'current':
 				break;
 
@@ -180,7 +240,7 @@ Class VatLib {
 					$periodTo = date('Y-m-d', strtotime($periodFrom.' + 1 month + 1 day'));
 				}
 				break;
-		}
+		}*/
 
 		switch($eFinancialYear['vatFrequency']) {
 
@@ -348,7 +408,7 @@ Class VatLib {
 		$vatData['0018'] = round(-1 * $deposits[\account\AccountSetting::VAT_DEPOSIT_CLASS_PREFIX]);
 
 		if(($vatData['8900'] ?? 0) >= ($vatData['0705'] ?? 0 + $vatData['0018'] ?? 0)) {
-			$vatData['33-number'] = round($vatData['8900'] - (($vatData['0705'] ?? 0) + ($vatData['0018'] ?? 0)), $precision);
+			$vatData['33-number'] = round(($vatData['8900'] ?? 0) - (($vatData['0705'] ?? 0) + ($vatData['0018'] ?? 0)), $precision);
 		}
 		if($vatData['0018'] ?? 0 >= $vatData['8900'] ?? 0) {
 			$vatData['34-number'] = round(($vatData['0018'] ?? 0 - $vatData['8900'] ?? 0), $precision);

@@ -56,38 +56,38 @@ class Vat {
 			Vat.getValue(cerfa, 'others') - Vat.getValue(cerfa, 'XA')
 		);
 
-		qs('#cerfa-12 [name="X4"]').value = Vat.computeWithPrecision(
-			Vat.getValue('12', 'X1') +
-			Vat.getValue('12', 'M1') +
-			Vat.getValue('12', 'X2') +
-			Vat.getValue('12', 'M2') +
-			Vat.getValue('12', 'X3') +
-			Vat.getValue('12', 'M3') +
-			Vat.getValue('12', 'XA')
+		qs('#cerfa-' + cerfa + ' [name="X4"]').value = Vat.computeWithPrecision(
+			Vat.getValue(cerfa, 'X1') +
+			Vat.getValue(cerfa, 'M1') +
+			Vat.getValue(cerfa, 'X2') +
+			Vat.getValue(cerfa, 'M2') +
+			Vat.getValue(cerfa, 'X3') +
+			Vat.getValue(cerfa, 'M3') +
+			Vat.getValue(cerfa, 'XA')
 		);
 
-		qs('#cerfa-12 [name="Y4"]').value = Vat.computeWithPrecision(
-			Vat.getValue('12', 'Y1') +
-			Vat.getValue('12', 'M4') +
-			Vat.getValue('12', 'Y2') +
-			Vat.getValue('12', 'M5') +
-			Vat.getValue('12', 'Y3') +
-			Vat.getValue('12', 'M6') +
-			Vat.getValue('12', 'YA')
+		qs('#cerfa-' + cerfa + ' [name="Y4"]').value = Vat.computeWithPrecision(
+			Vat.getValue(cerfa, 'Y1') +
+			Vat.getValue(cerfa, 'M4') +
+			Vat.getValue(cerfa, 'Y2') +
+			Vat.getValue(cerfa, 'M5') +
+			Vat.getValue(cerfa, 'Y3') +
+			Vat.getValue(cerfa, 'M6') +
+			Vat.getValue(cerfa, 'YA')
 		);
 
-		qs('#cerfa-12 [name="Z4"]').value = Vat.computeWithPrecision(
-			Vat.getValue('12', 'Z1') +
-			Vat.getValue('12', 'M7') +
-			Vat.getValue('12', 'Z2') +
-			Vat.getValue('12', 'M8') +
-			Vat.getValue('12', 'Z3') +
-			Vat.getValue('12', 'M9') +
-			Vat.getValue('12', 'ZB')
+		qs('#cerfa-' + cerfa + ' [name="Z4"]').value = Vat.computeWithPrecision(
+			Vat.getValue(cerfa, 'Z1') +
+			Vat.getValue(cerfa, 'M7') +
+			Vat.getValue(cerfa, 'Z2') +
+			Vat.getValue(cerfa, 'M8') +
+			Vat.getValue(cerfa, 'Z3') +
+			Vat.getValue(cerfa, 'M9') +
+			Vat.getValue(cerfa, 'ZB')
 		);
 
-		const val_X4 = Vat.getValue('12', 'X4');
-		qs('#cerfa-12 [name="8103"]').value = val_X4;
+		const val_X4 = Vat.getValue(cerfa, 'X4');
+		qs('#cerfa-' + cerfa + ' [name="8103"]').value = val_X4;
 	}
 }
 

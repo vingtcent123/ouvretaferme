@@ -61,6 +61,8 @@ class OperationLib extends OperationCrud {
 		return $model
 			->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL)
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
+			->whereDate('>=', $search->get('minDate'), if: $search->get('minDate'))
+			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))
 			->wherePaymentDate('LIKE', '%'.$search->get('paymentDate').'%', if: $search->get('paymentDate'))
 			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->whereAccountLabel('LIKE', $search->get('accountLabel').'%', if: $search->get('accountLabel'))

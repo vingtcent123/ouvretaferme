@@ -23,7 +23,8 @@ new Page(function($data) {
 		$search = new Search();
 		$search->set('financialYear', $data->eFinancialYear);
 
-		$data->vatParameters = \overview\VatLib::getVatDeclarationParameters($data->eFarm, $data->eFinancialYear);
+		$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFinancialYear);
+		$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFinancialYear);
 
 		$search->set('minDate', $data->vatParameters['from']);
 		$search->set('maxDate', $data->vatParameters['to']);
@@ -73,7 +74,7 @@ new Page(function($data) {
 
 		$from = POST('from');
 		$to = POST('to');
-		$data->vatParameters = \overview\VatLib::getVatDeclarationParameters($data->eFarm, $data->eFinancialYear);
+		$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFinancialYear);
 
 		if($data->vatParameters['from'] !== $from and $data->vatParameters['to'] !== $to) {
 			throw new NotExpectedAction('Unable to update for this VAT declaration dates');

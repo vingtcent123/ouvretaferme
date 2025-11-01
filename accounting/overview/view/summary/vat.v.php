@@ -56,11 +56,11 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 			case 'journal-buy':
 			case 'journal-sell':
-				echo new \overview\VatUi()->getOperationsTab($data->eFarm, mb_substr($data->tab, mb_strlen('journal') + 1), $data->cOperation, TRUE);
+				echo new \overview\VatUi()->getOperationsTab($data->eFarm, mb_substr($data->tab, mb_strlen('journal') + 1), $data->cOperation, $data->vatParameters);
 				break;
 
 			case 'check':
-				echo new \overview\VatUi()->getCheck($data->eFarm, $data->check);
+				echo new \overview\VatUi()->getCheck($data->eFarm, $data->check, $data->vatParameters);
 				break;
 
 			case 'cerfa':
@@ -68,7 +68,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 				break;
 
 			case 'history':
-				echo new \overview\VatDeclarationUi()->getHistory($data->eFarm, $data->eFinancialYear, $data->cVatDeclaration);
+				echo new \overview\VatDeclarationUi()->getHistory($data->eFarm, $data->eFinancialYear, $data->cVatDeclaration, $data->allPeriods);
 				break;
 		}
 
