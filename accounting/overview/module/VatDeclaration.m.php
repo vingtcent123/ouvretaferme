@@ -1,5 +1,5 @@
 <?php
-namespace journal;
+namespace overview;
 
 abstract class VatDeclarationElement extends \Element {
 
@@ -7,8 +7,12 @@ abstract class VatDeclarationElement extends \Element {
 
 	private static ?VatDeclarationModel $model = NULL;
 
-	const STATEMENT = 'statement';
-	const AMENDMENT = 'amendment';
+	const DRAFT = 'draft';
+	const DECLARED = 'declared';
+	const DELETED = 'deleted';
+
+	const CA3 = 'ca3';
+	const CA12 = 'ca12';
 
 	public static function getSelection(): array {
 		return VatDeclaration::model()->getProperties();
@@ -30,9 +34,9 @@ abstract class VatDeclarationElement extends \Element {
 
 class VatDeclarationModel extends \ModuleModel {
 
-	protected string $module = 'journal\VatDeclaration';
-	protected string $package = 'journal';
-	protected string $table = 'journalVatDeclaration';
+	protected string $module = 'overview\VatDeclaration';
+	protected string $package = 'overview';
+	protected string $table = 'overviewVatDeclaration';
 
 	public function __construct() {
 
@@ -40,30 +44,42 @@ class VatDeclarationModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'startDate' => ['date', 'cast' => 'string'],
-			'endDate' => ['date', 'cast' => 'string'],
-			'type' => ['enum', [\journal\VatDeclaration::STATEMENT, \journal\VatDeclaration::AMENDMENT], 'cast' => 'enum'],
-			'amendment' => ['element32', 'journal\VatDeclaration', 'null' => TRUE, 'cast' => 'element'],
-			'collectedVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
-			'deductibleVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
-			'dueVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'from' => ['date', 'cast' => 'string'],
+			'to' => ['date', 'cast' => 'string'],
+			'limit' => ['date', 'cast' => 'string'],
+			'status' => ['enum', [\overview\VatDeclaration::DRAFT, \overview\VatDeclaration::DECLARED, \overview\VatDeclaration::DELETED], 'cast' => 'enum'],
+			'associates' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'cerfa' => ['enum', [\overview\VatDeclaration::CA3, \overview\VatDeclaration::CA12], 'cast' => 'enum'],
+			'data' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
+			'updatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'updatedBy' => ['element32', 'user\User', 'cast' => 'element'],
+			'declaredAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'declaredBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'accountedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'accountedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'type', 'amendment', 'collectedVat', 'deductibleVat', 'dueVat', 'financialYear', 'createdAt', 'createdBy'
+			'id', 'from', 'to', 'limit', 'status', 'associates', 'cerfa', 'data', 'financialYear', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'declaredAt', 'declaredBy', 'accountedAt', 'accountedBy'
 		]);
 
 		$this->propertiesToModule += [
-			'amendment' => 'journal\VatDeclaration',
 			'financialYear' => 'account\FinancialYear',
 			'createdBy' => 'user\User',
+			'updatedBy' => 'user\User',
+			'declaredBy' => 'user\User',
+			'accountedBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['financialYear']
+		]);
+
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['from', 'to']
 		]);
 
 	}
@@ -72,13 +88,22 @@ class VatDeclarationModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'type' :
-				return VatDeclaration::STATEMENT;
+			case 'status' :
+				return VatDeclaration::DRAFT;
+
+			case 'data' :
+				return [];
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
 			case 'createdBy' :
+				return \user\ConnectionLib::getOnline();
+
+			case 'updatedAt' :
+				return new \Sql('NOW()');
+
+			case 'updatedBy' :
 				return \user\ConnectionLib::getOnline();
 
 			default :
@@ -92,11 +117,31 @@ class VatDeclarationModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'type' :
+			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'cerfa' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'data' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'data' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -114,32 +159,32 @@ class VatDeclarationModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereStartDate(...$data): VatDeclarationModel {
-		return $this->where('startDate', ...$data);
+	public function whereFrom(...$data): VatDeclarationModel {
+		return $this->where('from', ...$data);
 	}
 
-	public function whereEndDate(...$data): VatDeclarationModel {
-		return $this->where('endDate', ...$data);
+	public function whereTo(...$data): VatDeclarationModel {
+		return $this->where('to', ...$data);
 	}
 
-	public function whereType(...$data): VatDeclarationModel {
-		return $this->where('type', ...$data);
+	public function whereLimit(...$data): VatDeclarationModel {
+		return $this->where('limit', ...$data);
 	}
 
-	public function whereAmendment(...$data): VatDeclarationModel {
-		return $this->where('amendment', ...$data);
+	public function whereStatus(...$data): VatDeclarationModel {
+		return $this->where('status', ...$data);
 	}
 
-	public function whereCollectedVat(...$data): VatDeclarationModel {
-		return $this->where('collectedVat', ...$data);
+	public function whereAssociates(...$data): VatDeclarationModel {
+		return $this->where('associates', ...$data);
 	}
 
-	public function whereDeductibleVat(...$data): VatDeclarationModel {
-		return $this->where('deductibleVat', ...$data);
+	public function whereCerfa(...$data): VatDeclarationModel {
+		return $this->where('cerfa', ...$data);
 	}
 
-	public function whereDueVat(...$data): VatDeclarationModel {
-		return $this->where('dueVat', ...$data);
+	public function whereData(...$data): VatDeclarationModel {
+		return $this->where('data', ...$data);
 	}
 
 	public function whereFinancialYear(...$data): VatDeclarationModel {
@@ -152,6 +197,30 @@ class VatDeclarationModel extends \ModuleModel {
 
 	public function whereCreatedBy(...$data): VatDeclarationModel {
 		return $this->where('createdBy', ...$data);
+	}
+
+	public function whereUpdatedAt(...$data): VatDeclarationModel {
+		return $this->where('updatedAt', ...$data);
+	}
+
+	public function whereUpdatedBy(...$data): VatDeclarationModel {
+		return $this->where('updatedBy', ...$data);
+	}
+
+	public function whereDeclaredAt(...$data): VatDeclarationModel {
+		return $this->where('declaredAt', ...$data);
+	}
+
+	public function whereDeclaredBy(...$data): VatDeclarationModel {
+		return $this->where('declaredBy', ...$data);
+	}
+
+	public function whereAccountedAt(...$data): VatDeclarationModel {
+		return $this->where('accountedAt', ...$data);
+	}
+
+	public function whereAccountedBy(...$data): VatDeclarationModel {
+		return $this->where('accountedBy', ...$data);
 	}
 
 
@@ -258,7 +327,7 @@ abstract class VatDeclarationCrud extends \ModuleCrud {
 
 class VatDeclarationPage extends \ModulePage {
 
-	protected string $module = 'journal\VatDeclaration';
+	protected string $module = 'overview\VatDeclaration';
 
 	public function __construct(
 	   ?\Closure $start = NULL,

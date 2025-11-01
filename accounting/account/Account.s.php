@@ -27,12 +27,13 @@ class AccountSetting extends \Settings {
 	const VAT_CLASS = 445;
 	const FINANCIAL_GENERAL_CLASS = 5;
 	const CHARGE_ACCOUNT_CLASS = 6;
-	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 65;
+	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 66;
 	const CHARGE_ESCOMPTES_ACCOUNT_CLASS = 665;
 	const CHARGE_EXCEPTIONAL_ACCOUNT_CLASS = 67;
 	const PRODUCT_ACCOUNT_CLASS = 7;
 	const PRODUCT_SOLD_ACCOUNT_CLASS = 70;
-	const PRODUCT_FINANCIAL_ACCOUNT_CLASS = 75;
+	const PRODUCT_SUBVENTION_ACCOUNT_CLASS = 74;
+	const PRODUCT_FINANCIAL_ACCOUNT_CLASS = 76;
 	const PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS = 77;
 
 	const BANK_ACCOUNT_CLASS = '512';
@@ -49,6 +50,8 @@ class AccountSetting extends \Settings {
 
 	const DISPOSAL_ASSET_VALUE_CLASS = '675'; // Valeur comptable des éléments d'actifs cédés
 	const PRODUCT_ASSET_VALUE_CLASS = '775'; // Produits des cessions d'éléments d'actif
+	const CHARGES_OTHER = '658'; // Pénalités et autres charges
+	const PRODUCT_OTHER = '758'; // Indemnités et autres produits
 
 	const INTANGIBLE_ASSETS_CLASS = 20; // Immobilisations incorporelles
 	const TANGIBLE_ASSETS_CLASS = 21; // Immobilisations corporelles
@@ -63,17 +66,18 @@ class AccountSetting extends \Settings {
 	public static $balanceActifCategories;
 	public static $balancePassifCategories;
 
+	const VAT_DEPOSIT_PREFIX = '44581'; // Acomptes de TVA
+	const VAT_TO_PAY_INTRACOM_PREFIX = '4452'; // TVA due intracommunautaire
+	const VAT_DEDUCTIBLE_INTRACOM_PREFIX = '445662'; // TVA déductible intracommunautaire
 	const VAT_BUY_CLASS_PREFIX = '4456'; // TVA déductible
 	const VAT_BUY_CLASS_ACCOUNT = '44566'; // TVA déductible s/ABS
 	const VAT_ASSET_CLASS_ACCOUNT = '44562'; // TVA déductible s/immo
 	const VAT_CREDIT_CLASS_ACCOUNT = '44567'; // Crédit de TVA à reporter
+	const VAT_DEBIT_CLASS_ACCOUNT = '44551'; // TVA à décaisser
 	const VAT_SELL_CLASS_PREFIX = '4457'; // TVA collectée
 	const VAT_DEPOSIT_CLASS_PREFIX = '44581'; // Acompte de TVA
 
 	const COLLECTED_VAT_CLASS = '44571'; // TVA collectée
-	const PAYABLE_VAT_CLASS = '44571'; // TVA à décaisser
-
-	const CARRIED_VAT_CLASS = '44567'; // TVA à reporter
 
 	// Charges et produits constatés d'avance
 	const PREPAID_EXPENSE_CLASS = '486';  // Charge constatée d'avance

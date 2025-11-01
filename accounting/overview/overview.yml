@@ -1,0 +1,27 @@
+
+VatDeclaration:
+  id: serial32
+  # Période de déclaration
+  from: date
+  to: date
+  limit: date
+  status: enum(DRAFT, DECLARED, DELETED) = DRAFT
+  associates: ?int(0, null)
+  # Type de formulaire
+  cerfa: enum(CA3, CA12)
+  data: ?json = PHP([])
+  financialYear: account\FinancialYear
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+  updatedAt: ?datetime = SPECIAL(now)
+  updatedBy: user\User = SPECIAL(user)
+  declaredAt: ?datetime
+  declaredBy: ?user\User
+  accountedAt: ?datetime
+  accountedBy: ?user\User
+  UNIQUE: [
+    ["from", "to"],
+  ]
+  INDEX: [
+    ["financialYear"],
+  ]

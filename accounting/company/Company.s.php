@@ -7,6 +7,10 @@ class CompanySetting extends \Settings {
 
 	public static $accountingBetaTestFarms = [];
 
+	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
+	const CATEGORIE_JURIDIQUE_SOCIETE_ANONYME = ['from' => 5410, 'to' => 5710];
+	const CATEGORIE_GAEC = 6533;
+
 }
 
 CompanySetting::$mindeeApiKey = fn() => throw new \Exception("No Mindee Api Key set.");
@@ -19,6 +23,7 @@ function setAccountingBetaTestFarms(): void {
 	}
 
 	CompanySetting::$accountingBetaTestFarms = [
+		10, // Émilie
 		7, // Jardins de Tallende
 		1679, // Aëlle Le Gall
 		1608, // Asso OTF

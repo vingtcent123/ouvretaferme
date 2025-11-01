@@ -960,7 +960,7 @@ class FarmUi {
 			},
 
 			'summary' => match($name) {
-				'vat/' => s("Déclarations de TVA"),
+				'vat' => s("Déclarations de TVA"),
 				'incomeStatement' => s("Compte de Résultat"),
 				'balanceSheet' => s("Bilan"),
 			},
@@ -1929,8 +1929,8 @@ class FarmUi {
 
 			case 'summary' :
 				$categories = [];
-				if(false and LIME_ENV === 'dev' and $eFarm->getSelling('hasVat')) {
-					$categories[] = 'vat/';
+				if(LIME_ENV === 'dev' and $eFarm->getSelling('hasVat')) {
+					$categories[] = 'vat';
 				}
 				return array_merge($categories, ['incomeStatement', 'balanceSheet']);
 

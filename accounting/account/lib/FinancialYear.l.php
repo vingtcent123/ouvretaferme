@@ -5,10 +5,10 @@ class FinancialYearLib extends FinancialYearCrud {
 	private static ?\Collection $cOpenFinancialYear = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
+		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem', 'legalCategory', 'associates'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem'];
+		return ['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem', 'legalCategory', 'associates'];
 	}
 
 	public static function getPreviousFinancialYear(FinancialYear $eFinancialYear): FinancialYear {
@@ -251,32 +251,6 @@ class FinancialYearLib extends FinancialYearCrud {
 			return self::selectDefaultFinancialYear();
 
 		}
-
-	}
-
-	public static function getDataCheckForOpenFinancialYears(FinancialYear $eFinancialYear): array {
-
-		if($eFinancialYear['hasVat'] === FALSE) {
-			return [];
-		}
-
-		// Recherche d'écritures de TVA non déclarées
-		$search = new \Search(['financialYear' => $eFinancialYear]);
-		$eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($eFinancialYear);
-
-		if($eFinancialYear['lastPeriod'] !== NULL) {
-			$search->set('maxDate', $eFinancialYear['lastPeriod']['end']);
-		}
-
-		$cOperationWaiting = \journal\OperationLib::getAllForVatDeclaration($search);
-
-		$vatData = [
-			'undeclaredVatOperations' => $cOperationWaiting->count(),
-			// Recherche de déclarations de TVA manquantes
-			'missingPeriods' => \journal\VatDeclarationLib::listMissingPeriods($eFinancialYear),
-		];
-
-		return $vatData;
 
 	}
 

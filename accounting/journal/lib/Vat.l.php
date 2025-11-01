@@ -88,8 +88,8 @@ class VatLib {
 
 		if($balance !== 0.0) {
 
-			// Constatation du solde net dans le bilan sur 44551 / PAYABLE_VAT_CLASS si la TVA est à décaisser, sur 44567 / CARRIED_VAT_CLASS pour un crédit de TVA
-			$class = ($collectedVatAmount > $deductibleVatAmount ? \account\AccountSetting::PAYABLE_VAT_CLASS : \account\AccountSetting::CARRIED_VAT_CLASS);
+			// Constatation du solde net dans le bilan sur 44551 / COLLECTED_VAT_CLASS si la TVA est à décaisser, sur 44567 / VAT_CREDIT_CLASS_ACCOUNT pour un crédit de TVA
+			$class = ($collectedVatAmount > $deductibleVatAmount ? \account\AccountSetting::COLLECTED_VAT_CLASS : \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT);
 			$type = ($collectedVatAmount > $deductibleVatAmount ? OperationElement::CREDIT : OperationElement::DEBIT);
 			$eAccount = \account\AccountLib::getByClass($class);
 

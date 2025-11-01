@@ -61,6 +61,8 @@ class OperationLib extends OperationCrud {
 		return $model
 			->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL)
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
+			->whereDate('>=', $search->get('minDate'), if: $search->get('minDate'))
+			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))
 			->wherePaymentDate('LIKE', '%'.$search->get('paymentDate').'%', if: $search->get('paymentDate'))
 			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
 			->whereAccountLabel('LIKE', $search->get('accountLabel').'%', if: $search->get('accountLabel'))
@@ -114,7 +116,6 @@ class OperationLib extends OperationCrud {
 	       + ['operation' => Operation::getSelection()]
        )
 			->whereVatDeclaration(NULL, if: $search->has('vatDeclaration') === FALSE)
-			->whereDate('<', fn() => $search->get('maxDate'), if: $search->has('maxDate'))
 			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection();
 
@@ -447,9 +448,10 @@ class OperationLib extends OperationCrud {
 				$eOperation->build(['paymentDate', 'paymentMethod'], $input);
 			}
 
+			$fw->validate();
+
 			$eOperation['amount'] = abs($eOperation['amount']);
 
-			$fw->validate();
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
 				$eOperation['documentDate'] = $eOperation['date'];

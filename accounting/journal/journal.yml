@@ -60,8 +60,6 @@ Operation:
   paymentMethod: ?payment\Method
   # Lettrage : null = non lettrée, partial = partiellement lettrée, total = soldée
   letteringStatus: ?enum(PARTIAL, TOTAL)
-  vatDeclaration: ?journal\VatDeclaration
-  vatAdjustement: ?bool # Si c'est une régularisation dans cette déclaration de TVA
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
@@ -98,22 +96,6 @@ Stock:
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
-  INDEX: [
-    ["financialYear"],
-  ]
-
-VatDeclaration:
-  id: serial32
-  startDate: date
-  endDate: date
-  type: enum(STATEMENT, AMENDMENT) = STATEMENT # Déclaration, rectificative
-  amendment: ?journal\VatDeclaration # Déclaration rectificative liée si elle existe
-  collectedVat : decimal(8, 2)
-  deductibleVat : decimal(8, 2)
-  dueVat : decimal(8, 2)
-  financialYear: account\FinancialYear
-  createdAt: datetime = SPECIAL(now)
-  createdBy: user\User = SPECIAL(user)
   INDEX: [
     ["financialYear"],
   ]
