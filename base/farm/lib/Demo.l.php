@@ -391,8 +391,6 @@ class DemoLib {
 
 	public static function anonymizeCustomers(): void {
 
-		$position = 0;
-
 		foreach(new \selling\CustomerModel()
         ->select('id')
         ->getCollection() as $eCustomer) {
