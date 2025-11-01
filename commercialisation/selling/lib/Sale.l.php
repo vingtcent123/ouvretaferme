@@ -203,7 +203,9 @@ class SaleLib extends SaleCrud {
 				'type' => NULL,
 				'shopDate' => $eDate,
 				'shopProducts' => FALSE,
-				'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop']
+				'shop' => $eDate->empty() ? new \shop\Shop() : $eDate['shop'],
+				'cProduct' => new \Collection(),
+				'discount' => 0,
 			]);
 
 			if($eSale['shopDate']->notEmpty()) {

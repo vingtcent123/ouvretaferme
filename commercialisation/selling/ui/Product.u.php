@@ -906,6 +906,9 @@ class ProductUi {
 			$h .= $form->dynamicGroup($eProduct, 'vat');
 
 			$h .= '<br/>';
+			$h .= $this->getFieldDescription($form, $eProduct);
+
+			$h .= '<br/>';
 			$h .= $this->getFieldProfile($form, $eProduct);
 
 			$h .= '<br/>';
@@ -985,10 +988,7 @@ class ProductUi {
 			$h .= $form->dynamicGroup($eProduct, 'vat');
 
 			$h .= '<br/>';
-			$h .= '<h3>'.s("Description").'</h3>';
-			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->dynamicGroups($eProduct, ['additional', 'description']);
-			$h .= '</div>';
+			$h .= $this->getFieldDescription($form, $eProduct);
 
 			$h .= '<br/>';
 			$h .= $this->getFieldProfile($form, $eProduct);
@@ -1007,6 +1007,18 @@ class ProductUi {
 			title: s("Modifier un produit"),
 			body: $h
 		);
+
+	}
+
+	private function getFieldDescription(\util\FormUi $form, Product $eProduct): string {
+
+		$h = '';
+		$h .= '<h3>'.s("Description").'</h3>';
+		$h .= '<div class="util-block bg-background-light">';
+			$h .= $form->dynamicGroups($eProduct, ['additional', 'description']);
+		$h .= '</div>';
+
+		return $h;
 
 	}
 

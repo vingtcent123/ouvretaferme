@@ -7,7 +7,7 @@ class ProductLib extends ProductCrud {
 		return [
 			'unit', 'name', 'category', 'profile',
 			'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen',
-			'origin', 'description', 'quality',
+			'origin', 'additional', 'description', 'quality',
 			'pro', 'private', 'proOrPrivate',
 			'proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat',
 			'proOrPrivatePrice'

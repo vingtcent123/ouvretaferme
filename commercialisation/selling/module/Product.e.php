@@ -307,7 +307,7 @@ class Product extends ProductElement {
 				if(
 					$p->isBuilt('profile') === FALSE or
 					$this['private'] === FALSE or
-					$this['profile'] === Product::COMPOSITION or
+					$this['profile'] !== Product::COMPOSITION or
 					$p->isInvalid('proOrPrivate')
 				) {
 					return TRUE;
@@ -442,7 +442,7 @@ class Product extends ProductElement {
 				if(
 					$p->isBuilt('profile') === FALSE or
 					$this['pro'] === FALSE or
-					$this['profile'] === Product::COMPOSITION or
+					$this['profile'] !== Product::COMPOSITION or
 					$p->isInvalid('proOrPrivate')
 				) {
 					return TRUE;
