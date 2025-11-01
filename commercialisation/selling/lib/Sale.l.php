@@ -272,7 +272,7 @@ class SaleLib extends SaleCrud {
 
 		if($search->get('customerName')) {
 			$cCustomer = CustomerLib::getFromQuery($search->get('customerName'), $eFarm);
-			Sale::model()->whereCustomer('IN', $cCustomer);
+			Sale::model()->where('m1.customer', 'IN', $cCustomer);
 		}
 
 		if($search->get('invoicing')) {
