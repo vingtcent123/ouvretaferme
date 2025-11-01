@@ -5,6 +5,13 @@ class CashflowLib extends CashflowCrud {
 
 	public static function applySearch(\Search $search): CashflowModel {
 
+		if(($search->has('amountMin') and $search->has('amountMax'))) {
+			Cashflow::model()
+				->or(
+					fn() => $this->where('amount BETWEEN '.$search->get('amountMin').' AND '.$search->get('amountMax'), if: ($search->has('amountMin') and $search->has('amountMax'))),
+					fn() => $this->where('amount BETWEEN '.(-1 * $search->get('amountMin')).' AND '.(-1 * $search->get('amountMax')), if: ($search->has('amountMin') and $search->has('amountMax'))),
+				);
+		}
 		return Cashflow::model()
 			->whereImport('=', $search->get('import'), if: $search->has('import'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
@@ -15,7 +22,6 @@ class CashflowLib extends CashflowCrud {
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
 			->whereStatus('!=', Cashflow::DELETED, if: $search->get('statusNotDeleted'))
-			->where('amount BETWEEN '.$search->get('amountMin').' AND '.$search->get('amountMax'), if: ($search->has('amountMin') and $search->has('amountMax')))
 		;
 
 	}
