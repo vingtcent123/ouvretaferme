@@ -264,7 +264,7 @@ class Operation {
         // On ne surcharge pas ce qui a déjà été saisi par l'utilisateur
         if(vatRate !== 0.0) {
             if(vatRate !== accountDetail.vatRate) {
-                qs('[data-vat-rate-warning]').removeHide();
+                qs('[data-vat-rate-warning][data-index="' + index + '"]').removeHide();
                 qs('span[data-vat-rate-default][data-index="' + index + '"]').innerHTML = accountDetail.vatRate;
                 qs('span[data-vat-rate-class][data-index="' + index + '"]').innerHTML = accountDetail.class;
                 qs('a[data-vat-rate-link][data-index="' + index + '"]').setAttribute('onclick', 'Operation.updateVatRate(' + index + ', ' + accountDetail.vatRate + ')');
@@ -434,7 +434,7 @@ class Operation {
                 // Cet ordre doit être conservé et non factorisé (pour ne pas avoir à "deviner" quel champ de TVA utiliser : taux ou valeur)
                 if(lastFieldFilled === 'vatValue') {
                     newAmount = round(amountIncludingVAT - vatValue);
-                } else if(lastFieldFilled === 'vatRate') {
+                } else if(lastFieldFilled === 'vatRate' || lastFieldFilled === 'amountIncludingVAT') {
                     newAmount = round(amountIncludingVAT / (1 + vatRate / 100));
                 } else if(isNaN(vatValue) === false) {
                     newAmount = round(amountIncludingVAT - vatValue);
@@ -449,7 +449,7 @@ class Operation {
                 // Cet ordre doit être conservé et non factorisé (pour ne pas avoir à "deviner" quel champ de TVA utiliser : taux ou valeur)
                 if(lastFieldFilled === 'vatValue') {
                     newAmountIncludingVAT = round(amount + vatValue);
-                } else if(lastFieldFilled === 'vatRate') {
+                } else if(lastFieldFilled === 'vatRate' || lastFieldFilled === 'amount') {
                     newAmountIncludingVAT = round(amount * (1 + vatRate / 100));
                 } else if(isNaN(vatValue) === false) {
                     newAmountIncludingVAT = round(amount + vatValue);
