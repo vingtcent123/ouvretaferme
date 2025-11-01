@@ -47,25 +47,25 @@ Class VatLib {
 		}
 
 		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
-			$periods = [];
-			$referenceDate = $eFinancialYear['startDate'];
-			for($i = 0; $i < 4; $i++) {
-				$date = mb_substr($referenceDate, 0, 5).((int)mb_substr($referenceDate, 5, 2) + $i * 3).mb_substr($referenceDate, -2);
-				$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $date);
-				$periods[$period['from'].'|'.$period['to']] = $period;
-			}
-			return $periods;
+			$monthsPerPeriod = 3;
+			$totalPeriods = 4;
+		} else {
+			$monthsPerPeriod = 1;
+			$totalPeriods = 12;
 		}
 
 		$periods = [];
 		$referenceDate = $eFinancialYear['startDate'];
-		for($i = 0; $i < 12; $i++) {
-			$date = mb_substr($referenceDate, 0, 5).mb_str_pad((int)mb_substr($referenceDate, 5, 2) + $i, 2, '0', STR_PAD_LEFT).mb_substr($referenceDate, -3);
+		for($i = 0; $i < $totalPeriods; $i++) {
+			$date = mb_substr($referenceDate, 0, 5) // YEAR
+				.mb_str_pad(((int)mb_substr($referenceDate, 5, 2) + $i * $monthsPerPeriod), 2, '0', STR_PAD_LEFT) // MONTH
+ 				.mb_substr($referenceDate, -3) // DAY
+			;
 			$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $date);
 			$periods[$period['from'].'|'.$period['to']] = $period;
 		}
-		return $periods;
 
+		return $periods;
 
 	}
 

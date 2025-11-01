@@ -163,97 +163,106 @@ Class VatUi {
 
 			$h .= $this->displayPeriod($vatParameters);
 
-			$h .= '<table class="tr-even tr-hover">';
+			if($cOperation->empty()) {
 
-				$h .= '<thead class="thead-sticky">';
-					$h .= '<tr>';
-						$h .= '<th rowspan="2">'.s("Date").'</th>';
-						$h .= '<th rowspan="2">'.s("N° compte").'</th>';
-						$h .= '<th rowspan="2">'.s("Pièce comptable").'</th>';
-						$h .= '<th rowspan="2">'.s("Description").'</th>';
-						$h .= '<th rowspan="2">'.s("Tiers").'</th>';
-						$h .= '<th colspan="2" class="text-center">'.s("Taux TVA (%)").'</th>';
-						$h .= '<th rowspan="2" class="text-center">'.s("Montant (TTC)").'</th>';
-						$h .= '<th rowspan="2" class="text-center">'.s("Montant (HT)").'</th>';
-						$h .= '<th rowspan="2" class="text-center">'.s("TVA (€)").'</th>';
-					$h .= '</tr>';
-					$h .= '<tr>';
-						$h .= '<th class="td-min-content text-end rowspaned-center">'.s("déclaré").'</th>';
-						$h .= '<th class="td-min-content text-end rowspaned-center">'.s("calculé").'</th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
+				$h .= '<div class="util-info">'.s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.").'</div>';
 
-				$h .= '<tbody>';
-					foreach($cOperation as $eOperation) {
+			} else {
 
-						$eOperationInitial = $eOperation['operation'];
 
-						$h .= '<tr class="">';
+				$h .= '<table class="tr-even tr-hover">';
 
-							$h .= '<td>';
-								$h .= \util\DateUi::numeric($eOperationInitial['date']);
-							$h .= '</td>';
-
-							$h .= '<td>';
-								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
-								if($eOperation['accountLabel'] !== NULL) {
-									$h .= encode(trim($eOperation['accountLabel'], '0'));
-								} else {
-									$h .= encode($eOperation['account']['class'], 8, 0);
-								}
-								$h .= '</div>';
-								$h .= '<div class="dropdown-list bg-primary">';
-								$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
-								$h .= '</div>';
-							$h .= '</td>';
-
-							$h .= '<td>';
-								$h .= '<div class="operation-info">';
-									if($eOperationInitial['document'] !== NULL) {
-										$h .= '<a href="'.new \journal\JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
-								}
-								$h .= '</div>';
-							$h .= '</td>';
-
-							$h .= '<td class="td-description">';
-								$h .= '<div class="description">';
-									$h .= encode($eOperationInitial['description']);
-								$h .= '</div>';
-							$h .= '</td>';
-
-							$h .= '<td>';
-								if($eOperationInitial['thirdParty']->exists() === TRUE) {
-									$h .= encode($eOperationInitial['thirdParty']['name']);
-								}
-							$h .= '</td>';
-
-							$h .= '<td class="td-min-content text-end">';
-								$h .= $eOperationInitial['vatRate'];
-							$h .= '</td>';
-
-							$calculatedVatRate = round(($eOperation['amount'] / $eOperationInitial['amount']) * 100, 1);
-							$h .= '<td class="td-min-content text-end '.($eOperationInitial['vatRate'] !== $calculatedVatRate ? 'color-danger' : '').'">';
-								$h .= $calculatedVatRate;
-							$h .= '</td>';
-
-							$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-								$h .= \util\TextUi::money($eOperationInitial['amount'] + $eOperation['amount']);
-							$h .= '</td>';
-
-							$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
-								$h .= \util\TextUi::money($eOperationInitial['amount']);
-							$h .= '</td>';
-
-							$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-								$h .= \util\TextUi::money($eOperation['amount']);
-							$h .= '</td>';
-
+					$h .= '<thead class="thead-sticky">';
+						$h .= '<tr>';
+							$h .= '<th rowspan="2">'.s("Date").'</th>';
+							$h .= '<th rowspan="2">'.s("N° compte").'</th>';
+							$h .= '<th rowspan="2">'.s("Pièce comptable").'</th>';
+							$h .= '<th rowspan="2">'.s("Description").'</th>';
+							$h .= '<th rowspan="2">'.s("Tiers").'</th>';
+							$h .= '<th colspan="2" class="text-center">'.s("Taux TVA (%)").'</th>';
+							$h .= '<th rowspan="2" class="text-center">'.s("Montant (TTC)").'</th>';
+							$h .= '<th rowspan="2" class="text-center">'.s("Montant (HT)").'</th>';
+							$h .= '<th rowspan="2" class="text-center">'.s("TVA (€)").'</th>';
 						$h .= '</tr>';
+						$h .= '<tr>';
+							$h .= '<th class="td-min-content text-end rowspaned-center">'.s("déclaré").'</th>';
+							$h .= '<th class="td-min-content text-end rowspaned-center">'.s("calculé").'</th>';
+						$h .= '</tr>';
+					$h .= '</thead>';
 
-					}
-				$h .= '</tbody>';
+					$h .= '<tbody>';
+						foreach($cOperation as $eOperation) {
 
-			$h .= '</table>';
+							$eOperationInitial = $eOperation['operation'];
+
+							$h .= '<tr class="">';
+
+								$h .= '<td>';
+									$h .= \util\DateUi::numeric($eOperationInitial['date']);
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
+									if($eOperation['accountLabel'] !== NULL) {
+										$h .= encode(trim($eOperation['accountLabel'], '0'));
+									} else {
+										$h .= encode($eOperation['account']['class'], 8, 0);
+									}
+									$h .= '</div>';
+									$h .= '<div class="dropdown-list bg-primary">';
+									$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
+									$h .= '</div>';
+								$h .= '</td>';
+
+								$h .= '<td>';
+									$h .= '<div class="operation-info">';
+										if($eOperationInitial['document'] !== NULL) {
+											$h .= '<a href="'.new \journal\JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+									}
+									$h .= '</div>';
+								$h .= '</td>';
+
+								$h .= '<td class="td-description">';
+									$h .= '<div class="description">';
+										$h .= encode($eOperationInitial['description']);
+									$h .= '</div>';
+								$h .= '</td>';
+
+								$h .= '<td>';
+									if($eOperationInitial['thirdParty']->exists() === TRUE) {
+										$h .= encode($eOperationInitial['thirdParty']['name']);
+									}
+								$h .= '</td>';
+
+								$h .= '<td class="td-min-content text-end">';
+									$h .= $eOperationInitial['vatRate'];
+								$h .= '</td>';
+
+								$calculatedVatRate = round(($eOperation['amount'] / $eOperationInitial['amount']) * 100, 1);
+								$h .= '<td class="td-min-content text-end '.($eOperationInitial['vatRate'] !== $calculatedVatRate ? 'color-danger' : '').'">';
+									$h .= $calculatedVatRate;
+								$h .= '</td>';
+
+								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+									$h .= \util\TextUi::money($eOperationInitial['amount'] + $eOperation['amount']);
+								$h .= '</td>';
+
+								$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
+									$h .= \util\TextUi::money($eOperationInitial['amount']);
+								$h .= '</td>';
+
+								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+									$h .= \util\TextUi::money($eOperation['amount']);
+								$h .= '</td>';
+
+							$h .= '</tr>';
+
+						}
+					$h .= '</tbody>';
+
+				$h .= '</table>';
+
+			}
 
 		$h .= '</div>';
 
