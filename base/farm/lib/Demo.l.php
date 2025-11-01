@@ -51,7 +51,8 @@ class DemoLib {
 		'user\User' => ['birthdate', 'phone', 'vignette', 'street1', 'street2', 'postcode', 'city'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
-		'selling\Sale' => ['invoice', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']
+		'selling\Sale' => ['invoice', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity'],
+		'selling\Customer' => ['name', 'firstName', 'lastName', 'email', 'phone', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']
 	];
 
 	private static array $ms = [];
@@ -399,20 +400,9 @@ class DemoLib {
 			$eCustomer['firstName'] = self::getFirstName($eCustomer['user']['id'] ?? $eCustomer['id']);
 			$eCustomer['lastName'] = self::getLastName();
 			$eCustomer['name'] = $eCustomer['firstName'].' '.$eCustomer['lastName'];
-			$eCustomer['email'] = NULL;
-			$eCustomer['phone'] = NULL;
-			$eCustomer['legalName'] = NULL;
-			$eCustomer['invoiceStreet1'] = NULL;
-			$eCustomer['invoiceStreet2'] = NULL;
-			$eCustomer['invoicePostcode'] = NULL;
-			$eCustomer['invoiceCity'] = NULL;
-			$eCustomer['deliveryStreet1'] = NULL;
-			$eCustomer['deliveryStreet2'] = NULL;
-			$eCustomer['deliveryPostcode'] = NULL;
-			$eCustomer['deliveryCity'] = NULL;
 
 			new \selling\CustomerModel()
-				->select('firstName', 'lastName', 'name', 'phone', 'email', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity')
+				->select('firstName', 'lastName', 'name')
 				->update($eCustomer);
 
 		}
