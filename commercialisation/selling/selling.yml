@@ -370,7 +370,7 @@ StockBookmark:
   createdBy: ?user\User = SPECIAL(user)
   INDEX: [
     ["farm", "product"],
-    ["plant", "unit", "size", "variety"]
+    ["plant", "unit", "variety"]
   ]
   
 Unit:

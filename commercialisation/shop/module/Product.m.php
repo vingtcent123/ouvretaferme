@@ -10,6 +10,12 @@ abstract class ProductElement extends \Element {
 	const PRIVATE = 'private';
 	const PRO = 'pro';
 
+	const NONE = 'none';
+	const BASIC = 'basic';
+	const NEW = 'new';
+	const WEEK = 'week';
+	const MONTH = 'month';
+
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
 
@@ -50,6 +56,7 @@ class ProductModel extends \ModuleModel {
 			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'promotion' => ['enum', [\shop\Product::NONE, \shop\Product::BASIC, \shop\Product::NEW, \shop\Product::WEEK, \shop\Product::MONTH], 'cast' => 'enum'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'priceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'limitMin' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -65,7 +72,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -92,6 +99,9 @@ class ProductModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'promotion' :
+				return Product::NONE;
 
 			case 'limitCustomers' :
 				return [];
@@ -120,6 +130,9 @@ class ProductModel extends \ModuleModel {
 		switch($property) {
 
 			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'promotion' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'limitCustomers' :
@@ -205,6 +218,10 @@ class ProductModel extends \ModuleModel {
 
 	public function wherePackaging(...$data): ProductModel {
 		return $this->where('packaging', ...$data);
+	}
+
+	public function wherePromotion(...$data): ProductModel {
+		return $this->where('promotion', ...$data);
 	}
 
 	public function wherePrice(...$data): ProductModel {

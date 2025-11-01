@@ -70,6 +70,7 @@ Product:
   catalog: ?shop\Catalog
   product: selling\Product
   packaging: ?decimal(6, 2, 0.01, null)
+  promotion: enum(NONE, BASIC, NEW, WEEK, MONTH) = NONE
   price: decimal(8, 2, 0.0, null)
   priceInitial: ?decimal(8, 2, 0.0, null)
   limitMin: ?decimal(8, 2, 0.0, null)

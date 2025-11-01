@@ -85,10 +85,6 @@ class StockLib extends StockCrud {
 			$eTask['variety']->expects(['name']);
 		}
 
-		if($eTask['harvestSize']->notEmpty()) {
-			$eTask['harvestSize']->expects(['name']);
-		}
-
 		$eUnit = UnitLib::getByFqn($unit);
 
 		return Product::model()
@@ -99,7 +95,7 @@ class StockLib extends StockCrud {
 			->whereUnit($eUnit)
 			->whereStock('!=', NULL)
 			->sort(new \Sql('
-				'.($eTask['variety']->notEmpty() ? 'IF(unprocessedVariety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0)' : '0').' DESC,
+				'.($eTask['variety']->notEmpty() ? 'IF(unprocessedVariety = "'.Product::model()->format($eTask['variety']['name']).'", 1, 0) DESC,' : '').' 
 				name ASC
 			'))
 			->getCollection();
@@ -282,7 +278,6 @@ class StockLib extends StockCrud {
 			->wherePlant($eTask['plant'])
 			->whereUnit($unit)
 			->whereVariety($eTask['variety'])
-			->whereSize($eTask['harvestSize'])
 			->get();
 
 		if($eStockBookmark->empty()) {
@@ -328,7 +323,6 @@ class StockLib extends StockCrud {
 			->wherePlant($eTask['plant'])
 			->whereUnit($eTask['harvestUnit'])
 			->whereVariety($eTask['variety'])
-			->whereSize($eTask['harvestSize'])
 			->delete();
 
 	}

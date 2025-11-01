@@ -64,7 +64,7 @@ class StockBookmarkModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm', 'product'],
-			['plant', 'unit', 'size', 'variety']
+			['plant', 'unit', 'variety']
 		]);
 
 	}

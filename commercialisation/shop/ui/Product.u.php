@@ -299,6 +299,27 @@ class ProductUi {
 			$quality = '';
 		}
 
+		switch($eProduct['promotion']) {
+
+			case Product::NONE :
+			case Product::BASIC :
+				$promotion = '';
+				break;
+
+			case Product::NEW :
+				$promotion = '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Nouveauté").'</div>';
+				break;
+
+			case Product::WEEK :
+				$promotion = '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Produit de la semaine").'</div>';
+				break;
+
+			case Product::MONTH :
+				$promotion = '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Produit du mois").'</div>';
+				break;
+
+		}
+
 		$eFarm = $eProduct['product']['farm'];
 
 		$h = '<div class="shop-product '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-approximate="'.($eProductSelling['unit']->notEmpty() and $eProductSelling['unit']['approximate'] ? 1 : 0).'" data-has="0" '.($showFarm ? 'data-filter-farm="'.$eFarm['id'].'"' : '').'>';
@@ -330,10 +351,14 @@ class ProductUi {
 				}
 				if($eShop['type'] === Shop::PRIVATE) {
 					$h .= $quality;
+					$h .= $promotion;
 				}
 			$h .= '</div>';
 			$h .= '<div class="shop-product-content">';
 
+				if($eShop['type'] === Shop::PRO) {
+					$h .= $promotion;
+				}
 				$h .= '<div class="shop-product-header">';
 					$h .= '<div class="shop-product-name">';
 
@@ -837,6 +862,7 @@ class ProductUi {
 					$outCatalog = ($hasCatalog and $canUpdate);
 
 					$hasLimits = (
+						$eProduct['promotion'] !== Product::NONE or
 						$eProduct['limitCustomers'] or
 						$eProduct['limitGroups'] or
 						$eProduct['excludeCustomers'] or
@@ -991,6 +1017,7 @@ class ProductUi {
 					$uiProductSelling = new \selling\ProductUi();
 
 					$hasLimits = (
+						$eProduct['promotion'] !== Product::NONE or
 						$eProduct['limitCustomers'] or
 						$eProduct['limitGroups'] or
 						$eProduct['excludeCustomers'] or
@@ -1079,6 +1106,26 @@ class ProductUi {
 
 				$h .= '<div class="shop-product-limits">';
 
+					switch($eProduct['promotion']) {
+
+						case Product::BASIC :
+							$h .= '<span class="shop-product-promotion">'.\Asset::icon('star-fill').' '.s("Mis en avant").'</span>';
+							break;
+
+						case Product::NEW :
+							$h .= '<span class="shop-product-promotion">'.\Asset::icon('star-fill').' '.s("Nouveauté").'</span>';
+							break;
+
+						case Product::WEEK :
+							$h .= '<span class="shop-product-promotion">'.\Asset::icon('star-fill').' '.s("Produit de la semaine").'</span>';
+							break;
+
+						case Product::MONTH :
+							$h .= '<span class="shop-product-promotion">'.\Asset::icon('star-fill').' '.s("Produit du mois").'</span>';
+							break;
+
+					}
+
 					if($outCatalog) {
 						$h .= '<span>'.s("Hors catalogue").'</span>';
 					}
@@ -1156,14 +1203,14 @@ class ProductUi {
 					if($excludeAt === FALSE) {
 
 						if($eProduct['limitStartAt'] !== NULL and $eProduct['limitEndAt'] !== NULL) {
-							$h .= '<span>'.s("Pour les ventes livrées du {from} au {to}", [
+							$h .= '<span>'.s("Disponible pour les ventes livrées du {from} au {to}", [
 								'from' => '<u>'.\util\DateUi::numeric($eProduct['limitStartAt']).'</u>',
 								'to' => '<u>'.\util\DateUi::numeric($eProduct['limitEndAt']).'</u>',
 							]).'</span>';
 						} else if($eProduct['limitStartAt'] !== NULL) {
-							$h .= '<span>'.s("Pour les ventes livrées à partir du {value}", '<u>'.\util\DateUi::numeric($eProduct['limitStartAt']).'</u>').'</span>';
+							$h .= '<span>'.s("Disponible à partir des ventes livrées le {value}", '<u>'.\util\DateUi::numeric($eProduct['limitStartAt']).'</u>').'</span>';
 						} else if($eProduct['limitEndAt'] !== NULL) {
-							$h .= '<span>'.s("Pour les ventes livrées jusqu'au {value}", '<u>'.\util\DateUi::numeric($eProduct['limitEndAt']).'</u>').'</span>';
+							$h .= '<span>'.s("Disponible jusqu'aux ventes livrées le {value}", '<u>'.\util\DateUi::numeric($eProduct['limitEndAt']).'</u>').'</span>';
 						}
 
 					}
@@ -1298,8 +1345,8 @@ class ProductUi {
 			);
 
 			$h .= $form->dynamicGroups($e, match($e['type']) {
-				Product::PRO => ['packaging', 'available'],
-				Product::PRIVATE => ['available']
+				Product::PRO => ['packaging', 'available', 'promotion'],
+				Product::PRIVATE => ['available', 'promotion']
 			});
 
 			$h .= '<br/>';
@@ -1404,6 +1451,7 @@ class ProductUi {
 			'product' => s("Produit"),
 			'available' => s("Disponible"),
 			'packaging' => s("Colisage"),
+			'promotion' => s("Mise en avant"),
 			'price' => fn($e) => s("Prix unitaire").($e['farm']->getSelling('hasVat') ? ' <span class="util-annotation">'.$e->getTaxes().'</span>' : ''),
 			'priceDiscount' => s("Prix remisé"),
 			'date' => s("Vente"),
@@ -1416,6 +1464,20 @@ class ProductUi {
 		]);
 
 		switch($property) {
+
+			case 'promotion' :
+				$d->attributes['mandatory'] = TRUE;
+				$d->field = 'select';
+				$d->prepend = \Asset::icon('star-fill');
+				$d->labelAfter = \util\FormUi::info(s("Les produits mis en avant sont affichés en tête de liste."));
+				$d->values = [
+					Product::NONE => s("Pas de mise en avant"),
+					Product::BASIC => s("Mise en avant sans mention"),
+					Product::NEW => s("Mise en avant avec mention « Nouveauté »"),
+					Product::WEEK => s("Mise en avant avec mention « Produit de la semaine »"),
+					Product::MONTH => s("Mise en avant avec mention « Produit du mois »"),
+				];
+				break;
 
 			case 'limitStartAt' :
 				$d->prepend = s("À partir du");
@@ -1441,7 +1503,7 @@ class ProductUi {
 
 			case 'limitCustomers' :
 				$d->autocompleteDefault = fn(Product $e) => $e['cCustomerLimit'] ?? $e->expects(['cCustomerLimit']);
-				$d->placeholder = s("Taper un nom de client à autoriser");
+				$d->placeholder = s("Tapez un nom de client à autoriser");
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
 						'farm' => $e['farm']['id'],
@@ -1454,7 +1516,7 @@ class ProductUi {
 
 			case 'excludeCustomers' :
 				$d->autocompleteDefault = fn(Product $e) => $e['cCustomerExclude'] ?? $e->expects(['cCustomerExclude']);
-				$d->placeholder = s("Taper un nom de client à interdire");
+				$d->placeholder = s("Tapez un nom de client à interdire");
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
 						'farm' => $e['farm']['id'],
@@ -1467,7 +1529,7 @@ class ProductUi {
 
 			case 'limitGroups' :
 				$d->autocompleteDefault = fn(Product $e) => $e['cGroupLimit'] ?? $e->expects(['cGroupLimit']);
-				$d->placeholder = s("Taper un nom de groupe de clients à autoriser");
+				$d->placeholder = s("Tapez un nom de groupe de clients à autoriser");
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
 						'farm' => $e['farm']['id'],
@@ -1480,7 +1542,7 @@ class ProductUi {
 
 			case 'excludeGroups' :
 				$d->autocompleteDefault = fn(Product $e) => $e['cGroupExclude'] ?? $e->expects(['cGroupExclude']);
-				$d->placeholder = s("Taper un nom de groupe de clients à interdire");
+				$d->placeholder = s("Tapez un nom de groupe de clients à interdire");
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
 						'farm' => $e['farm']['id'],

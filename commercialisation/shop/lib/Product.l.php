@@ -7,7 +7,7 @@ class ProductLib extends ProductCrud {
 
 		return function(Product $eProduct) {
 
-			$properties = ['price', 'priceDiscount', 'available', 'limitGroups', 'excludeGroups', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
+			$properties = ['promotion', 'price', 'priceDiscount', 'available', 'limitGroups', 'excludeGroups', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
 
 			if($eProduct['type'] === Product::PRO) {
 				$properties[] = 'packaging';
@@ -134,6 +134,7 @@ class ProductLib extends ProductCrud {
 				'sold' => round($eItem['sold'], 2),
 				'catalog' => new Catalog(),
 				'date' => new Date(),
+				'promotion' => Product::NONE,
 				'limitMax' => NULL,
 				'limitCustomers' => [],
 				'limitGroups' => [],
@@ -275,6 +276,17 @@ class ProductLib extends ProductCrud {
 			};
 
 		}
+
+
+		$order[] = function($e1, $e2) {
+			if($e1['promotion'] !== Product::NONE) {
+				return -1;
+			} else if($e2['promotion'] !== Product::NONE) {
+				return 1;
+			} else {
+				return 0;
+			}
+		};
 
 		$order['product'] = ['name'];
 
