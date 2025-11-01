@@ -345,8 +345,8 @@ class ItemUi {
 				$product = encode($eItem['name']);
 			}
 
-			if($eItem['description'] !== NULL) {
-				$product .= '<div class="item-item-product-description">'.$eItem->quick('description', encode($eItem['description'])).'</div>';
+			if($eItem['additional'] !== NULL) {
+				$product .= '<div class="item-item-product-description">'.$eItem->quick('additional', encode($eItem['additional'])).'</div>';
 			}
 
 			$h .= '<tbody>';
@@ -1261,7 +1261,7 @@ class ItemUi {
 				);
 			}
 
-			$h .= $form->dynamicGroups($eItem, ['name', 'description', 'quality']);
+			$h .= $form->dynamicGroups($eItem, ['name', 'additional', 'quality']);
 
 			if($eItem['sale']->isPro()) {
 				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
@@ -1354,7 +1354,7 @@ class ItemUi {
 
 		$d = Item::model()->describer($property, [
 			'name' => s("Désignation"),
-			'description' => s("Complément d'information"),
+			'additional' => s("Complément d'information"),
 			'product' => s("Produit"),
 			'quality' => s("Signe de qualité"),
 			'packaging' => s("Colisage"),
@@ -1382,7 +1382,7 @@ class ItemUi {
 				new ProductUi()->query($d);
 				break;
 
-			case 'description' :
+			case 'additional' :
 				$d->after = \util\FormUi::info(s("Le complément d'information est affiché sur les documents de vente."));
 				break;
 

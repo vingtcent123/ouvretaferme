@@ -1347,13 +1347,13 @@ class ProductUi {
 				$limit = '<div class="shop-product-update-restriction">';
 					$limit .= '<div>';
 						$limit .= '<fieldset>';
-							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Des clients").'</legend>';
+							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Clients").'</legend>';
 							$limit .= $form->dynamicField($e, 'excludeCustomers');
 						$limit .= '</fieldset>';
 					$limit .= '</div>';
 					$limit .= '<div>';
 						$limit .= '<fieldset>';
-							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Des groupes de clients").'</legend>';
+							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Groupes de clients").'</legend>';
 							$limit .= $form->dynamicField($e, 'excludeGroups');
 						$limit .= '</fieldset>';
 					$limit .= '</div>';
@@ -1391,7 +1391,7 @@ class ProductUi {
 		$h .= '</div>';
 
 		return $form->group(
-			s("Uniquement pour les ventes livrées"),
+			s("Disponible uniquement pour les ventes livrées"),
 			$h,
 			['wrapper' => 'limitStartAt limitStartEnd']
 		);

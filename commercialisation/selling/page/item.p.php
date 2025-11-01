@@ -82,7 +82,7 @@ new \selling\SalePage()
 
 
 new \selling\ItemPage()
-	->quick(['packaging', 'number', 'unitPrice', 'vatRate', 'price', 'description'])
+	->quick(['packaging', 'number', 'unitPrice', 'vatRate', 'price', 'additional'])
 	->update()
 	->doUpdate(function($data) {
 		throw new ReloadAction('selling', 'Item::updated');

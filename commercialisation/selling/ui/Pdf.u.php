@@ -472,8 +472,8 @@ class PdfUi {
 						$h .= '<small> / '.s("Calibre {value}", encode($eItem['product']['unprocessedSize'])).'</small>';
 					}
 				}
-				if($eItem['description'] !== NULL) {
-					$h .= '<div style="margin-left: 1.25rem"><small>'.encode($eItem['description']).'</small></div>';
+				if($eItem['additional'] !== NULL) {
+					$h .= '<div style="margin-left: 1.25rem"><small>'.encode($eItem['additional']).'</small></div>';
 				}
 			$h .= '</td>';
 			$h .= '<td class="td-min-content">';
@@ -832,9 +832,9 @@ class PdfUi {
 						$h .= implode(' / ', $details);
 					$h .= '</div>';
 				}
-				if($eItem['description'] !== NULL) {
+				if($eItem['additional'] !== NULL) {
 					$h .= '<div class="pdf-document-product-details">';
-						$h .= encode($eItem['description']);
+						$h .= encode($eItem['additional']);
 					$h .= '</div>';
 				}
 			$h .= '</td>';
