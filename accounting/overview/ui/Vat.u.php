@@ -2339,16 +2339,19 @@ Class VatUi {
 
 				$h .= '<tr>';
 
+					$years = [];
+					for($i = (int)date('Y') - 5; $i < (int)date('Y') + 5; $i++) {
+						$years[$i] = $i;
+					}
+
 					$h .= '<td class="vat-cerfa-number">'.s("58").'</td>';
 					$h .= '<td colspan="3">';
 						$h .= '<div style="display: flex; align-items: center;">';
-							$h .= s("Juillet").'&nbsp;:&nbsp;'.$form->number(
-								'deposit[0][paid]', $data['deposit[0][paid]'] ?? '',
-								['min' => mb_substr($eFinancialYear['startDate'], 0, 4) - 5, 'max' => mb_substr($eFinancialYear['startDate'], 0, 4) + 5, ] + $attributes
+							$h .= s("Juillet").'&nbsp;:&nbsp;'.$form->select(
+								'deposit[0][year]', $years, $data['deposit'][0]['year'] ?? NULL, $attributes
 							);
-							$h .= '&nbsp;'.s("Décembre").'&nbsp;:&nbsp;'.$form->number(
-								'deposit[1][paid]', $data['deposit[1][paid]'] ?? '',
-								['min' => mb_substr($eFinancialYear['startDate'], 0, 4) - 5, 'max' => mb_substr($eFinancialYear['startDate'], 0, 4) + 5, ] + $attributes
+							$h .= '&nbsp;'.s("Décembre").'&nbsp;:&nbsp;'.$form->select(
+								'deposit[1][year]', $years, $data['deposit'][1]['year'] ?? NULL, $attributes
 							);
 							$h .= '</div>';
 						$h .= '</td>';
