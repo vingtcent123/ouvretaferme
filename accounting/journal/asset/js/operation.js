@@ -32,11 +32,21 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="
 
 });
 
+document.delegateEventListener('autocompleteSource', '[data-account-label="journal-operation-create"], [data-account-label="bank-cashflow-allocate"]', function(e) {
+
+    if(e.detail.results.length === 1 && e.target.value.length === 0) {
+        const index = e.detail.input.getAttribute('data-index');
+        const inputElement = qs('input[data-wrapper="accountLabel['+ index +']"]');
+        AutocompleteField.apply(inputElement, e.detail.results[0]);
+    }
+
+});
+
 document.delegateEventListener('autocompleteSelect', '[data-account="journal-operation-create"], [data-account="bank-cashflow-allocate"]', function(e) {
 
-    if(e.detail.value.length !== 0) { // Else : l'utilisateur a supprimé la classe
+    const index = e.detail.input.getAttribute('data-index');
 
-        const index = e.detail.input.getAttribute('data-index');
+    if(e.detail.value.length !== 0) { // Else : l'utilisateur a supprimé la classe
 
         if(e.detail.vatClass) {
             qs('[data-index="' + index + '"][data-vat="account-info"]').removeHide();
@@ -47,7 +57,10 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
         Operation.updateType(e.detail);
         Operation.refreshVAT(e.detail);
     }
+
     Operation.checkAutocompleteStatus(e);
+
+    Operation.resetAccountLabel(index);
 });
 
 document.delegateEventListener('autocompleteUpdate', '[data-third-party="journal-operation-create"], [data-third-party="bank-cashflow-allocate"]', function(e) {
@@ -163,6 +176,13 @@ class Operation {
         if(qs('[name="thirdParty[' + index + ']"]') && qs('[name="thirdParty[' + (index - 1) + ']"]')) {
             qs('[name="thirdParty[' + index + ']"]').setAttribute('value', qs('[name="thirdParty[' + (index - 1) + ']"]').value || null)
         }
+
+    }
+
+    static resetAccountLabel(index) {
+
+        const element = qs('[data-wrapper="accountLabel['+ index +']"] a[class="autocomplete-empty"]');
+        AutocompleteField.empty(element);
 
     }
 

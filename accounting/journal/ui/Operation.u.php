@@ -645,10 +645,19 @@ class OperationUi {
 
 	private static function getAmountButtonIcons(string $type, int $index): string {
 
-		$activeIcon = match($type) {
-			'amount' => 'lock',
-			default => 'erase',
-		};
+		if($index > 0) {
+
+			$activeIcon = 'erase';
+
+		} else {
+
+			$activeIcon = match($type) {
+				'amount' => 'lock',
+				default => 'erase',
+			};
+
+		}
+
 		$h = '<div class="merchant-write hide">'.\Asset::icon('pencil').'</div>';
 		$h .= '<div class="merchant-lock '.($activeIcon === 'lock' ? '' : 'hide').'">'.\Asset::icon('lock-fill').'</div>';
 		$h .= '<div class="merchant-erase '.($activeIcon === 'erase' ? '' : 'hide').'">';
@@ -785,7 +794,9 @@ class OperationUi {
 					$d->attributes['step'] = 0.01;
 					$d->attributes['data-field'] = 'amount';
 					$d->attributes['data-index'] = $index;
-					$d->attributes['disabled'] = TRUE;
+					if($index === 0) {
+						$d->attributes['disabled'] = TRUE;
+					}
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
 				});
 			$h .='</div>';
