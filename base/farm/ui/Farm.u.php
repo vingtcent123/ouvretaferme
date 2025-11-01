@@ -1929,7 +1929,7 @@ class FarmUi {
 
 			case 'summary' :
 				$categories = [];
-				if(LIME_ENV === 'dev' and $eFarm->getSelling('hasVat')) {
+				if($eFarm->getSelling('hasVat')) {
 					$categories[] = 'vat';
 				}
 				return array_merge($categories, ['incomeStatement', 'balanceSheet']);
