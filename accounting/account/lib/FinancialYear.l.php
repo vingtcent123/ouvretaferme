@@ -254,32 +254,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function getDataCheckForOpenFinancialYears(FinancialYear $eFinancialYear): array {
-
-		if($eFinancialYear['hasVat'] === FALSE) {
-			return [];
-		}
-
-		// Recherche d'écritures de TVA non déclarées
-		$search = new \Search(['financialYear' => $eFinancialYear]);
-		$eFinancialYear['lastPeriod'] = \journal\VatDeclarationLib::calculateLastPeriod($eFinancialYear);
-
-		if($eFinancialYear['lastPeriod'] !== NULL) {
-			$search->set('maxDate', $eFinancialYear['lastPeriod']['end']);
-		}
-
-		$cOperationWaiting = \journal\OperationLib::getAllForVatDeclaration($search);
-
-		$vatData = [
-			'undeclaredVatOperations' => $cOperationWaiting->count(),
-			// Recherche de déclarations de TVA manquantes
-			'missingPeriods' => \journal\VatDeclarationLib::listMissingPeriods($eFinancialYear),
-		];
-
-		return $vatData;
-
-	}
-
 	public static function update(FinancialYear $e, array $properties): void {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'));

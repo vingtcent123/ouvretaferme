@@ -195,12 +195,12 @@ class JournalUi {
 		if($eFinancialYearSelected['hasVat']) {
 			$journalCode = 'vat-buy';
 			$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
-				$h .= new VatUi()->getTableContainer($eFarm, $eFinancialYearSelected, $operationsVat['buy'] ?? new \Collection(), 'buy', $search);
+				$h .= new VatUi()->getTableContainer($eFarm, $operationsVat['buy'] ?? new \Collection(), 'buy', $search);
 			$h .= '</div>';
 
 			$journalCode = 'vat-sell';
 			$h .= '<div class="tab-panel'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'">';
-				$h .= new VatUi()->getTableContainer($eFarm, $eFinancialYearSelected, $operationsVat['sell'] ?? new \Collection(), 'sell', $search);
+				$h .= new VatUi()->getTableContainer($eFarm, $operationsVat['sell'] ?? new \Collection(), 'sell', $search);
 			$h .= '</div>';
 
 		}

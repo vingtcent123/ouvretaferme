@@ -144,11 +144,6 @@ class PdfUi {
 
 	}
 
-	public static function urlVatDeclaration(\farm\Farm $eFarm, VatDeclaration $eVatDeclaration): string {
-
-		return \company\CompanyUi::urlJournal($eFarm).'/vatDeclaration:pdf?id='.$eVatDeclaration['id'];
-
-	}
 
 	public static function getVatDeclarationTitle(): string {
 

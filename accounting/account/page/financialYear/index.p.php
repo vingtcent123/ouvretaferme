@@ -68,8 +68,6 @@ new \account\FinancialYearPage(
 	})
 	->read('close', function($data) {
 
-		$data->e['vatData'] = \account\FinancialYearLib::getDataCheckForOpenFinancialYears($data->e);
-
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 		$search = new Search(['financialYear' => $data->e]);
 

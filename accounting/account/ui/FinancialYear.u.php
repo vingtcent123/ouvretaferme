@@ -456,7 +456,6 @@ class FinancialYearUi {
 		$h .= '</div>';
 
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
-			$h .= $this->vat($eFarm, $eFinancialYear);
 
 			$h .= new \journal\DeferralUi()->listForClosing($eFarm, $eFinancialYear, $cOperationToDefer);
 
@@ -485,62 +484,6 @@ class FinancialYearUi {
 			).'</div>';
 
 		$h .= $form->close();
-
-		return $h;
-
-	}
-
-	private function vat(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
-
-		$h = '';
-
-		if($eFinancialYear['hasVat'] and count($eFinancialYear['vatData']) > 0) {
-
-			$h .= '<h3>'.s("Vérification de la TVA").'</h3>';
-
-			$messages = [];
-
-			if(($eFinancialYear['vatData']['undeclaredVatOperations'] ?? 0) > 0) {
-				$messages[] = p("{value} opération de TVA n'a pas été déclarée.", "{value} opérations de TVA n'ont pas été déclarées.", $eFinancialYear['vatData']['undeclaredVatOperations']);
-			}
-
-			if(count($eFinancialYear['vatData']['missingPeriods'] ?? []) > 0) {
-				$periodList = [];
-				foreach($eFinancialYear['vatData']['missingPeriods'] as $periods) {
-					$periodList[] = s("du {startDate} au {endDate}", [
-						'startDate' => \util\DateUi::numeric($periods['start'], \util\DateUi::DATE),
-						'endDate' => \util\DateUi::numeric($periods['end'], \util\DateUi::DATE),
-					]);
-				}
-
-				$periodText = '<ul>';
-					$periodText .= '<li>';
-						$periodText .= join('</li><li>', $periodList);
-					$periodText .= '</li>';
-				$periodText .= '</ul>';
-
-				$messages[] = p("{value} période de TVA n'a pas été déclarée : {period}", "{value} périodes de TVA n'ont pas été déclarées : {period}", count($eFinancialYear['vatData']['missingPeriods']), ['period' => $periodText]);
-			}
-
-			if(count($messages) > 0) {
-
-				$h .= '<div>';
-					$h .= '<ul>';
-						$h .= '<li>';
-							$h .= join('</li><li>', $messages);
-						$h .= '</li>';
-					$h .= '</ul>';
-				$h .= '</div>';
-
-				$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/vat">'.s("Voir mes déclarations").'</a>';
-
-			} else {
-
-				$h .= '<div class="util-success">'.s("Aucune anomalie à signaler concernant les déclarations de TVA").'</div>';
-
-			}
-
-		}
 
 		return $h;
 
@@ -635,17 +578,17 @@ class FinancialYearUi {
 			case 'legalCategory':
 				$d->field = 'select';
 				$d->values = [
-					1000 => s("Entreprise individuelle"),
-					6533 => s("Groupement agricole d'exploitation en commun (GAEC)"),
-					6597 => s("Société civile d'exploitation agricole (SCEA)"),
+					\company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL => s("Entreprise individuelle"),
 					6598 => s("Exploitation agricole à responsabilité limitée (EARL)"),
+					\company\CompanySetting::CATEGORIE_GAEC => s("Groupement agricole d'exploitation en commun (GAEC)"),
+					5500 => s("Société Anonyme"),
+					5710 => s("SAS"),
+					6597 => s("Société civile d'exploitation agricole (SCEA)"),
 					6317 => s("Société coopérative agricole (SCA)"),
-					6318 => s("Union de sociétés coopératives agricoles"),
 					2200 => s("Société de fait"),
 					2300 => s("Société en participation"),
-					5710 => s("SAS"),
-					5500 => s("Société Anonyme"),
-					9999 => s("Autre"),
+					6318 => s("Union de sociétés coopératives agricoles"),
+					9999 => s("Autre structure juridique"),
 				];
 				break;
 

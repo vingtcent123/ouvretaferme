@@ -34,7 +34,7 @@ Class VatLib {
 			return $period;
 		}
 
-		// On n'a pas trouvé de période déjà passée => On prend la premièer de l'exercice
+		// On n'a pas trouvé de période déjà passée => On prend la première de l'exercice
 		return first($period);
 
 	}
@@ -192,17 +192,17 @@ Class VatLib {
 			$currentMonth = $month;
 
 			if($currentMonth < 3) {
-				$trimestre = 1;
+				$trimester = 1;
 			} else if($currentMonth < 6) {
-				$trimestre = 2;
+				$trimester = 2;
 			} else if($currentMonth < 9) {
-				$trimestre = 3;
+				$trimester = 3;
 			} else if($currentMonth < 12) {
-				$trimestre = 4;
+				$trimester = 4;
 			}
 
-			$periodFrom = date('Y-m-01', mktime(0, 0, 0, ($trimestre - 1) * 3 + 1, 1, $year));
-			$periodTo = date('Y-m-d', mktime(0, 0, 0, $trimestre * 3 + 1, 0, $year));
+			$periodFrom = date('Y-m-01', mktime(0, 0, 0, ($trimester - 1) * 3 + 1, 1, $year));
+			$periodTo = date('Y-m-d', mktime(0, 0, 0, $trimester * 3 + 1, 0, $year));
 
 		} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::MONTHLY) {
 
@@ -210,37 +210,6 @@ Class VatLib {
 			$periodTo = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
 
 		}
-
-		/*switch($period) {
-			case 'current':
-				break;
-
-			case 'last':
-				if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
-					$periodFrom = date('Y-m-d', strtotime($periodFrom.' - 1 year'));
-					$periodTo = date('Y-m-d', strtotime($periodTo.' - 1 year'));
-				} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
-					$periodFrom = date('Y-m-d', strtotime($periodFrom.' - 3 month'));
-					$periodTo = date('Y-m-d', strtotime($periodTo.' - 3 month'));
-				} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::MONTHLY) {
-					$periodFrom = date('Y-m-d', strtotime($periodFrom.' - 1 month'));
-					$periodTo = date('Y-m-d', strtotime($periodFrom.' + 1 month - 1 day'));
-				}
-				break;
-
-			case 'next':
-				if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
-					$periodFrom = date('Y-m-d', strtotime($periodFrom.' + 1 year'));
-					$periodTo = date('Y-m-d', strtotime($periodTo.' + 1 year'));
-				} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
-					$periodFrom = date('Y-m-d', strtotime($periodFrom.' + 3 month'));
-					$periodTo = date('Y-m-d', strtotime($periodTo.' + 3 month'));
-				} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::MONTHLY) {
-					$periodFrom = date('Y-m-d', strtotime($periodFrom.' + 1 month'));
-					$periodTo = date('Y-m-d', strtotime($periodFrom.' + 1 month + 1 day'));
-				}
-				break;
-		}*/
 
 		switch($eFinancialYear['vatFrequency']) {
 
@@ -437,13 +406,13 @@ Class VatLib {
 		// Taxe ADAR (calcul pour valeur annuelle)
 		$turnover = round(array_sum(array_filter($vatData, fn($index, $key) => in_array($key, ['0033', '0207-base', '0151-base', '0105-base', '0100-base', '0201-base', '0900-base', '0950-base', '0210-base', '0211-base', '0212-base', '0213-base', '0214-base', '0215-base', '0970-base', '0981-base']), ARRAY_FILTER_USE_BOTH)), $precision);
 		$associates = $eFinancialYear['associates'];
-		$fixedUnit = 90;
-		$fixed = $fixedUnit * $associates;
+		$UNIT_BY_ASSOCIATE_ADAR_TAX = 90;
+		$fixed = $UNIT_BY_ASSOCIATE_ADAR_TAX * $associates;
 
-		$adarRate = 0.19 / 100;
-		$threshold = 370000;
-		$adarRate2 = 0.05 / 100;
-		$adarTax = round($fixed + min($threshold, $turnover) * $adarRate + max(0, $turnover - $threshold) * $adarRate2, $precision);
+		$RATE_1_ADAR = 0.19 / 100;
+		$THRESHOLD_ADAR_TAX = 370000;
+		$RATE_2_ADAR = 0.05 / 100;
+		$adarTax = round($fixed + min($THRESHOLD_ADAR_TAX, $turnover) * $RATE_1_ADAR + max(0, $turnover - $THRESHOLD_ADAR_TAX) * $RATE_2_ADAR, $precision);
 
 		$vatData['4220'] = $adarTax;
 
