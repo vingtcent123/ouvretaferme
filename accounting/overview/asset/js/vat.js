@@ -226,8 +226,8 @@ class Vat12 {
 		const deposit_not_paid = Vat.getValue('12', 'deposit[total][not-paid]');
 		const deposit_paid = Vat.getValue('12', 'deposit[total][paid]');
 
-		if(deposit_paid - deposit_not_paid > 0) {
-			qs('#cerfa-12 [name="0018"]').value = Vat.computeWithPrecision(-1 * deposit_paid);
+		if(deposit_paid > 0) {
+			qs('#cerfa-12 [name="0018"]').value = Vat.computeWithPrecision(deposit_paid);
 		}
 
 		const ligne_28 = Vat.getValue('12', '8900');

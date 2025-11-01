@@ -452,9 +452,10 @@ class OperationLib extends OperationCrud {
 				$eOperation->build(['paymentDate', 'paymentMethod'], $input);
 			}
 
+			$fw->validate();
+
 			$eOperation['amount'] = abs($eOperation['amount']);
 
-			$fw->validate();
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
 				$eOperation['documentDate'] = $eOperation['date'];

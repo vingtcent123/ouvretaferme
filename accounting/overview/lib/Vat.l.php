@@ -398,10 +398,27 @@ Class VatLib {
 			$vatData['0705'] = round($vatData['26-number'] - $vatData['19-number'], $precision);
 		}
 
-		// Acomptes  TODO : trouver un moyen de récupérer les acomptes déjà payés
-		$vatData['deposit[0][paid]'] = 0;
+		$cOperationDeposit = \journal\OperationLib::applySearch($search)
+	     ->select([
+				 'period' => new \Sql('SUBSTRING(date, 1, 7)'),
+	       'amount' => new \Sql('ROUND(SUM(IF(type = "debit", amount, -1 * amount)))', 'float'),
+	     ])
+			->whereAccountLabel('LIKE', \account\AccountSetting::VAT_DEPOSIT_PREFIX.'%')
+			->group(['period'])
+			->getCollection();
+		$firstDeposit = 0;
+		$lastDeposit = 0;
+		foreach($cOperationDeposit as $eOperationDeposit) {
+			if((int)mb_substr($eOperationDeposit['period'], -2) === 12) { // Acompte de décembre
+				$lastDeposit += $eOperationDeposit['amount'];
+			} else {
+				$firstDeposit += $eOperationDeposit['amount'];
+			}
+		}
+
+		$vatData['deposit[0][paid]'] = $firstDeposit;
 		$vatData['deposit[0][not-paid]'] = 0;
-		$vatData['deposit[1][paid]'] = 0;
+		$vatData['deposit[1][paid]'] = $lastDeposit;
 		$vatData['deposit[1][not-paid]'] = 0;
 		$vatData['deposit[total][paid]'] = round($vatData['deposit[0][paid]'] + $vatData['deposit[1][paid]'], $precision);
 		$vatData['deposit[total][not-paid]'] = round($vatData['deposit[0][not-paid]'] + $vatData['deposit[1][not-paid]']);

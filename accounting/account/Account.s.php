@@ -66,6 +66,7 @@ class AccountSetting extends \Settings {
 	public static $balanceActifCategories;
 	public static $balancePassifCategories;
 
+	const VAT_DEPOSIT_PREFIX = '44581'; // Acomptes de TVA
 	const VAT_TO_PAY_INTRACOM_PREFIX = '4452'; // TVA due intracommunautaire
 	const VAT_DEDUCTIBLE_INTRACOM_PREFIX = '445662'; // TVA déductible intracommunautaire
 	const VAT_BUY_CLASS_PREFIX = '4456'; // TVA déductible
