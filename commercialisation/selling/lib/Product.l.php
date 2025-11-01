@@ -236,6 +236,14 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function generateItemsByCustomers(\Collection $cProduct, \Collection $cCustomer, Sale $eSale): int {
+
+		$eSale->expects(['farm', 'type', 'customer', 'discount']);
+
+		return self::generateItems($cProduct, $eSale, new \Collection());
+
+	}
+
 	public static function generateItemsByCustomer(\Collection $cProduct, Customer $eCustomer, Sale $eSale): int {
 
 		$eSale->expects(['farm', 'type', 'customer', 'discount']);

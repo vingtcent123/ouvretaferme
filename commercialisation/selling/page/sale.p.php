@@ -164,6 +164,10 @@ new Page(function($data) {
 
 		switch($sourceType) {
 
+			case 'customers' :
+				$data->e['nGrid'] = \selling\ProductLib::generateItemsByCustomers($data->e['cProduct'], $sourceValue, $data->e);
+				break;
+
 			case 'customer' :
 				$data->e['nGrid'] = \selling\ProductLib::generateItemsByCustomer($data->e['cProduct'], $sourceValue, $data->e);
 				break;
