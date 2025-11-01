@@ -24,7 +24,7 @@ class CashflowUi {
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut")]);
 			$h .= $form->inputGroup($form->addon(s('Montant'))
-					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px'])
+					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01])
 					.$form->addon(s('+/-'))
 					.$form->number('margin', $search->get('margin', 1))
 					.$form->addon(s('€'))
