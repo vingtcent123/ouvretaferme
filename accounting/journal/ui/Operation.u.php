@@ -292,7 +292,7 @@ class OperationUi {
 					}
 
 					$h .= '<tr>';
-						$h .= '<td>'.self::getShortJournal($eFarm, $eOperationLinkedByCashflow['journalCode'], link: FALSE).'</td>';
+						$h .= '<td>'.($eOperationLinkedByCashflow['journalCode'] ? self::getShortJournal($eFarm, $eOperationLinkedByCashflow['journalCode'], link: FALSE) : '').'</td>';
 						$h .= '<td>'.encode($eOperationLinkedByCashflow['accountLabel']).' - '.encode($eOperationLinkedByCashflow['account']['description']).'</td>';
 						$h .= '<td>'.\util\DateUi::numeric($eOperationLinkedByCashflow['date']).'</td>';
 						$h .= '<td>'.self::p('type')->values[$eOperationLinkedByCashflow['type']].'</td>';
