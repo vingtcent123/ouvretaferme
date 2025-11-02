@@ -686,6 +686,17 @@ class FarmUi {
 
 	public function getMainTabs(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
+		if(currentDate() < '2025-11-15') {
+
+			$training = '<a href="https://blog.ouvretaferme.org/#news-190" class="farm-tab hide-lateral-down" target="_blank">';
+				$training .= '<span class="farm-tab-icon">'.\Asset::icon('pen-fill').'</span>';
+				$training .= '<span class="farm-tab-label">'.s("Formations").'</span>';
+			$training .= '</a>';
+
+		} else {
+			$training = '';
+		}
+
 		$h = '<nav id="farm-nav">';
 
 			$h .= '<div id="farm-breadcrumbs">'.$this->getBreadcrumbs($eFarm, $nav, $subNav).'</div>';
@@ -695,6 +706,7 @@ class FarmUi {
 				$h .= '<div class="farm-tabs farm-section-production">';
 					$h .= $this->getCloseSection();
 					$h .= $this->getProductionSection($eFarm, $nav, $subNav);
+					$h .= $training;
 				$h .= '</div>';
 
 			}
@@ -704,6 +716,7 @@ class FarmUi {
 				$h .= '<div class="farm-tabs farm-section-commercialisation">';
 					$h .= $this->getCloseSection();
 					$h .= $this->getCommercialisationSection($eFarm, $nav, $subNav);
+				$h .= $training;
 				$h .= '</div>';
 
 			}
