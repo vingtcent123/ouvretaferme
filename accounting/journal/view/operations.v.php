@@ -37,7 +37,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 			case NULL:
 				echo '<div class="tab-panel selected" data-tab="journal">';
-				echo new \journal\JournalUi()->getTableContainer($data->eFarm, (string)$selectedJournalCode, $data->cOperation, $data->eFinancialYear, $data->search, selectedJournalCode: $selectedJournalCode);
+				echo new \journal\JournalUi()->getTableContainer($data->eFarm, NULL, $data->cOperation, $data->eFinancialYear, $data->search);
 				echo '</div>';
 				break;
 
@@ -55,7 +55,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 			default:
 				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-				echo new \journal\JournalUi()->getTableContainer($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFinancialYear, $data->search, selectedJournalCode: $selectedJournalCode);
+				echo new \journal\JournalUi()->getTableContainer($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFinancialYear, $data->search);
 				echo '</div>';
 				break;
 

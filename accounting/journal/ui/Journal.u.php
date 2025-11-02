@@ -174,13 +174,11 @@ class JournalUi {
 
 	public function getTableContainer(
 		\farm\Farm $eFarm,
-		string $journalCode,
+		?string $journalCode,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search(),
 		array $hide = [],
-		array $show = [],
-		?string $selectedJournalCode = NULL,
 	): string {
 
 		if($cOperation->empty() === TRUE) {
@@ -219,7 +217,7 @@ class JournalUi {
 
 						$h .= '<th>'.s("Compte").'</th>';
 
-						if($selectedJournalCode === NULL) {
+						if($journalCode === NULL) {
 							$h .= '<th></th>';
 						}
 
@@ -297,7 +295,7 @@ class JournalUi {
 								$h .= '</div>';
 							$h .= '</td>';
 
-							if($selectedJournalCode === NULL) {
+							if($journalCode === NULL) {
 								$h .= '<td>';
 									$h .= $eOperation['journalCode'] === NULL ? '' : OperationUi::getShortJournal($eFarm, $eOperation['journalCode'], link: TRUE);
 								$h .= '</td>';
