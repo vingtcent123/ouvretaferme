@@ -30,8 +30,40 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	}
 
 	echo '<div class="tabs-h" id="journals">';
+
 		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode);
-		echo new \journal\JournalUi()->getJournal($data->eFarm, $data->cOperation, $data->eFinancialYear, selectedJournalCode: $selectedJournalCode, operationsVat: $data->operationsVat, search: $data->search, cPaymentMethod: $data->cPaymentMethod);
+
+		switch($selectedJournalCode) {
+
+			case NULL:
+				echo '<div class="tab-panel selected" data-tab="journal">';
+				echo new \journal\JournalUi()->getTableContainer($data->eFarm, (string)$selectedJournalCode, $data->cOperation, $data->eFinancialYear, $data->search, selectedJournalCode: $selectedJournalCode);
+				echo '</div>';
+				break;
+
+			case 'vat-buy':
+				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
+				echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['buy'] ?? new \Collection(), 'buy', $data->search);
+				echo '</div>';
+				break;
+
+			case  'vat-sell':
+				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
+				echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['sell'] ?? new \Collection(), 'buy', $data->search);
+				echo '</div>';
+				break;
+
+			default:
+				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
+				echo new \journal\JournalUi()->getTableContainer($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFinancialYear, $data->search, selectedJournalCode: $selectedJournalCode);
+				echo '</div>';
+				break;
+
+		}
+
+		echo new \journal\JournalUi()->getBatch($data->eFarm, $data->cPaymentMethod);
+
+
 	echo '</div>';
 
 });
