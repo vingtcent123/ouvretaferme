@@ -565,16 +565,12 @@ class ProductUi {
 
 	}
 
-	public function display(Product $eProduct, \Collection $cItemYear): string {
+	public function display(Product $eProduct): string {
 
 		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
-				if($eProduct['additional'] !== NULL) {
-					$h .= '<dt>'.s("Complément d'information").'</dt>';
-					$h .= '<dd>'.encode($eProduct['additional']).'</dd>';
-				}
 				if($eProduct['origin'] !== NULL) {
 					$h .= '<dt>'.self::p('origin')->label.'</dt>';
 					$h .= '<dd>'.($eProduct['origin'] ? encode($eProduct['origin']) : '').'</dd>';
@@ -592,6 +588,10 @@ class ProductUi {
 				if($eProduct['profile'] === Product::COMPOSITION) {
 					$h .= '<dt>'.s("Composition").'</dt>';
 					$h .= '<dd>'.($eProduct['compositionVisibility'] === Product::PRIVATE ? s("surprise") : s("visible")).'</dd>';
+				}
+				if($eProduct['additional'] !== NULL) {
+					$h .= '<dt>'.s("Complément d'information").'</dt>';
+					$h .= '<dd>'.encode($eProduct['additional']).'</dd>';
 				}
 				if($eProduct['unprocessedPlant']->notEmpty()) {
 					$h .= '<dt>'.self::p('unprocessedPlant')->label.'</dt>';
@@ -612,16 +612,22 @@ class ProductUi {
 			$h .= '</dl>';
 		$h .= '</div>';
 
+		return $h;
+
+	}
+
+	public function getAnalyze(Product $eProduct, \Collection $cItemYear): string {
+
 		if(
 			$eProduct['farm']->canAnalyze() and
 			$cItemYear->notEmpty()
 		) {
 
-			$h .= new AnalyzeUi()->getProductYear($cItemYear, NULL, $eProduct);
+			return new AnalyzeUi()->getProductYear($cItemYear, NULL, $eProduct);
 
+		} else {
+			return '';
 		}
-
-		return $h;
 
 	}
 
@@ -1193,7 +1199,7 @@ class ProductUi {
 			'category' => s("Catégorie"),
 			'vignette' => s("Vignette"),
 			'name' => s("Nom du produit"),
-			'additional' => s("Complément d'information sur le produit"),
+			'additional' => s("Complément d'information"),
 			'unprocessedPlant' => s("Espèce"),
 			'unprocessedVariety' => s("Variété"),
 			'mixedFrozen' => s("Surgelé").'  '.self::getFrozenIcon(),
@@ -1206,6 +1212,7 @@ class ProductUi {
 			'quality' => s("Signe de qualité"),
 			'farm' => s("Ferme"),
 			'unit' => s("Unité de vente"),
+			'variant' => s("Variantes"),
 			'private' => s("Vente aux clients particuliers"),
 			'privatePrice' => s("Prix particulier"),
 			'privatePriceInitial' => s("Prix particulier de base"),

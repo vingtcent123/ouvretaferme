@@ -451,8 +451,6 @@ class Product extends ProductElement {
 				return ($value !== NULL);
 
 			})
-
-
 			->setCallback('proOrPrivatePrice.empty', function() use ($p) {
 
 				if(

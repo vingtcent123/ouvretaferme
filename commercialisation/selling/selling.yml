@@ -247,13 +247,11 @@ Product:
   name: text8(1, null) @collate(general)
   additional: ?text8(1, null) @collate(general)
   description: ?editor24
-  reference: ?text8(1, null) @collate(general)
   vignette: ?textFixed(30, 30) @charset(ascii)
   profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER)
   category: ?selling\Category
-  variantMaster: bool = FALSE
+  variant: ?enum(PARENT, CHILD)
   variantParent: ?selling\Product
-  variantName: ?text8(1, null) @collate(general)
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null)
   mixedFrozen: ?bool
