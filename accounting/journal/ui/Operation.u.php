@@ -735,8 +735,18 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
 
 			if($eFinancialYear['hasVat']) {
-
-				$h .= '<div class="operation-create-header">'.self::p('vatRate')->label.' '.\util\FormUi::asterisk().'</div>';
+				$h .= '<div class="operation-create-header">';
+					$h .= '<div>';
+						$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+							$h .= self::p('vatRate')->label.' '.\util\FormUi::asterisk().' '.\Asset::icon('question-circle');
+						$h .= '</div>';
+						$h .= '<div class="dropdown-list bg-primary">';
+							$h .= '<span class="dropdown-item">'.s("Les taux de TVA habituels en vigueur en France sont : 20%, 10% et 5.5% (<link>en savoir plus {icon}</link>)", [
+								'icon' => \Asset::icon('box-arrow-up-right'),
+								'link' => '<a style="color: white;" href="https://www.economie.gouv.fr/cedef/les-fiches-pratiques/quels-sont-les-taux-de-tva-en-vigueur-en-france-et-dans-lunion" target="_blank">']).'</span>';
+						$h .= '</div>';
+					$h .= '</div>';
+				$h .= '</div>';
 				$h .= '<div class="operation-create-header" data-wrapper="vatValue">'.self::p('vatValue')->label.' '.\util\FormUi::asterisk().'</div>';
 			}
 
@@ -999,8 +1009,7 @@ class OperationUi {
 							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1],
 						)
 						.$form->addon('% '))
-						.\util\FormUi::info('<div data-index="'.$index.'" data-vat="account-info" class="hide">'.s("Le compte de TVA utilisé est le <b>{value}</b>. Si vous souhaitez en spécifier un autre, indiquez 0% ici et créez une autre écriture.", ['value' => '<span data-index="'.$index.'" data-vat="account-value"></span>']).'</div>'
-						.'<div>'.s("Les taux de TVA habituels en vigueur en France sont : 20%, 10% et 5.5% (<link>en savoir plus</link>)", ['link' => '<a href="https://www.economie.gouv.fr/cedef/les-fiches-pratiques/quels-sont-les-taux-de-tva-en-vigueur-en-france-et-dans-lunion" target="_blank">']).'</div>')
+						.\util\FormUi::info('<div data-index="'.$index.'" data-vat="account-info" class="hide">'.s("Le compte de TVA utilisé est le <b>{value}</b>. Si vous souhaitez en spécifier un autre, indiquez 0% ici et créez une autre écriture.", ['value' => '<span data-index="'.$index.'" data-vat="account-value"></span>']).'</div>')
 					;
 						$h .= '<div class="warning hide mt-1" data-vat-rate-warning data-index="'.$index.'">';
 							$h .= s(
