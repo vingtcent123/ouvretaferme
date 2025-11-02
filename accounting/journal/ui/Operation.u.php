@@ -794,7 +794,7 @@ class OperationUi {
 					$d->attributes['step'] = 0.01;
 					$d->attributes['data-field'] = 'amount';
 					$d->attributes['data-index'] = $index;
-					if($index === 0) {
+					if((int)$index === 0) {
 						$d->attributes['disabled'] = TRUE;
 					}
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
