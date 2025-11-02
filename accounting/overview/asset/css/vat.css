@@ -1,3 +1,8 @@
+.vat-width-100 {
+	min-width: inherit;
+	max-width: 100%;
+}
+
 .vat-summary-table {
 	width: inherit;
 }
