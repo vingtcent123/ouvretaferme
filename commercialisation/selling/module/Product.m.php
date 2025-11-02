@@ -7,15 +7,13 @@ abstract class ProductElement extends \Element {
 
 	private static ?ProductModel $model = NULL;
 
+	const GROUP = 'group';
 	const COMPOSITION = 'composition';
 	const UNPROCESSED_PLANT = 'unprocessed-plant';
 	const UNPROCESSED_ANIMAL = 'unprocessed-animal';
 	const PROCESSED_FOOD = 'processed-food';
 	const PROCESSED_PRODUCT = 'processed-product';
 	const OTHER = 'other';
-
-	const PARENT = 'parent';
-	const CHILD = 'child';
 
 	const PUBLIC = 'public';
 	const PRIVATE = 'private';
@@ -62,10 +60,9 @@ class ProductModel extends \ModuleModel {
 			'additional' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'profile' => ['enum', [\selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER], 'cast' => 'enum'],
+			'profile' => ['enum', [\selling\Product::GROUP, \selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER], 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
-			'variant' => ['enum', [\selling\Product::PARENT, \selling\Product::CHILD], 'null' => TRUE, 'cast' => 'enum'],
-			'variantParent' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
+			'groupProducts' => ['json', 'cast' => 'array'],
 			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'mixedFrozen' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
@@ -95,12 +92,11 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'variant', 'variantParent', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'groupProducts', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
 			'category' => 'selling\Category',
-			'variantParent' => 'selling\Product',
 			'unprocessedPlant' => 'plant\Plant',
 			'farm' => 'farm\Farm',
 			'unit' => 'selling\Unit',
@@ -117,6 +113,9 @@ class ProductModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'groupProducts' :
+				return [];
 
 			case 'unit' :
 				return \selling\SellingSetting::UNIT_DEFAULT_ID;
@@ -147,8 +146,8 @@ class ProductModel extends \ModuleModel {
 			case 'profile' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'variant' :
-				return ($value === NULL) ? NULL : (string)$value;
+			case 'groupProducts' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'compositionVisibility' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -161,6 +160,20 @@ class ProductModel extends \ModuleModel {
 
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'groupProducts' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -202,12 +215,8 @@ class ProductModel extends \ModuleModel {
 		return $this->where('category', ...$data);
 	}
 
-	public function whereVariant(...$data): ProductModel {
-		return $this->where('variant', ...$data);
-	}
-
-	public function whereVariantParent(...$data): ProductModel {
-		return $this->where('variantParent', ...$data);
+	public function whereGroupProducts(...$data): ProductModel {
+		return $this->where('groupProducts', ...$data);
 	}
 
 	public function whereUnprocessedPlant(...$data): ProductModel {

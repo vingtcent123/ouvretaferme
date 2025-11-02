@@ -194,11 +194,11 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
-			->setCallback('profile.composition', function(?string $profile) use ($p): bool {
+			->setCallback('profile.consistency', function(?string $profile) use ($p): bool {
 
 				return (
-					$p->for === 'create' or
-					$profile !== Product::COMPOSITION
+					$profile !== Product::GROUP and
+					($p->for === 'create' or $profile !== Product::COMPOSITION)
 				);
 
 			})

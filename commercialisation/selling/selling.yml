@@ -248,10 +248,9 @@ Product:
   additional: ?text8(1, null) @collate(general)
   description: ?editor24
   vignette: ?textFixed(30, 30) @charset(ascii)
-  profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER)
+  profile: enum(GROUP, COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER)
   category: ?selling\Category
-  variant: ?enum(PARENT, CHILD)
-  variantParent: ?selling\Product
+  groupProducts: json = PHP([])
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null)
   mixedFrozen: ?bool
