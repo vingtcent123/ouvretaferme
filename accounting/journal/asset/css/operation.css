@@ -211,3 +211,56 @@
 	margin-left: 0.5rem;
 	font-size: small;
 }
+
+body.operation-view-panel-open.panel-open {
+
+	overflow: auto;
+
+}
+
+body.operation-view-panel-open #panel-operation-view {
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 25rem;
+	z-index: 101;
+	background-color: white;
+	box-shadow: 0 0 1rem #0003;
+	position: fixed;
+	padding: 0 0.75rem 3rem 0.75rem;
+	overflow-y: auto;
+}
+
+body.operation-view-panel-open #panel-operation-view .panel-dialog {
+	margin: 0;
+	padding: 0;
+}
+body.operation-view-panel-open #panel-operation-view .panel-body {
+	font-size: small;
+}
+body.operation-view-panel-open #panel-operation-view .panel-close-desktop {
+	margin: -1rem 0 -1rem 0;
+}
+body.operation-view-panel-open #panel-operation-view .panel-header {
+	margin-left: calc(-1 * var(--container-padding));
+	width: calc(100% + var(--container-padding));
+	padding-left: var(--container-padding);
+}
+#panel-operation-view .operation-view-label {
+	color: var(--muted);
+	padding: 0;
+	margin: 0;
+}
+#panel-operation-view .operation-view-value .util-quick {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem 0.5rem 0.5rem 1rem;
+}
+#panel-operation-view .operation-view-value:not(:has(.util-quick)) {
+	padding: 0.5rem 0.5rem 0.5rem 1rem;
+}
+#panel-operation-view .operation-view-value .util-quick:hover {
+	background-color: var(--background-light);
+}
+

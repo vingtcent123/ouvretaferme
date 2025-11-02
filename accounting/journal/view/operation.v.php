@@ -2,22 +2,6 @@
 
 new AdaptativeView('/journal/operation/{id}', function($data, PanelTemplate $t) {
 
-	/*$t->nav = 'journal';
-	$t->subNav = 'operations';
-
-	$t->title = new \journal\OperationUi()->getTitle($data->e);
-	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/operations';
-
-	$t->mainTitle = '<h1>'.new \journal\OperationUi()->getTitle($data->e).'</h1>';
-
-	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
-		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlJournal($data->eFarm).'/operation/'.$data->e['id'].'?financialYear='.$eFinancialYear['id'];
-		},
-		$data->cFinancialYear,
-		$data->eFinancialYear,
-	);*/
-
 	return new \journal\OperationUi()->getView($data->eFarm, $data->e);
 
 });

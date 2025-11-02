@@ -1,3 +1,26 @@
+document.delegateEventListener('panelClose', '#panel-operation-view', function(e) {
+
+    if(qs('body').dataset.touch === 'yes') {
+        return;
+    }
+
+    qs('body').classList.remove('operation-view-panel-open');
+});
+
+document.delegateEventListener('panelAfterShow', '#panel-operation-view', function(e) {
+
+    if(qs('body').dataset.touch === 'yes') {
+        return;
+    }
+
+    qs('body').classList.add('operation-view-panel-open');
+    const style =  document.createElement('style');
+    style.id = 'series-selector-style';
+    style.innerHTML = ':root { --nav-width: 25rem; }';
+
+    qs('#panel-operation-view').append(style);
+})
+
 document.delegateEventListener('focus', '.operation-create [name^="amount"], .operation-create [name^="vat"]', function() {
     this.select();
 });

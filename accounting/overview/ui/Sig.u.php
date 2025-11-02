@@ -123,10 +123,10 @@ Class SigUi {
 							}
 						$h .= '</tr>';
 						$h .= '<tr class="tr-title">';
-							$h .= '<th class="highlight-stick-right">'.s("Montant (€)").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Montant (€)").'</th>';
 							$h .= '<th class="text-center highlight-stick-left">'.s("Répartition (%)").'</th>';
 							if($hasComparison) {
-								$h .= '<th class="highlight-stick-right">'.s("Montant (€)").'</th>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Montant (€)").'</th>';
 								$h .= '<th class="text-center highlight-stick-left">'.s("Répartition (%)").'</th>';
 								$h .= '<th class="text-center highlight-stick-right">'.s("Variation (€)").'</th>';
 								$h .= '<th class="text-center highlight-stick-left">'.s("Variation (%)").'</th>';
