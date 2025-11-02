@@ -320,7 +320,8 @@ class JournalUi {
 							}
 
 							$h .= '<td>';
-								$h .= '<div class="description">';
+								$class = ($eOperation['type'] === Operation::CREDIT ? ' ml-3' : '');
+								$h .= '<div class="description'.$class.'">';
 									if($eOperation['asset']->exists() === TRUE) {
 										$attributes = [
 											'href' => \company\CompanyUi::urlAsset($eFarm).'/depreciation?id='.$eOperation['asset']['id'],
@@ -335,8 +336,7 @@ class JournalUi {
 										$h .= '</div>';
 									}
 
-								$class = ($eOperation['type'] === Operation::CREDIT ? ' ml-3' : '');
-								$h .= '<span class="'.$class.'"><a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">'.encode($eOperation['description']).'</a></span>';
+								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">'.encode($eOperation['description']).'</a>';
 
 							$h .= '</td>';
 
