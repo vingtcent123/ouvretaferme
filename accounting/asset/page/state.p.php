@@ -1,6 +1,6 @@
 <?php
 new Page()
-	->get('index', function($data) {
+	->get('/asset/state', function($data) {
 
 		$data->eFarm->validate('canManage');
 

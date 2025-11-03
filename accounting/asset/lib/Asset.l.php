@@ -609,5 +609,209 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	public static function computeTable(Asset $eAsset): array {
+
+		if($eAsset['type'] === Asset::LINEAR) {
+
+			return self::computeLinearTable($eAsset);
+
+		} else if($eAsset['type'] === Asset::DEGRESSIVE) {
+
+			return self::computeDegressiveTable($eAsset);
+
+		}
+
+	}
+
+	/**
+	 * Calcul du prorata
+	 * - si linéaire => date de mise en service
+	 * - si dégressif => 1er jour du mois de la date d'acquisition
+	 *
+	 * @param string $firstDateOfFinancialYear
+	 * @param Asset $eAsset
+	 * @return void
+	 */
+	private static function computeProrataTemporis(\account\FinancialYear $eFinancialYear, Asset $eAsset): float {
+
+		if($eAsset['type'] === Asset::LINEAR) {
+
+			$referenceDate = $eAsset['startDate'];
+			$daysFirstMonth = 30 - (int)mb_substr($referenceDate, -2);
+
+		} else {
+
+			$referenceDate = mb_substr($eAsset['acquisitionDate'], 0, 8).'01';
+			$daysFirstMonth = 0;
+
+		}
+
+		$datetime1 = new \DateTime($referenceDate);
+		$datetime2 = new \DateTime($eFinancialYear['endDate']);
+		$interval = $datetime1->diff($datetime2);
+		$months = (int)$interval->format('%m');
+
+		$days = $daysFirstMonth + $months * 30;
+
+		// Nombre de mois dans cet exercice comptable
+		$datetime1 = new \DateTime($eFinancialYear['startDate']);
+		$datetime2 = new \DateTime($eFinancialYear['endDate']);
+		$interval = $datetime1->diff($datetime2);
+		$monthsInFinancialYear = (int)$interval->format('%m') + 1;
+
+		return round(min(1, $days / (30 * $monthsInFinancialYear)), 2);
+	}
+
+	private static function computeLinearTable(Asset $eAsset): array {
+
+		$rate = round(1 / $eAsset['duration'] * 100, 2);
+
+		$cFinancialYearAll = \account\FinancialYearLib::getAll();
+
+		$table = [];
+		$depreciationCumulated = 0;
+		$currentDate = $eAsset['startDate'];
+		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
+
+		for($i = 0; $i <= $eAsset['duration']; $i++) {
+
+			$eFinancialYearCurrent = $cFinancialYearAll->find(fn($e) => $e['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
+
+			if($eFinancialYearCurrent === NULL) {
+				$eFinancialYear = new \account\FinancialYear([
+					'startDate' => date('Y-m-d', strtotime($eFinancialYear['startDate']. ' + 1 YEAR')),
+					'endDate' => date('Y-m-d', strtotime($eFinancialYear['endDate'].' + 1 YEAR')),
+				]);
+			} else {
+				$eFinancialYear = $eFinancialYearCurrent;
+			}
+
+			$eDepreciation = $eAsset['cDepreciation'][$i] ?? new Depreciation();
+
+			if($eDepreciation->empty()) {
+
+				switch($i) {
+					case 0:
+						$depreciation = round($eAsset['value'] * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						break;
+					case $eAsset['duration']:
+						$depreciation = round($eAsset['value'] - $depreciationCumulated, 2);
+						break;
+					default:
+						$depreciation = round($eAsset['value'] * $rate / 100, 2);
+				}
+
+			} else {
+
+				$depreciation = $eDepreciation['amount'];
+
+			}
+
+			$depreciationCumulated += $depreciation;
+
+			$table[] = [
+				'financialYear' => $eFinancialYear,
+				'base' => $eAsset['value'],
+				'rate' => $rate,
+				'depreciationValue' => $depreciation,
+				'depreciationValueCumulated' => round($depreciationCumulated, 2),
+				'endValue' => round($eAsset['value'] - $depreciationCumulated),
+				'depreciation' => $eDepreciation,
+			];
+
+			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
+
+		}
+
+		return $table;
+
+	}
+
+	private static function computeDegressiveTable(Asset $eAsset): array {
+
+		$baseLinearRate = round(1 / $eAsset['duration'] * 100, 2);
+
+		if($eAsset['duration'] === 3 or $eAsset['duration'] === 4) {
+
+			$degressiveCoefficient = 1.25;
+
+		} else if($eAsset['duration'] === 5 or $eAsset['duration'] === 6) {
+
+			$degressiveCoefficient = 1.75;
+
+		} else {
+
+			$degressiveCoefficient = 2.25;
+
+		}
+
+		$cFinancialYearAll = \account\FinancialYearLib::getAll();
+
+		$table = [];
+		$depreciationCumulated = 0;
+		$currentDate = $eAsset['startDate'];
+		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
+
+		for($i = 0; $i <= $eAsset['duration']; $i++) {
+
+			$eFinancialYearCurrent = $cFinancialYearAll->find(fn($e) => $e['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
+			$linearRate = round(1 / ($eAsset['duration'] + 1 - $i) * 100, 2);
+			$degressiveRate = round($baseLinearRate * $degressiveCoefficient, 2);
+
+			$rate = round(max($linearRate, $degressiveRate), 2);
+
+			if($eFinancialYearCurrent === NULL) {
+				$eFinancialYear = new \account\FinancialYear([
+					'startDate' => date('Y-m-d', strtotime($eFinancialYear['startDate']. ' + 1 YEAR')),
+					'endDate' => date('Y-m-d', strtotime($eFinancialYear['endDate'].' + 1 YEAR')),
+				]);
+			} else {
+				$eFinancialYear = $eFinancialYearCurrent;
+			}
+
+			$eDepreciation = $eAsset['cDepreciation'][$i] ?? new Depreciation();
+
+			if($eDepreciation->empty()) {
+
+				switch($i) {
+					case 0:
+						$depreciation = round(($eAsset['value'] - $depreciationCumulated) * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						break;
+					case $eAsset['duration']:
+						$depreciation = round(($eAsset['value'] - $depreciationCumulated), 2);
+						break;
+					default:
+						$depreciation = round(($eAsset['value'] - $depreciationCumulated) * $rate / 100, 2);
+				}
+
+			} else {
+
+				$depreciation = $eDepreciation['amount'];
+
+			}
+
+			$base = round($eAsset['value'] - $depreciationCumulated, 2);
+			$depreciationCumulated += $depreciation;
+
+			$table[] = [
+				'financialYear' => $eFinancialYear,
+				'base' => $base,
+				'linearRate' => $linearRate,
+				'degressiveRate' => $degressiveRate,
+				'rate' => $rate,
+				'depreciationValue' => $depreciation,
+				'depreciationValueCumulated' => round($depreciationCumulated, 2),
+				'endValue' => round($eAsset['value'] - $depreciationCumulated),
+				'depreciation' => $eDepreciation,
+			];
+
+			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
+
+		}
+		//dd($eAsset, $table);
+		return $table;
+
+	}
+
 }
 ?>

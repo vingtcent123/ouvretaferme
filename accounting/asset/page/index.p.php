@@ -1,22 +1,23 @@
 <?php
 new \asset\AssetPage(function($data) {
-
 	\user\ConnectionLib::checkLogged();
 
-	if(get_exists('id') === FALSE and post_exists('id') === FALSE) {
-		throw new NotExpectedAction('Asset Id is required.');
-	}
-
 	$data->eFarm->validate('canManage');
+	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
-	$data->eAsset = \asset\AssetLib::getWithDepreciationsById(REQUEST('id'));
+	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 })
-	->get('view', function($data) {
+->read('/asset/{id}/', function($data) {
 
-		throw new ViewAction($data);
+	$data->e->validate('canView');
 
-	});
+	$data->e['table'] = \asset\AssetLib::computeTable($data->e);
+
+	throw new ViewAction($data);
+
+});
 
 new \asset\AssetPage(function($data) {
 

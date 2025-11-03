@@ -8,7 +8,7 @@ Asset:
   type: ?enum(LINEAR, WITHOUT, DEGRESSIVE, GRANT_RECOVERY) # linéaire, pas, dégressif, reprise de sub
   # Date d'achat
   acquisitionDate: date
-  # Date de mise en service (= début de l'amortissement), null si type grant
+  # Date de mise en service (= début de l'amortissement si linéaire), null si type grant
   startDate: ?date
   # Date de fin d'amortissement (calculé)
   endDate: date

@@ -1,5 +1,5 @@
 <?php
-new AdaptativeView('index', function($data, FarmTemplate $t) {
+new AdaptativeView('/asset/depreciation', function($data, FarmTemplate $t) {
 
 	$t->nav = 'assets';
 	$t->subNav = 'depreciation';

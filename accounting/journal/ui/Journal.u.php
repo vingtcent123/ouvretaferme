@@ -325,7 +325,7 @@ class JournalUi {
 								$h .= '<div class="description'.$class.'">';
 									if($eOperation['asset']->exists() === TRUE) {
 										$attributes = [
-											'href' => \company\CompanyUi::urlAsset($eFarm).'/depreciation?id='.$eOperation['asset']['id'],
+											'href' => \company\CompanyUi::urlAsset($eFarm).'/'.$eOperation['asset']['id'].'/',
 											'data-dropdown' => 'bottom-end',
 											'data-dropdown-hover' => TRUE,
 											'data-dropdown-offset-x' => 0,

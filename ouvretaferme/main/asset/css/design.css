@@ -510,7 +510,7 @@ thead.thead-sticky {
 	position: sticky;
 	background-color: var(--background-body);
 	top: var(--mainSticky);
-	z-index: 999;
+	z-index: 99; /* Doit passer sous la nav */
 }
 
 @media (max-width: 449px) {

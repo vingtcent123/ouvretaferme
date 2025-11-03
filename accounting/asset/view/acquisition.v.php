@@ -1,5 +1,5 @@
 <?php
-new AdaptativeView('index', function($data, FarmTemplate $t) {
+new AdaptativeView('/asset/acquisition', function($data, FarmTemplate $t) {
 
 	$t->nav = 'assets';
 	$t->subNav = 'acquisition';
@@ -11,7 +11,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlAsset($data->eFarm).'/acquisition?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlAsset($data->eFarm).'/acquisitio/?financialYear='.$eFinancialYear['id'];
 			},
 		$data->cFinancialYear,
 		$data->eFinancialYear,

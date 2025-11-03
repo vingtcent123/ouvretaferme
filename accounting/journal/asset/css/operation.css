@@ -212,13 +212,13 @@
 	font-size: small;
 }
 
-body.operation-view-panel-open.panel-open {
+body[data-touch="no"].panel-open {
 
 	overflow: auto;
 
 }
 
-body.operation-view-panel-open #panel-operation-view {
+body[data-touch="no"] #panel-operation-view {
 	left: 0;
 	top: 0;
 	bottom: 0;
@@ -231,17 +231,17 @@ body.operation-view-panel-open #panel-operation-view {
 	overflow-y: auto;
 }
 
-body.operation-view-panel-open #panel-operation-view .panel-dialog {
+body[data-touch="no"] #panel-operation-view .panel-dialog {
 	margin: 0;
 	padding: 0;
 }
-body.operation-view-panel-open #panel-operation-view .panel-body {
+body[data-touch="no"] #panel-operation-view .panel-body {
 	font-size: small;
 }
-body.operation-view-panel-open #panel-operation-view .panel-close-desktop {
+body[data-touch="no"] #panel-operation-view .panel-close-desktop {
 	margin: -1rem 0 -1rem 0;
 }
-body.operation-view-panel-open #panel-operation-view .panel-header {
+body[data-touch="no"] #panel-operation-view .panel-header {
 	margin-left: calc(-1 * var(--container-padding));
 	width: calc(100% + var(--container-padding));
 	padding-left: var(--container-padding);

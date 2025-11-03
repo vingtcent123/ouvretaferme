@@ -30,6 +30,10 @@ class Asset extends AssetElement {
 				'asset' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
 				'grant' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
 				'account' => \account\Account::getSelection(),
+				'cDepreciation' => Depreciation::model()
+	        ->select(Depreciation::getSelection())
+					->sort(['date' => SORT_ASC])
+	        ->delegateCollection('asset')
 			];
 
 	}

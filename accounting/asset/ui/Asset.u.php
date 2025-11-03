@@ -5,6 +5,7 @@ Class AssetUi {
 
 	public function __construct() {
 		\Asset::css('company', 'company.css');
+		\Asset::css('asset', 'asset.css');
 	}
 
 	public function getAssetShortTranslation(): string {
@@ -65,18 +66,16 @@ Class AssetUi {
 
 		$h = '<div class="stick-sm util-overflow-sm ">';
 
-			$h .= '<table class="tr-even td-vertical-top tr-hover table-bordered">';
+			$h .= '<table class="tr-even td-vertical-top tr-hover">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Code").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Compte").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Désignation").'</th>';
+						$h .= '<th class="" rowspan="2">'.s("Compte").'</th>';
+						$h .= '<th class="" rowspan="2">'.s("Désignation").'</th>';
 						$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en années)").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Date").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Valeur").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("DPI affectée").'</th>';
+						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur").'</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Eco").'</th>';
@@ -89,18 +88,23 @@ Class AssetUi {
 				$total = 0;
 					foreach($cAsset as $eAsset) {
 						$h .= '<tr>';
-
-							$h .= '<td></td>';
-							$h .= '<td>'.encode($eAsset['accountLabel']).'</td>';
-							$h .= '<td>'.encode($eAsset['description']).'</td>';
 							$h .= '<td>';
+								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+									$h .= encode($eAsset['accountLabel']);
+								$h .= '</div>';
+								$h .= '<div class="dropdown-list bg-primary">';
+									$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
+								$h .= '</div>';
+							$h .= '</td>';
+							$h .= '<td>'.encode($eAsset['description']).'</td>';
+							$h .= '<td class="text-center">';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
 									AssetElement::GRANT_RECOVERY => s("LIN"),
 								};
 							$h .= '</td>';
-							$h .= '<td>';
+							$h .= '<td class="text-center">';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
@@ -110,15 +114,13 @@ Class AssetUi {
 							$h .= '<td class="text-center">';
 								$h .= $eAsset['duration'];
 							$h .= '</td>';
-							$h .= '<td class="text-end">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
-							$h .= '<td class="text-end">'.$this->number($eAsset['value'], '', 2).'</td>';
-							$h .= '<td></td>';
+							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
+							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['value'], '', 2).'</td>';
 
 						$h .= '</tr>';
 						$total += $eAsset['value'];
 					}
 					$h .= '<tr class="row-bold">';
-						$h .= '<td></td>';
 						$h .= '<td></td>';
 						$h .= '<td>';
 							$h .= match($type) {
@@ -131,7 +133,6 @@ Class AssetUi {
 						$h .= '<td></td>';
 						$h .= '<td></td>';
 						$h .= '<td class="text-end">'.$this->number($total, '', 2).'</td>';
-						$h .= '<td></td>';
 					$h .= '</tr>';
 
 				$h .= '</tbody>';
@@ -237,18 +238,22 @@ Class AssetUi {
 
 		$h = '<div class="util-block stick-xs bg-background-light">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
-				$h .= '<dt>'.s("N° compte").'</dt>';
-				$h .= '<dd>'.encode($eAsset['accountLabel']).'</dd>';
-				$h .= '<dt>'.s("Date d'acquisition").'</dt>';
-				$h .= '<dd>'.\util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE).'</dd>';
+				$h .= '<dt>'.s("Compte").'</dt>';
+				$h .= '<dd>'.encode($eAsset['accountLabel']).' - <span class="font-sm" style="font-weight: normal;">'.encode($eAsset['account']['description']).'</span></dd>';
 				$h .= '<dt>'.s("Libellé").'</dt>';
 				$h .= '<dd>'.encode($eAsset['description']).'</dd>';
-				$h .= '<dt>'.s("Type").'</dt>';
-				$h .= '<dd>'.AssetUi::p('type')->values[$eAsset['type']].'</dd>';
-				$h .= '<dt>'.s("Valeur d'achat").'</dt>';
+				$h .= '<dt>'.s("Date d'acquisition").'</dt>';
+				$h .= '<dd>'.\util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE).'</dd>';
+				$h .= '<dt>'.s("Date de mise en service").'</dt>';
+				$h .= '<dd>'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</dd>';
+				$h .= '<dt>'.s("Valeur d'acquisition").'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
+				$h .= '<dt>'.s("Type d'amortissement").'</dt>';
+				$h .= '<dd>'.AssetUi::p('type')->values[$eAsset['type']].'</dd>';
 				$h .= '<dt>'.s("Statut").'</dt>';
 				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
+				$h .= '<dt>'.s("Durée (en années)").'</dt>';
+				$h .= '<dd>'.p("{value} an" ,"{value} ans", $eAsset['duration']).'</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -334,7 +339,7 @@ Class AssetUi {
 		$h = self::getHeader($eAsset);
 
 		$h .= '<div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?asset='.$eAsset['id'].'">'.s("Voir toutes les écritures comptables de cette immobilisation pour cet exercice comptable").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?asset='.$eAsset['id'].'" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation pour cet exercice comptable").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
 		$h .= '</div>';
 
 		if($eAsset['status'] === AssetElement::ONGOING) {
@@ -346,49 +351,91 @@ Class AssetUi {
 
 		}
 
-		$h .= '<h2>'.s("Amortissements").'</h2>';
-
-		if($eAsset['cDepreciation']->empty()) {
-
-			$h .= '<div class="util-info">';
-				$h .= s("Il n'y a pas encore eu d'amortissement enregistré pour cette immobilisation.");
-			$h .= '</div>';
-
-		} else {
+		$h .= '<h2>'.s("Plan d'amortissement").'</h2>';
 
 			$h .= '<div class="stick-sm util-overflow-sm">';
 
-				$h .= '<table class="tr-even td-vertical-top tr-hover table-bordered">';
+				$h .= '<table class="tr-even td-vertical-top tr-hover">';
 
-					$h .= '<thead class="thead-sticky">';
+					$h .= '<thead>';
 						$h .= '<tr>';
-							$h .= '<th>'.s("Date").'</th>';
-							$h .= '<th>'.s("Type").'</th>';
-							$h .= '<th>'.s("Montant").'</th>';
-							$h .= '<th>'.s("Exercice comptable").'</th>';
+							$h .= '<th class="text-center">'.s("Exercice").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
+
+								if($eAsset['type'] === Asset::DEGRESSIVE) {
+
+									$h .= '<th class="text-center">'.s("Taux linéaire").'</th>';
+									$h .= '<th class="text-center">'.s("Taux dégressif").'</th>';
+									$h .= '<th class="text-center">'.s("Taux retenu").'</th>';
+
+								} else {
+
+									$h .= '<th class="text-center">'.s("Taux").'</th>';
+								}
+
+							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+							$h .= '<th>'.s("Statut").'</th>';
 						$h .= '</tr>';
 					$h .= '</thead>';
 
 					$h .= '<tbody>';
+						foreach($eAsset['table'] as $period) {
+							$h .= '<tr class="'.($period['depreciation']->empty() ? 'asset-line-future' : '').'">';
+								$h .= '<td class="text-center">';
+									$h .= \account\FinancialYearUi::getYear($period['financialYear']);
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['base']);
+								$h .= '</td>';
 
-						foreach($eAsset['cDepreciation'] as $eDepreciation) {
+								if($eAsset['type'] === Asset::DEGRESSIVE) {
 
-							$h .= '<tr>';
-								$h .= '<td>'.\util\DateUi::numeric($eDepreciation['date'], \util\DateUi::DATE).'</td>';
-								$h .= '<td>'.DepreciationUi::p('type')->values[$eDepreciation['type']].'</td>';
-								$h .= '<td>'.\util\TextUi::money($eDepreciation['amount']).'</td>';
-								$h .= '<td>'.\account\FinancialYearUi::getYear($eDepreciation['financialYear']).'</td>';
+									$h .= '<td class="text-center">';
+										$h .= s("{value} %", $period['linearRate']);
+									$h .= '</td>';
+
+
+									$h .= '<td class="text-center">';
+										$h .= s("{value} %", $period['degressiveRate']);
+									$h .= '</td>';
+
+
+									$h .= '<td class="text-center">';
+										$h .= s("{value} %", $period['rate']);
+									$h .= '</td>';
+
+								} else {
+
+									$h .= '<td class="text-center">';
+										$h .= s("{value} %", $period['rate']);
+									$h .= '</td>';
+
+								}
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['depreciationValue']);
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['depreciationValueCumulated']);
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['endValue']);
+								$h .= '</td>';
+								$h .= '<td>';
+									if($period['depreciation']->empty()) {
+										$h .= s("En attente...");
+									} else {
+										$h .= s("Comptabilisé le {value} ", \util\DateUi::numeric($period['depreciation']['date']));
+									}
+								$h .= '</td>';
 							$h .= '</tr>';
-
 						}
-
 					$h .= '</tbody>';
 
 				$h .= '</table>';
 
 			$h .= '</div>';
-
-		}
 
 		return new \Panel(
 			id: 'panel-asset-view',
@@ -491,6 +538,7 @@ Class AssetUi {
 			case 'type':
 				$d->values = [
 					AssetElement::LINEAR => s("Linéaire"),
+					AssetElement::DEGRESSIVE => s("Dégressif"),
 					AssetElement::WITHOUT => s("Sans"),
 					AssetElement::GRANT_RECOVERY => s("Reprise sur subvention"),
 				];

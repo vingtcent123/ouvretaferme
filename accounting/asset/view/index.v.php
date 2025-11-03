@@ -1,7 +1,7 @@
 <?php
-new AdaptativeView('view', function($data, PanelTemplate $t) {
+new AdaptativeView('/asset/{id}/', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()::view($data->eFarm, $data->eAsset);
+	return new \asset\AssetUi()::view($data->eFarm, $data->e);
 
 });
 

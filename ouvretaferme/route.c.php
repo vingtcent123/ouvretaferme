@@ -8,6 +8,26 @@ Route::register([
 			'priority' => 5,
 			'route' => ['adherer'],
 		],
+		'/asset/acquisition' => [
+			'request' => 'asset/acquisition',
+			'priority' => 5,
+			'route' => ['asset', 'acquisition'],
+		],
+		'/asset/depreciation' => [
+			'request' => 'asset/depreciation',
+			'priority' => 5,
+			'route' => ['asset', 'depreciation'],
+		],
+		'/asset/state' => [
+			'request' => 'asset/state',
+			'priority' => 5,
+			'route' => ['asset', 'state'],
+		],
+		'/asset/{id}/' => [
+			'request' => 'asset/index',
+			'priority' => 5,
+			'route' => ['asset', '{id}'],
+		],
 		'/client/{id}' => [
 			'request' => 'selling/customer',
 			'priority' => 5,
