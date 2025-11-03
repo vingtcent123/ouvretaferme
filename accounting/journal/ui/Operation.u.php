@@ -375,14 +375,21 @@ class OperationUi {
 		$h = '<table class="tr-even">';
 			$h .= '<tr>';
 				$h .= '<th colspan="2">';
-					$h .= ($eOperation['journalCode'] ? self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE) : '');
-					$h .= ' ';
-					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">';
-						$h .= match($eOperation['type']) {
-								Operation::DEBIT => s("Débit du {value}", \util\DateUi::numeric($eOperation['date'])),
-								Operation::CREDIT => s("Crédit du {value}", \util\DateUi::numeric($eOperation['date'])),
-						};
-					$h .= '</a>';
+					$h .= '<div class="operation-linked-title">';
+						$h .= '<div>';
+							$h .= ($eOperation['journalCode'] ? self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE) : '');
+							$h .= ' ';
+								$h .= match($eOperation['type']) {
+										Operation::DEBIT => s("Débit du {value}", \util\DateUi::numeric($eOperation['date'])),
+										Operation::CREDIT => s("Crédit du {value}", \util\DateUi::numeric($eOperation['date'])),
+								};
+						$h .= '</div>';
+						$h .= '<div>';
+							$h .= ' <a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">';
+								$h .= s("détails");
+							$h .= '</a>';
+						$h .= '</div>';
+					$h .= '</div>';
 				$h .= '</th>';
 			$h .= '</tr>';
 			$h .= '<tr>';

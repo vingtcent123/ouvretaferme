@@ -264,3 +264,8 @@ body.operation-view-panel-open #panel-operation-view .panel-header {
 	background-color: var(--background-light);
 }
 
+.operation-linked-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}

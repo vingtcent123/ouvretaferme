@@ -247,6 +247,7 @@ class JournalUi {
 						$h .= '<th>'.s("Tiers").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
+						$h .= '<th></th>';
 
 					$h .= '</tr>';
 
@@ -336,7 +337,7 @@ class JournalUi {
 										$h .= '</div>';
 									}
 
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">'.encode($eOperation['description']).'</a>';
+								$h .= encode($eOperation['description']);
 
 							$h .= '</td>';
 
@@ -357,6 +358,9 @@ class JournalUi {
 								if($eOperation['type'] === Operation::CREDIT) {
 									$h .= \util\TextUi::money($eOperation['amount']);
 								}
+							$h .= '</td>';
+							$h .= '<td>';
+								$h .= '<a class="btn btn-outline-secondary btn-xs" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">'.s("détails").'</a>';
 							$h .= '</td>';
 
 						$h .= '</tr>';
