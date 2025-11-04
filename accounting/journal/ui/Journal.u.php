@@ -360,7 +360,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= '<a class="btn btn-outline-secondary btn-xs" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">'.s("détails").'</a>';
+								$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">'.s("Ouvrir le détail").'</a>';
 							$h .= '</td>';
 
 						$h .= '</tr>';

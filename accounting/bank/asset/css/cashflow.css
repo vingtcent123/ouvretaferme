@@ -1,6 +1,5 @@
 
 .cashflow-status-label {
-	padding: 0.25rem 0.75rem;
 	border-radius: var(--radius);
 	display: inline-block;
 }
@@ -26,16 +25,21 @@
 }
 
 .cashflow-status-label.cashflow-status-allocated {
-	background-color: var(--success);
-	color: white;
+	border: 1px solid var(--success);
 }
 .cashflow-status-waiting {
 	color: var(--todo);
 }
 
 .cashflow-status-label.cashflow-status-waiting {
-	background-color: var(--todo);
-	color: white;
+	border: 1px solid var(--todo);
+}
+.cashflow-status-deleted {
+	color: var(--muted);
+}
+
+.cashflow-status-label.cashflow-status-deleted {
+	border: 1px solid var(--muted);
 }
 
 /* Allocating form */

@@ -130,8 +130,11 @@ class CashflowUi {
 						$h .= '</th>';
 						$h .= '<th class="text-end highlight-stick-right td-vertical-align-middle">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left td-vertical-align-middle">'.s("Crédit (C)").'</th>';
-						$h .= '<th class="text-center td-vertical-align-middle">'.s("Statut").'</th>';
-						$h .= '<th></th>';
+						if($eFinancialYearSelected->canUpdate()) {
+							$h .= '<th class="text-center td-vertical-align-middle">'.s("Statut").'</th>';
+						} else {
+							$h .= '<th></th>';
+						}
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -193,20 +196,21 @@ class CashflowUi {
 						$h .= '</td>';
 
 					$h .= '<td class="td-min-content text-center">';
-						if($eCashflow['status'] === Cashflow::WAITING) {
-							$h .= '<div class="cashflow-status-label cashflow-status-'.$eCashflow['status'].'">'.CashflowUi::p('status')->values[$eCashflow['status']].'</div>';
+
+						if($eFinancialYearSelected->canUpdate()) {
+
+							$h .= '<a data-dropdown="bottom-end" class="cashflow-status-label cashflow-status-'.$eCashflow['status'].' dropdown-toggle btn btn-outline-secondary">'.CashflowUi::p('status')->values[$eCashflow['status']].'</a>';
+							$h .= $this->getAction($eFarm, $eCashflow);
+
+						} else {
+
+							$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">';
+								$h .= s("Voir les écritures");
+							$h .= '</a>';
+
+
 						}
 					$h .= '</td>';
-
-					$h .= '<td>';
-							if(
-								$eFinancialYearSelected['status'] === \account\FinancialYear::OPEN and
-								$eCashflow['date'] <= $eFinancialYearSelected['endDate'] and
-								$eCashflow['date'] >= $eFinancialYearSelected['startDate']
-							) {
-								$h .= $this->getUpdate($eFarm, $eCashflow);
-							}
-						$h .= '</td>';
 
 					$h .= '</tr>';
 				}
@@ -218,24 +222,41 @@ class CashflowUi {
 		return $h;
 
 	}
-	protected function getUpdate(\farm\Farm $eFarm, Cashflow $eCashflow): string {
+	protected function getView(\farm\Farm $eFarm, Cashflow $eCashflow): string {
+
+		$h = '<div class="dropdown-list">';
+
+		if($eCashflow['status'] === CashflowElement::ALLOCATED) {
+
+			$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
+				$h .= s("Voir les écritures");
+			$h .= '</a>';
+
+		}
+
+		$h .= '</div>';
+
+		return $h;
+		
+	}
+	protected function getAction(\farm\Farm $eFarm, Cashflow $eCashflow): string {
 
 		if($eFarm->canManage() === FALSE) {
 			return '';
 		}
 
-		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
-		$h .= '<div class="dropdown-list">';
+		$h = '<div class="dropdown-list">';
+
+			$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
-				$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
 				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Voir les écritures");
 				$h .= '</a>';
 
 				$h .= '<div class="dropdown-divider"></div>';
-
 				$h .= '<div class="dropdown-title">'.s("Actions sur les écritures comptables liées").'</div>';
 
 				$confirm = s("Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?");
@@ -249,8 +270,6 @@ class CashflowUi {
 				$h .= '</a>';
 
 			} else if($eCashflow['status'] === CashflowElement::WAITING) {
-
-				$h .= '<div class="dropdown-title">'.s("Créer des écritures comptables").'</div>';
 
 				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Créer de nouvelles écritures");
@@ -769,17 +788,17 @@ class CashflowUi {
 
 			case 'status' :
 				$d->values = [
-					CashflowElement::ALLOCATED => s("Attribuée"),
+					CashflowElement::ALLOCATED => s("Traitée"),
 					CashflowElement::DELETED => s("Supprimée"),
 					CashflowElement::WAITING => s("À traiter"),
 				];
 				$d->translation = [
-					CashflowElement::ALLOCATED => ['singular' => s("Attribuée"), 'plural' => s("Attribuées")],
+					CashflowElement::ALLOCATED => ['singular' => s("Traitée"), 'plural' => s("Traitées")],
 					CashflowElement::DELETED => ['singular' => s("Supprimée"), 'plural' => s("Supprimées")],
 					CashflowElement::WAITING => ['singular' => s("À traiter"), 'plural' => s("À traiter")],
 				];
 				$d->shortValues = [
-					CashflowElement::ALLOCATED => s("I"),
+					CashflowElement::ALLOCATED => s("T"),
 					CashflowElement::DELETED => s("S"),
 					CashflowElement::WAITING => s("A"),
 				];
