@@ -832,7 +832,7 @@ class OperationUi {
 							$h .= '</div>';
 
 						}
-					$h .= '<div class="hide" data-index="'.$index.'">';
+					$h .= '<div class="hide" data-index="'.$index.'" data-operation-delete>';
 						$h .= '<a onclick="Operation.deleteOperation(this)" class="btn btn-outline-primary">'.\Asset::icon('trash').'</a>';
 					$h .= '</div>';
 				$h .= '</div>';

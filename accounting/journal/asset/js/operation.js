@@ -248,13 +248,11 @@ class Operation {
 
         const operations = qsa('#operation-create-list .operation-create:not(.operation-create-headers):not(.operation-create-validation)').length;
 
-        qsa('.operation-create-delete', node => (operations > 1 && Number(node.getAttribute('data-index')) === operations - 1) ? node.classList.remove('hide') : node.classList.add('hide'));
+        if(operations > 1) {
+            qsa('[data-operation-delete]', node => (Number(node.getAttribute('data-index')) === operations - 1) ? node.classList.remove('hide') : node.classList.add('hide'));
+        }
 
         qs('#operation-create-list').setAttribute('data-columns', operations);
-
-        if(operations > 1) {
-
-        }
 
         Operation.updateSingularPluralText();
 
