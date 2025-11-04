@@ -412,7 +412,7 @@ class Operation {
                 Cashflow.vatWarning(true);
             }
         } else {
-            qs('[data-vat-rate-warning]').hide();
+            qs('[data-vat-rate-warning][data-index="' + index + '"]').hide();
             qs('[data-wrapper="vatValue[' + index + ']"]', node => node.classList.remove('form-warning-wrapper'));
             qs('[data-vat-warning][data-index="' + index + '"]').hide();
             if(typeof Cashflow !== 'undefined') {

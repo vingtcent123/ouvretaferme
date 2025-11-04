@@ -269,3 +269,8 @@ body[data-touch="no"] #panel-operation-view .panel-header {
 	align-items: center;
 	justify-content: space-between;
 }
+
+.operation_group-input {
+	display: flex;
+	gap: 0.5rem;
+}

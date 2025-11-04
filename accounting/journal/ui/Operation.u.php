@@ -1008,42 +1008,69 @@ class OperationUi {
 				$eOperation['vatRate'.$suffix] = '';
 
 				$h .= '<div data-wrapper="vatRate'.$suffix.'">';
-					$h .= $form->inputGroup(
-						$form->addon(self::getAmountButtonIcons('vatRate', $index))
-						.$form->number(
-							'vatRate'.$suffix,
-							$vatRateDefault,
-							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1],
-						)
-						.$form->addon('% '))
-						.\util\FormUi::info('<div data-index="'.$index.'" data-vat="account-info" class="hide">'.s("Le compte de TVA utilisé est le <b>{value}</b>. Si vous souhaitez en spécifier un autre, indiquez 0% ici et créez une autre écriture.", ['value' => '<span data-index="'.$index.'" data-vat="account-value"></span>']).'</div>')
-					;
-						$h .= '<div class="warning hide mt-1" data-vat-rate-warning data-index="'.$index.'">';
-							$h .= s(
-								"Attention : Habituellement, pour la classe <b>{class}</b> le taux de <b>{vatRate}%</b> est utilisé. Souhaitez-vous <link>l'utiliser</link> ?",
-								[
-									'vatRate' => '<span data-vat-rate-default data-index="'.$index.'"></span>',
-									'class' => '<span data-vat-rate-class data-index="'.$index.'"></span>',
-									'link' => '<a data-vat-rate-link data-index="'.$index.'">',
-								],
-							);
-						$h .= '</div>';
+					$h .= '<div class="operation_group-input">';
+						$h .= $form->inputGroup(
+							$form->addon(self::getAmountButtonIcons('vatRate', $index))
+							.$form->number(
+								'vatRate'.$suffix,
+								$vatRateDefault,
+								['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1],
+							))
+						;
+							$h .= '<div data-vat="account-info" class="hide" data-index="'.$index.'">';
+								$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true">';
+									$h .= \Asset::icon('question-circle');
+								$h .= '</a>';
+								$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+									$h .= '<span class="dropdown-item">';
+										$h .= s("Le compte de TVA utilisé est le <b>{value}</b>. Si vous souhaitez en spécifier un autre, indiquez 0% ici et créez une autre écriture.", ['value' => '<span data-index="'.$index.'" data-vat="account-value"></span>']);
+									$h .= '</span>';
+								$h .= '</div>';
+							$h .= '</div>';
+							$h .= '<div data-vat-rate-warning class="hide" data-index="'.$index.'">';
+								$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'">';
+									$h .= \Asset::icon('exclamation-triangle');
+								$h .= '</a>';
+								$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+									$h .= '<span class="dropdown-item">';
+										$h .= s(
+											"Attention : Habituellement, pour la classe <b>{class}</b> le taux de <b>{vatRate}%</b> est utilisé. Souhaitez-vous l'utiliser ?",
+											[
+												'vatRate' => '<span data-vat-rate-default data-index="'.$index.'"></span>',
+												'class' => '<span data-vat-rate-class data-index="'.$index.'"></span>',
+											],
+										);
+									$h .= '</span>';
+								$h .= '</div>';
+							$h .= '</div>';
+					$h .= '</div>';
 				$h .= '</div>';
 
 				$h .= '<div data-wrapper="vatValue'.$suffix.'">';
-					$h .= $form->dynamicField($eOperation, 'vatValue'.$suffix, function($d) use($vatAmountDefault, $index) {
-						$d->default = $vatAmountDefault ?? '';
-						$d->attributes['min'] = 0;
-						$d->attributes['step'] = 0.01;
-						$d->attributes['data-field'] = 'vatValue';
-						$d->attributes['data-index'] = $index;
-						$d->prepend = OperationUi::getAmountButtonIcons('vatValue', $index);
-					});
-					$h .= '<div class="warning hide mt-1" data-vat-warning data-index="'.$index.'">';
-						$h .= s(
-							"Il y a une incohérence de calcul de TVA, souhaitiez-vous plutôt indiquer {amountVAT} ?",
-							['amountVAT' => '<a onclick="Operation.updateVatValue('.$index.')" data-vat-warning-value data-index="'.$index.'"></a>'],
-						);
+					$h .= '<div class="operation_group-input">';
+
+						$h .= $form->dynamicField($eOperation, 'vatValue'.$suffix, function($d) use($vatAmountDefault, $index) {
+							$d->default = $vatAmountDefault ?? '';
+							$d->attributes['min'] = 0;
+							$d->attributes['step'] = 0.01;
+							$d->attributes['data-field'] = 'vatValue';
+							$d->attributes['data-index'] = $index;
+							$d->prepend = OperationUi::getAmountButtonIcons('vatValue', $index);
+						});
+
+						$h .= '<div data-vat-warning class="hide" data-index="'.$index.'">';
+							$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true" onclick="Operation.updateVatValue('.$index.')">';
+							$h .= \Asset::icon('exclamation-triangle');
+							$h .= '</a>';
+							$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+								$h .= '<span class="dropdown-item">';
+								$h .= s(
+									"Il y a une incohérence de calcul de TVA, souhaitiez-vous plutôt indiquer {amountVAT} ?",
+									['amountVAT' => '<span data-vat-warning-value data-index="'.$index.'"></span>'],
+								);
+								$h .= '</span>';
+							$h .= '</div>';
+						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
 			}
