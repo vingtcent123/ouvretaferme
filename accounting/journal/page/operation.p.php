@@ -104,7 +104,7 @@ new \journal\OperationPage(
 			'cashflow' => $eCashflow,
 		]);
 
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
 		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
