@@ -200,7 +200,7 @@ class CashflowUi {
 						if($eFinancialYearSelected->canUpdate()) {
 
 							$h .= '<a data-dropdown="bottom-end" class="cashflow-status-label cashflow-status-'.$eCashflow['status'].' dropdown-toggle btn btn-outline-secondary">'.CashflowUi::p('status')->values[$eCashflow['status']].'</a>';
-							$h .= $this->getAction($eFarm, $eCashflow);
+							$h .= $this->getAction($eFarm, $eFinancialYearSelected, $eCashflow);
 
 						} else {
 
@@ -240,7 +240,7 @@ class CashflowUi {
 		return $h;
 		
 	}
-	protected function getAction(\farm\Farm $eFarm, Cashflow $eCashflow): string {
+	protected function getAction(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow): string {
 
 		if($eFarm->canManage() === FALSE) {
 			return '';
@@ -271,7 +271,7 @@ class CashflowUi {
 
 			} else if($eCashflow['status'] === CashflowElement::WAITING) {
 
-				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
+				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
 					$h .= s("Créer de nouvelles écritures");
 				$h .= '</a>';
 
