@@ -67,11 +67,11 @@
 }
 
 #bank-cashflow-allocate > div.panel-header > a,
-#journal-operation-update > div.panel-header > a {
+#journal-operation-update[data-cashflow] > div.panel-header > a {
 	display: none;
 }
 #bank-cashflow-allocate div.panel-title-container,
-#journal-operation-update div.panel-title-container {
+#journal-operation-update[data-cashflow] div.panel-title-container {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;

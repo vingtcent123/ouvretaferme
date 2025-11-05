@@ -130,12 +130,12 @@ class OperationUi {
 
 		$dialogOpen = $form->openAjax(
 			\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/doUpdate',
-			[
+			array_merge([
 				'id' => 'journal-operation-update',
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
 				'data-has-vat' => (int)$eFinancialYear['hasVat'],
-			],
+			], $eCashflow->empty() ? [] : ['data-cashflow']),
 		);
 
 		$h = '';

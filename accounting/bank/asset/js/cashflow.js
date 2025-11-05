@@ -163,7 +163,7 @@ class Cashflow {
 
         if(
           qs('form#bank-cashflow-allocate') === null &&
-          qs('form#journal-operation-update') === null
+          qs('form#journal-operation-update[data-cashflow]') === null
         ) {
             return;
         }

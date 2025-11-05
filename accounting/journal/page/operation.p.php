@@ -28,8 +28,9 @@ new \journal\OperationPage(
 	foreach($data->cOperation as $eOperation) {
 		$cOperationCashflow->mergeCollection($eOperation['cOperationCashflow']);
 	}
+
 	if($cOperationCashflow->notEmpty()) {
-		$data->eCashflow = $cOperationCashflow['cashflow'];
+		$data->eCashflow = $cOperationCashflow->first()['cashflow'];
 	} else {
 		$data->eCashflow = new \bank\Cashflow();
 	}
