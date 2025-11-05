@@ -50,7 +50,7 @@ class CustomerGroupLib extends CustomerGroupCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, ?string $index = 'id'): \Collection|Group {
+	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, ?string $index = 'id'): \Collection|CustomerGroup {
 
 		$expects = 'collection';
 
@@ -81,7 +81,7 @@ class CustomerGroupLib extends CustomerGroupCrud {
 
 	}
 
-	public static function getForManage(\farm\Farm $eFarm): \Collection|Group {
+	public static function getForManage(\farm\Farm $eFarm): \Collection|CustomerGroup {
 
 		CustomerGroup::model()
 			->select([

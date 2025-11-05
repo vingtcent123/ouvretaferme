@@ -244,7 +244,7 @@ class GridUi {
 
 	}
 
-	public function getGridWithProduct(Customer|Group $eSource, \Collection $cGrid, ?array $exclude = NULL, array $hide = [], array $show = []): string {
+	public function getGridWithProduct(Customer|CustomerGroup $eSource, \Collection $cGrid, ?array $exclude = NULL, array $hide = [], array $show = []): string {
 
 		if($cGrid->empty()) {
 			return '';

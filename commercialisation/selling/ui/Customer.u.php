@@ -34,7 +34,7 @@ class CustomerUi {
 
 	}
 
-	public static function getType(Customer|Sale|Group $eCustomer): string {
+	public static function getType(Customer|Sale|CustomerGroup $eCustomer): string {
 
 		return match($eCustomer['type']) {
 
