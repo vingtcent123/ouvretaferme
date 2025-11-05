@@ -5,6 +5,11 @@ new AdaptativeView('/journal/operation/{id}', function($data, PanelTemplate $t) 
 	return new \journal\OperationUi()->getView($data->eFarm, $data->e);
 
 });
+new AdaptativeView('/journal/operation/{id}/update', function($data, PanelTemplate $t) {
+
+	return new \journal\OperationUi()->getUpdate($data->eFarm, $data->eFinancialYear, $data->cOperation, [], $data->cPaymentMethod, $data->eCashflow, $data->e);
+
+});
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 

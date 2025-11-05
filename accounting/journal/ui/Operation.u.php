@@ -79,6 +79,113 @@ class OperationUi {
 		);
 	}
 
+	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, array $assetData, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase): \Panel {
+
+		\Asset::css('journal', 'operation.css');
+		\Asset::js('journal', 'operation.js');
+		\Asset::js('journal', 'asset.js');
+		\Asset::js('account', 'thirdParty.js');
+
+		if($eCashflow->notEmpty()) {
+			\Asset::css('bank', 'cashflow.css');
+			\Asset::js('bank', 'cashflow.js');
+		}
+
+		$eOperationBank = new Operation();
+		$linkedOperationIds = [];
+
+		// Formattage des opérations (association de la TVA avec son écriture d'origine + ne pas mettre l'opération de banque)
+		$cOperationFormatted = new \Collection();
+
+		foreach($cOperation as $eOperation) {
+
+			if(in_array($eOperation['id'], $linkedOperationIds)) {
+				continue;
+			}
+
+			// L'opération de banque est automatiquement gérée
+			if(
+				$eCashflow->notEmpty() and
+				abs($eOperation['amount']) === abs($eCashflow['amount']) and
+				\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::FINANCIAL_GENERAL_CLASS)
+			) {
+				$linkedOperationIds[] = $eOperation['id'];
+				$eOperationBank = clone $eOperation;
+				continue;
+			}
+
+			// On regarde s'il y a une opération de TVA liée
+			$eOperationVAT = $cOperation->find(fn($e) => $e['operation']->notEmpty() and $e['operation']['id'] === $eOperation['id'])->first();
+			if($eOperationVAT !== NULL and \account\ClassLib::isFromClass($eOperationVAT['accountLabel'], \account\AccountSetting::VAT_CLASS)) {
+				$linkedOperationIds[] = $eOperationVAT['id'];
+				$eOperation['vatAmount'] = $eOperationVAT['amount'];
+				$eOperation['vatOperation'] = $eOperationVAT;
+			}
+
+			$cOperationFormatted->append($eOperation);
+
+		}
+
+		$form = new \util\FormUi();
+
+		$dialogOpen = $form->openAjax(
+			\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/doUpdate',
+			[
+				'id' => 'journal-operation-update',
+				'third-party-create-index' => 0,
+				'class' => 'panel-dialog',
+				'data-has-vat' => (int)$eFinancialYear['hasVat'],
+			],
+		);
+
+		$h = '';
+
+		$h .= $form->hidden('id', $eOperationBase['id']);
+		$h .= $form->hidden('hash', $cOperation->first()['hash']);
+		$h .= $form->hidden('farm', $eFarm['id']);
+		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
+
+		$h .= self::getUpdateGrid(
+			eFarm: $eFarm,
+			eFinancialYear: $eFinancialYear,
+			form: $form,
+			assetData: $assetData,
+			cPaymentMethod: $cPaymentMethod,
+			cOperation: $cOperationFormatted,
+			eCashflow: $eCashflow);
+
+		$saveButton = $form->submit(
+			s("Modifier"),
+			[
+				'id' => 'submit-save-operation',
+				'data-text-singular' => s("Modifier l'écriture"),
+				'data-text-plural' => s(("Modifier les écritures")),
+				'data-confirm-text-singular' => s("Il y a une incohérence de valeur de TVA, voulez-vous quand même enregistrer ?"),
+				'data-confirm-text-plural' => s("Il y a plusieurs incohérences de valeur de TVA, voulez-vous quand même enregistrer ?"),
+			] + ($eCashflow->empty() ? [] : ['data-confirm-text' => s("Il y a une incohérence entre les écritures saisies et le montant de l'opération bancaire. Voulez-vous vraiment les enregistrer tel quel ?")]),
+		);
+
+		$dialogClose = $form->close();
+
+		$footer = '<div class="operation-create-button-add">'.$saveButton.'</div>';
+
+		if($eCashflow->empty()) {
+			$title = $cOperation->count() > 1 ? s("Modifier les écritures") : s("Modifier une écriture");
+		} else {
+			$title = new \bank\CashflowUi()->getAllocateTitle($eCashflow, $eFinancialYear, $eOperationBank->getArrayCopy(), $cPaymentMethod, $form);
+		}
+
+		return new \Panel(
+			id: 'panel-journal-operation-update',
+			title: $title,
+			dialogOpen: $dialogOpen,
+			dialogClose: $dialogClose,
+			body: $h,
+			footer: $footer,
+		);
+
+	}
+
 	public function getView(\farm\Farm $eFarm, Operation $eOperation): \Panel {
 
 		\Asset::css('journal', 'operation.css');
@@ -150,11 +257,7 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div class="operation-view-value">';
 			$amount = \util\TextUi::money($eOperation['amount']);
-			if($eOperation->canUpdateQuick()) {
-				$h .= $eOperation->quick('amount', $amount.$this->pencil());
-			} else {
-				$h .= $amount;
-			}
+			$h .= $amount;
 		$h .= '</div>';
 
 		$h .= '<div class="operation-view-label">';
@@ -162,11 +265,7 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div class="operation-view-value">';
 			$description = $eOperation['description'] ? $eOperation['description'] : '<i>'.s("Non indiqué").'</i>';
-			if($eOperation->canUpdateQuick()) {
-				$h .= $eOperation->quick('description', $description.$this->pencil());
-			} else {
-				$h .= $description;
-			}
+			$h .= $description;
 		$h .= '</div>';
 
 		$h .= '<div class="operation-view-label">';
@@ -174,11 +273,7 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div class="operation-view-value">';
 			$document = $eOperation['document'] ? $eOperation['document'] : '<i>'.s("Non indiqué").'</i>';
-			if($eOperation->canUpdateQuick()) {
-				$h .= $eOperation->quick('document', $document.$this->pencil());
-			} else {
-				$h .= $document;
-			}
+			$h .= $document;
 		$h .= '</div>';
 
 		$h .= '<div class="operation-view-label">';
@@ -193,11 +288,7 @@ class OperationUi {
 				$journalCode = '<i>'.s("Non indiqué").'</i>';
 			}
 			$journalCode .= '</div>';
-			if($eOperation->canUpdateQuick()) {
-				$h .= $eOperation->quick('journalCode', $journalCode.$this->pencil());
-			} else {
-				$h .= $journalCode;
-			}
+			$h .= $journalCode;
 		$h .= '</div>';
 
 		$h .= '<div class="operation-view-label">';
@@ -205,11 +296,7 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div class="operation-view-value">';
 			$paymentMethod = ($eOperation['paymentMethod']['name'] ?? NULL) !== NULL ? \payment\MethodUi::getName($eOperation['paymentMethod']) : '<i>'.s("Non indiqué").'</i>';
-			if($eOperation->canUpdateQuick()) {
-				$h .= $eOperation->quick('paymentMethod', $paymentMethod.$this->pencil());
-			} else {
-				$h .= $paymentMethod;
-			}
+			$h .= $paymentMethod;
 		$h .= '</div>';
 
 		$h .= '<div class="operation-view-label">';
@@ -217,11 +304,7 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div class="operation-view-value">';
 			$comment = ($eOperation['comment'] !== NULL) ? encode($eOperation['comment']) : '<i>-</i>';
-			if($eOperation->canUpdateQuick()) {
-				$h .= $eOperation->quick('comment', $comment.$this->pencil());
-			} else {
-				$h .= $comment;
-			}
+			$h .= $comment;
 		$h .= '</div>';
 
 		return $h;
@@ -821,6 +904,14 @@ class OperationUi {
 		}
 
 		$h = '<div class="operation-create" data-index="'.$index.'">';
+
+			if(($eOperation['id'] ?? NULL) !== NULL) {
+				$h .= $form->hidden('id['.$index.']', $eOperation['id']);
+			}
+			if(($eOperation['vatOperation'] ?? NULL) !== NULL) {
+				$h .= $form->hidden('vatOperation['.$index.']', $eOperation['vatOperation']['id']);
+			}
+
 			$h .= '<div class="operation-create-title">';
 				$h .= '<h4>'.s("Écriture #{number}", ['number' => $index + 1]).'</h4>';
 
@@ -844,7 +935,7 @@ class OperationUi {
 						'data-date' => $form->getId(),
 						'data-index' => $index,
 						'data-accounting-type' => $eFinancialYear['accountingType'],
-					]);
+					] + (($eOperation['id'] ?? NULL) !== NULL ? ['disabled' => 'disabled'] : []));
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="document'.$suffix.'">';
@@ -995,15 +1086,24 @@ class OperationUi {
 
 			if($eFinancialYear['hasVat']) {
 
-				$vatRateDefault = 0;
-				if($eOperation['account']->exists() === TRUE) {
-					if($eOperation['account']['vatRate'] !== NULL) {
-						$vatRateDefault = $eOperation['account']['vatRate'];
-					} else if($eOperation['account']['vatAccount']->exists() === TRUE) {
-						$vatRateDefault = $eOperation['account']['vatAccount']['vatRate'];
+				if(($eOperation['vatAmount'] ?? NULL) !== NULL) {
+
+					$vatAmountDefault = $eOperation['vatAmount'];
+					$vatRateDefault = $eOperation['vatRate'];
+
+				} else {
+
+					$vatRateDefault = 0;
+					if($eOperation['account']->exists() === TRUE) {
+						if($eOperation['account']['vatRate'] !== NULL) {
+							$vatRateDefault = $eOperation['account']['vatRate'];
+						} else if($eOperation['account']['vatAccount']->exists() === TRUE) {
+							$vatRateDefault = $eOperation['account']['vatAccount']['vatRate'];
+						}
 					}
+					$vatAmountDefault = $vatRateDefault !== 0 ? round(($defaultValues['amount'] ?? 0) * $vatRateDefault / 100,2) : 0;
+
 				}
-				$vatAmountDefault = $vatRateDefault !== 0 ? round(($defaultValues['amount'] ?? 0) * $vatRateDefault / 100,2) : 0;
 
 				$eOperation['vatRate'.$suffix] = '';
 
@@ -1157,6 +1257,48 @@ class OperationUi {
 
 			$h .= self::getCreateHeader($eFinancialYear, $isFromCashflow);
 			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData, $cPaymentMethod);
+
+			if($isFromCashflow === TRUE) {
+				$h .= self::getCreateValidate($eFinancialYear['hasVat']);
+			}
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public static function getUpdateGrid(
+		\farm\Farm $eFarm,
+		\account\FinancialYear $eFinancialYear,
+		\util\FormUi $form,
+		array $assetData,
+		\Collection $cPaymentMethod,
+		\Collection $cOperation,
+		\bank\Cashflow $eCashflow,
+	): string {
+
+		$isFromCashflow = $eCashflow->notEmpty();
+
+		$index = 0;
+
+		$h = '<div id="operation-update-list" class="operation-create-several-container" data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
+
+			if($eCashflow->notEmpty()) {
+				$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
+				$h .= $form->hidden('type', $eCashflow['type']);
+			}
+
+			$h .= self::getCreateHeader($eFinancialYear, $isFromCashflow);
+
+			foreach($cOperation as $eOperation) {
+
+				$suffix = '['.$index.']';
+
+				$eOperation['amountIncludingVAT'] = $eOperation['amount'] + ($eOperation['vatAmount'] ?? 0);
+				$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $assetData, $cPaymentMethod);
+				$index++;
+			}
 
 			if($isFromCashflow === TRUE) {
 				$h .= self::getCreateValidate($eFinancialYear['hasVat']);

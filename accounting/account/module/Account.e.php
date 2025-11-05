@@ -3,6 +3,13 @@ namespace account;
 
 class Account extends AccountElement {
 
+	public static function getSelection(): array {
+
+		return parent::getSelection() + [
+			'vatAccount' => ['id', 'class', 'vatRate'],
+		];
+
+	}
 	public function canQuickUpdate(): bool {
 
 		return $this['custom'] === TRUE;

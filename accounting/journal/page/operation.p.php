@@ -18,6 +18,30 @@ new \journal\OperationPage(
 	$data->e['cOperationLinkedByCashflow'] = $data->e['cOperationCashflow']->empty() ? new Collection() : \journal\OperationCashflowLib::getOperationsByCashflows($data->e['cOperationCashflow']->getColumnCollection('cashflow')->getIds());
 
 	throw new ViewAction($data);
+})
+->read('/journal/operation/{id}/update', function($data) {
+
+	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
+	$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+
+	$cOperationCashflow = new Collection();
+	foreach($data->cOperation as $eOperation) {
+		$cOperationCashflow->mergeCollection($eOperation['cOperationCashflow']);
+	}
+	if($cOperationCashflow->notEmpty()) {
+		$data->eCashflow = $cOperationCashflow['cashflow'];
+	} else {
+		$data->eCashflow = new \bank\Cashflow();
+	}
+
+	throw new ViewAction($data);
+})
+->post('/journal/operation/{id}/doUpdate', function($data) {
+
+	$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation(), for: 'update');
+
+	throw new ReloadAction('journal', $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated');
+
 });
 
 new \journal\OperationPage(

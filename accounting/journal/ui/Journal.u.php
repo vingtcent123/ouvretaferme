@@ -360,7 +360,14 @@ class JournalUi {
 								}
 							$h .= '</td>';
 							$h .= '<td>';
-								$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">'.s("Ouvrir le détail").'</a>';
+								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
+								$h .= '<div class="dropdown-list">';
+									$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'" class="dropdown-item">'.s("Ouvrir le détail").'</a>';
+									if($eOperation->canUpdate()) {
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier").'</a>';
+									}
+								$h .= '</div>';
 							$h .= '</td>';
 
 						$h .= '</tr>';

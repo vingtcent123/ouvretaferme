@@ -323,6 +323,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['journal', 'operation', '{id}'],
 		],
+		'/journal/operation/{id}/update' => [
+			'request' => 'journal/operation',
+			'priority' => 5,
+			'route' => ['journal', 'operation', '{id}', 'update'],
+		],
 		'/minify/{version}/{filename}' => [
 			'request' => 'dev/minify',
 			'priority' => 5,
@@ -816,6 +821,11 @@ Route::register([
 			'request' => 'website/news',
 			'priority' => 5,
 			'route' => ['@module', 'website', 'News', 'quick'],
+		],
+		'/journal/operation/{id}/doUpdate' => [
+			'request' => 'journal/operation',
+			'priority' => 5,
+			'route' => ['journal', 'operation', '{id}', 'doUpdate'],
 		],
 		'/public/{domain}/:doContact' => [
 			'request' => 'website/public',

@@ -158,29 +158,40 @@
 	text-decoration: none;
 }
 
-#operation-create-list {
+#operation-create-list,
+#operation-update-list {
 	flex: 1;
 }
 #operation-create-list .operation-create-headers,
-#operation-create-list .operation-create-validation {
+#operation-update-list .operation-create-headers,
+#operation-create-list .operation-create-validation,
+#operation-update-list .operation-create-validation {
 	background-color: transparent !important;
 }
 #operation-create-list .operation-create-headers > :nth-child(2),
-#operation-create-list .operation-create-validation > :nth-child(2) {
+#operation-update-list .operation-create-headers > :nth-child(2),
+#operation-create-list .operation-create-validation > :nth-child(2),
+#operation-update-list .operation-create-validation > :nth-child(2) {
 	border-top-left-radius: var(--radius);
 	border-top-right-radius: var(--radius);
 }
 #operation-create-list .operation-create-headers > :nth-child(n + 2),
-#operation-create-list .operation-create-validation > :nth-child(n + 2) {
+#operation-update-list .operation-create-headers > :nth-child(n + 2),
+#operation-create-list .operation-create-validation > :nth-child(n + 2),
+#operation-update-list .operation-create-validation > :nth-child(n + 2) {
 	background-color: var(--background-light);
 }
 #operation-create-list .operation-create-headers > :last-child,
-#operation-create-list .operation-create-validation > :last-child {
+#operation-update-list .operation-create-headers > :last-child,
+#operation-create-list .operation-create-validation > :last-child,
+#operation-update-list .operation-create-validation > :last-child {
 	border-bottom-left-radius: var(--radius);
 	border-bottom-right-radius: var(--radius);
 }
 #operation-create-list.has-asset .operation-create-validation div.operation-asset div,
-#operation-create-list .operation-create-validation div:not(.operation-asset) div {
+#operation-update-list.has-asset .operation-create-validation div.operation-asset div,
+#operation-create-list .operation-create-validation div:not(.operation-asset) div,
+#operation-update-list .operation-create-validation div:not(.operation-asset) div {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;

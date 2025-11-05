@@ -1,4 +1,4 @@
-document.delegateEventListener('panelAfterPaint', '#panel-bank-cashflow-allocate', function() {
+document.delegateEventListener('panelAfterPaint', '#panel-bank-cashflow-allocate, #panel-journal-operation-update', function() {
     Cashflow.checkValidationValues();
 });
 
@@ -11,7 +11,8 @@ class Cashflow {
 
     static recalculateAmounts(excludeIndex) {
 
-        const operationNumber = qs('#add-operation').getAttribute('post-index');
+        const operationNumber = qs('[data-columns]').dataset.columns;
+        const id = qs('[data-columns]').getAttribute('id');
 
         let sum = 0;
         for(let index = 0; index < operationNumber; index++) {
@@ -26,7 +27,7 @@ class Cashflow {
             const targetVatValue = Operation.hasVat() ? qs('[name="vatValue[' + index + ']"') : 0;
             const vatValue = Operation.hasVat() ? CalculationField.getValue(targetVatValue) : 0;
 
-            const type = Array.from(qsa('#operation-create-list [name="type[' + index + ']"]')).find((checkboxType) => checkboxType.checked === true);
+            const type = Array.from(qsa('#'+ id +' [name="type[' + index + ']"]')).find((checkboxType) => checkboxType.checked === true);
 
             const amountToAdd = Math.abs(isNaN(amount) ? 0 : amount);
             const vatAmountToAdd = Math.abs(isNaN(vatValue) ? 0 : vatValue);
@@ -160,7 +161,10 @@ class Cashflow {
 
     static checkValidationValues() {
 
-        if(qs('form#bank-cashflow-allocate') === null) {
+        if(
+          qs('form#bank-cashflow-allocate') === null &&
+          qs('form#journal-operation-update') === null
+        ) {
             return;
         }
 

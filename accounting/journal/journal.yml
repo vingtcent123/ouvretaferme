@@ -32,6 +32,8 @@ Lettering:
 
 Operation:
   id: serial32
+  # Identifiant pour regrouper les opérations enregistrées ensemble
+  hash: ?textFixed(20, 20) @charset(ascii)
   number: ?int32(0, null)
   financialYear: account\FinancialYear
   journalCode: ?enum(ACH, VEN, BAN, KS, OD)

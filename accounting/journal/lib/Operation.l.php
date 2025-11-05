@@ -6,7 +6,7 @@ class OperationLib extends OperationCrud {
 	const TMP_INVOICE_FOLDER = 'tmp-invoice';
 
 	public static function getPropertiesCreate(): array {
-		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'vatRate', 'thirdParty', 'asset'];
+		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}
 	public static function getPropertiesUpdate(): array {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'thirdParty'];
@@ -85,6 +85,15 @@ class OperationLib extends OperationCrud {
 			->sort(['count' => SORT_DESC])
 			->getCollection(NULL, NULL, 'account');
 
+	}
+
+	public static function getByHash(string $hash): \Collection {
+
+		return Operation::model()
+			->select(Operation::getSelection() + ['cOperationCashflow' => OperationCashflowLib::delegateByOperation(),])
+			->whereHash($hash)
+			->sort(['id' => SORT_ASC])
+			->getCollection();
 	}
 
 	public static function getAllForBook(\Search $search = new \Search()): \Collection {
@@ -384,7 +393,39 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function prepareOperations(\farm\Farm $eFarm, array $input, Operation $eOperationDefault, \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
+	/**
+	 * Generates a 19-characters hash
+	 *
+	 * @param string $end Optional end (from 0 to 6 characters)
+	 * @return string
+	 */
+	public static function generateHash(string $end = ''): string {
+
+		$endLength = strlen($end);
+
+		if($endLength > 6) {
+			throw new \Exception('Parameter \'end\' is too long (max length expected: 6, received: '.$end.')');
+		}
+
+		$hash = uniqid(); /* 13 caracters */
+
+		$crcLength = 6 - $endLength;
+
+		if($crcLength > 0) {
+			$crc = sprintf('%0'.$crcLength.'x', mt_rand(0, 16 ** $crcLength - 1)); /* 6 caracters */
+		} else {
+			$crc = '';
+		}
+
+		return $hash.$crc.$end; /* 19 caracters */
+	}
+
+
+	public static function prepareOperations(\farm\Farm $eFarm, array $input, Operation $eOperationDefault, string $for = 'create', \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
+
+		$hash = self::generateHash().($eCashflow->empty() ? 'w' : 'c');
+
+		$eOperationDefault['hash'] = $hash;
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
@@ -429,9 +470,13 @@ class OperationLib extends OperationCrud {
 
 			}
 
-		} else {
+		} else if($for === 'create') {
 
 			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
+
+		} else {
+
+			$properties = array_merge($properties, ['id']);
 
 		}
 
@@ -444,7 +489,7 @@ class OperationLib extends OperationCrud {
 			$input['invoiceFile'] = [$index => $invoiceFile];
 			$eOperation->buildIndex($properties, $input, $index);
 
-			if($isFromCashflow) {
+			if($isFromCashflow and $for === 'create') {
 				$eOperation->build(['paymentDate', 'paymentMethod'], $input);
 			}
 
@@ -518,7 +563,7 @@ class OperationLib extends OperationCrud {
 
 			}
 
-			foreach(['date', 'document', 'documentDate', 'thirdParty'] as $property) {
+			foreach(['document', 'documentDate', 'thirdParty'] + ($for === 'create' ? ['date'] : []) as $property) {
 				if(($eOperationDefault[$property] ?? NULL) === NULL) {
 					$eOperationDefault[$property] = $eOperation[$property];
 				}
@@ -545,16 +590,32 @@ class OperationLib extends OperationCrud {
 
 			$eOperation['journalCode'] = \account\AccountLib::getJournalCodeByClass($eOperation['accountLabel']);
 
-			// Immo : vérification et création
-			$eAsset = \asset\AssetLib::prepareAsset($eOperation, $input['asset'][$index] ?? [], $index);
+			if($for === 'create') {
 
-			$fw->validate();
+				// Immo : vérification et création
+				$eAsset = \asset\AssetLib::prepareAsset($eOperation, $input['asset'][$index] ?? [], $index);
 
-			$eOperation['asset'] = $eAsset;
+				$fw->validate();
 
-			\journal\Operation::model()->insert($eOperation);
+				$eOperation['asset'] = $eAsset;
+
+			}
+
+			if($for === 'create') {
+
+				\journal\Operation::model()->insert($eOperation);
+
+			} else {
+
+				Operation::model()
+					->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy())))
+					->update($eOperation);
+
+			}
+
 			$cOperation->append($eOperation);
-			if($isFromCashflow) {
+
+			if($for === 'create' and $isFromCashflow) {
 				$cOperationCashflow->append(new OperationCashflow([
 					'operation' => $eOperation,
 					'cashflow' => $eCashflow,
@@ -576,12 +637,15 @@ class OperationLib extends OperationCrud {
 							'cashflow' => $eCashflow,
 							'paymentMethod' => $eOperation['paymentMethod'],
 							'journalCode' => $eOperation['journalCode'],
+							'hash' => $hash,
 						]
 						: $eOperation->getArrayCopy(),
 					eCashflow: $eCashflow,
+					for: $for,
 				);
 
 				$cOperation->append($eOperationVat);
+
 			}
 
 			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411
@@ -649,6 +713,7 @@ class OperationLib extends OperationCrud {
 						'accountLabel' => $accountLabel,
 						'description' => $description,
 						'financialYear' => $eFinancialYear,
+						'hash' => $hash,
 					]
 				);
 
@@ -671,8 +736,8 @@ class OperationLib extends OperationCrud {
 				$document = NULL;
 			}
 
-			// Ajout de la transaction sur la classe de compte bancaire 512
-			if($isFromCashflow === TRUE) {
+			// Ajout de la transaction sur la classe de compte bancaire 512 (seulement pour une création)
+			if($for === 'create' and $isFromCashflow === TRUE) {
 
 				// Crée automatiquement l'operationCashflow correspondante
 				$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
@@ -708,7 +773,7 @@ class OperationLib extends OperationCrud {
 		return $cOperation;
 	}
 
-	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues, \bank\Cashflow $eCashflow): Operation {
+	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues, \bank\Cashflow $eCashflow, string $for = 'create'): Operation {
 
 		$values = [
 			...$defaultValues,
@@ -717,26 +782,32 @@ class OperationLib extends OperationCrud {
 			'document' => $eOperationLinked['document'],
 			'thirdParty' => $eOperationLinked['thirdParty']['id'] ?? NULL,
 			'type' => $eOperationLinked['type'],
-			'paymentDate' => $eOperationLinked['paymentDate'],
-			'paymentMethod' => $eOperationLinked['paymentMethod']['id'] ?? NULL,
 			'amount' => abs($vatValue),
 			'financialYear' => $eOperationLinked['financialYear']['id'],
+			'hash' => $eOperationLinked['hash'],
 		];
+
+		if($for === 'create') {
+			$values['date'] = $eOperationLinked['date'];
+			$values['paymentDate'] = $eOperationLinked['paymentDate'];
+			$values['paymentMethod'] = $eOperationLinked['paymentMethod'];
+		}
 
 		$eOperationVat = new Operation();
 
 		$fw = new \FailWatch();
 
 		$eOperationVat->build(
-			[
+			array_merge([
 				'financialYear',
-				'date', 'account', 'accountLabel', 'description', 'document', 'journalCode',
+				'account', 'accountLabel', 'description', 'document', 'journalCode',
 				'thirdParty', 'type', 'amount', 'operation',
-				'paymentDate', 'paymentMethod',
-			],
+				'hash',
+			], ($for === 'create' ? ['date', 'paymentDate', 'paymentMethod'] : [])),
 			$values,
-			new \Properties('create'),
+			new \Properties($for),
 		);
+
 		$eOperationVat['operation'] = $eOperationLinked;
 		if($eOperationLinked['document'] !== NULL) {
 			$eOperationVat['documentDate'] = new \Sql('NOW()');
@@ -744,17 +815,32 @@ class OperationLib extends OperationCrud {
 
 		$fw->validate();
 
-		Operation::model()->insert($eOperationVat);
+		if($for === 'create') {
+
+			Operation::model()->insert($eOperationVat);
+
+		} else {
+
+			Operation::model()
+				->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperationVat->getArrayCopy())))
+				->whereOperation($eOperationLinked)
+				->update($eOperationVat);
+
+		}
 
 		if($eCashflow->notEmpty()) {
 
-			$eOperationCashflow = new OperationCashflow([
-				'operation' => $eOperationVat,
-				'cashflow' => $eCashflow,
-				'amount' => min($eOperationVat['amount'], abs($eCashflow['amount'])),
-			]);
+			if($for === 'create') {
 
-			OperationCashflow::model()->insert($eOperationCashflow);
+				$eOperationCashflow = new OperationCashflow([
+					'operation' => $eOperationVat,
+					'cashflow' => $eCashflow,
+					'amount' => min($eOperationVat['amount'], abs($eCashflow['amount'])),
+				]);
+
+				OperationCashflow::model()->insert($eOperationCashflow);
+
+			}
 
 		}
 
@@ -919,6 +1005,7 @@ class OperationLib extends OperationCrud {
 			'paymentDate' => $eCashflow['date'],
 			'paymentMethod'=> $eOperation['paymentMethod']['id'] ?? NULL,
 			'financialYear'=> $eOperation['financialYear']['id'],
+			'hash'=> $eOperation['hash'],
 			'journalCode' => \account\AccountLib::getJournalCodeByClass($label),
 		];
 
@@ -928,7 +1015,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationBank->build([
 			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMethod', 'journalCode',
+			'operation', 'paymentDate', 'paymentMethod', 'journalCode', 'hash',
 		], $values, new \Properties('create'));
 
 		if($document !== NULL) {

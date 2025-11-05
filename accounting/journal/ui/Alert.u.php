@@ -54,6 +54,8 @@ class AlertUi {
 
 			'Operation::created' => s("L'écriture a bien été enregistrée."),
 			'Operation::createdSeveral' => s("Les écritures ont bien été enregistrées."),
+			'Operation::update' => s("L'écriture a bien été modifiée."),
+			'Operation::updatedSeveral' => s("Les écritures ont bien été modifiées."),
 			'Operation::deleted' => s("L'écriture a bien été supprimée."),
 
 			'Operations::updated' => s("Les opérations ont été modifiées."),

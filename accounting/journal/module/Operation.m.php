@@ -49,6 +49,7 @@ class OperationModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'number' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'journalCode' => ['enum', [\journal\Operation::ACH, \journal\Operation::VEN, \journal\Operation::BAN, \journal\Operation::KS, \journal\Operation::OD], 'null' => TRUE, 'cast' => 'enum'],
@@ -77,7 +78,7 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -151,6 +152,10 @@ class OperationModel extends \ModuleModel {
 
 	public function whereId(...$data): OperationModel {
 		return $this->where('id', ...$data);
+	}
+
+	public function whereHash(...$data): OperationModel {
+		return $this->where('hash', ...$data);
 	}
 
 	public function whereNumber(...$data): OperationModel {

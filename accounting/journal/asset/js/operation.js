@@ -41,7 +41,7 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-account="journa
     Array.from(qsa('div.operation-create [name^="account["]')).map(element => e.detail.body.append('accountAlready[]', element.value ? parseInt(element.value) : ''));
 });
 
-document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="journal-operation-create"], [data-account-label="bank-cashflow-allocate"]', function(e) {
+document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="journal-operation-create"], [data-account-label="journal-operation-update"], [data-account-label="bank-cashflow-allocate"]', function(e) {
 
     if(e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') !== null) {
         const thirdParty = e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]').getAttribute('value');
@@ -55,7 +55,7 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="
 
 });
 
-document.delegateEventListener('autocompleteSource', '[data-account-label="journal-operation-create"], [data-account-label="bank-cashflow-allocate"]', function(e) {
+document.delegateEventListener('autocompleteSource', '[data-account-label="journal-operation-create"], [data-account-label="journal-operation-update"], [data-account-label="bank-cashflow-allocate"]', function(e) {
 
     if(e.detail.results.length === 1 && e.target.value.length === 0) {
         const index = e.detail.input.getAttribute('data-index');
@@ -65,7 +65,7 @@ document.delegateEventListener('autocompleteSource', '[data-account-label="journ
 
 });
 
-document.delegateEventListener('autocompleteSelect', '[data-account="journal-operation-create"], [data-account="bank-cashflow-allocate"]', function(e) {
+document.delegateEventListener('autocompleteSelect', '[data-account="journal-operation-create"], [data-account="journal-operation-update"], [data-account="bank-cashflow-allocate"]', function(e) {
 
     const index = e.detail.input.getAttribute('data-index');
 
@@ -86,11 +86,11 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
     Operation.resetAccountLabel(index);
 });
 
-document.delegateEventListener('autocompleteUpdate', '[data-third-party="journal-operation-create"], [data-third-party="bank-cashflow-allocate"]', function(e) {
+document.delegateEventListener('autocompleteUpdate', '[data-third-party="journal-operation-create"], [data-third-party="journal-operation-update"], [data-third-party="bank-cashflow-allocate"]', function(e) {
     Operation.checkAutocompleteStatus(e);
 });
 
-document.delegateEventListener('autocompleteSelect', '[data-third-party="journal-operation-create"], [data-third-party="bank-cashflow-allocate"]', function(e) {
+document.delegateEventListener('autocompleteSelect', '[data-third-party="journal-operation-create"], [data-third-party="journal-operation-update"], [data-third-party="bank-cashflow-allocate"]', function(e) {
 
     const index = parseInt(this.dataset.index);
 
@@ -220,7 +220,7 @@ class Operation {
 
     static updateThirdParty(index, detail) {
 
-        const columns = qs('#operation-create-list').getAttribute('data-columns');
+        const columns = qs('[data-columns]').getAttribute('data-columns');
         detail.input.firstParent('form').qs('#add-operation').setAttribute('post-third-party', detail.value);
 
         for(let i = 0; i < columns; i++) {
@@ -244,6 +244,7 @@ class Operation {
 
     }
 
+    // Seulement pour la création
     static showOrHideDeleteOperation() {
 
         const operations = qsa('#operation-create-list .operation-create:not(.operation-create-headers):not(.operation-create-validation)').length;
@@ -258,11 +259,12 @@ class Operation {
 
     }
 
+    // Seulement pour la création
     static updateSingularPluralText() {
 
         const operations = qsa('#operation-create-list .operation-create:not(.operation-create-headers)').length;
 
-        qs('#submit-save-operation').innerHTML = qs('#submit-save-operation').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
+        qs('button[type="submit"]').innerHTML = qs('button[type="submit"]').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
 
         if(qs('#panel-journal-operation-create-title')) {
             qs('#panel-journal-operation-create-title').innerHTML = qs('#panel-journal-operation-create-title').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
@@ -579,6 +581,7 @@ class Operation {
 
     }
 
+    // Seulement pour la création
     static openInvoiceFileForm() {
 
         const columns = qs('#operation-create-list').getAttribute('data-columns');

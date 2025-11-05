@@ -9,6 +9,7 @@ class Operation extends OperationElement {
 
 		return parent::getSelection() + [
 			'account' => \account\Account::getSelection(),
+			'vatAccount' => ['class', 'vatRate', 'description'],
 			'thirdParty' => \account\ThirdParty::getSelection(),
 			'paymentMethod' => \payment\Method::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
@@ -22,9 +23,12 @@ class Operation extends OperationElement {
 
 	public function canUpdate(): bool {
 
-		$this->expects(['date', 'financialYear']);
+		$this->expects(['date', 'financialYear', 'hash']);
 
-		return \account\FinancialYearLib::isDateInOpenFinancialYear($this['date']) and $this['financialYear']->canUpdate();
+		return
+			\account\FinancialYearLib::isDateInOpenFinancialYear($this['date']) and
+			$this['financialYear']->canUpdate() and
+			$this['hash'] !== NULL;
 	}
 
 	public function canUpdateQuick(): bool {
