@@ -9,7 +9,7 @@ class CashflowLib extends CashflowCrud {
 			Cashflow::model()
 				->or(
 					fn() => $this->where('amount BETWEEN '.$search->get('amountMin').' AND '.$search->get('amountMax'), if: ($search->has('amountMin') and $search->has('amountMax'))),
-					fn() => $this->where('amount BETWEEN '.(-1 * $search->get('amountMin')).' AND '.(-1 * $search->get('amountMax')), if: ($search->has('amountMin') and $search->has('amountMax'))),
+					fn() => $this->where('amount BETWEEN '.(-1 * $search->get('amountMax')).' AND '.(-1 * $search->get('amountMin')), if: ($search->has('amountMin') and $search->has('amountMax'))),
 				);
 		}
 		return Cashflow::model()
