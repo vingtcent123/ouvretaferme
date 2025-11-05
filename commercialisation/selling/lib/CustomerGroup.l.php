@@ -1,7 +1,7 @@
 <?php
 namespace selling;
 
-class GroupLib extends GroupCrud {
+class CustomerGroupLib extends CustomerGroupCrud {
 
 	public static function getPropertiesCreate(): array {
 		return ['name', 'color', 'type'];
@@ -15,8 +15,8 @@ class GroupLib extends GroupCrud {
 
 		$groups = array_merge(...$cProduct->getColumn('limitGroups'), ...$cProduct->getColumn('excludeGroups'));
 
-		return Group::model()
-			->select(Group::getSelection())
+		return CustomerGroup::model()
+			->select(CustomerGroup::getSelection())
 			->whereId('IN', $groups)
 			->getCollection(NULL, NULL, 'id');
 
@@ -25,11 +25,11 @@ class GroupLib extends GroupCrud {
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $properties = []): \Collection {
 
 		if($query !== '') {
-			Group::model()->whereName('LIKE', '%'.$query.'%');
+			CustomerGroup::model()->whereName('LIKE', '%'.$query.'%');
 		}
 
-		return Group::model()
-			->select($properties ?: Group::getSelection())
+		return CustomerGroup::model()
+			->select($properties ?: CustomerGroup::getSelection())
 			->whereFarm($eFarm)
 			->whereType($type, if: $type !== NULL)
 			->getCollection()
@@ -39,7 +39,7 @@ class GroupLib extends GroupCrud {
 
 	public static function askByFarm(\farm\Farm $eFarm, array $ids): \Collection {
 
-		$callback = fn() => Group::model()
+		$callback = fn() => CustomerGroup::model()
 			->select([
 				'id', 'name', 'color'
 			])
@@ -56,18 +56,18 @@ class GroupLib extends GroupCrud {
 
 		if($id !== NULL) {
 			$expects = 'element';
-			Group::model()->whereId($id);
+			CustomerGroup::model()->whereId($id);
 		}
 
-		Group::model()
-			->select(Group::getSelection())
+		CustomerGroup::model()
+			->select(CustomerGroup::getSelection())
 			->whereFarm($eFarm)
 			->sort(['name' => SORT_ASC]);
 
 		if($expects === 'element') {
-			return Group::model()->get();
+			return CustomerGroup::model()->get();
 		} else {
-			return Group::model()->getCollection(NULL, NULL, $index);
+			return CustomerGroup::model()->getCollection(NULL, NULL, $index);
 		}
 
 	}
@@ -75,7 +75,7 @@ class GroupLib extends GroupCrud {
 
 	public static function countByFarm(\farm\Farm $eFarm): int {
 
-		return Group::model()
+		return CustomerGroup::model()
 			->whereFarm($eFarm)
 			->count();
 
@@ -83,28 +83,28 @@ class GroupLib extends GroupCrud {
 
 	public static function getForManage(\farm\Farm $eFarm): \Collection|Group {
 
-		Group::model()
+		CustomerGroup::model()
 			->select([
 				'prices' => Grid::model()
 					->group(['group'])
 					->delegateProperty('group', new \Sql('COUNT(*)', 'int'), fn($value) => $value ?? 0)
 			]);
 
-		$cGroup = self::getByFarm($eFarm);
+		$cCustomerGroup = self::getByFarm($eFarm);
 
-		foreach($cGroup as $eGroup) {
-			$eGroup['customers'] = CustomerLib::countByGroup($eGroup);
+		foreach($cCustomerGroup as $eCustomerGroup) {
+			$eCustomerGroup['customers'] = CustomerLib::countByGroup($eCustomerGroup);
 		}
 
-		return $cGroup;
+		return $cCustomerGroup;
 
 	}
 
-	public static function delete(Group $e): void {
+	public static function delete(CustomerGroup $e): void {
 
 		$e->expects(['id', 'farm']);
 
-		Group::model()->beginTransaction();
+		CustomerGroup::model()->beginTransaction();
 
 			Customer::model()
 				->whereFarm($e['farm'])
@@ -115,7 +115,7 @@ class GroupLib extends GroupCrud {
 
 			parent::delete($e);
 
-		Group::model()->commit();
+		CustomerGroup::model()->commit();
 
 	}
 

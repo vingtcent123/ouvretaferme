@@ -39,7 +39,7 @@ class GridModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
-			'group' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
+			'group' => ['element32', 'selling\CustomerGroup', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
 			'priceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -54,7 +54,7 @@ class GridModel extends \ModuleModel {
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'customer' => 'selling\Customer',
-			'group' => 'selling\Group',
+			'group' => 'selling\CustomerGroup',
 			'product' => 'selling\Product',
 		];
 

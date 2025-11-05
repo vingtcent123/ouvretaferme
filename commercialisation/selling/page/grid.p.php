@@ -15,14 +15,14 @@ new \selling\GridPage()
 			\selling\ProductLib::getById(GET('product'))->validateProperty('farm', $data->eFarm) :
 			new \selling\Product();
 
-		$data->e['group'] = new \selling\Group();
+		$data->e['group'] = new \selling\CustomerGroup();
 		$data->e['customer'] = new \selling\Customer();
 
 		if(get_exists('customer')) {
 			$data->e['customer'] = \selling\CustomerLib::getById(GET('customer'))->validateProperty('farm', $data->eFarm);
 			$data->e['type'] = $data->e['customer']['type'];
 		} else if(get_exists('group')) {
-			$data->e['group'] = \selling\GroupLib::getById(GET('group'))->validateProperty('farm', $data->eFarm);
+			$data->e['group'] = \selling\CustomerGroupLib::getById(GET('group'))->validateProperty('farm', $data->eFarm);
 			$data->e['type'] = $data->e['group']['type'];
 		}
 
@@ -31,7 +31,7 @@ new \selling\GridPage()
 			$data->e['customer']->empty()
 		) {
 
-			$data->e['cGroup'] = \selling\GroupLib::getByFarm($data->eFarm);
+			$data->e['cGroup'] = \selling\CustomerGroupLib::getByFarm($data->eFarm);
 
 		}
 
@@ -84,7 +84,7 @@ new \selling\CustomerPage()
 
 	});
 
-new \selling\GroupPage()
+new \selling\CustomerGroupPage()
 	->write('doDeleteByGroup', function($data) {
 
 		\selling\GridLib::deleteByGroup($data->e);

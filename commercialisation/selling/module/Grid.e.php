@@ -41,15 +41,15 @@ class Grid extends GridElement {
 					->get($eCustomer);
 
 			})
-			->setCallback('group.check', function(Group $eGroup): bool {
+			->setCallback('group.check', function(CustomerGroup $eCustomerGroup): bool {
 
-				return $eGroup->empty() or Group::model()
-					->select(Group::getSelection())
+				return $eCustomerGroup->empty() or CustomerGroup::model()
+					->select(CustomerGroup::getSelection())
 					->whereFarm($this['farm'])
-					->get($eGroup);
+					->get($eCustomerGroup);
 
 			})
-			->setCallback('group.orCustomer', function(Group $eGroup) use ($p): bool {
+			->setCallback('group.orCustomer', function(CustomerGroup $eCustomerGroup) use ($p): bool {
 
 				if($p->isNew('customer') === FALSE) {
 					throw new \Exception('Missing customer');
@@ -61,7 +61,7 @@ class Grid extends GridElement {
 
 				return (
 					$this['customer']->notEmpty() or
-					$eGroup->notEmpty()
+					$eCustomerGroup->notEmpty()
 				);
 
 			})

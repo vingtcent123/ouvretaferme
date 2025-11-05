@@ -173,26 +173,26 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getByGroup(Group $eGroup): \Collection {
+	public static function getByGroup(CustomerGroup $eCustomerGroup): \Collection {
 
-		$eGroup->expects(['farm']);
+		$eCustomerGroup->expects(['farm']);
 
 		return Customer::model()
 			->select(Customer::getSelection())
-			->whereFarm($eGroup['farm'])
-			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\')')
+			->whereFarm($eCustomerGroup['farm'])
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eCustomerGroup['id'].'\')')
 			->sort(['name' => SORT_ASC])
 			->getCollection();
 
 	}
 
-	public static function countByGroup(Group $eGroup): int {
+	public static function countByGroup(CustomerGroup $eCustomerGroup): int {
 
-		$eGroup->expects(['farm']);
+		$eCustomerGroup->expects(['farm']);
 
 		return Customer::model()
-			->whereFarm($eGroup['farm'])
-			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\')')
+			->whereFarm($eCustomerGroup['farm'])
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eCustomerGroup['id'].'\')')
 			->count();
 
 	}
@@ -379,28 +379,28 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function associateGroup(\Collection $cCustomer, Group $eGroup): void {
+	public static function associateGroup(\Collection $cCustomer, CustomerGroup $eCustomerGroup): void {
 
 		Customer::model()
-			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\') = 0')
-			->whereDestination('!=', Customer::COLLECTIVE, if: $eGroup['type'] === Customer::PRIVATE)
-			->whereType($eGroup['type'])
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eCustomerGroup['id'].'\') = 0')
+			->whereDestination('!=', Customer::COLLECTIVE, if: $eCustomerGroup['type'] === Customer::PRIVATE)
+			->whereType($eCustomerGroup['type'])
 			->whereId('IN', $cCustomer)
 			->update([
-				'groups' => new \Sql('JSON_ARRAY_INSERT('.Customer::model()->field('groups').', \'$[0]\', '.$eGroup['id'].')')
+				'groups' => new \Sql('JSON_ARRAY_INSERT('.Customer::model()->field('groups').', \'$[0]\', '.$eCustomerGroup['id'].')')
 			]);
 
 	}
 
-	public static function dissociateGroup(\Collection $cCustomer, Group $eGroup): void {
+	public static function dissociateGroup(\Collection $cCustomer, CustomerGroup $eCustomerGroup): void {
 
 		Customer::model()
-			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eGroup['id'].'\')')
+			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eCustomerGroup['id'].'\')')
 			->whereId('IN', $cCustomer)
 			->whereDestination('!=', Customer::COLLECTIVE)
-			->whereType($eGroup['type'])
+			->whereType($eCustomerGroup['type'])
 			->update([
-				'groups' => new \Sql(Customer::model()->pdo()->api->jsonRemove('groups', $eGroup['id']))
+				'groups' => new \Sql(Customer::model()->pdo()->api->jsonRemove('groups', $eCustomerGroup['id']))
 			]);
 
 	}

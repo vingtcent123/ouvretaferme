@@ -76,6 +76,17 @@ Customer:
     ["farm", "user"]
   ]
 
+CustomerGroup:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  type: enum(PRIVATE, PRO)
+  color: color = PHP('#373737')
+  farm: ?farm\Farm
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm"]
+  ]
+
 Event:
   id: serial32
   name: text8(1, null) @collate(general)
@@ -89,7 +100,7 @@ Grid:
   id: serial32
   farm: farm\Farm
   customer: ?selling\Customer
-  group: ?selling\Group
+  group: ?selling\CustomerGroup
   product: selling\Product
   price: decimal(8, 2, 0.0, null)
   priceInitial: ?decimal(8, 2, 0.0, null)
@@ -101,17 +112,6 @@ Grid:
   UNIQUE: [
     ["customer", "product"],
     ["group", "product"]
-  ]
-
-Group:
-  id: serial32
-  name: text8(1, null) @collate(general)
-  type: enum(PRIVATE, PRO)
-  color: color = PHP('#373737')
-  farm: ?farm\Farm
-  createdAt: datetime = SPECIAL(now)
-  INDEX: [
-    ["farm"]
   ]
 
 History:

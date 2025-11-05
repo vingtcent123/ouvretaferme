@@ -1349,7 +1349,7 @@ class ItemUi {
 				if($eItem['grid']['customer']->notEmpty()) {
 					$h .= s("Prix personnalisé appliqué");
 				} else {
-					$h .= s("Prix {value} appliqué", GroupUi::link($eItem['grid']['group']));
+					$h .= s("Prix {value} appliqué", CustomerGroupUi::link($eItem['grid']['group']));
 				}
 
 			$h .= '</div>';

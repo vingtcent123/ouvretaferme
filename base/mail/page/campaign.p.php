@@ -8,7 +8,7 @@ new \mail\CampaignPage()
 		$eCampaign = new \mail\Campaign([
 			'farm' => $data->eFarm,
 			'source' => \mail\Campaign::INPUT('source', 'source', fn($value) => $value !== NULL ? throw new NotExpectedAction() : NULL),
-			'sourceGroup' => new \selling\Group(),
+			'sourceGroup' => new \selling\CustomerGroup(),
 			'sourceShop' => new \shop\Shop(),
 			'sourcePeriod' => NULL
 		]);
@@ -20,7 +20,7 @@ new \mail\CampaignPage()
 				break;
 
 			case \mail\Campaign::GROUP :
-				$eCampaign['sourceGroup'] = \selling\GroupLib::getById(INPUT('sourceGroup'))->validateProperty('farm', $data->eFarm);
+				$eCampaign['sourceGroup'] = \selling\CustomerGroupLib::getById(INPUT('sourceGroup'))->validateProperty('farm', $data->eFarm);
 				break;
 
 			case \mail\Campaign::PERIOD :
@@ -62,7 +62,7 @@ new \mail\CampaignPage()
 new \farm\FarmPage()
 	->read('createSelect', function($data) {
 
-		$data->cGroup = \selling\GroupLib::getByFarm($data->e);
+		$data->cCustomerGroup = \selling\CustomerGroupLib::getByFarm($data->e);
 		$data->ccShop = \shop\ShopLib::getList($data->e);
 
 		throw new ViewAction($data);

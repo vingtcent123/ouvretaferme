@@ -26,13 +26,13 @@ class GridLib extends GridCrud {
 
 	}
 
-	public static function getByGroup(Group $eGroup, mixed $index = NULL): \Collection {
+	public static function getByGroup(CustomerGroup $eCustomerGroup, mixed $index = NULL): \Collection {
 
-		$eGroup->expects(['id']);
+		$eCustomerGroup->expects(['id']);
 
 		$cGrid = Grid::model()
 			->select(Grid::getSelection())
-			->whereGroup($eGroup)
+			->whereGroup($eCustomerGroup)
 			->getCollection(index: $index);
 
 		$cGrid->sort(['product' => ['name']]);
@@ -41,11 +41,11 @@ class GridLib extends GridCrud {
 
 	}
 
-	public static function getByGroups(\Collection|array $cGroup): \Collection {
+	public static function getByGroups(\Collection|array $cCustomerGroup): \Collection {
 
 		return Grid::model()
 			->select(Grid::getSelection())
-			->whereGroup('IN', $cGroup)
+			->whereGroup('IN', $cCustomerGroup)
 			->sort(['price' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection()
 			->sort([
@@ -69,11 +69,11 @@ class GridLib extends GridCrud {
 
 	}
 
-	public static function calculateByGroup(Group $eGroup, Product $eProduct = new Product()): \Collection|Grid {
+	public static function calculateByGroup(CustomerGroup $eCustomerGroup, Product $eProduct = new Product()): \Collection|Grid {
 
-		$eGroup->expects(['id']);
+		$eCustomerGroup->expects(['id']);
 
-		Grid::model()->whereGroup($eGroup);
+		Grid::model()->whereGroup($eCustomerGroup);
 
 		return self::calculate($eProduct);
 
@@ -191,10 +191,10 @@ class GridLib extends GridCrud {
 
 	}
 
-	public static function deleteByGroup(Group $eGroup) {
+	public static function deleteByGroup(CustomerGroup $eCustomerGroup) {
 
 		Grid::model()
-			->whereGroup($eGroup)
+			->whereGroup($eCustomerGroup)
 			->delete();
 
 	}

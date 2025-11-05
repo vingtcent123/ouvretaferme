@@ -163,7 +163,7 @@ class CustomerUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, \Collection $cGroup, ?int $nCustomer = NULL, \Search $search = new \Search(), array $hide = [], ?int $page = NULL) {
+	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, \Collection $cCustomerGroup, ?int $nCustomer = NULL, \Search $search = new \Search(), array $hide = [], ?int $page = NULL) {
 
 		if($cCustomer->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucun client à afficher.").'</div>';
@@ -333,17 +333,17 @@ class CustomerUi {
 			$h .= \util\TextUi::pagination($page, $nCustomer / 100);
 		}
 
-		$h .= $this->getBatch($eFarm, $cGroup);
+		$h .= $this->getBatch($eFarm, $cCustomerGroup);
 
 		return $h;
 
 	}
 
-	public function getBatch(\farm\Farm $eFarm, \Collection $cGroup): string {
+	public function getBatch(\farm\Farm $eFarm, \Collection $cCustomerGroup): string {
 
 		$menu = '';
 
-		if($cGroup->count() > 0) {
+		if($cCustomerGroup->count() > 0) {
 
 			$menu .= '<a data-dropdown="top-start" class="batch-menu-group batch-menu-item">';
 				$menu .= \Asset::icon('tag');
@@ -352,13 +352,13 @@ class CustomerUi {
 
 			$menu .= '<div class="dropdown-list bg-secondary">';
 				$menu .= '<div class="dropdown-title">'.s("Modifier les groupes").'</div>';
-				foreach($cGroup as $eGroup) {
-					$menu .= '<div class="dropdown-subtitle batch-menu-type batch-menu-'.$eGroup['type'].'">';
-						$menu .= '<span class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</span>';
+				foreach($cCustomerGroup as $eCustomerGroup) {
+					$menu .= '<div class="dropdown-subtitle batch-menu-type batch-menu-'.$eCustomerGroup['type'].'">';
+						$menu .= '<span class="util-badge" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</span>';
 					$menu .= '</div>';
-					$menu .= '<div class="dropdown-items-2 batch-menu-type batch-menu-'.$eGroup['type'].'">';
-						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupAssociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eGroup['id'].'" class="dropdown-item">'.\Asset::icon('plus').' '.s(text: "Ajouter").'</a>';
-						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupDissociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eGroup['id'].'" class="dropdown-item">'.\Asset::icon('x').' '.s("Retirer").'</a>';
+					$menu .= '<div class="dropdown-items-2 batch-menu-type batch-menu-'.$eCustomerGroup['type'].'">';
+						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupAssociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('plus').' '.s(text: "Ajouter").'</a>';
+						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupDissociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('x').' '.s("Retirer").'</a>';
 					$menu .= '</div>';
 				}
 			$menu .= '</div>';
@@ -865,9 +865,9 @@ class CustomerUi {
 
 		$h = '';
 
-		foreach($eCustomer['cGroup?']() as $eGroup) {
-			$eGroup['farm'] = $eCustomer['farm'];
-			$h .= ' '.GroupUi::link($eGroup).' ';
+		foreach($eCustomer['cGroup?']() as $eCustomerGroup) {
+			$eCustomerGroup['farm'] = $eCustomer['farm'];
+			$h .= ' '.CustomerGroupUi::link($eCustomerGroup).' ';
 		}
 
 		return $h;
@@ -933,7 +933,7 @@ class CustomerUi {
 						'type' => $e['type'],
 					];
 				};
-				new \selling\GroupUi()->query($d, TRUE);
+				new \selling\CustomerGroupUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'groups'];
 				break;
 

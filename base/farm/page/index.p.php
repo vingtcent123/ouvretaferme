@@ -95,15 +95,15 @@ new Page(function($data) {
 
 		$data->search = new Search([
 			'name' => GET('name'),
-			'group' => GET('group', 'selling\Group'),
-			'cGroup' => \selling\GroupLib::getByFarm($data->eFarm),
+			'group' => GET('group', 'selling\CustomerGroup'),
+			'cGroup' => \selling\CustomerGroupLib::getByFarm($data->eFarm),
 			'email' => GET('email'),
 			'category' => GET('category')
 		], GET('sort', default: 'lastName'));
 
 		[$data->cCustomer, $data->nCustomer] = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);
 
-		$data->cGroup = \selling\GroupLib::getByFarm($data->eFarm);
+		$data->cCustomerGroup = \selling\CustomerGroupLib::getByFarm($data->eFarm);
 
 		throw new ViewAction($data);
 
@@ -265,7 +265,7 @@ new Page(function($data) {
 			$data->eCatalogSelected['cProduct'] = \shop\ProductLib::getByCatalog($data->eCatalogSelected, onlyActive: FALSE);
 			$data->eCatalogSelected['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 			$data->eCatalogSelected['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->eCatalogSelected['cProduct']);
-			$data->eCatalogSelected['cGroup'] = \selling\GroupLib::getLimitedByProducts($data->eCatalogSelected['cProduct']);
+			$data->eCatalogSelected['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($data->eCatalogSelected['cProduct']);
 		}
 
 		throw new ViewAction($data);

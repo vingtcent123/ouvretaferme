@@ -7,7 +7,7 @@ new \selling\CustomerPage()
 		return new \selling\Customer([
 			'farm' => $data->eFarm,
 			'user' => new \user\User(),
-			'nGroup' => \selling\GroupLib::countByFarm($data->eFarm)
+			'nGroup' => \selling\CustomerGroupLib::countByFarm($data->eFarm)
 		]);
 
 	})
@@ -55,7 +55,7 @@ new \selling\CustomerPage()
 	})
 	->update(function($data) {
 
-		$data->e['nGroup'] = \selling\GroupLib::countByFarm($data->e['farm']);
+		$data->e['nGroup'] = \selling\CustomerGroupLib::countByFarm($data->e['farm']);
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 		throw new ViewAction($data);
@@ -76,9 +76,9 @@ new \selling\CustomerPage()
 	->writeCollection('doUpdateGroupAssociateCollection', function($data) {
 
 		$eFarm = $data->c->first()['farm'];
-		$eGroup = \selling\GroupLib::getById(POST('group'))->validateProperty('farm', $eFarm);
+		$eCustomerGroup = \selling\CustomerGroupLib::getById(POST('group'))->validateProperty('farm', $eFarm);
 
-		\selling\CustomerLib::associateGroup($data->c, $eGroup);
+		\selling\CustomerLib::associateGroup($data->c, $eCustomerGroup);
 
 		throw new ReloadAction();
 
@@ -86,9 +86,9 @@ new \selling\CustomerPage()
 	->writeCollection('doUpdateGroupDissociateCollection', function($data) {
 
 		$eFarm = $data->c->first()['farm'];
-		$eGroup = \selling\GroupLib::getById(POST('group'))->validateProperty('farm', $eFarm);
+		$eCustomerGroup = \selling\CustomerGroupLib::getById(POST('group'))->validateProperty('farm', $eFarm);
 
-		\selling\CustomerLib::dissociateGroup($data->c, $eGroup);
+		\selling\CustomerLib::dissociateGroup($data->c, $eCustomerGroup);
 
 		throw new ReloadAction();
 

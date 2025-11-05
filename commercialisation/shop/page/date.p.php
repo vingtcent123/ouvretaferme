@@ -40,7 +40,7 @@ new \farm\FarmPage()
 
 		$cProduct = \shop\ProductLib::getByDate($data->eDate);
 		$data->eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($cProduct);
-		$data->eDate['cGroup'] = \selling\GroupLib::getLimitedByProducts($cProduct);
+		$data->eDate['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($cProduct);
 
 		// Uniquement les boutiques avec un seul producteur
 		$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($data->cSale, $cProduct->getColumnCollection('product')));

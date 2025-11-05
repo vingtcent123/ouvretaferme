@@ -8,7 +8,7 @@ class Campaign extends CampaignElement {
 		return parent::getSelection() + [
 			'farm' => \farm\FarmElement::getSelection(),
 			'sourceShop' => \shop\ShopElement::getSelection(),
-			'sourceGroup' => \selling\GroupElement::getSelection(),
+			'sourceGroup' => \selling\CustomerGroupElement::getSelection(),
 		];
 
 	}

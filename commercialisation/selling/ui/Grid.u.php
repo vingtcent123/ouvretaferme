@@ -127,7 +127,7 @@ class GridUi {
 									if($eGrid['customer']->notEmpty()) {
 										$h .= CustomerUi::link($eGrid['customer']);
 									} else if($eGrid['group']->notEmpty()) {
-										$h .= GroupUi::link($eGrid['group']);
+										$h .= CustomerGroupUi::link($eGrid['group']);
 									}
 								$h .= '</td>';
 
@@ -201,7 +201,7 @@ class GridUi {
 
 	}
 
-	public function getGridByGroups(Customer $eCustomer, \Collection $cGroup, \Collection $cGridGroup): string {
+	public function getGridByGroups(Customer $eCustomer, \Collection $cCustomerGroup, \Collection $cGridGroup): string {
 
 		if($cGridGroup->empty()) {
 			return '';
@@ -213,13 +213,13 @@ class GridUi {
 			$h .= p("Ce client appartient à un groupe qui lui permet de bénéficier d'autres prix personnalisés par rapport aux prix de base.", "Ce client appartient à des groupes qui lui permettent de bénéficier d'autres prix personnalisés par rapport aux prix de base.", count($eCustomer['groups']));
 		$h .= '</div>';
 
-		$h .= $this->getGridWithProduct($eCustomer, $cGridGroup, exclude: $cGroup->getColumnCollection('product')->getIds(), hide: ['actions'], show: ['group']);
+		$h .= $this->getGridWithProduct($eCustomer, $cGridGroup, exclude: $cCustomerGroup->getColumnCollection('product')->getIds(), hide: ['actions'], show: ['group']);
 
 		return $h;
 
 	}
 
-	public function getGridByGroup(Group $eGroup, \Collection $cGrid): string {
+	public function getGridByGroup(CustomerGroup $eCustomerGroup, \Collection $cGrid): string {
 
 		$h = '<div class="util-title">';
 
@@ -231,14 +231,14 @@ class GridUi {
 
 			$h .= '<div>';
 				$h .= '<a href="/doc/selling:pricing" class="btn btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a> ';
-				$h .= '<a href="/selling/grid:create?farm='.$eGroup['farm']['id'].'&group='.$eGroup['id'].'" class="btn btn-outline-primary">'.s("Ajouter un prix").'</a> ';
+				$h .= '<a href="/selling/grid:create?farm='.$eCustomerGroup['farm']['id'].'&group='.$eCustomerGroup['id'].'" class="btn btn-outline-primary">'.s("Ajouter un prix").'</a> ';
 				if($cGrid->notEmpty()) {
-					$h .= '<a data-ajax="/selling/grid:doDeleteByGroup" post-id="'.$eGroup['id'].'" class="btn btn-outline-danger" data-confirm="'.s("Confirmer la suppression de l'ensemble des prix personnalisés pour ce groupe ?").'">'.s("Tout supprimer").'</a>';
+					$h .= '<a data-ajax="/selling/grid:doDeleteByGroup" post-id="'.$eCustomerGroup['id'].'" class="btn btn-outline-danger" data-confirm="'.s("Confirmer la suppression de l'ensemble des prix personnalisés pour ce groupe ?").'">'.s("Tout supprimer").'</a>';
 				}
 			$h .= '</div>';
 		$h .= '</div>';
 
-		$h .= $this->getGridWithProduct($eGroup, $cGrid);
+		$h .= $this->getGridWithProduct($eCustomerGroup, $cGrid);
 
 		return $h;
 
@@ -299,7 +299,7 @@ class GridUi {
 							$h .= '</td>';
 
 							if(in_array('group', $show)) {
-								$h .= '<td>'.GroupUi::link($eGrid['group']).'</td>';
+								$h .= '<td>'.CustomerGroupUi::link($eGrid['group']).'</td>';
 							}
 
 							$h .= '<td class="text-end">';

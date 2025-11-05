@@ -84,15 +84,15 @@ new Page(function($data) {
 
 		if(get_exists('group')) {
 
-			$eGroup = \selling\GroupLib::getById(GET('group'))->validateProperty('farm', $data->eFarm);
-			$cCustomer = \selling\CustomerLib::getByGroup($eGroup);
+			$eCustomerGroup = \selling\CustomerGroupLib::getById(GET('group'))->validateProperty('farm', $data->eFarm);
+			$cCustomer = \selling\CustomerLib::getByGroup($eCustomerGroup);
 
 			if($cCustomer->notEmpty()) {
 				$eCustomer = $cCustomer->first();
 			}
 
 			$sourceType = 'group';
-			$sourceValue = $eGroup;
+			$sourceValue = $eCustomerGroup;
 
 		} else if(get_exists('customers')) {
 
@@ -151,11 +151,11 @@ new Page(function($data) {
 
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
 
-			$data->cGroup = new Collection();
+			$data->cCustomerGroup = new Collection();
 
 		} else {
 
-			$data->cGroup = \selling\GroupLib::getByFarm($data->eFarm);
+			$data->cCustomerGroup = \selling\CustomerGroupLib::getByFarm($data->eFarm);
 
 		}
 

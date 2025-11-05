@@ -71,7 +71,7 @@ class Product extends ProductElement {
 
 				$this->expects(['farm']);
 
-				$groups = \selling\Group::model()
+				$groups = \selling\CustomerGroup::model()
 					->select('id')
 					->whereId('IN', (array)($groups ?? []))
 					->whereFarm($this['farm'])
@@ -85,7 +85,7 @@ class Product extends ProductElement {
 
 				$this->expects(['farm']);
 
-				$groups = \selling\Group::model()
+				$groups = \selling\CustomerGroup::model()
 					->select('id')
 					->whereId('IN', (array)($groups ?? []))
 					->whereFarm($this['farm'])

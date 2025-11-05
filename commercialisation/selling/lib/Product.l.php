@@ -222,12 +222,12 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function generateItemsByGroup(\Collection $cProduct, Group $eGroup, Sale $eSale): int {
+	public static function generateItemsByGroup(\Collection $cProduct, CustomerGroup $eCustomerGroup, Sale $eSale): int {
 
 		$eSale->expects(['farm', 'type', 'customer', 'discount']);
 
 		if($eSale->isComposition() === FALSE) {
-			$cGrid = \selling\GridLib::calculateByGroup($eGroup);
+			$cGrid = \selling\GridLib::calculateByGroup($eCustomerGroup);
 		} else {
 			$cGrid = new \Collection();
 		}

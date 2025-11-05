@@ -1787,7 +1787,7 @@ class SaleUi {
 
 	}
 
-	public function createCollection(Sale $eSale, \Collection $cGroup): \Panel {
+	public function createCollection(Sale $eSale, \Collection $cCustomerGroup): \Panel {
 
 		$eSale->expects(['farm']);
 
@@ -1827,7 +1827,7 @@ class SaleUi {
 					$h .= '<div class="util-info">';
 						$h .= match($eSale['gridSource']) {
 							'customer' => s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour {value}.", '<b>'.encode($eSale['gridValue']->getName()).'</b>'),
-							'group' => s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour {value}.", GroupUi::link($eSale['gridValue']))
+							'group' => s("Les prix indiqués tiennent compte des prix personnalisés qui ont été trouvés pour {value}.", CustomerGroupUi::link($eSale['gridValue']))
 						};
 					$h .= '</div>';
 
@@ -1851,14 +1851,14 @@ class SaleUi {
 
 			});
 
-			if($cGroup->notEmpty()) {
+			if($cCustomerGroup->notEmpty()) {
 
 				$h .= '<div class="text-end">';
 					$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.s("Créer une vente pour un groupe de clients").'</a>';
 					$h .= '<div class="dropdown-list bg-primary">';
-					foreach($cGroup as $eGroup) {
-						$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'group', $eGroup['id']).'" class="dropdown-item">';
-							$h .= '<span class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</span>';
+					foreach($cCustomerGroup as $eCustomerGroup) {
+						$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'group', $eCustomerGroup['id']).'" class="dropdown-item">';
+							$h .= '<span class="util-badge" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</span>';
 						$h .= '</a>';
 					}
 					$h .= '</div>';

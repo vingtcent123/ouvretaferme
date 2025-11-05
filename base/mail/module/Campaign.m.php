@@ -48,7 +48,7 @@ class CampaignModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'source' => ['enum', [\mail\Campaign::PERIOD, \mail\Campaign::SHOP, \mail\Campaign::GROUP, \mail\Campaign::NEWSLETTER], 'null' => TRUE, 'cast' => 'enum'],
 			'sourceShop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
-			'sourceGroup' => ['element32', 'selling\Group', 'null' => TRUE, 'cast' => 'element'],
+			'sourceGroup' => ['element32', 'selling\CustomerGroup', 'null' => TRUE, 'cast' => 'element'],
 			'sourcePeriod' => ['int8', 'min' => 1, 'max' => 12, 'null' => TRUE, 'cast' => 'int'],
 			'to' => ['json', 'cast' => 'array'],
 			'subject' => ['text8', 'min' => 1, 'max' => 100, 'cast' => 'string'],
@@ -74,7 +74,7 @@ class CampaignModel extends \ModuleModel {
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'sourceShop' => 'shop\Shop',
-			'sourceGroup' => 'selling\Group',
+			'sourceGroup' => 'selling\CustomerGroup',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [

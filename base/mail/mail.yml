@@ -3,7 +3,7 @@ Campaign:
   farm: farm\Farm
   source: ?enum(PERIOD, SHOP, GROUP, NEWSLETTER)
   sourceShop: ?shop\Shop
-  sourceGroup: ?selling\Group
+  sourceGroup: ?selling\CustomerGroup
   sourcePeriod: ?int8(1, 12)
   to: json
   subject: text8(1, 100)

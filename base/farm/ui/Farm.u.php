@@ -217,7 +217,7 @@ class FarmUi {
 	}
 
 	public static function urlSellingCustomersGroups(Farm $eFarm): string {
-		return '/selling/group:manage?farm='.$eFarm['id'];
+		return '/selling/customerGroup:manage?farm='.$eFarm['id'];
 	}
 
 	public static function urlSellingSales(Farm $eFarm, ?string $view = NULL): string {
@@ -1729,7 +1729,7 @@ class FarmUi {
 				case Farmer::GROUP :
 					$h .= '<div>';
 						if($canCreate) {
-							$h .= '<a href="/selling/group:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau groupe").'</span></a>';
+							$h .= '<a href="/selling/customerGroup:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau groupe").'</span></a>';
 						}
 					$h .= '</div>';
 					break;

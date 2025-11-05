@@ -1,38 +1,38 @@
 <?php
 namespace selling;
 
-abstract class GroupElement extends \Element {
+abstract class CustomerGroupElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?GroupModel $model = NULL;
+	private static ?CustomerGroupModel $model = NULL;
 
 	const PRIVATE = 'private';
 	const PRO = 'pro';
 
 	public static function getSelection(): array {
-		return Group::model()->getProperties();
+		return CustomerGroup::model()->getProperties();
 	}
 
-	public static function model(): GroupModel {
+	public static function model(): CustomerGroupModel {
 		if(self::$model === NULL) {
-			self::$model = new GroupModel();
+			self::$model = new CustomerGroupModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('Group::'.$failName, $arguments, $wrapper);
+		return \Fail::log('CustomerGroup::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class GroupModel extends \ModuleModel {
+class CustomerGroupModel extends \ModuleModel {
 
-	protected string $module = 'selling\Group';
+	protected string $module = 'selling\CustomerGroup';
 	protected string $package = 'selling';
-	protected string $table = 'sellingGroup';
+	protected string $table = 'sellingCustomerGroup';
 
 	public function __construct() {
 
@@ -41,7 +41,7 @@ class GroupModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'type' => ['enum', [\selling\Group::PRIVATE, \selling\Group::PRO], 'cast' => 'enum'],
+			'type' => ['enum', [\selling\CustomerGroup::PRIVATE, \selling\CustomerGroup::PRO], 'cast' => 'enum'],
 			'color' => ['color', 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -92,35 +92,35 @@ class GroupModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): GroupModel {
+	public function select(...$fields): CustomerGroupModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): GroupModel {
+	public function where(...$data): CustomerGroupModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): GroupModel {
+	public function whereId(...$data): CustomerGroupModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereName(...$data): GroupModel {
+	public function whereName(...$data): CustomerGroupModel {
 		return $this->where('name', ...$data);
 	}
 
-	public function whereType(...$data): GroupModel {
+	public function whereType(...$data): CustomerGroupModel {
 		return $this->where('type', ...$data);
 	}
 
-	public function whereColor(...$data): GroupModel {
+	public function whereColor(...$data): CustomerGroupModel {
 		return $this->where('color', ...$data);
 	}
 
-	public function whereFarm(...$data): GroupModel {
+	public function whereFarm(...$data): CustomerGroupModel {
 		return $this->where('farm', ...$data);
 	}
 
-	public function whereCreatedAt(...$data): GroupModel {
+	public function whereCreatedAt(...$data): CustomerGroupModel {
 		return $this->where('createdAt', ...$data);
 	}
 
@@ -128,24 +128,24 @@ class GroupModel extends \ModuleModel {
 }
 
 
-abstract class GroupCrud extends \ModuleCrud {
+abstract class CustomerGroupCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): Group {
+	public static function getById(mixed $id, array $properties = []): CustomerGroup {
 
-		$e = new Group();
+		$e = new CustomerGroup();
 
 		if(empty($id)) {
-			Group::model()->reset();
+			CustomerGroup::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = Group::getSelection();
+			$properties = CustomerGroup::getSelection();
 		}
 
-		if(Group::model()
+		if(CustomerGroup::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -163,14 +163,14 @@ abstract class GroupCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = Group::getSelection();
+			$properties = CustomerGroup::getSelection();
 		}
 
 		if($sort !== NULL) {
-			Group::model()->sort($sort);
+			CustomerGroup::model()->sort($sort);
 		}
 
-		return Group::model()
+		return CustomerGroup::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -184,51 +184,51 @@ abstract class GroupCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Group {
+	public static function getCreateElement(): CustomerGroup {
 
-		return new Group(['id' => NULL]);
-
-	}
-
-	public static function create(Group $e): void {
-
-		Group::model()->insert($e);
+		return new CustomerGroup(['id' => NULL]);
 
 	}
 
-	public static function update(Group $e, array $properties): void {
+	public static function create(CustomerGroup $e): void {
+
+		CustomerGroup::model()->insert($e);
+
+	}
+
+	public static function update(CustomerGroup $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		Group::model()
+		CustomerGroup::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, Group $e, array $properties): void {
+	public static function updateCollection(\Collection $c, CustomerGroup $e, array $properties): void {
 
-		Group::model()
+		CustomerGroup::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(Group $e): void {
+	public static function delete(CustomerGroup $e): void {
 
 		$e->expects(['id']);
 
-		Group::model()->delete($e);
+		CustomerGroup::model()->delete($e);
 
 	}
 
 }
 
 
-class GroupPage extends \ModulePage {
+class CustomerGroupPage extends \ModulePage {
 
-	protected string $module = 'selling\Group';
+	protected string $module = 'selling\CustomerGroup';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -237,8 +237,8 @@ class GroupPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? GroupLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? GroupLib::getPropertiesUpdate()
+		   $propertiesCreate ?? CustomerGroupLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? CustomerGroupLib::getPropertiesUpdate()
 		);
 	}
 

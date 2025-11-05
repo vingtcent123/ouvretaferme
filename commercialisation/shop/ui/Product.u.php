@@ -1098,7 +1098,7 @@ class ProductUi {
 
 	}
 
-	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, \Collection $cGroup, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
+	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, \Collection $cCustomerGroup, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
 
 		$h = '<tr>';
 
@@ -1166,8 +1166,8 @@ class ProductUi {
 
 						foreach($eProduct['limitGroups'] as $group) {
 
-							if($cGroup->offsetExists($group)) {
-								$for[] = '<u>'.\selling\GroupUi::link($cGroup[$group]).'</u>';
+							if($cCustomerGroup->offsetExists($group)) {
+								$for[] = '<u>'.\selling\CustomerGroupUi::link($cCustomerGroup[$group]).'</u>';
 							}
 
 						}
@@ -1190,8 +1190,8 @@ class ProductUi {
 
 						foreach($eProduct['excludeGroups'] as $group) {
 
-							if($cGroup->offsetExists($group)) {
-								$for[] = '<u>'.\selling\GroupUi::link($cGroup[$group]).'</u>';
+							if($cCustomerGroup->offsetExists($group)) {
+								$for[] = '<u>'.\selling\CustomerGroupUi::link($cCustomerGroup[$group]).'</u>';
 							}
 
 						}
@@ -1536,7 +1536,7 @@ class ProductUi {
 						'type' => $e['type']
 					];
 				};
-				new \selling\GroupUi()->query($d, TRUE);
+				new \selling\CustomerGroupUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'limitGroups'];
 				break;
 
@@ -1549,7 +1549,7 @@ class ProductUi {
 						'type' => $e['type']
 					];
 				};
-				new \selling\GroupUi()->query($d, TRUE);
+				new \selling\CustomerGroupUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'excludeGroups'];
 				break;
 

@@ -1,7 +1,7 @@
 <?php
 namespace selling;
 
-class GroupUi {
+class CustomerGroupUi {
 
 	public function __construct() {
 
@@ -10,8 +10,8 @@ class GroupUi {
 
 	}
 
-	public static function link(Group $eGroup): string {
-		return '<a href="/selling/group:get?id='.$eGroup['id'].'" class="util-badge" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a>';
+	public static function link(CustomerGroup $eCustomerGroup): string {
+		return '<a href="/selling/customerGroup:get?id='.$eCustomerGroup['id'].'" class="util-badge" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</a>';
 	}
 
 	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
@@ -23,8 +23,8 @@ class GroupUi {
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'group'];
 
-		$d->autocompleteUrl = '/selling/group:query';
-		$d->autocompleteResults = function(Group|\Collection $e) {
+		$d->autocompleteUrl = '/selling/customerGroup:query';
+		$d->autocompleteResults = function(CustomerGroup|\Collection $e) {
 			return self::getAutocomplete($e);
 		};
 
@@ -34,16 +34,16 @@ class GroupUi {
 
 	}
 
-	public static function getAutocomplete(Group $eGroup): array {
+	public static function getAutocomplete(CustomerGroup $eCustomerGroup): array {
 
 		\Asset::css('media', 'media.css');
 
-		$item = '<div>'.encode($eGroup['name']).'</div>';
+		$item = '<div>'.encode($eCustomerGroup['name']).'</div>';
 
 		return [
-			'value' => $eGroup['id'],
+			'value' => $eCustomerGroup['id'],
 			'itemHtml' => $item,
-			'itemText' => $eGroup['name']
+			'itemText' => $eCustomerGroup['name']
 		];
 
 	}
@@ -55,13 +55,13 @@ class GroupUi {
 
 		return [
 			'type' => 'link',
-			'link' => '/selling/group:create?farm='.$eFarm['id'],
+			'link' => '/selling/customerGroup:create?farm='.$eFarm['id'],
 			'itemHtml' => $item
 		];
 
 	}
 
-	public function getOne(Group $eGroup, \Collection $cCustomer, \Collection $cGrid, \Collection $cGroup): string {
+	public function getOne(CustomerGroup $eCustomerGroup, \Collection $cCustomer, \Collection $cGrid, \Collection $cCustomerGroup): string {
 
 		$h = '<div class="tabs-h" id="group-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "group")').'">';
 
@@ -76,11 +76,11 @@ class GroupUi {
 
 			$h .= '<div>';
 				$h .= '<div data-tab="sales" class="tab-panel selected">';
-					$h .= new CustomerUi()->getList($eGroup['farm'], $cCustomer, $cGroup, hide: ['more', 'sales', 'prices', 'actions']);
+					$h .= new CustomerUi()->getList($eCustomerGroup['farm'], $cCustomer, $cCustomerGroup, hide: ['more', 'sales', 'prices', 'actions']);
 				$h .= '</div>';
 
 				$h .= '<div data-tab="grid" class="tab-panel">';
-					$h .= new \selling\GridUi()->getGridByGroup($eGroup, $cGrid);
+					$h .= new \selling\GridUi()->getGridByGroup($eCustomerGroup, $cGrid);
 				$h .= '</div>';
 
 			$h .= '</div>';
@@ -91,16 +91,16 @@ class GroupUi {
 
 	}
 
-	public function getMenu(Group $eGroup, string $btn): string {
+	public function getMenu(CustomerGroup $eCustomerGroup, string $btn): string {
 
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 
-			$h .= '<div class="dropdown-title">'.encode($eGroup['name']).'</div>';
+			$h .= '<div class="dropdown-title">'.encode($eCustomerGroup['name']).'</div>';
 
-			$h .= '<a href="/selling/group:update?id='.$eGroup['id'].'" class="dropdown-item">'.s("Modifier le groupe").'</a> ';
+			$h .= '<a href="/selling/customerGroup:update?id='.$eCustomerGroup['id'].'" class="dropdown-item">'.s("Modifier le groupe").'</a> ';
 			$h .= '<div class="dropdown-divider"></div>';
-			$h .= '<a data-ajax="/selling/group:doDelete" post-id="'.$eGroup['id'].'" data-confirm="'.s("Voulez-vous réellement supprimer ce groupe de clients. Continuer ?").'" class="dropdown-item">'.s("Supprimer le groupe").'</a>';
+			$h .= '<a data-ajax="/selling/customerGroup:doDelete" post-id="'.$eCustomerGroup['id'].'" data-confirm="'.s("Voulez-vous réellement supprimer ce groupe de clients. Continuer ?").'" class="dropdown-item">'.s("Supprimer le groupe").'</a>';
 
 		$h .= '</div>';
 
@@ -108,16 +108,16 @@ class GroupUi {
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cGroup): string {
+	public function getManage(\farm\Farm $eFarm, \Collection $cCustomerGroup): string {
 
 		$h = '';
 
-		if($cGroup->empty()) {
+		if($cCustomerGroup->empty()) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= '<p>'.s("Vous pouvez créer des groupes de clients pour regrouper vos clients en fonction de votre canaux de commercialisation. Cela vous permettra notamment de créer des ventes pour tout un groupe en clic ou faire des recherches plus facilement dans votre base de clients !").'</p>';
 				$h .= '<p>'.s("Par exemple, si vous avez plusieurs AMAP, vous pouvez créer un groupe pour chaque AMAP.").'</p>';
-				$h .= '<a href="/selling/group:create?farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Créer un premier groupe de clients").'</a>';
+				$h .= '<a href="/selling/customerGroup:create?farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Créer un premier groupe de clients").'</a>';
 			$h .= '</div>';
 
 		} else {
@@ -135,27 +135,27 @@ class GroupUi {
 
 				$h .= '<tbody>';
 
-				foreach($cGroup as $eGroup) {
+				foreach($cCustomerGroup as $eCustomerGroup) {
 
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content">';
-							$h .= self::link($eGroup);
+							$h .= self::link($eCustomerGroup);
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= self::p('type')->values[$eGroup['type']];
+							$h .= self::p('type')->values[$eCustomerGroup['type']];
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
-							$h .= $eGroup['customers'];
+							$h .= $eCustomerGroup['customers'];
 						$h .= '</td>';
 						$h .= '<td class="text-center hide-xs-down">';
-							if($eGroup['prices'] > 0) {
-								$h .= p("{value} prix", "{value} prix", $eGroup['prices']);
+							if($eCustomerGroup['prices'] > 0) {
+								$h .= p("{value} prix", "{value} prix", $eCustomerGroup['prices']);
 							} else {
 								$h .= '-';
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end" style="white-space: nowrap">';
-							$h .= $this->getMenu($eGroup, 'btn-primary');
+							$h .= $this->getMenu($eCustomerGroup, 'btn-primary');
 						$h .= '</td>';
 					$h .= '</tr>';
 				}
@@ -170,16 +170,16 @@ class GroupUi {
 
 	public function create(\farm\Farm $eFarm): \Panel {
 
-		$eGroup = new Group();
+		$eCustomerGroup = new CustomerGroup();
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/selling/group:doCreate');
+		$h = $form->openAjax('/selling/customerGroup:doCreate');
 
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->dynamicGroups($eGroup, ['name*', 'type*', 'color']);
+			$h .= $form->dynamicGroups($eCustomerGroup, ['name*', 'type*', 'color']);
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))
 			);
@@ -194,14 +194,14 @@ class GroupUi {
 
 	}
 
-	public function update(Group $eGroup): \Panel {
+	public function update(CustomerGroup $eCustomerGroup): \Panel {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/selling/group:doUpdate');
+		$h = $form->openAjax('/selling/customerGroup:doUpdate');
 
-			$h .= $form->hidden('id', $eGroup['id']);
-			$h .= $form->dynamicGroups($eGroup, ['name', 'color']);
+			$h .= $form->hidden('id', $eCustomerGroup['id']);
+			$h .= $form->dynamicGroups($eCustomerGroup, ['name', 'color']);
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
 			);
@@ -218,7 +218,7 @@ class GroupUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		$d = Group::model()->describer($property, [
+		$d = CustomerGroup::model()->describer($property, [
 			'name' => s("Nom"),
 			'type' => s("Clientèle"),
 			'color' => s("Couleur"),
@@ -233,8 +233,8 @@ class GroupUi {
 
 			case 'type' :
 				$d->values = [
-					Group::PRO => s("Professionnels"),
-					Group::PRIVATE => s("Particuliers")
+					CustomerGroup::PRO => s("Professionnels"),
+					CustomerGroup::PRIVATE => s("Particuliers")
 				];
 				break;
 

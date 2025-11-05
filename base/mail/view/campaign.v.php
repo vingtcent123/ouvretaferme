@@ -1,6 +1,6 @@
 <?php
 new AdaptativeView('createSelect', function($data, PanelTemplate $t) {
-	return new \mail\CampaignUi()->createSelect($data->e, $data->cGroup, $data->ccShop);
+	return new \mail\CampaignUi()->createSelect($data->e, $data->cCustomerGroup, $data->ccShop);
 });
 
 new AdaptativeView('getLimits', function($data, AjaxTemplate $t) {

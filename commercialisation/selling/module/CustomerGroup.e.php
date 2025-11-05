@@ -1,7 +1,7 @@
 <?php
 namespace selling;
 
-class Group extends GroupElement {
+class CustomerGroup extends CustomerGroupElement {
 
 	public function canRead(): bool {
 		return $this->canWrite();

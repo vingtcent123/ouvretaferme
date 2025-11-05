@@ -26,7 +26,7 @@ class ContactLib extends ContactCrud {
 			'source' => var_filter($data['source'] ?? NULL, '?string'),
 			'email' => var_filter($data['email'] ?? NULL),
 			'shop' => var_filter($data['shop'] ?? NULL, 'shop\Shop'),
-			'group' => var_filter($data['group'] ?? NULL, 'selling\Group'),
+			'group' => var_filter($data['group'] ?? NULL, 'selling\CustomerGroup'),
 			'optIn' => var_filter($data['optIn'] ?? NULL, '?string'),
 			'newsletter' => var_filter($data['newsletter'] ?? NULL, '?string'),
 			'category' => var_filter($data['category'] ?? NULL, [\selling\Customer::PRIVATE, \selling\Customer::PRO]),

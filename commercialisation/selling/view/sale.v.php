@@ -79,7 +79,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
-	return new \selling\SaleUi()->createCollection($data->e, $data->cGroup);
+	return new \selling\SaleUi()->createCollection($data->e, $data->cCustomerGroup);
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {

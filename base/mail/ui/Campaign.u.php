@@ -27,21 +27,21 @@ class CampaignUi {
 
 	}
 
-	public function createSelect(\farm\Farm $eFarm, \Collection $cGroup, \Collection $ccShop): \Panel {
+	public function createSelect(\farm\Farm $eFarm, \Collection $cCustomerGroup, \Collection $ccShop): \Panel {
 
 		$h = '';
 
 		$h .= '<div class="util-block-help">'.s("Envoyez un e-mail groupé à tous les clients qui correspondent à l'un des critères ci-dessus.").'</div>';
 
-		if($cGroup->notEmpty()) {
+		if($cCustomerGroup->notEmpty()) {
 
 			$h .= '<div class="util-block bg-background-light mb-2">';
 
 				$h .= '<h3>'.s("À destination d'un groupe de clients").'</h3>';
 
 				$h .= '<div class="campaign-list">';
-					foreach($cGroup as $eGroup) {
-						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::GROUP.'&sourceGroup='.$eGroup['id'].'" class="btn color-white btn-lg" style="background-color: '.$eGroup['color'].'">'.encode($eGroup['name']).'</a>';
+					foreach($cCustomerGroup as $eCustomerGroup) {
+						$h .= '<a href="/mail/campaign:create?farm='.$eFarm['id'].'&source='.Campaign::GROUP.'&sourceGroup='.$eCustomerGroup['id'].'" class="btn color-white btn-lg" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</a>';
 					}
 				$h .= '</div>';
 
