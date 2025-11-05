@@ -307,6 +307,10 @@ class OperationUi {
 			$h .= $comment;
 		$h .= '</div>';
 
+		if($eOperation->canUpdate()) {
+			$h .= '<div class="text-center"><a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update">'.s("Modifier").'</a></div>';
+		}
+
 		return $h;
 	}
 
