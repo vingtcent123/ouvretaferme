@@ -9,7 +9,6 @@ abstract class OperationElement extends \Element {
 
 	const ACH = 'ach';
 	const VEN = 'ven';
-	const BAN = 'ban';
 	const KS = 'ks';
 	const OD = 'od';
 
@@ -52,7 +51,7 @@ class OperationModel extends \ModuleModel {
 			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'number' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
-			'journalCode' => ['enum', [\journal\Operation::ACH, \journal\Operation::VEN, \journal\Operation::BAN, \journal\Operation::KS, \journal\Operation::OD], 'null' => TRUE, 'cast' => 'enum'],
+			'journalCode' => ['enum', [\journal\Operation::ACH, \journal\Operation::VEN, \journal\Operation::KS, \journal\Operation::OD], 'null' => TRUE, 'cast' => 'enum'],
 			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],

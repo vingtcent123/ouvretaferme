@@ -160,6 +160,37 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	/**
+	 * Le journal de banque doit ressortir toutes les contreparties au compte AccountSetting\BANK_ACCOUNT_CLASS
+	 */
+	public static function getAllForBankJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
+
+		$eFinancialYear = $search->get('financialYear');
+		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
+
+		$searchFiltered = new \Search($search->getFiltered(['journalCode']));
+
+		$hashes = self::applySearch($searchFiltered)
+			->select([
+				'hash' => new \Sql('DISTINCT(hash)'),
+			])
+			->whereAccountLabel('LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%')
+			->getCollection()
+			->getColumn('hash');
+
+		return self::applySearch($searchFiltered)
+			->select(
+			 Operation::getSelection()
+			 + ['account' => ['class', 'description']]
+			 + ['thirdParty' => ['id', 'name']]
+			)
+			->sort($hasSort === TRUE ? $search->buildSort() : $defaultOrder)
+			->whereHash('IN', $hashes)
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%')
+			->getCollection();
+
+	}
+
 	public static function getAllChargesForClosing(\Search $search): \Collection {
 
 		return self::applySearch($search)

@@ -47,14 +47,21 @@ new Page(function($data) {
 		$search->set('journalCode', $journalCode);
 
 		$code = GET('code');
-		if(in_array($code, ['vat-buy', 'vat-sell']) === FALSE and in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
+		if(
+			in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_BANK_CODE]) === FALSE and
+			in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE
+		) {
 			$code = NULL;
 		}
 
 		$data->cOperation = new Collection();
 		$data->operationsVat = [];
 
-		if(in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) or $code === NULL) {
+		if($code === \journal\JournalSetting::JOURNAL_BANK_CODE) {
+
+			$data->cOperation = \journal\OperationLib::getAllForBankJournal($search, $hasSort);
+
+		} else if(in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) or $code === NULL) {
 
 			$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 

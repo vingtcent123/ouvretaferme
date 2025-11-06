@@ -36,7 +36,7 @@ Operation:
   hash: ?textFixed(20, 20) @charset(ascii)
   number: ?int32(0, null)
   financialYear: account\FinancialYear
-  journalCode: ?enum(ACH, VEN, BAN, KS, OD)
+  journalCode: ?enum(ACH, VEN, KS, OD)
   # Compte concerné par l'opération
   account: account\Account
   accountLabel: text8(1, null) @collate(general)

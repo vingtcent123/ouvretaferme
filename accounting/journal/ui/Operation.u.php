@@ -1350,7 +1350,6 @@ class OperationUi {
 			Operation::ACH => s("Journal des achats"),
 			Operation::VEN => s("Journal des ventes"),
 			Operation::KS => s("Journal de caisse"),
-			Operation::BAN => s("Journal de banque"),
 			Operation::OD => s("Journal des opérations diverses"),
 		};
 
@@ -1392,25 +1391,25 @@ class OperationUi {
 
 			case 'type':
 				$d->values = [
-					OperationElement::DEBIT => s("Débit"),
-					OperationElement::CREDIT => s("Crédit"),
+					Operation::DEBIT => s("Débit"),
+					Operation::CREDIT => s("Crédit"),
 				];
 				break;
 
 			case 'journalCode':
 				$d->values = [
-					OperationElement::ACH => s("Achats"),
-					OperationElement::VEN => s("Ventes"),
-					OperationElement::BAN => s("Banque"),
-					OperationElement::KS => s("Caisse"),
-					OperationElement::OD => s("Opérations diverses"),
+					Operation::ACH => s("Achats"),
+					Operation::VEN => s("Ventes"),
+					Operation::KS => s("Caisse"),
+					Operation::OD => s("Opérations diverses"),
+					JournalSetting::JOURNAL_BANK_CODE => s("Banque"),
 				];
 				$d->shortValues = [
-					OperationElement::ACH => s("JA"),
-					OperationElement::VEN => s("JV"),
-					OperationElement::BAN => s("JB"),
-					OperationElement::KS => s("JC"),
-					OperationElement::OD => s("JOD"),
+					Operation::ACH => s("JA"),
+					Operation::VEN => s("JV"),
+					Operation::KS => s("JC"),
+					Operation::OD => s("JOD"),
+					JournalSetting::JOURNAL_BANK_CODE => s("JB"),
 				];
 				$d->field = 'select';
 

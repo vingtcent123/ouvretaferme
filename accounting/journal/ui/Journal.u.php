@@ -135,7 +135,7 @@ class JournalUi {
 
 			$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?'.$args.'">'.s("Général").'</a>';
 
-			foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
+			foreach([Operation::ACH, Operation::VEN, JournalSetting::JOURNAL_BANK_CODE, Operation::KS, Operation::OD] as $journalCode) {
 
 					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'&'.$args.'">';
 						$h .= '<div class="text-center">';
@@ -232,7 +232,7 @@ class JournalUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 
-						if($eFinancialYearSelected->canUpdate()) {
+						if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_BANK_CODE) {
 							$h .= '<th>';
 							$h .= '</th>';
 						}
@@ -278,7 +278,7 @@ class JournalUi {
 
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
-							if($eFinancialYearSelected->canUpdate()) {
+							if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_BANK_CODE) {
 								$h .= '<td class="td-checkbox">';
 								$attributesCheckbox = [
 									'data-batch-type' => $eOperation['type'],
@@ -291,11 +291,9 @@ class JournalUi {
 								} else {
 									$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$journalCode.'")';
 								}
-								if($canUpdate) {
-									$h .= '<label>';
-										$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
-									$h .= '</label>';
-								}
+								$h .= '<label>';
+									$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
+								$h .= '</label>';
 								$h .= '</td>';
 							}
 							$h .= '<td>';
@@ -315,6 +313,7 @@ class JournalUi {
 							$h .= '</td>';
 
 							if($journalCode === NULL) {
+
 								$h .= '<td>';
 									$h .= $eOperation['journalCode'] === NULL ? '' : OperationUi::getShortJournal($eFarm, $eOperation['journalCode'], link: TRUE);
 								$h .= '</td>';
@@ -404,7 +403,6 @@ class JournalUi {
 				Operation::ACH => s("Déplacer ces écritures dans le journal d'achats ?"),
 				Operation::VEN => s("Déplacer ces écritures dans le journal de ventes ?"),
 				Operation::OD => s("Déplacer ces écritures dans le journal d'opérations diverses ?"),
-				Operation::BAN => s("Déplacer ces écritures dans le journal de banque ?"),
 				Operation::KS => s("Déplacer ces écritures dans le journal de caisse ?"),
 			} ;
 

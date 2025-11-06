@@ -110,7 +110,6 @@ class AccountSetting extends \Settings {
 	];
 
 	const CLASSES_BY_JOURNAL = [
-		\journal\Operation::BAN => ['512'],
 		\journal\Operation::KS => ['530'],
 		\journal\Operation::ACH => ['60', '61', '62', '63', '64', '4456'],
 		\journal\Operation::VEN => ['70', '71', '72', '74', '4452', '4457'],
