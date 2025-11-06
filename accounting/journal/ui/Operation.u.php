@@ -198,7 +198,7 @@ class OperationUi {
 			id: 'panel-operation-view',
 			title: s("Détail d'opération"),
 			body: $h,
-			close: 'reload'
+			close: 'passthrough'
 		);
 	}
 	public function getSummary(Operation $eOperation): string {
@@ -316,12 +316,10 @@ class OperationUi {
 
 	public function getLinked(\farm\Farm $eFarm, Operation $eOperation): string {
 
-		$linkedOperationIds = [$eOperation['id']];
-		if($eOperation['operationLinked']->notEmpty()) {
-			$linkedOperationIds[] = $eOperation['operationLinked']['id'];
-		}
-
-		if($eOperation['operationLinked']->empty() and $eOperation['cOperationCashflow']->empty() and ($eOperation['cOperationLinkedByCashflow']->count() - count($linkedOperationIds)) <= 0) {
+		if(
+			($eOperation['cOperationHash']->empty() or $eOperation['cOperationHash']->count() < 2)
+			and $eOperation['cOperationCashflow']->empty()
+		) {
 			return '';
 		}
 
@@ -393,34 +391,27 @@ class OperationUi {
 
 		}
 
-		if($eOperation['operationLinked']->notEmpty() or ($eOperation['cOperationLinkedByCashflow']->count() - count($linkedOperationIds)) > 0) {
+		if($eOperation['cOperationHash']->count() > 1) {
 
-			$count = ($eOperation['operationLinked']->notEmpty() ? 1 : 0) + $eOperation['cOperationLinkedByCashflow']->count() - count($linkedOperationIds);
+			$count = (clone $eOperation['cOperationHash'])->find(fn($e) => $e['id'] !== $eOperation['id'])->count();
 
 			$h .= '<div class="util-title mt-2">';
 				$h .= '<h3>'.p("Écriture comptable liée","Écritures comptables liées", $count).'</h3>';
 			$h .= '</div>';
 
+			foreach($eOperation['cOperationHash'] as $eOperationHash) {
 
-			if($eOperation['operationLinked']->notEmpty()) {
-
-				$h .= $this->getLinkedOperationDetails($eFarm, $eOperation['operationLinked']);
-
-			}
-
-			foreach($eOperation['cOperationLinkedByCashflow'] as $eOperationLinkedByCashflow) {
-
-				if($eOperationLinkedByCashflow['type'] === Operation::CREDIT) {
-					$totalCredit += $eOperationLinkedByCashflow['amount'];
+				if($eOperationHash['type'] === Operation::CREDIT) {
+					$totalCredit += $eOperationHash['amount'];
 				} else {
-					$totalDebit += $eOperationLinkedByCashflow['amount'];
+					$totalDebit += $eOperationHash['amount'];
 				}
 
-				if(in_array($eOperationLinkedByCashflow['id'], $linkedOperationIds)) {
+				if($eOperationHash['id'] === $eOperation['id']) {
 					continue;
 				}
 
-				$h .= $this->getLinkedOperationDetails($eFarm, $eOperationLinkedByCashflow);
+				$h .= $this->getLinkedOperationDetails($eFarm, $eOperationHash);
 
 			}
 

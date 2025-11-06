@@ -12,10 +12,7 @@ new \journal\OperationPage(
 	})
 ->read('/journal/operation/{id}', function($data) {
 
-	$data->e['operationLinked'] = $data->e['operation']->empty() ? new \journal\Operation() : \journal\OperationLib::getById($data->e['operation']['id']);
-
-	// Toutes les opérations reliées à cette opération bancaire
-	$data->e['cOperationLinkedByCashflow'] = $data->e['cOperationCashflow']->empty() ? new Collection() : \journal\OperationCashflowLib::getOperationsByCashflows($data->e['cOperationCashflow']->getColumnCollection('cashflow')->getIds());
+	$data->e['cOperationHash'] = \journal\OperationLib::getByHash($data->e['hash']);
 
 	throw new ViewAction($data);
 })
