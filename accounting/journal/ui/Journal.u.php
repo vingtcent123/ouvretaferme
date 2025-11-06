@@ -363,9 +363,99 @@ class JournalUi {
 								$h .= '<div class="dropdown-list">';
 									$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
 									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'" class="dropdown-item">'.s("Ouvrir le détail").'</a>';
+
 									if($eOperation->canUpdate()) {
+
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier").'</a>';
+
+										// ACTION "SUPPRIMER"
+										if($eOperation['cOperationCashflow']->empty()) { // Cette opération est liée à une autre : on ne peut pas la supprimer.
+
+											if($eOperation['operation']->notEmpty()) {
+
+												$attributes = [
+													'class' => 'dropdown-item inactive',
+													'onclick' => 'void(0);',
+													'data-highlight' => 'operation-'.$eOperation['operation']['id'],
+												];
+
+												$more = s("Cette écriture est liée à une autre écriture. Supprimer l'autre écriture supprimera celle-ci.");
+
+												$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+
+												$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+
+											} else {
+
+												$attributes = [
+													'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
+													'post-id' => $eOperation['id'],
+													'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+													'class' => 'dropdown-item',
+												];
+
+												if($eOperation['vatAccount']->notEmpty()) {
+
+													$attributes += [
+														'data-highlight' => $eOperation['vatAccount']->exists()
+															? 'operation-linked-'.$eOperation['id']
+															: 'operation-'.$eOperation['operation']['id'],
+														'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+													];
+
+												}
+
+												if($eOperation['asset']->exists() === TRUE) {
+
+													if($eOperation['vatAccount']->exists() === TRUE) {
+
+														$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
+
+														$more = s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
+
+													} else {
+
+														$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
+
+														$more = s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
+
+													}
+
+												} elseif($eOperation['vatAccount']->exists() === TRUE) {
+
+													$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
+
+													$more = s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
+
+												}
+
+												if(isset($more)) {
+
+													$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+
+												} else {
+
+													$deleteText = s("Supprimer");
+
+												}
+
+												$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+											}
+
+											$h .= '<div class="dropdown-divider"></div>';
+											$h .= $buttonDelete;
+
+										} else {
+
+											$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
+
+											$h .= '<div class="dropdown-divider"></div>';
+											$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
+
+										}
+
 									}
+
 								$h .= '</div>';
 							$h .= '</td>';
 

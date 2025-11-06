@@ -256,9 +256,15 @@ new \journal\OperationPage(
 )
 ->post('doDelete', function($data) {
 
+	$fw = new FailWatch();
+
 	\journal\OperationLib::delete($data->eOperation);
 
-	throw new ReloadAction('journal', 'Operation::deleted');
+	if($fw->ok()) {
+
+		throw new ReloadAction('journal', 'Operation::deleted');
+
+	}
 });
 
 new \journal\OperationPage(function($data) {
