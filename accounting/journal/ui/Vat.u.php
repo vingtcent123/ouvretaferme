@@ -113,16 +113,9 @@ Class VatUi {
 						$currentMonth = $month;
 
 						$eOperationInitial = $eOperation['operation'];
-						if(
-							str_starts_with($eOperation['accountLabel'], \account\AccountSetting::VAT_BUY_CLASS_PREFIX)
-						and $eOperationInitial['type'] === OperationElement::CREDIT) {
-							$multiplyer = -1;
-						} else {
-							$multiplyer = 1;
-						}
-						$monthTotals['withVat'] += $multiplyer * $eOperationInitial['amount'] + $multiplyer * $eOperation['amount'];
-						$monthTotals['withoutVat'] += $multiplyer * $eOperationInitial['amount'];
-						$monthTotals['vat']+= $multiplyer * $eOperation['amount'];
+						$monthTotals['withVat'] += $eOperationInitial['amount'] + $eOperation['amount'];
+						$monthTotals['withoutVat'] += $eOperationInitial['amount'];
+						$monthTotals['vat']+= $eOperation['amount'];
 
 						$h .= '<tbody>';
 							$h .= '<tr class="tr-border-top">';
@@ -156,15 +149,15 @@ Class VatUi {
 								$h .= '</td>';
 
 								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-										$h .= \util\TextUi::money($multiplyer * ($eOperationInitial['amount'] + $eOperation['amount']));
+										$h .= \util\TextUi::money(round($eOperationInitial['amount'] + $eOperation['amount'], 2));
 								$h .= '</td>';
 
 								$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
-										$h .= \util\TextUi::money($multiplyer * $eOperationInitial['amount']);
+										$h .= \util\TextUi::money($eOperationInitial['amount']);
 								$h .= '</td>';
 
 								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-										$h .= \util\TextUi::money($multiplyer * $eOperation['amount']);
+										$h .= \util\TextUi::money($eOperation['amount']);
 								$h .= '</td>';
 
 							$h .= '</tr>';

@@ -217,20 +217,28 @@ class OperationLib extends OperationCrud {
 	public static function getAllForVatJournal(string $type, \Search $search = new \Search(), bool $hasSort = FALSE,
 		?array $index = ['accountLabel', 'month', NULL]): \Collection {
 
+		// Si c'est le journal des achats il faut tout afficher en positif
+		if($type === 'buy') {
+			$amount = new \Sql('IF(type = "credit", -1 * amount, amount)');
+		} else {
+			$amount = new \Sql('IF(type = "debit", -1 * amount, amount)');
+		}
+
 		return self::applySearch($search)
 			->select(
 				Operation::getSelection()
 				+ ['operation' => [
 					'id', 'account', 'accountLabel', 'document', 'type',
 					'thirdParty' => ['id', 'name'],
-					'description', 'amount', 'vatRate', 'date',
+					'description', 'vatRate', 'date',
 					'financialYear',
-					'cOperationCashflow' => OperationCashflowLib::delegateByOperation()
+					'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
+					'amount' => $amount,
 				]]
 				+ ['account' => ['class', 'description']]
 				+ ['thirdParty' => ['id', 'name']]
 				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
-				+ ['amount' => new \Sql('IF(SUBSTRING(accountLabel, 1, 4) = "'.\account\AccountSetting::VAT_BUY_CLASS_PREFIX.'", IF(type = "credit", -1 * amount, amount), IF(type = "debit", -1 * amount, amount))')]
+				+ ['amount' => $amount],
 			)
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
