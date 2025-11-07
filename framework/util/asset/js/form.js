@@ -226,8 +226,8 @@ class CalculationField {
 	 */
 	static calculateValue(target) {
 		const currentOperation = target.value.replace(/,/g, '.');
-		const resultElement = target.nextElementSibling;
-		const hiddenElement = resultElement.nextElementSibling;
+		const hiddenElement = target.firstParent('div').qs('input[type="hidden"]');
+		const resultElement = target.firstParent('div').qs('[data-calculated]');
 
 		if(!currentOperation) {
 			resultElement.hide();
@@ -255,7 +255,7 @@ class CalculationField {
 
 		hiddenTarget.setAttribute('value', value);
 
-		const resultElement = hiddenTarget.previousSibling;
+		const resultElement = hiddenTarget.firstParent('div').qs('[data-calculated]');
 
 		if(resultElement) {
 
@@ -263,7 +263,7 @@ class CalculationField {
 			resultElement.innerHTML = '= ' + value;
 
 			// Updates the input field
-			const operationElement = resultElement.previousSibling;
+			const operationElement = resultElement.firstParent('div').qs('input[data-calculation="1"]');
 
 			if(operationElement) {
 				operationElement.value = value;
