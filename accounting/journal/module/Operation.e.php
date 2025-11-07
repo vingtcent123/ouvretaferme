@@ -16,7 +16,8 @@ class Operation extends OperationElement {
 			'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
 			'cOperationLinked' => new OperationModel()
 				->select('id', 'operation')
-				->delegateCollection('operation')
+				->delegateCollection('operation'),
+			'createdBy' => ['id', 'firstName', 'lastName']
 		];
 
 	}

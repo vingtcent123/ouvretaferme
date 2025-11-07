@@ -233,6 +233,11 @@ class OperationUi {
 				$h .= '<td>'.s("{type} de {amount}", ['type' => self::p('type')->values[$eOperation['type']], 'amount' => \util\TextUi::money($eOperation['amount'])]).'</td>';
 			$h .= '</tr>';
 
+			$h .= '<tr>';
+				$h .= '<th>'.s("Créée").'</th>';
+				$h .= '<td>'.s("le {date} par {name}", ['name' => ($eOperation['createdBy']->notEmpty() ? $eOperation['createdBy']->getName() : '-'), 'date' => \util\DateUi::numeric($eOperation['createdAt'], \util\DateUi::DATE_HOUR_MINUTE)]).'</td>';
+			$h .= '</tr>';
+
 		$h .= '</table>';
 
 		return $h;
