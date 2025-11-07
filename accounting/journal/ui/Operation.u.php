@@ -170,7 +170,7 @@ class OperationUi {
 		$footer = '<div class="operation-create-button-add">'.$saveButton.'</div>';
 
 		if($eCashflow->empty()) {
-			$title = $cOperation->count() > 1 ? s("Modifier les écritures") : s("Modifier une écriture");
+			$title = $cOperationFormatted->count() > 1 ? s("Modifier les écritures") : s("Modifier une écriture");
 		} else {
 			$title = new \bank\CashflowUi()->getAllocateTitle($eCashflow, $eFinancialYear, $eOperationBank->getArrayCopy(), $cPaymentMethod, $form);
 		}
@@ -196,7 +196,7 @@ class OperationUi {
 
 		return new \Panel(
 			id: 'panel-operation-view',
-			title: s("Détail d'opération"),
+			title: s("Détail d'écriture"),
 			body: $h,
 			close: 'passthrough'
 		);
@@ -206,7 +206,7 @@ class OperationUi {
 		$h = '<table class="tr-even">';
 
 			$h .= '<tr>';
-				$h .= '<th>'.s("Date d'opération").'</th>';
+				$h .= '<th>'.s("Date d'écriture").'</th>';
 				$h .= '<td>'.\util\DateUi::numeric($eOperation['date']).' - '.s("Exercice {value}", \account\FinancialYearUi::getYear($eOperation['financialYear'])).'</td>';
 			$h .= '</tr>';
 
@@ -228,7 +228,7 @@ class OperationUi {
 			$h .= '</tr>';
 
 			$h .= '<tr>';
-				$h .= '<th>'.s("Opération").'</th>';
+				$h .= '<th>'.s("Type").'</th>';
 				$h .= '<td>'.s("{type} de {amount}", ['type' => self::p('type')->values[$eOperation['type']], 'amount' => \util\TextUi::money($eOperation['amount'])]).'</td>';
 			$h .= '</tr>';
 
