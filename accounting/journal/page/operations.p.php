@@ -31,6 +31,16 @@ new Page(function($data) {
 
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
+
+		$data->eOperationRequested = new \journal\Operation();
+
+		if(GET('operation')) {
+			$data->eOperationRequested = \journal\OperationLib::getById(GET('operation'));
+			if($data->eOperationRequested->notEmpty()) {
+				$data->eFinancialYear = $data->eOperationRequested['financialYear'];
+			}
+		}
+
 		// Ne pas ouvrir le bloc de recherche
 		$search->set('financialYear', $data->eFinancialYear);
 
@@ -39,20 +49,30 @@ new Page(function($data) {
 			$search->set('cashflow', GET('cashflow'));
 		}
 
-		$journalCode = GET('code');
+		if($data->eOperationRequested->notEmpty() and !GET('code')) {
 
-		if(in_array($journalCode, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
 			$journalCode = NULL;
-		}
-		$search->set('journalCode', $journalCode);
-
-		$code = GET('code');
-		if(
-			in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_BANK_CODE]) === FALSE and
-			in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE
-		) {
 			$code = NULL;
+
+		} else {
+
+			$journalCode = GET('code');
+
+			if(in_array($journalCode, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
+				$journalCode = NULL;
+			}
+
+			$code = GET('code');
+			if(
+				in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_BANK_CODE]) === FALSE and
+				in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE
+			) {
+				$code = NULL;
+			}
+
 		}
+
+		$search->set('journalCode', $journalCode);
 
 		$data->cOperation = new Collection();
 		$data->operationsVat = [];

@@ -362,7 +362,7 @@ class JournalUi {
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 								$h .= '<div class="dropdown-list">';
 									$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'" class="dropdown-item">'.s("Voir l'écriture").'</a>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
 
 									if($eOperation->canUpdate()) {
 

@@ -165,6 +165,10 @@ document.delegateEventListener('input', '[data-field="document"]', function(e) {
 
 class Operation {
 
+    static open(id) {
+        qs('a[data-view-operation="' + id + '"]').click();
+    }
+
     static hasVat() {
         return parseBool(qs('form[data-has-vat]').dataset.hasVat);
     }

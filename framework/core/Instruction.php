@@ -21,6 +21,7 @@ class Panel implements Instruction {
 		public ?string $footer = NULL,
 		public string $close = 'passthrough',
 		public bool $layer = TRUE,
+		public ?string $url = NULL,
 		public array $attributes = []
 	) {
 	}
@@ -76,7 +77,13 @@ class Panel implements Instruction {
 		$output['layer'] = $this->layer;
 
 		// Pas de changement d'URL si on skip l'historique
-		$output['url'] = (SERVER('HTTP_X_HISTORY') === 'skip') ? NULL : LIME_REQUEST;
+		if(SERVER('HTTP_X_HISTORY') === 'skip') {
+			$output['url'] = NULL;
+		} else if($this->url) {
+			$output['url'] = $this->url;
+		} else {
+			$output['url'] = LIME_REQUEST;
+		}
 
 		$output['attributes'] = $this->attributes + [
 			'data-close' => $this->close

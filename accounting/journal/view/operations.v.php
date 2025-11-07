@@ -29,7 +29,11 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		$selectedJournalCode = NULL;
 	}
 
-	echo '<div class="tabs-h" id="journals">';
+	echo '<div class="tabs-h" id="journals"';
+		if($data->eOperationRequested->notEmpty()) {
+			echo ' onrender="Operation.open('.$data->eOperationRequested['id'].');"';
+		}
+	echo '>';
 
 		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode);
 

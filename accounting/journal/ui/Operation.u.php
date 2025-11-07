@@ -198,7 +198,8 @@ class OperationUi {
 			id: 'panel-operation-view',
 			title: s("Détail d'écriture"),
 			body: $h,
-			close: 'passthrough'
+			close: 'passthrough',
+			url: \company\CompanyUi::urlJournal($eFarm).'/operations?operation='.$eOperation['id'],
 		);
 	}
 	public function getSummary(Operation $eOperation): string {
