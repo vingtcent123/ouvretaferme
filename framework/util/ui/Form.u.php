@@ -1852,6 +1852,13 @@ class FormUi {
 		$attributes['class'] = 'form-control form-number '.($attributes['class'] ?? '');
 		$attributes['data-calculation'] = 1;
 
+		if(array_key_exists('after', $attributes)) {
+			$after = $attributes['after'];
+			unset($attributes['after']);
+		} else {
+			$after = '';
+		}
+
 		$result = '<div class="form-calculation hide" data-calculated>';
 			if($value !== NULL) {
 				$result .= '= '.$value;
@@ -1862,7 +1869,7 @@ class FormUi {
 
 		$attributes['name'] = $name.'-calculation';
 
-		return $this->input('text', $name, $value, $attributes).$result;
+		return $this->input('text', $name, $value, $attributes).$after.$result;
 	}
 
 	/**

@@ -1157,21 +1157,20 @@ class OperationUi {
 							$d->attributes['data-field'] = 'vatValue';
 							$d->attributes['data-index'] = $index;
 							$d->prepend = OperationUi::getAmountButtonIcons('vatValue', $index);
+							$d->attributes['after'] = '<span class="input-group-addon hide" data-vat-warning data-index="'.$index.'">'.
+								'<a data-dropdown="bottom" data-dropdown-hover="true" onclick="Operation.updateVatValue('.$index.')">'.
+									\Asset::icon('exclamation-triangle').' '.'<span data-vat-warning-value data-index="'.$index.'"></span>'.
+								'</a>'.
+								'<div class="dropdown-list bg-primary dropdown-list-bottom">'.
+									'<span class="dropdown-item">'.
+									s(
+										"Il y a une incohérence de calcul de TVA, souhaitiez-vous plutôt indiquer {amountVAT} ?",
+										['amountVAT' => '<span data-vat-warning-value data-index="'.$index.'"></span>'],
+									).
+								'</span>'.
+								'</div>'.
+							'</span>';
 						});
-
-						$h .= '<div data-vat-warning class="hide" data-index="'.$index.'">';
-							$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true" onclick="Operation.updateVatValue('.$index.')">';
-							$h .= \Asset::icon('exclamation-triangle');
-							$h .= '</a>';
-							$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-								$h .= '<span class="dropdown-item">';
-								$h .= s(
-									"Il y a une incohérence de calcul de TVA, souhaitiez-vous plutôt indiquer {amountVAT} ?",
-									['amountVAT' => '<span data-vat-warning-value data-index="'.$index.'"></span>'],
-								);
-								$h .= '</span>';
-							$h .= '</div>';
-						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
 			}

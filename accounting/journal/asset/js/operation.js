@@ -411,7 +411,7 @@ class Operation {
         if(Math.abs(round(vatValue - expectedVatValue)) > 0.01) {
             qs('[data-vat-warning][data-index="' + index + '"]').removeHide();
             qs('[data-wrapper="vatValue[' + index + ']"]', node => node.classList.add('form-warning-wrapper'));
-            qs('[data-vat-warning-value][data-index="' + index + '"]').innerHTML = money(expectedVatValue);
+            qsa('[data-vat-warning-value][data-index="' + index + '"]', node => node.innerHTML = money(expectedVatValue));
             if(typeof Cashflow !== 'undefined') {
                 Cashflow.vatWarning(true);
             }
