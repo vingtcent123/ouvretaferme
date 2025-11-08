@@ -51,6 +51,8 @@ class AlertUi {
 			'Product::proPrice.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
 			'Product::proPriceInitial.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
 
+			'Relation::empty' => s("Vous n'avez pas sélectionné de produit"),
+
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarket' => s("Cette vente de marché ne peut pas être supprimée."),
 			'Sale::customer.typeCollective' => s("Vous ne pouvez pas créer une vente pour plusieurs clients dont au moins l'un est un point de vente collectif."),
@@ -144,6 +146,7 @@ class AlertUi {
 
 			'Product::created' => s("Le produit a bien été ajouté."),
 			'Product::createdComposition' => s("La composition a bien été ajoutée."),
+			'Product::createdGroup' => s("Le groupe de produits a bien été ajouté."),
 			'Product::updated' => s("Le produit a bien été mis à jour."),
 			'Product::updatedComposition' => s("La composition a bien été mise à jour."),
 			'Product::deleted' => s("Le produit a bien été supprimé."),

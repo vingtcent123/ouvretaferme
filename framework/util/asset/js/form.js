@@ -794,7 +794,7 @@ class AutocompleteField {
 
 		if(input.dataset.autocompleteBody) {
 			Object.entries(JSON.parse(input.dataset.autocompleteBody)).forEach(([key, value]) => {
-				if(typeof value === 'object') {
+				if(value !== null && typeof value === 'object') {
 					Object.entries(value).forEach(([subKey, subValue]) => {
 						body.append(key +'['+ subKey +']', subValue);
 					});

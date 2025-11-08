@@ -1022,8 +1022,8 @@ tbody .td-checkbox > label {
 }
 
 .util-info {
-	border-radius: var(--radius);
-	background-color: var(--info);
+	border-left: 4px solid var(--secondary);
+	color: var(--secondary);
 }
 
 .util-info a:not(.btn) {

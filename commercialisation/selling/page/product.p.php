@@ -17,7 +17,11 @@ new \selling\ProductPage()
 
 		if(get_exists('from')) {
 
-			$data->e->merge(\selling\ProductLib::getById(GET('from'))->validateProperty('farm', $data->eFarm));
+			$data->e->merge(
+				\selling\ProductLib::getById(GET('from'))
+					->validateProperty('farm', $data->eFarm)
+					->validate('acceptDuplicate')
+			);
 			$data->e['status'] = \shop\Product::ACTIVE;
 
 		} else {
@@ -86,6 +90,10 @@ new \selling\ProductPage()
 
 		$data->cItemLast = \selling\ItemLib::getByProduct($data->e);
 		$data->cItemYear = \selling\AnalyzeLib::getProductYear($data->eFarm, $data->e);
+
+		if($data->e['profile'] === \selling\Product::GROUP) {
+			$data->e['cRelation'] = \selling\RelationLib::getByParent($data->e);
+		}
 
 		throw new ViewAction($data);
 
@@ -156,7 +164,7 @@ new \selling\ProductPage()
 		'proPrice' => ['proPrice', 'proPriceDiscount'],
 		'proPackaging',
 		'proStep'
-	]);
+	], validate: ['canUpdate', 'acceptPrice']);
 
 new \selling\ProductPage()
 	->applyCollection(function($data, Collection $c) {
@@ -171,8 +179,11 @@ new Page()
 		$eFarm = \farm\FarmLib::getById(POST('farm', '?int'))->validate('canWrite');;
 		$type = POST('type', '?string');
 		$stock = POST('stock', '?string');
+		$withGroup = POST('profileGroup', 'bool', TRUE);
+		$withComposition = POST('profileComposition', 'bool', TRUE);
+		$exclude = post_exists('exclude') ? explode(',', POST('exclude')) : NULL;
 
-		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type, $stock);
+		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type, $exclude, $stock, $withGroup, $withComposition);
 
 		throw new \ViewAction($data);
 

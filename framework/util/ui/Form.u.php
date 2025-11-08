@@ -2114,6 +2114,12 @@ class FormUi {
 
 		$multiple = (strpos($name, '[]') !== FALSE);
 
+		foreach($body as $key => $value) {
+			if(is_bool($value)) {
+				$body[$key] = (int)$value;
+			}
+		}
+
 		$attributes += [
 			'placeholder' => '', // Mandatory
 			'data-autocomplete-url' => $url,

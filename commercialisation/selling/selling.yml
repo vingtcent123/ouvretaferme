@@ -250,7 +250,6 @@ Product:
   vignette: ?textFixed(30, 30) @charset(ascii)
   profile: enum(GROUP, COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER)
   category: ?selling\Category
-  groupProducts: json = PHP([])
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null)
   mixedFrozen: ?bool
@@ -258,6 +257,7 @@ Product:
   processedAllergen: ?text8(1, null)
   processedComposition: ?text16(1, null)
   compositionVisibility: ?enum(PUBLIC, PRIVATE)
+  groupSelection: ?enum(UNIQUE, MULTIPLE)
   origin: ?text8(1, null)
   farm: farm\Farm
   unit: ?selling\Unit = PHP(\selling\SellingSetting::UNIT_DEFAULT_ID)
@@ -270,7 +270,7 @@ Product:
   proPriceInitial: ?decimal(8, 2)
   proPackaging: ?float32(0.01, null)
   proStep: ?decimal(6, 2, 0.01, null)
-  vat: int8(1, null)
+  vat: ?int8(1, null)
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   stock: ?decimal(8, 2, 0.0, null)
   stockLast: ?selling\Stock
@@ -280,6 +280,19 @@ Product:
   INDEX: [
     ["farm"],
     ["unprocessedPlant"]
+  ]
+
+Relation:
+  id: serial32
+  farm: farm\Farm
+  parent: selling\Product
+  child: selling\Product
+  position: int(0, null)
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm"],
+    ["parent"],
+    ["child"]
   ]
 
 Sale:

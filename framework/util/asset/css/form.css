@@ -1022,12 +1022,14 @@ input[data-autocomplete-items]:placeholder-shown + a.autocomplete-empty:not(:foc
 
 .autocomplete-items-multiple .autocomplete-item {
 	display: flex;
+	column-gap: 0.5rem;
 	align-items: center;
 	justify-content: space-between;
 	padding: 0.5rem 0.75rem;
 	border-radius: calc(var(--radius) / 2);
 	background-color: #00000008;
 	font-weight: bold;
+	line-height: 1.4;
 }
 
 .autocomplete-items-multiple .autocomplete-item a {

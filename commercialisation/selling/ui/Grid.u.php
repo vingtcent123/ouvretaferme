@@ -369,6 +369,7 @@ class GridUi {
 
 					return [
 						'farm' => $e['farm']['id'],
+						'profileGroup' => FALSE,
 						'type' => $e['customer']['type'] ?? $e['group']['type'] ?? NULL
 					];
 

@@ -54,6 +54,8 @@ class ProductModel extends \ModuleModel {
 			'type' => ['enum', [\shop\Product::PRIVATE, \shop\Product::PRO], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
+			'parent' => ['element32', 'shop\Product', 'null' => TRUE, 'cast' => 'element'],
+			'children' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'promotion' => ['enum', [\shop\Product::NONE, \shop\Product::BASIC, \shop\Product::NEW, \shop\Product::WEEK, \shop\Product::MONTH], 'cast' => 'enum'],
@@ -72,7 +74,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
+			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'parent', 'children', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -80,6 +82,7 @@ class ProductModel extends \ModuleModel {
 			'date' => 'shop\Date',
 			'farm' => 'farm\Farm',
 			'catalog' => 'shop\Catalog',
+			'parent' => 'shop\Product',
 			'product' => 'selling\Product',
 		];
 
@@ -91,7 +94,8 @@ class ProductModel extends \ModuleModel {
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['date', 'product'],
-			['catalog', 'product']
+			['catalog', 'product'],
+			['parent', 'product']
 		]);
 
 	}
@@ -99,6 +103,9 @@ class ProductModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'children' :
+				return 0;
 
 			case 'promotion' :
 				return Product::NONE;
@@ -210,6 +217,14 @@ class ProductModel extends \ModuleModel {
 
 	public function whereCatalog(...$data): ProductModel {
 		return $this->where('catalog', ...$data);
+	}
+
+	public function whereParent(...$data): ProductModel {
+		return $this->where('parent', ...$data);
+	}
+
+	public function whereChildren(...$data): ProductModel {
+		return $this->where('children', ...$data);
 	}
 
 	public function whereProduct(...$data): ProductModel {

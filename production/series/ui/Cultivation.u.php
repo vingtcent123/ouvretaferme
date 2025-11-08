@@ -1148,7 +1148,7 @@ class CultivationUi {
 
 									$number = number_format($seedsVariety['seeds'], 0, NULL, ' ');
 									if($eVariety->notEmpty() and $cSupplier->notEmpty()) {
-										$h .= $eVariety->quick('supplierSeed', '<span title="'.s("Modifir le fournisseur de semences").'">'.$number.'</span>');
+										$h .= $eVariety->quick('supplierSeed', '<span title="'.s("Modifier le fournisseur de semences").'">'.$number.'</span>');
 									} else {
 										$h .= $number;
 									}

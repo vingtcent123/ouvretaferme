@@ -18,6 +18,12 @@ class ProductLib extends ProductCrud {
 
 		return function(Product $eProduct) {
 
+			$eProduct->expects(['profile']);
+
+			if($eProduct['profile'] === Product::GROUP) {
+				return ['name', 'groupSelection'];
+			}
+
 			$eProduct->expects(['cUnit']);
 
 			$properties = [];
@@ -73,7 +79,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?string $stock, ?array $properties = []): \Collection {
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $exclude, ?string $stock, bool $withGroup, bool $withComposition, ?array $properties = []): \Collection {
 
 		if(strpos($query, '#') === 0 and ctype_digit(substr($query, 1))) {
 
@@ -114,7 +120,10 @@ class ProductLib extends ProductCrud {
 		return Product::model()
 			->select($properties ?: Product::getSelection())
 			->whereFarm($eFarm)
+			->whereId('NOT IN', $exclude, if: $exclude !== NULL)
 			->whereStatus(Product::ACTIVE)
+			->whereProfile('!=' , Product::GROUP, if: $withGroup === FALSE)
+			->whereProfile('!=' , Product::COMPOSITION, if: $withComposition === FALSE)
 			->whereStock(NULL, if: $stock === 'enable')
 			->getCollection();
 
@@ -338,7 +347,7 @@ class ProductLib extends ProductCrud {
 
 	public static function delete(Product $e): void {
 
-		$e->expects(['id']);
+		$e->expects(['id', 'profile']);
 
 		Product::model()->beginTransaction();
 
@@ -347,6 +356,10 @@ class ProductLib extends ProductCrud {
 				->delete();
 
 			StockLib::disable($e);
+
+			if($e['profile'] === Product::GROUP) {
+				RelationLib::deleteByParent($e);
+			}
 
 			if(
 				Item::model()

@@ -47,7 +47,10 @@ class Product extends ProductElement {
 
 	public function acceptEnableStock(): bool {
 
-		return ($this['stock'] === NULL);
+		return (
+			$this['stock'] === NULL and
+			$this->acceptPrice()
+		);
 
 	}
 
@@ -60,6 +63,26 @@ class Product extends ProductElement {
 	public function acceptStock(): bool {
 
 		return ($this['stock'] !== NULL);
+
+	}
+
+	public function acceptDuplicate(): bool {
+
+		return (
+			$this->acceptPrice()
+		);
+
+	}
+
+	public function acceptPrice(): bool {
+
+		return ($this['profile'] !== Product::GROUP);
+
+	}
+
+	public function acceptRelation(): bool {
+
+		return in_array($this['profile'], [Product::COMPOSITION, Product::GROUP]) === FALSE;
 
 	}
 
@@ -147,6 +170,7 @@ class Product extends ProductElement {
 			'processedPackaging' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 			'processedAllergen' => [Product::PROCESSED_FOOD],
 			'processedComposition' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
+			'groupSelection' => [Product::GROUP]
 		};
 	}
 
@@ -171,6 +195,21 @@ class Product extends ProductElement {
 
 				if(in_array($this['profile'], Product::getProfiles('processedComposition')) === FALSE) {
 					$composition = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('groupSelection.prepare', function(?string &$selection): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('groupSelection')) === FALSE) {
+					$selection = NULL;
+				} else {
+
+					if($selection === NULL) {
+						return FALSE;
+					}
+
 				}
 
 				return TRUE;
@@ -277,8 +316,14 @@ class Product extends ProductElement {
 				}
 
 			})
-			->setCallback('vat.check', function(int $vat): bool {
+			->setCallback('vat.check', function(?int $vat): bool {
+
+				if($vat === NULL) {
+					return ($this['profile'] === Product::GROUP);
+				}
+
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
+
 			})
 			->setCallback('proOrPrivate.check', function() use ($p): bool {
 

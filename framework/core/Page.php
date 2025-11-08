@@ -591,7 +591,6 @@ class Page {
 		};
 
 		foreach(self::$pages[$pagePath] ?? [] as $page) {
-
 			if(
 				$page['name'] === $pageName and
 				(

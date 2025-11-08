@@ -121,7 +121,7 @@ class CategoryUi {
 					$h .= '<td class="td-min-content">';
 						$h .= '<b>'.$eCategory['position'].'.</b>';
 					$h .= '</td>';
-					$h .= '<td>';
+					$h .= '<td class="td-min-content">';
 
 						if($eCategory['position'] > 1) {
 							$h .= '<a data-ajax="/farm/category:doIncrementPosition" post-id='.$eCategory['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
