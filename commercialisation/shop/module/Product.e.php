@@ -39,6 +39,24 @@ class Product extends ProductElement {
 				return $this['catalog']->notEmpty();
 
 			})
+			->setCallback('parentName.prepare', function(?string &$name): bool {
+
+				if($name === NULL) {
+					return FALSE;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('relation.prepare', function(?string &$relation): bool {
+
+				if($relation === NULL) {
+					return FALSE;
+				}
+
+				return TRUE;
+
+			})
 			->setCallback('limitCustomers.prepare', function(mixed &$customers): bool {
 
 				$this->expects(['farm']);

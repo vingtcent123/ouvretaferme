@@ -33,7 +33,7 @@ class RelationLib extends RelationCrud {
 			'private' => FALSE
 		]);
 
-		$eProductParent->build(['name', 'groupSelection'], $input);
+		$eProductParent->build(['parentName', 'parent'], $input);
 
 		$cProductChildren = ProductLib::getByIds((array)($input['children'] ?? []))
 			->validateProperty('farm', $eFarm)

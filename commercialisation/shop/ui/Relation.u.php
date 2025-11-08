@@ -110,7 +110,7 @@ class RelationUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups(new Product(), ['name', 'groupSelection']);
+			$h .= $form->dynamicGroups(new Product(), ['parentName', 'parent']);
 			$h .= $form->dynamicGroup($eRelationReference, 'children*');
 
 			$h .= $form->group(content: $form->submit(s("Créer le groupe de produits")));
@@ -128,7 +128,7 @@ class RelationUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		$d = Sale::model()->describer($property, [
+		$d = Relation::model()->describer($property, [
 			'children' => s("Produits"),
 		]);
 
@@ -143,7 +143,7 @@ class RelationUi {
 						'profileComposition' => FALSE,
 					];
 				};
-				new ProductUi()->query($d, multiple: TRUE);
+				new \selling\ProductUi()->query($d, multiple: TRUE);
 				$d->group['class'] = 'relation-wrapper';
 				break;
 
@@ -156,7 +156,7 @@ class RelationUi {
 						'profileComposition' => FALSE,
 					];
 				};
-				new ProductUi()->query($d);
+				new \selling\ProductUi()->query($d);
 				break;
 
 		}

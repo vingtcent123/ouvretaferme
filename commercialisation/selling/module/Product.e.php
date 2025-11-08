@@ -188,21 +188,6 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
-			->setCallback('groupSelection.prepare', function(?string &$selection): bool {
-
-				if(in_array($this['profile'], Product::getProfiles('groupSelection')) === FALSE) {
-					$selection = NULL;
-				} else {
-
-					if($selection === NULL) {
-						return FALSE;
-					}
-
-				}
-
-				return TRUE;
-
-			})
 			->setCallback('processedAllergen.prepare', function(?string &$allergen): bool {
 
 				if(in_array($this['profile'], Product::getProfiles('processedAllergen')) === FALSE) {
