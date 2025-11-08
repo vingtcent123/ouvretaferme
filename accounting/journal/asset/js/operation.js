@@ -69,7 +69,7 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
 
     const index = e.detail.input.getAttribute('data-index');
 
-    if(e.detail.value.length !== 0) { // Else : l'utilisateur a supprimé la classe
+    if(Operation.hasVat() && e.detail.value.length !== 0) { // Else : l'utilisateur a supprimé la classe
 
         if(e.detail.vatClass) {
             qs('[data-index="' + index + '"][data-vat="account-info"]').removeHide();
