@@ -58,27 +58,7 @@ class Product {
 
 	static changeSelection() {
 
-		return Batch.changeSelection((selection) => {
-
-			let idsCollection = '';
-
-			selection.forEach(node => {
-
-				idsCollection += '&products[]='+ node.value;
-
-			});
-
-			qs(
-				'.batch-menu-relation',
-				node => {
-
-					node.removeHide();
-					node.setAttribute('href', node.dataset.url + idsCollection);
-
-				}
-			);
-
-		});
+		return Batch.changeSelection();
 
 	}
 

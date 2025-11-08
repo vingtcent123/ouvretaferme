@@ -86,10 +86,6 @@ class ProductUi {
 
 			foreach(\selling\ProductUi::p('profile')->values as $profile => $value) {
 
-				if($profile === Product::GROUP) {
-					continue;
-				}
-
 				if($profile === Product::COMPOSITION and $eProduct->exists()) {
 					continue;
 				}
@@ -103,22 +99,6 @@ class ProductUi {
 						if($examples) {
 							$h .= '<br/><small style="color: #fff8">'.$examples.'</small>';
 						}
-					$h .= '</div>';
-				$h .= '</a>';
-
-			}
-
-			if(
-				FEATURE_GROUP and
-				$eProduct->exists() === FALSE
-			) {
-
-				$h .= '<div class="dropdown-divider"></div>';
-
-				$h .= '<a href="/selling/relation:createCollection?farm='.$eProduct['farm']['id'].'" class="dropdown-item dropdown-item-icon" data-profile="'.Product::GROUP.'">';
-					$h .= self::getProfileIcon(Product::GROUP);
-					$h .= '<div>';
-						$h .= '<span class="product-profile-name">'.s("Créer un groupe de produits").'</span>';
 					$h .= '</div>';
 				$h .= '</a>';
 
@@ -247,99 +227,85 @@ class ProductUi {
 						}
 
 						$h .= '<td class="product-item-unit">';
-							if($eProduct->acceptPrice()) {
-								$h .= \selling\UnitUi::getSingular($eProduct['unit']);
-							}
+							$h .= \selling\UnitUi::getSingular($eProduct['unit']);
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right hide-md-down">';
-							if($eProduct->acceptPrice()) {
-								if($eItemTotal->notEmpty() and $eItemTotal['year']) {
-									$amount = \util\TextUi::money($eItemTotal['year'], precision: 0);
-									$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
-								} else {
-									$h .= '-';
-								}
+							if($eItemTotal->notEmpty() and $eItemTotal['year']) {
+								$amount = \util\TextUi::money($eItemTotal['year'], precision: 0);
+								$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
+							} else {
+								$h .= '-';
 							}
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-left hide-md-down customer-item-year-before">';
-							if($eProduct->acceptPrice()) {
-								if($eItemTotal->notEmpty() and $eItemTotal['yearBefore']) {
-									$amount = \util\TextUi::money($eItemTotal['yearBefore'], precision: 0);
-									$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
-								} else {
-									$h .= '-';
-								}
+							if($eItemTotal->notEmpty() and $eItemTotal['yearBefore']) {
+								$amount = \util\TextUi::money($eItemTotal['yearBefore'], precision: 0);
+								$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
+							} else {
+								$h .= '-';
 							}
 						$h .= '</td>';
 
 						$h .= '<td class="product-item-price highlight-stick-right text-end">';
 
-							if($eProduct->acceptPrice()) {
+							if($eProduct['private'] === FALSE) {
+								$h .= \Asset::icon('x');
+							} else {
 
-								if($eProduct['private'] === FALSE) {
-									$h .= \Asset::icon('x');
-								} else {
+								$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 
-									$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
-
-									if($eProduct['privatePrice'] !== NULL) {
-										$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
-										if($eProduct['privatePriceInitial'] !== NULL) {
-											$h .= new PriceUi()->priceWithoutDiscount($eProduct['privatePriceInitial'], unit: $taxes);
-										}
-									} else if($eProduct['proPrice'] !== NULL) {
-										$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
-											$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
-										$value .= '</span>';
-									} else {
-										$value = \Asset::icon('question');
+								if($eProduct['privatePrice'] !== NULL) {
+									$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
+									if($eProduct['privatePriceInitial'] !== NULL) {
+										$h .= new PriceUi()->priceWithoutDiscount($eProduct['privatePriceInitial'], unit: $taxes);
 									}
-
-									$h .= $eProduct->quick('privatePrice', $value);
-
+								} else if($eProduct['proPrice'] !== NULL) {
+									$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
+										$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
+									$value .= '</span>';
+								} else {
+									$value = \Asset::icon('question');
 								}
+
+								$h .= $eProduct->quick('privatePrice', $value);
 
 							}
 
 						$h .= '</td>';
 
 						$h .= '<td class="product-item-price highlight-stick-left text-end">';
-							if($eProduct->acceptPrice()) {
 
-								if($eProduct['pro'] === FALSE) {
-									$h .= \Asset::icon('x');
-								} else {
+							if($eProduct['pro'] === FALSE) {
+								$h .= \Asset::icon('x');
+							} else {
 
-									$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
+								$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
 
-									if($eProduct['proPrice']) {
-										$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
-										if($eProduct['proPriceInitial'] !== NULL) {
-											$h .= new PriceUi()->priceWithoutDiscount($eProduct['proPriceInitial'], unit: $taxes);
-										}
-									} else if($eProduct['privatePrice']) {
-										$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA.").'">'.\Asset::icon('magic').' ';
-											$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
-										$value .= '</span>';
-									} else {
-										$value = \Asset::icon('question');
+								if($eProduct['proPrice']) {
+									$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
+									if($eProduct['proPriceInitial'] !== NULL) {
+										$h .= new PriceUi()->priceWithoutDiscount($eProduct['proPriceInitial'], unit: $taxes);
 									}
-
-									$h .= $eProduct->quick('proPrice', $value);
-
+								} else if($eProduct['privatePrice']) {
+									$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA.").'">'.\Asset::icon('magic').' ';
+										$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
+									$value .= '</span>';
+								} else {
+									$value = \Asset::icon('question');
 								}
 
+								$h .= $eProduct->quick('proPrice', $value);
+
 							}
+
 						$h .= '</td>';
 
 						if($eFarm->getSelling('hasVat')) {
 
 							$h .= '<td class="text-center product-item-vat">';
-								if($eProduct->acceptPrice()) {
-									$h .= s("{value} %", SellingSetting::VAT_RATES[$eProduct['vat']]);
-								}
+								$h .= s("{value} %", SellingSetting::VAT_RATES[$eProduct['vat']]);
 							$h .= '</td>';
 
 						}
@@ -434,15 +400,6 @@ class ProductUi {
 			$menu .= \Asset::icon('toggle-off');
 			$menu .= '<span>'.s("Désactiver").'</span>';
 		$menu .= '</a>';
-
-		if(FEATURE_GROUP) {
-
-			$menu .= '<a data-url="/selling/relation:createCollection?farm='.$eFarm['id'].'" class="batch-menu-relation batch-menu-item">';
-				$menu .= \Asset::icon('plus-circle');
-				$menu .= '<span>'.s("Créer une groupe").'</span>';
-			$menu .= '</a>';
-
-		}
 
 		return \util\BatchUi::group($menu, title: s("Pour les produits sélectionnés"));
 
@@ -616,19 +573,6 @@ class ProductUi {
 
 	public function display(Product $eProduct): string {
 
-		if($eProduct['profile'] === Product::GROUP) {
-
-			$h = '<div class="util-info">';
-				$h .= match($eProduct['groupSelection']) {
-					Product::UNIQUE => s("Les clients ne peuvent choisir qu'un seul produit dans la liste lors d'une commande."),
-					Product::MULTIPLE => s("Les clients peuvent choisir plusieurs produits dans la liste lors d'une commande."),
-				};
-			$h .= '</div>';
-
-			return $h;
-
-		}
-
 		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
@@ -697,10 +641,6 @@ class ProductUi {
 
 	public function getTabs(Product $eProduct, \Collection $cSaleComposition, \Collection $cGrid, \Collection $cItemLast): string {
 
-		if($eProduct['profile'] === Product::GROUP) {
-			return $this->getGroup($eProduct);
-		}
-
 		$h = '<div class="tabs-h" id="product-tabs" onrender="'.encode('Lime.Tab.restore(this, "product-grid")').'">';
 
 			$h .= '<div class="tabs-item">';
@@ -731,18 +671,6 @@ class ProductUi {
 			$h .= '</div>';
 
 		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getGroup(Product $eProduct): string {
-
-		$h = '<div class="util-title mt-2">';
-			$h .= '<h3>'.s("Liste des produits").'</h3>';
-		$h .= '</div>';
-
-		$h .= new \selling\RelationUi()->displayByParent($eProduct, $eProduct['cRelation']);
 
 		return $h;
 
@@ -929,12 +857,7 @@ class ProductUi {
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eProduct->getName()).'</div>';
 
-			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">';
-				$h .= match($eProduct['profile']) {
-					Product::GROUP => s("Modifier le groupe"),
-					default => s("Modifier le produit")
-				};
-			$h .= '</a>';
+			$h .= '<a href="/selling/product:update?id='.$eProduct['id'].'" class="dropdown-item">'.s("Modifier le produit").'</a>';
 
 			if($eProduct['profile'] === Product::COMPOSITION) {
 				$h .= '<a href="/selling/sale:create?farm='.$eProduct['farm']['id'].'&compositionOf='.$eProduct['id'].'" class="dropdown-item">'.s("Nouvelle composition").'</a>';
@@ -943,12 +866,7 @@ class ProductUi {
 			if($eProduct->acceptDuplicate()) {
 				$h .= '<a href="/selling/product:create?farm='.$eProduct['farm']['id'].'&from='.$eProduct['id'].'" class="dropdown-item">'.s("Dupliquer le produit").'</a>';
 			}
-			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">';
-				$h .= match($eProduct['profile']) {
-					Product::GROUP => s("Supprimer le groupe"),
-					default => s("Supprimer le produit")
-				};
-			$h .= '</a>';
+			$h .= '<a data-ajax="/selling/product:doDelete" post-id="'.$eProduct['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du produit ?").'">'.s("Supprimer le produit").'</a>';
 			if($eProduct->acceptEnableStock() or $eProduct->acceptDisableStock()) {
 				$h .= '<div class="dropdown-divider"></div>';
 				if($eProduct->acceptEnableStock()) {
@@ -1070,42 +988,31 @@ class ProductUi {
 
 			$h .= $form->hidden('id', $eProduct['id']);
 
-			if($eProduct['profile'] === Product::GROUP) {
+			$h .= $form->dynamicGroup($eProduct, 'profile');
+			$h .= $form->dynamicGroup($eProduct, 'name');
 
-				$h .= $form->dynamicGroup($eProduct, 'name', function($d) {
-					$d->label = s("Nom du groupe");
-				});
-				$h .= $form->dynamicGroup($eProduct, 'groupSelection');
-
-			} else {
-
-				$h .= $form->dynamicGroup($eProduct, 'profile');
-				$h .= $form->dynamicGroup($eProduct, 'name');
-
-				if($eProduct['cCategory']->notEmpty()) {
-					$h .= $form->dynamicGroup($eProduct, 'category');
-				}
-
-				$h .= $form->group(
-					self::p('unit')->label,
-					($eProduct['unit']->empty() or $eProduct['unit']['approximate'] === FALSE) ?
-						$form->dynamicField($eProduct, 'unit') :
-						$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
-				);
-
-				$h .= $form->dynamicGroups($eProduct, ['origin', 'quality']);
-				$h .= $form->dynamicGroup($eProduct, 'vat');
-
-				$h .= '<br/>';
-				$h .= $this->getFieldDescription($form, $eProduct);
-
-				$h .= '<br/>';
-				$h .= $this->getFieldProfile($form, $eProduct);
-
-				$h .= '<br/>';
-				$h .= $this->getFieldPrices($form, $eProduct, 'update');
-
+			if($eProduct['cCategory']->notEmpty()) {
+				$h .= $form->dynamicGroup($eProduct, 'category');
 			}
+
+			$h .= $form->group(
+				self::p('unit')->label,
+				($eProduct['unit']->empty() or $eProduct['unit']['approximate'] === FALSE) ?
+					$form->dynamicField($eProduct, 'unit') :
+					$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
+			);
+
+			$h .= $form->dynamicGroups($eProduct, ['origin', 'quality']);
+			$h .= $form->dynamicGroup($eProduct, 'vat');
+
+			$h .= '<br/>';
+			$h .= $this->getFieldDescription($form, $eProduct);
+
+			$h .= '<br/>';
+			$h .= $this->getFieldProfile($form, $eProduct);
+
+			$h .= '<br/>';
+			$h .= $this->getFieldPrices($form, $eProduct, 'update');
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -1115,10 +1022,7 @@ class ProductUi {
 
 		return new \Panel(
 			id: 'panel-product-update',
-			title: match($eProduct['profile']) {
-				Product::GROUP => s("Modifier un groupe"),
-				default => s("Modifier un produit")
-			},
+			title: s("Modifier un produit"),
 			body: $h
 		);
 
@@ -1314,7 +1218,6 @@ class ProductUi {
 			'processedComposition' => s("Composition"),
 			'processedPackaging' => s("Conditionnement"),
 			'processedAllergen' => s("Allergènes"),
-			'groupSelection' => s("Les clients doivent-ils choisir un produit dans la liste ou peuvent-ils sélectionner plusieurs produits lors d'une commande ?"),
 			'profile' => s("Type"),
 			'origin' => s("Origine"),
 			'description' => s("Présentation du produit"),
@@ -1387,7 +1290,6 @@ class ProductUi {
 					Product::PROCESSED_FOOD => s("Produit alimentaire transformé"),
 					Product::PROCESSED_PRODUCT => s("Produit non alimentaire"),
 					Product::COMPOSITION => s("Produit composé"),
-					Product::GROUP => s("Groupe de produits"),
 					Product::OTHER => s("Autre produit"),
 				];
 
@@ -1397,7 +1299,6 @@ class ProductUi {
 					Product::PROCESSED_FOOD => s("Pain, crèmerie, confiture..."),
 					Product::PROCESSED_PRODUCT => s("Savon, lessive..."),
 					Product::COMPOSITION => s("Panier de légumes, bouquet de fleurs..."),
-					Product::GROUP => NULL,
 					Product::OTHER => NULL,
 				];
 
@@ -1407,7 +1308,6 @@ class ProductUi {
 					Product::PROCESSED_FOOD => \Asset::icon('fork-knife'),
 					Product::PROCESSED_PRODUCT => \Asset::icon('box'),
 					Product::COMPOSITION => \Asset::icon('puzzle-fill'),
-					Product::GROUP => \Asset::icon('database'),
 					Product::OTHER => \Asset::icon('three-dots'),
 				];
 				break;
@@ -1428,15 +1328,6 @@ class ProductUi {
 
 			case 'mixedFrozen' :
 				$d->field = 'switch';
-				break;
-
-			case 'groupSelection' :
-				$d->field = 'radio';
-				$d->attributes['mandatory'] = TRUE;
-				$d->values = [
-					Product::UNIQUE => s("Un seul produit dans la liste"),
-					Product::MULTIPLE => s("Autant de produits dans la liste que souhaité"),
-				];
 				break;
 
 			case 'unit' :

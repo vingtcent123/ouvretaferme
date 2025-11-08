@@ -85,8 +85,8 @@ class Item extends ItemElement {
 						Product::model()
 							->select(ProductElement::getSelection())
 							->whereStatus(Product::ACTIVE)
-							->get($eProduct) and
-						$eProduct->validateProperty('farm', $this['farm'])
+							->whereFarm($this['farm'])
+							->get($eProduct)
 					);
 
 				} else {

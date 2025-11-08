@@ -68,8 +68,8 @@ Product:
   type: enum(PRIVATE, PRO)
   farm: farm\Farm
   catalog: ?shop\Catalog
-  parent: ?shop\Product
-  children: int16(0, null) = 0
+  parentName: ?text8(1, NULL)
+  parent: ?enum(UNIQUE, MULTIPLE)
   product: selling\Product
   packaging: ?decimal(6, 2, 0.01, null)
   promotion: enum(NONE, BASIC, NEW, WEEK, MONTH) = NONE
@@ -94,6 +94,21 @@ Product:
     ["date", "product"],
     ["catalog", "product"],
     ["parent", "product"]
+  ]
+
+Relation:
+  id: serial32
+  farm: farm\Farm
+  parent: shop\Product
+  child: shop\Product
+  position: int(0, null)
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["farm"],
+    ["parent"]
+  ]
+  UNIQUE: [
+    ["child"]
   ]
 
 Range:

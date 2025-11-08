@@ -7,6 +7,10 @@ class ProductLib extends ProductCrud {
 
 		return function(Product $eProduct) {
 
+			if($eProduct['parent'] !== NULL) {
+				return ['name', 'parent'];
+			}
+
 			$properties = ['promotion', 'price', 'priceDiscount', 'available', 'limitGroups', 'excludeGroups', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
 
 			if($eProduct['type'] === Product::PRO) {
@@ -511,6 +515,10 @@ class ProductLib extends ProductCrud {
 
 		Product::model()->beginTransaction();
 
+			if($eProduct['parent'] !== NULL) {
+				RelationLib::deleteByParent($eProduct);
+			}
+
 			Product::model()->delete($eProduct);
 
 			if($eProduct['catalog']->notEmpty()) {
@@ -518,6 +526,14 @@ class ProductLib extends ProductCrud {
 			}
 
 		Product::model()->commit();
+
+	}
+
+	public static function deleteCollection(\Collection $cProduct): void {
+
+		foreach($cProduct as $eProduct) {
+			self::delete($eProduct);
+		}
 
 	}
 

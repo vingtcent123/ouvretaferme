@@ -19,6 +19,22 @@ new \shop\ProductPage()
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data));
 
+
+new \shop\ProductPage()
+	->applyCollection(function($data, Collection $c) {
+		$c->validateProperty('farm', $c->first()['farm']);
+	})
+	->doUpdateCollectionProperties('doUpdateStatusCollection', ['status'], fn($data) => throw new ReloadAction())
+	->writeCollection('doDeleteCollection', function($data) {
+
+		$data->c->validate('canDelete');
+
+		\shop\ProductLib::deleteCollection($data->c);
+
+		throw new ReloadAction();
+
+	});
+
 new \shop\ProductPage()
 	->applyElement(function($data, \shop\Product $e) {
 

@@ -47,10 +47,7 @@ class Product extends ProductElement {
 
 	public function acceptEnableStock(): bool {
 
-		return (
-			$this['stock'] === NULL and
-			$this->acceptPrice()
-		);
+		return ($this['stock'] === NULL);
 
 	}
 
@@ -68,21 +65,13 @@ class Product extends ProductElement {
 
 	public function acceptDuplicate(): bool {
 
-		return (
-			$this->acceptPrice()
-		);
-
-	}
-
-	public function acceptPrice(): bool {
-
-		return ($this['profile'] !== Product::GROUP);
+		return ($this['profile'] !== Product::COMPOSITION);
 
 	}
 
 	public function acceptRelation(): bool {
 
-		return in_array($this['profile'], [Product::COMPOSITION, Product::GROUP]) === FALSE;
+		return ($this['profile'] !== Product::COMPOSITION);
 
 	}
 
@@ -170,7 +159,6 @@ class Product extends ProductElement {
 			'processedPackaging' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 			'processedAllergen' => [Product::PROCESSED_FOOD],
 			'processedComposition' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
-			'groupSelection' => [Product::GROUP]
 		};
 	}
 
@@ -235,10 +223,7 @@ class Product extends ProductElement {
 			})
 			->setCallback('profile.consistency', function(?string $profile) use ($p): bool {
 
-				return (
-					$profile !== Product::GROUP and
-					($p->for === 'create' or $profile !== Product::COMPOSITION)
-				);
+				return ($p->for === 'create' or $profile !== Product::COMPOSITION);
 
 			})
 			->setCallback('mixedFrozen.prepare', function(?bool &$frozen): bool {
@@ -317,13 +302,7 @@ class Product extends ProductElement {
 
 			})
 			->setCallback('vat.check', function(?int $vat): bool {
-
-				if($vat === NULL) {
-					return ($this['profile'] === Product::GROUP);
-				}
-
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
-
 			})
 			->setCallback('proOrPrivate.check', function() use ($p): bool {
 

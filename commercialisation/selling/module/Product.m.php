@@ -7,7 +7,6 @@ abstract class ProductElement extends \Element {
 
 	private static ?ProductModel $model = NULL;
 
-	const GROUP = 'group';
 	const COMPOSITION = 'composition';
 	const UNPROCESSED_PLANT = 'unprocessed-plant';
 	const UNPROCESSED_ANIMAL = 'unprocessed-animal';
@@ -17,9 +16,6 @@ abstract class ProductElement extends \Element {
 
 	const PUBLIC = 'public';
 	const PRIVATE = 'private';
-
-	const UNIQUE = 'unique';
-	const MULTIPLE = 'multiple';
 
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
@@ -63,7 +59,7 @@ class ProductModel extends \ModuleModel {
 			'additional' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'profile' => ['enum', [\selling\Product::GROUP, \selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER], 'cast' => 'enum'],
+			'profile' => ['enum', [\selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER], 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -72,7 +68,6 @@ class ProductModel extends \ModuleModel {
 			'processedAllergen' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'processedComposition' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'compositionVisibility' => ['enum', [\selling\Product::PUBLIC, \selling\Product::PRIVATE], 'null' => TRUE, 'cast' => 'enum'],
-			'groupSelection' => ['enum', [\selling\Product::UNIQUE, \selling\Product::MULTIPLE], 'null' => TRUE, 'cast' => 'enum'],
 			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
@@ -85,7 +80,7 @@ class ProductModel extends \ModuleModel {
 			'proPriceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'proPackaging' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'proStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
-			'vat' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'vat' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'quality' => ['enum', [\selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES, \selling\Product::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'stock' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'stockLast' => ['element32', 'selling\Stock', 'null' => TRUE, 'cast' => 'element'],
@@ -95,7 +90,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'groupSelection', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
+			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -147,9 +142,6 @@ class ProductModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'compositionVisibility' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'groupSelection' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'quality' :
@@ -227,10 +219,6 @@ class ProductModel extends \ModuleModel {
 
 	public function whereCompositionVisibility(...$data): ProductModel {
 		return $this->where('compositionVisibility', ...$data);
-	}
-
-	public function whereGroupSelection(...$data): ProductModel {
-		return $this->where('groupSelection', ...$data);
 	}
 
 	public function whereOrigin(...$data): ProductModel {

@@ -62,6 +62,7 @@ td.product-item-stock a {
 
 div.product-item-label {
 	width: 100%;
+	max-width: 40rem;
 	display: flex;
 	justify-content: space-between;
 	column-gap: 0.25rem;

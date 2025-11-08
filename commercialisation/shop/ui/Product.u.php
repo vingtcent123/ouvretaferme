@@ -6,6 +6,7 @@ class ProductUi {
 	public function __construct() {
 
 		\Asset::css('shop', 'product.css');
+		\Asset::js('shop', 'product.js');
 
 	}
 
@@ -830,6 +831,13 @@ class ProductUi {
 		$h = '<div class="'.$overflow.' stick-xs mb-3">';
 			$h .= '<table class="tbody-even td-padding-sm">';
 				$h .= '<thead>';
+					if($canAction) {
+						$h .= '<th class="td-checkbox">';
+							$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+								$h .= '<input type="checkbox" class="batch-all" onclick="ShopProduct.toggleSelection(this)"/>';
+							$h .= '</label>';
+						$h .= '</th>';
+					}
 					$h .= '<tr>';
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($showFarm) {
@@ -875,10 +883,19 @@ class ProductUi {
 						$eProduct['farm'] = $eDate['cFarm'][$eProduct['farm']['id']] ?? new \farm\Farm();
 					}
 
-
 					$h .= '<tbody>';
 
 						$h .= '<tr>';
+
+							if($canAction) {
+								$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
+									if($canUpdate) {
+										$h .= '<label>';
+											$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
+										$h .= '</label>';
+									}
+								$h .= '</td>';
+							}
 
 							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
 								if(
@@ -982,6 +999,8 @@ class ProductUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
+		$h .= $this->getBatch($eFarm);
+
 		return $h;
 
 	}
@@ -995,6 +1014,13 @@ class ProductUi {
 			$h .= '<table class="tbody-even td-padding-sm">';
 				$h .= '<thead>';
 					$h .= '<tr>';
+						if($eCatalog->canWrite()) {
+							$h .= '<th class="td-checkbox">';
+								$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+									$h .= '<input type="checkbox" class="batch-all" onclick="ShopProduct.toggleSelection(this)"/>';
+								$h .= '</label>';
+							$h .= '</th>';
+						}
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($eCatalog['type'] === Date::PRO) {
 							$columns++;
@@ -1029,6 +1055,14 @@ class ProductUi {
 
 					$h .= '<tbody>';
 						$h .= '<tr>';
+
+							if($eCatalog->canWrite()) {
+								$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
+									$h .= '<label>';
+										$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
+									$h .= '</label>';
+								$h .= '</td>';
+							}
 
 							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
 								if($eProductSelling['vignette'] !== NULL) {
@@ -1094,7 +1128,41 @@ class ProductUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
+		$h .= $this->getBatch($eFarm);
+
 		return $h;
+
+	}
+
+	public function getBatch(\farm\Farm $eFarm): string {
+
+		$menu = '';
+
+		$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
+			$menu .= \Asset::icon('toggle-on');
+			$menu .= '<span>'.s("Activer").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-menu-inactive batch-menu-item">';
+			$menu .= \Asset::icon('toggle-off');
+			$menu .= '<span>'.s("Désactiver").'</span>';
+		$menu .= '</a>';
+
+		if(FEATURE_GROUP) {
+
+			$menu .= '<a data-url="/shop/relation:createCollection?farm='.$eFarm['id'].'" class="batch-menu-relation batch-menu-item">';
+				$menu .= \Asset::icon('plus-circle');
+				$menu .= '<span>'.s("Créer un groupe").'</span>';
+			$menu .= '</a>';
+
+		}
+
+		$danger = '<a data-ajax-submit="/shop/product:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces produits du catalogue ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
+			$danger .= \Asset::icon('trash');
+			$danger .= '<span>'.s("Supprimer").'</span>';
+		$danger .= '</a>';
+
+		return \util\BatchUi::group($menu, $danger, title: s("Pour les produits sélectionnés"));
 
 	}
 
@@ -1331,87 +1399,95 @@ class ProductUi {
 
 			$h .= $form->hidden('id', $e['id']);
 
-			if($e['catalog']->notEmpty()) {
-				$info = s("Le prix que vous donnez ici ne s'applique qu'à ce catalogue et n'est pas prioritaire par rapport aux prix personnalisés de vos clients");
+			if($e['parent'] !== NULL) {
+
+				$h .= $form->dynamicGroups($e, ['parentName', 'parent']);
+
 			} else {
-				$info = s("Le prix que vous donnez ici ne s'applique qu'à cette boutique et n'est pas prioritaire par rapport aux prix personnalisés de vos clients");
-			}
-
-			$info .= ' '.s("(<link>en savoir plus</link>)", ['link' => '<a href="/doc/selling:pricing">']);
-
-			$h .= $form->group(
-				(self::p('price')->label)($e).\util\FormUi::info($info),
-				$form->dynamicField($e, 'price').$form->dynamicField($e, 'priceDiscount')
-			);
-
-			$h .= $form->dynamicGroups($e, match($e['type']) {
-				Product::PRO => ['packaging', 'available', 'promotion'],
-				Product::PRIVATE => ['available', 'promotion']
-			});
-
-			$h .= '<br/>';
-			$h .= '<h3>'.\Asset::icon('lock-fill').'  '.s("Limitations de commande").'</h3>';
-			$h .= '<div class="util-block bg-background-light">';
-
-				$h .= $form->group(
-				);
 
 				if($e['catalog']->notEmpty()) {
-					$h .= $this->getLimitAtField($form, $e);
+					$info = s("Le prix que vous donnez ici ne s'applique qu'à ce catalogue et n'est pas prioritaire par rapport aux prix personnalisés de vos clients");
+				} else {
+					$info = s("Le prix que vous donnez ici ne s'applique qu'à cette boutique et n'est pas prioritaire par rapport aux prix personnalisés de vos clients");
 				}
 
-				$h .= $form->dynamicGroups($e, ['limitMin', 'limitMax']);
-
-			$h .= '</div>';
-
-			$h .= '<br/>';
-			$h .= '<h3>'.\Asset::icon('person-circle').'  '.s("Autorisations et interdictions à certains clients").'</h3>';
-
-			$h .= '<p class="util-helper">'.s("Vous pouvez laisser ces champs vides si vous souhaitez que ce produit soit accessible à tous vos clients. Vous ne pouvez pas à la fois autoriser et interdire les commandes d'un produit à certains clients.").'</pa>';
-
-			$h .= '<div class="util-block bg-background-light">';
-
-				$limit = '<div class="shop-product-update-restriction">';
-					$limit .= '<div>';
-						$limit .= '<fieldset>';
-							$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Clients").'</legend>';
-							$limit .= $form->dynamicField($e, 'limitCustomers');
-						$limit .= '</fieldset>';
-					$limit .= '</div>';
-					$limit .= '<div>';
-						$limit .= '<fieldset>';
-							$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Groupes de clients").'</legend>';
-							$limit .= $form->dynamicField($e, 'limitGroups');
-						$limit .= '</fieldset>';
-					$limit .= '</div>';
-				$limit .= '</div>';
+				$info .= ' '.s("(<link>en savoir plus</link>)", ['link' => '<a href="/doc/selling:pricing">']);
 
 				$h .= $form->group(
-					s("Autoriser uniquement les commandes de ce produit à :"),
-					$limit
+					(self::p('price')->label)($e).\util\FormUi::info($info),
+					$form->dynamicField($e, 'price').$form->dynamicField($e, 'priceDiscount')
 				);
 
-				$limit = '<div class="shop-product-update-restriction">';
-					$limit .= '<div>';
-						$limit .= '<fieldset>';
-							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Clients").'</legend>';
-							$limit .= $form->dynamicField($e, 'excludeCustomers');
-						$limit .= '</fieldset>';
-					$limit .= '</div>';
-					$limit .= '<div>';
-						$limit .= '<fieldset>';
-							$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Groupes de clients").'</legend>';
-							$limit .= $form->dynamicField($e, 'excludeGroups');
-						$limit .= '</fieldset>';
-					$limit .= '</div>';
-				$limit .= '</div>';
+				$h .= $form->dynamicGroups($e, match($e['type']) {
+					Product::PRO => ['packaging', 'available', 'promotion'],
+					Product::PRIVATE => ['available', 'promotion']
+				});
 
-				$h .= $form->group(
-					s("Interdire les commandes de ce produit à :").\util\FormUi::info(s("Nous vous recommandons d'utiliser l'interdiction avec précaution car vos clients pourraient voir qu'ils ne peuvent pas acheter ce produit s'ils consultent votre boutique sans être connecté.")),
-					$limit
-				);
+				$h .= '<br/>';
+				$h .= '<h3>'.\Asset::icon('lock-fill').'  '.s("Limitations de commande").'</h3>';
+				$h .= '<div class="util-block bg-background-light">';
 
-			$h .= '</div>';
+					$h .= $form->group(
+					);
+
+					if($e['catalog']->notEmpty()) {
+						$h .= $this->getLimitAtField($form, $e);
+					}
+
+					$h .= $form->dynamicGroups($e, ['limitMin', 'limitMax']);
+
+				$h .= '</div>';
+
+				$h .= '<br/>';
+				$h .= '<h3>'.\Asset::icon('person-circle').'  '.s("Autorisations et interdictions à certains clients").'</h3>';
+
+				$h .= '<p class="util-helper">'.s("Vous pouvez laisser ces champs vides si vous souhaitez que ce produit soit accessible à tous vos clients. Vous ne pouvez pas à la fois autoriser et interdire les commandes d'un produit à certains clients.").'</pa>';
+
+				$h .= '<div class="util-block bg-background-light">';
+
+					$limit = '<div class="shop-product-update-restriction">';
+						$limit .= '<div>';
+							$limit .= '<fieldset>';
+								$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Clients").'</legend>';
+								$limit .= $form->dynamicField($e, 'limitCustomers');
+							$limit .= '</fieldset>';
+						$limit .= '</div>';
+						$limit .= '<div>';
+							$limit .= '<fieldset>';
+								$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Groupes de clients").'</legend>';
+								$limit .= $form->dynamicField($e, 'limitGroups');
+							$limit .= '</fieldset>';
+						$limit .= '</div>';
+					$limit .= '</div>';
+
+					$h .= $form->group(
+						s("Autoriser uniquement les commandes de ce produit à :"),
+						$limit
+					);
+
+					$limit = '<div class="shop-product-update-restriction">';
+						$limit .= '<div>';
+							$limit .= '<fieldset>';
+								$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Clients").'</legend>';
+								$limit .= $form->dynamicField($e, 'excludeCustomers');
+							$limit .= '</fieldset>';
+						$limit .= '</div>';
+						$limit .= '<div>';
+							$limit .= '<fieldset>';
+								$limit .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Groupes de clients").'</legend>';
+								$limit .= $form->dynamicField($e, 'excludeGroups');
+							$limit .= '</fieldset>';
+						$limit .= '</div>';
+					$limit .= '</div>';
+
+					$h .= $form->group(
+						s("Interdire les commandes de ce produit à :").\util\FormUi::info(s("Nous vous recommandons d'utiliser l'interdiction avec précaution car vos clients pourraient voir qu'ils ne peuvent pas acheter ce produit s'ils consultent votre boutique sans être connecté.")),
+						$limit
+					);
+
+				$h .= '</div>';
+
+			}
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -1421,7 +1497,10 @@ class ProductUi {
 
 		return new \Panel(
 			id: 'panel-product-update',
-			title: s("Modifier un produit"),
+			title: match($e['parent']) {
+				NULL => s("Modifier un produit"),
+				default => s("Modifier un groupe")
+			},
 			subTitle: \selling\ProductUi::getPanelHeader($e['product']),
 			body: $h
 		);
@@ -1449,6 +1528,8 @@ class ProductUi {
 
 		$d = Product::model()->describer($property, [
 			'product' => s("Produit"),
+			'parentName' => s("Nom du groupe"),
+			'parent' => s("Les clients doivent-ils choisir un produit dans la liste ou peuvent-ils sélectionner plusieurs produits lors d'une commande ?"),
 			'available' => s("Disponible"),
 			'packaging' => s("Colisage"),
 			'promotion' => s("Mise en avant"),
@@ -1476,6 +1557,15 @@ class ProductUi {
 					Product::NEW => s("Mise en avant avec mention « Nouveauté »"),
 					Product::WEEK => s("Mise en avant avec mention « Produit de la semaine »"),
 					Product::MONTH => s("Mise en avant avec mention « Produit du mois »"),
+				];
+				break;
+
+			case 'parent' :
+				$d->field = 'radio';
+				$d->attributes['mandatory'] = TRUE;
+				$d->values = [
+					Product::UNIQUE => s("Un seul produit dans la liste"),
+					Product::MULTIPLE => s("Autant de produits dans la liste que souhaité"),
 				];
 				break;
 
