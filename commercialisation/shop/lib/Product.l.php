@@ -28,6 +28,55 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, Catalog $eCatalog, Date $eDate, bool $withRelations): \Collection {
+
+		if($eCatalog->notEmpty()) {
+
+			$cProductExclude = $withRelations ?
+				new \Collection() :
+				Relation::model()
+					->select('child')
+					->whereCatalog($eCatalog)
+					->getColumn('child');
+
+			Product::model()->whereCatalog($eCatalog);
+
+		} else if($eDate->notEmpty()) {
+
+			$cProductExclude = $withRelations ?
+				new \Collection() :
+				Relation::model()
+					->select('child')
+					->whereDate($eDate)
+					->getColumn('child');
+
+			Product::model()->whereDate($eDate);
+
+		} else {
+			throw new \Exception('Missing catalog or date');
+		}
+
+		$cProduct = Product::model()
+			->select(Product::getSelection())
+			->whereId('NOT IN', $cProductExclude, if: $cProductExclude->notEmpty())
+			->getCollection(index: 'product');
+
+		$onlyIds = $cProduct
+			->getColumnCollection('product')
+			->getIds();
+
+		$filteredIds = \selling\ProductLib::getFromQuery($query, $eFarm, onlyIds: $onlyIds, withComposition: FALSE, properties: ['id'])->getIds();
+
+		$cProductFiltered = new \Collection();
+
+		foreach($filteredIds as $id) {
+			$cProductFiltered[] = $cProduct[$id];
+		}
+
+		return $cProductFiltered;
+
+	}
+
 	public static function getForCopy(Shop $eShop, Date $eDate): \Collection {
 
 		$eShop->expects(['type']);

@@ -178,7 +178,7 @@ new Page()
 		$withComposition = POST('profileComposition', 'bool', TRUE);
 		$exclude = post_exists('exclude') ? explode(',', POST('exclude')) : NULL;
 
-		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type, $exclude, $stock, $withComposition);
+		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type, excludeIds: $exclude, stock: $stock, withComposition: $withComposition);
 
 		throw new \ViewAction($data);
 

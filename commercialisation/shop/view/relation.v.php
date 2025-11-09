@@ -4,6 +4,6 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
-	return new \shop\RelationUi()->createCollection($data->eFarm, $data->cProduct);
+	return new \shop\RelationUi()->createCollection($data->eFarm, $data->eDate, $data->eCatalog, $data->cProduct);
 });
 ?>

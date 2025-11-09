@@ -37,7 +37,7 @@ new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
 
 new JsonView('query', function($data, AjaxTemplate $t) {
 
-	$results = $data->cProduct->makeArray(fn($eCustomer) => \selling\ProductUi::getAutocomplete($eCustomer));
+	$results = $data->cProduct->makeArray(fn($eProduct) => \selling\ProductUi::getAutocomplete($eProduct));
 	$t->push('results', $results);
 
 });

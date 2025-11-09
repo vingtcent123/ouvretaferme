@@ -10,6 +10,25 @@ class ProductUi {
 
 	}
 
+	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
+
+		new \selling\ProductUi()->query($d, $multiple);
+
+		$d->autocompleteUrl = '/shop/product:query';
+		$d->autocompleteResults = function(Product $e) {
+			return self::getAutocomplete($e);
+		};
+
+	}
+
+	public static function getAutocomplete(Product $eProduct): array {
+
+		return [
+			'value' => $eProduct['id']
+		] + \selling\ProductUi::getAutocomplete($eProduct['product']);
+
+	}
+
 	public function toggle(Product $eProduct) {
 
 		return \util\TextUi::switch([
@@ -999,7 +1018,7 @@ class ProductUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
-		$h .= $this->getBatch($eFarm);
+		$h .= $this->getBatch($eFarm, eDate: $eDate);
 
 		return $h;
 
@@ -1128,13 +1147,13 @@ class ProductUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
-		$h .= $this->getBatch($eFarm);
+		$h .= $this->getBatch($eFarm, eCatalog: $eCatalog);
 
 		return $h;
 
 	}
 
-	public function getBatch(\farm\Farm $eFarm): string {
+	public function getBatch(\farm\Farm $eFarm, Date $eDate = new Date(), Catalog $eCatalog = new Catalog()): string {
 
 		$menu = '';
 
@@ -1150,7 +1169,7 @@ class ProductUi {
 
 		if(FEATURE_GROUP) {
 
-			$menu .= '<a data-url="/shop/relation:createCollection?farm='.$eFarm['id'].'" class="batch-menu-relation batch-menu-item">';
+			$menu .= '<a data-url="/shop/relation:createCollection?farm='.$eFarm['id'].($eDate->notEmpty() ? '&date='.$eDate['id'] : '').($eCatalog->notEmpty() ? '&catalog='.$eCatalog['id'] : '').'" class="batch-menu-relation batch-menu-item">';
 				$menu .= \Asset::icon('plus-circle');
 				$menu .= '<span>'.s("Créer un groupe").'</span>';
 			$menu .= '</a>';

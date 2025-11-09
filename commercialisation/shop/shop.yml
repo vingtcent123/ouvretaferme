@@ -63,10 +63,10 @@ Point:
 
 Product:
   id: serial32
+  farm: farm\Farm
+  type: enum(PRIVATE, PRO)
   shop: ?shop\Shop
   date: ?shop\Date
-  type: enum(PRIVATE, PRO)
-  farm: farm\Farm
   catalog: ?shop\Catalog
   parentName: ?text8(1, NULL)
   parent: ?enum(UNIQUE, MULTIPLE)
@@ -99,12 +99,17 @@ Product:
 Relation:
   id: serial32
   farm: farm\Farm
+  shop: ?shop\Shop
+  date: ?shop\Date
+  catalog: ?shop\Catalog
   parent: shop\Product
   child: shop\Product
   position: int(0, null)
   createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["farm"],
+    ["date"],
+    ["catalog"],
     ["parent"]
   ]
   UNIQUE: [

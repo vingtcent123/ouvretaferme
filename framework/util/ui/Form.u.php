@@ -2117,6 +2117,8 @@ class FormUi {
 		foreach($body as $key => $value) {
 			if(is_bool($value)) {
 				$body[$key] = (int)$value;
+			} else if($value === NULL) {
+				unset($body[$key]);
 			}
 		}
 

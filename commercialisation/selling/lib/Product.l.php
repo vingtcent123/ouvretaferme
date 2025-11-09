@@ -73,7 +73,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type, ?array $exclude, ?string $stock, bool $withComposition, ?array $properties = []): \Collection {
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type = NULL, ?array $excludeIds = [], ?array $onlyIds = [], ?string $stock = NULL, bool $withComposition = TRUE, ?array $properties = []): \Collection {
 
 		if(strpos($query, '#') === 0 and ctype_digit(substr($query, 1))) {
 
@@ -114,7 +114,8 @@ class ProductLib extends ProductCrud {
 		return Product::model()
 			->select($properties ?: Product::getSelection())
 			->whereFarm($eFarm)
-			->whereId('NOT IN', $exclude, if: $exclude !== NULL)
+			->whereId('NOT IN', $excludeIds, if: $excludeIds !== [])
+			->whereId('IN', $onlyIds, if: $onlyIds !== [])
 			->whereStatus(Product::ACTIVE)
 			->whereProfile('!=' , Product::COMPOSITION, if: $withComposition === FALSE)
 			->whereStock(NULL, if: $stock === 'enable')

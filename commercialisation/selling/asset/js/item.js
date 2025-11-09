@@ -128,7 +128,7 @@ class Item {
 
 	static updateSummary() {
 
-		const wrapper = qs('#item-create-tabs');
+		const wrapper = qs('#item-create-wrapper');
 
 		// Pas dans le tableau des produits
 		if(wrapper === null) {

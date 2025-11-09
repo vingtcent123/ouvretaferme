@@ -89,10 +89,12 @@ class RelationUi {
 
 	}
 
-	public function createCollection(\farm\Farm $eFarm, \Collection $cProduct): \Panel {
+	public function createCollection(\farm\Farm $eFarm, Date $eDate, Catalog $eCatalog, \Collection $cProduct): \Panel {
 
 		$eRelationReference = new Relation([
 			'farm' => $eFarm,
+			'date' => $eDate,
+			'catalog' => $eCatalog,
 			'cProduct' => $cProduct
 		]);
 
@@ -103,12 +105,20 @@ class RelationUi {
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Quel est le rôle des groupes de produits ?").'</h4>';
 				$h .= '<p>'.s("Un groupe de produits peut être proposé à la vente dans vos catalogues ou sur vos boutiques en ligne. Lorsqu'un groupe de produits est mis en vente, le choix est laissé au client de choisir un des produits du groupe pour compléter sa commande.").'</p>';
-				$h .= '<p>'.s("Cela vous permet par exemple de vendre plusieurs variantes d'un même produit. Vous pourriez par exemple créer un groupe <i>Aromatiques</i> et inclure dans ce groupe les produits <i>Persil</i>, <i>Ciboulette</i> et <i>Basilic</i>. Si votre client veut des <i>Aromatiques</i>, alors il devra choisir par les trois possibilités qui s'offrent à lui.").'</p>';
+				$h .= '<p>'.s("Cela vous permet par exemple de vendre plusieurs variantes d'un même produit. Vous pourriez par exemple créer un groupe <i>Aromatiques</i> et inclure dans ce groupe les produits <i>Persil</i>, <i>Ciboulette</i> et <i>Basilic</i>. Si votre client veut des <i>Aromatiques</i>, alors il devra choisir parmi les trois possibilités qui s'offrent à lui.").'</p>';
 			$h .= '</div>';
 
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
+
+			if($eDate->notEmpty()) {
+				$h .= $form->hidden('date', $eDate['id']);
+			}
+
+			if($eCatalog->notEmpty()) {
+				$h .= $form->hidden('catalog', $eCatalog['id']);
+			}
 
 			$h .= $form->dynamicGroups(new Product(), ['parentName', 'parent']);
 			$h .= $form->dynamicGroup($eRelationReference, 'children*');
@@ -140,10 +150,12 @@ class RelationUi {
 					$e->expects(['farm']);
 					return [
 						'farm' => $e['farm']['id'],
-						'profileComposition' => FALSE,
+						'catalog' => $e['catalog']->empty() ? NULL : $e['catalog']['id'],
+						'date' => $e['date']->empty() ? NULL : $e['date']['id'],
+						'relations' => FALSE
 					];
 				};
-				new \selling\ProductUi()->query($d, multiple: TRUE);
+				new \shop\ProductUi()->query($d, multiple: TRUE);
 				$d->group['class'] = 'relation-wrapper';
 				break;
 

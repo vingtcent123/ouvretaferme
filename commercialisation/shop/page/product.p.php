@@ -88,4 +88,25 @@ new Page(function($data) {
 		throw new ReloadAction('shop', 'Products::created');
 
 	});
+
+new Page()
+	->post('query', function($data) {
+
+		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
+
+		$eCatalog = post_exists('catalog') ?
+			\shop\CatalogLib::getById(POST('catalog'))->validateProperty('farm', $eFarm) :
+			new \shop\Catalog();
+		
+		$eDate = post_exists('date') ?
+			\shop\DateLib::getById(POST('date'))->validateProperty('farm', $eFarm) :
+			new \shop\Date();
+
+		$withRelations = POST('relations', 'bool', TRUE);
+
+		$data->cProduct = \shop\ProductLib::getFromQuery(POST('query'), $eFarm, $eCatalog, $eDate, $withRelations);
+
+		throw new \ViewAction($data);
+
+	});
 ?>

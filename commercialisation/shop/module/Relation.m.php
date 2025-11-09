@@ -38,6 +38,9 @@ class RelationModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
+			'date' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
+			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'parent' => ['element32', 'shop\Product', 'cast' => 'element'],
 			'child' => ['element32', 'shop\Product', 'unique' => TRUE, 'cast' => 'element'],
 			'position' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -45,17 +48,22 @@ class RelationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'parent', 'child', 'position', 'createdAt'
+			'id', 'farm', 'shop', 'date', 'catalog', 'parent', 'child', 'position', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
+			'shop' => 'shop\Shop',
+			'date' => 'shop\Date',
+			'catalog' => 'shop\Catalog',
 			'parent' => 'shop\Product',
 			'child' => 'shop\Product',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm'],
+			['date'],
+			['catalog'],
 			['parent']
 		]);
 
@@ -93,6 +101,18 @@ class RelationModel extends \ModuleModel {
 
 	public function whereFarm(...$data): RelationModel {
 		return $this->where('farm', ...$data);
+	}
+
+	public function whereShop(...$data): RelationModel {
+		return $this->where('shop', ...$data);
+	}
+
+	public function whereDate(...$data): RelationModel {
+		return $this->where('date', ...$data);
+	}
+
+	public function whereCatalog(...$data): RelationModel {
+		return $this->where('catalog', ...$data);
 	}
 
 	public function whereParent(...$data): RelationModel {

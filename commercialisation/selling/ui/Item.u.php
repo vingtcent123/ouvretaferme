@@ -893,62 +893,68 @@ class ItemUi {
 
 	public function getCreateList(\Collection $cProduct, \Collection $cCategory, \Closure $list): string {
 
-		if($cCategory->empty()) {
-			return $list($cProduct);
-		}
+		$h = '<div id="item-create-wrapper">';
 
-		$ccProduct = $cProduct->reindex(['category']);
+			if($cCategory->empty()) {
+				$h .= $list($cProduct);
+			} else {
 
-		$h = '<div class="tabs-h" id="item-create-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
+				$ccProduct = $cProduct->reindex(['category']);
 
-			$h .= '<div class="tabs-item">';
+				$h = '<div class="tabs-h" id="item-create-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
 
-				foreach($cCategory as $eCategory) {
+					$h .= '<div class="tabs-item">';
 
-					if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
-						continue;
-					}
+						foreach($cCategory as $eCategory) {
 
-					$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
-
-					$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
-						$h .= encode($eCategory['name']);
-						$h .= '<span class="tab-item-count">';
-							if($products > 0) {
-								$h .= $products;
+							if($ccProduct->offsetExists($eCategory['id']) === FALSE) {
+								continue;
 							}
-						$h .= '</span>';
-					$h .= '</a>';
 
-				}
+							$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
 
-				if($ccProduct->offsetExists('')) {
+							$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
+								$h .= encode($eCategory['name']);
+								$h .= '<span class="tab-item-count">';
+									if($products > 0) {
+										$h .= $products;
+									}
+								$h .= '</span>';
+							$h .= '</a>';
 
-					$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
+						}
 
-					$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
-						$h .= s("Non catégorisé");
-						$h .= '<span class="tab-item-count">';
-							if($products > 0) {
-								$h .= $products;
-							}
-						$h .= '</span>';
-					$h .= '</a>';
-				}
+						if($ccProduct->offsetExists('')) {
 
-			$h .= '</div>';
+							$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
 
-			$h .= '<div class="tabs-panel stick-sm">';
+							$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
+								$h .= s("Non catégorisé");
+								$h .= '<span class="tab-item-count">';
+									if($products > 0) {
+										$h .= $products;
+									}
+								$h .= '</span>';
+							$h .= '</a>';
+						}
 
-				foreach($ccProduct as $category => $cProduct) {
-
-					$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
-						$h .= $list($cProduct);
 					$h .= '</div>';
 
-				}
+					$h .= '<div class="tabs-panel stick-sm">';
 
-			$h .= '</div>';
+						foreach($ccProduct as $category => $cProduct) {
+
+							$h .= '<div class="tab-panel" data-tab="'.($category ?: 'empty').'">';
+								$h .= $list($cProduct);
+							$h .= '</div>';
+
+						}
+
+					$h .= '</div>';
+				$h .= '</div>';
+
+			}
+
 		$h .= '</div>';
 
 		return $h;

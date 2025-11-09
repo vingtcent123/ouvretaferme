@@ -52,10 +52,10 @@ class ProductModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
+			'type' => ['enum', [\shop\Product::PRIVATE, \shop\Product::PRO], 'cast' => 'enum'],
 			'shop' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'date' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
-			'type' => ['enum', [\shop\Product::PRIVATE, \shop\Product::PRO], 'cast' => 'enum'],
-			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'parentName' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'parent' => ['enum', [\shop\Product::UNIQUE, \shop\Product::MULTIPLE], 'null' => TRUE, 'cast' => 'enum'],
@@ -77,13 +77,13 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'shop', 'date', 'type', 'farm', 'catalog', 'parentName', 'parent', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
+			'id', 'farm', 'type', 'shop', 'date', 'catalog', 'parentName', 'parent', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
+			'farm' => 'farm\Farm',
 			'shop' => 'shop\Shop',
 			'date' => 'shop\Date',
-			'farm' => 'farm\Farm',
 			'catalog' => 'shop\Catalog',
 			'product' => 'selling\Product',
 		];
@@ -201,20 +201,20 @@ class ProductModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereShop(...$data): ProductModel {
-		return $this->where('shop', ...$data);
-	}
-
-	public function whereDate(...$data): ProductModel {
-		return $this->where('date', ...$data);
+	public function whereFarm(...$data): ProductModel {
+		return $this->where('farm', ...$data);
 	}
 
 	public function whereType(...$data): ProductModel {
 		return $this->where('type', ...$data);
 	}
 
-	public function whereFarm(...$data): ProductModel {
-		return $this->where('farm', ...$data);
+	public function whereShop(...$data): ProductModel {
+		return $this->where('shop', ...$data);
+	}
+
+	public function whereDate(...$data): ProductModel {
+		return $this->where('date', ...$data);
 	}
 
 	public function whereCatalog(...$data): ProductModel {
