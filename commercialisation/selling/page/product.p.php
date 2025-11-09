@@ -176,7 +176,7 @@ new Page()
 		$type = POST('type', '?string');
 		$stock = POST('stock', '?string');
 		$withComposition = POST('profileComposition', 'bool', TRUE);
-		$exclude = post_exists('exclude') ? explode(',', POST('exclude')) : NULL;
+		$exclude = post_exists('exclude') ? explode(',', POST('exclude')) : [];
 
 		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type, excludeIds: $exclude, stock: $stock, withComposition: $withComposition);
 
