@@ -66,7 +66,12 @@ class ProductUi {
 
 	public static function getPanelHeader(Product $eProduct): string {
 
-		return '<div class="panel-header-subtitle">'.self::getVignette($eProduct, '2rem').'  '.$eProduct->getName('html').'</div>';
+		$h = '<div class="panel-header-subtitle">';
+			$h .= self::getVignette($eProduct, '2rem').'  ';
+			$h .= $eProduct->getName('html');
+		$h .= '</div>';
+
+		return $h;
 
 	}
 

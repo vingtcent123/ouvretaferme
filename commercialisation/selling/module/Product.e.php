@@ -69,12 +69,6 @@ class Product extends ProductElement {
 
 	}
 
-	public function acceptRelation(): bool {
-
-		return ($this['profile'] !== Product::COMPOSITION);
-
-	}
-
 	public function getName(string $mode = 'text'): string {
 
 		$this->expects(['name', 'unprocessedVariety', 'mixedFrozen']);

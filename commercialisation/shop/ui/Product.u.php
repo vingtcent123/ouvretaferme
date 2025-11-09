@@ -10,25 +10,6 @@ class ProductUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
-
-		new \selling\ProductUi()->query($d, $multiple);
-
-		$d->autocompleteUrl = '/shop/product:query';
-		$d->autocompleteResults = function(Product $e) {
-			return self::getAutocomplete($e);
-		};
-
-	}
-
-	public static function getAutocomplete(Product $eProduct): array {
-
-		return [
-			'value' => $eProduct['id']
-		] + \selling\ProductUi::getAutocomplete($eProduct['product']);
-
-	}
-
 	public function toggle(Product $eProduct) {
 
 		return \util\TextUi::switch([
@@ -280,7 +261,7 @@ class ProductUi {
 
 	public function getProducts(Shop $eShop, Date $eDate, bool $canBasket, bool $isModifying, \Collection $cProduct): string {
 
-		$h = '<div class="shop-product-group">';
+		$h = '<div class="shop-product-list">';
 			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eShop, $eDate, $eProduct, $canBasket, $isModifying));
 		$h .= '</div>';
 
@@ -821,7 +802,9 @@ class ProductUi {
 
 	}
 
-	public function getUpdateCatalog(\farm\Farm $eFarm, Catalog $eCatalog, \Collection $ccProduct, \Collection $cCategory): string {
+	public function getUpdateCatalog(\farm\Farm $eFarm, Catalog $eCatalog, \Collection $cProduct, \Collection $cCategory): string {
+
+		$ccProduct = $cProduct->reindex(['product', 'category']);
 
 		return $this->getListByCategory(
 			$cCategory,
@@ -1058,89 +1041,56 @@ class ProductUi {
 
 				foreach($cProduct as $eProduct) {
 
-					$eProductSelling = $eProduct['product'];
-					$uiProductSelling = new \selling\ProductUi();
+					if($eProduct['parent'] === NULL) {
 
-					$hasLimits = (
-						$eProduct['promotion'] !== Product::NONE or
-						$eProduct['limitCustomers'] or
-						$eProduct['limitGroups'] or
-						$eProduct['excludeCustomers'] or
-						$eProduct['excludeGroups'] or
-						$eProduct['limitMax'] or
-						$eProduct['limitStartAt'] or
-						$eProduct['limitEndAt']
-					);
+						$h .= '<tbody>';
+							$h .= $this->getOneByCatalog($eCatalog, $eProduct, $columns);
+						$h .= '</tbody>';
 
-					$h .= '<tbody>';
-						$h .= '<tr>';
+					} else {
 
-							if($eCatalog->canWrite()) {
-								$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
-									$h .= '<label>';
-										$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
-									$h .= '</label>';
-								$h .= '</td>';
-							}
+						$h .= '<tbody class="shop-product-group">';
+							$h .= '<tr>';
 
-							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
-								if($eProductSelling['vignette'] !== NULL) {
-									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
-								} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
-									$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], '3rem');
+								if($eCatalog->canWrite()) {
+									$h .= '<td class="td-checkbox"></td>';
 								}
-							$h .= '</td>';
 
-							$h .= '<td>';
-								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: TRUE);
-							$h .= '</td>';
-
-							if($eCatalog['type'] === Date::PRO) {
 								$h .= '<td class="td-min-content">';
-									if($eProduct['packaging'] !== NULL) {
-										$h .= $eProduct->quick('packaging', s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)));
-									} else {
-										$h .= $eProduct->quick('packaging', '-');
-									}
 								$h .= '</td>';
-							}
 
-							$h .= '<td class="text-end" style="white-space: nowrap">';
-								$unit = \selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
-								if($eProduct['priceInitial'] !== NULL) {
-									$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: $unit);
-									$field = 'priceDiscount';
-								} else {
-									$field = 'price';
+								$h .= '<td>';
+									$h .= '<h4>'.encode($eProduct['parentName']).'</h4>';
+								$h .= '</td>';
+
+								if($eCatalog['type'] === Date::PRO) {
+									$h .= '<td class="td-min-content"></td>';
 								}
-								$price = \util\TextUi::money($eProduct['price']).$unit;
-								$h .= $eProduct->quick($field, $price);
-							$h .= '</td>';
 
-							$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';
-								$h .= $this->getStatus($eProduct, TRUE);
-							$h .= '</td>';
+								$h .= '<td class="text-end" style="white-space: nowrap"></td>';
 
-							$h .= '<td class="text-center" '.($hasLimits ? 'rowspan="2"' : '').'>';
-								$h .= $this->toggle($eProduct);
-							$h .= '</td>';
+								$h .= '<td class="shop-product-available highlight"></td>';
 
-							if($eCatalog->canWrite()) {
+								$h .= '<td class="text-center"></td>';
 
-								$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
-									$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
-									$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
-								$h .= '</td>';
+								if($eCatalog->canWrite()) {
 
+									$h .= '<td class="td-min-content">';
+										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
+										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+									$h .= '</td>';
+
+								}
+
+							$h .= '</tr>';
+
+							foreach($eProduct['cProductChild'] as $eProductChild) {
+								$h .= $this->getOneByCatalog($eCatalog, $eProductChild, $columns);
 							}
 
-						$h .= '</tr>';
+						$h .= '</tbody>';
 
-						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $eCatalog['cCustomer'], $eCatalog['cGroup']);
-						}
-
-					$h .= '</tbody>';
+					}
 
 				}
 ;
@@ -1148,6 +1098,93 @@ class ProductUi {
 		$h .= '</div>';
 
 		$h .= $this->getBatch($eFarm, eCatalog: $eCatalog);
+
+		return $h;
+
+	}
+
+	protected function getOneByCatalog(Catalog $eCatalog, Product $eProduct, int $columns): string {
+
+		$eProductSelling = $eProduct['product'];
+		$uiProductSelling = new \selling\ProductUi();
+
+		$hasLimits = (
+			$eProduct['promotion'] !== Product::NONE or
+			$eProduct['limitCustomers'] or
+			$eProduct['limitGroups'] or
+			$eProduct['excludeCustomers'] or
+			$eProduct['excludeGroups'] or
+			$eProduct['limitMax'] or
+			$eProduct['limitStartAt'] or
+			$eProduct['limitEndAt']
+		);
+
+		$h = '<tr class="shop-product-one">';
+
+			if($eCatalog->canWrite()) {
+				$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
+					$h .= '<label>';
+						$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
+					$h .= '</label>';
+				$h .= '</td>';
+			}
+
+			$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
+				if($eProductSelling['vignette'] !== NULL) {
+					$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
+				} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
+					$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], '3rem');
+				}
+			$h .= '</td>';
+
+			$h .= '<td>';
+				$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: TRUE);
+			$h .= '</td>';
+
+			if($eCatalog['type'] === Date::PRO) {
+				$h .= '<td class="td-min-content">';
+					if($eProduct['packaging'] !== NULL) {
+						$h .= $eProduct->quick('packaging', s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE)));
+					} else {
+						$h .= $eProduct->quick('packaging', '-');
+					}
+				$h .= '</td>';
+			}
+
+			$h .= '<td class="text-end" style="white-space: nowrap">';
+				$unit = \selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+				if($eProduct['priceInitial'] !== NULL) {
+					$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: $unit);
+					$field = 'priceDiscount';
+				} else {
+					$field = 'price';
+				}
+				$price = \util\TextUi::money($eProduct['price']).$unit;
+				$h .= $eProduct->quick($field, $price);
+			$h .= '</td>';
+
+			$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';
+				$h .= $this->getStatus($eProduct, TRUE);
+			$h .= '</td>';
+
+			$h .= '<td class="text-center" '.($hasLimits ? 'rowspan="2"' : '').'>';
+				$h .= $this->toggle($eProduct);
+			$h .= '</td>';
+
+			if($eCatalog->canWrite()) {
+
+				$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
+					$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
+					$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+				$h .= '</td>';
+
+			}
+
+		$h .= '</tr>';
+
+		if($hasLimits) {
+			$h .= $this->getLimits($columns, $eProduct, $eCatalog['cCustomer'], $eCatalog['cGroup']);
+		}
 
 		return $h;
 
@@ -1420,7 +1457,7 @@ class ProductUi {
 
 			if($e['parent'] !== NULL) {
 
-				$h .= $form->dynamicGroups($e, ['parentName', 'parent']);
+				$h .= $form->dynamicGroups($e, ['parentName', 'parent', 'children']);
 
 			} else {
 
@@ -1460,7 +1497,7 @@ class ProductUi {
 				$h .= '<br/>';
 				$h .= '<h3>'.\Asset::icon('person-circle').'  '.s("Autorisations et interdictions à certains clients").'</h3>';
 
-				$h .= '<p class="util-helper">'.s("Vous pouvez laisser ces champs vides si vous souhaitez que ce produit soit accessible à tous vos clients. Vous ne pouvez pas à la fois autoriser et interdire les commandes d'un produit à certains clients.").'</pa>';
+				$h .= '<p class="util-info">'.s("Vous pouvez laisser ces champs vides si vous souhaitez que ce produit soit accessible à tous vos clients. Vous ne pouvez pas à la fois autoriser et interdire les commandes d'un produit à certains clients.").'</pa>';
 
 				$h .= '<div class="util-block bg-background-light">';
 
@@ -1520,7 +1557,9 @@ class ProductUi {
 				NULL => s("Modifier un produit"),
 				default => s("Modifier un groupe")
 			},
-			subTitle: \selling\ProductUi::getPanelHeader($e['product']),
+			subTitle: $e['parent'] !== NULL ?
+				NULL :
+				\selling\ProductUi::getPanelHeader($e['product']),
 			body: $h
 		);
 
@@ -1561,6 +1600,7 @@ class ProductUi {
 			'limitMax' => s("Quantité maximale autorisée par commande"),
 			'limitCustomers' => s("N'autoriser les commandes de ce produit qu'à certains clients"),
 			'excludeCustomers' => s("Interdire les commandes de ce produit à certains clients"),
+			'children' => s("Produits")
 		]);
 
 		switch($property) {
@@ -1752,6 +1792,21 @@ class ProductUi {
 					return $append;
 
 				};
+				break;
+
+			case 'children' :
+				$d->autocompleteDefault = fn(Product $e) => $e['cRelation'] ?? new \Collection();
+				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+					$e->expects(['farm']);
+					return [
+						'farm' => $e['farm']['id'],
+						'catalog' => $e['catalog']->empty() ? NULL : $e['catalog']['id'],
+						'date' => $e['date']->empty() ? NULL : $e['date']['id'],
+						'relations' => FALSE
+					];
+				};
+				new \shop\RelationUi()->query($d, multiple: TRUE);
+				$d->group['class'] = 'relation-wrapper';
 				break;
 
 

@@ -58,8 +58,9 @@ class ProductModel extends \ModuleModel {
 			'date' => ['element32', 'shop\Date', 'null' => TRUE, 'cast' => 'element'],
 			'catalog' => ['element32', 'shop\Catalog', 'null' => TRUE, 'cast' => 'element'],
 			'parentName' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'parentCategory' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'parent' => ['enum', [\shop\Product::UNIQUE, \shop\Product::MULTIPLE], 'null' => TRUE, 'cast' => 'enum'],
-			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
+			'product' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'promotion' => ['enum', [\shop\Product::NONE, \shop\Product::BASIC, \shop\Product::NEW, \shop\Product::WEEK, \shop\Product::MONTH], 'cast' => 'enum'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
@@ -77,7 +78,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'type', 'shop', 'date', 'catalog', 'parentName', 'parent', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
+			'id', 'farm', 'type', 'shop', 'date', 'catalog', 'parentName', 'parentCategory', 'parent', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -85,6 +86,7 @@ class ProductModel extends \ModuleModel {
 			'shop' => 'shop\Shop',
 			'date' => 'shop\Date',
 			'catalog' => 'shop\Catalog',
+			'parentCategory' => 'selling\Category',
 			'product' => 'selling\Product',
 		];
 
@@ -223,6 +225,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereParentName(...$data): ProductModel {
 		return $this->where('parentName', ...$data);
+	}
+
+	public function whereParentCategory(...$data): ProductModel {
+		return $this->where('parentCategory', ...$data);
 	}
 
 	public function whereParent(...$data): ProductModel {

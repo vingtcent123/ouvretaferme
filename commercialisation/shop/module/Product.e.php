@@ -29,6 +29,12 @@ class Product extends ProductElement {
 
 	}
 
+	public function acceptRelation(): bool {
+
+		return ($this['product']['profile'] !== \selling\Product::COMPOSITION);
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

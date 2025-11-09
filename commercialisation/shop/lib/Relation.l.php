@@ -13,7 +13,7 @@ class RelationLib extends RelationCrud {
 
 		return Relation::model()
 			->select(Relation::getSelection() + [
-				'child' => ProductElement::getSelection()
+				'child' => Product::getSelection()
 			])
 			->whereParent($eProduct)
 			->sort([
@@ -23,14 +23,16 @@ class RelationLib extends RelationCrud {
 
 	}
 
-	public static function prepareCollection(\farm\Farm $eFarm, array $input): array {
+	public static function prepareCollection(\farm\Farm $eFarm, Date $eDate, Catalog $eCatalog, array $input): array {
 
 		$cRelationReference = new \Collection();
 
 		$eProductParent = new Product([
 			'farm' => $eFarm,
-			'pro' => FALSE,
-			'private' => FALSE
+			'date' => $eDate,
+			'catalog' => $eCatalog,
+			'type' => $eDate->notEmpty() ? $eDate['type'] : $eCatalog['type'],
+			'price' => 0
 		]);
 
 		$eProductParent->build(['parentName', 'parent'], $input);
@@ -41,23 +43,24 @@ class RelationLib extends RelationCrud {
 
 		$position = 1;
 
+		$eProductParent['category'] = $cProductChildren->first()['product']['category'];
+
 		foreach($cProductChildren as $eProductChild) {
+
+			if($eProductChild['product']['category']->is($eProductParent['category']) === FALSE) {
+				\shop\Relation::fail('categoryConsistency');
+				return [NULL, NULL];
+			}
 
 			$eRelationReference = new Relation([
 				'farm' => $eFarm,
+				'date' => $eDate,
+				'catalog' => $eCatalog,
 				'child' => $eProductChild,
 				'position' => $position++
 			]);
 
 			$cRelationReference[] = $eRelationReference;
-
-			if($eProductChild['pro']) {
-				$eProductParent['pro'] = TRUE;
-			}
-
-			if($eProductChild['private']) {
-				$eProductParent['private'] = TRUE;
-			}
 
 		}
 

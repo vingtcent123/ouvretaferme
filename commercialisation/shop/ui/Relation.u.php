@@ -10,6 +10,25 @@ class RelationUi {
 
 	}
 
+	public function query(\PropertyDescriber $d, bool $multiple = FALSE) {
+
+		new \selling\ProductUi()->query($d, $multiple);
+
+		$d->autocompleteUrl = '/shop/relation:query';
+		$d->autocompleteResults = function(Relation $e) {
+			return self::getAutocomplete($e);
+		};
+
+	}
+
+	public static function getAutocomplete(Relation $eRelation): array {
+
+		return [
+			'value' => $eRelation['child']['id']
+		] + \selling\ProductUi::getAutocomplete($eRelation['child']['product']);
+
+	}
+
 	public function displayByParent(Product $eProduct, \Collection $cRelation): string {
 
 		if($cRelation->empty()) {
@@ -89,13 +108,13 @@ class RelationUi {
 
 	}
 
-	public function createCollection(\farm\Farm $eFarm, Date $eDate, Catalog $eCatalog, \Collection $cProduct): \Panel {
+	public function createCollection(\farm\Farm $eFarm, Date $eDate, Catalog $eCatalog, \Collection $cRelation): \Panel {
 
-		$eRelationReference = new Relation([
+		$eProduct = new Product([
 			'farm' => $eFarm,
 			'date' => $eDate,
 			'catalog' => $eCatalog,
-			'cProduct' => $cProduct
+			'cRelation' => $cRelation
 		]);
 
 		$form = new \util\FormUi();
@@ -120,8 +139,7 @@ class RelationUi {
 				$h .= $form->hidden('catalog', $eCatalog['id']);
 			}
 
-			$h .= $form->dynamicGroups(new Product(), ['parentName', 'parent']);
-			$h .= $form->dynamicGroup($eRelationReference, 'children*');
+			$h .= $form->dynamicGroups($eProduct, ['parentName', 'parent', 'children*']);
 
 			$h .= $form->group(content: $form->submit(s("Créer le groupe de produits")));
 
@@ -133,47 +151,6 @@ class RelationUi {
 			title: s("Ajouter un groupe de produits"),
 			body: $h,
 		);
-
-	}
-
-	public static function p(string $property): \PropertyDescriber {
-
-		$d = Relation::model()->describer($property, [
-			'children' => s("Produits"),
-		]);
-
-		switch($property) {
-
-			case 'children' :
-				$d->autocompleteDefault = fn(Relation $e) => $e['cProduct'] ?? new \Collection();
-				$d->autocompleteBody = function(\util\FormUi $form, Relation $e) {
-					$e->expects(['farm']);
-					return [
-						'farm' => $e['farm']['id'],
-						'catalog' => $e['catalog']->empty() ? NULL : $e['catalog']['id'],
-						'date' => $e['date']->empty() ? NULL : $e['date']['id'],
-						'relations' => FALSE
-					];
-				};
-				new \shop\ProductUi()->query($d, multiple: TRUE);
-				$d->group['class'] = 'relation-wrapper';
-				break;
-
-			case 'child' :
-				$d->placeholder = s("Ajouter un produit");
-				$d->autocompleteBody = function(\util\FormUi $form, Relation $e) {
-					$e->expects(['farm']);
-					return [
-						'farm' => $e['farm']['id'],
-						'profileComposition' => FALSE,
-					];
-				};
-				new \selling\ProductUi()->query($d);
-				break;
-
-		}
-
-		return $d;
 
 	}
 

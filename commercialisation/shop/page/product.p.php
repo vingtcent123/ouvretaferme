@@ -8,6 +8,10 @@ new \shop\ProductPage()
 		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getByIds($data->e['limitGroups'], sort: ['name' => SORT_ASC]);
 		$data->e['cGroupExclude'] = \selling\CustomerGroupLib::getByIds($data->e['excludeGroups'], sort: ['name' => SORT_ASC]);
 
+		if($data->e['parent'] !== NULL) {
+			$data->e['cRelation'] = \shop\RelationLib::getByParent($data->e);
+		}
+
 		throw new ViewAction($data);
 
 	})
@@ -86,27 +90,6 @@ new Page(function($data) {
 		\shop\ProductLib::createCollection($data->e, $data->cProduct);
 
 		throw new ReloadAction('shop', 'Products::created');
-
-	});
-
-new Page()
-	->post('query', function($data) {
-
-		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
-
-		$eCatalog = post_exists('catalog') ?
-			\shop\CatalogLib::getById(POST('catalog'))->validateProperty('farm', $eFarm) :
-			new \shop\Catalog();
-		
-		$eDate = post_exists('date') ?
-			\shop\DateLib::getById(POST('date'))->validateProperty('farm', $eFarm) :
-			new \shop\Date();
-
-		$withRelations = POST('relations', 'bool', TRUE);
-
-		$data->cProduct = \shop\ProductLib::getFromQuery(POST('query'), $eFarm, $eCatalog, $eDate, $withRelations);
-
-		throw new \ViewAction($data);
 
 	});
 ?>

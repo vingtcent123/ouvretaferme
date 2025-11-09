@@ -15,11 +15,4 @@ new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
 	$t->qs('#product-available-'.$data->e['id'])->innerHtml(new \shop\ProductUi()->getStatus($data->e, TRUE));
 
 });
-
-new JsonView('query', function($data, AjaxTemplate $t) {
-
-	$results = $data->cProduct->makeArray(fn($eProduct) => \shop\ProductUi::getAutocomplete($eProduct));
-	$t->push('results', $results);
-
-});
 ?>

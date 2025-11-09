@@ -8,7 +8,7 @@ class ProductLib extends ProductCrud {
 		return function(Product $eProduct) {
 
 			if($eProduct['parent'] !== NULL) {
-				return ['name', 'parent'];
+				return ['parentName', 'parent', 'children'];
 			}
 
 			$properties = ['promotion', 'price', 'priceDiscount', 'available', 'limitGroups', 'excludeGroups', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
@@ -359,18 +359,61 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByCatalog(Catalog $eCatalog, bool $onlyActive = TRUE): \Collection {
+	public static function getByCatalog(Catalog $eCatalog, bool $onlyActive = TRUE, bool $withParent = FALSE): \Collection {
 
 		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereCatalog($eCatalog)
+			->whereParent(NULL, if: $withParent === FALSE)
 			->whereStatus(Product::ACTIVE, if: $onlyActive)
-			->getCollection(NULL, NULL, 'product')
-			->sort(['product' => ['name']], natural: TRUE);
+			->getCollection(NULL, NULL, 'id');
 
 		$cProduct->setColumn('sold', NULL);
 
-		return $cProduct;
+		if($withParent === FALSE) {
+			return $cProduct->sort(['product' => ['name']], natural: TRUE);
+		}
+
+		$cProductParent = $cProduct->find(fn($eProduct) => $eProduct['parent'] !== NULL);
+
+		$ccRelation = Relation::model()
+			->select(Relation::getSelection())
+			->whereParent('IN', $cProductParent)
+			->getCollection(index: ['parent', 'child']);
+
+		$cProductChild = $ccRelation->getColumnCollection('child', 'child');
+
+		$cProductOrdered = new \Collection();
+
+		foreach($cProduct as $eProduct) {
+
+			if($cProductChild->offsetExists($eProduct['id'])) {
+				continue;
+			}
+
+			if($eProduct['parent'] !== NULL) {
+
+				$eProduct['cProductChild'] = new \Collection();
+				$eProduct['product'] = new Product([
+					'name' => $eProduct['parentName'],
+					'category' => $eProduct['parentCategory'],
+				]);
+
+				$cProductOrdered[] = $eProduct;
+
+				foreach($ccRelation[$eProduct['id']] as $eRelation) {
+
+					$eProduct['cProductChild'][] = $cProduct[$eRelation['child']['id']];
+
+				}
+
+			} else {
+				$cProductOrdered[] = $eProduct;
+			}
+
+		}
+
+		return $cProductOrdered->sort(['product' => ['name']], natural: TRUE);
 
 	}
 
@@ -534,7 +577,19 @@ class ProductLib extends ProductCrud {
 	}
 
 	public static function create(Product $e): void {
-		throw new \Exception('Not implemented');
+
+		Product::model()->beginTransaction();
+
+			Product::model()
+				->option('add-ignore')
+				->insert($e);
+
+			if($e['catalog']->notEmpty()) {
+				CatalogLib::recalculate($e['catalog']);
+			}
+
+		Product::model()->commit();
+
 	}
 
 	public static function createCollection(Date|Catalog $e, \Collection $c): void {
@@ -552,7 +607,6 @@ class ProductLib extends ProductCrud {
 			if($e instanceof Catalog) {
 				CatalogLib::recalculate($e);
 			}
-
 
 		Product::model()->commit();
 
