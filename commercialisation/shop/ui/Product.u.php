@@ -833,14 +833,14 @@ class ProductUi {
 		$h = '<div class="'.$overflow.' stick-xs mb-3">';
 			$h .= '<table class="tbody-even td-padding-sm">';
 				$h .= '<thead>';
-					if($canAction) {
-						$h .= '<th class="td-checkbox">';
-							$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
-								$h .= '<input type="checkbox" class="batch-all" onclick="ShopProduct.toggleSelection(this)"/>';
-							$h .= '</label>';
-						$h .= '</th>';
-					}
 					$h .= '<tr>';
+						if($canAction) {
+							$h .= '<th class="td-checkbox">';
+								$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+									$h .= '<input type="checkbox" class="batch-all" onclick="ShopProduct.toggleSelection(this)"/>';
+								$h .= '</label>';
+							$h .= '</th>';
+						}
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($showFarm) {
 							$columns++;
