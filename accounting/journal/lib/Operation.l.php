@@ -538,7 +538,7 @@ class OperationLib extends OperationCrud {
 
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
-				$eOperation['documentDate'] = $eOperation['date'];
+				$eOperation['documentDate'] = $eOperation['paymentDate'];
 			} else {
 				$eOperation['documentDate'] = NULL;
 			}
@@ -1012,6 +1012,7 @@ class OperationLib extends OperationCrud {
 			'thirdParty' => $eThirdParty,
 			'paymentMethod' => $eOperation['paymentMethod'],
 			'financialYear' => $eOperation['financialYear'],
+			'hash' => $eOperation['hash'],
 		]));
 
 		return $updated;
