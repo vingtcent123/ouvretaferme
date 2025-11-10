@@ -9,7 +9,7 @@ class OperationLib extends OperationCrud {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'thirdParty'];
+		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'thirdParty', 'comment'];
 	}
 
 	public static function countByOldDatesButNotNewDate(\account\FinancialYear $eFinancialYear, string $newStartDate, string $newEndDate): int {
@@ -519,6 +519,12 @@ class OperationLib extends OperationCrud {
 
 		}
 
+		if($for === 'update') {
+
+			$cOperation = OperationLib::getByIds($input['id'] ?? [], index: 'id');
+
+		}
+
 		foreach($accounts as $index => $account) {
 
 			$eOperation = clone $eOperationDefault;
@@ -532,13 +538,19 @@ class OperationLib extends OperationCrud {
 				$eOperation->build(['paymentDate', 'paymentMethod'], $input);
 			}
 
+			if($for === 'update') {
+
+				$eOperationOriginal = $cOperation->offsetGet($input['id'][$index]);
+				$eOperation['date'] = $eOperationOriginal['date'];
+			}
+
 			$fw->validate();
 
 			$eOperation['amount'] = abs($eOperation['amount']);
 
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
-				$eOperation['documentDate'] = $eOperation['paymentDate'];
+				$eOperation['documentDate'] = $eOperation['date'];
 			} else {
 				$eOperation['documentDate'] = NULL;
 			}
