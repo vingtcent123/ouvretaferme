@@ -19,6 +19,8 @@ class RelationUi {
 			return self::getAutocomplete($e);
 		};
 
+		$d->group['wrapper'] = 'children';
+
 	}
 
 	public static function getAutocomplete(Relation $eRelation): array {
@@ -108,18 +110,11 @@ class RelationUi {
 
 	}
 
-	public function createCollection(\farm\Farm $eFarm, Date $eDate, Catalog $eCatalog, \Collection $cRelation): \Panel {
-
-		$eProduct = new Product([
-			'farm' => $eFarm,
-			'date' => $eDate,
-			'catalog' => $eCatalog,
-			'cRelation' => $cRelation
-		]);
+	public function create(Product $eProduct): \Panel {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/shop/relation:doCreateCollection');
+		$h = $form->openAjax('/shop/relation:doCreate');
 
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Quel est le rôle des groupes de produits ?").'</h4>';
@@ -129,17 +124,17 @@ class RelationUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('farm', $eProduct['farm']);
 
-			if($eDate->notEmpty()) {
-				$h .= $form->hidden('date', $eDate['id']);
+			if($eProduct['date']->notEmpty()) {
+				$h .= $form->hidden('date', $eProduct['date']);
 			}
 
-			if($eCatalog->notEmpty()) {
-				$h .= $form->hidden('catalog', $eCatalog['id']);
+			if($eProduct['catalog']->notEmpty()) {
+				$h .= $form->hidden('catalog', $eProduct['catalog']);
 			}
 
-			$h .= $form->dynamicGroups($eProduct, ['parentName', 'parent', 'children*']);
+			$h .= $form->dynamicGroups($eProduct, ['parentName', 'children*']);
 
 			$h .= $form->group(content: $form->submit(s("Créer le groupe de produits")));
 

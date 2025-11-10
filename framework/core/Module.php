@@ -770,7 +770,7 @@ abstract class ModuleModel {
 					return;
 				}
 
-				$value = ctype_digit($value) ? (int)$value : (string)$value;
+				$value = ctype_digit((string)$value) ? (int)$value : (string)$value;
 				break;
 
 			default :

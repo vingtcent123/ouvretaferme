@@ -24,11 +24,12 @@ class AlertUi {
 			'Product::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter."),
 			'Product::priceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base."),
 
+			'Product::children.categoryConsistency' => s("Vos produits doivent appartenir à la même catégorie pour intégrer un groupe"),
+			'Product::children.alreadyUsed' => s("Des produits de la liste appartiennent déjà à un autre groupe"),
+			'Product::children.empty' => s("Vous n'avez pas sélectionné de produit"),
+
 			'Range::missingDate' => s("Veuillez choisir si vous souhaitez retirer le catalogue de toutes les ventes en cours sur la boutique ou non."),
 			'Range::duplicate' => s("Ce catalogue a déjà été associé à la boutique."),
-
-			'Relation::categoryConsistency' => s("Vos produits doivent appartenir à la même catégorie pour intégrer un groupe"),
-			'Relation::empty' => s("Vous n'avez pas sélectionné de produit"),
 
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),
 			'Sale::terms' => s("Veuillez accepter les conditions générales de vente pour continuer."),

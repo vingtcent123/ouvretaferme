@@ -1,5 +1,12 @@
 <?php
 new \shop\ProductPage()
+	->applyElement(function($data, \shop\Product $e) {
+
+		if($e['parent']) {
+			$e['cRelation'] = \shop\RelationLib::getByParent($e);
+		}
+
+	})
 	->update(function($data) {
 
 		$data->e['cCustomerLimit'] = \selling\CustomerLib::getByIds($data->e['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
@@ -7,10 +14,6 @@ new \shop\ProductPage()
 
 		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getByIds($data->e['limitGroups'], sort: ['name' => SORT_ASC]);
 		$data->e['cGroupExclude'] = \selling\CustomerGroupLib::getByIds($data->e['excludeGroups'], sort: ['name' => SORT_ASC]);
-
-		if($data->e['parent'] !== NULL) {
-			$data->e['cRelation'] = \shop\RelationLib::getByParent($data->e);
-		}
 
 		throw new ViewAction($data);
 

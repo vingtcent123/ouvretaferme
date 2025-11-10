@@ -68,9 +68,9 @@ Product:
   shop: ?shop\Shop
   date: ?shop\Date
   catalog: ?shop\Catalog
+  parent: bool = FALSE
   parentName: ?text8(1, NULL)
   parentCategory: ?selling\Category
-  parent: ?enum(UNIQUE, MULTIPLE)
   product: ?selling\Product
   packaging: ?decimal(6, 2, 0.01, null)
   promotion: enum(NONE, BASIC, NEW, WEEK, MONTH) = NONE

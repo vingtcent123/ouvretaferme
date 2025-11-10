@@ -1,54 +1,58 @@
 <?php
-new Page(function($data) {
+new \shop\ProductPage()
+	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
+		$eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 
-		$data->eCatalog = input_exists('catalog') ?
-			\shop\CatalogLib::getById(INPUT('catalog'))->validateProperty('farm', $data->eFarm) :
+		$eCatalog = input_exists('catalog') ?
+			\shop\CatalogLib::getById(INPUT('catalog'))->validateProperty('farm', $eFarm) :
 			new \shop\Catalog();
 
-		$data->eDate = input_exists('date') ?
-			\shop\DateLib::getById(INPUT('date'))->validateProperty('farm', $data->eFarm) :
+		$eDate = input_exists('date') ?
+			\shop\DateLib::getById(INPUT('date'))->validateProperty('farm', $eFarm) :
 			new \shop\Date();
 
-		if($data->eCatalog->empty() and $data->eDate->empty()) {
+		if($eCatalog->empty() and $eDate->empty()) {
 			throw new NotExpectedAction('Missing date or catalog');
 		}
 
+		return new \shop\Product([
+			'farm' => $eFarm,
+			'date' => $eDate,
+			'catalog' => $eCatalog,
+			'type' => $eDate->notEmpty() ? $eDate['type'] : $eCatalog['type'],
+			'parent' => TRUE,
+			'price' => 0
+		]);
+
 	})
-	->get('createCollection', function($data) {
+	->create(function($data) {
 
 		$cProduct = \shop\ProductLib::getByIds(GET('products', 'array'));
 
 		if($cProduct->notEmpty()) {
-			$cProduct->validateProperty('farm', $data->eFarm);
+			$cProduct->validateProperty('farm', $data->e['farm']);
 		}
 
-		$data->cRelation = new Collection();
+		$cRelation = new Collection();
 
 		foreach($cProduct as $eProduct) {
-			$data->cRelation[] = new \shop\Relation([
+			$cRelation[] = new \shop\Relation([
 				'child' => $eProduct
 			]);
 		}
 
+		$data->e['cRelation'] = $cRelation;
+
 		throw new \ViewAction($data);
 
 	})
-	->post('doCreateCollection', function($data) {
+	->doCreate(function($data) {
 
-		$fw = new \FailWatch();
-
-		[$eProduct, $cRelation] = \shop\RelationLib::prepareCollection($data->eFarm, $data->eDate, $data->eCatalog, $_POST);
-
-		$fw->validate();
-
-		\shop\RelationLib::createCollection($eProduct, $cRelation);
-
-		if($data->eDate->notEmpty()) {
-			$redirect = \shop\ShopUi::adminDateUrl($data->eFarm, $data->eDate).'?';
-		} else if($data->eCatalog->notEmpty()) {
-			$redirect = \farm\FarmUi::urlShopCatalog($data->eFarm).'?catalog='.$data->eCatalog['id'].'&';
+		if($data->e['date']->notEmpty()) {
+			$redirect = \shop\ShopUi::adminDateUrl($data->e['farm'], $data->e['date']).'?';
+		} else if($data->e['catalog']->notEmpty()) {
+			$redirect = \farm\FarmUi::urlShopCatalog($data->e['farm']).'?catalog='.$data->e['catalog']['id'].'&';
 		}
 
 		throw new RedirectAction($redirect.'success=shop:Product::createdGroup');
@@ -56,17 +60,6 @@ new Page(function($data) {
 	});
 
 new \shop\RelationPage()
-	->getCreateElement(function($data) {
-
-		$data->eProduct = \selling\ProductLib::getById(INPUT('parent'));
-
-		return new \shop\Relation([
-			'parent' => $data->eProduct,
-			'farm' => $data->eProduct['farm']
-		]);
-
-	})
-	->doCreate(fn($data) => throw new ReloadAction())
 	->write('doIncrementPosition', function($data) {
 
 		$increment = POST('increment', 'int');
@@ -74,8 +67,7 @@ new \shop\RelationPage()
 
 		throw new ReloadAction();
 
-	})
-	->doDelete(fn($data) => throw new ReloadAction());
+	});
 
 new Page()
 	->post('query', function($data) {

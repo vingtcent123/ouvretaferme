@@ -54,11 +54,57 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
-			->setCallback('relation.prepare', function(?string &$relation): bool {
+			->setCallback('children.check', function(array $children) use ($p): bool {
 
-				if($relation === NULL) {
-					return FALSE;
+				$this->expects(['farm', 'date', 'catalog']);
+
+				array_walk($children, fn(&$value) => $value = (int)$value);
+
+				$cProductChildren = ProductLib::getByIds($children, sort: new \Sql('FIELD(id, '.implode(', ', $children).')'))
+					->validateProperty('farm', $this['farm'])
+					->validate('acceptRelation');
+
+				if(
+					Relation::model()
+						->whereCatalog($this['catalog'])
+						// Produit déjà dans un groupe
+						->whereChild('IN', $cProductChildren)
+						// En cas d'édition, on ignore le contenu du group actuel
+						->whereChild('NOT IN', fn() => $this['cRelation']->getColumn('child'), if: $p->for === 'update')
+						->exists()
+				) {
+					throw new \FailException('Product::children.alreadyUsed');
 				}
+
+				$position = 1;
+
+				$eProductParent['category'] = $cProductChildren->first()['product']['category'];
+
+				$cRelation = new \Collection();
+
+				foreach($cProductChildren as $eProductChild) {
+
+					if($eProductChild['product']['category']->is($eProductParent['category']) === FALSE) {
+						throw new \FailException('Product::children.categoryConsistency');
+					}
+
+					$eRelation = new Relation([
+						'farm' => $this['farm'],
+						'date' => $this['date'],
+						'catalog' => $this['catalog'],
+						'child' => $eProductChild,
+						'position' => $position++
+					]);
+
+					$cRelation[] = $eRelation;
+
+				}
+
+				if($cRelation->empty()) {
+					throw new \FailException('Product::children.empty');
+				}
+				
+				$this['cRelation'] = $cRelation;
 
 				return TRUE;
 

@@ -3,12 +3,28 @@ namespace shop;
 
 class ProductLib extends ProductCrud {
 
+	public static function getPropertiesCreate(): \Closure {
+
+		return function(Product $eProduct) {
+
+			$eProduct->expects(['parent']);
+
+			if($eProduct['parent']) {
+				return ['parentName', 'children'];
+			} else {
+				throw new \Exception('Not implemented');
+			}
+
+		};
+
+	}
+
 	public static function getPropertiesUpdate(): \Closure {
 
 		return function(Product $eProduct) {
 
-			if($eProduct['parent'] !== NULL) {
-				return ['parentName', 'parent', 'children'];
+			if($eProduct['parent']) {
+				return ['parentName', 'children'];
 			}
 
 			$properties = ['promotion', 'price', 'priceDiscount', 'available', 'limitGroups', 'excludeGroups', 'limitCustomers', 'excludeCustomers', 'limitMin', 'limitMax'];
@@ -181,6 +197,7 @@ class ProductLib extends ProductCrud {
 			$cProduct[] = new Product([
 				'farm' => $eItem['farm'],
 				'product' => $eItem['product'],
+				'parent' => FALSE,
 				'packaging' => $eItem['packaging'],
 				'price' => round($eItem['price'], 2),
 				'priceInitial' => NULL,
@@ -239,7 +256,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \Collection $cSaleExclude = new \Collection(), bool $withIngredients = FALSE, bool $public = FALSE): \Collection {
+	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \Collection $cSaleExclude = new \Collection(), bool $withIngredients = FALSE, bool $public = FALSE, bool $withParent = FALSE): \Collection {
 
 		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer, $public) {
 
@@ -288,7 +305,7 @@ class ProductLib extends ProductCrud {
 		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereId('IN', $ids)
-			->getCollection(NULL, NULL, ['product']);
+			->getCollection(NULL, NULL, 'id');
 
 		if($withIngredients) {
 
@@ -306,8 +323,17 @@ class ProductLib extends ProductCrud {
 						'cItemIngredient' => new \selling\SaleLib()->delegateIngredients($eDate['deliveryDate'], 'id')
 					])
 					->get($cProductSellingComposition);
+
 			}
 
+		}
+
+		self::applySold($eDate, $cProduct, $cGrid, $cSaleExclude);
+
+		if($withParent === FALSE) {
+			$cProductOrdered = $cProduct;
+		} else {
+			$cProductOrdered = self::reorderChildren($cProduct);
 		}
 
 		$order = [];
@@ -330,7 +356,6 @@ class ProductLib extends ProductCrud {
 
 		}
 
-
 		$order[] = function($e1, $e2) {
 			if($e1['promotion'] !== Product::NONE) {
 				return -1;
@@ -343,10 +368,9 @@ class ProductLib extends ProductCrud {
 
 		$order['product'] = ['name'];
 
-		$cProduct->sort($order, natural: TRUE);
-		self::applySold($eDate, $cProduct, $cGrid, $cSaleExclude);
+		$cProductOrdered->sort($order, natural: TRUE);
 
-		return $cProduct;
+		return $cProductOrdered;
 
 	}
 
@@ -371,8 +395,16 @@ class ProductLib extends ProductCrud {
 		$cProduct->setColumn('sold', NULL);
 
 		if($withParent === FALSE) {
-			return $cProduct->sort(['product' => ['name']], natural: TRUE);
+			$cProductOrdered = $cProduct;
+		} else {
+			$cProductOrdered = self::reorderChildren($cProduct);
 		}
+
+		return $cProductOrdered->sort(['product' => ['name']], natural: TRUE);
+
+	}
+
+	public static function reorderChildren(\Collection $cProduct): \Collection {
 
 		$cProductParent = $cProduct->find(fn($eProduct) => $eProduct['parent'] !== NULL);
 
@@ -391,7 +423,7 @@ class ProductLib extends ProductCrud {
 				continue;
 			}
 
-			if($eProduct['parent'] !== NULL) {
+			if($eProduct['parent']) {
 
 				$eProduct['cProductChild'] = new \Collection();
 				$eProduct['product'] = new Product([
@@ -413,8 +445,7 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		return $cProductOrdered->sort(['product' => ['name']], natural: TRUE);
-
+		return $cProductOrdered;
 	}
 
 	public static function exportAsSelling(\Collection $cProduct): \Collection {
@@ -442,6 +473,10 @@ class ProductLib extends ProductCrud {
 		$cItem = SaleLib::getProductsByDate($eDate, $cSaleExclude);
 
 		foreach($cProduct as $eProduct) {
+
+			if($eProduct['parent']) {
+				continue;
+			}
 
 			$productId = $eProduct['product']['id'];
 
@@ -588,6 +623,10 @@ class ProductLib extends ProductCrud {
 				CatalogLib::recalculate($e['catalog']);
 			}
 
+			if($e['parent']) {
+				RelationLib::createByParent($e, $e['cRelation']);
+			}
+
 		Product::model()->commit();
 
 	}
@@ -618,7 +657,7 @@ class ProductLib extends ProductCrud {
 
 		Product::model()->beginTransaction();
 
-			if($eProduct['parent'] !== NULL) {
+			if($eProduct['parent']) {
 				RelationLib::deleteByParent($eProduct);
 			}
 
@@ -710,7 +749,20 @@ class ProductLib extends ProductCrud {
 			$properties[] = 'priceInitial';
 		}
 
-		parent::update($e, $properties);
+		$hasChildren = array_delete($properties, 'children');
+
+		Product::model()->beginTransaction();
+
+			parent::update($e, $properties);
+
+			if($hasChildren) {
+
+				RelationLib::deleteByParent($e);
+				RelationLib::createByParent($e, $e['cRelation']);
+
+			}
+
+		Product::model()->commit();
 
 	}
 

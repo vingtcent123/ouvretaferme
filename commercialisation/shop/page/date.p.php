@@ -38,7 +38,7 @@ new \farm\FarmPage()
 			\shop\CatalogLib::getByIds($data->eDate['catalogs']) :
 			new Collection();
 
-		$cProduct = \shop\ProductLib::getByDate($data->eDate);
+		$cProduct = \shop\ProductLib::getByDate($data->eDate, withParent: TRUE);
 		$data->eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($cProduct);
 		$data->eDate['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($cProduct);
 

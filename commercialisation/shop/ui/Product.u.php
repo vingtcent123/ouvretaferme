@@ -816,15 +816,14 @@ class ProductUi {
 
 	public function getListByDate(\farm\Farm $eFarm, Date $eDate, \Collection $cProduct, bool $isExpired, bool $showFarm): string {
 
-		$type = $eDate['type'];
-		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>' : '';
+		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eDate['type']).'</span>' : '';
 		$hasSold = $cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL);
 		$columns = 2;
 
 		$hasCatalog = $cProduct->contains(fn($eProduct) => $eProduct['catalog']->notEmpty());
 		$canAction = ($isExpired === FALSE and $cProduct->contains(fn($eProduct) => $eProduct->exists() and $eProduct['catalog']->empty()));
 
-		if($type === Date::PRIVATE) {
+		if($eDate['type'] === Date::PRIVATE) {
 			$overflow = $eDate['shop']['shared'] ? 'util-overflow-sm' : 'util-overflow-xs';
 		} else {
 			$overflow = $eDate['shop']['shared'] ? 'util-overflow-lg' : 'util-overflow-sm';
@@ -846,7 +845,7 @@ class ProductUi {
 							$columns++;
 							$h .= '<td></td>';
 						}
-						if($type === Date::PRO) {
+						if($eDate['type'] === Date::PRO) {
 							$columns++;
 							$h .= '<td></td>';
 						}
@@ -865,136 +864,51 @@ class ProductUi {
 
 				foreach($cProduct as $eProduct) {
 
-					$eProductSelling = $eProduct['product'];
-					$uiProductSelling = new \selling\ProductUi();
+					if($eProduct['parent'] === FALSE) {
 
-					$canUpdate = ($isExpired === FALSE and $eProduct->exists() and $eProduct['catalog']->empty());
-					$outCatalog = ($hasCatalog and $canUpdate);
+						$h .= '<tbody>';
+							$h .= $this->getOneByDate($eDate, $eProduct, $columns, $showFarm, $canAction, $isExpired, $hasCatalog, $hasSold);
+						$h .= '</tbody>';
 
-					$hasLimits = (
-						$eProduct['promotion'] !== Product::NONE or
-						$eProduct['limitCustomers'] or
-						$eProduct['limitGroups'] or
-						$eProduct['excludeCustomers'] or
-						$eProduct['excludeGroups'] or
-						$eProduct['limitMax'] or
-						$outCatalog
-					);
+					} else {
 
-					if($showFarm) {
-						$eProduct['farm'] = $eDate['cFarm'][$eProduct['farm']['id']] ?? new \farm\Farm();
-					}
-
-					$h .= '<tbody>';
-
-						$h .= '<tr>';
-
-							if($canAction) {
-								$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
-									if($canUpdate) {
-										$h .= '<label>';
-											$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
-										$h .= '</label>';
-									}
-								$h .= '</td>';
-							}
-
-							$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
-								if(
-									$eProductSelling['vignette'] !== NULL or
-									$eProductSelling['profile'] === \selling\Product::COMPOSITION
-								) {
-									$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
-								} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
-									$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], '3rem');
+						$h .= '<tbody class="shop-product-group">';
+							$h .= '<tr>';
+								if($canAction) {
+									$h .= '<th class="td-checkbox"></th>';
 								}
-							$h .= '</td>';
-
-							$h .= '<td class="'.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
-								$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: $isExpired === FALSE);
-							$h .= '</td>';
-
-							if($showFarm) {
-								$h .= '<td class="font-sm color-muted">';
-									if($eProduct['farm']->empty()) {
-										$h .= '<i>'.s("Ancien producteur").'</i>';
-									} else {
-										$h .= encode($eProduct['farm']['name']);
-									}
-								$h .= '</td>';
-							}
-
-							if($type === Date::PRO) {
-								$h .= '<td class="td-min-content '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
-									if($eProduct['packaging'] !== NULL) {
-										$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
-									}
-								$h .= '</td>';
-							}
-
-							$h .= '<td class="text-end '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'" style="white-space: nowrap">';
-								$price = '';
-								$unit = \selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
-								if($eProduct['priceInitial'] === NULL) {
-									$field = 'price';
-								} else {
-									$field = 'priceDiscount';
-									$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: ' '.$unit);
+								$h .= '<td></td>';
+								$h .= '<th>';
+									$h .= '<h4>'.encode($eProduct['parentName']).'</h4>';
+								$h .= '</th>';
+								if($showFarm) {
+									$h .= '<td></td>';
 								}
-								$price .= \util\TextUi::money($eProduct['price']).$unit;
-								if($canUpdate) {
-									$h .= $eProduct->quick($field, $price);
-								} else {
-									$h .= $price;
+								if($eDate['type'] === Date::PRO) {
+									$h .= '<td></td>';
 								}
-							$h .= '</td>';
-
-							if($isExpired === FALSE) {
-
-								$h .= '<td class="shop-product-available highlight" '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').' '.($hasLimits ? 'rowspan="2"' : '').'>';
-									$h .= $this->getStatus($eProduct, $canUpdate);
-								$h .= '</td>';
-
-							}
-
-							if($hasSold) {
-
-								$sold = $eProduct['sold'] ?? 0;
-
-								$h .= '<td class="text-center" '.($hasLimits ? 'rowspan="2"' : '').'>';
-
-									if($sold > 0) {
-										$h .= '<span class="shop-product-sold">'.$sold.'</span>';
-									} else {
-										$h .= '-';
-									}
-
-								$h .= '</td>';
-
-							}
-
-							if($canAction) {
-
-								$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').' >';
-
-									if($canUpdate) {
-
+								$h .= '<th class="text-end"></th>';
+								if($isExpired === FALSE) {
+									$h .= '<th class="highlight"></th>';
+								}
+								if($hasSold) {
+									$h .= '<th></th>';
+								}
+								if($canAction) {
+									$h .= '<th class="td-min-content">';
 										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
-										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de la vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce groupe ? Les produits actuellement dans le groupe resteront dans le catalogue.").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+									$h .= '</th>';
+								}
+							$h .= '</tr>';
 
-									}
-
-								$h .= '</td>';
-
+							foreach($eProduct['cProductChild'] as $eProductChild) {
+								$h .= $this->getOneByDate($eDate, $eProductChild, $columns, $showFarm, $canAction, $isExpired, $hasCatalog, $hasSold);
 							}
 
-						$h .= '</tr>';
+						$h .= '</tbody>';
 
-						if($hasLimits) {
-							$h .= $this->getLimits($columns, $eProduct, $eDate['cCustomer'], $eDate['cGroup'], excludeAt: TRUE, outCatalog: $outCatalog);
-						}
-
-					$h .= '</tbody>';
+					}
 
 				}
 ;
@@ -1002,6 +916,139 @@ class ProductUi {
 		$h .= '</div>';
 
 		$h .= $this->getBatch($eFarm, eDate: $eDate);
+
+		return $h;
+
+	}
+
+	protected function getOneByDate(Date $eDate, Product $eProduct, int $columns, bool $showFarm, bool $canAction, bool $isExpired, bool $hasCatalog, bool $hasSold): string {
+
+		$eProductSelling = $eProduct['product'];
+		$uiProductSelling = new \selling\ProductUi();
+
+		$canUpdate = ($isExpired === FALSE and $eProduct->exists() and $eProduct['catalog']->empty());
+		$outCatalog = ($hasCatalog and $canUpdate);
+
+		$hasLimits = (
+			$eProduct['promotion'] !== Product::NONE or
+			$eProduct['limitCustomers'] or
+			$eProduct['limitGroups'] or
+			$eProduct['excludeCustomers'] or
+			$eProduct['excludeGroups'] or
+			$eProduct['limitMax'] or
+			$outCatalog
+		);
+
+		if($showFarm) {
+			$eProduct['farm'] = $eDate['cFarm'][$eProduct['farm']['id']] ?? new \farm\Farm();
+		}
+
+		$h = '<tr>';
+
+			if($canAction) {
+				$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
+					if($canUpdate) {
+						$h .= '<label>';
+							$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
+						$h .= '</label>';
+					}
+				$h .= '</td>';
+			}
+
+			$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
+				if(
+					$eProductSelling['vignette'] !== NULL or
+					$eProductSelling['profile'] === \selling\Product::COMPOSITION
+				) {
+					$h .= \selling\ProductUi::getVignette($eProductSelling, '3rem');
+				} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
+					$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], '3rem');
+				}
+			$h .= '</td>';
+
+			$h .= '<td class="'.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
+				$h .= $uiProductSelling->getInfos($eProductSelling, includeStock: $isExpired === FALSE);
+			$h .= '</td>';
+
+			if($showFarm) {
+				$h .= '<td class="font-sm color-muted">';
+					if($eProduct['farm']->empty()) {
+						$h .= '<i>'.s("Ancien producteur").'</i>';
+					} else {
+						$h .= encode($eProduct['farm']['name']);
+					}
+				$h .= '</td>';
+			}
+
+			if($eDate['type'] === Date::PRO) {
+				$h .= '<td class="td-min-content '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'">';
+					if($eProduct['packaging'] !== NULL) {
+						$h .= s("Colis de {value}", \selling\UnitUi::getValue($eProduct['packaging'], $eProductSelling['unit'], TRUE));
+					}
+				$h .= '</td>';
+			}
+
+			$h .= '<td class="text-end '.(($isExpired or $eProduct->exists()) ? '' : 'shop-product-not-exist').'" style="white-space: nowrap">';
+				$price = '';
+				$unit = \selling\UnitUi::getBy($eProductSelling['unit'], short: TRUE);
+				if($eProduct['priceInitial'] === NULL) {
+					$field = 'price';
+				} else {
+					$field = 'priceDiscount';
+					$h .= new \selling\PriceUi()->priceWithoutDiscount($eProduct['priceInitial'], unit: ' '.$unit);
+				}
+				$price .= \util\TextUi::money($eProduct['price']).$unit;
+				if($canUpdate) {
+					$h .= $eProduct->quick($field, $price);
+				} else {
+					$h .= $price;
+				}
+			$h .= '</td>';
+
+			if($isExpired === FALSE) {
+
+				$h .= '<td class="shop-product-available highlight" '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').' '.($hasLimits ? 'rowspan="2"' : '').'>';
+					$h .= $this->getStatus($eProduct, $canUpdate);
+				$h .= '</td>';
+
+			}
+
+			if($hasSold) {
+
+				$sold = $eProduct['sold'] ?? 0;
+
+				$h .= '<td class="text-center" '.($hasLimits ? 'rowspan="2"' : '').'>';
+
+					if($sold > 0) {
+						$h .= '<span class="shop-product-sold">'.$sold.'</span>';
+					} else {
+						$h .= '-';
+					}
+
+				$h .= '</td>';
+
+			}
+
+			if($canAction) {
+
+				$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').' >';
+
+					if($canUpdate) {
+
+						$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
+						$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de la vente ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+
+					}
+
+				$h .= '</td>';
+
+			}
+
+		$h .= '</tr>';
+
+		if($hasLimits) {
+			$h .= $this->getLimits($columns, $eProduct, $eDate['cCustomer'], $eDate['cGroup'], excludeAt: TRUE, outCatalog: $outCatalog);
+		}
 
 		return $h;
 
@@ -1041,7 +1088,7 @@ class ProductUi {
 
 				foreach($cProduct as $eProduct) {
 
-					if($eProduct['parent'] === NULL) {
+					if($eProduct['parent'] === FALSE) {
 
 						$h .= '<tbody>';
 							$h .= $this->getOneByCatalog($eCatalog, $eProduct, $columns);
@@ -1077,7 +1124,7 @@ class ProductUi {
 
 									$h .= '<td class="td-min-content">';
 										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
-										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce produit de ce catalogue ?").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce groupe ? Les produits actuellement dans le groupe resteront dans le catalogue.").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
 									$h .= '</td>';
 
 								}
@@ -1206,7 +1253,7 @@ class ProductUi {
 
 		if(FEATURE_GROUP) {
 
-			$menu .= '<a data-url="/shop/relation:createCollection?farm='.$eFarm['id'].($eDate->notEmpty() ? '&date='.$eDate['id'] : '').($eCatalog->notEmpty() ? '&catalog='.$eCatalog['id'] : '').'" class="batch-menu-relation batch-menu-item">';
+			$menu .= '<a data-url="/shop/relation:create?farm='.$eFarm['id'].($eDate->notEmpty() ? '&date='.$eDate['id'] : '').($eCatalog->notEmpty() ? '&catalog='.$eCatalog['id'] : '').'" class="batch-menu-relation batch-menu-item">';
 				$menu .= \Asset::icon('plus-circle');
 				$menu .= '<span>'.s("Créer un groupe").'</span>';
 			$menu .= '</a>';
@@ -1455,9 +1502,9 @@ class ProductUi {
 
 			$h .= $form->hidden('id', $e['id']);
 
-			if($e['parent'] !== NULL) {
+			if($e['parent']) {
 
-				$h .= $form->dynamicGroups($e, ['parentName', 'parent', 'children']);
+				$h .= $form->dynamicGroups($e, ['parentName', 'children']);
 
 			} else {
 
@@ -1553,11 +1600,10 @@ class ProductUi {
 
 		return new \Panel(
 			id: 'panel-product-update',
-			title: match($e['parent']) {
-				NULL => s("Modifier un produit"),
-				default => s("Modifier un groupe")
-			},
-			subTitle: $e['parent'] !== NULL ?
+			title: $e['parent'] ?
+				s("Modifier un groupe") :
+				s("Modifier un produit"),
+			subTitle: $e['parent'] ?
 				NULL :
 				\selling\ProductUi::getPanelHeader($e['product']),
 			body: $h
@@ -1587,7 +1633,6 @@ class ProductUi {
 		$d = Product::model()->describer($property, [
 			'product' => s("Produit"),
 			'parentName' => s("Nom du groupe"),
-			'parent' => s("Les clients doivent-ils choisir un produit dans la liste ou peuvent-ils sélectionner plusieurs produits lors d'une commande ?"),
 			'available' => s("Disponible"),
 			'packaging' => s("Colisage"),
 			'promotion' => s("Mise en avant"),
@@ -1616,15 +1661,6 @@ class ProductUi {
 					Product::NEW => s("Mise en avant avec mention « Nouveauté »"),
 					Product::WEEK => s("Mise en avant avec mention « Produit de la semaine »"),
 					Product::MONTH => s("Mise en avant avec mention « Produit du mois »"),
-				];
-				break;
-
-			case 'parent' :
-				$d->field = 'radio';
-				$d->attributes['mandatory'] = TRUE;
-				$d->values = [
-					Product::UNIQUE => s("Un seul produit dans la liste"),
-					Product::MULTIPLE => s("Autant de produits dans la liste que souhaité"),
 				];
 				break;
 
@@ -1806,7 +1842,9 @@ class ProductUi {
 					];
 				};
 				new \shop\RelationUi()->query($d, multiple: TRUE);
-				$d->group['class'] = 'relation-wrapper';
+				$d->group += [
+					'class' => 'relation-wrapper'
+				];
 				break;
 
 

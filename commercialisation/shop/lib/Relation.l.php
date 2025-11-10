@@ -23,91 +23,6 @@ class RelationLib extends RelationCrud {
 
 	}
 
-	public static function prepareCollection(\farm\Farm $eFarm, Date $eDate, Catalog $eCatalog, array $input): array {
-
-		$cRelationReference = new \Collection();
-
-		$eProductParent = new Product([
-			'farm' => $eFarm,
-			'date' => $eDate,
-			'catalog' => $eCatalog,
-			'type' => $eDate->notEmpty() ? $eDate['type'] : $eCatalog['type'],
-			'price' => 0
-		]);
-
-		$eProductParent->build(['parentName', 'parent'], $input);
-
-		$cProductChildren = ProductLib::getByIds((array)($input['children'] ?? []))
-			->validateProperty('farm', $eFarm)
-			->validate('acceptRelation');
-
-		$position = 1;
-
-		$eProductParent['category'] = $cProductChildren->first()['product']['category'];
-
-		foreach($cProductChildren as $eProductChild) {
-
-			if($eProductChild['product']['category']->is($eProductParent['category']) === FALSE) {
-				\shop\Relation::fail('categoryConsistency');
-				return [NULL, NULL];
-			}
-
-			$eRelationReference = new Relation([
-				'farm' => $eFarm,
-				'date' => $eDate,
-				'catalog' => $eCatalog,
-				'child' => $eProductChild,
-				'position' => $position++
-			]);
-
-			$cRelationReference[] = $eRelationReference;
-
-		}
-
-		if($cRelationReference->empty()) {
-			\shop\Relation::fail('empty');
-		}
-
-		return [$eProductParent, $cRelationReference];
-
-	}
-
-	public static function create(Relation $eRelation): void {
-
-		$eRelation->expects([
-			'parent' => ['farm'],
-			'child'
-		]);
-
-		\shop\Relation::model()->beginTransaction();
-
-			$eRelation['position'] = Relation::model()
-				->whereParent($eRelation['parent'])
-				->count() + 1;
-
-			parent::create($eRelation);
-
-		\shop\Relation::model()->commit();
-
-	}
-
-	public static function createCollection(Product $eProduct, \Collection $cRelation): void {
-
-		\shop\Relation::model()->beginTransaction();
-
-			ProductLib::create($eProduct);
-
-			$cRelation->setColumn('parent', $eProduct);
-
-			foreach($cRelation as $eRelation) {
-				parent::create($eRelation);
-			}
-
-
-		\shop\Relation::model()->commit();
-
-	}
-
 	public static function incrementPosition(Relation $e, int $increment): void {
 
 		$e->expects(['parent']);
@@ -162,17 +77,19 @@ class RelationLib extends RelationCrud {
 
 	}
 
+	public static function createByParent(Product $eProduct, \Collection $cRelation): void {
+
+		$cRelation->setColumn('parent', $eProduct);
+
+		foreach($cRelation as $eRelation) {
+			self::create($eRelation);
+		}
+
+	}
+
 	public static function delete(Relation $e): void {
 
-		$e->expects(['id', 'parent']);
-
-		Relation::model()->beginTransaction();
-
-			parent::delete($e);
-
-			self::reorderByParent($e['parent']);
-
-		Relation::model()->commit();
+		throw new \Exception('Not implemented');
 
 	}
 
@@ -181,22 +98,6 @@ class RelationLib extends RelationCrud {
 		Relation::model()
 			->whereParent($eProduct)
 			->delete();
-
-	}
-
-	public static function reorderByParent(Product $eProduct): void {
-
-		$cRelation = self::getByParent($eProduct);
-
-		$position = 1;
-
-		foreach($cRelation as $eRelation) {
-
-			Relation::model()->update($eRelation, [
-				'position' => $position++
-			]);
-
-		}
 
 	}
 
