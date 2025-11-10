@@ -822,6 +822,7 @@ class ProductUi {
 
 		$hasCatalog = $cProduct->contains(fn($eProduct) => $eProduct['catalog']->notEmpty());
 		$canAction = ($isExpired === FALSE and $cProduct->contains(fn($eProduct) => $eProduct->exists() and $eProduct['catalog']->empty()));
+		$canGroup = ($canAction === FALSE and $cProduct->contains(fn($eProduct) => $eProduct['parent']));
 
 		if($eDate['type'] === Date::PRIVATE) {
 			$overflow = $eDate['shop']['shared'] ? 'util-overflow-sm' : 'util-overflow-xs';
@@ -834,11 +835,13 @@ class ProductUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($canAction) {
-							$h .= '<th class="td-checkbox">';
+							$h .= '<th class="shop-product-group-first td-checkbox">';
 								$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
 									$h .= '<input type="checkbox" class="batch-all" onclick="ShopProduct.toggleSelection(this)"/>';
 								$h .= '</label>';
 							$h .= '</th>';
+						} else if($canGroup) {
+							$h .= '<th class="shop-product-group-first shop-product-group-readonly"></th>';
 						}
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($showFarm) {
@@ -867,7 +870,7 @@ class ProductUi {
 					if($eProduct['parent'] === FALSE) {
 
 						$h .= '<tbody>';
-							$h .= $this->getOneByDate($eDate, $eProduct, $columns, $showFarm, $canAction, $isExpired, $hasCatalog, $hasSold);
+							$h .= $this->getOneByDate($eDate, $eProduct, $columns, $showFarm, $canAction, $canGroup, $isExpired, $hasCatalog, $hasSold);
 						$h .= '</tbody>';
 
 					} else {
@@ -875,7 +878,9 @@ class ProductUi {
 						$h .= '<tbody class="shop-product-group">';
 							$h .= '<tr>';
 								if($canAction) {
-									$h .= '<th class="td-checkbox"></th>';
+									$h .= '<td class="shop-product-group-first td-checkbox"></td>';
+								} else if($canGroup) {
+									$h .= '<td class="shop-product-group-first shop-product-group-readonly"></td>';
 								}
 								$h .= '<td></td>';
 								$h .= '<th>';
@@ -903,7 +908,7 @@ class ProductUi {
 							$h .= '</tr>';
 
 							foreach($eProduct['cProductChild'] as $eProductChild) {
-								$h .= $this->getOneByDate($eDate, $eProductChild, $columns, $showFarm, $canAction, $isExpired, $hasCatalog, $hasSold);
+								$h .= $this->getOneByDate($eDate, $eProductChild, $columns, $showFarm, $canAction, $canGroup, $isExpired, $hasCatalog, $hasSold);
 							}
 
 						$h .= '</tbody>';
@@ -921,7 +926,7 @@ class ProductUi {
 
 	}
 
-	protected function getOneByDate(Date $eDate, Product $eProduct, int $columns, bool $showFarm, bool $canAction, bool $isExpired, bool $hasCatalog, bool $hasSold): string {
+	protected function getOneByDate(Date $eDate, Product $eProduct, int $columns, bool $showFarm, bool $canAction, bool $canGroup, bool $isExpired, bool $hasCatalog, bool $hasSold): string {
 
 		$eProductSelling = $eProduct['product'];
 		$uiProductSelling = new \selling\ProductUi();
@@ -946,13 +951,15 @@ class ProductUi {
 		$h = '<tr>';
 
 			if($canAction) {
-				$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
+				$h .= '<td class="shop-product-group-first td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
 					if($canUpdate) {
 						$h .= '<label>';
 							$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
 						$h .= '</label>';
 					}
 				$h .= '</td>';
+			} else if($canGroup) {
+				$h .= '<td class="shop-product-group-first shop-product-group-readonly"></td>';
 			}
 
 			$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
@@ -1064,11 +1071,13 @@ class ProductUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($eCatalog->canWrite()) {
-							$h .= '<th class="td-checkbox">';
+							$h .= '<th class="shop-product-group-first td-checkbox">';
 								$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
 									$h .= '<input type="checkbox" class="batch-all" onclick="ShopProduct.toggleSelection(this)"/>';
 								$h .= '</label>';
 							$h .= '</th>';
+						} else {
+							$h .= '<th class="shop-product-group-first shop-product-group-readonly"></th>';
 						}
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($eCatalog['type'] === Date::PRO) {
@@ -1100,21 +1109,17 @@ class ProductUi {
 							$h .= '<tr>';
 
 								if($eCatalog->canWrite()) {
-									$h .= '<td class="td-checkbox"></td>';
+									$h .= '<td class="shop-product-group-first td-checkbox"></td>';
+								} else {
+									$h .= '<td class="shop-product-group-first shop-product-group-readonly"></td>';
 								}
 
 								$h .= '<td class="td-min-content">';
 								$h .= '</td>';
 
-								$h .= '<td>';
+								$h .= '<td colspan="'.(2 + (($eCatalog['type'] === Date::PRO) ? 1 : 0)).'">';
 									$h .= '<h4>'.encode($eProduct['parentName']).'</h4>';
 								$h .= '</td>';
-
-								if($eCatalog['type'] === Date::PRO) {
-									$h .= '<td class="td-min-content"></td>';
-								}
-
-								$h .= '<td class="text-end" style="white-space: nowrap"></td>';
 
 								$h .= '<td class="shop-product-available highlight"></td>';
 
@@ -1169,11 +1174,13 @@ class ProductUi {
 		$h = '<tr class="shop-product-one">';
 
 			if($eCatalog->canWrite()) {
-				$h .= '<td class="td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
+				$h .= '<td class="shop-product-group-first td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
 					$h .= '<label>';
 						$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
 					$h .= '</label>';
 				$h .= '</td>';
+			} else {
+				$h .= '<td class="shop-product-group-first shop-product-group-readonly" rowspan="'.($hasLimits ? 2 : 1).'"></td>';
 			}
 
 			$h .= '<td class="td-min-content" '.($hasLimits ? 'rowspan="2"' : '').'>';
