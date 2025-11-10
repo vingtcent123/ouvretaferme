@@ -219,6 +219,10 @@ class DateLib extends DateCrud {
 					->whereDate($eDate)
 					->delete();
 
+				Relation::model()
+					->whereDate($eDate)
+					->delete();
+
 			}
 
 			Date::model()->delete($eDate);
