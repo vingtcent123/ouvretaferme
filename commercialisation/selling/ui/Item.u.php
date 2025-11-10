@@ -901,7 +901,7 @@ class ItemUi {
 
 				$ccProduct = $cProduct->reindex(['category']);
 
-				$h = '<div class="tabs-h" id="item-create-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
+				$h .= '<div class="tabs-h" id="item-create-tabs" onrender="'.encode('Lime.Tab.restore(this)').'">';
 
 					$h .= '<div class="tabs-item">';
 
