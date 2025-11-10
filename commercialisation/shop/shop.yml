@@ -93,8 +93,7 @@ Product:
   ]
   UNIQUE: [
     ["date", "product"],
-    ["catalog", "product"],
-    ["parent", "product"]
+    ["catalog", "product"]
   ]
 
 Relation:

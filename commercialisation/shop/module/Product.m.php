@@ -95,8 +95,7 @@ class ProductModel extends \ModuleModel {
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['date', 'product'],
-			['catalog', 'product'],
-			['parent', 'product']
+			['catalog', 'product']
 		]);
 
 	}
