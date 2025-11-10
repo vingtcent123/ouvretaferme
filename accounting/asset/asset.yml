@@ -5,7 +5,7 @@ Asset:
   # Valeur d'acquisition
   value: decimal(8, 2, 0, null)
   description: text8(1, null) @collate(general)
-  type: ?enum(LINEAR, WITHOUT, DEGRESSIVE, GRANT_RECOVERY) # linéaire, pas, dégressif, reprise de sub
+  type: ?enum(LINEAR, WITHOUT, DEGRESSIVE) # linéaire, pas, dégressif
   # Date d'achat
   acquisitionDate: date
   # Date de mise en service (= début de l'amortissement si linéaire), null si type grant

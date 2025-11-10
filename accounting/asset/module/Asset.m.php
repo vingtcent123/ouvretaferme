@@ -10,7 +10,6 @@ abstract class AssetElement extends \Element {
 	const LINEAR = 'linear';
 	const WITHOUT = 'without';
 	const DEGRESSIVE = 'degressive';
-	const GRANT_RECOVERY = 'grant-recovery';
 
 	const ONGOING = 'ongoing';
 	const SOLD = 'sold';
@@ -51,7 +50,7 @@ class AssetModel extends \ModuleModel {
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'value' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'type' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::WITHOUT, \asset\Asset::DEGRESSIVE, \asset\Asset::GRANT_RECOVERY], 'null' => TRUE, 'cast' => 'enum'],
+			'type' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::WITHOUT, \asset\Asset::DEGRESSIVE], 'null' => TRUE, 'cast' => 'enum'],
 			'acquisitionDate' => ['date', 'cast' => 'string'],
 			'startDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],

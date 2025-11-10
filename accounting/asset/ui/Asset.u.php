@@ -101,14 +101,12 @@ Class AssetUi {
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
-									AssetElement::GRANT_RECOVERY => s("LIN"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['type']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
-									AssetElement::GRANT_RECOVERY => s("LIN"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
@@ -540,7 +538,6 @@ Class AssetUi {
 					AssetElement::LINEAR => s("Linéaire"),
 					AssetElement::DEGRESSIVE => s("Dégressif"),
 					AssetElement::WITHOUT => s("Sans"),
-					AssetElement::GRANT_RECOVERY => s("Reprise sur subvention"),
 				];
 				break;
 
