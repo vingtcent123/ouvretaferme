@@ -113,3 +113,11 @@
 	text-decoration: line-through;
 	color: var(--muted);
 }
+
+.cashflow-attach-panel-footer {
+	display: grid;
+	grid-column-gap: 1rem;
+	grid-template-columns: 1fr auto auto;
+	align-items: center;
+	min-height: 65px;
+}

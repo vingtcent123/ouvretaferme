@@ -569,7 +569,11 @@ class CashflowUi {
 	public function getAttach(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cOperation): \Panel {
 
 		\Asset::js('bank', 'cashflow.js');
+		\Asset::css('bank', 'cashflow.css');
 		$h = CashflowUi::getCashflowHeader($eCashflow);
+
+		$form = new \util\FormUi();
+		$dialogOpen = $form->openAjax(\company\CompanyUi::urlBank($eFarm).'/cashflow:doAttach', ['method' => 'post', 'id' => 'cashflow-doAttach', 'class' => 'panel-dialog']);
 
 		if($cOperation->empty() === TRUE) {
 
@@ -578,32 +582,30 @@ class CashflowUi {
 		} else {
 
 			$h .= '<h3>'.s("1. Sélectionnez les écritures liées à cette opération bancaire").'</h3>';
-			$form = new \util\FormUi();
-			$h .= $form->openAjax(\company\CompanyUi::urlBank($eFarm).'/cashflow:doAttach', ['method' => 'post', 'id' => 'cashflow-doAttach']);
 
-				$h .= $form->hidden('id', $eCashflow['id']);
-				$h .= '<span class="hide" name="cashflow-amount">'.$eCashflow['amount'].'</span>';
+			$h .= $form->hidden('id', $eCashflow['id']);
+			$h .= '<span class="hide" name="cashflow-amount">'.$eCashflow['amount'].'</span>';
 
-				$h .= '<div class="stick-sm util-overflow-sm">';
-					$h .= '<table class="tr-hover">';
+			$h .= '<div class="stick-sm util-overflow-sm">';
+				$h .= '<table class="tr-hover">';
 
-						$h .= '<thead>';
-							$h .= '<tr class="row-header">';
-								$h .= '<th class="text-end">';
-									$h .= s("Date");
-								$h .= '</th>';
-								$h .= '<th>';
-									$h .= s("Description");
-								$h .= '</th>';
-								$h .= '<th>'.s("Tiers").'</th>';
-								$h .= '<th>'.s("Moyen de paiement").'</th>';
-								$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
-								$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
-								$h .= '<th class="text-center">'.s("Choisir").'</th>';
-							$h .= '</tr>';
-						$h .= '</thead>';
+					$h .= '<thead>';
+						$h .= '<tr class="row-header">';
+							$h .= '<th class="text-end">';
+								$h .= s("Date");
+							$h .= '</th>';
+							$h .= '<th>';
+								$h .= s("Description");
+							$h .= '</th>';
+							$h .= '<th>'.s("Tiers").'</th>';
+							$h .= '<th>'.s("Moyen de paiement").'</th>';
+							$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
+							$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
+							$h .= '<th class="text-center"></th>';
+						$h .= '</tr>';
+					$h .= '</thead>';
 
-						$h .= '<tbody>';
+					$h .= '<tbody>';
 
 						foreach($cOperation as $eOperation) {
 
@@ -662,23 +664,12 @@ class CashflowUi {
 
 						}
 
-						$h .= '<tr class="row-highlight row-bold">';
-							$h .= '<td colspan="4" class="text-end">'.s("Total sélectionné :").'</td>';
-							$h .= '<td class="text-end"><span data-field="totalAmount">'.\util\TextUi::money(0).'</span></td>';
-							$h .= '<td class="text-end"></td>';
-							$h .= '<td class="text-end"></td>';
-							$h .= '<td class="text-end"></td>';
-						$h .= '</tr>';
+					$h .= '</tbody>';
 
-						$h .= '</tbody>';
+				$h .= '</table>';
+			$h .= '</div>';
 
-					$h .= '</table>';
-				$h .= '</div>';
-
-				$h .= '<div id="cashflow-attach-difference-warning" class="util-warning-outline hide">';
-					$h .= s("Attention, le montant de l'opération bancaire ne correspond pas au total des écritures sélectionnées ({span} de différence). Vous pouvez quand même valider.", ['span' => '<span id="cashflow-attach-missing-value"></span>']);
-				$h .= '</div>';
-
+			$h .= '<div class="mb-3">';
 				$h .= '<h3>'.s("2. Indiquez le tiers lié à cette opération bancaire").'</h3>';
 				$h .= $form->dynamicField(new \journal\Operation(), 'thirdParty', function($d) use($form) {
 					$d->autocompleteDispatch = '[data-third-party="'.$form->getId().'"]';
@@ -687,16 +678,24 @@ class CashflowUi {
 					$d->label = '';
 					$d->wrapper = 'third-party';
 				});
+			$h .= '</div>';
 
-				$h .= '<div class="text-end mt-1 mb-3">'.$form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']).'</div>';
-
-			$h .= $form->close();
 		}
 
+		$footer = '<div class="cashflow-attach-panel-footer">'.
+			'<div><div id="cashflow-attach-difference-warning" class="util-warning-outline hide" style="margin: 0;">'.
+				s("⚠️ Le montant de l'opération bancaire ne correspond pas au total des écritures sélectionnées ({span} de différence). Vous pouvez quand même valider.", ['span' => '<span id="cashflow-attach-missing-value"></span>']).
+			'</div></div>'.
+			'<div>'.s("Total sélectionné : {value}", '<span data-field="totalAmount" class="mr-2">'.\util\TextUi::money(0).'</span>').'</div>'.
+			$form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']).
+			'</div>';
 		return new \Panel(
 			id: 'panel-cashflow-attach',
 			title: s("Rattacher l'opération bancaire à une ou plusieurs écritures comptables"),
-			body: $h
+			body: $h,
+			dialogOpen : $dialogOpen,
+			dialogClose: $form->close(),
+			footer: $footer,
 		);
 
 	}

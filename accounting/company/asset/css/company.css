@@ -23,7 +23,7 @@ tr.row-emphasis {
 }
 
 tr.row-highlight {
-	background-color: var(--background-highlight) !important;
+	background-color: var(--background-dark) !important;
 }
 
 tr.row-upper,
@@ -167,4 +167,9 @@ tr.tr-border-bottom {
 tr.account_not-visible {
 	color: var(--muted);
 	text-decoration-line: line-through;
+}
+
+.accounting-info {
+	padding: 1rem;
+	background-color: var(--info);
 }

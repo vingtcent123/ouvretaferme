@@ -130,7 +130,8 @@ class FarmTemplate extends MainTemplate {
 
 			$h = '';
 			if(GET('app') === 'accounting') {
-				$h .= '<div class="util-info text-center">'.s("Ce module de comptabilité est en version <b>alpha</b> : il n'est pas encore ouvert au public et le développement est en cours.").'</div>';
+				Asset::css('company', 'company.css');
+				$h .= '<div class="accounting-info text-center">'.s("Ce module de comptabilité est en version <b>alpha</b> : il n'est pas encore ouvert au public et le développement est en cours.").'</div>';
 			}
 
 			$h .= $this->getMainTitle();
