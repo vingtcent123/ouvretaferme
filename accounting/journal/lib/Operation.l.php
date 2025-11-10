@@ -65,8 +65,8 @@ class OperationLib extends OperationCrud {
 			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))
 			->wherePaymentDate('LIKE', '%'.$search->get('paymentDate').'%', if: $search->get('paymentDate'))
 			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
-			->whereAccountLabel('LIKE', $search->get('accountLabel').'%', if: $search->get('accountLabel'))
-			->where(fn() => 'accountLabel LIKE "'.join('%" OR accountLabel LIKE "', $search->get('accountLabels')).'%"', if: $search->get('accountLabels'))
+			->whereAccountLabel('LIKE', '%'.$search->get('accountLabel').'%', if: $search->get('accountLabel'))
+			->where(fn() => 'accountLabel LIKE "%'.join('%" OR accountLabel LIKE "%', $search->get('accountLabels')), if: $search->get('accountLabels'))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereDocument($search->get('document'), if: $search->get('document'))
 			->whereType($search->get('type'), if: $search->get('type'))
@@ -107,7 +107,6 @@ class OperationLib extends OperationCrud {
 				+ ['account' => ['description']]
 			)
 			->join(\account\Account::model(), 'm1.account = m2.id')
-			->whereAccountLabel('LIKE', trim($search->get('accountLabel'), '0').'%', if: $search->get('accountLabel'))
 			->sort(['m1_accountLabel' => SORT_ASC, 'date' => SORT_ASC])
 			->getCollection();
 

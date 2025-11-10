@@ -6,10 +6,15 @@ new Page(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
+	$search = new Search([
+		'accountLabel' => GET('accountLabel'),
+		'financialYear' => $data->eFinancialYear,
+	], GET('sort'));
+
+	$data->search = clone $search;
+
 })
 	->get('index', function($data) {
-
-		$data->search = new Search(['financialYear' => $data->eFinancialYear, 'accountLabel' => GET('accountLabel')]);
 
 		$data->cOperation = \journal\OperationLib::getAllForBook($data->search);
 		$data->cAccount = \account\AccountLib::getAll();

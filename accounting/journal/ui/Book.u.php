@@ -16,9 +16,36 @@ class BookUi {
 				$h .= s("Le Grand livre");
 			$h .= '</h1>';
 
-			$h .= '<div>';
-				//$h .= '<a href="'.PdfUi::urlBook($eFarm).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').'&nbsp;'.s("Télécharger en PDF").'</a>';
-			$h .= '</div>';
+		$h .= '<div>';
+			$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#book-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
+		$h .= '</div>';
+
+			/*$h .= '<div>';
+				$h .= '<a href="'.PdfUi::urlBook($eFarm).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').'&nbsp;'.s("Télécharger en PDF").'</a>';
+			$h .= '</div>';*/
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYear): string {
+
+		$h = '<div id="book-search" class="util-block-search '.($search->empty(['ids', 'financialYear']) === TRUE ? 'hide' : '').'">';
+
+			$form = new \util\FormUi();
+				$url = LIME_REQUEST_PATH;
+
+				$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+
+					$h .= '<div>';
+					$h .= $form->text('accountLabel', $search->get('accountLabel') !== '' ? $search->get('accountLabel') : '', ['placeholder' => s("Classe de compte")]);
+					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '</div>';
+
+			$h .= $form->close();
+
 		$h .= '</div>';
 
 		return $h;
@@ -167,7 +194,11 @@ class BookUi {
 	): string {
 
 		if($cOperation->empty() === TRUE) {
-			return '<div class="util-info">'. s("Aucune écriture n'a encore été enregistrée") .'</div>';
+			if($search->empty(['ids', 'financialYear'])) {
+				return '<div class="util-info">'. s("Aucune écriture n'a encore été enregistrée") .'</div>';
+			} else {
+				return '<div class="util-info">'. s("Aucune écriture ne correspond à vos critères de recherche.") .'</div>';
+			}
 		}
 
 		$h = '<div class="stick-sm util-overflow-sm">';
