@@ -1,18 +1,18 @@
 class Batch {
 
-	static hideSelection() {
+	static hideSelection(groupId) {
 
-		qs('#batch-group').hide();
+		qs(groupId).hide();
 
-		qsa('[name="batch[]"]:checked, .batch-all', (field) => field.checked = false);
+		qsa('[data-batch="'+ groupId +'"] [name="batch[]"]:checked, .batch-all', (field) => field.checked = false);
 
 	}
 
-	static changeSelection(callback) {
+	static changeSelection(groupId, oneId, callback = null) {
 
-		const group = qs('#batch-group');
-		const one = qs('#batch-one');
-		const selection = qsa('[name="batch[]"]:checked');
+		const group = qs(groupId);
+		const one = qs(oneId);
+		const selection = qsa('[data-batch="'+ groupId +'"] [name="batch[]"]:checked');
 
 		if(one !== null) {
 
@@ -27,14 +27,14 @@ class Batch {
 					one.removeHide();
 					selection[0].firstParent('.batch-item').insertAdjacentElement('afterbegin', one);
 					group.hide();
-					this.updateMenu(selection, callback);
+					this.updateMenu('one', oneId, selection, callback);
 					break;
 
 				default :
 					one.hide();
 					group.removeHide();
 					group.style.zIndex = Lime.getZIndex();
-					this.updateMenu(selection, callback);
+					this.updateMenu('group', groupId, selection, callback);
 					break;
 
 			}
@@ -46,7 +46,7 @@ class Batch {
 			} else {
 				group.removeHide();
 				group.style.zIndex = Lime.getZIndex();
-				this.updateMenu(selection, callback);
+				this.updateMenu('group', groupId, selection, callback);
 			}
 
 
@@ -54,21 +54,29 @@ class Batch {
 
 	}
 
-	static updateMenu(selection, callback) {
+	static updateMenu(type, id, selection, callback) {
 
-		qs('#batch-group-count').innerHTML = selection.length;
+		if(type === 'group') {
+			qs(id +' .batch-group-count').innerHTML = selection.length;
+		}
 
 		let newIds = '';
 		selection.forEach((field) => newIds += '<input type="checkbox" name="ids[]" value="'+ field.value +'" checked/>');
 
-		qsa('.batch-ids', node => node.innerHTML = newIds);
+		qsa(id +' .batch-ids', node => node.innerHTML = newIds);
 
-		let actions = callback(selection);
+		if(callback !== null) {
+			callback(selection);
+		}
 
-		const list = qsa('.batch-menu-main .batch-menu-item:not(.hide)', node => node.classList.remove('batch-menu-item-last'));
+		if(type === 'group') {
 
-		if(list.length > 0) {
-			list[list.length - 1].classList.add('batch-menu-item-last');
+			const list = qsa(id +' .batch-menu-main .batch-menu-item:not(.hide)', node => node.classList.remove('batch-menu-item-last'));
+
+			if(list.length > 0) {
+				list[list.length - 1].classList.add('batch-menu-item-last');
+			}
+
 		}
 	}
 

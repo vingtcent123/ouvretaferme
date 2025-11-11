@@ -119,7 +119,7 @@ class Series {
 
 	static changeSelection() {
 
-		return Batch.changeSelection(function(selection) {
+		return Batch.changeSelection('#batch-series', null, function(selection) {
 
 			if(selection.filter('[data-batch~="not-open"]').length > 0) {
 				qsa('.batch-menu-open', button => button.hide());
@@ -151,7 +151,7 @@ class Series {
 
 	static hideSelection() {
 
-		qs('#batch-group').hide();
+		qs('#batch-series').hide();
 
 		qsa('#series-wrapper .series-item-planning-checkbox:checked', (field) => field.checked = false);
 

@@ -10,7 +10,7 @@ class ShopProduct {
 
 	static changeSelection() {
 
-		return Batch.changeSelection((selection) => {
+		return Batch.changeSelection('#batch-catalog', null, (selection) => {
 
 			let idsCollection = '';
 

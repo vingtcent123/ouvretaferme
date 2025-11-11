@@ -80,7 +80,7 @@ class InvoiceUi {
 
 			$columns = 7;
 
-			$h .= '<table class="tr-even">';
+			$h .= '<table class="tr-even" data-batch="#batch-invoice">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -322,7 +322,7 @@ class InvoiceUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		return \util\BatchUi::group($menu, $danger, title: s("Pour les factures sélectionnées"));
+		return \util\BatchUi::group('batch-invoice', $menu, $danger, title: s("Pour les factures sélectionnées"));
 
 	}
 

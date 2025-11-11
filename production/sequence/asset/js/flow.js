@@ -134,7 +134,7 @@ class Flow {
 
 	static changeSelection() {
 
-		return Batch.changeSelection(function(selection) {
+		return Batch.changeSelection('#batch-flow', '#batch-flow-one',function(selection) {
 
 		if(selection.length > 1) {
 			qsa('.batch-menu-update', node => node.hide());

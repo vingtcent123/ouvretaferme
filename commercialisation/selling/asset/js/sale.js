@@ -54,7 +54,7 @@ class Sale {
 
 	static changeSelection() {
 
-		return Batch.changeSelection(function(selection) {
+		return Batch.changeSelection('#batch-sale', null, function(selection) {
 
 			let actions = 0;
 

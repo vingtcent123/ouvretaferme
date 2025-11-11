@@ -172,7 +172,7 @@ class CustomerUi {
 		$year = date('Y');
 		$yearBefore = $year - 1;
 
-		$h = '<table class="customer-item-table tr-even stick-xs">';
+		$h = '<table class="customer-item-table tr-even stick-xs" data-batch="#batch-customer">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';
@@ -357,8 +357,8 @@ class CustomerUi {
 						$menu .= '<span class="util-badge" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</span>';
 					$menu .= '</div>';
 					$menu .= '<div class="dropdown-items-2 batch-menu-type batch-menu-'.$eCustomerGroup['type'].'">';
-						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupAssociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('plus').' '.s(text: "Ajouter").'</a>';
-						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupDissociateCollection" data-ajax-target="#batch-group-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('x').' '.s("Retirer").'</a>';
+						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupAssociateCollection" data-ajax-target="#batch-customer-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('plus').' '.s(text: "Ajouter").'</a>';
+						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupDissociateCollection" data-ajax-target="#batch-customer-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('x').' '.s("Retirer").'</a>';
 					$menu .= '</div>';
 				}
 			$menu .= '</div>';
@@ -380,7 +380,7 @@ class CustomerUi {
 			$menu .= '<span>'.s("Désactiver").'</span>';
 		$menu .= '</a>';
 
-		return \util\BatchUi::group($menu, title: s("Pour les clients sélectionnés"));
+		return \util\BatchUi::group('batch-customer', $menu, title: s("Pour les clients sélectionnés"));
 
 	}
 

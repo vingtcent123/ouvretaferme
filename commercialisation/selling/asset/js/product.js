@@ -58,7 +58,7 @@ class Product {
 
 	static changeSelection() {
 
-		return Batch.changeSelection();
+		return Batch.changeSelection('#batch-product', null);
 
 	}
 

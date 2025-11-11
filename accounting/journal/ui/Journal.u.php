@@ -512,10 +512,10 @@ class JournalUi {
 			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").'</div>';
 			foreach($cPaymentMethod as $ePaymentMethod) {
 				if($ePaymentMethod['online'] === FALSE) {
-					$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-group-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+					$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-journal-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 				}
 			}
-			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-group-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-journal-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
 		$menu .= '</div>';
 
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createCommentCollection" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('chat-text-fill').'<span>'.s("Commenter").'</span></a>';
@@ -525,7 +525,7 @@ class JournalUi {
 		$menu .= '<span class="hide" data-batch-title-more-singular>'.s(", dont 1 opération liée").'</span>';
 		$menu .= '<span class="hide" data-batch-title-more-plural>'.s(", dont <span data-batch-title-more-value></span> opérations liées").'</span>';
 
-		return \util\BatchUi::group($menu, '', title: s("Pour les opérations sélectionnées"));
+		return \util\BatchUi::group('batch-journal', $menu, '', title: s("Pour les opérations sélectionnées"));
 
 	}
 

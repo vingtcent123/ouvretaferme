@@ -164,7 +164,7 @@ class ProductUi {
 
 		$h .= '<div class="product-item-wrapper stick-md">';
 
-		$h .= '<table class="product-item-table tbody-even">';
+		$h .= '<table class="product-item-table tbody-even" data-batch="#batch-product">';
 
 			$h .= '<thead>';
 
@@ -389,9 +389,9 @@ class ProductUi {
 			$menu .= '<div class="dropdown-list bg-secondary">';
 				$menu .= '<div class="dropdown-title">'.s("Changer de catégorie").'</div>';
 				foreach($cCategory as $eCategory) {
-					$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="'.$eCategory['id'].'" class="dropdown-item">'.encode($eCategory['name']).'</a>';
+					$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-product-form" post-category="'.$eCategory['id'].'" class="dropdown-item">'.encode($eCategory['name']).'</a>';
 				}
-				$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-group-form" post-category="" class="dropdown-item"><i>'.s("Non catégorisé").'</i></a>';
+				$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-product-form" post-category="" class="dropdown-item"><i>'.s("Non catégorisé").'</i></a>';
 			$menu .= '</div>';
 
 		}
@@ -406,7 +406,7 @@ class ProductUi {
 			$menu .= '<span>'.s("Désactiver").'</span>';
 		$menu .= '</a>';
 
-		return \util\BatchUi::group($menu, title: s("Pour les produits sélectionnés"));
+		return \util\BatchUi::group('batch-product', $menu, title: s("Pour les produits sélectionnés"));
 
 	}
 

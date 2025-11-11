@@ -201,7 +201,7 @@ class SaleUi {
 
 		$previousSubtitle = NULL;
 
-		$h .= '<table class="tr-even">';
+		$h .= '<table class="tr-even" data-batch="#batch-sale">';
 
 			$h .= '<thead>';
 
@@ -642,10 +642,10 @@ class SaleUi {
 			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").'</div>';
 			foreach($cPaymentMethod as $ePaymentMethod) {
 				if($ePaymentMethod['online'] === FALSE) {
-					$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-group-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+					$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-sale-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 				}
 			}
-			$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-group-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-sale-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
 		$menu .= '</div>';
 
 		$menu .= '<a data-url="/vente/" data-confirm="'.s("Vous allez entrer dans le mode de préparation de commandes. Voulez-vous continuer ?").'" class="batch-menu-prepare batch-menu-item">';
@@ -658,7 +658,7 @@ class SaleUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		return \util\BatchUi::group($menu, $danger, title: s("Pour les ventes sélectionnées"));
+		return \util\BatchUi::group('batch-sale', $menu, $danger, title: s("Pour les ventes sélectionnées"));
 
 	}
 

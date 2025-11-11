@@ -475,6 +475,7 @@ class ProductLib extends ProductCrud {
 		foreach($cProduct as $eProduct) {
 
 			if($eProduct['parent']) {
+				$eProduct['sold'] = NULL;
 				continue;
 			}
 

@@ -25,7 +25,7 @@ class Invoice {
 
 	static changeSelection() {
 
-		return Batch.changeSelection(function(selection) {
+		return Batch.changeSelection('#batch-invoice', null, function(selection) {
 
 			qsa(
 				'.batch-menu-send',

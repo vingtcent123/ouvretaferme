@@ -24,7 +24,7 @@ class Journal {
 			span.setAttribute('id', 'batch-title-detail');
 			span.innerHTML = qs(textSelector).innerHTML;
 
-			qs('#batch-group-count').after(span);
+			qs('#batch-journal .batch-group-count').after(span);
 
 		} else {
 
@@ -32,7 +32,7 @@ class Journal {
 
 		}
 
-		return Batch.changeSelection(function(selection) {
+		return Batch.changeSelection('#batch-journal', null, function(selection) {
 
 			let actions = 0;
 

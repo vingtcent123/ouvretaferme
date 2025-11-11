@@ -831,7 +831,7 @@ class ProductUi {
 		}
 
 		$h = '<div class="'.$overflow.' stick-xs mb-3">';
-			$h .= '<table class="tbody-even td-padding-sm">';
+			$h .= '<table class="tbody-even td-padding-sm" data-batch="#batch-catalog">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($canAction) {
@@ -1067,7 +1067,7 @@ class ProductUi {
 		$columns = 2;
 
 		$h = '<div class="util-overflow-sm stick-xs">';
-			$h .= '<table class="tbody-even td-padding-sm">';
+			$h .= '<table class="tbody-even td-padding-sm" data-batch="#batch-catalog">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($eCatalog->canWrite()) {
@@ -1248,15 +1248,19 @@ class ProductUi {
 
 		$menu = '';
 
-		$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
-			$menu .= \Asset::icon('toggle-on');
-			$menu .= '<span>'.s("Activer").'</span>';
-		$menu .= '</a>';
+		if($eCatalog->notEmpty()) {
 
-		$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-menu-inactive batch-menu-item">';
-			$menu .= \Asset::icon('toggle-off');
-			$menu .= '<span>'.s("Désactiver").'</span>';
-		$menu .= '</a>';
+			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
+				$menu .= \Asset::icon('toggle-on');
+				$menu .= '<span>'.s("Activer").'</span>';
+			$menu .= '</a>';
+
+			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-menu-inactive batch-menu-item">';
+				$menu .= \Asset::icon('toggle-off');
+				$menu .= '<span>'.s("Désactiver").'</span>';
+			$menu .= '</a>';
+
+		}
 
 		if(FEATURE_GROUP) {
 
@@ -1272,7 +1276,7 @@ class ProductUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		return \util\BatchUi::group($menu, $danger, title: s("Pour les produits sélectionnés"));
+		return \util\BatchUi::group('batch-catalog', $menu, $danger, title: s("Pour les produits sélectionnés"));
 
 	}
 

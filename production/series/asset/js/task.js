@@ -763,7 +763,7 @@ class Task {
 
 	static hidePlanningSelection() {
 
-		qs('#batch-group').hide();
+		qs('#batch-task').hide();
 
 		qsa('[name="batch[]"]:checked', (field) => field.checked = false);
 		qsa('[name="batchAction[]"]:checked', (field) => field.checked = false);
@@ -793,7 +793,7 @@ class Task {
 
 	static changePlanningSelection() {
 
-		return Batch.changeSelection(function(selection) {
+		return Batch.changeSelection('#batch-task', '#batch-task-one',function(selection) {
 
 			if(selection.filter(':not([data-batch~="harvest"])').length > 0) {
 				qsa(".batch-menu-harvest", button => button.hide());

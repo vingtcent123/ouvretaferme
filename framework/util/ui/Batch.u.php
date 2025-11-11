@@ -3,16 +3,16 @@ namespace util;
 
 class BatchUi {
 
-	public static function one(string $menu) {
+	public static function one(string $id, string $menu) {
 
 		\Asset::css('util', 'batch.css');
 		\Asset::js('util', 'batch.js');
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="batch-one" class="batch-one hide">';
+		$h = '<div id="'.$id.'" class="batch-one hide">';
 
-			$h .= $form->open('batch-one-form');
+			$h .= $form->open($id.'-form');
 
 				$h .= '<div class="batch-ids hide"></div>';
 				$h .= '<div class="batch-one-menu">';
@@ -27,24 +27,25 @@ class BatchUi {
 
 	}
 
-	public static function group(string $menu, ?string $danger = NULL, ?string $title = NULL, string $hide = 'Batch.hideSelection()') {
+	public static function group(string $id, string $menu, ?string $danger = NULL, ?string $title = NULL, ?string $hide = NULL) {
 
 		\Asset::css('util', 'batch.css');
 		\Asset::js('util', 'batch.js');
 
 		$form = new \util\FormUi();
 
+		$hide ??= 'Batch.hideSelection("#'.$id.'")';
 		$title ??= s("Pour la sélection");
 
-		$h = '<div id="batch-group" class="hide">';
+		$h = '<div id="'.$id.'" class="batch-group hide">';
 
-			$h .= $form->open('batch-group-form');
+			$h .= $form->open($id.'-form');
 
 			$h .= '<div class="batch-ids hide"></div>';
 
 			$h .= '<div class="batch-title">';
-				$h .= '<h4>'.$title.' (<span id="batch-group-count"></span>)</h4>';
-				$h .= '<a onclick="'.$hide.'" class="btn btn-transparent">'.s("Annuler").'</a>';
+				$h .= '<h4>'.$title.' (<span class="batch-group-count"></span>)</h4>';
+				$h .= '<a '.attr('onclick', $hide).' class="btn btn-transparent">'.s("Annuler").'</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="batch-menu">';

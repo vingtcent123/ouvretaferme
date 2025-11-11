@@ -483,7 +483,7 @@ class CultivationUi {
 		$viewField = $eFarm->getView('viewPlanningField');
 		$viewArea = $eFarm->getView('viewPlanningArea');
 
-		$h = '<div id="series-wrapper" class="series-item-wrapper series-item-planning-wrapper '.($viewHarvestExpected ? 'series-item-planning-harvest' : '').' util-overflow-md stick-md">';
+		$h = '<div id="series-wrapper" class="series-item-wrapper series-item-planning-wrapper '.($viewHarvestExpected ? 'series-item-planning-harvest' : '').' util-overflow-md stick-md" data-batch="#batch-series">';
 
 			$h .= '<div class="series-item-header series-item-planning">';
 
@@ -717,7 +717,7 @@ class CultivationUi {
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		return \util\BatchUi::group($menu, $danger, title: s("Pour les séries sélectionnées"), hide: 'Series.hideSelection()');
+		return \util\BatchUi::group('batch-series', $menu, $danger, title: s("Pour les séries sélectionnées"), hide: 'Series.hideSelection()');
 
 	}
 

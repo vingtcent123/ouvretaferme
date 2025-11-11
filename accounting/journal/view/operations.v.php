@@ -33,7 +33,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		if($data->eOperationRequested->notEmpty()) {
 			echo ' onrender="Operation.open('.$data->eOperationRequested['id'].');"';
 		}
-	echo '>';
+	echo ' data-batch="#batch-journal">';
 
 		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode);
 

@@ -60,7 +60,7 @@ class Customer {
 
 	static changeSelection()	 {
 
-		return Batch.changeSelection(function(selection) {
+		return Batch.changeSelection('#batch-customer', null, function(selection) {
 
 			let idsCollection = '';
 			let lastId = '';

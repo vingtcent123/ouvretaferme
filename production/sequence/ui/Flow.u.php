@@ -18,7 +18,7 @@ class FlowUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="flow-wrapper" data-sequence="'.$eSequence['id'].'">';
+		$h = '<div id="flow-wrapper" data-sequence="'.$eSequence['id'].'" data-batch="#batch-flow">';
 
 			$h .= '<div class="flow-timeline-wrapper stick-xs">';
 
@@ -368,27 +368,27 @@ class FlowUi {
 				$menu .= \Asset::icon('watch');
 				$menu .= '<span>'.s("Planifier").'</span>';
 			$menu .= '</a>';
-			$menu .= $this->getBatchPlanned('batch-one-form');
+			$menu .= $this->getBatchPlanned('batch-flow-one-form');
 		$menu .= '</div>';
 
 		$menu .= '<a class="batch-one-item batch-menu-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="/sequence/flow:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
 
-		$h = \util\BatchUi::one($menu);
+		$h = \util\BatchUi::one('batch-flow-one', $menu);
 
 		$menu = '<a data-dropdown="top-start" class="batch-menu-item">';
 			$menu .= \Asset::icon('watch');
 			$menu .= '<span>'.s("Planifier").'</span>';
 		$menu .= '</a>';
-		$menu .= $this->getBatchPlanned('batch-group-form');
+		$menu .= $this->getBatchPlanned('batch-flow-form');
 
 		$danger = '<a data-ajax-submit="/sequence/flow:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-menu-item batch-menu-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
 
-		$h .= \util\BatchUi::group($menu, $danger, title: s("Pour les interventions sélectionnées"));
+		$h .= \util\BatchUi::group('batch-flow', $menu, $danger, title: s("Pour les interventions sélectionnées"));
 
 		return $h;
 

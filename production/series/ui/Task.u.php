@@ -48,7 +48,7 @@ class TaskUi {
 			$position = 1;
 		}
 
-		$h .= '<div id="planning-container-daily" onrender="Task.scrollPlanningDaily(this, '.$position.')" data-week="'.$week.'" data-farm="'.$eFarm['id'].'">';
+		$h .= '<div id="planning-container-daily" onrender="Task.scrollPlanningDaily(this, '.$position.')" data-week="'.$week.'" data-farm="'.$eFarm['id'].'" data-batch="#batch-task">';
 
 			$h .= '<div id="planning-wrapper-daily">';
 
@@ -230,7 +230,7 @@ class TaskUi {
 
 		\Asset::css('series', 'planning.css');
 
-		$h = '<div id="planning-week-tabs" class="tabs-h" data-farm="'.$eFarm['id'].'" data-week="'.$week.'" onrender="'.encode('Lime.Tab.restore(this, "todo")').'">';
+		$h = '<div id="planning-week-tabs" class="tabs-h" data-farm="'.$eFarm['id'].'" data-week="'.$week.'" onrender="'.encode('Lime.Tab.restore(this, "todo")').'" data-batch="#batch-task">';
 
 			$h .= '<div class="tabs-item util-print-hide">';
 				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="todo">'.s("À faire").'</a>';
@@ -402,7 +402,7 @@ class TaskUi {
 					$menu .= \Asset::icon('watch');
 					$menu .= '<span>'.s("Planifier").'</span>';
 				$menu .= '</a>';
-				$menu .= $this->getBatchPlanned('batch-one-form', $week);
+				$menu .= $this->getBatchPlanned('batch-task-one-form', $week);
 			$menu .= '</div>';
 
 			if($cUser->count() > 1) {
@@ -411,7 +411,7 @@ class TaskUi {
 						$menu .= \Asset::icon('people-fill');
 						$menu .= '<span>'.s("Affecter").'</span>';
 					$menu .= '</a>';
-					$menu .= $this->getBatchUsers('batch-one-form', $cUser);
+					$menu .= $this->getBatchUsers('batch-task-one-form', $cUser);
 				$menu .= '</div>';
 			}
 
@@ -427,7 +427,7 @@ class TaskUi {
 			$menu .= '<a data-ajax-submit="/series/task:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
 		}
 
-		$h = \util\BatchUi::one($menu);
+		$h = \util\BatchUi::one('batch-task-one', $menu);
 
 		$menu = '';
 		
@@ -473,7 +473,7 @@ class TaskUi {
 					$menu .= \Asset::icon('watch');
 					$menu .= '<span>'.s("Planifier").'</span>';
 				$menu .= '</a>';
-				$menu .= $this->getBatchPlanned('batch-group-form', $week);
+				$menu .= $this->getBatchPlanned('batch-task-form', $week);
 			$menu .= '</div>';
 
 			if($cUser->count() > 1) {
@@ -482,7 +482,7 @@ class TaskUi {
 						$menu .= \Asset::icon('people-fill');
 						$menu .= '<span>'.s("Affecter").'</span>';
 					$menu .= '</a>';
-					$menu .= $this->getBatchUsers('batch-group-form', $cUser);
+					$menu .= $this->getBatchUsers('batch-task-form', $cUser);
 				$menu .= '</div>';
 			}
 
@@ -508,7 +508,7 @@ class TaskUi {
 			$danger = NULL;
 		}
 		
-		$h .= \util\BatchUi::group($menu, $danger, title: s("Pour les interventions sélectionnées"), hide: 'Task.hidePlanningSelection()');
+		$h .= \util\BatchUi::group('batch-task', $menu, $danger, title: s("Pour les interventions sélectionnées"), hide: 'Task.hidePlanningSelection()');
 
 		return $h;
 
@@ -1551,7 +1551,7 @@ class TaskUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="series-task-wrapper" data-series="'.$eSeries['id'].'">';
+		$h = '<div id="series-task-wrapper" data-series="'.$eSeries['id'].'" data-batch="#batch-task">';
 
 			$h .= '<div class="util-title">';
 				$h .= '<h3>'.s("Interventions").'</h3>';

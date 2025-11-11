@@ -1409,6 +1409,12 @@ a.tabs-category {
 
 }
 
+.batch-menu-planned,
+.batch-menu-users {
+	display: flex;
+	align-items: end;
+}
+
 body[data-template~="farm-planning-daily"] .batch-one,
 body[data-template~="farm-planning-weekly"] .batch-one {
 	left: 2.5rem;
