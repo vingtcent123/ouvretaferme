@@ -97,6 +97,9 @@ class AccountUi {
 
 				foreach($cAccount as $eAccount) {
 
+					$eAccount->setQuickAttribute('farm', $eFarm['id']);
+					$eAccount->setQuickAttribute('app', 'accounting');
+
 					$classNumber = strlen($eAccount['class']) - 2;
 
 					$h .= '<tr name="account-'.$eAccount['id'].'" class="'.($eAccount['visible'] ? '' : 'account_not-visible').'">';
