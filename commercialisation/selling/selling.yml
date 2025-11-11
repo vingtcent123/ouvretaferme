@@ -33,6 +33,7 @@ Configuration:
   invoiceHeader: ?editor16(1, 400)
   invoiceFooter: ?editor16(1, 400)
   marketSalePaymentMethod: ?payment\Method
+  marketSaleDefaultDecimal: enum(NUMBER, PRICE) = PRICE
   pdfNaturalOrder: bool = FALSE
   UNIQUE: [
     ["farm"]

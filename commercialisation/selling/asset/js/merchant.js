@@ -9,6 +9,7 @@ class Merchant {
 	static selectedField = null;
 	static selectedProperty = null;
 	static selectedValue = 0;
+	static selectedComma = false;
 
 	static show(item) {
 
@@ -58,7 +59,7 @@ class Merchant {
 				this.keyboardOpen(this.current.qs('.merchant-field[data-property="number"]'));
 			} else {
 
-				if(this.isUnitInteger()) {
+				if(this.isNumberDefault()) {
 					this.keyboardOpen(this.current.qs('.merchant-field[data-property="number"]'));
 				} else {
 					this.keyboardOpen(this.current.qs('.merchant-field[data-property="price"]'));
@@ -245,7 +246,8 @@ class Merchant {
 				h += '<a onclick="Merchant.pressDigit('+ digit +')" data-digit="'+ digit +'" class="merchant-digit">'+ digit +'</a>';
 			}
 			h += '<a onclick="Merchant.pressDigit(0)" data-digit="0" class="merchant-digit">0</a>';
-			h += '<a onclick="Merchant.pressDigit(0); Merchant.pressDigit(0);" class="merchant-digit">00</a>';
+			h += '<a onclick="Merchant.pressDigit(0); Merchant.pressDigit(0);" class="merchant-digit merchant-digit-00">00</a>';
+			h += '<a onclick="Merchant.pressComma();" class="merchant-digit merchant-digit-comma">,</a>';
 			h += '<a onclick="Merchant.pressBack();" class="merchant-digit">'+ Lime.Asset.icon('backspace') +'</a>';
 		h += '</div>';
 
@@ -266,7 +268,9 @@ class Merchant {
 
 		// On efface la valeur en cours
 		field.qs('input').value = '';
+
 		this.selectedValue = null;
+		this.selectedComma = false;
 
 		field.qs('.merchant-value').innerHTML = this.getKeyboardEmpty(property);
 
@@ -433,6 +437,7 @@ class Merchant {
 		this.selectedProperty = target.dataset.property;
 		this.selectedField = this.current.qs('.merchant-field[data-property="'+ this.selectedProperty +'"] input');
 		this.selectedValue = 0;
+		this.selectedComma = false;
 
 		this.current.qs('.merchant-field.selected', field => field.classList.remove('selected'));
 		target.classList.add('selected');
@@ -457,6 +462,7 @@ class Merchant {
 		this.selectedProperty = null;
 		this.selectedField = null;
 		this.selectedValue = null;
+		this.selectedComma = false;
 
 	}
 
@@ -466,10 +472,35 @@ class Merchant {
 			return;
 		}
 
-		this.selectedValue *= (digit === '00') ? 100 : 10;
-		this.selectedValue += (digit === '00') ? 0 : digit;
+		let value, stringValue;
 
-		const value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
+		const node = qs('#merchant-'+ this.current.dataset.item +'-'+ this.selectedProperty);
+
+		if(this.selectedComma) {
+
+			stringValue = node.innerHTML.replace(',', '.');
+			if(stringValue.includes('.') === false) {
+				stringValue += '.';
+			}
+
+			if(stringValue.indexOf('.') < stringValue.length - 2) {
+				stringValue = stringValue.slice(0, -1) + digit;
+			} else {
+				stringValue += digit;
+			}
+
+			value = parseFloat(stringValue);
+			this.selectedValue = value;
+
+		} else {
+
+			this.selectedValue *= (digit === '00') ? 100 : 10;
+			this.selectedValue += (digit === '00') ? 0 : digit;
+
+			value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
+
+		}
+
 		const isNull = (value === 0 && this.selectedProperty !== 'unit-price');
 		this.selectedField.value = isNull ? '' : value;
 
@@ -484,7 +515,41 @@ class Merchant {
 
 		this.recalculate();
 
-		this.setEntryValue(this.current.dataset.item, this.selectedProperty, isNull ? null : value);
+		if(this.selectedComma) {
+			const node = qs('#merchant-'+ this.current.dataset.item +'-'+ this.selectedProperty);
+			node.innerHTML = stringValue.replace('.', ',');
+		} else {
+			this.setEntryValue(this.current.dataset.item, this.selectedProperty, isNull ? null : value);
+		}
+
+	}
+
+	static pressComma() {
+
+		if(
+			this.selectedField === null ||
+			this.selectedProperty !== 'number'
+		) {
+			return;
+		}
+
+		if(Math.round(this.selectedValue) !== this.selectedValue) {
+			return;
+		}
+
+		this.selectedComma = true;
+
+		let text;
+
+		const node = qs('#merchant-'+ this.current.dataset.item +'-'+ this.selectedProperty);
+
+		if(this.selectedValue === 0) {
+			text = '0,';
+		} else {
+			text = this.selectedValue +',';
+		}
+
+		node.innerHTML = text;
 
 	}
 
@@ -494,21 +559,61 @@ class Merchant {
 			return;
 		}
 
-		this.selectedValue /= 10;
-		this.selectedValue = Math.floor(this.selectedValue);
+		let value, stringValue;
 
-		const value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
+		if(this.selectedComma) {
+
+			const node = qs('#merchant-'+ this.current.dataset.item +'-'+ this.selectedProperty);
+
+			// Cas particulier du retour arrière si une virgule vient d'être posée
+			if(node.innerHTML.slice(-1) === ',') {
+				node.innerHTML = node.innerHTML.slice(0, -1);
+				this.selectedComma = false;
+				return;
+			}
+
+			stringValue = node.innerHTML.replace(',', '.');
+			stringValue = stringValue.slice(0, -1);
+
+			const isComma = (stringValue.slice(-1) === '.');
+
+			if(isComma) {
+				stringValue = stringValue.slice(0, -1);
+			}
+
+			value = parseFloat(stringValue);
+			this.selectedValue = value;
+
+			if(isComma) {
+				node.innerHTML = node.innerHTML.slice(0, -1);
+				return;
+			}
+
+		} else {
+
+			this.selectedValue /= 10;
+			this.selectedValue = Math.floor(this.selectedValue);
+
+			value = this.selectedValue / (this.isPropertyInteger(this.selectedProperty) ? 1 : 100);
+
+		}
+
 		const isNull = (value === 0 && this.selectedProperty !== 'unit-price');
 		this.selectedField.value = isNull ? '' : value;
 
 		this.recalculate();
-		
-		this.setEntryValue(this.current.dataset.item, this.selectedProperty, isNull ? null : value);
+
+		if(this.selectedComma) {
+			const node = qs('#merchant-'+ this.current.dataset.item +'-'+ this.selectedProperty);
+			node.innerHTML = stringValue.replace('.', ',');
+		} else {
+			this.setEntryValue(this.current.dataset.item, this.selectedProperty, isNull ? null : value);
+		}
 
 	}
 
-	static isUnitInteger() {
-		return (this.current.dataset.unitInteger === '1');
+	static isNumberDefault() {
+		return (this.current.dataset.numberDefault === '1');
 	}
 
 	static setEntryValue(item, property, value) {
@@ -524,7 +629,7 @@ class Merchant {
 		} else {
 
 			if(this.isPropertyInteger(property)) {
-				text = value;
+				text = (value + '').replace('.', ',');
 			} else {
 				const textValue = Math.round(value * 100).toString().padStart(3, '0');
 				text = textValue.substring(0, textValue.length - 2) +','+ textValue.substring(textValue.length - 2, textValue.length);
@@ -552,11 +657,11 @@ class Merchant {
 				const packagingInput = this.current.qs('.merchant-field[data-property="packaging"] input');
 				return (
 					(packagingInput !== null && packagingInput.value !== '') ||
-					this.isUnitInteger()
+					this.isNumberDefault()
 				);
 
 			case 'packaging' :
-				return this.isUnitInteger();
+				return this.isNumberDefault();
 
 			default :
 				return false;

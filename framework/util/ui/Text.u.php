@@ -350,18 +350,28 @@ class TextUi {
 
 	}
 
-	public static function number(int|float|null $number, ?int $precision = NULL): ?string {
+	public static function number(int|float|null $number, int|string|null $precision = 'auto'): ?string {
 
 		if($number === NULL) {
 			return NULL;
 		}
 
-		$precision ??= is_int($number) ? 0 : 2;
+		if($precision === 'auto') {
+			$precision = is_int($number) ? 0 : 2;
+		}
 
 		$numberFormatter = new \NumberFormatter(\L::getLang(), \NumberFormatter::DECIMAL);
-		$numberFormatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, $precision);
 
-		return $numberFormatter->format(round($number, $precision));
+		if($precision !== NULL) {
+
+			$numberFormatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, $precision);
+			$formattedNumber = round($number, $precision);
+
+		} else {
+			$formattedNumber = $number;
+		}
+
+		return $numberFormatter->format($formattedNumber);
 
 	}
 

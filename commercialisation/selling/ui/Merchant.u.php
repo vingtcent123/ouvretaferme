@@ -27,11 +27,16 @@ class MerchantUi {
 		};
 
 		$format = fn($property, $value, $defaultPrecision = 2) => match($defaultPrecision) {
-			0 => ($value or $property === Item::UNIT_PRICE) ? $value : '-',
+			0 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, NULL) : '-',
 			2 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, 2) : '-,--'
 		};
 
-		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide" data-unit-integer="'.($eItem['unit']->isInteger() ? '1' : '0').'" data-item="'.$eItem['id'].'">';
+		$unitInteger = match($eSale['farm']->getSelling('marketSaleDefaultDecimal')) {
+			Configuration::NUMBER => '1',
+			Configuration::PRICE => ($eItem['unit']['approximate'] ? '0' : '1')
+		};
+
+		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide" data-number-default="'.$unitInteger.'" data-item="'.$eItem['id'].'">';
 			$h .= '<div class="merchant-background" onclick="Merchant.hide()"></div>';
 			$h .= '<div class="merchant-content">';
 

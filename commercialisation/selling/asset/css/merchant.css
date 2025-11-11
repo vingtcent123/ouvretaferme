@@ -318,6 +318,15 @@ body[data-touch="no"] .merchant-keyboard {
 	border-radius: var(--radius);
 }
 
+[data-number-default="1"]:has(a[data-property="number"].selected) .merchant-digit-00 {
+	display: none;
+}
+
+[data-number-default="1"]:has(a[data-property="number"]:not(.selected)) .merchant-digit-comma,
+[data-number-default="0"] .merchant-digit-comma {
+	display: none;
+}
+
 @keyframes digitHighlight {
 	 0% { background: var(--muted); }
 	 100% { background: white; }

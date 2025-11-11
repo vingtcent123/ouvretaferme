@@ -12,6 +12,9 @@ abstract class ConfigurationElement extends \Element {
 	const PRO = 'pro';
 	const DISABLED = 'disabled';
 
+	const NUMBER = 'number';
+	const PRICE = 'price';
+
 	public static function getSelection(): array {
 		return Configuration::model()->getProperties();
 	}
@@ -65,11 +68,12 @@ class ConfigurationModel extends \ModuleModel {
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'marketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
+			'marketSaleDefaultDecimal' => ['enum', [\selling\Configuration::NUMBER, \selling\Configuration::PRICE], 'cast' => 'enum'],
 			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'pdfNaturalOrder'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder'
 		]);
 
 		$this->propertiesToModule += [
@@ -117,6 +121,9 @@ class ConfigurationModel extends \ModuleModel {
 			case 'invoicePrefix' :
 				return \selling\ConfigurationUi::getDefaultInvoicePrefix();
 
+			case 'marketSaleDefaultDecimal' :
+				return Configuration::PRICE;
+
 			case 'pdfNaturalOrder' :
 				return FALSE;
 
@@ -132,6 +139,9 @@ class ConfigurationModel extends \ModuleModel {
 		switch($property) {
 
 			case 'documentTarget' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'marketSaleDefaultDecimal' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -243,6 +253,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereMarketSalePaymentMethod(...$data): ConfigurationModel {
 		return $this->where('marketSalePaymentMethod', ...$data);
+	}
+
+	public function whereMarketSaleDefaultDecimal(...$data): ConfigurationModel {
+		return $this->where('marketSaleDefaultDecimal', ...$data);
 	}
 
 	public function wherePdfNaturalOrder(...$data): ConfigurationModel {

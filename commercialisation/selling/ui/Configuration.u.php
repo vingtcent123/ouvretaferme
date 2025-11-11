@@ -92,7 +92,7 @@ class ConfigurationUi {
 				$h .= $form->group(content: '<h3>'.s("Certification").'</h3>');
 				$h .= $form->dynamicGroups($eConfiguration, ['organicCertifier']);
 				$h .= $form->group(content: '<h3>'.s("Autres").'</h3>');
-				$h .= $form->dynamicGroups($eConfiguration, ['documentCopy', 'paymentMode', 'pdfNaturalOrder']);
+				$h .= $form->dynamicGroups($eConfiguration, ['documentCopy', 'paymentMode', 'pdfNaturalOrder', 'marketSaleDefaultDecimal']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -426,6 +426,7 @@ class ConfigurationUi {
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
 			'documentCopy' => s("Recevoir une copie sur l'adresse e-mail de la ferme des devis, bons de livraisons et factures que vous envoyez aux clients"),
 			'pdfNaturalOrder' => s("Trier les commandes et les étiquettes exportées en PDF pour faciliter la découpe"),
+			'marketSaleDefaultDecimal' => s("Quel valeur voulez-vous saisir par défaut dans le logiciel de caisse pour les produits vendus au poids ?"),
 		]);
 
 		switch($property) {
@@ -491,6 +492,16 @@ class ConfigurationUi {
 				$d->field = 'yesNo';
 				$d->labelAfter = \util\FormUi::info(s("Les étiquettes devront être coupées empilées après impression et déposées l'une sur l'autre du coin haut gauche au coin bas droite des feuilles pour conserver le tri"));
 				break;
+
+			case 'marketSaleDefaultDecimal' :
+
+				$d->values = [
+					Configuration::NUMBER => s("Saisir la quantité par défaut"),
+					Configuration::PRICE => s("Saisir le prix par défaut")
+				];
+
+				break;
+
 
 			case 'documentTarget' :
 
