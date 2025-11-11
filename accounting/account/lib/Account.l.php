@@ -87,7 +87,7 @@ class AccountLib extends AccountCrud {
 			Account::model()->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->get('classPrefixes'));
 		}
 		return Account::model()
-      ->select(
+			->select(
         ['name' => new \Sql('CONCAT(class, ". ", description)')]
         + Account::getSelection()
         + ['vatAccount' => ['class', 'vatRate', 'description']]

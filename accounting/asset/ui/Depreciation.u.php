@@ -47,7 +47,7 @@ Class DepreciationUi {
 
 		if($depreciation['id'] !== NULL and $depreciation['id'] !== '') {
 
-			$link = \company\CompanyUi::urlAsset($eFarm).'/:view?id='.$depreciation['id'];
+			$link = \company\CompanyUi::urlAsset($eFarm).'/'.$depreciation['id'].'/';
 			$description = '<a href="'.$link.'">'.encode($depreciation['description']).'</a>';
 			$id = '<a href="'.$link.'">'.encode($depreciation['id']).'</a>';
 

@@ -334,8 +334,8 @@ Class AssetUi {
 				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
 				$h .= '<dt>'.s("Statut").'</dt>';
 				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
-				$h .= '<dt>'.s("Durée (en années)").'</dt>';
-				$h .= '<dd>'.p("{value} an" ,"{value} ans", $eAsset['duration']).'</dd>';
+				$h .= '<dt>'.s("Durée (en mois)").'</dt>';
+				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).'</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -444,7 +444,7 @@ Class AssetUi {
 							$h .= '<th class="text-center">'.s("Exercice").'</th>';
 							$h .= '<th class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
 
-								if($eAsset['type'] === Asset::DEGRESSIVE) {
+								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
 									$h .= '<th class="text-center">'.s("Taux linéaire").'</th>';
 									$h .= '<th class="text-center">'.s("Taux dégressif").'</th>';
@@ -472,7 +472,7 @@ Class AssetUi {
 									$h .= \util\TextUi::money($period['base']);
 								$h .= '</td>';
 
-								if($eAsset['type'] === Asset::DEGRESSIVE) {
+								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
 									$h .= '<td class="text-center">';
 										$h .= s("{value} %", $period['linearRate']);
