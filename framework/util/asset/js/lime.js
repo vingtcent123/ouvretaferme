@@ -19,7 +19,7 @@ if('scrollRestoration' in history) { // what an amazing feature!
 }
 
 function calculateScreenWidth() {
-  document.documentElement.style.setProperty('--screen-width', document.documentElement.clientWidth + 'px');
+  document.documentElement.style.setProperty('--screen-width', (document.documentElement.clientWidth - 1) + 'px');
 }
 
 calculateScreenWidth();
