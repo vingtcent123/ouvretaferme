@@ -55,7 +55,7 @@ Operation:
   vatAccount: ?account\Account
   # Opération à laquelle celle-ci est liée (ex: opération de TVA reliée à une autre opération)
   operation: ?journal\Operation
-  # Immobilisation à laquelle cette opération est liée (obligatoire pour une classe 2)
+  # Immobilisation à laquelle cette opération est liée (obligatoire pour une classe 2 ou 13)
   asset: ?asset\Asset
   comment: ?text8(1, null)
   paymentDate: ?date

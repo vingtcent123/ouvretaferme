@@ -27,11 +27,14 @@ new Page(function($data) {
 
 	$query = POST('query');
 	$thirdParty = POST('thirdParty', '?int');
-	$classPrefix = REQUEST('classPrefix');
 	$accountsAlreadyUsed = POST('accountAlready', 'array', []);
 	$stock = POST('stock', '?int');
 	
-	$data->search = new Search(['classPrefix' => $classPrefix]);
+	$data->search = new Search([
+		'classPrefix' => GET('classPrefix'),
+		'classPrefixes' => GET('classPrefixes', 'array')
+	]);
+
 	if($stock) {
 		$eAccountStock = \account\AccountLib::getById($stock);
 		if($eAccountStock->notEmpty()) {

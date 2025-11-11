@@ -45,7 +45,13 @@ new AdaptativeView('/asset/depreciation', function($data, FarmTemplate $t) {
 			echo '</div>';
 
 			echo '<div class="tab-panel" data-tab="depreciation-subvention">';
-				echo \asset\DepreciationUi::getDepreciationTable($data->eFarm, $data->subventionDepreciations);
+				if(count($data->subventionDepreciations) > 0) {
+					echo \asset\DepreciationUi::getDepreciationTable($data->eFarm, $data->subventionDepreciations);
+				} else {
+					echo '<div class="util-info">';
+						echo s("Il n'y a aucun amortissement à afficher.");
+					echo '</div>';
+				}
 			echo '</div>';
 
 		echo '</div>';

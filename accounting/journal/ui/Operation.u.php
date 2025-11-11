@@ -83,7 +83,6 @@ class OperationUi {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
-		\Asset::js('journal', 'asset.js');
 		\Asset::js('account', 'thirdParty.js');
 
 		if($eCashflow->notEmpty()) {
@@ -678,7 +677,6 @@ class OperationUi {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
-		\Asset::js('journal', 'asset.js');
 		\Asset::js('account', 'thirdParty.js');
 
 		$dialogOpen = '';
@@ -713,28 +711,6 @@ class OperationUi {
 				['link' => '<a href="'.\company\CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" target="_blank">']);
 		$h .= '</div>';
 		$h .= '<div>';
-
-		$h .= '<div class="util-block-help hide" data-help="grant">';
-			$h .= '<h4>'.s("Quelques précisions sur les immobilisations").'</h4>';
-			$h .= '<p>'.s("En règle générale, les durées sont de :").'</p>';
-			$h .= '<ul>';
-				$h .= '<li>'.s('5 ans pour un montant < 1 000 € (petites aides à effet immédiat)').'</li>';
-				$h .= '<li>'.s('7 ans pour un montant compris entre 1 000 € et 10 000 € (aide intermédiaire)').'</li>';
-				$h .= '<li>'.s('10 ans pour un montant > 10 000 € (durée recommandée par défaut)').'</li>';
-			$h .= '</ul>';
-		$h .= '</div>';
-
-		$h .= '<div class="util-block-help hide" data-help="grant">';
-			$h .= '<h4>'.s("Quelques précisions sur les subventions").'</h4>';
-			$h .= '<p>'.s("La durée de la subvention est équivalente à celle de l'immobilisation liée.").'</p>';
-			$h .= '<p>'.s("Si aucune suvention n'est liée, voici quelques indications pour la durée de l'utilisation comptable de la subvention :").'</p>';
-			$h .= '<ul>';
-				$h .= '<li>'.s('5 à 10 ans pour du matériel agricole (compte 2153)').'</li>';
-				$h .= '<li>'.s('4 à 7 ans pour du matériel de transport (compte 2154)').'</li>';
-				$h .= '<li>'.s('15 à 25 ans pour des constructions agricoles (compte 2132)').'</li>';
-				$h .= '<li>'.s('sans amortissement pour les terrains (compte 212)').'</li>';
-			$h .= '</ul>';
-		$h .= '</div>';
 
 			$h .= '<div style="display: flex;">';
 
@@ -805,24 +781,11 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('thirdParty')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="operation-create-header">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('comment')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.s("Montant TTC").'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
-
-			$h .= '<div class="operation-asset" data-is-asset="1">';
-				$h .= '<h4>'.s("Immobilisation").'</h4>';
-			$h .= '</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1">';
-				$h .= \asset\AssetUi::p('type')->label.' '.\util\FormUi::asterisk();
-			$h .= '</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1" data-asset-link="grant">'.\asset\AssetUi::p('grant')->label.'</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1" data-asset-link="asset">'.\asset\AssetUi::p('asset')->label.'</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('acquisitionDate')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('startDate')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('value')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-asset" data-is-asset="1">'.\asset\AssetUi::p('duration')->label.' '.\util\FormUi::asterisk().'</div>';
-
 			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
 
 			if($eFinancialYear['hasVat']) {
@@ -891,7 +854,6 @@ class OperationUi {
 		\Collection $cPaymentMethod,
 	): string {
 
-		\Asset::js('journal', 'asset.js');
 		\Asset::js('journal', 'operation.js');
 
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
@@ -961,16 +923,28 @@ class OperationUi {
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="account'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'account'.$suffix, function($d) use($form, $index, $disabled, $suffix) {
-					$d->autocompleteDispatch = '[data-account="'.$form->getId().'"][data-index="'.$index.'"]';
-					$d->attributes['data-wrapper'] = 'account'.$suffix;
-					$d->attributes['data-index'] = $index;
-					if(in_array('account', $disabled) === TRUE) {
-						$d->attributes['disabled'] = TRUE;
-					}
-					$d->attributes['data-account'] = $form->getId();
-					$d->label .=  ' '.\util\FormUi::asterisk();
-				});
+				$h .= '<div class="operation_group-input">';
+					$h .= $form->dynamicField($eOperation, 'account'.$suffix, function($d) use($form, $index, $disabled, $suffix) {
+						$d->autocompleteDispatch = '[data-account="'.$form->getId().'"][data-index="'.$index.'"]';
+						$d->attributes['data-wrapper'] = 'account'.$suffix;
+						$d->attributes['data-index'] = $index;
+						if(in_array('account', $disabled) === TRUE) {
+							$d->attributes['disabled'] = TRUE;
+						}
+						$d->attributes['data-account'] = $form->getId();
+						$d->label .=  ' '.\util\FormUi::asterisk();
+					});
+					$h .= '<div data-account="asset-create" class="hide" data-index="'.$index.'">';
+						$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true" href="'.\company\CompanyUi::urlAsset($eFarm).'/asset:create">';
+							$h .= \Asset::icon('house-add');
+						$h .= '</a>';
+						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+							$h .= '<span class="dropdown-item">';
+								$h .= s("Créer une nouvelle immobilisation");
+							$h .= '</span>';
+						$h .= '</div>';
+					$h .= '</div>';
+				$h .='</div>';
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="accountLabel'.$suffix.'">';
@@ -979,6 +953,16 @@ class OperationUi {
 					$d->attributes['data-wrapper'] = 'accountLabel'.$suffix;
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-account-label'] = $form->getId();
+					$d->label .=  ' '.\util\FormUi::asterisk();
+				});
+			$h .='</div>';
+
+			$h .= '<div data-wrapper="asset'.$suffix.'">';
+				$h .= $form->dynamicField($eOperation, 'asset'.$suffix, function($d) use($form, $index, $suffix) {
+					$d->autocompleteDispatch = '[data-asset="'.$form->getId().'"][data-index="'.$index.'"]';
+					$d->attributes['data-wrapper'] = 'asset'.$suffix;
+					$d->attributes['data-index'] = $index;
+					$d->attributes['data-asset'] = $form->getId();
 					$d->label .=  ' '.\util\FormUi::asterisk();
 				});
 			$h .='</div>';
@@ -1020,61 +1004,6 @@ class OperationUi {
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
 				});
 			$h .='</div>';
-
-			$h .= '<div class="operation-asset" data-is-asset="1" data-index="'.$index.'">';
-			$h .='</div>';
-
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[type]" data-is-asset="1" data-index="'.$index.'">';
-				$h .= $form->radios('asset'.$suffix.'[type]', \asset\AssetUi::p('type')->values, '', [
-					'data-index' => $index,
-					'columns' => 3,
-					'mandatory' => TRUE,
-				]);
-			$h .='</div>';
-
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[grant]" data-is-asset="1" data-index="'.$index.'" data-asset-link="grant">';
-			$grants = $cAssetGrant->makeArray(fn($e) => ['value' => $e['id'], 'label' => s("{description} / montant : {amount} / durée : {duration} / date d'obtention : {date}", [
-				'description' => $e['description'],
-				'amount' => \util\TextUi::money($e['value']),
-				'duration' => p('{value} an', '{value} ans', $e['duration']),
-				'date' => \util\DateUi::numeric($e['acquisitionDate'])
-				])]);
-				$h .= $form->select('asset'.$suffix.'[grant]', $grants, NULL, ['placeholder' => s("< Choisir la subvention qui a financé tout ou partie cette immobilisation >")]);
-			$h .='</div>';
-
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[asset]" data-is-asset="1" data-index="'.$index.'" data-asset-link="asset">';
-			$grants = $cAssetToLinkToGrant->makeArray(fn($e) => ['value' => $e['id'], 'label' => s("{description} / date d'acquisition : {date} / valeur : {amount}", [
-				'description' => $e['description'],
-				'amount' => \util\TextUi::money($e['value']),
-				'date' => \util\DateUi::numeric($e['acquisitionDate'])
-				])]);
-				$h .= $form->select('asset'.$suffix.'[asset]', $grants, NULL, ['placeholder' => s("< Choisir l'immobilisation amortissable >")]);
-			$h .='</div>';
-
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[acquisitionDate]" data-is-asset="1" data-index="'.$index.'">';
-				$h .= $form->date('asset'.$suffix.'[acquisitionDate]', '', ['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
-			$h .='</div>';
-
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[startDate]" data-is-asset="1" data-index="'.$index.'">';
-				$h .= $form->date('asset'.$suffix.'[startDate]', '', ['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
-			$h .= '</div>';
-
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[value]" data-is-asset="1" data-index="'.$index.'">';
-				$h .= $form->inputGroup(
-					$form->number(
-						'asset'.$suffix.'[value]',
-						'',
-						[
-							'min' => 0, 'step' => 0.01,
-						]
-					)
-					.$form->addon('€ ')
-				);
-			$h .= '</div>';
-
-			$h .= '<div class="operation-asset" data-wrapper="asset'.$suffix.'[duration]" data-is-asset="1" data-index="'.$index.'">';
-				$h .= '<div>'.$form->number('asset'.$suffix.'[duration]', '').'</div>';
-			$h .= '</div>';
 
 			$h .= '<div data-wrapper="type'.$suffix.'">';
 				$h .= $form->radios('type'.$suffix, self::p('type')->values, $defaultValues['type'] ?? '', [
@@ -1219,13 +1148,6 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>';
 			$h .= '<div class="cashflow-create-operation-validate" data-field="amount"><div><span>=</span><span data-type="value"></span></div></div>';
 
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"><h4></h4></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1" data-field="assetValue"><div><span>=</span><span data-type="value"></span></div></div>';
-			$h .= '<div class="cashflow-create-operation-validate operation-asset" data-is-asset="1"></div>';
-
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 
 			if($hasVat) {
@@ -1362,6 +1284,7 @@ class OperationUi {
 		$d = Operation::model()->describer($property, [
 			'account' => s("Classe de compte"),
 			'accountLabel' => s("Compte"),
+			'asset' => s("Immobilisation liée"),
 			'date' => s("Date de l'opération"),
 			'description' => s("Libellé"),
 			'document' => s("Pièce comptable"),
@@ -1380,7 +1303,6 @@ class OperationUi {
 		switch($property) {
 
 			case 'documentDate' :
-			case 'paymentDate' :
 			case 'date' :
 				$d->prepend = \Asset::icon('calendar-date');
 				break;
@@ -1431,6 +1353,15 @@ class OperationUi {
 				new \account\AccountUi()->queryLabel($d, GET('farm', '?int'), query: GET('query'));
 				break;
 
+			case 'asset':
+				$d->autocompleteBody = function(\util\FormUi $form, Operation $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				new \asset\AssetUi()->query($d, GET('farm', '?int'));
+				break;
+
 			case 'vatValue' :
 				$d->field = 'calculation';
 				$d->append = function(\util\FormUi $form, Operation $e) {
@@ -1467,8 +1398,17 @@ class OperationUi {
 				$d->attributes['data-limit'] = 250;
 				break;
 
-			case 'paymentMethod' :
+			case 'paymentDate' :
+				$d->prepend = \Asset::icon('calendar-date');
+				$d->attributes = function(\util\FormUi $form, Operation $eOperation) use($property) {
+					if($eOperation['financialYear']->isCashAccounting()) {
+						return ['mandatory' => TRUE];
+					}
+					return [];
+				};
+				break;
 
+			case 'paymentMethod' :
 				$d->values = fn(Operation $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
 				$d->attributes = function(\util\FormUi $form, Operation $eOperation) use($property) {
 					if($eOperation['financialYear']->isCashAccounting()) {

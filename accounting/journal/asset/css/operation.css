@@ -1,14 +1,10 @@
 :root {
-	--operation-create-rows: 15;
-	--operation-create-rows-with-asset: 22;
+	--operation-create-rows: 16;
 }
 @supports (grid-template-columns: subgrid) {
 
-	.operation-create-several-container:not(.has-asset) {
+	.operation-create-several-container {
 		grid-template-rows: repeat(var(--operation-create-rows), auto);
-	}
-	.operation-create-several-container.has-asset {
-		grid-template-rows: repeat(var(--operation-create-rows-with-asset), auto);
 	}
 
 }
@@ -60,13 +56,9 @@
 	.operation-create-validation {
 		grid-template-rows: subgrid;
 	}
-	.operation-create-several-container:not(.has-asset) .operation-create,
-	.operation-create-several-container:not(.has-asset) .operation-create-validation {
+	.operation-create-several-container .operation-create,
+	.operation-create-several-container .operation-create-validation {
 		grid-row: span var(--operation-create-rows);
-	}
-	.operation-create-several-container.has-asset .operation-create,
-	.operation-create-several-container.has-asset .operation-create-validation {
-		grid-row: span var(--operation-create-rows-with-asset);
 	}
 }
 .operation-create {
@@ -94,15 +86,6 @@
 
 .operation-asset {
 	background-color: #0001;
-}
-.operation-create-several-container.has-asset .operation-asset {
-	display: flex;
-}
-.operation-create-several-container.has-asset div.operation-create:not(.is-asset):not(.operation-create-headers) div.operation-asset > * {
-	visibility: hidden;
-}
-.operation-create-several-container:not(.has-asset) div.operation-asset {
-	display: none;
 }
 
 .panel-header-content .operation-create-several-container > div:nth-child(2n+1),
@@ -188,10 +171,8 @@
 	border-bottom-left-radius: var(--radius);
 	border-bottom-right-radius: var(--radius);
 }
-#operation-create-list.has-asset .operation-create-validation div.operation-asset div,
-#operation-update-list.has-asset .operation-create-validation div.operation-asset div,
-#operation-create-list .operation-create-validation div:not(.operation-asset) div,
-#operation-update-list .operation-create-validation div:not(.operation-asset) div {
+#operation-create-list .operation-create-validation div div,
+#operation-update-list .operation-create-validation div div {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;

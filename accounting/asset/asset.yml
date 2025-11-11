@@ -4,30 +4,25 @@ Asset:
   accountLabel: text8(1, null) @collate(general)
   # Valeur d'acquisition
   value: decimal(8, 2, 0, null)
+  # Base amortissable
+  depreciableBase: decimal(8, 2, 0, null)
   description: text8(1, null) @collate(general)
-  type: ?enum(LINEAR, WITHOUT, DEGRESSIVE) # linéaire, pas, dégressif
+  economicMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
+  economicDuration: int(0, null) # en mois
+  fiscalMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
+  fiscalDuration: int(0, null) # en mois
   # Date d'achat
   acquisitionDate: date
   # Date de mise en service (= début de l'amortissement si linéaire), null si type grant
   startDate: ?date
   # Date de fin d'amortissement (calculé)
   endDate: date
-  # Durée en années
-  duration: int8(0, null)
   status: enum(ONGOING, SOLD, SCRAPPED, ENDED) = ONGOING
   # Si l'immo a été en partie financée par une sub, lien vers cette sub
   grant: ?asset\Asset
   # Si la subvention a été utilisée sur une immo, lien vers cette immo
   asset: ?asset\Asset
   isGrant: bool = false
-  # Infos supplémentaires pour les amortissements dérogatoires
-  taxDuration: ?int8(0, null)
-  taxValue: ?decimal(8, 2, 0, null)
-  derogationTotalAmount: ?decimal(8, 2, 0, null)
-  alreadyDerogatedAmount: ?decimal(8, 2, 0, null)
-  derogatoryAllocation: ?decimal(8, 2, 0, null)
-  possibleRecovery: ?decimal(8, 2, 0, null)
-  taxJustification: ?text(0, null)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

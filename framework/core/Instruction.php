@@ -343,7 +343,7 @@ class QuerySelectorInstruction implements Instruction {
 	}
 
 	/**
-	 * Scroll to to something
+	 * Scroll to do something
 	 */
 	public function scrollTo(string $block = 'start', string $behavior = 'auto'): self {
 		$this->instructions[] = ['scrollTo', [$block, $behavior]];

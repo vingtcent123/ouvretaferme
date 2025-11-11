@@ -490,6 +490,7 @@ class OperationLib extends OperationCrud {
 		$properties = [
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
+			'asset',
 		];
 		if($eFinancialYear['hasVat']) {
 			$properties[] = 'vat';
@@ -639,17 +640,6 @@ class OperationLib extends OperationCrud {
 			$fw->validate();
 
 			$eOperation['journalCode'] = \account\AccountLib::getJournalCodeByClass($eOperation['accountLabel']);
-
-			if($for === 'create') {
-
-				// Immo : vérification et création
-				$eAsset = \asset\AssetLib::prepareAsset($eOperation, $input['asset'][$index] ?? [], $index);
-
-				$fw->validate();
-
-				$eOperation['asset'] = $eAsset;
-
-			}
 
 			if($for === 'create') {
 

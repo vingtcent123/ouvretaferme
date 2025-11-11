@@ -1,3 +1,49 @@
+document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="asset-asset-create"], [data-account-label="asset-asset-update"]', function(e) {
+
+    if(e.detail.input.firstParent('form').qs('[name^="account"]') !== null) {
+        const account = e.detail.input.firstParent('form').qs('[name^="account"]').getAttribute('value');
+        e.detail.body.append('account', account);
+    }
+
+});
+
+document.delegateEventListener('autocompleteSource', '[data-account-label="asset-asset-create"], [data-account-label="asset-asset-update"]', function(e) {
+
+    if(e.detail.results.length === 1 && e.target.value.length === 0) {
+        const inputElement = qs('[data-wrapper="accountLabel"] input');
+        AutocompleteField.apply(inputElement, e.detail.results[0]);
+    }
+
+});
+
+document.delegateEventListener('change', '[data-wrapper="value-calculation"] input', function() {
+    const targetDepreciableBase = qs('[name="depreciableBase"]');
+    const depreciableBase = CalculationField.getValue(targetDepreciableBase);
+
+    if(isNaN(depreciableBase)) {
+        const targetValue = qs('[name="value"]');
+        const value = CalculationField.getValue(targetValue);
+        CalculationField.setValue(targetDepreciableBase, value);
+    }
+});
+
+document.delegateEventListener('change', '[data-field="economicMode"]', function() {
+
+    const selectedEconomicMode = qs('[name="economicMode"]:checked').value;
+    if(qs('[name="fiscalMode"]:checked') === null) {
+        qs('[name="fiscalMode"][value="' + selectedEconomicMode + '"]').checked = true;
+    }
+
+});
+
+document.delegateEventListener('change', '[name="economicDuration"]', function() {
+
+    if(!qs('[name="fiscalDuration"]').value) {
+        qs('[name="fiscalDuration"]').value = qs('[name="economicDuration"]').value;
+    }
+
+});
+
 class Asset {
 
     static onchangeStatus(element) {

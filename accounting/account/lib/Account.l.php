@@ -83,6 +83,9 @@ class AccountLib extends AccountCrud {
 
 	public static function getAll(?\Search $search = new \Search(), string $query = ''): \Collection {
 
+		if($search->get('classPrefixes')) {
+			Account::model()->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->get('classPrefixes'));
+		}
 		return Account::model()
       ->select(
         ['name' => new \Sql('CONCAT(class, ". ", description)')]

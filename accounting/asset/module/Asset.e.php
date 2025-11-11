@@ -41,19 +41,13 @@ class Asset extends AssetElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('startDate.empty', function(?string $startDate): bool {
+			/*->setCallback('startDate.empty', function(?string $startDate): bool {
 
 				$this->expects(['type']);
 
 				return in_array($this['type'], [Asset::LINEAR, Asset::DEGRESSIVE]) ? $startDate !== NULL : TRUE;
 
-			})
-			->setCallback('accountLabel.check', function(?string $accountLabel): bool {
-
-				return \account\ClassLib::isFromClass($accountLabel, \account\AccountSetting::ASSET_GENERAL_CLASS)
-					or \account\ClassLib::isFromClass($accountLabel, \account\AccountSetting::GRANT_ASSET_CLASS);
-
-			})
+			})*/
 			->setCallback('account.check', function(?\account\Account $eAccount): bool {
 
 				$eAccount = \account\AccountLib::getById($eAccount['id']);
@@ -62,20 +56,31 @@ class Asset extends AssetElement {
 					or \account\ClassLib::isFromClass($eAccount['class'], \account\AccountSetting::GRANT_ASSET_CLASS));
 
 			})
-			->setCallback('account.consistency', function(?\account\Account $eAccount): bool {
+			->setCallback('account.consistency', function(?\account\Account $eAccount) use($p): bool {
 
-				$this->expects(['accountLabel']);
+				if($p->isBuilt('accountLabel') === FALSE) {
+					return TRUE;
+				}
+
 				$eAccount = \account\AccountLib::getById($eAccount['id']);
 
 				return mb_substr($eAccount['class'], 0, 2) === mb_substr($this['accountLabel'], 0, 2);
 
 			})
-			->setCallback('type.consistency', function(?string $type): bool {
+			->setCallback('accountLabel.check', function(?string $accountLabel): bool {
 
-				$this->expects(['accountLabel']);
+				return \account\ClassLib::isFromClass($accountLabel, \account\AccountSetting::ASSET_GENERAL_CLASS)
+					or \account\ClassLib::isFromClass($accountLabel, \account\AccountSetting::GRANT_ASSET_CLASS);
+
+			})
+			->setCallback('type.consistency', function(?string $type) use($p): bool {
+
+				if($p->isBuilt('accountLabel') === FALSE) {
+					return TRUE;
+				}
 
 				if(\account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS)) {
-					return $type === NULL or in_array($type, [Asset::WITHOUT, Asset::GRANT_RECOVERY]);
+					return $type === NULL or in_array($type, [Asset::WITHOUT]);
 				}
 
 				if(\account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::ASSET_GENERAL_CLASS)) {
@@ -85,28 +90,37 @@ class Asset extends AssetElement {
 				return FALSE;
 
 			})
-			->setCallback('grant.check', function(?Asset $eAsset): bool {
+			->setCallback('depreciableBase.check', function(float $depreciableBase) use($p): bool {
 
-				if($eAsset->empty()) {
+				if($p->isBuilt('value') === FALSE) {
 					return TRUE;
 				}
 
-				$this->expects(['accountLabel']);
+				return($this['value'] >= $depreciableBase);
+
+			})
+			/*->setCallback('grant.check', function(?Asset $eAsset) use($p): bool {
+
+				if($eAsset->empty() or $p->isBuilt('accountLabel') === FALSE) {
+					return TRUE;
+				}
+
+				$this->expects(['accountLabel', 'type']);
 
 				$eAsset = AssetLib::getById($eAsset['id']);
 
-				return ($eAsset['type'] === NULL or $eAsset['type'] === Asset::GRANT_RECOVERY)
+				return ($eAsset['type'] === NULL)
 					and $eAsset['asset']->empty()
 					and \account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::ASSET_GENERAL_CLASS);
 
 			})
-			->setCallback('asset.check', function(?Asset $eAsset): bool {
+			->setCallback('asset.check', function(?Asset $eAsset) use($p): bool {
 
-				if($eAsset->empty()) {
+				if($eAsset->empty() or $p->isBuilt('accountLabel') === FALSE) {
 					return TRUE;
 				}
 
-				$this->expects(['accountLabel']);
+				$this->expects(['accountLabel', 'type']);
 
 				$eAsset = AssetLib::getById($eAsset['id']);
 
@@ -114,7 +128,7 @@ class Asset extends AssetElement {
 					and $eAsset['grant']->empty()
 					and \account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS);
 
-			})
+			})*/
 			;
 		parent::build($properties, $input, $p);
 	}

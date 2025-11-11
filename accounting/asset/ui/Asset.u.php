@@ -6,6 +6,7 @@ Class AssetUi {
 	public function __construct() {
 		\Asset::css('company', 'company.css');
 		\Asset::css('asset', 'asset.css');
+		\Asset::js('asset', 'asset.js');
 	}
 
 	public function getAssetShortTranslation(): string {
@@ -56,6 +57,89 @@ Class AssetUi {
 
 	}
 
+	public function create(\farm\Farm $eFarm, Asset $eAsset = new Asset()): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax(\company\CompanyUi::urlAsset($eFarm).'/asset:doCreate', ['id' => 'asset-asset-create', 'autocomplete' => 'off']);
+
+		$h .= $form->asteriskInfo();
+
+		$h .= $form->dynamicGroups($eAsset, ['description*']);
+
+		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset) {
+			$d->autocompleteDispatch = '[data-account="'.$form->getId().'"]';
+			$d->attributes['data-wrapper'] = 'account';
+			$d->attributes['data-account'] = $form->getId();
+			$d->autocompleteDefault = $eAsset['account'];
+		}, 'accountLabel*' => function($d) use($form) {
+			$d->autocompleteDispatch = '[data-account-label="'.$form->getId().'"]';
+			$d->attributes['data-account-label'] = $form->getId();
+		}]);
+
+		$h .= $form->dynamicGroups($eAsset, ['value*', 'depreciableBase*', 'acquisitionDate*', 'startDate*']);
+		$h .= '<h3>'.s("Amortissement économique").'</h3>';
+		$h .= '<div class="util-block bg-background-light">';
+			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration*']);
+		$h .= '</div>';
+
+		$h .= '<h3>'.s("Amortissement fiscal").'</h3>';
+		$h .= '<div class="util-block bg-background-light">';
+			$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration*']);
+		$h .= '</div>';
+
+		$h .= $form->group(
+			content: $form->submit(s("Créer l'immobilisation"))
+		);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-asset-create',
+			title: s("Ajouter une immobilisation"),
+			body: $h,
+			close: 'passthrough',
+		);
+
+	}
+
+	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE, array $query = []): void {
+
+		$d->prepend = \Asset::icon('house');
+		$d->field = 'autocomplete';
+
+		$d->placeholder ??= s("Commencez à saisir l'immobilisation...");
+		$d->multiple = $multiple;
+
+		$d->autocompleteUrl = \company\CompanyUi::urlAsset($farm).'/asset:query?'.http_build_query($query);
+		$d->autocompleteResults = function(Asset $e) use ($farm) {
+			return self::getAutocomplete($farm, $e);
+		};
+
+	}
+
+	public static function getAutocomplete(int $farm, Asset $eAsset, \Search $search = new \Search()): array {
+
+		\Asset::css('media', 'media.css');
+
+		$itemHtml = '<div>';
+			$itemHtml .= encode($eAsset['accountLabel'].' ' .$eAsset['description']);
+			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Date d'acquisition : {value}", \util\DateUi::numeric($eAsset['acquisitionDate'])).'</div>';
+			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Valeur : {value} / Base amortissable : {base}", ['value' => \util\TextUi::money($eAsset['value']), 'base' => \util\TextUi::money($eAsset['depreciableBase'])]).'</div>';
+		$itemHtml .= '</div>';
+
+		return [
+			'value' => $eAsset['id'],
+			'description' => $eAsset['description'],
+			'farm' => $farm,
+			'itemHtml' => $itemHtml,
+			'itemText' => $eAsset['accountLabel'].' '.$eAsset['description']
+		];
+
+	}
+
 	public function getAcquisitionTable(\Collection $cAsset, string $type): string {
 
 		if($cAsset->empty() === TRUE) {
@@ -73,7 +157,7 @@ Class AssetUi {
 						$h .= '<th class="" rowspan="2">'.s("Compte").'</th>';
 						$h .= '<th class="" rowspan="2">'.s("Désignation").'</th>';
 						$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en années)").'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Date").'</th>';
 						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur").'</th>';
 					$h .= '</tr>';
@@ -98,19 +182,19 @@ Class AssetUi {
 							$h .= '</td>';
 							$h .= '<td>'.encode($eAsset['description']).'</td>';
 							$h .= '<td class="text-center">';
-								$h .= match($eAsset['type']) {
+								$h .= match($eAsset['economicMode']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								$h .= match($eAsset['type']) {
+								$h .= match($eAsset['fiscalMode']) {
 									AssetElement::LINEAR => s("LIN"),
 									AssetElement::WITHOUT => s("SANS"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								$h .= $eAsset['duration'];
+								$h .= $eAsset['economicDuration'];
 							$h .= '</td>';
 							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
 							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['value'], '', 2).'</td>';
@@ -246,8 +330,8 @@ Class AssetUi {
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</dd>';
 				$h .= '<dt>'.s("Valeur d'acquisition").'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
-				$h .= '<dt>'.s("Type d'amortissement").'</dt>';
-				$h .= '<dd>'.AssetUi::p('type')->values[$eAsset['type']].'</dd>';
+				$h .= '<dt>'.s("Type d'amortissement économique").'</dt>';
+				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
 				$h .= '<dt>'.s("Statut").'</dt>';
 				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
 				$h .= '<dt>'.s("Durée (en années)").'</dt>';
@@ -511,10 +595,16 @@ Class AssetUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		$d = \journal\Operation::model()->describer($property, [
+		$d = Asset::model()->describer($property, [
+			'account' => s("Classe de compte"),
 			'accountLabel' => s("Compte"),
 			'value' => s("Valeur (HT)"),
+			'depreciableBase' => s("Base amortissable (HT)"),
 			'type' => s("Type d'amortissement"),
+			'economicMode' => s("Mode économique"),
+			'economicDuration' => s("Durée économique (en mois)"),
+			'fiscalMode' => s("Mode fiscal"),
+			'fiscalDuration' => s("Durée fiscale (en mois)"),
 			'mode' => s("Mode"),
 			'acquisitionDate' => s("Date d'acquisition"),
 			'startDate' => s("Date de mise en service"),
@@ -528,12 +618,40 @@ Class AssetUi {
 
 		switch($property) {
 
+			case 'account':
+				$d->autocompleteBody = function(\util\FormUi $form, Asset $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefixes' => [\account\AccountSetting::ASSET_GENERAL_CLASS, \account\AccountSetting::GRANT_ASSET_CLASS]]);
+				break;
+
+			case 'accountLabel':
+				$d->autocompleteBody = function(\util\FormUi $form, Asset $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'accountLabel'];
+				new \account\AccountUi()->queryLabel($d, GET('farm', '?int'), query: GET('query'));
+				break;
+
 			case 'acquisitionDate' :
 			case 'startDate' :
 				$d->prepend = \Asset::icon('calendar-date');
 				break;
 
+			case 'value':
+			case 'depreciableBase':
+				$d->field = 'calculation';
+				$d->append = function(\util\FormUi $form, Asset $e) {
+					return $form->addon(s("€"));
+				};
+				break;
+
 			case 'type':
+			case 'economicMode':
+			case 'fiscalMode':
 				$d->values = [
 					AssetElement::LINEAR => s("Linéaire"),
 					AssetElement::DEGRESSIVE => s("Dégressif"),

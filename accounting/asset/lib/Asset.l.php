@@ -4,9 +4,25 @@ namespace asset;
 class AssetLib extends \asset\AssetCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['account', 'accountLabel', 'value', 'type', 'description', 'acquisitionDate', 'startDate', 'duration', 'grant', 'asset'];
+		return [
+			'acquisitionDate', 'startDate',
+			'account', 'accountLabel',
+			'value', 'depreciableBase',
+			'economicMode', 'fiscalMode',
+			'description',
+			'duration', 'economicDuration', 'fiscalDuration',
+			'grant', 'asset',
+		];
 	}
 
+	public static function create(Asset $e): void {
+
+		// Calculate endDate
+		$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
+
+		Asset::model()->insert($e);
+
+	}
 	public static function isTangibleAsset(string $account): bool {
 
 		return \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_ASSETS_CLASS);
@@ -55,7 +71,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		return Asset::model()
 			->select(Asset::getSelection())
-			->whereType('IN', [Asset::LINEAR, Asset::DEGRESSIVE])
+			->whereEconomicMode('IN', [Asset::LINEAR, Asset::DEGRESSIVE])
 			->whereIsGrant(FALSE)
 			->whereGrant(NULL)
 			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
@@ -104,58 +120,6 @@ class AssetLib extends \asset\AssetCrud {
 			->whereStatus($status, if: $status !== NULL)
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
-
-	}
-
-	public static function prepareAsset(\journal\Operation $eOperation, array $assetData, int $index): ?Asset {
-
-		$eOperation->expects(['accountLabel']);
-
-		// Ni une immo, ni une sub
-		if(
-			\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::ASSET_GENERAL_CLASS) === FALSE
-			and	\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS) === FALSE
-		) {
-			return NULL;
-		}
-
-		$fw = new \FailWatch();
-
-		$properties = new \Properties('create');
-		$properties->setWrapper(function(string $property) use($index) {
-			return 'asset['.$index.']['.$property.']';
-		});
-		$assetData['account'] = $eOperation['account']['id'];
-		$assetData['accountLabel'] = $eOperation['accountLabel'];
-		$assetData['description'] = $eOperation['description'];
-
-		$isGrant = self::isGrantAsset($eOperation['accountLabel']);
-		$assetData['isGrant'] = $isGrant;
-
-		$eAsset = new Asset();
-		$eAsset->build(['isGrant', 'accountLabel', 'account', 'description', 'value', 'type', 'acquisitionDate', 'startDate', 'duration', 'grant', 'asset'], $assetData);
-
-		if($fw->ko() === TRUE) {
-			return NULL;
-		}
-
-		// Pour les subventions date d'acquisition = date de mise en service
-		if($isGrant) {
-			$eAsset['startDate'] = $eAsset['acquisitionDate'];
-		}
-
-		$eAsset['endDate'] = date('Y-m-d', strtotime($eAsset['startDate'].' + '.$eAsset['duration'].' year - 1 day'));
-
-		Asset::model()->insert($eAsset);
-
-		// On ajoute le lien vers l'immo dans la subvention concernée
-		if($eAsset['grant']->notEmpty()) {
-
-			Asset::model()->update($eAsset['grant'], ['asset' => $eAsset]);
-
-		}
-
-		return $eAsset;
 
 	}
 
@@ -424,6 +388,26 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	public static function getAll(\Search $search): \Collection {
+
+		return Asset::model()
+			->select(Asset::getSelection())
+			->whereAccountLabel($search->get('accountLabel'), if: $search->get('accountLabel'))
+			->whereAccount($search->get('account'), if: $search->get('account') and $search->get('account')->notEmpty())
+			->where('description LIKE "%'.$search->get('query').'%" OR accountLabel LIKE "%'.$search->get('query').'%"', if: $search->get('query'))
+			->sort(['createdAt' => SORT_DESC])
+			->getCollection();
+	}
+
+	public static function isAsset(string $class): bool {
+
+		return (
+			mb_substr($class, 0, mb_strlen(\account\AccountSetting::GRANT_ASSET_CLASS)) === \account\AccountSetting::GRANT_ASSET_CLASS or
+			mb_substr($class, 0, mb_strlen(\account\AccountSetting::ASSET_GENERAL_CLASS)) === (string)\account\AccountSetting::ASSET_GENERAL_CLASS
+		);
+
+	}
+
 	public static function isDepreciable(Asset $eAsset): bool {
 
 		return substr($eAsset['accountLabel'], 0, mb_strlen(\account\AccountSetting::NON_DEPRECIABLE_ASSET_CLASS)) !== \account\AccountSetting::NON_DEPRECIABLE_ASSET_CLASS;
@@ -448,7 +432,6 @@ class AssetLib extends \asset\AssetCrud {
 			->join($assetModel, 'm1.asset = m2.id')
 			->where('m2.status != "'.Asset::ONGOING.'"')
 			->where('m1.status = "'.Asset::ONGOING.'"')
-			->where('m1.type = "'.Asset::GRANT_RECOVERY.'"')
 			->where('m1.asset IS NOT NULL')
 			->where('m1.isGrant = 1')
 			->getCollection();
@@ -611,11 +594,11 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function computeTable(Asset $eAsset): array {
 
-		if($eAsset['type'] === Asset::LINEAR) {
+		if($eAsset['economicMode'] === Asset::LINEAR) {
 
 			return self::computeLinearTable($eAsset);
 
-		} else if($eAsset['type'] === Asset::DEGRESSIVE) {
+		} else if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
 			return self::computeDegressiveTable($eAsset);
 
@@ -634,7 +617,7 @@ class AssetLib extends \asset\AssetCrud {
 	 */
 	private static function computeProrataTemporis(\account\FinancialYear $eFinancialYear, Asset $eAsset): float {
 
-		if($eAsset['type'] === Asset::LINEAR) {
+		if($eAsset['economicMode'] === Asset::LINEAR) {
 
 			$referenceDate = $eAsset['startDate'];
 			$daysFirstMonth = 30 - (int)mb_substr($referenceDate, -2);
@@ -664,7 +647,8 @@ class AssetLib extends \asset\AssetCrud {
 
 	private static function computeLinearTable(Asset $eAsset): array {
 
-		$rate = round(1 / $eAsset['duration'] * 100, 2);
+		$durationInYears = ($eAsset['economicDuration'] / 12);
+		$rate = round(1 / $durationInYears * 100, 2);
 
 		$cFinancialYearAll = \account\FinancialYearLib::getAll();
 
@@ -673,7 +657,7 @@ class AssetLib extends \asset\AssetCrud {
 		$currentDate = $eAsset['startDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
-		for($i = 0; $i <= $eAsset['duration']; $i++) {
+		for($i = 0; $i <= $durationInYears; $i++) {
 
 			$eFinancialYearCurrent = $cFinancialYearAll->find(fn($e) => $e['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
@@ -694,7 +678,7 @@ class AssetLib extends \asset\AssetCrud {
 					case 0:
 						$depreciation = round($eAsset['value'] * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
-					case $eAsset['duration']:
+					case $durationInYears:
 						$depreciation = round($eAsset['value'] - $depreciationCumulated, 2);
 						break;
 					default:
@@ -729,13 +713,13 @@ class AssetLib extends \asset\AssetCrud {
 
 	private static function computeDegressiveTable(Asset $eAsset): array {
 
-		$baseLinearRate = round(1 / $eAsset['duration'] * 100, 2);
+		$baseLinearRate = round(1 / $eAsset['economicDuration'] * 100, 2);
 
-		if($eAsset['duration'] === 3 or $eAsset['duration'] === 4) {
+		if($eAsset['economicDuration'] === 3 or $eAsset['economicDuration'] === 4) {
 
 			$degressiveCoefficient = 1.25;
 
-		} else if($eAsset['duration'] === 5 or $eAsset['duration'] === 6) {
+		} else if($eAsset['economicDuration'] === 5 or $eAsset['economicDuration'] === 6) {
 
 			$degressiveCoefficient = 1.75;
 
@@ -752,10 +736,10 @@ class AssetLib extends \asset\AssetCrud {
 		$currentDate = $eAsset['startDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
-		for($i = 0; $i <= $eAsset['duration']; $i++) {
+		for($i = 0; $i <= $eAsset['economicDuration'] / 12; $i++) {
 
 			$eFinancialYearCurrent = $cFinancialYearAll->find(fn($e) => $e['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
-			$linearRate = round(1 / ($eAsset['duration'] + 1 - $i) * 100, 2);
+			$linearRate = round(1 / ($eAsset['economicDuration'] + 1 - $i) * 100, 2);
 			$degressiveRate = round($baseLinearRate * $degressiveCoefficient, 2);
 
 			$rate = round(max($linearRate, $degressiveRate), 2);
@@ -777,7 +761,7 @@ class AssetLib extends \asset\AssetCrud {
 					case 0:
 						$depreciation = round(($eAsset['value'] - $depreciationCumulated) * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
-					case $eAsset['duration']:
+					case $eAsset['economicDuration']:
 						$depreciation = round(($eAsset['value'] - $depreciationCumulated), 2);
 						break;
 					default:
@@ -808,7 +792,7 @@ class AssetLib extends \asset\AssetCrud {
 			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
 
 		}
-		//dd($eAsset, $table);
+
 		return $table;
 
 	}

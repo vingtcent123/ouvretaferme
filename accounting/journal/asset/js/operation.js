@@ -1,4 +1,4 @@
-document.delegateEventListener('panelClose', '#panel-operation-view', function(e) {
+document.delegateEventListener('panelClose', '#panel-operation-view', function() {
 
     if(qs('body').dataset.touch === 'yes') {
         return;
@@ -7,7 +7,7 @@ document.delegateEventListener('panelClose', '#panel-operation-view', function(e
     qs('body').classList.remove('operation-view-panel-open');
 });
 
-document.delegateEventListener('panelAfterShow', '#panel-operation-view', function(e) {
+document.delegateEventListener('panelAfterShow', '#panel-operation-view', function() {
 
     if(qs('body').dataset.touch === 'yes') {
         return;
@@ -55,6 +55,20 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-account-label="
 
 });
 
+document.delegateEventListener('autocompleteBeforeQuery', '[data-asset="journal-operation-create"], [data-asset="journal-operation-update"], [data-asset="bank-cashflow-allocate"]', function(e) {
+
+    if(e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]') !== null) {
+        const accountLabel = e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]').getAttribute('value');
+        e.detail.body.append('accountLabel', accountLabel);
+    }
+
+    if(e.detail.input.firstParent('div.operation-create').qs('[name^="account["]') !== null) {
+        const account = e.detail.input.firstParent('div.operation-create').qs('[name^="account["]').getAttribute('value');
+        e.detail.body.append('account', account);
+    }
+
+});
+
 document.delegateEventListener('autocompleteSource', '[data-account-label="journal-operation-create"], [data-account-label="journal-operation-update"], [data-account-label="bank-cashflow-allocate"]', function(e) {
 
     if(e.detail.results.length === 1 && e.target.value.length === 0) {
@@ -79,6 +93,26 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
         }
         Operation.updateType(e.detail);
         Operation.refreshVAT(e.detail);
+
+    }
+
+    // Vérifie si on doit créer une immobilisation
+    qs('[data-account="asset-create"][data-index="' + index + '"]').hide();
+
+    const accountClass = e.detail.class;
+    const isGrant = accountClass?.startsWith('13');
+    const isAsset = accountClass?.startsWith('2');
+
+    if(isAsset || isGrant) {
+        const url = new URL('https://example.com' + qs('[data-account="asset-create"][data-index="' + index + '"] a').getAttribute('href'));
+
+        const params = new URLSearchParams(url.search);
+        params.set('account', e.detail.value);
+
+        qs('[data-account="asset-create"][data-index="' + index + '"] a').setAttribute('href', url.pathname + '?' + params.toString());
+
+        qs('[data-account="asset-create"][data-index="' + index + '"]').removeHide();
+
     }
 
     Operation.checkAutocompleteStatus(e);
@@ -121,7 +155,6 @@ document.delegateEventListener('change', '[data-field="amountIncludingVAT"], [da
 
     Operation.lockAmount(this.dataset.field === 'amountIncludingVAT' ? 'amount' : 'amountIncludingVAT', index);
     Operation.updateAmountValue(index, this.dataset.field);
-    Asset.initializeData(index);
 
     Operation.updateVatValue(index);
     Operation.checkVatConsistency(index);

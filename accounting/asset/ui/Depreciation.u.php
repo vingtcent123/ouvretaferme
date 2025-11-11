@@ -24,7 +24,7 @@ Class DepreciationUi {
 
 	private static function getDepreciationLine(\farm\Farm $eFarm, array $depreciation): string {
 
-		$isTotalLine = match($depreciation['type']) {
+		$isTotalLine = match($depreciation['economicMode']) {
 			AssetElement::LINEAR, AssetElement::WITHOUT => FALSE,
 			default => TRUE,
 		};
@@ -66,12 +66,22 @@ Class DepreciationUi {
 					$h .= \util\DateUi::numeric($depreciation['acquisitionDate'], \util\DateUi::DATE);
 				}
 			$h .= '</td>';
+
 			$h .= '<td class="td-min-content">';
-				$h .= match($depreciation['type']) {
-					AssetElement::LINEAR => 'L/L',
-					AssetElement::WITHOUT => 'S/S',
-					default => '',
-				};
+				if($depreciation['economicMode'] and $depreciation['fiscalMode']) {
+
+					$h .= match($depreciation['economicMode']) {
+						AssetElement::LINEAR => 'L',
+						AssetElement::WITHOUT => 'S',
+						default => '',
+					};
+					$h .= '/';
+					$h .= match($depreciation['fiscalMode']) {
+						AssetElement::LINEAR => 'L',
+						AssetElement::WITHOUT => 'S',
+						default => '',
+					};
+				}
 			$h .= '</td>';
 			$h .= '<td>'.encode($depreciation['duration']).'</td>';
 
@@ -152,7 +162,8 @@ Class DepreciationUi {
 				'description' => '',
 				'id' => '',
 				'acquisitionDate' => NULL,
-				'type' => '',
+				'economicMode' => '',
+				'fiscalMode' => '',
 				'duration' => '',
 				'acquisitionValue' => 0,
 				'economic' => [

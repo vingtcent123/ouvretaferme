@@ -19,12 +19,12 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 	public static function computeDepreciationRate(Asset $eAsset) {
 
-		if($eAsset['type'] === Asset::LINEAR) {
-			return 1 / $eAsset['duration'];
+		if($eAsset['economicMode'] === Asset::LINEAR) {
+			return 1 / ($eAsset['economicDuration'] / 12);
 		}
 
 		if($eAsset['type'] === Asset::DEGRESSIVE) {
-			return DepreciationLib::getDegressiveCoefficient($eAsset['duration']) / $eAsset['duration'];
+			return DepreciationLib::getDegressiveCoefficient($eAsset['economicDuration'] / 12) / ($eAsset['economicDuration'] * 12);
 		}
 
 		throw new \NotExpectedAction('Unknown depreciation type.');
@@ -105,7 +105,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 	 */
 	public static function calculateDepreciation(string $startDate, string $endDate, Asset $eAsset): float {
 
-		if(in_array($eAsset['type'], [Asset::LINEAR, Asset::DEGRESSIVE]) === FALSE) {
+		if(in_array($eAsset['economicMode'], [Asset::LINEAR, Asset::DEGRESSIVE]) === FALSE) {
 			return 0.0;
 		}
 
@@ -116,7 +116,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 		$prorata = min(1, $days / 360);
 
-		if ($eAsset['type'] === AssetElement::LINEAR) {
+		if ($eAsset['economicMode'] === AssetElement::LINEAR) {
 
 			// Annuité = $base * $rate
 			return round($base * $rate * $prorata, 2);
@@ -125,20 +125,21 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 		// Si l'amortissement est dégressif, il faut calculer le plus avantageux.
 		$remainingValue = $eAsset['value'];
+		$durationInYears = $eAsset['duration'] / 12;
 
-		for ($currentYear = 1; $currentYear <= $eAsset['duration']; $currentYear++) {
+		for ($currentYear = 1; $currentYear <= $durationInYears; $currentYear++) {
 			$annuity = $remainingValue * $rate;
 
 			// Calcul de l’amortissement linéaire résiduel
-			$linearBase = $eAsset['value'] - (($currentYear - 1) * ($eAsset['value'] / $eAsset['duration']));
-			$linearAnnuity = $linearBase / ($eAsset['duration'] - ($currentYear - 1));
+			$linearBase = $eAsset['value'] - (($currentYear - 1) * ($eAsset['value'] / $durationInYears));
+			$linearAnnuity = $linearBase / ($durationInYears - ($currentYear - 1));
 
 			if ($linearAnnuity > $annuity) {
 				$annuity = $linearAnnuity;
 			}
 
-			if ($currentYear === $eAsset['duration']) {
-				return round($annuity * ($eAsset['duration'] === 1 ? $prorata : 1), 2);
+			if ($currentYear === $durationInYears) {
+				return round($annuity * ($durationInYears === 1 ? $prorata : 1), 2);
 			}
 
 			$remainingValue -= $annuity;
@@ -267,13 +268,14 @@ class DepreciationLib extends \asset\DepreciationCrud {
 				'description' => $eAsset['description'],
 
 				'status' => $eAsset['status'],
-				'type' => $eAsset['type'],
+				'economicMode' => $eAsset['economicMode'],
+				'fiscalMode' => $eAsset['fiscalMode'],
 
 				'acquisitionDate' => $eAsset['acquisitionDate'],
 				'startDate' => $eAsset['startDate'],
 				'endDate' => $eAsset['endDate'],
 
-				'duration' => $eAsset['duration'],
+				'duration' => $eAsset['economicDuration'],
 
 				'acquisitionValue' => $eAsset['value'],
 
