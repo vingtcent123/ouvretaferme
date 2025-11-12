@@ -15,19 +15,17 @@ class ShopProduct {
 			let idsCollection = '';
 
 			selection.forEach(node => {
-
 				idsCollection += '&products[]='+ node.value;
-
 			});
 
-			qs(
+			qsa(
 				'.batch-menu-relation',
-				node => {
-
-					node.removeHide();
-					node.setAttribute('href', node.dataset.url + idsCollection);
-
-				}
+				selection.filter('[data-batch~="not-relation"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+						node.setAttribute('href', node.dataset.url + idsCollection);
+					}
 			);
 
 		});

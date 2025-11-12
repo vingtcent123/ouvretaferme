@@ -901,8 +901,8 @@ class ProductUi {
 								}
 								if($canAction) {
 									$h .= '<th class="td-min-content">';
-										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
-										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce groupe ? Les produits actuellement dans le groupe resteront dans le catalogue.").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-secondary">'.\Asset::icon('gear-fill').'</a> ';
+										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce groupe ? Les produits actuellement dans le groupe resteront dans le catalogue.").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
 									$h .= '</th>';
 								}
 							$h .= '</tr>';
@@ -954,7 +954,7 @@ class ProductUi {
 				$h .= '<td class="shop-product-group-first td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
 					if($canUpdate) {
 						$h .= '<label>';
-							$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
+							$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()" data-batch="'.$this->getProductBatch($eProduct).'"/>';
 						$h .= '</label>';
 					}
 				$h .= '</td>';
@@ -1128,8 +1128,8 @@ class ProductUi {
 								if($eCatalog->canWrite()) {
 
 									$h .= '<td class="td-min-content">';
-										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a> ';
-										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-outline-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce groupe ? Les produits actuellement dans le groupe resteront dans le catalogue.").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
+										$h .= '<a href="/shop/product:update?id='.$eProduct['id'].'" class="btn btn-secondary">'.\Asset::icon('gear-fill').'</a> ';
+										$h .= '<a data-ajax="/shop/product:doDelete" class="btn btn-secondary" data-confirm="'.s("Voulez-vous vraiment supprimer ce groupe ? Les produits actuellement dans le groupe resteront dans le catalogue.").'" post-id="'.$eProduct['id'].'">'.\Asset::icon('trash-fill').'</a>';
 									$h .= '</td>';
 
 								}
@@ -1176,7 +1176,7 @@ class ProductUi {
 			if($eCatalog->canWrite()) {
 				$h .= '<td class="shop-product-group-first td-checkbox" rowspan="'.($hasLimits ? 2 : 1).'">';
 					$h .= '<label>';
-						$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()"/>';
+						$h .= '<input type="checkbox" name="batch[]" value="'.$eProduct['id'].'" oninput="ShopProduct.changeSelection()" data-batch="'.$this->getProductBatch($eProduct).'"/>';
 					$h .= '</label>';
 				$h .= '</td>';
 			} else {
@@ -1241,6 +1241,23 @@ class ProductUi {
 		}
 
 		return $h;
+
+	}
+
+	public function getProductBatch(Product $eProduct): string {
+
+		$eProduct->expects(['child']);
+
+		$batch = [];
+
+		if(
+			$eProduct->acceptRelation() === FALSE or
+			$eProduct['child']
+		) {
+			$batch[] = 'not-relation';
+		}
+
+		return implode(' ', $batch);
 
 	}
 

@@ -153,9 +153,9 @@ class ProductLib extends ProductCrud {
 	public static function excludeExisting(Date|Catalog $e, \Collection $cProductSelling): void {
 
 		if($e instanceof Date) {
-			$cProduct = self::getColumnByDate($e, 'product');
+			$cProduct = self::getColumnByDate($e, 'product', withParent: FALSE);
 		} else {
-			$cProduct = self::getColumnByCatalog($e, 'product');
+			$cProduct = self::getColumnByCatalog($e, 'product', withParent: FALSE);
 		}
 
 		if($cProduct === []) {
@@ -222,7 +222,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getColumnByDate(Date $eDate, string $column, ?\Closure $apply = NULL): array|\Collection {
+	public static function getColumnByDate(Date $eDate, string $column, ?\Closure $apply = NULL, bool $withParent = TRUE): array|\Collection {
 
 		if($apply) {
 			$apply(Product::model());
@@ -231,6 +231,7 @@ class ProductLib extends ProductCrud {
 		$data = Product::model()
 			->select($column)
 			->whereDate($eDate)
+			->whereParent(NULL, if: $withParent === FALSE)
 			->getColumn($column);
 
 		if($eDate->isCatalog()) {
@@ -256,7 +257,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \Collection $cSaleExclude = new \Collection(), bool $withIngredients = FALSE, bool $public = FALSE, bool $withParent = FALSE): \Collection {
+	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \Collection $cSaleExclude = new \Collection(), bool $withIngredients = FALSE, bool $public = FALSE, bool $reorderChildren = FALSE): \Collection {
 
 		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer, $public) {
 
@@ -330,7 +331,7 @@ class ProductLib extends ProductCrud {
 
 		self::applySold($eDate, $cProduct, $cGrid, $cSaleExclude);
 
-		if($withParent === FALSE) {
+		if($reorderChildren === FALSE) {
 			$cProductOrdered = $cProduct;
 		} else {
 			$cProductOrdered = self::reorderChildren($cProduct);
@@ -374,27 +375,28 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getColumnByCatalog(Catalog $eCatalog, string $column): array|\Collection {
+	public static function getColumnByCatalog(Catalog $eCatalog, string $column, bool $withParent = TRUE): array|\Collection {
 
 		return Product::model()
 			->select($column)
 			->whereCatalog($eCatalog)
+			->whereParent(NULL, if: $withParent === FALSE)
 			->getColumn($column);
 
 	}
 
-	public static function getByCatalog(Catalog $eCatalog, bool $onlyActive = TRUE, bool $withParent = FALSE): \Collection {
+	public static function getByCatalog(Catalog $eCatalog, bool $onlyActive = TRUE, bool $reorderChildren = FALSE): \Collection {
 
 		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereCatalog($eCatalog)
-			->whereParent(NULL, if: $withParent === FALSE)
+			->whereParent(NULL, if: $reorderChildren === FALSE)
 			->whereStatus(Product::ACTIVE, if: $onlyActive)
 			->getCollection(NULL, NULL, 'id');
 
 		$cProduct->setColumn('sold', NULL);
 
-		if($withParent === FALSE) {
+		if($reorderChildren === FALSE) {
 			$cProductOrdered = $cProduct;
 		} else {
 			$cProductOrdered = self::reorderChildren($cProduct);
@@ -423,6 +425,8 @@ class ProductLib extends ProductCrud {
 				continue;
 			}
 
+			$eProduct['child'] = FALSE;
+
 			if($eProduct['parent']) {
 
 				$eProduct['cProductChild'] = new \Collection();
@@ -435,7 +439,10 @@ class ProductLib extends ProductCrud {
 
 				foreach($ccRelation[$eProduct['id']] as $eRelation) {
 
-					$eProduct['cProductChild'][] = $cProduct[$eRelation['child']['id']];
+					$eProductChild = $cProduct[$eRelation['child']['id']];
+					$eProductChild['child'] = TRUE;
+
+					$eProduct['cProductChild'][] = $eProductChild;
 
 				}
 

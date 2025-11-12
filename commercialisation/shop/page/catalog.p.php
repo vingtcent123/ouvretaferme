@@ -15,7 +15,7 @@ new \shop\CatalogPage()
 new \shop\CatalogPage()
 	->read('show', function($data) {
 
-		$data->e['cProduct'] = \shop\ProductLib::getByCatalog($data->e, onlyActive: FALSE, withParent: TRUE);
+		$data->e['cProduct'] = \shop\ProductLib::getByCatalog($data->e, onlyActive: FALSE, reorderChildren: TRUE);
 		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
 		$data->e['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->e['cProduct']);
 		$data->e['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($data->e['cProduct']);

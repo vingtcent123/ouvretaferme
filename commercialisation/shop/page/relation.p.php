@@ -28,7 +28,7 @@ new \shop\ProductPage()
 	})
 	->create(function($data) {
 
-		$cProduct = \shop\ProductLib::getByIds(GET('products', 'array'));
+		$cProduct = \shop\ProductLib::getByIds(GET('products', 'array'))->filter(fn($eProduct) => $eProduct->acceptRelation());
 
 		if($cProduct->notEmpty()) {
 			$cProduct->validateProperty('farm', $data->e['farm']);
