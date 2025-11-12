@@ -239,7 +239,7 @@ class PlantLib extends PlantCrud {
 				->whereFarm($e['farm'])
 				->whereUnprocessedPlant($e)
 				->update([
-					'plant' => new Plant()
+					'unprocessedPlant' => new Plant()
 				]);
 
 		Plant::model()->delete($e);
