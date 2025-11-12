@@ -354,7 +354,6 @@ class StockUi {
 						$h .= '<th>'.s("Espèce").'</th>';
 						$h .= '<th>'.s("Variété").'</th>';
 						$h .= '<th>'.s("Unité").'</th>';
-						$h .= '<th>'.s("Calibre").'</th>';
 						$h .= '<th>'.s("Par").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
@@ -382,14 +381,6 @@ class StockUi {
 
 						$h .= '<td class="product-item-unit">';
 							$h .= \selling\UnitUi::getSingular($eBookmark['unit'], short: TRUE);
-						$h .= '</td>';
-
-						$h .= '<td>';
-							if($eBookmark['size']->notEmpty()) {
-								$h .= encode($eBookmark['size']['name']);
-							} else {
-								$h .= '<span class="color-muted">/</span>';
-							}
 						$h .= '</td>';
 
 						$h .= '<td class="bookmark-item-name">';

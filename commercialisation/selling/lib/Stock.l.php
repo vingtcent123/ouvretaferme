@@ -237,7 +237,6 @@ class StockLib extends StockCrud {
 			->select(StockBookmark::getSelection() + [
 				'plant' => ['name', 'fqn', 'vignette'],
 				'variety' => ['name'],
-				'size' => ['name'],
 				'createdBy' => ['vignette', 'firstName', 'lastName']
 			])
 			->whereProduct($eProduct)
