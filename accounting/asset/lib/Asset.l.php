@@ -51,12 +51,6 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function isDepreciationClass(string $class): bool {
-
-		return (mb_substr($class, 1, 1) === '8');
-
-	}
-
 	public static function getAllGrants(): \Collection {
 
 		return Asset::model()

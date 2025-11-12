@@ -19,13 +19,17 @@ class AccountSetting extends \Settings {
 	const PROFIT_CLASS = '120';
 	const LOSS_CLASS = '129';
 	const ASSET_GENERAL_CLASS = 2;
+	const ASSET_AMORTIZATION_GENERAL_CLASS = 28;
 	const GRANT_ASSET_CLASS = '13';
+	const GRANT_ASSET_AMORTIZATION_CLASS = '139';
 	const GRANT_DEPRECIATION_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
 
 	const STOCK_GENERAL_CLASS = 3;
 	const THIRD_PARTY_GENERAL_CLASS = 4;
+	const THIRD_PARTY_DEPRECIATION_CLASS = 49;
 	const VAT_CLASS = 445;
 	const FINANCIAL_GENERAL_CLASS = 5;
+	const FINANCIAL_DEPRECIATION_CLASS = 59;
 	const CHARGE_ACCOUNT_CLASS = 6;
 	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 66;
 	const CHARGE_ESCOMPTES_ACCOUNT_CLASS = 665;

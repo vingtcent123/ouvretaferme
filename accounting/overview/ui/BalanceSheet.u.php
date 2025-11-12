@@ -4,7 +4,7 @@ namespace overview;
 class BalanceSheetUi {
 
 	public function __construct() {
-		\Asset::css('overview', 'overview.css');
+		\Asset::css('overview', 'balance.css');
 	}
 
 	public function getTitle(): string {
@@ -86,29 +86,48 @@ class BalanceSheetUi {
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="overview tr-hover tr-even'.($hasComparison ? ' overview_has_previous' : '').'">';
+			$h .= '<table class="balance-table tr-hover tr-even'.($hasComparison ? ' overview_has_previous' : '').'">';
 
 				$h .= '<thead class="thead-sticky">';
 
 					$h .= '<tr class="overview_row_sizing">';
-						$h .= '<td colspan="'.($hasComparison ? 5 : 4).'"></td>';
-						$h .= '<td colspan="'.($hasComparison ? 5 : 4).'"></td>';
+						$h .= '<td colspan="'.($hasComparison ? 9 : 6).'"></td>';
+						$h .= '<td colspan="'.($hasComparison ? 9 : 6).'"></td>';
 					$h .= '</tr>';
 
 					$h .= '<tr class="overview_row-title">';
-						$h .= '<th class="text-center" colspan="'.($hasComparison ? 10 : 8).'">'.s("{farm} - exercice {year}<br />Balance au {date}", ['farm' => $eFarm['legalName'], 'year' => \account\FinancialYearUi::getYear($eFinancialYear), 'date' => \util\DateUi::numeric($date)]).'</th>';
+						$h .= '<th class="text-center" colspan="'.($hasComparison ? 18 : 12).'">'.s("{farm} - exercice {year}<br />Bilan au {date}", ['farm' => $eFarm['legalName'], 'year' => \account\FinancialYearUi::getYear($eFinancialYear), 'date' => \util\DateUi::numeric($date)]).'</th>';
 					$h .= '</tr>';
 
 					$h .= '<tr class="overview_group-title">';
-						$h .= '<th colspan="3">'.s("Actif").'</th>';
-						$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+						$h .= '<th colspan="3" rowspan="2">'.s("Actif").'</th>';
+						$h .= '<th class="td-min-content text-center" colspan="3">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
 						if($hasComparison) {
-							$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+							$h .= '<th class="td-min-content text-center" colspan="3">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
 						}
-						$h .= '<th colspan="3">'.s("Passif").'</th>';
-						$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+						$h .= '<th colspan="3" rowspan="2">'.s("Passif").'</th>';
+						$h .= '<th class="td-min-content text-center" colspan="3">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
 						if($hasComparison) {
-							$h .= '<th class="td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+							$h .= '<th class="td-min-content text-center" colspan="3">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+						}
+					$h .= '</tr>';
+
+					$h .= '<tr class="overview_group-title">';
+						$h .= '<th class="td-min-content">'.s("Brut").'</th>';
+						$h .= '<th class="td-min-content">'.s("Amort. Prov.").'</th>';
+						$h .= '<th class="td-min-content">'.s("Net").'</th>';
+						if($hasComparison) {
+							$h .= '<th class="td-min-content">'.s("Brut").'</th>';
+							$h .= '<th class="td-min-content">'.s("Amort. Prov.").'</th>';
+							$h .= '<th class="td-min-content">'.s("Net").'</th>';
+						}
+						$h .= '<th class="td-min-content">'.s("Brut").'</th>';
+						$h .= '<th class="td-min-content">'.s("Amort. Prov.").'</th>';
+						$h .= '<th class="td-min-content">'.s("Net").'</th>';
+						if($hasComparison) {
+							$h .= '<th class="td-min-content">'.s("Brut").'</th>';
+							$h .= '<th class="td-min-content">'.s("Amort. Prov.").'</th>';
+							$h .= '<th class="td-min-content">'.s("Net").'</th>';
 						}
 					$h .= '</tr>';
 
@@ -121,14 +140,22 @@ class BalanceSheetUi {
 					$h .= '<tr class="overview_group-total row-bold">';
 
 						$h .= '<th colspan="3">'.s("Total actif immobilisé").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets']['current']).'</td>';
+						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['currentBrut']).'</td>';
+						$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($totals['fixedAssets']['currentDepreciation']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['currentNet']).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets']['comparison']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($totals['fixedAssets']['comparisonDepreciation']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['comparisonNet']).'</td>';
 						}
 						$h .= '<th colspan="3">'.s("Total capitaux propres").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['current']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['currentBrut']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['currentDepreciation']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['currentNet']).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparison']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparisonDepreciation']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparisonNet']).'</td>';
 						}
 
 					$h .= '</tr>';
@@ -138,14 +165,22 @@ class BalanceSheetUi {
 					$h .= '<tr class="overview_group-total row-bold">';
 
 						$h .= '<th colspan="3">'.s("Total actif circulant").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totals['currentAssets']['current']).'</td>';
+						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['currentAssets']['currentBrut']).'</td>';
+						$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($totals['currentAssets']['currentDepreciation']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['currentAssets']['currentNet']).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totals['currentAssets']['comparison']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['currentAssets']['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($totals['currentAssets']['comparisonDepreciation']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['currentAssets']['comparisonNet']).'</td>';
 						}
 						$h .= '<th colspan="3">'.s("Total dettes").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['current']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['currentBrut']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['currentDepreciation']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['currentNet']).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['comparison']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['comparisonDepreciation']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['debts']['comparisonNet']).'</td>';
 						}
 
 					$h .= '</tr>';
@@ -153,14 +188,22 @@ class BalanceSheetUi {
 					$h .= '<tr class="overview_group-total row-bold">';
 
 						$h .= '<th colspan="3">'.s("Total Actif").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets']['current'] + $totals['currentAssets']['current']).'</td>';
+						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['currentBrut'] + $totals['currentAssets']['currentBrut']).'</td>';
+						$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($totals['fixedAssets']['currentDepreciation'] + $totals['currentAssets']['currentDepreciation']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['currentNet'] + $totals['currentAssets']['currentNet']).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totals['fixedAssets']['comparison'] + $totals['currentAssets']['comparison']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['comparisonBrut'] + $totals['currentAssets']['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($totals['fixedAssets']['comparisonDepreciation'] + $totals['currentAssets']['comparisonDepreciation']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['comparisonNet'] + $totals['currentAssets']['comparisonNet']).'</td>';
 						}
 						$h .= '<th colspan="3">'.s("Total passif").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['current'] + $totals['debts']['current']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['currentBrut'] + $totals['debts']['currentBrut']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['currentDepreciation'] + $totals['debts']['currentDepreciation']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['currentNet'] + $totals['debts']['currentNet']).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparison'] + $totals['debts']['comparison']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparisonBrut'] + $totals['debts']['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparisonDepreciation'] + $totals['debts']['comparisonDepreciation']).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totals['equity']['comparisonNet'] + $totals['debts']['comparisonNet']).'</td>';
 						}
 
 					$h .= '</tr>';
@@ -201,9 +244,13 @@ class BalanceSheetUi {
 						}
 					$h .= '</i></td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $asset['class']).'</td>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($asset['current']).'</td>';
+					$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($asset['currentBrut']).'</td>';
+					$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($asset['currentDepreciation']).'</td>';
+					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($asset['currentNet']).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end">'.\util\TextUi::money($asset['comparison']).'</td>';
+						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($asset['comparisonBrut']).'</td>';
+						$h .= '<td class="text-end balance-td-depreciation">'.\util\TextUi::money($asset['comparisonDepreciation']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($asset['comparisonNet']).'</td>';
 					}
 
 				} else {
@@ -218,18 +265,28 @@ class BalanceSheetUi {
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $asset['class']).'</td>';
-					$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($asset['current']).'</td>';
+					$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($asset['currentBrut']).'</td>';
+					$h .= '<td class="text-end'.$class.' balance-td-depreciation">'.\util\TextUi::money($asset['currentDepreciation']).'</td>';
+					$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($asset['currentNet']).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($asset['comparison']).'</td>';
+						$h .= '<td class="text-end'.$class.' balance">'.\util\TextUi::money($asset['comparisonBrut']).'</td>';
+						$h .= '<td class="text-end'.$class.' balance">'.\util\TextUi::money($asset['comparisonDepreciation']).'</td>';
+						$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($asset['comparisonNet']).'</td>';
 					}
 
 				}
+
 			} else {
+
+				$h .= '<td></td>';
+				$h .= '<td></td>';
 				$h .= '<td></td>';
 				$h .= '<td></td>';
 				$h .= '<td></td>';
 				$h .= '<td></td>';
 				if($hasComparison) {
+					$h .= '<td></td>';
+					$h .= '<td></td>';
 					$h .= '<td></td>';
 				}
 			}
@@ -247,9 +304,13 @@ class BalanceSheetUi {
 						}
 					$h .= '</i></td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $liability['class']).'</td>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($liability['current']).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($liability['currentBrut']).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($liability['currentDepreciation']).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($liability['currentNet']).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end">'.\util\TextUi::money($liability['comparison']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($liability['comparisonBrut']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($liability['comparisonDepreciation']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($liability['comparisonNet']).'</td>';
 					}
 
 				} else {
@@ -266,9 +327,13 @@ class BalanceSheetUi {
 
 					$h .= '</td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $liability['class']).'</td>';
-					$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['current']).'</td>';
+					$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['currentBrut']).'</td>';
+					$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['currentDepreciation']).'</td>';
+					$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['currentNet']).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['comparison']).'</td>';
+						$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['comparisonBrut']).'</td>';
+						$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['comparisonDepreciation']).'</td>';
+						$h .= '<td class="text-end'.$class.'">'.\util\TextUi::money($liability['comparisonNet']).'</td>';
 					}
 
 				}
@@ -278,7 +343,11 @@ class BalanceSheetUi {
 				$h .= '<td></td>';
 				$h .= '<td></td>';
 				$h .= '<td></td>';
+				$h .= '<td></td>';
+				$h .= '<td></td>';
 				if($hasComparison) {
+					$h .= '<td></td>';
+					$h .= '<td></td>';
 					$h .= '<td></td>';
 				}
 			}

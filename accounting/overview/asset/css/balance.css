@@ -1,0 +1,50 @@
+
+table.tr-hover thead tr.overview_row-title,
+thead.thead-sticky tr.overview_row-title th,
+table.tr-hover thead tr.overview_row-title:hover,
+thead.thead-sticky tr.overview_row-title:hover th {
+	background-color: var(--primary) !important;
+	color: white;
+}
+
+tr.overview_row_sizing {
+	height: 0;
+}
+tr.overview_row_sizing td {
+	background-color: transparent!important;
+	width: 50%;
+	padding: 0;
+	margin: 0;
+	height: 0;
+}
+
+thead.thead-sticky tr.overview_group-title th,
+.overview_group-title th {
+	vertical-align: middle;
+}
+
+table.balance-table {
+	border-left: 1px solid var(--muted);
+	border-right: 1px solid var(--muted);
+}
+td.balance-td-net,
+td.balance-td-depreciation,
+td.balance-td-brut {
+	border-left: 1px solid var(--muted);
+	border-right: 1px solid var(--muted);
+}
+
+tr.overview_group-total {
+	border-bottom: 1px solid var(--muted);
+}
+
+.overview_cell-links a {
+	color: var(--muted);
+}
+.overview_cell-summary {
+	font-weight: bold;
+}
+
+.overview_class-detail {
+	color: var(--muted);
+}

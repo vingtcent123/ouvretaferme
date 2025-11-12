@@ -20,10 +20,31 @@ Class BalanceSheetLib {
 			])
 			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%"'))
 			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%"'))
+			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%"'))
+			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS.'%"'))
+			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::THIRD_PARTY_DEPRECIATION_CLASS.'%"'))
+			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::FINANCIAL_DEPRECIATION_CLASS.'%"'))
 			->group(['class', 'financialYear'])
 			->having('amount != 0.0')
 			->sort(['class' => SORT_ASC])
-			->getCollection();
+			->getCollection()
+			->mergeCollection(self::applyFinancialYearsCondition($eFinancialYear, $eFinancialYearComparison)
+	      ->select([
+	        'financialYear',
+	        'class' => new \Sql('SUBSTRING(accountLabel, 1, 4)'),
+	        // Attention pour les classes 4 et 5, calcul ici : débit - crédit (équivalent actif)
+	        'amount' => new \Sql('SUM(IF(accountLabel LIKE "1%", -1, 1) * IF(type = "debit", amount, -amount))', 'float')
+	      ])
+	      ->or(
+					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%"')),
+					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS.'%"')),
+					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::THIRD_PARTY_DEPRECIATION_CLASS.'%"')),
+					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::FINANCIAL_DEPRECIATION_CLASS.'%"')),
+	      )
+	      ->group(['class', 'financialYear'])
+	      ->having('amount != 0.0')
+	      ->sort(['class' => SORT_ASC])
+				->getCollection());
 
 		if($isDetailed) {
 			$cOperationDetail = \overview\BalanceSheetLib::getDetailData(eFinancialYear: $eFinancialYear, eFinancialYearComparison: $eFinancialYearComparison);
@@ -41,10 +62,22 @@ Class BalanceSheetLib {
 		];
 
 		$totals = [
-			'fixedAssets' => ['current' => 0, 'comparison' => 0],
-			'currentAssets' => ['current' => 0, 'comparison' => 0],
-			'equity' => ['current' => 0, 'comparison' => 0],
-			'debts' => ['current' => 0, 'comparison' => 0],
+			'fixedAssets' => [
+				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
+				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+			],
+			'currentAssets' => [
+				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
+				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+			],
+			'equity' => [
+				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
+				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+			],
+			'debts' => [
+				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
+				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+			],
 		];
 
 		foreach($cOperation as $eOperation) {
@@ -113,30 +146,60 @@ Class BalanceSheetLib {
 
 		// On rajoute le résultat si l'exercice est encore ouvert
 		if($noResult or $eFinancialYear->canUpdate()) {
+
 			$result = \overview\IncomeStatementLib::computeResult($eFinancialYear);
 			$class = ($result > 0 ? \account\AccountSetting::PROFIT_CLASS : \account\AccountSetting::LOSS_CLASS);
+
 			if(isset($balanceSheetData['equity'][$class]) === FALSE) {
 				$balanceSheetData['equity'][$class] = [
 					'class' => (string)$class,
-					'current' => 0,
-					'comparison' => 0,
+					'currentBrut' => 0,
+					'currentDepreciation' => 0,
+					'currentNet' => 0,
+					'comparisonBrut' => 0,
+					'comparisonDepreciation' => 0,
+					'comparisonNet' => 0,
 				];
 			}
-			$balanceSheetData['equity'][$class]['current'] = $result;
-			$totals['equity']['current'] += $result;
+
+			$balanceSheetData['equity'][$class]['currentBrut'] = $result;
+			$balanceSheetData['equity'][$class]['currentNet'] = $balanceSheetData['equity'][$class]['currentBrut'] - $balanceSheetData['equity'][$class]['currentDepreciation'];
+			$totals['equity']['currentBrut'] += $result;
+			$totals['equity']['currentNet'] = $totals['equity']['currentBrut'] - $totals['equity']['currentDepreciation'];
+
 		}
+
 		if($eFinancialYearComparison->notEmpty() and $eFinancialYearComparison->canUpdate()) {
 			$result = \overview\IncomeStatementLib::computeResult($eFinancialYearComparison);
 			$class = ($result > 0 ? \account\AccountSetting::PROFIT_CLASS : \account\AccountSetting::LOSS_CLASS);
 			if(isset($balanceSheetData['equity'][$class]) === FALSE) {
 				$balanceSheetData['equity'][$class] = [
 					'class' => (string)$class,
-					'current' => 0,
-					'comparison' => 0,
+					'currentBrut' => 0,
+					'currentDepreciation' => 0,
+					'currentNet' => 0,
+					'comparisonBrut' => 0,
+					'comparisonDepreciation' => 0,
+					'comparisonNet' => 0,
 				];
 			}
-			$balanceSheetData['equity'][$class]['comparison'] = $result;
-			$totals['equity']['comparison'] += $result;
+			$balanceSheetData['equity'][$class]['comparisonBrut'] = $result;
+			$balanceSheetData['equity'][$class]['comparisonNet'] = $balanceSheetData['equity'][$class]['comparisonBrut'] - $balanceSheetData['equity'][$class]['comparisonDepreciation'];
+			$totals['equity']['comparisonBrut'] += $result;
+			$totals['equity']['comparisonNet'] = $totals['equity']['comparisonBrut'] - $totals['equity']['comparisonDepreciation'];
+		}
+
+		// Recalcule les totaux
+		foreach($totals as $category => $values) {
+
+			$categoryBalance = $balanceSheetData[$category];
+
+			foreach(['currentBrut', 'currentDepreciation', 'currentNet', 'comparisonBrut', 'comparaisonDepreciation', 'comparaisonNet'] as $key) {
+
+				$sum = round(array_sum(array_column($categoryBalance,$key)), 2);
+				$totals[$category][$key] = $sum;
+
+			}
 		}
 
 		return [$balanceSheetData, $totals];
@@ -145,33 +208,67 @@ Class BalanceSheetLib {
 	private static function affectOperation(array $operationsSubClasses, array &$balanceSheetDataCategory, \account\FinancialYear $eFinancialYear, \journal\Operation $eOperation, array &$totals): void {
 
 		foreach($operationsSubClasses as $eOperationSub) {
+
+			if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperationSub['class'])) { // On ne le visualise pas
+				continue;
+			}
+
 			if(isset($balanceSheetDataCategory[$eOperationSub['class']]) === FALSE) {
 				$balanceSheetDataCategory[$eOperationSub['class']] = [
-					'comparison' => 0,
-					'current' => 0,
+					'comparisonBrut' => 0,
+					'comparisonDepreciation' => 0,
+					'comparisonNet' => 0,
+					'currentBrut' => 0,
+					'currentDepreciation' => 0,
+					'currentNet' => 0,
 					'class' => $eOperationSub['class'],
 					'description' => $eOperationSub['description'],
 				];
 			}
+
 			if($eOperationSub['financialYear']->is($eFinancialYear)) {
 				$balanceSheetDataCategory[$eOperationSub['class']]['current'] = $eOperationSub['amount'];
 			} else {
 				$balanceSheetDataCategory[$eOperationSub['class']]['comparison'] = $eOperationSub['amount'];
 			}
+
 		}
-		if(isset($balanceSheetDataCategory[$eOperation['class']]) === FALSE) {
+		if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperation['class']) === FALSE and isset($balanceSheetDataCategory[$eOperation['class']]) === FALSE) {
 			$balanceSheetDataCategory[$eOperation['class']] = [
-				'comparison' => 0,
+				'comparisonBrut' => 0,
+				'comparisonDepreciation' => 0,
+				'comparisonNet' => 0,
+				'currentBrut' => 0,
+				'currentDepreciation' => 0,
+				'currentNet' => 0,
 				'current' => 0,
 				'class' => $eOperation['class'],
 			];
 		}
-		if($eOperation['financialYear']->is($eFinancialYear)) {
-			$balanceSheetDataCategory[$eOperation['class']]['current'] = $eOperation['amount'];
-			$totals['current'] += $eOperation['amount'];
+
+		if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperation['class'])) {
+
+			$originClass = \account\ClassLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
+			$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
+
+			$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
+
 		} else {
-			$balanceSheetDataCategory[$eOperation['class']]['comparison'] = $eOperation['amount'];
-			$totals['comparison'] += $eOperation['amount'];
+
+			if($eOperation['financialYear']->is($eFinancialYear)) {
+
+				$balanceSheetDataCategory[$eOperation['class']]['currentBrut'] = $eOperation['amount'];
+				$totals['currentBrut'] += $eOperation['amount'];
+				$balanceSheetDataCategory[$eOperation['class']]['currentNet'] = round($balanceSheetDataCategory[$eOperation['class']]['currentBrut'] - $balanceSheetDataCategory[$eOperation['class']]['currentDepreciation'], 2);
+
+			} else {
+
+				$balanceSheetDataCategory[$eOperation['class']]['comparisonBrut'] = $eOperation['amount'];
+				$totals['comparisonBrut'] += $eOperation['amount'];
+
+				$balanceSheetDataCategory[$eOperation['class']]['comparisonNet'] = round($balanceSheetDataCategory[$eOperation['class']]['comparisonBrut'] - $balanceSheetDataCategory[$eOperation['class']]['comparisonDepreciation'], 2);
+			}
+
 		}
 	}
 
