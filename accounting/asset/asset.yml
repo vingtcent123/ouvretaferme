@@ -17,6 +17,7 @@ Asset:
   startDate: ?date
   # Date de fin d'amortissement (calculé)
   endDate: date
+  endedDate: ?date # Date de fin réelle (cession, mise au rebut, fin d'amort.)
   status: enum(ONGOING, SOLD, SCRAPPED, ENDED) = ONGOING
   # Si l'immo a été en partie financée par une sub, lien vers cette sub
   grant: ?asset\Asset

@@ -140,7 +140,7 @@ Class AssetUi {
 
 	}
 
-	public function getAcquisitionTable(\Collection $cAsset, string $type): string {
+	public function getAcquisitionTable(\farm\Farm $eFarm, \Collection $cAsset, string $type): string {
 
 		if($cAsset->empty() === TRUE) {
 
@@ -155,7 +155,7 @@ Class AssetUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 						$h .= '<th class="" rowspan="2">'.s("Compte").'</th>';
-						$h .= '<th class="" rowspan="2">'.s("Désignation").'</th>';
+						$h .= '<th class="" rowspan="2">'.s("Libellé").'</th>';
 						$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Date").'</th>';
@@ -180,7 +180,7 @@ Class AssetUi {
 									$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
 								$h .= '</div>';
 							$h .= '</td>';
-							$h .= '<td>'.encode($eAsset['description']).'</td>';
+							$h .= '<td><a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['economicMode']) {
 									AssetElement::LINEAR => s("LIN"),
@@ -316,6 +316,18 @@ Class AssetUi {
 
 	}
 
+	private static function getDurationInYears(int $duration): string {
+
+		$years = floor($duration / 12);
+		$months = ($duration % 12);
+
+		if($months === 0) {
+			return p("{years} an", "{years} ans", $years, ['years' => $years]);
+		}
+		return p("{years} an et {months} mois", "{years} ans et {months} mois", $years, ['years' => $years, 'months' => $months]);
+
+	}
+
 	private static function getHeader(Asset $eAsset): string {
 
 		$h = '<div class="util-block stick-xs bg-background-light">';
@@ -334,8 +346,8 @@ Class AssetUi {
 				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
 				$h .= '<dt>'.s("Statut").'</dt>';
 				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
-				$h .= '<dt>'.s("Durée (en mois)").'</dt>';
-				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).'</dd>';
+				$h .= '<dt>'.s("Durée").'</dt>';
+				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).' ('.self::getDurationInYears($eAsset['economicDuration']).')</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
 

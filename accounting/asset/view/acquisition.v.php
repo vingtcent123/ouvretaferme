@@ -25,11 +25,11 @@ new AdaptativeView('/asset/acquisition', function($data, FarmTemplate $t) {
 		echo '</div>';
 
 		echo '<div class="tab-panel" data-tab="acquisition-asset">';
-			echo new \asset\AssetUi()->getAcquisitionTable($data->cAsset, 'asset');
+			echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAsset, 'asset');
 		echo '</div>';
 
 		echo '<div class="tab-panel" data-tab="acquisition-subvention">';
-			echo new \asset\AssetUi()->getAcquisitionTable($data->cAssetSubvention, 'subvention');
+			echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAssetSubvention, 'subvention');
 		echo '</div>';
 
 	echo '</div>';
