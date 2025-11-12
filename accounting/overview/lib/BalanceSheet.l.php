@@ -29,22 +29,23 @@ Class BalanceSheetLib {
 			->sort(['class' => SORT_ASC])
 			->getCollection()
 			->mergeCollection(self::applyFinancialYearsCondition($eFinancialYear, $eFinancialYearComparison)
-	      ->select([
-	        'financialYear',
-	        'class' => new \Sql('SUBSTRING(accountLabel, 1, 4)'),
-	        // Attention pour les classes 4 et 5, calcul ici : débit - crédit (équivalent actif)
-	        'amount' => new \Sql('SUM(IF(accountLabel LIKE "1%", -1, 1) * IF(type = "debit", amount, -amount))', 'float')
-	      ])
-	      ->or(
+				->select([
+					'financialYear',
+					'class' => new \Sql('SUBSTRING(accountLabel, 1, 4)'),
+					// Attention pour les classes 4 et 5, calcul ici : débit - crédit (équivalent actif)
+					'amount' => new \Sql('SUM(IF(accountLabel LIKE "1%", -1, 1) * IF(type = "debit", amount, -amount))', 'float')
+				])
+				->or(
 					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%"')),
 					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS.'%"')),
 					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::THIRD_PARTY_DEPRECIATION_CLASS.'%"')),
 					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::FINANCIAL_DEPRECIATION_CLASS.'%"')),
-	      )
-	      ->group(['class', 'financialYear'])
-	      ->having('amount != 0.0')
-	      ->sort(['class' => SORT_ASC])
-				->getCollection());
+				)
+				->group(['class', 'financialYear'])
+				->having('amount != 0.0')
+				->sort(['class' => SORT_ASC])
+				->getCollection()
+			);
 
 		if($isDetailed) {
 			$cOperationDetail = \overview\BalanceSheetLib::getDetailData(eFinancialYear: $eFinancialYear, eFinancialYearComparison: $eFinancialYearComparison);
@@ -64,19 +65,19 @@ Class BalanceSheetLib {
 		$totals = [
 			'fixedAssets' => [
 				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
-				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+				'comparisonBrut' => 0, 'comparisonDepreciation' => 0, 'comparisonNet' => 0,
 			],
 			'currentAssets' => [
 				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
-				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+				'comparisonBrut' => 0, 'comparisonDepreciation' => 0, 'comparisonNet' => 0,
 			],
 			'equity' => [
 				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
-				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+				'comparisonBrut' => 0, 'comparisonDepreciation' => 0, 'comparisonNet' => 0,
 			],
 			'debts' => [
 				'currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0,
-				'comparisonBrut' => 0, 'comparaisonDepreciation' => 0, 'comparaisonNet' => 0,
+				'comparisonBrut' => 0, 'comparisonDepreciation' => 0, 'comparisonNet' => 0,
 			],
 		];
 
@@ -87,7 +88,19 @@ Class BalanceSheetLib {
 			}
 
 			// Recherche des détails d'opération (même exercice comptable + classe de compte)
-			$operationsSubClasses = $cOperationDetail->find(fn($e) => (mb_substr($e['class'], 0, 3) === $eOperation['class'] and $eOperation['financialYear']->is($e['financialYear'])))->getArrayCopy();
+			$operationsSubClasses = $cOperationDetail->find(function($e) use($eOperation): bool {
+
+				$isClass = (mb_substr($e['class'], 0, 3) === $eOperation['class']);
+				$classFromAmortizationOrDepreciation = rtrim(\account\ClassLib::getClassFromAmortizationOrDepreciationClass($e['class']), '0');
+
+				$operationClass = rtrim($eOperation['class'], '0');
+
+				$length = min(mb_strlen($classFromAmortizationOrDepreciation), mb_strlen($operationClass));
+				$isAmortizationOrDepreciationClass = ($classFromAmortizationOrDepreciation !== "" and mb_substr($classFromAmortizationOrDepreciation, 0, $length) === mb_substr($eOperation['class'], 0, $length));
+				$isFinancialYear = $eOperation['financialYear']->is($e['financialYear']);
+
+				return (($isClass or $isAmortizationOrDepreciationClass) and $isFinancialYear);
+			})->getArrayCopy();
 
 			$generalClass = (int)substr($eOperation['class'], 0, 1);
 
@@ -227,12 +240,15 @@ Class BalanceSheetLib {
 			}
 
 			if($eOperationSub['financialYear']->is($eFinancialYear)) {
-				$balanceSheetDataCategory[$eOperationSub['class']]['current'] = $eOperationSub['amount'];
+				$balanceSheetDataCategory[$eOperationSub['class']]['currentBrut'] = $eOperationSub['amount'];
+				$balanceSheetDataCategory[$eOperationSub['class']]['currentNet'] = ($balanceSheetDataCategory[$eOperationSub['class']]['currentBrut'] - $balanceSheetDataCategory[$eOperationSub['class']]['currentDepreciation']);
 			} else {
-				$balanceSheetDataCategory[$eOperationSub['class']]['comparison'] = $eOperationSub['amount'];
+				$balanceSheetDataCategory[$eOperationSub['class']]['comparisonBrut'] = $eOperationSub['amount'];
+				$balanceSheetDataCategory[$eOperationSub['class']]['comparisonNet'] = ($balanceSheetDataCategory[$eOperationSub['class']]['comparisonBrut'] - $balanceSheetDataCategory[$eOperationSub['class']]['comparisonDepreciation']);
 			}
 
 		}
+
 		if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperation['class']) === FALSE and isset($balanceSheetDataCategory[$eOperation['class']]) === FALSE) {
 			$balanceSheetDataCategory[$eOperation['class']] = [
 				'comparisonBrut' => 0,
@@ -248,10 +264,20 @@ Class BalanceSheetLib {
 
 		if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperation['class'])) {
 
+			// Classe à 3 chiffres
 			$originClass = \account\ClassLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
 			$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
-
 			$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
+
+			// Classe complète (si isDetailed)
+			$originClass = \account\ClassLib::pad($originClass);
+
+			// Cas où ça n'est pas créé : si les amortissements ont été regroupés et qu'on a perdu les sous-comptes
+			if(isset($balanceSheetDataCategory[$originClass])) {
+
+				$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
+				$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
+			}
 
 		} else {
 

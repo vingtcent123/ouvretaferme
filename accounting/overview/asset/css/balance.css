@@ -30,8 +30,17 @@ table.balance-table {
 td.balance-td-net,
 td.balance-td-depreciation,
 td.balance-td-brut {
-	border-left: 1px solid var(--muted);
+	border-left: 1px solid var(--muted-light);
+	border-right: 1px solid var(--muted-light);
+	padding: 0.25rem 0.25rem;
+}
+td.balance-td-net {
+	border-left: 1px solid var(--muted-light);
 	border-right: 1px solid var(--muted);
+}
+td.balance-td-brut {
+	border-left: 1px solid var(--muted);
+	border-right: 1px solid var(--muted-light);
 }
 
 tr.overview_group-total {

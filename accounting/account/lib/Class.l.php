@@ -30,6 +30,10 @@ class ClassLib {
 
 	public static function getClassFromAmortizationOrDepreciationClass(string $class): string {
 
+		if(self::isAmortizationOrDepreciationClass($class) === FALSE) {
+			return '';
+		}
+
 		if(mb_substr($class, 0, 3) === AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS) {
 			return mb_substr($class, 0, 2).mb_substr($class, 3);
 		}
