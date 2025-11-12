@@ -159,11 +159,13 @@ class Product extends ProductElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('category.check', function(Category $eCategory): bool {
+			->setCallback('category.check', function(Category $eCategory) use ($p): bool {
 
 				$this->expects(['farm']);
 
-				$this['oldCategory'] = $this['category'];
+				if($p->for === 'update') {
+					$this['oldCategory'] = $this['category'];
+				}
 
 				return (
 					$eCategory->empty() or (
