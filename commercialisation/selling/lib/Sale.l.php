@@ -176,6 +176,22 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function fillForExport(\Collection $cSale): void {
+
+		Sale::model()
+			->select([
+				'ccItem' => Item::model()
+					->select(Item::getSelection())
+					->sort([
+						'name' => SORT_ASC,
+						'id' => SORT_ASC
+					])
+					->delegateCollection('sale', index: ['ingredientOf', NULL])
+			])
+			->get($cSale);
+
+	}
+
 	public static function fillForCreate(Sale $eSale): void {
 
 		$eSale->expects(['farm', 'customer']);
@@ -261,7 +277,7 @@ class SaleLib extends SaleCrud {
 			->getCollection();
 
 		if($selectItems) {
-			self::fillItems($cSale);
+			self::fillForExport($cSale);
 		}
 
 		return $cSale;

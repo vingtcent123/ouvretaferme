@@ -212,7 +212,6 @@ class ItemLib extends ItemCrud {
 				'product' => ProductElement::getSelection(),
 				'productComposition' => fn() => FALSE
 			])
-			->whereIngredientOf(NULL)
 			->whereSale('IN', $cSale)
 			->group(['product', 'name', 'unit', 'quality'])
 			->sort('name')

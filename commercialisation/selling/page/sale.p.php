@@ -564,7 +564,7 @@ new Page(function($data) {
 	})
 	->remote('getExport', 'selling', function($data) {
 
-		\selling\SaleLib::fillItems($data->c);
+		\selling\SaleLib::fillForExport($data->c);
 
 		$data->cItem = \selling\ItemLib::getSummaryBySales($data->c);
 

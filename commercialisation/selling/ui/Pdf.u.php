@@ -1101,7 +1101,15 @@ class PdfUi {
 			$h .= '<tbody>';
 				foreach($cItem as $eItem) {
 					$h .= '<tr>';
-						$h .= '<td>'.encode($eItem['name']).'</th>';
+						$h .= '<td>';
+							if(
+								$eItem['product']->notEmpty() and
+								$eItem['product']['profile'] === Product::COMPOSITION
+							) {
+								$h .= \Asset::icon('puzzle-fill').'  ';
+							}
+							$h .= encode($eItem['name']);
+						$h .= '</th>';
 						$h .= '<td>';
 							if($eItem['quality']) {
 								$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.4cm']);
@@ -1176,17 +1184,41 @@ class PdfUi {
 
 	public function getSaleLabel(\selling\Sale $eSale, array $farms): array {
 
+		if($eSale['ccItem']->empty()) {
+			return [];
+		}
+
 		$eCustomer = $eSale['customer'];
 
 		$itemsList = [];
 
-		$cItem = clone $eSale['cItem'];
+		$cItemFormated = new \Collection();
+		$nItem = 0;
 
-		if($eSale['shipping']) {
-			$cItem[] = $this->getItemShipping($eSale);
+		foreach($eSale['ccItem'][''] as $eItem) {
+
+			$cItemFormated[] = $eItem;
+
+			if(
+				$eItem['productComposition'] and
+				$eSale['ccItem']->offsetExists($eItem['id'])
+			) {
+
+				$cItemIngredient = $eSale['ccItem'][$eItem['id']];
+				$cItemFormated->mergeCollection($cItemIngredient);
+				$nItem += $cItemIngredient->count();
+
+			} else {
+				$nItem++;
+			}
+
 		}
 
-		foreach($cItem as $eItem) {
+		if($eSale['shipping']) {
+			$cItemFormated[] = $this->getItemShipping($eSale);
+		}
+
+		foreach($cItemFormated as $eItem) {
 
 			if($eItem['packaging'] !== NULL) {
 				// Gérer les colis en nombre entier
@@ -1195,9 +1227,14 @@ class PdfUi {
 				$quantity = $eItem['number'];
 			}
 
-			$item = \Asset::icon('circle', ['class' => 'font-lg']);
+			$item = $eItem['productComposition'] ? \Asset::icon('puzzle-fill', ['class' => 'font-lg']) : \Asset::icon('circle', ['class' => 'font-lg']);
 			$item .= '<div class="pdf-sales-label-content-item '.(mb_strlen($eItem['name']) > 50 ? 'pdf-sales-label-content-shrink-strong' : (mb_strlen($eItem['name']) > 40 ? 'pdf-sales-label-content-shrink' : '')).'">';
 				$item .= '<div class="pdf-sales-label-content-value">';
+
+					if($eItem['ingredientOf']->notEmpty()) {
+						$item .= ' '.\Asset::icon('arrow-return-right').'  ';
+					}
+
 					if(mb_strlen($eItem['name']) >= 60) {
 						$item .= encode(mb_substr($eItem['name'], 0, 55)).'...';
 					} else {
@@ -1246,7 +1283,7 @@ class PdfUi {
 					$entry .= '</div>';
 					$entry .= '<div>';
 						$entry .= '<div class="pdf-sales-label-products"><span>'.s("Articles").'</span></div>';
-						$entry .= '<div class="pdf-sales-label-count">'.$eSale['cItem']->count().'</div>';
+						$entry .= '<div class="pdf-sales-label-count">'.$nItem.'</div>';
 					$entry .= '</div>';
 
 				$entry.= '</div>';
