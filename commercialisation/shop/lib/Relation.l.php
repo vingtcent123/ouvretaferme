@@ -101,6 +101,19 @@ class RelationLib extends RelationCrud {
 
 	}
 
+	public static function deleteBySellingProduct(\selling\Product $eProduct): void {
+
+		$cProduct = Product::model()
+			->select('id')
+			->whereProduct($eProduct)
+			->getCollection();
+
+		foreach($cProduct as $eProduct) {
+			self::deleteByChild($eProduct);
+		}
+
+	}
+
 	public static function deleteByChild(Product $eProductChild): void {
 
 		Product::model()->beginTransaction();

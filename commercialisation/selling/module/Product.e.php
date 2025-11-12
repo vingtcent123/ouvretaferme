@@ -163,6 +163,8 @@ class Product extends ProductElement {
 
 				$this->expects(['farm']);
 
+				$this['oldCategory'] = $this['category'];
+
 				return (
 					$eCategory->empty() or (
 						Category::model()

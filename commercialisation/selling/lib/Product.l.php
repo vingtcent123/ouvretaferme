@@ -61,7 +61,23 @@ class ProductLib extends ProductCrud {
 
 		array_delete($properties, 'proOrPrivatePrice');
 
+		Product::model()->beginTransaction();
+
 		parent::update($e, $properties);
+
+		if(in_array('category', $properties)) {
+
+			$e->expects(['oldCategory']);
+
+			if($e['category']->is($e['oldCategory']) === FALSE) {
+
+				\shop\RelationLib::deleteBySellingProduct($e);
+
+			}
+
+		}
+
+		Product::model()->commit();
 
 	}
 
