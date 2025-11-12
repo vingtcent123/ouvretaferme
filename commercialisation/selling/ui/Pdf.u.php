@@ -467,6 +467,7 @@ class PdfUi {
 			'quality' => NULL,
 			'number' => NULL,
 			'packaging' => NULL,
+			'additional' => NULL,
 			'unit' => new Unit(),
 			'unitPrice' => NULL,
 			'price' => $eSale['shipping'],
