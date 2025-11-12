@@ -237,7 +237,7 @@ class PlantLib extends PlantCrud {
 
 			\selling\Product::model()
 				->whereFarm($e['farm'])
-				->wherePlant($e)
+				->whereUnprocessedPlant($e)
 				->update([
 					'plant' => new Plant()
 				]);
