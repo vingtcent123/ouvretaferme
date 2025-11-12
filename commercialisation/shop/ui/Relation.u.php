@@ -6,7 +6,6 @@ class RelationUi {
 	public function __construct() {
 
 		\Asset::js('shop', 'relation.js');
-		\Asset::css('shop', 'relation.css');
 
 	}
 
@@ -14,7 +13,7 @@ class RelationUi {
 
 		new \selling\ProductUi()->query($d, $multiple);
 
-		$d->autocompleteUrl = '/shop/relation:query';
+		$d->autocompleteReorder = TRUE;
 		$d->autocompleteResults = function(Relation $e) {
 			return self::getAutocomplete($e);
 		};
@@ -28,85 +27,6 @@ class RelationUi {
 		return [
 			'value' => $eRelation['child']['id']
 		] + \selling\ProductUi::getAutocomplete($eRelation['child']['product']);
-
-	}
-
-	public function displayByParent(Product $eProduct, \Collection $cRelation): string {
-
-		if($cRelation->empty()) {
-			return '<div class="util-info">'.s("Il n'y a aucun produit dans ce groupe.").'</div>';
-		}
-
-		$h = '<table class="tr-even">';
-
-			$h .= '<thead>';
-				$h .= '<tr>';
-					if($cRelation->count() > 1) {
-						$h .= '<th></th>';
-					}
-					$h .= '<th colspan="2">'.s("Produit").'</th>';
-					if($cRelation->count() > 1) {
-						$h .= '<th></th>';
-					}
-					$h .= '<th></th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
-
-			$h .= '<tbody>';
-
-			foreach($cRelation as $eRelation) {
-
-				$eProductChild = $eRelation['child'];
-
-				$h .= '<tr>';
-
-					if($cRelation->count() > 1) {
-
-						$h .= '<td class="td-min-content">';
-							$h .= '<b>'.$eRelation['position'].'.</b>';
-						$h .= '</td>';
-
-					}
-
-					$h .= '<td class="td-min-content">';
-						$h .= ProductUi::getVignette($eProductChild, '3rem');
-					$h .= '</td>';
-					$h .= '<td>';
-						$h .= ProductUi::getInfos($eProductChild);
-					$h .= '</td>';
-
-					if($cRelation->count() > 1) {
-
-						$h .= '<td class="td-min-content">';
-
-							if($eRelation['position'] > 1) {
-								$h .= '<a data-ajax="/shop/relation:doIncrementPosition" post-id='.$eRelation['id'].'" post-increment="-1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-up').'</a> ';
-							} else {
-								$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-up').'</a> ';
-							}
-
-							if($eRelation['position'] !== $cRelation->count()) {
-								$h .= '<a data-ajax="/shop/relation:doIncrementPosition" post-id='.$eRelation['id'].'" post-increment="1" class="btn btn-sm btn-secondary">'.\Asset::icon('arrow-down').'</a> ';
-							} else {
-								$h .= '<a class="btn btn-sm disabled">'.\Asset::icon('arrow-down').'</a> ';
-							}
-						$h .= '</td>';
-
-					}
-
-					$h .= '<td class="td-min-content" style="white-space: nowrap">';
-
-						$h .= '<a data-ajax="/shop/relation:doDelete" post-id="'.$eRelation['id'].'" class="btn btn-outline-secondary">';
-							$h .= \Asset::icon('trash-fill');
-						$h .= '</a>';
-
-					$h .= '</td>';
-				$h .= '</tr>';
-			}
-			$h .= '</tbody>';
-		$h .= '</table>';
-
-		return $h;
 
 	}
 

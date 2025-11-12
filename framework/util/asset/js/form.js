@@ -1040,7 +1040,12 @@ class AutocompleteField {
 
 						let item = '<div class="autocomplete-item" data-value="'+ value.value +'">';
 							item += '<input type="hidden" name="'+ field +'" value="'+ value.value +'"/>';
-							item += value.itemHtml +'&nbsp;<a onclick="AutocompleteField.removeItem(this)" class="btn btn-sm btn-outline-primary">'+ Lime.Asset.icon('trash-fill') +'</a>';
+							item += value.itemHtml;
+							item += '<div class="autocomplete-item-actions">';
+								item += '<a onclick="AutocompleteField.upItem(this)" class="btn btn-sm btn-outline-primary autocomplete-reorder-up">'+ Lime.Asset.icon('arrow-up') +'</a>';
+								item += '<a onclick="AutocompleteField.downItem(this)" class="btn btn-sm btn-outline-primary autocomplete-reorder-down">'+ Lime.Asset.icon('arrow-down') +'</a>';
+								item += '<a onclick="AutocompleteField.removeItem(this)" class="btn btn-sm btn-outline-primary">'+ Lime.Asset.icon('trash-fill') +'</a>';
+							item += '</div>';
 						item += '</div>';
 
 						qs(itemSelector).insertAdjacentHTML('beforeend', item);
@@ -1127,6 +1132,20 @@ class AutocompleteField {
 		if(input !== null) {
 			this.onUpdate(input);
 		}
+
+	}
+
+	static upItem(target) {
+
+		const item = target.firstParent('.autocomplete-item');
+		item.parentElement.insertBefore(item, item.previousSibling);
+
+	}
+
+	static downItem(target) {
+
+		const item = target.firstParent('.autocomplete-item');
+		item.parentElement.insertBefore(item.nextSibling, item);
 
 	}
 

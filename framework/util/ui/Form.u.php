@@ -535,10 +535,12 @@ class FormUi {
 						$dispatch = $d->autocompleteDispatch ?? NULL;
 					}
 
+					$reorder = $d->autocompleteReorder ?? FALSE;
+
 					[
 						'query' => $query,
 						'results' => $results
-					] = $this->autocomplete($name, $url, $autocompleteBody, $dispatch, $default, $attributes);
+					] = $this->autocomplete($name, $url, $autocompleteBody, $dispatch, $default, $reorder, $attributes);
 
 					$d->last = $results;
 
@@ -2108,7 +2110,7 @@ class FormUi {
 	/**
 	 * Create an autocomplete field
 	 */
-	public function autocomplete(string $name, string $url, array $body, ?string $dispatch, array $values, array $attributes): array {
+	public function autocomplete(string $name, string $url, array $body, ?string $dispatch, array $values, bool $reorder, array $attributes): array {
 
 		$id = $attributes['id'] ?? uniqid('autocomplete-');
 
@@ -2128,6 +2130,7 @@ class FormUi {
 			'data-autocomplete-body' => json_encode($body),
 			'data-autocomplete-items' => $id,
 			'data-autocomplete-field' => $name,
+			'data-autocomplete-reorder' => $reorder,
 			'data-autocomplete-empty' => s("Aucun résultat !"),
 			'data-autocomplete-select' => 'event',
 			'onrender' => 'AutocompleteField.start(this);'
@@ -2146,7 +2149,12 @@ class FormUi {
 			foreach($values as $value) {
 				$defaultResults .= '<div class="autocomplete-item" data-value="'.$value['value'].'">';
 					$defaultResults .= $this->hidden($name, $value['value']);
-					$defaultResults .= $value['itemHtml'].'&nbsp;<a onclick="AutocompleteField.removeItem(this)" class="btn btn-sm btn-outline-primary">'.\Asset::icon('trash-fill').'</a>';
+					$defaultResults .= $value['itemHtml'];
+					$defaultResults .= '<div class="autocomplete-item-actions">';
+						$defaultResults .= '<a onclick="AutocompleteField.upItem(this)" class="btn btn-sm btn-outline-primary autocomplete-reorder-up">'.\Asset::icon('arrow-up').'</a>';
+						$defaultResults .= '<a onclick="AutocompleteField.downItem(this)" class="btn btn-sm btn-outline-primary autocomplete-reorder-down">'.\Asset::icon('arrow-down').'</a>';
+						$defaultResults .= '<a onclick="AutocompleteField.removeItem(this)" class="btn btn-sm btn-outline-primary">'.\Asset::icon('trash-fill').'</a>';
+					$defaultResults .= '</div>';
 				$defaultResults .= '</div>';
 			}
 		} else {
@@ -2160,7 +2168,7 @@ class FormUi {
 
 		return [
 			'query' => $query,
-			'results' => '<div class="autocomplete-items '.($multiple ? 'autocomplete-items-multiple' : '').'" id="'.$id.'">'.$defaultResults.'</div>'
+			'results' => '<div class="autocomplete-items '.($reorder ? 'autocomplete-items-reorder' : '').' '.($multiple ? 'autocomplete-items-multiple' : '').'" id="'.$id.'">'.$defaultResults.'</div>'
 		];
 
 	}

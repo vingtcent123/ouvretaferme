@@ -1032,8 +1032,26 @@ input[data-autocomplete-items]:placeholder-shown + a.autocomplete-empty:not(:foc
 	line-height: 1.4;
 }
 
-.autocomplete-items-multiple .autocomplete-item a {
-	margin-left: 0.5rem;
+.autocomplete-items-multiple .autocomplete-item-actions {
+	display: flex;
+	column-gap: 0.5rem;
+}
+
+.autocomplete-items.autocomplete-items-multiple.autocomplete-items-reorder .autocomplete-item {
+	width: 100%;
+}
+
+.autocomplete-items:not(.autocomplete-items-reorder) .autocomplete-reorder-up,
+.autocomplete-items:not(.autocomplete-items-reorder) .autocomplete-reorder-down {
+	display: none;
+}
+
+.autocomplete-items-multiple .autocomplete-item:first-child .autocomplete-reorder-up {
+	visibility: hidden;
+}
+
+.autocomplete-items-multiple .autocomplete-item:last-child .autocomplete-reorder-down {
+	visibility: hidden;
 }
 
 @media (max-width: 575px) {
