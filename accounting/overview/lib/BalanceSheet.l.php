@@ -209,12 +209,18 @@ Class BalanceSheetLib {
 
 			foreach(['currentBrut', 'currentDepreciation', 'currentNet', 'comparisonBrut', 'comparaisonDepreciation', 'comparaisonNet'] as $key) {
 
-				$sum = round(array_sum(array_column($categoryBalance,$key)), 2);
-				$totals[$category][$key] = $sum;
+				$sum = 0;
+				foreach($categoryBalance as $class => $balance) {
+					// Cas où c'est du détail + cas où on ne veut pas de comparaison
+					if(mb_strlen((string)$class) > 3 or isset($balance[$key]) === FALSE) {
+						continue;
+					}
+					$sum += $balance[$key];
+				}
+				$totals[$category][$key] = round($sum, 2);
 
 			}
 		}
-
 		return [$balanceSheetData, $totals];
 	}
 
