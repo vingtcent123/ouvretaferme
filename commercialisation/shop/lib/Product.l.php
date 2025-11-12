@@ -623,6 +623,10 @@ class ProductLib extends ProductCrud {
 
 		Product::model()->beginTransaction();
 
+			if($e['parent']) {
+				$e['parentCategory'] = $e['cRelation']->first()['child']['product']['category'];
+			}
+
 			Product::model()
 				->option('add-ignore')
 				->insert($e);
@@ -668,6 +672,8 @@ class ProductLib extends ProductCrud {
 			if($eProduct['parent']) {
 				RelationLib::deleteByParent($eProduct);
 			}
+
+			RelationLib::deleteByChild($eProduct);
 
 			Product::model()->delete($eProduct);
 

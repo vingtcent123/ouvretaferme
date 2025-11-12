@@ -93,11 +93,41 @@ class RelationLib extends RelationCrud {
 
 	}
 
-	public static function deleteByParent(Product $eProduct): void {
+	public static function deleteByParent(Product $eProductParent): void {
 
 		Relation::model()
-			->whereParent($eProduct)
+			->whereParent($eProductParent)
 			->delete();
+
+	}
+
+	public static function deleteByChild(Product $eProductChild): void {
+
+		Product::model()->beginTransaction();
+
+		$cProductParent = Relation::model()
+			->whereChild($eProductChild)
+			->getColumn('parent');
+
+		Relation::model()
+			->whereChild($eProductChild)
+			->delete();
+
+		foreach($cProductParent as $eProductParent) {
+
+			if(
+				Relation::model()
+					->whereParent($eProductParent)
+					->exists() === FALSE
+			) {
+
+				Product::model()->delete($eProductParent);
+
+			}
+
+		}
+
+		Product::model()->commit();
 
 	}
 

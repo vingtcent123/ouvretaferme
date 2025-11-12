@@ -1056,7 +1056,7 @@ class DateUi {
 
 		}
 
-		if(currentDate() > $eDate['deliveryDate']) {
+		if($eDate->isPast()) {
 			$h .= $this->getDeliveredProducts($eFarm, $eShop, $eDate);
 		} else {
 			$h .= $this->getPendingProducts($eFarm, $eShop, $eDate);

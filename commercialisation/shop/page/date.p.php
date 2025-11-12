@@ -63,6 +63,11 @@ new \farm\FarmPage()
 				]);
 
 		}
+
+		if($data->eDate->isPast()) {
+			$cProduct->filter(fn($eProduct) => $eProduct['sold'] > 0);
+		}
+
 		\shop\ProductLib::applyIndexing($data->eShop, $data->eDate, $cProduct);
 		$data->eDate['nProduct'] = $cProduct->count();
 

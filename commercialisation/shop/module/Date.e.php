@@ -83,6 +83,10 @@ class Date extends DateElement {
 		return date('Y-m-d H:i:s') > $this['orderEndAt'];
 	}
 
+	public function isPast(): bool {
+		return currentDate() > $this['deliveryDate'];
+	}
+
 	public function isCatalog(): bool {
 		return $this['source'] === Date::CATALOG;
 	}
