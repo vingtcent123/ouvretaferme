@@ -33,7 +33,7 @@ class MerchantUi {
 
 		$unitInteger = match($eSale['farm']->getSelling('marketSaleDefaultDecimal')) {
 			Configuration::NUMBER => '1',
-			Configuration::PRICE => ($eItem['unit']['approximate'] ? '0' : '1')
+			Configuration::PRICE => (($eItem['unit']->notEmpty() and $eItem['unit']['approximate']) ? '0' : '1')
 		};
 
 		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide" data-number-default="'.$unitInteger.'" data-item="'.$eItem['id'].'">';
