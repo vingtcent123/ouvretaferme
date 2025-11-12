@@ -1,3 +1,7 @@
+#item-create-tabs .util-badge {
+	display: none;
+}
+
 /* Afficher les articles d'une vente */
 td.item-item-actions {
 	text-align: right;

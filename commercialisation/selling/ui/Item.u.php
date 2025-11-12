@@ -913,7 +913,10 @@ class ItemUi {
 
 							$products = $ccProduct[$eCategory['id']]->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
 
-							$h .= '<a class="tab-item " data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
+							$h .= '<a class="tab-item" data-tab="'.$eCategory['id'].'" onclick="Lime.Tab.select(this)">';
+								$h .= '<span class="util-badge bg-danger mr-1">';
+									$h .= \Asset::icon('exclamation-circle-fill');
+								$h .= '</span>';
 								$h .= encode($eCategory['name']);
 								$h .= '<span class="tab-item-count">';
 									if($products > 0) {
@@ -921,6 +924,9 @@ class ItemUi {
 									}
 								$h .= '</span>';
 							$h .= '</a>';
+							$h .= '<style>';
+							$h .= '#item-create-tabs:has(.tab-panel[data-tab="'.$eCategory['id'].'"] .form-error-wrapper) .tab-item[data-tab="'.$eCategory['id'].'"] .util-badge { display: block; }';
+							$h .= '</style>';
 
 						}
 
@@ -928,7 +934,10 @@ class ItemUi {
 
 							$products = $ccProduct['']->find(fn($eProduct) => $eProduct['checked'] ?? FALSE)->count();
 
-							$h .= '<a class="tab-item " data-tab="empty" onclick="Lime.Tab.select(this)">';
+							$h .= '<a class="tab-item" data-tab="empty" onclick="Lime.Tab.select(this)">';
+								$h .= '<span class="util-badge bg-danger mr-1">';
+									$h .= \Asset::icon('exclamation-circle-fill');
+								$h .= '</span>';
 								$h .= s("Non catégorisé");
 								$h .= '<span class="tab-item-count">';
 									if($products > 0) {
@@ -936,6 +945,10 @@ class ItemUi {
 									}
 								$h .= '</span>';
 							$h .= '</a>';
+							$h .= '<style>';
+							$h .= '#item-create-tabs:has(.tab-panel[data-tab="empty"] .form-error-wrapper) .tab-item[data-tab="empty"] .util-badge { display: block; }';
+							$h .= '</style>';
+
 						}
 
 					$h .= '</div>';
