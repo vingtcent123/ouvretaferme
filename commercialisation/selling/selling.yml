@@ -252,13 +252,13 @@ Product:
   profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER)
   category: ?selling\Category
   unprocessedPlant: ?plant\Plant
-  unprocessedVariety: ?text8(1, null)
+  unprocessedVariety: ?text8(1, null) @collate(general)
   mixedFrozen: ?bool
   processedPackaging: ?text8(1, null)
   processedAllergen: ?text8(1, null)
   processedComposition: ?text16(1, null)
   compositionVisibility: ?enum(PUBLIC, PRIVATE)
-  origin: ?text8(1, null)
+  origin: ?text8(1, null) @collate(general)
   farm: farm\Farm
   unit: ?selling\Unit = PHP(\selling\SellingSetting::UNIT_DEFAULT_ID)
   private: bool = TRUE
@@ -280,6 +280,9 @@ Product:
   INDEX: [
     ["farm"],
     ["unprocessedPlant"]
+  ]
+  SEARCH: [
+    ["name", "origin", "unprocessedVariety"]
   ]
 
 Sale:

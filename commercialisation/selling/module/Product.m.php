@@ -62,13 +62,13 @@ class ProductModel extends \ModuleModel {
 			'profile' => ['enum', [\selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER], 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
-			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'mixedFrozen' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'processedPackaging' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'processedAllergen' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'processedComposition' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'compositionVisibility' => ['enum', [\selling\Product::PUBLIC, \selling\Product::PRIVATE], 'null' => TRUE, 'cast' => 'enum'],
-			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
 			'private' => ['bool', 'cast' => 'bool'],
@@ -104,6 +104,10 @@ class ProductModel extends \ModuleModel {
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm'],
 			['unprocessedPlant']
+		]);
+
+		$this->searchConstraints = array_merge($this->searchConstraints, [
+			['name', 'origin', 'unprocessedVariety']
 		]);
 
 	}
