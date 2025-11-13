@@ -11,6 +11,7 @@ Asset:
   economicDuration: int(0, null) # en mois
   fiscalMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
   fiscalDuration: int(0, null) # en mois
+  isExcess: bool = false # Si c'est un amortissement dérogatoire
   # Date d'achat
   acquisitionDate: date
   # Date de mise en service (= début de l'amortissement si linéaire), null si type grant

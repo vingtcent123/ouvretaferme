@@ -245,7 +245,7 @@ Class AssetUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr class="row-bold">';
 						$h .= '<th colspan="2" class="text-center">'.s("Caractéristiques").'</th>';
-						$h .= '<th colspan="5" class="text-center">'.s("Valeurs brutes").'</th>';
+						$h .= '<th colspan="4" class="text-center">'.s("Valeurs brutes").'</th>';
 						$h .= '<th colspan="6" class="text-center">'.s("Amortissements économiques").'</th>';
 						$h .= '<th rowspan="4" class="text-center">'.s("VNC").'</th>';
 						$h .= '<th colspan="4" class="text-center">'.s("Amortissements dérogatoires").'</th>';
@@ -255,7 +255,6 @@ Class AssetUi {
 						$h .= '<th rowspan="3" colspan="2" class="text-center border-bottom">'.s("Libellé").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Valeur début").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Acquis. ou apport").'</th>';
-						$h .= '<th rowspan="3" class="text-center">'.s("Diminution poste à p.").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Sortie d'actif").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Val. fin d'exercice").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Début d'exercice").'</th>';
@@ -284,7 +283,6 @@ Class AssetUi {
 
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number(0, '', 2) .'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['acquisitionValue'], '', 2).'</td>';
-							$h .= '<td class="util-unit text-end">'.new AssetUi()->number(0, '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number(0, '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['acquisitionValue'], '', 2).'</td>';
 
@@ -342,12 +340,14 @@ Class AssetUi {
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</dd>';
 				$h .= '<dt>'.s("Valeur d'acquisition").'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
+				$h .= '<dt>'.s("Base amortissable").'</dt>';
+				$h .= '<dd>'.\util\TextUi::money($eAsset['depreciableBase']).'</dd>';
 				$h .= '<dt>'.s("Type d'amortissement économique").'</dt>';
 				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
-				$h .= '<dt>'.s("Statut").'</dt>';
-				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
 				$h .= '<dt>'.s("Durée").'</dt>';
 				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).' ('.self::getDurationInYears($eAsset['economicDuration']).')</dd>';
+				$h .= '<dt>'.s("Statut").'</dt>';
+				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -433,7 +433,7 @@ Class AssetUi {
 		$h = self::getHeader($eAsset);
 
 		$h .= '<div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?asset='.$eAsset['id'].'" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation pour cet exercice comptable").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?asset='.$eAsset['id'].'&financialYear=0" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
 		$h .= '</div>';
 
 		if($eAsset['status'] === AssetElement::ONGOING) {
@@ -445,7 +445,7 @@ Class AssetUi {
 
 		}
 
-		$h .= '<h2>'.s("Plan d'amortissement").'</h2>';
+		$h .= '<h2 class="mt-2">'.s("Plan d'amortissement").'</h2>';
 
 			$h .= '<div class="stick-sm util-overflow-sm">';
 

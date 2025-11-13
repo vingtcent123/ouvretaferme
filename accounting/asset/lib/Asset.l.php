@@ -670,13 +670,13 @@ class AssetLib extends \asset\AssetCrud {
 
 				switch($i) {
 					case 0:
-						$depreciation = round($eAsset['value'] * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$depreciation = round($eAsset['depreciableBase'] * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
 					case $durationInYears:
-						$depreciation = round($eAsset['value'] - $depreciationCumulated, 2);
+						$depreciation = round($eAsset['depreciableBase'] - $depreciationCumulated, 2);
 						break;
 					default:
-						$depreciation = round($eAsset['value'] * $rate / 100, 2);
+						$depreciation = round($eAsset['depreciableBase'] * $rate / 100, 2);
 				}
 
 			} else {
@@ -689,15 +689,20 @@ class AssetLib extends \asset\AssetCrud {
 
 			$table[] = [
 				'financialYear' => $eFinancialYear,
-				'base' => $eAsset['value'],
+				'base' => $eAsset['depreciableBase'],
 				'rate' => $rate,
 				'depreciationValue' => $depreciation,
 				'depreciationValueCumulated' => round($depreciationCumulated, 2),
-				'endValue' => round($eAsset['value'] - $depreciationCumulated),
+				'endValue' => round($eAsset['depreciableBase'] - $depreciationCumulated),
 				'depreciation' => $eDepreciation,
 			];
 
 			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
+
+			// On n'amortit pas + que la valeur initiale
+			if($depreciationCumulated >= $eAsset['depreciableBase']) {
+				break;
+			}
 
 		}
 
@@ -753,13 +758,13 @@ class AssetLib extends \asset\AssetCrud {
 
 				switch($i) {
 					case 0:
-						$depreciation = round(($eAsset['value'] - $depreciationCumulated) * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$depreciation = round(($eAsset['depreciableBase'] - $depreciationCumulated) * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
 					case $eAsset['economicDuration']:
-						$depreciation = round(($eAsset['value'] - $depreciationCumulated), 2);
+						$depreciation = round(($eAsset['depreciableBase'] - $depreciationCumulated), 2);
 						break;
 					default:
-						$depreciation = round(($eAsset['value'] - $depreciationCumulated) * $rate / 100, 2);
+						$depreciation = round(($eAsset['depreciableBase'] - $depreciationCumulated) * $rate / 100, 2);
 				}
 
 			} else {
@@ -768,7 +773,7 @@ class AssetLib extends \asset\AssetCrud {
 
 			}
 
-			$base = round($eAsset['value'] - $depreciationCumulated, 2);
+			$base = round($eAsset['depreciableBase'] - $depreciationCumulated, 2);
 			$depreciationCumulated += $depreciation;
 
 			$table[] = [
@@ -779,7 +784,7 @@ class AssetLib extends \asset\AssetCrud {
 				'rate' => $rate,
 				'depreciationValue' => $depreciation,
 				'depreciationValueCumulated' => round($depreciationCumulated, 2),
-				'endValue' => round($eAsset['value'] - $depreciationCumulated),
+				'endValue' => round($eAsset['depreciableBase'] - $depreciationCumulated),
 				'depreciation' => $eDepreciation,
 			];
 

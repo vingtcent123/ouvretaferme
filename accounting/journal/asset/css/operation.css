@@ -256,6 +256,10 @@ body[data-touch="no"] #panel-operation-view .panel-header {
 	background-color: var(--background-light);
 }
 
+#panel-operation-view table tbody tr td:has(div.operation-view-label) {
+	max-width:66px;
+	width:66px;
+}
 .operation-linked-title {
 	display: flex;
 	align-items: center;

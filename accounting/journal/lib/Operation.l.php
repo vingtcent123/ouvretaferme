@@ -43,6 +43,10 @@ class OperationLib extends OperationCrud {
 					);
 
 			}
+		} else {
+
+			$model = Operation::model();
+
 		}
 
 		if($search->get('cashflowFilter') === TRUE) {
@@ -146,7 +150,7 @@ class OperationLib extends OperationCrud {
 	public static function getAllForJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
 		$eFinancialYear = $search->get('financialYear');
-		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
+		$defaultOrder = ($eFinancialYear !== NULL and $eFinancialYear->isCashAccounting()) ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
 
 		return self::applySearch($search)
 			->select(

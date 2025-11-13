@@ -370,7 +370,7 @@ class OperationUi {
 					$h .= '<tr>';
 						$h .= '<td>';
 							$h .= '<div class="operation-view-label">';
-								$h .= s("Description");
+								$h .= s("Libellé");
 							$h .= '</div>';
 						$h .= '</td>';
 						$h .= '<td>';

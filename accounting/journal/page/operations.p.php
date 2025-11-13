@@ -41,8 +41,10 @@ new Page(function($data) {
 			}
 		}
 
-		// Ne pas ouvrir le bloc de recherche
-		$search->set('financialYear', $data->eFinancialYear);
+		if(GET('financialYear', 'int') !== 0) { // On demande explicitement : pas de filtre sur l'exercice
+			// Ne pas ouvrir le bloc de recherche
+			$search->set('financialYear', $data->eFinancialYear);
+		}
 
 		$data->eCashflow = \bank\CashflowLib::getById(GET('cashflow'));
 		if($data->eCashflow->exists() === TRUE) {
