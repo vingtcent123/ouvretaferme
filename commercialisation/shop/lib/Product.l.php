@@ -312,7 +312,8 @@ class ProductLib extends ProductCrud {
 
 			$cProductSellingComposition = $cProduct
 				->find(fn($eProduct) => (
-					$eProduct['product']['profile'] === \selling\Product::COMPOSITION and
+					$eProduct['product']->notEmpty() and
+					($eProduct['product']['profile'] === \selling\Product::COMPOSITION) and
 					($public === FALSE or $eProduct['product']['compositionVisibility'] === \selling\Product::PUBLIC)
 				), clone: FALSE)
 				->getColumnCollection('product');
@@ -334,7 +335,7 @@ class ProductLib extends ProductCrud {
 		if($reorderChildren === FALSE) {
 			$cProductOrdered = $cProduct;
 		} else {
-			$cProductOrdered = self::reorderChildren($cProduct);
+			$cProductOrdered = self::reorderChildren($cProduct, filtered: TRUE);
 		}
 
 		$order = [];
@@ -375,6 +376,45 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function findAvailable(Shop $eShop, \Collection $cProduct, \Collection $cItemExisting): array|\Collection {
+
+		$cProductAvailable = new \Collection();
+
+		foreach($cProduct as $key => $eProduct) {
+
+			if($eProduct['parent']) {
+
+				$eProduct['cProductChild'] = self::findAvailable($eShop, $eProduct['cProductChild'], $cItemExisting);
+
+				if($eProduct['cProductChild']->notEmpty()) {
+
+					$cProductAvailable[] = $eProduct->merge([
+						'reallyAvailable' => NULL
+					]);
+
+				}
+
+			} else {
+
+				$reallyAvailable = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $cItemExisting);
+
+				if(
+					($eShop['outOfStock'] === \shop\Shop::SHOW) or
+					($eShop['outOfStock'] === \shop\Shop::HIDE and $reallyAvailable !== 0.0)
+				) {
+					$cProductAvailable[] = $eProduct->merge([
+						'reallyAvailable' => $reallyAvailable
+					]);
+				}
+
+			}
+
+		}
+
+		return $cProductAvailable;
+
+	}
+
 	public static function getColumnByCatalog(Catalog $eCatalog, string $column, bool $withParent = TRUE): array|\Collection {
 
 		return Product::model()
@@ -406,13 +446,18 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function reorderChildren(\Collection $cProduct): \Collection {
+	/**
+	 * filtered à TRUE permet d'ignorer les erreurs si l'enfant n'est pas référencé dans les produits
+	 * À n'utiliser que s'il y a des recherches par filtre (= limites sur des clients...)
+	 */
+	public static function reorderChildren(\Collection $cProduct, bool $filtered = FALSE): \Collection {
 
 		$cProductParent = $cProduct->find(fn($eProduct) => $eProduct['parent'] !== NULL);
 
 		$ccRelation = Relation::model()
 			->select(Relation::getSelection())
 			->whereParent('IN', $cProductParent)
+			->whereChild('IN', $cProduct, if: $filtered)
 			->getCollection(index: ['parent', 'child']);
 
 		$cProductChild = $ccRelation->getColumnCollection('child', 'child');
@@ -430,7 +475,8 @@ class ProductLib extends ProductCrud {
 			if($eProduct['parent']) {
 
 				$eProduct['cProductChild'] = new \Collection();
-				$eProduct['product'] = new Product([
+				$eProduct['product'] = new \selling\Product([
+					'farm' => $eProduct['farm'],
 					'name' => $eProduct['parentName'],
 					'category' => $eProduct['parentCategory'],
 				]);
@@ -694,6 +740,10 @@ class ProductLib extends ProductCrud {
 	}
 
 	public static function getReallyAvailable(Product $eProduct, \selling\Product $eProductSelling, \Collection $cItem): ?float {
+
+		if($eProduct['parent']) {
+			return NULL;
+		}
 
 		$eProductSelling->expects(['id']);
 

@@ -45,7 +45,7 @@ class UnitUi {
 
 	}
 
-	public static function getBy(string|\selling\Unit $unit, bool $short = FALSE): string {
+	public static function getBy(string|\selling\Unit|null $unit, bool $short = FALSE): string {
 
 		if(
 			is_string($unit) or

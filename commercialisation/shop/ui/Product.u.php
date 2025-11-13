@@ -262,14 +262,131 @@ class ProductUi {
 	public function getProducts(Shop $eShop, Date $eDate, bool $canBasket, bool $isModifying, \Collection $cProduct): string {
 
 		$h = '<div class="shop-product-list">';
-			$h .= $cProduct->makeString(fn($eProduct) => $this->getProduct($eShop, $eDate, $eProduct, $canBasket, $isModifying));
+			$h .= $cProduct->makeString(fn($eProduct) => ($eProduct['parent'] and $eProduct['cProductChild']->count() > 1) ?
+				$this->getParentProduct($eShop, $eDate, $eProduct, $canBasket, $isModifying) :
+				$this->getProduct($eShop, $eDate, $eProduct['parent'] ? $eProduct['cProductChild']->first() : $eProduct, $canBasket, $isModifying));
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function getProduct(Shop $eShop, Date $eDate, Product $eProduct, bool $canBasket, bool $isModifying): string {
+	public function getParentProduct(Shop $eShop, Date $eDate, Product $eProduct, bool $canBasket, bool $isModifying): string {
+
+		$eShop->expects(['shared']);
+		$eDate->expects(['productsIndex']);
+
+		$eProduct->expects(['reallyAvailable']);
+
+		$showFarm = (
+			$eShop['shared'] and
+			$eDate['productsIndex'] !== 'farm'
+		);
+
+		$promotion = $this->getPromotion($eProduct);
+
+		$eFarm = $eProduct['farm'];
+		$eProductDefault = $eProduct['cProductChild']->first();
+
+		$h = '<div id="shop-product-'.$eProduct['id'].'" class="shop-product shop-product-parent shop-product-parent-only" data-children="'.implode(',', $eProduct['cProductChild']->getIds()).'" '.($showFarm ? 'data-filter-farm="'.$eFarm['id'].'"' : '').'>';
+
+			$url = $this->getVignetteUrl($eProductDefault);
+
+			$h .= '<div ';
+			if($url !== NULL) {
+				$h .= 'class="shop-product-image" style="background-image: url('.$url.')"';
+			} else {
+				$h .= 'class="shop-product-image shop-product-image-empty"';
+			}
+			$h .= '>';
+				if($url === NULL) {
+					$h .= $this->getDefaultVignette($eProductDefault, $eShop);
+				}
+				if($eShop['type'] === Shop::PRIVATE) {
+					$h .= $promotion;
+				}
+			$h .= '</div>';
+			$h .= '<div class="shop-product-content">';
+
+				if($eShop['type'] === Shop::PRO) {
+					$h .= $promotion;
+				}
+
+				$h .= '<div class="shop-product-header">';
+					$h .= '<div class="shop-product-name">';
+
+						$h .= '<h4 class="shop-product-name-link">';
+							$h .= encode($eProduct['parentName']);
+							$h .= '<div class="shop-product-additional">'.p("{value} format", "{value} formats", $eProduct['cProductChild']->count()).'</div>';
+						$h .= '</h4>';
+
+						if($showFarm) {
+							$h .= '<div class="shop-product-farm">';
+								$h .= \Asset::icon('person-fill').' '.encode($eShop['cShare'][$eFarm['id']]['farm']['name']);
+							$h .= '</div>';
+						}
+
+					$h .= '</div>';
+					$h .= '<div class="shop-product-title">';
+
+						$h .= '<div class="shop-product-buy-price">';
+
+							$prices = [];
+
+							foreach($eProduct['cProductChild'] as $eProductChild) {
+
+								$eProductSelling = $eProductChild['product'];
+								$unit = $eProductSelling['unit']->notEmpty() ? $eProductSelling['unit']['id'] : NULL;
+
+								$prices[$unit] ??= [
+									'eUnit' => $eProductSelling['unit'],
+									'min' => $eProductChild['price'],
+									'max' => $eProductChild['price']
+								];
+
+								$prices[$unit]['min'] = min($prices[$unit]['min'], $eProductChild['price']);
+								$prices[$unit]['max'] = max($prices[$unit]['max'], $eProductChild['price']);
+
+							}
+
+							$list = [];
+
+							foreach($prices as ['eUnit' => $eUnit, 'min' => $min, 'max' => $max]) {
+
+								$unit = ' '.$this->getTaxes($eProduct).\selling\UnitUi::getBy($eUnit);
+
+								if($min === $max) {
+									$list[] = \util\TextUi::money($min).$unit;
+								} else {
+									$list[] = s("{from} à {to}", ['from' => \util\TextUi::money($min), 'to' => \util\TextUi::money($max).$unit]);
+								}
+
+							}
+
+							$h .= implode(' '.s("ou").' ', $list);
+
+						$h .= '</div>';
+
+					$h .= '</div>';
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+			$h .= '<div class="shop-product-buy">';
+				$h .= '<a onclick="BasketManage.showChildren(this);" class="btn btn-outline-primary">'.s("Choisir un format").'</a>';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		foreach($eProduct['cProductChild'] as $eProductChild) {
+			$h .= $this->getProduct($eShop, $eDate, $eProductChild, $canBasket, $isModifying, TRUE);
+		}
+
+		return $h;
+
+	}
+
+	public function getProduct(Shop $eShop, Date $eDate, Product $eProduct, bool $canBasket, bool $isModifying, bool $isChild = FALSE): string {
 
 		$eShop->expects(['shared']);
 		$eDate->expects(['productsIndex']);
@@ -300,38 +417,13 @@ class ProductUi {
 			$quality = '';
 		}
 
-		switch($eProduct['promotion']) {
-
-			case Product::NONE :
-			case Product::BASIC :
-				$promotion = '';
-				break;
-
-			case Product::NEW :
-				$promotion = '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Nouveauté").'</div>';
-				break;
-
-			case Product::WEEK :
-				$promotion = '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Produit de la semaine").'</div>';
-				break;
-
-			case Product::MONTH :
-				$promotion = '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Produit du mois").'</div>';
-				break;
-
-		}
+		$promotion = $this->getPromotion($eProduct);
 
 		$eFarm = $eProduct['product']['farm'];
 
-		$h = '<div class="shop-product '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-approximate="'.($eProductSelling['unit']->notEmpty() and $eProductSelling['unit']['approximate'] ? 1 : 0).'" data-has="0" '.($showFarm ? 'data-filter-farm="'.$eFarm['id'].'"' : '').'>';
+		$h = '<div id="shop-product-'.$eProduct['id'].'" class="shop-product '.($isChild ? 'shop-product-child' : '').' '.(($eProductSelling['compositionVisibility'] === \selling\Product::PUBLIC and $eProductSelling['cItemIngredient']->notEmpty()) ? 'shop-product-composition' : '').'" data-id="'.$eProductSelling['id'].'" data-price="'.$price.'" data-approximate="'.($eProductSelling['unit']->notEmpty() and $eProductSelling['unit']['approximate'] ? 1 : 0).'" data-has="0" '.($showFarm ? 'data-filter-farm="'.$eFarm['id'].'"' : '').'>';
 
-			if($eProductSelling['vignette'] !== NULL) {
-				$url = new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');
-			} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
-				$url = new \media\PlantVignetteUi()->getUrlByElement($eProductSelling['unprocessedPlant'], 'l');
-			} else {
-				$url = NULL;
-			}
+			$url = $this->getVignetteUrl($eProduct);
 
 			$h .= '<div ';
 			if($url !== NULL) {
@@ -341,14 +433,7 @@ class ProductUi {
 			}
 			$h .= '>';
 				if($url === NULL) {
-					if($eProductSelling['unprocessedPlant']->notEmpty()) {
-						$h .= \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], match($eShop['type']) {
-							Shop::PRO => '4rem',
-							Shop::PRIVATE => '9rem'
-						});
-					} else {
-						$h .= \Asset::icon('camera', ['class' => 'shop-product-image-placeholder']);
-					}
+					$h .= $this->getDefaultVignette($eProduct, $eShop);
 				}
 				if($eShop['type'] === Shop::PRIVATE) {
 					$h .= $quality;
@@ -538,6 +623,56 @@ class ProductUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public function getVignetteUrl(Product $eProduct): ?string {
+
+		$eProductSelling = $eProduct['product'];
+
+		if($eProductSelling['vignette'] !== NULL) {
+			return new \media\ProductVignetteUi()->getUrlByElement($eProductSelling, 'l');
+		} else if($eProductSelling['unprocessedPlant']->notEmpty()) {
+			return new \media\PlantVignetteUi()->getUrlByElement($eProductSelling['unprocessedPlant'], 'l');
+		} else {
+			return NULL;
+		}
+
+	}
+
+	public function getDefaultVignette(Product $eProduct, Shop $eShop): string {
+
+		$eProductSelling = $eProduct['product'];
+
+		if($eProductSelling['unprocessedPlant']->notEmpty()) {
+			return \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], match($eShop['type']) {
+				Shop::PRO => '4rem',
+				Shop::PRIVATE => '9rem'
+			});
+		} else {
+			return \Asset::icon('camera', ['class' => 'shop-product-image-placeholder']);
+		}
+
+	}
+
+	public function getPromotion(Product $eProduct): string {
+
+		switch($eProduct['promotion']) {
+
+			case Product::NONE :
+			case Product::BASIC :
+				return '';
+
+			case Product::NEW :
+				return '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Nouveauté").'</div>';
+
+			case Product::WEEK :
+				return '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Produit de la semaine").'</div>';
+
+			case Product::MONTH :
+				return '<div class="shop-header-image-promotion">'.\Asset::icon('star-fill').' '.s("Produit du mois").'</div>';
+
+		}
 
 	}
 
@@ -738,7 +873,7 @@ class ProductUi {
 		$form = new \util\FormUi();
 
 		$h = '<div class="shop-product-number" data-inconsistency="'.($inconsistency ? 1 : 0).'">';
-			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-number-decrease" onclick="'.$attributesDecrease.'">-</a>';
+			$h .= '<a class="btn btn-outline-primary shop-product-number-decrease" onclick="'.$attributesDecrease.'">-</a>';
 			$h .= '<span class="shop-product-number-value" data-price="'.$price.'" data-step="'.$step.'" data-available="'.$available.'" data-number="'.$number.'" data-product="'.$eProductSelling['id'].'" data-field="number">';
 				$h .= match($eShop['type']) {
 					Shop::PRIVATE => '<span class="shop-product-number-display">'.$number.'</span> '.$unit,
@@ -749,7 +884,7 @@ class ProductUi {
 				};
 
 			$h .= '</span>';
-			$h .= '<a class="btn btn-outline-primary btn-sm shop-product-number-increase" onclick="'.$attributesIncrease.'">+</a>';
+			$h .= '<a class="btn btn-outline-primary shop-product-number-increase" onclick="'.$attributesIncrease.'">+</a>';
 		$h .= '</div>';
 
 		return $h;
@@ -1859,6 +1994,7 @@ class ProductUi {
 				break;
 
 			case 'children' :
+				$d->labelAfter = \util\FormUi::info(s("La vignette du premier produit de la liste sera utilisée comme vignette pour le groupe sur les boutiques pour les particuliers."));
 				$d->autocompleteDefault = fn(Product $e) => $e['cRelation'] ?? new \Collection();
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					$e->expects(['farm']);

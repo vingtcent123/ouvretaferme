@@ -56,6 +56,10 @@ class BasketLib {
 
 		foreach($cProduct as $eProduct) {
 
+			if($eProduct['parent']) {
+				continue;
+			}
+
 			$eProductSelling = $eProduct['product'];
 			$numberOrdered = round((float)($products[$eProductSelling['id']]['number'] ?? 0.0), 2);
 

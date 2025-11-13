@@ -347,6 +347,8 @@ class BasketManage {
 
 		});
 
+		this.updateHas();
+
 		const formatter = new Intl.NumberFormat('fr-FR', {
 			style: 'currency',
 			currency: 'EUR'
@@ -356,6 +358,47 @@ class BasketManage {
 			articles,
 			formatter.format(amount.toFixed(2))
 		];
+
+	}
+
+	static updateHas() {
+
+		qsa('.shop-product-parent', parent => {
+
+			const children = parent.dataset.children.split(',');
+			let has = false;
+
+			children.forEach((childId) => {
+
+				qs('#shop-product-'+ childId, child => {
+
+					if(child.dataset.has === '1') {
+						has = true;
+					}
+
+				});
+
+			});
+
+			if(has) {
+				this.showChildren(parent.firstChild);
+			}
+
+		});
+
+	}
+
+	static showChildren(target) {
+
+		const parent = target.firstParent('.shop-product');
+
+		parent.classList.remove('shop-product-parent-only');
+		parent.classList.add('shop-product-with-children');
+
+		const children = parent.dataset.children.split(',');
+		children.forEach((childId) => {
+			qs('#shop-product-'+ childId, child => child.classList.add('shop-product-with-children'));
+		});
 
 	}
 

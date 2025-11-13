@@ -115,6 +115,13 @@ body:not([data-template~="shop-embedded"]) {
 	padding: 0.5rem;
 }
 
+.shop-product-pro .shop-product.shop-product-parent {
+	grid-template:
+		 "content buy" auto / 1fr 22rem;
+	margin-top: 1rem;
+	padding: 0;
+}
+
 .shop-product-pro .shop-product.shop-product-composition {
 	grid-template:
 		 "image content buy" auto
@@ -127,6 +134,11 @@ body:not([data-template~="shop-embedded"]) {
 		grid-template:
 			 "image content" auto
 			 "image buy" auto / 4rem 1fr;
+	}
+
+	.shop-product-pro .shop-product.shop-product-parent {
+		grid-template:
+			 "content" auto / 1fr;
 	}
 
 	.shop-product-pro .shop-product.shop-product-composition {
@@ -145,6 +157,10 @@ body:not([data-template~="shop-embedded"]) {
 
 .shop-product > * {
 	padding: 0 0.5rem;
+}
+
+.shop-product-pro .shop-product.shop-product-parent > * {
+	padding: 0;
 }
 
 .shop-product-image {
@@ -237,6 +253,45 @@ body:not([data-template~="shop-embedded"]) {
 
 .shop-product-private .shop-product-number .btn {
 	border-width: 2px;
+}
+
+.shop-product-pro .shop-product-parent {
+	box-shadow: none;
+	background-color: transparent;
+}
+
+.shop-product-pro .shop-product-parent .shop-product-additional,
+.shop-product-pro .shop-product-parent .shop-product-image,
+.shop-product-pro .shop-product-parent .shop-product-title,
+.shop-product-pro .shop-product-parent .shop-product-buy {
+	display: none;
+}
+
+.shop-product-pro .shop-product-parent .shop-product-name-link {
+	color: var(--primary);
+	font-size: 1.2rem;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.shop-product-parent .shop-product-buy .btn {
+	border-width: 2px;
+}
+
+.shop-product-parent.shop-product-with-children {
+	display: none;
+}
+
+.shop-product-private .shop-product-child:not(.shop-product-with-children) {
+	display: none;
+}
+
+.shop-product-private .shop-product-child {
+	border: 3px solid var(--primary);
+}
+
+.shop-product-pro .shop-product-child + .shop-product:not(.shop-product-child) {
+	margin-top: 1.5rem;
 }
 
 input.shop-product-number-display {
@@ -454,7 +509,6 @@ input.shop-product-number-display {
 
 .shop-product-buy-price {
 	grid-area: price;
-	white-space: nowrap;
 }
 
 @media (min-width: 992px) {

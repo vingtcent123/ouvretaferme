@@ -228,24 +228,9 @@ END;
 
 			$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 
-			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, cSaleExclude: $data->isModifying ? $data->cSaleExisting : new Collection(), withIngredients: TRUE, public: TRUE);
+			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, cSaleExclude: $data->isModifying ? $data->cSaleExisting : new Collection(), withIngredients: TRUE, public: TRUE, reorderChildren: TRUE);
 
-			$cProductAvailable = new Collection();
-
-			foreach($cProduct as $key => $eProduct) {
-
-				$reallyAvailable = \shop\ProductLib::getReallyAvailable($eProduct, $eProduct['product'], $data->cItemExisting);
-
-				if(
-					($data->eShop['outOfStock'] === \shop\Shop::SHOW) or
-					($data->eShop['outOfStock'] === \shop\Shop::HIDE and $reallyAvailable !== 0.0)
-				) {
-					$cProductAvailable[] = $eProduct->merge([
-						'reallyAvailable' => $reallyAvailable
-					]);
-				}
-
-			}
+			$cProductAvailable = \shop\ProductLib::findAvailable($data->eShop, $cProduct, $data->cItemExisting);
 
 			\shop\ProductLib::applyIndexing($data->eShop, $data->eDateSelected, $cProductAvailable);
 
