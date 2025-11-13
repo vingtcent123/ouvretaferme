@@ -64,7 +64,7 @@ class VatLib {
 
 		if($collectedVatAmount !== 0.0) {
 
-			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::COLLECTED_VAT_CLASS);
+			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT);
 
 			$eOperationReverse = new Operation([
 				'accountLabel' => \account\ClassLib::pad($eAccount['class']),
@@ -74,7 +74,7 @@ class VatLib {
 				'documentDate' => new \Sql('NOW()'),
 				'thirdParty' => $eThirdPartyVat,
 				'date' => $eFinancialYear['endDate'],
-				'description' => new \account\VatUi()->getVatLabel(\account\AccountSetting::COLLECTED_VAT_CLASS),
+				'description' => new \account\VatUi()->getVatLabel(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT),
 				'type' => $deductibleVatAmount >= 0 ? OperationElement::CREDIT : OperationElement::DEBIT,
 				'financialYear' => $eFinancialYear,
 				'journalCode' => Operation::OD,
@@ -88,8 +88,8 @@ class VatLib {
 
 		if($balance !== 0.0) {
 
-			// Constatation du solde net dans le bilan sur 44551 / COLLECTED_VAT_CLASS si la TVA est à décaisser, sur 44567 / VAT_CREDIT_CLASS_ACCOUNT pour un crédit de TVA
-			$class = ($collectedVatAmount > $deductibleVatAmount ? \account\AccountSetting::COLLECTED_VAT_CLASS : \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT);
+			// Constatation du solde net dans le bilan sur 44551 / VAT_SELL_CLASS_ACCOUNT si la TVA est à décaisser, sur 44567 / VAT_CREDIT_CLASS pour un crédit de TVA
+			$class = ($collectedVatAmount > $deductibleVatAmount ? \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT : \account\AccountSetting::VAT_CREDIT_CLASS);
 			$type = ($collectedVatAmount > $deductibleVatAmount ? OperationElement::CREDIT : OperationElement::DEBIT);
 			$eAccount = \account\AccountLib::getByClass($class);
 

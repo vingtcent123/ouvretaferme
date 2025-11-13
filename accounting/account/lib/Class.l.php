@@ -18,12 +18,15 @@ class ClassLib {
 	public static function isAmortizationOrDepreciationClass(string $class): bool {
 
 		return (
-			// Immos
-			(mb_substr($class, 1, 1) === '8' and (in_array(mb_substr($class, 0, 1), ['2']))) or
-			// Stocks, tiers, financiers
-			(mb_substr($class, 1, 1) === '9' and (in_array(mb_substr($class, 0, 1), ['3', '4', '5']))) or
-			// Subventions
-			mb_substr($class, 0, 3) === AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS
+			in_array(
+				mb_substr($class, 0, 2), [
+					(string)AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS, // Immos : amortissement
+					(string)AccountSetting::ASSET_DEPRECIATION_CLASS, // Immos : dépréciations
+					(string)AccountSetting::STOCK_DEPRECIATION_CLASS, // Stocks : dépréciations
+					(string)AccountSetting::THIRD_PARTY_DEPRECIATION_CLASS, // Tiers : dépréciations
+					(string)AccountSetting::FINANCIAL_DEPRECIATION_CLASS, // Finance : dépréciations
+				]) or
+			mb_substr($class, 0, 3) === AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS // Subvention
 		);
 
 	}
@@ -41,7 +44,6 @@ class ClassLib {
 		return mb_substr($class, 0, 1).mb_substr($class, 2);
 
 	}
-
 
 }
 ?>

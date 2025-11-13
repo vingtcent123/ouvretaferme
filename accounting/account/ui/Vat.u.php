@@ -25,7 +25,7 @@ class VatUi {
 		return match($account) {
 			AccountSetting::VAT_BUY_CLASS_PREFIX => s("TVA versée"),
 			AccountSetting::VAT_SELL_CLASS_PREFIX => s("TVA / ventes"),
-			AccountSetting::COLLECTED_VAT_CLASS => s("TVA / ventes"),
+			AccountSetting::VAT_SELL_CLASS_ACCOUNT => s("TVA / ventes"),
 			default => throw new \NotExpectedAction('Unknown account for Vat Label'),
 		};
 

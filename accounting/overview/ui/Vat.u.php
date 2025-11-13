@@ -303,7 +303,7 @@ Class VatUi {
 					$h .= '<th class="text-center td-min-content">'.s("Taux").'</th>';
 					$h .= '<th class="text-end highlight-stick-right">'.s("Montant (HT)").'</th>';
 					$h .= '<th class="text-end highlight-stick-right">'.s("Montant de TVA<br />(calculé)").'</th>';
-					$h .= '<th class="text-end highlight-stick-right">'.s("TVA collectée<br />(compte {value})", \account\AccountSetting::COLLECTED_VAT_CLASS).'</th>';
+					$h .= '<th class="text-end highlight-stick-right">'.s("TVA collectée<br />(compte {value})", \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT).'</th>';
 					$h .= '<th class="text-center td-min-content">'.s("Contrôle").'</th>';
 				$h .= '</thead>';
 
@@ -313,7 +313,7 @@ Class VatUi {
 					$totalCollected = 0;
 					foreach($sales as $sale) {
 
-						$collectedVat = $taxes[\account\AccountSetting::COLLECTED_VAT_CLASS][(string)$sale['vatRate']]['amount'] ?? 0;
+						$collectedVat = $taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT][(string)$sale['vatRate']]['amount'] ?? 0;
 
 						$h .= '<tr>';
 							$h .= '<th class="text-center td-min-content text-end">'.round($sale['vatRate'], 1).'</th>';
@@ -374,7 +374,7 @@ Class VatUi {
 
 			if($hasIncoherence) {
 
-				$h .= '<div class="util-warning-outline vat-width-100">'.s("Il y a une incohérence entre les opérations de vente et les opérations de TVA enregistrées dans votre journal : la somme de la TVA sur le compte {value} ne correspond pas avec le montant de TVA qui est calculé.", \account\AccountSetting::COLLECTED_VAT_CLASS).'</div>';
+				$h .= '<div class="util-warning-outline vat-width-100">'.s("Il y a une incohérence entre les opérations de vente et les opérations de TVA enregistrées dans votre journal : la somme de la TVA sur le compte {value} ne correspond pas avec le montant de TVA qui est calculé.", \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT).'</div>';
 
 			} else if($totalCalculated !== 0) {
 
@@ -407,8 +407,8 @@ Class VatUi {
 
 			}
 
-			$vatCredit = $deposits[\account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT];
-			$vatDeposit = $deposits[\account\AccountSetting::VAT_DEPOSIT_CLASS_PREFIX];
+			$vatCredit = $deposits[\account\AccountSetting::VAT_CREDIT_CLASS];
+			$vatDeposit = $deposits[\account\AccountSetting::VAT_DEPOSIT_CLASS];
 
 			$vatBalance = $totalCollected - $abs44566 - $immo44562 - $vatCredit;
 			$h .= '<h3>'.s("Récapitulatif").'</h3>';
@@ -433,14 +433,14 @@ Class VatUi {
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("TVA sur immobilisations").'</th>';
-					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_ASSET_CLASS_ACCOUNT.'</td>';
+					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_ASSET_CLASS.'</td>';
 					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($immo44562), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('3-circle').'</td>';
 				$h .= '</tr>';
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("Crédit de TVA à reporter").'</th>';
-					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT.'</td>';
+					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_CREDIT_CLASS.'</td>';
 					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($vatCredit), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('4-circle').'</td>';
 				$h .= '</tr>';
@@ -462,7 +462,7 @@ Class VatUi {
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("Acomptes de TVA").'</th>';
-					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_DEPOSIT_CLASS_PREFIX.'</td>';
+					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_DEPOSIT_CLASS.'</td>';
 					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($vatDeposit), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('6-circle').'</td>';
 				$h .= '</tr>';
@@ -3547,12 +3547,12 @@ Class VatUi {
 
 		$h .= '<h3 class="mt-2">'.s("Et après ?").'</h3>';
 
-		if($cOperation->offsetExists(\account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT)) {
+		if($cOperation->offsetExists(\account\AccountSetting::VAT_CREDIT_CLASS)) {
 
 			$h .= '<ul>';
 
 				$h .= '<li>'.s("Comme vous avez un <b>crédit de TVA</b> (compte {account}), vous pouvez soit demander un remboursement (<link>voir les conditions {icon}</link>), soit le déduire dans votre prochaine déclaration.", [
-					'account' => \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT,
+					'account' => \account\AccountSetting::VAT_CREDIT_CLASS,
 					'link' => '<a href="https://www.impots.gouv.fr/professionnel/remboursement-de-credit-de-tva-0" target="_blank">',
 					'icon' => \Asset::icon('box-arrow-up-right'),
 				]).'</li>';
@@ -3565,11 +3565,11 @@ Class VatUi {
 
 						if($eFinancialYear->isCashAccounting()) {
 
-							$h .= ' '.s("Lorsque celui-ci arrivera sur votre compte, vous pourrez l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant votre compte bancaire {bankAccount} (ceci peut être fait plus facilement lorsque vous aurez importé votre relevé bancaire)", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+							$h .= ' '.s("Lorsque celui-ci arrivera sur votre compte, vous pourrez l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant votre compte bancaire {bankAccount} (ceci peut être fait plus facilement lorsque vous aurez importé votre relevé bancaire)", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
 
 						} else {
 
-							$h .= ' '.s("Vous pouvez déjà l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant le compte de tiers Trésor Public. Il s'agira ensuite d'enregistrer le remboursement lorsque le mouvement apparaîtra sur votre relevé bancaire.", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS_ACCOUNT]);
+							$h .= ' '.s("Vous pouvez déjà l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant le compte de tiers Trésor Public. Il s'agira ensuite d'enregistrer le remboursement lorsque le mouvement apparaîtra sur votre relevé bancaire.", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS]);
 
 						}
 
@@ -3587,19 +3587,19 @@ Class VatUi {
 
 			$h .= '</ul>';
 
-		} else if($cOperation->offsetExists(\account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT)) {
+		} else if($cOperation->offsetExists(\account\AccountSetting::VAT_DEBIT_CLASS)) {
 
 			$h .= '<ul>';
 
-				$h .= '<li>'.s("Comme vous avez de la <b>TVA à décaisser</b> (compte {account}), vous devez faire un télérèglement.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT]).'</li>';
+				$h .= '<li>'.s("Comme vous avez de la <b>TVA à décaisser</b> (compte {account}), vous devez faire un télérèglement.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS]).'</li>';
 
 				if($eFinancialYear->isCashAccounting()) {
 
-					$h .= '<li>'.s("Une fois que ce règlement apparaîtra dans votre compte bancaire, vous pourrez créditer le compte {account} (TVA à décaisser) pour le solder, et débiter votre compte bancaire (compte {bankAccount} ou l'un de ses sous-comptes si vous en avez créé).", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
+					$h .= '<li>'.s("Une fois que ce règlement apparaîtra dans votre compte bancaire, vous pourrez créditer le compte {account} (TVA à décaisser) pour le solder, et débiter votre compte bancaire (compte {bankAccount} ou l'un de ses sous-comptes si vous en avez créé).", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
 
 				} else {
 
-					$h .= '<li>'.s("Vous pouvez dès maintenant créditer le compte {account} (TVA à décaisser) pour le solder, et débiter le compte de tiers Trésor Public pour enregistrer l'opération dans votre comptabilité. Il s'agira ensuite d'enregistrer le règlement lorsque le mouvement aura été enregistré.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS_ACCOUNT]).'</li>';
+					$h .= '<li>'.s("Vous pouvez dès maintenant créditer le compte {account} (TVA à décaisser) pour le solder, et débiter le compte de tiers Trésor Public pour enregistrer l'opération dans votre comptabilité. Il s'agira ensuite d'enregistrer le règlement lorsque le mouvement aura été enregistré.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS]).'</li>';
 
 				}
 

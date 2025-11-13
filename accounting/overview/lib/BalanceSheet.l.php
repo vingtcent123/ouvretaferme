@@ -11,6 +11,7 @@ Class BalanceSheetLib {
 
 	public static function getData(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, bool $isDetailed): array {
 
+		// On récupère toutes les entrées sur 3 chiffres
 		$cOperation = self::applyFinancialYearsCondition($eFinancialYear, $eFinancialYearComparison)
 			->select([
 				'financialYear',
@@ -28,6 +29,7 @@ Class BalanceSheetLib {
 			->having('amount != 0.0')
 			->sort(['class' => SORT_ASC])
 			->getCollection()
+			// On récupère également toutes les dépréciations, amortissements et provisions
 			->mergeCollection(self::applyFinancialYearsCondition($eFinancialYear, $eFinancialYearComparison)
 				->select([
 					'financialYear',
@@ -87,19 +89,23 @@ Class BalanceSheetLib {
 				continue;
 			}
 
-			// Recherche des détails d'opération (même exercice comptable + classe de compte)
+			// Recherche des détails d'opération (même exercice comptable + classe de compte ou amortissement/dépréciation de cette classe)
 			$operationsSubClasses = $cOperationDetail->find(function($e) use($eOperation): bool {
 
-				$isClass = (mb_substr($e['class'], 0, 3) === $eOperation['class']);
+				$isSameClass = (mb_substr($e['class'], 0, 3) === $eOperation['class']);
+
 				$classFromAmortizationOrDepreciation = rtrim(\account\ClassLib::getClassFromAmortizationOrDepreciationClass($e['class']), '0');
+				// On prend le plus petit nombre de chiffres significatifs
+				$length = min(mb_strlen($classFromAmortizationOrDepreciation), mb_strlen(rtrim($eOperation['class'], '0')));
 
-				$operationClass = rtrim($eOperation['class'], '0');
+				$isAmortizationOrDepreciationClass = (
+					$classFromAmortizationOrDepreciation !== "" and
+					mb_substr($classFromAmortizationOrDepreciation, 0, $length) === mb_substr($eOperation['class'], 0, $length)
+				);
 
-				$length = min(mb_strlen($classFromAmortizationOrDepreciation), mb_strlen($operationClass));
-				$isAmortizationOrDepreciationClass = ($classFromAmortizationOrDepreciation !== "" and mb_substr($classFromAmortizationOrDepreciation, 0, $length) === mb_substr($eOperation['class'], 0, $length));
 				$isFinancialYear = $eOperation['financialYear']->is($e['financialYear']);
 
-				return (($isClass or $isAmortizationOrDepreciationClass) and $isFinancialYear);
+				return (($isSameClass or $isAmortizationOrDepreciationClass) and $isFinancialYear);
 			})->getArrayCopy();
 
 			$generalClass = (int)substr($eOperation['class'], 0, 1);

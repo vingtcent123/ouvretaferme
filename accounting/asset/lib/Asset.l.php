@@ -155,7 +155,7 @@ class AssetLib extends \asset\AssetCrud {
 		// Toutes les subventions possibles
 		$cAssetGrant = \asset\AssetLib::getGrantsWithAmortizedAssets();
 
-		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANTS_IN_INCOME_STATEMENT;
+		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS;
 		$eAccountDepreciation = \account\AccountLib::getByClass(\account\AccountSetting::GRANT_DEPRECIATION_CLASS);
 
 		foreach($grantsToRecognize as $grantId) {
@@ -184,7 +184,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		$cAsset = self::getGrantsByFinancialYear($eFinancialYear);
 
-		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANTS_IN_INCOME_STATEMENT;
+		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS;
 		$eAccountDepreciation = \account\AccountLib::getByClass(\account\AccountSetting::GRANT_DEPRECIATION_CLASS);
 
 		foreach($cAsset as $eAsset) {
