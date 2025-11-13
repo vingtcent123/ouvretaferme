@@ -79,7 +79,7 @@ Class AssetUi {
 			$d->attributes['data-account-label'] = $form->getId();
 		}]);
 
-		$h .= $form->dynamicGroups($eAsset, ['value*', 'depreciableBase*', 'acquisitionDate*', 'startDate*']);
+		$h .= $form->dynamicGroups($eAsset, ['value*', 'amortizableBase*', 'acquisitionDate*', 'startDate*']);
 		$h .= '<h3>'.s("Amortissement économique").'</h3>';
 		$h .= '<div class="util-block bg-background-light">';
 			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration*']);
@@ -127,7 +127,7 @@ Class AssetUi {
 		$itemHtml = '<div>';
 			$itemHtml .= encode($eAsset['accountLabel'].' ' .$eAsset['description']);
 			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Date d'acquisition : {value}", \util\DateUi::numeric($eAsset['acquisitionDate'])).'</div>';
-			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Valeur : {value} / Base amortissable : {base}", ['value' => \util\TextUi::money($eAsset['value']), 'base' => \util\TextUi::money($eAsset['depreciableBase'])]).'</div>';
+			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Valeur : {value} / Base amortissable : {base}", ['value' => \util\TextUi::money($eAsset['value']), 'base' => \util\TextUi::money($eAsset['amortizableBase'])]).'</div>';
 		$itemHtml .= '</div>';
 
 		return [
@@ -184,14 +184,14 @@ Class AssetUi {
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['economicMode']) {
 									AssetElement::LINEAR => s("LIN"),
-									AssetElement::LINEAR => s("DEG"),
+									AssetElement::DEGRESSIVE => s("DEG"),
 									AssetElement::WITHOUT => s("SANS"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['fiscalMode']) {
 									AssetElement::LINEAR => s("LIN"),
-									AssetElement::LINEAR => s("DEG"),
+									AssetElement::DEGRESSIVE => s("DEG"),
 									AssetElement::WITHOUT => s("SANS"),
 								};
 							$h .= '</td>';
@@ -289,16 +289,16 @@ Class AssetUi {
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['acquisitionValue'], '', 2).'</td>';
 
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['startFinancialYearValue'], '', 2).'</td>';
-							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearDepreciation'] + $asset['economic']['currentFinancialYearDegressiveDepreciation'], '', 2).'</td>';
-							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearDepreciation'], '', 2).'</td>';
-							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearDegressiveDepreciation'], '', 2).'</td>';
+							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearAmortization'] + $asset['economic']['currentFinancialYearDegressiveAmortization'], '', 2).'</td>';
+							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearAmortization'], '', 2).'</td>';
+							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearDegressiveAmortization'], '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['financialYearDiminution'], '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['endFinancialYearValue'], '', 2).'</td>';
 
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['netFinancialValue'], '', 2).'</td>';
 
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['excess']['startFinancialYearValue'], '', 2).'</td>';
-							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['excess']['currentFinancialYearDepreciation'], '', 2).'</td>';
+							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['excess']['currentFinancialYearAmortization'], '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['excess']['reversal'], '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['excess']['endFinancialYearValue'], '', 2).'</td>';
 
@@ -342,8 +342,8 @@ Class AssetUi {
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</dd>';
 				$h .= '<dt>'.self::p('value')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
-				$h .= '<dt>'.self::p('depreciableBase')->label.'</dt>';
-				$h .= '<dd>'.\util\TextUi::money($eAsset['depreciableBase']).'</dd>';
+				$h .= '<dt>'.self::p('amortizableBase')->label.'</dt>';
+				$h .= '<dd>'.\util\TextUi::money($eAsset['amortizableBase']).'</dd>';
 				$h .= '<dt>'.self::p('economicMode')->label.'</dt>';
 				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
 				$h .= '<dt>'.self::p('economicDuration')->label.'</dt>';
@@ -456,7 +456,7 @@ Class AssetUi {
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th class="text-center">'.s("Exercice").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.self::p('depreciableBase')->label.'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.self::p('amortizableBase')->label.'</th>';
 
 								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
@@ -478,7 +478,7 @@ Class AssetUi {
 
 					$h .= '<tbody>';
 						foreach($eAsset['table'] as $period) {
-							$h .= '<tr class="'.($period['depreciation']->empty() ? 'asset-line-future' : '').'">';
+							$h .= '<tr class="'.($period['amortization']->empty() ? 'asset-line-future' : '').'">';
 								$h .= '<td class="text-center">';
 									$h .= \account\FinancialYearUi::getYear($period['financialYear']);
 								$h .= '</td>';
@@ -510,19 +510,19 @@ Class AssetUi {
 
 								}
 								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['depreciationValue']);
+									$h .= \util\TextUi::money($period['amortizationValue']);
 								$h .= '</td>';
 								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['depreciationValueCumulated']);
+									$h .= \util\TextUi::money($period['amortizationValueCumulated']);
 								$h .= '</td>';
 								$h .= '<td class="text-end highlight-stick-right">';
 									$h .= \util\TextUi::money($period['endValue']);
 								$h .= '</td>';
 								$h .= '<td>';
-									if($period['depreciation']->empty()) {
+									if($period['amortization']->empty()) {
 										$h .= s("En attente...");
 									} else {
-										$h .= s("Comptabilisé le {value} ", \util\DateUi::numeric($period['depreciation']['date']));
+										$h .= s("Comptabilisé le {value} ", \util\DateUi::numeric($period['amortization']['date']));
 									}
 								$h .= '</td>';
 							$h .= '</tr>';
@@ -613,7 +613,7 @@ Class AssetUi {
 			'account' => s("Classe de compte"),
 			'accountLabel' => s("Compte"),
 			'value' => s("Valeur d'acquisition (HT)"),
-			'depreciableBase' => s("Base amortissable (HT)"),
+			'amortizableBase' => s("Base amortissable (HT)"),
 			'type' => s("Type d'amortissement"),
 			'economicMode' => s("Mode économique"),
 			'economicDuration' => s("Durée économique (en mois)"),
@@ -656,7 +656,7 @@ Class AssetUi {
 				break;
 
 			case 'value':
-			case 'depreciableBase':
+			case 'amortizableBase':
 				$d->field = 'calculation';
 				$d->append = function(\util\FormUi $form, Asset $e) {
 					return $form->addon(s("€"));

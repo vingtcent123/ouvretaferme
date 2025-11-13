@@ -1,7 +1,7 @@
 <?php
 namespace asset;
 
-Class DepreciationUi {
+Class AmortizationUi {
 
 	public function __construct() {
 		\Asset::js('asset', 'asset.js');
@@ -22,9 +22,9 @@ Class DepreciationUi {
 
 	}
 
-	private static function getDepreciationLine(\farm\Farm $eFarm, array $depreciation): string {
+	private static function getDepreciationLine(\farm\Farm $eFarm, array $amortization): string {
 
-		$isTotalLine = match($depreciation['economicMode']) {
+		$isTotalLine = match($amortization['economicMode']) {
 			AssetElement::LINEAR, AssetElement::WITHOUT => FALSE,
 			default => TRUE,
 		};
@@ -41,66 +41,63 @@ Class DepreciationUi {
 
 		}
 
-		if(GET('id', 'int') === $depreciation['id']) {
+		if(GET('id', 'int') === $amortization['id']) {
 			$class .= 'row-highlight';
 		}
 
-		if($depreciation['id'] !== NULL and $depreciation['id'] !== '') {
+		if($amortization['id'] !== NULL and $amortization['id'] !== '') {
 
-			$link = \company\CompanyUi::urlAsset($eFarm).'/'.$depreciation['id'].'/';
-			$description = '<a href="'.$link.'">'.encode($depreciation['description']).'</a>';
-			$id = '<a href="'.$link.'">'.encode($depreciation['id']).'</a>';
+			$link = \company\CompanyUi::urlAsset($eFarm).'/'.$amortization['id'].'/';
+			$description = '<a href="'.$link.'">'.encode($amortization['description']).'</a>';
 
 		} else {
 
-			$description = encode($depreciation['description']);
-			$id = encode($depreciation['id']);
+			$description = encode($amortization['description']);
 
 		}
 
-		$h = '<tr name="asset-'.$depreciation['id'].'" class="'.$class.'">';
+		$h = '<tr name="asset-'.$amortization['id'].'" class="'.$class.'">';
 			$h .= '<td>'.$description.'</td>';
-			$h .= '<td>'.$id.'</td>';
 			$h .= '<td>';
-				if($depreciation['acquisitionDate'] !== NULL) {
-					$h .= \util\DateUi::numeric($depreciation['acquisitionDate'], \util\DateUi::DATE);
+				if($amortization['acquisitionDate'] !== NULL) {
+					$h .= \util\DateUi::numeric($amortization['acquisitionDate'], \util\DateUi::DATE);
 				}
 			$h .= '</td>';
 
 			$h .= '<td class="td-min-content">';
-				if($depreciation['economicMode'] and $depreciation['fiscalMode']) {
+				if($amortization['economicMode'] and $amortization['fiscalMode']) {
 
-					$h .= match($depreciation['economicMode']) {
+					$h .= match($amortization['economicMode']) {
 						AssetElement::LINEAR => 'L',
 						AssetElement::WITHOUT => 'S',
 						default => '',
 					};
 					$h .= '/';
-					$h .= match($depreciation['fiscalMode']) {
+					$h .= match($amortization['fiscalMode']) {
 						AssetElement::LINEAR => 'L',
 						AssetElement::WITHOUT => 'S',
 						default => '',
 					};
 				}
 			$h .= '</td>';
-			$h .= '<td>'.encode($depreciation['duration']).'</td>';
+			$h .= '<td>'.encode($amortization['duration']).'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['acquisitionValue'], $default, 2) .'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['acquisitionValue'], $default, 2) .'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['economic']['startFinancialYearValue'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['economic']['currentFinancialYearDepreciation'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['economic']['financialYearDiminution'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['economic']['endFinancialYearValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['startFinancialYearValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['currentFinancialYearAmortization'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['financialYearDiminution'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['endFinancialYearValue'], $default, 2).'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['grossValueDiminution'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['netFinancialValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['grossValueDiminution'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['netFinancialValue'], $default, 2).'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['excess']['startFinancialYearValue'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['excess']['currentFinancialYearDepreciation'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['excess']['reversal'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['excess']['endFinancialYearValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['startFinancialYearValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearAmortization'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['reversal'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['endFinancialYearValue'], $default, 2).'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($depreciation['fiscalNetValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], $default, 2).'</td>';
 
 		$h .= '</tr>';
 
@@ -111,20 +108,20 @@ Class DepreciationUi {
 
 		$total['acquisitionValue'] += $line['acquisitionValue'];
 		$total['economic']['startFinancialYearValue'] += $line['economic']['startFinancialYearValue'];
-		$total['economic']['currentFinancialYearDepreciation'] += $line['economic']['currentFinancialYearDepreciation'];
+		$total['economic']['currentFinancialYearAmortization'] += $line['economic']['currentFinancialYearAmortization'];
 		$total['economic']['financialYearDiminution'] += $line['economic']['financialYearDiminution'];
 		$total['economic']['endFinancialYearValue'] += $line['economic']['endFinancialYearValue'];
 		$total['grossValueDiminution'] += $line['grossValueDiminution'];
 		$total['netFinancialValue'] += $line['netFinancialValue'];
 		$total['excess']['startFinancialYearValue'] += $line['excess']['startFinancialYearValue'];
-		$total['excess']['currentFinancialYearDepreciation'] += $line['excess']['currentFinancialYearDepreciation'];
+		$total['excess']['currentFinancialYearAmortization'] += $line['excess']['currentFinancialYearAmortization'];
 		$total['excess']['reversal'] += $line['excess']['reversal'];
 		$total['excess']['endFinancialYearValue'] += $line['excess']['endFinancialYearValue'];
 		$total['fiscalNetValue'] += $line['fiscalNetValue'];
 
 	}
 
-	public static function getDepreciationTable(\farm\Farm $eFarm, array $depreciations): string {
+	public static function getDepreciationTable(\farm\Farm $eFarm, array $amortizations): string {
 
 		$highlightedAssetId = GET('id', 'int');
 
@@ -134,7 +131,7 @@ Class DepreciationUi {
 
 			$h .= '<thead class="thead-sticky">';
 				$h .= '<tr class="row-bold">';
-					$h .= '<th colspan="5" class="text-center">'.s("Caractéristiques").'</th>';
+					$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
 					$h .= '<th colspan="4" class="text-center">'.s("Amortissements économiques").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
@@ -144,7 +141,6 @@ Class DepreciationUi {
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<th class="text-center">'.s("Libellé").'</th>';
-					$h .= '<th class="text-center">'.s("Ordre").'</th>';
 					$h .= '<th class="text-center">'.s("Date").'</th>';
 					$h .= '<th colspan="2" class="text-center border-bottom">'.s("Mode E/F et durée").'</th>';
 					$h .= '<th class="text-center">'.s("Début exercice").'</th>';
@@ -168,7 +164,7 @@ Class DepreciationUi {
 				'acquisitionValue' => 0,
 				'economic' => [
 					'startFinancialYearValue' => 0,
-					'currentFinancialYearDepreciation' => 0,
+					'currentFinancialYearAmortization' => 0,
 					'financialYearDiminution' => 0,
 					'endFinancialYearValue' => 0,
 				],
@@ -176,7 +172,7 @@ Class DepreciationUi {
 				'netFinancialValue' => 0,
 				'excess' => [
 					'startFinancialYearValue' => 0,
-					'currentFinancialYearDepreciation' => 0,
+					'currentFinancialYearAmortization' => 0,
 					'reversal' => 0,
 					'endFinancialYearValue' => 0,
 				],
@@ -190,20 +186,20 @@ Class DepreciationUi {
 
 			$h .= '<tbody>';
 
-				foreach($depreciations as $depreciation) {
+				foreach($amortizations as $amortization) {
 
-					if($currentAccountLabel !== NULL and $depreciation['accountLabel'] !== $currentAccountLabel) {
+					if($currentAccountLabel !== NULL and $amortization['accountLabel'] !== $currentAccountLabel) {
 
 						$h .= self::getDepreciationLine($eFarm, $total);
 						self::addTotalLine($generalTotal, $total);
 						$total = $emptyLine;
 
 					}
-					$currentAccountLabel = $depreciation['accountLabel'];
-					$total['description'] = $depreciation['accountLabel'].' '.$depreciation['accountDescription'];
+					$currentAccountLabel = $amortization['accountLabel'];
+					$total['description'] = $amortization['accountLabel'].' '.$amortization['accountDescription'];
 
-					$h .= self::getDepreciationLine($eFarm, $depreciation);
-					self::addTotalLine($total, $depreciation);
+					$h .= self::getDepreciationLine($eFarm, $amortization);
+					self::addTotalLine($total, $amortization);
 
 				}
 				self::addTotalLine($generalTotal, $total);
@@ -235,8 +231,8 @@ Class DepreciationUi {
 
 			case 'type':
 				$d->values = [
-					DepreciationElement::EXCESS => s("Dérogatoire"),
-					DepreciationElement::ECONOMIC => s("Économique"),
+					Amortization::EXCESS => s("Dérogatoire"),
+					Amortization::ECONOMIC => s("Économique"),
 				];
 				break;
 

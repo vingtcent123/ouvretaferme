@@ -1,7 +1,7 @@
 <?php
 namespace asset;
 
-class DepreciationLib extends \asset\DepreciationCrud {
+class AmortizationLib extends \asset\AmortizationCrud {
 
 	public static function getDegressiveCoefficient(int $duration): int {
 
@@ -17,43 +17,23 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 	}
 
-	public static function computeDepreciationRate(Asset $eAsset) {
+	public static function computeAmortizationRate(Asset $eAsset) {
 
 		if($eAsset['economicMode'] === Asset::LINEAR) {
 			return 1 / ($eAsset['economicDuration'] / 12);
 		}
 
 		if($eAsset['type'] === Asset::DEGRESSIVE) {
-			return DepreciationLib::getDegressiveCoefficient($eAsset['economicDuration'] / 12) / ($eAsset['economicDuration'] * 12);
+			return AmortizationLib::getDegressiveCoefficient($eAsset['economicDuration'] / 12) / ($eAsset['economicDuration'] * 12);
 		}
 
-		throw new \NotExpectedAction('Unknown depreciation type.');
+		throw new \NotExpectedAction('Unknown amortization type.');
 
 	}
 
-	private static function computeCurrentFinancialYearExcessDepreciation(Asset $eAsset, float $alreadyDepreciated, \account\FinancialYear $eFinancialYear): float {
+	private static function computeCurrentFinancialYearExcessAmortization(Asset $eAsset, float $alreadyAmortized, \account\FinancialYear $eFinancialYear): float {
 
 		return 0.0;
-
-	}
-
-	private static function countMonthsBetweenTwoDates(string $date1, string $date2): int {
-
-		$startDatetime = new \DateTime($date1);
-		$endDatetime = new \DateTime($date2);
-		$interval = $startDatetime->diff($endDatetime);
-
-		return (int)$interval->format('%m');
-
-	}
-
-	protected static function calculateDepreciationForFinancialYear(\account\FinancialYear $eFinancialYear, Asset $eAsset): float {
-
-		if($eAsset['type'] === AssetElement::WITHOUT) {
-			return 0;
-		}
-
-		return self::calculateDepreciation($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
 
 	}
 
@@ -83,7 +63,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 		return $days;
 	}
 
-	public static function calculateGrantDepreciation(string $startDate, string $endDate, Asset $eAsset): array {
+	public static function calculateGrantAmortization(string $startDate, string $endDate, Asset $eAsset): array {
 
 		$value = $eAsset['value'];
 		$rate = 1 / $eAsset['duration'];
@@ -96,21 +76,21 @@ class DepreciationLib extends \asset\DepreciationCrud {
 	}
 
 	/**
-	 * Calcul l'amortissement de l'immobilisation entre 2 dates
+	 * Calcule l'amortissement de l'immobilisation entre 2 dates
 	 *
 	 * @param string $startDate
 	 * @param string $endDate
 	 * @param Asset $eAsset
 	 * @return float
 	 */
-	public static function calculateDepreciation(string $startDate, string $endDate, Asset $eAsset): float {
+	public static function calculateAmortization(string $startDate, string $endDate, Asset $eAsset): float {
 
 		if(in_array($eAsset['economicMode'], [Asset::LINEAR, Asset::DEGRESSIVE]) === FALSE) {
 			return 0.0;
 		}
 
 		$base = $eAsset['value'];
-		$rate = DepreciationLib::computeDepreciationRate($eAsset);
+		$rate = AmortizationLib::computeAmortizationRate($eAsset);
 
 		$days = self::getDays(max($startDate, $eAsset['startDate']), min($endDate, $eAsset['endDate']), $eAsset);
 
@@ -146,14 +126,14 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 		}
 
-		throw new \NotExpectedAction('Unable to calculate depreciation for asset '.$eAsset['id']);
+		throw new \NotExpectedAction('Unable to calculate amortization for asset '.$eAsset['id']);
 	}
 
 	public static function getSummary(\account\FinancialYear $eFinancialYear): array {
 
-		$depreciations = self::getByFinancialYear($eFinancialYear, 'asset');
+		$amortizations = self::getByFinancialYear($eFinancialYear, 'asset');
 
-		if(empty($depreciations)) {
+		if(empty($amortizations)) {
 			return [];
 		}
 
@@ -163,8 +143,8 @@ class DepreciationLib extends \asset\DepreciationCrud {
 			'acquisitionValue' => 0,
 			'economic' => [
 				'startFinancialYearValue' => 0,
-				'currentFinancialYearDepreciation' => 0,
-				'currentFinancialYearDegressiveDepreciation' => 0,
+				'currentFinancialYearAmortization' => 0,
+				'currentFinancialYearDegressiveAmortization' => 0,
 				'financialYearDiminution' => 0,
 				'endFinancialYearValue' => 0,
 			],
@@ -172,7 +152,7 @@ class DepreciationLib extends \asset\DepreciationCrud {
 			'netFinancialValue' => 0,
 			'excess' => [
 				'startFinancialYearValue' => 0,
-				'currentFinancialYearDepreciation' => 0,
+				'currentFinancialYearAmortization' => 0,
 				'reversal' => 0,
 				'endFinancialYearValue' => 0,
 			],
@@ -185,24 +165,24 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 		$currentAccountLabel = NULL;
 
-		foreach($depreciations as $depreciation) {
+		foreach($amortizations as $amortization) {
 
-			if($currentAccountLabel !== NULL and $depreciation['accountLabel'] !== $currentAccountLabel) {
+			if($currentAccountLabel !== NULL and $amortization['accountLabel'] !== $currentAccountLabel) {
 
-				DepreciationUi::addTotalLine($generalTotal, $total);
+				AmortizationUi::addTotalLine($generalTotal, $total);
 				$lines[] = $total;
 				$total = $emptyLine;
 
 			}
 
-			$total['accountLabel'] = $depreciation['accountLabel'];
-			$total['description'] = $depreciation['accountDescription'];
-			$currentAccountLabel = $depreciation['accountLabel'];
-			DepreciationUi::addTotalLine($total, $depreciation);
+			$total['accountLabel'] = $amortization['accountLabel'];
+			$total['description'] = $amortization['accountDescription'];
+			$currentAccountLabel = $amortization['accountLabel'];
+			AmortizationUi::addTotalLine($total, $amortization);
 
 		}
 
-		DepreciationUi::addTotalLine($generalTotal, $total);
+		AmortizationUi::addTotalLine($generalTotal, $total);
 
 		$lines[] = $total;
 		$lines[] = $generalTotal;
@@ -218,50 +198,50 @@ class DepreciationLib extends \asset\DepreciationCrud {
 			'subvention' => AssetLib::getGrantsByFinancialYear($eFinancialYear),
 		};
 
-		$ccDepreciation = Depreciation::model()
+		$ccAmortization = Amortization::model()
 			->select(['asset', 'financialYear', 'amount', 'type'])
 			->whereAsset('IN', $cAsset)
 			->whereDate('<=', $eFinancialYear['endDate'])
 			->getCollection(NULL, NULL, ['asset', 'financialYear']);
 
-		$depreciations = [];
+		$amortizations = [];
 
 		foreach($cAsset as $eAsset) {
 
 			$accountLabel = $eAsset['accountLabel'];
 
-			$cDepreciation = $ccDepreciation->offsetExists($eAsset['id']) ? $ccDepreciation->offsetGet($eAsset['id']) : new \Collection();
+			$cAmortization = $ccAmortization->offsetExists($eAsset['id']) ? $ccAmortization->offsetGet($eAsset['id']) : new \Collection();
 
-			// sum what has already been depreciated for this asset (during previous financial years)
-			$alreadyDepreciated = array_reduce(
-				$cDepreciation->getArrayCopy(),
-				fn($res, $eDepreciation) => $res + (($eDepreciation['financialYear']['id'] !== $eFinancialYear['id'] and $eDepreciation['type'] === DepreciationElement::ECONOMIC) ? $eDepreciation['amount'] : 0), 0,
+			// sum what has already been amortized for this asset (during previous financial years)
+			$alreadyAmortized = array_reduce(
+				$cAmortization->getArrayCopy(),
+				fn($res, $eAmortization) => $res + (($eAmortization['financialYear']['id'] !== $eFinancialYear['id'] and $eAmortization['type'] === Amortization::ECONOMIC) ? $eAmortization['amount'] : 0), 0,
 			);
-			$alreadyExcessDepreciated = array_reduce(
-				$cDepreciation->getArrayCopy(),
-				fn($res, $eDepreciation) => $res + (($eDepreciation['financialYear']['id'] !== $eFinancialYear['id'] and $eDepreciation['type'] === DepreciationElement::EXCESS) ? $eDepreciation['amount'] : 0), 0,
+			$alreadyExcessAmortized = array_reduce(
+				$cAmortization->getArrayCopy(),
+				fn($res, $eAmortization) => $res + (($eAmortization['financialYear']['id'] !== $eFinancialYear['id'] and $eAmortization['type'] === Amortization::EXCESS) ? $eAmortization['amount'] : 0), 0,
 			);
 
-			// This financial year depreciation
+			// This financial year amortization
 			if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
-				$currentDepreciation = ($cDepreciation->offsetExists($eFinancialYear['id']) and $cDepreciation[$eFinancialYear['id']]['type'] === DepreciationElement::ECONOMIC) ? $cDepreciation[$eFinancialYear['id']]['amount'] : 0;
-				$currentExcessDepreciation = ($cDepreciation->offsetExists($eFinancialYear['id']) and $cDepreciation[$eFinancialYear['id']]['type'] === DepreciationElement::EXCESS) ? $cDepreciation[$eFinancialYear['id']]['amount'] : 0;
+				$currentAmortization = ($cAmortization->offsetExists($eFinancialYear['id']) and $cAmortization[$eFinancialYear['id']]['type'] === Amortization::ECONOMIC) ? $cAmortization[$eFinancialYear['id']]['amount'] : 0;
+				$currentExcessAmortization = ($cAmortization->offsetExists($eFinancialYear['id']) and $cAmortization[$eFinancialYear['id']]['type'] === Amortization::EXCESS) ? $cAmortization[$eFinancialYear['id']]['amount'] : 0;
 
 			} else {
 
 				// Estimate
-				$currentDepreciation = self::calculateDepreciation($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
-				$currentExcessDepreciation = self::computeCurrentFinancialYearExcessDepreciation($eAsset, $alreadyExcessDepreciated, $eFinancialYear);
+				$currentAmortization = self::calculateAmortization($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
+				$currentExcessAmortization = self::computeCurrentFinancialYearExcessAmortization($eAsset, $alreadyExcessAmortized, $eFinancialYear);
 
 			}
 
 			$financialYearDiminution = 0; // TODO
 
-			$vnc = $eAsset['value'] - $alreadyDepreciated - $currentDepreciation;
-			$vnf = $currentExcessDepreciation > 0 ? $eAsset['value'] - $alreadyExcessDepreciated - $currentExcessDepreciation : $vnc;
+			$vnc = $eAsset['value'] - $alreadyAmortized - $currentAmortization;
+			$vnf = $currentExcessAmortization > 0 ? $eAsset['value'] - $alreadyExcessAmortized - $currentExcessAmortization : $vnc;
 
-			$depreciation = [
+			$amortization = [
 				'id' => $eAsset['id'],
 				'accountLabel' => $accountLabel,
 				'accountDescription' => $eAsset['account']['description'],
@@ -279,14 +259,14 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 				'acquisitionValue' => $eAsset['value'],
 
-				// Economic depreciation
+				// Economic amortization
 				'economic' => [
 					// Début exercice : NULL si acquis durant l'exercice comptable
-					'startFinancialYearValue' => $eAsset['startDate'] >= $eFinancialYear['startDate'] ? NULL : $eAsset['value'] - $alreadyDepreciated,
-					'currentFinancialYearDepreciation' => $currentDepreciation,
-					'currentFinancialYearDegressiveDepreciation' => 0,
+					'startFinancialYearValue' => $eAsset['startDate'] >= $eFinancialYear['startDate'] ? NULL : $eAsset['value'] - $alreadyAmortized,
+					'currentFinancialYearAmortization' => $currentAmortization,
+					'currentFinancialYearDegressiveAmortization' => 0,
 					'financialYearDiminution' => $financialYearDiminution,
-					'endFinancialYearValue' => $currentDepreciation - $financialYearDiminution,
+					'endFinancialYearValue' => $currentAmortization - $financialYearDiminution,
 				],
 
 				// Diminution de valeur brut
@@ -295,12 +275,12 @@ class DepreciationLib extends \asset\DepreciationCrud {
 				// VNC
 				'netFinancialValue' => $vnc,
 
-				// Excess depreciation (amortissement dérogatoire)
+				// Excess amortization (amortissement dérogatoire)
 				'excess' => [
 					'startFinancialYearValue' => 0,
-					'currentFinancialYearDepreciation' => $currentExcessDepreciation,
+					'currentFinancialYearAmortization' => $currentExcessAmortization,
 					'reversal' => 0,
-					'endFinancialYearValue' => $currentExcessDepreciation,
+					'endFinancialYearValue' => $currentExcessAmortization,
 				],
 
 				// VNF
@@ -309,11 +289,11 @@ class DepreciationLib extends \asset\DepreciationCrud {
 
 			];
 
-			$depreciations[] = $depreciation;
+			$amortizations[] = $amortization;
 
 		}
 
-		return $depreciations;
+		return $amortizations;
 
 	}
 

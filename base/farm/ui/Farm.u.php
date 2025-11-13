@@ -950,8 +950,7 @@ class FarmUi {
 
 			'assets' => match($name) {
 				'acquisition' => s("Acquisitions"),
-				'depreciation' => s("Amortissement"),
-				'state' => s("État des immos"),
+				'amortization' => s("Amortissements"),
 			},
 
 			'bank' => match($name) {
@@ -1918,7 +1917,7 @@ class FarmUi {
 				return $categories;
 
 			case 'assets' :
-				return ['acquisition', 'depreciation', 'state'];
+				return ['acquisition', 'amortization'];
 
 			case 'journal' :
 				$categories = [

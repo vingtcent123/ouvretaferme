@@ -28,7 +28,7 @@ table.balance-table {
 	border-right: 1px solid var(--muted);
 }
 td.balance-td-net,
-td.balance-td-depreciation,
+td.balance-td-amortization,
 td.balance-td-brut {
 	border-left: 1px solid var(--muted-light);
 	border-right: 1px solid var(--muted-light);

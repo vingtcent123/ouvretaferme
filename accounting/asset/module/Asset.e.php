@@ -30,8 +30,8 @@ class Asset extends AssetElement {
 				'asset' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
 				'grant' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
 				'account' => \account\Account::getSelection(),
-				'cDepreciation' => Depreciation::model()
-	        ->select(Depreciation::getSelection())
+				'cAmortization' => Amortization::model()
+	        ->select(Amortization::getSelection())
 					->sort(['date' => SORT_ASC])
 	        ->delegateCollection('asset')
 			];
@@ -90,13 +90,13 @@ class Asset extends AssetElement {
 				return FALSE;
 
 			})
-			->setCallback('depreciableBase.check', function(float $depreciableBase) use($p): bool {
+			->setCallback('amortizableBase.check', function(float $amortizableBase) use($p): bool {
 
 				if($p->isBuilt('value') === FALSE) {
 					return TRUE;
 				}
 
-				return($this['value'] >= $depreciableBase);
+				return($this['value'] >= $amortizableBase);
 
 			})
 			/*->setCallback('grant.check', function(?Asset $eAsset) use($p): bool {

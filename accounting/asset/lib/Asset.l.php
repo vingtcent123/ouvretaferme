@@ -7,7 +7,7 @@ class AssetLib extends \asset\AssetCrud {
 		return [
 			'acquisitionDate', 'startDate',
 			'account', 'accountLabel',
-			'value', 'depreciableBase',
+			'value', 'amortizableBase',
 			'economicMode', 'fiscalMode',
 			'description',
 			'duration', 'economicDuration', 'fiscalDuration',
@@ -100,7 +100,7 @@ class AssetLib extends \asset\AssetCrud {
       ->getCollection();
 	}
 
-	public static function getAssetsByFinancialYear(\account\FinancialYear $eFinancialYear, ?string $status = Asset::ONGOING): \Collection {
+	public static function getAssetsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Asset::model()
 			->select(
@@ -111,7 +111,6 @@ class AssetLib extends \asset\AssetCrud {
 			->whereEndDate('>=', $eFinancialYear['startDate'])
 			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
 			->whereIsGrant(FALSE)
-			->whereStatus($status, if: $status !== NULL)
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
 
@@ -135,7 +134,7 @@ class AssetLib extends \asset\AssetCrud {
 			->select(
 				Asset::getSelection()
 				+ [
-					'cDepreciation' => Depreciation::model()
+					'cAmortization' => Amortization::model()
 						->select(['amount', 'date', 'type', 'financialYear' => \account\FinancialYear::getSelection()])
 						->sort(['date' => SORT_ASC])
 						->delegateCollection('asset'),
@@ -168,10 +167,10 @@ class AssetLib extends \asset\AssetCrud {
 			$eAsset = $cAsset->first();
 
 			$alreadyRecognized = RecognitionLib::sumByGrant($eAsset);
-			$depreciationValue = $eAsset['value'] - $alreadyRecognized;
+			$amortizationValue = $eAsset['value'] - $alreadyRecognized;
 			$prorataDays = 0;
 
-			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $depreciationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, new AssetUi()->getFinalRecognitionTranslation());
+			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $amortizationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, new AssetUi()->getFinalRecognitionTranslation());
 
 		}
 
@@ -189,16 +188,16 @@ class AssetLib extends \asset\AssetCrud {
 
 		foreach($cAsset as $eAsset) {
 
-			$depreciationData = DepreciationLib::calculateGrantDepreciation($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
-			$prorataDays = $depreciationData['prorataDays'];
+			$amortizationData = AmortizationLib::calculateGrantAmortization($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
+			$prorataDays = $amortizationData['prorataDays'];
 
 			// Valeur théorique
-			$depreciationValue = $depreciationData['value'];
+			$amortizationValue = $amortizationData['value'];
 
 			// Valeur restante (déjà virée au compte de résultat)
 			$alreadyRecognized = RecognitionLib::sumByGrant($eAsset);
 
-			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $depreciationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, NULL);
+			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $amortizationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, NULL);
 
 		}
 
@@ -209,14 +208,14 @@ class AssetLib extends \asset\AssetCrud {
 		\account\FinancialYear $eFinancialYear,
 		Asset $eAsset,
 		float $alreadyRecognized,
-		float $depreciationValue,
+		float $amortizationValue,
 		\account\Account $eAccountGrantsInIncomeStatement,
 		\account\Account $eAccountDepreciation,
 		float $prorataDays,
 		?string $comment,
 	): void {
 
-		$value = min($eAsset['value'] - $alreadyRecognized, $depreciationValue);
+		$value = min($eAsset['value'] - $alreadyRecognized, $amortizationValue);
 
 		// Crée l'opération 139 au débit
 		$eOperationSubvention = new \journal\Operation([
@@ -304,22 +303,22 @@ class AssetLib extends \asset\AssetCrud {
 			$endDate = $eFinancialYear['endDate'];
 		}
 
-		$depreciationValue = DepreciationLib::calculateDepreciation($eFinancialYear['startDate'], $endDate, $eAsset);
+		$amortizationValue = AmortizationLib::calculateAmortization($eFinancialYear['startDate'], $endDate, $eAsset);
 
 		// Dotation aux amortissements
 		if(self::isIntangibleAsset($eAsset['accountLabel'])) {
-			$depreciationChargeClass = \account\AccountSetting::INTANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS;
+			$amortizationChargeClass = \account\AccountSetting::INTANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS;
 		} else {
-			$depreciationChargeClass = \account\AccountSetting::TANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS;
+			$amortizationChargeClass = \account\AccountSetting::TANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS;
 		}
 
-		$eAccountDepreciationCharge = \account\AccountLib::getByClass($depreciationChargeClass);
+		$eAccountDepreciationCharge = \account\AccountLib::getByClass($amortizationChargeClass);
 		$values = [
 			'account' => $eAccountDepreciationCharge['id'],
 			'accountLabel' => \account\ClassLib::pad($eAccountDepreciationCharge['class']),
 			'date' => $endDate,
 			'description' => $eAccountDepreciationCharge['description'],
-			'amount' => $depreciationValue,
+			'amount' => $amortizationValue,
 			'type' => \journal\OperationElement::DEBIT,
 			'asset' => $eAsset,
 			'financialYear' => $eFinancialYear['id'],
@@ -327,25 +326,25 @@ class AssetLib extends \asset\AssetCrud {
 		\journal\OperationLib::createFromValues($values);
 
 		// Amortissement
-		$values = self::getDepreciationOperationValues($eFinancialYear, $eAsset, $endDate, $depreciationValue);
+		$values = self::getDepreciationOperationValues($eFinancialYear, $eAsset, $endDate, $amortizationValue);
 
-		if($depreciationValue !== 0.0) {
+		if($amortizationValue !== 0.0) {
 			\journal\OperationLib::createFromValues($values);
 		}
 
-		// Créer une entrée dans la table Depreciation
-		$eDepreciation = new Depreciation([
+		// Créer une entrée dans la table Amortization
+		$eDepreciation = new Amortization([
 			'asset' => $eAsset,
-			'amount' => $depreciationValue,
-			'type' => DepreciationElement::ECONOMIC,
+			'amount' => $amortizationValue,
+			'type' => Amortization::ECONOMIC,
 			'date' => $endDate,
 			'financialYear' => $eFinancialYear,
 		]);
 
-		Depreciation::model()->insert($eDepreciation);
+		Amortization::model()->insert($eDepreciation);
 
 		// Si l'immobilisation a été entièrement amortie ou n'est plus valide
-		$depreciatedValue = Depreciation::model()
+		$depreciatedValue = Amortization::model()
 			->whereAsset($eAsset)
 			->getValue(new \Sql('SUM(amount)', 'float'));
 
@@ -366,8 +365,8 @@ class AssetLib extends \asset\AssetCrud {
 	 */
 	private static function getDepreciationOperationValues(\account\FinancialYear $eFinancialYear, Asset $eAsset, string $date, float $amount): array {
 
-		$depreciationClass = self::depreciationClassByAssetClass(substr($eAsset['accountLabel'], 0, 3));
-		$eAccountDepreciation = \account\AccountLib::getByClass(trim($depreciationClass, '0'));
+		$amortizationClass = self::depreciationClassByAssetClass(substr($eAsset['accountLabel'], 0, 3));
+		$eAccountDepreciation = \account\AccountLib::getByClass(trim($amortizationClass, '0'));
 
 		return [
 			'account' => $eAccountDepreciation['id'],
@@ -484,7 +483,7 @@ class AssetLib extends \asset\AssetCrud {
 			// Re-récupérer l'actif pour sommer les amortissements cumulés
 			Asset::model()
 				->select(Asset::getSelection() + [
-						'cDepreciation' => Depreciation::model()
+						'cAmortization' => Amortization::model()
 							->select(['amount', 'date', 'type', 'financialYear' => \account\FinancialYear::getSelection()])
 							->sort(['date' => SORT_ASC])
 							->delegateCollection('asset'),
@@ -500,7 +499,7 @@ class AssetLib extends \asset\AssetCrud {
 		$initialValue = $eAsset['value'];
 
 		// Amortissements
-		$accumulatedDepreciationsValue = $eAsset['cDepreciation']->sum('amount');
+		$accumulatedDepreciationsValue = $eAsset['cAmortization']->sum('amount');
 		$netAccountingValue = $initialValue - $accumulatedDepreciationsValue;
 
 		// Sortir l'actif (immo : 2x)
@@ -647,7 +646,7 @@ class AssetLib extends \asset\AssetCrud {
 		$cFinancialYearAll = \account\FinancialYearLib::getAll();
 
 		$table = [];
-		$depreciationCumulated = 0;
+		$amortizationCumulated = 0;
 		$currentDate = $eAsset['startDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
@@ -664,43 +663,43 @@ class AssetLib extends \asset\AssetCrud {
 				$eFinancialYear = $eFinancialYearCurrent;
 			}
 
-			$eDepreciation = $eAsset['cDepreciation'][$i] ?? new Depreciation();
+			$eDepreciation = $eAsset['cAmortization'][$i] ?? new Amortization();
 
 			if($eDepreciation->empty()) {
 
 				switch($i) {
 					case 0:
-						$depreciation = round($eAsset['depreciableBase'] * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$amortization = round($eAsset['amortizableBase'] * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
 					case $durationInYears:
-						$depreciation = round($eAsset['depreciableBase'] - $depreciationCumulated, 2);
+						$amortization = round($eAsset['amortizableBase'] - $amortizationCumulated, 2);
 						break;
 					default:
-						$depreciation = round($eAsset['depreciableBase'] * $rate / 100, 2);
+						$amortization = round($eAsset['amortizableBase'] * $rate / 100, 2);
 				}
 
 			} else {
 
-				$depreciation = $eDepreciation['amount'];
+				$amortization = $eDepreciation['amount'];
 
 			}
 
-			$depreciationCumulated += $depreciation;
+			$amortizationCumulated += $amortization;
 
 			$table[] = [
 				'financialYear' => $eFinancialYear,
-				'base' => $eAsset['depreciableBase'],
+				'base' => $eAsset['amortizableBase'],
 				'rate' => $rate,
-				'depreciationValue' => $depreciation,
-				'depreciationValueCumulated' => round($depreciationCumulated, 2),
-				'endValue' => round($eAsset['depreciableBase'] - $depreciationCumulated),
-				'depreciation' => $eDepreciation,
+				'amortizationValue' => $amortization,
+				'amortizationValueCumulated' => round($amortizationCumulated, 2),
+				'endValue' => round($eAsset['amortizableBase'] - $amortizationCumulated),
+				'amortization' => $eDepreciation,
 			];
 
 			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
 
 			// On n'amortit pas + que la valeur initiale
-			if($depreciationCumulated >= $eAsset['depreciableBase']) {
+			if($amortizationCumulated >= $eAsset['amortizableBase']) {
 				break;
 			}
 
@@ -731,7 +730,7 @@ class AssetLib extends \asset\AssetCrud {
 		$cFinancialYearAll = \account\FinancialYearLib::getAll();
 
 		$table = [];
-		$depreciationCumulated = 0;
+		$amortizationCumulated = 0;
 		$currentDate = $eAsset['startDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
@@ -752,29 +751,29 @@ class AssetLib extends \asset\AssetCrud {
 				$eFinancialYear = $eFinancialYearCurrent;
 			}
 
-			$eDepreciation = $eAsset['cDepreciation'][$i] ?? new Depreciation();
+			$eDepreciation = $eAsset['cAmortization'][$i] ?? new Amortization();
 
 			if($eDepreciation->empty()) {
 
 				switch($i) {
 					case 0:
-						$depreciation = round(($eAsset['depreciableBase'] - $depreciationCumulated) * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$amortization = round(($eAsset['amortizableBase'] - $amortizationCumulated) * $rate * self::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
 					case $eAsset['economicDuration']:
-						$depreciation = round(($eAsset['depreciableBase'] - $depreciationCumulated), 2);
+						$amortization = round(($eAsset['amortizableBase'] - $amortizationCumulated), 2);
 						break;
 					default:
-						$depreciation = round(($eAsset['depreciableBase'] - $depreciationCumulated) * $rate / 100, 2);
+						$amortization = round(($eAsset['amortizableBase'] - $amortizationCumulated) * $rate / 100, 2);
 				}
 
 			} else {
 
-				$depreciation = $eDepreciation['amount'];
+				$amortization = $eDepreciation['amount'];
 
 			}
 
-			$base = round($eAsset['depreciableBase'] - $depreciationCumulated, 2);
-			$depreciationCumulated += $depreciation;
+			$base = round($eAsset['amortizableBase'] - $amortizationCumulated, 2);
+			$amortizationCumulated += $amortization;
 
 			$table[] = [
 				'financialYear' => $eFinancialYear,
@@ -782,10 +781,10 @@ class AssetLib extends \asset\AssetCrud {
 				'linearRate' => $linearRate,
 				'degressiveRate' => $degressiveRate,
 				'rate' => $rate,
-				'depreciationValue' => $depreciation,
-				'depreciationValueCumulated' => round($depreciationCumulated, 2),
-				'endValue' => round($eAsset['depreciableBase'] - $depreciationCumulated),
-				'depreciation' => $eDepreciation,
+				'amortizationValue' => $amortization,
+				'amortizationValueCumulated' => round($amortizationCumulated, 2),
+				'endValue' => round($eAsset['amortizableBase'] - $amortizationCumulated),
+				'amortization' => $eDepreciation,
 			];
 
 			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));

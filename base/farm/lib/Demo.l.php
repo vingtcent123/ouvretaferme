@@ -21,7 +21,7 @@ class DemoLib {
 		'account\Partner',
 		'account\ThirdParty',
 		'asset\Asset',
-		'asset\Depreciation',
+		'asset\Amortization',
 		'association\History',
 		'bank\BankAccount',
 		'bank\Cashflow',

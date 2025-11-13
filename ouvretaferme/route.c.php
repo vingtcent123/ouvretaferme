@@ -13,15 +13,10 @@ Route::register([
 			'priority' => 5,
 			'route' => ['asset', 'acquisition'],
 		],
-		'/asset/depreciation' => [
-			'request' => 'asset/depreciation',
+		'/asset/amortization' => [
+			'request' => 'asset/amortization',
 			'priority' => 5,
-			'route' => ['asset', 'depreciation'],
-		],
-		'/asset/state' => [
-			'request' => 'asset/state',
-			'priority' => 5,
-			'route' => ['asset', 'state'],
+			'route' => ['asset', 'amortization'],
 		],
 		'/asset/{id}/' => [
 			'request' => 'asset/index',

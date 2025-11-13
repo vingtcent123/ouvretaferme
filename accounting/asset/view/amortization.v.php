@@ -1,17 +1,17 @@
 <?php
-new AdaptativeView('/asset/depreciation', function($data, FarmTemplate $t) {
+new AdaptativeView('/asset/amortization', function($data, FarmTemplate $t) {
 
 	$t->nav = 'assets';
-	$t->subNav = 'depreciation';
+	$t->subNav = 'amortization';
 
 	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/depreciation';
+	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/amortization';
 
-	$t->mainTitle = new \asset\DepreciationUi()->getTitle();
+	$t->mainTitle = new \asset\AmortizationUi()->getTitle();
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlAsset($data->eFarm).'/depreciation?financialYear='.$eFinancialYear['id'];
+			return \company\CompanyUi::urlAsset($data->eFarm).'/amortization?financialYear='.$eFinancialYear['id'];
 		},
 		$data->cFinancialYear,
 		$data->eFinancialYear,
@@ -33,20 +33,20 @@ new AdaptativeView('/asset/depreciation', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<div class="tabs-h" id="asset-depreciation" onrender="'.encode('Lime.Tab.restore(this, "depreciation-asset")').'">';
+		echo '<div class="tabs-h" id="asset-amortization" onrender="'.encode('Lime.Tab.restore(this, "amortization-asset")').'">';
 
 			echo '<div class="tabs-item">';
-			echo '<a class="tab-item selected" data-tab="depreciation-asset" onclick="Lime.Tab.select(this)">'.s("Immobilisations").'</a>';
-			echo '<a class="tab-item" data-tab="depreciation-subvention" onclick="Lime.Tab.select(this)">'.s("Subventions").'</a>';
+			echo '<a class="tab-item selected" data-tab="amortization-asset" onclick="Lime.Tab.select(this)">'.s("Immobilisations").'</a>';
+			echo '<a class="tab-item" data-tab="amortization-subvention" onclick="Lime.Tab.select(this)">'.s("Subventions").'</a>';
 			echo '</div>';
 
-			echo '<div class="tab-panel" data-tab="depreciation-asset">';
-				echo \asset\DepreciationUi::getDepreciationTable($data->eFarm, $data->assetDepreciations);
+			echo '<div class="tab-panel" data-tab="amortization-asset">';
+				echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->assetDepreciations);
 			echo '</div>';
 
-			echo '<div class="tab-panel" data-tab="depreciation-subvention">';
+			echo '<div class="tab-panel" data-tab="amortization-subvention">';
 				if(count($data->subventionDepreciations) > 0) {
-					echo \asset\DepreciationUi::getDepreciationTable($data->eFarm, $data->subventionDepreciations);
+					echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->subventionDepreciations);
 				} else {
 					echo '<div class="util-info">';
 						echo s("Il n'y a aucun amortissement à afficher.");

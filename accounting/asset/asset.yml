@@ -5,7 +5,7 @@ Asset:
   # Valeur d'acquisition
   value: decimal(8, 2, 0, null)
   # Base amortissable
-  depreciableBase: decimal(8, 2, 0, null)
+  amortizableBase: decimal(8, 2, 0, null)
   description: text8(1, null) @collate(general)
   economicMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
   economicDuration: int(0, null) # en mois
@@ -29,7 +29,7 @@ Asset:
   updatedAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
 
-Depreciation:
+Amortization:
   id: serial32
   asset: asset\Asset
   amount: decimal(8, 2)

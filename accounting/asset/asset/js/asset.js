@@ -17,13 +17,13 @@ document.delegateEventListener('autocompleteSource', '[data-account-label="asset
 });
 
 document.delegateEventListener('change', '[data-wrapper="value-calculation"] input', function() {
-    const targetDepreciableBase = qs('[name="depreciableBase"]');
-    const depreciableBase = CalculationField.getValue(targetDepreciableBase);
+    const targetamortizableBase = qs('[name="amortizableBase"]');
+    const amortizableBase = CalculationField.getValue(targetamortizableBase);
 
-    if(isNaN(depreciableBase)) {
+    if(isNaN(amortizableBase)) {
         const targetValue = qs('[name="value"]');
         const value = CalculationField.getValue(targetValue);
-        CalculationField.setValue(targetDepreciableBase, value);
+        CalculationField.setValue(targetamortizableBase, value);
     }
 });
 
