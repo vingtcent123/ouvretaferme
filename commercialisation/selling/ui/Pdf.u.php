@@ -30,9 +30,9 @@ class PdfUi {
 
 		foreach($cSale as $eSale) {
 
-			$cItem = $eSale['cItem'];
+			$ccItem = $eSale['ccItem'];
 
-			foreach($cItem as $eItem) {
+			foreach($ccItem[''] as $eItem) {
 
 				if(
 					$eItem['product']->empty() or
