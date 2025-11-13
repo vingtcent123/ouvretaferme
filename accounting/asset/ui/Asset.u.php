@@ -154,8 +154,8 @@ Class AssetUi {
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						$h .= '<th class="" rowspan="2">'.s("Compte").'</th>';
-						$h .= '<th class="" rowspan="2">'.s("Libellé").'</th>';
+						$h .= '<th class="" rowspan="2">'.self::p('accountLabel')->label.'</th>';
+						$h .= '<th class="" rowspan="2">'.self::p('description')->label.'</th>';
 						$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Date").'</th>';
@@ -184,12 +184,14 @@ Class AssetUi {
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['economicMode']) {
 									AssetElement::LINEAR => s("LIN"),
+									AssetElement::LINEAR => s("DEG"),
 									AssetElement::WITHOUT => s("SANS"),
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['fiscalMode']) {
 									AssetElement::LINEAR => s("LIN"),
+									AssetElement::LINEAR => s("DEG"),
 									AssetElement::WITHOUT => s("SANS"),
 								};
 							$h .= '</td>';
@@ -332,21 +334,21 @@ Class AssetUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Compte").'</dt>';
 				$h .= '<dd>'.encode($eAsset['accountLabel']).' - <span class="font-sm" style="font-weight: normal;">'.encode($eAsset['account']['description']).'</span></dd>';
-				$h .= '<dt>'.s("Libellé").'</dt>';
+				$h .= '<dt>'.self::p('description')->label.'</dt>';
 				$h .= '<dd>'.encode($eAsset['description']).'</dd>';
-				$h .= '<dt>'.s("Date d'acquisition").'</dt>';
+				$h .= '<dt>'.self::p('acquisitionDate')->label.'</dt>';
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE).'</dd>';
-				$h .= '<dt>'.s("Date de mise en service").'</dt>';
+				$h .= '<dt>'.self::p('startDate')->label.'</dt>';
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</dd>';
-				$h .= '<dt>'.s("Valeur d'acquisition").'</dt>';
+				$h .= '<dt>'.self::p('value')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
-				$h .= '<dt>'.s("Base amortissable").'</dt>';
+				$h .= '<dt>'.self::p('depreciableBase')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['depreciableBase']).'</dd>';
-				$h .= '<dt>'.s("Type d'amortissement économique").'</dt>';
+				$h .= '<dt>'.self::p('economicMode')->label.'</dt>';
 				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
-				$h .= '<dt>'.s("Durée").'</dt>';
+				$h .= '<dt>'.self::p('economicDuration')->label.'</dt>';
 				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).' ('.self::getDurationInYears($eAsset['economicDuration']).')</dd>';
-				$h .= '<dt>'.s("Statut").'</dt>';
+				$h .= '<dt>'.self::p('status')->label.'</dt>';
 				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
@@ -454,7 +456,7 @@ Class AssetUi {
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th class="text-center">'.s("Exercice").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.self::p('depreciableBase')->label.'</th>';
 
 								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
@@ -470,7 +472,7 @@ Class AssetUi {
 							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement").'</th>';
 							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement").'</th>';
 							$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
-							$h .= '<th>'.s("Statut").'</th>';
+							$h .= '<th>'.self::p('status')->label.'</th>';
 						$h .= '</tr>';
 					$h .= '</thead>';
 
@@ -610,7 +612,7 @@ Class AssetUi {
 		$d = Asset::model()->describer($property, [
 			'account' => s("Classe de compte"),
 			'accountLabel' => s("Compte"),
-			'value' => s("Valeur (HT)"),
+			'value' => s("Valeur d'acquisition (HT)"),
 			'depreciableBase' => s("Base amortissable (HT)"),
 			'type' => s("Type d'amortissement"),
 			'economicMode' => s("Mode économique"),
