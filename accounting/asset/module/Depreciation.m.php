@@ -45,12 +45,12 @@ class DepreciationModel extends \ModuleModel {
 			'type' => ['enum', [\asset\Depreciation::NORMAL, \asset\Depreciation::EXCEPTIONAL], 'cast' => 'enum'],
 			'date' => ['date', 'cast' => 'string'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
-			'isRecovered' => ['bool', 'cast' => 'bool'],
+			'recoverDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'asset', 'amount', 'type', 'date', 'financialYear', 'isRecovered', 'createdAt'
+			'id', 'asset', 'amount', 'type', 'date', 'financialYear', 'recoverDate', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -66,9 +66,6 @@ class DepreciationModel extends \ModuleModel {
 
 			case 'date' :
 				return new \Sql('CURDATE()');
-
-			case 'isRecovered' :
-				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -126,8 +123,8 @@ class DepreciationModel extends \ModuleModel {
 		return $this->where('financialYear', ...$data);
 	}
 
-	public function whereIsRecovered(...$data): DepreciationModel {
-		return $this->where('isRecovered', ...$data);
+	public function whereRecoverDate(...$data): DepreciationModel {
+		return $this->where('recoverDate', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): DepreciationModel {

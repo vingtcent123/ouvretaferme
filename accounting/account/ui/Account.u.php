@@ -81,6 +81,9 @@ class AccountUi {
 							$h .= s("Libellé");
 						$h .= '</th>';
 						$h .= '<th>';
+							$h .= s("Journal");
+						$h .= '</th>';
+						$h .= '<th>';
 							$h .= s("Personnalisé ?");
 						$h .= '</th>';
 						$h .= '<th>';
@@ -104,6 +107,7 @@ class AccountUi {
 
 					$h .= '<tr name="account-'.$eAccount['id'].'" class="'.($eAccount['visible'] ? '' : 'account_not-visible').'">';
 
+
 						$h .= '<td>';
 							$h .= '<span class="ml-'.$classNumber.'">';
 								$h .= $classNumber === 0 ? '<b>' : '';
@@ -112,16 +116,26 @@ class AccountUi {
 							$h .= '</span>';
 						$h .= '</td>';
 
+
 						$h .= '<td>';
 							$h .= '<span class="ml-'.$classNumber.'">';
 								$h .= $classNumber === 0 ? '<b>' : '';
-									if($eAccount['custom'] === TRUE) {
+									if($eAccount->canQuickUpdate('description')) {
 										$eAccount->setQuickAttribute('farm', $eFarm['id']);
+										$eAccount->setQuickAttribute('property', 'description');
 										$h .= $eAccount->quick('description', encode($eAccount['description']));
 									} else {
 										$h .= encode($eAccount['description']).'</span>';
 									}
 								$h .= $classNumber === 0 ? '</b>' : '';
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content">';
+							if($eAccount->canQuickUpdate('journalCode')) {
+								$eAccount->setQuickAttribute('farm', $eFarm['id']);
+								$eAccount->setQuickAttribute('property', 'journalCode');
+								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? encode($eAccount['journalCode']['name']) : '<i>'.s("Non défini").'</i>');
+							}
 						$h .= '</td>';
 
 						$h .= '<td class="text-center">';
@@ -627,6 +641,7 @@ class AccountUi {
 
 		$d = Account::model()->describer($property, [
 			'class' => s("Classe"),
+			'journalCode' => s("Code journal"),
 			'description' => s("Libellé"),
 			'custom' => s("Personnalisé"),
 			'vatAccount' => s("Compte de TVA"),
@@ -643,6 +658,9 @@ class AccountUi {
 				$d->group += ['wrapper' => 'vatAccount'];
 				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => AccountSetting::VAT_CLASS]);
 				break;
+
+			case 'journalCode':
+				$d->values = fn(Account $e) => $e['cJournalCode'] ?? $e->expects(['cJournalCode']);
 
 			case 'class':
 				$d->attributes['minlength'] = 4;

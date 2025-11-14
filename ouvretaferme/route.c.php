@@ -597,6 +597,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'farm', 'Tool', 'quick'],
 		],
+		'/@module/journal/JournalCode/doQuick' => [
+			'request' => 'journal/journalCode',
+			'priority' => 5,
+			'route' => ['@module', 'journal', 'JournalCode', 'doQuick'],
+		],
+		'/@module/journal/JournalCode/quick' => [
+			'request' => 'journal/journalCode',
+			'priority' => 5,
+			'route' => ['@module', 'journal', 'JournalCode', 'quick'],
+		],
 		'/@module/journal/Operation/doQuick' => [
 			'request' => 'journal/operation',
 			'priority' => 5,

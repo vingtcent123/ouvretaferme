@@ -127,20 +127,57 @@ class JournalUi {
 
 	}
 
-	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search, ?string $selectedJournalCode): string {
+	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search, ?string $selectedJournalCode, \Collection $cJournalCode): string {
 
 		$args = $search->toQuery(exclude: ['code']);
 
 		$h = '<div class="tabs-item">';
 
-			$h .= '<a class="tab-item'.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?'.$args.'">'.s("Général").'</a>';
 
-			foreach([Operation::ACH, Operation::VEN, JournalSetting::JOURNAL_BANK_CODE, Operation::KS, Operation::OD] as $journalCode) {
+			$h .= '<style>';
+				foreach($cJournalCode as $eJournalCode) {
+					if($eJournalCode['color']) {
 
-					$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'&'.$args.'">';
+						$h .= '.journal-code-'.$eJournalCode['id'].'.selected { color: white; background-color: '.$eJournalCode['color'].';}';
+						$h .= '.journal-code-'.$eJournalCode['id'].':not(.selected):hover { color: white; background-color: '.$eJournalCode['color'].';}';
+
+					}	 else {
+
+						$h .= '.journal-code-'.$eJournalCode['id'].'.selected { color: white; background-color: var(--secondary);}';
+						$h .= '.journal-code-'.$eJournalCode['id'].':not(.selected):hover { color: white; background-color: var(--secondary);}';
+
+					}
+				}
+			$h .= '</style>';
+
+			$h .= '<a class="tab-item '.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?'.$args.'">'.s("Général").'</a>';
+
+			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_BANK_CODE ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_BANK_CODE.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.\journal\JournalSetting::JOURNAL_BANK_CODE.'&'.$args.'">';
+				$h .= '<div class="text-center">';
+					$h .= s("Banque");
+					$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
+				$h .= '</div>';
+			$h .= '</a>';
+
+			foreach($cJournalCode as $eJournalCode) {
+
+				$attributes = [
+					'class' => 'tab-item journal-code-'.$eJournalCode['id'], 'data-tab' => 'journal-'.$eJournalCode['id'],
+					'href' => \company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eJournalCode['id'].'&'.$args,
+				];
+				if((int)$selectedJournalCode === $eJournalCode['id']) {
+					$attributes['style'] = 'color: white; background-color: ';
+					if($eJournalCode['color']) {
+						$attributes['style'] .= $eJournalCode['color'];
+					} else {
+						$attributes['style'] .= 'var(--secondary);';
+					}
+				}
+
+					$h .= '<a '.attrs($attributes).'>';
 						$h .= '<div class="text-center">';
-							$h .= OperationUi::p('journalCode')->values[$journalCode];
-							$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.OperationUi::p('journalCode')->shortValues[$journalCode].')</span></small>';
+							$h .= encode($eJournalCode['name']);
+							$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.encode($eJournalCode['code']).')</span></small>';
 						$h .= '</div>';
 					$h .= '</a>';
 
@@ -315,8 +352,9 @@ class JournalUi {
 							if($journalCode === NULL) {
 
 								$h .= '<td>';
-									$h .= $eOperation['journalCode'] === NULL ? '' : OperationUi::getShortJournal($eFarm, $eOperation['journalCode'], link: TRUE);
+									$h .= $eOperation['journalCode']->empty() ? '' : OperationUi::getShortJournal($eFarm, $eOperation['journalCode'], link: TRUE);
 								$h .= '</td>';
+
 							}
 
 							$h .= '<td>';
@@ -472,7 +510,7 @@ class JournalUi {
 
 	}
 
-	public function getBatch(\farm\Farm $eFarm, \Collection $cPaymentMethod): string {
+	public function getBatch(\farm\Farm $eFarm, \Collection $cPaymentMethod, \Collection $cJournalCode): string {
 
 		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
 			$menu .= '<span>';
@@ -487,18 +525,13 @@ class JournalUi {
 			$menu .= '<span>'.s("Crédit").'</span>';
 		$menu .= '</a>';
 
-		foreach(Operation::model()->getPropertyEnum('journalCode') as $journalCode) {
+		foreach($cJournalCode as $eJournalCode) {
 
-			$warningText = match($journalCode) {
-				Operation::ACH => s("Déplacer ces écritures dans le journal d'achats ?"),
-				Operation::VEN => s("Déplacer ces écritures dans le journal de ventes ?"),
-				Operation::OD => s("Déplacer ces écritures dans le journal d'opérations diverses ?"),
-				Operation::KS => s("Déplacer ces écritures dans le journal de caisse ?"),
-			} ;
+			$warningText = s("Déplacer ces écritures dans ce journal : {value} ?", encode($eJournalCode['name']));
 
-			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" post-journal-code="'.$journalCode.'"  data-confirm="'.$warningText.'" class="batch-menu-'.$journalCode.' batch-menu-item">';
-				$menu .= '<span class="btn btn-sm journal-code-batch journal-code-button">'.OperationUi::p('journalCode')->shortValues[$journalCode].'</span>';
-			$menu .= '<span>'.OperationUi::p('journalCode')->values[$journalCode].'</span>';
+			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" post-journal-code="'.$eJournalCode['id'].'"  data-confirm="'.$warningText.'" class="batch-menu-'.$eJournalCode['id'].' batch-menu-item">';
+				$menu .= '<span class="btn btn-sm journal-code-batch journal-code-button">'.encode($eJournalCode['code']).'</span>';
+			$menu .= '<span>'.encode($eJournalCode['name']).'</span>';
 			$menu .= '</a>';
 		}
 

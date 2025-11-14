@@ -6,6 +6,8 @@ new Page(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
+	$data->cJournalCode = \journal\JournalCodeLib::getAll();
+
 })
 	->get('index', function($data) {
 
@@ -41,7 +43,8 @@ new Page(function($data) {
 			}
 		}
 
-		if(GET('financialYear', 'int') !== 0) { // On demande explicitement : pas de filtre sur l'exercice
+		if(get_exists('financialYear') and GET('financialYear', 'int') === 0) { // On demande explicitement : pas de filtre sur l'exercice
+		} else {
 			// Ne pas ouvrir le bloc de recherche
 			$search->set('financialYear', $data->eFinancialYear);
 		}
@@ -60,14 +63,14 @@ new Page(function($data) {
 
 			$journalCode = GET('code');
 
-			if(in_array($journalCode, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE) {
+			if(in_array($journalCode, $data->cJournalCode->getIds()) === FALSE) {
 				$journalCode = NULL;
 			}
 
 			$code = GET('code');
 			if(
 				in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_BANK_CODE]) === FALSE and
-				in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE
+				in_array($journalCode, $data->cJournalCode->getIds()) === FALSE
 			) {
 				$code = NULL;
 			}
@@ -83,7 +86,7 @@ new Page(function($data) {
 
 			$data->cOperation = \journal\OperationLib::getAllForBankJournal($search, $hasSort);
 
-		} else if(in_array($code, \journal\Operation::model()->getPropertyEnum('journalCode')) or $code === NULL) {
+		} else if(in_array($journalCode, $data->cJournalCode->getIds()) or $code === NULL) {
 
 			$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 

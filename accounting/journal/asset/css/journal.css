@@ -107,6 +107,10 @@ tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 span.journal-button {
 	cursor: initial !important;
 }
+.journal-code-default-button {
+	background-color: var(--primary);
+	color: white !important;
+}
 .journal-ven {
 	color: var(--ven);
 }

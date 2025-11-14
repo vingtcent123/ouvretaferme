@@ -7,6 +7,7 @@ Account:
   oldDescription: ?text8(1, null) @collate(general)
   visible: bool = TRUE
   custom: bool = FALSE
+  journalCode: ?journal\JournalCode
   vatAccount: ?account\Account
   vatRate: ?decimal(5, 2)
   createdAt: datetime = SPECIAL(now)

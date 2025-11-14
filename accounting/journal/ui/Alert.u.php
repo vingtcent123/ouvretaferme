@@ -72,6 +72,9 @@ class AlertUi {
 			'Stock::reset' => s("Le stock a bien été enregistré à 0 à la fin de cet exercice fiscal."),
 			'Stock::renew' => s("Le stock a bien été enregistré identique à l'exercice précédent pour cet exercice fiscal."),
 
+			'JournalCode::created' => s("Le journal a bien été créé."),
+			'JournalCode::deleted' => s("Le journal a bien été supprimé."),
+
 			default => null
 
 		};

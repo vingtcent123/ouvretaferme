@@ -82,11 +82,14 @@ new Page(function($data) {
 
 new \account\AccountPage(function($data) {
 
-		\user\ConnectionLib::checkLogged();
+	\user\ConnectionLib::checkLogged();
 
-		$data->eFarm->validate('canManage');
+	$data->eFarm->validate('canManage');
+})
+	->applyElement(function($data, \account\Account $e) {
+		$e['cJournalCode'] = \journal\JournalCodeLib::getAll();
 	})
-	->quick(['description'], validate: ['canQuickUpdate'])
+	->quick(['description', 'journalCode'], validate: ['canQuickUpdate'])
 	->create(function($data) {
 
 		throw new ViewAction($data);

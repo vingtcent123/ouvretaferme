@@ -517,7 +517,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			'type' => \journal\OperationElement::DEBIT,
 			'asset' => $eAsset,
 			'financialYear' => $eFinancialYear['id'],
-			'hash' => $hash
+			'hash' => $hash,
+			'journalCode' => $eAccountAmortizationCharge['journalCode'],
 		];
 		\journal\OperationLib::createFromValues($values);
 
@@ -599,6 +600,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			'type' => \journal\OperationElement::CREDIT,
 			'asset' => $eAsset,
 			'financialYear' => $eFinancialYear['id'],
+			'journalCode' => $eAccountAmortizationFound['journalCode'],
 		];
 
 	}

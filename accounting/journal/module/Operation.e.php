@@ -9,6 +9,7 @@ class Operation extends OperationElement {
 
 		return parent::getSelection() + [
 			'account' => \account\Account::getSelection(),
+			'journalCode' => JournalCode::getSelection(),
 			'vatAccount' => ['class', 'vatRate', 'description'],
 			'thirdParty' => \account\ThirdParty::getSelection(),
 			'paymentMethod' => \payment\Method::getSelection(),

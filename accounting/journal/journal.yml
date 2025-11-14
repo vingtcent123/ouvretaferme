@@ -17,6 +17,17 @@ Deferral:
     ["status"]
   ]
 
+JournalCode:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  code: text8(2,4)
+  isCustom: bool = TRUE
+  color: ?color
+  isExtournable: bool = FALSE
+  UNIQUE: [
+    ["code"]
+  ]
+
 Lettering:
   id: serial32
   credit: journal\Operation
@@ -36,7 +47,7 @@ Operation:
   hash: ?textFixed(20, 20) @charset(ascii)
   number: ?int32(0, null)
   financialYear: account\FinancialYear
-  journalCode: ?enum(ACH, VEN, KS, OD)
+  journalCode: ?journal\JournalCode
   # Compte concerné par l'opération
   account: account\Account
   accountLabel: text8(1, null) @collate(general)

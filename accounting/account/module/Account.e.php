@@ -7,12 +7,32 @@ class Account extends AccountElement {
 
 		return parent::getSelection() + [
 			'vatAccount' => ['id', 'class', 'vatRate'],
+			'journalCode' => \journal\JournalCode::getSelection(),
 		];
 
 	}
-	public function canQuickUpdate(): bool {
 
-		return $this['custom'] === TRUE;
+	public function canQuickUpdate(?string $property = NULL): bool {
+
+		$this->expects(['custom', 'class']);
+
+		if($this['visible'] === FALSE) {
+			return FALSE;
+		}
+
+		if($property === NULL) {
+			$property = POST('property');
+		}
+
+		if($property === 'description') {
+			return $this['custom'] === TRUE;
+		}
+
+		if($property === 'journalCode') {
+			return (mb_strlen($this['class']) > 2);
+		}
+
+		return FALSE;
 
 	}
 

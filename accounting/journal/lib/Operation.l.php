@@ -63,7 +63,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		return $model
-			->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode') !== NULL)
+			->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode')!== NULL)
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->whereDate('>=', $search->get('minDate'), if: $search->get('minDate'))
 			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))
@@ -643,7 +643,7 @@ class OperationLib extends OperationCrud {
 
 			$fw->validate();
 
-			$eOperation['journalCode'] = \account\AccountLib::getJournalCodeByClass($eOperation['accountLabel']);
+			$eOperation['journalCode'] = $eOperation['account']['journalCode'];
 
 			if($for === 'create') {
 
@@ -680,7 +680,6 @@ class OperationLib extends OperationCrud {
 							'description' => $eOperation['description'] ?? $eCashflow['memo'],
 							'cashflow' => $eCashflow,
 							'paymentMethod' => $eOperation['paymentMethod'],
-							'journalCode' => $eOperation['journalCode'],
 							'hash' => $hash,
 						]
 						: $eOperation->getArrayCopy(),
@@ -844,7 +843,7 @@ class OperationLib extends OperationCrud {
 		$eOperationVat->build(
 			array_merge([
 				'financialYear',
-				'account', 'accountLabel', 'description', 'document', 'journalCode',
+				'account', 'accountLabel', 'description', 'document',
 				'thirdParty', 'type', 'amount', 'operation',
 				'hash',
 			], ($for === 'create' ? ['date', 'paymentDate', 'paymentMethod'] : [])),
@@ -1051,7 +1050,6 @@ class OperationLib extends OperationCrud {
 			'paymentMethod'=> $eOperation['paymentMethod']['id'] ?? NULL,
 			'financialYear'=> $eOperation['financialYear']['id'],
 			'hash'=> $eOperation['hash'],
-			'journalCode' => \account\AccountLib::getJournalCodeByClass($label),
 		];
 
 		$eOperationBank = new Operation();
@@ -1060,7 +1058,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationBank->build([
 			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMethod', 'journalCode', 'hash',
+			'operation', 'paymentDate', 'paymentMethod', 'hash',
 		], $values, new \Properties('create'));
 
 		if($document !== NULL) {
@@ -1387,7 +1385,9 @@ class OperationLib extends OperationCrud {
 	 */
 	public static function createForOpening(\Collection $cOperation, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious): void {
 
+		$eJournalCodeOD = JournalCodeLib::getByCode(JournalSetting::JOURNAL_BANK_OD);
 		$number = 1;
+
 		foreach($cOperation as $eOperation) {
 
 			$values = [
@@ -1399,7 +1399,7 @@ class OperationLib extends OperationCrud {
 				'date' => $eFinancialYear['startDate'],
 				'paymentDate' => $eFinancialYear['startDate'],
 				'description' => new \account\FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious['endDate']),
-				'journalCode' => Operation::OD,
+				'journalCode' => $eJournalCodeOD,
 				'document' => 'OUV-'.str_pad($number, 4, '0', STR_PAD_LEFT),
 				'documentDate' => $eFinancialYear['startDate'],
 			];
@@ -1428,25 +1428,23 @@ class OperationLib extends OperationCrud {
 		return TRUE;
 	}
 
-	public static function updateJournalCodeCollection(\Collection $cOperation, ?string $journalCode): void {
+	public static function updateJournalCodeCollection(\Collection $cOperation, JournalCode $eJournalCode): void {
 
 		if(self::checkSelectedOperationsForBatch($cOperation) === FALSE) {
 			return;
 		}
 
-		if(in_array($journalCode, Operation::model()->getPropertyEnum('journalCode')) === FALSE and $journalCode !== '') {
+		$cJournalCode = JournalCodeLib::getAll();
+
+		if($eJournalCode->notEmpty() and in_array($eJournalCode['id'], $cJournalCode->getIds()) === FALSE) {
 			\Fail::log('Operation::selectedJournalCodeInconsistency');
 			return;
-		}
-
-		if($journalCode === "") {
-			$journalCode = NULL;
 		}
 
 		Operation::model()
 			->select(['journalCode'])
 			->whereId('IN', $cOperation->getIds())
-			->update(new Operation(['journalCode' => $journalCode]));
+			->update(['journalCode' => $eJournalCode]);
 	}
 
 	public static function updateCommentCollection(\Collection $cOperation, ?string $comment): void {

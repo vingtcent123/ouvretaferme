@@ -281,7 +281,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		foreach($cAsset as $eAsset) {
 
-			self::amortize($eFinancialYear, $eAsset, NULL);
+			AmortizationLib::amortize($eFinancialYear, $eAsset, NULL);
 
 		}
 
@@ -390,6 +390,7 @@ class AssetLib extends \asset\AssetCrud {
 				'asset' => $eAsset,
 				'financialYear' => $eFinancialYear['id'],
 				'hash' => $hash,
+				'journalCode' => $eAccountVNC['journalCode'],
 			];
 			\journal\OperationLib::createFromValues($values);
 
@@ -405,6 +406,7 @@ class AssetLib extends \asset\AssetCrud {
 				'asset' => $eAsset,
 				'financialYear' => $eFinancialYear['id'],
 				'hash' => $hash,
+				'journalCode' => $eAsset['account']['journalCode'],
 			];
 			\journal\OperationLib::createFromValues($values);
 
@@ -441,6 +443,7 @@ class AssetLib extends \asset\AssetCrud {
 					'asset' => $eAsset,
 					'financialYear' => $eFinancialYear['id'],
 					'hash' => $hash,
+					'journalCode' => $eAccountAssetDepreciation['journalCode'],
 				];
 				\journal\OperationLib::createFromValues($values);
 
@@ -456,6 +459,7 @@ class AssetLib extends \asset\AssetCrud {
 					'asset' => $eAsset,
 					'financialYear' => $eFinancialYear['id'],
 					'hash' => $hash,
+					'journalCode' => $eAccountRecovery['journalCode'],
 				];
 				\journal\OperationLib::createFromValues($values);
 

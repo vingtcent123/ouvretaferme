@@ -23,7 +23,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$selectedJournalCode = GET('code');
 	if(
-		in_array($selectedJournalCode, \journal\Operation::model()->getPropertyEnum('journalCode')) === FALSE and
+		in_array($selectedJournalCode, $data->cJournalCode->getIds()) === FALSE and
 		in_array($selectedJournalCode, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_BANK_CODE]) === FALSE
 	) {
 		$selectedJournalCode = NULL;
@@ -35,7 +35,8 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		}
 	echo ' data-batch="#batch-journal">';
 
-		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode);
+		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode, $data->cJournalCode);
+
 
 		switch($selectedJournalCode) {
 
@@ -65,7 +66,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 		}
 
-		echo new \journal\JournalUi()->getBatch($data->eFarm, $data->cPaymentMethod);
+		echo new \journal\JournalUi()->getBatch($data->eFarm, $data->cPaymentMethod, $data->cJournalCode);
 
 
 	echo '</div>';

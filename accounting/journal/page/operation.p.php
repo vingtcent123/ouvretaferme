@@ -298,11 +298,11 @@ new \journal\OperationPage(function($data) {
 	})
 	->writeCollection('doUpdateJournalCollection', function($data) {
 
-		$journalCode = POST('journalCode');
+		$eJournalCode = POST('journalCode', 'journal\journalCode');
 
 		$fw = new FailWatch();
 
-		\journal\OperationLib::updateJournalCodeCollection($data->c, $journalCode);
+		\journal\OperationLib::updateJournalCodeCollection($data->c, $eJournalCode);
 
 		$fw->validate();
 

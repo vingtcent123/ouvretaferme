@@ -42,6 +42,7 @@ class AccountModel extends \ModuleModel {
 			'oldDescription' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'visible' => ['bool', 'cast' => 'bool'],
 			'custom' => ['bool', 'cast' => 'bool'],
+			'journalCode' => ['element32', 'journal\JournalCode', 'null' => TRUE, 'cast' => 'element'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -49,10 +50,11 @@ class AccountModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'oldDescription', 'visible', 'custom', 'vatAccount', 'vatRate', 'createdAt', 'createdBy'
+			'id', 'class', 'description', 'oldDescription', 'visible', 'custom', 'journalCode', 'vatAccount', 'vatRate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
+			'journalCode' => 'journal\JournalCode',
 			'vatAccount' => 'account\Account',
 			'createdBy' => 'user\User',
 		];
@@ -117,6 +119,10 @@ class AccountModel extends \ModuleModel {
 
 	public function whereCustom(...$data): AccountModel {
 		return $this->where('custom', ...$data);
+	}
+
+	public function whereJournalCode(...$data): AccountModel {
+		return $this->where('journalCode', ...$data);
 	}
 
 	public function whereVatAccount(...$data): AccountModel {

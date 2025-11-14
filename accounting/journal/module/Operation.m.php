@@ -7,11 +7,6 @@ abstract class OperationElement extends \Element {
 
 	private static ?OperationModel $model = NULL;
 
-	const ACH = 'ach';
-	const VEN = 'ven';
-	const KS = 'ks';
-	const OD = 'od';
-
 	const DEBIT = 'debit';
 	const CREDIT = 'credit';
 
@@ -51,7 +46,7 @@ class OperationModel extends \ModuleModel {
 			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'number' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
-			'journalCode' => ['enum', [\journal\Operation::ACH, \journal\Operation::VEN, \journal\Operation::KS, \journal\Operation::OD], 'null' => TRUE, 'cast' => 'enum'],
+			'journalCode' => ['element32', 'journal\JournalCode', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
@@ -82,6 +77,7 @@ class OperationModel extends \ModuleModel {
 
 		$this->propertiesToModule += [
 			'financialYear' => 'account\FinancialYear',
+			'journalCode' => 'journal\JournalCode',
 			'account' => 'account\Account',
 			'thirdParty' => 'account\ThirdParty',
 			'invoice' => 'selling\Invoice',
@@ -124,9 +120,6 @@ class OperationModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
-
-			case 'journalCode' :
-				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;

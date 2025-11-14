@@ -184,6 +184,11 @@ class CompanyUi {
 					$h .= \Asset::icon('list-columns-reverse');
 				$h .= '</a>';
 
+				$h .= '<a href="'.CompanyUi::urlJournal($eFarm).'/journalCode" class="util-button">';
+					$h .= '<h4>'.s("Les journaux").'</h4>';
+					$h .= \Asset::icon('journal-bookmark');
+				$h .= '</a>';
+
 				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/" class="util-button">';
 					$h .= '<h4>'.s("Les exercices comptables").'</h4>';
 					$h .= \Asset::icon('calendar3');

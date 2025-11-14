@@ -1260,22 +1260,21 @@ class OperationUi {
 
 	}
 
-	public static function getShortJournal(\farm\Farm $eFarm, string $journalCode, bool $link): string {
+	public static function getShortJournal(\farm\Farm $eFarm, JournalCode $eJournal, bool $link): string {
 
-		$code = self::p('journalCode')->shortValues[$journalCode];
-
-		$journalName = match($journalCode) {
-			Operation::ACH => s("Journal des achats"),
-			Operation::VEN => s("Journal des ventes"),
-			Operation::KS => s("Journal de caisse"),
-			Operation::OD => s("Journal des opérations diverses"),
-		};
-
-		if($link) {
-			return '<a class="btn btn-xs journal-button journal-'.$journalCode.'-button" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'" title="'.s("Filtrer sur le {value}", mb_strtolower($journalName)).'">'.$code.'</a>';
+		if($eJournal['color'] !== NULL) {
+			$style = ' style="background-color: '.$eJournal['color'].'" ';
+			$class = '';
+		} else {
+			$style = '';
+			$class = ' journal-code-default-button ';
 		}
 
-		return '<span class="btn btn-xs journal-button journal-'.$journalCode.'-button" title="'.$journalName.'">'.$code.'</span>';
+		if($link) {
+			return '<a class="btn btn-xs journal-button '.$class.'" '.$style.' href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eJournal['id'].'" title="'.s("Filtrer sur : {value}", mb_strtolower($eJournal['name'])).'">'.encode($eJournal['code']).'</a>';
+		}
+
+		return '<span class="btn btn-xs journal-button" title="'.encode($eJournal['name']).'">'.encode($eJournal['code']).'</span>';
 
 	}
 
@@ -1315,20 +1314,6 @@ class OperationUi {
 				break;
 
 			case 'journalCode':
-				$d->values = [
-					Operation::ACH => s("Achats"),
-					Operation::VEN => s("Ventes"),
-					Operation::KS => s("Caisse"),
-					Operation::OD => s("Opérations diverses"),
-					JournalSetting::JOURNAL_BANK_CODE => s("Banque"),
-				];
-				$d->shortValues = [
-					Operation::ACH => s("JA"),
-					Operation::VEN => s("JV"),
-					Operation::KS => s("JC"),
-					Operation::OD => s("JOD"),
-					JournalSetting::JOURNAL_BANK_CODE => s("JB"),
-				];
 				$d->field = 'select';
 
 				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and ($e['cOperationLinked'] ?? new \Collection())->notEmpty()) ? \util\FormUi::info(s("Cette modification sera également reportée sur les écritures liées")) : '';

@@ -88,6 +88,12 @@ class CompanyLib {
 		$database = new \account\AccountModel()->getDb();
 		$pdo->exec('ALTER TABLE '.$pdo->api->field($database).'.'.$pdo->api->field('account').' AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
 
+		$cJournalCode = JournalCode::model()
+			->select(\journal\JournalCode::getSelection())
+			->getCollection();
+		foreach($cJournalCode as $eJournalCode) {
+			\journal\JournalCode::model()->insert($eJournalCode);
+		}
 	}
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {

@@ -139,12 +139,12 @@ class AccountSetting extends \Settings {
 		'353' => '71353', // ?
 	];
 
-	const CLASSES_BY_JOURNAL = [
+	/*const CLASSES_BY_JOURNAL = [
 		\journal\Operation::KS => ['530'],
 		\journal\Operation::ACH => ['60', '61', '62', '63', '64', '4456'],
 		\journal\Operation::VEN => ['70', '71', '72', '74', '4452', '4457'],
 		\journal\Operation::OD => ['28', '29', '65', '68', '69'],
-	];
+	];*/
 }
 
 AccountSetting::$summaryAccountingBalanceCategories = AccountUi::getSummaryBalanceCategories();
