@@ -357,7 +357,6 @@ class AssetLib extends \asset\AssetCrud {
 		$endDate = $eAsset['endedDate'];
 		$newStatus = $eAsset['status'];
 
-
 		Asset::model()->beginTransaction();
 
 		if(\account\ClassLib::isFromClass($eAsset['accountLabel'], \account\AccountSetting::NON_AMORTIZABLE_ASSET_CLASS) === FALSE) {
@@ -409,9 +408,70 @@ class AssetLib extends \asset\AssetCrud {
 			];
 			\journal\OperationLib::createFromValues($values);
 
+			// Étape 3. Reprise des éventuelles dépréciations
+			$cDepreciation = DepreciationLib::getByAsset($eAsset);
+			$depreciationExceptionalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::EXCEPTIONAL)->sum('amount'), 2);
+			$depreciationNormalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::NORMAL)->sum('amount'), 2);
+			$accountLabelDepreciation = \account\ClassLib::geDepreciationClassFromClass($eAsset['accountLabel']);
+
+			foreach([Depreciation::NORMAL => $depreciationNormalAmount, Depreciation::EXCEPTIONAL => $depreciationExceptionalAmount] as $type => $amount) {
+
+				if($amount <= 0.0) {
+					continue;
+				}
+
+				$hash = \journal\OperationLib::generateHash().'i';
+
+				$class = match($type) {
+					Depreciation::NORMAL => \account\AccountSetting::RECOVERY_NORMAL_ON_ASSET_DEPRECIATION,
+					Depreciation::EXCEPTIONAL => \account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION,
+				};
+				$eAccountRecovery = \account\AccountLib::getByClass($class);
+				$eAccountAssetDepreciation = \account\AccountLib::getByClass(mb_substr($accountLabelDepreciation, 0, 3));
+
+				// Débiter le compte 29
+				$values = [
+					'account' => $eAccountAssetDepreciation['id'],
+					'accountLabel' => $accountLabelDepreciation,
+					'date' => $endDate,
+					'paymentDate' => $endDate,
+					'description' => new AssetUi()->getTranslation('depreciation-asset').' '.$eAsset['description'],
+					'amount' => $amount,
+					'type' => \journal\OperationElement::DEBIT,
+					'asset' => $eAsset,
+					'financialYear' => $eFinancialYear['id'],
+					'hash' => $hash,
+				];
+				\journal\OperationLib::createFromValues($values);
+
+				// Créditer le compte 7816 ou 7876
+				$values = [
+					'account' => $eAccountRecovery['id'],
+					'accountLabel' => \account\ClassLib::pad($eAccountRecovery['class']),
+					'date' => $endDate,
+					'paymentDate' => $endDate,
+					'description' => new AssetUi()->getTranslation('recovery-depreciation-'.($type === Depreciation::EXCEPTIONAL ? 'exceptional' : 'asset')).' '.$eAsset['description'],
+					'amount' => $amount,
+					'type' => \journal\OperationElement::CREDIT,
+					'asset' => $eAsset,
+					'financialYear' => $eFinancialYear['id'],
+					'hash' => $hash,
+				];
+				\journal\OperationLib::createFromValues($values);
+
+			}
+
+			if($depreciationNormalAmount > 0 or $depreciationExceptionalAmount > 0) {
+
+				Depreciation::model()
+					->whereAsset($eAsset)
+					->update(['recoverDate' => new \Sql('NOW()')]);
+
+			}
+
 		}
 
-		// Étape 3 : Mise à jour de l'immobilisation
+		// Étape 4 : Mise à jour de l'immobilisation
 		Asset::model()->update($eAsset, ['status' => $newStatus, 'endedDate' => $endDate, 'updatedAt' => new \Sql('NOW()')]);
 
 		Asset::model()->commit();

@@ -38,6 +38,16 @@ Amortization:
   financialYear: account\FinancialYear
   createdAt: datetime = SPECIAL(now)
 
+Depreciation:
+  id: serial32
+  asset: asset\Asset
+  amount: decimal(8, 2)
+  type: enum(NORMAL, EXCEPTIONAL)
+  date: date = SPECIAL(now)
+  financialYear: account\FinancialYear
+  recoverDate: ?date
+  createdAt: datetime = SPECIAL(now)
+
 # Quote-part des sub virées au résultat
 Recognition:
   id: serial32

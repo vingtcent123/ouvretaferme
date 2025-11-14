@@ -47,7 +47,11 @@ class Asset extends AssetElement {
 				'cAmortization' => Amortization::model()
 	        ->select(Amortization::getSelection())
 					->sort(['date' => SORT_ASC])
-	        ->delegateCollection('asset') // Ne pas modifier l'index (qui correspond à année 1, année 2 etc.)
+	        ->delegateCollection('asset'), // Ne pas modifier l'index (qui correspond à année 1, année 2 etc.)
+				'cDepreciation' => Depreciation::model()
+	        ->select(Depreciation::getSelection())
+					->sort(['date' => SORT_ASC])
+	        ->delegateCollection('asset'),
 			];
 
 	}

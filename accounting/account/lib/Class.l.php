@@ -54,5 +54,14 @@ class ClassLib {
 
 	}
 
+	public static function geDepreciationClassFromClass(string $class): ?string {
+
+		if(in_array(mb_substr($class, 0, 1), [AccountSetting::ASSET_GENERAL_CLASS, AccountSetting::STOCK_GENERAL_CLASS, AccountSetting::THIRD_PARTY_GENERAL_CLASS, AccountSetting::FINANCIAL_GENERAL_CLASS]) === FALSE) {
+			return NULL;
+		}
+		return mb_substr($class, 0, 1).'9'.mb_substr($class, 1);
+
+	}
+
 }
 ?>

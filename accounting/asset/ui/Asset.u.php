@@ -677,6 +677,9 @@ Class AssetUi {
 		return match($class) {
 			'amortization' => s("Amortissement"),
 			'asset' => s("Immobilisation"),
+			'depreciation-asset' => s("Dépréciation des immobilisations"),
+			'recovery-depreciation-asset' => s("Reprises sur dépréciations des immobilisations"),
+			'recovery-depreciation-exceptional' => s("Reprises sur dépréciations exceptionnelles"),
 			\account\AccountSetting::INTANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
 			\account\AccountSetting::TANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
 			\account\AccountSetting::ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),

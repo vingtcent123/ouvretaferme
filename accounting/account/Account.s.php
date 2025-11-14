@@ -48,6 +48,8 @@ class AccountSetting extends \Settings {
 	const INTANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS = '68111'; // Dotation aux amortissements sur immos incorporelles
 	const TANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS = '68112'; // Dotation aux amortissements sur immos corporelles
 	const RECEIVABLES_ON_ASSET_DISPOSAL_CLASS = '462'; // Créances sur cessions d'immobilisations
+	const RECOVERY_NORMAL_ON_ASSET_DEPRECIATION = '7816'; // Reprises sur dépréciations des immobilisations
+	const RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION = '7876'; // Reprises sur dépréciations exceptionnelles
 
 	// CLASSES de TVA
 	const VAT_CLASS = 445;
