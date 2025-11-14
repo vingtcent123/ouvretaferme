@@ -13,7 +13,7 @@ new \asset\AssetPage(function($data) {
 
 	$data->e->validate('canView');
 
-	$data->e['table'] = \asset\AssetLib::computeTable($data->e);
+	$data->e['table'] = \asset\AmortizationLib::computeTable($data->e);
 
 	throw new ViewAction($data);
 

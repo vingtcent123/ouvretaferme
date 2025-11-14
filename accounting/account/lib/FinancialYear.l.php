@@ -81,11 +81,11 @@ class FinancialYearLib extends FinancialYearCrud {
 		// Effectuer toutes les opérations de clôture :
 
 		// 1- Calcul des amortissements
-		\asset\AssetLib::depreciateAll($eFinancialYear);
+		\asset\AssetLib::amortizeAll($eFinancialYear);
 
 		// 2- Reprise sur subventions
-		\asset\AssetLib::finallyRecognizeGrants($eFinancialYear, $grantsToRecognize); // Solde les subventions sélectionnées
-		\asset\AssetLib::recognizeGrants($eFinancialYear); // Quote part des sub restantes à réintégrer au CdR
+		//\asset\AssetLib::finallyRecognizeGrants($eFinancialYear, $grantsToRecognize); // Solde les subventions sélectionnées
+		//\asset\AssetLib::recognizeGrants($eFinancialYear); // Quote part des sub restantes à réintégrer au CdR
 
 		// 3- Charges et Produits constatés d'avance
 		\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);

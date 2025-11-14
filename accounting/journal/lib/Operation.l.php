@@ -1091,13 +1091,13 @@ class OperationLib extends OperationCrud {
 
 		$eOperation->build(
 			[
-				'financialYear', 'date',
+				'financialYear', 'date', 'paymentDate',
 				'operation', 'asset', 'thirdParty',
 				'account', 'accountLabel',
 				'description', 'type', 'amount',
 				'document', 'documentDate',
 				'vatRate', 'vatAccount',
-				'journalCode'
+				'journalCode', 'hash',
 			],
 			$values,
 			new \Properties('create')

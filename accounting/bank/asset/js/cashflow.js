@@ -178,19 +178,12 @@ class Cashflow {
         const amountIncludingVAT = Cashflow.sumType('amountIncludingVAT') * multiplier;
         const amount = Cashflow.sumType('amount') * multiplier;
         const vatValue = Cashflow.sumType('vatValue') * multiplier;
-        const assetValue = Array.from(qsa('[type="number"][name^="asset["]')).map(function(node) {
-            if(node.name.match(/asset\[\d+\]\[value\]/)) {
-                return node;
-            }
-        }).filter(asset => asset)
-            .reduce((acc, value) => acc + parseFloat(value.value || 0), 0);
 
         if(Operation.hasVat()) {
             qs('.cashflow-create-operation-validate[data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
         }
         qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
         qs('.cashflow-create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
-        qs('.cashflow-create-operation-validate[data-field="assetValue"] [data-type="value"]').innerHTML = money(assetValue);
 
         if(sum !== totalAmount) {
             var difference = round(totalAmount - sum);

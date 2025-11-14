@@ -124,10 +124,14 @@ Class AssetUi {
 
 		\Asset::css('media', 'media.css');
 
+		$cumulatedAmortization = $eAsset['cAmortization']->sum('amount');
 		$itemHtml = '<div>';
 			$itemHtml .= encode($eAsset['accountLabel'].' ' .$eAsset['description']);
 			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Date d'acquisition : {value}", \util\DateUi::numeric($eAsset['acquisitionDate'])).'</div>';
-			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Valeur : {value} / Base amortissable : {base}", ['value' => \util\TextUi::money($eAsset['value']), 'base' => \util\TextUi::money($eAsset['amortizableBase'])]).'</div>';
+			if($eAsset['endedDate'] !== NULL) {
+				$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Fin d'amortissement : {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</div>';
+			}
+			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Val. : {value} / Base amortissable : {base} / Amort. cumulés : {cumulated}", ['value' => \util\TextUi::money($eAsset['value']), 'base' => \util\TextUi::money($eAsset['amortizableBase']), 'cumulated' => \util\TextUi::money($cumulatedAmortization)]).'</div>';
 		$itemHtml .= '</div>';
 
 		return [
@@ -159,7 +163,8 @@ Class AssetUi {
 						$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Date").'</th>';
-						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur").'</th>';
+						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur d'acquisition").'</th>';
+						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Base amortissable").'</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Eco").'</th>';
@@ -169,8 +174,11 @@ Class AssetUi {
 
 				$h .= '<tbody>';
 
-				$total = 0;
+					$total = 0;
+					$totalAmortizable = 0;
+
 					foreach($cAsset as $eAsset) {
+
 						$h .= '<tr>';
 							$h .= '<td>';
 								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
@@ -200,10 +208,14 @@ Class AssetUi {
 							$h .= '</td>';
 							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
 							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['value'], '', 2).'</td>';
+							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['amortizableBase'], '', 2).'</td>';
 
 						$h .= '</tr>';
 						$total += $eAsset['value'];
+						$totalAmortizable += $eAsset['amortizableBase'];
+
 					}
+
 					$h .= '<tr class="row-bold">';
 						$h .= '<td></td>';
 						$h .= '<td>';
@@ -216,7 +228,8 @@ Class AssetUi {
 						$h .= '<td></td>';
 						$h .= '<td></td>';
 						$h .= '<td></td>';
-						$h .= '<td class="text-end">'.$this->number($total, '', 2).'</td>';
+						$h .= '<td class="text-end highlight-stick-left">'.$this->number($total, '', 2).'</td>';
+						$h .= '<td class="text-end highlight-stick-left">'.$this->number($totalAmortizable, '', 2).'</td>';
 					$h .= '</tr>';
 
 				$h .= '</tbody>';
@@ -330,6 +343,15 @@ Class AssetUi {
 
 	private static function getHeader(Asset $eAsset): string {
 
+		$eFinancialYearLast = $eAsset['cAmortization']->first()->notEmpty() ? $eAsset['cAmortization'][0]['financialYear'] : new \account\FinancialYear();
+		$amortizationCumulated = 0;
+		foreach($eAsset['cAmortization'] as $eAmortization) {
+			if($eAmortization['financialYear']['endDate'] > $eFinancialYearLast) {
+				$eFinancialYearLast = $eAmortization['financialYear'];
+			}
+			$amortizationCumulated += $eAmortization['amount'];
+		}
+
 		$h = '<div class="util-block stick-xs bg-background-light">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Compte").'</dt>';
@@ -347,9 +369,21 @@ Class AssetUi {
 				$h .= '<dt>'.self::p('economicMode')->label.'</dt>';
 				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
 				$h .= '<dt>'.self::p('economicDuration')->label.'</dt>';
-				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).' ('.self::getDurationInYears($eAsset['economicDuration']).')</dd>';
+				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).' ('.s("soit {value}", self::getDurationInYears($eAsset['economicDuration'])).')</dd>';
 				$h .= '<dt>'.self::p('status')->label.'</dt>';
-				$h .= '<dd>'.self::p('status')->values[$eAsset['status']].'</dd>';
+				$h .= '<dd>';
+					$h .= self::p('status')->values[$eAsset['status']];
+					if($eAsset['endedDate'] !== NULL) {
+						$h .= ' '.s("le {value}", \util\DateUi::numeric($eAsset['endedDate']));
+					}
+				$h .= '</dd>';
+				if($eAsset['endedDate'] !== NULL) {
+					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
+					$h .= '<dd>'.\util\TextUi::money(round($eAsset['amortizableBase'] - $amortizationCumulated)).'</dd>';
+				} else	if($eFinancialYearLast->notEmpty()) {
+					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
+					$h .= '<dd>'.\util\TextUi::money(round($eAsset['amortizableBase'] - $amortizationCumulated)).'</dd>';
+				}
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -357,7 +391,7 @@ Class AssetUi {
 
 	}
 
-	public static function dispose(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Asset $eAsset): \Panel {
+	public static function dispose(\farm\Farm $eFarm, Asset $eAsset): \Panel {
 
 		\Asset::js('asset', 'asset.js');
 
@@ -369,11 +403,62 @@ Class AssetUi {
 			AssetElement::SOLD => s("Vendre"),
 		];
 
+		$assetAccountLabel = rtrim($eAsset['accountLabel'], '0');
+		$amortizationAccountLabel = \account\ClassLib::getAmortizationClassFromClass($assetAccountLabel);
+
+		$amortizationCumulated = $eAsset['cAmortization']->sum('amount');
+
+		$h .= '<div class="util-info">';
+			if($amortizationCumulated < $eAsset['amortizableBase']) {
+				$h .= s("En validant ce formulaire, deux mouvements seront créés automatiquement : ");
+			} else {
+				$h .= s("En validant ce formulaire, un mouvement sera créée automatiquement : ");
+			}
+
+			$h .= '<ul>';
+				if($amortizationCumulated < $eAsset['amortizableBase']) {
+					$h .= '<li>';
+						$h .= s("Écritures de la <b>dotation complémentaire</b> jusqu'à la date de sortie de l'immobilisation (débit 681, crédit {value})", $amortizationAccountLabel);
+					$h .= '</li>';
+				}
+				$h .= '<li>';
+					$h .= s("Écritures de la <b>sortie de l'immobilisation</b> du patrimoine (débit {debit}, débit 657,  crédit {credit})", ['debit' => $amortizationAccountLabel, 'credit' => $assetAccountLabel]);
+				$h .= '</li>';
+				$h .= '</li>';
+			$h .= '</ul>';
+
+		$h .= '</div>';
+
+		$h .= '<div class="util-info hide" type="sold">';
+		$h .= '<h2>'.\Asset::icon('exclamation-octagon').' '.s("Point de vigilance").'</h2>';
+			$h .= s("Dans le cas d'une vente de l'immobilisation, les écritures de cession doivent être enregistrées dans le livre-journal. Il s'agit de :");
+			$h .= '<ul>';
+				$h .= '<li>';
+					$h .= s("<b>débiter</b> le compte 462 (créance sur cession d'immobilisation) ou le compte 512 (banque) ou le compte 411 (client),");
+				$h .= '</li>';
+				$h .= '<li>';
+					$h .= s("<b>créditer</b> le compte 757 (produit de cession d'immobilisation) au montant HT,");
+				$h .= '</li>';
+				$h .= '<li>';
+					$h .= s("<b>créditer</b> le compte 44571 (TVA collectée) du montant de la TVA correspondante.");
+				$h .= '</li>';
+			$h .= '</ul>';
+		$h .= '</div>';
+
+		$h .= '<div class="util-info hide" id="dispose-scrap-warning">';
+			$h .= s(
+			"Attention, si vous percevez une indemnisation suite à un sinistre, cette indemnisation doit être comptabilisée comme le produit d'une vente de votre immobilisation : créditer le compte 757 (produit de cession d'immobilisation) et débiter le compte 512 (banque)",
+		);
+		$h .= '</div>';
+
 		$h .= '<div class="util-block">';
 
-			$h .= $form->openAjax(
+			$dialogOpen = $form->openAjax(
 				\company\CompanyUi::urlAsset($eFarm).'/:doDispose',
-				['id' => 'panel-asset-dispose']
+				[
+					'id' => 'panel-asset-dispose',
+					'class' => 'panel-dialog',
+				]
 			);
 
 				$h .= $form->hidden('farm', $eFarm['id']);
@@ -383,7 +468,7 @@ Class AssetUi {
 
 				$h .= $form->group(
 					s("Date de cession").' '.\util\FormUi::asterisk(),
-					$form->date('date', date('Y-m-d'), ['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
+					$form->date('endedDate', date('Y-m-d'))
 				);
 
 				$h .= $form->group(
@@ -391,33 +476,10 @@ Class AssetUi {
 					$form->select('status', $statuses, attributes: ['onchange' => 'Asset.onchangeStatus(this);']),
 				);
 
-
-				$h .= '<div class="hide" type="sold">';
-					$h .= $form->group(
-						s("Créer une créance").' '.\util\FormUi::asterisk(),
-						$form->checkbox('createReceivable').
-							'<div class="util-info mt-1">'.s("Une opération bancaire ou une créance devra être créée pour matérialiser la vente. Cochez pour créer une créance.").'</div>',
-					);
-				$h .= '</div>';
-
-				$h .= $form->group(
-					s("Valeur de sortie").' '.\util\FormUi::asterisk(),
-					$form->inputGroup($form->number('amount').$form->addon('€ ')).
-					'<div class="util-info mt-1 hide" type="sold">'.s(" Attention la vente d’une immobilisation peut être assujettie à TVA. Renseignez-vous auprès de votre expert-comptable ou organisme agréé sur ce point.").'</div>',
-				);
-
-				$h .= '<div class="util-info hide" id="dispose-scrap-warning">';
-					$h .= s(
-					"Attention, si vous percevez une indemnisation suite à un sinistre, cette indemnisation doit être comptabilisée comme le produit d'une vente de votre immobilisation !",
-				);
-				$h .= '</div>';
-
-				$buttons = $form->submit(
+				$footer = '<div class="text-end">'.$form->submit(
 					s("Céder"),
 					['id' => 'submit-dispose-asset'],
-				);
-
-				$h .= $form->group(content: $buttons);
+				).'</div>';
 
 			$h .= $form->close();
 
@@ -426,7 +488,10 @@ Class AssetUi {
 		return new \Panel(
 			id: 'panel-asset-dispose',
 			title: s("Cession de l'immobilisation #{id}", ['id' => $eAsset['id']]),
-			body: $h
+			body: $h,
+			dialogOpen : $dialogOpen,
+			dialogClose: $form->close(),
+			footer: $footer,
 		);
 	}
 
@@ -605,6 +670,19 @@ Class AssetUi {
 
 	public function getFinalRecognitionTranslation(): string {
 		return s("Reprise finale de subvention");
+	}
+
+	public function getTranslation(string|int $class): string {
+
+		return match($class) {
+			'amortization' => s("Amortissement"),
+			'asset' => s("Immobilisation"),
+			\account\AccountSetting::INTANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
+			\account\AccountSetting::TANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
+			\account\AccountSetting::ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
+			\account\AccountSetting::CHARGE_ASSET_NET_VALUE_CLASS => s("VNC d'immobilisation"),
+		};
+
 	}
 
 	public static function p(string $property): \PropertyDescriber {

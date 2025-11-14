@@ -8,10 +8,6 @@ class Asset extends AssetElement {
 			return FALSE;
 		}
 
-		if($this['status'] !== AssetElement::ONGOING) {
-			return FALSE;
-		}
-
 		return TRUE;
 	}
 
@@ -24,6 +20,24 @@ class Asset extends AssetElement {
 		return TRUE;
 	}
 
+	public function canDispose(): bool {
+
+		return $this->canManage() and $this['status'] === Asset::ONGOING;
+	}
+
+	public function isTangible(): bool {
+
+		return AssetLib::isTangibleAsset($this['accountLabel']);
+
+	}
+
+
+	public function isIntangible(): bool {
+
+		return AssetLib::isIntangibleAsset($this['accountLabel']);
+
+	}
+
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
@@ -33,7 +47,7 @@ class Asset extends AssetElement {
 				'cAmortization' => Amortization::model()
 	        ->select(Amortization::getSelection())
 					->sort(['date' => SORT_ASC])
-	        ->delegateCollection('asset')
+	        ->delegateCollection('asset') // Ne pas modifier l'index (qui correspond à année 1, année 2 etc.)
 			];
 
 	}

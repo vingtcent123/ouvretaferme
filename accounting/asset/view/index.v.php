@@ -7,6 +7,6 @@ new AdaptativeView('/asset/{id}/', function($data, PanelTemplate $t) {
 
 new AdaptativeView('dispose', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()::dispose($data->eFarm, $data->eFinancialYear, $data->eAsset);
+	return new \asset\AssetUi()::dispose($data->eFarm, $data->eAsset);
 
 });

@@ -5,7 +5,7 @@ class ClassLib {
 
 	public static function pad(string $account): string {
 
-		return str_pad($account, 8, '0');
+		return str_pad(mb_substr($account, 0, 8), 8, '0');
 
 	}
 
@@ -42,6 +42,15 @@ class ClassLib {
 		}
 
 		return mb_substr($class, 0, 1).mb_substr($class, 2);
+
+	}
+
+	public static function getAmortizationClassFromClass(string $class): ?string {
+
+		if(in_array(mb_substr($class, 0, 2), [AccountSetting::INTANGIBLE_ASSETS_CLASS, AccountSetting::TANGIBLE_ASSETS_CLASS]) === FALSE) {
+			return NULL;
+		}
+		return mb_substr($class, 0, 1).'8'.mb_substr($class, 1);
 
 	}
 

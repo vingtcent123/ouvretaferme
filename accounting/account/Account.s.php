@@ -20,7 +20,7 @@ class AccountSetting extends \Settings {
 	const GRANT_ASSET_CLASS = '13';
 	const GRANT_ASSET_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
 	const GRANT_DEPRECIATION_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
-	const NON_DEPRECIABLE_ASSET_CLASS = '2125';
+	const NON_AMORTIZABLE_ASSET_CLASS = '2125';
 
 	// CLASSES GÉNÉRALES
 	const CAPITAL_GENERAL_CLASS = 1;
@@ -38,12 +38,15 @@ class AccountSetting extends \Settings {
 	// AMORTISSEMENTS, DÉPRÉCIATIONS ET PROVISIONS
 	const PROVISION_CLASS = 15;
 	const ASSET_AMORTIZATION_GENERAL_CLASS = 28;
+	const ASSET_AMORTIZATION_INTANGIBLE_CLASS = 280;
+	const ASSET_AMORTIZATION_TANGIBLE_CLASS = 281;
 	const ASSET_DEPRECIATION_CLASS = 29;
 	const STOCK_DEPRECIATION_CLASS = 39;
 	const THIRD_PARTY_DEPRECIATION_CLASS = 49;
 	const FINANCIAL_DEPRECIATION_CLASS = 59;
-	const INTANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS = '68111'; // Dotation aux amortissements sur immos incorporelles
-	const TANGIBLE_ASSETS_DEPRECIATION_CHARGE_CLASS = '68112'; // Dotation aux amortissements sur immos corporelles
+	const ASSETS_AMORTIZATION_CHARGE_CLASS = '6811'; // Dotation aux amortissements sur immos corporelles et incorpo
+	const INTANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS = '68111'; // Dotation aux amortissements sur immos incorporelles
+	const TANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS = '68112'; // Dotation aux amortissements sur immos corporelles
 	const RECEIVABLES_ON_ASSET_DISPOSAL_CLASS = '462'; // Créances sur cessions d'immobilisations
 
 	// CLASSES de TVA
@@ -65,8 +68,8 @@ class AccountSetting extends \Settings {
 	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 66;
 	const CHARGE_ESCOMPTES_ACCOUNT_CLASS = 665;
 	const CHARGE_EXCEPTIONAL_ACCOUNT_CLASS = 67;
-	const DISPOSAL_ASSET_VALUE_CLASS = '675'; // Valeur comptable des éléments d'actifs cédés
-	
+	const CHARGE_ASSET_NET_VALUE_CLASS = 657; // VNC
+
 	// PRODUITS
 	const PRODUCT_SOLD_ACCOUNT_CLASS = 70;
 	const PRODUCT_SUBVENTION_ACCOUNT_CLASS = 74;
