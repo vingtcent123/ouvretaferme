@@ -471,7 +471,9 @@ class PdfUi {
 			'unit' => new Unit(),
 			'unitPrice' => NULL,
 			'price' => $eSale['shipping'],
-			'vatRate' => $eSale['shippingVatRate']
+			'vatRate' => $eSale['shippingVatRate'],
+			'productComposition' => FALSE,
+			'ingredientOf' => new Item()
 		]);
 
 	}

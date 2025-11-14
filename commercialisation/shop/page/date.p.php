@@ -201,7 +201,7 @@ new \shop\DatePage()
 new Page()
 	->remote('getSales', 'selling', function($data) {
 
-		$data->e = \shop\DateLib::getById(GET('id'));
+		$data->e = \shop\DateLib::getById(GET('id'))->validate();
 		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
 
 		if($data->e['shop']->isPersonal()) {
