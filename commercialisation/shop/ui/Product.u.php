@@ -1414,14 +1414,10 @@ class ProductUi {
 
 		}
 
-		if(FEATURE_GROUP) {
-
-			$menu .= '<a data-url="/shop/relation:create?farm='.$eFarm['id'].($eDate->notEmpty() ? '&date='.$eDate['id'] : '').($eCatalog->notEmpty() ? '&catalog='.$eCatalog['id'] : '').'" class="batch-menu-relation batch-menu-item">';
-				$menu .= \Asset::icon('plus-circle');
-				$menu .= '<span>'.s("Créer un groupe").'</span>';
-			$menu .= '</a>';
-
-		}
+		$menu .= '<a data-url="/shop/relation:create?farm='.$eFarm['id'].($eDate->notEmpty() ? '&date='.$eDate['id'] : '').($eCatalog->notEmpty() ? '&catalog='.$eCatalog['id'] : '').'" class="batch-menu-relation batch-menu-item">';
+			$menu .= \Asset::icon('plus-circle');
+			$menu .= '<span>'.s("Créer un groupe").'</span>';
+		$menu .= '</a>';
 
 		$danger = '<a data-ajax-submit="/shop/product:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces produits du catalogue ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
 			$danger .= \Asset::icon('trash');

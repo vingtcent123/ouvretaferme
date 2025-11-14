@@ -39,7 +39,7 @@ class RelationUi {
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Quel est le rôle des groupes de produits ?").'</h4>';
 				$h .= '<p>'.s("Un groupe de produits peut être proposé à la vente dans vos catalogues ou sur vos boutiques en ligne. Lorsqu'un groupe de produits est mis en vente, le choix est laissé au client de choisir un des produits du groupe pour compléter sa commande.").'</p>';
-				$h .= '<p>'.s("Cela vous permet par exemple de vendre plusieurs variantes d'un même produit. Vous pourriez par exemple créer un groupe <i>Aromatiques</i> et inclure dans ce groupe les produits <i>Persil</i>, <i>Ciboulette</i> et <i>Basilic</i>. Si votre client veut des <i>Aromatiques</i>, alors il devra choisir parmi les trois possibilités qui s'offrent à lui.").'</p>';
+				$h .= '<p>'.s("Cela vous permet par exemple de vendre plusieurs variantes d'un même produit. Vous pourriez par exemple créer un groupe <i>Lait entier</i> et inclure dans ce groupe les produits <i>Lait entier / 1 litre</i> et <i>Lait entier / 500 mL</i>. Si votre client veut du <i>Lait entier</i>, alors il pourra choisir parmi les deux possibilités qui s'offrent à lui.").'</p>';
 			$h .= '</div>';
 
 			$h .= $form->asteriskInfo();
