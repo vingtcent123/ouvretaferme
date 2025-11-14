@@ -269,7 +269,10 @@ class DateUi {
 			// Setter les produits sélectionnés et leur prix s'ils sont toujours disponibles
 			foreach($eDateBase['cProduct'] as $eProduct) {
 
-				if($cProduct->offsetExists($eProduct['product']['id'])) {
+				if(
+					$eProduct['parent'] === FALSE and
+					$cProduct->offsetExists($eProduct['product']['id'])
+				) {
 
 					$cProduct[$eProduct['product']['id']]['checked'] = TRUE;
 
