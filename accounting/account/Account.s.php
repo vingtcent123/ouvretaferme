@@ -1,6 +1,20 @@
 <?php
 namespace account;
 
+/**
+ * Vocabulaire :
+ * Actif              Asset
+ * Actif immobilisé   Fixed Asset
+ * Actif circulant    Current Asset
+ * Capitaux propres   Equity
+ * Debts              Dettes
+ * Passif             Liability
+ * Immobilisation     Asset
+ * Amortissement      Amortization
+ * Dépréciation       Depreciation
+ * Provision          Provision
+ * Extourne           Reversal
+ */
 class AccountSetting extends \Settings {
 
 	public static $remoteKey;
