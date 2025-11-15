@@ -225,7 +225,7 @@ Class JournalCodeUi {
 
 		$h .= $form->asteriskInfo();
 
-		$h .= $form->dynamicGroups($eJournalCode, ['code*', 'name*', 'color', 'isExtournable']);
+		$h .= $form->dynamicGroups($eJournalCode, ['code*', 'name*', 'color', 'isReversable', 'isDisplayed']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Créer le journal"))
