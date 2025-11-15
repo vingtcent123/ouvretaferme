@@ -45,16 +45,18 @@ class GenericAccountModel extends \ModuleModel {
 			'visible' => ['bool', 'cast' => 'bool'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'journalCode' => ['element32', 'company\JournalCode', 'null' => TRUE, 'cast' => 'element'],
 			'deletedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\company\GenericAccount::AGRICULTURAL, \company\GenericAccount::ASSOCIATION], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'deletedAt', 'type'
+			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'journalCode', 'deletedAt', 'type'
 		]);
 
 		$this->propertiesToModule += [
 			'vatAccount' => 'account\Account',
+			'journalCode' => 'company\JournalCode',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -122,6 +124,10 @@ class GenericAccountModel extends \ModuleModel {
 
 	public function whereVatRate(...$data): GenericAccountModel {
 		return $this->where('vatRate', ...$data);
+	}
+
+	public function whereJournalCode(...$data): GenericAccountModel {
+		return $this->where('journalCode', ...$data);
 	}
 
 	public function whereDeletedAt(...$data): GenericAccountModel {

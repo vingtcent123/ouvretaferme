@@ -88,6 +88,7 @@ class CompanyLib {
 		$database = new \account\AccountModel()->getDb();
 		$pdo->exec('ALTER TABLE '.$pdo->api->field($database).'.'.$pdo->api->field('account').' AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
 
+		// Copy journalCodes
 		$cJournalCode = JournalCode::model()
 			->select(\journal\JournalCode::getSelection())
 			->getCollection();

@@ -5,6 +5,7 @@ GenericAccount:
   visible: bool = TRUE
   vatAccount: ?account\Account
   vatRate: ?decimal(5, 2)
+  journalCode: ?company\JournalCode
   deletedAt: ?date
   type: enum(AGRICULTURAL, ASSOCIATION)
   INDEX: [
