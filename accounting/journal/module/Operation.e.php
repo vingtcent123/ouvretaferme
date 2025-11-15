@@ -23,6 +23,13 @@ class Operation extends OperationElement {
 
 	}
 
+	public function acceptUpdate(): bool {
+
+		$this->expects(['hash']);
+
+		return mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED;
+
+	}
 	public function canUpdate(): bool {
 
 		$this->expects(['date', 'financialYear', 'hash']);

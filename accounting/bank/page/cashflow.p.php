@@ -72,11 +72,9 @@ new \bank\CashflowPage(
 )
 	->get('allocate', function($data) {
 
-		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
-		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
-
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+		$data->cJournalCode = \journal\JournalCodeLib::getAll();
 
 		throw new ViewAction($data);
 
@@ -85,10 +83,8 @@ new \bank\CashflowPage(
 
 		$data->index = POST('index');
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
-		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty, 'cOperationCashflow' => new Collection(['cashflow' => $data->eCashflow])]);
+		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty, 'cOperationCashflow' => new Collection(['cashflow' => $data->eCashflow]), 'cJournalCode' => \journal\JournalCodeLib::getAll()]);
 
-		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
-		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 
 		throw new ViewAction($data);

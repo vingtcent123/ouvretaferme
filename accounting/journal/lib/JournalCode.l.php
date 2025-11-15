@@ -11,7 +11,8 @@ Class JournalCodeLib extends JournalCodeCrud {
 
 		return JournalCode::model()
 			->select(JournalCode::getSelection())
-			->getCollection();
+			->sort(['name' => SORT_ASC])
+			->getCollection(NULL, NULL, 'id');
 
 	}
 	public static function getByCode(string $code): JournalCode {

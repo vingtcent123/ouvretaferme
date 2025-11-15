@@ -91,6 +91,7 @@ class AccountLib extends AccountCrud {
         ['name' => new \Sql('CONCAT(class, ". ", description)')]
         + Account::getSelection()
         + ['vatAccount' => ['class', 'vatRate', 'description']]
+				+ ['journalCode' => ['id']],
       )
 			->sort(['class' => SORT_ASC])
 			->whereClass('IN', fn() => AccountSetting::STOCK_VARIATION_CLASSES[$search->get('stock')['class']], if: $search->has('stock'))

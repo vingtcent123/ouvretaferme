@@ -79,7 +79,7 @@ class OperationUi {
 		);
 	}
 
-	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, array $assetData, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase): \Panel {
+	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -121,6 +121,8 @@ class OperationUi {
 				$eOperation['vatOperation'] = $eOperationVAT;
 			}
 
+			$eOperation['cJournalCode'] = $eOperationBase['cJournalCode'];
+
 			$cOperationFormatted->append($eOperation);
 
 		}
@@ -148,7 +150,6 @@ class OperationUi {
 			eFarm: $eFarm,
 			eFinancialYear: $eFinancialYear,
 			form: $form,
-			assetData: $assetData,
 			cPaymentMethod: $cPaymentMethod,
 			cOperation: $cOperationFormatted,
 			eCashflow: $eCashflow);
@@ -313,7 +314,7 @@ class OperationUi {
 			$h .= $comment;
 		$h .= '</div>';
 
-		if($eOperation->canUpdate()) {
+		if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
 			$h .= '<div class="text-center"><a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update">'.s("Modifier").'</a></div>';
 		}
 
@@ -674,7 +675,7 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, array $assetData, \Collection $cPaymentMethod, ?string $invoice = NULL): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, ?string $invoice = NULL): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -721,7 +722,7 @@ class OperationUi {
 				$index = 0;
 				$defaultValues = $eOperation->getArrayCopy();
 
-				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, $cPaymentMethod);
+				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
 
 				$h .= '<div class="operation-invoice-preview hide">';
 					$h .= '<embed class="hide"/>';
@@ -732,7 +733,7 @@ class OperationUi {
 
 		$h .= '</div>';
 
-		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:addOperation" post-index="'.($index + 1).'" post-amount="" post-third-party="" class="btn btn-outline-secondary">';
+		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:addOperation" post-index="'.($index + 1).'" post-financial-year="'.$eFinancialYear['id'].'" class="btn btn-outline-secondary">';
 			$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
 		$addButton .= '</a>';
 
@@ -779,6 +780,7 @@ class OperationUi {
 			$h .= '<h4>&nbsp;</h4>';
 			$h .= '<div class="operation-create-header">'.self::p('date')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('document')->label.'</div>';
+			$h .= '<div class="operation-create-header">'.self::p('journalCode')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('thirdParty')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -851,7 +853,6 @@ class OperationUi {
 		?string $suffix,
 		array $defaultValues,
 		array $disabled,
-		array $assetData,
 		\Collection $cPaymentMethod,
 	): string {
 
@@ -860,8 +861,6 @@ class OperationUi {
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
 		$isFromCashflow = ($eOperation['cOperationCashflow'] ?? new \Collection())->notEmpty();
 
-		$cAssetGrant = $assetData['grant'] ?? new \Collection();
-		$cAssetToLinkToGrant = $assetData['asset'] ?? new \Collection();
 
 		if($eFinancialYear->isAccrualAccounting() and $index > 0) {
 			$disabled[] = 'thirdParty';
@@ -907,6 +906,25 @@ class OperationUi {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-field'] = 'document';
 				});
+			$h .='</div>';
+
+			$h .= '<div data-wrapper="journalCode'.$suffix.'">';
+				$h .= '<div class="operation_group-input">';
+					$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($index) {
+						$d->attributes['data-index'] = $index;
+						$d->attributes['data-field'] = 'journalCode';
+					});
+					$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
+						$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true">';
+							$h .= \Asset::icon('exclamation-triangle');
+						$h .= '</a>';
+						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+							$h .= '<span class="dropdown-item">';
+							$h .= s("Cette classe de compte est normalement configurée pour être dans le journal \"{value}\".", ['value' => '<span data-index="'.$index.'" data-journalCode="journal-name"></span>']);
+							$h .= '</span>';
+						$h .= '</div>';
+					$h .= '</div>';
+				$h .= '</div>';
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="thirdParty'.$suffix.'">';
@@ -1169,7 +1187,6 @@ class OperationUi {
 		int $index,
 		\util\FormUi $form,
 		array $defaultValues,
-		array $assetData,
 		\Collection $cPaymentMethod,
 	): string {
 
@@ -1179,7 +1196,7 @@ class OperationUi {
 		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
 			$h .= self::getCreateHeader($eFinancialYear, $isFromCashflow);
-			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $assetData, $cPaymentMethod);
+			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $cPaymentMethod);
 
 			if($isFromCashflow === TRUE) {
 				$h .= self::getCreateValidate($eFinancialYear['hasVat']);
@@ -1195,7 +1212,6 @@ class OperationUi {
 		\farm\Farm $eFarm,
 		\account\FinancialYear $eFinancialYear,
 		\util\FormUi $form,
-		array $assetData,
 		\Collection $cPaymentMethod,
 		\Collection $cOperation,
 		\bank\Cashflow $eCashflow,
@@ -1219,7 +1235,7 @@ class OperationUi {
 				$suffix = '['.$index.']';
 
 				$eOperation['amountIncludingVAT'] = $eOperation['amount'] + ($eOperation['vatAmount'] ?? 0);
-				$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $assetData, $cPaymentMethod);
+				$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $cPaymentMethod);
 				$index++;
 			}
 
@@ -1320,8 +1336,7 @@ class OperationUi {
 
 			case 'journalCode':
 				$d->field = 'select';
-
-				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and ($e['cOperationLinked'] ?? new \Collection())->notEmpty()) ? \util\FormUi::info(s("Cette modification sera également reportée sur les écritures liées")) : '';
+				$d->values = fn($e) => $e['cJournalCode'] ?? new \Collection();
 
 				break;
 

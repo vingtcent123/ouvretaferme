@@ -206,7 +206,8 @@ class AccountUi {
 			'vatClass' => $vatClass,
 			'farm' => $farm,
 			'itemHtml' => $itemHtml,
-			'itemText' => $eAccount['class'].' '.$eAccount['description']
+			'itemText' => $eAccount['class'].' '.$eAccount['description'],
+			'journalCode' => ($eAccount['journalCode']['id'] ?? NULL),
 		];
 
 	}

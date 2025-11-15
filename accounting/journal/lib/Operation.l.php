@@ -495,6 +495,7 @@ class OperationLib extends OperationCrud {
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
 			'asset',
+			'journalCode',
 		];
 		if($eFinancialYear['hasVat']) {
 			$properties[] = 'vat';
@@ -643,7 +644,9 @@ class OperationLib extends OperationCrud {
 
 			$fw->validate();
 
-			$eOperation['journalCode'] = $cAccounts->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
+			if($eOperation['journalCode']->empty()) {
+					$eOperation['journalCode'] = $cAccounts->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
+			}
 
 			if($for === 'create') {
 

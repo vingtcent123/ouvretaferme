@@ -28,7 +28,7 @@ class JournalUi {
 						and $eFarm->canManage()
 					) {
 						if($eFinancialYear->isCashAccounting()) {
-							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?financialYear='.$eFinancialYear['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
+							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?financialYear='.$eFinancialYear['id'].'&code='.GET('code').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
 						}
 						if($eFinancialYear->isAccrualAccounting()) {
 
@@ -402,7 +402,7 @@ class JournalUi {
 									$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
 									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
 
-									if($eOperation->canUpdate()) {
+									if($eOperation->canUpdate() and $eOperation->acceptUpdate()) {
 
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
 

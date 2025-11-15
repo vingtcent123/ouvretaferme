@@ -37,8 +37,8 @@ new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 		$data->eFarm,
 		$data->eFinancialYear,
 		$data->eCashflow,
-		['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],
 		$data->cPaymentMethod,
+		$data->cJournalCode,
 	);
 
 });
@@ -47,7 +47,7 @@ new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
 	$t->qs('#operation-create-list')->setAttribute('data-columns', $data->index + 1);
 	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml('afterend', new \bank\CashflowUi()->addAllocate(
-		$data->eFarm, $data->eOperation, $data->eFinancialYear, $data->eCashflow, $data->index, ['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],cPaymentMethod: $data->cPaymentMethod));
+		$data->eFarm, $data->eOperation, $data->eFinancialYear, $data->eCashflow, $data->index, cPaymentMethod: $data->cPaymentMethod));
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
 	if($data->index >= 4) {
 		$t->qs('#add-operation')->addClass('not-visible');

@@ -131,7 +131,7 @@ Class OpeningLib {
 
 	public static function open(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, array $journalCodes): void {
 
-		$hash = \journal\OperationLib::generateHash().'n';
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_RETAINED;
 		
 		$cOperation = \account\OpeningLib::getRetainedEarnings($eFinancialYearPrevious, $eFinancialYear, $hash);
 

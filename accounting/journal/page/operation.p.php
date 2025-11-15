@@ -32,6 +32,8 @@ new \journal\OperationPage(
 		$data->eCashflow = new \bank\Cashflow();
 	}
 
+	$data->e['cJournalCode'] = \journal\JournalCodeLib::getAll();
+
 	throw new ViewAction($data);
 })
 ->post('/journal/operation/{id}/doUpdate', function($data) {
@@ -86,6 +88,8 @@ new \journal\OperationPage(
 
 		// Third party
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
+		$cJournalCode = \journal\JournalCodeLib::getAll();
+		$eJournalCode = (get_exists('code') and $cJournalCode->offsetExists(GET('code', 'int'))) ? $cJournalCode->offsetGet(GET('code', 'int')) : new \journal\JournalCode();
 
 		$data->e->merge([
 			'farm' => $data->eFarm['id'],
@@ -99,12 +103,11 @@ new \journal\OperationPage(
 			'type' => GET('type'),
 			'amount' => GET('amount', 'float'),
 			'cashflow' => $eCashflow,
+			'cJournalCode' => $cJournalCode,
+			'journalCode' => $eJournalCode,
 		]);
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
-		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
-		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
 
 		throw new ViewAction($data);
 
@@ -151,13 +154,17 @@ new \journal\OperationPage(
 	->post('addOperation', function($data) {
 
 		$data->index = POST('index');
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
-		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty]);
-
-		$data->cAssetGrant = \asset\AssetLib::getAllGrants();
-		$data->cAssetToLinkToGrant = \asset\AssetLib::getAllAssetsToLinkToGrant();
+		$cJournalCode = \journal\JournalCodeLib::getAll();
+		$eJournalCode = (post_exists('code') and $cJournalCode->offsetExists(POST('code', 'int'))) ? $cJournalCode->offsetGet(POST('code', 'int')) : new \journal\JournalCode();
+		$data->eOperation = new \journal\Operation([
+			'account' => new \account\Account(),
+			'thirdParty' => $eThirdParty,
+			'cJournalCode' => $cJournalCode,
+			'journalCode' => $eJournalCode
+		]);
 
 		throw new ViewAction($data);
 
@@ -189,7 +196,7 @@ new \journal\OperationPage(
 		throw new ReloadAction('journal', $cOperation->count() > 1 ? 'Operation::createdSeveral' : 'Operation::created');
 
 	})
-	->create(action: function($data) {
+	->create(function($data) {
 
 		// Third party
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
@@ -203,6 +210,7 @@ new \journal\OperationPage(
 			'type' => GET('type'),
 			'amount' => GET('amount', 'float'),
 			'cPaymentMethod' => $data->cPaymentMethod,
+			'cJournalCode' => \journal\JournalCodeLib::getAll(),
 		]);
 
 		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();

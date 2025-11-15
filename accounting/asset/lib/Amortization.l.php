@@ -495,7 +495,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$amortizationValue = self::computeAmortizationUntil($eAsset, $endDate);
-		$hash = \journal\OperationLib::generateHash().'i';
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 		// Étape 1 : Dotation aux amortissements, on débite 6811XXXX
 		if($eAsset->isIntangible()) {

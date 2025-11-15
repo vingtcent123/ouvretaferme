@@ -365,7 +365,7 @@ class AssetLib extends \asset\AssetCrud {
 			AmortizationLib::amortize($eFinancialYear, $eAsset, $endDate);
 
 			// Étape 2 : Écriture de la sortie du bien du patrimoine
-			$hash = \journal\OperationLib::generateHash().'i';
+			$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 			$eAsset = AssetLib::getById($eAsset['id']); // On re-récupère tous les amortissements
 			$accumulatedAmortizationsValue = round($eAsset['cAmortization']->sum('amount'), 2);
@@ -422,7 +422,7 @@ class AssetLib extends \asset\AssetCrud {
 					continue;
 				}
 
-				$hash = \journal\OperationLib::generateHash().'i';
+				$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 				$class = match($type) {
 					Depreciation::NORMAL => \account\AccountSetting::RECOVERY_NORMAL_ON_ASSET_DEPRECIATION,

@@ -91,8 +91,34 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
         } else {
             qs('[data-index="' + index + '"][data-vat="account-info"]').hide();
         }
+
+        if(e.detail.journalCode) {
+
+            qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').hide();
+
+            const actualJournalCode = qs('[name="journalCode[' + index + ']"]').value;
+
+            if(actualJournalCode && e.detail.journalCode !== actualJournalCode) {
+
+                const journalName = qs('[name="journalCode[' + index + ']"] option[value="'+ e.detail.journalCode +'"]').text;
+                qs('[data-journalCode="journal-name"][data-index="' + index + '"]').innerHTML = journalName;
+                qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').removeHide();
+                qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').dataset.journalSuggested = e.detail.journalCode;
+
+            } else {
+
+                qs('[name="journalCode[' + index + ']"]').value = e.detail.journalCode;
+
+            }
+        }
         Operation.updateType(e.detail);
         Operation.refreshVAT(e.detail);
+
+    } else {
+
+        Operation.resetVat(index);
+
+        Operation.resetAccountLabel(index);
 
     }
 
@@ -116,8 +142,6 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
     }
 
     Operation.checkAutocompleteStatus(e);
-
-    Operation.resetAccountLabel(index);
 });
 
 document.delegateEventListener('autocompleteUpdate', '[data-third-party="journal-operation-create"], [data-third-party="journal-operation-update"], [data-third-party="bank-cashflow-allocate"]', function(e) {
@@ -218,6 +242,13 @@ class Operation {
              : qs('[name="' + selector + '"]').classList.remove('row-highlight');
     }
 
+    static applyJournal(index) {
+
+        const journalCodeId = qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').dataset.journalSuggested;
+        qs('[name="journalCode[' + index + ']"]').value = journalCodeId;
+        qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').hide();
+    }
+
     static preFillNewOperation(index) {
 
         qs('[name="date[' + index + ']"]').setAttribute('value', qs('[name="date[' + (index - 1) + ']"]').value)
@@ -237,12 +268,22 @@ class Operation {
             qs('[name="thirdParty[' + index + ']"]').setAttribute('value', qs('[name="thirdParty[' + (index - 1) + ']"]').value || null)
         }
 
+        if(qs('[name="journalCode[' + index + ']"]') && qs('[name="journalCode[' + (index - 1) + ']"]')) {
+            qs('[name="journalCode[' + index + ']"]').value = qs('[name="journalCode[' + (index - 1) + ']"]').value || null
+        }
+
     }
 
     static resetAccountLabel(index) {
 
         const element = qs('[data-wrapper="accountLabel['+ index +']"] a[class="autocomplete-empty"]');
         AutocompleteField.empty(element);
+
+    }
+
+    static resetVat(index) {
+
+        qs('[data-wrapper="vatRate['+ index +']"] input').value = '';
 
     }
 

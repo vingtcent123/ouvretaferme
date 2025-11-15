@@ -7,7 +7,7 @@ new AdaptativeView('/journal/operation/{id}', function($data, PanelTemplate $t) 
 });
 new AdaptativeView('/journal/operation/{id}/update', function($data, PanelTemplate $t) {
 
-	return new \journal\OperationUi()->getUpdate($data->eFarm, $data->eFinancialYear, $data->cOperation, [], $data->cPaymentMethod, $data->eCashflow, $data->e);
+	return new \journal\OperationUi()->getUpdate($data->eFarm, $data->eFinancialYear, $data->cOperation, $data->cPaymentMethod, $data->eCashflow, $data->e);
 
 });
 
@@ -17,7 +17,6 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 			$data->eFarm,
 			$data->e,
 			$data->eFinancialYear,
-			['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],
 			$data->cPaymentMethod,
 		);
 
@@ -95,8 +94,8 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 				$data->eFinancialYear,
 				'['.$index.']',
 				$defaultValues,
-				[], [],
-				$data->cPaymentMethod
+				[],
+				$data->cPaymentMethod,
 			)
 		);
 		$t->qs('#add-operation')->setAttribute('post-index', $index + 1);
@@ -200,7 +199,6 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 			'['.$data->index.']',
 			$defaultValues,
 			[],
-			['grant' => $data->cAssetGrant, 'asset' => $data->cAssetToLinkToGrant],
 			$data->cPaymentMethod
 		)
 	);

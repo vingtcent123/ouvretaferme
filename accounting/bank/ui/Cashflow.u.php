@@ -423,7 +423,7 @@ class CashflowUi {
 
 	}
 
-	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, array $assetData, \Collection $cPaymentMethod): \Panel {
+	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('bank', 'cashflow.js');
@@ -444,7 +444,11 @@ class CashflowUi {
 			]
 		);
 
-		$eOperation = new \journal\Operation(['account' => new \account\Account()]);
+		$eOperation = new \journal\Operation([
+			'account' => new \account\Account(),
+			'cOperationCashflow' => new \Collection(['cashflow' => $eCashflow]),
+			'cJournalCode' => $cJournalCode,
+		]);
 		$index = 0;
 		$defaultValues = [
 			'date' => $eCashflow['date'],
@@ -462,8 +466,7 @@ class CashflowUi {
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 		$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
 
-		$eOperation['cOperationCashflow'] = new \Collection(['cashflow' => $eCashflow]);
-		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $assetData, $cPaymentMethod);
+		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
@@ -523,7 +526,7 @@ class CashflowUi {
 
 	}
 
-	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, array $assetData, \Collection $cPaymentMethod): string {
+	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, \Collection $cPaymentMethod): string {
 
 		$form = new \util\FormUi();
 		$form->open('bank-cashflow-allocate');
@@ -533,7 +536,7 @@ class CashflowUi {
 			'description' => $eCashflow['memo'],
 		];
 
-		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $assetData, $cPaymentMethod);
+		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $cPaymentMethod);
 
 	}
 
