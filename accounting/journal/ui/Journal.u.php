@@ -152,7 +152,7 @@ class JournalUi {
 
 			$h .= '<a class="tab-item '.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?'.$args.'">'.s("Général").'</a>';
 
-			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_BANK_CODE ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_BANK_CODE.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.\journal\JournalSetting::JOURNAL_BANK_CODE.'&'.$args.'">';
+			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
 				$h .= '<div class="text-center">';
 					$h .= s("Banque");
 					$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
@@ -269,7 +269,7 @@ class JournalUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 
-						if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_BANK_CODE) {
+						if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK) {
 							$h .= '<th>';
 							$h .= '</th>';
 						}
@@ -315,7 +315,7 @@ class JournalUi {
 
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
-							if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_BANK_CODE) {
+							if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK) {
 								$h .= '<td class="td-checkbox">';
 								$attributesCheckbox = [
 									'data-batch-type' => $eOperation['type'],

@@ -47,23 +47,18 @@ class FinancialYearLib extends FinancialYearCrud {
 	/**
 	 * @param FinancialYear $eFinancialYear Exercice sur lequel écrire le bilan d'ouverture
 	 */
-	public static function openFinancialYear(FinancialYear $eFinancialYear): void {
+	public static function openFinancialYear(FinancialYear $eFinancialYear, array $journalCodes): void {
+
+		$eFinancialYearPrevious = self::getPreviousFinancialYear($eFinancialYear);
 
 		FinancialYear::model()->beginTransaction();
 
-		$eFinancialYearPrevious = self::getPreviousFinancialYear($eFinancialYear);
-		$cOperation = \journal\OperationLib::getForOpening($eFinancialYearPrevious);
-
-		// 1. Report des soldes
-		\journal\OperationLib::createForOpening($cOperation, $eFinancialYear, $eFinancialYearPrevious);
-
-		// 2. Charges et Produits constatés d'avance
-		\journal\DeferralLib::deferIntoFinancialYear($eFinancialYearPrevious, $eFinancialYear);
+		OpeningLib::open($eFinancialYearPrevious, $eFinancialYear, $journalCodes);
 
 		LogLib::save('open', 'financialYear', ['id' => $eFinancialYear['id']]);
 
 		FinancialYear::model()->update($eFinancialYear, [
-			'balanceSheetOpen' => TRUE,
+			'openDate' => new \Sql('NOW()'),
 		]);
 
 		FinancialYear::model()->commit();

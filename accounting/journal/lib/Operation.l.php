@@ -1371,10 +1371,9 @@ class OperationLib extends OperationCrud {
 			])
 			->whereFinancialYear($eFinancialYear)
 			->where(new \Sql('SUBSTRING(accountLabel, 1, 1) NOT IN ("'.join('", "', [\account\AccountSetting::CHARGE_ACCOUNT_CLASS, \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]).'")'))
-			->where(new \Sql('SUBSTRING(accountLabel, 1, 3) NOT IN ("'.join('", "', [\account\AccountSetting::PREPAID_EXPENSE_CLASS, \account\AccountSetting::ACCRUED_EXPENSE_CLASS]).'")'))
 			->sort(['accountLabel' => SORT_ASC])
 			->group(['account', 'accountLabel'])
-			->having(new \Sql('ABS(total) > 0.5'))
+			->having(new \Sql('ABS(total) > 0.0'))
 			->getCollection();
 
 	}
@@ -1386,7 +1385,7 @@ class OperationLib extends OperationCrud {
 	 */
 	public static function createForOpening(\Collection $cOperation, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious): void {
 
-		$eJournalCodeOD = JournalCodeLib::getByCode(JournalSetting::JOURNAL_BANK_OD);
+		$eJournalCodeOD = JournalCodeLib::getByCode(JournalSetting::JOURNAL_CODE_OD);
 		$number = 1;
 
 		foreach($cOperation as $eOperation) {
@@ -1399,7 +1398,7 @@ class OperationLib extends OperationCrud {
 				'accountLabel' => $eOperation['accountLabel'],
 				'date' => $eFinancialYear['startDate'],
 				'paymentDate' => $eFinancialYear['startDate'],
-				'description' => new \account\FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious['endDate']),
+				'description' => new \account\FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious),
 				'journalCode' => $eJournalCodeOD,
 				'document' => 'OUV-'.str_pad($number, 4, '0', STR_PAD_LEFT),
 				'documentDate' => $eFinancialYear['startDate'],

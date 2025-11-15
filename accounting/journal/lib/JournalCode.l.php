@@ -18,7 +18,7 @@ Class JournalCodeLib extends JournalCodeCrud {
 
 		return JournalCode::model()
 			->select(JournalCode::getSelection())
-			->whereCode()
+			->whereCode($code)
 			->get();
 
 	}

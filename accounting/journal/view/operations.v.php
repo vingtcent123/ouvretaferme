@@ -24,7 +24,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$selectedJournalCode = GET('code');
 	if(
 		in_array($selectedJournalCode, $data->cJournalCode->getIds()) === FALSE and
-		in_array($selectedJournalCode, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_BANK_CODE]) === FALSE
+		in_array($selectedJournalCode, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_CODE_BANK]) === FALSE
 	) {
 		$selectedJournalCode = NULL;
 	}

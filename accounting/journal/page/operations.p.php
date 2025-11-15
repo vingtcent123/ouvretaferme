@@ -69,7 +69,7 @@ new Page(function($data) {
 
 			$code = GET('code');
 			if(
-				in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_BANK_CODE]) === FALSE and
+				in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_CODE_BANK]) === FALSE and
 				in_array($journalCode, $data->cJournalCode->getIds()) === FALSE
 			) {
 				$code = NULL;
@@ -82,7 +82,7 @@ new Page(function($data) {
 		$data->cOperation = new Collection();
 		$data->operationsVat = [];
 
-		if($code === \journal\JournalSetting::JOURNAL_BANK_CODE) {
+		if($code === \journal\JournalSetting::JOURNAL_CODE_BANK) {
 
 			$data->cOperation = \journal\OperationLib::getAllForBankJournal($search, $hasSort);
 

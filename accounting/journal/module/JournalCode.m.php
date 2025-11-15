@@ -41,11 +41,11 @@ class JournalCodeModel extends \ModuleModel {
 			'code' => ['text8', 'min' => 2, 'max' => 4, 'unique' => TRUE, 'cast' => 'string'],
 			'isCustom' => ['bool', 'cast' => 'bool'],
 			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
-			'isExtournable' => ['bool', 'cast' => 'bool'],
+			'isReversable' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'code', 'isCustom', 'color', 'isExtournable'
+			'id', 'name', 'code', 'isCustom', 'color', 'isReversable'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -61,7 +61,7 @@ class JournalCodeModel extends \ModuleModel {
 			case 'isCustom' :
 				return TRUE;
 
-			case 'isExtournable' :
+			case 'isReversable' :
 				return FALSE;
 
 			default :
@@ -99,8 +99,8 @@ class JournalCodeModel extends \ModuleModel {
 		return $this->where('color', ...$data);
 	}
 
-	public function whereIsExtournable(...$data): JournalCodeModel {
-		return $this->where('isExtournable', ...$data);
+	public function whereIsReversable(...$data): JournalCodeModel {
+		return $this->where('isReversable', ...$data);
 	}
 
 

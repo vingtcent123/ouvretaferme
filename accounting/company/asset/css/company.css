@@ -173,3 +173,10 @@ tr.account_not-visible {
 	padding: 1rem;
 	background-color: var(--info);
 }
+
+.company-journal {
+	padding: 0.5rem 0.75rem;
+	border-radius: var(--radius);
+	color: white;
+	background-color: var(--secondary);
+}

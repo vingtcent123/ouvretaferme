@@ -14,6 +14,11 @@ namespace account;
  * Dépréciation       Depreciation
  * Provision          Provision
  * Extourne           Reversal
+ * FNP                Accrued Expense (Facture Non Parvenue)
+ * FAE                Accrued Income (Facture À Établir)
+ * CCA                Prepaid Expense (Charge Constatée d'Avance)
+ * PCA                Prepaid Income (Produit Constaté d'Avance)
+ * Report à nouveau   Retained Earnings
  */
 class AccountSetting extends \Settings {
 

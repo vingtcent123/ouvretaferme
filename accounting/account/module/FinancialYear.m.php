@@ -59,18 +59,17 @@ class FinancialYearModel extends \ModuleModel {
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'vatFrequency' => ['enum', [\account\FinancialYear::MONTHLY, \account\FinancialYear::QUARTERLY, \account\FinancialYear::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
 			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL, \account\FinancialYear::AUTRE_BIC, \account\FinancialYear::AUTRE_BNC], 'null' => TRUE, 'cast' => 'enum'],
-			'balanceSheetOpen' => ['bool', 'cast' => 'bool'],
-			'balanceSheetClose' => ['bool', 'cast' => 'bool'],
 			'accountingType' => ['enum', [\account\FinancialYear::ACCRUAL, \account\FinancialYear::CASH], 'cast' => 'enum'],
 			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'null' => TRUE, 'cast' => 'int'],
 			'associates' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'openDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'balanceSheetOpen', 'balanceSheetClose', 'accountingType', 'legalCategory', 'associates', 'closeDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'closeDate', 'openDate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -85,12 +84,6 @@ class FinancialYearModel extends \ModuleModel {
 
 			case 'status' :
 				return FinancialYear::OPEN;
-
-			case 'balanceSheetOpen' :
-				return FALSE;
-
-			case 'balanceSheetClose' :
-				return FALSE;
 
 			case 'accountingType' :
 				return FinancialYear::CASH;
@@ -167,14 +160,6 @@ class FinancialYearModel extends \ModuleModel {
 		return $this->where('taxSystem', ...$data);
 	}
 
-	public function whereBalanceSheetOpen(...$data): FinancialYearModel {
-		return $this->where('balanceSheetOpen', ...$data);
-	}
-
-	public function whereBalanceSheetClose(...$data): FinancialYearModel {
-		return $this->where('balanceSheetClose', ...$data);
-	}
-
 	public function whereAccountingType(...$data): FinancialYearModel {
 		return $this->where('accountingType', ...$data);
 	}
@@ -189,6 +174,10 @@ class FinancialYearModel extends \ModuleModel {
 
 	public function whereCloseDate(...$data): FinancialYearModel {
 		return $this->where('closeDate', ...$data);
+	}
+
+	public function whereOpenDate(...$data): FinancialYearModel {
+		return $this->where('openDate', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): FinancialYearModel {

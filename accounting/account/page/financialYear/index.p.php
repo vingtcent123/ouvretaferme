@@ -87,10 +87,11 @@ new \account\FinancialYearPage(
 
 		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->e);
 
-		$data->cOperation = \journal\OperationLib::getForOpening($data->eFinancialYearPrevious);
+		$data->cOperation = \account\OpeningLib::getRetainedEarnings($data->eFinancialYearPrevious, $data->e, '');
 
-		// Récupérer les écritures de charges constatées d'avance
-		$data->cDeferral = \journal\DeferralLib::getDeferrals($data->eFinancialYearPrevious);
+		$data->eOperationResult = \account\OpeningLib::getResultOperation($data->eFinancialYearPrevious, $data->e, '');
+
+		list($data->cJournalCode, $data->ccOperationReversed) = \account\OpeningLib::getReversableData($data->eFinancialYearPrevious, $data->e, '');
 
 		throw new ViewAction($data);
 
@@ -99,7 +100,7 @@ new \account\FinancialYearPage(
 
 		$data->e->validate('acceptOpen');
 
-		\account\FinancialYearLib::openFinancialYear($data->e);
+		\account\FinancialYearLib::openFinancialYear($data->e, POST('journalCode', 'array'));
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');
 

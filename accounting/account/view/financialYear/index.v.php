@@ -32,7 +32,9 @@ new AdaptativeView('open', function($data, FarmTemplate $t) {
 		$data->e,
 		$data->eFinancialYearPrevious,
 		$data->cOperation,
-		$data->cDeferral,
+		$data->eOperationResult,
+		$data->cJournalCode,
+		$data->ccOperationReversed,
 	);
 
 });
