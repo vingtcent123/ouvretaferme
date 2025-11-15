@@ -14,6 +14,7 @@ L::setVariables([
 Lime::setName('Ouvretaferme');
 
 define('FEATURE_ACCOUNTING', LIME_ENV === 'dev');
+define('FEATURE_GAME', LIME_ENV === 'dev');
 
 require_once Lime::getPath().'/secret.c.php';
 
@@ -43,6 +44,7 @@ switch(LIME_ENV) {
 			'analyze' => 'ouvretaferme',
 			'hr' => 'ouvretaferme',
 			'selling' => 'ouvretaferme',
+			'game' => 'ouvretaferme',
 			'website' => 'ouvretaferme',
 
 			'association' => 'ouvretaferme',
@@ -78,6 +80,7 @@ switch(LIME_ENV) {
 			'analyze' => 'dev_ouvretaferme',
 			'hr' => 'dev_ouvretaferme',
 			'selling' => 'dev_ouvretaferme',
+			'game' => 'dev_ouvretaferme',
 			'website' => 'dev_ouvretaferme',
 
 			'association' => 'dev_ouvretaferme',

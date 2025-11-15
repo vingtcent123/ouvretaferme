@@ -1254,8 +1254,7 @@ a.util-badge {
 
 .util-block,
 .util-block-secondary,
-.util-block-help,
-.util-card {
+.util-block-help {
 	border-radius: var(--radius);
 	margin-bottom: 1rem;
 	padding: 1rem;
@@ -1263,8 +1262,7 @@ a.util-badge {
 
 .util-block *:last-child,
 .util-block-secondary *:last-child,
-.util-block-help *:last-child,
-.util-card *:last-child {
+.util-block-help *:last-child {
 	margin-bottom: 0;
 }
 
@@ -1393,30 +1391,6 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	color: var(--muted);
 	letter-spacing: 1px;
 	margin-bottom: 0.5rem;
-}
-
-.util-card {
-	background: white;
-}
-
-.util-card-header {
-	padding: 1rem;
-	background: var(--background-light);
-	border-bottom: 1px solid var(--border);
-	border-top-left-radius: .5rem;
-	border-top-right-radius: .5rem;
-}
-
-.util-card-body {
-	padding: 1rem;
-}
-
-.util-card-footer {
-	padding: 1rem;
-	background: var(--background-light);
-	border-top: 1px solid var(--border);
-	border-bottom-left-radius: .5rem;
-	border-bottom-right-radius: .5rem;
 }
 
 .util-box-danger,

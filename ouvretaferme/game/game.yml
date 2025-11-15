@@ -1,0 +1,40 @@
+Growing:
+  id: serial32
+  name: text8(1, null)
+  fqn: fqn
+  harvest: ?int8(1, null)
+  days: ?int8(1, null)
+  timeHarvesting: ?int8(0, null)
+  bonusWatering: ?int8(0, null)
+  bonusFertility: ?int8(0, null)
+
+Food:
+  growing: game\Growing
+  harvest: int16(0, null) = 0
+
+Player:
+  id: serial32
+  name: text8(1, 20) @collate(general)
+  user: user\User
+  time: int8(0, null)
+  calendar: json = PHP([])
+  boards: int8(0, null) = 0
+  points: int8(0, null) = 0
+  UNIQUE: [
+    ["name"],
+    ["user"]
+  ]
+
+Tile:
+  user: user\User
+  board: int8(1, null)
+  position: int8(1, null)
+  growing: game\Growing
+  growingBefore: ?game\Growing
+  harvest: int16(0, null)
+  watered: bool = FALSE
+  plantedAt: ?date
+  harvestedAt: ?date
+  UNIQUE: [
+    ["user", "board", "position"]
+  ]

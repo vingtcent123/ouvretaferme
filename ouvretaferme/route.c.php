@@ -313,6 +313,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['itineraire', '{id}'],
 		],
+		'/jouer' => [
+			'request' => 'game/index',
+			'priority' => 5,
+			'route' => ['jouer'],
+		],
 		'/journal/operation/{id}' => [
 			'request' => 'journal/operation',
 			'priority' => 5,

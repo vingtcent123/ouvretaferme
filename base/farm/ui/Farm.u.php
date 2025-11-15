@@ -721,6 +721,16 @@ class FarmUi {
 
 			}
 
+			if($eFarm->canPlay()) {
+
+				$h .= '<div class="farm-tabs farm-section-game">';
+					$h .= $this->getCloseSection();
+					$h .= $this->getGameSection($eFarm, $nav, $subNav);
+				$h .= $training;
+				$h .= '</div>';
+
+			}
+
 			if((FEATURE_ACCOUNTING or $eFarm->hasAccounting()) and $eFarm->canAccounting()) {
 
 				$h .= '<div class="farm-tabs farm-section-accounting">';
@@ -868,6 +878,14 @@ class FarmUi {
 			'settings-accounting' => [
 				'icon' => \Asset::icon('gear-fill'),
 				'label' => s("Paramétrage")
+			],
+			'game-map' => [
+				'icon' => \Asset::icon('map'),
+				'label' => s("Carte")
+			],
+			'game-ranking' => [
+				'icon' => \Asset::icon('trophy'),
+				'label' => s("Classements")
 			],
 		};
 
@@ -1085,6 +1103,75 @@ class FarmUi {
 			}
 
 		}
+
+		if($eFarm->canAnalyze()) {
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-analyze-commercialisation">';
+
+				$h .= $this->getAnalyzeTab(
+					$eFarm,
+					$nav,
+					$subNav,
+					'commercialisation'
+				);
+
+			$h .= '</div>';
+
+		}
+
+		if($eFarm->canManage()) {
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-settings-commercialisation">';
+
+				$h .= $this->getSettingsTab(
+					$eFarm,
+					$nav,
+					'commercialisation',
+					FarmUi::urlSettingsCommercialisation($eFarm)
+				);
+
+			$h .= '</div>';
+
+		}
+		return $h;
+
+	}
+
+	protected function getGameSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
+
+		$h = '';
+
+		$h .= '<div class="farm-tab-wrapper farm-nav-selling">';
+
+			$h .= $this->getNav('selling', $nav);
+
+			$h .= $this->getSellingMenu($eFarm, subNav: $subNav);
+
+		$h .= '</div>';
+		$h .= '<div class="farm-tab-wrapper farm-nav-shop">';
+
+			if($eFarm['hasShops']) {
+
+				$h .= $this->getNav('shop', $nav);
+
+				$h .= $this->getShopMenu($eFarm, subNav: $subNav);
+
+			} else {
+
+				$h .= $this->getNav('shop', $nav);
+				$h .= $this->getEmptyShopMenu($eFarm, subNav: $subNav);
+
+			}
+
+		$h .= '</div>';
+
+		$h .= '<div class="farm-tab-wrapper farm-nav-communication">';
+
+			$h .= $this->getNav('game-ranking', $nav);
+			$h .= $this->getCommunicationsMenu($eFarm, subNav: $subNav);
+
+		$h .= '</div>';
+
 
 		if($eFarm->canAnalyze()) {
 
@@ -2297,6 +2384,9 @@ class FarmUi {
 				}
 				if($eFarm->canCommercialisation()) {
 					$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vendre").'</a> ';
+				}
+				if($eFarm->canPlay()) {
+					$h .= '<a href="'.$eFarm->getGameUrl().'" class="btn btn-game">'.\Asset::icon('controller').'<br/>'.s("Jouer").'</a> ';
 				}
 				if($eFarm->hasAccounting() and $eFarm->canAccounting()) {
 					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('bank').'<br/>'.s("Comptabilité").'</a> ';

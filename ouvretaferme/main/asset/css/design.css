@@ -15,6 +15,7 @@
 	--background-light: #f5f5f7;
 	--background-odd: #fafafc;
 	--background-even: #ededf1;
+	--background-game: #f7ecda;
 	--primary: #373737;
 	--secondary: #4a4a70;
 	--secondary-rgb: 74, 74, 112;
@@ -27,6 +28,7 @@
 	--production: #035e42;
 	--commercialisation: #4a4a70;
 	--accounting: #205160;
+	--game: #7a2408;
 	--account-group: #FDE9D9;
 
 	--draft: var(--todo);
@@ -695,6 +697,23 @@ address {
 .btn-outline-accounting {
 	color: var(--accounting);
 	border-color: var(--accounting);
+}
+
+.btn-game,
+.btn-outline-game:not(.btn-readonly):hover {
+	color: white;
+	background-color: var(--game);
+	border-color: var(--game);
+}
+
+.btn-game:not(.btn-readonly):hover {
+	color: white;
+	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
+}
+
+.btn-outline-game {
+	color: var(--game);
+	border-color: var(--game);
 }
 
 .btn-selling,

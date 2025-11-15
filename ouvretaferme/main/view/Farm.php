@@ -78,6 +78,10 @@ class FarmTemplate extends MainTemplate {
 			$sections['commercialisation'] = [\Asset::icon('basket3'), s("Vendre")];
 		}
 
+		if($eFarm->canPlay()) {
+			$sections['game'] = [\Asset::icon('controller'), s("Jouer")];
+		}
+
 		if((FEATURE_ACCOUNTING or $eFarm->hasAccounting()) and $eFarm->canAccounting()) {
 			$sections['accounting'] = [\Asset::icon('bank'), s("Comptabilité")];
 		}

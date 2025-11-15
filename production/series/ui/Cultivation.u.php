@@ -1959,7 +1959,7 @@ class CultivationUi {
 
 		if($eSeries['cycle'] === Series::PERENNIAL) {
 
-			$h .= '<div class="series-header-perennial-seasons util-card">';
+			$h .= '<div class="series-header-perennial-seasons util-block">';
 
 				$h .= '<div class="series-header-perennial-seasons-label">'.s("Année").'</div>';
 

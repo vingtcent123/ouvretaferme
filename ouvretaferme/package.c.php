@@ -12,6 +12,7 @@ Package::setList([
 	'example' => 'framework',
 	'farm' => 'base',
 	'gallery' => 'production',
+	'game' => 'ouvretaferme',
 	'hr' => 'base',
 	'journal' => 'accounting',
 	'language' => 'framework',

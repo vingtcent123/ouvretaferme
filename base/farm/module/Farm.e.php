@@ -176,6 +176,11 @@ class Farm extends FarmElement {
 		);
 	}
 
+	// Peut jouer
+	public function canPlay(): bool {
+		return (FEATURE_GAME and $this->canPlanning());
+	}
+
 	// Peut voir les données personnelles des clients et la page de gestion d'équipe
 	public function canPersonalData(): bool {
 		return $this->canManage();
@@ -404,6 +409,10 @@ class Farm extends FarmElement {
 
 	public function getAccountingUrl(): string {
 		return \company\CompanyUi::urlJournal($this).'/operations';
+	}
+
+	public function getGameUrl(): string {
+		return FarmUi::url($this).'/plateau';
 	}
 
 	public function getCampaignLimit(): int {
