@@ -130,6 +130,16 @@ Class JournalCodeUi {
 		);
 
 	}
+
+	public function getInlineStyle(JournalCode $eJournalCode): string {
+
+		if($eJournalCode->empty() or $eJournalCode['color'] === NULL) {
+			return '';
+		}
+
+		return 'background-color: '.encode($eJournalCode['color']).'; color: white;';
+
+	}
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = JournalCode::model()->describer($property, [

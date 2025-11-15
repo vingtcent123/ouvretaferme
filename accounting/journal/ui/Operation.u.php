@@ -285,10 +285,11 @@ class OperationUi {
 			$h .= s("Journal");
 		$h .= '</div>';
 		$h .= '<div class="operation-view-value">';
-			if($eOperation['journalCode'] !== NULL) {
-				$journalCode = '<div>'.self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE);
+			if($eOperation['journalCode']->notEmpty()) {
+				$journalCode = '<div>';
 				$journalCode .= ' ';
-				$journalCode .= '<span class="journal-'.$eOperation['journalCode'].'">'.($eOperation['journalCode'] ? self::p('journalCode')->values[$eOperation['journalCode']] : '');
+
+				$journalCode .= '<span style=" border-radius: var(--radius); padding: 0.5rem 0.75rem; '.new JournalCodeUi()->getInlineStyle($eOperation['journalCode']).'">'.encode($eOperation['journalCode']['name']);
 			} else {
 				$journalCode = '<i>'.s("Non indiqué").'</i>';
 			}
@@ -1260,10 +1261,14 @@ class OperationUi {
 
 	}
 
-	public static function getShortJournal(\farm\Farm $eFarm, JournalCode $eJournal, bool $link): string {
+	public static function getShortJournal(\farm\Farm $eFarm, JournalCode $eJournalCode, bool $link): string {
 
-		if($eJournal['color'] !== NULL) {
-			$style = ' style="background-color: '.$eJournal['color'].'" ';
+		if($eJournalCode->empty()) {
+			return '';
+		}
+
+		if($eJournalCode['color'] !== NULL) {
+			$style = ' style="background-color: '.$eJournalCode['color'].'" ';
 			$class = '';
 		} else {
 			$style = '';
@@ -1271,10 +1276,10 @@ class OperationUi {
 		}
 
 		if($link) {
-			return '<a class="btn btn-xs journal-button '.$class.'" '.$style.' href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eJournal['id'].'" title="'.s("Filtrer sur : {value}", mb_strtolower($eJournal['name'])).'">'.encode($eJournal['code']).'</a>';
+			return '<a class="btn btn-xs journal-button '.$class.'" '.$style.' href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eJournalCode['id'].'" title="'.s("Filtrer sur : {value}", mb_strtolower($eJournalCode['name'])).'">'.encode($eJournalCode['code']).'</a>';
 		}
 
-		return '<span class="btn btn-xs journal-button" title="'.encode($eJournal['name']).'">'.encode($eJournal['code']).'</span>';
+		return '<span class="btn btn-xs journal-button '.$class.' " '.$style.' title="'.encode($eJournalCode['name']).'">'.encode($eJournalCode['code']).'</span>';
 
 	}
 

@@ -643,7 +643,7 @@ class OperationLib extends OperationCrud {
 
 			$fw->validate();
 
-			$eOperation['journalCode'] = $eOperation['account']['journalCode'];
+			$eOperation['journalCode'] = $cAccounts->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
 
 			if($for === 'create') {
 
@@ -828,6 +828,7 @@ class OperationLib extends OperationCrud {
 			'amount' => abs($vatValue),
 			'financialYear' => $eOperationLinked['financialYear']['id'],
 			'hash' => $eOperationLinked['hash'],
+			'journalCode' => NULL,
 		];
 
 		if($for === 'create') {
@@ -845,7 +846,7 @@ class OperationLib extends OperationCrud {
 				'financialYear',
 				'account', 'accountLabel', 'description', 'document',
 				'thirdParty', 'type', 'amount', 'operation',
-				'hash',
+				'hash', 'journalCode',
 			], ($for === 'create' ? ['date', 'paymentDate', 'paymentMethod'] : [])),
 			$values,
 			new \Properties($for),
