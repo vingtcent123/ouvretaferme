@@ -828,7 +828,7 @@ class OperationLib extends OperationCrud {
 			'amount' => abs($vatValue),
 			'financialYear' => $eOperationLinked['financialYear']['id'],
 			'hash' => $eOperationLinked['hash'],
-			'journalCode' => NULL,
+			'journalCode' => $eOperationLinked['journalCode']['id'] ?? NULL,
 		];
 
 		if($for === 'create') {
@@ -846,7 +846,7 @@ class OperationLib extends OperationCrud {
 				'financialYear',
 				'account', 'accountLabel', 'description', 'document',
 				'thirdParty', 'type', 'amount', 'operation',
-				'hash', 'journalCode',
+				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
 			], ($for === 'create' ? ['date', 'paymentDate', 'paymentMethod'] : [])),
 			$values,
 			new \Properties($for),
