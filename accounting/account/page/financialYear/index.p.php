@@ -66,21 +66,6 @@ new \account\FinancialYearPage(
 		throw new ReloadAction('account', 'FinancialYear::updated');
 
 	})
-	->read('close', function($data) {
-
-		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
-		$search = new Search(['financialYear' => $data->e]);
-
-		$data->cOperationToDefer = \journal\OperationLib::getAllChargesForClosing($search);
-		\journal\DeferralLib::getDeferralsForOperations($data->cOperationToDefer);
-
-		// Stock enregistré de cet exercice comptable + celui de l'exercice précédent non reporté
-		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
-
-		$data->cAssetGrant = \asset\AssetLib::getGrantsWithAmortizedAssets();
-
-		throw new ViewAction($data);
-	})
 	->read('open', function($data) {
 
 		$data->e->validate('acceptOpen');
@@ -105,11 +90,26 @@ new \account\FinancialYearPage(
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');
 
 	})
+	->read('close', function($data) {
+
+		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
+		$search = new Search(['financialYear' => $data->e]);
+
+		$data->cOperationToDefer = \journal\OperationLib::getAllChargesForClosing($search);
+		\journal\DeferralLib::getDeferralsForOperations($data->cOperationToDefer);
+
+		// Stock enregistré de cet exercice comptable + celui de l'exercice précédent non reporté
+		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
+
+		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
+
+		throw new ViewAction($data);
+	})
 	->write('doClose', function($data) {
 
 		$data->e->validate('acceptClose');
 
-		\account\FinancialYearLib::closeFinancialYear($data->e, POST('grantsToRecognize', 'array', []));
+		\account\FinancialYearLib::closeFinancialYear($data->e);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	});

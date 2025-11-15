@@ -17,7 +17,7 @@ new AdaptativeView('/asset/amortization', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	if(empty($data->assetDepreciations) and empty($data->subventionDepreciations)) {
+	if(empty($data->assetDepreciations) and empty($data->grantAmortizations)) {
 
 		echo '<div class="util-info">';
 			echo s("Il n'y a pas d'information à afficher pour le moment.");
@@ -45,8 +45,8 @@ new AdaptativeView('/asset/amortization', function($data, FarmTemplate $t) {
 			echo '</div>';
 
 			echo '<div class="tab-panel" data-tab="amortization-subvention">';
-				if(count($data->subventionDepreciations) > 0) {
-					echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->subventionDepreciations);
+				if(count($data->grantAmortizations) > 0) {
+					echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->grantAmortizations);
 				} else {
 					echo '<div class="util-info">';
 						echo s("Il n'y a aucun amortissement à afficher.");

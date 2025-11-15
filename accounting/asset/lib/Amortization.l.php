@@ -143,6 +143,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		}
 
+		return 0.0;
+
 	}
 
 	public static function computeTable(Asset $eAsset): array {
@@ -363,125 +365,76 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		return $table;
 
 	}
-/*
-	public static function getDegressiveCoefficient(int $duration): int {
 
-		if($duration <= 4) {
-			return 1.25;
+	public static function amortizeGrant(\account\FinancialYear $eFinancialYear, Asset $eAsset): void {
+
+		$amortizationValue = self::computeAmortizationUntil($eAsset, $eFinancialYear['endDate']);
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
+
+		$grantDebitClass = \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS;
+		$amortizationChargeClass = \account\AccountSetting::INVESTMENT_GRANT_TO_RESULT_CLASS;
+
+		$cAccount = \account\AccountLib::getByClasses([$eAsset['account']['class'], $grantDebitClass, $amortizationChargeClass], index: 'class');
+
+		// Étape 1 : On débite 139
+		$eAccountGrantDebit = $cAccount[$grantDebitClass]['id'];
+		$values = [
+			'account' => $eAccountGrantDebit['id'],
+			'accountLabel' => \account\ClassLib::pad($eAccountGrantDebit['class']),
+			'date' => $eFinancialYear['endDate'],
+			'paymentDate' => $eFinancialYear['endDate'],
+			'description' => $eAccountGrantDebit['description'].' - '.$eAsset['description'],
+			'amount' => $amortizationValue,
+			'type' => \journal\OperationElement::DEBIT,
+			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear['id'],
+			'hash' => $hash,
+			'journalCode' => $eAccountGrantDebit['journalCode'],
+		];
+		\journal\OperationLib::createFromValues($values);
+
+		// Étape 2 : on crédite 777
+		$eAccountGrantAmortization = $cAccount[$amortizationChargeClass]['id'];
+		$values = [
+			'account' => $eAccountGrantAmortization['id'],
+			'accountLabel' => \account\ClassLib::pad($eAccountGrantAmortization['class']),
+			'date' => $eFinancialYear['endDate'],
+			'paymentDate' => $eFinancialYear['endDate'],
+			'description' => $eAccountGrantAmortization['description'].' - '.$eAsset['description'],
+			'amount' => $amortizationValue,
+			'type' => \journal\OperationElement::CREDIT,
+			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear['id'],
+			'hash' => $hash,
+			'journalCode' => $eAccountGrantAmortization['journalCode'],
+		];
+		\journal\OperationLib::createFromValues($values);
+
+		// Étape 3 : on inscrit cet amortissement dans la base de données de la subvention
+		$eAmortization = new Amortization([
+			'asset' => $eAsset,
+			'amount' => $amortizationValue,
+			'type' => Amortization::ECONOMIC,
+			'date' => $eFinancialYear['endDate'],
+			'financialYear' => $eFinancialYear,
+		]);
+		Amortization::model()->insert($eAmortization);
+
+		// Étape 4 : Si la sub est entièrement amortie, il faut débiter le compte d'origine (131 ou 138) et créditer 139 du montant total
+
+		$amortizedTotalValue = Amortization::model()
+	    ->whereAsset($eAsset)
+	    ->getValue(new \Sql('SUM(amount)', 'float'));
+
+		if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $amortizedTotalValue >= $eAsset['value']) {
+			Asset::model()->update(
+				$eAsset,
+				['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')],
+			);
 		}
 
-		if($duration <= 6) {
-			return 1.75;
-		}
-
-		return 2.25;
 
 	}
-
-	public static function computeAmortizationRate(Asset $eAsset) {
-
-		if($eAsset['economicMode'] === Asset::LINEAR) {
-			return 1 / ($eAsset['economicDuration'] / 12);
-		}
-
-		if($eAsset['type'] === Asset::DEGRESSIVE) {
-			return AmortizationLib::getDegressiveCoefficient($eAsset['economicDuration'] / 12) / ($eAsset['economicDuration'] * 12);
-		}
-
-		throw new \NotExpectedAction('Unknown amortization type.');
-
-	}
-
-	private static function computeCurrentFinancialYearExcessAmortization(Asset $eAsset, float $alreadyAmortized, \account\FinancialYear $eFinancialYear): float {
-
-		return 0.0;
-
-	}
-
-	private static function getDays(string $startDate, string $endDate, Asset $eAsset): int {
-
-		// Calcul du nombre de mois complets
-		$startDatetime = new \DateTime($startDate);
-		$endDatetime = new \DateTime($endDate);
-		$interval = $startDatetime->diff($endDatetime);
-		$months = (int)$interval->format('%m');
-		$days = $months * 30; // En comptabilité, un mois fait 30 jours.
-
-		// Ajout du nombre de jours de prorata (début)
-		if($eAsset['startDate'] >= $startDate) {
-
-			$lastDayOfMonth = date("Y-m-d", mktime(0, 0, 0, (int)date('m', strtotime($eAsset['startDate'])) + 1, 0, date('Y', strtotime($startDate))));
-
-			// Intervalle : on aurait du faire +1 mais ce n'est pas le calcul de ISTEA.
-			$days += min(30, max((int)date('d', strtotime($lastDayOfMonth)) - (int)date('d', strtotime($eAsset['startDate'])), 1));
-		}
-
-		// Ajout du nombre de jours de prorata (fin)
-		if($eAsset['endDate'] < $endDate) {
-			$days += min(date('d', strtotime($eAsset['endDate'])), 30);
-		}
-
-		return $days;
-	}
-
-	public static function calculateGrantAmortization(string $startDate, string $endDate, Asset $eAsset): array {
-
-		$value = $eAsset['value'];
-		$rate = 1 / $eAsset['duration'];
-
-		$days = self::getDays(max($startDate, $eAsset['startDate']), min($endDate, $eAsset['endDate']), $eAsset);
-
-		$prorata = min(1, $days / 360);
-
-		return ['prorataDays' => $prorata, 'value' => round($value * $rate * $prorata, 2)];
-	}
-
-	public static function calculateAmortization(string $startDate, string $endDate, Asset $eAsset): float {
-
-		if(in_array($eAsset['economicMode'], [Asset::LINEAR, Asset::DEGRESSIVE]) === FALSE) {
-			return 0.0;
-		}
-
-		$base = $eAsset['value'];
-		$rate = AmortizationLib::computeAmortizationRate($eAsset);
-
-		$days = self::getDays(max($startDate, $eAsset['startDate']), min($endDate, $eAsset['endDate']), $eAsset);
-
-		$prorata = min(1, $days / 360);
-
-		if ($eAsset['economicMode'] === AssetElement::LINEAR) {
-
-			// Annuité = $base * $rate
-			return round($base * $rate * $prorata, 2);
-
-		}
-
-		// Si l'amortissement est dégressif, il faut calculer le plus avantageux.
-		$remainingValue = $eAsset['value'];
-		$durationInYears = $eAsset['duration'] / 12;
-
-		for ($currentYear = 1; $currentYear <= $durationInYears; $currentYear++) {
-			$annuity = $remainingValue * $rate;
-
-			// Calcul de l’amortissement linéaire résiduel
-			$linearBase = $eAsset['value'] - (($currentYear - 1) * ($eAsset['value'] / $durationInYears));
-			$linearAnnuity = $linearBase / ($durationInYears - ($currentYear - 1));
-
-			if ($linearAnnuity > $annuity) {
-				$annuity = $linearAnnuity;
-			}
-
-			if ($currentYear === $durationInYears) {
-				return round($annuity * ($durationInYears === 1 ? $prorata : 1), 2);
-			}
-
-			$remainingValue -= $annuity;
-
-		}
-
-		throw new \NotExpectedAction('Unable to calculate amortization for asset '.$eAsset['id']);
-	}*/
-
 	/**
 	 * Amortit l'immobilisation sur l'exercice comptable dépendant de sa date d'acquisition / date de fin d'amortissement
 	 * Crée une entrée "Dotation aux amortissements" (classe 6) au débit et une entrée "Amortissement" (classe 2) au crédit
@@ -671,7 +624,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		$cAsset = match($type) {
 			'asset' => AssetLib::getAssetsByFinancialYear($eFinancialYear),
-			'subvention' => AssetLib::getGrantsByFinancialYear($eFinancialYear),
+			'grant' => AssetLib::getGrantsByFinancialYear($eFinancialYear),
 		};
 
 		$ccAmortization = Amortization::model()

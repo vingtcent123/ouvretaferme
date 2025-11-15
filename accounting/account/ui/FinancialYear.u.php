@@ -666,10 +666,16 @@ class FinancialYearUi {
 
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
 
+			// Étape 1 : PCA et CCA
 			$h .= new \journal\DeferralUi()->listForClosing($eFarm, $eFinancialYear, $cOperationToDefer);
 
+			// Étape 2 : Gestion des stocks
 			$h .= new \journal\StockUi()->listForClosing($eFarm, $eFinancialYear, $cStock);
 
+			// Étape 3 : Visualisation des amortissements
+
+
+			// Étape 4 : Visualisation des subventions
 			$h .= new \asset\AssetUi()->listGrantsForClosing($form, $cAssetGrant);
 
 			$canClose = TRUE;

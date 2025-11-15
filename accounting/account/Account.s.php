@@ -19,6 +19,7 @@ namespace account;
  * CCA                Prepaid Expense (Charge Constatée d'Avance)
  * PCA                Prepaid Income (Produit Constaté d'Avance)
  * Report à nouveau   Retained Earnings
+ * Subvention         Grant
  */
 class AccountSetting extends \Settings {
 
@@ -37,8 +38,7 @@ class AccountSetting extends \Settings {
 	const PROFIT_CLASS = '120';
 	const LOSS_CLASS = '129';
 	const GRANT_ASSET_CLASS = '13';
-	const GRANT_ASSET_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
-	const GRANT_DEPRECIATION_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
+	const EQUIPMENT_GRANT_CLASS = '131'; // Subventions d'équipement octroyée
 	const NON_AMORTIZABLE_ASSET_CLASS = '2125';
 
 	// CLASSES GÉNÉRALES
@@ -56,6 +56,8 @@ class AccountSetting extends \Settings {
 	
 	// AMORTISSEMENTS, DÉPRÉCIATIONS ET PROVISIONS
 	const PROVISION_CLASS = 15;
+	const INVESTMENT_GRANT_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
+	const INVESTMENT_GRANT_TO_RESULT_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
 	const ASSET_AMORTIZATION_GENERAL_CLASS = 28;
 	const ASSET_AMORTIZATION_INTANGIBLE_CLASS = 280;
 	const ASSET_AMORTIZATION_TANGIBLE_CLASS = 281;

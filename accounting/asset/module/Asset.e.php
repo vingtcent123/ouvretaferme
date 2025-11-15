@@ -41,8 +41,6 @@ class Asset extends AssetElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-				'asset' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
-				'grant' => ['account', 'accountLabel', 'description', 'duration', 'value', 'type', 'startDate', 'endDate', 'acquisitionDate'],
 				'account' => \account\Account::getSelection(),
 				'cAmortization' => Amortization::model()
 	        ->select(Amortization::getSelection())
@@ -117,36 +115,6 @@ class Asset extends AssetElement {
 				return($this['value'] >= $amortizableBase);
 
 			})
-			/*->setCallback('grant.check', function(?Asset $eAsset) use($p): bool {
-
-				if($eAsset->empty() or $p->isBuilt('accountLabel') === FALSE) {
-					return TRUE;
-				}
-
-				$this->expects(['accountLabel', 'type']);
-
-				$eAsset = AssetLib::getById($eAsset['id']);
-
-				return ($eAsset['type'] === NULL)
-					and $eAsset['asset']->empty()
-					and \account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::ASSET_GENERAL_CLASS);
-
-			})
-			->setCallback('asset.check', function(?Asset $eAsset) use($p): bool {
-
-				if($eAsset->empty() or $p->isBuilt('accountLabel') === FALSE) {
-					return TRUE;
-				}
-
-				$this->expects(['accountLabel', 'type']);
-
-				$eAsset = AssetLib::getById($eAsset['id']);
-
-				return (in_array($eAsset['type'], [Asset::LINEAR, Asset::DEGRESSIVE]))
-					and $eAsset['grant']->empty()
-					and \account\ClassLib::isFromClass($this['accountLabel'], \account\AccountSetting::GRANT_ASSET_CLASS);
-
-			})*/
 			;
 		parent::build($properties, $input, $p);
 	}

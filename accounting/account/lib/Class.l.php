@@ -26,7 +26,7 @@ class ClassLib {
 					(string)AccountSetting::THIRD_PARTY_DEPRECIATION_CLASS, // Tiers : dépréciations
 					(string)AccountSetting::FINANCIAL_DEPRECIATION_CLASS, // Finance : dépréciations
 				]) or
-			mb_substr($class, 0, 3) === AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS // Subvention
+			mb_substr($class, 0, 3) === AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS // Subvention
 		);
 
 	}
@@ -37,7 +37,7 @@ class ClassLib {
 			return '';
 		}
 
-		if(mb_substr($class, 0, 3) === AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS) {
+		if(mb_substr($class, 0, 3) === AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS) {
 			return mb_substr($class, 0, 2).mb_substr($class, 3);
 		}
 

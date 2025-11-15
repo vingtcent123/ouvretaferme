@@ -22,7 +22,7 @@ Class BalanceSheetLib {
 			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%"'))
 			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%"'))
 			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%"'))
-			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS.'%"'))
+			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS.'%"'))
 			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::THIRD_PARTY_DEPRECIATION_CLASS.'%"'))
 			->where(new \Sql('accountLabel NOT LIKE "'.\account\AccountSetting::FINANCIAL_DEPRECIATION_CLASS.'%"'))
 			->group(['class', 'financialYear'])
@@ -39,7 +39,7 @@ Class BalanceSheetLib {
 				])
 				->or(
 					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%"')),
-					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS.'%"')),
+					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS.'%"')),
 					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::THIRD_PARTY_DEPRECIATION_CLASS.'%"')),
 					fn() => $this->where(new \Sql('accountLabel LIKE "'.\account\AccountSetting::FINANCIAL_DEPRECIATION_CLASS.'%"')),
 				)

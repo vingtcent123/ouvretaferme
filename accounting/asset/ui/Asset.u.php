@@ -343,13 +343,26 @@ Class AssetUi {
 
 	private static function getHeader(Asset $eAsset): string {
 
-		$eFinancialYearLast = $eAsset['cAmortization']->first()->notEmpty() ? $eAsset['cAmortization'][0]['financialYear'] : new \account\FinancialYear();
 		$amortizationCumulated = 0;
-		foreach($eAsset['cAmortization'] as $eAmortization) {
-			if($eAmortization['financialYear']['endDate'] > $eFinancialYearLast) {
-				$eFinancialYearLast = $eAmortization['financialYear'];
+
+		if($eAsset['cAmortization']->count() > 0) {
+
+			$eFinancialYearLast = $eAsset['cAmortization']->first()->notEmpty() ? $eAsset['cAmortization'][0]['financialYear'] : new \account\FinancialYear();
+
+			foreach($eAsset['cAmortization'] as $eAmortization) {
+
+				if($eAmortization['financialYear']['endDate'] > $eFinancialYearLast) {
+					$eFinancialYearLast = $eAmortization['financialYear'];
+				}
+
+				$amortizationCumulated += $eAmortization['amount'];
+
 			}
-			$amortizationCumulated += $eAmortization['amount'];
+
+		} else { // Acquisition de l'année
+
+			$eFinancialYearLast = new \account\FinancialYear();
+
 		}
 
 		$h = '<div class="util-block stick-xs bg-background-light">';
@@ -380,7 +393,7 @@ Class AssetUi {
 				if($eAsset['endedDate'] !== NULL) {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
 					$h .= '<dd>'.\util\TextUi::money(round($eAsset['amortizableBase'] - $amortizationCumulated)).'</dd>';
-				} else	if($eFinancialYearLast->notEmpty()) {
+				} elseif($eFinancialYearLast->notEmpty()) {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
 					$h .= '<dd>'.\util\TextUi::money(round($eAsset['amortizableBase'] - $amortizationCumulated)).'</dd>';
 				}
@@ -648,7 +661,7 @@ Class AssetUi {
 						$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).'</td>';
 						$h .= '<td>'.s("Débit {accountDebit} / Crédit {accountCredit}", [
 							'accountDebit' => encode($eAsset['account']['class']),
-							'accountCredit' => \account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS,
+							'accountCredit' => \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS,
 						]).'</td>';
 						$h .= '<td class="text-center">';
 							$h .= $form->checkbox('grantsToRecognize[]', $eAsset['id']);
@@ -666,10 +679,6 @@ Class AssetUi {
 
 		return $h;
 
-	}
-
-	public function getFinalRecognitionTranslation(): string {
-		return s("Reprise finale de subvention");
 	}
 
 	public function getTranslation(string|int $class): string {

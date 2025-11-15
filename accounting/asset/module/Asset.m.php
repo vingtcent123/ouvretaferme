@@ -61,8 +61,6 @@ class AssetModel extends \ModuleModel {
 			'endDate' => ['date', 'cast' => 'string'],
 			'endedDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\asset\Asset::ONGOING, \asset\Asset::SOLD, \asset\Asset::SCRAPPED, \asset\Asset::ENDED], 'cast' => 'enum'],
-			'grant' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
-			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'isGrant' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
@@ -70,13 +68,11 @@ class AssetModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'accountLabel', 'value', 'amortizableBase', 'description', 'economicMode', 'economicDuration', 'fiscalMode', 'fiscalDuration', 'isExcess', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'grant', 'asset', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'account', 'accountLabel', 'value', 'amortizableBase', 'description', 'economicMode', 'economicDuration', 'fiscalMode', 'fiscalDuration', 'isExcess', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'account' => 'account\Account',
-			'grant' => 'asset\Asset',
-			'asset' => 'asset\Asset',
 			'createdBy' => 'user\User',
 		];
 
@@ -201,14 +197,6 @@ class AssetModel extends \ModuleModel {
 
 	public function whereStatus(...$data): AssetModel {
 		return $this->where('status', ...$data);
-	}
-
-	public function whereGrant(...$data): AssetModel {
-		return $this->where('grant', ...$data);
-	}
-
-	public function whereAsset(...$data): AssetModel {
-		return $this->where('asset', ...$data);
 	}
 
 	public function whereIsGrant(...$data): AssetModel {

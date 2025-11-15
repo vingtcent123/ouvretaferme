@@ -10,7 +10,6 @@ class AssetLib extends \asset\AssetCrud {
 			'economicMode', 'fiscalMode',
 			'description',
 			'duration', 'economicDuration', 'fiscalDuration',
-			'grant', 'asset',
 		];
 	}
 
@@ -32,43 +31,6 @@ class AssetLib extends \asset\AssetCrud {
 
 		return \account\ClassLib::isFromClass($account, \account\AccountSetting::INTANGIBLE_ASSETS_CLASS);
 
-	}
-
-	public static function isGrantAsset(string $account): bool {
-
-		return \account\ClassLib::isFromClass($account, \account\AccountSetting::GRANT_ASSET_CLASS);
-
-	}
-
-	public static function depreciationClassByAssetClass(string $class): string {
-
-		if(self::isGrantAsset($class) === TRUE) {
-			return \account\AccountSetting::GRANT_DEPRECIATION_CLASS;
-		}
-
-		return mb_substr($class, 0, 1).'8'.mb_substr($class, 1);
-
-	}
-
-	public static function getAllGrants(): \Collection {
-
-		return Asset::model()
-			->select(Asset::getSelection())
-			->whereIsGrant(TRUE)
-			->whereAsset(NULL)
-			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%')
-			->getCollection();
-	}
-
-	public static function getAllAssetsToLinkToGrant(): \Collection {
-
-		return Asset::model()
-			->select(Asset::getSelection())
-			->whereEconomicMode('IN', [Asset::LINEAR, Asset::DEGRESSIVE])
-			->whereIsGrant(FALSE)
-			->whereGrant(NULL)
-			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
-			->getCollection();
 	}
 
 	public static function getAcquisitions(\account\FinancialYear $eFinancialYear, string $type): \Collection {
@@ -93,8 +55,6 @@ class AssetLib extends \asset\AssetCrud {
       ->whereStartDate('<=', $eFinancialYear['endDate'])
       ->whereEndDate('>=', $eFinancialYear['startDate'])
 			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%')
-			->whereIsGrant(TRUE)
-			->whereStatus(Asset::ONGOING)
       ->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
       ->getCollection();
 	}
@@ -109,7 +69,6 @@ class AssetLib extends \asset\AssetCrud {
 			->whereStartDate('<=', $eFinancialYear['endDate'])
 			->whereEndDate('>=', $eFinancialYear['startDate'])
 			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
-			->whereIsGrant(FALSE)
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
 
@@ -146,133 +105,6 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function finallyRecognizeGrants(\account\FinancialYear $eFinancialYear, array $grantsToRecognize): void {
-
-		Asset::model()->beginTransaction();
-
-		// Toutes les subventions possibles
-		$cAssetGrant = \asset\AssetLib::getGrantsWithAmortizedAssets();
-
-		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS;
-		$eAccountDepreciation = \account\AccountLib::getByClass(\account\AccountSetting::GRANT_DEPRECIATION_CLASS);
-
-		foreach($grantsToRecognize as $grantId) {
-
-			$cAsset = $cAssetGrant->find(fn($e) => $e['id'] === (int)$grantId);
-			if($cAsset->empty()) {
-				continue;
-			}
-
-			$eAsset = $cAsset->first();
-
-			$alreadyRecognized = RecognitionLib::sumByGrant($eAsset);
-			$amortizationValue = $eAsset['value'] - $alreadyRecognized;
-			$prorataDays = 0;
-
-			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $amortizationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, new AssetUi()->getFinalRecognitionTranslation());
-
-		}
-
-		Asset::model()->commit();
-	}
-
-	public static function recognizeGrants(\account\FinancialYear $eFinancialYear): void {
-
-		Asset::model()->beginTransaction();
-
-		$cAsset = self::getGrantsByFinancialYear($eFinancialYear);
-
-		$eAccountGrantsInIncomeStatement = \account\AccountSetting::GRANT_ASSET_AMORTIZATION_CLASS;
-		$eAccountDepreciation = \account\AccountLib::getByClass(\account\AccountSetting::GRANT_DEPRECIATION_CLASS);
-
-		foreach($cAsset as $eAsset) {
-
-			$amortizationData = AmortizationLib::calculateGrantAmortization($eFinancialYear['startDate'], $eFinancialYear['endDate'], $eAsset);
-			$prorataDays = $amortizationData['prorataDays'];
-
-			// Valeur théorique
-			$amortizationValue = $amortizationData['value'];
-
-			// Valeur restante (déjà virée au compte de résultat)
-			$alreadyRecognized = RecognitionLib::sumByGrant($eAsset);
-
-			self::recognize($eFinancialYear, $eAsset, $alreadyRecognized, $amortizationValue, $eAccountGrantsInIncomeStatement, $eAccountDepreciation, $prorataDays, NULL);
-
-		}
-
-		Asset::model()->commit();
-	}
-
-	private static function recognize(
-		\account\FinancialYear $eFinancialYear,
-		Asset $eAsset,
-		float $alreadyRecognized,
-		float $amortizationValue,
-		\account\Account $eAccountGrantsInIncomeStatement,
-		\account\Account $eAccountDepreciation,
-		float $prorataDays,
-		?string $comment,
-	): void {
-
-		$value = min($eAsset['value'] - $alreadyRecognized, $amortizationValue);
-
-		// Crée l'opération 139 au débit
-		$eOperationSubvention = new \journal\Operation([
-			'type' => \journal\OperationElement::DEBIT,
-			'amount' => $value,
-			'account' => $eAccountGrantsInIncomeStatement,
-			'accountLabel' => \account\ClassLib::pad($eAccountGrantsInIncomeStatement['class']),
-			'description' => $eAsset['description'],
-			'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
-			'document' => new AssetUi()->getAssetShortTranslation(),
-			'documentDate' => new \Sql('NOW()'),
-			'asset' => $eAsset,
-			'financialYear' => $eFinancialYear,
-			'date' => $eFinancialYear['endDate'],
-			'paymentDate' => $eFinancialYear['endDate'],
-		]);
-
-		\journal\Operation::model()->insert($eOperationSubvention);
-
-		// Crée l'opération de reprise au crédit du compte 7777
-		$eOperationRecognition = new \journal\Operation([
-			'type' => \journal\OperationElement::CREDIT,
-			'amount' => $value,
-			'account' => $eAccountDepreciation,
-			'accountLabel' => \account\ClassLib::pad($eAccountDepreciation['class']),
-			'description' => $eAsset['description'],
-			'thirdParty' => $eOperation['thirdParty'] ?? new \account\ThirdParty(),
-			'document' => new AssetUi()->getAssetShortTranslation(),
-			'documentDate' => new \Sql('NOW()'),
-			'asset' => $eAsset,
-			'financialYear' => $eFinancialYear,
-			'date' => $eFinancialYear['endDate'],
-			'paymentDate' => $eFinancialYear['endDate'],
-		]);
-
-		\journal\Operation::model()->insert($eOperationRecognition);
-
-		// Enregistre la quote part virée au compte de résultat
-		$recognitionValues = [
-			'grant' => $eAsset,
-			'financialYear' => $eFinancialYear,
-			'date' => $eFinancialYear['endDate'] > $eAsset['endDate'] ? $eAsset['endDate'] : $eFinancialYear['endDate'],
-			'amount' => $value,
-			'operation' => $eOperationRecognition,
-			'debitAccountLabel' => $eOperationSubvention['accountLabel'],
-			'creditAccountLabel' => $eOperationRecognition['accountLabel'],
-			'prorataDays' => $prorataDays,
-			'comment' => $comment,
-		];
-		RecognitionLib::saveByValues($recognitionValues);
-
-		// Solde la subvention si elle est terminée
-		if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $alreadyRecognized + $value >= $eAsset['value']) {
-			Asset::model()->update($eAsset, ['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')]);
-		}
-
-	}
-
 	public static function amortizeAll(\account\FinancialYear $eFinancialYear): void {
 
 		Asset::model()->beginTransaction();
@@ -282,6 +114,14 @@ class AssetLib extends \asset\AssetCrud {
 		foreach($cAsset as $eAsset) {
 
 			AmortizationLib::amortize($eFinancialYear, $eAsset, NULL);
+
+		}
+
+		$cAssetGrant = self::getGrantsByFinancialYear($eFinancialYear);
+
+		foreach($cAssetGrant as $eAsset) {
+
+			AmortizationLib::amortizeGrant($eFinancialYear, $eAsset);
 
 		}
 
@@ -311,30 +151,6 @@ class AssetLib extends \asset\AssetCrud {
 			mb_substr($class, 0, mb_strlen(\account\AccountSetting::GRANT_ASSET_CLASS)) === \account\AccountSetting::GRANT_ASSET_CLASS or
 			mb_substr($class, 0, mb_strlen(\account\AccountSetting::ASSET_GENERAL_CLASS)) === (string)\account\AccountSetting::ASSET_GENERAL_CLASS
 		);
-
-	}
-
-	/**
-	 * Recupère toutes les subventions courantes reliées à une immobilisation amortie ou terminée.
-	 */
-	public static function getGrantsWithAmortizedAssets(): \Collection {
-
-		$assetModel = clone Asset::model();
-		return Asset::model()
-			->select(
-				Asset::getSelection()
-				+ [
-					'asset' => Asset::getSelection(),
-					'alreadyRecognized' => Recognition::model()
-             ->delegateProperty('grant', new \Sql('SUM(amount)', 'float'))
-				]
-			)
-			->join($assetModel, 'm1.asset = m2.id')
-			->where('m2.status != "'.Asset::ONGOING.'"')
-			->where('m1.status = "'.Asset::ONGOING.'"')
-			->where('m1.asset IS NOT NULL')
-			->where('m1.isGrant = 1')
-			->getCollection();
 
 	}
 

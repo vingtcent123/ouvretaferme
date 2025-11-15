@@ -65,7 +65,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function closeFinancialYear(FinancialYear $eFinancialYear, array $grantsToRecognize): void {
+	public static function closeFinancialYear(FinancialYear $eFinancialYear): void {
 
 		if($eFinancialYear['status'] == FinancialYearElement::CLOSE) {
 			throw new \NotExpectedAction('Financial year already closed');
@@ -73,25 +73,14 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->beginTransaction();
 
-		// Effectuer toutes les opérations de clôture :
-
-		// 1- Calcul des amortissements
+		// 1- Calcul des amortissements classe 2. + des étalements de subvention
 		\asset\AssetLib::amortizeAll($eFinancialYear);
 
-		// 2- Reprise sur subventions
-		//\asset\AssetLib::finallyRecognizeGrants($eFinancialYear, $grantsToRecognize); // Solde les subventions sélectionnées
-		//\asset\AssetLib::recognizeGrants($eFinancialYear); // Quote part des sub restantes à réintégrer au CdR
-
-		// 3- Charges et Produits constatés d'avance
+		// 2- Charges et Produits constatés d'avance
 		\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
 
-		// 4- Stocks de fin d'exercice
+		// 3- Stocks de fin d'exercice
 		\journal\StockLib::recordStock($eFinancialYear);
-
-		// 5- Calcul de la TVA
-		if($eFinancialYear['hasVat']) {
-			\journal\VatLib::balance($eFinancialYear);
-		}
 
 		// Mettre les numéros d'écritures
 		\journal\OperationLib::setNumbers($eFinancialYear);

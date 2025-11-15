@@ -8,7 +8,7 @@ new Page()
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		$data->assetDepreciations = \asset\AmortizationLib::getByFinancialYear($data->eFinancialYear, 'asset');
-		$data->subventionDepreciations = \asset\AmortizationLib::getByFinancialYear($data->eFinancialYear, 'subvention');
+		$data->grantAmortizations = \asset\AmortizationLib::getByFinancialYear($data->eFinancialYear, 'grant');
 
 		throw new ViewAction($data);
 
