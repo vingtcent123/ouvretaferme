@@ -3,11 +3,14 @@ namespace journal;
 
 class JournalCode extends JournalCodeElement {
 
-	public function canUpdate(?string $property = NULL): bool {
+	public function isCustom(): bool {
 
-		$property = POST('property');
+		return $this['isCustom'];
 
-		return $this['isCustom'] === TRUE or in_array($property, ['color']);
+	}
+	public function canUpdate(): bool {
+
+		return TRUE;
 
 	}
 
@@ -17,14 +20,18 @@ class JournalCode extends JournalCodeElement {
 
 	}
 
-	public function canQuickUpdate(?string $property = NULL): bool {
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		if($property === NULL) {
-			$property = POST('property');
-		}
+		$p
+			->setCallback('code.check', function(string $code): bool {
 
-		return $this['isCustom'] === TRUE or in_array($property, ['name', 'color']);
+				return $this['isCustom'];
+
+			});
+
+		parent::build($properties, $input, $p);
 
 	}
+
 }
 ?>

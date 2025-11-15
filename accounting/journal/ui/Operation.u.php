@@ -462,7 +462,7 @@ class OperationUi {
 				$h .= '<th colspan="2">';
 					$h .= '<div class="operation-linked-title">';
 						$h .= '<div>';
-							$h .= ($eOperation['journalCode'] ? self::getShortJournal($eFarm, $eOperation['journalCode'], link: FALSE) : '');
+							$h .= ($eOperation['journalCode'] ? new JournalCodeUi()->getColoredButton($eOperation['journalCode']): '');
 							$h .= ' ';
 								$h .= match($eOperation['type']) {
 										Operation::DEBIT => s("Débit du {value}", \util\DateUi::numeric($eOperation['date'])),
@@ -1274,28 +1274,6 @@ class OperationUi {
 			"Débit du {date} de {amount}",
 			['date' => \util\DateUi::numeric($eOperation['date']), 'amount' => \util\TextUi::money($eOperation['amount'])]
 		);
-
-	}
-
-	public static function getShortJournal(\farm\Farm $eFarm, JournalCode $eJournalCode, bool $link): string {
-
-		if($eJournalCode->empty()) {
-			return '';
-		}
-
-		if($eJournalCode['color'] !== NULL) {
-			$style = ' style="background-color: '.$eJournalCode['color'].'" ';
-			$class = '';
-		} else {
-			$style = '';
-			$class = ' journal-code-default-button ';
-		}
-
-		if($link) {
-			return '<a class="btn btn-xs journal-button '.$class.'" '.$style.' href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eJournalCode['id'].'" title="'.s("Filtrer sur : {value}", mb_strtolower($eJournalCode['name'])).'">'.encode($eJournalCode['code']).'</a>';
-		}
-
-		return '<span class="btn btn-xs journal-button '.$class.' " '.$style.' title="'.encode($eJournalCode['name']).'">'.encode($eJournalCode['code']).'</span>';
 
 	}
 

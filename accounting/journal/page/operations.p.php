@@ -61,17 +61,14 @@ new Page(function($data) {
 
 		} else {
 
-			$journalCode = GET('code');
+			$journalCode = GET('journalCode');
 
 			if(in_array($journalCode, $data->cJournalCode->getIds()) === FALSE) {
 				$journalCode = NULL;
 			}
 
-			$code = GET('code');
-			if(
-				in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_CODE_BANK]) === FALSE and
-				in_array($journalCode, $data->cJournalCode->getIds()) === FALSE
-			) {
+			$code = GET('journalCode');
+			if(in_array($code, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_CODE_BANK]) === FALSE) {
 				$code = NULL;
 			}
 
@@ -105,9 +102,8 @@ new Page(function($data) {
 		}
 
 
-		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
-
+		$data->cJournalCode = \journal\JournalCodeLib::getAll();
 		$data->cAccount = \account\AccountLib::getAll();
 
 		throw new ViewAction($data);

@@ -42,10 +42,11 @@ class JournalCodeModel extends \ModuleModel {
 			'isCustom' => ['bool', 'cast' => 'bool'],
 			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'isReversable' => ['bool', 'cast' => 'bool'],
+			'isDisplayed' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'code', 'isCustom', 'color', 'isReversable'
+			'id', 'name', 'code', 'isCustom', 'color', 'isReversable', 'isDisplayed'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -63,6 +64,9 @@ class JournalCodeModel extends \ModuleModel {
 
 			case 'isReversable' :
 				return FALSE;
+
+			case 'isDisplayed' :
+				return TRUE;
 
 			default :
 				return parent::getDefaultValue($property);
@@ -101,6 +105,10 @@ class JournalCodeModel extends \ModuleModel {
 
 	public function whereIsReversable(...$data): JournalCodeModel {
 		return $this->where('isReversable', ...$data);
+	}
+
+	public function whereIsDisplayed(...$data): JournalCodeModel {
+		return $this->where('isDisplayed', ...$data);
 	}
 
 

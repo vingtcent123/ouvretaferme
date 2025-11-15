@@ -64,7 +64,7 @@ class JournalUi {
 		return \company\CompanyUi::urlJournal($eFarm).'/operations'.'?financialYear='.($eFinancialYear['id'] ?? '').'&code='.GET('code');
 
 	}
-	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod, \Collection $cJournalCode): string {
 
 		\Asset::js('journal', 'operation.js');
 
@@ -93,6 +93,7 @@ class JournalUi {
 						0 => s("Toutes les écritures"),
 						1 => s("Écritures non rattachées à une opération bancaire"),
 					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
+					$h .= $form->select('journalCode', $cJournalCode, $search->get('journalCode', 'int'));
 					$h .= $form->select('hasDocument', [
 						0 => s("Avec ou sans pièce comptable"),
 						1 => s("Sans pièce comptable"),
@@ -152,7 +153,7 @@ class JournalUi {
 
 			$h .= '<a class="tab-item '.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?'.$args.'">'.s("Général").'</a>';
 
-			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
+			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
 				$h .= '<div class="text-center">';
 					$h .= s("Banque");
 					$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
@@ -161,9 +162,13 @@ class JournalUi {
 
 			foreach($cJournalCode as $eJournalCode) {
 
+				if($eJournalCode['isDisplayed'] === FALSE and (int)$selectedJournalCode !== $eJournalCode['id']) {
+					continue;
+				}
+
 				$attributes = [
 					'class' => 'tab-item journal-code-'.$eJournalCode['id'], 'data-tab' => 'journal-'.$eJournalCode['id'],
-					'href' => \company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eJournalCode['id'].'&'.$args,
+					'href' => \company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.$eJournalCode['id'].'&'.$args,
 				];
 				if((int)$selectedJournalCode === $eJournalCode['id']) {
 					$attributes['style'] = 'color: white; background-color: ';
@@ -187,7 +192,7 @@ class JournalUi {
 			if($eFinancialYear['hasVat']) {
 
 				$journalCode = 'vat-buy';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'&'.$args.'">';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Achats").')</span></small>';
@@ -195,7 +200,7 @@ class JournalUi {
 				$h .= '</a>';
 
 				$journalCode = 'vat-sell';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?code='.$journalCode.'&'.$args.'">';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Ventes").')</span></small>';
@@ -258,6 +263,8 @@ class JournalUi {
 
 		\Asset::js('journal', 'journal.js');
 
+		$canUpdateFinancialYear = ($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK);
+
 		$columns = 5;
 
 		$h = '';
@@ -269,7 +276,7 @@ class JournalUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 
-						if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK) {
+						if($canUpdateFinancialYear) {
 							$h .= '<th>';
 							$h .= '</th>';
 						}
@@ -296,10 +303,6 @@ class JournalUi {
 
 					foreach($cOperation as $eOperation) {
 
-						$canUpdate = (
-							$eOperation->canUpdate()
-						);
-
 						$referenceDate = $eFinancialYearSelected->isCashAccounting() ? $eOperation['paymentDate'] : $eOperation['date'];
 
 						if($currentDate === NULL or $currentDate !== $referenceDate) {
@@ -315,22 +318,24 @@ class JournalUi {
 
 						$h .= '<tr name="operation-'.$eOperation['id'].'" name-linked="operation-linked-'.($eOperation['operation']['id'] ?? '').'">';
 
-							if($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK) {
+							if($canUpdateFinancialYear) {
 								$h .= '<td class="td-checkbox">';
-								$attributesCheckbox = [
-									'data-batch-type' => $eOperation['type'],
-									'data-batch-amount' => $eOperation['amount'],
-									'data-journal-code' => (string)$journalCode,
-								];
-								if($eOperation['operation']->notEmpty()) {
-									$attributesCheckbox['class'] = 'hide';
-									$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
-								} else {
-									$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$journalCode.'")';
-								}
-								$h .= '<label>';
-									$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
-								$h .= '</label>';
+									if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
+										$attributesCheckbox = [
+											'data-batch-type' => $eOperation['type'],
+											'data-batch-amount' => $eOperation['amount'],
+											'data-journal-code' => (string)$journalCode,
+										];
+										if($eOperation['operation']->notEmpty()) {
+											$attributesCheckbox['class'] = 'hide';
+											$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
+										} else {
+											$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$journalCode.'")';
+										}
+										$h .= '<label>';
+											$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
+										$h .= '</label>';
+									}
 								$h .= '</td>';
 							}
 							$h .= '<td>';
@@ -352,7 +357,9 @@ class JournalUi {
 							if($journalCode === NULL) {
 
 								$h .= '<td>';
-									$h .= $eOperation['journalCode']->empty() ? '' : OperationUi::getShortJournal($eFarm, $eOperation['journalCode'], link: TRUE);
+									$h .= $eOperation['journalCode']->empty()
+										? ''
+										: new JournalCodeUi()->getColoredButton($eOperation['journalCode'], link: \company\CompanyUi::urlJournal($eFarm).'/operations?code='.$eOperation['journalCode']['id'], title: s("Filtrer sur le journal : {value}", encode($eOperation['journalCode']['name'])));
 								$h .= '</td>';
 
 							}
@@ -525,15 +532,19 @@ class JournalUi {
 			$menu .= '<span>'.s("Crédit").'</span>';
 		$menu .= '</a>';
 
-		foreach($cJournalCode as $eJournalCode) {
+		$menu .= '<a data-dropdown="top-start" class="batch-menu-journal-code batch-menu-item">';
+			$menu .= \Asset::icon('journal-bookmark');
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Journal").'</span>';
+		$menu .= '</a>';
 
-			$warningText = s("Déplacer ces écritures dans ce journal : {value} ?", encode($eJournalCode['name']));
+		$menu .= '<div class="dropdown-list bg-secondary">';
 
-			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" post-journal-code="'.$eJournalCode['id'].'"  data-confirm="'.$warningText.'" class="batch-menu-'.$eJournalCode['id'].' batch-menu-item">';
-				$menu .= '<span class="btn btn-sm journal-code-batch journal-code-button">'.encode($eJournalCode['code']).'</span>';
-			$menu .= '<span>'.encode($eJournalCode['name']).'</span>';
-			$menu .= '</a>';
-		}
+			$menu .= '<div class="dropdown-title">'.s("Changer de journal").'</div>';
+			foreach($cJournalCode as $eJournalCode) {
+				$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" data-ajax-target="#batch-journal-form" post-journal-code="'.$eJournalCode['id'].'" class="dropdown-item">'.encode($eJournalCode['name']).'</a>';
+			}
+			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" data-ajax-target="#batch-journal-form" post-journal-code="" class="dropdown-item"><i>'.s("Pas de journal").'</i></a>';
+		$menu .= '</div>';
 
 		$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
 			$menu .= \Asset::icon('cash-coin');

@@ -497,13 +497,9 @@ class FinancialYearUi {
 
 		foreach($cJournalCode as $eJournalCode) {
 
-			if($eJournalCode['color']) {
-				$style = 'background-color: '.encode($eJournalCode['color']);
-			} else {
-				$style = '';
-			}
 			$h .= '<h4>';
-				$title = s("Journal {value}", '<span class="company-journal" style="'.$style.'">'.encode($eJournalCode['name']).'</span>');
+				$journal = new \journal\JournalCodeUi()->getColoredName($eJournalCode);
+				$title = s("Journal {value}", $journal);
 				$h .= $form->checkbox('journalCode[]', $eJournalCode['id'], ['callbackLabel' => fn($input) => $input.' '.$title]);
 			$h .= '</h4>';
 

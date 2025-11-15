@@ -24,6 +24,7 @@ JournalCode:
   isCustom: bool = TRUE
   color: ?color
   isReversable: bool = FALSE # est extournable
+  isDisplayed: bool = TRUE # est affiché dans les onglets
   UNIQUE: [
     ["code"]
   ]

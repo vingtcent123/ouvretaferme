@@ -17,4 +17,11 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 	return new \journal\JournalCodeUi()->create($data->eFarm, $data->e);
 
 });
+
+new AdaptativeView('accounts', function($data, PanelTemplate $t) {
+
+	return new \journal\JournalCodeUi()->accounts($data->eFarm, $data->e, $data->cAccount);
+
+});
+
 ?>

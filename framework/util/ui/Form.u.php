@@ -901,7 +901,7 @@ class FormUi {
 
 		$input = $this->inputCheckbox($name, $value, $attributes);
 
-		$h = '<label '.attrs($fieldAttributes).'">';
+		$h = '<label '.attrs($fieldAttributes).'>';
 			$h .= $addon($input);
 		$h .= '</label>';
 

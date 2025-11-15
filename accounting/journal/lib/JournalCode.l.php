@@ -24,4 +24,26 @@ Class JournalCodeLib extends JournalCodeCrud {
 
 	}
 
+	public static function countAccountsByJournalCode(\Collection $cJournalCode): void {
+
+		$cAccount = \account\Account::model()
+			->select(['journalCode', 'number' => new \Sql('COUNT(*)', 'int')])
+			->where('journalCode IS NOT NULL')
+			->group('journalCode')
+			->getCollection(NULL, NULL, 'journalCode');
+
+		foreach($cJournalCode as &$eJournalCode) {
+			$eJournalCode['accounts'] = $cAccount[$eJournalCode['id']]['number'] ?? 0;
+		}
+
+	}
+
+	public static function updateAccountsForJournalCode(JournalCode $eJournalCode, array $accounts): void {
+
+		\account\Account::model()
+			->whereId('IN', $accounts)
+			->update(['journalCode' => $eJournalCode]);
+
+	}
+
 }

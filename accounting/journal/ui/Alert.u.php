@@ -74,6 +74,7 @@ class AlertUi {
 
 			'JournalCode::created' => s("Le journal a bien été créé."),
 			'JournalCode::deleted' => s("Le journal a bien été supprimé."),
+			'JournalCode::accountsUpdated' => s("Les classes de compte de ce journal ont bien été modifiées."),
 
 			default => null
 

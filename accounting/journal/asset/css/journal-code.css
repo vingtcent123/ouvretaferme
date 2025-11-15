@@ -1,0 +1,6 @@
+.journal-code-container {
+	background-color: var(--primary);
+	color: white !important;
+	border-radius: var(--radius);
+	padding: 0.5rem 0.75rem;
+}

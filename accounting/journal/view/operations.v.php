@@ -18,10 +18,18 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	);
 
 	if($data->eFinancialYear->notEmpty()) {
-		echo new \journal\JournalUi()->getSearch($data->eFarm, $data->search, $data->eFinancialYear, $data->eCashflow, $data->eThirdParty, $data->cPaymentMethod);
+		echo new \journal\JournalUi()->getSearch(
+			eFarm: $data->eFarm,
+			search: $data->search,
+			eFinancialYearSelected: $data->eFinancialYear,
+			eCashflow: $data->eCashflow,
+			eThirdParty: $data->eThirdParty,
+			cPaymentMethod: $data->cPaymentMethod,
+			cJournalCode: $data->cJournalCode,
+		);
 	}
 
-	$selectedJournalCode = GET('code');
+	$selectedJournalCode = GET('journalCode');
 	if(
 		in_array($selectedJournalCode, $data->cJournalCode->getIds()) === FALSE and
 		in_array($selectedJournalCode, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_CODE_BANK]) === FALSE
