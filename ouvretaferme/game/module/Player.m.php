@@ -39,7 +39,7 @@ class PlayerModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => 20, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
 			'user' => ['element32', 'user\User', 'unique' => TRUE, 'cast' => 'element'],
-			'time' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'time' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'calendar' => ['json', 'cast' => 'array'],
 			'boards' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'points' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -68,7 +68,7 @@ class PlayerModel extends \ModuleModel {
 				return [];
 
 			case 'boards' :
-				return 0;
+				return 1;
 
 			case 'points' :
 				return 0;

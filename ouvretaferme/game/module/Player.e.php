@@ -3,11 +3,15 @@ namespace game;
 
 class Player extends PlayerElement {
 
+	public function isPremium(): bool {
+		return \farm\FarmLib::getByUser($this['user'])->contains(fn($eFarm) => $eFarm['membership']);
+	}
+
 	public function getStartTime(): int {
 
 		$this->expects(['user']);
 
-		return \farm\FarmLib::getByUser($this['user'])->contains(fn($eFarm) => $eFarm['membership']) ? GameSetting::TIME_DAY_PREMIUM : GameSetting::TIME_DAY;
+		return $this->isPremium() ? GameSetting::TIME_DAY_PREMIUM : GameSetting::TIME_DAY;
 
 	}
 

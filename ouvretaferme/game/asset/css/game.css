@@ -5,9 +5,19 @@ body[data-template~="game"] main {
 	padding-top: 2rem;
 }
 
+.game-menu {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 2rem;
+}
+
+.game-menu > .input-group {
+	width: max-content;
+}
+
 .game-intro {
 	max-width: 50rem;
-	margin: auto;
+	margin: 0 auto 2rem auto;
 }
 
 .game-intro h2,
@@ -57,6 +67,8 @@ a.game-intro-start:hover  {
 
 .game-dashboard {
 	display: grid;
+	max-width: 50rem;
+	margin: auto;
 	grid-template-columns: 1fr 1fr;
 	padding: 0;
 }
@@ -217,4 +229,20 @@ a.game-tile-action {
 	background-color: #fffc;
 	text-decoration: none;
 	color: var(--primary);
+}
+
+.game-table th {
+	white-space: nowrap;
+}
+
+.game-table td.game-table-bonus {
+	text-align: right;
+	font-size: .9rem;
+}
+
+.game-table .game-table-separator {
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: bold;
+	background-color: #fff3;
 }

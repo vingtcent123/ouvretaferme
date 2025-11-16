@@ -11,6 +11,20 @@ new Page(function($data) {
 		}
 
 		$data->cTile = \game\TileLib::getByUser($data->ePlayer['user'], 1);
+		$data->cGrowing = \game\GrowingLib::getAll();
+
+		throw new ViewAction($data);
+
+	});
+
+new Page(function($data) {
+
+		$data->ePlayer = \game\PlayerLib::getOnline()->validate();
+
+		$data->eTile = \game\TileLib::getOne($data->ePlayer['user'], INPUT('board'), INPUT('tile'))->validate();
+
+	})
+	->get('planting', function($data) {
 
 		throw new ViewAction($data);
 
@@ -35,5 +49,5 @@ new \game\PlayerPage(function($data) {
 
 	})
 	->create(page: 'new')
-	->doCreate(fn() => throw new RedirectAction('/jouer'), page: 'doNew');
+	->doCreate(fn() => throw new RedirectAction('/jouer?start'), page: 'doNew');
 ?>

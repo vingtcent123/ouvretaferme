@@ -15,6 +15,8 @@ class PlayerLib extends PlayerCrud {
 
 			parent::create($e);
 
+			TileLib::createBoard($e['user'], 1);
+
 		} catch(\DuplicateException) {
 			Player::fail('name.duplicate');
 		}

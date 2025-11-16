@@ -43,11 +43,10 @@ class GrowingModel extends \ModuleModel {
 			'days' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'timeHarvesting' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'bonusWatering' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'bonusFertility' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'harvest', 'days', 'timeHarvesting', 'bonusWatering', 'bonusFertility'
+			'id', 'name', 'fqn', 'harvest', 'days', 'timeHarvesting', 'bonusWatering'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -90,10 +89,6 @@ class GrowingModel extends \ModuleModel {
 
 	public function whereBonusWatering(...$data): GrowingModel {
 		return $this->where('bonusWatering', ...$data);
-	}
-
-	public function whereBonusFertility(...$data): GrowingModel {
-		return $this->where('bonusFertility', ...$data);
 	}
 
 

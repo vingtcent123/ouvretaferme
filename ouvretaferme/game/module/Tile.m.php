@@ -38,27 +38,26 @@ class TileModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'user' => ['element32', 'user\User', 'cast' => 'element'],
 			'board' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
-			'position' => ['int8', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
-			'growing' => ['element32', 'game\Growing', 'cast' => 'element'],
-			'growingBefore' => ['element32', 'game\Growing', 'null' => TRUE, 'cast' => 'element'],
-			'harvest' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'watered' => ['bool', 'cast' => 'bool'],
+			'tile' => ['int8', 'min' => 1, 'max' => 16, 'cast' => 'int'],
+			'growing' => ['element32', 'game\Growing', 'null' => TRUE, 'cast' => 'element'],
+			'harvest' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'watered' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'plantedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'harvestedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'nextBonusHarvest' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'user', 'board', 'position', 'growing', 'growingBefore', 'harvest', 'watered', 'plantedAt', 'harvestedAt'
+			'user', 'board', 'tile', 'growing', 'harvest', 'watered', 'plantedAt', 'harvestedAt', 'nextBonusHarvest'
 		]);
 
 		$this->propertiesToModule += [
 			'user' => 'user\User',
 			'growing' => 'game\Growing',
-			'growingBefore' => 'game\Growing',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['user', 'board', 'position']
+			['user', 'board', 'tile']
 		]);
 
 	}
@@ -93,16 +92,12 @@ class TileModel extends \ModuleModel {
 		return $this->where('board', ...$data);
 	}
 
-	public function wherePosition(...$data): TileModel {
-		return $this->where('position', ...$data);
+	public function whereTile(...$data): TileModel {
+		return $this->where('tile', ...$data);
 	}
 
 	public function whereGrowing(...$data): TileModel {
 		return $this->where('growing', ...$data);
-	}
-
-	public function whereGrowingBefore(...$data): TileModel {
-		return $this->where('growingBefore', ...$data);
 	}
 
 	public function whereHarvest(...$data): TileModel {
@@ -119,6 +114,10 @@ class TileModel extends \ModuleModel {
 
 	public function whereHarvestedAt(...$data): TileModel {
 		return $this->where('harvestedAt', ...$data);
+	}
+
+	public function whereNextBonusHarvest(...$data): TileModel {
+		return $this->where('nextBonusHarvest', ...$data);
 	}
 
 

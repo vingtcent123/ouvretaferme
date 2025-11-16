@@ -3,7 +3,7 @@ namespace game;
 
 class HelpUi {
 
-	public static function getSummary(): string {
+	public static function getStory(): string {
 	
 		$h = '<div class="game-intro">';
 			$h .= '<h3>'.s("La fin d'année approche et vous pensiez pouvoir partir tranquillement en vacances ?").'</h3>';
@@ -16,7 +16,7 @@ class HelpUi {
 			$h .= '<div class="game-intro-disclaimer">';
 				$h .= '<h4>'.s("Pourquoi ce jeu ?").'</h4>';
 				$h .= '<p>'.s("C'est d'abord l'opportunité de vous amuser seul ou avec vos collègues et vos clients avant de démarrer une nouvelle année.").'</p>';
-				$h .= '<p>'.s("C'est aussi un moyen pour Ouvretaferme de vous demander officiellement d'adhérer à notre association pour contribuer à sécuriser financièrement notre projet sur le long terme. Parce que oui, en <link>ayant adhéré à l'association</link>, vous bénéficierez de quelques bonus dans le jeu pour sauver Noël !", ['link' => '<a href="/adherer">']).'</p>';
+				$h .= '<p>'.s("C'est aussi un moyen pour Ouvretaferme de vous demander officiellement d'adhérer à <link>notre association</link> pour contribuer à sécuriser financièrement notre projet sur le long terme. Parce que oui, en <membership>ayant adhéré à l'association</membership>, vous bénéficierez de quelques bonus dans le jeu pour sauver Noël !", ['link' => '<a href="'.\association\AssociationSetting::URL.'">', 'membership' => '<a href="/adherer">']).'</p>';
 			$h .= '</div>';
 		$h .= '</div>';
 		
@@ -24,23 +24,24 @@ class HelpUi {
 		
 	}
 
-	public static function getRules(bool $new): string {
+	public static function getRules(bool $new = FALSE): string {
 
 		$h = '<div class="game-intro">';
 			$h .= '<h3>'.s("Les règles du jeu").'</h3>';
 			$h .= '<div class="util-block mb-2">';
+				$h .= '<p>'.s("Vous démarrez avec un plateau de 16 parcelles prêtes à être cultivées !").'</p>';
 				$h .= '<p>'.s("Vous disposez chaque jour de {value} heures de temps de travail que vous pouvez répartir sur les différentes actions :", GameSetting::TIME_DAY).'</p>';
 				$h .= '<ul>';
 					$h .= '<li>'.s("<b>IMPLANTER</b> une nouvelle culture sur une de vos parcelles").'</li>';
 					$h .= '<li>'.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures").'</li>';
-					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celles d'un autre joueur").'</li>';
+					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celle d'un autre joueur").'</li>';
 					$h .= '<li>'.s("<b>TROQUER</b> des légumes avec les autres joueurs").'</li>';
 				$h .= '</ul>';
 				$h .= '<p>'.s("Votre compteur de temps de travail est remis à zéro chaque nuit à minuit.").'</p>';
 			$h .= '</div>';
 			$h .= '<h3>'.s("Comment gagner ?").'</h3>';
 			$h .= '<div class="util-block mb-2">';
-				$h .= '<p>'.s("À partir du 24 décembre entre 20:00 et 23:59, les rennes du Père Noël viendront manger les légumes que vous aurez récoltés pour eux. Votre objectif est de voir passer un maximum de rennes sur votre partie, et pour cela vous devez :").'</p>';
+				$h .= '<p>'.s("Le 24 décembre à 20:00, les rennes du Père Noël viendront manger les légumes que vous aurez récoltés pour eux. Votre objectif est de voir passer un maximum de rennes sur votre partie, et pour cela vous devez :").'</p>';
 				$h .= '<ul>';
 					$h .= '<li>'.s("<b>PRODUIRE</b> le plus de légumes possibles <i>(1 légume attirera 1 renne)</i>").'</li>';
 					$h .= '<li>'.s("<b>CUISINER</b> des soupes de légumes <i>(1 soupe attirera 10 rennes)</i>").'</li>';
@@ -53,30 +54,94 @@ class HelpUi {
 				$h .= '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme, vous débloquez les deux bonus suivants :").'</p>';
 				$h .= '<ul class="mb-1">';
 					$h .= '<li>'.s("<b>{premium} heures de travail par jour au lieu de {value} heures</b>", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';
-					$h .= '<li>'.s("<b>Proposer un troc aux autres joueurs</b>").'</li>';
+					$h .= '<li>'.s("<b>Proposer du troc aux autres joueurs</b>").'</li>';
 				$h .= '</ul>';
 				$h .= '<p class="text-center">';
 					$h .= '<a href="/adherer" class="btn btn-game">'.s("Adhérer à l'association").'</a>';
 				$h .= '</p>';
 			$h .= '</div>';
+
 			if($new) {
 				$h .= '<div class="game-intro-disclaimer">';
 					$h .= '<h2>'.s("Pour commencer").'</h2>';
 					$h .= '<p>'.s("Choisissez une parcelle sur votre terrain et implantez une première culture !").'</p>';
 				$h .= '</div>';
 			}
+
 		$h .= '</div>';
 		
 		return $h;
 
 	}
 
-	public static function getCrops(): string {
+	public static function getCrops(\Collection $cGrowing): string {
 
 		$h = '<div class="game-intro">';
 			$h .= '<h3>'.s("Tableau des cultures").'</h3>';
-			$h .= '<table class="tr-bordered">';
+			$h .= '<table class="game-table tr-bordered">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th></th>';
+						$h .= '<th class="text-end">'.s("Durée de<br/>la culture").'</th>';
+						$h .= '<th class="text-end">'.s("Rendement<br/>par parcelle").'</th>';
+						$h .= '<th class="text-end">'.s("Temps de récolte<br/>par parcelle").'</th>';
+						$h .= '<th class="text-end">'.s("Augmentation<br/>du rendement<br/>par arrosage").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
 				$h .= '<tbody>';
+
+					$separator = FALSE;
+
+					foreach($cGrowing as $eGrowing) {
+
+						$vignette = \plant\PlantUi::getVignette(new \plant\Plant([
+							'fqn' => $eGrowing['fqn']
+						]), '2rem');
+
+						if($separator === FALSE and $eGrowing['harvest'] === NULL) {
+
+							$h .= '<tr>';
+								$h .= '<td colspan="5" class="game-table-separator">'.s("Plantes compagnes").'<br/><small style="font-weight: normal; text-transform: none">'.s("(les avantages des plantes compagnes sont cumulables)").'</small></td>';
+							$h .= '</tr>';
+
+							$separator = TRUE;
+
+						}
+
+						$h .= '<tr>';
+							$h .= '<td><b>'.$eGrowing['name'].'</b></td>';
+							$h .= '<td class="text-end">';
+								if($eGrowing['days'] !== NULL) {
+									$h .= p("{value} jour", "{value} jours", $eGrowing['days']);
+								} else {
+									$h .= s("Pérenne");
+								}
+							$h .= '</td>';
+							if($eGrowing['harvest'] !== NULL) {
+								$h .= '<td class="text-end">';
+									$h .= '<b>'.$eGrowing['harvest'].'</b>  ';
+									$h .= $vignette;
+								$h .= '</td>';
+								$h .= '<td class="text-end">';
+									if($eGrowing['timeHarvesting'] !== NULL) {
+										$h .= s("{value} <small> h</small>", $eGrowing['timeHarvesting']);
+									}
+								$h .= '</td>';
+								$h .= '<td class="text-end">';
+									if($eGrowing['bonusWatering'] !== NULL) {
+										$h .= '<b>'.s("+ {value}", $eGrowing['bonusWatering']).'</b>  '.$vignette;
+									}
+								$h .= '</td>';
+							} else {
+								$h .= '<td colspan="3" class="game-table-bonus">';
+									$h .= match($eGrowing['fqn']) {
+										'pivoine' => s("<b>+ {value}</b> de rendement sur les cultures des parcelles adjacentes", GameSetting::BONUS_PIVOINE),
+										'lavande' => s("<b>- {value} min</b> de temps de récolte sur toutes les autres cultures du plateau", GameSetting::BONUS_LAVANDE)
+									};
+								$h .= '</td>';
+							}
+						$h .= '</tr>';
+					}
 				$h .= '</tbody>';
 			$h .= '</table>';
 		$h .= '</div>';
