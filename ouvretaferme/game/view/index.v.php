@@ -5,7 +5,7 @@ new AdaptativeView('start', function($data, GameTemplate $t) {
 
 	echo \game\HelpUi::getStory();
 
-	echo new \game\DeskUi()->get('<a href="/game/:new" class="game-intro-start">'.s("Commencer à jouer").'</a>', image: 1);
+	echo new \game\DeskUi()->get('<a href="/game/:new" class="game-intro-start">'.s("Commencer à jouer").'</a>', 1);
 
 });
 
@@ -24,7 +24,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 		echo \game\HelpUi::getRules(TRUE);
 
-		echo new \game\DeskUi()->play();
+		echo new \game\DeskUi()->play(1);
 
 	} else {
 
@@ -69,7 +69,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 				echo '</div>';
 
-				echo new \game\DeskUi()->play();
+				echo new \game\DeskUi()->play(1);
 
 				echo \game\HelpUi::getCrops($data->cGrowing);
 

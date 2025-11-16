@@ -3,7 +3,7 @@ namespace game;
 
 class DeskUi {
 
-	public function play(?int $image = NULL): string {
+	public function play(int $board): string {
 
 		$content = '';
 
@@ -13,15 +13,13 @@ class DeskUi {
 			$content .= '</div>';
 		}
 
-		return $this->get($content, $image);
+		return $this->get($content, $board);
 
 	}
 
-	public function get(string $content = '', ?int $image = NULL): string {
+	public function get(string $content, int $board): string {
 
-		$image ??= mt_rand(1, 10);
-
-		$h = '<div class="game-desk" style="background-image: url('.\Asset::getPath('game', 'tiles-'.$image.'.jpg', 'image').')">';
+		$h = '<div class="game-desk" style="background-image: url('.\Asset::getPath('game', 'board-'.$board.'.jpg', 'image').')">';
 			$h .= $content;
 		$h .= '</div>';
 
