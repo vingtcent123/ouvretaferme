@@ -55,9 +55,12 @@ class AssetLib extends \asset\AssetCrud {
 
 		$e['isExcess'] = $isExcess;
 
-		Asset::model()->insert($e);
+		$e['isGrant'] = \asset\AssetLib::isGrant($e['accountLabel']);
+
+		parent::create($e);
 
 	}
+
 	public static function isTangibleAsset(string $account): bool {
 
 		return \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_ASSETS_CLASS);
