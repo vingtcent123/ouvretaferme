@@ -1,10 +1,30 @@
 <?php
-
-// Exemple d'utilisation :
+// Exemples d'utilisation :
+// pour générer le fec : Lancer le script php framework/lime.php -a ouvretaferme -e dev journal/configure/fec:generate
+// pour vérifier le fec :
 // 1. Déplacer le fec dans /tmp/fec.txt
-// 2. Lancer le script php framework/lime.php -a ouvretaferme -e dev configure/checkFec
+// 2. Lancer le script php framework/lime.php -a ouvretaferme -e dev journal/configure/fec:check
 new Page()
-	->cli('index', function($data) {
+	->cli('generate', function($data) {
+
+		$eFarm = \farm\Farm::model()
+		->select(\farm\Farm::getSelection())
+		->whereHasAccounting(TRUE)
+		->whereId(7)
+		->get();
+
+		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+
+		$eFinancialYear = \account\FinancialYear::model()->select(\account\FinancialYear::getSelection())->whereStartDate('2024-01-01')->get();
+
+		$fec = \account\FecLib::generate($eFinancialYear);
+
+		file_put_contents(LIME_DIRECTORY.'/'.mb_substr($eFarm['siret'], 0, 9).'FEC20250531.txt', $fec);
+
+	});
+
+new Page()
+	->cli('check', function($data) {
 
 		$cheminFichier = '/tmp/shared/fec.txt';
 		$erreurs = [];
@@ -23,10 +43,12 @@ new Page()
 		// 2. Vérification de l'en-tête
 		$colonnes_attendues = [
 			"JournalCode", "JournalLib", "EcritureNum", "EcritureDate", "CompteNum", "CompteLib",
-			"CompAuxNum", "CompAuxLib", "PieceRef", "PieceDate", "LibelleEcriture",
+			"CompAuxNum", "CompAuxLib", "PieceRef", "PieceDate", "EcritureLib",
 			"Debit", "Credit", "EcritureLet", "DateLet",
-			"ValidDate", "MontantDevise", "IDevise"
+			"ValidDate", "MontantDevise", "IDevise",
+			"DateRglt", "ModeRglt", "NatOp", // Compta de tréso
 		];
+		$nbChamps = count($colonnes_attendues);
 		$ligne = fgets($fichier);
 		if (!$ligne) dd("Le fichier est vide.");
 
@@ -41,13 +63,13 @@ new Page()
 			$nLigne++;
 			$champs = explode('|', trim($ligne));
 
-			if (count($champs) !== 18) {
+			if (count($champs) !== $nbChamps) {
 				$erreurs[] = "Ligne $nLigne : doit contenir exactement 18 champs, trouvé " . count($champs);
 				continue;
 			}
 
 			// Vérification des dates (AAAAMMJJ)
-			$dates = [3, 9, 14, 15, 16]; // index des champs date
+			$dates = [3, 9, 14, 15, 18]; // index des champs date
 			foreach ($dates as $i) {
 				$champ = $champs[$i];
 				if ($champ !== '' and !preg_match('/^\d{8}$/', $champ)) {
