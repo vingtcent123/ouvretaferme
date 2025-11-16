@@ -32,12 +32,12 @@ class HelpUi {
 				$h .= '<p>'.s("Vous démarrez avec un plateau de 16 parcelles prêtes à être cultivées !").'</p>';
 				$h .= '<p>'.s("Vous disposez chaque jour de {value} heures de temps de travail que vous pouvez répartir sur les différentes actions :", GameSetting::TIME_DAY).'</p>';
 				$h .= '<ul>';
-					$h .= '<li>'.s("<b>IMPLANTER</b> une nouvelle culture sur une de vos parcelles").'</li>';
-					$h .= '<li>'.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures").'</li>';
-					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celle d'un autre joueur").'</li>';
-					$h .= '<li>'.s("<b>TROQUER</b> des légumes avec les autres joueurs").'</li>';
+					$h .= '<li>'.s("<b>IMPLANTER</b> une nouvelle culture sur une de vos parcelles coûte {value} h", GameSetting::TIME_PLANTING).'</i></li>';
+					$h .= '<li>'.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures coûte un temps variable selon la culture").'</li>';
+					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celle d'un autre joueur coûte {value} h", GameSetting::TIME_WATERING).'</li>';
+					$h .= '<li>'.s("<b>TROQUER</b> des légumes avec les autres joueurs coûte {value} h", GameSetting::TIME_MARKET).'</li>';
 				$h .= '</ul>';
-				$h .= '<p>'.s("Votre compteur de temps de travail est remis à zéro chaque nuit à minuit.").'</p>';
+				$h .= '<p>'.s("Votre compteur de temps de travail est remis à zéro chaque nuit à minuit. Les actions décomptent votre temps de travail, mais vous n'avez pas à attendre, elles sont réalisées immédiatement !").'</p>';
 			$h .= '</div>';
 			$h .= '<h3>'.s("Comment gagner ?").'</h3>';
 			$h .= '<div class="util-block mb-2">';
@@ -46,7 +46,7 @@ class HelpUi {
 					$h .= '<li>'.s("<b>PRODUIRE</b> le plus de légumes possibles <i>(1 légume attirera 1 renne)</i>").'</li>';
 					$h .= '<li>'.s("<b>CUISINER</b> des soupes de légumes <i>(1 soupe attirera 10 rennes)</i>").'</li>';
 				$h .= '</ul>';
-				$h .= '<p>'.s("Une soupe de légume se cuisine en utilisant 1 légume de chacune des 5 espèces proposées dans le jeu.").'</p>';
+				$h .= '<p>'.s("Une soupe de légumes se cuisine en utilisant 1 légume de chacune des 5 espèces proposées dans le jeu.").'</p>';
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block">';
@@ -124,7 +124,7 @@ class HelpUi {
 								$h .= '</td>';
 								$h .= '<td class="text-end">';
 									if($eGrowing['timeHarvesting'] !== NULL) {
-										$h .= s("{value} <small> h</small>", $eGrowing['timeHarvesting']);
+										$h .= s("{value} h", $eGrowing['timeHarvesting']);
 									}
 								$h .= '</td>';
 								$h .= '<td class="text-end">';

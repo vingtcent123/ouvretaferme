@@ -58,8 +58,8 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 					echo '<div>';
 						echo '<h4 class="game-dashboard-title">'.s("Temps de travail disponible").'</h4>';
-						echo '<div class="game-dashboard-value">'.s("{value} <small> h</small>", $data->ePlayer['time']).'</div>';
-						echo '<div class="game-dashboard-more">(retour à 8<small> h</small> dans XX minutes)</div>';
+						echo '<div class="game-dashboard-value">'.s("{value} h", $data->ePlayer['time']).'</div>';
+						echo '<div class="game-dashboard-more">(retour à 8 h dans XX minutes)</div>';
 					echo '</div>';
 
 					echo '<div>';
