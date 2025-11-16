@@ -15,7 +15,7 @@ new Page(function($data) {
 		$data->cFood = \game\FoodLib::getByUser($data->ePlayer['user']);
 		$data->cHistory = \game\HistoryLib::getByUser($data->ePlayer['user']);
 
-		//\game\FoodLib::add($data->ePlayer, $data->cGrowing[3], new \game\Tile(), 3);
+		//\game\FoodLib::add($data->ePlayer, $data->cGrowing[6], new \game\Tile(), 3);
 
 		throw new ViewAction($data);
 

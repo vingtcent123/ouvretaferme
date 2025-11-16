@@ -86,6 +86,7 @@ Product:
   excludeGroups: json = PHP([])
   available: ?decimal(9, 2, 0.0, 999999)
   status: enum(ACTIVE, INACTIVE) = ACTIVE
+  createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["product"],
     ["catalog"],

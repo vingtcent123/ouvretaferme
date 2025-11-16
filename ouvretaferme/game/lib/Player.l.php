@@ -66,7 +66,7 @@ class PlayerLib extends PlayerCrud {
 
 		return Food::model()
 			->whereUser($eUser)
-			->getValue(new \Sql('SUM(IF(growing IS NULL, current * 2, current))', 'int'));
+			->getValue(new \Sql('SUM(IF(growing IS NULL, current * 10, current))', 'int'));
 
 	}
 

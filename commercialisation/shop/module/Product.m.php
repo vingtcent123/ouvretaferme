@@ -72,10 +72,11 @@ class ProductModel extends \ModuleModel {
 			'excludeGroups' => ['json', 'cast' => 'array'],
 			'available' => ['decimal', 'digits' => 9, 'decimal' => 2, 'min' => 0.0, 'max' => 999999, 'null' => TRUE, 'cast' => 'float'],
 			'status' => ['enum', [\shop\Product::ACTIVE, \shop\Product::INACTIVE], 'cast' => 'enum'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'type', 'shop', 'date', 'catalog', 'parent', 'parentName', 'parentCategory', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status'
+			'id', 'farm', 'type', 'shop', 'date', 'catalog', 'parent', 'parentName', 'parentCategory', 'product', 'packaging', 'promotion', 'price', 'priceInitial', 'limitMin', 'limitMax', 'limitCustomers', 'limitGroups', 'limitStartAt', 'limitEndAt', 'excludeCustomers', 'excludeGroups', 'available', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -124,6 +125,9 @@ class ProductModel extends \ModuleModel {
 
 			case 'status' :
 				return Product::ACTIVE;
+
+			case 'createdAt' :
+				return new \Sql('NOW()');
 
 			default :
 				return parent::getDefaultValue($property);
@@ -289,6 +293,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereStatus(...$data): ProductModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): ProductModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 
