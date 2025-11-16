@@ -3,6 +3,8 @@ namespace game;
 
 class GameSetting extends \Settings {
 
+	const BOARDS = 3;
+
 	const TIME_DAY = 8;
 	const TIME_DAY_PREMIUM = 12;
 

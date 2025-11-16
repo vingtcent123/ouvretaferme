@@ -36,18 +36,25 @@ class FoodModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
+			'id' => ['serial32', 'cast' => 'int'],
+			'user' => ['element32', 'user\User', 'cast' => 'element'],
 			'growing' => ['element32', 'game\Growing', 'null' => TRUE, 'cast' => 'element'],
 			'current' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'total' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'growing', 'current', 'total'
+			'id', 'user', 'growing', 'current', 'total'
 		]);
 
 		$this->propertiesToModule += [
+			'user' => 'user\User',
 			'growing' => 'game\Growing',
 		];
+
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['user']
+		]);
 
 	}
 
@@ -74,6 +81,14 @@ class FoodModel extends \ModuleModel {
 
 	public function where(...$data): FoodModel {
 		return parent::where(...$data);
+	}
+
+	public function whereId(...$data): FoodModel {
+		return $this->where('id', ...$data);
+	}
+
+	public function whereUser(...$data): FoodModel {
+		return $this->where('user', ...$data);
 	}
 
 	public function whereGrowing(...$data): FoodModel {

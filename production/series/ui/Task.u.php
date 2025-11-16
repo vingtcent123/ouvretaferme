@@ -1883,7 +1883,7 @@ class TaskUi {
 
 	}
 
-	public static function convertTime(float $time, bool $showMinutes = TRUE): string {
+	public static function convertTime(float $time, ?bool $showMinutes = TRUE): string {
 
 		\Asset::css('series', 'task.css');
 
@@ -1896,7 +1896,10 @@ class TaskUi {
 			$hours++;
 		}
 
-		if($showMinutes) {
+		if(
+			$showMinutes === TRUE or
+			($showMinutes === NULL and $minutes > 0)
+		) {
 
 			return '<span><span class="task-time-hours">'.$hours.'</span><small class="task-time-hour">h</small><span class="task-time-minutes">'.sprintf('%02d', $minutes).'</span></span>';
 

@@ -39,15 +39,17 @@ class PlayerModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => 20, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
 			'user' => ['element32', 'user\User', 'unique' => TRUE, 'cast' => 'element'],
-			'time' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
+			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
+			'timeUpdatedAt' => ['date', 'cast' => 'string'],
 			'gift' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'lastGift' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'lastGift' => ['date', 'cast' => 'string'],
 			'boards' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'points' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'createdAt' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'user', 'time', 'gift', 'lastGift', 'boards', 'points'
+			'id', 'name', 'user', 'time', 'timeUpdatedAt', 'gift', 'lastGift', 'boards', 'points', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -65,14 +67,26 @@ class PlayerModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'time' :
+				return 0;
+
+			case 'timeUpdatedAt' :
+				return new \Sql('CURDATE()');
+
 			case 'gift' :
 				return 0;
+
+			case 'lastGift' :
+				return new \Sql('CURDATE()');
 
 			case 'boards' :
 				return 1;
 
 			case 'points' :
 				return 0;
+
+			case 'createdAt' :
+				return new \Sql('CURDATE()');
 
 			default :
 				return parent::getDefaultValue($property);
@@ -105,6 +119,10 @@ class PlayerModel extends \ModuleModel {
 		return $this->where('time', ...$data);
 	}
 
+	public function whereTimeUpdatedAt(...$data): PlayerModel {
+		return $this->where('timeUpdatedAt', ...$data);
+	}
+
 	public function whereGift(...$data): PlayerModel {
 		return $this->where('gift', ...$data);
 	}
@@ -119,6 +137,10 @@ class PlayerModel extends \ModuleModel {
 
 	public function wherePoints(...$data): PlayerModel {
 		return $this->where('points', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): PlayerModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 

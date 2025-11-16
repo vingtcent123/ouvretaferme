@@ -13,7 +13,7 @@ class TileUi {
 
 
 			$h .= $form->group(
-				content: $form->submit(\s("C'est parti"))
+				content: $form->submit(s("C'est parti"))
 			);
 
 		$h .= $form->close();

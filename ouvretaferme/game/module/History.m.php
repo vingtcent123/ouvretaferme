@@ -36,18 +36,38 @@ class HistoryModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
+			'id' => ['serial32', 'cast' => 'int'],
 			'user' => ['element32', 'user\User', 'cast' => 'element'],
-			'time' => ['float32', 'min' => 0.0, 'max' => NULL, 'cast' => 'float'],
-			'message' => ['text8', 'cast' => 'string'],
+			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'message' => ['text16', 'cast' => 'string'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'user', 'time', 'message'
+			'id', 'user', 'time', 'message', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'user' => 'user\User',
 		];
+
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['user']
+		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'createdAt' :
+				return new \Sql('NOW()');
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
 
 	}
 
@@ -57,6 +77,10 @@ class HistoryModel extends \ModuleModel {
 
 	public function where(...$data): HistoryModel {
 		return parent::where(...$data);
+	}
+
+	public function whereId(...$data): HistoryModel {
+		return $this->where('id', ...$data);
 	}
 
 	public function whereUser(...$data): HistoryModel {
@@ -69,6 +93,10 @@ class HistoryModel extends \ModuleModel {
 
 	public function whereMessage(...$data): HistoryModel {
 		return $this->where('message', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): HistoryModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 

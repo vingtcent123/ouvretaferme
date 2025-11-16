@@ -28,7 +28,7 @@
 	--production: #035e42;
 	--commercialisation: #4a4a70;
 	--accounting: #205160;
-	--game: #7a2408;
+	--game: var(--harvest);
 	--account-group: #FDE9D9;
 
 	--draft: var(--todo);

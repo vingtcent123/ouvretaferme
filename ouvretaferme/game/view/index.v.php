@@ -17,7 +17,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 	if(get_exists('start')) {
 
-		echo '<div class="text-center mb-2" style="font-style: italic">';
+		echo '<div class="text-center mb-3 mt-3 font-xl" style="font-style: italic">';
 			echo s("Votre partie est bien créée, {value} !", encode($data->ePlayer['name'])).'<br/>';
 			echo s("Il ne vous reste qu'à lire les règles du jeu avant de commencer le travail.");
 		echo '</div>';
@@ -33,7 +33,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 				echo '<a href="/jouer" class="btn btn-lg btn-'.(get_exists('show') ? 'outline-' : '').'game">'.s("Jouer").'</a>';
 				echo '<a href="/jouer?show=story" class="btn btn-lg btn-'.(GET('show') !== 'story' ? 'outline-' : '').'game">'.s("Synopsis").'</a>';
 				echo '<a href="/jouer?show=rules" class="btn btn-lg btn-'.(GET('show') !== 'rules' ? 'outline-' : '').'game">'.s("Règles").'</a>';
-				if($data->ePlayer->isPremium() === FALSE) {
+				if(\game\Player::isPremium($data->ePlayer['user']) === FALSE) {
 					echo '<a href="/adherer" class="btn btn-lg btn-outline-game">'.s("Adhérer").'</a>';
 				}
 			echo '</div>';
@@ -52,26 +52,13 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 			default :
 
-				echo '<div class="game-dashboard util-block">';
-
-					echo '<h3>'.encode($data->ePlayer['name']).'</h3>';
-
-					echo '<div>';
-						echo '<h4 class="game-dashboard-title">'.s("Temps de travail disponible").'</h4>';
-						echo '<div class="game-dashboard-value">'.s("{value} h", $data->ePlayer['time']).'</div>';
-						echo '<div class="game-dashboard-more">(retour à 8 h dans XX minutes)</div>';
-					echo '</div>';
-
-					echo '<div>';
-						echo '<h4>'.s("Production").'</h4>';
-						echo '<div class="game-dashboard-value">XXX</div>';
-					echo '</div>';
-
-				echo '</div>';
+				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cFood);
 
 				echo new \game\DeskUi()->play(1);
 
 				echo \game\HelpUi::getCrops($data->cGrowing);
+				echo '<br/>';
+				echo \game\HistoryUi::display($data->cHistory);
 
 				break;
 

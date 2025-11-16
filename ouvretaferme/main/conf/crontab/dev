@@ -9,8 +9,10 @@
 0 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme selling/cron/invoice
 0 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme shop/cron/delivery:finish
 0 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme storage/cron/buffer
+0 0 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme game/cron/update:time
 0 0 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme user/cron/seniority
 0 0 1 10 * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme farm/cron/newSeason
+0 1 1 1 * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme association/cron/membership
 0 12 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme mail/cron/clean
 0 2 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme media/cron/clean
 0 3 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme hr/cron/calculate
@@ -25,7 +27,6 @@
 17 7 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme dev/cron/minifyClean
 19 5 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme selling/cron/clean:pdf
 28 4 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme website/cron/certbot:clean
-3 */12 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme website/cron/certbot:certificate
+3 3 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme website/cron/certbot:certificate
 47 5 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme dev/cron/error
 5 */2 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme bank/cron/invoices
-0 1 1 1 * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme association/cron/membership

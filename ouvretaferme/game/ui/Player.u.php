@@ -3,6 +3,10 @@ namespace game;
 
 class PlayerUi {
 
+	public static function getTime(float $time): string {
+		return \series\TaskUi::convertTime($time, showMinutes: NULL);
+	}
+
 	public function create(Player $e): \Panel {
 
 		$form = new \util\FormUi();

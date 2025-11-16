@@ -3,6 +3,14 @@ namespace game;
 
 class TileLib extends TileCrud {
 
+	public static function createByUser(\user\User $eUser): void {
+
+		for($board = 1; $board <= GameSetting::BOARDS; $board++) {
+			self::createBoard($eUser, $board);
+		}
+
+	}
+
 	public static function createBoard(\user\User $eUser, int $board): void {
 
 		for($tile = 1; $tile <= 16; $tile++) {
