@@ -282,7 +282,6 @@ class AssetLib extends \asset\AssetCrud {
 				AmortizationLib::recoverExcess($eFinancialYear, $eAsset, $endDate);
 			}
 
-			/* TODO DEPRECIATIONS
 			// Étape 3. Reprise des éventuelles dépréciations
 			$cDepreciation = DepreciationLib::getByAsset($eAsset);
 			$depreciationExceptionalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::EXCEPTIONAL)->sum('amount'), 2);
@@ -344,7 +343,7 @@ class AssetLib extends \asset\AssetCrud {
 					->whereAsset($eAsset)
 					->update(['recoverDate' => new \Sql('NOW()')]);
 
-			}*/
+			}
 
 		}
 
