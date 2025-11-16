@@ -4,7 +4,6 @@ Growing:
   fqn: fqn
   harvest: ?int8(1, null)
   days: ?int8(1, null)
-  timeHarvesting: ?int8(0, null)
   bonusWatering: ?int8(0, null)
 
 Food:

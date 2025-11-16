@@ -33,13 +33,13 @@ class HelpUi {
 				$h .= '<p>'.s("Vous disposez chaque jour de {value} heures de temps de travail que vous pouvez répartir sur les différentes actions :", GameSetting::TIME_DAY).'</p>';
 				$h .= '<ul>';
 					$h .= '<li>'.s("<b>IMPLANTER</b> une nouvelle culture sur une de vos parcelles coûte {value}", PlayerUi::getTime(GameSetting::TIME_PLANTING)).'</i></li>';
-					$h .= '<li>'.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures coûte un temps variable selon la culture").'</li>';
-					$h .= '<li>'.s("<b>CHATOUILLER</b> une de vos cultures avance sa date de récolte de 2 jours et coûte {value}", PlayerUi::getTime(GameSetting::TIME_TICKLE)).'</li>';
+					$h .= '<li>'.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures coûte {value}", PlayerUi::getTime(GameSetting::TIME_HARVESTING)).'</li>';
+					$h .= '<li>'.s("<b>DORLOTER</b> une de vos cultures avance sa date de récolte de 2 jours et coûte {value}", PlayerUi::getTime(GameSetting::TIME_CUDDLE)).'</li>';
 					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celle d'un autre joueur coûte {value}", PlayerUi::getTime(GameSetting::TIME_WATERING)).'</li>';
 					$h .= '<li>'.s("<b>TROQUER</b> des légumes avec les autres joueurs coûte {value}", PlayerUi::getTime(GameSetting::TIME_MARKET)).'</li>';
 				$h .= '</ul>';
 				$h .= '<p>'.s("Votre compteur de temps de travail est remis à zéro chaque nuit à minuit. Les actions décomptent votre temps de travail, mais vous n'avez pas à attendre, elles sont réalisées immédiatement !").'</p>';
-				$h .= '<p>'.s("Le 5 et le 10 décembre, vous pourrez également débloquer un deuxième et un troisième plateau.").'</p>';
+				$h .= '<p>'.s("Le 5 et le 10 décembre, vous débloquez un deuxième et un troisième plateau.").'</p>';
 			$h .= '</div>';
 			$h .= '<h3>'.s("Comment gagner ?").'</h3>';
 			$h .= '<div class="util-block mb-2">';
@@ -86,7 +86,6 @@ class HelpUi {
 						$h .= '<th></th>';
 						$h .= '<th class="text-end">'.s("Durée de<br/>la culture").'</th>';
 						$h .= '<th class="text-end">'.s("Rendement<br/>par parcelle").'</th>';
-						$h .= '<th class="text-end">'.s("Temps de récolte<br/>par parcelle").'</th>';
 						$h .= '<th class="text-end">'.s("Augmentation<br/>du rendement<br/>par arrosage").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -123,17 +122,12 @@ class HelpUi {
 									$h .= $vignette;
 								$h .= '</td>';
 								$h .= '<td class="text-end">';
-									if($eGrowing['timeHarvesting'] !== NULL) {
-										$h .= PlayerUi::getTime($eGrowing['timeHarvesting']);
-									}
-								$h .= '</td>';
-								$h .= '<td class="text-end">';
 									if($eGrowing['bonusWatering'] !== NULL) {
 										$h .= '<b>'.s("+ {value}", $eGrowing['bonusWatering']).'</b>  '.$vignette;
 									}
 								$h .= '</td>';
 							} else {
-								$h .= '<td colspan="3" class="game-table-bonus">';
+								$h .= '<td colspan="2" class="game-table-bonus">';
 									$h .= match($eGrowing['fqn']) {
 										'pivoine' => s("<b>+ {value}</b> de rendement sur les cultures des parcelles adjacentes", GameSetting::BONUS_PIVOINE),
 										'lavande' => s("<b>- {value}<small>min</small></b> de temps de récolte sur toutes les autres cultures du plateau", GameSetting::BONUS_LAVANDE)

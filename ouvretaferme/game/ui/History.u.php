@@ -20,7 +20,7 @@ class HistoryUi {
 					$h .= '<tr>';
 						$h .= '<th class="td-min-content">'.s("Date").'</th>';
 						$h .= '<th>'.s("Message").'</th>';
-						$h .= '<th class="text-end">'.s("Temps").'</th>';
+						$h .= '<th class="text-end">'.s("Temps de travail").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 				$h .= '<tbody>';

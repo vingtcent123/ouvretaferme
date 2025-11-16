@@ -41,12 +41,11 @@ class GrowingModel extends \ModuleModel {
 			'fqn' => ['fqn', 'unique' => TRUE, 'cast' => 'string'],
 			'harvest' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'days' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'timeHarvesting' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'bonusWatering' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'harvest', 'days', 'timeHarvesting', 'bonusWatering'
+			'id', 'name', 'fqn', 'harvest', 'days', 'bonusWatering'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -81,10 +80,6 @@ class GrowingModel extends \ModuleModel {
 
 	public function whereDays(...$data): GrowingModel {
 		return $this->where('days', ...$data);
-	}
-
-	public function whereTimeHarvesting(...$data): GrowingModel {
-		return $this->where('timeHarvesting', ...$data);
 	}
 
 	public function whereBonusWatering(...$data): GrowingModel {
