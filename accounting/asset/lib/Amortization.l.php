@@ -682,6 +682,20 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		Amortization::model()->insert($eAmortization);
 
+		if($eAccountExcessAmortization > 0) {
+
+			$eAmortization = new Amortization([
+				'asset' => $eAsset,
+				'amount' => $eAccountExcessAmortization,
+				'type' => Amortization::EXCESS,
+				'date' => $endDate,
+				'financialYear' => $eFinancialYear,
+			]);
+
+			Amortization::model()->insert($eAmortization);
+
+		}
+
 		// Étape 4 : Mise à jour de l'immobilisation
 		Asset::model()->update(
 			$eAsset,
@@ -815,7 +829,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		};
 
 		$ccAmortization = Amortization::model()
-			->select(['asset', 'financialYear', 'amount', 'type'])
+			->select(['asset', 'financialYear', 'amount', 'type',])
 			->whereAsset('IN', $cAsset)
 			->whereDate('<=', $eFinancialYear['endDate'])
 			->getCollection(NULL, NULL, ['asset', 'financialYear']);
@@ -829,20 +843,30 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$cAmortization = $ccAmortization->offsetExists($eAsset['id']) ? $ccAmortization->offsetGet($eAsset['id']) : new \Collection();
 
 			// sum what has already been amortized for this asset (during previous financial years)
-			$alreadyAmortized = array_reduce(
-				$cAmortization->getArrayCopy(),
-				fn($res, $eAmortization) => $res + (($eAmortization['financialYear']['id'] !== $eFinancialYear['id'] and $eAmortization['type'] === Amortization::ECONOMIC) ? $eAmortization['amount'] : 0), 0,
-			);
-			$alreadyExcessAmortized = array_reduce(
-				$cAmortization->getArrayCopy(),
-				fn($res, $eAmortization) => $res + (($eAmortization['financialYear']['id'] !== $eFinancialYear['id'] and $eAmortization['type'] === Amortization::EXCESS) ? $eAmortization['amount'] : 0), 0,
-			);
+			$alreadyAmortized = $eAsset['economicAmortization'];
+			$alreadyExcessAmortized = $eAsset['excessAmortization'];
 
 			// This financial year amortization
 			if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
-				$currentAmortization = ($cAmortization->offsetExists($eFinancialYear['id']) and $cAmortization[$eFinancialYear['id']]['type'] === Amortization::ECONOMIC) ? $cAmortization[$eFinancialYear['id']]['amount'] : 0;
-				$currentExcessAmortization = ($cAmortization->offsetExists($eFinancialYear['id']) and $cAmortization[$eFinancialYear['id']]['type'] === Amortization::EXCESS) ? $cAmortization[$eFinancialYear['id']]['amount'] : 0;
+				if(($cAmortization->offsetExists($eFinancialYear['id']) and $cAmortization[$eFinancialYear['id']]['type'] === Amortization::ECONOMIC)) {
+
+					$currentAmortization = $cAmortization[$eFinancialYear['id']]['amount'];
+					$alreadyAmortized -= $currentAmortization;
+
+				} else {
+					$currentAmortization = 0;
+				}
+
+				if($cAmortization->offsetExists($eFinancialYear['id']) and $cAmortization[$eFinancialYear['id']]['type'] === Amortization::EXCESS) {
+
+					$currentExcessAmortization =  $cAmortization[$eFinancialYear['id']]['amount'];
+					$alreadyExcessAmortized -= $currentExcessAmortization;
+
+				} else {
+					$currentExcessAmortization = 0;
+				}
+
 
 			} else {
 
@@ -852,9 +876,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 			}
 
-
 			$vnc = AssetLib::getAmortizableBase($eAsset, 'economic') - $alreadyAmortized - $currentAmortization;
-			$vnf = $currentExcessAmortization > 0 ? $eAsset['value'] - $alreadyExcessAmortized - $currentExcessAmortization : $vnc;
+			$vnf = AssetLib::getAmortizableBase($eAsset, 'economic') - $alreadyAmortized - $alreadyExcessAmortized - $currentExcessAmortization - $currentAmortization;
 
 			$amortization = [
 				'id' => $eAsset['id'],
@@ -877,9 +900,9 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				// Economic amortization
 				'economic' => [
 					// Début exercice : NULL si acquis durant l'exercice comptable
-					'startFinancialYearValue' => $eAsset['startDate'] >= $eFinancialYear['startDate'] ? NULL : AssetLib::getAmortizableBase($eAsset, 'économic') - $alreadyAmortized,
+					'startFinancialYearValue' => $eAsset['startDate'] >= $eFinancialYear['startDate'] ? NULL : $alreadyAmortized,
 					'currentFinancialYearAmortization' => $currentAmortization, // Dotation pour l'exercice (proratisé)
-					'currentFinancialYearDegressiveAmortization' => 0,
+					'currentFinancialYearDegressiveAmortization' => $currentExcessAmortization,
 					'endFinancialYearValue' => $alreadyAmortized + $currentAmortization, // Cumul de toutes les dotations
 				],
 

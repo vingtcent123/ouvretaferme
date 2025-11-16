@@ -37,7 +37,7 @@ new AdaptativeView('/asset/amortization', function($data, FarmTemplate $t) {
 
 			echo '<div class="tabs-item">';
 				echo '<a class="tab-item '.($data->selectedTab === 'asset' ? 'selected' : '').'" data-tab="amortization-asset" href="'.$t->canonical.'?tab=asset">'.s("Immobilisations").'</a>';
-				echo '<a class="tab-item" data-tab="amortization-grant" href="'.$t->canonical.'?tab=grant">'.s("Subventions").'</a>';
+				echo '<a class="tab-item '.($data->selectedTab === 'grant' ? 'selected' : '').' " data-tab="amortization-grant" href="'.$t->canonical.'?tab=grant">'.s("Subventions").'</a>';
 			echo '</div>';
 
 			echo '<div class="tab-panel '.($data->selectedTab === 'asset' ? 'selected' : '').'" data-tab="amortization-asset">';

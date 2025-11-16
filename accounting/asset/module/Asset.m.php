@@ -53,9 +53,12 @@ class AssetModel extends \ModuleModel {
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'economicMode' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::DEGRESSIVE, \asset\Asset::WITHOUT], 'cast' => 'enum'],
 			'economicDuration' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'economicAmortization' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'fiscalMode' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::DEGRESSIVE, \asset\Asset::WITHOUT], 'cast' => 'enum'],
 			'fiscalDuration' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'isExcess' => ['bool', 'cast' => 'bool'],
+			'excessAmortization' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
+			'excessRecovery' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'acquisitionDate' => ['date', 'cast' => 'string'],
 			'startDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
@@ -68,7 +71,7 @@ class AssetModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'accountLabel', 'value', 'residualValue', 'description', 'economicMode', 'economicDuration', 'fiscalMode', 'fiscalDuration', 'isExcess', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'account', 'accountLabel', 'value', 'residualValue', 'description', 'economicMode', 'economicDuration', 'economicAmortization', 'fiscalMode', 'fiscalDuration', 'isExcess', 'excessAmortization', 'excessRecovery', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -85,8 +88,17 @@ class AssetModel extends \ModuleModel {
 			case 'residualValue' :
 				return 0;
 
+			case 'economicAmortization' :
+				return 0;
+
 			case 'isExcess' :
 				return FALSE;
+
+			case 'excessAmortization' :
+				return 0;
+
+			case 'excessRecovery' :
+				return 0;
 
 			case 'status' :
 				return Asset::ONGOING;
@@ -170,6 +182,10 @@ class AssetModel extends \ModuleModel {
 		return $this->where('economicDuration', ...$data);
 	}
 
+	public function whereEconomicAmortization(...$data): AssetModel {
+		return $this->where('economicAmortization', ...$data);
+	}
+
 	public function whereFiscalMode(...$data): AssetModel {
 		return $this->where('fiscalMode', ...$data);
 	}
@@ -180,6 +196,14 @@ class AssetModel extends \ModuleModel {
 
 	public function whereIsExcess(...$data): AssetModel {
 		return $this->where('isExcess', ...$data);
+	}
+
+	public function whereExcessAmortization(...$data): AssetModel {
+		return $this->where('excessAmortization', ...$data);
+	}
+
+	public function whereExcessRecovery(...$data): AssetModel {
+		return $this->where('excessRecovery', ...$data);
 	}
 
 	public function whereAcquisitionDate(...$data): AssetModel {

@@ -89,13 +89,13 @@ Class AmortizationUi {
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['endFinancialYearValue'], $default, 2).'</td>';
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['grossValueDiminution'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['netFinancialValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['netFinancialValue'], '0.00', 2).'</td>';
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['startFinancialYearValue'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearAmortization'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['endFinancialYearValue'], $default, 2).'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], '0.00', 2).'</td>';
 
 		$h .= '</tr>';
 
