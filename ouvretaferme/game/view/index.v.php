@@ -24,7 +24,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 		echo \game\HelpUi::getRules(TRUE);
 
-		echo new \game\DeskUi()->play(1);
+		echo new \game\DeskUi()->play($data->ePlayer, $data->cTile, $data->board);
 
 	} else {
 
@@ -54,7 +54,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cFood);
 
-				echo new \game\DeskUi()->play(1);
+				echo new \game\DeskUi()->play($data->ePlayer, $data->cTile, $data->board);
 
 				echo \game\HelpUi::getCrops($data->cGrowing);
 				echo '<br/>';

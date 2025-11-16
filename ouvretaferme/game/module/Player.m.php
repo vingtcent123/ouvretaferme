@@ -43,7 +43,7 @@ class PlayerModel extends \ModuleModel {
 			'timeUpdatedAt' => ['date', 'cast' => 'string'],
 			'gift' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'lastGift' => ['date', 'cast' => 'string'],
-			'boards' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'boards' => ['int8', 'min' => 1, 'max' => GameSetting::BOARDS, 'cast' => 'int'],
 			'points' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['date', 'cast' => 'string'],
 		]);

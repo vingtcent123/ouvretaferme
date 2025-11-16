@@ -17,7 +17,7 @@
 	--background-even: #ededf1;
 	--background-game: #f7ecda;
 	--primary: #373737;
-	--secondary: #4a4a70;
+	--secondary: #704a4a;
 	--secondary-rgb: 74, 74, 112;
 	--training: #fdf7c9;
 	--shop: #006d6b;
@@ -28,7 +28,7 @@
 	--production: #035e42;
 	--commercialisation: #4a4a70;
 	--accounting: #205160;
-	--game: var(--harvest);
+	--game: #7a1b1b;
 	--account-group: #FDE9D9;
 
 	--draft: var(--todo);

@@ -3,7 +3,26 @@ namespace game;
 
 class DeskUi {
 
-	public function play(int $board): string {
+	public function play(Player $ePlayer, \Collection $cTile, int $board): string {
+
+		$h = '<div class="game-boards">';
+			$h .= '<a href="/jouer?board=1" class="btn '.($board === 1 ? 'btn-primary' : '').' game-board btn-lg">';
+				$h .= s("Plateau");
+				$h .= '<div class="game-board-label">'.\Asset::icon('1-circle-fill').'</div>';
+			$h .= '</a>';
+			$h .= '<a href="/jouer?board=2" class="btn '.($board === 2 ? 'btn-primary' : '').' '.($ePlayer['boards'] <= 1 ? 'disabled' : '').' game-board btn-lg">';
+				$h .= s("Plateau");
+				$h .= '<div class="game-board-label">'.($ePlayer['boards'] <= 1 ? \Asset::icon('lock-fill') : \Asset::icon('2-circle-fill')).'</div>';
+			$h .= '</a>';
+			$h .= '<a href="/jouer?board=3" class="btn '.($board === 3 ? 'btn-primary' : '').' '.($ePlayer['boards'] <= 2 ? 'disabled' : '').' game-board btn-lg">';
+				$h .= s("Plateau");
+				$h .= '<div class="game-board-label">'.($ePlayer['boards'] <= 2 ? \Asset::icon('lock-fill') : \Asset::icon('3-circle-fill')).'</div>';
+			$h .= '</a>';
+		$h .= '</div>';
+
+		if($ePlayer['boards'] < $board) {
+			return $h;
+		}
 
 		$content = '';
 
@@ -13,7 +32,9 @@ class DeskUi {
 			$content .= '</div>';
 		}
 
-		return $this->get($content, $board);
+		$h .= $this->get($content, $board);
+
+		return $h;
 
 	}
 

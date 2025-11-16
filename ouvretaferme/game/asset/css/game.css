@@ -5,6 +5,21 @@ body[data-template~="game"] main {
 	padding-top: 2rem;
 }
 
+.game-boards {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	margin-top: 2rem;
+}
+
+.game-board svg {
+	font-size: 1.5rem;
+}
+
+.game-board-label {
+	margin-top: .75rem;
+}
+
 .game-menu {
 	display: flex;
 	justify-content: center;

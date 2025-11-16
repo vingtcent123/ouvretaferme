@@ -10,6 +10,17 @@ new Page(function($data) {
 			throw new ViewAction($data, ':start');
 		}
 
+		if(get_exists('board')) {
+			$data->board = \game\Player::GET('board', 'boards', 1);
+			\session\SessionLib::set('gameBoard', $data->board);
+		} else {
+			try {
+				$data->board = \session\SessionLib::get('gameBoard');
+			} catch(Exception) {
+				$data->board = 1;
+			}
+		}
+
 		$data->cTile = \game\TileLib::getByUser($data->ePlayer['user'], 1);
 		$data->cGrowing = \game\GrowingLib::getAll();
 		$data->cFood = \game\FoodLib::getByUser($data->ePlayer['user']);
