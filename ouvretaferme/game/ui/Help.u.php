@@ -34,6 +34,7 @@ class HelpUi {
 				$h .= '<ul>';
 					$h .= '<li>'.s("<b>IMPLANTER</b> une nouvelle culture sur une de vos parcelles coûte {value}", PlayerUi::getTime(GameSetting::TIME_PLANTING)).'</i></li>';
 					$h .= '<li>'.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures coûte un temps variable selon la culture").'</li>';
+					$h .= '<li>'.s("<b>CHATOUILLER</b> une de vos cultures avance sa date de récolte de 2 jours et coûte {value}", PlayerUi::getTime(GameSetting::TIME_TICKLE)).'</li>';
 					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celle d'un autre joueur coûte {value}", PlayerUi::getTime(GameSetting::TIME_WATERING)).'</li>';
 					$h .= '<li>'.s("<b>TROQUER</b> des légumes avec les autres joueurs coûte {value}", PlayerUi::getTime(GameSetting::TIME_MARKET)).'</li>';
 				$h .= '</ul>';
@@ -51,7 +52,7 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block">';
-				$h .= '<p>'.s("Chaque jour, vous pourrez ouvrir un petit cadeau pour débloquer une récompense qui vous aidera dans votre quête !").'</p>';
+				$h .= '<p>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir 2 heures de temps de travail en plus !").'</p>';
 				$h .= '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme, vous débloquez les deux bonus suivants :").'</p>';
 				$h .= '<ul class="mb-1">';
 					$h .= '<li>'.s("<b>{premium} heures de travail par jour au lieu de {value} heures</b>", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';
