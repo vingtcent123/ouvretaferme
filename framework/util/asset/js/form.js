@@ -230,6 +230,7 @@ class CalculationField {
 		const resultElement = target.firstParent('div').qs('[data-calculated]');
 
 		if(!currentOperation) {
+			hiddenElement.setAttribute('value', ''); // reset value
 			resultElement.hide();
 		}
 
@@ -244,8 +245,12 @@ class CalculationField {
 				}
 				resultElement.innerHTML = '= ' + result;
 				hiddenElement.setAttribute('value', result);
+			} else {
+				hiddenElement.setAttribute('value', ''); // reset value
 			}
-		} catch(e) {}
+		} catch(e) {
+			hiddenElement.setAttribute('value', ''); // reset value
+		}
 	}
 
 	/**

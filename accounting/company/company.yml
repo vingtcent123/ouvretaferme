@@ -13,6 +13,12 @@ GenericAccount:
     ["class"]
   ]
 
+# Recommandations fiscales pour les durées d'amortissement, sinon : amortissement dérogatoire
+AmortizationDuration:
+  class: text8(1, null)
+  durationMin: int(0, null) # en années
+  durationMax: int(0, null) # en années
+
 JournalCode:
   id: serial32
   name: text8(1, null) @collate(general)

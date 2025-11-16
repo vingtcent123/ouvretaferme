@@ -39,7 +39,6 @@ class AccountSetting extends \Settings {
 	const LOSS_CLASS = '129';
 	const GRANT_ASSET_CLASS = '13';
 	const EQUIPMENT_GRANT_CLASS = '131'; // Subventions d'équipement octroyée
-	const NON_AMORTIZABLE_ASSET_CLASS = '2125';
 
 	// CLASSES GÉNÉRALES
 	const CAPITAL_GENERAL_CLASS = 1;
@@ -53,7 +52,13 @@ class AccountSetting extends \Settings {
 	// IMMOBILISATIONS
 	const INTANGIBLE_ASSETS_CLASS = 20; // Immobilisations incorporelles
 	const TANGIBLE_ASSETS_CLASS = 21; // Immobilisations corporelles
-	
+
+	// Immos non amortissables
+	const ASSET_LEASEHOLD_RIGHTS_CLASS = 206; // Droit au bail
+	const ASSET_GOODWILL_CLASS = 207; // Fonds commercial
+	const ASSET_LANDS_CLASS = 211; // Terrains
+	const NON_AMORTIZABLE_IMPROVEMENTS_CLASS = '2125';
+
 	// AMORTISSEMENTS, DÉPRÉCIATIONS ET PROVISIONS
 	const PROVISION_CLASS = 15;
 	const INVESTMENT_GRANT_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
@@ -99,7 +104,7 @@ class AccountSetting extends \Settings {
 	const PRODUCT_OTHER_CLASS = '758'; // Indemnités et autres produits
 	const PRODUCT_FINANCIAL_ACCOUNT_CLASS = 76;
 	const PRODUCT_EXCEPTIONAL_ACCOUNT_CLASS = 77;
-	const PRODUCT_ASSET_VALUE_CLASS = '775'; // Produits des cessions d'éléments d'actif
+	const PRODUCT_ASSET_VALUE_CLASS = '757'; // Produits des cessions d'éléments d'actif
 
 	// FINANCE
 	const BANK_ACCOUNT_CLASS = '512';

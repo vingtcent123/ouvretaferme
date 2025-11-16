@@ -49,12 +49,12 @@ class AssetModel extends \ModuleModel {
 			'account' => ['element32', 'account\Account', 'cast' => 'element'],
 			'accountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'value' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
-			'amortizableBase' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
+			'residualValue' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'economicMode' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::DEGRESSIVE, \asset\Asset::WITHOUT], 'cast' => 'enum'],
-			'economicDuration' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'economicDuration' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'fiscalMode' => ['enum', [\asset\Asset::LINEAR, \asset\Asset::DEGRESSIVE, \asset\Asset::WITHOUT], 'cast' => 'enum'],
-			'fiscalDuration' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'fiscalDuration' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'isExcess' => ['bool', 'cast' => 'bool'],
 			'acquisitionDate' => ['date', 'cast' => 'string'],
 			'startDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -68,7 +68,7 @@ class AssetModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'accountLabel', 'value', 'amortizableBase', 'description', 'economicMode', 'economicDuration', 'fiscalMode', 'fiscalDuration', 'isExcess', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'account', 'accountLabel', 'value', 'residualValue', 'description', 'economicMode', 'economicDuration', 'fiscalMode', 'fiscalDuration', 'isExcess', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -81,6 +81,9 @@ class AssetModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'residualValue' :
+				return 0;
 
 			case 'isExcess' :
 				return FALSE;
@@ -151,8 +154,8 @@ class AssetModel extends \ModuleModel {
 		return $this->where('value', ...$data);
 	}
 
-	public function whereAmortizableBase(...$data): AssetModel {
-		return $this->where('amortizableBase', ...$data);
+	public function whereResidualValue(...$data): AssetModel {
+		return $this->where('residualValue', ...$data);
 	}
 
 	public function whereDescription(...$data): AssetModel {

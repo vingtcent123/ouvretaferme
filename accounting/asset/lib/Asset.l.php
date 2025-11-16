@@ -4,19 +4,56 @@ namespace asset;
 class AssetLib extends \asset\AssetCrud {
 	public static function getPropertiesCreate(): array {
 		return [
-			'acquisitionDate', 'startDate',
+			'acquisitionDate',
 			'account', 'accountLabel',
-			'value', 'amortizableBase',
+			'value', 'residualValue',
 			'economicMode', 'fiscalMode',
+			'startDate', // Doit venir après les modes (pour le check)
 			'description',
 			'duration', 'economicDuration', 'fiscalDuration',
+			'isExcess',
 		];
+	}
+
+	public static function isOutOfDurationRange(Asset $eAsset, string $type): bool {
+
+		$cAmortizationDuration = \company\AmortizationDurationLib::getAll();
+
+		if($cAmortizationDuration->offsetExists((int)mb_substr($eAsset['accountLabel'], 0, 4))) {
+			$eAmortizationDuration = $cAmortizationDuration->offsetGet((int)mb_substr($eAsset['accountLabel'], 0, 4));
+		} else if($cAmortizationDuration->offsetExists((int)mb_substr($eAsset['accountLabel'], 0, 3))) {
+			$eAmortizationDuration = $cAmortizationDuration->offsetGet((int)mb_substr($eAsset['accountLabel'], 0, 3));
+		} else {
+			return FALSE;
+		}
+
+		return (
+			$eAsset[$type.'Duration'] < $eAmortizationDuration['durationMin'] * 12 * (1 - AssetSetting::AMORTIZATION_DURATION_TOLERANCE) or
+			$eAsset[$type.'Duration'] > $eAmortizationDuration['durationMax'] * 12 * (1 + AssetSetting::AMORTIZATION_DURATION_TOLERANCE)
+		);
 	}
 
 	public static function create(Asset $e): void {
 
 		// Calculate endDate
 		$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
+
+		// Set isExcess value
+		// On vérifie :
+		// - si une valeur résiduelle est indiquée
+		// - si economicMode != fiscalMode
+		// - sinon, si la durée d'amortissement économique est hors de la tranche des durées recommandées
+		if($e['economicMode'] === Asset::WITHOUT and $e['fiscalMode'] === Asset::WITHOUT) {
+			$isExcess = FALSE;
+		} else if($e['economicMode'] !== $e['fiscalMode']) {
+			$isExcess = TRUE;
+		} else if($e['residualValue'] > 0) {
+			$isExcess = TRUE;
+		} else {
+			$isExcess = self::isOutOfDurationRange($e, 'economic');
+		}
+
+		$e['isExcess'] = $isExcess;
 
 		Asset::model()->insert($e);
 
@@ -145,12 +182,14 @@ class AssetLib extends \asset\AssetCrud {
 			->getCollection();
 	}
 
+	public static function isGrant(string $class): bool {
+
+			return mb_substr($class, 0, mb_strlen(\account\AccountSetting::GRANT_ASSET_CLASS)) === \account\AccountSetting::GRANT_ASSET_CLASS;
+	}
+
 	public static function isAsset(string $class): bool {
 
-		return (
-			mb_substr($class, 0, mb_strlen(\account\AccountSetting::GRANT_ASSET_CLASS)) === \account\AccountSetting::GRANT_ASSET_CLASS or
-			mb_substr($class, 0, mb_strlen(\account\AccountSetting::ASSET_GENERAL_CLASS)) === (string)\account\AccountSetting::ASSET_GENERAL_CLASS
-		);
+		return mb_substr($class, 0, mb_strlen(\account\AccountSetting::ASSET_GENERAL_CLASS)) === (string) \account\AccountSetting::ASSET_GENERAL_CLASS;
 
 	}
 
@@ -175,7 +214,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->beginTransaction();
 
-		if(\account\ClassLib::isFromClass($eAsset['accountLabel'], \account\AccountSetting::NON_AMORTIZABLE_ASSET_CLASS) === FALSE) {
+		if(\account\ClassLib::isFromClass($eAsset['accountLabel'], \account\AccountSetting::NON_AMORTIZABLE_IMPROVEMENTS_CLASS) === FALSE) {
 
 			// Étape 1 : On calcule la dotation aux amortissements
 			AmortizationLib::amortize($eFinancialYear, $eAsset, $endDate);
@@ -193,7 +232,7 @@ class AssetLib extends \asset\AssetCrud {
 			\journal\OperationLib::createFromValues($values);
 
 			// 2.b) VNC au débit
-			$netAccountingValue = round($eAsset['amortizableBase'] - $accumulatedAmortizationsValue, 2);
+			$netAccountingValue = round(self::getAmortizableBase($eAsset, 'economic') - $accumulatedAmortizationsValue, 2);
 			$eAccountVNC = \account\AccountLib::getByClass(\account\AccountSetting::CHARGE_ASSET_NET_VALUE_CLASS);
 			$values = [
 				'account' => $eAccountVNC['id'],
@@ -217,7 +256,7 @@ class AssetLib extends \asset\AssetCrud {
 				'date' => $endDate,
 				'paymentDate' => $endDate,
 				'description' => new AssetUi()->getTranslation('asset').' '.$eAsset['description'],
-				'amount' => $eAsset['amortizableBase'],
+				'amount' => self::getAmortizableBase($eAsset, 'economic'),
 				'type' => \journal\OperationElement::CREDIT,
 				'asset' => $eAsset,
 				'financialYear' => $eFinancialYear['id'],
@@ -298,5 +337,13 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	public static function getAmortizableBase(Asset $eAsset, string $type): float {
+
+		if($type === 'economic') {
+			return round($eAsset['value'] - $eAsset['residualValue'], 2);
+		} else {
+			return $eAsset['value'];
+		}
+	}
 }
 ?>

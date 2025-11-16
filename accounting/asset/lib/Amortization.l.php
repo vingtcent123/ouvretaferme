@@ -6,10 +6,29 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	const DAYS_IN_MONTH = 30;
 	const DAYS_IN_YEAR = 360;
 
-
 	public static function isAmortizable(Asset $eAsset): bool {
 
-		return substr($eAsset['accountLabel'], 0, mb_strlen(\account\AccountSetting::NON_AMORTIZABLE_ASSET_CLASS)) !== \account\AccountSetting::NON_AMORTIZABLE_ASSET_CLASS;
+		$nonAmortizableAssetsClasses = [
+			\account\AccountSetting::NON_AMORTIZABLE_IMPROVEMENTS_CLASS,
+			\account\AccountSetting::ASSET_LEASEHOLD_RIGHTS_CLASS,
+			\account\AccountSetting::ASSET_GOODWILL_CLASS,
+			\account\AccountSetting::ASSET_LANDS_CLASS,
+		];
+
+		// Pas une classe d'immo => non
+		if(substr($eAsset['accountLabel'], 0, mb_strlen((string)\account\AccountSetting::ASSET_GENERAL_CLASS)) !== (string)\account\AccountSetting::ASSET_GENERAL_CLASS) {
+			return FALSE;
+		}
+
+		foreach($nonAmortizableAssetsClasses as $class) {
+
+			$stringClass = (string)$class;
+			if(substr($eAsset['accountLabel'], 0, mb_strlen($stringClass)) === $stringClass) {
+				return FALSE;
+			}
+
+		}
+		return TRUE;
 
 	}
 
@@ -47,6 +66,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	}
 
 	private static function computeLinearAmortizationUntil(Asset $eAsset, string $endDate): float {
+
+		if($eAsset['economicMode'] === Asset::WITHOUT) {
+			return 0;
+		}
 
 		$table = self::computeLinearTable($eAsset);
 
@@ -198,6 +221,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$endedDate = $eAsset['endedDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
+		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+
 		for($i = 0; $i <= $durationInYears; $i++) {
 
 			$eFinancialYearCurrent = $cFinancialYearAll->find(fn($e) => $e['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
@@ -221,13 +246,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 				switch($i) {
 					case 0:
-						$amortization = round($eAsset['amortizableBase'] * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
 					case $durationInYears:
-						$amortization = round($eAsset['amortizableBase'] - $amortizationCumulated, 2);
+						$amortization = round($amortizableBase - $amortizationCumulated, 2);
 						break;
 					default:
-						$amortization = round($eAsset['amortizableBase'] * $rate / 100, 2);
+						$amortization = round($amortizableBase * $rate / 100, 2);
 				}
 
 			} else {
@@ -241,18 +266,18 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$table[] = [
 				'year' => $i + 1,
 				'financialYear' => $eFinancialYear,
-				'base' => $eAsset['amortizableBase'],
+				'base' => $amortizableBase,
 				'rate' => $rate,
 				'amortizationValue' => $amortization,
 				'amortizationValueCumulated' => round($amortizationCumulated, 2),
-				'endValue' => round($eAsset['amortizableBase'] - $amortizationCumulated),
+				'endValue' => round($amortizableBase - $amortizationCumulated),
 				'amortization' => $eAmortization,
 			];
 
 			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
 
 			// On n'amortit pas + que la valeur initiale
-			if($amortizationCumulated >= $eAsset['amortizableBase']) {
+			if($amortizationCumulated >= $amortizableBase) {
 				break;
 			}
 
@@ -269,8 +294,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	}
 
 	private static function getDegressiveCoefficient(int $duration): float {
-
-		$baseLinearRate = self::getLinearRate($duration);
 
 		if($duration === 3 or $duration === 4) {
 
@@ -304,6 +327,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$currentDate = $eAsset['startDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
+		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+
 		for($i = 0; $i <= $durationInYears / 12; $i++) {
 
 			$eFinancialYearCurrent = $cFinancialYearAll->find(fn($e) => $e['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
@@ -327,13 +352,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 				switch($i) {
 					case 0:
-						$amortization = round(($eAsset['amortizableBase']) * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$amortization = round(($amortizableBase) * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
 						break;
 					case $durationInYears:
-						$amortization = round(($eAsset['amortizableBase'] - $amortizationCumulated), 2);
+						$amortization = round(($amortizableBase - $amortizationCumulated), 2);
 						break;
 					default:
-						$amortization = round(($eAsset['amortizableBase'] - $amortizationCumulated) * $rate / 100, 2);
+						$amortization = round(($amortizableBase - $amortizationCumulated) * $rate / 100, 2);
 				}
 
 			} else {
@@ -342,7 +367,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 			}
 
-			$base = round($eAsset['amortizableBase'] - $amortizationCumulated, 2);
+			$base = round($amortizableBase - $amortizationCumulated, 2);
 			$amortizationCumulated += $amortization;
 
 			$table[] = [
@@ -354,7 +379,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'rate' => $rate,
 				'amortizationValue' => $amortization,
 				'amortizationValueCumulated' => round($amortizationCumulated, 2),
-				'endValue' => round($eAsset['amortizableBase'] - $amortizationCumulated),
+				'endValue' => round($amortizableBase - $amortizationCumulated),
 				'amortization' => $eDepreciation,
 			];
 

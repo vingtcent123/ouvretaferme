@@ -19,11 +19,20 @@ new \asset\AssetPage(function($data) {
 
 		$data->e['account'] = $eAccount;
 
+		// Références de durées
+		$data->e['cAmortizationDuration'] = \company\AmortizationDurationLib::getAll();
+
 		throw new ViewAction($data);
 
 	})
 	->doCreate(function($data) {
-		throw new ReloadAction('asset', 'Asset::created');
+
+		if(\asset\AssetLib::isAsset($data->e['accountLabel'])) {
+			throw new ReloadAction('asset', 'Asset::asset.created');
+		} elseif(\asset\AssetLib::isGrant($data->e['accountLabel'])) {
+			throw new ReloadAction('asset', 'Asset::grant.created');
+		}
+
 	})
 	->post('query', function($data) {
 

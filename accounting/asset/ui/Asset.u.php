@@ -59,9 +59,13 @@ Class AssetUi {
 
 	public function create(\farm\Farm $eFarm, Asset $eAsset = new Asset()): \Panel {
 
+		$script = '<script type="text/javascript">';
+			$script .= 'Asset.initFiscalDurations('.json_encode($eAsset['cAmortizationDuration']).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
+		$script .= '</script>';
+
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = $script;
 
 		$h .= $form->openAjax(\company\CompanyUi::urlAsset($eFarm).'/asset:doCreate', ['id' => 'asset-asset-create', 'autocomplete' => 'off']);
 
@@ -79,15 +83,38 @@ Class AssetUi {
 			$d->attributes['data-account-label'] = $form->getId();
 		}]);
 
-		$h .= $form->dynamicGroups($eAsset, ['value*', 'amortizableBase*', 'acquisitionDate*', 'startDate*']);
+		$h .= $form->dynamicGroups($eAsset, ['value*', 'residualValue', 'acquisitionDate*', 'startDate']);
 		$h .= '<h3>'.s("Amortissement économique").'</h3>';
 		$h .= '<div class="util-block bg-background-light">';
-			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration*']);
+			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration'], [
+				'economicDuration' => function($d) use($form) {
+					$d->group += ['class' => 'company_form_group-with-tip'];
+					$append = '<a data-economic-duration-suggested class="btn btn-outline-warning hide" data-dropdown="bottom" data-dropdown-hover="true">';
+						$append .= \Asset::icon('exclamation-triangle');
+					$append .= '</a>';
+					$append .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+						$append .= '<span class="dropdown-item">';
+							$append .= '<span data-suggestion-one-year class="hide">'.s("La durée recommandée par l'administration fiscale est <br />de {minYear} ans, soit, avec la marge de tolérance, <br /> entre <b>{minMois} et {maxMois}</b> mois. Il y aura donc des amortissements <br />dérogatoires pour cette immobilisation.", [
+								'minYear' => '<span data-min-year></span>',
+								'minMois' => '<span data-min-month></span>',
+								'maxMois' => '<span data-max-month></span>',
+							]).'</span>';
+							$append .= '<span data-suggestion-several-years class="hide">'.s("La durée recommandée par l'administration fiscale est comprise <br />entre {minYear} et {maxYear} ans, soit, avec la marge de tolérance, <br />entre <b>{minMois} et {maxMois}</b> mois. Il y aura donc des amortissements <br />dérogatoires pour cette immobilisation.", [
+								'minYear' => '<span data-min-year></span>',
+								'maxYear' => '<span data-max-year></span>',
+								'minMois' => '<span data-min-month></span>',
+								'maxMois' => '<span data-max-month></span>',
+							]).'</span>';
+						$append .= '</span>';
+					$append .= '</div>';
+					$d->after = $append;
+				}
+			]);
 		$h .= '</div>';
 
 		$h .= '<h3>'.s("Amortissement fiscal").'</h3>';
 		$h .= '<div class="util-block bg-background-light">';
-			$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration*']);
+			$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration']);
 		$h .= '</div>';
 
 		$h .= $form->group(
@@ -98,7 +125,7 @@ Class AssetUi {
 
 		return new \Panel(
 			id: 'panel-asset-create',
-			title: s("Ajouter une immobilisation"),
+			title: s("Ajouter une immobilisation ou une subvention"),
 			body: $h,
 			close: 'passthrough',
 		);
@@ -131,7 +158,7 @@ Class AssetUi {
 			if($eAsset['endedDate'] !== NULL) {
 				$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Fin d'amortissement : {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</div>';
 			}
-			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Val. : {value} / Base amortissable : {base} / Amort. cumulés : {cumulated}", ['value' => \util\TextUi::money($eAsset['value']), 'base' => \util\TextUi::money($eAsset['amortizableBase']), 'cumulated' => \util\TextUi::money($cumulatedAmortization)]).'</div>';
+			$itemHtml .= '<div class="ml-1 color-muted font-sm">'.s("Val. : {value} / Base amortissable : {base} / Amort. cumulés : {cumulated}", ['value' => \util\TextUi::money($eAsset['value']), 'base' => \util\TextUi::money(AssetLib::getAmortizableBase($eAsset, 'economic')), 'cumulated' => \util\TextUi::money($cumulatedAmortization)]).'</div>';
 		$itemHtml .= '</div>';
 
 		return [
@@ -179,6 +206,8 @@ Class AssetUi {
 
 					foreach($cAsset as $eAsset) {
 
+						$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+
 						$h .= '<tr>';
 							$h .= '<td>';
 								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
@@ -208,11 +237,11 @@ Class AssetUi {
 							$h .= '</td>';
 							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
 							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['value'], '', 2).'</td>';
-							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['amortizableBase'], '', 2).'</td>';
+							$h .= '<td class="text-end highlight-stick-left">'.$this->number($amortizableBase, '', 2).'</td>';
 
 						$h .= '</tr>';
 						$total += $eAsset['value'];
-						$totalAmortizable += $eAsset['amortizableBase'];
+						$totalAmortizable += $amortizableBase;
 
 					}
 
@@ -365,6 +394,8 @@ Class AssetUi {
 
 		}
 
+		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+
 		$h = '<div class="util-block stick-xs bg-background-light">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Compte").'</dt>';
@@ -378,9 +409,16 @@ Class AssetUi {
 				$h .= '<dt>'.self::p('value')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
 				$h .= '<dt>'.self::p('amortizableBase')->label.'</dt>';
-				$h .= '<dd>'.\util\TextUi::money($eAsset['amortizableBase']).'</dd>';
+				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
 				$h .= '<dt>'.self::p('economicMode')->label.'</dt>';
-				$h .= '<dd>'.AssetUi::p('economicMode')->values[$eAsset['economicMode']].'</dd>';
+				$h .= '<dd>';
+					$h .= AssetUi::p('economicMode')->values[$eAsset['economicMode']];
+					if($eAsset['isExcess']) {
+						$h .= ' ('.s("avec amortissement dérogatoire").')';
+					}
+				$h .= '</dd>';
+				$h .= '<dt>'.self::p('residualValue')->label.'</dt>';
+				$h .= '<dd>'.\util\TextUi::money($eAsset['residualValue']).'</dd>';
 				$h .= '<dt>'.self::p('economicDuration')->label.'</dt>';
 				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).' ('.s("soit {value}", self::getDurationInYears($eAsset['economicDuration'])).')</dd>';
 				$h .= '<dt>'.self::p('status')->label.'</dt>';
@@ -392,10 +430,10 @@ Class AssetUi {
 				$h .= '</dd>';
 				if($eAsset['endedDate'] !== NULL) {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($eAsset['amortizableBase'] - $amortizationCumulated)).'</dd>';
+					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated)).'</dd>';
 				} elseif($eFinancialYearLast->notEmpty()) {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($eAsset['amortizableBase'] - $amortizationCumulated)).'</dd>';
+					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated)).'</dd>';
 				}
 			$h .= '</dl>';
 		$h .= '</div>';
@@ -418,18 +456,19 @@ Class AssetUi {
 
 		$assetAccountLabel = rtrim($eAsset['accountLabel'], '0');
 		$amortizationAccountLabel = \account\ClassLib::getAmortizationClassFromClass($assetAccountLabel);
+		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
 
 		$amortizationCumulated = $eAsset['cAmortization']->sum('amount');
 
 		$h .= '<div class="util-info">';
-			if($amortizationCumulated < $eAsset['amortizableBase']) {
+			if($amortizationCumulated < $amortizableBase) {
 				$h .= s("En validant ce formulaire, deux mouvements seront créés automatiquement : ");
 			} else {
 				$h .= s("En validant ce formulaire, un mouvement sera créée automatiquement : ");
 			}
 
 			$h .= '<ul>';
-				if($amortizationCumulated < $eAsset['amortizableBase']) {
+				if($amortizationCumulated < $amortizableBase) {
 					$h .= '<li>';
 						$h .= s("Écritures de la <b>dotation complémentaire</b> jusqu'à la date de sortie de l'immobilisation (débit 681, crédit {value})", $amortizationAccountLabel);
 					$h .= '</li>';
@@ -716,8 +755,7 @@ Class AssetUi {
 			'status' => s("Statut"),
 			'endDate' => s('Date de fin'),
 			'description' => s('Libellé'),
-			'grant' => s('Subvention'),
-			'asset' => s('Immobilisation liée'),
+			'residualValue' => s('Valeur résiduelle'),
 		]);
 
 		switch($property) {
@@ -728,7 +766,7 @@ Class AssetUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefixes' => [\account\AccountSetting::ASSET_GENERAL_CLASS, \account\AccountSetting::GRANT_ASSET_CLASS]]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefixes' => [\account\AccountSetting::INTANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_ASSETS_CLASS, \account\AccountSetting::GRANT_ASSET_CLASS]]);
 				break;
 
 			case 'accountLabel':
@@ -746,7 +784,6 @@ Class AssetUi {
 				break;
 
 			case 'value':
-			case 'amortizableBase':
 				$d->field = 'calculation';
 				$d->append = function(\util\FormUi $form, Asset $e) {
 					return $form->addon(s("€"));
@@ -761,6 +798,14 @@ Class AssetUi {
 					AssetElement::DEGRESSIVE => s("Dégressif"),
 					AssetElement::WITHOUT => s("Sans"),
 				];
+				break;
+
+			case 'residualValue':
+				$d->field = 'calculation';
+				$d->append = function(\util\FormUi $form, Asset $e) {
+					return $form->addon(s("€"));
+				};
+				$d->after = \util\FormUi::info(s("La valeur résiduelle n'est prise en compte que dans l'amortissement économique et donnera lieu à des amortissements dérogatoires."));
 				break;
 
 			case 'status':

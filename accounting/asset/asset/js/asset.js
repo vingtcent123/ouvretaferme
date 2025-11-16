@@ -34,6 +34,26 @@ document.delegateEventListener('change', '[data-field="economicMode"]', function
         qs('[name="fiscalMode"][value="' + selectedEconomicMode + '"]').checked = true;
     }
 
+    if(selectedEconomicMode === 'without') {
+        qs('[name="economicDuration"]').value = '';
+        qs('[name="economicDuration"]').setAttribute('disabled', 'disabled');
+    } else {
+        qs('[name="economicDuration"]').removeAttribute('disabled');
+    }
+
+});
+
+document.delegateEventListener('change', '[data-field="fiscalMode"]', function() {
+
+    const selectedFiscalMode = qs('[name="fiscalMode"]:checked').value;
+
+    if(selectedFiscalMode === 'without') {
+        qs('[name="fiscalDuration"]').value = '';
+        qs('[name="fiscalDuration"]').setAttribute('disabled', 'disabled');
+    } else {
+        qs('[name="fiscalDuration"]').removeAttribute('disabled');
+    }
+
 });
 
 document.delegateEventListener('change', '[name="economicDuration"]', function() {
@@ -42,9 +62,33 @@ document.delegateEventListener('change', '[name="economicDuration"]', function()
         qs('[name="fiscalDuration"]').value = qs('[name="economicDuration"]').value;
     }
 
+    Asset.checkEconomicDuration();
+
 });
 
+document.delegateEventListener('autocompleteSelect', '[data-account="asset-asset-create"]', function(e) {
+
+    if(e.detail.value.length === 0) {
+
+        const element = qs('[data-wrapper="accountLabel"] a[class="autocomplete-empty"]');
+        AutocompleteField.empty(element);
+        Asset.checkEconomicDuration();
+    }
+
+});
+
+document.delegateEventListener('autocompleteSelect', '[data-account-label="asset-asset-create"]', function(e) {
+
+    Asset.setRecommendations(e.detail.value);
+    Asset.checkEconomicDuration();
+
+});
+
+
 class Asset {
+
+    static durations = null;
+    static tolerance = 0;
 
     static onchangeStatus(element) {
 
@@ -59,6 +103,69 @@ class Asset {
         }
 
     }
+
+    static initFiscalDurations(json, tolerance) {
+
+        Asset.durations = json;
+        Asset.tolerance = tolerance;
+    }
+
+    static setRecommendations(accountLabel) {
+
+        const account4 = accountLabel.substring(0, 4);
+        const account3 = accountLabel.substring(0, 3);
+
+        const fiscalDuration = Asset.durations[account4] !== undefined ? Asset.durations[account4] : Asset.durations[account3];
+
+        qs('[data-economic-duration-suggested]').hide();
+
+        if(fiscalDuration === undefined) {
+            qs('[name="fiscalDuration"]').setAttribute('min', 12); // pas d'immo de moins de 12 mois
+            qs('[name="fiscalDuration"]').removeAttribute('max');
+            qs('[name="fiscalDuration"]').value = '';
+            return;
+        }
+
+        qsa('[data-min-year]', node => node.innerHTML = fiscalDuration.durationMin);
+        qsa('[data-max-year]', node => node.innerHTML = fiscalDuration.durationMax);
+        qsa('[data-min-month]', node => node.innerHTML = parseInt(fiscalDuration.durationMin * 12 * (1 - Asset.tolerance)));
+        qsa('[data-max-month]', node => node.innerHTML = parseInt(fiscalDuration.durationMax * 12 * (1 + Asset.tolerance)));
+
+        qs('[name="fiscalDuration"]').setAttribute('min', parseInt(fiscalDuration.durationMin * 12));
+        qs('[name="fiscalDuration"]').setAttribute('max', parseInt(fiscalDuration.durationMax * 12));
+
+        if(parseInt(fiscalDuration.durationMin) === parseInt(fiscalDuration.durationMax)) {
+            qs('[name="fiscalDuration"]').value = parseInt(fiscalDuration.durationMax * 12);
+        }
+
+    }
+
+    static checkEconomicDuration() {
+
+        qs('[data-economic-duration-suggested]').hide();
+
+        const economicDuration = parseInt(qs('[name="economicDuration"]').value);
+        if(!economicDuration) {
+            return;
+        }
+        const min = parseInt(qs('[data-min-month]').innerHTML);
+        const max = parseInt(qs('[data-max-month]').innerHTML);
+
+        if(economicDuration < min || economicDuration > max) {
+
+            qs('[data-economic-duration-suggested]').removeHide();
+            qs('[data-suggestion-one-year]').hide();
+            qs('[data-suggestion-several-years]').hide();
+
+            if(parseInt(qs('[data-min-year]').innerHTML) === parseInt(qs('[data-max-year]').innerHTML)) {
+                qs('[data-suggestion-one-year]').removeHide();
+            } else {
+                qs('[data-suggestion-several-years]').removeHide();
+            }
+        }
+
+    }
+
 }
 
 class DepreciationList {

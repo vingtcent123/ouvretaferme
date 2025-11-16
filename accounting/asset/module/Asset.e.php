@@ -57,14 +57,11 @@ class Asset extends AssetElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			/*->setCallback('startDate.empty', function(?string $startDate): bool {
-
-				$this->expects(['type']);
-
-				return in_array($this['type'], [Asset::LINEAR, Asset::DEGRESSIVE]) ? $startDate !== NULL : TRUE;
-
-			})*/
 			->setCallback('account.check', function(?\account\Account $eAccount): bool {
+
+				if($eAccount->empty()) {
+					return FALSE;
+				}
 
 				$eAccount = \account\AccountLib::getById($eAccount['id']);
 
@@ -106,13 +103,134 @@ class Asset extends AssetElement {
 				return FALSE;
 
 			})
-			->setCallback('amortizableBase.check', function(float $amortizableBase) use($p): bool {
+			->setCallback('amortizableBase.checkValue', function(?float $amortizableBase) use($p): bool {
 
-				if($p->isBuilt('value') === FALSE) {
+				if($p->isBuilt('value') === FALSE or $amortizableBase === NULL) {
 					return TRUE;
 				}
 
 				return($this['value'] >= $amortizableBase);
+
+			})
+			->setCallback('economicMode.incompatible', function(?string $economicMode) use($p): bool {
+
+				if(
+					$p->isBuilt('accountLabel') === FALSE or $economicMode === NULL or $economicMode === Asset::WITHOUT or
+					AssetLib::isGrant($this['accountLabel'])
+				) {
+					return TRUE;
+				}
+
+				return AmortizationLib::isAmortizable($this);
+
+			})
+			->setCallback('economicDuration.unexpected', function(?int $economicDuration) use($p): bool {
+
+				if(
+					$p->isBuilt('economicMode') === FALSE or
+					$this['economicMode'] !== Asset::WITHOUT
+				) {
+					return TRUE;
+				}
+
+				return ($economicDuration === NULL);
+
+			})
+			->setCallback('economicDuration.missing', function(?int $economicDuration) use($p): bool {
+
+				if(
+					$p->isBuilt('economicMode') === FALSE or
+					$this['economicMode'] === Asset::WITHOUT
+				) {
+					return TRUE;
+				}
+
+				return ($economicDuration !== NULL);
+
+			})
+			->setCallback('economicDuration.degressive', function(?int $economicDuration) use($p): bool {
+
+				if(
+					$p->isBuilt('economicMode') === FALSE or
+					$this['economicMode'] !== Asset::DEGRESSIVE
+				) {
+					return TRUE;
+				}
+
+				return ($economicDuration >= 36);
+
+			})
+			->setCallback('fiscalMode.incompatible', function(?string $fiscalMode) use($p): bool {
+
+				if(
+					$p->isBuilt('accountLabel') === FALSE or $fiscalMode === NULL or $fiscalMode === Asset::WITHOUT or
+					AssetLib::isGrant($this['accountLabel'])
+				) {
+					return TRUE;
+				}
+
+				return AmortizationLib::isAmortizable($this);
+
+			})
+			->setCallback('fiscalDuration.unexpected', function(?int $fiscalDuration) use($p): bool {
+
+				if(
+					$p->isBuilt('fiscalMode') === FALSE or
+					$this['fiscalMode'] !== Asset::WITHOUT
+				) {
+					return TRUE;
+				}
+
+				return ($fiscalDuration === NULL);
+
+			})
+			->setCallback('fiscalDuration.missing', function(?int $fiscalDuration) use($p): bool {
+
+				if(
+					$p->isBuilt('fiscalMode') === FALSE or
+					$this['fiscalMode'] === Asset::WITHOUT
+				) {
+					return TRUE;
+				}
+
+				return ($fiscalDuration !== NULL);
+
+			})
+			->setCallback('fiscalDuration.degressive', function(?int $fiscalDuration) use($p): bool {
+
+				if(
+					$p->isBuilt('fiscalMode') === FALSE or
+					$this['fiscalMode'] !== Asset::DEGRESSIVE
+				) {
+					return TRUE;
+				}
+
+				return ($fiscalDuration >= 36);
+
+			})
+			->setCallback('fiscalDuration.range', function(?int $fiscalDuration) use($p): bool {
+
+				if(
+					$p->isBuilt('accountLabel') === FALSE or
+					$p->isBuilt('fiscalMode') === FALSE or
+					$this['fiscalMode'] === Asset::WITHOUT
+				) {
+					return TRUE;
+				}
+
+				$this['fiscalDuration'] = $fiscalDuration;
+				return AssetLib::isOutOfDurationRange($this, 'fiscal') === FALSE;
+
+			})
+			->setCallback('startDate.missing', function(?string $startDate) use($p): bool {
+
+				$p->expectsBuilt('economicMode');
+
+				if($p->isBuilt(('economicMode')) === FALSE or $this['economicMode'] !== Asset::LINEAR) {
+					return TRUE;
+				}
+
+				return $startDate !== NULL;
 
 			})
 			;

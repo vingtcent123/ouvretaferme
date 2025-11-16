@@ -4,13 +4,12 @@ Asset:
   accountLabel: text8(1, null) @collate(general)
   # Valeur d'acquisition
   value: decimal(8, 2, 0, null)
-  # Base amortissable
-  amortizableBase: decimal(8, 2, 0, null)
+  residualValue: decimal(8, 2, 0, null) = 0
   description: text8(1, null) @collate(general)
   economicMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
-  economicDuration: int(0, null) # en mois
+  economicDuration: ?int(0, null) # en mois
   fiscalMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
-  fiscalDuration: int(0, null) # en mois
+  fiscalDuration: ?int(0, null) # en mois
   isExcess: bool = false # Si c'est un amortissement dérogatoire
   # Date d'achat
   acquisitionDate: date

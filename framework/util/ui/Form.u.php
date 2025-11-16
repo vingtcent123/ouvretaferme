@@ -144,8 +144,12 @@ class FormUi {
 		unset($attributes['wrapper']);
 		$this->nextWrapper = NULL;
 
-		if($wrapper !== NULL and substr($wrapper, -2) === '[]') {
-			$wrapper = substr($wrapper, 0, -2);
+		if($wrapper !== NULL) {
+			if(substr($wrapper, -2) === '[]') {
+				$wrapper = substr($wrapper, 0, -2);
+			} else if(substr($wrapper, -strlen('-calculation')) === '-calculation') {
+				$wrapper = substr($wrapper, 0, -strlen('-calculation'));
+			}
 		}
 
 		$class = $attributes['class'] ?? '';
