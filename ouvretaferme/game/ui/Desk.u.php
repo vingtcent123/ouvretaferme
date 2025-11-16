@@ -9,7 +9,7 @@ class DeskUi {
 
 		for($tile = 1; $tile <= 16; $tile++) {
 			$content .= '<div class="game-tile game-tile-'.$tile.'">';
-				$content .= '<a href="/game/:planting?board=1&tile='.$tile.'" class="game-tile-action">'.\Asset::icon('plus-lg').'</a>';
+				$content .= '<a href="/game/:planting?board=1&tile='.$tile.'" class="game-tile-action">+</a>';
 			$content .= '</div>';
 		}
 
@@ -19,7 +19,7 @@ class DeskUi {
 
 	public function get(string $content = '', ?int $image = NULL): string {
 
-		$image ??= mt_rand(1, 24);
+		$image ??= mt_rand(1, 15);
 
 		$h = '<div class="game-desk" style="background-image: url('.\Asset::getPath('game', 'tiles-'.$image.'.jpg', 'image').')">';
 			$h .= $content;

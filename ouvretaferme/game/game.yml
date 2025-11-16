@@ -8,8 +8,9 @@ Growing:
   bonusWatering: ?int8(0, null)
 
 Food:
-  growing: game\Growing
-  harvest: int16(0, null) = 0
+  growing: ?game\Growing
+  current: int16(0, null) = 0
+  total: int16(0, null) = 0
 
 History:
   user: user\User

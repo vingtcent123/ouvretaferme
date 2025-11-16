@@ -36,12 +36,13 @@ class FoodModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
-			'growing' => ['element32', 'game\Growing', 'cast' => 'element'],
-			'harvest' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'growing' => ['element32', 'game\Growing', 'null' => TRUE, 'cast' => 'element'],
+			'current' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'total' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'growing', 'harvest'
+			'growing', 'current', 'total'
 		]);
 
 		$this->propertiesToModule += [
@@ -54,7 +55,10 @@ class FoodModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'harvest' :
+			case 'current' :
+				return 0;
+
+			case 'total' :
 				return 0;
 
 			default :
@@ -76,8 +80,12 @@ class FoodModel extends \ModuleModel {
 		return $this->where('growing', ...$data);
 	}
 
-	public function whereHarvest(...$data): FoodModel {
-		return $this->where('harvest', ...$data);
+	public function whereCurrent(...$data): FoodModel {
+		return $this->where('current', ...$data);
+	}
+
+	public function whereTotal(...$data): FoodModel {
+		return $this->where('total', ...$data);
 	}
 
 
