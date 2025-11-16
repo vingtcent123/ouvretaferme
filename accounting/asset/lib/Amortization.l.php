@@ -537,13 +537,19 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		$amortizationValue = $amortizationEconomicValue;
 		$amortizationExcessValue = 0;
+		$amortizationExcessRecoverValue = 0;
 
 		if($eAsset['isExcess']) {
 
+			$amortizationExcessClass = \account\AccountSetting::EXCESS_AMORTIZATION_CLASS;
+			$eAccountExcessAmortization = \account\AccountLib::getByClass($amortizationExcessClass);
+
 			$amortizationFiscalValue = self::computeAmortizationUntil($eAsset, $endDate, 'fiscal');
 
-			if($amortizationFiscalValue > $amortizationEconomicValue) {
+			if($amortizationFiscalValue > $amortizationEconomicValue) { // Dotation
 				$amortizationExcessValue = $amortizationFiscalValue - $amortizationEconomicValue;
+			} else if($amortizationEconomicValue > $amortizationFiscalValue) { // Reprise
+				$amortizationExcessRecoverValue = $amortizationEconomicValue - $amortizationFiscalValue;
 			}
 		}
 
@@ -593,6 +599,25 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			];
 			\journal\OperationLib::createFromValues($values);
 
+			// Étape 1c : Reprise d'amortissement dérogatoire, on débite 145
+		} else if($amortizationExcessRecoverValue > 0) {
+
+			$description = new AssetUi()->getTranslation(\account\AccountSetting::EXCESS_AMORTIZATION_CLASS).' '.$eAsset['description'];
+			$values = [
+				'account' => $eAccountExcessAmortization['id'],
+				'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortization['class']),
+				'date' => $endDate,
+				'paymentDate' => $endDate,
+				'description' => $description,
+				'amount' => $amortizationExcessRecoverValue,
+				'type' => \journal\OperationElement::DEBIT,
+				'asset' => $eAsset,
+				'financialYear' => $eFinancialYear['id'],
+				'hash' => $hash,
+				'journalCode' => $eAccountExcessAmortization['journalCode'],
+			];
+			\journal\OperationLib::createFromValues($values);
+
 		}
 
 		// Étape 2 : Amortissement, on crédite 28XXXXXX
@@ -606,7 +631,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		// Étape 2b : Amortissement dérogatoire, on crédite 145
 		if($amortizationExcessValue > 0) {
 
-			$amortizationExcessClass = \account\AccountSetting::EXCESS_AMORTIZATION_CLASS;
 			$eAccountExcessAmortization = \account\AccountLib::getByClass($amortizationExcessClass);
 			$description = new AssetUi()->getTranslation($amortizationExcessClass).' '.$eAsset['description'];
 			$values = [
@@ -624,6 +648,27 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			];
 			\journal\OperationLib::createFromValues($values);
 
+
+		// Étape 2c : Reprise d'amortissement dérogatoire, on crédite 787
+		} else if($amortizationExcessRecoverValue > 0) {
+
+			$eAccountExcessRecoveryAmortization = \account\AccountLib::getByClass(\account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION);
+			$description = new AssetUi()->getTranslation(\account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION).' '.$eAsset['description'];
+			$values = [
+				'account' => $eAccountExcessRecoveryAmortization['id'],
+				'accountLabel' => \account\ClassLib::pad($eAccountExcessRecoveryAmortization['class']),
+				'date' => $endDate,
+				'paymentDate' => $endDate,
+				'description' => $description,
+				'amount' => $amortizationExcessRecoverValue,
+				'type' => \journal\OperationElement::CREDIT,
+				'asset' => $eAsset,
+				'financialYear' => $eFinancialYear['id'],
+				'hash' => $hash,
+				'journalCode' => $eAccountExcessRecoveryAmortization['journalCode'],
+			];
+			\journal\OperationLib::createFromValues($values);
+
 		}
 
 		// Étape 3 : Entrée dans la table Amortization
@@ -637,17 +682,17 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		Amortization::model()->insert($eAmortization);
 
-		// Étape 4 : Si l'immobilisation a été entièrement amortie ou n'est plus valide
-		$amortizedValue = Amortization::model()
-	    ->whereAsset($eAsset)
-	    ->getValue(new \Sql('SUM(amount)', 'float'));
-
-		if($eAsset['endDate'] <= $endDate or $amortizedValue >= $eAsset['value']) {
-			Asset::model()->update(
-				$eAsset,
-				['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')],
-			);
-		}
+		// Étape 4 : Mise à jour de l'immobilisation
+		Asset::model()->update(
+			$eAsset,
+			[
+				'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
+				'excessAmortization' => new \Sql('excessAmortization + '.$amortizationExcessValue),
+				'excessRecovery' => new \Sql('excessRecovery + '.$amortizationExcessRecoverValue),
+				'status' => new \Sql('IF(economicAmortization >= value OR endDate <= "'.$endDate.'", "'.Asset::ENDED.'" : status)'),
+				'updatedAt' => new \Sql('NOW()'),
+			]
+		);
 
 	}
 
@@ -863,6 +908,65 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		return $amortizations;
 
+	}
+
+	/**
+	 * Reprise de toutes les dotations dérogatoires
+	 * débite 145
+	 * crédite 787
+	 */
+	public static function recoverExcess(\account\FinancialYear $eFinancialYear, Asset $eAsset, string $endDate): void {
+
+		if($eAsset['excessRecovery'] >= $eAsset['excessAmortization']) {
+			return;
+		}
+
+		$amount = $eAsset['excessAmortization'] - $eAsset['excessRecovery'];
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
+
+		// Débite 145
+		$eAccountExcessAmortization = \account\AccountLib::getByClass(\account\AccountSetting::EXCESS_AMORTIZATION_CLASS);
+		$description = new AssetUi()->getTranslation(\account\AccountSetting::EXCESS_AMORTIZATION_CLASS).' '.$eAsset['description'];
+		$values = [
+			'account' => $amount['id'],
+			'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortization['class']),
+			'date' => $endDate,
+			'paymentDate' => $endDate,
+			'description' => $description,
+			'amount' => $amount,
+			'type' => \journal\OperationElement::CREDIT,
+			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear['id'],
+			'hash' => $hash,
+			'journalCode' => $eAccountExcessAmortization['journalCode'],
+		];
+		\journal\OperationLib::createFromValues($values);
+
+		// Crédite 787
+		$eAccountExcessRecoveryAmortization = \account\AccountLib::getByClass(\account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION);
+		$description = new AssetUi()->getTranslation(\account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION).' '.$eAsset['description'];
+		$values = [
+			'account' => $eAccountExcessRecoveryAmortization['id'],
+			'accountLabel' => \account\ClassLib::pad($eAccountExcessRecoveryAmortization['class']),
+			'date' => $endDate,
+			'paymentDate' => $endDate,
+			'description' => $description,
+			'amount' => $amount,
+			'type' => \journal\OperationElement::DEBIT,
+			'asset' => $eAsset,
+			'financialYear' => $eFinancialYear['id'],
+			'hash' => $hash,
+			'journalCode' => $eAccountExcessRecoveryAmortization['journalCode'],
+		];
+		\journal\OperationLib::createFromValues($values);
+
+		// Met à jour l'asset
+		Asset::model()
+			->update($eAsset, [
+				'status' => Asset::ENDED,
+				'excessRecovery' => new \Sql('excessRecovery + '.$amount),
+				'updatedAt' => new \Sql('NOW()'),
+			]);
 	}
 
 }

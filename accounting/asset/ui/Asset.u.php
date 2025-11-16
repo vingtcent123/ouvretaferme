@@ -732,7 +732,8 @@ Class AssetUi {
 			\account\AccountSetting::ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
 			\account\AccountSetting::CHARGE_ASSET_NET_VALUE_CLASS => s("VNC d'immobilisation"),
 			\account\AccountSetting::ASSETS_AMORTIZATION__EXCEPTIONAL_CHARGE_CLASS => s("Dotation aux amortissements (dérogatoires)"),
-			\account\AccountSetting::EXCESS_AMORTIZATION_CLASS => s("amortissements dérogatoires"),
+			\account\AccountSetting::EXCESS_AMORTIZATION_CLASS => s("Amortissements dérogatoires"),
+			\account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION => s("Reprise sur amortissements dérogatoires"),
 		};
 
 	}

@@ -8,9 +8,12 @@ Asset:
   description: text8(1, null) @collate(general)
   economicMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
   economicDuration: ?int(0, null) # en mois
+  economicAmortization: int(0, null) = 0 # le cumul des dotations déjà enregistrées
   fiscalMode: enum(LINEAR, DEGRESSIVE, WITHOUT)
   fiscalDuration: ?int(0, null) # en mois
   isExcess: bool = false # Si c'est un amortissement dérogatoire
+  excessAmortization: int(0, null) = 0 # le cumul des dotations dérogatoires déjà enregistrées
+  excessRecovery: int(0, null) = 0 # le cumul des dototations dérogatoires déjà reprises
   # Date d'achat
   acquisitionDate: date
   # Date de mise en service (= début de l'amortissement si linéaire), null si type grant

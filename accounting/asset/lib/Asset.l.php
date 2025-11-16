@@ -226,7 +226,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->beginTransaction();
 
-		if(\account\ClassLib::isFromClass($eAsset['accountLabel'], \account\AccountSetting::NON_AMORTIZABLE_IMPROVEMENTS_CLASS) === FALSE) {
+		if(AmortizationLib::isAmortizable($eAsset)) {
 
 			// Étape 1 : On calcule la dotation aux amortissements
 			AmortizationLib::amortize($eFinancialYear, $eAsset, $endDate);
@@ -235,7 +235,7 @@ class AssetLib extends \asset\AssetCrud {
 			$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 			$eAsset = AssetLib::getById($eAsset['id']); // On re-récupère tous les amortissements
-			$accumulatedAmortizationsValue = round($eAsset['cAmortization']->sum('amount'), 2);
+			$accumulatedAmortizationsValue = $eAsset['economicAmortization'];
 
 			// 2.a) amortissement au débit
 			$values = AmortizationLib::getAmortizationOperationValues($eFinancialYear, $eAsset, $endDate, $accumulatedAmortizationsValue);
@@ -277,6 +277,12 @@ class AssetLib extends \asset\AssetCrud {
 			];
 			\journal\OperationLib::createFromValues($values);
 
+			// Si dérogatoire : faire une reprise des dotations
+			if($eAsset['isExcess']) {
+				AmortizationLib::recoverExcess($eFinancialYear, $eAsset, $endDate);
+			}
+
+			/* TODO DEPRECIATIONS
 			// Étape 3. Reprise des éventuelles dépréciations
 			$cDepreciation = DepreciationLib::getByAsset($eAsset);
 			$depreciationExceptionalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::EXCEPTIONAL)->sum('amount'), 2);
@@ -338,13 +344,19 @@ class AssetLib extends \asset\AssetCrud {
 					->whereAsset($eAsset)
 					->update(['recoverDate' => new \Sql('NOW()')]);
 
-			}
+			}*/
 
 		}
 
 		// Étape 4 : Mise à jour de l'immobilisation
-		Asset::model()->update($eAsset, ['status' => $newStatus, 'endedDate' => $endDate, 'updatedAt' => new \Sql('NOW()')]);
-
+		Asset::model()->update(
+			$eAsset,
+			[
+				'status' => $newStatus,
+				'endDate' => $endDate,
+				'updatedAt' => new \Sql('NOW()'),
+			]
+		);
 		Asset::model()->commit();
 
 	}
