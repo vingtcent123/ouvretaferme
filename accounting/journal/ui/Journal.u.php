@@ -134,7 +134,6 @@ class JournalUi {
 
 		$h = '<div class="tabs-item">';
 
-
 			$h .= '<style>';
 				foreach($cJournalCode as $eJournalCode) {
 					if($eJournalCode['color']) {

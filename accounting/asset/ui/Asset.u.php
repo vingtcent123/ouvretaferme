@@ -334,7 +334,6 @@ Class AssetUi {
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearAmortization'] + $asset['economic']['currentFinancialYearDegressiveAmortization'], '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearAmortization'], '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['currentFinancialYearDegressiveAmortization'], '', 2).'</td>';
-							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['financialYearDiminution'], '', 2).'</td>';
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['economic']['endFinancialYearValue'], '', 2).'</td>';
 
 							$h .= '<td class="util-unit text-end">'.new AssetUi()->number($asset['netFinancialValue'], '', 2).'</td>';
@@ -732,6 +731,8 @@ Class AssetUi {
 			\account\AccountSetting::TANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
 			\account\AccountSetting::ASSETS_AMORTIZATION_CHARGE_CLASS => s("Dotation aux amortissements"),
 			\account\AccountSetting::CHARGE_ASSET_NET_VALUE_CLASS => s("VNC d'immobilisation"),
+			\account\AccountSetting::ASSETS_AMORTIZATION__EXCEPTIONAL_CHARGE_CLASS => s("Dotation aux amortissements (dérogatoires)"),
+			\account\AccountSetting::EXCESS_AMORTIZATION_CLASS => s("amortissements dérogatoires"),
 		};
 
 	}

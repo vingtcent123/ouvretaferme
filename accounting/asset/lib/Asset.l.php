@@ -37,25 +37,34 @@ class AssetLib extends \asset\AssetCrud {
 
 		// Calculate endDate
 		$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
+		$e['isGrant'] = \asset\AssetLib::isGrant($e['accountLabel']);
 
 		// Set isExcess value
 		// On vérifie :
 		// - si une valeur résiduelle est indiquée
 		// - si economicMode != fiscalMode
 		// - sinon, si la durée d'amortissement économique est hors de la tranche des durées recommandées
-		if($e['economicMode'] === Asset::WITHOUT and $e['fiscalMode'] === Asset::WITHOUT) {
+		if($e['isGrant']) {
+
 			$isExcess = FALSE;
-		} else if($e['economicMode'] !== $e['fiscalMode']) {
-			$isExcess = TRUE;
-		} else if($e['residualValue'] > 0) {
-			$isExcess = TRUE;
+
 		} else {
-			$isExcess = self::isOutOfDurationRange($e, 'economic');
+
+			if($e['economicMode'] === Asset::WITHOUT and $e['fiscalMode'] === Asset::WITHOUT) {
+				$isExcess = FALSE;
+			} else if($e['economicMode'] !== $e['fiscalMode']) {
+				$isExcess = TRUE;
+			} else if($e['residualValue'] > 0) {
+				$isExcess = TRUE;
+			} else if($e['economicDuration'] >= $e['fiscalDuration']) {
+				$isExcess = FALSE;
+			} else {
+				$isExcess = self::isOutOfDurationRange($e, 'economic');
+			}
+
 		}
 
 		$e['isExcess'] = $isExcess;
-
-		$e['isGrant'] = \asset\AssetLib::isGrant($e['accountLabel']);
 
 		parent::create($e);
 

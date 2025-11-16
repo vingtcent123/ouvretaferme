@@ -86,7 +86,6 @@ Class AmortizationUi {
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['startFinancialYearValue'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['currentFinancialYearAmortization'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['financialYearDiminution'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['endFinancialYearValue'], $default, 2).'</td>';
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['grossValueDiminution'], $default, 2).'</td>';
@@ -94,7 +93,6 @@ Class AmortizationUi {
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['startFinancialYearValue'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearAmortization'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['reversal'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['endFinancialYearValue'], $default, 2).'</td>';
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], $default, 2).'</td>';
@@ -109,13 +107,11 @@ Class AmortizationUi {
 		$total['acquisitionValue'] += $line['acquisitionValue'];
 		$total['economic']['startFinancialYearValue'] += $line['economic']['startFinancialYearValue'];
 		$total['economic']['currentFinancialYearAmortization'] += $line['economic']['currentFinancialYearAmortization'];
-		$total['economic']['financialYearDiminution'] += $line['economic']['financialYearDiminution'];
 		$total['economic']['endFinancialYearValue'] += $line['economic']['endFinancialYearValue'];
 		$total['grossValueDiminution'] += $line['grossValueDiminution'];
 		$total['netFinancialValue'] += $line['netFinancialValue'];
 		$total['excess']['startFinancialYearValue'] += $line['excess']['startFinancialYearValue'];
 		$total['excess']['currentFinancialYearAmortization'] += $line['excess']['currentFinancialYearAmortization'];
-		$total['excess']['reversal'] += $line['excess']['reversal'];
 		$total['excess']['endFinancialYearValue'] += $line['excess']['endFinancialYearValue'];
 		$total['fiscalNetValue'] += $line['fiscalNetValue'];
 
@@ -133,10 +129,10 @@ Class AmortizationUi {
 				$h .= '<tr class="row-bold">';
 					$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
-					$h .= '<th colspan="4" class="text-center">'.s("Amortissements économiques").'</th>';
+					$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("VNC fin").'</th>';
-					$h .= '<th colspan="4" class="text-center">'.s("Amortissements dérogatoires").'</th>';
+					$h .= '<th colspan="3" class="text-center">'.s("Amortissements dérogatoires").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("VNF fin").'</th>';
 				$h .= '</tr>';
 				$h .= '<tr>';
@@ -145,11 +141,9 @@ Class AmortizationUi {
 					$h .= '<th colspan="2" class="text-center border-bottom">'.s("Mode E/F et durée").'</th>';
 					$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
-					$h .= '<th class="text-center">'.s("Diminution exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
-					$h .= '<th class="text-center">'.s("Diminution exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
@@ -165,7 +159,6 @@ Class AmortizationUi {
 				'economic' => [
 					'startFinancialYearValue' => 0,
 					'currentFinancialYearAmortization' => 0,
-					'financialYearDiminution' => 0,
 					'endFinancialYearValue' => 0,
 				],
 				'grossValueDiminution' => 0,
@@ -173,7 +166,6 @@ Class AmortizationUi {
 				'excess' => [
 					'startFinancialYearValue' => 0,
 					'currentFinancialYearAmortization' => 0,
-					'reversal' => 0,
 					'endFinancialYearValue' => 0,
 				],
 				'fiscalNetValue' => 0,

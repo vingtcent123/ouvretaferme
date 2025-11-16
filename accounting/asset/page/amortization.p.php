@@ -7,8 +7,13 @@ new Page()
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
-		$data->assetDepreciations = \asset\AmortizationLib::getByFinancialYear($data->eFinancialYear, 'asset');
-		$data->grantAmortizations = \asset\AmortizationLib::getByFinancialYear($data->eFinancialYear, 'grant');
+		$selectedTab = GET('tab', 'string', 'asset');
+		if(in_array($selectedTab, ['asset', 'grant']) === FALSE) {
+			$selectedTab = 'asset';
+		}
+		$data->amortizations = \asset\AmortizationLib::getByFinancialYear($data->eFinancialYear, $selectedTab);
+
+		$data->selectedTab = $selectedTab;
 
 		throw new ViewAction($data);
 

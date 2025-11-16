@@ -41,9 +41,9 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	 * @param Asset $eAsset
 	 * @return void
 	 */
-	public static function computeProrataTemporis(\account\FinancialYear $eFinancialYear, Asset $eAsset): float {
+	public static function computeProrataTemporis(\account\FinancialYear $eFinancialYear, Asset $eAsset, string $type): float {
 
-		if($eAsset['economicMode'] === Asset::LINEAR) {
+		if($eAsset[$type.'Mode'] === Asset::LINEAR) {
 
 			$startDate = $eAsset['startDate'];
 			$daysFirstMonth = self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2);
@@ -71,7 +71,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			return 0;
 		}
 
-		$table = self::computeLinearTable($eAsset);
+		$table = self::computeLinearTable($eAsset, 'economic');
 
 		$found = FALSE;
 		foreach($table as $amortizationYearData) {
@@ -93,7 +93,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$isFirstDayOfStartMonth = ((int)mb_substr($startDate, 8, 2) === 1);
 			$daysFirstMonth = $isFirstDayOfStartMonth ? 0 : self::DAYS_IN_MONTH - (int)mb_substr($startDate, 8, 2);
 
-			$lastDayOfEndDate = date('d', mktime(0, 0, 0, mb_substr($endDate, 5, 2) + 1, 0, mb_substr($endDate, 0, 4)));
+			$lastDayOfEndDate = date('d', mktime(0, 0, 0, (int)mb_substr($endDate, 5, 2) + 1, 0, mb_substr($endDate, 0, 4)));
 			$isLastDayOfEndMonth = ($lastDayOfEndDate >= (int)mb_substr($endDate, 8, 2));
 			$daysLastMonth = ($isLastDayOfEndMonth ? 0 : (int)mb_substr($endDate, 8, 2));
 
@@ -115,16 +115,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	 * En amortissement dégressif, Prorata de fin en cas de mise au rebut ou de vente
 	 * /!\ Calcul sur les mois complets
 	 *
-	 * @param Asset $eAsset
-	 * @param string $endDate
-	 * @return float
 	 */
-	private static function computeDegressiveAmortizationUntil(Asset $eAsset, string $endDate): float {
+	private static function computeDegressiveAmortizationUntil(Asset $eAsset, string $endDate, string $type): float {
 
 		// endDate doit être le dernier jour du mois précédent (= pas de prorata)
 		$endDate = date('Y-m-d', mktime(0, 0, 0, mb_substr($endDate, 5, 2), 0, mb_substr($endDate, 0, 4)));
 
-		$table = self::computeDegressiveTable($eAsset);
+		$table = self::computeDegressiveTable($eAsset, $type);
 
 		// On récupère la valeur d'amortissement de l'année considérée
 		$found = FALSE;
@@ -154,15 +151,15 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
-	public static function computeAmortizationUntil(Asset $eAsset, string $endDate): float {
+	public static function computeAmortizationUntil(Asset $eAsset, string $endDate, string $type): float {
 
-		if($eAsset['economicMode'] === Asset::LINEAR) {
+		if($eAsset[$type.'Mode'] === Asset::LINEAR) {
 
 			return self::computeLinearAmortizationUntil($eAsset, $endDate);
 
-		} else if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
+		} else if($eAsset[$type.'Mode'] === Asset::DEGRESSIVE) {
 
-			return self::computeDegressiveAmortizationUntil($eAsset, $endDate);
+			return self::computeDegressiveAmortizationUntil($eAsset, $endDate, $type);
 
 		}
 
@@ -174,13 +171,77 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		if($eAsset['economicMode'] === Asset::LINEAR) {
 
-			return self::computeLinearTable($eAsset);
+			$table = self::computeLinearTable($eAsset, 'economic');
+
+			if($eAsset['isExcess']) {
+				if($eAsset['fiscalMode'] === Asset::LINEAR) {
+					$tableFiscal = self::computeLinearTable($eAsset, 'fiscal');
+				} else {
+					$tableFiscal = self::computeLinearTable($eAsset, 'fiscal');
+				}
+			}
 
 		} else if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
-			return self::computeDegressiveTable($eAsset);
+			$table = self::computeDegressiveTable($eAsset, 'economic');
+
+			if($eAsset['isExcess']) {
+				if($eAsset['fiscalMode'] === Asset::LINEAR) {
+					$tableFiscal = self::computeLinearTable($eAsset, 'fiscal');
+				} else {
+					$tableFiscal = self::computeLinearTable($eAsset, 'fiscal');
+				}
+			}
+
+		} else {
+
+			return [];
 
 		}
+
+		if($eAsset['isExcess'] === FALSE) {
+			return $table;
+		}
+
+		$tableFiscal = ($eAsset['fiscalMode'] === Asset::LINEAR) ? self::computeLinearTable($eAsset, 'fiscal') : self::computeDegressiveTable($eAsset, 'fiscal');
+
+		$maxIndex = max(count($table), count($tableFiscal));
+
+		for($year = 0; $year < $maxIndex; $year++) {
+
+			if(isset($table[$year]) === 0) {
+
+				$table[$year] = $tableFiscal[$year];
+				$table[$year]['excessAmortizationValue'] = $tableFiscal[$year]['amortizationValue'];
+				$table[$year]['excessAmortizationValueCumulated'] = $tableFiscal[$year]['amortizationValueCumulated'];
+				$table[$year]['amortizationValue'] = 0;
+				$table[$year]['base'] = $table[$year - 1]['base'];
+				$table[$year]['endValue'] = 0;
+				$table[$year]['amortizationValueCumulated'] = $table[$year - 1]['amortizationValueCumulated'];
+
+			} else {
+
+				$table[$year]['excessAmortizationValue'] = ($tableFiscal[$year]['amortizationValue'] ?? 0);
+				$table[$year]['excessAmortizationValueCumulated'] = ($tableFiscal[$year]['amortizationValueCumulated'] ?? 0);
+
+				// Dotation
+				if($table[$year]['excessAmortizationValue'] > $table[$year]['amortizationValue']) { // Si AF > AC
+
+					$table[$year]['dotation'] = $table[$year]['excessAmortizationValue'] - $table[$year]['amortizationValue'];
+					$table[$year]['recovery'] = 0;
+
+					// Reprise
+				} else if($table[$year]['excessAmortizationValue'] < $table[$year]['amortizationValue']) { // Si AF < AC
+
+					$table[$year]['recovery'] = $table[$year]['amortizationValue'] - $table[$year]['excessAmortizationValue'];
+					$table[$year]['dotation'] = 0;
+
+				}
+
+			}
+		}
+
+		return $table;
 
 	}
 
@@ -208,9 +269,9 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	}
 
 
-	private static function computeLinearTable(Asset $eAsset): array {
+	private static function computeLinearTable(Asset $eAsset, string $type): array {
 
-		$durationInYears = floor($eAsset['economicDuration'] / 12);
+		$durationInYears = floor($eAsset[$type.'Duration'] / 12);
 		$rate = self::getLinearRate($durationInYears);
 
 		$cFinancialYearAll = \account\FinancialYearLib::getAll();
@@ -221,7 +282,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$endedDate = $eAsset['endedDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
-		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+		$amortizableBase = AssetLib::getAmortizableBase($eAsset, $type);
 
 		for($i = 0; $i <= $durationInYears; $i++) {
 
@@ -246,7 +307,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 				switch($i) {
 					case 0:
-						$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
 						break;
 					case $durationInYears:
 						$amortization = round($amortizableBase - $amortizationCumulated, 2);
@@ -313,11 +374,11 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
-	private static function computeDegressiveTable(Asset $eAsset): array {
+	private static function computeDegressiveTable(Asset $eAsset, string $type): array {
 
 		$cFinancialYearAll = \account\FinancialYearLib::getAll();
 
-		$durationInYears = round($eAsset['economicDuration'] / 12);
+		$durationInYears = round($eAsset[$type.'Duration'] / 12);
 
 		$baseLinearRate = self::getLinearRate($durationInYears);
 		$degressiveCoefficient = self::getDegressiveCoefficient($durationInYears);
@@ -327,7 +388,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$currentDate = $eAsset['startDate'];
 		$eFinancialYear = $cFinancialYearAll->find(fn($e) => $eAsset['startDate'] <= $currentDate and $e['endDate'] >= $currentDate)->first();
 
-		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+		$amortizableBase = AssetLib::getAmortizableBase($eAsset, $type);
 
 		for($i = 0; $i <= $durationInYears / 12; $i++) {
 
@@ -346,13 +407,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				$eFinancialYear = $eFinancialYearCurrent;
 			}
 
-			$eDepreciation = $eAsset['cAmortization'][$i] ?? new Amortization();
+			$eAmortization = $eAsset['cAmortization'][$i] ?? new Amortization();
 
-			if($eDepreciation->empty()) {
+			if($eAmortization->empty()) {
 
 				switch($i) {
 					case 0:
-						$amortization = round(($amortizableBase) * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset) / 100, 2);
+						$amortization = round(($amortizableBase) * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
 						break;
 					case $durationInYears:
 						$amortization = round(($amortizableBase - $amortizationCumulated), 2);
@@ -363,7 +424,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 			} else {
 
-				$amortization = $eDepreciation['amount'];
+				$amortization = $eAmortization['amount'];
 
 			}
 
@@ -380,20 +441,19 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'amortizationValue' => $amortization,
 				'amortizationValueCumulated' => round($amortizationCumulated, 2),
 				'endValue' => round($amortizableBase - $amortizationCumulated),
-				'amortization' => $eDepreciation,
+				'amortization' => $eAmortization,
 			];
 
 			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
 
 		}
-
 		return $table;
 
 	}
 
 	public static function amortizeGrant(\account\FinancialYear $eFinancialYear, Asset $eAsset): void {
 
-		$amortizationValue = self::computeAmortizationUntil($eAsset, $eFinancialYear['endDate']);
+		$amortizationValue = self::computeAmortizationUntil($eAsset, $eFinancialYear['endDate'], 'economic');
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 		$grantDebitClass = \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS;
@@ -472,8 +532,20 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$endDate = $eFinancialYear['endDate'];
 		}
 
-		$amortizationValue = self::computeAmortizationUntil($eAsset, $endDate);
+		$amortizationEconomicValue = self::computeAmortizationUntil($eAsset, $endDate, 'economic');
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
+
+		$amortizationValue = $amortizationEconomicValue;
+		$amortizationExcessValue = 0;
+
+		if($eAsset['isExcess']) {
+
+			$amortizationFiscalValue = self::computeAmortizationUntil($eAsset, $endDate, 'fiscal');
+
+			if($amortizationFiscalValue > $amortizationEconomicValue) {
+				$amortizationExcessValue = $amortizationFiscalValue - $amortizationEconomicValue;
+			}
+		}
 
 		// Étape 1 : Dotation aux amortissements, on débite 6811XXXX
 		if($eAsset->isIntangible()) {
@@ -500,12 +572,58 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		];
 		\journal\OperationLib::createFromValues($values);
 
+		// Étape 1b : Amortissement dérogatoire, on débite 687 : dotation aux amortissements
+		if($amortizationExcessValue > 0) {
+
+			$amortizationExcessChargeClass = \account\AccountSetting::ASSETS_AMORTIZATION__EXCEPTIONAL_CHARGE_CLASS;
+			$eAccountExcessAmortizationCharge = \account\AccountLib::getByClass($amortizationExcessChargeClass);
+			$description = new AssetUi()->getTranslation($amortizationExcessChargeClass).' '.$eAsset['description'];
+			$values = [
+				'account' => $eAccountExcessAmortizationCharge['id'],
+				'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortizationCharge['class']),
+				'date' => $endDate,
+				'paymentDate' => $endDate,
+				'description' => $description,
+				'amount' => $amortizationExcessValue,
+				'type' => \journal\OperationElement::DEBIT,
+				'asset' => $eAsset,
+				'financialYear' => $eFinancialYear['id'],
+				'hash' => $hash,
+				'journalCode' => $eAccountAmortizationCharge['journalCode'],
+			];
+			\journal\OperationLib::createFromValues($values);
+
+		}
+
 		// Étape 2 : Amortissement, on crédite 28XXXXXX
 		$values = self::getAmortizationOperationValues($eFinancialYear, $eAsset, $endDate, $amortizationValue);
 		$values['hash'] = $hash;
 
 		if($amortizationValue !== 0.0) {
 			\journal\OperationLib::createFromValues($values);
+		}
+
+		// Étape 2b : Amortissement dérogatoire, on crédite 145
+		if($amortizationExcessValue > 0) {
+
+			$amortizationExcessClass = \account\AccountSetting::EXCESS_AMORTIZATION_CLASS;
+			$eAccountExcessAmortization = \account\AccountLib::getByClass($amortizationExcessClass);
+			$description = new AssetUi()->getTranslation($amortizationExcessClass).' '.$eAsset['description'];
+			$values = [
+				'account' => $eAccountExcessAmortization['id'],
+				'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortization['class']),
+				'date' => $endDate,
+				'paymentDate' => $endDate,
+				'description' => $description,
+				'amount' => $amortizationExcessValue,
+				'type' => \journal\OperationElement::CREDIT,
+				'asset' => $eAsset,
+				'financialYear' => $eFinancialYear['id'],
+				'hash' => $hash,
+				'journalCode' => $eAccountAmortizationCharge['journalCode'],
+			];
+			\journal\OperationLib::createFromValues($values);
+
 		}
 
 		// Étape 3 : Entrée dans la table Amortization
@@ -599,7 +717,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'startFinancialYearValue' => 0,
 				'currentFinancialYearAmortization' => 0,
 				'currentFinancialYearDegressiveAmortization' => 0,
-				'financialYearDiminution' => 0,
 				'endFinancialYearValue' => 0,
 			],
 			'grossValueDiminution' => 0,
@@ -685,15 +802,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			} else {
 
 				// Estimate
-				$currentAmortization = self::computeAmortizationUntil($eAsset, $eFinancialYear['endDate']);
-				// TODO dérogatoire
+				$currentAmortization = self::computeAmortizationUntil($eAsset, $eFinancialYear['endDate'], 'economic');
 				$currentExcessAmortization = 0;
 
 			}
 
-			$financialYearDiminution = 0; // TODO saykoi ?
 
-			$vnc = $eAsset['value'] - $alreadyAmortized - $currentAmortization;
+			$vnc = AssetLib::getAmortizableBase($eAsset, 'economic') - $alreadyAmortized - $currentAmortization;
 			$vnf = $currentExcessAmortization > 0 ? $eAsset['value'] - $alreadyExcessAmortized - $currentExcessAmortization : $vnc;
 
 			$amortization = [
@@ -717,11 +832,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				// Economic amortization
 				'economic' => [
 					// Début exercice : NULL si acquis durant l'exercice comptable
-					'startFinancialYearValue' => $eAsset['startDate'] >= $eFinancialYear['startDate'] ? NULL : $eAsset['value'] - $alreadyAmortized,
-					'currentFinancialYearAmortization' => $currentAmortization,
+					'startFinancialYearValue' => $eAsset['startDate'] >= $eFinancialYear['startDate'] ? NULL : AssetLib::getAmortizableBase($eAsset, 'économic') - $alreadyAmortized,
+					'currentFinancialYearAmortization' => $currentAmortization, // Dotation pour l'exercice (proratisé)
 					'currentFinancialYearDegressiveAmortization' => 0,
-					'financialYearDiminution' => $financialYearDiminution,
-					'endFinancialYearValue' => $currentAmortization - $financialYearDiminution,
+					'endFinancialYearValue' => $alreadyAmortized + $currentAmortization, // Cumul de toutes les dotations
 				],
 
 				// Diminution de valeur brut
@@ -734,8 +848,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'excess' => [
 					'startFinancialYearValue' => 0,
 					'currentFinancialYearAmortization' => $currentExcessAmortization,
-					'reversal' => 0,
-					'endFinancialYearValue' => $currentExcessAmortization,
+					'endFinancialYearValue' => $alreadyExcessAmortized + $currentExcessAmortization,
 				],
 
 				// VNF

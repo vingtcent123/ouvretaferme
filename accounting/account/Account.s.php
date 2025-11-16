@@ -61,6 +61,7 @@ class AccountSetting extends \Settings {
 
 	// AMORTISSEMENTS, DÉPRÉCIATIONS ET PROVISIONS
 	const PROVISION_CLASS = 15;
+	const EXCESS_AMORTIZATION_CLASS = 145;
 	const INVESTMENT_GRANT_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
 	const INVESTMENT_GRANT_TO_RESULT_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
 	const ASSET_AMORTIZATION_GENERAL_CLASS = 28;
@@ -71,6 +72,7 @@ class AccountSetting extends \Settings {
 	const THIRD_PARTY_DEPRECIATION_CLASS = 49;
 	const FINANCIAL_DEPRECIATION_CLASS = 59;
 	const ASSETS_AMORTIZATION_CHARGE_CLASS = '6811'; // Dotation aux amortissements sur immos corporelles et incorpo
+	const ASSETS_AMORTIZATION__EXCEPTIONAL_CHARGE_CLASS = '687'; // Dotation aux amortissements exceptionnels
 	const INTANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS = '68111'; // Dotation aux amortissements sur immos incorporelles
 	const TANGIBLE_ASSETS_AMORTIZATION_CHARGE_CLASS = '68112'; // Dotation aux amortissements sur immos corporelles
 	const RECEIVABLES_ON_ASSET_DISPOSAL_CLASS = '462'; // Créances sur cessions d'immobilisations

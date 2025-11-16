@@ -17,7 +17,7 @@ new AdaptativeView('/asset/amortization', function($data, FarmTemplate $t) {
 		$data->eFinancialYear,
 	);
 
-	if(empty($data->assetDepreciations) and empty($data->grantAmortizations)) {
+	if(empty($data->amortizations)) {
 
 		echo '<div class="util-info">';
 			echo s("Il n'y a pas d'information à afficher pour le moment.");
@@ -33,20 +33,20 @@ new AdaptativeView('/asset/amortization', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<div class="tabs-h" id="asset-amortization" onrender="'.encode('Lime.Tab.restore(this, "amortization-asset")').'">';
+		echo '<div class="tabs-h" id="asset-amortization">';
 
 			echo '<div class="tabs-item">';
-			echo '<a class="tab-item selected" data-tab="amortization-asset" onclick="Lime.Tab.select(this)">'.s("Immobilisations").'</a>';
-			echo '<a class="tab-item" data-tab="amortization-subvention" onclick="Lime.Tab.select(this)">'.s("Subventions").'</a>';
+				echo '<a class="tab-item '.($data->selectedTab === 'asset' ? 'selected' : '').'" data-tab="amortization-asset" href="'.$t->canonical.'?tab=asset">'.s("Immobilisations").'</a>';
+				echo '<a class="tab-item" data-tab="amortization-grant" href="'.$t->canonical.'?tab=grant">'.s("Subventions").'</a>';
 			echo '</div>';
 
-			echo '<div class="tab-panel" data-tab="amortization-asset">';
-				echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->assetDepreciations);
+			echo '<div class="tab-panel '.($data->selectedTab === 'asset' ? 'selected' : '').'" data-tab="amortization-asset">';
+				echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->amortizations);
 			echo '</div>';
 
-			echo '<div class="tab-panel" data-tab="amortization-subvention">';
-				if(count($data->grantAmortizations) > 0) {
-					echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->grantAmortizations);
+			echo '<div class="tab-panel '.($data->selectedTab === 'grant' ? 'selected' : '').'" data-tab="amortization-grant">';
+				if(count($data->amortizations) > 0) {
+					echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->amortizations);
 				} else {
 					echo '<div class="util-info">';
 						echo s("Il n'y a aucun amortissement à afficher.");
