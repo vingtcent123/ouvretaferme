@@ -22,7 +22,8 @@ Player:
   name: text8(1, 20) @collate(general)
   user: user\User
   time: float(0, null)
-  calendar: json = PHP([])
+  gift: int8(0, null) = 0
+  lastGift: ?date
   boards: int8(0, null) = 1
   points: int8(0, null) = 0
   UNIQUE: [

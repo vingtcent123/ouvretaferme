@@ -40,13 +40,14 @@ class PlayerModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => 20, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
 			'user' => ['element32', 'user\User', 'unique' => TRUE, 'cast' => 'element'],
 			'time' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
-			'calendar' => ['json', 'cast' => 'array'],
+			'gift' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'lastGift' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'boards' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'points' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'user', 'time', 'calendar', 'boards', 'points'
+			'id', 'name', 'user', 'time', 'gift', 'lastGift', 'boards', 'points'
 		]);
 
 		$this->propertiesToModule += [
@@ -64,8 +65,8 @@ class PlayerModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'calendar' :
-				return [];
+			case 'gift' :
+				return 0;
 
 			case 'boards' :
 				return 1;
@@ -75,34 +76,6 @@ class PlayerModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
-
-		}
-
-	}
-
-	public function encode(string $property, $value) {
-
-		switch($property) {
-
-			case 'calendar' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
-
-			default :
-				return parent::encode($property, $value);
-
-		}
-
-	}
-
-	public function decode(string $property, $value) {
-
-		switch($property) {
-
-			case 'calendar' :
-				return $value === NULL ? NULL : json_decode($value, TRUE);
-
-			default :
-				return parent::decode($property, $value);
 
 		}
 
@@ -132,8 +105,12 @@ class PlayerModel extends \ModuleModel {
 		return $this->where('time', ...$data);
 	}
 
-	public function whereCalendar(...$data): PlayerModel {
-		return $this->where('calendar', ...$data);
+	public function whereGift(...$data): PlayerModel {
+		return $this->where('gift', ...$data);
+	}
+
+	public function whereLastGift(...$data): PlayerModel {
+		return $this->where('lastGift', ...$data);
 	}
 
 	public function whereBoards(...$data): PlayerModel {

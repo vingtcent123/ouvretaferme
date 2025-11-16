@@ -19,7 +19,7 @@ class DeskUi {
 
 	public function get(string $content = '', ?int $image = NULL): string {
 
-		$image ??= mt_rand(1, 15);
+		$image ??= mt_rand(1, 10);
 
 		$h = '<div class="game-desk" style="background-image: url('.\Asset::getPath('game', 'tiles-'.$image.'.jpg', 'image').')">';
 			$h .= $content;
