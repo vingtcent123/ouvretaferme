@@ -9,7 +9,7 @@ new \map\PlotPage(function($data) {
 	})
 	->getCreateElement(function($data) {
 
-		$data->eZone = \map\ZoneLib::getById(INPUT('zone'));
+		$data->eZone = \map\ZoneLib::getById(INPUT('zone'))->validate('canWrite');
 
 		return new \map\Plot([
 			'zone' => $data->eZone,
