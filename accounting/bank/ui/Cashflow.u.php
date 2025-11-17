@@ -408,14 +408,14 @@ class CashflowUi {
 			$subtitle .= $form->date(
 				'paymentDate',
 					$defaultValues['paymentDate'] ?? '',
-				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']],
+				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
 			);
 			$subtitle .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
 			$subtitle .= $form->select(
 				'paymentMethod',
 				$cPaymentMethod,
 					$defaultValues['paymentMethod'] ?? '',
-				['mandatory' => TRUE],
+				['mandatory' => TRUE] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
 			);
 		$subtitle .= '</div>';
 
