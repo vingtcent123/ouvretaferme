@@ -2385,9 +2385,6 @@ class FarmUi {
 				if($eFarm->canCommercialisation()) {
 					$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vendre").'</a> ';
 				}
-				if($eFarm->canPlay()) {
-					$h .= '<a href="'.$eFarm->getGameUrl().'" class="btn btn-game">'.\Asset::icon('controller').'<br/>'.s("Jouer").'</a> ';
-				}
 				if($eFarm->hasAccounting() and $eFarm->canAccounting()) {
 					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('bank').'<br/>'.s("Comptabilité").'</a> ';
 				}

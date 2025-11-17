@@ -79,7 +79,7 @@ class FarmTemplate extends MainTemplate {
 		}
 
 		if($eFarm->canPlay()) {
-			$sections['game'] = [\Asset::icon('controller'), s("Jouer")];
+			$sections['game'] = ['🦌', s("Jouer")];
 		}
 
 		if((FEATURE_ACCOUNTING or $eFarm->hasAccounting()) and $eFarm->canAccounting()) {
