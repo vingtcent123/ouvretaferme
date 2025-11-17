@@ -153,6 +153,7 @@ class AccountSetting extends \Settings {
 		'353' => '71353', // ?
 	];
 
+	const LOG_PER_PAGE = 50;
 }
 
 AccountSetting::$summaryAccountingBalanceCategories = AccountUi::getSummaryBalanceCategories();

@@ -196,6 +196,10 @@ class CompanyUi {
 
 			$h .= '</div>';
 
+			$h .= '<div class="text-end">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/log">'.s("Activité du compte").'</a>';
+			$h .= '</div>';
+
 		return $h;
 
 	}
