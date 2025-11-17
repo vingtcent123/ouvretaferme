@@ -73,8 +73,8 @@ class FecLib  {
 				'noDocument' => new \Sql('SUM(IF(document IS NULL, 1, 0))', 'int'),
 				'hasDocument' => new \Sql('SUM(IF(document IS NOT NULL, 1, 0))', 'int'),
 			])
-      ->whereDate('>=', $eFinancialYear['startDate'])
-      ->whereDate('<=', $eFinancialYear['endDate'])
+			->whereDate('>=', $eFinancialYear['startDate'])
+			->whereDate('<=', $eFinancialYear['endDate'])
 			->get();
 
 		$eOperationByJournal = \journal\Operation::model()
