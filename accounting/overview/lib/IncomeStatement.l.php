@@ -110,6 +110,27 @@ Class IncomeStatementLib {
 
 	private static function getTypeAndCategory(int $class): array {
 
+		switch((int)mb_substr((string)$class, 0, 3)) {
+
+			case \account\AccountSetting::CHARGE_AMORTIZATION_OPERATING_ACCOUNT_CLASS:
+				return ['expenses', 'operating'];
+
+			case \account\AccountSetting::CHARGE_AMORTIZATION_FINANCIAL_ACCOUNT_CLASS:
+				return ['expenses', 'financial'];
+
+			case \account\AccountSetting::CHARGE_AMORTIZATION_EXCEPTIONAL_ACCOUNT_CLASS:
+				return ['expenses', 'exceptional'];
+
+			case \account\AccountSetting::PRODUCT_AMORTIZATION_OPERATING_ACCOUNT_CLASS:
+				return ['incomes', 'operating'];
+
+			case \account\AccountSetting::PRODUCT_AMORTIZATION_FINANCIAL_ACCOUNT_CLASS:
+				return ['incomes', 'financial'];
+
+			case \account\AccountSetting::PRODUCT_AMORTIZATION_EXCEPTIONAL_ACCOUNT_CLASS:
+				return ['incomes', 'exceptional'];
+
+		}
 		switch((int)mb_substr((string)$class, 0, 2)) {
 
 			case \account\AccountSetting::CHARGE_FINANCIAL_ACCOUNT_CLASS:
