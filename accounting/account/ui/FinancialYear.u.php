@@ -86,7 +86,12 @@ class FinancialYearUi {
 			}
 
 			if($eFinancialYear->acceptClose()) {
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';;
+
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';
+
+			} else if($eFinancialYear->acceptReClose()) {
+
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doReclose" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Refermer").'</a>';;
 			}
 
 			$h .= '<div class="dropdown-divider"></div>';
@@ -232,7 +237,7 @@ class FinancialYearUi {
 
 							$h .= '<td class="text-center">';
 								$h .= match($eFinancialYear['status']) {
-									FinancialYearElement::OPEN => s("En cours"),
+									FinancialYearElement::OPEN => ($eFinancialYear['closeDate'] !== NULL) ? '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Rouvert").'</span>' : s("En cours"),
 									FinancialYearElement::CLOSE => s("Clôturé"),
 								};
 							$h .= '</td>';

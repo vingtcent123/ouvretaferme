@@ -127,5 +127,13 @@ new \account\FinancialYearPage(
 		\account\FinancialYearLib::reopen($data->e);
 
 		throw new ReloadAction('account', 'FinancialYear::reopen');
+	})
+	->write('doReclose', function($data) {
+
+		$data->e->validate('acceptReClose');
+
+		\account\FinancialYearLib::reclose($data->e);
+
+		throw new ReloadAction('account', 'FinancialYear::reclose');
 	});
 ?>

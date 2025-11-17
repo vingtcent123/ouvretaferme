@@ -286,10 +286,20 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	public static function reopen(FinancialYear $eFinancialYear): void {
 
+		// On ne réinitialise pas closeDate car le bilan de clôture a déjà été réalisé
 		FinancialYear::model()
-			->update($eFinancialYear, ['status' => FinancialYear::OPEN, 'closeDate' => NULL]);
+			->update($eFinancialYear, ['status' => FinancialYear::OPEN]);
 
 		LogLib::save('reopen', 'FinancialYear', ['id' => $eFinancialYear['id']]);
+
+	}
+
+	public static function reclose(FinancialYear $eFinancialYear): void {
+
+		FinancialYear::model()
+			->update($eFinancialYear, ['status' => FinancialYear::CLOSE]);
+
+		LogLib::save('reclose', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
 	}
 

@@ -102,6 +102,7 @@ class LogUi {
 			'close' => s("Clôture de l'exercice #{value}", $params['id']),
 			'update' => s("Mise à jour de l'exercice #{value}", $params['id']),
 			'reopen' => s("Réouverture de l'exercice #{value}", $params['id']),
+			'reclose' => s("Refermeture de l'exercice #{value}", $params['id']),
 			'generatefec' => s("Génération de FEC de l'exercice #{value}", $params['id']),
 		};
 
