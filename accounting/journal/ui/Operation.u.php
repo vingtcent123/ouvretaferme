@@ -912,6 +912,7 @@ class OperationUi {
 				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($index) {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-field'] = 'journalCode';
+					$d->default = fn() => GET('journalCode');
 				});
 				$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
 					$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true">';
