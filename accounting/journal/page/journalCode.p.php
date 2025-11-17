@@ -45,6 +45,8 @@ new \journal\JournalCodePage(function($data) {
 		\journal\JournalCodeLib::updateAccountsForJournalCode($data->e, POST('account', 'array'));
 
 		throw new ReloadAction('journal', 'JournalCode::accountsUpdated');
-	});
+	})
+	->doUpdateProperties('doUpdateIsReversable', ['isReversable'], fn() => throw new ReloadAction())
+	->doUpdateProperties('doUpdateIsDisplayed', ['isDisplayed'], fn() => throw new ReloadAction());
 
 ?>

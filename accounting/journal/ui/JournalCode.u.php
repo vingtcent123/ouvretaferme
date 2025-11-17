@@ -99,12 +99,22 @@ Class JournalCodeUi {
 							$h .= $eJournalCode->quick('color', $color);
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
-							$isReversable = ($eJournalCode['isReversable'] ? $yes : $no);
-							$h .= $eJournalCode->quick('isReversable', $isReversable);
+							$h .= \util\TextUi::switch([
+								'id' => 'isReversable-switch-'.$eJournalCode['id'],
+								'disabled' => $eJournalCode->canWrite() === FALSE,
+								'data-ajax' => $eJournalCode->canWrite() ? \company\CompanyUi::urlJournal($eFarm).'/journalCode:doUpdateIsReversable' : NULL,
+								'post-id' => $eJournalCode['id'],
+								'post-isReversable' => !$eJournalCode['isReversable'],
+							], $eJournalCode['isReversable']);
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
-							$isDisplayed = ($eJournalCode['isDisplayed'] ? $yes : $no);
-							$h .= $eJournalCode->quick('isDisplayed', $isDisplayed);
+							$h .= \util\TextUi::switch([
+								'id' => 'isDisplayed-switch-'.$eJournalCode['id'],
+								'disabled' => $eJournalCode->canWrite() === FALSE,
+								'data-ajax' => $eJournalCode->canWrite() ? \company\CompanyUi::urlJournal($eFarm).'/journalCode:doUpdateIsDisplayed' : NULL,
+								'post-id' => $eJournalCode['id'],
+								'post-isDisplayed' => !$eJournalCode['isDisplayed'],
+							], $eJournalCode['isDisplayed']);
 						$h .= '</td>';
 
 						$h .= '<td class="text-center">';
@@ -262,12 +272,33 @@ Class JournalCodeUi {
 
 		switch($property) {
 			case 'isReversable' :
-				$d->field = 'yesNo';
+				$d->values = [
+					true => s("Oui"),
+					false => s("Non"),
+				];
+				$d->field = 'switch';
+				$d->attributes = [
+					'labelOn' => $d->values[TRUE],
+					'labelOff' => $d->values[FALSE],
+					'valueOn' => TRUE,
+					'valueOff' => FALSE,
+				];
 				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() ? \util\FormUi::info(s("Toutes les écritures d'un journal extournable pourront être extournées lors du bilan d'ouverture en année N+1.")) : '');
 				break;
 
 			case 'isDisplayed' :
-				$d->field = 'yesNo';
+				$d->values = [
+					true => s("Oui"),
+					false => s("Non"),
+				];
+				$d->field = 'switch';
+				$d->attributes = [
+					'labelOn' => $d->values[TRUE],
+					'labelOff' => $d->values[FALSE],
+					'valueOn' => TRUE,
+					'valueOff' => FALSE,
+				];
+				$d->field = 'switch';
 				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() ? \util\FormUi::info(s("Est-ce que ce journal doit être affiché dans les onglets du livre-journal ?")) : '');
 				break;
 		}
