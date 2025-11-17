@@ -170,6 +170,18 @@ class ProductLib extends ProductCrud {
 
 	public static function aggregateBySales(\Collection $cSale, \Collection $cProductExclude = new \Collection()): \Collection {
 
+		$cProductSellingExclude = new \Collection();
+
+		foreach($cProductExclude as $eProductExclude) {
+
+			$cProductSellingExclude[] = $eProductExclude['product'];
+
+			if($eProductExclude['parent']) {
+				$cProductSellingExclude->mergeCollection($eProductExclude['cProductChild']->getColumnCollection('product'));
+			}
+
+		}
+
 		$cItem = \selling\Item::model()
 			->select([
 				'product' => \selling\ProductElement::getSelection() + [
@@ -183,7 +195,7 @@ class ProductLib extends ProductCrud {
 				'sold' => new \Sql('SUM(number)', 'float'),
 			])
 			->where('sale', 'IN', $cSale)
-			->where('product', 'NOT IN', $cProductExclude)
+			->where('product', 'NOT IN', $cProductSellingExclude)
 			->where('number > 0')
 			->whereIngredientOf(NULL)
 			->whereStatus('NOT IN', [\selling\Sale::EXPIRED, \selling\Sale::CANCELED])

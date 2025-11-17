@@ -43,7 +43,7 @@ new \farm\FarmPage()
 		$data->eDate['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($cProduct);
 
 		// Uniquement les boutiques avec un seul producteur
-		$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($data->cSale, $cProduct->getColumnCollection('product')));
+		$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($data->cSale, $cProduct));
 		$cProduct->sort(['product' => ['name']], natural: TRUE);
 
 		if($data->eShop['shared']) {
