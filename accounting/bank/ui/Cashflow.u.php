@@ -99,7 +99,7 @@ class CashflowUi {
 
 		if($eImport->exists() === TRUE) {
 
-			$h .= '<div class="util-block-search">';
+			$h .= '<div class="util-info">';
 			$h .= s(
 				"Vous visualisez actuellement les opérations bancaires correspondant à l'import #{id} du {date}.",
 				[
