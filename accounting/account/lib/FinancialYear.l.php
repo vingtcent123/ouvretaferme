@@ -55,7 +55,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		OpeningLib::open($eFinancialYearPrevious, $eFinancialYear, $journalCodes);
 
-		LogLib::save('open', 'financialYear', ['id' => $eFinancialYear['id']]);
+		LogLib::save('open', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
 		FinancialYear::model()->update($eFinancialYear, [
 			'openDate' => new \Sql('NOW()'),
@@ -91,7 +91,7 @@ class FinancialYearLib extends FinancialYearCrud {
 			'balanceSheetClose' => TRUE,
 		]);
 
-		LogLib::save('close', 'financialYear', ['id' => $eFinancialYear['id']]);
+		LogLib::save('close', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
 		FinancialYear::model()->commit();
 
@@ -272,7 +272,7 @@ class FinancialYearLib extends FinancialYearCrud {
 				$changes[$property] = ['old' => $value, 'new' => $e[$property]];
 			}
 		}
-		LogLib::save('update', 'financialYear', ['id' => $e['id'], 'changes' => $changes]);
+		LogLib::save('update', 'FinancialYear', ['id' => $e['id'], 'changes' => $changes]);
 
 	}
 
@@ -281,6 +281,15 @@ class FinancialYearLib extends FinancialYearCrud {
 		\farm\FarmerLib::setView('viewAccountingYear', $eFarm, $eFinancialYear['id']);
 		\farm\FarmerLib::setView('viewAccountingType', $eFarm, $eFinancialYear['accountingType']);
 		\farm\FarmerLib::setView('viewAccountingHasVat', $eFarm, $eFinancialYear['hasVat']);
+
+	}
+
+	public static function reopen(FinancialYear $eFinancialYear): void {
+
+		FinancialYear::model()
+			->update($eFinancialYear, ['status' => FinancialYear::OPEN, 'closeDate' => NULL]);
+
+		LogLib::save('reopen', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
 	}
 

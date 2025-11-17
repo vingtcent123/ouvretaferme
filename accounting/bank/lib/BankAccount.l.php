@@ -70,7 +70,7 @@ class BankAccountLib extends BankAccountCrud {
 			\journal\OperationLib::updateAccountLabels($e);
 		}
 
-		\account\LogLib::save('update', 'bank', ['id' => $e['id'], 'properties' => $properties]);
+		\account\LogLib::save('update', 'Bank', ['id' => $e['id'], 'properties' => $properties]);
 	}
 }
 ?>

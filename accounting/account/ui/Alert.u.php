@@ -42,6 +42,7 @@ class AlertUi {
 			'FinancialYear::updated' => s("L'exercice comptable a bien été mis à jour."),
 			'FinancialYear::closed' => s("L'exercice comptable a bien été clôturé."),
 			'FinancialYear::open' => s("Le bilan d'ouverture a bien été effectué."),
+			'FinancialYear::reopen' => s("L'exercice comptable a bien été rouvert ! Faites bien attention..."),
 
 			'ThirdParty::created' => s("Le tiers a bien été créé."),
 			'ThirdParty::deleted' => s("Le tiers a bien été supprimé."),

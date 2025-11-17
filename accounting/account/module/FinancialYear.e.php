@@ -41,7 +41,7 @@ class FinancialYear extends FinancialYearElement {
 	}
 	public function isClosed(): bool {
 
-		return $this['closeDate'] !== NULL;
+		return $this['closeDate'] !== NULL and $this['status'] === FinancialYear::CLOSE;
 
 	}
 	public function acceptClose(): bool {

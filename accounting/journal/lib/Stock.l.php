@@ -42,7 +42,7 @@ Class StockLib extends StockCrud {
 
 		}
 
-		\account\LogLib::save('delete', 'stock', ['id' => $e['id']]);
+		\account\LogLib::save('delete', 'Stock', ['id' => $e['id']]);
 
 	}
 
@@ -80,7 +80,7 @@ Class StockLib extends StockCrud {
 			->select(['reportedTo', 'updatedAt'])
 			->update($eStockReference);
 
-		\account\LogLib::save('set', 'stock', ['id' => $eStock['id']]);
+		\account\LogLib::save('set', 'Stock', ['id' => $eStock['id']]);
 
 		Stock::model()->commit();
 

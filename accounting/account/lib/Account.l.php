@@ -200,7 +200,7 @@ class AccountLib extends AccountCrud {
 
 		Account::model()->delete($e);
 
-		LogLib::save('delete', 'account', ['id' => $e['id'], 'class' => $e['class']]);
+		LogLib::save('delete', 'Account', ['id' => $e['id'], 'class' => $e['class']]);
 
 	}
 

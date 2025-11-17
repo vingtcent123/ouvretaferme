@@ -16,7 +16,7 @@ new \journal\StockPage(
 	})
 	->doCreate(function($data) {
 
-		\account\LogLib::save('create', 'stock', ['id' => $data->e['id']]);
+		\account\LogLib::save('create', 'Stock', ['id' => $data->e['id']]);
 
 		throw new ReloadAction('journal', 'Stock::created');
 

@@ -216,7 +216,7 @@ class DeferralLib extends DeferralCrud {
 
 		Deferral::model()->insert($eDeferral);
 
-		\account\LogLib::save('create', 'deferral', ['id' => $eDeferral['id']]);
+		\account\LogLib::save('create', 'Deferral', ['id' => $eDeferral['id']]);
 
 		return $isCharge ? 'DeferralCharge::created' : 'DeferralProduct::created';
 

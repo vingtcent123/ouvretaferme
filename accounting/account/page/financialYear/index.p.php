@@ -112,5 +112,20 @@ new \account\FinancialYearPage(
 		\account\FinancialYearLib::closeFinancialYear($data->e);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
+	})
+	;
+
+new \account\FinancialYearPage(
+	function($data) {
+		\user\ConnectionLib::checkLogged();
+		$data->eFarm->validate('canManage');
+	})
+	->write('doReopen', function($data) {
+
+		$data->e->validate('isClosed');
+
+		\account\FinancialYearLib::reopen($data->e);
+
+		throw new ReloadAction('account', 'FinancialYear::reopen');
 	});
 ?>

@@ -33,7 +33,7 @@ new \journal\DeferralPage(function($data) {
 })
 ->doDelete(function($data) {
 
-	\account\LogLib::save('delete', 'deferral', ['id' => $data->e['id']]);
+	\account\LogLib::save('delete', 'Deferral', ['id' => $data->e['id']]);
 
 	throw new ReloadAction('journal', 'Deferral::deleted');
 

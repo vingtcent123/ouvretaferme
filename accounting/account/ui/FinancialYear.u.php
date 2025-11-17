@@ -70,9 +70,20 @@ class FinancialYearUi {
 
 			$h .= '<div class="dropdown-title">'.s("Exercice {year}", ['year' => self::getYear($eFinancialYear)]).'</div>';
 
-			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
-				$h .= s("Modifier");
-			$h .= '</a>';
+			if($eFinancialYear->canUpdate()) {
+
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
+					$h .= s("Modifier");
+				$h .= '</a>';
+
+			} else {
+
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doReopen" post-id='.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item color-danger">';
+					$h .= \Asset::icon('exclamation-triangle').' ';
+					$h .= s("Rouvrir");
+				$h .= '</a>';
+
+			}
 
 			if($eFinancialYear->acceptClose()) {
 				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';;

@@ -123,7 +123,7 @@ class CashflowLib extends CashflowCrud {
 
 		Cashflow::model()->commit();
 
-		\account\LogLib::save('attach', 'cashflow', ['id' => $eCashflow['id'], 'operations' => $operations]);
+		\account\LogLib::save('attach', 'Cashflow', ['id' => $eCashflow['id'], 'operations' => $operations]);
 	}
 
 	public static function deleteCasfhlow(Cashflow $eCashflow): void {
