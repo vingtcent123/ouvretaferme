@@ -986,7 +986,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		// Met à jour l'asset
 		Asset::model()
 			->update($eAsset, [
-				'status' => Asset::ENDED,
 				'excessRecovery' => new \Sql('excessRecovery + '.$amount),
 				'updatedAt' => new \Sql('NOW()'),
 			]);

@@ -25,7 +25,9 @@ class JournalCode extends JournalCodeElement {
 		$p
 			->setCallback('code.check', function(string $code): bool {
 
-				return $this['isCustom'];
+				return (JournalCode::model()
+					->whereCode($code)
+					->count() === 0);
 
 			});
 

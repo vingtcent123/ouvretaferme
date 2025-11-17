@@ -6,6 +6,9 @@ Class JournalCodeLib extends JournalCodeCrud {
 	public static function getPropertiesCreate(): array {
 		return ['name', 'code', 'color', 'isReversable', 'isDisplayed'];
 	}
+	public static function getPropertiesUpdate(): array {
+		return ['name', 'color', 'isReversable', 'isDisplayed'];
+	}
 
 	public static function getAll(): \Collection {
 
