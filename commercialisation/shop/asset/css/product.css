@@ -777,6 +777,11 @@ body:not([data-template~="shop-embedded"]) {
 	width: 1rem;
 }
 
+.shop-product-alert {
+	font-weight: bold;
+	margin-top: 0.125rem;
+}
+
 .shop-product-available {
 	white-space: nowrap;
 }

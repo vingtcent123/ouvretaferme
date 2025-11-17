@@ -1145,6 +1145,9 @@ class ProductUi {
 				} else {
 					$h .= $price;
 				}
+				if($eProduct['price'] < 0) {
+					$h .= '<div class="shop-product-alert">'.\Asset::icon('exclamation-circle').' '.s("Prix négatif").'</div>';
+				}
 			$h .= '</td>';
 
 			if($isExpired === FALSE) {
@@ -1350,6 +1353,9 @@ class ProductUi {
 				}
 				$price = \util\TextUi::money($eProduct['price']).$unit;
 				$h .= $eProduct->quick($field, $price);
+				if($eProduct['price'] < 0) {
+					$h .= '<div class="shop-product-alert">'.\Asset::icon('exclamation-circle').' '.s("Prix négatif").'</div>';
+				}
 			$h .= '</td>';
 
 			$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';
