@@ -97,7 +97,6 @@ new \shop\DatePage()
 	})
 	->create(function($data) {
 
-
 		$data->cProduct = \selling\ProductLib::getForSale($data->e['farm'], $data->e['type']);
 
 		// Si c'est une copie : récupérer également la liste des produits de la date en question

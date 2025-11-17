@@ -54,9 +54,13 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
-			->setCallback('children.check', function(array $children) use ($p): bool {
+			->setCallback('children.check', function(?array $children) use ($p): bool {
 
 				$this->expects(['farm', 'date', 'catalog']);
+
+				if($children === NULL) {
+					return FALSE;
+				}
 
 				array_walk($children, fn(&$value) => $value = (int)$value);
 
