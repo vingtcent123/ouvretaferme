@@ -107,10 +107,7 @@ class CashflowLib extends CashflowCrud {
 			throw new \NotExpectedAction('Cashflow #'.$eCashflow['id'].' already attached');
 		}
 
-		$updated = \journal\OperationLib::attachIdsToCashflow($eCashflow, $operations, $eThirdParty, $cPaymentMethod);
-		if($updated !== count($operations)) {
-			throw new \NotExpectedAction($updated.' operations updated instead of '.count($operations).' expected. Cashflow #'.$eCashflow['id'].' not attached.');
-		}
+		\journal\OperationLib::attachIdsToCashflow($eCashflow, $operations, $eThirdParty, $cPaymentMethod);
 
 		$properties = ['status', 'updatedAt'];
 		$eCashflow['status'] = Cashflow::ALLOCATED;

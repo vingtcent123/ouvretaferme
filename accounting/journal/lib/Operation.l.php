@@ -627,12 +627,6 @@ class OperationLib extends OperationCrud {
 
 			}
 
-			foreach(['document', 'documentDate', 'thirdParty'] + ($for === 'create' ? ['date'] : []) as $property) {
-				if(($eOperationDefault[$property] ?? NULL) === NULL) {
-					$eOperationDefault[$property] = $eOperation[$property];
-				}
-			}
-
 			// Ce type d'écriture a un compte de TVA correspondant
 			$eAccount = $cAccounts[$account] ?? new \account\Account();
 			$vatValue = var_filter($vatValues[$index] ?? NULL, 'float', 0.0);
@@ -654,6 +648,12 @@ class OperationLib extends OperationCrud {
 
 			if($eOperation['journalCode']->empty()) {
 					$eOperation['journalCode'] = $cAccounts->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
+			}
+
+			foreach(['document', 'documentDate', 'thirdParty', 'journalCode'] + ($for === 'create' ? ['date'] : []) as $property) {
+				if(($eOperationDefault[$property] ?? NULL) === NULL) {
+					$eOperationDefault[$property] = $eOperation[$property];
+				}
 			}
 
 			if($for === 'create') {
@@ -990,7 +990,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function attachIdsToCashflow(\bank\Cashflow $eCashflow, array $operationIds, \account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): int {
+	public static function attachIdsToCashflow(\bank\Cashflow $eCashflow, array $operationIds, \account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): void {
 
 		// Get the operations AND linked Operations
 		$cOperation = Operation::model()
@@ -1006,7 +1006,7 @@ class OperationLib extends OperationCrud {
 			'paymentDate' => $eCashflow['date'],
 		]);
 
-		$updated = self::addOpenFinancialYearCondition()
+		self::addOpenFinancialYearCondition()
 			->select($properties)
 			->whereId('IN', $cOperation->getIds())
 			->update($eOperation);
@@ -1029,9 +1029,9 @@ class OperationLib extends OperationCrud {
 			'paymentMethod' => $eOperation['paymentMethod'],
 			'financialYear' => $eOperation['financialYear'],
 			'hash' => $eOperation['hash'],
+			'journalCode' => $eOperation['journalCode'],
 		]));
 
-		return $updated;
 	}
 
 	public static function createBankOperationFromCashflow(\bank\Cashflow $eCashflow, Operation $eOperation, ?string $document = NULL): Operation {
@@ -1061,6 +1061,7 @@ class OperationLib extends OperationCrud {
 			'paymentDate' => $eCashflow['date'],
 			'paymentMethod'=> $eOperation['paymentMethod']['id'] ?? NULL,
 			'financialYear'=> $eOperation['financialYear']['id'],
+			'journalCode'=> $eOperation['journalCode']['id'] ?? NULL,
 			'hash'=> $eOperation['hash'],
 		];
 
@@ -1070,7 +1071,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationBank->build([
 			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMethod', 'hash',
+			'operation', 'paymentDate', 'paymentMethod', 'hash', 'journalCode',
 		], $values, new \Properties('create'));
 
 		if($document !== NULL) {
