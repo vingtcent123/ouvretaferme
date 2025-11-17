@@ -61,7 +61,7 @@ class JournalUi {
 
 	public function getBaseUrl(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear = new \account\FinancialYear()): string {
 
-		return \company\CompanyUi::urlJournal($eFarm).'/operations'.'?financialYear='.($eFinancialYear['id'] ?? '').'&journalCode='.GET('journalCode');
+		return \company\CompanyUi::urlJournal($eFarm).'/operations'.'?financialYear='.($eFinancialYear['id'] ?? '');
 
 	}
 	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod, \Collection $cJournalCode): string {
@@ -93,13 +93,18 @@ class JournalUi {
 						0 => s("Toutes les écritures"),
 						1 => s("Écritures non rattachées à une opération bancaire"),
 					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
-					$h .= $form->select('journalCode', $cJournalCode, $search->get('journalCode', 'int'));
+					$journalCode = [];
+					foreach($cJournalCode as $eJournalCode) {
+						$journalCode[$eJournalCode['id']] = $eJournalCode['name'];
+					}
+					$journalCode[-1] = s("Sans journal");
+					$h .= $form->select('journalCode', $journalCode, $search->get('journalCode'), ['placeholder' => s("Journal")]);
 					$h .= $form->select('hasDocument', [
 						0 => s("Avec ou sans pièce comptable"),
 						1 => s("Sans pièce comptable"),
 					], $search->get('hasDocument', 'int', 0), ['mandatory' => TRUE]);
 
-		$h .= '</div>';
+			$h .= '</div>';
 				$h .= '<div>';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';

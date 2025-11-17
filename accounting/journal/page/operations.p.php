@@ -63,7 +63,7 @@ new Page(function($data) {
 
 			$journalCode = GET('journalCode');
 
-			if(in_array($journalCode, $data->cJournalCode->getIds()) === FALSE) {
+			if(in_array($journalCode, $data->cJournalCode->getIds()) === FALSE and $journalCode !== '-1') {
 				$journalCode = NULL;
 			}
 
@@ -75,7 +75,9 @@ new Page(function($data) {
 		}
 
 		$search->set('journalCode', $journalCode);
-
+		if($journalCode === '-1') {
+			$data->search->set('journalCode', $journalCode);
+		}
 		$data->cOperation = new Collection();
 		$data->operationsVat = [];
 
@@ -83,7 +85,7 @@ new Page(function($data) {
 
 			$data->cOperation = \journal\OperationLib::getAllForBankJournal($search, $hasSort);
 
-		} else if(in_array($journalCode, $data->cJournalCode->getIds()) or $code === NULL) {
+		} else if(in_array($journalCode, $data->cJournalCode->getIds()) or $code === NULL or $journalCode === -1) {
 
 			$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
 

@@ -7,7 +7,7 @@ class LogLib extends LogCrud {
 
 		$eLog = new Log([
 			'action' => $action,
-			'element' => $element,
+			'element' => mb_strtolower($element),
 			'params' => $params
 		]);
 

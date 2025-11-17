@@ -64,12 +64,66 @@ namespace account;
  */
 class FecLib  {
 
+	public static function checkDataForFec(\farm\Farm $eFarm, FinancialYear $eFinancialYear): array {
+
+		$eOperation = \journal\Operation::model()
+			->select([
+				'noJournal' => new \Sql('SUM(IF(journalCode IS NULL, 1, 0))', 'int'),
+				'hasJournal' => new \Sql('SUM(IF(journalCode IS NOT NULL, 1, 0))', 'int'),
+				'noDocument' => new \Sql('SUM(IF(document IS NULL, 1, 0))', 'int'),
+				'hasDocument' => new \Sql('SUM(IF(document IS NOT NULL, 1, 0))', 'int'),
+			])
+      ->whereDate('>=', $eFinancialYear['startDate'])
+      ->whereDate('<=', $eFinancialYear['endDate'])
+			->get();
+
+		$eOperationByJournal = \journal\Operation::model()
+			->select([
+				'credit' => new \Sql('SUM(IF(type = "credit", amount, 0))', 'float'),
+				'debit' => new \Sql('SUM(IF(type = "debit", amount, 0))', 'float'),
+				'isBalanced' => new \Sql('SUM(IF(type = "debit", amount, 0)) = SUM(IF(type = "credit", amount, 0))', 'bool'),
+				'journalCode'
+			])
+			->group('journalCode')
+			->getCollection();
+
+		return [
+			'hasSiren' => $eFarm['siret'] !== NULL,
+			'hasJournal' => $eOperation['hasJournal'],
+			'noJournal' => $eOperation['noJournal'],
+			'hasDocument' => $eOperation['hasDocument'],
+			'noDocument' => $eOperation['noDocument'],
+			'journalBalance' => $eOperationByJournal->getArrayCopy(),
+		];
+
+	}
+
+	public static function getFilename(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
+
+		$filename = '';
+
+		if($eFarm['siret'] !== NULL) {
+			$filename .= mb_substr($eFarm['siret'], 0, 9);
+		}
+
+		$filename .= 'FEC';
+
+		if($eFinancialYear->isClosed()) {
+			$filename .= date('Ymd', $filename['closeDate']);
+		} else {
+			$filename .= date('YmdHis');
+		}
+
+		return $filename.'.txt';
+
+	}
+
 	/**
 	 * TODO : faire une notice justificative (?)
 	 * @param FinancialYear $eFinancialYear
 	 * @return string
 	 */
-	public static function generate(FinancialYear $eFinancialYear): string {
+	public static function generate(FinancialYear $eFinancialYear, string $startDate, string $endDate): string {
 
 		$headers = [
 			'JournalCode', // peut être vide Alphanumérique
@@ -101,12 +155,16 @@ class FecLib  {
 			join('|', $headers),
 		];
 
-		$search = new \Search(['financialYear' => $eFinancialYear]);
+		$search = new \Search(['financialYear' => $eFinancialYear, 'startDate' => $startDate, 'endDate' => $endDate]);
 		$cOperation = \journal\OperationLib::getAllForJournal($search);
 
 		$number = 1;
 
 		foreach($cOperation as $eOperation) {
+
+			if($eOperation['amount'] === 0.0) {
+				continue;
+			}
 
 			$operationData = [
 				$eOperation['journalCode']['code'] ?? 'GEN',
@@ -137,7 +195,7 @@ class FecLib  {
 
 		}
 
-		LogLib::save('generateFec', 'operation', ['financialYear' => $eFinancialYear['id']]);
+		LogLib::save('generateFec', 'Operation', ['financialYear' => $eFinancialYear['id']]);
 
 		return join("\n", $fecData);
 
