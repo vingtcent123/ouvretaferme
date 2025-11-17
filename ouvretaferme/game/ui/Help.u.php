@@ -32,10 +32,10 @@ class HelpUi {
 				$h .= '<p>'.s("Vous démarrez avec un plateau de 16 parcelles prêtes à être cultivées !").'</p>';
 				$h .= '<p>'.s("Vous disposez chaque jour de {value} heures de temps de travail que vous pouvez répartir sur les différentes actions :", GameSetting::TIME_DAY).'</p>';
 				$h .= '<ul>';
-					$h .= '<li>'.s("<b>IMPLANTER</b> une nouvelle culture sur une de vos parcelles coûte {value}", PlayerUi::getTime(GameSetting::TIME_PLANTING)).'</i></li>';
+					$h .= '<li>'.s("<b>SEMER</b> une nouvelle culture sur une de vos parcelles coûte {value}", PlayerUi::getTime(GameSetting::TIME_PLANTING)).'</i></li>';
 					$h .= '<li>'.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures coûte {value}", PlayerUi::getTime(GameSetting::TIME_HARVESTING)).'</li>';
-					$h .= '<li>'.s("<b>DORLOTER</b> une de vos cultures avance sa date de récolte de 2 jours et coûte {value}", PlayerUi::getTime(GameSetting::TIME_CUDDLE)).'</li>';
-					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celle d'un autre joueur coûte {value}", PlayerUi::getTime(GameSetting::TIME_WATERING)).'</li>';
+					$h .= '<li>'.s("<b>DÉSHERBER</b> une de vos cultures avance sa date de récolte de 2 jours et coûte {value}", PlayerUi::getTime(GameSetting::TIME_WEED)).'</li>';
+					$h .= '<li>'.s("<b>ARROSER</b> une de vos cultures ou celle d'un ami coûte {value}", PlayerUi::getTime(GameSetting::TIME_WATERING)).'</li>';
 					$h .= '<li>'.s("<b>TROQUER</b> des légumes avec les autres joueurs coûte {value}", PlayerUi::getTime(GameSetting::TIME_MARKET)).'</li>';
 				$h .= '</ul>';
 				$h .= '<p>'.s("Votre compteur de temps de travail est remis à zéro chaque nuit à minuit. Les actions décomptent votre temps de travail, mais vous n'avez pas à attendre, elles sont réalisées immédiatement !").'</p>';

@@ -10,7 +10,7 @@ class DemoLib {
 	const COPY_FARM = 7;
 
 	const COPY_PACKAGE_EXCLUDE = [
-		'dev', 'session', 'storage', 'mail',
+		'dev', 'session', 'storage', 'mail', 'game',
 		'analyze', 'shop', 'website'
 	];
 
