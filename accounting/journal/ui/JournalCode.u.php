@@ -61,6 +61,8 @@ Class JournalCodeUi {
 						$h .= '<th class="text-center">';
 							$h .= s("Nombre de comptes");
 						$h .= '</th>';
+						$h .= '<th>';
+						$h .= '</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -119,6 +121,12 @@ Class JournalCodeUi {
 
 						$h .= '<td class="text-center">';
 							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/journalCode:accounts?id='.$eJournalCode['id'].'">'.$eJournalCode['accounts'].'</a>';
+						$h .= '</td>';
+
+						$h .= '<td>';
+							if($eJournalCode->acceptDelete()) {
+								$h .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/journalCode:doDelete" post-id="'.$eJournalCode['id'].'" class="btn btn-danger">'.\Asset::icon('trash').'</a>';
+							}
 						$h .= '</td>';
 
 					$h .= '</tr>';

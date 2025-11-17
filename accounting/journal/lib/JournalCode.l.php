@@ -49,4 +49,18 @@ Class JournalCodeLib extends JournalCodeCrud {
 
 	}
 
+	public static function delete(JournalCode $e): void {
+
+		JournalCode::model()->beginTransaction();
+
+		parent::delete($e);
+
+		\account\Account::model()
+			->whereByJournalCode($e)
+			->update(['journalCode' => NULL]);
+
+		JournalCode::model()->commit();
+
+	}
+
 }

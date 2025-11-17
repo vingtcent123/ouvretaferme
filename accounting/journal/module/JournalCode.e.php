@@ -14,7 +14,7 @@ class JournalCode extends JournalCodeElement {
 
 	}
 
-	public function canDelete(): bool {
+	public function acceptDelete(): bool {
 
 		return $this['isCustom'] === TRUE and Operation::model()->whereJournalCode($this)->count() === 0;
 
