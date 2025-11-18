@@ -56,7 +56,7 @@ Class JournalCodeLib extends JournalCodeCrud {
 		parent::delete($e);
 
 		\account\Account::model()
-			->whereByJournalCode($e)
+			->whereJournalCode($e)
 			->update(['journalCode' => NULL]);
 
 		JournalCode::model()->commit();
