@@ -16,7 +16,7 @@ new \mail\CampaignPage()
 		switch($eCampaign['source']) {
 
 			case \mail\Campaign::SHOP :
-				$eCampaign['sourceShop'] = \shop\ShopLib::getById(INPUT('sourceShop'))->validateShareRead($data->eFarm);
+				$eCampaign['sourceShop'] = \shop\ShopLib::getById(INPUT('sourceShop'))->validateShare($data->eFarm);
 				break;
 
 			case \mail\Campaign::GROUP :

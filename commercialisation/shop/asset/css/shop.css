@@ -387,6 +387,7 @@ div.shop-widget-order {
 	font-weight: normal;
 	padding: 0.25rem 0.75rem;
 	vertical-align: middle;
+	white-space: nowrap;
 }
 
 .shop-list-item-content {

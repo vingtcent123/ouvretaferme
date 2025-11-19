@@ -1192,7 +1192,7 @@ class ProductUi {
 		$h .= '</tr>';
 
 		if($hasLimits) {
-			$h .= $this->getLimits($columns, $eProduct, $eDate['cCustomer'], $eDate['cGroup'], excludeAt: TRUE, outCatalog: $outCatalog);
+			$h .= $this->getLimits($columns, $eProduct, $eDate['cCustomer'], $eDate['cGroup'], $canGroup, excludeAt: TRUE, outCatalog: $outCatalog);
 		}
 
 		return $h;
@@ -1238,7 +1238,7 @@ class ProductUi {
 					if($eProduct['parent'] === FALSE) {
 
 						$h .= '<tbody>';
-							$h .= $this->getOneByCatalog($eCatalog, $eProduct, $columns);
+							$h .= $this->getOneByCatalog($eCatalog, $eProduct, $columns, FALSE);
 						$h .= '</tbody>';
 
 					} else {
@@ -1275,7 +1275,7 @@ class ProductUi {
 							$h .= '</tr>';
 
 							foreach($eProduct['cProductChild'] as $eProductChild) {
-								$h .= $this->getOneByCatalog($eCatalog, $eProductChild, $columns);
+								$h .= $this->getOneByCatalog($eCatalog, $eProductChild, $columns, TRUE);
 							}
 
 						$h .= '</tbody>';
@@ -1293,12 +1293,13 @@ class ProductUi {
 
 	}
 
-	protected function getOneByCatalog(Catalog $eCatalog, Product $eProduct, int $columns): string {
+	protected function getOneByCatalog(Catalog $eCatalog, Product $eProduct, int $columns, bool $inGroup): string {
 
 		$eProductSelling = $eProduct['product'];
 		$uiProductSelling = new \selling\ProductUi();
 
 		$hasLimits = (
+			$inGroup === FALSE and
 			$eProduct['promotion'] !== Product::NONE or
 			$eProduct['limitCustomers'] or
 			$eProduct['limitGroups'] or
@@ -1378,7 +1379,7 @@ class ProductUi {
 		$h .= '</tr>';
 
 		if($hasLimits) {
-			$h .= $this->getLimits($columns, $eProduct, $eCatalog['cCustomer'], $eCatalog['cGroup']);
+			$h .= $this->getLimits($columns, $eProduct, $eCatalog['cCustomer'], $eCatalog['cGroup'], $inGroup);
 		}
 
 		return $h;
@@ -1434,9 +1435,13 @@ class ProductUi {
 
 	}
 
-	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, \Collection $cCustomerGroup, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
+	protected function getLimits(int $columns, Product $eProduct, \Collection $cCustomer, \Collection $cCustomerGroup, bool $canGroup, bool $excludeAt = FALSE, bool $outCatalog = FALSE): string {
 
 		$h = '<tr>';
+
+			if($canGroup) {
+				$h .= '<td class="shop-product-group-first shop-product-group-readonly"></td>';
+			}
 
 			$h .= '<td colspan="'.$columns.'" style="padding-top: 0; padding-bottom: 0rem">';
 

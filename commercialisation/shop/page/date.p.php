@@ -4,7 +4,7 @@ new \farm\FarmPage()
 
 		$data->eDate = \shop\DateLib::getById(GET('date'))->validate();
 
-		$data->eShop = \shop\ShopLib::getById($data->eDate['shop'])->validateShareRead($data->e);
+		$data->eShop = \shop\ShopLib::getById($data->eDate['shop'])->validateShare($data->e);
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->eShop['farm']);
 
 		if($data->eShop['shared']) {
@@ -138,8 +138,8 @@ new \shop\DatePage()
 	})
 	->read('downloadSales', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
-		$data->eShop = \shop\ShopLib::getById($data->e['shop'])->validateShareRead($data->eFarm);
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eShop = \shop\ShopLib::getById($data->e['shop'])->validateShare($data->eFarm, validateShared: 'canWrite');
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e);
 
@@ -148,7 +148,13 @@ new \shop\DatePage()
 		}
 
 		$filename = 'sales-'.$data->e['id'].'.pdf';
-		$content = \selling\PdfLib::build('/shop/date:getSales?id='.$data->e['id'].'&farm='.$data->eFarm['id'], $filename);
+
+		$url = '/shop/date:getSales?id='.$data->e['id'];
+		if($data->eFarm->notEmpty()) {
+			$url .= '&farm='.$data->eFarm['id'];
+		}
+
+		$content = \selling\PdfLib::build($url, $filename);
 
 		throw new PdfAction($content, $filename);
 
@@ -165,7 +171,7 @@ new Page()
 			'shop' => \shop\ShopElement::getSelection()
 		]);
 
-		$data->eDate['shop']->validateShareRead($data->eCatalog['farm']);
+		$data->eDate['shop']->validateShare($data->eCatalog['farm']);
 
 		// On ne vérifie l'existence du catalogue qu'en cas d'ajout à la vente
 		if($newStatus) {
@@ -209,7 +215,10 @@ new Page()
 
 			$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
-			if(\shop\ShareLib::match($data->e['shop'], $data->eFarm) === FALSE) {
+			if(
+				$data->eFarm->notEmpty() and
+				\shop\ShareLib::match($data->e['shop'], $data->eFarm) === FALSE
+			) {
 				throw new NotExpectedAction('Invalid match');
 			}
 

@@ -191,7 +191,7 @@ class ItemLib extends ItemCrud {
 				'deliveredAt' => fn() => $eDate['deliveryDate'],
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])
-			->whereFarm($eFarm)
+			->whereFarm($eFarm, if: $eFarm->notEmpty())
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CLOSED])
 			->whereIngredientOf(NULL)
 			->whereShopDate($eDate)

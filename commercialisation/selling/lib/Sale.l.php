@@ -142,9 +142,10 @@ class SaleLib extends SaleCrud {
 
 		Sale::model()
 			->where('m1.id', 'IN', $ids)
-			->sort(new \Sql('IF(lastName IS NULL, name, lastName), firstName, m1.id'));
+			->sort(new \Sql('IF(lastName IS NULL, name, lastName), firstName, m1.id'))
+			->where('m1.farm', $eFarm);
 
-		return self::getForLabels($eFarm, $selectItems);
+		return self::getForLabels($selectItems);
 	}
 
 	public static function getForLabelsByDate(\farm\Farm $eFarm, \shop\Date $eDate, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
@@ -152,10 +153,11 @@ class SaleLib extends SaleCrud {
 		Sale::model()
 			->whereShopDate($eDate)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
-			->sort(new \Sql('shopPoint, IF(lastName IS NULL, name, lastName), firstName, m1.id'));
+			->sort(new \Sql('shopPoint, IF(lastName IS NULL, name, lastName), firstName, m1.id'))
+			->where('m1.farm', $eFarm, if: $eFarm->notEmpty());
 
 
-		return self::getForLabels($eFarm, $selectItems, $selectPoint);
+		return self::getForLabels($selectItems, $selectPoint);
 
 	}
 
@@ -262,7 +264,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	private static function getForLabels(\farm\Farm $eFarm, bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
+	private static function getForLabels(bool $selectItems = FALSE, bool $selectPoint = FALSE): \Collection {
 
 		if($selectPoint) {
 			Sale::model()->select([
@@ -273,7 +275,6 @@ class SaleLib extends SaleCrud {
 		$cSale = Sale::model()
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->select(Sale::getSelection())
-			->where('m1.farm', $eFarm)
 			->getCollection();
 
 		if($selectItems) {

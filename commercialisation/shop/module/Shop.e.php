@@ -20,25 +20,31 @@ class Shop extends ShopElement {
 
 	}
 
-	public function validateShareRead(\farm\Farm $eFarm): self {
+	public function validateShare(\farm\Farm $eFarm, string $validatePersonal = 'canRead', string $validateShared = 'canRead'): self {
+
+		if($this->canShare($eFarm, $validatePersonal, $validateShared) === FALSE) {
+			throw new \NotAllowedAction();
+		}
+
+		return $this;
+
+	}
+
+	public function canShare(\farm\Farm $eFarm, string $validatePersonal = 'canRead', string $validateShared = 'canRead'): bool {
 
 		if(
 			$this->empty() or
 			$this['shared'] === FALSE
 		) {
-			return $this->validate('canRead');
+			return $this->$validatePersonal();
 		} else {
 
 			$this->expects(['shared']);
 
-			if(
-				$this->canRead() or
-				$this->canShareRead($eFarm)
-			) {
-				return $this;
-			} else {
-				throw new \NotAllowedAction();
-			}
+			return (
+				($validateShared === 'canRead' and ($this->canRead() or $this->canShareRead($eFarm))) or
+				($validateShared === 'canWrite' and $this->canWrite())
+			);
 
 		}
 

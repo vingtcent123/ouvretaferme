@@ -615,9 +615,11 @@ class DateUi {
 
 							$h .= '<td class="text-end" style="white-space: nowrap">';
 
-								if($eDate['sales']['countValid'] > 0) {
+								if(
+									$eDate['sales']['countValid'] > 0 and $eShop->canShare($eFarm, validateShared: 'canWrite')
+								) {
 
-									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eDate['farm']['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
 
 								}
 
@@ -876,13 +878,13 @@ class DateUi {
 							$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une commande").'</a> ';
 						}
 
-						if(
-							$cSale->notEmpty() and
-							($eShop->isPersonal() or $eShop->canWrite() === FALSE) // L'administrateur ne peut pas télécharger de PDF
-						) {
-							$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'&farm='.$eFarm['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
-						}
+					}
 
+					if(
+						$cSale->notEmpty() and
+						$eShop->canShare($eFarm, validateShared: 'canWrite')
+					) {
+						$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eShop['eFarmSelected']->empty() ? '' : '&farm='.$eShop['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
 					}
 
 				$actions .= '</div>';
