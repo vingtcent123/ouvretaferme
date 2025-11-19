@@ -53,7 +53,7 @@ class UnitUi {
 		) {
 
 			$text = ' / ';
-			$text .= self::getSingular($unit, $short, TRUE);
+			$text .= self::getSingular($unit, $short);
 
 		} else {
 			$text = '';
