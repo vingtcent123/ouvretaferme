@@ -170,19 +170,28 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	public static function computeTable(Asset $eAsset): array {
 
 		$table = self::computeTheoricTable($eAsset);
-
+if($eAsset['id'] === 88) {
+	//dd($table);
+}
 		if($eAsset['endedDate'] === NULL) {
 			return $table;
 		}
 
 		$effectiveTable = [];
 		$amortizationCumulated = 0;
+		$amortizationFiscalCumulated = 0;
 
 		foreach($table as $year => $period) {
 
 			if($eAsset['endedDate'] > $period['financialYear']['endDate']) {
 				$effectiveTable[$year] = $period;
 				$amortizationCumulated += $period['amortizationValue'];
+				$amortizationFiscalCumulated += $period['fiscalAmortizationValue'];
+				continue;
+			}
+
+			// Déjà fini !
+			if($eAsset['endedDate'] < $period['financialYear']['startDate']) {
 				continue;
 			}
 
@@ -190,6 +199,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$amortization = self::computeAmortizationUntil($eAsset, $eAsset['endedDate'], 'economic');
 			$amortizationCumulated = round($amortizationCumulated + $amortization, 2);
 			$amortizationFiscal = self::computeAmortizationUntil($eAsset, $eAsset['endedDate'], 'fiscal');
+			$amortizationFiscalCumulated = round($amortizationFiscalCumulated + $amortizationFiscal, 2);
 
 			$excessDotation = 0;
 			$excessRecovery = 0;
@@ -218,6 +228,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'amortizationValue' => $amortization,
 				'amortizationValueCumulated' => $amortizationCumulated,
 				'endValue' => round($period['base'] - $amortizationCumulated, 2),
+				'fiscalAmortizationValue' => $amortizationFiscal,
+				'fiscalAmortizationValueCumulated' => $amortizationFiscalCumulated,
 				'excessDotation' => $excessDotation,
 				'excessRecovery' => $excessRecovery,
 			];

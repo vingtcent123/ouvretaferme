@@ -662,21 +662,24 @@ Class AssetUi {
 								$h .= '<td class="text-end highlight-stick-right">';
 									$h .= \util\TextUi::money($period['amortizationValueCumulated']);
 								$h .= '</td>';
+
 								if($eAsset['isExcess']) {
 
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
-								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
-								$h .= '</td>';
 									$h .= '<td class="text-end highlight-stick-right">';
-										$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
+										$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
 									$h .= '</td>';
 									$h .= '<td class="text-end highlight-stick-right">';
-										$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
+										$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
 									$h .= '</td>';
+										$h .= '<td class="text-end highlight-stick-right">';
+											$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
+										$h .= '</td>';
+										$h .= '<td class="text-end highlight-stick-right">';
+											$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
+										$h .= '</td>';
+
 								}
+
 								$h .= '<td class="text-end highlight-stick-right">';
 									$h .= \util\TextUi::money($period['endValue']);
 								$h .= '</td>';
