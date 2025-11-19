@@ -170,9 +170,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	public static function computeTable(Asset $eAsset): array {
 
 		$table = self::computeTheoricTable($eAsset);
-if($eAsset['id'] === 88) {
-	//dd($table);
-}
+
 		if($eAsset['endedDate'] === NULL) {
 			return $table;
 		}
@@ -368,22 +366,17 @@ if($eAsset['id'] === 88) {
 
 		$amortizableBase = AssetLib::getAmortizableBase($eAsset, $type);
 
-		$amortization = NULL;
-
 		for($i = 0; $i <= $durationInYears; $i++) {
 
-			if($amortization === NULL) {
-
-				switch($i) {
-					case 0:
-						$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
-						break;
-					case $durationInYears:
-						$amortization = round($amortizableBase - $amortizationCumulated, 2);
-						break;
-					default:
-						$amortization = round($amortizableBase * $rate / 100, 2);
-				}
+			switch($i) {
+				case 0:
+					$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
+					break;
+				case $durationInYears:
+					$amortization = round($amortizableBase - $amortizationCumulated, 2);
+					break;
+				default:
+					$amortization = round($amortizableBase * $rate / 100, 2);
 			}
 
 			$amortizationCumulated += $amortization;
@@ -482,14 +475,18 @@ if($eAsset['id'] === 88) {
 			$rate = round(max($linearRate, $degressiveRate), 2);
 
 			switch($i) {
+
 				case 0:
 					$amortization = round(($amortizableBase) * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
 					break;
+
 				case $durationInYears:
 					$amortization = round(($amortizableBase - $amortizationCumulated), 2);
 					break;
+
 				default:
 					$amortization = round(($amortizableBase - $amortizationCumulated) * $rate / 100, 2);
+
 			}
 
 			$base = round($amortizableBase - $amortizationCumulated, 2);
