@@ -478,13 +478,22 @@ class ProductLib extends ProductCrud {
 
 		foreach($cProduct as $eProduct) {
 
-			if($cProductChild->offsetExists($eProduct['id'])) {
+			if(
+				$cProductChild->offsetExists($eProduct['id']) or // C'est un enfant, il va être passé dans cProductChild
+			) {
 				continue;
 			}
 
 			$eProduct['child'] = FALSE;
 
 			if($eProduct['parent']) {
+
+				if(
+					$ccRelation->offsetExists($eProduct['id']) === FALSE // Tous les enfants de ce parent sont désactivés
+				) {
+					continue;
+				}
+
 
 				$eProduct['cProductChild'] = new \Collection();
 				$eProduct['product'] = new \selling\Product([
