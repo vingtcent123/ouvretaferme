@@ -479,7 +479,7 @@ class ProductLib extends ProductCrud {
 		foreach($cProduct as $eProduct) {
 
 			if(
-				$cProductChild->offsetExists($eProduct['id']) or // C'est un enfant, il va être passé dans cProductChild
+				$cProductChild->offsetExists($eProduct['id']) // C'est un enfant, il va être passé dans cProductChild
 			) {
 				continue;
 			}
