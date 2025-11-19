@@ -243,10 +243,12 @@ if($eAsset['id'] === 88) {
 		$economicTable = match($eAsset['economicMode']) {
 			Asset::LINEAR => self::computeLinearTable($eAsset, 'economic'),
 			Asset::DEGRESSIVE => self::computeDegressiveTable($eAsset, 'economic'),
+			default => [],
 		};
 		$fiscalTable = match($eAsset['fiscalMode']) {
 			Asset::LINEAR => self::computeLinearTable($eAsset, 'fiscal'),
 			Asset::DEGRESSIVE => self::computeDegressiveTable($eAsset, 'fiscal'),
+			default => [],
 		};
 
 		if($eAsset['isExcess'] === FALSE) {
