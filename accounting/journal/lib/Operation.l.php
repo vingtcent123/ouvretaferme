@@ -490,7 +490,7 @@ class OperationLib extends OperationCrud {
 
 		$fw = new \FailWatch();
 
-		if($eFinancialYear->canUpdate() === FALSE) {
+		if($eFinancialYear->acceptUpdate() === FALSE) {
 			\Fail::log('Operation::FinancialYear.notUpdatable');
 			return new \Collection();
 		}

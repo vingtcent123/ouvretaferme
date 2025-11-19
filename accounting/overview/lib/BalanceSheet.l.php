@@ -164,7 +164,7 @@ Class BalanceSheetLib {
 		$noResult = (isset($balanceSheetData['equity'][\account\AccountSetting::PROFIT_CLASS]) === FALSE and isset($balanceSheetData['equity'][\account\AccountSetting::LOSS_CLASS]) === FALSE);
 
 		// On rajoute le résultat si l'exercice est encore ouvert
-		if($noResult or $eFinancialYear->canUpdate()) {
+		if($noResult or $eFinancialYear->acceptUpdate()) {
 
 			$result = \overview\IncomeStatementLib::computeResult($eFinancialYear);
 			$class = ($result > 0 ? \account\AccountSetting::PROFIT_CLASS : \account\AccountSetting::LOSS_CLASS);

@@ -7,7 +7,7 @@ new AdaptativeView('/asset/amortization', function($data, FarmTemplate $t) {
 	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/amortization';
 
-	$t->mainTitle = new \asset\AmortizationUi()->getTitle();
+	$t->mainTitle = new \asset\AmortizationUi()->getTitle($data->eFarm, $data->eFinancialYear);
 
 	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
 		function(\account\FinancialYear $eFinancialYear) use ($data) {

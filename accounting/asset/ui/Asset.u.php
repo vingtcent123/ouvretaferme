@@ -57,7 +57,7 @@ Class AssetUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Asset $eAsset = new Asset()): \Panel {
+	public function create(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset = new Asset()): \Panel {
 
 		$script = '<script type="text/javascript">';
 			$script .= 'Asset.initFiscalDurations('.json_encode($eAsset['cAmortizationDuration']).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
@@ -72,7 +72,7 @@ Class AssetUi {
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->dynamicGroups($eAsset, ['description*']);
-
+		
 		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset) {
 			$d->autocompleteDispatch = '[data-account="'.$form->getId().'"]';
 			$d->attributes['data-wrapper'] = 'account';
@@ -84,6 +84,25 @@ Class AssetUi {
 		}]);
 
 		$h .= $form->dynamicGroups($eAsset, ['value*', 'residualValue', 'acquisitionDate*', 'startDate']);
+
+		$h .= '<div class="mb-1"><a onclick="Asset.showAlreadyAmortizePart();" class="color-muted font-md" data-already-amortize-icon>';
+			$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
+			$h .= ' ';
+			$h .= s("L'amortissement de cette immobilisation a déjà commencé");
+		$h .= '</a></div>';
+		$h .= '<div data-already-amortize-part class="hide">';
+			$h .= '<h3>'.s("Réintégration de l'immobilisation").'</h3>';
+			$h .= $form->group(
+				s("Exercice"),
+				$form->select(
+					'resumeDate',
+					$cFinancialYear->toArray(fn($e) => [
+						'value' => $e['startDate'], 'label' => s("Exercice {value}", \account\FinancialYearUi::getYear($e))
+					])
+				).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
+			);
+		$h .= '</div>';
+
 		$h .= '<h3>'.s("Amortissement économique").'</h3>';
 		$h .= '<div class="util-block bg-background-light">';
 			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration'], [
@@ -379,7 +398,7 @@ Class AssetUi {
 
 			foreach($eAsset['cAmortization'] as $eAmortization) {
 
-				if($eAmortization['financialYear']['endDate'] > $eFinancialYearLast) {
+				if($eAmortization['financialYear']->notEmpty() and $eAmortization['financialYear']['endDate'] > $eFinancialYearLast) {
 					$eFinancialYearLast = $eAmortization['financialYear'];
 				}
 
@@ -585,16 +604,28 @@ Class AssetUi {
 									$h .= '<th class="text-center">'.s("Taux").'</th>';
 								}
 
-							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement éco").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement éco").'</th>';
+
+							if($eAsset['isExcess']) {
+
+								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement fiscal").'</th>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement fiscal").'</th>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement dérogatoire").'</th>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Reprise dérogatoire").'</th>';
+
+							}
+
 							$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
-							$h .= '<th>'.self::p('status')->label.'</th>';
 						$h .= '</tr>';
 					$h .= '</thead>';
 
 					$h .= '<tbody>';
+
 						foreach($eAsset['table'] as $period) {
-							$h .= '<tr class="'.($period['amortization']->empty() ? 'asset-line-future' : '').'">';
+
+							$h .= '<tr class="'.(($period['amortization'] ?? new Amortization())->empty() ? 'asset-line-future' : '').'">';
+
 								$h .= '<td class="text-center">';
 									$h .= \account\FinancialYearUi::getYear($period['financialYear']);
 								$h .= '</td>';
@@ -604,23 +635,23 @@ Class AssetUi {
 
 								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
-									$h .= '<td class="text-center">';
+									$h .= '<td class="text-center td-min-content">';
 										$h .= s("{value} %", $period['linearRate']);
 									$h .= '</td>';
 
 
-									$h .= '<td class="text-center">';
+									$h .= '<td class="text-center td-min-content">';
 										$h .= s("{value} %", $period['degressiveRate']);
 									$h .= '</td>';
 
 
-									$h .= '<td class="text-center">';
+									$h .= '<td class="text-center td-min-content">';
 										$h .= s("{value} %", $period['rate']);
 									$h .= '</td>';
 
 								} else {
 
-									$h .= '<td class="text-center">';
+									$h .= '<td class="text-center td-min-content">';
 										$h .= s("{value} %", $period['rate']);
 									$h .= '</td>';
 
@@ -631,15 +662,23 @@ Class AssetUi {
 								$h .= '<td class="text-end highlight-stick-right">';
 									$h .= \util\TextUi::money($period['amortizationValueCumulated']);
 								$h .= '</td>';
+								if($eAsset['isExcess']) {
+
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
+								$h .= '</td>';
+									$h .= '<td class="text-end highlight-stick-right">';
+										$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
+									$h .= '</td>';
+									$h .= '<td class="text-end highlight-stick-right">';
+										$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
+									$h .= '</td>';
+								}
 								$h .= '<td class="text-end highlight-stick-right">';
 									$h .= \util\TextUi::money($period['endValue']);
-								$h .= '</td>';
-								$h .= '<td>';
-									if($period['amortization']->empty()) {
-										$h .= s("En attente...");
-									} else {
-										$h .= s("Comptabilisé le {value} ", \util\DateUi::numeric($period['amortization']['date']));
-									}
 								$h .= '</td>';
 							$h .= '</tr>';
 						}
@@ -694,9 +733,9 @@ Class AssetUi {
 						$h .= '<tr id="'.$eAsset['id'].'">';
 
 						$h .= '<td>'.encode($eAsset['description']).'</td>';
-						$h .= '<td>'.encode($eAsset['asset']['description']).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['alreadyRecognized']).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).'</td>';
+						$h .= '<td>'./*encode($eAsset['asset']['description']).*/'</td>';
+						$h .= '<td class="text-end">'./*\util\TextUi::money($eAsset['alreadyRecognized']).*/'</td>';
+						$h .= '<td class="text-end">'./*\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).*/'</td>';
 						$h .= '<td>'.s("Débit {accountDebit} / Crédit {accountCredit}", [
 							'accountDebit' => encode($eAsset['account']['class']),
 							'accountCredit' => \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS,
@@ -758,6 +797,7 @@ Class AssetUi {
 			'endDate' => s('Date de fin'),
 			'description' => s('Libellé'),
 			'residualValue' => s('Valeur résiduelle'),
+			'resumeFinancialYear' => s("Exercice de reprise sur {siteName}"),
 		]);
 
 		switch($property) {
@@ -800,6 +840,11 @@ Class AssetUi {
 					AssetElement::DEGRESSIVE => s("Dégressif"),
 					AssetElement::WITHOUT => s("Sans"),
 				];
+				break;
+
+			case 'economicDuration':
+			case 'fiscalDuration':
+				$d->append = s("mois");
 				break;
 
 			case 'residualValue':

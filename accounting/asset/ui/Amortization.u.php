@@ -8,13 +8,19 @@ Class AmortizationUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public static function getTitle(): string {
+	public static function getTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= s("Amortissements");
+				$h .= s("Immobilisations & amortissements");
 			$h .= '</h1>';
+
+			if($eFinancialYear->acceptUpdate()) {
+				$h .= '<div>';
+					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/asset:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une immobilisation").'</a> ';
+				$h .= '</div>';
+			}
 
 		$h .= '</div>';
 
@@ -68,14 +74,16 @@ Class AmortizationUi {
 				if($amortization['economicMode'] and $amortization['fiscalMode']) {
 
 					$h .= match($amortization['economicMode']) {
-						AssetElement::LINEAR => 'L',
-						AssetElement::WITHOUT => 'S',
+						Asset::LINEAR => 'L',
+						Asset::DEGRESSIVE => 'D',
+						Asset::WITHOUT => 'S',
 						default => '',
 					};
 					$h .= '/';
 					$h .= match($amortization['fiscalMode']) {
-						AssetElement::LINEAR => 'L',
-						AssetElement::WITHOUT => 'S',
+						Asset::LINEAR => 'L',
+						Asset::DEGRESSIVE => 'D',
+						Asset::WITHOUT => 'S',
 						default => '',
 					};
 				}
@@ -93,6 +101,7 @@ Class AmortizationUi {
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['startFinancialYearValue'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearAmortization'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearRecovery'] ?? 0, $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['endFinancialYearValue'], $default, 2).'</td>';
 
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], '0.00', 2).'</td>';
@@ -132,7 +141,7 @@ Class AmortizationUi {
 					$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("VNC fin").'</th>';
-					$h .= '<th colspan="3" class="text-center">'.s("Amortissements dérogatoires").'</th>';
+					$h .= '<th colspan="4" class="text-center">'.s("Amortissements dérogatoires").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("VNF fin").'</th>';
 				$h .= '</tr>';
 				$h .= '<tr>';
@@ -144,6 +153,7 @@ Class AmortizationUi {
 					$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
+					$h .= '<th class="text-center">'.s("Reprise exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
 				$h .= '</tr>';
 			$h .= '</thead>';

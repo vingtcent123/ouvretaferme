@@ -82,7 +82,7 @@ class Stock extends StockElement {
 
 				$eFinancialYear = \account\FinancialYearLib::getById($eFinancialYear['id']);
 
-				return $eFinancialYear->notEmpty() and $eFinancialYear->canUpdate();
+				return $eFinancialYear->acceptUpdate();
 
 			})
 		;

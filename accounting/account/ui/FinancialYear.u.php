@@ -70,7 +70,7 @@ class FinancialYearUi {
 
 			$h .= '<div class="dropdown-title">'.s("Exercice {year}", ['year' => self::getYear($eFinancialYear)]).'</div>';
 
-			if($eFinancialYear->canUpdate()) {
+			if($eFinancialYear->acceptUpdate()) {
 
 				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 					$h .= s("Modifier");
@@ -682,7 +682,7 @@ class FinancialYearUi {
 			$h .= new \journal\StockUi()->listForClosing($eFarm, $eFinancialYear, $cStock);
 
 			// Étape 3 : Visualisation des amortissements
-
+			//$h .= new \asset\AssetUi()->listAmortizations($form, $cAsset);
 
 			// Étape 4 : Visualisation des subventions
 			$h .= new \asset\AssetUi()->listGrantsForClosing($form, $cAssetGrant);

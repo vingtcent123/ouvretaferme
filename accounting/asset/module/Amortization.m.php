@@ -44,7 +44,7 @@ class AmortizationModel extends \ModuleModel {
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'type' => ['enum', [\asset\Amortization::ECONOMIC, \asset\Amortization::EXCESS], 'cast' => 'enum'],
 			'date' => ['date', 'cast' => 'string'],
-			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
+			'financialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 

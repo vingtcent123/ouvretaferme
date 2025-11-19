@@ -79,7 +79,7 @@ class Operation extends OperationElement {
 				or mb_substr($this['accountLabel'], 0, mb_strlen(\account\AccountSetting::PRODUCT_ACCOUNT_CLASS)) === (string)\account\AccountSetting::PRODUCT_ACCOUNT_CLASS
 			)
 			and $this['financialYear']['id'] === $eFinancialYear['id']
-			and $eFinancialYear->canUpdate();
+			and $eFinancialYear->acceptUpdate();
 
 	}
 

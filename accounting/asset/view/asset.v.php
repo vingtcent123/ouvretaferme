@@ -2,7 +2,7 @@
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()->create($data->eFarm, $data->e);
+	return new \asset\AssetUi()->create($data->eFarm, $data->cFinancialYear, $data->e);
 
 });
 

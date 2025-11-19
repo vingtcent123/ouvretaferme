@@ -21,6 +21,7 @@ new \asset\AssetPage(function($data) {
 
 		// Références de durées
 		$data->e['cAmortizationDuration'] = \company\AmortizationDurationLib::getAll();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);
 

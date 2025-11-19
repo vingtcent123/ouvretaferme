@@ -140,6 +140,19 @@ class Asset {
 
     }
 
+    static showAlreadyAmortizePart() {
+        const isOpen = qs('.asset-icon-chevron-right').classList.contains('hide');
+        qs('[data-already-amortize-part]').toggle();
+
+        if(isOpen) {
+            qs('a[data-already-amortize-icon] .asset-icon-chevron-down').hide();
+            qs('a[data-already-amortize-icon] .asset-icon-chevron-right').removeHide();
+        } else {
+            qs('a[data-already-amortize-icon] .asset-icon-chevron-down').removeHide();
+            qs('a[data-already-amortize-icon] .asset-icon-chevron-right').hide();
+        }
+    }
+
     static checkEconomicDuration() {
 
         qs('[data-economic-duration-suggested]').hide();

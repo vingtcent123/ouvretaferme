@@ -12,6 +12,7 @@ class AssetLib extends \asset\AssetCrud {
 			'description',
 			'duration', 'economicDuration', 'fiscalDuration',
 			'isExcess',
+			'resumeDate', 'economicAmortization',
 		];
 	}
 
@@ -34,6 +35,8 @@ class AssetLib extends \asset\AssetCrud {
 	}
 
 	public static function create(Asset $e): void {
+
+		Asset::model()->beginTransaction();
 
 		// Calculate endDate
 		$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
@@ -67,6 +70,11 @@ class AssetLib extends \asset\AssetCrud {
 		$e['isExcess'] = $isExcess;
 
 		parent::create($e);
+
+		// Reprend les cumuls antérieurs à l'entrée dans l'exercice comptable
+		AmortizationLib::resume($e);
+
+		Asset::model()->commit();
 
 	}
 

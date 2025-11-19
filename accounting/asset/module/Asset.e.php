@@ -226,11 +226,40 @@ class Asset extends AssetElement {
 
 				$p->expectsBuilt('economicMode');
 
-				if($p->isBuilt(('economicMode')) === FALSE or $this['economicMode'] !== Asset::LINEAR) {
+				if($p->isBuilt('economicMode') === FALSE or $this['economicMode'] !== Asset::LINEAR) {
 					return TRUE;
 				}
 
 				return $startDate !== NULL;
+
+			})
+			->setCallback('resumeDate.inconsistent', function(?string $resumeDate) use($p): bool {
+
+				if($p->isBuilt('acquisitionDate') === FALSE) {
+					return TRUE;
+				}
+
+				if($this['acquisitionDate'] > $resumeDate) {
+					return FALSE;
+				}
+
+				$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
+				foreach($cFinancialYear as $eFinancialYear) {
+					if($resumeDate === $eFinancialYear['startDate']) {
+						return TRUE;
+					}
+				}
+
+				return FALSE;
+
+			})
+			->setCallback('economicAmortization.inconsistent', function(?float $economicAmortization) use($p): bool {
+
+				if($p->isBuilt('value') === FALSE or $p->isBuilt('residualValue') === FALSE) {
+					return TRUE;
+				}
+
+				return ($this['value'] - $this['residualValue']) > $economicAmortization;
 
 			})
 			;

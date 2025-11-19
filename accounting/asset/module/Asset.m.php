@@ -59,6 +59,7 @@ class AssetModel extends \ModuleModel {
 			'isExcess' => ['bool', 'cast' => 'bool'],
 			'excessAmortization' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'excessRecovery' => ['float32', 'min' => 0, 'max' => NULL, 'cast' => 'float'],
+			'resumeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'acquisitionDate' => ['date', 'cast' => 'string'],
 			'startDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
@@ -71,7 +72,7 @@ class AssetModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'accountLabel', 'value', 'residualValue', 'description', 'economicMode', 'economicDuration', 'economicAmortization', 'fiscalMode', 'fiscalDuration', 'isExcess', 'excessAmortization', 'excessRecovery', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'account', 'accountLabel', 'value', 'residualValue', 'description', 'economicMode', 'economicDuration', 'economicAmortization', 'fiscalMode', 'fiscalDuration', 'isExcess', 'excessAmortization', 'excessRecovery', 'resumeDate', 'acquisitionDate', 'startDate', 'endDate', 'endedDate', 'status', 'isGrant', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -204,6 +205,10 @@ class AssetModel extends \ModuleModel {
 
 	public function whereExcessRecovery(...$data): AssetModel {
 		return $this->where('excessRecovery', ...$data);
+	}
+
+	public function whereResumeDate(...$data): AssetModel {
+		return $this->where('resumeDate', ...$data);
 	}
 
 	public function whereAcquisitionDate(...$data): AssetModel {

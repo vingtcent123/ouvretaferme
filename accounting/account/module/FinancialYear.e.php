@@ -21,7 +21,7 @@ class FinancialYear extends FinancialYearElement {
 
 	}
 
-	public function canUpdate(): bool {
+	public function acceptUpdate(): bool {
 		return ($this['status'] === FinancialYearElement::OPEN);
 	}
 

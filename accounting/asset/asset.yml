@@ -14,6 +14,7 @@ Asset:
   isExcess: bool = false # Si c'est un amortissement dérogatoire
   excessAmortization: float(0, null) = 0 # le cumul des dotations dérogatoires déjà enregistrées
   excessRecovery: float(0, null) = 0 # le cumul des dototations dérogatoires déjà reprises
+  resumeDate: ?date # Date de reprise sur OTF
   # Date d'achat
   acquisitionDate: date
   # Date de mise en service (= début de l'amortissement si linéaire), null si type grant
@@ -33,7 +34,7 @@ Amortization:
   amount: decimal(8, 2)
   type: enum(ECONOMIC, EXCESS) # excess : dérogatoire
   date: date = SPECIAL(now)
-  financialYear: account\FinancialYear
+  financialYear: ?account\FinancialYear
   createdAt: datetime = SPECIAL(now)
 
 Depreciation:
