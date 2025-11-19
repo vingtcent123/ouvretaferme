@@ -63,7 +63,7 @@ class UnitUi {
 
 	}
 
-	public static function getSingular(string|\selling\Unit $unit, bool $short = FALSE, bool $by = FALSE, bool $noWrap = TRUE): string {
+	public static function getSingular(string|\selling\Unit $unit, bool $short = FALSE, bool $noWrap = TRUE): string {
 
 		if(is_string($unit)) {
 
@@ -83,10 +83,6 @@ class UnitUi {
 			} else {
 
 				$text = $short ? $unit['short'] : $unit['singular'];
-
-				if($unit['by'] and $by) {
-					$text = substr($text, 2);
-				}
 
 			}
 

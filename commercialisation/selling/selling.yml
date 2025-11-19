@@ -377,10 +377,9 @@ Unit:
   id: serial32
   singular: text8(1, 15) @collate(general)
   plural: text8(1, 15) @collate(general)
-  short: text8(1, 4) @collate(general)
+  short: text8(1, 8) @collate(general)
   farm: ?farm\Farm
   fqn: ?fqn
-  by: bool = false
   approximate: bool = false
   type: enum(INTEGER, DECIMAL)
   UNIQUE: [
