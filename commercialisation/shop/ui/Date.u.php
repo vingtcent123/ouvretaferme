@@ -552,6 +552,7 @@ class DateUi {
 									$h .= $this->getStatus($eShop, $eDate);
 
 									if(
+										$eShop->isShared() === FALSE and
 										$eDate['orderEndAt'] < currentDatetime() and
 										currentDate() <= $eDate['deliveryDate'] and
 										$eDate['sales']['countConfirmed'] > 0
