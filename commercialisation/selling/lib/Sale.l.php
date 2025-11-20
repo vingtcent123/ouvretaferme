@@ -251,7 +251,7 @@ class SaleLib extends SaleCrud {
 			}
 
 			if($eSale['shopDate']->notEmpty()) {
-				$eSale['cProduct'] = \shop\ProductLib::exportAsSelling(\shop\ProductLib::getByDate($eSale['shopDate'], $eSale['customer'], public: TRUE));
+				$eSale['cProduct'] = \shop\ProductLib::exportAsSelling(\shop\ProductLib::getByDate($eSale['shopDate'], $eSale['customer'], public: TRUE, withParents: FALSE));
 				$eSale['shopProducts'] = TRUE;
 			} else if($eCatalog->notEmpty()) {
 				$eSale['cProduct'] = \shop\ProductLib::exportAsSelling(\shop\ProductLib::getByCatalog($eCatalog));

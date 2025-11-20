@@ -269,7 +269,7 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \Collection $cSaleExclude = new \Collection(), bool $withIngredients = FALSE, bool $public = FALSE, bool $reorderChildren = FALSE): \Collection {
+	public static function getByDate(Date $eDate, \selling\Customer $eCustomer = new \selling\Customer(), \Collection $cSaleExclude = new \Collection(), bool $withIngredients = FALSE, bool $public = FALSE, bool $withParents = TRUE, bool $reorderChildren = FALSE): \Collection {
 
 		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer, $public) {
 
@@ -318,6 +318,7 @@ class ProductLib extends ProductCrud {
 		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereId('IN', $ids)
+			->whereParent(FALSE, if: $withParents === FALSE)
 			->getCollection(NULL, NULL, 'id');
 
 		if($withIngredients) {
