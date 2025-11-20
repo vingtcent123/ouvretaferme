@@ -13,6 +13,7 @@ class RelationUi {
 
 		new \selling\ProductUi()->query($d, $multiple);
 
+		$d->autocompleteUrl = '/shop/relation:query';
 		$d->autocompleteReorder = TRUE;
 		$d->autocompleteResults = function(Relation $e) {
 			return self::getAutocomplete($e);

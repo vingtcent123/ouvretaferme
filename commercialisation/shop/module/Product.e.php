@@ -67,6 +67,14 @@ class Product extends ProductElement {
 				$cProductChildren = ProductLib::getByIds($children, sort: new \Sql('FIELD(id, '.implode(', ', $children).')'))
 					->validateProperty('farm', $this['farm'])
 					->validate('acceptRelation');
+				
+				if($this['date']->notEmpty()) {
+					$cProductChildren->validateProperty('date', $this['date']);
+				}
+				
+				if($this['catalog']->notEmpty()) {
+					$cProductChildren->validateProperty('catalog', $this['catalog']);
+				}
 
 				if(
 					Relation::model()
