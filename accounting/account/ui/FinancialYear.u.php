@@ -76,7 +76,7 @@ class FinancialYearUi {
 					$h .= s("Modifier");
 				$h .= '</a>';
 
-			} else {
+			} else if($eFinancialYear->acceptReOpen()) {
 
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doReopen" post-id='.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item color-danger">';
 					$h .= \Asset::icon('exclamation-triangle').' ';
@@ -647,7 +647,7 @@ class FinancialYearUi {
 		return s("Résultat exercice {value}", FinancialYearUi::getYear($eFinancialYear));
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationToDefer, \Collection $cStock, \Collection $cAssetGrant): string {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationToDefer, \Collection $cStock, \Collection $cAssetGrant, \Collection $cAsset): string {
 
 		$form = new \util\FormUi();
 
@@ -682,7 +682,7 @@ class FinancialYearUi {
 			$h .= new \journal\StockUi()->listForClosing($eFarm, $eFinancialYear, $cStock);
 
 			// Étape 3 : Visualisation des amortissements
-			//$h .= new \asset\AssetUi()->listAmortizations($form, $cAsset);
+			$h .= new \asset\AssetUi()->listAmortizations($eFinancialYear, $form, $cAsset);
 
 			// Étape 4 : Visualisation des subventions
 			$h .= new \asset\AssetUi()->listGrantsForClosing($form, $cAssetGrant);

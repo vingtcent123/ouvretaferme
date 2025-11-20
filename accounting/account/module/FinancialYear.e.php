@@ -22,7 +22,7 @@ class FinancialYear extends FinancialYearElement {
 	}
 
 	public function acceptUpdate(): bool {
-		return ($this['status'] === FinancialYearElement::OPEN);
+		return ($this['status'] === FinancialYearElement::OPEN and $this['closeDate'] === NULL);
 	}
 
 	public function canReadDocument(): bool {
@@ -54,6 +54,12 @@ class FinancialYear extends FinancialYearElement {
 	public function acceptReClose(): bool {
 
 		return $this['closeDate'] !== NULL and $this['status'] === FinancialYear::OPEN;
+
+	}
+
+	public function acceptReOpen(): bool {
+
+		return $this['closeDate'] !== NULL and $this['status'] === FinancialYear::CLOSE;
 
 	}
 

@@ -28,7 +28,7 @@ Class AmortizationUi {
 
 	}
 
-	private static function getDepreciationLine(\farm\Farm $eFarm, array $amortization): string {
+	private static function getAmortizationLine(\farm\Farm $eFarm, array $amortization): string {
 
 		$isTotalLine = match($amortization['economicMode']) {
 			AssetElement::LINEAR, AssetElement::WITHOUT => FALSE,
@@ -192,7 +192,7 @@ Class AmortizationUi {
 
 					if($currentAccountLabel !== NULL and $amortization['accountLabel'] !== $currentAccountLabel) {
 
-						$h .= self::getDepreciationLine($eFarm, $total);
+						$h .= self::getAmortizationLine($eFarm, $total);
 						self::addTotalLine($generalTotal, $total);
 						$total = $emptyLine;
 
@@ -200,13 +200,13 @@ Class AmortizationUi {
 					$currentAccountLabel = $amortization['accountLabel'];
 					$total['description'] = $amortization['accountLabel'].' '.$amortization['accountDescription'];
 
-					$h .= self::getDepreciationLine($eFarm, $amortization);
+					$h .= self::getAmortizationLine($eFarm, $amortization);
 					self::addTotalLine($total, $amortization);
 
 				}
 				self::addTotalLine($generalTotal, $total);
-				$h .= self::getDepreciationLine($eFarm, $total);
-				$h .= self::getDepreciationLine($eFarm, $generalTotal);
+				$h .= self::getAmortizationLine($eFarm, $total);
+				$h .= self::getAmortizationLine($eFarm, $generalTotal);
 
 			$h .= '</tbody>';
 

@@ -699,6 +699,82 @@ Class AssetUi {
 
 	}
 
+	public function listAmortizations(\account\FinancialYear $eFinancialYear, \util\FormUi $form, \Collection $cAsset): string {
+
+		if($cAsset->empty()) {
+			return '';
+		}
+
+		$h = '<h3 class="mt-2">'.s("Amortissements").'</h3>';
+
+		$h .= '<div class="util-info">';
+			$h .= s("Les écritures suivantes seront automatiquement enregistrées lors de la clôture.");
+		$h .= '</div>';
+
+		$h .= '<div class="stick-sm util-overflow-sm">';
+
+			$h .= '<table class="financial-year-asset-table tr-even tr-hover">';
+
+				$h .= '<thead>';
+
+					$h .= '<tr>';
+
+						$h .= '<th>'.s("N° compte").'</th>';
+						$h .= '<th>'.s("Immobilisation").'</th>';
+						$h .= '<th>'.s("Base amortissable").'</th>';
+						$h .= '<th class="text-end">'.s("Amortissement économique").'</th>';
+						$h .= '<th class="text-end">'.s("VNC fin").'</th>';
+						$h .= '<th>'.s("Écriture proposée pour l'amortisseemnt économique").'</th>';
+
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+					foreach($cAsset as $eAsset) {
+
+						$currentPeriod = NULL;
+						foreach($eAsset['table'] as $period) {
+							if(
+								$period['financialYear']['startDate'] === $eFinancialYear['startDate'] and
+								$period['financialYear']['endDate'] === $eFinancialYear['endDate']
+							) {
+								$currentPeriod = $period;
+								break;
+							}
+						}
+
+						if($currentPeriod === NULL) {
+							continue;
+						}
+
+						$h .= '<tr id="'.$eAsset['id'].'">';
+
+						$h .= '<td>'.encode($eAsset['accountLabel']).'</td>';
+						$h .= '<td>'.encode($eAsset['description']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($period['base']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($period['amortizationValue']).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($period['endValue']).'</td>';
+						$h .= '<td>'./*s("Débit {accountDebit} / Crédit {accountCredit}", [
+							'accountDebit' => encode($eAsset['account']['class']),
+							'accountCredit' => \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS,
+						]).*/'</td>';
+						$h .= '<td class="text-center">';
+							$h .= $form->checkbox('asset[]', $eAsset['id']);
+						$h .= '</td>';
+
+						$h .= '</tr>';
+
+					}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+		$h .= '</div>';
+
+		return $h;
+	}
 	public function listGrantsForClosing(\util\FormUi $form, \Collection $cAssetGrant): string {
 
 		if($cAssetGrant->empty()) {
@@ -707,7 +783,7 @@ Class AssetUi {
 
 		$h = '<h3 class="mt-2">'.s("Reprise finale des subventions").'</h3>';
 
-		$h .= '<div class="util-block-help">';
+		$h .= '<div class="util-info">';
 			$h .= s("Si des subventions n'ont pas été entièrement reprises au compte de résultat alors que l'immobilisation correspondante est totalement amortie, vous pouvez <b>intégrer</b> cette reprise dans l'exercice comptable.");
 		$h .= '</div>';
 

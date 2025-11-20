@@ -172,7 +172,7 @@ class DeferralUi {
 			$countDeferral = $cOperation->find(fn($e) => $e['deferral'] !== NULL)->count();
 			$totalDeferral = $countDeferral;
 
-			$h .= '<div class="util-block-help">';
+			$h .= '<div class="util-info">';
 				$h .= s("Toutes les écritures de charge et de produit de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
 			$h .= '</div>';
 

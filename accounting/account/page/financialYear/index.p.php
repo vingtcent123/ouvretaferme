@@ -102,6 +102,10 @@ new \account\FinancialYearPage(
 		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
 
 		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
+		$data->cAsset = \asset\AssetLib::getAssetsByFinancialYear($data->e);
+		foreach($data->cAsset as &$eAsset) {
+			$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
+		}
 
 		throw new ViewAction($data);
 	})
