@@ -38,18 +38,20 @@ class DeskUi {
 
 	}
 
-	public function dashboard(Player $ePlayer, \Collection $cFood): string {
+	public function dashboard(Player $ePlayer, \Collection $cGrowing, \Collection $cFood): string {
 
-		$h = '<div class="game-dashboard util-block">';
+		$cGrowingFood = $cGrowing->find(fn($eGrowing) => $eGrowing['harvest'] !== NULL);
 
-				$h .= '<h3>'.encode($ePlayer['name']).'</h3>';
+		$h = '<div class="game-dashboard">';
+
+			$h .= '<h3>'.encode($ePlayer['name']).'</h3>';
 
 			$startTime = \game\Player::getDailyTime($ePlayer['user']);
 
-			$h .= '<div>';
-				$h .= '<h4 class="game-dashboard-title">'.s("Temps de travail<br/>disponible").'</h4>';
+			$h .= '<div class="game-dashboard-element">';
+				$h .= '<h4 class="game-dashboard-title">'.s("Temps de travail <br/>disponible").'</h4>';
 				$h .= '<div class="game-dashboard-value">';
-					$h .= '<div class="game-dashboard-item">'.\game\PlayerUi::getTime($startTime - $ePlayer['time']).'</div>';
+					$h .= '<div class="game-dashboard-item">'.\Asset::icon('clock').'  '.\game\PlayerUi::getTime($startTime - $ePlayer['time']).'</div>';
 				$h .= '</div>';
 
 				if($ePlayer['time'] > 0) {
@@ -60,27 +62,63 @@ class DeskUi {
 
 			$h .= '</div>';
 
-			$h .= '<div>';
-				$h .= '<h4 class="game-dashboard-title">'.s("Légumes<br/>produits").'</h4>';
+			$h .= '<div class="game-dashboard-element">';
+				$h .= '<h4 class="game-dashboard-title">'.s("Nourriture <br/>produite").'</h4>';
 				$h .= '<div class="game-dashboard-value game-dashboard-value-list">';
 
 					$hasFood = FALSE;
+					$canCook = $cFood->find(fn($eFood) => $eFood['current'] > 0)->count() === $cGrowingFood->count();
 
 					foreach($cFood as $eFood) {
 
-						if($eFood['current'] > 0) {
+						if($eFood['growing']->notEmpty()) {
 
-							$h .= '<div class="game-dashboard-item">';
+							if($eFood['current'] > 0) {
+								$h .= '<div class="game-dashboard-item">';
+									$h .= GrowingUi::getVignette($eFood['growing'], '1.5rem').'  '.$eFood['current'];
+								$h .= '</div>';
+							}
 
-								if($eFood['growing']->notEmpty()) {
-									$h .= $eFood['current'].'  '.GrowingUi::getVignette($eFood['growing'], '1.5rem');
-								} else {
-									$h .= p("{value} soupe", "{value} soupes", $eFood['current']);
-								}
+						} else {
 
-								$hasFood = TRUE;
+							$canEat = $eFood['current'] > 0;
 
-							$h .= '</div>';
+							if(
+								$canEat or
+								$canCook
+							) {
+
+								$h .= '<div class="game-dashboard-item">';
+
+									if($eFood['growing']->notEmpty()) {
+										$h .= $eFood['current'].'  '.GrowingUi::getVignette($eFood['growing'], '1.5rem');
+									} else {
+										$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('cup-hot').'  '.p("{value} soupe", "{value} soupes", $eFood['current']).'</a>';
+										$h .= '<div class="dropdown-list">';
+											$h .= '<div class="dropdown-subtitle">'.s("Côté cuisine").'</div>';
+											$h .= '<div class="dropdown-text">';
+												foreach($cGrowingFood as $eGrowing) {
+													$h .= '-1 '.GrowingUi::getVignette($eGrowing, '1.5rem').'   ';
+												}
+												$h .= \Asset::icon('arrow-right').'   ';
+												$h .= '+1 '.\Asset::icon('cup-hot');
+											$h .= '</div>';
+											$h .= '<a href="" class="'.($canCook ? '' : 'disabled').' dropdown-item">'.\Asset::icon('cup-hot').'  '.s("Cuisiner une soupe").'</a>';
+											$h .= '<div class="dropdown-divider"></div>';
+											$h .= '<div class="dropdown-subtitle">'.s("Côté salon").'</div>';
+											$h .= '<div class="dropdown-text">';
+												$h .= '-1 '.\Asset::icon('cup-hot').' '.\Asset::icon('arrow-right').' ';
+												$h .= s("+{value} de temps de travail disponible", PlayerUi::getTime(GameSetting::BONUS_SOUP)).'   ';
+											$h .= '</div>';
+											$h .= '<a href="" class="'.($canEat ? '' : 'disabled').' dropdown-item">'.s("Manger une soupe").'</a>';
+										$h .= '</div>';
+									}
+
+									$hasFood = TRUE;
+
+								$h .= '</div>';
+
+							}
 
 						}
 
@@ -93,10 +131,10 @@ class DeskUi {
 				$h .= '</div>';
 			$h .= '</div>';
 
-			$h .= '<div>';
-				$h .= '<h4 class="game-dashboard-title">'.s("Rennes attirés<br/>le 24 décembre").'</h4>';
+			$h .= '<div class="game-dashboard-element">';
+				$h .= '<h4 class="game-dashboard-title">'.s("Rennes attirés <br/>le 24 décembre").'</h4>';
 				$h .= '<div class="game-dashboard-value">';
-					$h .= '<div class="game-dashboard-item">'.$ePlayer['points'].' 🦌</div>';
+					$h .= '<div class="game-dashboard-item">🦌 '.$ePlayer['points'].'</div>';
 				$h .= '</div>';
 			$h .= '</div>';
 
@@ -108,8 +146,10 @@ class DeskUi {
 
 	public function get(string $content, int $board): string {
 
-		$h = '<div class="game-desk" style="background-image: url('.\Asset::getPath('game', 'board-'.$board.'.jpg', 'image').')">';
-			$h .= $content;
+		$h = '<div class="game-desk-wrapper">';
+			$h .= '<div class="game-desk" style="background-image: url('.\Asset::getPath('game', 'board-'.$board.'.jpg', 'image').')">';
+				$h .= $content;
+			$h .= '</div>';
 		$h .= '</div>';
 
 		return $h;

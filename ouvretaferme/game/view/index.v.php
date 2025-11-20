@@ -13,7 +13,11 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 	$t->title = s("Jouer !");
 
-	echo '<h1 class="text-center mb-2">'.s("Des légumes pour les rennes 🦌").'</h1>';
+	echo '<h1>';
+		echo '<span class="hide-sm-down">🎅 </span>';
+		echo s("Des légumes pour les rennes");
+		echo '<span class="hide-sm-down"> 🦌</span>';
+	echo '</h1>';
 
 	if(get_exists('start')) {
 
@@ -29,14 +33,12 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 	} else {
 
 		echo '<div class="game-menu">';
-			echo '<div class="input-group">';
-				echo '<a href="/jouer" class="btn btn-lg btn-'.(get_exists('show') ? 'outline-' : '').'game">'.s("Jouer").'</a>';
-				echo '<a href="/jouer?show=story" class="btn btn-lg btn-'.(GET('show') !== 'story' ? 'outline-' : '').'game">'.s("Synopsis").'</a>';
-				echo '<a href="/jouer?show=rules" class="btn btn-lg btn-'.(GET('show') !== 'rules' ? 'outline-' : '').'game">'.s("Règles").'</a>';
-				if(\game\Player::isPremium($data->ePlayer['user']) === FALSE) {
-					echo '<a href="/adherer" class="btn btn-lg btn-outline-game">'.s("Adhérer").'</a>';
-				}
-			echo '</div>';
+			echo '<a href="/jouer" class="btn btn-lg '.(get_exists('show') ? 'color-game' : 'btn-game').'">'.s("Jouer").'</a>';
+			echo '<a href="/jouer?show=story" class="btn btn-lg '.(GET('show') !== 'story' ? 'color-game' : 'btn-game').'">'.s("Synopsis").'</a>';
+			echo '<a href="/jouer?show=rules" class="btn btn-lg '.(GET('show') !== 'rules' ? 'color-game' : 'btn-game').'">'.s("Règles du jeu").'</a>';
+			if(\game\Player::isPremium($data->ePlayer['user']) === FALSE) {
+				echo '<a href="/adherer" class="btn btn-lg btn-outline-game">'.s("Adhérer").'</a>';
+			}
 		echo '</div>';
 
 		switch(GET('show')) {
@@ -52,7 +54,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 			default :
 
-				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cFood);
+				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cGrowing, $data->cFood);
 
 				echo new \game\DeskUi()->play($data->ePlayer, $data->cTile, $data->board);
 

@@ -10,7 +10,7 @@ class HelpUi {
 			$h .= '<h2>'.s("Détrompez-vous, il vous reste une ultime mission à accomplir en décembre avant de profiter d'un moment de repos bien mérité.").'</h2>';
 			$h .= '<div class="util-block">';
 				$h .= '<p>'.s("Le père Noël 🎅 et les lutins sont bien en train de confectionner les 247 millions de cadeaux 🎁 commandés par les petits enfants français, bien entendus fabriqués en bois et emballés avec un papier recyclable. Par contre, petit problème, le père Noël a encore oublié de s'occuper de la logistique pour nourrir ses rennes, qui ne mangent que des légumes biologiques 🙄.").'</p>';
-				$h .= '<p>'.s("C'est donc à vous que revient cette lourde mission. En lien avec les autres fermes, il vous reste seulement quelques semaines pour cultiver 🥕 et autres 🫛 pour qu'ils puissent se ravitailler chez vous dans la nuit du 24 décembre.").'</p>';
+				$h .= '<p>'.s("C'est donc à vous que revient cette lourde mission. En lien avec les autres fermes, il vous reste seulement quelques semaines pour cultiver 🥕 et autres 🫛 pour qu'ils puissent se ravitailler chez vous dans la nuit du 24 décembre et distribuer sereinement les cadeaux aux enfants.").'</p>';
 				$h .= '<p class="text-center">'.s("<b>Pas de légumes pour les rennes, pas de cadeaux 😞<br/>À vous de jouer !</b>").'</p>';
 			$h .= '</div>';
 			$h .= '<div class="game-intro-disclaimer">';
@@ -52,7 +52,7 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block">';
-				$h .= '<p>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir 2 heures de temps de travail en plus !").'</p>';
+				$h .= '<p>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir {value} heures de temps de travail en plus !", GameSetting::BONUS_SOUP).'</p>';
 				$h .= '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme, vous débloquez les deux bonus suivants :").'</p>';
 				$h .= '<ul class="mb-1">';
 					$h .= '<li>'.s("<b>{premium} heures de travail par jour au lieu de {value} heures</b>", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';

@@ -135,6 +135,10 @@
 	color: var(--private);
 }
 
+.color-game {
+	color: var(--game);
+}
+
 .bg-harvest {
 	background-color: var(--harvest) !important;
 }
@@ -164,6 +168,10 @@
 
 .bg-shop {
 	background-color: var(--shop) !important;
+}
+
+.bg-game {
+	background-color: var(--game) !important;
 }
 
 html {

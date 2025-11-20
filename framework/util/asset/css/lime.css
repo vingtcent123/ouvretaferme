@@ -2638,9 +2638,9 @@ h6 .dropdown-toggle:after {
 	grid-template-columns: repeat(2, auto);
 }
 
+.dropdown-text,
 .dropdown-item {
 	display: block;
-	cursor: pointer;
 	width: 100%;
 	padding: 0.625rem 1rem;
 	color: white;
@@ -2649,6 +2649,10 @@ h6 .dropdown-toggle:after {
 	border: 0;
 	text-align: left;
 	font-weight: normal;
+}
+
+.dropdown-item {
+	cursor: pointer;
 }
 
 body[data-touch="yes"] .dropdown-item {

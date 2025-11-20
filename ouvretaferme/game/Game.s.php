@@ -14,6 +14,7 @@ class GameSetting extends \Settings {
 	const TIME_PLANTING = 1;
 	const TIME_MARKET = 1;
 
+	const BONUS_SOUP = 2;
 	const BONUS_PIVOINE = 5;
 	const BONUS_LAVANDE = 30;
 
