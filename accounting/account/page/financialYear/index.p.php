@@ -103,6 +103,7 @@ new \account\FinancialYearPage(
 
 		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
 		$data->cAsset = \asset\AssetLib::getAssetsByFinancialYear($data->e);
+		\asset\AmortizationLib::simulate($data->e, $data->cAsset);
 		foreach($data->cAsset as &$eAsset) {
 			$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
 		}

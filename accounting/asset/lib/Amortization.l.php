@@ -581,12 +581,22 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
+	public static function simulate(\account\FinancialYear $eFinancialYear, \Collection $cAsset): void {
+
+		foreach($cAsset as &$eAsset) {
+			$eAsset['operations'] = self::amortize($eFinancialYear, $eAsset, NULL, TRUE);
+		}
+
+	}
+
 	/**
 	 * Amortit l'immobilisation sur l'exercice comptable dépendant de sa date d'acquisition / date de fin d'amortissement
 	 * Crée une entrée "Dotation aux amortissements" (classe 6) au débit et une entrée "Amortissement" (classe 2) au crédit
 	 *
 	 */
-	public static function amortize(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate): void {
+	public static function amortize(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate, bool $simulate = FALSE): \Collection {
+
+		$cOperation = new \Collection();
 
 		// Cas où on sort l'immo manuellement (cassé, mise au rebus etc.)
 		if($endDate === NULL) {
@@ -637,7 +647,12 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			'hash' => $hash,
 			'journalCode' => $eAccountAmortizationCharge['journalCode'],
 		];
-		\journal\OperationLib::createFromValues($values);
+
+		if($simulate) {
+			$cOperation->append(new \journal\Operation($values));
+		} else {
+			\journal\OperationLib::createFromValues($values);
+		}
 
 		// Étape 1b : Amortissement dérogatoire, on débite 687 : dotation aux amortissements
 		if($amortizationExcessValue > 0) {
@@ -658,7 +673,11 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'hash' => $hash,
 				'journalCode' => $eAccountAmortizationCharge['journalCode'],
 			];
-			\journal\OperationLib::createFromValues($values);
+			if($simulate) {
+				$cOperation->append(new \journal\Operation($values));
+			} else {
+				\journal\OperationLib::createFromValues($values);
+			}
 
 			// Étape 1c : Reprise d'amortissement dérogatoire, on débite 145
 		} else if($amortizationExcessRecoverValue > 0) {
@@ -677,7 +696,11 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'hash' => $hash,
 				'journalCode' => $eAccountExcessAmortization['journalCode'],
 			];
-			\journal\OperationLib::createFromValues($values);
+			if($simulate) {
+				$cOperation->append(new \journal\Operation($values));
+			} else {
+				\journal\OperationLib::createFromValues($values);
+			}
 
 		}
 
@@ -686,7 +709,11 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$values['hash'] = $hash;
 
 		if($amortizationValue !== 0.0) {
-			\journal\OperationLib::createFromValues($values);
+			if($simulate) {
+				$cOperation->append(new \journal\Operation($values));
+			} else {
+				\journal\OperationLib::createFromValues($values);
+			}
 		}
 
 		// Étape 2b : Amortissement dérogatoire, on crédite 145
@@ -707,7 +734,11 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'hash' => $hash,
 				'journalCode' => $eAccountAmortizationCharge['journalCode'],
 			];
-			\journal\OperationLib::createFromValues($values);
+			if($simulate) {
+				$cOperation->append(new \journal\Operation($values));
+			} else {
+				\journal\OperationLib::createFromValues($values);
+			}
 
 
 		// Étape 2c : Reprise d'amortissement dérogatoire, on crédite 787
@@ -728,8 +759,16 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'hash' => $hash,
 				'journalCode' => $eAccountExcessRecoveryAmortization['journalCode'],
 			];
-			\journal\OperationLib::createFromValues($values);
+			if($simulate) {
+				$cOperation->append(new \journal\Operation($values));
+			} else {
+				\journal\OperationLib::createFromValues($values);
+			}
 
+		}
+
+		if($simulate) {
+			return $cOperation;
 		}
 
 		// Étape 3 : Entrée dans la table Amortization
@@ -743,7 +782,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		Amortization::model()->insert($eAmortization);
 
-		if($eAccountExcessAmortization > 0) {
+		if(($eAccountExcessAmortization ?? 0) > 0) {
 
 			$eAmortization = new Amortization([
 				'asset' => $eAsset,
@@ -764,10 +803,12 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
 				'excessAmortization' => new \Sql('excessAmortization + '.$amortizationExcessValue),
 				'excessRecovery' => new \Sql('excessRecovery + '.$amortizationExcessRecoverValue),
-				'status' => new \Sql('IF(economicAmortization >= value OR endDate <= "'.$endDate.'", "'.Asset::ENDED.'" : status)'),
+				'status' => new \Sql('IF(economicAmortization >= value OR endDate <= "'.$endDate.'", "'.Asset::ENDED.'", status)'),
 				'updatedAt' => new \Sql('NOW()'),
 			]
 		);
+
+		return $cOperation;
 
 	}
 

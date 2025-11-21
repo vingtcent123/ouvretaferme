@@ -52,6 +52,7 @@ class AccountSetting extends \Settings {
 	// IMMOBILISATIONS
 	const INTANGIBLE_ASSETS_CLASS = 20; // Immobilisations incorporelles
 	const TANGIBLE_ASSETS_CLASS = 21; // Immobilisations corporelles
+	const TANGIBLE_LIVING_ASSETS_CLASS = 24; // Immobilisations corporelles biens vivants
 
 	// Immos non amortissables
 	const ASSET_LEASEHOLD_RIGHTS_CLASS = 206; // Droit au bail

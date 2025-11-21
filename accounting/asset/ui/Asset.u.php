@@ -699,7 +699,7 @@ Class AssetUi {
 
 	}
 
-	public function listAmortizations(\account\FinancialYear $eFinancialYear, \util\FormUi $form, \Collection $cAsset): string {
+	public function listForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \util\FormUi $form, \Collection $cAsset): string {
 
 		if($cAsset->empty()) {
 			return '';
@@ -719,12 +719,19 @@ Class AssetUi {
 
 					$h .= '<tr>';
 
-						$h .= '<th>'.s("N° compte").'</th>';
-						$h .= '<th>'.s("Immobilisation").'</th>';
-						$h .= '<th>'.s("Base amortissable").'</th>';
-						$h .= '<th class="text-end">'.s("Amortissement économique").'</th>';
-						$h .= '<th class="text-end">'.s("VNC fin").'</th>';
-						$h .= '<th>'.s("Écriture proposée pour l'amortisseemnt économique").'</th>';
+						$h .= '<th rowspan="2">'.s("N° compte").'</th>';
+						$h .= '<th rowspan="2">'.s("Immobilisation").'</th>';
+						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
+						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Amortissement économique").'</th>';
+						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+						$h .= '<th colspan="2">'.s("Écriture proposée pour l'amortissement économique").'</th>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<th class="text-center">'.s("Compte Débit").'</th>';
+						$h .= '<th class="text-center">'.s("Compte Crédit").'</th>';
 
 					$h .= '</tr>';
 
@@ -750,18 +757,32 @@ Class AssetUi {
 
 						$h .= '<tr id="'.$eAsset['id'].'">';
 
-						$h .= '<td>'.encode($eAsset['accountLabel']).'</td>';
-						$h .= '<td>'.encode($eAsset['description']).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($period['base']).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($period['amortizationValue']).'</td>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($period['endValue']).'</td>';
-						$h .= '<td>'./*s("Débit {accountDebit} / Crédit {accountCredit}", [
-							'accountDebit' => encode($eAsset['account']['class']),
-							'accountCredit' => \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS,
-						]).*/'</td>';
-						$h .= '<td class="text-center">';
-							$h .= $form->checkbox('asset[]', $eAsset['id']);
-						$h .= '</td>';
+							$h .= '<td>';
+								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+									$h .= encode($eAsset['accountLabel']);
+								$h .= '</div>';
+								$h .= '<div class="dropdown-list bg-primary">';
+								$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
+								$h .= '</div>';
+							$h .= '</td>';
+							$h .= '<td><a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';
+							$h .= '<td class="text-center">';
+								foreach($eAsset['operations'] as $eOperation) {
+									if($eOperation['type'] === \journal\Operation::DEBIT) {
+										$h .= '<div>'.$eOperation['accountLabel'].'</div>';
+									}
+								}
+							$h .= '</td>';
+							$h .= '<td class="text-center">';
+								foreach($eAsset['operations'] as $eOperation) {
+									if($eOperation['type'] === \journal\Operation::CREDIT) {
+										$h .= '<div>'.$eOperation['accountLabel'].'</div>';
+									}
+								}
+							$h .= '</td>';
 
 						$h .= '</tr>';
 
@@ -887,7 +908,7 @@ Class AssetUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefixes' => [\account\AccountSetting::INTANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_ASSETS_CLASS, \account\AccountSetting::GRANT_ASSET_CLASS]]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefixes' => [\account\AccountSetting::INTANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_LIVING_ASSETS_CLASS, \account\AccountSetting::GRANT_ASSET_CLASS]]);
 				break;
 
 			case 'accountLabel':

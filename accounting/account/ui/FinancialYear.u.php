@@ -682,7 +682,7 @@ class FinancialYearUi {
 			$h .= new \journal\StockUi()->listForClosing($eFarm, $eFinancialYear, $cStock);
 
 			// Étape 3 : Visualisation des amortissements
-			$h .= new \asset\AssetUi()->listAmortizations($eFinancialYear, $form, $cAsset);
+			$h .= new \asset\AssetUi()->listForClosing($eFarm, $eFinancialYear, $form, $cAsset);
 
 			// Étape 4 : Visualisation des subventions
 			$h .= new \asset\AssetUi()->listGrantsForClosing($form, $cAssetGrant);

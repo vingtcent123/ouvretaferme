@@ -80,7 +80,7 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isTangibleAsset(string $account): bool {
 
-		return \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_ASSETS_CLASS);
+		return \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_ASSETS_CLASS) or \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_LIVING_ASSETS_CLASS);
 
 	}
 
