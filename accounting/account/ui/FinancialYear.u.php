@@ -690,13 +690,10 @@ class FinancialYearUi {
 			// Étape 1 : PCA et CCA
 			$h .= new \journal\DeferralUi()->listForClosing($eFarm, $eFinancialYear, $cOperationToDefer);
 
-			// Étape 2 : Gestion des stocks
-			$h .= new \journal\StockUi()->listForClosing($eFarm, $eFinancialYear, $cStock);
-
-			// Étape 3 : Visualisation des amortissements
+			// Étape 2 : Visualisation des amortissements
 			$h .= new \asset\AssetUi()->listForClosing($eFarm, $eFinancialYear, $form, $cAsset);
 
-			// Étape 4 : Visualisation des subventions
+			// Étape 3 : Visualisation des subventions
 			$h .= new \asset\AssetUi()->listGrantsForClosing($eFarm, $eFinancialYear, $form, $cAssetGrant);
 
 			$canClose = TRUE;

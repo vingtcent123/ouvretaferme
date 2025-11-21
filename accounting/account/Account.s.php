@@ -80,6 +80,14 @@ class AccountSetting extends \Settings {
 	const RECOVERY_NORMAL_ON_ASSET_DEPRECIATION = '7816'; // Reprises sur dépréciations des immobilisations
 	const RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION = '7876'; // Reprises sur dépréciations exceptionnelles
 
+	// STOCKS
+	const STOCK_RAW_MATERIALS_CLASS = '31'; // Stock de matières premières
+	const STOCK_OTHER_SUPPLIES_CLASS = '32'; // Stock d'autres approvisionnements
+	const STOCK_GOODS_IN_PRODUCTION_CLASS = '33'; // Stock d'encours de production de biens
+	const STOCK_SERVICES_IN_PROGRESS_CLASS = '34'; // Stock d'encours de production de services
+	const STOCK_PRODUCTS_CLASS = '35'; // Stock de produits finis
+	const STOCK_GOODS_CLASS = '37'; // Stock de produits finis
+
 	// CLASSES de TVA
 	const VAT_CLASS = 445;
 	const VAT_TO_PAY_INTRACOM_CLASS = '4452'; // TVA due intracommunautaire

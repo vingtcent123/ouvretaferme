@@ -86,6 +86,9 @@ class AccountLib extends AccountCrud {
 		if($search->get('classPrefixes')) {
 			Account::model()->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->get('classPrefixes'));
 		}
+		if($search->has('stock')) {
+			Account::model()->where('class LIKE "%'.$search->has('stock').'%"');
+		}
 		return Account::model()
 			->select(
         ['name' => new \Sql('CONCAT(class, ". ", description)')]
@@ -94,7 +97,6 @@ class AccountLib extends AccountCrud {
 				+ ['journalCode' => ['id']],
       )
 			->sort(['class' => SORT_ASC])
-			->whereClass('IN', fn() => AccountSetting::STOCK_VARIATION_CLASSES[$search->get('stock')['class']], if: $search->has('stock'))
 			->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '')
 			->where('class LIKE "'.$search->get('classPrefix').'%"', if: $search->get('classPrefix'))
 			->whereClass('LIKE', fn() => '%'.$search->get('class').'%', if: $search->get('class') and is_string($search->get('class')))

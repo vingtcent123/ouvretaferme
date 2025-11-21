@@ -9,9 +9,9 @@ class AccountLabelLib {
 
 	}
 
-	public static function isFromClass(string $account, string $class): bool {
+	public static function isFromClass(string $accountLabel, string $class): bool {
 
-		return mb_substr($account, 0, mb_strlen($class)) === $class;
+		return mb_substr($accountLabel, 0, mb_strlen($class)) === $class;
 
 	}
 

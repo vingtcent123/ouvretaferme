@@ -104,9 +104,6 @@ new \account\FinancialYearPage(
 		$data->cOperationToDefer = \journal\OperationLib::getAllChargesForClosing($search);
 		\journal\DeferralLib::getDeferralsForOperations($data->cOperationToDefer);
 
-		// Stock enregistré de cet exercice comptable + celui de l'exercice précédent non reporté
-		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
-
 		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
 		\asset\AmortizationLib::simulateGrants($data->e, $data->cAssetGrant);
 		foreach($data->cAssetGrant as &$eAsset) {
@@ -125,7 +122,7 @@ new \account\FinancialYearPage(
 
 		$data->e->validate('acceptClose');
 
-		\account\FinancialYearLib::closeFinancialYear($data->e, $_POST);
+		\account\FinancialYearLib::closeFinancialYear($data->e);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	})
