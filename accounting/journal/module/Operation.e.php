@@ -23,6 +23,26 @@ class Operation extends OperationElement {
 
 	}
 
+	public function acceptDeferral(): bool {
+
+		$cDeferral = Deferral::model()
+			->select([
+				'status',
+				'count' => new \Sql('COUNT(*)')
+			])
+			->whereOperation($this)
+			->group('status')
+			->getCollection();
+
+		return ($cDeferral->empty() or ($cDeferral[Deferral::PLANNED] === 0) or ($cDeferral[Deferral::RECORDED] === 0) or ($cDeferral[Deferral::DEFERRED] === 0)) and
+			(
+				mb_substr($this['accountLabel'], 0, mb_strlen(\account\AccountSetting::CHARGE_ACCOUNT_CLASS)) === (string)\account\AccountSetting::CHARGE_ACCOUNT_CLASS
+				or mb_substr($this['accountLabel'], 0, mb_strlen(\account\AccountSetting::PRODUCT_ACCOUNT_CLASS)) === (string)\account\AccountSetting::PRODUCT_ACCOUNT_CLASS
+			)
+			and $this['financialYear']->acceptUpdate();
+
+	}
+
 	public function acceptUpdate(): bool {
 
 		$this->expects(['hash']);
@@ -69,17 +89,6 @@ class Operation extends OperationElement {
 		}
 
 		return $this['date'] < $period['start'];
-
-	}
-
-	public function isDeferrable(\account\FinancialYear $eFinancialYear): bool {
-
-		return (
-				mb_substr($this['accountLabel'], 0, mb_strlen(\account\AccountSetting::CHARGE_ACCOUNT_CLASS)) === (string)\account\AccountSetting::CHARGE_ACCOUNT_CLASS
-				or mb_substr($this['accountLabel'], 0, mb_strlen(\account\AccountSetting::PRODUCT_ACCOUNT_CLASS)) === (string)\account\AccountSetting::PRODUCT_ACCOUNT_CLASS
-			)
-			and $this['financialYear']['id'] === $eFinancialYear['id']
-			and $eFinancialYear->acceptUpdate();
 
 	}
 

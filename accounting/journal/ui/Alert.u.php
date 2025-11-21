@@ -62,9 +62,10 @@ class AlertUi {
 
 			'VatDeclaration:created' => s("La déclaration de TVA a bien été créée."),
 
-			'DeferralCharge::created' => s("La charge constatée d'avance a bien été enregistrée."),
-			'DeferralProduct::created' => s("Le produit constaté d'avance a bien été enregistré."),
-			'Deferral::deleted' => s("La suppression a bien été effectuée."),
+			'Deferral::charge.created' => s("La charge constatée d'avance a bien été enregistrée."),
+			'Deferral::product.created' => s("Le produit constaté d'avance a bien été enregistré."),
+			'Deferral::charge.deleted' => s("La charge constatée d'avance a bien été supprimée."),
+			'Deferral::product.deleted' => s("Le produit constaté d'avance a bien été supprimé."),
 
 			'Stock::created' => s("Le stock a bien été enregistré."),
 			'Stock::deleted' => s("Le stock a bien été supprimé."),

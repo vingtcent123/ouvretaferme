@@ -6,10 +6,11 @@ class DeferralUi {
 	public function __construct() {
 
 		\Asset::js('journal', 'deferral.js');
+		\Asset::css('journal', 'deferral.css');
 
 	}
 
-	public function set(\farm\Farm $eFarm, Operation $eOperation,\account\FinancialYear $eFinancialYear, string $field): \Panel {
+	public function set(\farm\Farm $eFarm, Operation $eOperation, string $field): \Panel {
 
 		$eDeferral = new Deferral();
 
@@ -31,10 +32,10 @@ class DeferralUi {
 
 		if($field === 'dates') {
 			$datesAttributes = [];
-			$amountAttributes = ['disabled' => TRUE];
+			$amountAttributes = ['disabled' => TRUE, 'max' => $eOperation['amount']];
 		} else {
 			$datesAttributes = ['disabled' => TRUE];
-			$amountAttributes = [];
+			$amountAttributes = ['max' => $eOperation['amount']];
 		}
 
 		$form = new \util\FormUi();
@@ -44,14 +45,17 @@ class DeferralUi {
 		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('id', $eOperation['id']);
 		$h .= $form->hidden('operationAmount', $eOperation['amount']);
-		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
-		$h .= $form->hidden('financialYearEndDate', $eFinancialYear['endDate']);
+		$h .= $form->hidden('financialYear', $eOperation['financialYear']['id']);
+		$h .= $form->hidden('financialYearEndDate', $eOperation['financialYear']['endDate']);
 		$h .= $form->hidden('field', $field);
 
-		$h .= $form->group(s("Dates de consommation"), s("du {startDate} au {endDate}", [
-			'startDate' => $form->date('startDate', $eOperation['date'], $datesAttributes),
-			'endDate' => $form->date('endDate', NULL, $datesAttributes + ['min' => date('Y-m-d', strtotime($eFinancialYear['endDate'].' + 1 day'))]),
-		]));
+		$h .= $form->group(
+			s("Dates de consommation"),
+			$form->inputGroup($form->addon(s("du")).
+				$form->date('startDate', $eOperation['date'], $datesAttributes).
+				$form->addon("au").
+				$form->date('endDate', NULL, $datesAttributes + ['min' => date('Y-m-d', strtotime($eOperation['financialYear']['endDate'].' + 1 day'))]))
+		);
 		$h .= $form->dynamicGroup($eDeferral, 'amount', function($d) use($amountAttributes) {
 			$d->attributes = $amountAttributes;
 		});
@@ -62,9 +66,16 @@ class DeferralUi {
 
 		$h .= $form->close();
 
+		$isCharge = \account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::CHARGE_ACCOUNT_CLASS);
+		if($isCharge) {
+			$title = s("Enregistrer une charge constatée d'avance");
+		} else {
+			$title = s("Enregistrer un produit constaté d'avance");
+		}
+
 		return new \Panel(
 			id: 'panel-journal-deferral-set',
-			title: s("Enregistrer une charge constatée d'avance"),
+			title: $title,
 			body: $h
 		);
 	}
@@ -88,8 +99,8 @@ class DeferralUi {
 						$h .= '<th>'.s("Type").'</th>';
 						$h .= '<th>'.s("Compte").'</th>';
 						$h .= '<th>'.s("Libellé du compte").'</th>';
-						$h .= '<th class="text-end">'.s("Débit").'</th>';
-						$h .= '<th class="text-end">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
 
 					$h .= '</tr>';
 
@@ -111,13 +122,13 @@ class DeferralUi {
 							$h .= '<td>'.encode(self::p('type')->values[$eDeferral['type']]).'</td>';
 							$h .= '<td>'.encode($eDeferral['operation']['accountLabel']).'</td>';
 							$h .= '<td>'.encode($eDeferral['operation']['description']).'</td>';
-							$h .= '<td class="text-end">';
+							$h .= '<td class="text-end highlight-stick-right">';
 							$h .= match($eDeferral['operation']['type']) {
 								\journal\Operation::CREDIT => '',
 								\journal\Operation::DEBIT => \util\TextUi::money($eDeferral['amount']),
 							};
 							$h .='</td>';
-							$h .= '<td class="text-end">';
+							$h .= '<td class="text-end highlight-stick-left">';
 							$h .= match($eDeferral['operation']['type']) {
 								\journal\Operation::DEBIT => '',
 								\journal\Operation::CREDIT => \util\TextUi::money($eDeferral['amount']),
@@ -173,7 +184,7 @@ class DeferralUi {
 			$totalDeferral = $countDeferral;
 
 			$h .= '<div class="util-info">';
-				$h .= s("Toutes les écritures de charge et de produit de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter");
+				$h .= s("Toutes les écritures de charge et de produit de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter.<br />Dans le cas d'une <b>charge</b> constatée d'avance, le compte de contrepartie utilisé sera le <b>{chargeClass}</b> et pour un <b>produit</b> constaté d'avance, le compte de contrepartie sera le <b>{productClass}</b>.", ['chargeClass' => \account\AccountSetting::PREPAID_EXPENSE_CLASS, 'productClass' => \account\AccountSetting::ACCRUED_EXPENSE_CLASS]);
 			$h .= '</div>';
 
 			$h .= '<div class="stick-sm util-overflow-sm mb-1">';
@@ -188,9 +199,9 @@ class DeferralUi {
 							$h .= '<th>'.s("Date").'</th>';
 							$h .= '<th>'.s("Compte").'</th>';
 							$h .= '<th>'.s("Libellé").'</th>';
-							$h .= '<th class="text-end">'.s("Montant HT").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Montant HT").'</th>';
 							$h .= '<th>'.s("Période de<br />consommation").'</th>';
-							$h .= '<th class="text-end">'.s("À reporter").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Montant à reporter").'</th>';
 							$h .= '<th></th>';
 
 						$h .= '</tr>';
@@ -201,23 +212,32 @@ class DeferralUi {
 
 						foreach($cOperation as $eOperation) {
 
-							if(($eOperation['deferral'] ?? NULL) !== NULL) {
+							$eDeferral = $eOperation['deferral'] ?? new Deferral();
+
+							if($eDeferral->notEmpty()) {
 
 								$isDeferral = TRUE;
 								$countDeferral--;
 
 								$period = s("{startDate} - {endDate}", [
-									'startDate' => \util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE),
-									'endDate' => \util\DateUi::numeric($eOperation['deferral']['endDate'], \util\DateUi::DATE),
+									'startDate' => \util\DateUi::numeric($eDeferral['startDate'], \util\DateUi::DATE),
+									'endDate' => \util\DateUi::numeric($eDeferral['endDate'], \util\DateUi::DATE),
 								]);
+								if(date('Y-m-d', strtotime($eDeferral['initialFinancialYear']['endDate'].' + 1 YEAR')) < $eDeferral['endDate']) {
+									$period = '<span class="color-warning" data-dropdown="bottom" data-dropdown-hover="true">'.$period.' '.\Asset::icon('exclamation-triangle').'</span>';
+									$period .= '<div class="dropdown-list bg-primary">';
+										$period .= '<span class="dropdown-item">'.s("La période de consommation est peut-être erronée").'</span>';
+									$period .= '</div>';
+								}
 								$amount = \util\TextUi::money($eOperation['deferral']['amount']);
 
-								if($eOperation['deferral']->canDelete()) {
+								if($eOperation['deferral']->acceptDelete()) {
 
-									$confirm = match((int)substr($eOperation['accountLabel'], 0, 1)) {
-										\account\AccountSetting::CHARGE_ACCOUNT_CLASS => s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?"),
-										\account\AccountSetting::PRODUCT_ACCOUNT_CLASS => s("Voulez-vous vraiment supprimer ce produit constaté d'avance ?"),
-									};
+									if(\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::CHARGE_ACCOUNT_CLASS)) {
+										$confirm = s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?");
+									} else {
+										$confirm = s("Voulez-vous vraiment supprimer ce produit constaté d'avance ?");
+									}
 
 									$action = '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:doDelete" post-id="'.$eOperation['deferral']['id'].'" title="'.s("Supprimer").'" data-confirm="'.$confirm.'" class="btn btn-outline-danger">'.\Asset::icon('trash').'</a>';
 
@@ -231,8 +251,8 @@ class DeferralUi {
 
 								$isDeferral = FALSE;
 
-								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=dates">'.s("modifier").'</a>';
-								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:set?operation='.$eOperation['id'].'&financialYear='.$eFinancialYear['id'].'&field=amount">'.s("modifier").'</a>';
+								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:set?id='.$eOperation['id'].'&field=dates">'.s("modifier").'</a>';
+								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:set?id='.$eOperation['id'].'&field=amount">'.s("modifier").'</a>';
 								$action = '';
 
 							}
@@ -259,11 +279,18 @@ class DeferralUi {
 									\account\AccountSetting::CHARGE_ACCOUNT_CLASS => s("Charge"),
 								}.'</td>';
 								$h .= '<td>'.\util\DateUi::numeric($eOperation['date'], \util\DateUi::DATE).'</td>';
-								$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
+								$h .= '<td>';
+									$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+										$h .= encode($eOperation['accountLabel']);
+									$h .= '</div>';
+									$h .= '<div class="dropdown-list bg-primary">';
+										$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
+									$h .= '</div>';
+								$h .= '</td>';
 								$h .= '<td>'.encode($eOperation['description']).'</td>';
-								$h .= '<td class="text-end">'.\util\TextUi::money($eOperation['amount']).'</td>';
-								$h .= '<td>'.$period.'</td>';
-								$h .= '<td class="text-end">'.$amount.'</td>';
+								$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($eOperation['amount']).'</td>';
+								$h .= '<td class="deferral-td-period">'.$period.'</td>';
+								$h .= '<td class="text-end highlight-stick-right">'.$amount.'</td>';
 								$h .= '<td class="td-min-content">'.$action.'</td>';
 
 							$h .= '</tr>';
@@ -275,7 +302,7 @@ class DeferralUi {
 				$h .= '</table>';
 
 				if($cOperation->count() > $totalDeferral and $totalDeferral > 0) {
-					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayOperations(this, \'deferral\')">'.\Asset::icon('caret-down').' '.s("Afficher toutes les charges").'</a>';
+					$h .= '<a style="width: 100%" class="btn btn-outline-secondary" onclick="FinancialYear.displayOperations(this, \'deferral\')">'.\Asset::icon('caret-down').' '.s("Afficher toutes les opérations").'</a>';
 				}
 
 			$h .= '</div>';

@@ -3,7 +3,7 @@ namespace journal;
 
 class Deferral extends DeferralElement {
 
-	public function canDelete(): bool {
+	public function acceptDelete(): bool {
 
 		$this->expects(['status']);
 
@@ -11,38 +11,41 @@ class Deferral extends DeferralElement {
 
 	}
 
+	public static function getSelection(): array {
+
+		return parent::getSelection() + [
+				'initialFinancialYear' => ['id', 'startDate', 'endDate', 'status'],
+			];
+
+	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('date.empty', function(?string $date): bool {
+			->setCallback('endDate.valid', function(?string $date) use($p): bool {
 
-				return $date !== NULL;
+				if($p->isBuilt('startDate') === FALSE) {
+					return TRUE;
+				}
+
+				$eFinancialYear = \account\FinancialYearLib::getById($this['initialFinancialYear']);
+				return $date > $eFinancialYear['endDate'];
 
 			})
-			->setCallback('amount.empty', function(?float $amount): bool {
+			->setCallback('amount.check', function(?float $amount) use($p): bool {
 
-				return $amount !== NULL;
+				if($p->isBuilt('operation') === FALSE) {
+					return TRUE;
+				}
+
+
+				$eOperation = OperationLib::getById($this['operation']['id']);
+				return $amount < $eOperation['amount'] and $amount > 0;
 
 			})
 			->setCallback('amount.incorrect', function(?float $amount): bool {
 
 				return $amount > 0;
-
-			})
-			->setCallback('date.check', function(string $date): bool {
-
-				$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
-
-				foreach($cFinancialYear as $eFinancialYear) {
-
-					if($date >= $eFinancialYear['startDate'] and $date <= $eFinancialYear['endDate']) {
-						return TRUE;
-					}
-
-				}
-
-				return FALSE;
 
 			})
 		;

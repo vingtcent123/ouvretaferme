@@ -4,7 +4,7 @@ namespace journal;
 class DeferralLib extends DeferralCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['type', 'operation', 'amount', 'startDate', 'endDate'];
+		return ['type', 'initialFinancialYear', 'operation', 'amount', 'startDate', 'endDate'];
 	}
 
 	public static function getDeferrals(\account\FinancialYear $eFinancialYearPrevious): \Collection {
@@ -167,18 +167,11 @@ class DeferralLib extends DeferralCrud {
 
 	}
 
-	public static function createDeferral(array $input): bool {
+	public static function createDeferral(Operation $eOperation, array $input): bool {
 
 		$field = $input['field'] ?? NULL;
 		if(in_array($field, ['dates', 'amount']) === FALSE) {
 			return FALSE;
-		}
-
-		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL)->validate('canUpdate');
-
-		$eOperation = OperationLib::getById($input['id'] ?? NULL);
-		if($eOperation->isDeferrable($eFinancialYear) === FALSE) {
-			throw new \NotExpectedAction('Unable to defer operation');
 		}
 
 		$isCharge = \account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::CHARGE_ACCOUNT_CLASS);
@@ -190,11 +183,11 @@ class DeferralLib extends DeferralCrud {
 
 		if($field === 'dates') {
 
-			[$amount, $endDate] = self::computeAmount($eOperation['date'], $input['endDate'] ?? NULL, $eOperation['amount'], $eFinancialYear['endDate']);
+			[$amount, $endDate] = self::computeAmount($eOperation, $input['endDate'] ?? NULL);
 
 		} else {
 
-			[$amount, $endDate] = self::computeDates($eOperation['date'], $eOperation['amount'], $input['amount'] ?? 0, $eFinancialYear['endDate']);
+			[$amount, $endDate] = self::computeDates($eOperation, $input['amount'] ?? 0);
 
 		}
 
@@ -206,59 +199,60 @@ class DeferralLib extends DeferralCrud {
 			'startDate' => $eOperation['date'],
 			'endDate' => $endDate,
 			'amount' => $amount,
-			'initialFinancialYear' => $eFinancialYear['id'],
+			'initialFinancialYear' => $eOperation['financialYear']['id'],
 			'status' => Deferral::PLANNED,
 			'type' => $isCharge ? Deferral::CHARGE : Deferral::PRODUCT
 		];
-		$eDeferral->build(['type', 'operation', 'startDate', 'endDate', 'amount', 'initialFinancialYear', 'status'], $values);
+		$eDeferral->build(['type', 'operation', 'initialFinancialYear', 'startDate', 'endDate', 'amount', 'status'], $values);
 
 		$fw->validate();
 
 		Deferral::model()->insert($eDeferral);
 
-		\account\LogLib::save('create', 'Deferral', ['id' => $eDeferral['id']]);
+		\account\LogLib::save('create', 'Deferral', ['id' => $eDeferral['id'], 'type' => $isCharge ? 'charge' : 'product']);
 
-		return $isCharge ? 'DeferralCharge::created' : 'DeferralProduct::created';
+		return $isCharge ? 'Deferral::charge.created' : 'Deferral::product.created';
 
 	}
 
-	private static function computeAmount(string $startDate, string $endDate, float $initialAmount, string $financialYearEndDate): array {
+	private static function computeAmount(Operation $eOperation, ?string $endDate): array {
 
 		if(
-			mb_strlen($endDate) !== 10
-			or checkdate(mb_substr($endDate, 5, 2), mb_substr($endDate, 8, 2), mb_substr($endDate, 0, 4)) === FALSE
-			or $endDate < $startDate
-			or $endDate < $financialYearEndDate
+			$endDate === NULL or
+			mb_strlen($endDate) !== 10 or
+			checkdate(mb_substr($endDate, 5, 2), mb_substr($endDate, 8, 2), mb_substr($endDate, 0, 4)) === FALSE or
+			$endDate < $eOperation['date'] or
+			$endDate < $eOperation['financialYear']['endDate']
 		) {
 			throw new \NotExpectedAction('Unable to compute amount');
 		}
 
-		$financialYearEndTime = strtotime($financialYearEndDate);
-		$startTime = strtotime($startDate);
+		$financialYearEndTime = strtotime($eOperation['financialYear']['endDate']);
+		$startTime = strtotime($eOperation['date']);
 		$endTime = strtotime($endDate);
 
 		$nbDaysYear1 = round(($financialYearEndTime - $startTime) / (60 * 60 * 24)) + 1;
 		$totalDays = round(($endTime - $startTime) / (60 * 60 * 24)) + 1;
 
-		$newAmount = round(($totalDays - $nbDaysYear1) * $initialAmount / $totalDays, 2);
+		$newAmount = round(($totalDays - $nbDaysYear1) * $eOperation['amount'] / $totalDays, 2);
 
 		return [$newAmount, $endDate];
 
 	}
 
-	private static function computeDates(string $startDate, float $initialAmount, float $deferredAmount, string $financialYearEndDate): array {
+	private static function computeDates(Operation $eOperation, float $deferredAmount): array {
 
-		if($deferredAmount >= $initialAmount) {
+		if($deferredAmount >= $eOperation['amount']) {
 			throw new \NotExpectedAction('Unable to compute date');
 		}
 
-		$financialYearEndTime = strtotime($financialYearEndDate);
-		$startTime = strtotime($startDate);
+		$financialYearEndTime = strtotime($eOperation['financialYear']['endDate']);
+		$startTime = strtotime($eOperation['date']);
 
 		$nbDaysYear1 = round(($financialYearEndTime - $startTime) / (60 * 60 * 24)) + 1;
 
-		$amountYear1 = $initialAmount - $deferredAmount;
-		$totalDays = round($nbDaysYear1 * ($initialAmount / $amountYear1));
+		$amountYear1 = $eOperation['amount'] - $deferredAmount;
+		$totalDays = round($nbDaysYear1 * ($eOperation['amount'] / $amountYear1));
 
 		$endTime = strtotime('+ '.$totalDays.' days - 1 day', $startTime);
 
