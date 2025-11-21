@@ -52,7 +52,6 @@ new AdaptativeView('close', function($data, FarmTemplate $t) {
 		$data->eFarm,
 		$data->e,
 		$data->cOperationToDefer,
-		$data->cStock,
 		$data->cAssetGrant,
 		$data->cAsset,
 	);

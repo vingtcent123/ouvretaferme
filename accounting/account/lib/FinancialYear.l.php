@@ -65,7 +65,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function closeFinancialYear(FinancialYear $eFinancialYear, array $input): void {
+	public static function closeFinancialYear(FinancialYear $eFinancialYear): void {
 
 		FinancialYear::model()->beginTransaction();
 
@@ -74,9 +74,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		// 2- Charges et Produits constatés d'avance
 		\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
-
-		// 3- Stocks de fin d'exercice
-		\journal\StockLib::recordStock($eFinancialYear);
 
 		// Mettre les numéros d'écritures
 		\journal\OperationLib::setNumbers($eFinancialYear);

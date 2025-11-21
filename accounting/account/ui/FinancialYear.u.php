@@ -647,7 +647,7 @@ class FinancialYearUi {
 		return s("Résultat exercice {value}", FinancialYearUi::getYear($eFinancialYear));
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationToDefer, \Collection $cStock, \Collection $cAssetGrant, \Collection $cAsset): string {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationToDefer, \Collection $cAssetGrant, \Collection $cAsset): string {
 
 		$form = new \util\FormUi();
 
@@ -696,24 +696,13 @@ class FinancialYearUi {
 			// Étape 3 : Visualisation des subventions
 			$h .= new \asset\AssetUi()->listGrantsForClosing($eFarm, $eFinancialYear, $form, $cAssetGrant);
 
-			$canClose = TRUE;
-			foreach($cStock as $eStock) {
-				if($eStock['financialYear']->is($eFinancialYear) === FALSE) {
-					$canClose = FALSE;
-				}
-			}
-
 			$h .= '<h3 class="mt-2">'.s("Confirmer la clôture de l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]).'</h3>';
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			if($canClose === FALSE) {
-				$h .= '<div class="util-warning-outline">'.s("Vous ne pouvez pas clôturer l'exercice comptable car des actions n'ont pas été réalisées, vérifiez partout où le symbole {icon} est affiché plus haut.", ['icon' => \Asset::icon('exclamation-diamond', ['class' => 'color-danger'])]).'</div>';
-			}
 			$h .= '<div>'.$form->submit(
 				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]),
-				$canClose ? [] : ['disabled' => 'disabled', 'class' => 'disabled']
 			).'</div>';
 
 		$h .= $form->close();
