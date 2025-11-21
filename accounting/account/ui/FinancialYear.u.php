@@ -697,7 +697,7 @@ class FinancialYearUi {
 			$h .= new \asset\AssetUi()->listForClosing($eFarm, $eFinancialYear, $form, $cAsset);
 
 			// Étape 4 : Visualisation des subventions
-			$h .= new \asset\AssetUi()->listGrantsForClosing($form, $cAssetGrant);
+			$h .= new \asset\AssetUi()->listGrantsForClosing($eFarm, $eFinancialYear, $form, $cAssetGrant);
 
 			$canClose = TRUE;
 			foreach($cStock as $eStock) {

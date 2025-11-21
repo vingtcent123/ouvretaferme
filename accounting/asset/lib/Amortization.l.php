@@ -512,7 +512,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
-	public static function amortizeGrant(\account\FinancialYear $eFinancialYear, Asset $eAsset): void {
+	public static function amortizeGrant(\account\FinancialYear $eFinancialYear, Asset $eAsset, bool $simulate = FALSE): \Collection {
 
 		$amortizationValue = self::computeAmortizationUntil($eAsset, $eFinancialYear['endDate'], 'economic');
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
@@ -521,26 +521,34 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$amortizationChargeClass = \account\AccountSetting::INVESTMENT_GRANT_TO_RESULT_CLASS;
 
 		$cAccount = \account\AccountLib::getByClasses([$eAsset['account']['class'], $grantDebitClass, $amortizationChargeClass], index: 'class');
+		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_INV);
+
+		$cOperation = new \Collection();
 
 		// Étape 1 : On débite 139
-		$eAccountGrantDebit = $cAccount[$grantDebitClass]['id'];
+		$eAccountGrantDebit = $cAccount[(int)$grantDebitClass];
+
 		$values = [
-			'account' => $eAccountGrantDebit['id'],
+			'account' => $eAccountGrantDebit,
 			'accountLabel' => \account\AccountLabelLib::pad($eAccountGrantDebit['class']),
 			'date' => $eFinancialYear['endDate'],
 			'paymentDate' => $eFinancialYear['endDate'],
 			'description' => $eAccountGrantDebit['description'].' - '.$eAsset['description'],
 			'amount' => $amortizationValue,
 			'type' => \journal\OperationElement::DEBIT,
-			'asset' => $eAsset,
+			'asset' => $eAsset['id'],
 			'financialYear' => $eFinancialYear['id'],
 			'hash' => $hash,
-			'journalCode' => $eAccountGrantDebit['journalCode'],
+			'journalCode' => $eJournalCode['id'],
 		];
-		\journal\OperationLib::createFromValues($values);
+		if($simulate) {
+			$cOperation->append(new \journal\Operation($values));
+		} else {
+			$cOperation->append(\journal\OperationLib::createFromValues($values));
+		}
 
 		// Étape 2 : on crédite 777
-		$eAccountGrantAmortization = $cAccount[$amortizationChargeClass]['id'];
+		$eAccountGrantAmortization = $cAccount[$amortizationChargeClass];
 		$values = [
 			'account' => $eAccountGrantAmortization['id'],
 			'accountLabel' => \account\AccountLabelLib::pad($eAccountGrantAmortization['class']),
@@ -549,12 +557,20 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			'description' => $eAccountGrantAmortization['description'].' - '.$eAsset['description'],
 			'amount' => $amortizationValue,
 			'type' => \journal\OperationElement::CREDIT,
-			'asset' => $eAsset,
+			'asset' => $eAsset['id'],
 			'financialYear' => $eFinancialYear['id'],
 			'hash' => $hash,
-			'journalCode' => $eAccountGrantAmortization['journalCode'],
+			'journalCode' => $eJournalCode['id'],
 		];
-		\journal\OperationLib::createFromValues($values);
+		if($simulate) {
+			$cOperation->append(new \journal\Operation($values));
+		} else {
+			$cOperation->append(\journal\OperationLib::createFromValues($values));
+		}
+
+		if($simulate) {
+			return $cOperation;
+		}
 
 		// Étape 3 : on inscrit cet amortissement dans la base de données de la subvention
 		$eAmortization = new Amortization([
@@ -566,18 +582,72 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		]);
 		Amortization::model()->insert($eAmortization);
 
-		// Étape 4 : Si la sub est entièrement amortie, il faut débiter le compte d'origine (131 ou 138) et créditer 139 du montant total
+		$valuesToUpdate = [
+			'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
+			'updatedAt' => new \Sql('NOW()'),
+		];
 
-		$amortizedTotalValue = Amortization::model()
-	    ->whereAsset($eAsset)
-	    ->getValue(new \Sql('SUM(amount)', 'float'));
+		Asset::model()->update(
+			$eAsset,
+			[
+				'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
+				'updatedAt' => new \Sql('NOW()'),
+			]
+		);
+
+		// Étape 4 : Si la sub est entièrement amortie, il faut débiter le compte d'origine (131 ou 138) et créditer 139 du montant total
+		$amortizedTotalValue = round($eAsset['economicAmortization'] + $amortizationValue, 2);
 
 		if($eAsset['endDate'] <= $eFinancialYear['endDate'] or $amortizedTotalValue >= $eAsset['value']) {
-			Asset::model()->update(
-				$eAsset,
-				['status' => Asset::ENDED, 'updatedAt' => new \Sql('NOW()')],
-			);
+
+			$valuesToUpdate['status'] = Asset::ENDED;
+
+			$eAccountGrantAmortization = $cAccount[$amortizationChargeClass];
+			$values = [
+				'account' => $eAsset['account']['id'],
+				'accountLabel' => $eAsset['accountLabel'],
+				'date' => $eFinancialYear['endDate'],
+				'paymentDate' => $eFinancialYear['endDate'],
+				'description' => $eAsset['description'],
+				'amount' => $eAsset['value'],
+				'type' => \journal\OperationElement::DEBIT,
+				'asset' => $eAsset['id'],
+				'financialYear' => $eFinancialYear['id'],
+				'hash' => $hash,
+				'journalCode' => $eJournalCode['id'],
+			];
+			if($simulate) {
+				$cOperation->append(new \journal\Operation($values));
+			} else {
+				$cOperation->append(\journal\OperationLib::createFromValues($values));
+			}
+
+			$values = [
+				'account' => $eAccountGrantDebit,
+				'accountLabel' => \account\AccountLabelLib::pad($eAccountGrantDebit['class']),
+				'date' => $eFinancialYear['endDate'],
+				'paymentDate' => $eFinancialYear['endDate'],
+				'description' => $eAccountGrantDebit['description'].' - '.$eAsset['description'],
+				'amount' => $eAsset['value'],
+				'type' => \journal\OperationElement::CREDIT,
+				'asset' => $eAsset['id'],
+				'financialYear' => $eFinancialYear['id'],
+				'hash' => $hash,
+				'journalCode' => $eJournalCode['id'],
+			];
+			if($simulate) {
+				$cOperation->append(new \journal\Operation($values));
+			} else {
+				$cOperation->append(\journal\OperationLib::createFromValues($values));
+			}
+
 		}
+		Asset::model()->update(
+			$eAsset,
+			$valuesToUpdate,
+		);
+
+		return $cOperation;
 
 	}
 
@@ -585,6 +655,14 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		foreach($cAsset as &$eAsset) {
 			$eAsset['operations'] = self::amortize($eFinancialYear, $eAsset, NULL, TRUE);
+		}
+
+	}
+
+	public static function simulateGrants(\account\FinancialYear $eFinancialYear, \Collection $cAssetGrant): void {
+
+		foreach($cAssetGrant as &$eAsset) {
+			$eAsset['operations'] = self::amortizeGrant($eFinancialYear, $eAsset, TRUE);
 		}
 
 	}
@@ -597,6 +675,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	public static function amortize(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate, bool $simulate = FALSE): \Collection {
 
 		$cOperation = new \Collection();
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 		// Cas où on sort l'immo manuellement (cassé, mise au rebus etc.)
 		if($endDate === NULL) {
@@ -604,7 +683,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$amortizationEconomicValue = self::computeAmortizationUntil($eAsset, $endDate, 'economic');
-		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 		$amortizationValue = $amortizationEconomicValue;
 		$amortizationExcessValue = 0;
@@ -651,7 +729,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		if($simulate) {
 			$cOperation->append(new \journal\Operation($values));
 		} else {
-			\journal\OperationLib::createFromValues($values);
+			$cOperation->append(\journal\OperationLib::createFromValues($values));
 		}
 
 		// Étape 1b : Amortissement dérogatoire, on débite 687 : dotation aux amortissements
@@ -676,7 +754,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
 			} else {
-				\journal\OperationLib::createFromValues($values);
+				$cOperation->append(\journal\OperationLib::createFromValues($values));
 			}
 
 			// Étape 1c : Reprise d'amortissement dérogatoire, on débite 145
@@ -699,7 +777,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
 			} else {
-				\journal\OperationLib::createFromValues($values);
+				$cOperation->append(\journal\OperationLib::createFromValues($values));
 			}
 
 		}
@@ -712,7 +790,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
 			} else {
-				\journal\OperationLib::createFromValues($values);
+				$cOperation->append(\journal\OperationLib::createFromValues($values));
 			}
 		}
 
@@ -737,7 +815,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
 			} else {
-				\journal\OperationLib::createFromValues($values);
+				$cOperation->append(\journal\OperationLib::createFromValues($values));
 			}
 
 
@@ -762,51 +840,54 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
 			} else {
-				\journal\OperationLib::createFromValues($values);
+				$cOperation->append(\journal\OperationLib::createFromValues($values));
 			}
 
 		}
 
-		if($simulate) {
-			return $cOperation;
-		}
+		if($simulate === FALSE) {
 
-		// Étape 3 : Entrée dans la table Amortization
-		$eAmortization = new Amortization([
-			'asset' => $eAsset,
-			'amount' => $amortizationValue,
-			'type' => Amortization::ECONOMIC,
-			'date' => $endDate,
-			'financialYear' => $eFinancialYear,
-		]);
-
-		Amortization::model()->insert($eAmortization);
-
-		if(($eAccountExcessAmortization ?? 0) > 0) {
-
-			$eAmortization = new Amortization([
-				'asset' => $eAsset,
-				'amount' => $eAccountExcessAmortization,
-				'type' => Amortization::EXCESS,
-				'date' => $endDate,
-				'financialYear' => $eFinancialYear,
-			]);
+			// Étape 3 : Entrée dans la table Amortization
+			$eAmortization = new Amortization(
+				[
+					'asset' => $eAsset,
+					'amount' => $amortizationValue,
+					'type' => Amortization::ECONOMIC,
+					'date' => $endDate,
+					'financialYear' => $eFinancialYear,
+				]
+			);
 
 			Amortization::model()->insert($eAmortization);
 
-		}
+			if(($eAccountExcessAmortization ?? 0) > 0) {
 
-		// Étape 4 : Mise à jour de l'immobilisation
-		Asset::model()->update(
-			$eAsset,
-			[
-				'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
-				'excessAmortization' => new \Sql('excessAmortization + '.$amortizationExcessValue),
-				'excessRecovery' => new \Sql('excessRecovery + '.$amortizationExcessRecoverValue),
-				'status' => new \Sql('IF(economicAmortization >= value OR endDate <= "'.$endDate.'", "'.Asset::ENDED.'", status)'),
-				'updatedAt' => new \Sql('NOW()'),
-			]
-		);
+				$eAmortization = new Amortization(
+					[
+						'asset' => $eAsset,
+						'amount' => $eAccountExcessAmortization,
+						'type' => Amortization::EXCESS,
+						'date' => $endDate,
+						'financialYear' => $eFinancialYear,
+					]
+				);
+
+				Amortization::model()->insert($eAmortization);
+
+			}
+
+			// Étape 4 : Mise à jour de l'immobilisation
+			Asset::model()->update(
+				$eAsset,
+				[
+					'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
+					'excessAmortization' => new \Sql('excessAmortization + '.$amortizationExcessValue),
+					'excessRecovery' => new \Sql('excessRecovery + '.$amortizationExcessRecoverValue),
+					'status' => new \Sql('IF(economicAmortization >= value OR endDate <= "'.$endDate.'", "'.Asset::ENDED.'", status)'),
+					'updatedAt' => new \Sql('NOW()'),
+				]
+			);
+		}
 
 		return $cOperation;
 

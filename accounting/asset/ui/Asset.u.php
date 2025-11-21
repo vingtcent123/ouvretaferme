@@ -724,7 +724,7 @@ Class AssetUi {
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Amortissement économique").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
-						$h .= '<th colspan="2">'.s("Écriture proposée pour l'amortissement économique").'</th>';
+						$h .= '<th colspan="2" class="text-center">'.s("Écritures proposées").'</th>';
 
 					$h .= '</tr>';
 
@@ -796,17 +796,13 @@ Class AssetUi {
 
 		return $h;
 	}
-	public function listGrantsForClosing(\util\FormUi $form, \Collection $cAssetGrant): string {
+	public function listGrantsForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \util\FormUi $form, \Collection $cAssetGrant): string {
 
 		if($cAssetGrant->empty()) {
 			return '';
 		}
 
-		$h = '<h3 class="mt-2">'.s("Reprise finale des subventions").'</h3>';
-
-		$h .= '<div class="util-info">';
-			$h .= s("Si des subventions n'ont pas été entièrement reprises au compte de résultat alors que l'immobilisation correspondante est totalement amortie, vous pouvez <b>intégrer</b> cette reprise dans l'exercice comptable.");
-		$h .= '</div>';
+		$h = '<h3 class="mt-2">'.s("Subventions").'</h3>';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
@@ -816,12 +812,19 @@ Class AssetUi {
 
 					$h .= '<tr>';
 
-						$h .= '<th>'.s("Subvention").'</th>';
-						$h .= '<th>'.s("Immobilisation liée").'</th>';
-						$h .= '<th class="text-end">'.s("Reprise déjà faite").'</th>';
-						$h .= '<th class="text-end">'.s("Solde à reprendre").'</th>';
-						$h .= '<th>'.s("Écriture proposée").'</th>';
-						$h .= '<th class="text-center">'.s("Intégrer ?").'</th>';
+						$h .= '<th rowspan="2">'.s("N° compte").'</th>';
+						$h .= '<th rowspan="2">'.s("Immobilisation").'</th>';
+						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
+						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Amortissement économique").'</th>';
+						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+						$h .= '<th colspan="2" class="text-center">'.s("Écritures").'</th>';
+
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+
+						$h .= '<th class="text-center">'.s("Compte Débit").'</th>';
+						$h .= '<th class="text-center">'.s("Compte Crédit").'</th>';
 
 					$h .= '</tr>';
 
@@ -830,19 +833,49 @@ Class AssetUi {
 				$h .= '<tbody>';
 					foreach($cAssetGrant as $eAsset) {
 
+						$currentPeriod = NULL;
+						foreach($eAsset['table'] as $period) {
+							if(
+								$period['financialYear']['startDate'] === $eFinancialYear['startDate'] and
+								$period['financialYear']['endDate'] === $eFinancialYear['endDate']
+							) {
+								$currentPeriod = $period;
+								break;
+							}
+						}
+
+						if($currentPeriod === NULL) {
+							continue;
+						}
+
 						$h .= '<tr id="'.$eAsset['id'].'">';
 
-						$h .= '<td>'.encode($eAsset['description']).'</td>';
-						$h .= '<td>'./*encode($eAsset['asset']['description']).*/'</td>';
-						$h .= '<td class="text-end">'./*\util\TextUi::money($eAsset['alreadyRecognized']).*/'</td>';
-						$h .= '<td class="text-end">'./*\util\TextUi::money($eAsset['value'] - $eAsset['alreadyRecognized']).*/'</td>';
-						$h .= '<td>'.s("Débit {accountDebit} / Crédit {accountCredit}", [
-							'accountDebit' => encode($eAsset['account']['class']),
-							'accountCredit' => \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS,
-						]).'</td>';
-						$h .= '<td class="text-center">';
-							$h .= $form->checkbox('grantsToRecognize[]', $eAsset['id']);
-						$h .= '</td>';
+							$h .= '<td>';
+								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+									$h .= encode($eAsset['accountLabel']);
+								$h .= '</div>';
+								$h .= '<div class="dropdown-list bg-primary">';
+								$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
+								$h .= '</div>';
+							$h .= '</td>';
+							$h .= '<td><a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';
+							$h .= '<td class="text-center">';
+								foreach($eAsset['operations'] as $eOperation) {
+									if($eOperation['type'] === \journal\Operation::DEBIT) {
+										$h .= '<div>'.$eOperation['accountLabel'].'</div>';
+									}
+								}
+								$h .= '</td>';
+								$h .= '<td class="text-center">';
+								foreach($eAsset['operations'] as $eOperation) {
+									if($eOperation['type'] === \journal\Operation::CREDIT) {
+										$h .= '<div>'.$eOperation['accountLabel'].'</div>';
+									}
+								}
+							$h .= '</td>';
 
 						$h .= '</tr>';
 

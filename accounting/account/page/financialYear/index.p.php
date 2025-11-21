@@ -108,6 +108,11 @@ new \account\FinancialYearPage(
 		$data->cStock = \journal\StockLib::getAllForFinancialYear($data->e);
 
 		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
+		\asset\AmortizationLib::simulateGrants($data->e, $data->cAssetGrant);
+		foreach($data->cAssetGrant as &$eAsset) {
+			$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
+		}
+
 		$data->cAsset = \asset\AssetLib::getAssetsByFinancialYear($data->e);
 		\asset\AmortizationLib::simulate($data->e, $data->cAsset);
 		foreach($data->cAsset as &$eAsset) {
