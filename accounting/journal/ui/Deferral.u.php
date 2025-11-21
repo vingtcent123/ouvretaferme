@@ -184,7 +184,7 @@ class DeferralUi {
 			$totalDeferral = $countDeferral;
 
 			$h .= '<div class="util-info">';
-				$h .= s("Toutes les écritures de charge et de produit de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez modifier leur période de consommation ou le montant à reporter.<br />Dans le cas d'une <b>charge</b> constatée d'avance, le compte de contrepartie utilisé sera le <b>{chargeClass}</b> et pour un <b>produit</b> constaté d'avance, le compte de contrepartie sera le <b>{productClass}</b>.", ['chargeClass' => \account\AccountSetting::PREPAID_EXPENSE_CLASS, 'productClass' => \account\AccountSetting::ACCRUED_EXPENSE_CLASS]);
+				$h .= s("Toutes les écritures de charge et de produit de cet exercice comptable ont été listées ci-après. Si vous souhaitez que certaines d'entre elles soient en partie reportées au prochain exercice, vous pouvez indiquer leur période de consommation ou le montant à reporter.<br />Dans le cas d'une <b>charge</b> constatée d'avance, le compte de contrepartie utilisé sera le <b>{chargeClass}</b> et pour un <b>produit</b> constaté d'avance, le compte de contrepartie sera le <b>{productClass}</b>.", ['chargeClass' => \account\AccountSetting::PREPAID_EXPENSE_CLASS, 'productClass' => \account\AccountSetting::ACCRUED_EXPENSE_CLASS]);
 			$h .= '</div>';
 
 			$h .= '<div class="stick-sm util-overflow-sm mb-1">';

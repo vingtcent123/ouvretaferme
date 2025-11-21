@@ -88,10 +88,14 @@ class AccountSetting extends \Settings {
 	const VAT_BUY_CLASS_PREFIX = '4456'; // TVA déductible
 	const VAT_BUY_CLASS_ACCOUNT = '44566'; // TVA déductible s/ABS
 	const VAT_DEPOSIT_CLASS = '44581'; // Acompte de TVA
+	const VAT_CHARGES_TO_PAY_CLASS = '44586'; // TVA à payer (FNP)
+	const VAT_CHARGES_TO_COLLECT_CLASS = '44587'; // TVA à payer (FAE
 	const VAT_ASSET_CLASS = '44562'; // TVA déductible s/immo
 	const VAT_CREDIT_CLASS = '44567'; // Crédit de TVA à reporter
 	const VAT_SELL_CLASS_PREFIX = '4457'; // TVA collectée
 	const VAT_SELL_CLASS_ACCOUNT = '44571'; // TVA collectée
+	const TAXES_TO_PAY_CLASS = '438'; // État - charges à payer
+	const TAXES_TO_GET_CLASS = '439'; // État - produits à recevoir
 
 	// CHARGES
 	const SHIPPING_CHARGE_ACCOUNT_CLASS = '624';
@@ -119,10 +123,18 @@ class AccountSetting extends \Settings {
 	const BANK_ACCOUNT_CLASS = '512';
 	const CASH_ACCOUNT_CLASS = '53'; // caisse
 	const DEFAULT_BANK_ACCOUNT_LABEL = '5121';
+	
+	const INTERESTS_TO_PAY_CLASS = '1648';
+	const INTERESTS_TO_GET_CLASS = '2768';
 
 	// TIERS
 	const THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS = '401';
+	const THIRD_ACCOUNT_SUPPLIER_TO_PAY_CLASS = '408';
 	const THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS = '411';
+	const THIRD_ACCOUNT_RECEIVABLE_TO_GET_CLASS = '4181';
+	const EMPLOYEE_TO_PAY_CLASS = '428';
+	const SOCIAL_TO_PAY_CLASS = '438';
+	const SOCIAL_TO_GET_CLASS = '438';
 
 
 	public static $summaryAccountingBalanceCategories;
