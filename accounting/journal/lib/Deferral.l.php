@@ -194,7 +194,7 @@ class DeferralLib extends DeferralCrud {
 
 	}
 
-	public static function createDeferral(Operation $eOperation, array $input): bool {
+	public static function createDeferral(Operation $eOperation, array $input): string {
 
 		$field = $input['field'] ?? NULL;
 		if(in_array($field, ['dates', 'amount']) === FALSE) {

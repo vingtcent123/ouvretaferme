@@ -90,6 +90,12 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	public static function isTangibleLivingAsset(string $account): bool {
+
+		return \account\AccountLabelLib::isFromClass($account, \account\AccountSetting::TANGIBLE_LIVING_ASSETS_CLASS);
+
+	}
+
 	public static function getAcquisitions(\account\FinancialYear $eFinancialYear, string $type): \Collection {
 
 		return Asset::model()

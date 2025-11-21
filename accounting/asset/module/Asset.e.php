@@ -31,10 +31,15 @@ class Asset extends AssetElement {
 
 	}
 
-
 	public function isIntangible(): bool {
 
 		return AssetLib::isIntangibleAsset($this['accountLabel']);
+
+	}
+
+	public function isTangibleLiving(): bool {
+
+		return AssetLib::isTangibleLivingAsset($this['accountLabel']);
 
 	}
 

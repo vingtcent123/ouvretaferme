@@ -529,7 +529,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$eAccountGrantDebit = $cAccount[(int)$grantDebitClass];
 
 		$values = [
-			'account' => $eAccountGrantDebit,
+			'account' => $eAccountGrantDebit['id'],
 			'accountLabel' => \account\AccountLabelLib::pad($eAccountGrantDebit['class']),
 			'date' => $eFinancialYear['endDate'],
 			'paymentDate' => $eFinancialYear['endDate'],
@@ -710,7 +710,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$eAccountAmortizationCharge = \account\AccountLib::getByClass($amortizationChargeClass);
-		$accountLabel = \account\AccountLabelLib::pad(\account\AccountSetting::ASSETS_AMORTIZATION_CHARGE_CLASS.mb_substr($eAsset['accountLabel'], 0, 3));
+		$accountLabel = \account\AccountLabelLib::pad($amortizationChargeClass.mb_substr($eAsset['accountLabel'], 0, 3));
+
 		$description = new AssetUi()->getTranslation($amortizationChargeClass).' '.$eAsset['description'];
 		$values = [
 			'account' => $eAccountAmortizationCharge['id'],
@@ -919,9 +920,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		// Pas trouvé ? Le compte général à 3 chiffres
 		if($eAccountAmortizationFound->empty()) {
-			$eAccountAmortizationFound = $eAsset->isTangible()
-				? \account\AccountLib::getByClass(\account\AccountSetting::ASSET_AMORTIZATION_TANGIBLE_CLASS)
-				: \account\AccountLib::getByClass(\account\AccountSetting::ASSET_AMORTIZATION_INTANGIBLE_CLASS);
+			if($eAsset->isTangibleLiving()) {
+				$eAccountAmortizationFound = \account\AccountLib::getByClass(\account\AccountSetting::ASSET_AMORTIZATION_TANGIBLE_LIVING_CLASS);
+			} else if($eAsset->isTangible()) {
+				$eAccountAmortizationFound = \account\AccountLib::getByClass(\account\AccountSetting::ASSET_AMORTIZATION_TANGIBLE_CLASS);
+			} else {
+				$eAccountAmortizationFound = \account\AccountLib::getByClass(\account\AccountSetting::ASSET_AMORTIZATION_INTANGIBLE_CLASS);
+			}
 		}
 
 		$amortizationAccountLabel = \account\AccountLabelLib::pad(rtrim(\account\AccountLabelLib::getAmortizationClassFromClass($eAsset['accountLabel']), '0'));

@@ -81,7 +81,6 @@ class FinancialYearLib extends FinancialYearCrud {
 		FinancialYear::model()->update($eFinancialYear, [
 			'status' => FinancialYear::CLOSE,
 			'closeDate' => new \Sql('NOW()'),
-			'balanceSheetClose' => TRUE,
 		]);
 
 		LogLib::save('close', 'FinancialYear', ['id' => $eFinancialYear['id']]);
@@ -145,7 +144,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()
 			->select(FinancialYear::getSelection())
-			->whereStatus(FinancialYearElement::OPEN)
 			->sort(['endDate' => SORT_DESC])
 			->get($eFinancialYear);
 

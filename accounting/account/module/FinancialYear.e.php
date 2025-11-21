@@ -47,7 +47,7 @@ class FinancialYear extends FinancialYearElement {
 
 	public function acceptClose(): bool {
 
-		return \journal\StockLib::hasWaitingStockFromPreviousFinancialYear($this) === FALSE and $this['closeDate'] === NULL;
+		return $this['closeDate'] === NULL and $this['status'] === FinancialYear::OPEN;
 
 	}
 
