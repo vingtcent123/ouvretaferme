@@ -12,6 +12,16 @@ body[data-template~="game"] main {
     }
 }
 
+body[data-template~="game"] .util-box-sticked {
+	width: 25rem;
+	left: calc(50vw - 12.5rem);
+	font-size: 1.5rem;
+	line-height: 1.4;
+	text-align: center;
+	background-color: var(--game);
+	box-shadow: 0 0 5rem black;
+}
+
 body[data-template~="game"] h1 {
 	font-family: 'Mystery Quest', serif;
 	text-align: center;
@@ -27,6 +37,8 @@ body[data-template~="game"] h1 {
 	}
 
 }
+
+
 
 .game-boards {
 	display: flex;
@@ -219,6 +231,7 @@ a.game-intro-start:hover  {
 
 .game-dashboard-more {
 	color: var(--muted);
+	margin-top: 0.25rem;
 }
 
 .game-desk {

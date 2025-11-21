@@ -39,7 +39,7 @@ class FoodModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'user' => ['element32', 'user\User', 'cast' => 'element'],
 			'growing' => ['element32', 'game\Growing', 'null' => TRUE, 'cast' => 'element'],
-			'current' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'current' => ['int16', 'cast' => 'int'],
 			'total' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 		]);
 

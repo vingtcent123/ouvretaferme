@@ -41,39 +41,67 @@ class FoodLib extends FoodCrud {
 
 	}
 
-	public static function add(Player $ePlayer, Growing $eGrowing, Tile $eTile, int $value): void {
+	public static function change(Player $ePlayer, string $history, \Collection|Growing $cGrowing, array|int $values, ?float $time = NULL): bool {
 
 		$ePlayer->expects(['user']);
 
+		if($cGrowing instanceof Growing) {
+			$cGrowing = new \Collection([$cGrowing]);
+		}
+
+		if(is_int($values)) {
+			$values = array_fill(0, $cGrowing->count(), $values);
+		}
+
 		Food::model()->beginTransaction();
 
-			if($eTile->notEmpty()) {
+			$position = 0;
 
-				//PlayerLib::canTime($eUser);
+			foreach($cGrowing as $eGrowing) {
 
-			} else {
-				$time = NULL;
-			}
+				$value = $values[$position++] ?? throw new \Exception('Missing value at position '.$position);
 
-			Food::model()
-				->whereUser($ePlayer['user'])
-				->whereGrowing($eGrowing)
-				->update([
+				$update = [
 					'current' => new \Sql('current + '.$value),
-					'total' => new \Sql('total + '.$value),
-				]);
+				];
+
+				if($value > 0) {
+
+					$update += [
+						'total' => new \Sql('total + '.$value),
+					];
+
+				}
+
+				$affected = Food::model()
+					->whereUser($ePlayer['user'])
+					->whereGrowing($eGrowing)
+					->where(new \Sql('current + '.$value.' >= 0'), if: $value < 0)
+					->update($update);
+
+				if($affected === 0) {
+
+					Food::model()->rollBack();
+
+					return FALSE;
+
+				}
+
+			}
 
 			PlayerLib::updatePoints($ePlayer);
 
 			$eHistory = new History([
 				'user' => $ePlayer['user'],
 				'time' => $time,
-				'message' => HistoryUi::getMessageProduction($eGrowing, $value)
+				'message' => HistoryUi::getMessage($history, $cGrowing, $values)
 			]);
 
 			History::model()->insert($eHistory);
 
 		Food::model()->commit();
+
+		return TRUE;
 
 	}
 

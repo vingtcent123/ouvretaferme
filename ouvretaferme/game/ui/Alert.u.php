@@ -1,5 +1,5 @@
 <?php
-namespace farm;
+namespace game;
 
 /**
  * Alert messages
@@ -23,7 +23,11 @@ class AlertUi {
 
 		return match($fqn) {
 
-			default => null
+			'Action::eaten' => s("Bon appétit !<br/>Vous pouvez maintenant travailler {value} heures de plus !", \game\GameSetting::BONUS_SOUP),
+			'Action::notEaten' => s("Il ne s'est rien passé, vous aviez déjà mangé votre dernière soupe !"),
+			'Action::cooked' => s("Cuisson terminée !"),
+			'Action::notCooked' => s("Préparation impossible, il vous manquait des légumes !"),
+			default => NULL
 
 		};
 

@@ -10,7 +10,7 @@ Food:
   id: serial32
   user: user\User
   growing: ?game\Growing
-  current: int16(0, null) = 0
+  current: int16 = 0
   total: int16(0, null) = 0
   INDEX: [
     ["user"]
@@ -35,7 +35,7 @@ Player:
   gift: int8(0, null) = 0
   lastGift: date = SPECIAL(now)
   boards: int8(1, PHP(GameSetting::BOARDS)) = 1
-  points: int8(0, null) = 0
+  points: int(0, null) = 0
   createdAt: date = SPECIAL(now)
   UNIQUE: [
     ["name"],

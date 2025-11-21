@@ -2643,12 +2643,12 @@ h6 .dropdown-toggle:after {
 	display: block;
 	width: 100%;
 	padding: 0.625rem 1rem;
-	color: white;
 	line-height: 1.2;
 	background-color: transparent;
 	border: 0;
 	text-align: left;
 	font-weight: normal;
+	color: white;
 }
 
 .dropdown-item {

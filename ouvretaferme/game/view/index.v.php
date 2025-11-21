@@ -36,7 +36,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 			echo '<a href="/jouer" class="btn btn-lg '.(get_exists('show') ? 'color-game' : 'btn-game').'">'.s("Jouer").'</a>';
 			echo '<a href="/jouer?show=story" class="btn btn-lg '.(GET('show') !== 'story' ? 'color-game' : 'btn-game').'">'.s("Synopsis").'</a>';
 			echo '<a href="/jouer?show=rules" class="btn btn-lg '.(GET('show') !== 'rules' ? 'color-game' : 'btn-game').'">'.s("Règles du jeu").'</a>';
-			if(\game\Player::isPremium($data->ePlayer['user']) === FALSE) {
+			if($data->ePlayer->isPremium() === FALSE) {
 				echo '<a href="/adherer" class="btn btn-lg btn-outline-game">'.s("Adhérer").'</a>';
 			}
 		echo '</div>';

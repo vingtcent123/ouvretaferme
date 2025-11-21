@@ -3,8 +3,20 @@ namespace game;
 
 class HistoryUi {
 
-	public static function getMessageProduction(Growing $eGrowing, int $value): string {
-		return s("Vous avez produit {value}", ['value' => '<b>'.$value.'</b>  '.GrowingUi::getVignette($eGrowing, '1rem')]);
+	public static function getMessage(string $history, \Collection $cGrowing, array $values): string {
+
+		return match($history) {
+			'production' => self::getMessageProduction($cGrowing, $values),
+			'soup-eat' => s("Vous avez mangé {value} soupe", 1),
+			'soup-cook' => p("Vous avez cuisiné {value} soupe avec vos légumes", "Vous avez cuisiné {value} soupes avec vos légumes", last($values)),
+		};
+
+	}
+
+	public static function getMessageProduction(\Collection $cGrowing, array $values): string {
+		return ($values[0] > 0) ?
+			s("Vous avez produit {value}", ['value' => '<b>'.$values[0].'</b>  '.GrowingUi::getVignette($cGrowing->first(), '1rem')]) :
+			s("Vous avez consommé {value}", ['value' => '<b>'.$values[0].'</b>  '.GrowingUi::getVignette($cGrowing->first(), '1rem')]);
 	}
 
 	public static function display(\Collection $cHistory): string {

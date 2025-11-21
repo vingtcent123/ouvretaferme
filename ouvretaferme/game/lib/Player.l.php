@@ -54,6 +54,18 @@ class PlayerLib extends PlayerCrud {
 
 	}
 
+	public static function changeTime(Player $e, float $value): bool {
+
+		$affected = Player::model()
+			->where(new \Sql('time - '.$value.' <= '.$e->getDailyTime()), if: $value < 0)
+			->update($e, [
+				'time' => new \Sql('time - '.$value)
+			]);
+
+		return ($affected > 0);
+
+	}
+
 	public static function updatePoints(Player $e): void {
 
 		Player::model()->update($e, [
@@ -67,16 +79,6 @@ class PlayerLib extends PlayerCrud {
 		return Food::model()
 			->whereUser($eUser)
 			->getValue(new \Sql('SUM(IF(growing IS NULL, current * 10, current))', 'int'));
-
-	}
-
-	public static function canTime(\user\User $eUser, int $additional): bool {
-
-		$time = Player::model()
-			->whereUser($eUser)
-			->getValue('time');
-
-		return ($time + $additional <= \game\Player::getDailyTime($eUser));
 
 	}
 
