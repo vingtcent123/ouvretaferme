@@ -106,7 +106,7 @@ class OperationUi {
 			if(
 				$eCashflow->notEmpty() and
 				abs($eOperation['amount']) === abs($eCashflow['amount']) and
-				\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::FINANCIAL_GENERAL_CLASS)
+				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::FINANCIAL_GENERAL_CLASS)
 			) {
 				$linkedOperationIds[] = $eOperation['id'];
 				$eOperationBank = clone $eOperation;
@@ -115,7 +115,7 @@ class OperationUi {
 
 			// On regarde s'il y a une opération de TVA liée
 			$eOperationVAT = $cOperation->find(fn($e) => $e['operation']->notEmpty() and $e['operation']['id'] === $eOperation['id'])->first();
-			if($eOperationVAT !== NULL and \account\ClassLib::isFromClass($eOperationVAT['accountLabel'], \account\AccountSetting::VAT_CLASS)) {
+			if($eOperationVAT !== NULL and \account\AccountLabelLib::isFromClass($eOperationVAT['accountLabel'], \account\AccountSetting::VAT_CLASS)) {
 				$linkedOperationIds[] = $eOperationVAT['id'];
 				$eOperation['vatAmount'] = $eOperationVAT['amount'];
 				$eOperation['vatOperation'] = $eOperationVAT;

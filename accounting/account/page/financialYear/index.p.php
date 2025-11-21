@@ -33,12 +33,18 @@ new \account\FinancialYearPage(
 		throw new ViewAction($data);
 
 	})
-	->doCreate(function($data) {
-
+;
+new \account\FinancialYearPage(
+	function($data) {
+		\user\ConnectionLib::checkLogged();
+		$data->eFarm->validate('canManage');
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 		if($data->cFinancialYearOpen->count() >= 2) {
 			throw new NotExpectedAction('Cannot create a new financial year as there are already '.$data->cFinancialYearOpen->count().' financial years open');
 		}
+	}
+)
+	->doCreate(function($data) {
 
 		throw new ReloadAction('account', 'FinancialYear::created');
 
@@ -114,7 +120,7 @@ new \account\FinancialYearPage(
 
 		$data->e->validate('acceptClose');
 
-		\account\FinancialYearLib::closeFinancialYear($data->e);
+		\account\FinancialYearLib::closeFinancialYear($data->e, $_POST);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	})

@@ -473,7 +473,7 @@ Class AssetUi {
 		];
 
 		$assetAccountLabel = rtrim($eAsset['accountLabel'], '0');
-		$amortizationAccountLabel = \account\ClassLib::getAmortizationClassFromClass($assetAccountLabel);
+		$amortizationAccountLabel = \account\AccountLabelLib::getAmortizationClassFromClass($assetAccountLabel);
 		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
 
 		$amortizationCumulated = $eAsset['cAmortization']->sum('amount');

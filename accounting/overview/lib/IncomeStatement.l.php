@@ -45,8 +45,8 @@ Class IncomeStatementLib {
 
 		foreach($cOperations as $eOperation) {
 
-			$isExpense = ((int)mb_substr($eOperation['class'], 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS);
-			$isIncome = ((int)mb_substr($eOperation['class'], 0, 1) === \account\AccountSetting::PRODUCT_ACCOUNT_CLASS);
+			$isExpense = \account\AccountLabelLib::isChargeClass($eOperation['class']);
+			$isIncome = \account\AccountLabelLib::isProductClass($eOperation['class']);
 
 			if($isExpense) {
 				self::affectResultData($expenses, $eFinancialYear, $eOperation);
@@ -146,7 +146,7 @@ Class IncomeStatementLib {
 				return ['incomes', 'exceptional'];
 
 			default:
-				if((int)mb_substr((string)$class, 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS) {
+				if(\account\AccountLabelLib::isChargeClass($class)) {
 					return ['expenses', 'operating'];
 				} else {
 					return ['incomes', 'operating'];

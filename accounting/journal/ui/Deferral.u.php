@@ -66,7 +66,7 @@ class DeferralUi {
 
 		$h .= $form->close();
 
-		$isCharge = \account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::CHARGE_ACCOUNT_CLASS);
+		$isCharge = \account\AccountLabelLib::isChargeClass($eOperation['accountLabel']);
 		if($isCharge) {
 			$title = s("Enregistrer une charge constatée d'avance");
 		} else {
@@ -141,7 +141,7 @@ class DeferralUi {
 							$h .= '<tr>';
 
 								$h .= '<td>'.encode(self::p('type')->values[$eDeferral['type']]).'</td>';
-								$h .= '<td>'.\account\ClassLib::pad($class).'</td>';
+								$h .= '<td>'.\account\AccountLabelLib::pad($class).'</td>';
 								$h .= '<td>'.self::getTranslation(NULL, $eDeferral['type']).' ('.encode($eDeferral['operation']['description']).')</td>';
 								$h .= '<td class="text-end">';
 								$h .= match($eDeferral['operation']['type']) {
@@ -223,7 +223,7 @@ class DeferralUi {
 									'startDate' => \util\DateUi::numeric($eDeferral['startDate'], \util\DateUi::DATE),
 									'endDate' => \util\DateUi::numeric($eDeferral['endDate'], \util\DateUi::DATE),
 								]);
-								if(date('Y-m-d', strtotime($eDeferral['initialFinancialYear']['endDate'].' + 1 YEAR')) < $eDeferral['endDate']) {
+								if(date('Y-m-d', strtotime($eDeferral['financialYear']['endDate'].' + 1 YEAR')) < $eDeferral['endDate']) {
 									$period = '<span class="color-warning" data-dropdown="bottom" data-dropdown-hover="true">'.$period.' '.\Asset::icon('exclamation-triangle').'</span>';
 									$period .= '<div class="dropdown-list bg-primary">';
 										$period .= '<span class="dropdown-item">'.s("La période de consommation est peut-être erronée").'</span>';
@@ -233,7 +233,7 @@ class DeferralUi {
 
 								if($eOperation['deferral']->acceptDelete()) {
 
-									if(\account\ClassLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::CHARGE_ACCOUNT_CLASS)) {
+									if(\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::CHARGE_ACCOUNT_CLASS)) {
 										$confirm = s("Voulez-vous vraiment supprimer cette charge constatée d'avance ?");
 									} else {
 										$confirm = s("Voulez-vous vraiment supprimer ce produit constaté d'avance ?");
@@ -247,13 +247,18 @@ class DeferralUi {
 
 								}
 
-							} else {
+							} else if($eOperation->acceptDeferral()) {
 
 								$isDeferral = FALSE;
 
 								$period = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:set?id='.$eOperation['id'].'&field=dates">'.s("modifier").'</a>';
 								$amount = '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/deferral:set?id='.$eOperation['id'].'&field=amount">'.s("modifier").'</a>';
 								$action = '';
+
+							} else {
+
+								$period = '';
+								$amount = '';
 
 							}
 
@@ -338,8 +343,7 @@ class DeferralUi {
 			'startDate' => s("Date de début"),
 			'endDate' => s("Date de fin"),
 			'amount' => s("Montant à reporter (HT)"),
-			'initialFinancialYear' => s("Exercice comptable d'origine"),
-			'destinationFinancialYear' => s("Exercice comptable de report"),
+			'financialYear' => s("Exercice comptable"),
 			'status' => s("Statut"),
 			'createdAt' => s("Enregistré le"),
 		]);

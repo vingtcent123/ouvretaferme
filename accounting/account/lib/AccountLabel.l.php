@@ -1,7 +1,7 @@
 <?php
 namespace account;
 
-class ClassLib {
+class AccountLabelLib {
 
 	public static function pad(string $account): string {
 
@@ -12,6 +12,18 @@ class ClassLib {
 	public static function isFromClass(string $account, string $class): bool {
 
 		return mb_substr($account, 0, mb_strlen($class)) === $class;
+
+	}
+
+	public static function isChargeClass(string $account): bool {
+
+		return substr($account, 0, mb_strlen(\account\AccountSetting::CHARGE_ACCOUNT_CLASS)) === (string)\account\AccountSetting::CHARGE_ACCOUNT_CLASS;
+
+	}
+
+	public static function isProductClass(string $account): bool {
+
+		return substr($account, 0, mb_strlen(\account\AccountSetting::CHARGE_ACCOUNT_CLASS)) === (string)\account\AccountSetting::PRODUCT_ACCOUNT_CLASS;
 
 	}
 

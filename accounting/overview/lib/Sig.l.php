@@ -95,13 +95,9 @@ class SigLib {
 	  self::IMPOTS_BENEFICES => ['689', '695', '696', '697', '698', '699', '-789'],
 	];
 
-	 public static function isCharge(string $account): bool {
-		 return (int)mb_substr($account, 0, 1) === \account\AccountSetting::CHARGE_ACCOUNT_CLASS;
-	 }
-
 	 public static function getAmountSql(string $account): string {
 
-		 if(self::isCharge($account)) {
+		 if(\account\AccountLabelLib::isChargeClass($account)) {
 			 return 'IF(type = "'.\journal\Operation::DEBIT.'", amount, -1 * amount)';
 		 }
 

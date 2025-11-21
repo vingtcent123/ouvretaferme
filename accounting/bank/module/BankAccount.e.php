@@ -8,7 +8,7 @@ class BankAccount extends BankAccountElement {
 		$p
 			->setCallback('label.numbers', function(string $label): bool {
 
-				return \account\ClassLib::isFromClass($label, \account\AccountSetting::BANK_ACCOUNT_CLASS);
+				return \account\AccountLabelLib::isFromClass($label, \account\AccountSetting::BANK_ACCOUNT_CLASS);
 
 			});
 

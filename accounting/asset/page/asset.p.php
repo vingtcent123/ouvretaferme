@@ -11,8 +11,8 @@ new \asset\AssetPage(function($data) {
 		$eAccount = \account\AccountLib::getById(GET('account'));
 		if(
 			$eAccount->notEmpty() and
-			\account\ClassLib::isFromClass($eAccount['class'], \account\AccountSetting::GRANT_ASSET_CLASS) === FALSE and
-			\account\ClassLib::isFromClass($eAccount['class'], \account\AccountSetting::ASSET_GENERAL_CLASS) === FALSE
+			\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::GRANT_ASSET_CLASS) === FALSE and
+			\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::ASSET_GENERAL_CLASS) === FALSE
 		) {
 			$eAccount = new \account\Account();
 		}

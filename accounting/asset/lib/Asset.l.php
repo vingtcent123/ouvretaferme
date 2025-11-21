@@ -80,13 +80,13 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isTangibleAsset(string $account): bool {
 
-		return \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_ASSETS_CLASS) or \account\ClassLib::isFromClass($account, \account\AccountSetting::TANGIBLE_LIVING_ASSETS_CLASS);
+		return \account\AccountLabelLib::isFromClass($account, \account\AccountSetting::TANGIBLE_ASSETS_CLASS) or \account\AccountLabelLib::isFromClass($account, \account\AccountSetting::TANGIBLE_LIVING_ASSETS_CLASS);
 
 	}
 
 	public static function isIntangibleAsset(string $account): bool {
 
-		return \account\ClassLib::isFromClass($account, \account\AccountSetting::INTANGIBLE_ASSETS_CLASS);
+		return \account\AccountLabelLib::isFromClass($account, \account\AccountSetting::INTANGIBLE_ASSETS_CLASS);
 
 	}
 
@@ -257,7 +257,7 @@ class AssetLib extends \asset\AssetCrud {
 			$eAccountVNC = \account\AccountLib::getByClass(\account\AccountSetting::CHARGE_ASSET_NET_VALUE_CLASS);
 			$values = [
 				'account' => $eAccountVNC['id'],
-				'accountLabel' => \account\ClassLib::pad($eAccountVNC['class']),
+				'accountLabel' => \account\AccountLabelLib::pad($eAccountVNC['class']),
 				'date' => $endDate,
 				'paymentDate' => $endDate,
 				'description' => new AssetUi()->getTranslation(\account\AccountSetting::CHARGE_ASSET_NET_VALUE_CLASS).' '.$eAsset['description'],
@@ -295,7 +295,7 @@ class AssetLib extends \asset\AssetCrud {
 			$cDepreciation = DepreciationLib::getByAsset($eAsset);
 			$depreciationExceptionalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::EXCEPTIONAL)->sum('amount'), 2);
 			$depreciationNormalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::NORMAL)->sum('amount'), 2);
-			$accountLabelDepreciation = \account\ClassLib::geDepreciationClassFromClass($eAsset['accountLabel']);
+			$accountLabelDepreciation = \account\AccountLabelLib::geDepreciationClassFromClass($eAsset['accountLabel']);
 
 			foreach([Depreciation::NORMAL => $depreciationNormalAmount, Depreciation::EXCEPTIONAL => $depreciationExceptionalAmount] as $type => $amount) {
 
@@ -331,7 +331,7 @@ class AssetLib extends \asset\AssetCrud {
 				// Créditer le compte 7816 ou 7876
 				$values = [
 					'account' => $eAccountRecovery['id'],
-					'accountLabel' => \account\ClassLib::pad($eAccountRecovery['class']),
+					'accountLabel' => \account\AccountLabelLib::pad($eAccountRecovery['class']),
 					'date' => $endDate,
 					'paymentDate' => $endDate,
 					'description' => new AssetUi()->getTranslation('recovery-depreciation-'.($type === Depreciation::EXCEPTIONAL ? 'exceptional' : 'asset')).' '.$eAsset['description'],

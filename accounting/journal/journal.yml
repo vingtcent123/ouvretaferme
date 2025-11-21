@@ -6,14 +6,13 @@ Deferral:
   startDate: date # Début conso
   endDate: date # Fin conso
   amount: decimal(8, 2, 0.01, null)
-  initialFinancialYear: account\FinancialYear
-  destinationFinancialYear: ?account\FinancialYear
+  financialYear: account\FinancialYear
   status: enum(PLANNED, RECORDED, DEFERRED, CANCELLED)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
   INDEX: [
-    ["initialFinancialYear"],
+    ["financialYear"],
     ["status"]
   ]
 

@@ -526,7 +526,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$eAccountGrantDebit = $cAccount[$grantDebitClass]['id'];
 		$values = [
 			'account' => $eAccountGrantDebit['id'],
-			'accountLabel' => \account\ClassLib::pad($eAccountGrantDebit['class']),
+			'accountLabel' => \account\AccountLabelLib::pad($eAccountGrantDebit['class']),
 			'date' => $eFinancialYear['endDate'],
 			'paymentDate' => $eFinancialYear['endDate'],
 			'description' => $eAccountGrantDebit['description'].' - '.$eAsset['description'],
@@ -543,7 +543,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$eAccountGrantAmortization = $cAccount[$amortizationChargeClass]['id'];
 		$values = [
 			'account' => $eAccountGrantAmortization['id'],
-			'accountLabel' => \account\ClassLib::pad($eAccountGrantAmortization['class']),
+			'accountLabel' => \account\AccountLabelLib::pad($eAccountGrantAmortization['class']),
 			'date' => $eFinancialYear['endDate'],
 			'paymentDate' => $eFinancialYear['endDate'],
 			'description' => $eAccountGrantAmortization['description'].' - '.$eAsset['description'],
@@ -632,7 +632,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$eAccountAmortizationCharge = \account\AccountLib::getByClass($amortizationChargeClass);
-		$accountLabel = \account\ClassLib::pad(\account\AccountSetting::ASSETS_AMORTIZATION_CHARGE_CLASS.mb_substr($eAsset['accountLabel'], 0, 3));
+		$accountLabel = \account\AccountLabelLib::pad(\account\AccountSetting::ASSETS_AMORTIZATION_CHARGE_CLASS.mb_substr($eAsset['accountLabel'], 0, 3));
 		$description = new AssetUi()->getTranslation($amortizationChargeClass).' '.$eAsset['description'];
 		$values = [
 			'account' => $eAccountAmortizationCharge['id'],
@@ -662,7 +662,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$description = new AssetUi()->getTranslation($amortizationExcessChargeClass).' '.$eAsset['description'];
 			$values = [
 				'account' => $eAccountExcessAmortizationCharge['id'],
-				'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortizationCharge['class']),
+				'accountLabel' => \account\AccountLabelLib::pad($eAccountExcessAmortizationCharge['class']),
 				'date' => $endDate,
 				'paymentDate' => $endDate,
 				'description' => $description,
@@ -685,7 +685,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$description = new AssetUi()->getTranslation(\account\AccountSetting::EXCESS_AMORTIZATION_CLASS).' '.$eAsset['description'];
 			$values = [
 				'account' => $eAccountExcessAmortization['id'],
-				'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortization['class']),
+				'accountLabel' => \account\AccountLabelLib::pad($eAccountExcessAmortization['class']),
 				'date' => $endDate,
 				'paymentDate' => $endDate,
 				'description' => $description,
@@ -723,7 +723,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$description = new AssetUi()->getTranslation($amortizationExcessClass).' '.$eAsset['description'];
 			$values = [
 				'account' => $eAccountExcessAmortization['id'],
-				'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortization['class']),
+				'accountLabel' => \account\AccountLabelLib::pad($eAccountExcessAmortization['class']),
 				'date' => $endDate,
 				'paymentDate' => $endDate,
 				'description' => $description,
@@ -748,7 +748,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$description = new AssetUi()->getTranslation(\account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION).' '.$eAsset['description'];
 			$values = [
 				'account' => $eAccountExcessRecoveryAmortization['id'],
-				'accountLabel' => \account\ClassLib::pad($eAccountExcessRecoveryAmortization['class']),
+				'accountLabel' => \account\AccountLabelLib::pad($eAccountExcessRecoveryAmortization['class']),
 				'date' => $endDate,
 				'paymentDate' => $endDate,
 				'description' => $description,
@@ -822,7 +822,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		// Trouve le compte le plus proche
 		$cAccountAmortization = \account\AccountLib::getAll(new \Search(['classPrefix' => \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS]));
-		$assetAmortizationClass = rtrim(\account\ClassLib::getAmortizationClassFromClass($eAsset['accountLabel']), '0');
+		$assetAmortizationClass = rtrim(\account\AccountLabelLib::getAmortizationClassFromClass($eAsset['accountLabel']), '0');
 		$eAccountAmortizationFound = new \account\Account();
 		for($i = 0; $i < mb_strlen($assetAmortizationClass); $i++) {
 			$accountLabel = mb_substr($assetAmortizationClass, 0, mb_strlen($assetAmortizationClass) - $i);
@@ -843,13 +843,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				: \account\AccountLib::getByClass(\account\AccountSetting::ASSET_AMORTIZATION_INTANGIBLE_CLASS);
 		}
 
-		$amortizationAccountLabel = \account\ClassLib::pad(rtrim(\account\ClassLib::getAmortizationClassFromClass($eAsset['accountLabel']), '0'));
+		$amortizationAccountLabel = \account\AccountLabelLib::pad(rtrim(\account\AccountLabelLib::getAmortizationClassFromClass($eAsset['accountLabel']), '0'));
 
 		$description = new AssetUi()->getTranslation('amortization').' '.$eAsset['description'];
 
 		return [
 			'account' => $eAccountAmortizationFound['id'],
-			'accountLabel' => \account\ClassLib::pad($amortizationAccountLabel),
+			'accountLabel' => \account\AccountLabelLib::pad($amortizationAccountLabel),
 			'date' => $operationDate,
 			'paymentDate' => $operationDate,
 			'description' => $description,
@@ -1049,7 +1049,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$description = new AssetUi()->getTranslation(\account\AccountSetting::EXCESS_AMORTIZATION_CLASS).' '.$eAsset['description'];
 		$values = [
 			'account' => $amount['id'],
-			'accountLabel' => \account\ClassLib::pad($eAccountExcessAmortization['class']),
+			'accountLabel' => \account\AccountLabelLib::pad($eAccountExcessAmortization['class']),
 			'date' => $endDate,
 			'paymentDate' => $endDate,
 			'description' => $description,
@@ -1067,7 +1067,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$description = new AssetUi()->getTranslation(\account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION).' '.$eAsset['description'];
 		$values = [
 			'account' => $eAccountExcessRecoveryAmortization['id'],
-			'accountLabel' => \account\ClassLib::pad($eAccountExcessRecoveryAmortization['class']),
+			'accountLabel' => \account\AccountLabelLib::pad($eAccountExcessRecoveryAmortization['class']),
 			'date' => $endDate,
 			'paymentDate' => $endDate,
 			'description' => $description,

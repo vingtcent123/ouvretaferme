@@ -496,7 +496,7 @@ Class VatLib {
 		if($vat44571Calculated > 0) {
 			$eOperation44571 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT],
-				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT),
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT),
 				'amount' => $vat44571Calculated,
 				'type' => \journal\Operation::DEBIT,
 				'description' => VatUi::getTranslations('tva-sur-ventes'),
@@ -512,7 +512,7 @@ Class VatLib {
 		if($vat4452Calculated > 0) {
 			$eOperation44571 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS],
-				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS),
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS),
 				'amount' => $vat4452Calculated,
 				'type' => \journal\Operation::DEBIT,
 				'description' => VatUi::getTranslations('tva-sur-ventes'),
@@ -527,7 +527,7 @@ Class VatLib {
 		if($amountVatCredit > 0) {
 			$eOperation44567 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_CREDIT_CLASS],
-				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_CREDIT_CLASS),
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_CREDIT_CLASS),
 				'amount' => $amountVatCredit,
 				'type' => \journal\Operation::DEBIT,
 				'description' => VatUi::getTranslations('tva-credit'),
@@ -549,7 +549,7 @@ Class VatLib {
 		if($differenceDeclaredAndCalculated !== 0.0) {
 			$eOperationDifference = new \journal\Operation([
 				'account' => $cAccount[$class],
-				'accountLabel' => \account\ClassLib::pad($class),
+				'accountLabel' => \account\AccountLabelLib::pad($class),
 				'amount' => abs($differenceDeclaredAndCalculated),
 				'type' => $type,
 				'description' => VatUi::getTranslations('tva-sur-ventes'),
@@ -567,7 +567,7 @@ Class VatLib {
 		if($vat44562Calculated > 0) {
 			$eOperation44562 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_ASSET_CLASS],
-				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_ASSET_CLASS),
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_ASSET_CLASS),
 				'amount' => $vat44562Calculated,
 				'type' => \journal\Operation::CREDIT,
 				'description' => VatUi::getTranslations('tva-versee'),
@@ -583,7 +583,7 @@ Class VatLib {
 		if($vat44566Calculated > 0) {
 			$eOperation44566 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT],
-				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT),
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT),
 				'amount' => $vat44566Calculated,
 				'type' => \journal\Operation::CREDIT,
 				'description' => VatUi::getTranslations('tva-versee'),
@@ -599,7 +599,7 @@ Class VatLib {
 		if($vat445662Calculated > 0) {
 			$eOperation445662 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS],
-				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS),
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS),
 				'amount' => $vat445662Calculated,
 				'type' => \journal\Operation::CREDIT,
 				'description' => VatUi::getTranslations('tva-versee'),
@@ -614,7 +614,7 @@ Class VatLib {
 		if($amountVatToPay > 0) {
 			$eOperation44551 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_DEBIT_CLASS],
-				'accountLabel' => \account\ClassLib::pad(\account\AccountSetting::VAT_DEBIT_CLASS),
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_DEBIT_CLASS),
 				'amount' => $amountVatToPay,
 				'type' => \journal\Operation::CREDIT,
 				'description' => VatUi::getTranslations('tva-debit'),
@@ -635,7 +635,7 @@ Class VatLib {
 		}
 		$eOperationDifference = new \journal\Operation([
 			'account' => $cAccount[$class],
-			'accountLabel' => \account\ClassLib::pad($class),
+			'accountLabel' => \account\AccountLabelLib::pad($class),
 			'amount' => abs($differenceDeclaredAndCalculated),
 			'type' => $type,
 			'description' => VatUi::getTranslations('tva-versee'),

@@ -94,7 +94,7 @@ Class BalanceSheetLib {
 
 				$isSameClass = (mb_substr($e['class'], 0, 3) === $eOperation['class']);
 
-				$classFromAmortizationOrDepreciation = rtrim(\account\ClassLib::getClassFromAmortizationOrDepreciationClass($e['class']), '0');
+				$classFromAmortizationOrDepreciation = rtrim(\account\AccountLabelLib::getClassFromAmortizationOrDepreciationClass($e['class']), '0');
 				// On prend le plus petit nombre de chiffres significatifs
 				$length = min(mb_strlen($classFromAmortizationOrDepreciation), mb_strlen(rtrim($eOperation['class'], '0')));
 
@@ -234,7 +234,7 @@ Class BalanceSheetLib {
 
 		foreach($operationsSubClasses as $eOperationSub) {
 
-			if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperationSub['class'])) { // On ne le visualise pas
+			if(\account\AccountLabelLib::isAmortizationOrDepreciationClass($eOperationSub['class'])) { // On ne le visualise pas
 				continue;
 			}
 
@@ -261,7 +261,7 @@ Class BalanceSheetLib {
 
 		}
 
-		if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperation['class']) === FALSE and isset($balanceSheetDataCategory[$eOperation['class']]) === FALSE) {
+		if(\account\AccountLabelLib::isAmortizationOrDepreciationClass($eOperation['class']) === FALSE and isset($balanceSheetDataCategory[$eOperation['class']]) === FALSE) {
 			$balanceSheetDataCategory[$eOperation['class']] = [
 				'comparisonBrut' => 0,
 				'comparisonDepreciation' => 0,
@@ -274,15 +274,15 @@ Class BalanceSheetLib {
 			];
 		}
 
-		if(\account\ClassLib::isAmortizationOrDepreciationClass($eOperation['class'])) {
+		if(\account\AccountLabelLib::isAmortizationOrDepreciationClass($eOperation['class'])) {
 
 			// Classe à 3 chiffres
-			$originClass = \account\ClassLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
+			$originClass = \account\AccountLabelLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
 			$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
 			$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
 
 			// Classe complète (si isDetailed)
-			$originClass = \account\ClassLib::pad($originClass);
+			$originClass = \account\AccountLabelLib::pad($originClass);
 
 			// Cas où ça n'est pas créé : si les amortissements ont été regroupés et qu'on a perdu les sous-comptes
 			if(isset($balanceSheetDataCategory[$originClass])) {

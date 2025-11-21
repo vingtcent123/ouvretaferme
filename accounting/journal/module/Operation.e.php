@@ -32,14 +32,16 @@ class Operation extends OperationElement {
 			])
 			->whereOperation($this)
 			->group('status')
-			->getCollection();
+			->getCollection(NULL, NULL, 'status');
 
-		return ($cDeferral->empty() or ($cDeferral[Deferral::PLANNED] === 0) or ($cDeferral[Deferral::RECORDED] === 0) or ($cDeferral[Deferral::DEFERRED] === 0)) and
-			(
-				mb_substr($this['accountLabel'], 0, mb_strlen(\account\AccountSetting::CHARGE_ACCOUNT_CLASS)) === (string)\account\AccountSetting::CHARGE_ACCOUNT_CLASS
-				or mb_substr($this['accountLabel'], 0, mb_strlen(\account\AccountSetting::PRODUCT_ACCOUNT_CLASS)) === (string)\account\AccountSetting::PRODUCT_ACCOUNT_CLASS
-			)
-			and $this['financialYear']->acceptUpdate();
+		return (
+			$cDeferral->empty() and
+			(($cDeferral[Deferral::PLANNED] ?? 0) === 0) and
+			(($cDeferral[Deferral::RECORDED] ?? 0) === 0) and
+			(($cDeferral[Deferral::DEFERRED] ?? 0) === 0) and
+			(\account\AccountLabelLib::isChargeClass($this['accountLabel']) or \account\AccountLabelLib::isProductClass($this['accountLabel'])) and
+			$this['financialYear']->acceptUpdate()
+		);
 
 	}
 
@@ -122,7 +124,7 @@ class Operation extends OperationElement {
 
 				$eAccount = \account\AccountLib::getById($this['account']['id']);
 
-				return \account\ClassLib::isFromClass($accountLabel, $eAccount['class']);
+				return \account\AccountLabelLib::isFromClass($accountLabel, $eAccount['class']);
 
 			})
 			->setCallback('date.empty', function(?string $date): bool {

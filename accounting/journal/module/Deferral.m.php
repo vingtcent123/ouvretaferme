@@ -50,8 +50,7 @@ class DeferralModel extends \ModuleModel {
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
-			'initialFinancialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
-			'destinationFinancialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
+			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'status' => ['enum', [\journal\Deferral::PLANNED, \journal\Deferral::RECORDED, \journal\Deferral::DEFERRED, \journal\Deferral::CANCELLED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
@@ -59,18 +58,17 @@ class DeferralModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'type', 'operation', 'startDate', 'endDate', 'amount', 'initialFinancialYear', 'destinationFinancialYear', 'status', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'type', 'operation', 'startDate', 'endDate', 'amount', 'financialYear', 'status', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'operation' => 'journal\Operation',
-			'initialFinancialYear' => 'account\FinancialYear',
-			'destinationFinancialYear' => 'account\FinancialYear',
+			'financialYear' => 'account\FinancialYear',
 			'createdBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['initialFinancialYear'],
+			['financialYear'],
 			['status']
 		]);
 
@@ -145,12 +143,8 @@ class DeferralModel extends \ModuleModel {
 		return $this->where('amount', ...$data);
 	}
 
-	public function whereInitialFinancialYear(...$data): DeferralModel {
-		return $this->where('initialFinancialYear', ...$data);
-	}
-
-	public function whereDestinationFinancialYear(...$data): DeferralModel {
-		return $this->where('destinationFinancialYear', ...$data);
+	public function whereFinancialYear(...$data): DeferralModel {
+		return $this->where('financialYear', ...$data);
 	}
 
 	public function whereStatus(...$data): DeferralModel {

@@ -429,7 +429,7 @@ class OperationLib extends OperationCrud {
 		$eOperationBank['type'] = $type === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT;
 		$eBankAccount = \bank\BankAccountLib::getById($input['bankAccountLabel']);
 		$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS);
-		$eOperationBank['accountLabel'] = $eBankAccount->empty() ? \account\ClassLib::pad($eBankAccount['class']) : $eBankAccount['label'];
+		$eOperationBank['accountLabel'] = $eBankAccount->empty() ? \account\AccountLabelLib::pad($eBankAccount['class']) : $eBankAccount['label'];
 		$eOperationBank['account'] = $eAccount;
 		$eOperationBank['description'] = OperationUi::getDescriptionBank($paymentType);
 
@@ -709,8 +709,8 @@ class OperationLib extends OperationCrud {
 				$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
 
 				$eThirdParty = \account\ThirdPartyLib::getById($thirdParty);
-				$isChargeOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\account\AccountSetting::CHARGE_ACCOUNT_CLASS;
-				$isProductOperation = mb_substr($eOperation['accountLabel'], 0, 1) === (string)\account\AccountSetting::PRODUCT_ACCOUNT_CLASS;
+				$isChargeOperation = \account\AccountLabelLib::isChargeClass($eOperation['accountLabel']);
+				$isProductOperation = \account\AccountLabelLib::isProductClass($eOperation['accountLabel']);
 
 				// Classe 6 => Fournisseur
 				if($isChargeOperation) {
@@ -832,7 +832,7 @@ class OperationLib extends OperationCrud {
 		$values = [
 			...$defaultValues,
 			'account' => $eAccount['vatAccount']['id'] ?? NULL,
-			'accountLabel' => \account\ClassLib::pad($eAccount['vatAccount']['class']),
+			'accountLabel' => \account\AccountLabelLib::pad($eAccount['vatAccount']['class']),
 			'document' => $eOperationLinked['document'],
 			'thirdParty' => $eOperationLinked['thirdParty']['id'] ?? NULL,
 			'type' => $eOperationLinked['type'],
@@ -1043,7 +1043,7 @@ class OperationLib extends OperationCrud {
 		if($eCashflow['import']['account']['label'] !== NULL) {
 			$label = $eCashflow['import']['account']['label'];
 		} else {
-			$label = \account\ClassLib::pad(\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL);
+			$label = \account\AccountLabelLib::pad(\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL);
 		}
 
 		$values = [
@@ -1094,7 +1094,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function createFromValues(array $values, \bank\Cashflow $eCashflow = new \bank\Cashflow()): void {
+	public static function createFromValues(array $values, \bank\Cashflow $eCashflow = new \bank\Cashflow()): Operation {
 
 		$eOperation = new Operation();
 
@@ -1133,6 +1133,9 @@ class OperationLib extends OperationCrud {
 			OperationCashflow::model()->insert($eOperationCashflow);
 
 		}
+
+		return $eOperation;
+
 	}
 
 	public static function unlinkCashflow(\bank\Cashflow $eCashflow, string $action): void {

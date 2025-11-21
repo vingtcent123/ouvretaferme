@@ -146,7 +146,7 @@ new JsonView('selectAccount', function($data, AjaxTemplate $t) {
 
 	$index = $data->index;
 	$suffix = '['.$index.']';
-	$eOperation = new \journal\Operation(['account' => $data->eAccount, 'accountLabel' => \account\ClassLib::pad($data->eAccount['class'])]);
+	$eOperation = new \journal\Operation(['account' => $data->eAccount, 'accountLabel' => \account\AccountLabelLib::pad($data->eAccount['class'])]);
 	$disabled = [];
 
 	$t->qs('[data-wrapper="account'.$suffix.'"]')->innerHtml($form->dynamicField($eOperation, 'account'.$suffix, function($d) use($form, $index, $disabled, $suffix) {

@@ -276,7 +276,7 @@ class FinancialYearUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency', 'legalCategory*', 'associates*', 'taxSystem*'],  [
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'accountingType*', 'hasVat*', 'vatFrequency', 'legalCategory*', 'associates*', 'taxSystem*'],  [
 				'hasVat*' => function($d) use($form) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},

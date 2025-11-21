@@ -8,7 +8,10 @@ namespace account;
  * - extournes
  */
 Class OpeningLib {
-	
+
+	/**
+	 * À-nouveaux
+	 */
 	public static function getRetainedEarnings(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, string $hash): \Collection {
 
 		$cOperation = \journal\OperationLib::getForOpening($eFinancialYearPrevious);
@@ -38,7 +41,10 @@ Class OpeningLib {
 		return $cOperationNew;
 		
 	}
-	
+
+	/**
+	 * Extournes
+	 */
 	public static function getReversableData(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, string $hash): array {
 
 		$cJournalCode = \journal\JournalCode::model()
@@ -46,7 +52,7 @@ Class OpeningLib {
 			->whereIsReversable(TRUE)
 			->getCollection();
 
-		$ccOperationN = \journal\Operation::model()
+		$ccOperationPrevious = \journal\Operation::model()
 			->select(\journal\Operation::getSelection())
 			->whereFinancialYear($eFinancialYearPrevious)
 			->whereJournalCode('IN', $cJournalCode)
@@ -56,7 +62,7 @@ Class OpeningLib {
 		$eUser = \user\ConnectionLib::getOnline();
 
 		$ccOperation = new \Collection();
-		foreach($ccOperationN as $journalCode => $cOperation) {
+		foreach($ccOperationPrevious as $journalCode => $cOperation) {
 
 			$ccOperation[$journalCode] = new \Collection();
 
@@ -93,6 +99,9 @@ Class OpeningLib {
 
 	}
 
+	/**
+	 * Résultat
+	 */
 	public static function getResultOperation(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, string $hash): \journal\Operation {
 
 		$result = \overview\IncomeStatementLib::computeResult($eFinancialYearPrevious);
@@ -114,7 +123,7 @@ Class OpeningLib {
 
 		$values = [
 			'account' => $eAccount,
-			'accountLabel' => \account\ClassLib::pad($class),
+			'accountLabel' => \account\AccountLabelLib::pad($class),
 			'date' => $eFinancialYear['startDate'],
 			'paymentDate' => $eFinancialYear['startDate'],
 			'description' => new FinancialYearUi()->getOpeningResult($eFinancialYearPrevious),
@@ -138,7 +147,7 @@ Class OpeningLib {
 		$eOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
 		$cOperation->append($eOperationResult);
 
-		list($cJournalCode, $ccOperationReversed) = \account\OpeningLib::getReversableData($eFinancialYearPrevious, $eFinancialYear, $hash);
+		[$cJournalCode, $ccOperationReversed] = \account\OpeningLib::getReversableData($eFinancialYearPrevious, $eFinancialYear, $hash);
 		foreach($cJournalCode as $eJournalCode) {
 			if(in_array((string)$eJournalCode['id'], $journalCodes)) {
 				$cOperation->mergeCollection($ccOperationReversed->offsetGet($eJournalCode['id']));
@@ -146,6 +155,9 @@ Class OpeningLib {
 		}
 
 		\journal\Operation::model()->insert($cOperation);
+
+		// Récupération des PCA et CCA
+		\journal\DeferralLib::deferIntoFinancialYear($eFinancialYearPrevious, $eFinancialYear);
 
 	}
 	

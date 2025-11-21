@@ -14,7 +14,7 @@ class Deferral extends DeferralElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-				'initialFinancialYear' => ['id', 'startDate', 'endDate', 'status'],
+				'financialYear' => ['id', 'startDate', 'endDate', 'status'],
 			];
 
 	}
@@ -28,7 +28,7 @@ class Deferral extends DeferralElement {
 					return TRUE;
 				}
 
-				$eFinancialYear = \account\FinancialYearLib::getById($this['initialFinancialYear']);
+				$eFinancialYear = \account\FinancialYearLib::getById($this['financialYear']);
 				return $date > $eFinancialYear['endDate'];
 
 			})
