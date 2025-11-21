@@ -90,7 +90,7 @@ class LogUi {
 			'dropbox' => [s("Dropbox"), $this->getDropboxAction($action, $params)],
 			'bank' => [s("Compte bancaire"), $this->getBankAction($action, $params)],
 			'cashflow' => [s("Flux bancaire"), $this->getCashflowAction($action, $params)],
-			'stock' => [s("Stock"), $this->getStockAction($action, $params)],
+			'deferral' => [s("CCA / PCA"), $this->getDeferralAction($action, $params)],
 		};
 
 	}
@@ -103,7 +103,7 @@ class LogUi {
 			'update' => s("Mise à jour de l'exercice #{value}", $params['id']),
 			'reopen' => s("Réouverture de l'exercice #{value}", $params['id']),
 			'reclose' => s("Refermeture de l'exercice #{value}", $params['id']),
-			'generatefec' => s("Génération de FEC de l'exercice #{value}", $params['id']),
+			'generatefec' => s("Génération du FEC de l'exercice #{value}", $params['id']),
 		};
 
 	}
@@ -136,18 +136,17 @@ class LogUi {
 
 	public function getCashflowAction(string $action, array $params): string {
 
-		return match(strtolower($action)) {
-			'attach' => s("Rattachement de l'opération bancaire 1{value}", $params['id']),
+		return match (strtolower($action)) {
+			'attach' => s("Rattachement de l'opération bancaire #{value}", $params['id']),
 		};
 
 	}
 
-	public function getStockAction(string $action, array $params): string {
+	public function getDeferralAction(string $action, array $params): string {
 
 		return match(strtolower($action)) {
-			'create' => s("Création du stock #{value}", $params['id']),
-			'set' => s("Enregistrement du stock #{value}", $params['id']),
-			'delete' => s("Suppression du stock #{value}", $params['id']),
+			'create' => $params['type'] === 'charge' ? s("Création d'une CCA #{value}", $params['id']) : s("Création d'un PCA #{value}", $params['id']),
+			'delete' => s("Suppression d'une CCA ou d'un PCA #{value}", $params['id']),
 		};
 
 	}
