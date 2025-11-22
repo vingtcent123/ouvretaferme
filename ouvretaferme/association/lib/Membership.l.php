@@ -55,12 +55,13 @@ class MembershipLib {
 	private static function getCustomerByFarm(\farm\Farm $eFarm, \payment\Method $ePaymentMethod): \selling\Customer {
 
 		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
+		$eUserConnected = \user\ConnectionLib::getOnline();
 
 		if($eFarm->notEmpty()) {
 
 			$eFarm->expects(['id', 'siret']);
 			$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
-			$eUser = \user\ConnectionLib::getOnline();
+			$eUser = $eUserConnected;
 
 		} else {
 
@@ -106,6 +107,7 @@ class MembershipLib {
 				'defaultPaymentMethod' => $ePaymentMethod,
 				'phone' => $eUser['phone'],
 				'farm' => $eFarmOtf,
+				'user' => $eUserConnected,
 			]);
 
 			if($eFarm->notEmpty()) {
@@ -173,7 +175,7 @@ class MembershipLib {
 
 		$arguments = [
 			'payment_intent_data' => [
-				'metadata' => ['source' => 'otf', 'type' => 'membership', 'membershipType' => $type]
+				'metadata' => ['source' => 'otf', 'type' => 'membership', 'membershipType' => $type, 'userId' => \user\ConnectionLib::getOnline()['id'] ?? NULL]
 			],
 			'expires_at' => time() + 60 * 45,
 			'client_reference_id' => $eCustomer['id'],
