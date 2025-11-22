@@ -36,7 +36,6 @@ class HelpUi {
 					$h .= '<li>'.GameSetting::EMOJI_HARVEST.'  '.s("<b>RÉCOLTER</b> les légumes à la fin d'une de vos cultures coûte {value}", PlayerUi::getTime(GameSetting::TIME_HARVESTING)).'</li>';
 					$h .= '<li>'.GameSetting::EMOJI_WEED.'  '.s("<b>DÉSHERBER</b> une de vos cultures avance sa date de récolte de {value} jours et coûte {time}", ['value' => GameSetting::BONUS_WEED, 'time' => PlayerUi::getTime(GameSetting::TIME_WEED)]).'</li>';
 					$h .= '<li>'.GameSetting::EMOJI_WATERING.'  '.s("<b>ARROSER</b> une de vos cultures augmente sa productivité et coûte {value}", PlayerUi::getTime(GameSetting::TIME_WATERING)).'</li>';
-					$h .= '<li>'.s("<b>TROQUER</b> des légumes avec les autres joueurs coûte {value}", PlayerUi::getTime(GameSetting::TIME_MARKET)).'</li>';
 				$h .= '</ul>';
 				$h .= '<p>'.s("Votre compteur de temps de travail est remis à zéro chaque nuit à minuit. Les actions décomptent votre temps de travail, mais vous n'avez pas à attendre, elles sont réalisées immédiatement !").'</p>';
 				$h .= '<p>'.s("Une fois qu'une parcelle est semée, elle est semée et vous ne pouvez pas revenir en arrière.").'</p>';

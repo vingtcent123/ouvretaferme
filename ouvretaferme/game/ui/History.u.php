@@ -19,7 +19,7 @@ class HistoryUi {
 			'harvesting' => ($values[0] > 0) ?
 				s("Vous avez récolté {value}", ['value' => '<b>'.$values[0].'</b>  '.GrowingUi::getVignette($cGrowing->first(), '1rem')]) :
 				s("Vous avez consommé {value}", ['value' => '<b>'.$values[0].'</b>  '.GrowingUi::getVignette($cGrowing->first(), '1rem')]),
-			'soup-eat' => s("Vous avez mangé {value} soupe", 1),
+			'soup-eat' => p("Vous avez mangé {value} soupe", "Vous avez mangé {value} soupes", -1 * last($values)),
 			'soup-cook' => p("Vous avez cuisiné {value} soupe avec vos légumes", "Vous avez cuisiné {value} soupes avec vos légumes", last($values)),
 		};
 
