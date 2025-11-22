@@ -78,25 +78,35 @@ class FarmTemplate extends MainTemplate {
 			$sections['commercialisation'] = [\Asset::icon('basket3'), s("Vendre")];
 		}
 
-		if($eFarm->canPlay()) {
-			$sections['game'] = ['🦌', s("Jouer")];
-		}
-
 		if((FEATURE_ACCOUNTING or $eFarm->hasAccounting()) and $eFarm->canAccounting()) {
 			$sections['accounting'] = [\Asset::icon('bank'), s("Comptabilité")];
 		}
 
-		$h = '<div id="farm-nav-sections" class="farm-nav-sections-'.count($sections).'">';
+		$nSections = count($sections);
+
+		if(FEATURE_GAME) {
+			$nSections++;
+		}
+
+		$h = '<div id="farm-nav-sections" class="farm-nav-sections-'.$nSections.'">';
 
 			foreach($sections as $name => [$icon, $label]) {
 
 				$h .= '<a '.attr('onclick', 'Farm.changeSection(this, "click")').' '.attr('onmouseenter', 'Farm.changeSection(this, "mouseenter", 200)').' onmouseleave="Farm.clearSection(this)" data-section="'.$name.'" class="farm-nav-section farm-nav-section-'.$name.'">';
-					$h .= $icon;
+					$h .= '<span class="farm-nav-section-icon">'.$icon.'</span>';
 					$h .= '<span>'.$label.'</span>';
 					$h .= '<span class="farm-nav-section-down">'.Asset::icon('chevron-down').'</span>';
 					$h .= '<span class="farm-nav-section-up">'.Asset::icon('chevron-up').'</span>';
 				$h .= '</a>';
 
+			}
+
+			if(FEATURE_GAME) {
+
+				$h .= '<a href="/jouer" data-ajax-navigation="never" class="farm-nav-section farm-nav-section-game">';
+					$h .= '<span class="farm-nav-section-icon">🎅</span>';
+					$h .= '<span>'.s("Jouer").'</span>';
+				$h .= '</a>';
 			}
 
 		$h .= '</div>';

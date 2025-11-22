@@ -37,10 +37,6 @@ body[data-template~="farm"] .nav-title-member-name {
 	background-color: var(--commercialisation);
 }
 
-.farm-tabs.farm-section-game {
-	background-color: var(--game);
-}
-
 .farm-tabs.farm-section-accounting {
 	background-color: var(--accounting);
 	padding-bottom: 5rem;
@@ -486,14 +482,19 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		color: white;
 	}
 
+	a.farm-nav-section {
+		text-decoration: none;
+	}
+
+	.farm-nav-section-icon {
+		font-size: 1.2rem;
+		line-height: 1;
+	}
+
 	.farm-nav-sections-1 .farm-nav-section,
 	.farm-nav-sections-2 .farm-nav-section {
 		padding-left: 1rem;
 		padding-right: 1rem;
-	}
-
-	.farm-nav-section svg {
-		font-size: 1.2rem;
 	}
 
 	.farm-nav-section-up,
@@ -634,6 +635,8 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		padding-top: 0.5rem;
 		align-items: end;
 		background-color: var(--primary);
+		max-width: var(--screen-width);
+		overflow: auto;
 	}
 
 
@@ -1129,8 +1132,6 @@ body[data-template~="farm-production"]:not([data-template*="farm-section-"]) .fa
 body[data-template~="farm-section-production"] .farm-nav-section-production,
 body[data-template~="farm-commercialisation"]:not([data-template*="farm-section-"]) .farm-nav-section-commercialisation,
 body[data-template~="farm-section-commercialisation"] .farm-nav-section-commercialisation,
-body[data-template~="farm-game"]:not([data-template*="farm-section-"]) .farm-nav-section-game,
-body[data-template~="farm-section-game"] .farm-nav-section-game,
 body[data-template~="farm-accounting"]:not([data-template*="farm-section-"]) .farm-nav-section-accounting,
 body[data-template~="farm-section-accounting"] .farm-nav-section-accounting {
 	border-color: #fff8;
@@ -1152,14 +1153,6 @@ body[data-template~="farm-section-commercialisation"] .farm-nav-section-commerci
 	z-index: 1;
 }
 
-
-body[data-template~="farm-game"]:not([data-template*="farm-section-"]) .farm-nav-section-game,
-body[data-template~="farm-section-game"] .farm-nav-section-game {
-	background-color: var(--game);
-	position: relative;
-	z-index: 1;
-}
-
 body[data-template~="farm-accounting"]:not([data-template*="farm-section-"]) .farm-nav-section-accounting,
 body[data-template~="farm-section-accounting"] .farm-nav-section-accounting {
 	background-color: var(--accounting);
@@ -1174,11 +1167,6 @@ body[data-template*="farm-section-"]:not([data-template~="farm-section-productio
 
 body:not([data-template~="farm-commercialisation"]):not([data-template~="farm-section-commercialisation"]) .farm-tabs.farm-section-commercialisation,
 body[data-template*="farm-section-"]:not([data-template~="farm-section-commercialisation"]) .farm-tabs.farm-section-commercialisation {
-	display: none;
-}
-
-body:not([data-template~="farm-game"]):not([data-template~="farm-section-game"]) .farm-tabs.farm-section-game,
-body[data-template*="farm-section-"]:not([data-template~="farm-section-game"]) .farm-tabs.farm-section-game {
 	display: none;
 }
 
@@ -1210,18 +1198,6 @@ body[data-template*="farm-section-"]:not([data-template~="farm-section-accountin
 	}
 
 	body[data-template~="farm-section-commercialisation"] .farm-nav-section-commercialisation .farm-nav-section-up {
-		display: block;
-	}
-
-	body:not([data-template~="farm-section-game"]) .farm-tabs.farm-section-game {
-		display: none;
-	}
-
-	body[data-template~="farm-section-game"] .farm-nav-section-game .farm-nav-section-down {
-		display: none;
-	}
-
-	body[data-template~="farm-section-game"] .farm-nav-section-game .farm-nav-section-up {
 		display: block;
 	}
 

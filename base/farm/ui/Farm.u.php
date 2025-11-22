@@ -721,16 +721,6 @@ class FarmUi {
 
 			}
 
-			if($eFarm->canPlay()) {
-
-				$h .= '<div class="farm-tabs farm-section-game">';
-					$h .= $this->getCloseSection();
-					$h .= $this->getGameSection($eFarm, $nav, $subNav);
-				$h .= $training;
-				$h .= '</div>';
-
-			}
-
 			if((FEATURE_ACCOUNTING or $eFarm->hasAccounting()) and $eFarm->canAccounting()) {
 
 				$h .= '<div class="farm-tabs farm-section-accounting">';

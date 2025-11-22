@@ -25,6 +25,10 @@ new Page()
 
 		$data->cNews = \website\NewsLib::getLastForBlog();
 
+		if(FEATURE_GAME) {
+			$data->ePlayer = \game\PlayerLib::getOnline();
+		}
+
 		throw new ViewAction($data, path: ':logged');
 
 	})

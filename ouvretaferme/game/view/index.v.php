@@ -7,7 +7,7 @@ new AdaptativeView('start', function($data, GameTemplate $t) {
 		echo s("Des légumes pour les rennes");
 	echo '</h1>';
 
-	echo \game\HelpUi::getStory();
+	echo new \game\HelpUi()->getStory();
 
 	echo new \game\DeskUi()->get('<a href="/game/:new" class="game-intro-start">'.s("Commencer à jouer").'</a>', 1);
 
@@ -30,7 +30,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 			echo s("Il ne vous reste qu'à lire les règles du jeu avant de commencer le travail.");
 		echo '</div>';
 
-		echo \game\HelpUi::getRules(TRUE);
+		echo new \game\HelpUi()->getRules(TRUE);
 
 		echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
 
@@ -48,12 +48,15 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 		switch(GET('show')) {
 
 			case 'story' :
-				echo \game\HelpUi::getStory();
+				echo new \game\HelpUi()->getStory();
 				break;
 
 			case 'rules' :
-				echo \game\HelpUi::getRules();
-				echo \game\HelpUi::getCrops($data->cGrowing);
+				echo new \game\HelpUi()->getRules();
+				echo '<div class="game-intro">';
+					echo '<h3>'.s("Tableau des cultures").'</h3>';
+					echo new \game\HelpUi()->getCrops($data->cGrowing);
+				echo '</div>';
 				break;
 
 			default :
@@ -62,9 +65,22 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 				echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
 
-				echo \game\HelpUi::getCrops($data->cGrowing);
-				echo '<br/>';
-				echo \game\HistoryUi::display($data->cHistory);
+				echo '<div class="tabs-h" id="game-tabs" onrender="'.encode('Lime.Tab.restore(this, "game-crops")').'">';
+
+					echo '<div class="tabs-item">';
+						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-crops">'.s("Tableau des cultures").'</a>';
+						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-history">'.s("Historique").'</a>';
+					echo '</div>';
+
+					echo '<div class="tab-panel" data-tab="game-crops">';
+						echo new \game\HelpUi()->getCrops($data->cGrowing);
+					echo '</div>';
+
+					echo '<div class="tab-panel" data-tab="game-history">';
+						echo new \game\HistoryUi()->display($data->cHistory);
+					echo '</div>';
+
+				echo '</div>';
 
 				break;
 

@@ -39,6 +39,8 @@ new Page(function($data) {
 
 new \game\PlayerPage(function($data) {
 
+		\user\ConnectionLib::checkLogged();
+
 		$ePlayer = \game\PlayerLib::getOnline();
 
 		if($ePlayer->notEmpty()) {

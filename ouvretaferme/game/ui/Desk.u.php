@@ -3,6 +3,16 @@ namespace game;
 
 class DeskUi {
 
+	public static function getFonts(): string {
+
+		$h = '<link rel="preconnect" href="https://fonts.googleapis.com">';
+		$h .= '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
+		$h .= '<link href="https://fonts.googleapis.com/css2?family='.urlencode('Mystery Quest').'" rel="stylesheet">';
+
+		return $h;
+
+	}
+
 	public function play(Player $ePlayer, int $board, \Collection $cTile, \Collection $cGrowing): string {
 
 		$h = '<div class="game-boards">';
@@ -65,7 +75,7 @@ class DeskUi {
 			$h .= '</div>';
 
 			$h .= '<div class="game-dashboard-element">';
-				$h .= '<h4 class="game-dashboard-title">'.s("Nourriture <br/>produite").'</h4>';
+				$h .= '<h4 class="game-dashboard-title">'.s("Production").'</h4>';
 				$h .= '<div class="game-dashboard-value game-dashboard-value-list">';
 
 					$hasFood = FALSE;

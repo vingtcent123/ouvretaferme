@@ -69,6 +69,20 @@ body[data-template~="game"] h1 {
 	width: max-content;
 }
 
+#game-tabs {
+	max-width: 50rem;
+	margin: auto;
+}
+
+#game-tabs .tabs-item {
+	border-color: var(--game);
+}
+
+#game-tabs .tab-item:hover,
+#game-tabs .tab-item.selected {
+	background-color: var(--game);
+}
+
 .game-intro {
 	max-width: 50rem;
 	margin: 0 auto 2rem auto;
@@ -480,4 +494,40 @@ a.game-tile-harvest:hover {
 	text-transform: uppercase;
 	font-weight: bold;
 	background-color: #fff3;
+}
+
+.game-home {
+	padding: 2rem;
+	border-radius: var(--radius);
+	margin-bottom: 2rem;
+	background-color: var(--game);
+	color: white;
+	display: flex;
+	justify-content: space-between;
+}
+
+.game-home h4 {
+	font-family: 'Mystery Quest', serif;
+	font-size: 2.25rem;
+}
+
+.game-home h2 {
+	font-size: 2rem;
+}
+
+.game-home img {
+	width: 30vw;
+	max-width: 25rem;
+	margin-left: 1rem;
+	margin-bottom: 1rem;
+	border-radius: 1rem;
+}
+
+.game-home-button {
+	background-color: var(--background-game);
+	color: var(--game);
+}
+
+.game-home-button:hover {
+	color: var(--game);
 }

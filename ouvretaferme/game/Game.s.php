@@ -5,7 +5,7 @@ class GameSetting extends \Settings {
 
 	const BOARDS = 3;
 
-	const EMOJI_SEEDLING = '🪏';
+	const EMOJI_SEEDLING = '🌱';
 	const EMOJI_WATERING = '🚿';
 	const EMOJI_WEED = '✂️';
 	const EMOJI_HARVEST = '🧺';

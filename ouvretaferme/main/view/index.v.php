@@ -202,6 +202,10 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 
 		echo new \main\HomeUi()->getTraining();
 
+		if(FEATURE_GAME) {
+			echo new \game\HelpUi()->getHome($data->ePlayer);
+		}
+
 		if($data->cFarmUser->notEmpty()) {
 			echo new \main\HomeUi()->getBlog($data->cNews);
 		}
