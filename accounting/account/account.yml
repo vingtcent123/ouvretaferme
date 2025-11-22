@@ -42,7 +42,7 @@ Log:
   createdAt: datetime = SPECIAL(now)
 
 Partner:
-  partner: enum(DROPBOX)
+  partner: enum(PHP(PartnerSetting::$PARTNERS))
   accessToken: text16
   params: ?json = PHP([])
   createdAt: datetime = SQL(NOW())

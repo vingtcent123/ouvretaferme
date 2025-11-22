@@ -7,8 +7,6 @@ abstract class PartnerElement extends \Element {
 
 	private static ?PartnerModel $model = NULL;
 
-	const DROPBOX = 'dropbox';
-
 	public static function getSelection(): array {
 		return Partner::model()->getProperties();
 	}
@@ -38,7 +36,7 @@ class PartnerModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
-			'partner' => ['enum', [\account\Partner::DROPBOX], 'unique' => TRUE, 'cast' => 'enum'],
+			'partner' => ['enum', PartnerSetting::$PARTNERS, 'unique' => TRUE, 'cast' => 'enum'],
 			'accessToken' => ['text16', 'cast' => 'string'],
 			'params' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'createdAt' => ['datetime', 'cast' => 'string'],

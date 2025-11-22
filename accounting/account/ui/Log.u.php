@@ -59,7 +59,7 @@ class LogUi {
 							$h .= \util\DateUi::numeric($eLog['createdAt']);
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= $eLog['doneBy']->getName();
+							$h .= $eLog['doneBy']->notEmpty() ? $eLog['doneBy']->getName() : '-';
 						$h .= '</td>';
 						$h .= '<td>';
 							$h .= $element;
@@ -91,6 +91,7 @@ class LogUi {
 			'bank' => [s("Compte bancaire"), $this->getBankAction($action, $params)],
 			'cashflow' => [s("Flux bancaire"), $this->getCashflowAction($action, $params)],
 			'deferral' => [s("CCA / PCA"), $this->getDeferralAction($action, $params)],
+			'superpdp' => [s("Factures électroniques"), $this->getSuperPdpAction($action, $params)],
 		};
 
 	}
@@ -147,6 +148,18 @@ class LogUi {
 		return match(strtolower($action)) {
 			'create' => $params['type'] === 'charge' ? s("Création d'une CCA #{value}", $params['id']) : s("Création d'un PCA #{value}", $params['id']),
 			'delete' => s("Suppression d'une CCA ou d'un PCA #{value}", $params['id']),
+		};
+
+	}
+
+	public function getSuperPdpAction(string $action, array $params): string {
+
+		return match(strtolower($action)) {
+			'sendinvoice' => s("Envoi de la facture #{value}", $params['filepath']),
+			'downloadinvoice' => s("Téléchargement de la facture #{value}", $params['invoiceId']),
+			'getinvoice' => s("Récupération des informatons de facture #{value}", $params['invoiceId']),
+			'getinvoices' => s("Récupération des factures"),
+			'getaccesstoken' => s("Récupération d'un token d'accès"),
 		};
 
 	}

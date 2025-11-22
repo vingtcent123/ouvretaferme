@@ -30,7 +30,7 @@ Class DropboxLib {
 
 	public static function getPartner(): Partner {
 
-		$ePartner = PartnerLib::getByPartner(Partner::DROPBOX);
+		$ePartner = PartnerLib::getByPartner(PartnerSetting::DROPBOX);
 
 		if($ePartner->empty()) {
 			return $ePartner;
@@ -212,7 +212,7 @@ Class DropboxLib {
 		if(($data['error'] ?? NULL) !== NULL) {
 
 			Partner::model()
-				->wherePartner(Partner::DROPBOX)
+				->wherePartner(PartnerSetting::DROPBOX)
 				->delete();
 
 			LogLib::save('delete', 'Dropbox', ['refreshToken' => 'invalid']);
@@ -220,7 +220,7 @@ Class DropboxLib {
 		} else {
 
 			$ePartner = new Partner([
-				'partner' => Partner::DROPBOX,
+				'partner' => PartnerSetting::DROPBOX,
 				'accessToken' => $data['access_token'],
 				'params' => ['account_id' => $data['account_id'], 'refresh_token' => $data['refresh_token']],
 				'expiresAt' => new \Sql('ADDDATE(NOW(), INTERVAL '.$data['expires_in'].' SECOND)'),
@@ -259,7 +259,7 @@ Class DropboxLib {
 			throw new \NotExpectedAction('Dropbox : cannot retrieve access token');
 		}
 		$ePartner = new Partner([
-			'partner' => Partner::DROPBOX,
+			'partner' => PartnerSetting::DROPBOX,
 			'accessToken' => $data['access_token'],
 			'params' => ['uid' => $data['uid'], 'account_id' => $data['account_id'], 'refresh_token' => $data['refresh_token']],
 			'expiresAt' => new \Sql('ADDDATE(NOW(), INTERVAL '.$data['expires_in'].' SECOND)'),

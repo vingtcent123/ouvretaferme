@@ -24,6 +24,11 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
+		// SuperPDP attend un SIREN mais ChorusPro attend un SIRET
+		// => On ne modifie pas pour le moment pour éviter que l'envoi des factures sur ChorusPro échoue.
+		//$sellerSiren = mb_substr(str_replace(' ', '', $eInvoice['farm']['siret'] ?? ''), 0, 9);
+		$sellerSiren = str_replace(' ', '', $eInvoice['farm']['siret'] ?? '');
+
 		$xml = '<?xml version="1.0" encoding="utf-8"?>
 <rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
 xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
@@ -59,7 +64,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<ram:SellerTradeParty><!--BG-4-->
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0002">'.encode(str_replace(' ', '', $eInvoice['farm']['siret'] ?? '')).'</ram:ID>
+					<ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
