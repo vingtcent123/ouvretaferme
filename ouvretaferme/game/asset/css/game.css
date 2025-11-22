@@ -6,9 +6,9 @@ body[data-template~="game"] main {
 	padding-top: 2rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 991px) and (max-width: 1399px) {
     html:has(body[data-template~="game"]) {
-        font-size: 15px;
+        font-size: 14px;
     }
 }
 
@@ -44,7 +44,9 @@ body[data-template~="game"] h1 {
 	display: flex;
 	justify-content: center;
 	gap: 1rem;
-	margin-top: 2rem;
+	transform: translate(0, 2rem);
+	position: relative;
+	z-index: 1;
 }
 
 .game-board svg {
@@ -121,9 +123,19 @@ a.game-intro-start:hover  {
 	display: grid;
 	max-width: 70rem;
 	margin: auto;
-	grid-template-columns: repeat(3, auto);
-	background-color: #fff7;
+	grid-template-columns: auto minmax(auto, 40vw) auto;
+	background-color: #fbf5eb;
 	border-radius: var(--radius);
+}
+
+@media (min-width: 1100px) {
+
+	.game-dashboard {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+	}
+
 }
 
 .game-dashboard > * {
@@ -134,6 +146,10 @@ a.game-intro-start:hover  {
 	text-transform: uppercase;
 	text-align: center;
 	margin: 0;
+	height: var(--mainNav);
+	display: flex;
+	align-items: center;
+	justify-content: center
 }
 
 @media (max-width: 575px) {
@@ -144,13 +160,6 @@ a.game-intro-start:hover  {
 
 	.game-dashboard > *:not(:last-child) {
 		border-bottom: 1px solid var(--border);
-	}
-
-	.game-dashboard-element {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		column-gap: .5rem;
 	}
 
 }
@@ -201,21 +210,13 @@ a.game-intro-start:hover  {
 }
 
 .game-dashboard-value {
-	font-size: 1.5rem;
+	font-size: 1.3rem;
 	font-weight: bold;
 	line-height: 1;
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
 	gap:  0.5rem;
-}
-
-@media (max-width: 575px) {
-
-	.game-dashboard-value.game-dashboard-value-list {
-		justify-content: end;
-	}
-
 }
 
 .game-dashboard-item {
@@ -244,16 +245,16 @@ a.game-intro-start:hover  {
 	justify-content: center;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
 
 	.game-desk {
 		width: 100%;
-		max-width: 60rem;
+		max-width: 70rem;
 	}
 
 }
 
-@media (max-width: 767px) {
+@media (max-width: 991px) {
 
 	.game-desk-wrapper {
 		margin-left: calc(-1 * var(--container-padding));
@@ -261,6 +262,19 @@ a.game-intro-start:hover  {
 		width: var(--screen-width);
 		overflow: hidden;
 	}
+
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+
+	.game-desk {
+		width: 120vw;
+		transform: translate(-10vw, 0);
+	}
+
+}
+
+@media (max-width: 767px) {
 
 	.game-desk {
 		width: 150vw;
@@ -270,7 +284,6 @@ a.game-intro-start:hover  {
 }
 
 .game-tile {
-	display: block;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -279,14 +292,15 @@ a.game-intro-start:hover  {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	clip-path: polygon(0% 50%, 50% 0%, 100% 50%, 50% 100%);
 	height: 12.6%;
 	width: 16.1%;
 	transition: background-color 0.5s;
+	pointer-events: none;
+	font-size: 1.2rem;
 }
 
-.game-tile:hover {
-	background-color: #fff3;
+.game-tile:not(.game-tile-growing) {
+	clip-path: polygon(0% 50%, 50% 0%, 100% 50%, 50% 100%);
 }
 
 .game-tile-1 {
@@ -369,17 +383,87 @@ a.game-intro-start:hover  {
 	top: 49.0%;
 }
 
-a.game-tile-action {
+.game-tile-action {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 30%;
 	border-radius: 50%;
-	aspect-ratio: 1;
-	border: 2px solid var(--primary);
-	background-color: #fffc;
+	width: 75%;
+	height: 75%;
+	text-align: center;
+	color: white;
 	text-decoration: none;
-	color: var(--primary);
+	transition: all 0.5s;
+	font-weight: bold;
+	line-height: 1.2;
+	pointer-events: auto;
+}
+
+.game-tile:has(.game-tile-harvest) .game-tile-action {
+	margin-top: -12%;
+}
+
+a.game-tile-action {
+	text-decoration: none;
+	color: white;
+}
+
+.game-tile-action-start {
+	font-size: 1.5rem;
+}
+
+.game-tile:has([data-dropdown-display]) .game-tile-action-start,
+.game-tile-action-start:hover {
+	font-size: 2rem;
+}
+
+.game-tile-harvest {
+	position: absolute;
+	top: 60%;
+	left: 20%;
+	width: 60%;
+	border-radius: var(--radius);
+	text-align: center;
+	background-color: #e5e3e3;
+	text-decoration: none;
+	font-size: 0.9rem;
+	pointer-events: auto;
+	line-height: 1.3;
+	padding: 0.125rem 0;
+}
+
+@media (max-width: 575px) {
+
+	.game-tile-harvest {
+		left: 25%;
+		width: 50%;
+	}
+
+}
+
+a.game-tile-harvest {
+	color: var(--text);
+	border: 2px solid var(--text);
+	text-decoration: none;
+	padding: 0.5rem 0;
+	transition: all .5s;
+}
+
+a.game-tile-harvest:hover {
+	background-color: white;
+}
+
+.game-tile-harvest-now {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+@media (max-width: 575px) {
+
+	.game-tile-harvest {
+		font-size: 0.8rem;
+	}
+
 }
 
 .game-table th {
@@ -388,7 +472,7 @@ a.game-tile-action {
 
 .game-table td.game-table-bonus {
 	text-align: right;
-	font-size: .9rem;
+	font-size: .8rem;
 }
 
 .game-table .game-table-separator {

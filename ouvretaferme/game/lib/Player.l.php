@@ -3,6 +3,8 @@ namespace game;
 
 class PlayerLib extends PlayerCrud {
 
+	private static $ePlayerOnline = NULL;
+
 	public static function getPropertiesCreate(): array {
 		return ['name'];
 	}
@@ -15,8 +17,8 @@ class PlayerLib extends PlayerCrud {
 
 				parent::create($e);
 
-				TileLib::createByUser($e['user']);
-				FoodLib::createByUser($e['user']);
+				TileLib::createByPlayer($e);
+				FoodLib::createByPlayer($e);
 
 			Player::model()->commit();
 
@@ -29,6 +31,10 @@ class PlayerLib extends PlayerCrud {
 	}
 
 	public static function getOnline(): Player {
+
+		if(self::$ePlayerOnline !== NULL) {
+			return self::$ePlayerOnline;
+		}
 
 		$ePlayer = Player::model()
 			->select(Player::getSelection())
@@ -50,7 +56,9 @@ class PlayerLib extends PlayerCrud {
 
 		}
 
-		return $ePlayer;
+		self::$ePlayerOnline = $ePlayer;
+
+		return self::$ePlayerOnline;
 
 	}
 
@@ -79,6 +87,33 @@ class PlayerLib extends PlayerCrud {
 		return Food::model()
 			->whereUser($eUser)
 			->getValue(new \Sql('SUM(IF(growing IS NULL, current * 10, current))', 'int'));
+
+	}
+
+	public static function restart(Player $ePlayer): void {
+
+		$eUser = $ePlayer['user'];
+
+		Player::model()->beginTransaction();
+
+			Player::model()
+				->whereUser($eUser)
+				->delete();
+
+			Food::model()
+				->whereUser($eUser)
+				->delete();
+
+			History::model()
+				->whereUser($eUser)
+				->delete();
+
+			Tile::model()
+				->whereUser($eUser)
+				->delete();
+
+		Player::model()->commit();
+
 
 	}
 

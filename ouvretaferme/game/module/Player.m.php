@@ -43,13 +43,12 @@ class PlayerModel extends \ModuleModel {
 			'timeUpdatedAt' => ['date', 'cast' => 'string'],
 			'gift' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'lastGift' => ['date', 'cast' => 'string'],
-			'boards' => ['int8', 'min' => 1, 'max' => GameSetting::BOARDS, 'cast' => 'int'],
 			'points' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'user', 'time', 'timeUpdatedAt', 'gift', 'lastGift', 'boards', 'points', 'createdAt'
+			'id', 'name', 'user', 'time', 'timeUpdatedAt', 'gift', 'lastGift', 'points', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -78,9 +77,6 @@ class PlayerModel extends \ModuleModel {
 
 			case 'lastGift' :
 				return new \Sql('CURDATE()');
-
-			case 'boards' :
-				return 1;
 
 			case 'points' :
 				return 0;
@@ -129,10 +125,6 @@ class PlayerModel extends \ModuleModel {
 
 	public function whereLastGift(...$data): PlayerModel {
 		return $this->where('lastGift', ...$data);
-	}
-
-	public function whereBoards(...$data): PlayerModel {
-		return $this->where('boards', ...$data);
 	}
 
 	public function wherePoints(...$data): PlayerModel {

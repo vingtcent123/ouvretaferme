@@ -34,7 +34,6 @@ Player:
   timeUpdatedAt: date = SPECIAL(now)
   gift: int8(0, null) = 0
   lastGift: date = SPECIAL(now)
-  boards: int8(1, PHP(GameSetting::BOARDS)) = 1
   points: int(0, null) = 0
   createdAt: date = SPECIAL(now)
   UNIQUE: [
@@ -43,15 +42,14 @@ Player:
   ]
 
 Tile:
+  id: serial32
   user: user\User
   board: int8(1, null)
   tile: int8(1, 16)
   growing: ?game\Growing
-  harvest: ?int16(0, null)
-  watered: ?bool = FALSE
-  plantedAt: ?date
-  harvestedAt: ?date
-  nextBonusHarvest: ?int8(0, null)
+  watering: ?int(0, null) = 0
+  plantedAt: ?datetime
+  harvestedAt: ?datetime
   UNIQUE: [
     ["user", "board", "tile"]
   ]

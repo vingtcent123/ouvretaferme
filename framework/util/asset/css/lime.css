@@ -2728,6 +2728,10 @@ body[data-touch="yes"] .dropdown-item {
 	margin-top: 0.5rem;
 }
 
+.dropdown-list-2 .dropdown-title + .dropdown-item + .dropdown-item {
+	margin-top: 0.5rem;
+}
+
 .dropdown-divider {
 	height: 0;
 	margin: 0.5rem 0;

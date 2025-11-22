@@ -3,20 +3,20 @@ namespace game;
 
 class TileLib extends TileCrud {
 
-	public static function createByUser(\user\User $eUser): void {
+	public static function createByPlayer(Player $ePlayer): void {
 
 		for($board = 1; $board <= GameSetting::BOARDS; $board++) {
-			self::createBoard($eUser, $board);
+			self::createBoard($ePlayer, $board);
 		}
 
 	}
 
-	public static function createBoard(\user\User $eUser, int $board): void {
+	public static function createBoard(Player $ePlayer, int $board): void {
 
 		for($tile = 1; $tile <= 16; $tile++) {
 
 			$eTile = new Tile([
-				'user' => $eUser,
+				'user' => $ePlayer['user'],
 				'board' => $board,
 				'tile' => $tile
 			]);
@@ -27,22 +27,12 @@ class TileLib extends TileCrud {
 
 	}
 
-	public static function getOne(\user\User $eUser, int $board, int $tile): Tile {
+	public static function getByBoard(Player $ePlayer, int $board): \Collection {
 
 		return Tile::model()
 			->select(Tile::getSelection())
-			->whereUser($eUser)
+			->whereUser($ePlayer['user'])
 			->whereBoard($board)
-			->whereTile($tile)
-			->get();
-
-	}
-
-	public static function getByUser(\user\User $eUser): \Collection {
-
-		return Tile::model()
-			->select(Tile::getSelection())
-			->whereUser($eUser)
 			->getCollection(index: 'tile');
 
 	}

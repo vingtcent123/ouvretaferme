@@ -3,21 +3,22 @@ namespace game;
 
 class FoodLib extends FoodCrud {
 
-	public static function getByUser(\user\User $eUser): \Collection {
+	public static function getByPlayer(Player $ePlayer): \Collection {
 
 		return Food::model()
 			->select(Food::getSelection() + [
 				'growing' => Growing::getSelection()
 			])
-			->whereUser($eUser)
+			->whereUser($ePlayer['user'])
 			->getCollection(index: 'growing')
 			->sort(['product' => ['name']], natural: TRUE);
 
 
 	}
 
-	public static function createByUser(\user\User $eUser): void {
+	public static function createByPlayer(Player $ePlayer): void {
 
+		$eUser = $ePlayer['user'];
 		$cGrowing = GrowingLib::getAll()->filter(fn($eGrowing) => $eGrowing['harvest'] !== NULL);
 
 		foreach($cGrowing as $eGrowing) {
@@ -94,7 +95,7 @@ class FoodLib extends FoodCrud {
 			$eHistory = new History([
 				'user' => $ePlayer['user'],
 				'time' => $time,
-				'message' => HistoryUi::getMessage($history, $cGrowing, $values)
+				'message' => HistoryUi::getFoodMessage($history, $cGrowing, $values)
 			]);
 
 			History::model()->insert($eHistory);

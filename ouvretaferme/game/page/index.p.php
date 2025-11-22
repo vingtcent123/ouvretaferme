@@ -11,8 +11,15 @@ new Page(function($data) {
 		}
 
 		if(get_exists('board')) {
-			$data->board = \game\Player::GET('board', 'boards', 1);
+
+			$data->board = GET('board', 'int');
+
+			if($data->board < 1 or $data->board > $data->ePlayer->getBoards()) {
+				$data->board = 1;
+			}
+
 			\session\SessionLib::set('gameBoard', $data->board);
+
 		} else {
 			try {
 				$data->board = \session\SessionLib::get('gameBoard');
@@ -21,25 +28,10 @@ new Page(function($data) {
 			}
 		}
 
-		$data->cTile = \game\TileLib::getByUser($data->ePlayer['user'], 1);
+		$data->cTile = \game\TileLib::getByBoard($data->ePlayer, $data->board);
 		$data->cGrowing = \game\GrowingLib::getAll();
-		$data->cFood = \game\FoodLib::getByUser($data->ePlayer['user']);
-		$data->cHistory = \game\HistoryLib::getByUser($data->ePlayer['user']);
-
-		//\game\FoodLib::add($data->ePlayer, $data->cGrowing[6], new \game\Tile(), 3);
-
-		throw new ViewAction($data);
-
-	});
-
-new Page(function($data) {
-
-		$data->ePlayer = \game\PlayerLib::getOnline()->validate();
-
-		$data->eTile = \game\TileLib::getOne($data->ePlayer['user'], INPUT('board'), INPUT('tile'))->validate();
-
-	})
-	->get('planting', function($data) {
+		$data->cFood = \game\FoodLib::getByPlayer($data->ePlayer);
+		$data->cHistory = \game\HistoryLib::getByPlayer($data->ePlayer);
 
 		throw new ViewAction($data);
 

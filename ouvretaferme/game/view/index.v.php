@@ -3,6 +3,10 @@ new AdaptativeView('start', function($data, GameTemplate $t) {
 
 	$t->title = s("Sauvez Noël !");
 
+	echo '<h1>';
+		echo s("Des légumes pour les rennes");
+	echo '</h1>';
+
 	echo \game\HelpUi::getStory();
 
 	echo new \game\DeskUi()->get('<a href="/game/:new" class="game-intro-start">'.s("Commencer à jouer").'</a>', 1);
@@ -14,9 +18,9 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 	$t->title = s("Jouer !");
 
 	echo '<h1>';
-		echo '<span class="hide-sm-down">🎅 </span>';
+		echo '<span class="hide-md-down">🎅 </span>';
 		echo s("Des légumes pour les rennes");
-		echo '<span class="hide-sm-down"> 🦌</span>';
+		echo '<span class="hide-md-down"> 🦌</span>';
 	echo '</h1>';
 
 	if(get_exists('start')) {
@@ -28,7 +32,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 		echo \game\HelpUi::getRules(TRUE);
 
-		echo new \game\DeskUi()->play($data->ePlayer, $data->cTile, $data->board);
+		echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
 
 	} else {
 
@@ -56,7 +60,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cGrowing, $data->cFood);
 
-				echo new \game\DeskUi()->play($data->ePlayer, $data->cTile, $data->board);
+				echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
 
 				echo \game\HelpUi::getCrops($data->cGrowing);
 				echo '<br/>';
@@ -72,9 +76,5 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 new AdaptativeView('new', function($data, PanelTemplate $t) {
 	return new \game\PlayerUi()->create($data->e);
-});
-
-new AdaptativeView('planting', function($data, PanelTemplate $t) {
-	return new \game\TileUi()->getPlanting($data->eTile);
 });
 ?>

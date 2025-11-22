@@ -1,7 +1,7 @@
 <?php
 namespace game;
 
-class GrowingLib extends TileCrud {
+class GrowingLib extends GrowingCrud {
 
 	public static function getAll(): \Collection {
 
@@ -11,7 +11,7 @@ class GrowingLib extends TileCrud {
 				new \Sql('harvest IS NULL'),
 				'name' => SORT_ASC
 			])
-			->getCollection();
+			->getCollection(index: 'id');
 
 	}
 

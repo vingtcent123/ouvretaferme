@@ -3,11 +3,11 @@ namespace game;
 
 class HistoryLib extends HistoryCrud {
 
-	public static function getByUser(\user\User $eUser): \Collection {
+	public static function getByPlayer(Player $ePlayer): \Collection {
 
 		return History::model()
 			->select(History::getSelection())
-			->whereUser($eUser)
+			->whereUser($ePlayer['user'])
 			->sort([
 				'createdAt' => SORT_DESC
 			])

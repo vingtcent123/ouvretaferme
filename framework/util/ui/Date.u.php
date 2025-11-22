@@ -1083,7 +1083,7 @@ class DateUi {
 	public static function secondToDuration(int $duration, int $format = self::SHORT, ?string $mode = NULL, ?int $maxNumber = NULL): ?string {
 
 		if($mode === NULL) {
-			$mode = 'DHMS';
+			$mode = 'DHM';
 		} else {
 			$mode = strtoupper($mode);
 		}
@@ -1153,7 +1153,8 @@ class DateUi {
 				$result .= ' ';
 			}
 
-			$result .= self::getMonths($months, $format);
+			$value = $months + ($maxNumber === 1 and $days > 15 ? 1 : 0);
+			$result .= self::getMonths($value, $format);
 
 		}
 
@@ -1168,41 +1169,43 @@ class DateUi {
 				$result .= ' ';
 			}
 
+			$value = $days + ($maxNumber === 1 and $hours > 12 ? 1 : 0);
+			
 			if($format === self::LONG or $format === self::AGO) {
-				$result .= self::getDays($days, $format);
+				$result .= self::getDays($value, $format);
 			} else {
 
 				switch(\L::getLang()) {
 
 					case 'fr_FR' :
-						$result .= sprintf("%d j", $days);
+						$result .= sprintf("%d j", $value);
 						break;
 
 					case 'it_IT' :
-						$result .= sprintf("%d g", $days);
+						$result .= sprintf("%d g", $value);
 						break;
 
 					case 'tr_TR' :
-						$result .= sprintf("%d gn.", $days);
+						$result .= sprintf("%d gn.", $value);
 						break;
 
 					case 'pl_PL' :
-						$result .= sprintf("%d dz.", $days);
+						$result .= sprintf("%d dz.", $value);
 						break;
 
 					case 'ar_AE' :
-						$result .= sprintf("%d يوم", $days);
+						$result .= sprintf("%d يوم", $value);
 						break;
 
 					case 'el_GR' :
-						$result .= sprintf("%d μ", $days);
+						$result .= sprintf("%d μ", $value);
 						break;
 
 					case 'fi_FI' :
-						$result .= sprintf("%d pv", $days);
+						$result .= sprintf("%d pv", $value);
 						break;
 					case 'de_DE' :
-						$result .= sprintf("%d T", $days);
+						$result .= sprintf("%d T", $value);
 						break;
 
 					case 'en_GB' :
@@ -1217,41 +1220,41 @@ class DateUi {
 					case 'da_DK' :
 					case 'cs_CZ' :
 					case 'no_NO' :
-						$result .= sprintf("%d d", $days);
+						$result .= sprintf("%d d", $value);
 						break;
 
 					case 'he_IL' :
-						$result .= sprintf("%d ימים", $days);
+						$result .= sprintf("%d ימים", $value);
 						break;
 
 					case 'hu_HU' :
-						$result .= sprintf("%d n", $days);
+						$result .= sprintf("%d n", $value);
 						break;
 
 					case 'ro_RO' :
-						$result = sprintf("%d z", $days);
+						$result = sprintf("%d z", $value);
 						break;
 
 					case 'bg_BG' :
-						$result = sprintf("%d д.", $days);
+						$result = sprintf("%d д.", $value);
 						break;
 
 					case 'lt_LT' :
-						$result = sprintf("%d d.", $days);
+						$result = sprintf("%d d.", $value);
 						break;
 
 					case 'lv_LV' :
 					case 'sl_SI' :
-						$result = sprintf("%dd", $days);
+						$result = sprintf("%dd", $value);
 						break;
 
 					case 'ru_UA' :
-						$result = sprintf("%d д.", $days);
+						$result = sprintf("%d д.", $value);
 						break;
 
 					case 'sk_SK' :
 					case 'ru_RU' :
-						$result = self::getDays($days, $format);
+						$result = self::getDays($value, $format);
 						break;
 
 				}
@@ -1269,11 +1272,13 @@ class DateUi {
 				$result .= ' ';
 			}
 
+			$value = $hours + ($maxNumber === 1 and $minutes > 30 ? 1 : 0);
+			
 			if($format === self::LONG) {
-				$result .= self::getHours($hours);
+				$result .= self::getHours($value);
 			} else if($format === self::AGO) {
 				if($days === 0) {
-					$result .= self::getHours($hours);
+					$result .= self::getHours($value);
 				}
 			}  else {
 
@@ -1290,59 +1295,59 @@ class DateUi {
 					case 'cs_CZ' :
 					case 'ro_RO' :
 					case 'sk_SK' :
-						$result .= sprintf("%d h", $hours);
+						$result .= sprintf("%d h", $value);
 						break;
 					case 'ar_AE' :
-						$result .= sprintf("%d ساعة", $hours);
+						$result .= sprintf("%d ساعة", $value);
 						break;
 					case 'pl_PL' :
-						$result .= sprintf("%d godz.", $hours);
+						$result .= sprintf("%d godz.", $value);
 						break;
 					case 'sv_SE' :
-						$result .= sprintf("%d tim", $hours);
+						$result .= sprintf("%d tim", $value);
 						break;
 					case 'nl_NL' :
-						$result .= sprintf("%d u", $hours);
+						$result .= sprintf("%d u", $value);
 						break;
 					case 'tr_TR' :
-						$result .= sprintf("%d s.", $hours);
+						$result .= sprintf("%d s.", $value);
 						break;
 					case 'it_IT' :
-						if($hours === 1 or $hours === 0) {
-							$result .= sprintf("%d ora", $hours);
+						if($value === 1 or $value === 0) {
+							$result .= sprintf("%d ora", $value);
 						} else {
-							$result .= sprintf("%d ore", $hours);
+							$result .= sprintf("%d ore", $value);
 						}
 						break;
 					case 'ru_RU' :
 					case 'ru_UA' :
-						$result .= sprintf("%d ч", $hours);
+						$result .= sprintf("%d ч", $value);
 						break;
 					case 'el_GR' :
-						$result .= sprintf("%d ω", $hours);
+						$result .= sprintf("%d ω", $value);
 						break;
 					case 'fi_FI' :
 					case 'da_DK' :
 					case 'no_NO' :
-						$result .= sprintf("%d t", $hours);
+						$result .= sprintf("%d t", $value);
 						break;
 					case 'he_IL' :
-						$result .= sprintf("%d ש'", $hours);
+						$result .= sprintf("%d ש'", $value);
 						break;
 					case 'hu_HU' :
-						$result .= sprintf("%d ó", $hours);
+						$result .= sprintf("%d ó", $value);
 						break;
 					case 'bg_BG' :
-						$result .= sprintf("%d ч.", $hours);
+						$result .= sprintf("%d ч.", $value);
 						break;
 					case 'lt_LT' :
-						$result .= sprintf("%d val.", $hours);
+						$result .= sprintf("%d val.", $value);
 						break;
 					case 'lv_LV' :
-						$result .= sprintf("%dst", $hours);
+						$result .= sprintf("%dst", $value);
 						break;
 					case 'sl_SI' :
-						$result .= sprintf("%dh", $hours);
+						$result .= sprintf("%dh", $value);
 						break;
 					default :
 						return NULL;
