@@ -19,7 +19,7 @@ class HelpUi {
 
 				$h .= '<h4 class="mb-0">'.s("🎅 Des légumes pour les rennes 🦌").'</h4>';
 				$h .= '<div>';
-					$h .= '<a href="/jouer" class="btn btn-xl game-home-button">'.s("Continuer ma partie").'</a>';
+					$h .= '<a href="/jouer" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Continuer ma partie").'</a>';
 				$h .= '</div>';
 
 			} else {
