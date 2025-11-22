@@ -95,6 +95,18 @@ new \account\FinancialYearPage(
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');
 
+	});
+
+new \account\FinancialYearPage(
+	function($data) {
+		\user\ConnectionLib::checkLogged();
+		$data->eFarm->validate('canManage');
+	})
+	->applyElement(function($data, \account\FinancialYear $e) {
+
+		$e->validate('acceptClose');
+		$data->eOld = clone $e;
+
 	})
 	->read('close', function($data) {
 

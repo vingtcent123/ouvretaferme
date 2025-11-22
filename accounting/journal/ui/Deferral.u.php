@@ -257,6 +257,7 @@ class DeferralUi {
 
 							} else {
 
+								$isDeferral = FALSE;
 								$period = '';
 								$amount = '';
 
