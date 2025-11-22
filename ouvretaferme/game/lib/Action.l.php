@@ -201,15 +201,19 @@ class ActionLib {
 
 	}
 
-	public static function eat(Player $ePlayer): bool {
+	public static function eat(Player $ePlayer, int $value): bool {
+
+		if($ePlayer->isPremium() === FALSE) {
+			return FALSE;
+		}
 
 		Player::model()->beginTransaction();
 
-		$eaten = FoodLib::change($ePlayer, 'soup-eat', new Growing(), -1);
+		$eaten = FoodLib::change($ePlayer, 'soup-eat', new Growing(), -1 * $value);
 
 		if($eaten) {
 
-			PlayerLib::changeTime($ePlayer, GameSetting::BONUS_SOUP);
+			PlayerLib::changeTime($ePlayer, GameSetting::BONUS_SOUP * $value);
 
 			Player::model()->commit();
 

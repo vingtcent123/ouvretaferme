@@ -10,7 +10,7 @@ new Page(function($data) {
 	})
 	->post('doEat', function($data) {
 
-		\game\ActionLib::eat($data->ePlayer) ?
+		\game\ActionLib::eat($data->ePlayer, POST('value', 'int')) ?
 			throw new ReloadAction('game', 'Action::eaten') :
 			throw new ReloadAction('game', 'Action::notEaten');
 

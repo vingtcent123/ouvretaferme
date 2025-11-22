@@ -53,11 +53,10 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block mb-2">';
-				$h .= '<p>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir {value} heures de temps de travail en plus !", GameSetting::BONUS_SOUP).'</p>';
 				$h .= '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme, vous débloquez les deux bonus suivants :").'</p>';
 				$h .= '<ul class="mb-1">';
-					$h .= '<li>'.s("<b>{premium} heures de travail par jour au lieu de {value} heures</b>", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';
-					$h .= '<li>'.s("<b>Proposer du troc aux autres joueurs</b>").'</li>';
+					$h .= '<li>'.s("{premium} heures de travail par jour au lieu de {value} heures", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';
+					$h .= '<li>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir {value} heures de temps de travail en plus", GameSetting::BONUS_SOUP).'</li>';
 				$h .= '</ul>';
 				$h .= '<p class="text-center">';
 					$h .= '<a href="/adherer" class="btn btn-game">'.s("Adhérer à l'association").'</a>';

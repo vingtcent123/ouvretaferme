@@ -70,6 +70,7 @@ class DeskUi {
 
 					$hasFood = FALSE;
 					$minFood = NULL;
+					$soup = NULL;
 					$canCook = $cFood->find(fn($eFood) => ($eFood['growing']->notEmpty() and $eFood['current'] > 0))->count() === $cGrowingFood->count();
 
 					foreach($cFood as $eFood) {
@@ -89,7 +90,8 @@ class DeskUi {
 
 						} else {
 
-							$canEat = $eFood['current'] > 0;
+							$soup = $eFood['current'];
+							$canEat = $soup > 0;
 
 							if(
 								$canEat or
@@ -128,7 +130,14 @@ class DeskUi {
 											$h .= '-1 '.\Asset::icon('cup-hot').' '.\Asset::icon('arrow-right').' ';
 											$h .= s("+{value} de temps de travail disponible", PlayerUi::getTime(GameSetting::BONUS_SOUP)).'   ';
 										$h .= '</div>';
-										$h .= '<a data-ajax="/game/action:doEat" class="'.($canEat ? '' : 'disabled').' dropdown-item">'.\Asset::icon('chevron-right').' '.s("Manger une soupe").'</a>';
+										if($ePlayer->isPremium()) {
+											$h .= '<a data-ajax="/game/action:doEat" post-value="1" class="'.($canEat ? '' : 'disabled').' dropdown-item">'.\Asset::icon('chevron-right').' '.s("Manger une soupe").'  '.\Asset::icon('cup-hot').'</a>';
+											if($soup >= 5) {
+												$h .= '<a data-ajax="/game/action:doEat" post-value="5" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Manger 5 soupes").'  '.str_repeat(\Asset::icon('cup-hot'), 5).'</a>';
+											}
+										} else {
+											$h .= '<a href="/adherer" class="dropdown-item">'.\Asset::icon('chevron-right').' '.s("Disponible pour les adhérents !").'</a>';
+										}
 									$h .= '</div>';
 
 									$hasFood = TRUE;
