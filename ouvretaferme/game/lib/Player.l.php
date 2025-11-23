@@ -90,6 +90,37 @@ class PlayerLib extends PlayerCrud {
 
 	}
 
+	public static function getPointsRanking(Player $ePlayerOnline): \Collection {
+
+		$position = 1;
+
+		$cPlayer = Player::model()
+			->select([
+				'position' => fn() => $position++,
+				'id',
+				'name',
+				'points',
+			])
+			->sort([
+				'points' => SORT_DESC,
+				new \Sql('id = '.$ePlayerOnline['id'].' DESC')
+			])
+			->getCollection(0, 20);
+		
+		if($cPlayer->contains(fn($ePlayer) => $ePlayerOnline->is($ePlayer)) === FALSE) {
+
+			$cPlayer[] = (clone $ePlayerOnline)->merge([
+				'position' => Player::model()
+					->wherePoints('>', $ePlayerOnline['points'])
+					->count() + 1
+			]);
+
+		}
+
+		return $cPlayer;
+
+	}
+
 	public static function restart(Player $ePlayer): void {
 
 		$eUser = $ePlayer['user'];

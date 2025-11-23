@@ -106,5 +106,18 @@ class FoodLib extends FoodCrud {
 
 	}
 
+	public static function fillRankings(Player $ePlayer, \Collection $cFood): void {
+
+		foreach($cFood as $eFood) {
+
+			$eFood['position'] = Food::model()
+					->whereGrowing($eFood['growing'])
+					->whereTotal('>', $eFood['total'])
+					->count() + 1;
+
+		}
+
+	}
+
 }
 ?>

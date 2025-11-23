@@ -71,7 +71,7 @@ body[data-template~="game"] h1 {
 
 #game-tabs {
 	max-width: 50rem;
-	margin: auto;
+	margin: 0 auto 3rem auto;
 }
 
 #game-tabs .tabs-item {

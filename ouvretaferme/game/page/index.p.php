@@ -32,6 +32,9 @@ new Page(function($data) {
 		$data->cGrowing = \game\GrowingLib::getAll();
 		$data->cFood = \game\FoodLib::getByPlayer($data->ePlayer);
 		$data->cHistory = \game\HistoryLib::getByPlayer($data->ePlayer);
+		$data->cPlayerRanking = \game\PlayerLib::getPointsRanking($data->ePlayer);
+
+		\game\FoodLib::fillRankings($data->ePlayer, $data->cFood);
 
 		throw new ViewAction($data);
 
