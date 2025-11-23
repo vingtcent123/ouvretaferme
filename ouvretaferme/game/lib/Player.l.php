@@ -115,6 +115,7 @@ class PlayerLib extends PlayerCrud {
 					'role' => ['fqn']
 				]
 			])
+			->wherePoints('>', 0)
 			->sort([
 				'points' => SORT_DESC,
 				new \Sql('id = '.$ePlayerOnline['id'].' DESC'),
