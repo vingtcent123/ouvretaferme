@@ -77,6 +77,10 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '</div>';
 
+	if(FEATURE_GAME) {
+		echo new \game\HelpUi()->getHome($data->ePlayer);
+	}
+
 	echo '<h2>'.s("Qui utilise Ouvretaferme et pourquoi ?").'</h2>';
 
 	echo '<div class="home-profiles">';

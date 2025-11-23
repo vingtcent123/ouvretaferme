@@ -3,6 +3,11 @@ new Page()
 	->get('index', function($data) {
 
 		if($data->eUserOnline->empty()) {
+
+			if(FEATURE_GAME) {
+				$data->ePlayer = new \game\Player();
+			}
+
 			throw new ViewAction($data, path: ':anonymous');
 		}
 

@@ -10,7 +10,7 @@ class Player extends PlayerElement {
 	}
 
 	public function getRole(): string {
-		return ($this['user']['role']['fqn'] === 'customer') ? 'customer' : 'farmer';
+		return ($this->empty() or $this['user']['role']['fqn'] === 'customer') ? 'customer' : 'farmer';
 	}
 
 	public function isPremium(): bool {
