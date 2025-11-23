@@ -91,27 +91,6 @@ class TipUi {
 					'button' => [$link, s("Revenir sur le planning")],
 				];
 
-			case 'plant-customize' :
-
-				$link = \plant\PlantUi::urlManage($eFarm);
-
-				$h = '<p>'.s("Si les espèces cultivées créées par défaut avec votre ferme ne sont pas suffisantes pour votre plan de culture, vous pouvez ajouter vos propres espèces !").'</p>';
-				$h .= '<div class="tip-list">';
-					$h .= '<span>'.s("Ail").'</span>';
-					$h .= '<span>'.s("Betterave").'</span>';
-					$h .= '<span>'.s("Carotte").'</span>';
-					$h .= '<span>'.s("...").'</span>';
-					$h .= '<a href="'.$link.'">'.\Asset::icon('plus-circle').' '.s("Ajouter").'</a>';
-				$h .= '</div>';
-
-				return [
-					'icon' => \Asset::icon('flower2'),
-					'title' => s("Ajoutez de nouvelles espèces cultivées !"),
-					'content' => $h,
-					'image' => FALSE,
-					'button' => [$link, s("Personnaliser les espèces")],
-				];
-
 			case 'feature-rotation' :
 
 				$link = FarmUi::urlHistory($eFarm);
@@ -127,7 +106,7 @@ class TipUi {
 					'title' => s("Suivez vos rotations de cultures !"),
 					'content' => $h,
 					'image' => FALSE,
-					'button' => [$link, s("Voir les rotations")],
+					'button' => NULL,
 				];
 
 			case 'feature-seeds' :
@@ -162,7 +141,7 @@ class TipUi {
 
 				$link = '/farm/farm:updateProduction?id='.$eFarm['id'];
 
-				$h = '<p>'.s("Simplifiez-vous l'interface de {siteName} en désactivant cette fonctionnalité. Vous ne serez plus dérangé par les interfaces de saisie de temps de travail. Vous pourrez réactiver cette fonctionnalité ultérieurement !").'</p>';
+				$h = '<p>'.s("Simplifiez-vous l'interface de {siteName} en désactivant cette fonctionnalité. Vous ne serez plus dérangé par les interfaces de saisie de temps de travail dans votre planning. Vous pourrez réactiver cette fonctionnalité ultérieurement !").'</p>';
 
 				return [
 					'icon' => \Asset::icon('clock'),
@@ -300,48 +279,6 @@ class TipUi {
 					'content' => $h,
 					'image' => FALSE,
 					'button' => NULL,
-				];
-
-			case 'series-duplicate' :
-
-				$link = FarmUi::urlCultivationSeries($eFarm, Farmer::AREA);
-
-				$h = '<p>'.s("Vous êtes satisfait d'une de vos séries ? Dupliquez-là à partir de sa page pour passer moins de temps à faire votre plan de culture l'année prochaine !").'</p>';
-
-				return [
-					'icon' => \Asset::icon('flower2'),
-					'title' => s("Dupliquez des séries"),
-					'content' => $h,
-					'image' => TRUE,
-					'button' => [$link, s("Voir mes séries")],
-				];
-
-			case 'series-harvest' :
-
-				$link = FarmUi::urlPlanningWeekly($eFarm);
-
-				$h = '<p>'.s("Quand vous récoltez plusieurs fois par semaine sur une même série, ne créez pas plusieurs interventions de récolte. Vous gagnerez du temps en créant une seule intervention pour la semaine et en ajoutant dessus à chaque fois un complément de récolte.").'</p>';
-
-				return [
-					'icon' => \Asset::icon('basket2-fill'),
-					'title' => s("Récoltes multiples"),
-					'content' => $h,
-					'image' => TRUE,
-					'button' => [$link, s("Revenir sur le planning")],
-				];
-
-			case 'series-forecast' :
-
-				$link = FarmUi::urlCultivationForecast($eFarm);
-
-				$h = '<p>'.s("À partir de votre plan de culture ou même en amont, vous pouvez obtenir le prévisionnel financier de votre année. Il ne vous reste qu'à saisir vos prix de ventes pour les particuliers et les professionnels, ainsi que la répartition des ventes entre les deux !").'</p>';
-
-				return [
-					'icon' => \Asset::icon('currency-euro'),
-					'title' => s("Votre prévisionnel financier est prêt !"),
-					'content' => $h,
-					'image' => TRUE,
-					'button' => [$link, s("Voir mon prévisionnel")],
 				];
 
 			case 'blog' :

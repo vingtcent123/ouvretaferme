@@ -8,7 +8,7 @@ class TipLib extends TipCrud {
 	}
 
 	public static function getPrivate(): array {
-		return ['sequence-weeks', 'accounting-invoice-cashflow', 'mailing-contact-help', 'mailing-campaign-help', 'series-forecast-help'];
+		return ['sequence-weeks', 'accounting-invoice-cashflow', 'mailing-contact-help', 'mailing-campaign-help', 'series-forecast-help', 'feature-rotation'];
 	}
 
 	public static function getPublic(): array {
@@ -16,22 +16,22 @@ class TipLib extends TipCrud {
 		return [
 
 			'action-customize' => [
-
+				'minSeniority' => 5,
+				'match' => fn(\user\User $eUser, Farm $eFarm) => \series\Task::model()
+					->whereFarm($eFarm)
+					->exists()
 			],
 			'planning-checkboxes' => [
-				'minSeniority' => 10
-			],
-			'plant-customize' => [
-				'match' => fn(\user\User $eUser, Farm $eFarm) => \plant\Plant::model()
+				'minSeniority' => 10,
+				'match' => fn(\user\User $eUser, Farm $eFarm) => \series\Task::model()
 					->whereFarm($eFarm)
-					->whereFqn(NULL)
-					->exists() === FALSE
-			],
-			'feature-rotation' => [
-				'minSeniority' => 100
+					->exists()
 			],
 			'feature-seeds' => [
-				'minSeniority' => 10
+				'minSeniority' => 10,
+				'match' => fn(\user\User $eUser, Farm $eFarm) => \series\Series::model()
+						->whereFarm($eFarm)
+						->exists()
 			],
 			'feature-team' => [
 				'minSeniority' => 10,
@@ -40,13 +40,23 @@ class TipLib extends TipCrud {
 						->count() === 1
 			],
 			'feature-time-disable' => [
-				'match' => fn(\user\User $eUser, Farm $eFarm) => ($eFarm['featureTime'] === TRUE)
+				'match' => fn(\user\User $eUser, Farm $eFarm) => (
+					$eFarm['featureTime'] === TRUE and
+					\series\Task::model()
+						->whereFarm($eFarm)
+						->exists()
+				)
 			],
 			'feature-tools' => [
 				'minSeniority' => 15,
-				'match' => fn(\user\User $eUser, Farm $eFarm) => Tool::model()
+				'match' => fn(\user\User $eUser, Farm $eFarm) => (
+					Tool::model()
 						->whereFarm($eFarm)
-						->exists() === FALSE
+						->exists() === FALSE and
+					\series\Task::model()
+						->whereFarm($eFarm)
+						->exists()
+				)
 			],
 			'feature-website' => [
 				'minSeniority' => 20,
@@ -70,18 +80,6 @@ class TipLib extends TipCrud {
 			'selling-shop' => [
 				'minSeniority' => 15,
 				'match' => fn(\user\User $eUser, Farm $eFarm) => \shop\Shop::model()
-						->whereFarm($eFarm)
-						->exists() === FALSE
-			],
-			'series-duplicate' => [
-				'minSeniority' => 50
-			],
-			'series-harvest' => [
-				'minSeniority' => 5
-			],
-			'series-forecast' => [
-				'minSeniority' => 3,
-				'match' => fn(\user\User $eUser, Farm $eFarm) => \plant\Forecast::model()
 						->whereFarm($eFarm)
 						->exists() === FALSE
 			],

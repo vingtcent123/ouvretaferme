@@ -762,7 +762,13 @@ class CultivationUi {
 
 	}
 
-	public function displayByForecast(\farm\Farm $eFarm, int $season, \Collection $ccForecast) {
+	public function displayByForecast(\Collection $ccForecast) {
+
+		if($ccForecast->empty()) {
+
+			return '<div class="util-empty">'.s("Le prévisionnel financier ne peut pas encore s'afficher car vous n'avez créé ni série ni ajouter d'espèce pour cette saison.").'</div>';
+
+		}
 
 		$h = '<div id="series-wrapper" class="series-item-wrapper series-item-forecast-wrapper util-overflow-lg stick-md">';
 

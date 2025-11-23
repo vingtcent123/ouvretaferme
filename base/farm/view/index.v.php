@@ -202,7 +202,7 @@ new AdaptativeView('forecast', function($data, FarmTemplate $t) {
 	$t->mainTitle = $uiFarm->getCultivationForecastTitle($data->eFarm, $data->season);
 	$t->mainYear = $uiFarm->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCultivationForecast($data->eFarm, season: $season), $data->season);
 
-	echo new \series\CultivationUi()->displayByForecast($data->eFarm, $data->season, $data->ccForecast);
+	echo new \series\CultivationUi()->displayByForecast($data->ccForecast);
 
 });
 
@@ -353,7 +353,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer vos ventes").'</h4>';
-			echo '<p>'.s("Avec {siteName}, vous allez gérer plus facilement la commercialisation dans votre ferme, en réduisant le temps que vous y passez et en limitant le risque d'erreurs.").'</p>';
+			echo '<p>'.s("Avec {siteName}, vous allez gérer facilement et de façon fiable la commercialisation dans votre ferme :").'</p>';
 			echo '<ul>';
 				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</li>';
 				echo '<li>'.s("Créez les ventes de vos <link>clients particuliers et professionnels</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">']).'</li>';

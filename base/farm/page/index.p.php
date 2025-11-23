@@ -687,6 +687,14 @@ new Page(function($data) {
 
 		\series\PlaceLib::filterRotationsByFamily($data->eFarm, $data->cZone, $data->search);
 
+		if(
+			$data->cZone->notEmpty() and
+			$data->eUserOnline['seniority'] > 50
+		) {
+			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'feature-rotation');
+			$data->tipNavigation = 'inline';
+		}
+
 		throw new ViewAction($data, ':soil');
 
 
