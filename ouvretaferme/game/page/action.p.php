@@ -27,6 +27,13 @@ new Page(function($data) {
 
 		\game\PlayerLib::restart($data->ePlayer);
 
+	})
+	->post('doFriendAdd', function($data) {
+
+		\game\PlayerLib::addFriend($data->ePlayer, POST('code')) ?
+			throw new ReloadAction('game', 'Action::friendAdded') :
+			throw new ReloadAction('game', 'Action::friendNotAdded');
+
 	});
 
 

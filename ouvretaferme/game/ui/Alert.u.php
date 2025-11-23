@@ -31,6 +31,9 @@ class AlertUi {
 			'Action::cooked' => s("Cuisson terminée !"),
 			'Action::notCooked' => s("Préparation impossible, il vous manquait des légumes !"),
 
+			'Action::friendAdded' => s("Vous avez un nouvel ami !"),
+			'Action::friendNotAdded' => s("Le code que vous avez saisi correspond à un ami imaginaire !"),
+
 			'Action::planted' => s("C'est semé !"),
 			'Action::notPlanted' => s("Semis impossible !"),
 

@@ -16,6 +16,16 @@ Food:
     ["user"]
   ]
 
+Friend:
+  id: serial32
+  user: user\User
+  friend: user\User
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["user", "friend"],
+    ["friend", "user"]
+  ]
+
 History:
   id: serial32
   user: user\User
@@ -29,6 +39,7 @@ History:
 Player:
   id: serial32
   name: text8(1, 20) @collate(general)
+  code: ?text8 @collate(general)
   user: user\User
   time: decimal(8, 2, 0, null) = 0
   timeUpdatedAt: date = SPECIAL(now)

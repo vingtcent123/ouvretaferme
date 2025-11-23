@@ -15,6 +15,8 @@ class PlayerLib extends PlayerCrud {
 
 			Player::model()->beginTransaction();
 
+				$e['code'] = dechex($e['user']['id']).bin2hex(random_bytes(2));
+
 				parent::create($e);
 
 				TileLib::createByPlayer($e);
@@ -145,6 +147,43 @@ class PlayerLib extends PlayerCrud {
 
 		Player::model()->commit();
 
+
+	}
+
+	public static function addFriend(Player $ePlayer, string $code): bool {
+
+		$ePlayerFriend = Player::model()
+			->select(Player::getSelection())
+			->whereCode($code)
+			->get();
+
+		if(
+			$ePlayerFriend->empty() or
+			$ePlayerFriend->is($ePlayer)
+		) {
+			return FALSE;
+		}
+
+		try {
+
+			$eFriend = new Friend([
+				'user' => $ePlayerFriend['user'],
+				'friend' => $ePlayer['user']
+			]);
+
+			Friend::model()->insert($eFriend);
+
+			$eFriend = new Friend([
+				'user' => $ePlayer['user'],
+				'friend' => $ePlayerFriend['user']
+			]);
+
+			Friend::model()->insert($eFriend);
+
+		} catch(\DuplicateException) {
+		}
+
+		return TRUE;
 
 	}
 

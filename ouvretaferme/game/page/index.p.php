@@ -33,6 +33,7 @@ new Page(function($data) {
 		$data->cFood = \game\FoodLib::getByPlayer($data->ePlayer);
 		$data->cHistory = \game\HistoryLib::getByPlayer($data->ePlayer);
 		$data->cPlayerRanking = \game\PlayerLib::getPointsRanking($data->ePlayer);
+		$data->cPlayerFriend = \game\FriendLib::getByPlayer($data->ePlayer);
 
 		\game\FoodLib::fillRankings($data->ePlayer, $data->cFood);
 

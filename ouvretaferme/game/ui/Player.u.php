@@ -43,7 +43,7 @@ class PlayerUi {
 			$h .= '<div class="util-empty">'.s("Le classement n'est pas encore bien rempli, les premières cultures arrivent seulement à leur terme !").'</div>';
 		}
 
-		$h .= '<h3>'.S("Rennes attirés 🦌").'</h3>';
+		$h .= '<h3>'.s("Rennes attirés 🦌").'</h3>';
 
 		$h .= '<table class="game-table tr-bordered">';
 			$h .= '<thead>';

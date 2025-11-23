@@ -69,12 +69,17 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 					echo '<div class="tabs-item">';
 						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-crops">'.s("Tableau des cultures").'</a>';
+						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-friends">'.s("Amis").' <small class="tab-item-count">'.$data->cPlayerFriend->count().'</small></a>';
 						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-rankings">'.s("Classements").'</a>';
 						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-history">'.s("Historique").'</a>';
 					echo '</div>';
 
 					echo '<div class="tab-panel" data-tab="game-crops">';
 						echo new \game\HelpUi()->getCrops($data->cGrowing);
+					echo '</div>';
+
+					echo '<div class="tab-panel" data-tab="game-friends">';
+						echo new \game\FriendUi()->display($data->cPlayerFriend, $data->ePlayer);
 					echo '</div>';
 
 					echo '<div class="tab-panel" data-tab="game-rankings">';

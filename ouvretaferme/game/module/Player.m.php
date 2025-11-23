@@ -38,6 +38,7 @@ class PlayerModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => 20, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
+			'code' => ['text8', 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'user' => ['element32', 'user\User', 'unique' => TRUE, 'cast' => 'element'],
 			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'timeUpdatedAt' => ['date', 'cast' => 'string'],
@@ -48,7 +49,7 @@ class PlayerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'user', 'time', 'timeUpdatedAt', 'gift', 'lastGift', 'points', 'createdAt'
+			'id', 'name', 'code', 'user', 'time', 'timeUpdatedAt', 'gift', 'lastGift', 'points', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -105,6 +106,10 @@ class PlayerModel extends \ModuleModel {
 
 	public function whereName(...$data): PlayerModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereCode(...$data): PlayerModel {
+		return $this->where('code', ...$data);
 	}
 
 	public function whereUser(...$data): PlayerModel {
