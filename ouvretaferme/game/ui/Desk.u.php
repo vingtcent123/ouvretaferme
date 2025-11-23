@@ -58,24 +58,23 @@ class DeskUi {
 
 		$h = '<div class="game-dashboard">';
 
-			$h .= '<h3>'.encode($ePlayer['name']).'</h3>';
+			$h .= '<h3 style="grid-area: title">'.encode($ePlayer['name']).'</h3>';
 
 			$startTime = $ePlayer->getDailyTime();
 
-			$h .= '<div class="game-dashboard-element">';
+			$h .= '<div class="game-dashboard-element" style="grid-area: time">';
 				$h .= '<h4 class="game-dashboard-title">'.s("Temps de travail <br/>disponible").'</h4>';
 				$h .= '<div>';
 					$h .= '<div class="game-dashboard-value">';
 						$h .= '<div class="game-dashboard-item">'.\Asset::icon('clock').'  '.\game\PlayerUi::getTime($startTime - $ePlayer['time']).'</div>';
+						if($ePlayer['time'] !== 0.0) {
+							$h .= '<div class="game-dashboard-more">'.s("retour à {time} à minuit", ['time' => \game\PlayerUi::getTime($startTime)]).'</div>';
+						}
 					$h .= '</div>';
-					if($ePlayer['time'] !== 0.0) {
-						$h .= '<div class="game-dashboard-more">'.s("(retour à {time} à minuit)", ['time' => \game\PlayerUi::getTime($startTime)]).'</div>';
-					}
 				$h .= '</div>';
 			$h .= '</div>';
 
-			$h .= '<div class="game-dashboard-element">';
-				$h .= '<h4 class="game-dashboard-title">'.s("Production").'</h4>';
+			$h .= '<div class="game-dashboard-element" style="grid-area: production">';
 				$h .= '<div class="game-dashboard-value game-dashboard-value-list">';
 
 					$hasFood = FALSE;
@@ -160,13 +159,13 @@ class DeskUi {
 					}
 
 					if($hasFood === FALSE) {
-						$h .= '<div class="game-dashboard-item">'.s("Aucun").'</div>';
+						$h .= '<div class="game-dashboard-item">'.s("Pas encore de production").'</div>';
 					}
 
 				$h .= '</div>';
 			$h .= '</div>';
 
-			$h .= '<div class="game-dashboard-element">';
+			$h .= '<div class="game-dashboard-element" style="grid-area: points">';
 				$h .= '<h4 class="game-dashboard-title">'.s("Rennes attirés <br/>le 24 décembre").'</h4>';
 				$h .= '<div class="game-dashboard-value">';
 					$h .= '<div class="game-dashboard-item">🦌 '.$ePlayer['points'].'</div>';

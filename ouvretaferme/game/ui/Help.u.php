@@ -151,7 +151,7 @@ class HelpUi {
 					}
 
 					$h .= '<tr>';
-						$h .= '<td>'.$vignette.'  <b>'.$eGrowing['name'].'</b></td>';
+						$h .= '<td><span class="hide-xs-down">'.$vignette.'  </span><b>'.$eGrowing['name'].'</b></td>';
 						$h .= '<td class="text-end">';
 							if($eGrowing['days'] !== NULL) {
 								$h .= p("{value} jour", "{value} jours", $eGrowing['days']);

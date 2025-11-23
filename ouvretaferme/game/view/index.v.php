@@ -68,10 +68,13 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 				echo '<div class="tabs-h" id="game-tabs" onrender="'.encode('Lime.Tab.restore(this, "game-crops")').'">';
 
 					echo '<div class="tabs-item">';
-						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-crops">'.s("Tableau des cultures").'</a>';
+						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-crops">';
+							echo '<span class="hide-xs-down">'.s("Tableau des cultures").'</span>';
+							echo '<span class="hide-sm-up">'.s("Cultures").'</span>';
+						echo '</a>';
 						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-friends">'.s("Amis").' <small class="tab-item-count">'.$data->cPlayerFriend->count().'</small></a>';
 						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-rankings">'.s("Classements").'</a>';
-						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-history">'.s("Historique").'</a>';
+						echo '<a onclick="Lime.Tab.select(this)" class="tab-item hide-xs-down" data-tab="game-history">'.s("Historique").'</a>';
 					echo '</div>';
 
 					echo '<div class="tab-panel" data-tab="game-crops">';
