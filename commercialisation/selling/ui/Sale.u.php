@@ -1698,7 +1698,10 @@ class SaleUi {
 
 	public function createCustomer(Sale $eSale): \Panel {
 
-		$eSale->expects(['farm', 'shopDate', 'nGrid']);
+		$eSale->expects([
+			'farm' => ['hasSales'],
+			'shopDate', 'nGrid'
+		]);
 
 		$form = new \util\FormUi();
 
@@ -1769,11 +1772,22 @@ class SaleUi {
 				$footer = ItemUi::getCreateSubmit($eSale, $form, s("Créer la vente"));
 
 			} else {
+
 				$footer = $form->submit(s("Créer la vente"), ['class' => 'btn btn-primary btn-lg']);
 			}
 
 		} else {
 			$footer = NULL;
+		}
+
+		if($eSale['farm']['hasSales'] === FALSE) {
+
+			$h .= '<div class="util-block-important mt-2">';
+				$h .= '<h3>'.s("Si vous souhaitez créer des ventes pour tester {siteName}").'</h3>';
+				$h .= '<p>'.s("Nous vous suggérons d'utiliser la ferme de démonstration ou de créer une ferme de test si vous souhaitez tester les fonctionnalités de commercialisation de Ouvretaferme. En raison de contraintes réglementaires, vous ne pouvez pas supprimer des ventes clôturées sur le logiciel.").'</p>';
+				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/1/ventes" target="_blank" class="btn btn-transparent">'.s("Utiliser la démo").'</a>';
+			$h .= '</div>';
+
 		}
 
 		return new \Panel(

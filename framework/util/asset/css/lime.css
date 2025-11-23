@@ -1254,7 +1254,8 @@ a.util-badge {
 
 .util-block,
 .util-block-secondary,
-.util-block-help {
+.util-block-help,
+.util-block-important {
 	border-radius: var(--radius);
 	margin-bottom: 1rem;
 	padding: 1rem;
@@ -1262,7 +1263,8 @@ a.util-badge {
 
 .util-block *:last-child,
 .util-block-secondary *:last-child,
-.util-block-help *:last-child {
+.util-block-help *:last-child,
+.util-block-important *:last-child {
 	margin-bottom: 0;
 }
 
@@ -1300,19 +1302,30 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	border-radius: var(--radius);
 }
 
-.util-block-help {
+.util-block-help,
+.util-block-important {
 	padding: 1.25rem 1rem  1rem;
-	background-color: var(--info);
 	line-height: 1.5;
 	position: relative;
 	min-height: 4rem;
 }
 
 .util-block-help {
+	background-color: var(--info);
+}
+
+.util-block-important {
+	background-color: var(--secondary);
+	color: white;
+}
+
+.util-block-help,
+.util-block-important {
 	padding-left: 4.5rem;
 }
 
-.util-block-help h4 {
+.util-block-help h4,
+.util-block-important h4 {
 	font-weight: bold;
 	height: 2.5rem;
 	margin-bottom: 0.5rem;
@@ -1320,7 +1333,8 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	align-items: center;
 }
 
-.util-block-help h4:first-child {
+.util-block-help h4:first-child,
+.util-block-important h4:first-child {
 	margin-top: -0.5rem;
 }
 
@@ -1329,9 +1343,13 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	color: var(--text);
 }
 
-.util-block-help:before {
+.util-block-important a:not(.btn) {
+	text-decoration: underline;
+}
+
+.util-block-help:before,
+.util-block-important:before {
 	position: absolute;
-	content: 'i';
 	font-style: italic;
 	float: left;
 	color: white;
@@ -1351,6 +1369,12 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 .util-block-help:before {
 	background-color: var(--secondary);
 	content: 'i';
+}
+
+.util-block-important:before {
+	background-color: white;
+	color: var(--secondary);
+	content: '!';
 }
 
 .util-block-dark {
