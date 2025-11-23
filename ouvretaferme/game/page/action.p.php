@@ -27,6 +27,8 @@ new Page(function($data) {
 
 		\game\PlayerLib::restart($data->ePlayer);
 
+		throw new RedirectAction('/jouer');
+
 	})
 	->post('doFriendAdd', function($data) {
 

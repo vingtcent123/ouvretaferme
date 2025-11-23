@@ -20,7 +20,7 @@ class ActionLib {
 
 		Player::model()->beginTransaction();
 
-			$time = GameSetting::TIME_PLANTING;
+			$time = GameSetting::TIME_SEEDLING;
 
 			if(PlayerLib::changeTime($ePlayer, -1 * $time)) {
 

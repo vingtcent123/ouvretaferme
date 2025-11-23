@@ -32,7 +32,7 @@ class Player extends PlayerElement {
 		return $this->isPremium() ? GameSetting::TIME_DAY_PREMIUM : GameSetting::TIME_DAY;
 	}
 
-	public function getRemainingTime(): int {
+	public function getRemainingTime(): float {
 		return $this->getDailyTime() - $this['time'];
 	}
 

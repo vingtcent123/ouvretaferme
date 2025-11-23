@@ -106,7 +106,7 @@ class FoodLib extends FoodCrud {
 
 	}
 
-	public static function fillRankings(Player $ePlayer, \Collection $cFood): void {
+	public static function fillRankings(\Collection $cFood): void {
 
 		foreach($cFood as $eFood) {
 

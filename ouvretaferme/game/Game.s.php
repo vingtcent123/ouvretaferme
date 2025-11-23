@@ -18,7 +18,7 @@ class GameSetting extends \Settings {
 	const TIME_HARVESTING = 4;
 	const TIME_WATERING = 1;
 	const TIME_WEED = 6;
-	const TIME_PLANTING = 1;
+	const TIME_SEEDLING = 1.5;
 
 	const BONUS_WEED = 2;
 	const BONUS_SOUP = 2;

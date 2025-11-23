@@ -111,8 +111,8 @@ class DeskUi {
 					) {
 						$h .= '<div class="game-dashboard-more">';
 							$h .= match($ePlayer->getRole()) {
-								'farmer' => '<a href="/adherer" class="color-game">'.s("Adhérer pour passer à {value}", \game\PlayerUi::getTime(GameSetting::TIME_DAY_PREMIUM)).'</a>',
-								'customer' => '<a href="/donner" class="color-game">'.s("Faire un don pour passer à {value}", \game\PlayerUi::getTime(GameSetting::TIME_DAY_PREMIUM)).'</a>',
+								'farmer' => '<a href="/adherer" class="color-game">'.s("Adhérer pour passer à {value} de travail par jour", \game\PlayerUi::getTime(GameSetting::TIME_DAY_PREMIUM)).'</a>',
+								'customer' => '<a href="/donner" class="color-game">'.s("Faire un don pour passer à {value} de travail par jour", \game\PlayerUi::getTime(GameSetting::TIME_DAY_PREMIUM)).'</a>',
 							};
 						$h .= '</div>';
 					}

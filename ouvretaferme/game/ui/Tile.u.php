@@ -92,7 +92,7 @@ class TileUi {
 		$h .= '<div class="dropdown-list dropdown-list-2">';
 			$h .= '<div class="dropdown-title flex-justify-space-between">';
 				$h .= '<span>'.GameSetting::EMOJI_SEEDLING.'  '.s("Semer").'</span>';
-				$h .= '<span>'.\Asset::icon('clock').'  '.PlayerUi::getTime(GameSetting::TIME_PLANTING).'</span>';
+				$h .= '<span>'.\Asset::icon('clock').'  '.PlayerUi::getTime(GameSetting::TIME_SEEDLING).'</span>';
 			$h .= '</div>';
 
 			$eGrowingBefore = NULL;
