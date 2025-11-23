@@ -12,7 +12,7 @@ class FriendUi {
 		$h .= $form->openAjax('/game/action:doFriendAdd');
 			$h .= $form->inputGroup(
 				$form->text('code', attributes: ['placeholder' => s("Tapez un code ami")]).
-				$form->submit(s("Ajouter"))
+				$form->submit(s("Ajouter cet ami"))
 			);
 		$h .= $form->close();
 
@@ -33,6 +33,7 @@ class FriendUi {
 					$h .= '<th class="td-min-content text-end">'.s("Position").'</th>';
 					$h .= '<th>'.s("Joueur").'</th>';
 					$h .= '<th class="text-center">'.s("Rennes attirés 🦌").'</th>';
+					$h .= '<th class="td-min-content"></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 			$h .= '<tbody>';
@@ -46,6 +47,9 @@ class FriendUi {
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
 							$h .= '<b>'.$ePlayer['points'].'</b>';
+						$h .= '</td>';
+						$h .= '<td class="td-min-content">';
+							$h .= '<a data-ajax="/game/action:doFriendRemove" class="btn btn-outline-danger" post-friend="'.$ePlayer['user']['id'].'" data-confirm="'.s("Fin de l'amitié ?").'">'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
 					$h .= '</tr>';
 				}

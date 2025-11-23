@@ -32,6 +32,15 @@ class PlayerLib extends PlayerCrud {
 
 	}
 
+	public static function getByUser(\user\User $eUser): Player {
+
+		return Player::model()
+			->select(Player::getSelection())
+			->whereUser($eUser)
+			->get();
+
+	}
+
 	public static function getOnline(): Player {
 
 		if(self::$ePlayerOnline !== NULL) {
@@ -105,7 +114,8 @@ class PlayerLib extends PlayerCrud {
 			])
 			->sort([
 				'points' => SORT_DESC,
-				new \Sql('id = '.$ePlayerOnline['id'].' DESC')
+				new \Sql('id = '.$ePlayerOnline['id'].' DESC'),
+				'id' => SORT_ASC
 			])
 			->getCollection(0, 20);
 		
@@ -166,6 +176,8 @@ class PlayerLib extends PlayerCrud {
 
 		try {
 
+			Friend::model()->beginTransaction();
+
 			$eFriend = new Friend([
 				'user' => $ePlayerFriend['user'],
 				'friend' => $ePlayer['user']
@@ -180,8 +192,31 @@ class PlayerLib extends PlayerCrud {
 
 			Friend::model()->insert($eFriend);
 
+			Friend::model()->commit();
+
 		} catch(\DuplicateException) {
+			Friend::model()->rollBack();
 		}
+
+		return TRUE;
+
+	}
+
+	public static function removeFriend(Player $ePlayer, Player $ePlayerFriend): bool {
+
+		Friend::model()->beginTransaction();
+
+			Friend::model()
+				->whereUser($ePlayer['user'])
+				->whereFriend($ePlayerFriend['user'])
+				->delete();
+
+			Friend::model()
+				->whereUser($ePlayerFriend['user'])
+				->whereFriend($ePlayer['user'])
+				->delete();
+
+		Friend::model()->commit();
 
 		return TRUE;
 

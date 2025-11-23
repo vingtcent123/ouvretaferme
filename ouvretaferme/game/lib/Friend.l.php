@@ -15,7 +15,10 @@ class FriendLib extends FriendCrud {
 			return Player::model()
 				->select(Player::getSelection())
 				->whereUser('IN', $cFriend)
-				->sort(['points' => SORT_DESC])
+				->sort([
+					'points' => SORT_DESC,
+					'id' => SORT_ASC
+				])
 				->getCollection();
 
 		} else {
