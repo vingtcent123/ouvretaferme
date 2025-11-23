@@ -663,6 +663,7 @@ body[data-template~="shop-embedded"] {
 
 	.shop-product-ordered {
 		border-radius: var(--radius);
+		padding: 1.5rem 1rem;
 	}
 
 }
@@ -828,6 +829,10 @@ body:not([data-template~="shop-embedded"]) {
 	overflow-x: auto;
 	background-color: var(--secondary);
 	border-radius: var(--radius);
+}
+
+body[data-template~="shop-embedded"] #product-department-list {
+	display: none;
 }
 
 #product-department-list.product-department-list-sticky {
