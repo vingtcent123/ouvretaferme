@@ -577,7 +577,7 @@ class ProductLib extends ProductCrud {
 		$eDate['productsApproximate'] = (
 			$eShop->isApproximate() and
 			$cProduct->contains(fn($eProduct) => (
-				$eProduct['product']->notEmpty() and
+				$eProduct['parent'] === FALSE and
 				$eProduct['product']['unit']->notEmpty() and
 				$eProduct['product']['unit']['approximate'])
 			)
