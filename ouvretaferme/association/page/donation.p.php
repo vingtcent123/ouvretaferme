@@ -2,10 +2,6 @@
 new Page()
 	->get('/donner', function($data) {
 
-		if(\association\AssociationSetting::IS_DONNER_PAGE_ACTIVE === FALSE) {
-			throw new RedirectAction(\association\AssociationSetting::URL.'/nous-soutenir');
-		}
-
 		$data->eHistory = new \association\History();
 
 		if(get_exists('donation')) {

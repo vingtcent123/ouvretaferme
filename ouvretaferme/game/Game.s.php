@@ -3,6 +3,8 @@ namespace game;
 
 class GameSetting extends \Settings {
 
+	const PROMOTION_LIMIT = '2025-12-04';
+
 	const BOARDS = 3;
 
 	const EMOJI_SEEDLING = '🌱';

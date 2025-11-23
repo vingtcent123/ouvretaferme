@@ -103,8 +103,8 @@ class TileUi {
 					$eGrowing['harvest'] === NULL and
 					$eGrowingBefore['harvest'] !== NULL
 				) {
-					$h .= '<div class="dropdown-divider""></div>';
-					$h .= '<div class="dropdown-subtitle"">'.s("Plantes compagnes").'</div>';
+					$h .= '<div class="dropdown-divider"></div>';
+					$h .= '<div class="dropdown-subtitle">'.s("Plantes compagnes").'</div>';
 				}
 
 				$can = (

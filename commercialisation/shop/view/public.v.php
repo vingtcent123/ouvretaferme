@@ -287,6 +287,10 @@ new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, Sho
 	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleReference);
 	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleReference, $data->cSaleExisting, $data->cItemExisting);
 
+	if(FEATURE_GAME) {
+		echo new \game\HelpUi()->getHome($data->ePlayer);
+	}
+
 });
 
 new AdaptativeView('confirmationEmpty', function($data, ShopTemplate $t) {

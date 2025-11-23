@@ -9,6 +9,10 @@ class Player extends PlayerElement {
 		return 1 + (int)(currentDate() >= '2025-12-01') + (int)(currentDate() >= '2025-12-10');
 	}
 
+	public function getRole(): string {
+		return ($this['user']['role']['fqn'] === 'customer') ? 'customer' : 'farmer';
+	}
+
 	public function isPremium(): bool {
 
 		if(self::$premium === NULL) {
@@ -28,6 +32,10 @@ class Player extends PlayerElement {
 		return $this->isPremium() ? GameSetting::TIME_DAY_PREMIUM : GameSetting::TIME_DAY;
 	}
 
+	public function getRemainingTime(): int {
+		return $this->getDailyTime() - $this['time'];
+	}
+
 	public function getHarvestTime(\Collection $cTile): float {
 
 		$bonus = $cTile->find(fn($eTile) => $eTile['growing']->notEmpty() and $eTile['growing']['fqn'] === 'pivoine')->count() * GameSetting::BONUS_PIVOINE / 60;
@@ -38,7 +46,7 @@ class Player extends PlayerElement {
 
 	public function canTime(int $additional): bool {
 
-		return ($this['time'] - $additional <= $this->getDailyTime());
+		return $this->getRemainingTime() >= $additional;
 
 	}
 

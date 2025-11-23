@@ -434,6 +434,10 @@ new Page(function($data) {
 			\selling\Item::containsApproximate($data->cItemExisting)
 		);
 
+		if(FEATURE_GAME) {
+			$data->ePlayer = \game\PlayerLib::getOnline();
+		}
+
 		throw new ViewAction($data);
 
 	})

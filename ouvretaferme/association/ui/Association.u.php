@@ -61,9 +61,9 @@ class AssociationUi {
 
 	public function donationIntroduction(): string {
 
-		$h = '<div class="util-info">'.s("Tout d'abord, un grand merci pour votre démarche !").'</div>';
+		$h = '<div class="util-block-help mb-2">';
 
-		$h .= '<div class="util-summarize mb-2">';
+			$h .= '<h3>'.s("Merci d'envisager un don pour l'association qui édite le logiciel Ouvretaferme").'</h3>';
 
 			$h .= '<p>'.s("Ouvretaferme est un logiciel mis à disposition gratuitement pour les producteurs et les productrices en agriculture biologique et développé entièrement bénévolement. Vos dons sont précieux pour le maintenir et le faire vivre.").'</p>';
 
@@ -99,7 +99,7 @@ class AssociationUi {
 					if($eWebsite->empty()) {
 						$h .= '<h3>'.s("Vos informations personnelles").'</h3>';
 
-						$h .= '<div class="util-annotation mb-1">'.s("Pour éditer le reçu de votre don, nous vous demandons quelques informations personnelles. Le paiement s'effectuera sur {icon} Stripe à l'étape suivante.", ['icon' => \Asset::icon('stripe')]).'</div>';
+						$h .= '<div class="util-info mb-1">'.s("Pour éditer le reçu de votre don, nous vous demandons quelques informations personnelles.<br/>Le paiement s'effectuera par carte bancaire à l'étape suivante.", ['icon' => \Asset::icon('stripe')]).'</div>';
 					}
 
 					$h .= $form->hidden('from', LIME_URL);

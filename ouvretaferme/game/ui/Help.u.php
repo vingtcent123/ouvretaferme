@@ -11,6 +11,13 @@ class HelpUi {
 
 	public function getHome(Player $ePlayer): string {
 
+		if(
+			$ePlayer->empty() and
+			currentDate() > GameSetting::PROMOTION_LIMIT
+		) {
+			return '';
+		}
+
 		$h = \game\DeskUi::getFonts();
 
 		$h .= '<div class="game-home">';
@@ -27,9 +34,9 @@ class HelpUi {
 				$h .= '<div>';
 					$h .= '<h4 class="mb-2">'.s("Vous pensiez pouvoir partir tranquillement en vacances ?").'</h4>';
 					$h .= '<h2>'.s("Détrompez-vous, le père Noël 🎅 a une ultime mission pour vous à accomplir en décembre avant de profiter d'un moment de repos bien mérité !").'</h2>';
-					$h .= '<p class="mb-2">'.s("Découvrez un petit jeu conçu sur mesure pour toutes celles et ceux qui utilisent {siteName} au quotidien pour gérer leur production biologique ou acheter leurs produits locaux préférés.").'</p>';
+					$h .= '<p class="mb-2">'.s("L'association qui édite {siteName} organise un jeu conçu sur mesure pour toutes celles et ceux qui utilisent le logiciel au quotidien pour gérer leur production biologique ou acheter leurs produits locaux préférés.").'</p>';
 					$h .= '<div>';
-						$h .= '<a href="/jouer" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Commencer à jouer").'</a>';
+						$h .= '<a href="'.\Lime::getUrl().'/jouer" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Commencer à jouer").'</a>';
 					$h .= '</div>';
 				$h .= '</div>';
 				$h .= \Asset::image('game', 'board-3.jpg');
@@ -53,8 +60,8 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<div class="game-intro-disclaimer">';
 				$h .= '<h4>'.s("Pourquoi ce jeu ?").'</h4>';
-				$h .= '<p>'.s("C'est d'abord l'opportunité de vous amuser seul ou avec vos collègues et vos clients avant de démarrer une nouvelle année.").'</p>';
-				$h .= '<p>'.s("C'est aussi un moyen pour Ouvretaferme de vous demander officiellement d'adhérer à <link>notre association</link> pour contribuer à sécuriser financièrement notre projet sur le long terme. Parce que oui, en <membership>ayant adhéré à l'association</membership>, vous bénéficierez de quelques bonus dans le jeu pour sauver Noël !", ['link' => '<a href="'.\association\AssociationSetting::URL.'">', 'membership' => '<a href="/adherer">']).'</p>';
+				$h .= '<p>'.s("C'est d'abord l'opportunité de vous amuser avant de démarrer une nouvelle année.").'</p>';
+				$h .= '<p>'.s("C'est aussi un moyen pour l'association Ouvretaferme de vous demander officiellement d'adhérer ou de faire un don à <link>notre association</link> pour contribuer à sécuriser financièrement notre projet sur le long terme. Parce que oui, en <membership>ayant adhéré à l'association</membership> ou en <donation>ayant fait un don</donation>, vous bénéficierez de quelques bonus dans le jeu pour sauver Noël !", ['link' => '<a href="'.\association\AssociationSetting::URL.'">', 'membership' => '<a href="/adherer">', 'donation' => '<a href="/donner">']).'</p>';
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -62,7 +69,7 @@ class HelpUi {
 
 	}
 
-	public function getRules(bool $new = FALSE): string {
+	public function getRules(Player $ePlayer, bool $new = FALSE): string {
 
 		$h = '<div class="game-intro">';
 			$h .= '<h3>'.s("Les règles du jeu").'</h3>';
@@ -90,13 +97,18 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block mb-2">';
-				$h .= '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme ou si vous avez fait un don pour soutenir l'association, vous débloquez les deux bonus suivants :").'</p>';
+				$h .= match($ePlayer->getRole()) {
+					'farmer' => '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme ou si vous avez fait un don pour soutenir l'association, vous débloquez les deux bonus suivants :").'</p>',
+					'customer' => '<p>'.s("Si vous avez fait un don pour soutenir l'association, vous débloquez les deux bonus suivants :").'</p>'
+				};
 				$h .= '<ul class="mb-1">';
 					$h .= '<li>'.s("{premium} heures de travail par jour au lieu de {value} heures", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';
 					$h .= '<li>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir {value} heures de temps de travail en plus", GameSetting::BONUS_SOUP).'</li>';
 				$h .= '</ul>';
 				$h .= '<p class="text-center">';
-					$h .= '<a href="/adherer" class="btn btn-game">'.s("Adhérer à l'association").'</a> ';
+					if($ePlayer->getRole() === 'farmer') {
+						$h .= '<a href="/adherer" class="btn btn-game">'.s("Adhérer à l'association").'</a> ';
+					}
 					$h .= '<a href="/donner" class="btn btn-outline-game">'.s("Faire un don").'</a>';
 				$h .= '</p>';
 			$h .= '</div>';

@@ -54,7 +54,7 @@ class UserUi {
 	 *
 	 * @return string
 	 */
-	public function logInBasic(?string $email = NULL): string {
+	public function logInBasic(?string $email = NULL, $withSignUp = FALSE): string {
 
 		$redirect = REQUEST('redirect');
 
@@ -62,39 +62,46 @@ class UserUi {
 
 		$h = '<div class="login-form">';
 
-		$h .= $form->openAjax('/user/log:in');
+			$h .= $form->openAjax('/user/log:in');
 
-			$h .= $form->hidden('redirect', $redirect);
+				$h .= $form->hidden('redirect', $redirect);
 
-			$h .= $form->group(
-				s("Adresse e-mail"),
-				$form->email('login', $email)
-			);
+				$h .= $form->group(
+					s("Adresse e-mail"),
+					$form->email('login', $email)
+				);
 
-			$h .= $form->group(
-				s("Mot de passe"),
-				$form->password('password')
-			);
+				$h .= $form->group(
+					s("Mot de passe"),
+					$form->password('password')
+				);
 
 
-			$h .= $form->group(
-				NULL,
-				$form->checkbox('remember', 1, ['checked' => TRUE, 'callbackLabel' => fn($input) => $input.' '.s("Se souvenir de moi")]),
-				['class' => 'login-remember']
-			);
+				$h .= $form->group(
+					NULL,
+					$form->checkbox('remember', 1, ['checked' => TRUE, 'callbackLabel' => fn($input) => $input.' '.s("Se souvenir de moi")]),
+					['class' => 'login-remember']
+				);
 
-			$submit = '<div class="login-submit">';
-				$submit .= $form->submit(s("Se connecter"));
-				$submit .= '<div class="login-forgotten-password">
-					<a href="/user/log:forgottenPassword" target="_blank">'.s("Mot de passe oublié ?").'</a>
-				</div>';
-			$submit .= '</div>';
+				$submit = '<div class="login-submit">';
+					$submit .= $form->submit(s("Se connecter"));
+					$submit .= '<div class="login-forgotten-password">
+						<a href="/user/log:forgottenPassword" target="_blank">'.s("Mot de passe oublié ?").'</a>
+					</div>';
+				$submit .= '</div>';
 
-			$h .= $form->group(content: $submit);
+				$h .= $form->group(content: $submit);
 
-		$h .= $form->close();
+			$h .= $form->close();
 
 		$h .= '</div>';
+
+		if($withSignUp) {
+			$h .= '<div class="mt-3 text-center" style="border-top: 1px solid var(--border); padding-top: 3rem">';
+				$h .= '<h4>'.s("Vous n'êtes pas encore inscrit ?").'</h4>';
+				$h .= '<a href="/user/signUp" class="btn btn-outline-secondary">'.s("Créer un compte").'</a>';
+			$h .= '</div>';
+		}
 
 		return $h;
 

@@ -54,6 +54,8 @@ class PlayerLib extends PlayerCrud {
 
 		if($ePlayer->notEmpty()) {
 
+			$ePlayer['user'] = \user\ConnectionLib::getOnline();
+
 			if($ePlayer['timeUpdatedAt'] !== currentDate()) {
 
 				$ePlayer['time'] = 0;

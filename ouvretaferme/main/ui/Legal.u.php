@@ -20,7 +20,7 @@ class LegalUi {
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Garanties").'</h2>';
-		$h .= '<p>'.s("Le site {siteName} est un projet développé bénévolement au service des producteurs en agriculture biologique. La conséquence immédiate est qu'il n'y a aucune garantie sur le bon fonctionnement du service ou sur la pérennité de vos données et vous utilisez le service à vos risques et périls. Si vous perdez des données, quelqu'en soit la cause, y compris à cause d'une erreur de notre part ou d'un arrêt du service, vous ne pourrez prétendre à aucun dédommagement, compensation ou droit particulier.").'</p>';
+		$h .= '<p>'.s("Le site {siteName} est un projet développé bénévolement au service des producteurs en agriculture biologique en circuits courts. La conséquence immédiate est qu'il n'y a aucune garantie sur le bon fonctionnement du service ou sur la pérennité de vos données et vous utilisez le service à vos risques et périls. Si vous perdez des données, quelqu'en soit la cause, y compris à cause d'une erreur de notre part ou d'un arrêt du service, vous ne pourrez prétendre à aucun dédommagement, compensation ou droit particulier.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Fonctionnalités").'</h2>';

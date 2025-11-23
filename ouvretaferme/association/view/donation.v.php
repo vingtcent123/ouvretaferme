@@ -1,5 +1,5 @@
 <?php
-new HtmlView('/donner', function($data, MainTemplate $t) {
+new AdaptativeView('/donner', function($data, MainTemplate $t) {
 
 	$t->title = s("Soutenir l'association Ouvretaferme avec un don");
 
@@ -9,7 +9,7 @@ new HtmlView('/donner', function($data, MainTemplate $t) {
 
 });
 
-new HtmlView('thankYou', function($data, MainTemplate $t) {
+new AdaptativeView('thankYou', function($data, MainTemplate $t) {
 
 	$t->title = s("Merci pour votre don !");
 

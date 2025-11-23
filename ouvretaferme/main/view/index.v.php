@@ -14,7 +14,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '<div class="home-features home-features-3">';
 
-		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel ouvert et gratuit qui contribue à l'autonomie des fermes").'</h3>';
+		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel gratuit qui contribue à l'autonomie des fermes en circuits courts").'</h3>';
 
 		echo '<div class="home-feature">';
 
@@ -115,7 +115,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '<div class="home-profile-header home-profile-header-text">';
 				echo '<h3>'.s("Vos clients").'</h3>';
 			echo '</div>';
-			echo '<p>'.s("Ils commandent à leur producteurs préférés les produits qu'ils proposent cette semaine et récupèrent leur commande au lieu et à la date convenus. Ils paient en ligne ou sur place selon le choix du producteur !").'</p>';
+			echo '<p>'.s("Ils commandent en vente directe à leur producteurs préférés les produits qu'ils proposent cette semaine et récupèrent leur commande au lieu et à la date convenus. Ils paient en ligne ou sur place selon le choix du producteur !").'</p>';
 		echo '</div>';
 
 		echo '<div class="home-profile">';
@@ -126,7 +126,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 					echo '<h3>'.s("Maraichage").'</h3>';
 				echo '</div>';
 			echo '</div>';
-			echo '<p>'.s("Lionel utilise Ouvretaferme depuis 2023 et notamment la boutique en ligne et le système de facturation qui lui ont fait gagner des heures. Le planning de production lui permet également de travailler en équipe et notamment de connaître les planches à préparer, la fertilisation et le paillage à utiliser !").'</p>';
+			echo '<p>'.s("Lionel utilise Ouvretaferme depuis 2023 et notamment la boutique en ligne pour ses ventes directes et le système de facturation qui lui ont fait gagner des heures. Le planning de production lui permet également de travailler en équipe et notamment de connaître les planches à préparer, la fertilisation et le paillage à utiliser !").'</p>';
 		echo '</div>';
 
 		echo '<div class="home-profile">';
@@ -200,14 +200,20 @@ new AdaptativeView('logged', function($data, MainTemplate $t) {
 
 		echo new \main\HomeUi()->getFarms($data->cFarmUser);
 
-		echo new \main\HomeUi()->getTraining();
-
 		if(FEATURE_GAME) {
 			echo new \game\HelpUi()->getHome($data->ePlayer);
 		}
 
+		echo new \main\HomeUi()->getTraining();
+
 		if($data->cFarmUser->notEmpty()) {
 			echo new \main\HomeUi()->getBlog($data->cNews);
+		}
+
+	} else {
+
+		if(FEATURE_GAME) {
+			echo new \game\HelpUi()->getHome($data->ePlayer);
 		}
 
 	}

@@ -25,7 +25,7 @@ class PlayerUi {
 
 		return new \Panel(
 			id: 'panel-game-create',
-			title: \s("Commencer à jouer"),
+			title: s("Commencer à jouer"),
 			body: $h
 		);
 
