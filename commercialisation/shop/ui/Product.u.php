@@ -55,22 +55,27 @@ class ProductUi {
 
 				case 'department' :
 
-					$h .= '<div id="product-department-list">';
+					if(Shop::isEmbed() === FALSE) {
 
-						foreach($eShop['cDepartment'] as $eDepartment) {
+						$h .= '<div id="product-department-list">';
 
-							if($eDate['ccProduct']->offsetExists($eDepartment['id'])) {
+							foreach($eShop['cDepartment'] as $eDepartment) {
 
-								$h .= '<a onclick="BasketManage.clickDepartment(this);" class="shop-department-item" data-department="'.$eDepartment['id'].'">';
-									$h .= DepartmentUi::getVignette($eDepartment, '2.5rem');
-									$h .= encode($eDepartment['name']);
-								$h .= '</a>';
+								if($eDate['ccProduct']->offsetExists($eDepartment['id'])) {
+
+									$h .= '<a onclick="BasketManage.clickDepartment(this);" class="shop-department-item" data-department="'.$eDepartment['id'].'">';
+										$h .= DepartmentUi::getVignette($eDepartment, '2.5rem');
+										$h .= encode($eDepartment['name']);
+									$h .= '</a>';
+
+								}
 
 							}
 
-						}
+						$h .= '</div>';
 
-					$h .= '</div>';
+					}
+
 					$h .= $this->getListByDepartment($eShop['cDepartment'], $eDate['ccProduct'], $callback);
 
 					break;
