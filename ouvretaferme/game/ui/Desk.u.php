@@ -52,6 +52,42 @@ class DeskUi {
 
 	}
 
+	public function tabs(Player $ePlayer, \Collection $cPlayerRanking, \Collection $cPlayerFriend, \Collection $cGrowing, \Collection $cFood, \Collection $cHistory): string {
+
+		$h = '<div class="tabs-h" id="game-tabs" onrender="'.encode('Lime.Tab.restore(this, "game-crops")').'">';
+
+			$h .= '<div class="tabs-item">';
+				$h .= '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-crops">';
+					$h .= '<span class="hide-xs-down">'.s("Tableau des cultures").'</span>';
+					$h .= '<span class="hide-sm-up">'.s("Cultures").'</span>';
+				$h .= '</a>';
+				$h .= '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-friends">'.s("Amis").' <small class="tab-item-count">'.$cPlayerFriend->count().'</small></a>';
+				$h .= '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-rankings">'.s("Classements").'</a>';
+				$h .= '<a onclick="Lime.Tab.select(this)" class="tab-item hide-xs-down" data-tab="game-history">'.s("Historique").'</a>';
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="game-crops">';
+				$h .= new \game\HelpUi()->getCrops($cGrowing);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="game-friends">';
+				$h .= new \game\FriendUi()->display($cPlayerFriend, $ePlayer);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="game-rankings">';
+				$h .= new \game\PlayerUi()->getRankings($cPlayerRanking, $ePlayer, $cFood);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel" data-tab="game-history">';
+				$h .= new \game\HistoryUi()->display($cHistory);
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function dashboard(Player $ePlayer, \Collection $cGrowing, \Collection $cFood): string {
 
 		$cGrowingFood = $cGrowing->find(fn($eGrowing) => $eGrowing['harvest'] !== NULL);

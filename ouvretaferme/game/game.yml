@@ -59,7 +59,7 @@ Tile:
   tile: int8(1, 16)
   growing: ?game\Growing
   watering: ?int(0, null) = 0
-  plantedAt: ?datetime
+  seededAt: ?datetime
   harvestedAt: ?datetime
   UNIQUE: [
     ["user", "board", "tile"]

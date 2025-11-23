@@ -27,12 +27,12 @@ class ActionLib {
 				$eTile->merge([
 					'growing' => $eGrowing,
 					'watering' => ($eGrowing['bonusWatering'] === NULL ? NULL : 0),
-					'plantedAt' => new \Sql('NOW()'),
+					'seededAt' => new \Sql('NOW()'),
 					'harvestedAt' => $eGrowing['harvest'] ? new \Sql('NOW() + INTERVAL '.$eGrowing['days'].' DAY') : NULL
 				]);
 
 				Tile::model()
-					->select('growing', 'watering', 'plantedAt', 'harvestedAt')
+					->select('growing', 'watering', 'seededAt', 'harvestedAt')
 					->update($eTile);
 
 				$eHistory = new History([
@@ -165,7 +165,7 @@ class ActionLib {
 				Tile::model()->update($eTile, [
 					'growing' => new Growing(),
 					'watering' => NULL,
-					'plantedAt' => NULL,
+					'seededAt' => NULL,
 					'harvestedAt' => NULL
 				]);
 

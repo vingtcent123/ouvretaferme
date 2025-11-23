@@ -103,7 +103,7 @@ class HelpUi {
 			if($new) {
 				$h .= '<div class="game-intro-disclaimer">';
 					$h .= '<h2>'.s("Pour commencer").'</h2>';
-					$h .= '<p>'.s("Choisissez une parcelle sur votre terrain et implantez une première culture !").'</p>';
+					$h .= '<p>'.s("Choisissez une parcelle sur votre terrain et semez une première culture !").'</p>';
 				$h .= '</div>';
 			} else {
 				$h .= '<h3>'.s("Votre début de partie est une catastrophe ?").'</h3>';

@@ -42,12 +42,12 @@ class TileModel extends \ModuleModel {
 			'tile' => ['int8', 'min' => 1, 'max' => 16, 'cast' => 'int'],
 			'growing' => ['element32', 'game\Growing', 'null' => TRUE, 'cast' => 'element'],
 			'watering' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'plantedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'seededAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'harvestedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'board', 'tile', 'growing', 'watering', 'plantedAt', 'harvestedAt'
+			'id', 'user', 'board', 'tile', 'growing', 'watering', 'seededAt', 'harvestedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -107,8 +107,8 @@ class TileModel extends \ModuleModel {
 		return $this->where('watering', ...$data);
 	}
 
-	public function wherePlantedAt(...$data): TileModel {
-		return $this->where('plantedAt', ...$data);
+	public function whereSeededAt(...$data): TileModel {
+		return $this->where('seededAt', ...$data);
 	}
 
 	public function whereHarvestedAt(...$data): TileModel {

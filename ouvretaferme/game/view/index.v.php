@@ -33,6 +33,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 		echo new \game\HelpUi()->getRules(TRUE);
 
 		echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
+		echo new \game\DeskUi()->tabs($data->ePlayer, $data->cPlayerRanking, $data->cPlayerFriend, $data->cGrowing, $data->cFood, $data->cHistory);
 
 	} else {
 
@@ -64,36 +65,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cGrowing, $data->cFood);
 
 				echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
-
-				echo '<div class="tabs-h" id="game-tabs" onrender="'.encode('Lime.Tab.restore(this, "game-crops")').'">';
-
-					echo '<div class="tabs-item">';
-						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-crops">';
-							echo '<span class="hide-xs-down">'.s("Tableau des cultures").'</span>';
-							echo '<span class="hide-sm-up">'.s("Cultures").'</span>';
-						echo '</a>';
-						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-friends">'.s("Amis").' <small class="tab-item-count">'.$data->cPlayerFriend->count().'</small></a>';
-						echo '<a onclick="Lime.Tab.select(this)" class="tab-item" data-tab="game-rankings">'.s("Classements").'</a>';
-						echo '<a onclick="Lime.Tab.select(this)" class="tab-item hide-xs-down" data-tab="game-history">'.s("Historique").'</a>';
-					echo '</div>';
-
-					echo '<div class="tab-panel" data-tab="game-crops">';
-						echo new \game\HelpUi()->getCrops($data->cGrowing);
-					echo '</div>';
-
-					echo '<div class="tab-panel" data-tab="game-friends">';
-						echo new \game\FriendUi()->display($data->cPlayerFriend, $data->ePlayer);
-					echo '</div>';
-
-					echo '<div class="tab-panel" data-tab="game-rankings">';
-						echo new \game\PlayerUi()->getRankings($data->cPlayerRanking, $data->ePlayer, $data->cFood);
-					echo '</div>';
-
-					echo '<div class="tab-panel" data-tab="game-history">';
-						echo new \game\HistoryUi()->display($data->cHistory);
-					echo '</div>';
-
-				echo '</div>';
+				echo new \game\DeskUi()->tabs($data->ePlayer, $data->cPlayerRanking, $data->cPlayerFriend, $data->cGrowing, $data->cFood, $data->cHistory);
 
 				break;
 
