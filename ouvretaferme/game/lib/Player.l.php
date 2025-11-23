@@ -111,6 +111,9 @@ class PlayerLib extends PlayerCrud {
 				'id',
 				'name',
 				'points',
+				'user' => [
+					'role' => ['fqn']
+				]
 			])
 			->sort([
 				'points' => SORT_DESC,

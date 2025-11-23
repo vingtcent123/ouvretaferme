@@ -31,7 +31,7 @@ class FriendUi {
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th class="td-min-content text-end">'.s("Position").'</th>';
-					$h .= '<th>'.s("Joueur").'</th>';
+					$h .= '<th colspan="2">'.s("Joueur").'</th>';
 					$h .= '<th class="text-center">'.s("Rennes attirés 🦌").'</th>';
 					$h .= '<th class="td-min-content"></th>';
 				$h .= '</tr>';
@@ -44,6 +44,12 @@ class FriendUi {
 						$h .= '<td class="td-min-content text-end">'.\util\TextUi::th($position++).'</td>';
 						$h .= '<td>';
 							$h .= encode($ePlayer['name']);
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= match($ePlayer['user']['role']['fqn']) {
+								'customer' => '<span class="util-badge ml-1 bg-private">'.s("Client").'</span>',
+								default => '<span class="util-badge ml-1 bg-pro">'.s("Producteur").'</span>',
+							};
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
 							$h .= '<b>'.$ePlayer['points'].'</b>';

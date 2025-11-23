@@ -13,7 +13,11 @@ class FriendLib extends FriendCrud {
 		if($cFriend->notEmpty()) {
 
 			return Player::model()
-				->select(Player::getSelection())
+				->select(Player::getSelection() + [
+					'user' => [
+						'role' => ['fqn']
+					]
+				])
 				->whereUser('IN', $cFriend)
 				->sort([
 					'points' => SORT_DESC,

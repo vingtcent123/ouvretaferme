@@ -49,7 +49,7 @@ class PlayerUi {
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th class="text-end td-min-content">'.s("Position").'</th>';
-					$h .= '<th>'.s("Joueur").'</th>';
+					$h .= '<th colspan="2">'.s("Joueur").'</th>';
 					$h .= '<th class="text-center"></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
@@ -61,6 +61,12 @@ class PlayerUi {
 						$h .= '<td class="text-end"><b>'.\util\TextUi::th($ePlayer['position']).'</b></td>';
 						$h .= '<td>';
 							$h .= encode($ePlayer['name']);
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= match($ePlayer['user']['role']['fqn']) {
+								'customer' => '<span class="util-badge ml-1 bg-private">'.s("Client").'</span>',
+								default => '<span class="util-badge ml-1 bg-pro">'.s("Producteur").'</span>',
+							};
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
 							$h .= '<b>'.$ePlayer['points'].'</b>';
