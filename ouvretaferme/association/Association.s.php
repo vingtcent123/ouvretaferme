@@ -12,7 +12,7 @@ class AssociationSetting extends \Settings {
 	// On peut adhérer pour l'année prochaine à partir du 1er octobre si on a déjà adhéré pour cette année
 	const CAN_JOIN_FOR_NEXT_YEAR_FROM = '10-01';
 
-	const IS_DONNER_PAGE_ACTIVE = FALSE;
+	const IS_DONNER_PAGE_ACTIVE = TRUE;
 
 }
 

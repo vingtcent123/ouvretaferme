@@ -574,7 +574,14 @@ class ProductLib extends ProductCrud {
 
 	public static function applyIndexing(Shop $eShop, Date $eDate, \Collection $cProduct): void {
 
-		$eDate['productsApproximate'] = $eShop->isApproximate() ? $cProduct->contains(fn($eProduct) => ($eProduct['product']['unit']->notEmpty() and $eProduct['product']['unit']['approximate'])) : FALSE;
+		$eDate['productsApproximate'] = (
+			$eShop->isApproximate() and
+			$cProduct->contains(fn($eProduct) => (
+				$eProduct['product']->notEmpty() and
+				$eProduct['product']['unit']->notEmpty() and
+				$eProduct['product']['unit']['approximate'])
+			)
+		);
 
 		if($eShop['shared']) {
 

@@ -90,13 +90,14 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block mb-2">';
-				$h .= '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme, vous débloquez les deux bonus suivants :").'</p>';
+				$h .= '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme ou si vous avez fait un don pour soutenir l'association, vous débloquez les deux bonus suivants :").'</p>';
 				$h .= '<ul class="mb-1">';
 					$h .= '<li>'.s("{premium} heures de travail par jour au lieu de {value} heures", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';
 					$h .= '<li>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir {value} heures de temps de travail en plus", GameSetting::BONUS_SOUP).'</li>';
 				$h .= '</ul>';
 				$h .= '<p class="text-center">';
-					$h .= '<a href="/adherer" class="btn btn-game">'.s("Adhérer à l'association").'</a>';
+					$h .= '<a href="/adherer" class="btn btn-game">'.s("Adhérer à l'association").'</a> ';
+					$h .= '<a href="/donner" class="btn btn-outline-game">'.s("Faire un don").'</a>';
 				$h .= '</p>';
 			$h .= '</div>';
 

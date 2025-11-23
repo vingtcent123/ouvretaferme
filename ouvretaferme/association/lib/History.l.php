@@ -30,6 +30,26 @@ class HistoryLib extends HistoryCrud {
 			->get();
 	}
 
+	public static function hasDonate(\user\User $eUser, ?int $year): bool {
+
+		$eCustomer = \selling\Customer::model()
+			->select('id')
+			->whereFarm(AssociationSetting::FARM)
+			->whereUser($eUser)
+			->get();
+
+		if($eCustomer->empty()) {
+			return FALSE;
+		}
+
+		return History::model()
+			->whereCustomer($eCustomer)
+			->whereCreatedAt('LIKE', $year.'-%', if: $year !== NULL)
+			->whereStatus(History::VALID)
+			->exists();
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm): \Collection {
 
 		return History::model()

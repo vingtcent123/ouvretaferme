@@ -3,7 +3,7 @@ new Page()
 	->get('/donner', function($data) {
 
 		if(\association\AssociationSetting::IS_DONNER_PAGE_ACTIVE === FALSE) {
-			throw new RedirectAction(\association\AssociationSetting::FARM.'/nous-soutenir');
+			throw new RedirectAction(\association\AssociationSetting::URL.'/nous-soutenir');
 		}
 
 		$data->eHistory = new \association\History();

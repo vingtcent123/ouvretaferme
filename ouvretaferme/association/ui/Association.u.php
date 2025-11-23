@@ -50,8 +50,9 @@ class AssociationUi {
 
 		$h .= '</div>';
 
-
-		$h .= '<a class="btn btn-outline-primary" href="'.AssociationSetting::URL.'">'.s("Consulter le site de l'association").'</a>';
+		if(FEATURE_GAME) {
+			$h .= '<a class="btn btn-game" href="/jouer">'.s("Retourner sur le jeu").'</a>';
+		}
 
 
 		return $h;
@@ -60,17 +61,17 @@ class AssociationUi {
 
 	public function donationIntroduction(): string {
 
-		$h = '<div class="util-block-secondary">'.s("Tout d'abord, un grand merci pour votre démarche !").'</div>';
+		$h = '<div class="util-info">'.s("Tout d'abord, un grand merci pour votre démarche !").'</div>';
 
 		$h .= '<div class="util-summarize mb-2">';
 
 			$h .= '<p>'.s("Ouvretaferme est un logiciel mis à disposition gratuitement pour les producteurs et les productrices en agriculture biologique et développé entièrement bénévolement. Vos dons sont précieux pour le maintenir et le faire vivre.").'</p>';
 
-			$h .= '<a target="_blank" class="btn btn-outline-primary" href="'.AssociationSetting::URL.'/nous-soutenir">'.s("Lire plus d'informations sur l'association").' '.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a target="_blank" class="btn btn-secondary" href="'.AssociationSetting::URL.'/nous-soutenir">'.s("En savoir plus sur l'association").'</a>';
 
 		$h .= '</div>';
 
-				return $h;
+		return $h;
 
 	}
 

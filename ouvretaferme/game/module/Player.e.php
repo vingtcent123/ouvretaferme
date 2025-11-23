@@ -12,7 +12,12 @@ class Player extends PlayerElement {
 	public function isPremium(): bool {
 
 		if(self::$premium === NULL) {
-			self::$premium = \farm\FarmLib::getByUser($this['user'])->contains(fn($eFarm) => $eFarm['membership']);
+
+			self::$premium = (
+				\farm\FarmLib::getByUser($this['user'])->contains(fn($eFarm) => $eFarm['membership']) or
+				\association\HistoryLib::hasDonate($this['user'], date('Y'))
+			);
+
 		}
 
 		return self::$premium;
