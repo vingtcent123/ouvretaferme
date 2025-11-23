@@ -58,7 +58,7 @@ class PlayerUi {
 				foreach($cPlayer as $ePlayer) {
 
 					$h .= '<tr '.($ePlayer->is($ePlayerOnline) ? 'style="background-color: #0001"' : '').'>';
-						$h .= '<td class="text-end"><b>'.$ePlayer['position'].'.</b></td>';
+						$h .= '<td class="text-end"><b>'.\util\TextUi::th($ePlayer['position']).'</b></td>';
 						$h .= '<td>';
 							$h .= encode($ePlayer['name']);
 						$h .= '</td>';

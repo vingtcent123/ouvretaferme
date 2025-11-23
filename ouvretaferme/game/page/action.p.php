@@ -39,6 +39,13 @@ new \game\TilePage(function($data) {
 		}
 
 	})
+	->applyElement(function($data, \game\Tile $e) {
+
+		if($e['board'] > $data->ePlayer->getBoards()) {
+			throw new NotExpectedAction('Invalid board');
+		}
+
+	})
 	->write('doSeedling', function($data) {
 
 		$data->eGrowing = \game\GrowingLib::getById(POST('growing'))->validate();

@@ -80,7 +80,6 @@ class DeskUi {
 
 					$hasFood = FALSE;
 					$minFood = NULL;
-					$soup = NULL;
 					$canCook = $cFood->find(fn($eFood) => ($eFood['growing']->notEmpty() and $eFood['current'] > 0))->count() === $cGrowingFood->count();
 
 					foreach($cFood as $eFood) {
