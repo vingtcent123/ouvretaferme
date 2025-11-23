@@ -446,6 +446,12 @@ a.game-tile-action {
 	color: white;
 }
 
+.game-tile-action-label {
+	font-size: 0.8rem;
+	margin-top: 0.125rem;
+	color: #fffa;
+}
+
 .game-tile-action-start {
 	font-size: 1.5rem;
 }

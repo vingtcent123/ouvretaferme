@@ -94,7 +94,18 @@ class TileUi {
 				$h .= '<span>'.GameSetting::EMOJI_SEEDLING.'  '.s("Semer").'</span>';
 				$h .= '<span>'.\Asset::icon('clock').'  '.PlayerUi::getTime(GameSetting::TIME_PLANTING).'</span>';
 			$h .= '</div>';
+
+			$eGrowingBefore = NULL;
+
 			foreach($cGrowing as $eGrowing) {
+
+				if(
+					$eGrowing['harvest'] === NULL and
+					$eGrowingBefore['harvest'] !== NULL
+				) {
+					$h .= '<div class="dropdown-divider""></div>';
+					$h .= '<div class="dropdown-subtitle"">'.s("Plantes compagnes").'</div>';
+				}
 
 				$can = (
 					$ePlayer->canTime(1) and
@@ -104,7 +115,20 @@ class TileUi {
 					)
 				);
 
-				$h .= '<a data-ajax="/game/action:doSeedling" post-id="'.$e['id'].'" post-growing="'.$eGrowing['id'].'" class="'.($can ? '' : 'disabled').' dropdown-item">'.GrowingUi::getVignette($eGrowing, '2rem').'  '.$eGrowing['name'].'</a>';
+				$h .= '<a data-ajax="/game/action:doSeedling" post-id="'.$e['id'].'" post-growing="'.$eGrowing['id'].'" class="'.($can ? '' : 'disabled').' dropdown-item">';
+					$h .= '<div class="flex-align-center">';
+						$h .= GrowingUi::getVignette($eGrowing, '2rem');
+						$h .= '<div>';
+							$h .= $eGrowing['name'];
+							if($eGrowing['harvest'] !== NULL) {
+								$h .= '<div class="game-tile-action-label">'.GameSetting::EMOJI_HARVEST.' '.s("Récolté en {value} jours", $eGrowing['days']).'</div>';
+							}
+						$h .= '</div>';
+					$h .= '</div>';
+				$h .= '</a>';
+
+				$eGrowingBefore = $eGrowing;
+
 			}
 		$h .= '</div>';
 

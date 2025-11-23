@@ -111,7 +111,7 @@ class DeskUi {
 			$h .= '</div>';
 
 			$h .= '<div class="game-dashboard-element" style="grid-area: production">';
-				$h .= '<div class="game-dashboard-value game-dashboard-production game-dashboard-value-list">';
+				$h .= '<div class="game-dashboard-value game-dashboard-value-list">';
 
 					$minFood = NULL;
 					$canCook = $cFood->find(fn($eFood) => ($eFood['growing']->notEmpty() and $eFood['current'] > 0))->count() === $cGrowingFood->count();
@@ -120,13 +120,11 @@ class DeskUi {
 
 						if($eFood['growing']->notEmpty()) {
 
-
 							$h .= '<div class="game-dashboard-item">';
 								$h .= GrowingUi::getVignette($eFood['growing'], '1.5rem').'  '.$eFood['current'];
 							$h .= '</div>';
 
 							$minFood = ($minFood === NULL) ? $eFood['current'] : min($eFood['current'], $minFood);
-
 
 						} else {
 

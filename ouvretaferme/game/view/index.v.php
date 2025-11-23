@@ -32,6 +32,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 
 		echo new \game\HelpUi()->getRules(TRUE);
 
+		echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cGrowing, $data->cFood);
 		echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
 		echo new \game\DeskUi()->tabs($data->ePlayer, $data->cPlayerRanking, $data->cPlayerFriend, $data->cGrowing, $data->cFood, $data->cHistory);
 
@@ -63,7 +64,6 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 			default :
 
 				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cGrowing, $data->cFood);
-
 				echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
 				echo new \game\DeskUi()->tabs($data->ePlayer, $data->cPlayerRanking, $data->cPlayerFriend, $data->cGrowing, $data->cFood, $data->cHistory);
 
