@@ -80,35 +80,45 @@ class PlayerUi {
 
 		$h .= '<h3>'.S("Votre production").'</h3>';
 
-		$h .= '<table class="game-table tr-bordered">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th colspan="2">'.s("Légume").'</th>';
-					$h .= '<th class="text-center">'.s("Total produit").'</th>';
-					$h .= '<th class="text-center td-min-content">'.s("Position").'</th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
-			$h .= '<tbody>';
+		if($cFood->contains(fn($eFood) => $eFood['total'] > 0)) {
 
-				foreach($cFood as $eFood) {
-
+			$h .= '<table class="game-table tr-bordered">';
+				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<td class="td-min-content">';
-							$h .= $eFood['growing']->empty() ? \Asset::icon('cup-hot', ['class' => 'asset-icon-lg']) : GrowingUi::getVignette($eFood['growing'], '2rem');
-						$h .= '</td>';
-						$h .= '<td>';
-							$h .= $eFood['growing']->empty() ? s("Soupe") : $eFood['growing']['name'];
-						$h .= '</td>';
-						$h .= '<td class="text-center">';
-							$h .= '<b>'.$eFood['total'].'</b>';
-						$h .= '</td>';
-						$h .= '<td class="text-center">';
-							$h .= '<b>'.\util\TextUi::th($eFood['position']).'</b>';
-						$h .= '</td>';
+						$h .= '<th colspan="2">'.s("Légume").'</th>';
+						$h .= '<th class="text-center">'.s("Total produit").'</th>';
+						$h .= '<th class="text-center td-min-content">'.s("Position").'</th>';
 					$h .= '</tr>';
-				}
-			$h .= '</tbody>';
-		$h .= '</table>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
+
+					foreach($cFood as $eFood) {
+
+						if($eFood['total'] === 0) {
+							continue;
+						}
+
+						$h .= '<tr>';
+							$h .= '<td class="td-min-content">';
+								$h .= $eFood['growing']->empty() ? \Asset::icon('cup-hot', ['class' => 'asset-icon-lg']) : GrowingUi::getVignette($eFood['growing'], '2rem');
+							$h .= '</td>';
+							$h .= '<td>';
+								$h .= $eFood['growing']->empty() ? s("Soupe") : $eFood['growing']['name'];
+							$h .= '</td>';
+							$h .= '<td class="text-center">';
+								$h .= '<b>'.$eFood['total'].'</b>';
+							$h .= '</td>';
+							$h .= '<td class="text-center">';
+								$h .= '<b>'.\util\TextUi::th($eFood['position']).'</b>';
+							$h .= '</td>';
+						$h .= '</tr>';
+					}
+				$h .= '</tbody>';
+			$h .= '</table>';
+
+		} else {
+			$h .= '<div class="util-empty">'.s("Vous n'avez pas encore produit de légume !").'</div>';
+		}
 
 		return $h;
 

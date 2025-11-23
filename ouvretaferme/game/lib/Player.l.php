@@ -123,7 +123,10 @@ class PlayerLib extends PlayerCrud {
 			])
 			->getCollection(0, 20);
 		
-		if($cPlayer->contains(fn($ePlayer) => $ePlayerOnline->is($ePlayer)) === FALSE) {
+		if(
+			$cPlayer->contains(fn($ePlayer) => $ePlayerOnline->is($ePlayer)) === FALSE and
+			$ePlayerOnline['points'] > 0
+		) {
 
 			$cPlayer[] = (clone $ePlayerOnline)->merge([
 				'position' => Player::model()
