@@ -111,9 +111,8 @@ class DeskUi {
 			$h .= '</div>';
 
 			$h .= '<div class="game-dashboard-element" style="grid-area: production">';
-				$h .= '<div class="game-dashboard-value game-dashboard-value-list">';
+				$h .= '<div class="game-dashboard-value game-dashboard-production game-dashboard-value-list">';
 
-					$hasFood = FALSE;
 					$minFood = NULL;
 					$canCook = $cFood->find(fn($eFood) => ($eFood['growing']->notEmpty() and $eFood['current'] > 0))->count() === $cGrowingFood->count();
 
@@ -121,16 +120,13 @@ class DeskUi {
 
 						if($eFood['growing']->notEmpty()) {
 
-							if($eFood['current'] > 0) {
 
-								$h .= '<div class="game-dashboard-item">';
-									$h .= GrowingUi::getVignette($eFood['growing'], '1.5rem').'  '.$eFood['current'];
-								$h .= '</div>';
+							$h .= '<div class="game-dashboard-item">';
+								$h .= GrowingUi::getVignette($eFood['growing'], '1.5rem').'  '.$eFood['current'];
+							$h .= '</div>';
 
-								$hasFood = TRUE;
-								$minFood = ($minFood === NULL) ? $eFood['current'] : min($eFood['current'], $minFood);
+							$minFood = ($minFood === NULL) ? $eFood['current'] : min($eFood['current'], $minFood);
 
-							}
 
 						} else {
 
@@ -184,8 +180,6 @@ class DeskUi {
 										}
 									$h .= '</div>';
 
-									$hasFood = TRUE;
-
 								$h .= '</div>';
 
 							}
@@ -194,11 +188,8 @@ class DeskUi {
 
 					}
 
-					if($hasFood === FALSE) {
-						$h .= '<div class="game-dashboard-item">'.s("Pas encore de production").'</div>';
-					}
-
 				$h .= '</div>';
+
 			$h .= '</div>';
 
 			$h .= '<div class="game-dashboard-element" style="grid-area: points">';
