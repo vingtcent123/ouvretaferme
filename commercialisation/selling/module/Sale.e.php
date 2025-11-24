@@ -75,7 +75,12 @@ class Sale extends SaleElement {
 
 		$this->expects(['profile', 'price', 'preparationStatus']);
 
-		return $this->isMarketSale() and $this['price'] > 0 and $this['preparationStatus'] === Sale::DELIVERED;
+		return (
+			$this->isMarketSale() and
+			$this['price'] > 0 and
+			$this['preparationStatus'] === Sale::DELIVERED and
+			$this['closed'] === FALSE
+		);
 
 	}
 
@@ -220,7 +225,7 @@ class Sale extends SaleElement {
 	public function acceptUpdateCustomer(): bool {
 		return (
 			$this->isComposition() === FALSE and
-			$this->isClosed() === FALSE and
+			$this['closed'] === FALSE and
 			$this['shopShared'] === FALSE
 		);
 	}
@@ -236,6 +241,7 @@ class Sale extends SaleElement {
 		$this->expects(['profile']);
 
 		return (
+			$this['closed'] === FALSE and
 			$this->isMarketSale() and
 			$this['preparationStatus'] === Sale::DRAFT
 		);
@@ -251,6 +257,7 @@ class Sale extends SaleElement {
 			$this->isComposition() === FALSE and
 			($this['cPayment']->empty() or $this->isPaymentOnline() === FALSE) and
 			$this['preparationStatus'] !== Sale::CANCELED and
+			$this['closed'] === FALSE and
 			$this['invoice']->empty()
 		);
 
@@ -339,16 +346,15 @@ class Sale extends SaleElement {
 		if($this->isComposition()) {
 			return $this->acceptUpdateComposition() === FALSE;
 		} else {
-			return in_array($this['preparationStatus'], [Sale::CANCELED, Sale::DELIVERED, Sale::BASKET, Sale::CLOSED]);
+			return (
+				$this['closed'] or
+				in_array($this['preparationStatus'], [Sale::CANCELED, Sale::DELIVERED, Sale::BASKET])
+			);
 		}
 	}
 
 	public function isOpen(): bool {
 		return $this->isLocked() === FALSE;
-	}
-
-	public function isClosed(): bool {
-		return $this['preparationStatus'] === Sale::CLOSED;
 	}
 
 	public function acceptUpdateItems(): bool {
@@ -748,6 +754,7 @@ class Sale extends SaleElement {
 	public function acceptStatusPrepared(): bool {
 
 		return (
+			$this['closed'] === FALSE and
 			$this->acceptUpdatePreparationStatus() and
 			$this->isMarket() === FALSE and
 			$this->isMarketSale() === FALSE and
@@ -759,6 +766,7 @@ class Sale extends SaleElement {
 	public function acceptStatusDelivered(): bool {
 
 		return (
+			$this['closed'] === FALSE and
 			$this->acceptUpdatePreparationStatus() and
 			$this->isMarket() === FALSE and
 			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT] : [Sale::CONFIRMED, Sale::PREPARED, Sale::DRAFT])
@@ -769,6 +777,7 @@ class Sale extends SaleElement {
 	public function acceptStatusSelling(): bool {
 
 		return (
+			$this['closed'] === FALSE and
 			$this->isMarket() and
 			in_array($this['preparationStatus'], [Sale::CONFIRMED, Sale::DELIVERED])
 		);
@@ -777,7 +786,10 @@ class Sale extends SaleElement {
 
 	public function acceptStatusConfirmed(): bool {
 
-		if(in_array($this['preparationStatus'], $this->isMarketSale() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED, Sale::EXPIRED]) === FALSE) {
+		if(
+			$this['closed'] or
+			in_array($this['preparationStatus'], $this->isMarketSale() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED, Sale::EXPIRED]) === FALSE
+		) {
 			return FALSE;
 		}
 
@@ -798,7 +810,10 @@ class Sale extends SaleElement {
 
 	public function acceptStatusCanceled(): bool {
 
-		if(in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE) {
+		if(
+			$this['closed'] or
+			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE
+		) {
 			return FALSE;
 		}
 

@@ -314,7 +314,7 @@ class SaleLib {
 
 		return (
 			$eSale['cPayment']->empty() or
-			$eSale['cPayment']->find(fn($ePayment) => $ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD)->empty()
+			$eSale['cPayment']->contains(fn($ePayment) => ($ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and in_array($ePayment['onlineStatus'], [\selling\Payment::EXPIRED, \selling\Payment::FAILURE]) === FALSE)) === FALSE
 		);
 
 	}

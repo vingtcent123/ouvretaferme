@@ -17,7 +17,7 @@ class MarketLib {
 			])
 			->whereProfile(Sale::MARKET)
 			->wherePriceIncludingVat('!=', NULL)
-			->wherePreparationStatus('IN', [Sale::CLOSED, Sale::SELLING])
+			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::SELLING])
 			->whereDeliveredAt($comparator, $eSale['deliveredAt'])
 			->whereFarm($eSale['farm'])
 			->whereCustomer($eSale['customer'])
@@ -215,10 +215,30 @@ class MarketLib {
 			return;
 		}
 
-		$eSale['oldPreparationStatus'] = Sale::SELLING;
-		$eSale['preparationStatus'] = Sale::CLOSED;
+		Sale::model()->beginTransaction();
 
-		SaleLib::update($eSale, ['preparationStatus']);
+			$eSale['oldPreparationStatus'] = Sale::SELLING;
+			$eSale['preparationStatus'] = Sale::DELIVERED;
+			$eSale['closed'] = TRUE;
+
+			SaleLib::update($eSale, ['preparationStatus', 'closed']);
+
+			$cSaleMarket = Sale::model()
+				->select(SaleElement::getSelection())
+				->whereFarm($eSale['farm'])
+				->whereMarketParent($eSale)
+				->wherePreparationStatus(Sale::DELIVERED)
+				->getCollection();
+
+			foreach($cSaleMarket as $eSaleMarket) {
+
+				$eSaleMarket['closed'] = TRUE;
+
+				SaleLib::update($eSaleMarket, ['closed']);
+
+			}
+
+		Sale::model()->commit();
 
 	}
 
@@ -240,6 +260,7 @@ class MarketLib {
 			self::doPaymentStatusMarketSale($eSale, Sale::PAID);
 
 		Sale::model()->commit();
+
 	}
 
 	public static function doNotPaidMarketSale(Sale $eSale): void {
@@ -311,6 +332,10 @@ class MarketLib {
 			->setTo($email)
 			->setContent(...\shop\MailUi::getSaleMarketTicket($eSale))
 			->send();
+
+		$eSale['closed'] = TRUE;
+
+		SaleLib::update($eSale, ['closed']);
 
 	}
 }

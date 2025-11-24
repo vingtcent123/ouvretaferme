@@ -26,7 +26,6 @@ abstract class SaleElement extends \Element {
 	const DELIVERED = 'delivered';
 	const CANCELED = 'canceled';
 	const EXPIRED = 'expired';
-	const CLOSED = 'closed';
 
 	const NOT_PAID = 'not-paid';
 	const PAID = 'paid';
@@ -85,7 +84,10 @@ class SaleModel extends \ModuleModel {
 			'shippingVatFixed' => ['bool', 'cast' => 'bool'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
-			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::CLOSED], 'cast' => 'enum'],
+			'closed' => ['bool', 'cast' => 'bool'],
+			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED, \selling\Sale::EXPIRED], 'cast' => 'enum'],
 			'paymentStatus' => ['enum', [\selling\Sale::NOT_PAID, \selling\Sale::PAID], 'null' => TRUE, 'cast' => 'enum'],
 			'onlinePaymentStatus' => ['enum', [\selling\Sale::INITIALIZED, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
@@ -117,12 +119,13 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 			'customer' => 'selling\Customer',
+			'closedBy' => 'user\User',
 			'compositionOf' => 'selling\Product',
 			'marketParent' => 'selling\Sale',
 			'invoice' => 'selling\Invoice',
@@ -166,6 +169,9 @@ class SaleModel extends \ModuleModel {
 				return 0;
 
 			case 'shippingVatFixed' :
+				return FALSE;
+
+			case 'closed' :
 				return FALSE;
 
 			case 'preparationStatus' :
@@ -332,6 +338,18 @@ class SaleModel extends \ModuleModel {
 
 	public function whereShippingExcludingVat(...$data): SaleModel {
 		return $this->where('shippingExcludingVat', ...$data);
+	}
+
+	public function whereClosed(...$data): SaleModel {
+		return $this->where('closed', ...$data);
+	}
+
+	public function whereClosedAt(...$data): SaleModel {
+		return $this->where('closedAt', ...$data);
+	}
+
+	public function whereClosedBy(...$data): SaleModel {
+		return $this->where('closedBy', ...$data);
 	}
 
 	public function wherePreparationStatus(...$data): SaleModel {

@@ -3,10 +3,11 @@ new AdaptativeView('/vente/{id}/marche', function($data, MarketTemplate $t) {
 
 	echo '<h2 class="mt-2 text-center">';
 
-		echo match($data->e['preparationStatus']) {
-			\selling\Sale::CLOSED => s("Cette vente est clôturée !"),
-			default => OTF_DEMO ? s("Bienvenue sur le logiciel de caisse de démonstration, à vous de jouer !") : s("Bienvenue sur le logiciel de caisse, à vous de jouer !")
-		};
+		if($data->e['closed']) {
+			echo s("Cette vente est clôturée !");
+		} else {
+			echo OTF_DEMO ? s("Bienvenue sur le logiciel de caisse de démonstration, à vous de jouer !") : s("Bienvenue sur le logiciel de caisse, à vous de jouer !");
+		}
 
 	echo '</h2>';
 

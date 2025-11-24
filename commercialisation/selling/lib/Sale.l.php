@@ -378,7 +378,7 @@ class SaleLib extends SaleCrud {
 			])
 			->whereFarm($eFarm)
 			->whereType($type, if: $type !== NULL)
-			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED, Sale::CLOSED])
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
 			->whereDeliveredAt($sign, currentDate())
 			->whereStats(TRUE)
 			->group('deliveredAt')
@@ -424,7 +424,7 @@ class SaleLib extends SaleCrud {
 			->select(Sale::getSelection())
 			->whereFarm($eFarm)
 			->whereDeliveredAt($date)
-			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CLOSED])
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereStats(TRUE)
 			->getCollection(NULL, NULL, 'id');
 
@@ -514,7 +514,7 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)
 			->whereProfile('IN', [Sale::SALE, Sale::SALE_MARKET])
-			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::CLOSED])
+			->wherePreparationStatus(Sale::DELIVERED)
 			->or(
 			fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
 			fn() => $this->wherePaymentStatus(NULL)
@@ -558,7 +558,7 @@ class SaleLib extends SaleCrud {
 				'createdBy' => ['firstName', 'lastName', 'vignette'],
 				'cPayment' => PaymentLib::delegateBySale()
 			])
-			->whereFarm($eSale['farm']['id'])
+			->whereFarm($eSale['farm'])
 			->whereMarketParent($eSale)
 			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::CANCELED.'") ASC, createdAt DESC'))
 			->getCollection(NULL, NULL, $indexByStatus ? ['preparationStatus', NULL] : NULL);
@@ -934,6 +934,20 @@ class SaleLib extends SaleCrud {
 
 		}
 
+		if(in_array('closed', $properties)) {
+
+			if($e['closed'] === FALSE) {
+				throw new \Exception("Impossible de rouvrir une vente");
+			}
+
+			$e['closedAt'] = new \Sql('NOW()');
+			$e['closedBy'] = \user\ConnectionLib::getOnline();
+
+			$properties[] = 'closedAt';
+			$properties[] = 'closedBy';
+
+		}
+
 		if(in_array('shopPointPermissive', $properties)) {
 
 			$properties[] = 'shopPoint';
@@ -994,7 +1008,7 @@ class SaleLib extends SaleCrud {
 
 			if(
 				$e['oldPreparationStatus'] === Sale::DELIVERED and
-				$e['preparationStatus'] !== Sale::CLOSED and
+				$e['closed'] === FALSE and
 				$e['paymentStatus'] === Sale::PAID
 			) {
 

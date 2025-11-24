@@ -301,8 +301,6 @@ class MarketUi {
 
 				if($eSaleMarket->isMarketSelling()) {
 
-					$reopenButton = '<a data-ajax="/selling/sale:doUpdateDraftCollection" post-ids="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
-
 					switch($eSale['preparationStatus']) {
 
 						case Sale::DRAFT :
@@ -319,7 +317,7 @@ class MarketUi {
 									} else {
 										$more .= '<a data-ajax="/selling/market:doNotPaidMarketSale" post-id="'.$eSale['id'].'" data-confirm="'.s("Cette vente sera sortie du logiciel de caisse et vous pourrez la gérer directement depuis la page de vos ventes. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Vente en paiement différé").'</a>';
 									}
-									$more .= '<a data-ajax="/selling/sale:doUpdateCanceledCollection" post-ids="'.$eSale['id'].'" data-confirm="'.s("Voulez-vous réellement annuler cette vente ?").'" class="dropdown-item">'.s("Vente annulée").'</a>';
+									$more .= '<a data-ajax="/selling/sale:doUpdateCanceledCollection" post-ids="'.$eSale['id'].'" data-confirm="'.s("L'annulation d'une vente est définitive. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Vente annulée").'</a>';
 								$more .= '</div>';
 
 								$buttons[] = $more;
@@ -329,7 +327,11 @@ class MarketUi {
 
 						case Sale::CANCELED :
 						case Sale::DELIVERED :
-							$buttons[] = $reopenButton;
+							if($eSale['closed']) {
+								$buttons[] = \Asset::icon('lock-fill').' '.s("Vente clôturée");
+							} else {
+								$buttons[] = '<a data-ajax="/selling/sale:doUpdateDraftCollection" post-ids="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Voulez-vous réellement remettre cette vente en cours ?").'">'.s("Repasser en cours").'</a> ';
+							}
 							break;
 
 					}
@@ -758,8 +760,12 @@ class MarketUi {
 
 				$h .= $form->hidden('id', $eSaleMarket['id']);
 
+				$h .= '<div class="util-block-help">';
+					$h .= s("Lorsque vous aurez envoyé le ticket au client par e-mail, la vente sera clôturée et ne pourra plus être modifiée.");
+				$h .= '</div>';
+
 				$h .= $form->group(
-					label: s("E-mail"),
+					label: s("E-mail du client"),
 					content: $form->email('email', $eSaleMarket['customer']->empty() ? '' : ($eSaleMarket['customer']['email'] ?? '')),
 				);
 

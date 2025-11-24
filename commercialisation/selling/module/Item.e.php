@@ -6,7 +6,7 @@ class Item extends ItemElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'sale' => ['farm', 'hasVat', 'profile', 'type', 'taxes', 'discount', 'shippingVatRate', 'shippingVatFixed', 'document', 'preparationStatus', 'shop', 'shopShared', 'marketParent', 'compositionOf', 'compositionEndAt', 'shipping', 'deliveredAt', 'customer'],
+			'sale' => SaleElement::getSelection(),
 			'customer' => ['name', 'type'],
 			'farm' => ['name'],
 			'unit' => \selling\Unit::getSelection(),
@@ -45,7 +45,9 @@ class Item extends ItemElement {
 		if($this['sale']->isComposition()) {
 			return $this['sale']->acceptUpdateComposition();
 		} else {
-			return in_array($this['sale']['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED]);
+			return (
+				in_array($this['sale']['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED])
+			);
 		}
 
 	}

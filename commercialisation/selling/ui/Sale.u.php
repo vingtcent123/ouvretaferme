@@ -888,8 +888,8 @@ class SaleUi {
 			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 		}
 
-		if($eSale['preparationStatus'] === Sale::CLOSED) {
-			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il n'est pas possible de modifier une vente clôturée.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
+		if($eSale['closed']) {
+			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-closed-button" title="'.s("Il n'est pas possible de modifier une vente clôturée.").'">'.s("Clôturé").'  '.\Asset::icon('lock-fill').'</span>';
 		}
 
 		if(
@@ -1297,7 +1297,7 @@ class SaleUi {
 
 		$h = '';
 
-		if($eSale->isClosed()) {
+		if($eSale['closed']) {
 			$h .= '<div class="sale-closed">';
 				$h .= \Asset::icon('lock-fill').' ';
 				if($eSale->isMarket()) {
@@ -1416,7 +1416,7 @@ class SaleUi {
 			$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">';
 				$primaryList .= match($eSale->isComposition()) {
 					TRUE => s("Modifier la composition"),
-					FALSE => $eSale->isClosed() ? s("Commenter la vente") : s("Modifier la vente"),
+					FALSE => $eSale['closed'] ? s("Commenter la vente") : s("Modifier la vente"),
 				};
 			$primaryList .= '</a>';
 		}
@@ -2384,7 +2384,6 @@ class SaleUi {
 					Sale::PREPARED => s("Préparé"),
 					Sale::DELIVERED => s("Livré"),
 					Sale::CANCELED => s("Annulé"),
-					Sale::CLOSED => s("Clôturé"),
 				];
 				$d->shortValues = [
 					Sale::DRAFT => s("B"),
@@ -2395,7 +2394,6 @@ class SaleUi {
 					Sale::PREPARED => s("P"),
 					Sale::DELIVERED => s("L"),
 					Sale::CANCELED => s("A"),
-					Sale::CLOSED => s("C"),
 				];
 				break;
 
