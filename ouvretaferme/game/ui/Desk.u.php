@@ -19,7 +19,7 @@ class DeskUi {
 
 		$h = '<div class="game-boards">';
 			for($position = 1; $position <= GameSetting::BOARDS; $position++) {
-				$h .= '<a href="/jouer?board='.$position.''.$player.'" class="btn '.($board === $position ? 'btn-primary' : '').' game-board btn-lg">';
+				$h .= '<a href="/jouer?board='.$position.''.$player.'" class="btn '.($board === $position ? 'btn-primary' : '').' '.($ePlayer->getBoards() >= $position ? '' : 'disabled').' game-board btn-lg">';
 					$h .= s("Plateau");
 					$h .= '<div class="game-board-label">'.\Asset::icon($position.'-circle-fill').'</div>';
 				$h .= '</a>';

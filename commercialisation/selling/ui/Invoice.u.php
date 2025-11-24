@@ -356,6 +356,8 @@ class InvoiceUi {
 	}
 
 	public function create(Invoice $eInvoice, \Collection $cSale, \Collection $cSaleMore, \Search $search): \Panel {
+
+		$eInvoice->expects(['lastDate']);
 		
 		$body = $this->getGenerateBody(
 			$eInvoice,
@@ -447,6 +449,8 @@ class InvoiceUi {
 	}
 
 	public function createCollection(\farm\Farm $eFarm, string $month, ?string $type, Invoice $e, \Collection $cSale): \Panel {
+
+		$e->expects(['lastDate']);
 
 		$form = new \util\FormUi();
 
@@ -762,6 +766,10 @@ class InvoiceUi {
 					];
 				};
 				new CustomerUi()->query($d);
+				break;
+
+			case 'date' :
+				$d->labelAfter = fn(Invoice $e) => \util\FormUi::info($e['lastDate'] !== NULL ? s("Vous devez légalement respecter la chronologie des dates de facturation dans l'édition de vos factures. Compte tenu des factures que vous avez déjà générées, vous ne pouvez pas facturer antérieurement au {value}.", \util\DateUi::numeric($e['lastDate'])) : s("Vous devez légalement respecter la chronologie des dates de facturation dans l'édition de vos factures. Dès lors que vous aurez généré une première facture, vous ne pourrez plus générer d'autres factures à une date antérieure."));
 				break;
 
 			case 'paymentCondition' :

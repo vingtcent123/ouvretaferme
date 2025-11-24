@@ -1789,7 +1789,7 @@ class Element extends ArrayObject {
 
 				$onError = function() use($name, $property, $wrapper, &$success) {
 
-					$class = $this->getModule($this);
+					$class = $this->getModule();
 					$error = explode('.', $name)[1];
 
 					$class::fail($property.'.'.$error, [$this], wrapper: $wrapper);

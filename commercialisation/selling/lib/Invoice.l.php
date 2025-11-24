@@ -69,6 +69,14 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function getLastDate(\farm\Farm $eFarm): ?string {
+
+		return Invoice::model()
+			->whereFarm($eFarm)
+			->getValue(new \Sql('MAX(date)'));
+
+	}
+
 	public static function getByCustomer(Customer $eCustomer, bool $selectSales = FALSE): \Collection {
 
 		if($selectSales) {

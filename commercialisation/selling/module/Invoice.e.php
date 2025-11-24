@@ -200,6 +200,18 @@ class Invoice extends InvoiceElement {
 				return (count(array_unique($hasVat)) === 1);
 
 			})
+			->setCallback('date.future', function(string $date): bool {
+
+				return ($date <= currentDate());
+
+			})
+			->setCallback('date.past', function(string $date): bool {
+
+				$this['lastDate'] = \selling\InvoiceLib::getLastDate($this['farm']);
+
+				return ($this['lastDate'] === NULL or $date >= $this['lastDate']);
+
+			})
 			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {
 
 				if($eMethod->empty()) {
