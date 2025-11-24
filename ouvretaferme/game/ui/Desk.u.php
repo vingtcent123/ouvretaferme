@@ -15,16 +15,18 @@ class DeskUi {
 
 	public function play(Player $ePlayer, int $board, \Collection $cTile, \Collection $cGrowing): string {
 
+		$player = $ePlayer->isOnline() ? '' : '&player='.$ePlayer['id'];
+
 		$h = '<div class="game-boards">';
-			$h .= '<a href="/jouer?board=1" class="btn '.($board === 1 ? 'btn-primary' : '').' game-board btn-lg">';
+			$h .= '<a href="/jouer?board=1'.$player.'" class="btn '.($board === 1 ? 'btn-primary' : '').' game-board btn-lg">';
 				$h .= s("Plateau");
 				$h .= '<div class="game-board-label">'.\Asset::icon('1-circle-fill').'</div>';
 			$h .= '</a>';
-			$h .= '<a href="/jouer?board=2" class="btn '.($board === 2 ? 'btn-primary' : '').' '.($ePlayer->getBoards() <= 1 ? 'disabled' : '').' game-board btn-lg">';
+			$h .= '<a href="/jouer?board=2'.$player.'" class="btn '.($board === 2 ? 'btn-primary' : '').' '.($ePlayer->getBoards() <= 1 ? 'disabled' : '').' game-board btn-lg">';
 				$h .= s("Plateau");
 				$h .= '<div class="game-board-label">'.($ePlayer->getBoards() <= 1 ? \Asset::icon('lock-fill') : \Asset::icon('2-circle-fill')).'</div>';
 			$h .= '</a>';
-			$h .= '<a href="/jouer?board=3" class="btn '.($board === 3 ? 'btn-primary' : '').' '.($ePlayer->getBoards() <= 2 ? 'disabled' : '').' game-board btn-lg">';
+			$h .= '<a href="/jouer?board=3'.$player.'" class="btn '.($board === 3 ? 'btn-primary' : '').' '.($ePlayer->getBoards() <= 2 ? 'disabled' : '').' game-board btn-lg">';
 				$h .= s("Plateau");
 				$h .= '<div class="game-board-label">'.($ePlayer->getBoards() <= 2 ? \Asset::icon('lock-fill') : \Asset::icon('3-circle-fill')).'</div>';
 			$h .= '</a>';

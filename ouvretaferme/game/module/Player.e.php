@@ -13,6 +13,13 @@ class Player extends PlayerElement {
 		return ($this->empty() or $this['user']['role']['fqn'] === 'customer') ? 'customer' : 'farmer';
 	}
 
+	public function isOnline(): bool {
+		return (
+			$this->empty() === FALSE and
+			$this['user']->is(\user\ConnectionLib::getOnline())
+		);
+	}
+
 	public function isPremium(): bool {
 
 		if(self::$premium === NULL) {

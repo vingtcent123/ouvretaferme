@@ -1,7 +1,17 @@
 <?php
 new Page(function($data) {
 
-		$data->ePlayer = \game\PlayerLib::getOnline();
+		if(get_exists('player')) {
+
+			$data->ePlayer = \game\PlayerLib::getById(GET('player'))->validate();
+
+			if(\game\FriendLib::are($data->ePlayer) === FALSE) {
+				throw new NotExpectedAction();
+			}
+
+		} else {
+			$data->ePlayer = \game\PlayerLib::getOnline();
+		}
 
 	})
 	->get('/jouer', function($data) {
@@ -30,12 +40,17 @@ new Page(function($data) {
 
 		$data->cTile = \game\TileLib::getByBoard($data->ePlayer, $data->board);
 		$data->cGrowing = \game\GrowingLib::getAll();
-		$data->cFood = \game\FoodLib::getByPlayer($data->ePlayer);
-		$data->cHistory = \game\HistoryLib::getByPlayer($data->ePlayer);
-		$data->cPlayerRanking = \game\PlayerLib::getPointsRanking($data->ePlayer);
-		$data->cPlayerFriend = \game\FriendLib::getByPlayer($data->ePlayer);
 
-		\game\FoodLib::fillRankings($data->cFood);
+		if($data->ePlayer->isOnline()) {
+
+			$data->cFood = \game\FoodLib::getByPlayer($data->ePlayer);
+			$data->cHistory = \game\HistoryLib::getByPlayer($data->ePlayer);
+			$data->cPlayerRanking = \game\PlayerLib::getPointsRanking($data->ePlayer);
+			$data->cPlayerFriend = \game\FriendLib::getByPlayer($data->ePlayer);
+
+			\game\FoodLib::fillRankings($data->cFood);
+
+		}
 
 		throw new ViewAction($data);
 

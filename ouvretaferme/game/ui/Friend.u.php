@@ -55,6 +55,7 @@ class FriendUi {
 							$h .= '<b>'.$ePlayer['points'].'</b>';
 						$h .= '</td>';
 						$h .= '<td class="td-min-content">';
+							$h .= '<a href="/jouer?player='.$ePlayer['id'].'" class="btn btn-outline-secondary">'.s('Voir la partie').'</a> ';
 							$h .= '<a data-ajax="/game/action:doFriendRemove" class="btn btn-outline-danger" post-friend="'.$ePlayer['user']['id'].'" data-confirm="'.s("Fin de l'amitié ?").'">'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
 					$h .= '</tr>';

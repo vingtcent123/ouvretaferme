@@ -32,5 +32,15 @@ class FriendLib extends FriendCrud {
 
 	}
 
+	public static function are(Player $ePlayer): bool {
+
+		return Friend::model()
+			->whereUser(\user\ConnectionLib::getOnline())
+			->whereFriend($ePlayer['user'])
+			->exists();
+
+
+	}
+
 }
 ?>

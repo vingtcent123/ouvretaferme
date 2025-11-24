@@ -23,7 +23,17 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 		echo '<span class="hide-md-down"> 🦌</span>';
 	echo '</h1>';
 
-	if(get_exists('start')) {
+	if($data->ePlayer->isOnline() === FALSE) {
+
+		echo '<h2 class="text-center">'.encode($data->ePlayer['name']).'</h2>';
+
+		echo '<div class="game-menu">';
+			echo '<a href="/jouer" class="btn btn-lg btn-outline-game">'.s("Revenir sur ma partie").'</a>';
+		echo '</div>';
+
+		echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
+
+	} else if(get_exists('start')) {
 
 		echo '<div class="text-center mb-3 mt-3 font-xl" style="font-style: italic">';
 			echo s("Votre partie est bien créée, {value} !", encode($data->ePlayer['name'])).'<br/>';
