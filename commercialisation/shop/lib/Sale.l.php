@@ -421,12 +421,9 @@ class SaleLib {
 
 		\selling\Sale::model()->commit();
 
-
-		if($eShop->isShared()) {
-			$cItemLinearized = $ccItem->linearize();
-			$group = TRUE;
-			self::notify('saleUpdated', $eSaleReference, $cItemLinearized, $group);
-		}
+		$cItemLinearized = $ccItem->linearize();
+		$group = $eShop->isShared();
+		self::notify('saleUpdated', $eSaleReference, $cItemLinearized, $group);
 
 		return ShopUi::confirmationUrl($eShop, $eDate);
 
