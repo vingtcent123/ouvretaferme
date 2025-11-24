@@ -381,7 +381,7 @@ class SaleLib {
 						\selling\SaleLib::update($eSaleExisting, $properties);
 						\selling\ItemLib::createCollection($eSaleExisting, $cItem, replace: TRUE);
 
-						self::autoCreatePayment($eFarm, $eShop, $eSaleExisting);
+						\selling\HistoryLib::createBySale($eSaleExisting, 'sale-updated-customer');
 
 					} else {
 
