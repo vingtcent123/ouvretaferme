@@ -176,7 +176,7 @@ new JsonView('getWaiting', function($data, AjaxTemplate $t) {
 
 	if($data->cOperation->count() > 0) {
 		$t->qs('#waiting-operations-list')->innerHtml(new \journal\OperationUi()->listWaitingOperations($data->eFarm, $form, $data->cOperation));
-		$t->qs('#waiting-operations-list-info')->innerHtml(new \journal\OperationUi()->$this->letteringInfo());
+		$t->qs('#waiting-operations-list-info')->innerHtml(new \journal\OperationUi()->letteringInfo());
 		$t->qs('#waiting-operations-list-container')->removeHide();
 	}
 

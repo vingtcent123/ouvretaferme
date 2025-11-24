@@ -200,6 +200,7 @@ new \journal\OperationPage(
 
 		// Third party
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 		$data->e->merge([
 			'farm' => $data->eFarm,
@@ -211,9 +212,9 @@ new \journal\OperationPage(
 			'amount' => GET('amount', 'float'),
 			'cPaymentMethod' => $data->cPaymentMethod,
 			'cJournalCode' => \journal\JournalCodeLib::getAll(),
+			'financialYear' => $data->eFinancialYear,
 		]);
 
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll();
 
