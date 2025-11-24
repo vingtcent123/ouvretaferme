@@ -4,7 +4,7 @@ namespace overview;
 class IncomeStatementUi {
 
 	public function __construct() {
-		\Asset::css('overview', 'overview.css');
+		\Asset::css('overview', 'incomeStatement.css');
 	}
 
 	public function getTitle(): string {
@@ -104,7 +104,7 @@ class IncomeStatementUi {
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="tr-even overview tr-hover'.($hasComparison ? ' overview_has_previous' : '').'">';
+			$h .= '<table class="income-statement-table tr-even overview tr-hover'.($hasComparison ? ' overview_has_previous' : '').'">';
 
 				$h .= '<thead class="thead-sticky">';
 
