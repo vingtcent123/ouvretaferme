@@ -21,7 +21,7 @@ Class SuperPdpLib {
 
 		$data = json_decode($curl->exec(self::API_URL.'invoices', file_get_contents($filepath), 'POST', $options), TRUE);
 
-		if($data['http_status_code'] === 200) {
+		if(isset($data['id'])) {
 			return $data['id'];
 		}
 
@@ -35,11 +35,10 @@ Class SuperPdpLib {
 
 	}
 
-	public static function validateInvoice(string $accessToken, string $filepath): bool {
+	public static function validateInvoice(string $filepath): bool {
 
 		$options = [
 			CURLOPT_HTTPHEADER => [
-				'Authorization: Bearer '.$accessToken,
 				'Content-Type: multipart/form-data',
 			],
 			CURLOPT_RETURNTRANSFER => true,
@@ -52,11 +51,11 @@ Class SuperPdpLib {
 
 		$data = json_decode($curl->exec(self::API_URL.'validation_reports', $params, 'POST', $options), TRUE);
 
-		if($data['http_status_code'] !== 200) {
-			throw new \Exception('Unable to validate invoice '.$filepath.' to SuperPDP : '.$data['message']);
+		if($data === NULL or isset($data['data'][0]) === FALSE) {
+			throw new \Exception('Unable to validate invoice '.$filepath.' to SuperPDP');
 		}
 
-		return ($data[0]['is_valid'] ?? FALSE);
+		return ($data['data'][0]['is_valid'] ?? FALSE);
 
 	}
 
