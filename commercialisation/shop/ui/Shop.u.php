@@ -151,7 +151,7 @@ class ShopUi {
 
 				}
 
-				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email'.($eShop['shared'] ? '*' : ''), 'frequency', 'description'], [
+				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email'.($eShop['shared'] ? '*' : ''), 'openingFrequency', 'description'], [
 					'type*' => self::getTypeDescriber($eFarm, 'create')
 				]);
 
@@ -238,7 +238,7 @@ class ShopUi {
 
 		$h .= $form->hidden('id', $eShop['id']);
 
-		$update = ['name', 'type', 'fqn', 'email', 'frequency', 'approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
+		$update = ['name', 'type', 'fqn', 'email', 'openingFrequency', 'approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
 
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
@@ -1091,7 +1091,7 @@ class ShopUi {
 					$h .= s("Fréquence des ventes");
 				$h .= '</dt>';
 				$h .= '<dd>';
-					$h .= self::p('frequency')->values[$eShop['frequency']];
+					$h .= self::p('openingFrequency')->values[$eShop['openingFrequency']];
 				$h .= '</dd>';
 
 				if($eShop['shared'] === FALSE) {
@@ -1153,7 +1153,7 @@ class ShopUi {
 			'description' => s("Description de la boutique"),
 			'type' => s("Grille tarifaire"),
 			'fqn' => s('Adresse internet'),
-			'frequency' => s("Fréquence d'ouverture des ventes"),
+			'openingFrequency' => s("Fréquence des livraisons"),
 			'name' => s("Nom de la boutique"),
 			'logo' => s("Image de présentation"),
 			'paymentCard' => s("Activer le choix du paiement en ligne avec {icon} Stripe", ['icon' => \Asset::icon('stripe')]),
@@ -1261,7 +1261,7 @@ class ShopUi {
 				);
 				break;
 
-			case 'frequency':
+			case 'openingFrequency':
 				$d->values = [
 					Shop::BIMONTHLY => s("Bimensuelle"),
 					Shop::MONTHLY => s("Mensuelle"),

@@ -14,6 +14,9 @@ abstract class ShopElement extends \Element {
 	const DEPARTMENT = 'department';
 	const PRODUCT = 'product';
 
+	const CALENDAR = 'calendar';
+	const FREQUENCY = 'frequency';
+
 	const WEEKLY = 'weekly';
 	const BIMONTHLY = 'bimonthly';
 	const MONTHLY = 'monthly';
@@ -66,7 +69,8 @@ class ShopModel extends \ModuleModel {
 			'sharedGroup' => ['enum', [\shop\Shop::FARM, \shop\Shop::DEPARTMENT, \shop\Shop::PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
 			'sharedHash' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'sharedHashExpiresAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'frequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
+			'opening' => ['enum', [\shop\Shop::CALENDAR, \shop\Shop::FREQUENCY], 'cast' => 'enum'],
+			'openingFrequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
 			'hasPoint' => ['bool', 'cast' => 'bool'],
 			'hasPayment' => ['bool', 'cast' => 'bool'],
 			'paymentCard' => ['bool', 'cast' => 'bool'],
@@ -100,7 +104,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'frequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -120,7 +124,10 @@ class ShopModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'frequency' :
+			case 'opening' :
+				return Shop::FREQUENCY;
+
+			case 'openingFrequency' :
 				return Shop::WEEKLY;
 
 			case 'hasPoint' :
@@ -188,7 +195,10 @@ class ShopModel extends \ModuleModel {
 			case 'sharedGroup' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'frequency' :
+			case 'opening' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'openingFrequency' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'limitCustomers' :
@@ -273,8 +283,12 @@ class ShopModel extends \ModuleModel {
 		return $this->where('sharedHashExpiresAt', ...$data);
 	}
 
-	public function whereFrequency(...$data): ShopModel {
-		return $this->where('frequency', ...$data);
+	public function whereOpening(...$data): ShopModel {
+		return $this->where('opening', ...$data);
+	}
+
+	public function whereOpeningFrequency(...$data): ShopModel {
+		return $this->where('openingFrequency', ...$data);
 	}
 
 	public function whereHasPoint(...$data): ShopModel {

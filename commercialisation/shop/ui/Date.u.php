@@ -49,7 +49,7 @@ class DateUi {
 
 	private function calculateDates(Date $eDate, Date $eDateBase): void {
 
-		$frequency = $eDate['shop']['frequency'];
+		$frequency = $eDate['shop']['openingFrequency'];
 
 		// Calculer les dates en décalant si pertinent
 		if($frequency === Shop::WEEKLY) {

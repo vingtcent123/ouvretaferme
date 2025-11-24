@@ -4,13 +4,13 @@ namespace shop;
 class ShopLib extends ShopCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'shared'];
+		return ['fqn', 'name', 'type', 'email', 'description', 'openingFrequency', 'shared'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
 		return function($eShop) {
 
-			$properties = ['fqn', 'name', 'type', 'email', 'description', 'frequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
+			$properties = ['fqn', 'name', 'type', 'email', 'description', 'openingFrequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
 
 			if($eShop['paymentCard'] === FALSE) {
 				$properties[] = 'approximate';
