@@ -6,7 +6,7 @@ class Player extends PlayerElement {
 	private static ?bool $premium = NULL;
 
 	public function getBoards(): int {
-		return 1 + (int)(currentDate() >= '2025-12-01') + (int)(currentDate() >= '2025-12-10');
+		return 1 + (int)(currentDate() >= '2025-12-01') + (int)(currentDate() >= '2025-12-05') + (int)(currentDate() >= '2025-12-10');
 	}
 
 	public function getRole(): string {
