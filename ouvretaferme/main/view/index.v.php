@@ -303,7 +303,7 @@ new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', functi
 				echo 	s("À partir du 1<sup>er</sup> septembre 2027, elles seront tenues :");
 				echo '<ul>';
 					echo '<li>'.s("d'émettre leurs factures au format électronique (<i>e-invoicing</i>)").'</li>';
-					echo '<li>'.s("de transmettre le montant des opérations réalisées avec des clients particuliers ou certaines associations (<i>e-invoicing</i>)").'</li>';
+					echo '<li>'.s("de transmettre le montant des opérations réalisées avec des clients particuliers ou certaines associations (<i>e-reporting</i>)").'</li>';
 				echo '</ul>';
 			echo '</li>';
 		echo '</ul>';
