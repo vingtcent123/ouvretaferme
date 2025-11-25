@@ -30,7 +30,7 @@ div.market-top {
 	min-height: 6rem;
 	max-height: 8rem;
 	color: white;
-	min-width: 45rem;
+	min-width: 48rem;
 }
 
 div.market-top a {
@@ -54,7 +54,7 @@ a.market-top-close {
 @media (max-width: 767px) {
 
 	a.market-top-back {
-		font-size: 4vh;
+		font-size: 3vh;
 	}
 
 }
@@ -80,7 +80,7 @@ a.market-top-close {
 }
 
 a.market-top-back {
-	font-size: 5vh;
+	font-size: 4vh;
 }
 
 a.market-top-back:hover {
@@ -92,6 +92,7 @@ div.market-top-title {
 	justify-content: center;
 	flex-direction: column;
 	padding: 0.25rem 1rem;
+	overflow: hidden;
 }
 
 div.market-top-title h2 {
@@ -102,7 +103,7 @@ div.market-top-title h2 {
 @media (max-width: 767px) {
 
 	div.market-top-title h2 {
-		font-size: 1.4rem;
+		font-size: 1.3rem;
 	}
 
 }
@@ -110,7 +111,7 @@ div.market-top-title h2 {
 @media (min-width: 992px) {
 
 	div.market-top-title h2 {
-		font-size: 2.25rem;
+		font-size: 2rem;
 	}
 
 }
@@ -118,6 +119,14 @@ div.market-top-title h2 {
 div.market-top-title div.market-top-title-date {
 	color: var(--border);
 	font-size: 1.2rem;
+}
+
+@media (max-width: 767px) {
+
+	div.market-top-title div.market-top-title-date {
+		font-size: 1rem;
+	}
+
 }
 
 .market-top-stat {
