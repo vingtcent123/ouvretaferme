@@ -56,16 +56,24 @@ new Page(function($data) {
 ->post('queryLabel', function($data) {
 
 	$query = POST('query');
-	$thirdParty = POST('thirdParty', '?int');
-	$account = POST('account', '?int');
+	$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty', '?int'));
+	$eAccount = \account\AccountLib::getById(POST('account', '?int'));
 
-	$labels = \journal\OperationLib::getLabels($query, $thirdParty, $account);
+	$labels = \journal\OperationLib::getLabels($query, $eThirdParty, $eAccount);
 
-	if(post_exists('account')) {
-		$eAccount = \account\AccountLib::getById($account);
+	if($eAccount->notEmpty()) {
+
 		$accountClass = str_pad($eAccount['class'], 8, '0');
+
 		if($eAccount->exists() === TRUE and in_array($accountClass, $labels) === FALSE) {
 			$labels[] = $accountClass;
+		}
+
+		if($eThirdParty['clientAccountLabel'] !== NULL and \account\AccountLabelLib::isFromClass($eThirdParty['clientAccountLabel'], $eAccount['class'])) {
+			$labels[] = $eThirdParty['clientAccountLabel'];
+		}
+		if($eThirdParty['supplierAccountLabel'] !== NULL and \account\AccountLabelLib::isFromClass($eThirdParty['supplierAccountLabel'], $eAccount['class'])) {
+			$labels[] = $eThirdParty['supplierAccountLabel'];
 		}
 	}
 

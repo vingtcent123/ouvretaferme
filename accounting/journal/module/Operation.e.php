@@ -71,7 +71,12 @@ class Operation extends OperationElement {
 
 		$this->expects(['operation']);
 
-		return ($this->notEmpty() and $this->canUpdate() and $this['operation']->empty());
+		return (
+			$this->notEmpty() and
+			$this->canUpdate() and
+			$this['operation']->empty() and
+			($this['financialYear']->isAccrualAccounting() === FALSE or LetteringLib::isOperationLinkedInLettering($this) === FALSE)
+		);
 
 	}
 

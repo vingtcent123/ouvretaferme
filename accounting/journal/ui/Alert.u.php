@@ -41,6 +41,8 @@ class AlertUi {
 			'Operation::selectedJournalCodeInconsistency' => s("Un problème technique est survenu avec le journal choisi. Veuillez rafraîchir la page et recommencer."),
 
 			'Operation::lettering.inconsistency' => s("Un changement sur le montant n'est pas possible du fait du lettrage déjà réalisé."),
+			'Operation::typeProduitCharge.inconsistent' => s("Il n'est pas possible d'avoir en même temps une écriture de charge et une écriture de produit. Réalisez deux écritures séparément."),
+			'Operation::thirdPartys.inconsistent' => s("Il n'est pas possible de créer des écritures pour plusieurs tiers différents, réalisez des écritures séparément par tiers."),
 
 			default => null
 

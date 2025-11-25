@@ -534,9 +534,9 @@ class OperationLib extends OperationCrud {
 		$ePaymentMethodInvoice = var_filter($input['invoice']['paymentMethod'] ?? NULL, 'payment\Method');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$isFromCashflow = $eCashflow->notEmpty();
+		$eThirdParty = new \account\ThirdParty();
 
-		$isAccrual = $eFinancialYear->isAccrualAccounting();
-		$isCash = $eFinancialYear->isCashAccounting();
+		$totalAmount = 0; // Par défaut : débit - crédit
 
 		$fw = new \FailWatch();
 
@@ -558,7 +558,6 @@ class OperationLib extends OperationCrud {
 		if($eFinancialYear['hasVat']) {
 			$properties[] = 'vat';
 		}
-
 
 		$eOperationDefault['thirdParty'] = NULL;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
@@ -622,7 +621,11 @@ class OperationLib extends OperationCrud {
 
 			if($thirdParty !== null) {
 
-				$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($thirdParty);
+				if($eThirdParty->empty() or $eThirdParty['id'] !== (int)$thirdParty) {
+					$eThirdParty = \account\ThirdPartyLib::getById($thirdParty);
+				}
+
+				$eOperation['thirdParty'] = $eThirdParty;
 
 				// Vérifier si on doit enregistrer des données supplémentaires (issues de la facture pdf)
 				if($eOperation['thirdParty']['vatNumber'] === NULL and ($input['thirdPartyVatNumber'][$index] ?? NULL) !== NULL) {
@@ -710,6 +713,8 @@ class OperationLib extends OperationCrud {
 
 				\journal\Operation::model()->insert($eOperation);
 
+				$totalAmount += $eOperation['type'] === Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
+
 			} else {
 
 				Operation::model()
@@ -750,104 +755,37 @@ class OperationLib extends OperationCrud {
 
 				$cOperation->append($eOperationVat);
 
-			}
-
-			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411
-			// Et vérification si un lettrage est possible
-			if($isAccrual and $eOperation['thirdParty']->notEmpty()) {
-
-				$eThirdParty = \account\ThirdPartyLib::getById($thirdParty);
-
-				if($for === 'create') {
-
-					$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
-
-					$isChargeOperation = \account\AccountLabelLib::isChargeClass($eOperation['accountLabel']);
-					$isProductOperation = \account\AccountLabelLib::isProductClass($eOperation['accountLabel']);
-	
-					// Classe 6 => Fournisseur
-					if($isChargeOperation) {
-	
-						$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
-						$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-	
-						if($eThirdParty['supplierAccountLabel'] === NULL) {
-	
-							$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-							$eThirdParty['supplierAccountLabel'] = $accountLabel;
-							\account\ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
-	
-						} else {
-	
-							$accountLabel = $eThirdParty['supplierAccountLabel'];
-	
-						}
-	
-						// Classe 7 => Client
-					} else if($isProductOperation) {
-	
-						$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
-						$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-	
-						if($eThirdParty['clientAccountLabel'] === NULL) {
-	
-							$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-							$eThirdParty['clientAccountLabel'] = $accountLabel;
-							\account\ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
-	
-						} else {
-	
-							$accountLabel = $eThirdParty['clientAccountLabel'];
-	
-						}
-	
-					} else {
-	
-						throw new \Exception('Unable to register a 401 or 411 operation.');
-	
-					}
-	
-					// On en profite pour affecter le numéro de accountLabel aux tiers
-					$eOperationThirdParty = new Operation(
-						[
-							'thirdParty' => $eThirdParty,
-							'date' => $eOperation['date'],
-							'document' => $eOperation['document'],
-							'documentDate' => $eOperation['documentDate'],
-							'amount' => $amount,
-							'account' => $eAccountThirdParty,
-							'type' => $eOperation['type'] === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT,
-							'accountLabel' => $accountLabel,
-							'description' => $description,
-							'financialYear' => $eFinancialYear,
-							'hash' => $hash,
-							'journalCode' => $eOperation['journalCode'],
-							'paymentDate' => $eOperation['paymentDate'],
-						]
-					);
-	
-					\journal\Operation::model()->insert($eOperationThirdParty);
-					$cOperation->append($eOperationThirdParty);
-
-					// On tente de le lettrer
-					LetteringLib::letterOperation($eOperationThirdParty, $for);
-
-				} else { // Il faudrait vérifier le lettrage
-					if(
-						$eOperation['accountLabel'] === $eThirdParty['clientAccountLabel'] or
-						$eOperation['accountLabel'] === $eThirdParty['supplierAccountLabel']
-					) {
-
-						LetteringLib::letterOperation($eOperation, $for);
-
-					}
-
-				}
+				$totalAmount += $eOperationVat['type'] === Operation::DEBIT ? $eOperationVat['amount'] : -1 * $eOperationVat['amount'];
 
 			}
+
 		}
 
-		if($isCash) {
+		$cOperationWithoutThirdParties = new \Collection();
+		foreach($cOperation as $eOperation) {
+			$cOperationWithoutThirdParties->append(clone $eOperation);
+		}
+
+		// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
+		$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $totalAmount, $hash, $cOperation, $eThirdParty, $for);
+		if($eOperationThirdParty->notEmpty()) {
+			$cOperation->append($eOperationThirdParty);
+		}
+
+		if(
+			$eFinancialYear->isAccrualAccounting() and
+			$eThirdParty->notEmpty() and
+			($eOperation['accountLabel'] === $eThirdParty['clientAccountLabel'] or
+			$eOperation['accountLabel'] === $eThirdParty['supplierAccountLabel'])
+		) {
+
+			LetteringLib::letterOperation($eOperation, $for);
+
+		}
+
+
+		// Ajout de la transaction sur la classe de compte bancaire 512 (seulement pour une création)
+		if($for === 'create' and $isFromCashflow === TRUE) {
 
 			// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
 			$documents = $cOperation->getColumn('document');
@@ -858,18 +796,21 @@ class OperationLib extends OperationCrud {
 				$document = NULL;
 			}
 
-			// Ajout de la transaction sur la classe de compte bancaire 512 (seulement pour une création)
-			if($for === 'create' and $isFromCashflow === TRUE) {
+			$hash = self::generateHash().($eCashflow->empty() ? 'w' : 'c');
+			$eOperationDefault['hash'] = $hash;
 
-				// Crée automatiquement l'operationCashflow correspondante
-				$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
-					$eCashflow,
-					$eOperationDefault,
-					$document,
-				);
-				$cOperation->append($eOperationBank);
+			// Crée automatiquement l'operationCashflow correspondante
+			$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
+				$eCashflow,
+				$eOperationDefault,
+				$document,
+			);
+			$cOperation->append($eOperationBank);
 
-			}
+			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
+			$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $eCashflow['amount'], $hash, $cOperationWithoutThirdParties, $eThirdParty, $for);
+			$cOperation->append($eOperationThirdParty);
+
 		}
 
 		if(($eOperationDefault['invoice'] ?? NULL) !== NULL and $eOperationDefault['invoice']->exists() and $ePaymentMethodInvoice->exists()) {
@@ -893,6 +834,127 @@ class OperationLib extends OperationCrud {
 		}
 
 		return $cOperation;
+
+	}
+
+	private static function createThirdPartyOperation(\account\FinancialYear $eFinancialYear, float $amount, string $hash, \Collection $cOperation, \account\ThirdParty $eThirdParty, string $for): Operation {
+
+		if($amount === 0.0 or $eFinancialYear->isAccrualAccounting() === FALSE) {
+			return new Operation();
+		}
+
+		// On ne doit avoir qu'un seul type (charge ou produit) d'opération, pas les 2 en même temps
+		$hasCharge = FALSE;
+		$hasProduit = FALSE;
+		$thirdPartys = [];
+		$hasThirdPartyOperation = FALSE;
+		foreach($cOperation as $eOperation) {
+
+			if(isset($eOperation['thirdParty']) and $eOperation['thirdParty']->notEmpty()) {
+				$thirdPartys[] = $eOperation['thirdParty']['id'];
+			}
+
+			if(\account\AccountLabelLib::isChargeClass($eOperation['accountLabel'])) {
+				$hasCharge = TRUE;
+			} else if(\account\AccountLabelLib::isProductClass($eOperation['accountLabel'])) {
+				$hasProduit = TRUE;
+			}
+
+			if(
+				\account\AccountLabelLib::isFromClass(\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS, $eOperation['accountLabel']) or
+				\account\AccountLabelLib::isFromClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, $eOperation['accountLabel'])
+			) {
+				$hasThirdPartyOperation = TRUE;
+			}
+		}
+
+		// On ne doit avoir qu'un seul tiers, pas plusieurs en même temps
+		if(count(array_unique($thirdPartys)) > 1) {
+			\Fail::log('Operation::thirdPartys.inconsistent');
+			return new Operation();
+		}
+		if(count(array_unique($thirdPartys)) === 0) {
+			return new Operation();
+		}
+
+		if($hasCharge and $hasProduit) {
+			\Fail::log('Operation::typeProduitCharge.inconsistent');
+			return new Operation();
+		}
+
+		// Si dans le lot il y a une opération en 401 ou 411 => On ne crée pas d'opération Third Party
+		if($hasThirdPartyOperation) {
+			return new Operation();
+		}
+
+		// Opération avec un fournisseur
+		if($hasCharge) {
+
+			$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
+			$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
+
+			if($eThirdParty['supplierAccountLabel'] === NULL) {
+
+				$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
+				$eThirdParty['supplierAccountLabel'] = $accountLabel;
+				\account\ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
+
+			} else {
+
+				$accountLabel = $eThirdParty['supplierAccountLabel'];
+
+			}
+
+		} else if($hasProduit) {
+
+			$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
+			$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+
+			if($eThirdParty['clientAccountLabel'] === NULL) {
+
+				$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+				$eThirdParty['clientAccountLabel'] = $accountLabel;
+				\account\ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
+
+			} else {
+
+				$accountLabel = $eThirdParty['clientAccountLabel'];
+
+			}
+		} else {
+			return new Operation();
+		}
+
+		if($for === 'create') {
+
+			// On en profite pour affecter le numéro de accountLabel aux tiers
+			$eOperationThirdParty = new Operation(
+				[
+					'thirdParty' => $eThirdParty,
+					'date' => $eOperation['date'],
+					'document' => $eOperation['document'],
+					'documentDate' => $eOperation['documentDate'],
+					'amount' => abs($amount),
+					'account' => $eAccountThirdParty,
+					'type' => $amount > 0 ? Operation::CREDIT : Operation::DEBIT,
+					'accountLabel' => $accountLabel,
+					'description' => $description,
+					'financialYear' => $eFinancialYear,
+					'hash' => $hash,
+					'journalCode' => $eOperation['journalCode'],
+					'paymentDate' => $eOperation['paymentDate'],
+				]
+			);
+
+			\journal\Operation::model()->insert($eOperationThirdParty);
+
+			// On tente de le lettrer
+			LetteringLib::letterOperation($eOperationThirdParty, $for);
+
+		}
+
+		return $eOperationThirdParty;
+
 	}
 
 	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues, \bank\Cashflow $eCashflow, string $for = 'create'): Operation {
@@ -1219,7 +1281,7 @@ class OperationLib extends OperationCrud {
 			->whereCashflow($eCashflow)
 			->getCollection();
 
-		// Suppression de  l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
+		// Suppression de l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
 		\journal\Operation::model()
 			->whereId('IN', $cOperationCashflow->getColumnCollection('operation')->getIds())
 			->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
@@ -1238,9 +1300,26 @@ class OperationLib extends OperationCrud {
 				\asset\AssetLib::deleteByIds($cAsset->getIds());
 			}
 			// Suppression des écritures
-			\journal\Operation::model()
+			$cOperation = \journal\Operation::model()
 	      ->whereId('IN', $cOperationCashflow->getColumnCollection('operation')->getIds())
-	      ->delete();
+	      ->getCollection();
+
+			// On ne peut pas supprimer d'écritures qui ont été lettrées
+			$hasBeenLettered = (Lettering::model()
+				->or(
+					fn() => $this->whereCredit('IN', $cOperation),
+					fn() => $this->whereDebit('IN', $cOperation),
+				)
+				->count() > 0);
+
+			if($hasBeenLettered) {
+				\Fail::log('Operation::cashflow.letteredUndeletable');
+				return;
+
+				Operation::model()
+					->whereId('IN', $cOperation->getIds())
+					->delete();
+			}
 
 		}
 
@@ -1259,12 +1338,12 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getLabels(string $query, ?int $thirdParty, ?int $account): array {
+	public static function getLabels(string $query, \account\ThirdParty $eThirdParty, \account\Account $eAccount): array {
 
 		$labels = Operation::model()
 			->select(['accountLabel' => new \Sql('DISTINCT(accountLabel)')])
-			->whereThirdParty($thirdParty, if: $thirdParty !== NULL)
-			->whereAccount($account, if: $account !== NULL)
+			->whereThirdParty($eThirdParty, if: $eThirdParty->notEmpty())
+			->whereAccount($eAccount, if: $eAccount->notEmpty())
 			->where('accountLabel LIKE "%'.$query.'%"', if: $query !== '')
 			->sort(['accountLabel' => SORT_ASC])
 			->getCollection()

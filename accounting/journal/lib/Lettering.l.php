@@ -66,13 +66,23 @@ class LetteringLib extends LetteringCrud {
 
 	}
 
+	public static function isOperationLinkedInLettering(Operation $eOperation): bool {
+
+		return (Lettering::model()
+			->or(
+				fn() => $this->whereCredit($eOperation),
+				fn() => $this->whereDebit($eOperation),
+			)
+			->count() > 0);
+	}
+
 	/**
 	 *
 	 * @param Operation $eOperationToLetter
 	 * @return void
 	 * @throws \ElementException
 	 */
-	public static function letterOperation(Operation $eOperationToLetter, $for): void {
+	public static function letterOperation(Operation $eOperationToLetter, string $for): void {
 
 		if($for === 'update') {
 

@@ -934,11 +934,6 @@ class OperationUi {
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
 		$isFromCashflow = ($eOperation['cOperationCashflow'] ?? new \Collection())->notEmpty();
 
-
-		if($eFinancialYear->isAccrualAccounting() and $index > 0) {
-			$disabled[] = 'thirdParty';
-		}
-
 		$h = '<div class="operation-create'.(($eOperation['isRequested'] ?? FALSE) ? ' operation-update-selected' : '').'" data-index="'.$index.'">';
 
 			if(($eOperation['id'] ?? NULL) !== NULL) {
