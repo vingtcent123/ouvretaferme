@@ -280,96 +280,86 @@ new AdaptativeView('/presentation/invitation', function($data, MainTemplate $t) 
 
 });
 
-new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) {
+new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', function($data, MainTemplate $t) {
 
-	$t->title = s("{siteName} - Pour les producteurs");
-	$t->metaDescription = s("Présentation des fonctionnalités de {siteName} pour les producteurs. Découvrez tous les outils de planification, de vente en ligne, de communication et de gestion d'équipe !");
-	$t->template = 'home-farmer';
+	$t->title = s("{siteName} - Facturation électronique");
+	$t->metaDescription = s("{siteName} sera pleinement compatible avec la facturation électronique.");
+	$t->template = 'home-invoicing';
 
 	Asset::css('main', 'font-ptserif.css');
-
 	Asset::css('main', 'home.css');
 
-	$t->header = '<h4 class="home-domain">'.Lime::getDomain().'</h4>';
-	$t->header .= '<h1>'.s("De la production à la vente").'</h1>';
-	$t->header .= '<h4 class="home-domain">'.s("Découvrez les principales fonctionnalités du logiciel !").'</h4>';
+	$t->header .= '<h1>'.s("À propos de la facturation électronique").'</h1>';
+	$t->header .= '<h4 class="home-domain">'.s("(et pourquoi ce ne sera pas un problème)").'</h4>';
 
 
-	echo '<div class="home-presentation">';
-
-		echo '<div>';
-			echo '<h2 class="color-secondary">'.Asset::icon('basket').'<br/>'.s("Un logiciel pour vendre").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Gérez vos ventes pour les professionnels et les particuliers.</b><br/><small>Créez des ventes à partir de vos produits, gérez votre clientèle, choisissez vos prix. Imprimez des étiquettes de colisage si vous livrez aux professionnels. Exporter les ventes du jour au format PDF pour préparer vos livraisons.</small>").'</li>';
-					echo '<li>'.s("<b>Utilisez le logiciel de caisse intégré.</b><br/><small>Utilisez le logiciel de caisse avec une tablette ou un téléphone pour préparer vos marchés et saisir vos ventes directement pendant le marché. Pour chaque vente, visualisez ce que le client a acheté et le montant qu'il doit vous régler. Simple et efficace.</small>").'</li>';
-					echo '<li>'.s("<b>Créez des boutiques en ligne.</b><br/><small>Permettez à vos clients de passer commande en ligne et de récupérer leur colis à la date et l'endroit convenus, ou bien livrez-les à domicile selon vos préférences. Activez si vous le souhaitez le paiement par carte bancaire sans commission sur les ventes.</small>").'</li>';
-					echo '<li>'.s("<b>Partagez vos boutiques en ligne avec d'autres producteurs.</b><br/><small>Vendez à plusieurs sur la même boutique pour partager vos créneaux de vente et simplifier l'expérience pour vos clients.</small>").'</li>';
-					echo '<li>'.s("<b>Éditez des mercuriales pour vos clients professionnels.</b><br/><small>Créez des boutiques en ligne exclusivement réservées à vos clients professionnels. Personnalisez les prix et les disponibilités par client.</small>").'</li>';
-					echo '<li>'.s("<b>Pilotez vos stocks.</b><br/><small>Choisissez les produits pour lesquels vous souhaitez avoir un suivi des stocks. Les récoltes et les ventes que vous saisissez impactent automatiquement le stock et vous savez toujours ce qui vous reste à vendre.</small>").'</li>';
-					echo '<li>'.s("<b>Gérez vos devis, bons de livraison et factures.</b><br/><small>Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients. Obtenez-les au format PDF.</small>").'</li>';
-					echo '<li>'.s("<b>Compatible avec la facturation électronique.</b><br/><small>Les factures intègrent le format Factur-X.</small>").'</li>';
-				echo '</ul>';
-			echo '</div>';
-		echo '</div>';
-
-		echo '<div>';
-			echo '<h2 class="color-production">'.Asset::icon('leaf').'<br/>'.s("Un logiciel pour produire").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Planifiez votre saison de culture en concevant vos plan de culture et plan d'assolement.</b><br/><small>Gérez les variétés, la longueur des planches, les surfaces, les densités, les objectifs de récolte et les associations de cultures. Enregistrez et retrouvez facilement toutes les informations liées à vos séries de cultures. De plus, un prévisionnel financier vous aide à estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</li>';
-					echo '<li>'.s("<b>Maîtrisez votre temps de travail.</b><br/><small>Que ce soit à la ferme avec votre téléphone ou le soir sur l'ordinateur, un planning hebdomadaire ou quotidien vous permet de faire le suivi des interventions planifiées et réalisées sur la semaine. Renseignez facilement votre temps de travail pour comprendre là où passe votre temps.</small>").'</li>';
-					echo '<li>'.s("<b>Suivez précisément vos rotations sur votre parcellaire.</b><br/><small>Choisissez vos critères pour les rotations et vérifiez en un coup d'oeil les planches qui correspondent à ces critères. Pratique pour éviter de mettre vos cultures aux mêmes emplacements trop souvent !</small>").'</li>';
-					echo '<li>'.s("<b>Collaborez avec votre équipe.</b><br/><small>Invitez votre équipe sur l'espace de votre ferme et gérez les droits de chaque personne.</small>").'</li>';
-					echo '<li>'.s("<b>C'est adapté à toutes les productions.</b><br/><small>{siteName} vous accompagne en maraichage, floriculture, arboriculture ou même en production de semences.</small>").'</li>';
-					echo '<li>'.s("<b>Et aussi...</b><br/><small>Consultez les quantités de semences et plants à produire ou commander. Créez des itinéraires techniques réutilisables saison après saison. Ajoutez des photos pour vous souvenir de vos cultures. Enregistrez le matériel disponible à la ferme pour l'utiliser dans vos interventions...</small>").'</li>';
-				echo '</ul>';
-			echo '</div>';
-		echo '</div>';
-
-	echo '</div>';
-
-	echo '<div class="home-presentation">';
-
-		echo '<div>';
-			echo '<h2>'.Asset::icon('megaphone').'<br/>'.s("Un logiciel pour communiquer").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Programmez des campagnes d'e-mailing.</b><br/><small>Vous pouvez envoyer des e-mails à vos clients pour les prévenir de l'ouverture de vos ventes ou tout simplement leur envoyer une newsletter.</small>").'</li>';
-					echo '<li>'.s("<b>Créez le site internet de votre ferme.</b><br/><small>Créez autant de pages que vous voulez sur votre nouveau site et personnalisez le thème graphique. Vous pouvez même avoir un nom de domaine si vous le souhaitez.</small>").'</li>';
-					echo '<li>'.s("<b>Aucune connaissance technique n'est nécessaire.</b><br/><small>Toutes les étapes de création de votre site internet se font depuis votre téléphone ou votre ordinateur.</small>").'</li>';
-					echo '<li>'.s("<b>Pas de publicité.</b>").'</li>';
-				echo '</ul>';
-			echo '</div>';
-		echo '</div>';
-
-		echo '<div>';
-			echo '<h2>'.Asset::icon('send').'<br/>'.s("Un logiciel pour améliorer vos pratiques").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Accédez à de nombreux graphiques et statistiques.</b><br/><small>Visualisez les résultats de votre plan de culture, votre temps de travail et vos ventes. Retournez dans le passé pour mesurer vos progrès. Comprenez ce qui vous prend du temps pour améliorer vos pratiques.</small>").'</li>';
-					echo '<li>'.s("<b>Connaissez votre prix de revient pour chaque culture.</b><br/><small>Avec le temps de travail et les ventes que vous avez saisis, calculez vos prix de revient pour mieux définir vos prix de vente.</small>").'</li>';
-					echo '<li>'.s("<b>Exportez vos données au format CSV.</b><br/><small>Manipulez vos chiffres de vente ou de temps de travail dans un tableur pour tirer partie de vos données !</small>").'</li>';
-				echo '</ul>';
-			echo '</div>';
-		echo '</div>';
-
-	echo '</div>';
-
-	echo '<br/>';
-
-	echo '<div class="text-center">';
-		echo '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-secondary btn-lg">'.s("Explorez la ferme démo pour découvrir le service").'</a>';
-	echo '</div>';
-	echo '<br/>';
-	echo '<br/>';
-
-	echo new \main\HomeUi()->getPoints();
-
-	echo '<h3 class="mt-2">'.s("Principe de gratuité").'</h3>';
+	echo '<h3 class="mt-2">'.s("Principes généraux").'</h3>';
 
 	echo '<div class="home-story">';
-		echo s("L'accès à toutes les fonctionnalités de {siteName} est ouvert et gratuit pour les producteurs sous signe de qualité <i>Agriculture biologique</i> ou <i>Nature & Progrès</i>. Pour les autres, reportez-vous aux <link>conditions d'utilisation du service</link>.", ['link' => '<a href="/presentation/service">']);
+		echo '<p>'.s("La réforme de la facturation électronique concerne toutes les entreprises assujetties à la TVA.").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("À partir du 1<sup>er</sup> septembre 2026, elles devront être en mesure de recevoir des factures électroniques de la part de ses fournisseurs.").'</li>';
+			echo '<li>';
+				echo 	s("À partir du 1<sup>er</sup> septembre 2027, elles seront tenues :");
+				echo '<ul>';
+					echo '<li>'.s("d'émettre leurs factures au format électroniques (<i>e-invoicing</i>)").'</li>';
+					echo '<li>'.s("de transmettre le montant des opérations réalisées avec des clients particuliers ou certaines associations (<i>e-invoicing</i>)").'</li>';
+				echo '</ul>';
+			echo '</li>';
+		echo '</ul>';
+		echo '<p>'.s("Vous pourrez trouver des informations fiables sur la <link>foire aux questions</link> éditée par les finances publiques.", ['link' => '<a href="https://www.impots.gouv.fr/sites/default/files/media/1_metier/2_professionnel/EV/2_gestion/290_facturation_electronique/faq---fe_je-decouvre-la-facturation-electronique.pdf">']).'</p>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<h3>'.s("Comment émettre et recevoir des factures électroniques ?").'</h3>';
+
+	echo '<div class="home-story">';
+		echo '<p>'.s("Vous devrez contractualiser avec une plateforme agréée (PA), qui vous permettra de réaliser l'ensemble des opérations. Il est important de comprendre qu'avec cette réforme, vous n'aurez plus le droit de transmettre vos factures directement à vos clients professionnels et qu'elles devront obligatoirement transiter par votre PA.").'</p>';
+		echo '<p><i>'.s("Point important : vous pourrez tout à fait utiliser plusieurs PA en parallèle et en changer comme bon vous semble.").'</i></p>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<h3>'.s("Pourquoi il n'y a rien d'urgent ?").'</h3>';
+
+	echo '<div class="home-story">';
+		echo '<p>'.s("Un grand nombre d'opérateurs ayant identifié une opportunité commerciale se sont positionnés sur le marché de la facturation électronique. Il y a une situation de forte concurrence qui poussent certains de ces opérateurs à jouer sur la peur.").'</p>';
+		echo '<p>'.s("Néanmoins, à l'heure actuelle, il faut bien comprendre que les infrastructures techniques ne sont pas encore prêtes du côté de la plupart des PA et que le travail de normalisation est encore en cours.").'</p>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<h3>'.s("Comment ça va se passer sur Ouvretaferme ?").'</h3>';
+
+	echo '<div class="home-story">';
+		echo '<p>'.s("Nous allons travailler avec une plateforme agréée qui vous permettra d'envoyer automatiquement vos factures depuis Ouvretaferme. Nous avons choisi <link>SUPER PDP</link>. Cette plateforme est l'une des plus avancées et nous sommes déjà en train de l'intégrer.", ['link' => '<a href="https://www.superpdp.tech/">']).'</p>';
+		echo '<p>'.s("L'utilisation de <i>SUPER PDP</i> est <link>gratuite jusqu'à 1000 factures par mois</link>, ce qui correspond à l'immense majorité des producteurs. Vous pourrez même l'utiliser indépendamment de Ouvretaferme.", ['link' => '<a href="https://www.superpdp.tech/tarifs">']).'</p>';
+		echo '<p>'.s("Nous allons chercher également à intégrer pleinement <i>SUPER PDP</i> avec Ouvretaferme. Cette intégration sera facturée à l'association par <i>SUPER PDP</i> et nous la rendrons donc disponible pour les fermes ayant adhéré à l'association. <b>Notre objectif est que vous puissiez gérer l'ensemble de vos factures de ventes directement depuis Ouvretaferme.</b>").'</p>';
+		echo '<p>'.s("Notre opinion subjective est qu'il ne faut pas être trop pressé, et qu'il est stratégiquement intéressant de laisser d'autres acteurs essuyer les pots cassés et les bugs qui accompagneront le lancement de la réforme.").'</p>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<h3>'.s("Vous voulez une synthèse simple en 4 points ?").'</h3>';
+
+	echo '<div class="home-points">';
+		echo '<div class="home-point">';
+			echo \Asset::icon('music-note');
+			echo '<h4>'.s("Il n'y a aucune urgence car personne n'est encore prêt.").'</h4>';
+		echo '</div>';
+		echo '<div class="home-point">';
+			echo \Asset::icon('wallet2');
+			echo '<h4>'.s("Cela ne vous coûtera pas grand chose si vous choisissez un bon logiciel.").'</h4>';
+		echo '</div>';
+		echo '<div class="home-point">';
+			echo \Asset::icon('heart');
+			echo '<h4>'.s("Ouvretaferme est un bon logiciel et nous vous donnerons régulièrement des nouvelles.").'</h4>';
+		echo '</div>';
+		echo '<div class="home-point">';
+			echo \Asset::icon('basket3');
+			echo '<h4>'.s("Vous pouvez donner la priorité à vos productions bio et locales.").'</h4>';
+		echo '</div>';
 	echo '</div>';
 
 });

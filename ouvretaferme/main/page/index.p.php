@@ -41,5 +41,6 @@ new Page()
 	->get('/presentation/producteur', fn($data) => throw new ViewAction($data))
 	->get('/presentation/formations', fn($data) => throw new ViewAction($data))
 	->get('/presentation/faq', fn($data) => throw new ViewAction($data))
-	->get('/presentation/service', fn($data) => throw new ViewAction($data));
+	->get('/presentation/service', fn($data) => throw new ViewAction($data))
+	->get('/facturation-electronique-les-mains-dans-les-poches', fn($data) => throw new ViewAction($data));
 ?>

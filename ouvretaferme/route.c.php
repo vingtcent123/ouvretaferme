@@ -53,6 +53,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['espece', '{id@int}'],
 		],
+		'/facturation-electronique-les-mains-dans-les-poches' => [
+			'request' => 'main/index',
+			'priority' => 5,
+			'route' => ['facturation-electronique-les-mains-dans-les-poches'],
+		],
 		'/facture/{id}' => [
 			'request' => 'selling/invoice',
 			'priority' => 5,
