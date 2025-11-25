@@ -403,8 +403,6 @@ class OperationLib extends OperationCrud {
 		$paymentType = POST('paymentType');
 		$cOperation = new \Collection();
 
-		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_PAYMENT;
-
 		if(in_array($paymentType, ['incoming-client', 'incoming-supplier', 'outgoing-client', 'outgoing-supplier']) === FALSE) {
 			\Fail::log('Operation::payment.typeMissing');
 			return NULL;
@@ -416,6 +414,8 @@ class OperationLib extends OperationCrud {
 		$fw->validate();
 
 		$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($eOperation['thirdParty']['id']);
+
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_PAYMENT;
 		$eOperation['hash'] = $hash;
 
 		if(mb_strpos($paymentType, 'client') !== FALSE) {
@@ -426,8 +426,7 @@ class OperationLib extends OperationCrud {
 			if($eOperation['thirdParty']['clientAccountLabel'] === NULL) {
 
 				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-				$eOperation['thirdParty']['clientAccountLabel'] = $nextLabel;
-				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['clientAccountLabel']);
+				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['clientAccountLabel' => $nextLabel]);
 				$accountLabel = $nextLabel;
 
 			} else {
@@ -444,8 +443,7 @@ class OperationLib extends OperationCrud {
 			if($eOperation['thirdParty']['supplierAccountLabel'] === NULL) {
 
 				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-				$eOperation['thirdParty']['supplierAccountLabel'] = $nextLabel;
-				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['supplierAccountLabel']);
+				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['supplierAccountLabel' => $nextLabel]);
 				$accountLabel = $nextLabel;
 
 			} else {
@@ -477,7 +475,7 @@ class OperationLib extends OperationCrud {
 
 		$eOperationBank = clone $eOperation;
 		$eOperationBank->offsetUnset('id');
-		$eOperationBank['type'] = $type === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT;
+		$eOperationBank['type'] = ($type === Operation::CREDIT) ? Operation::DEBIT : Operation::CREDIT;
 		$eBankAccount = \bank\BankAccountLib::getById($input['bankAccountLabel']);
 		$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS);
 		$eOperationBank['accountLabel'] = $eBankAccount->empty() ? \account\AccountLabelLib::pad($eBankAccount['class']) : $eBankAccount['label'];
@@ -823,10 +821,13 @@ class OperationLib extends OperationCrud {
 							'description' => $description,
 							'financialYear' => $eFinancialYear,
 							'hash' => $hash,
+							'journalCode' => $eOperation['journalCode'],
+							'paymentDate' => $eOperation['paymentDate'],
 						]
 					);
 	
 					\journal\Operation::model()->insert($eOperationThirdParty);
+					$cOperation->append($eOperationThirdParty);
 
 					// On tente de le lettrer
 					LetteringLib::letterOperation($eOperationThirdParty, $for);
