@@ -56,6 +56,99 @@ Class BalanceUi {
 
 	}
 
+	public function getTabs(\farm\Farm $eFarm, ?string $selectedTab): string {
+
+		$tabs = [
+			NULL => s("Balance générale"),
+			'customer' => s("Balance clients"),
+			'supplier' => s("Balance fournisseurs"),
+		];
+
+		$h = '<div class="tabs-item">';
+
+			foreach($tabs as $key => $translation) {
+				$isSelected = ((empty($key) === TRUE and empty($selectedTab)) or $key === $selectedTab);
+				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$key.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/balance?tab='.encode($key).'">'.$translation.'</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
+	public function displayThirdParty(\farm\Farm $eFarm, \Collection $cOperation, string $type): string {
+
+		if($cOperation->empty()) {
+			return '<div class="util-info">'.s("Il n'y a pas encore d'écriture à afficher").'</div>';
+		}
+
+		$h = '<div class="stick-sm util-overflow-sm">';
+
+			$h .= '<table class="tr-even tr-hover">';
+
+				$h .= '<thead class="thead-sticky">';
+					$h .= '<tr>';
+
+						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Tiers").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Solde").'</th>';
+						$h .= '<th></th>';
+
+					$h .= '</tr>';
+
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+				foreach($cOperation as $eOperation) {
+
+					$h .= '<tr name="operation-'.$eOperation['accountLabel'].'">';
+
+						$h .= '<td>';
+							$h .= encode($eOperation['accountLabel']);
+						$h .= '</td>';
+
+						$h .= '<td>';
+							$h .= encode($eOperation['thirdParty']['name']);
+						$h .= '</td>';
+
+						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+							$h .= \util\TextUi::money($eOperation[Operation::DEBIT]);
+						$h .= '</td>';
+
+						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+							$h .= \util\TextUi::money($eOperation[Operation::CREDIT]);
+						$h .= '</td>';
+
+						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+							$h .= \util\TextUi::money($eOperation[Operation::DEBIT] - $eOperation[Operation::CREDIT]);
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content">';
+							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<div class="dropdown-title">'.encode($eOperation['accountLabel']).' '.encode($eOperation['thirdParty']['name']).'</div>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.$eOperation['accountLabel'].'&thirdParty='.$eOperation['thirdParty']['id'].'" class="dropdown-item">'.s("Voir le détail des écritures").'</a>';
+								$h .= '</div>';
+							$h .= '</div>';
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+		$h .= '</div>';
+		return $h;
+
+
+	}
+
 	public function display(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious, array $balance, array $balancePrevious, \Search $search, array $searches): string {
 
 		$hasPrevious = $eFinancialYearPrevious->notEmpty();

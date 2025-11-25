@@ -22,7 +22,7 @@ class PaymentOperation {
 
 		const paymentType = qs('#journal-operation-create-payment [name="paymentType"]:checked')?.getAttribute('value') || null;
 
-		if(paymentType.indexOf('client') >> 0 && qs('#journal-operation-create-payment [name="accountLabel"]').getAttribute('data-client')) {
+		if(paymentType.indexOf('client') > 0 && qs('#journal-operation-create-payment [name="accountLabel"]').getAttribute('data-client')) {
 
 			qs('#journal-operation-create-payment [name="accountLabel"]').setAttribute('value', qs('#journal-operation-create-payment [name="accountLabel"]').getAttribute('data-client') || '');
 

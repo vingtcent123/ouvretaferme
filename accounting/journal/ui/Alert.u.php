@@ -39,6 +39,9 @@ class AlertUi {
 
 			'Operation::selectedOperationInconsistency' => s("Les opérations sélectionnées ne sont pas cohérentes, veuillez rafraîchir la page et recommencer."),
 			'Operation::selectedJournalCodeInconsistency' => s("Un problème technique est survenu avec le journal choisi. Veuillez rafraîchir la page et recommencer."),
+
+			'Operation::lettering.inconsistency' => s("Un changement sur le montant n'est pas possible du fait du lettrage déjà réalisé."),
+
 			default => null
 
 		};

@@ -19,8 +19,29 @@ new AdaptativeView(
 		$data->eFinancialYear,
 	);
 
-	echo new \journal\BalanceUi()->getSearch($data->search, $data->eFinancialYear);
-	echo new \journal\BalanceUi()->display($data->eFinancialYear, $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search, $data->searches);
+	echo '<div class="tabs-h" id="balances">';
 
+	if($data->eFinancialYear->isAccrualAccounting()) {
+		echo new \journal\BalanceUi()->getTabs($data->eFarm, $data->tab);
+	}
+
+	switch($data->tab) {
+
+		case 'customer':
+		case 'supplier':
+			echo '<div class="tab-panel selected" data-tab="'.$data->tab.'">';
+				echo new \journal\BalanceUi()->displayThirdParty($data->eFarm, $data->cOperation, $data->tab);
+			echo '</div>';
+			break;
+
+		default:
+			echo '<div class="tab-panel selected" data-tab="">';
+				echo new \journal\BalanceUi()->getSearch($data->search, $data->eFinancialYear);
+				echo new \journal\BalanceUi()->display($data->eFinancialYear, $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search, $data->searches);
+			echo '</div>';
+
+	}
+
+	echo '</div>';
 }
 );

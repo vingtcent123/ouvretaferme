@@ -269,7 +269,19 @@ class JournalUi {
 
 		$canUpdateFinancialYear = ($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK);
 
-		$columns = 5;
+		// On affiche les données de lettrage si on a filtré sur un tiers + sa classe
+		$showLettering = ($eFinancialYearSelected->isAccrualAccounting() and $search->get('thirdParty') and $search->get('accountLabel'));
+
+		$columns = 6;
+		if($journalCode === NULL) {
+			$columns++;
+		}
+		if($showLettering) {
+			$columns++;
+		}
+
+		$totalDebit = 0;
+		$totalCredit = 0;
 
 		$h = '';
 
@@ -293,6 +305,11 @@ class JournalUi {
 
 						$h .= '<th>'.s("Libellé").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
+
+						if($showLettering) {
+							$h .= '<th>'.s("Lettrage").'</th>';
+						}
+
 						$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
 						$h .= '<th></th>';
@@ -396,6 +413,26 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
+							if($showLettering) {
+
+								$c = new \Collection();
+								$c->mergeCollection($eOperation['cLetteringDebit']);
+								$c->mergeCollection($eOperation['cLetteringCredit']);
+
+								[$icon, $class, $title] = match($eOperation['letteringStatus']) {
+									NULL => [\Asset::icon('x-lg'), 'color-danger', s("Non lettrée")],
+									Operation::PARTIAL => [\Asset::icon('exclamation-triangle'), 'color-warning', s("Lettrage partiel")],
+									Operation::TOTAL => [\Asset::icon('check'), 'color-success', s("Lettrée")],
+								};
+
+								$h .= '<td title="'.$title.'">';
+									$h .= '<div class="journal-operation-letters">';
+										$h .= '<div class="'.$class.'">'.$icon.'</div>';
+										$h .= '<div>'.join('<br />', $c->getColumn('code')).'</div>';
+									$h .= '</div>';
+								$h .= '</td>';
+							}
+
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
 								if($eOperation['type'] === Operation::DEBIT) {
 									$h .= \util\TextUi::money($eOperation['amount']);
@@ -407,11 +444,16 @@ class JournalUi {
 									$h .= \util\TextUi::money($eOperation['amount']);
 								}
 							$h .= '</td>';
-							$h .= '<td>';
+
+							$args = $_GET;
+							foreach(['id', 'operation', 'origin', 'farm', 'app'] as $filteredField) {
+								unset($args[$filteredField]);
+							}
+							$h .= '<td class="td-min-content">';
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 								$h .= '<div class="dropdown-list">';
 									$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'?'.http_build_query($args).'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
 
 									if($eOperation->canUpdate() and $eOperation->acceptUpdate()) {
 
@@ -507,6 +549,63 @@ class JournalUi {
 
 								$h .= '</div>';
 							$h .= '</td>';
+
+							if($eOperation['type'] === Operation::DEBIT) {
+								$totalDebit += $eOperation['amount'];
+							}
+							if($eOperation['type'] === Operation::CREDIT) {
+								$totalCredit += $eOperation['amount'];
+							}
+
+						$h .= '</tr>';
+
+					}
+
+					if($showLettering) {
+
+						$colspan = ($journalCode === NULL ? 5 : 4);
+
+						$h .= '<tr class="row-highlight row-bold">';
+
+							$h .= '<td class="td-checkbox"></td>';
+							$h .= '<td colspan="'.$colspan.'">'.s("Totaux").'</td>';
+
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+								$h .= \util\TextUi::money($totalDebit);
+							$h .= '</td>';
+
+							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+								$h .= \util\TextUi::money($totalCredit);
+							$h .= '</td>';
+
+							$h .= '<td></td>';
+
+						$h .= '</tr>';
+
+						if($totalCredit >= $totalDebit) {
+							$text = s("Solde créditeur");
+						} else {
+							$text = s("Solde débiteur");
+						}
+
+						$h .= '<tr class="row-highlight row-bold">';
+
+							$h .= '<td class="td-checkbox"></td>';
+							$h .= '<td colspan="'.$colspan.'">'.$text.'</td>';
+
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+								if($totalDebit > $totalCredit) {
+									$h .= \util\TextUi::money($totalDebit - $totalCredit);
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+								if($totalDebit <= $totalCredit) {
+									$h .= \util\TextUi::money($totalCredit - $totalDebit);
+								}
+							$h .= '</td>';
+
+							$h .= '<td></td>';
 
 						$h .= '</tr>';
 

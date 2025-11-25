@@ -968,7 +968,6 @@ class FarmUi {
 
 			'journal' => match($name) {
 				'operations' => s("Livre journal"),
-				'accounts' => s("Comptes"),
 				'book' => s("Grand livre"),
 				'balance' => s("Balance"),
 			},
@@ -1997,18 +1996,7 @@ class FarmUi {
 				return ['acquisition', 'amortization'];
 
 			case 'journal' :
-				$categories = [
-					'operations'
-				];
-
-				if($eFarm->getView('viewAccountingType') === \account\FinancialYear::ACCRUAL) {
-					$categories[] = 'accounts';
-				}
-
-				$categories[] = 'book';
-				$categories[] = 'balance';
-
-				return $categories;
+				return ['operations', 'book', 'balance'];
 
 			case 'bank' :
 				return ['cashflow'];

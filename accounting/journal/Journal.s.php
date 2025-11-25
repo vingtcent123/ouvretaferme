@@ -11,6 +11,7 @@ class JournalSetting extends \Settings {
 	const HASH_LETTER_ASSETS = 'i'; // hash des écritures d'inventaire (immos)
 	const HASH_LETTER_DEFERRAL = 'd'; // hash des écritures d'inventaire (PCA et CCA)
 
+	const HASH_LETTER_PAYMENT = 'p'; // hash des écritures de paiement
 }
 
 ?>

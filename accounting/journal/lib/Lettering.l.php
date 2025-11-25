@@ -21,6 +21,16 @@ class LetteringLib extends LetteringCrud {
 
 	}
 
+	public static function getByOperation(string $type, Operation $eOperation): \Collection {
+
+		return Lettering::model()
+			->select(Lettering::getSelection())
+			->where($type.' = '.$eOperation['id'])
+			->sort(['createdAt' => SORT_ASC])
+			->getCollection();
+
+	}
+
 	public static function generateNewCode(): string {
 
 		$eLettering = Lettering::model()
@@ -62,9 +72,18 @@ class LetteringLib extends LetteringCrud {
 	 * @return void
 	 * @throws \ElementException
 	 */
-	public static function letter(Operation $eOperationToLetter): void {
+	public static function letterOperation(Operation $eOperationToLetter, $for): void {
 
-		$eOperationToLetter->expects(['thirdParty', 'type', 'amount']);
+		if($for === 'update') {
+
+			$eOperationToLetter->expects(['id', 'type', 'amount']);
+			$cLettering = self::getByOperation($eOperationToLetter['type'], $eOperationToLetter);
+
+		} else {
+
+			$eOperationToLetter->expects(['id', 'thirdParty', 'type', 'amount']);
+
+		}
 
 		$letteringCode = self::generateNewCode();
 
@@ -88,7 +107,30 @@ class LetteringLib extends LetteringCrud {
 			->getCollection();
 
 		// Chaque opération est lettrée au fur et à mesure en enregistrant le montant lettré
-		$amount = $eOperationToLetter['amount'];
+		if($for === 'update') {
+
+			$amountToLetter = $eOperationToLetter['amount'];
+			$amountLettered = $cLettering->reduce(fn($e, $n) => $n + $e['amount'], 0);
+
+			// Tout est déjà lettré
+			if(round($amountLettered, 2) === round($amountToLetter, 2)) {
+				return;
+			}
+
+			if($amountToLetter > $amountLettered) {
+				$amount = $amountToLetter - $amountLettered;
+			} else {
+				// Problème : on a lettré + que nécessaire => diminuer le lettrage de la dernière opération de contrepartie
+				\Fail::log('Operation::lettering.inconsistency');
+				return;
+			}
+
+		} else {
+
+			$amount = $eOperationToLetter['amount'];
+
+		}
+
 		$type = $eOperationToLetter['type'];
 
 		foreach($cOperation as $eOperation) {

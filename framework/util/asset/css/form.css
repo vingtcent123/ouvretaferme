@@ -1009,6 +1009,7 @@ input[data-autocomplete-items]:placeholder-shown + a.autocomplete-empty:not(:foc
 }
 
 /* Results */
+.autocomplete-items,
 .autocomplete-items:empty {
 	display: none;
 }

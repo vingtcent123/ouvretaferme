@@ -67,6 +67,9 @@
 	color: var(--text);
 	border-radius: 8px;
 }
+.operation-update-selected {
+	border: 2px solid var(--primary);
+}
 .operation-create > * {
 	padding: 0.5rem;
 	height: 100%;

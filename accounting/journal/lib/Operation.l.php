@@ -72,6 +72,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		return $model
+			->whereId('=', $search->get('id'), if: $search->get('id'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->whereDate('>=', $search->get('minDate'), if: $search->get('minDate'))
 			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))
@@ -102,7 +103,9 @@ class OperationLib extends OperationCrud {
 	public static function getByHash(string $hash): \Collection {
 
 		return Operation::model()
-			->select(Operation::getSelection() + ['cOperationCashflow' => OperationCashflowLib::delegateByOperation(),])
+			->select(Operation::getSelection() + [
+				'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
+			])
 			->whereHash($hash)
 			->sort(['id' => SORT_ASC])
 			->getCollection();
@@ -141,6 +144,22 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getForAccounting(int $id): Operation {
+
+		$search = new \Search(['id' => $id]);
+
+		return self::applySearch($search)
+			->select(
+				Operation::getSelection()
+				+ ['account' => ['class', 'description']]
+				+ ['thirdParty' => ['id', 'name']]
+				+ ['cLetteringCredit' => LetteringLib::delegate('credit', ['credit' => Operation::getSelection()])]
+				+ ['cLetteringDebit' => LetteringLib::delegate('debit', ['debit' => Operation::getSelection()])]
+			)
+			->whereThirdParty('!=', NULL)
+			->get();
+	}
+
 	public static function getAllForAccounting(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
 
 		return self::applySearch($search)
@@ -151,8 +170,31 @@ class OperationLib extends OperationCrud {
 				+ ['cLetteringCredit' => LetteringLib::delegate('credit')]
 				+ ['cLetteringDebit' => LetteringLib::delegate('debit')]
 			)
+			->whereThirdParty('!=', NULL)
 			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection();
+	}
+
+	public static function getByThirdParty(\account\FinancialYear $eFinancialYear, string $type): \Collection {
+
+		$search = new \Search(['financialYear' => $eFinancialYear]);
+		if($type === 'customer') {
+			$search->set('accountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+		} else {
+			$search->set('accountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
+		}
+
+		return self::applySearch($search)
+			->select([
+				'accountLabel',
+				'debit' => new \Sql('SUM(IF(type = "'.Operation::DEBIT.'", amount, 0))'),
+				'credit' => new \Sql('SUM(IF(type = "'.Operation::CREDIT.'", amount, 0))'),
+				'thirdParty' => ['id', 'name'],
+			])
+			->whereThirdParty('!=', NULL)
+			->group(['accountLabel', 'thirdParty'])
+			->getCollection();
+
 	}
 
 	public static function getAllForJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
@@ -160,12 +202,34 @@ class OperationLib extends OperationCrud {
 		$eFinancialYear = $search->get('financialYear');
 		$defaultOrder = ($eFinancialYear !== NULL and $eFinancialYear->isCashAccounting()) ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
 
+		$selection = Operation::getSelection()
+			+ ['account' => ['class', 'description']]
+			+ ['thirdParty' => ['id', 'name']];
+
+		// On requête un compte auxiliaire
+		if($search->get('thirdParty') and $search->get('accountLabel')) {
+
+			$eThirdParty = \account\ThirdPartyLib::getById($search->get('thirdParty'));
+
+			if(
+				(
+					$eThirdParty['clientAccountLabel'] !== NULL and
+					mb_substr($eThirdParty['clientAccountLabel'], 0, mb_strlen($search->get('accountLabel'))) === $search->get('accountLabel')
+				) or
+				(
+					$eThirdParty['supplierAccountLabel'] !== NULL and
+					mb_substr($eThirdParty['supplierAccountLabel'], 0, mb_strlen($search->get('accountLabel'))) === $search->get('accountLabel')
+				)
+			) {
+				$selection += [
+					'cLetteringCredit' => LetteringLib::delegate('credit'),
+					'cLetteringDebit' => LetteringLib::delegate('debit'),
+				];
+			}
+		}
+
 		return self::applySearch($search)
-			->select(
-				Operation::getSelection()
-				+ ['account' => ['class', 'description']]
-				+ ['thirdParty' => ['id', 'name']]
-			)
+			->select($selection)
 			->sort($hasSort === TRUE ? $search->buildSort() : $defaultOrder)
 			->getCollection();
 
@@ -333,27 +397,13 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getNotLetteredOperationsByThirdParty(\account\ThirdParty $eThirdParty): \Collection {
-
-		if($eThirdParty->empty()) {
-			return new \Collection();
-		}
-
-		return Operation::model()
-			->select(Operation::getSelection() +
-				['cLetteringCredit' => LetteringLib::delegate('credit'), 'cLetteringDebit' => LetteringLib::delegate('debit')]
-			)
-			->whereLetteringStatus('!=', Operation::TOTAL)
-			->sort(['date' => SORT_ASC])
-			->getCollection();
-
-	}
-
 	public static function preparePayments(array $input): ?\Collection {
 
 		$fw = new \FailWatch();
 		$paymentType = POST('paymentType');
 		$cOperation = new \Collection();
+
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_PAYMENT;
 
 		if(in_array($paymentType, ['incoming-client', 'incoming-supplier', 'outgoing-client', 'outgoing-supplier']) === FALSE) {
 			\Fail::log('Operation::payment.typeMissing');
@@ -366,6 +416,7 @@ class OperationLib extends OperationCrud {
 		$fw->validate();
 
 		$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($eOperation['thirdParty']['id']);
+		$eOperation['hash'] = $hash;
 
 		if(mb_strpos($paymentType, 'client') !== FALSE) {
 
@@ -432,12 +483,13 @@ class OperationLib extends OperationCrud {
 		$eOperationBank['accountLabel'] = $eBankAccount->empty() ? \account\AccountLabelLib::pad($eBankAccount['class']) : $eBankAccount['label'];
 		$eOperationBank['account'] = $eAccount;
 		$eOperationBank['description'] = OperationUi::getDescriptionBank($paymentType);
+		$eOperationBank['hash'] = $hash;
 
 		$cOperation->append($eOperationBank);
 		Operation::model()->insert($eOperationBank);
 
 		// Lettrage
-		LetteringLib::letter($eOperation);
+		LetteringLib::letterOperation($eOperation, 'create');
 
 		return $cOperation;
 
@@ -706,75 +758,90 @@ class OperationLib extends OperationCrud {
 			// Et vérification si un lettrage est possible
 			if($isAccrual and $eOperation['thirdParty']->notEmpty()) {
 
-				$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
-
 				$eThirdParty = \account\ThirdPartyLib::getById($thirdParty);
-				$isChargeOperation = \account\AccountLabelLib::isChargeClass($eOperation['accountLabel']);
-				$isProductOperation = \account\AccountLabelLib::isProductClass($eOperation['accountLabel']);
 
-				// Classe 6 => Fournisseur
-				if($isChargeOperation) {
+				if($for === 'create') {
 
-					$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
-					$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+					$amount = $eOperation['amount'] + ($hasVatAccount ? $eOperationVat['amount'] : 0);
 
-					if($eThirdParty['supplierAccountLabel'] === NULL) {
-
-						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-						$eThirdParty['supplierAccountLabel'] = $accountLabel;
-						\account\ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
-
+					$isChargeOperation = \account\AccountLabelLib::isChargeClass($eOperation['accountLabel']);
+					$isProductOperation = \account\AccountLabelLib::isProductClass($eOperation['accountLabel']);
+	
+					// Classe 6 => Fournisseur
+					if($isChargeOperation) {
+	
+						$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
+						$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+	
+						if($eThirdParty['supplierAccountLabel'] === NULL) {
+	
+							$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
+							$eThirdParty['supplierAccountLabel'] = $accountLabel;
+							\account\ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
+	
+						} else {
+	
+							$accountLabel = $eThirdParty['supplierAccountLabel'];
+	
+						}
+	
+						// Classe 7 => Client
+					} else if($isProductOperation) {
+	
+						$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
+						$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+	
+						if($eThirdParty['clientAccountLabel'] === NULL) {
+	
+							$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+							$eThirdParty['clientAccountLabel'] = $accountLabel;
+							\account\ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
+	
+						} else {
+	
+							$accountLabel = $eThirdParty['clientAccountLabel'];
+	
+						}
+	
 					} else {
+	
+						throw new \Exception('Unable to register a 401 or 411 operation.');
+	
+					}
+	
+					// On en profite pour affecter le numéro de accountLabel aux tiers
+					$eOperationThirdParty = new Operation(
+						[
+							'thirdParty' => $eThirdParty,
+							'date' => $eOperation['date'],
+							'document' => $eOperation['document'],
+							'documentDate' => $eOperation['documentDate'],
+							'amount' => $amount,
+							'account' => $eAccountThirdParty,
+							'type' => $eOperation['type'] === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT,
+							'accountLabel' => $accountLabel,
+							'description' => $description,
+							'financialYear' => $eFinancialYear,
+							'hash' => $hash,
+						]
+					);
+	
+					\journal\Operation::model()->insert($eOperationThirdParty);
 
-						$accountLabel = $eThirdParty['supplierAccountLabel'];
+					// On tente de le lettrer
+					LetteringLib::letterOperation($eOperationThirdParty, $for);
+
+				} else { // Il faudrait vérifier le lettrage
+					if(
+						$eOperation['accountLabel'] === $eThirdParty['clientAccountLabel'] or
+						$eOperation['accountLabel'] === $eThirdParty['supplierAccountLabel']
+					) {
+
+						LetteringLib::letterOperation($eOperation, $for);
 
 					}
-
-					// Classe 7 => Client
-				} else if($isProductOperation) {
-
-					$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
-					$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-
-					if($eThirdParty['clientAccountLabel'] === NULL) {
-
-						$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-						$eThirdParty['clientAccountLabel'] = $accountLabel;
-						\account\ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
-
-					} else {
-
-						$accountLabel = $eThirdParty['clientAccountLabel'];
-
-					}
-
-				} else {
-
-					throw new \Exception('Unable to register a 401 or 411 operation.');
 
 				}
-
-				// On en profite pour affecter le numéro de accountLabel aux tiers
-				$eOperationThirdParty = new Operation(
-					[
-						'thirdParty' => $eThirdParty,
-						'date' => $eOperation['date'],
-						'document' => $eOperation['document'],
-						'documentDate' => $eOperation['documentDate'],
-						'amount' => $amount,
-						'account' => $eAccountThirdParty,
-						'type' => $eOperation['type'] === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT,
-						'accountLabel' => $accountLabel,
-						'description' => $description,
-						'financialYear' => $eFinancialYear,
-						'hash' => $hash,
-					]
-				);
-
-				\journal\Operation::model()->insert($eOperationThirdParty);
-
-				// On tente de le lettrage
-				LetteringLib::letter($eOperationThirdParty);
 
 			}
 		}
@@ -1256,7 +1323,10 @@ class OperationLib extends OperationCrud {
 		]);
 
 		return self::applySearch($search)
-			->select(Operation::getSelection() + ['cLetteringCredit' => LetteringLib::delegate('credit'), 'cLetteringDebit' => LetteringLib::delegate('debit')])
+			->select(Operation::getSelection() + [
+				'cLetteringCredit' => LetteringLib::delegate('credit'),
+				'cLetteringDebit' => LetteringLib::delegate('debit'),
+			])
 			->or(
 				fn() => $this->whereLetteringStatus(NULL),
 				fn() => $this->whereLetteringStatus('!=', Operation::TOTAL),

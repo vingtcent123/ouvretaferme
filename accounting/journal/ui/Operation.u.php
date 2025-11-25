@@ -152,7 +152,9 @@ class OperationUi {
 			form: $form,
 			cPaymentMethod: $cPaymentMethod,
 			cOperation: $cOperationFormatted,
-			eCashflow: $eCashflow);
+			eCashflow: $eCashflow,
+			eOperationRequested: $eOperationBase,
+		);
 
 		$saveButton = $form->submit(
 			s("Modifier"),
@@ -188,18 +190,26 @@ class OperationUi {
 
 	public function getView(\farm\Farm $eFarm, Operation $eOperation): \Panel {
 
+		$args = $_GET;
+		foreach(['id', 'operation', 'origin', 'farm', 'app'] as $filteredField) {
+			unset($args[$filteredField]);
+		}
 		\Asset::css('journal', 'operation.css');
 
 		$h = $this->getSummary($eOperation);
 		$h .= $this->getUtil($eFarm, $eOperation);
 		$h .= $this->getLinked($eFarm, $eOperation);
 
+		if($eOperation['financialYear']->isAccrualAccounting()) {
+			$h .= $this->getLettering($eFarm, $eOperation);
+		}
+
 		return new \Panel(
 			id: 'panel-operation-view',
 			title: s("Détail d'écriture"),
 			body: $h,
 			close: 'passthrough',
-			url: \company\CompanyUi::urlJournal($eFarm).'/operations?operation='.$eOperation['id'],
+			url: \company\CompanyUi::urlJournal($eFarm).'/operations?operation='.$eOperation['id'].'&'.http_build_query($args),
 		);
 	}
 	public function getSummary(Operation $eOperation): string {
@@ -242,10 +252,6 @@ class OperationUi {
 
 		return $h;
 
-	}
-
-	private function pencil(): string {
-		return \Asset::icon('pencil', ['class' => 'operation_view_icon']);
 	}
 
 	public function getUtil(\farm\Farm $eFarm, Operation $eOperation): string {
@@ -321,6 +327,59 @@ class OperationUi {
 		return $h;
 	}
 
+	public function getLettering(\farm\Farm $eFarm, Operation $eOperation): string {
+
+		if($eOperation['type'] === Operation::CREDIT) {
+			$letteringField = 'cLetteringCredit';
+			$letteringOperation = Operation::DEBIT;
+		} else {
+			$letteringField = 'cLetteringDebit';
+			$letteringOperation = Operation::CREDIT;
+		}
+
+		$totalLettered = $eOperation[$letteringField]->reduce(fn($e, $n) => $e['amount'] + $n, 0);
+
+		$h = '<div class="util-title mt-2">';
+			$h .= '<h3>'.s("Lettrage").'</h3>';
+		$h .= '</div>';
+
+		$h .= '<table class="tr-even">';
+
+			$h .= '<tr>';
+				$h .= '<th>'.s("Lettrage").'</th>';
+				$h .= '<td>'.match($eOperation['letteringStatus']) {
+						NULL => s("Non lettré"),
+						Operation::PARTIAL => s("Partiel"),
+						Operation::TOTAL => s("Soldé"),
+					}.'</td>';
+			$h .= '</tr>';
+
+			$h .= '<tr>';
+				$h .= '<th>'.s("Montant lettré").'</th>';
+				$h .= '<td>'.\util\TextUi::money($totalLettered).'</td>';
+			$h .= '</tr>';
+
+			$h .= '<tr>';
+				$h .= '<th>'.s("Montant non lettré").'</th>';
+				$h .= '<td>'.\util\TextUi::money($eOperation['amount'] - $totalLettered).'</td>';
+			$h .= '</tr>';
+
+		$h .= '</table>';
+
+		if($eOperation[$letteringField]->notEmpty()) {
+
+			$h .= '<div class="util-title mt-2">';
+				$h .= '<h5>'.s("Écritures de lettrage").'</h5>';
+			$h .= '</div>';
+
+			foreach($eOperation[$letteringField] as $eLettering) {
+				$h .= $this->getLinkedOperationDetails($eFarm, $eLettering[$letteringOperation], $eLettering['code']);
+			}
+		}
+
+		return $h;
+
+	}
 	public function getLinked(\farm\Farm $eFarm, Operation $eOperation): string {
 
 		if(
@@ -449,13 +508,14 @@ class OperationUi {
 					$h .= '</td>';
 				$h .= '</tr>';
 			$h .= '</table>';
+
 		}
 
 		return $h;
 
 	}
 
-	protected function getLinkedOperationDetails(\farm\Farm $eFarm, Operation $eOperation): string {
+	protected function getLinkedOperationDetails(\farm\Farm $eFarm, Operation $eOperation, ?string $letteringCode = NULL): string {
 
 		$h = '<table class="tr-even">';
 			$h .= '<tr>';
@@ -477,6 +537,19 @@ class OperationUi {
 					$h .= '</div>';
 				$h .= '</th>';
 			$h .= '</tr>';
+
+			if($letteringCode !== NULL) {
+				$h .= '<tr>';
+					$h .= '<td>';
+						$h .= '<div class="operation-view-label">';
+							$h .= s("Code lettrage");
+						$h .= '</div>';
+					$h .= '</td>';
+					$h .= '<td>';
+						$h .= encode($letteringCode);
+					$h .= '</td>';
+				$h .= '</tr>';
+			}
 			$h .= '<tr>';
 				$h .= '<td>';
 					$h .= '<div class="operation-view-label">';
@@ -866,7 +939,7 @@ class OperationUi {
 			$disabled[] = 'thirdParty';
 		}
 
-		$h = '<div class="operation-create" data-index="'.$index.'">';
+		$h = '<div class="operation-create'.(($eOperation['isRequested'] ?? FALSE) ? ' operation-update-selected' : '').'" data-index="'.$index.'">';
 
 			if(($eOperation['id'] ?? NULL) !== NULL) {
 				$h .= $form->hidden('id['.$index.']', $eOperation['id']);
@@ -1207,6 +1280,7 @@ class OperationUi {
 		\Collection $cPaymentMethod,
 		\Collection $cOperation,
 		\bank\Cashflow $eCashflow,
+		Operation $eOperationRequested,
 	): string {
 
 		$isFromCashflow = $eCashflow->notEmpty();
@@ -1225,6 +1299,7 @@ class OperationUi {
 			foreach($cOperation as $eOperation) {
 
 				$suffix = '['.$index.']';
+				$eOperation['isRequested'] = ($eOperationRequested['id'] === $eOperation['id']);
 
 				$eOperation['amountIncludingVAT'] = $eOperation['amount'] + ($eOperation['vatAmount'] ?? 0);
 				$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $cPaymentMethod);

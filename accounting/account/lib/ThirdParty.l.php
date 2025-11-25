@@ -110,7 +110,7 @@ class ThirdPartyLib extends ThirdPartyCrud {
       ->get();
 
 		if($eThirdParty->empty()) {
-			return $prefix.'001';
+			return $prefix.str_pad('001', 5, '0', STR_PAD_LEFT);
 		}
 
 		return (int)$eThirdParty[$field] + 1;

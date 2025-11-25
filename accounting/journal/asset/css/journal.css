@@ -61,3 +61,9 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
 tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 	background-color: rgba(0, 0, 0, 0.07) !important;
 }
+
+.journal-operation-letters {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}

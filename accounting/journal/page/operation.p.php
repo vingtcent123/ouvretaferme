@@ -12,6 +12,10 @@ new \journal\OperationPage(
 	})
 ->read('/journal/operation/{id}', function($data) {
 
+	if($data->e['financialYear']->isAccrualAccounting()) {
+		$data->e['cLetteringCredit'] = \journal\LetteringLib::getByOperation('credit', $data->e);
+		$data->e['cLetteringDebit'] = \journal\LetteringLib::getByOperation('debit', $data->e);
+	}
 	$data->e['cOperationHash'] = \journal\OperationLib::getByHash($data->e['hash']);
 
 	throw new ViewAction($data);
@@ -38,7 +42,15 @@ new \journal\OperationPage(
 })
 ->post('/journal/operation/{id}/doUpdate', function($data) {
 
+	$fw = new FailWatch();
+
+	\journal\Operation::model()->beginTransaction();
+
 	$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation(), for: 'update');
+
+	$fw->validate();
+
+	\journal\Operation::model()->commit();
 
 	throw new ReloadAction('journal', $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated');
 
