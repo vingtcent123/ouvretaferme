@@ -692,9 +692,9 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 	echo new \selling\InvoiceUi()->getSearch($data->search);
 
 	echo '<div class="util-block-important">';
-		echo '<h3>'.s("Vous êtes inquiet à propos de la facturation électronique ?").'</h3>';
+		echo '<h3>'.s("Vous vous questionnez sur la facturation électronique ?").'</h3>';
 		echo '<p>';
-			echo s("Il n'y a aucune raison de l'être, la transition sera progressive et Ouvretaferme sera pleinement compatible avec la réforme");
+			echo s("Ouvretaferme sera pleinement compatible avec la réforme");
 			echo '  '.Asset::icon('arrow-right-circle-fill').'  ';
 			echo '<a href="/facturation-electronique-les-mains-dans-les-poches" class="btn btn-transparent">'.s("En savoir plus").'</a>';
 		'</p>';

@@ -62,7 +62,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Éditez des devis, bons de livraison et factures").'</li>';
-				echo '<li>'.s("Compatible facturation électronique").'</li>';
+				echo '<li><a href="/facturation-electronique-les-mains-dans-les-poches">'.s("Compatible facturation électronique").'</a> 👍</li>';
 				echo '<li>'.s("Utilisez un logiciel de caisse pour vos marchés").'</li>';
 				echo '<li>'.s("Créez le site internet de votre ferme").'</li>';
 			echo '</ul>';
@@ -298,16 +298,16 @@ new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', functi
 	echo '<div class="home-story">';
 		echo '<p>'.s("La réforme de la facturation électronique concerne toutes les entreprises assujetties à la TVA.").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("À partir du 1<sup>er</sup> septembre 2026, elles devront être en mesure de recevoir des factures électroniques de la part de ses fournisseurs.").'</li>';
+			echo '<li>'.s("À partir du 1<sup>er</sup> septembre 2026, elles devront être en mesure de recevoir des factures électroniques de la part de leurs fournisseurs.").'</li>';
 			echo '<li>';
 				echo 	s("À partir du 1<sup>er</sup> septembre 2027, elles seront tenues :");
 				echo '<ul>';
-					echo '<li>'.s("d'émettre leurs factures au format électroniques (<i>e-invoicing</i>)").'</li>';
+					echo '<li>'.s("d'émettre leurs factures au format électronique (<i>e-invoicing</i>)").'</li>';
 					echo '<li>'.s("de transmettre le montant des opérations réalisées avec des clients particuliers ou certaines associations (<i>e-invoicing</i>)").'</li>';
 				echo '</ul>';
 			echo '</li>';
 		echo '</ul>';
-		echo '<p>'.s("Vous pourrez trouver des informations fiables sur la <link>foire aux questions</link> éditée par les finances publiques.", ['link' => '<a href="https://www.impots.gouv.fr/sites/default/files/media/1_metier/2_professionnel/EV/2_gestion/290_facturation_electronique/faq---fe_je-decouvre-la-facturation-electronique.pdf">']).'</p>';
+		echo '<p>'.s("Vous pouvez trouver des informations fiables sur la <link>foire aux questions</link> éditée par les finances publiques.", ['link' => '<a href="https://www.impots.gouv.fr/sites/default/files/media/1_metier/2_professionnel/EV/2_gestion/290_facturation_electronique/faq---fe_je-decouvre-la-facturation-electronique.pdf">']).'</p>';
 	echo '</div>';
 
 	echo '<br/>';
@@ -324,7 +324,7 @@ new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', functi
 	echo '<h3>'.s("Pourquoi il n'y a rien d'urgent ?").'</h3>';
 
 	echo '<div class="home-story">';
-		echo '<p>'.s("Un grand nombre d'opérateurs ayant identifié une opportunité commerciale se sont positionnés sur le marché de la facturation électronique. Il y a une situation de forte concurrence qui poussent certains de ces opérateurs à jouer sur la peur.").'</p>';
+		echo '<p>'.s("Un grand nombre d'opérateurs ayant identifié une opportunité commerciale se sont positionnés sur le marché de la facturation électronique. Il y a une situation de forte concurrence qui poussent certains de ces opérateurs à jouer sur la peur et l'urgence.").'</p>';
 		echo '<p>'.s("Néanmoins, à l'heure actuelle, il faut bien comprendre que les infrastructures techniques ne sont pas encore prêtes du côté de la plupart des PA et que le travail de normalisation est encore en cours.").'</p>';
 	echo '</div>';
 
@@ -336,12 +336,12 @@ new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', functi
 		echo '<p>'.s("Nous allons travailler avec une plateforme agréée qui vous permettra d'envoyer automatiquement vos factures depuis Ouvretaferme. Nous avons choisi <link>SUPER PDP</link>. Cette plateforme est l'une des plus avancées et nous sommes déjà en train de l'intégrer.", ['link' => '<a href="https://www.superpdp.tech/">']).'</p>';
 		echo '<p>'.s("L'utilisation de <i>SUPER PDP</i> est <link>gratuite jusqu'à 1000 factures par mois</link>, ce qui correspond à l'immense majorité des producteurs. Vous pourrez même l'utiliser indépendamment de Ouvretaferme.", ['link' => '<a href="https://www.superpdp.tech/tarifs">']).'</p>';
 		echo '<p>'.s("Nous allons chercher également à intégrer pleinement <i>SUPER PDP</i> avec Ouvretaferme. Cette intégration sera facturée à l'association par <i>SUPER PDP</i> et nous la rendrons donc disponible pour les fermes ayant adhéré à l'association. <b>Notre objectif est que vous puissiez gérer l'ensemble de vos factures de ventes directement depuis Ouvretaferme.</b>").'</p>';
-		echo '<p>'.s("Notre opinion subjective est qu'il ne faut pas être trop pressé, et qu'il est stratégiquement intéressant de laisser d'autres acteurs essuyer les pots cassés et les bugs qui accompagneront le lancement de la réforme.").'</p>';
+		echo '<p><i>'.s("<p>Notre opinion : il ne faut pas être trop pressé et il est stratégiquement intéressant de laisser d'autres acteurs essuyer les plâtres et les bugs qui accompagneront le lancement de la réforme.").'</i></p>';
 	echo '</div>';
 
 	echo '<br/>';
 
-	echo '<h3>'.s("Vous voulez une synthèse simple en 4 points ?").'</h3>';
+	echo '<h3>'.s("Vous souhaitez une synthèse simple en 4 points ?").'</h3>';
 
 	echo '<div class="home-points">';
 		echo '<div class="home-point">';
@@ -354,7 +354,7 @@ new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', functi
 		echo '</div>';
 		echo '<div class="home-point">';
 			echo \Asset::icon('heart');
-			echo '<h4>'.s("Ouvretaferme est un bon logiciel et nous vous donnerons régulièrement des nouvelles.").'</h4>';
+			echo '<h4>'.s("Ouvretaferme est un bon logiciel et nous travaillons activement le sujet.").'</h4>';
 		echo '</div>';
 		echo '<div class="home-point">';
 			echo \Asset::icon('basket3');
