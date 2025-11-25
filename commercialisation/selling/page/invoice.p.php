@@ -99,7 +99,7 @@ new \selling\InvoicePage()
 
 		throw new ViewAction($data);
 
-	}, propertiesUpdate: ['date', 'paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
+	}, propertiesUpdate: ['paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
 
 		if($data->e['content']->empty()) {

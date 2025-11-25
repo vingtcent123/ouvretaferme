@@ -609,7 +609,10 @@ class InvoiceUi {
 
 			}
 
-			$h .= $form->dynamicGroup($eInvoice, 'date');
+			$h .= $form->group(
+				self::p('date')->label,
+				\util\DateUi::numeric($eInvoice['date'])
+			);
 
 			$h .= '<div id="invoice-customize" class="hide">';
 				$h .= $form->dynamicGroups($eInvoice, ['paymentCondition', 'header', 'footer']);
