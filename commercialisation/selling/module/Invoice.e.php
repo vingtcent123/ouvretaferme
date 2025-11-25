@@ -207,6 +207,8 @@ class Invoice extends InvoiceElement {
 			})
 			->setCallback('date.past', function(string $date): bool {
 
+				$this->expects(['farm']);
+
 				$this['lastDate'] = \selling\InvoiceLib::getLastDate($this['farm']);
 
 				return ($this['lastDate'] === NULL or $date >= $this['lastDate']);

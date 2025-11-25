@@ -154,7 +154,9 @@ new Page(function($data) {
 	})
 	->post('doCreateCollection', function($data) {
 
-		$eInvoice = new \selling\Invoice();
+		$eInvoice = new \selling\Invoice([
+			'farm' => $data->eFarm
+		]);
 
 		$fw = new FailWatch();
 
