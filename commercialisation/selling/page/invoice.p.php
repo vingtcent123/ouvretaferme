@@ -139,6 +139,8 @@ new Page(function($data) {
 			$data->cSale = \selling\SaleLib::getForMonthlyInvoice($data->eFarm, $data->month, $data->type);
 		}
 
+		$data->cCustomerGroup = \selling\CustomerGroupLib::getByFarm($data->eFarm);
+
 		$data->e = new \selling\Invoice([
 			'farm' => $data->eFarm,
 			'paymentCondition' => $data->eFarm->getSelling('invoicePaymentCondition'),

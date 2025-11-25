@@ -57,6 +57,11 @@ body[data-template~="game"] h1 {
 	margin-top: .75rem;
 }
 
+.game-board-disabled {
+	opacity: 0.5;
+	cursor: initial !important;
+}
+
 .game-menu {
 	display: flex;
 	align-items: center;
@@ -266,11 +271,10 @@ a.game-intro-start:hover  {
 }
 
 .game-dashboard-more {
-	color: var(--muted);
 	margin-top: 0.25rem;
 	font-size: 0.9rem;
 	letter-spacing: -0.1px;
-	font-weight: normal;
+	color: var(--game);
 }
 
 .game-desk {

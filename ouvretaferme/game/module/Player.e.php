@@ -6,7 +6,19 @@ class Player extends PlayerElement {
 	private static ?bool $premium = NULL;
 
 	public function getBoards(): int {
-		return 1 + (int)(currentDate() >= '2025-12-01') + (int)(currentDate() >= '2025-12-05') + (int)(currentDate() >= '2025-12-10');
+
+		$boards = 0;
+		$currentDate = currentDate();
+
+		foreach(GameSetting::BOARDS_OPENING as $date) {
+
+			if($date === NULL or $currentDate >= $date) {
+				$boards++;
+			}
+
+		}
+
+		return $boards;
 	}
 
 	public function getRole(): string {

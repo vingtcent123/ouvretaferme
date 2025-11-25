@@ -56,9 +56,9 @@ new JsonView('doUpdatePaymentStatus', function($data, AjaxTemplate $t) {
 new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
 
 	if($data->month === NULL) {
-		return new \selling\InvoiceUi()->selectMonthForCreateCollection($data->eFarm);
+		return new \selling\InvoiceUi()->selectMonthForCreateCollection($data->eFarm, $data->cCustomerGroup);
 	} else {
-		return new \selling\InvoiceUi()->createCollection($data->eFarm, $data->month, $data->type, $data->e, $data->cSale);
+		return new \selling\InvoiceUi()->createCollection($data->eFarm, $data->month, $data->type, $data->e, $data->cSale, $data->cCustomerGroup);
 	}
 
 });

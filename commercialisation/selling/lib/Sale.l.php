@@ -500,6 +500,12 @@ class SaleLib extends SaleCrud {
 
 	public static function getForMonthlyInvoice(\farm\Farm $eFarm, string $month, ?string $type): \Collection {
 
+		if($type !== NULL and ctype_digit($type)) {
+			$eCustomerGroup = CustomerGroupLib::getById($type);
+		} else {
+			$eCustomerGroup = new CustomerGroup();
+		}
+
 		$mSale = Sale::model()
 			->select([
 				'customer' => ['type', 'name'],
@@ -510,6 +516,7 @@ class SaleLib extends SaleCrud {
 				'list' => new \Sql('GROUP_CONCAT(m1.id ORDER BY m1.id SEPARATOR ",")')
 			])
 			->where('m1.farm = '.$eFarm['id'])
+			->whereCustomer('IN', fn() => CustomerLib::getByGroup($eCustomerGroup), if: $eCustomerGroup->notEmpty())
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
 			->whereDeliveredAt('LIKE', $month.'%')
 			->whereInvoice(NULL)

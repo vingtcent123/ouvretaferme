@@ -414,7 +414,7 @@ class InvoiceUi {
 
 	}
 
-	public function selectMonthForCreateCollection(\farm\Farm $eFarm): \Panel {
+	public function selectMonthForCreateCollection(\farm\Farm $eFarm, \Collection $cCustomerGroup): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -431,7 +431,7 @@ class InvoiceUi {
 
 			$h .= $form->group(
 				s("Pour quelles ventes ?"),
-				content: $form->select('type', $this->getSelectType(), attributes: ['placeholder' => s("Toutes les ventes")])
+				content: $form->select('type', $this->getSelectType($cCustomerGroup), attributes: ['placeholder' => s("Toutes les ventes"), 'group' => TRUE])
 			);
 
 			$h .= $form->group(
@@ -448,7 +448,7 @@ class InvoiceUi {
 
 	}
 
-	public function createCollection(\farm\Farm $eFarm, string $month, ?string $type, Invoice $e, \Collection $cSale): \Panel {
+	public function createCollection(\farm\Farm $eFarm, string $month, ?string $type, Invoice $e, \Collection $cSale, \Collection $cCustomerGroup): \Panel {
 
 		$e->expects(['lastDate']);
 
@@ -469,7 +469,7 @@ class InvoiceUi {
 
 				$h .= $form->group(
 					s("Clients"),
-					$form->select(NULL, $this->getSelectType(), $type, ['disabled'])
+					$form->select(NULL, $this->getSelectType($cCustomerGroup), $type, ['disabled', 'group' => TRUE])
 				);
 
 			}
@@ -511,13 +511,38 @@ class InvoiceUi {
 
 	}
 
-	protected function getSelectType(): array {
+	protected function getSelectType(\Collection $cCustomerGroup): array {
 
-		return [
-			Customer::PRO => s("Ventes aux clients professionnels"),
-			Customer::PRIVATE => s("Ventes aux clients particuliers"),
-			\payment\MethodLib::TRANSFER => s("Ventes non payées par virement bancaire"),
+		$values = [
+			[
+				'label' => s("Une partie des ventes"),
+				'values' => [
+					Customer::PRO => s("Ventes aux clients professionnels"),
+					Customer::PRIVATE => s("Ventes aux clients particuliers"),
+					\payment\MethodLib::TRANSFER => s("Ventes non payées par virement bancaire"),
+				]
+			]
 		];
+
+		if($cCustomerGroup->notEmpty()) {
+
+			$list = [];
+			foreach($cCustomerGroup as $eCustomerGroup) {
+				$list[] = [
+					'value' => $eCustomerGroup['id'],
+					'label' => $eCustomerGroup['name'],
+					'attributes' => ['style' => 'color: '.$eCustomerGroup['color']]
+				];
+			}
+
+			$values[] = [
+				'label' => s("Les ventes d'un groupe de clients"),
+				'values' => $list
+			];
+
+		}
+
+		return $values;
 
 	}
 

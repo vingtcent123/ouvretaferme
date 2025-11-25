@@ -7,6 +7,13 @@ class GameSetting extends \Settings {
 
 	const BOARDS = 4;
 
+	const BOARDS_OPENING = [
+		1 => NULL,
+		2 => '2025-12-01',
+		3 => '2025-12-05',
+		4 => '2025-12-10',
+	];
+
 	const EMOJI_SEEDLING = '🌱';
 	const EMOJI_WATERING = '🚿';
 	const EMOJI_WEED = '✂️';
