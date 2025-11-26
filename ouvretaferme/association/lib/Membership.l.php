@@ -285,6 +285,8 @@ class MembershipLib {
 				]
 			);
 
+			$eHistoryDb['amount'] = $eHistory['amount'];
+
 			$eHistory = $eHistoryDb;
 
 		}
