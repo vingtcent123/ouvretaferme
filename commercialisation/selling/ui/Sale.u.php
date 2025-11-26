@@ -200,6 +200,7 @@ class SaleUi {
 		$hasDocuments = $cSale->contains(fn($eSale) => $eSale->isMarket() === FALSE);
 
 		$previousSubtitle = NULL;
+		$previousSegment = NULL;
 
 		$h .= '<table class="tr-even" data-batch="#batch-sale">';
 
@@ -293,20 +294,20 @@ class SaleUi {
 								$h .= '<tbody>';
 							}
 
-							$h .= '<tr class="tr-title">';
-								$h .= '<th class="td-checkbox">';
-									$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
-										$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleDaySelection(this)"/>';
-									$h .= '</label>';
-								$h .= '</th>';
-								$h .= '<td colspan="'.$columns.'">';
-									$h .= match($currentSubtitle) {
-										Sale::DRAFT => s("Brouillon"),
-										currentDate() => s("Aujourd'hui"),
-										default => \util\DateUi::textual($currentSubtitle)
-									};
-								$h .= '</td>';
-							$h .= '</tr>';
+									$h .= '<tr class="tr-title">';
+										$h .= '<th class="td-checkbox">';
+											$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
+												$h .= '<input type="checkbox" class="batch-all batch-all-group" onclick="Sale.toggleGroupSelection(this)"/>';
+											$h .= '</label>';
+										$h .= '</th>';
+										$h .= '<td colspan="'.$columns.'">';
+											$h .= match($currentSubtitle) {
+												Sale::DRAFT => s("Brouillon"),
+												currentDate() => s("Aujourd'hui"),
+												default => \util\DateUi::textual($currentSubtitle)
+											};
+										$h .= '</td>';
+									$h .= '</tr>';
 								$h .= '</tbody>';
 								$h .= '<tbody>';
 
@@ -324,17 +325,29 @@ class SaleUi {
 
 							if($currentSegment->is($previousSegment) === FALSE) {
 
-								$h .= '<tr class="tr-title">';
-									$h .= '<td colspan="'.($columns + 1).'">';
-										if($eSale['shopPoint']->empty()) {
-											$h .= s("Aucun mode de livraison");
-										} else if($eSale['shopPoint']['type'] === \shop\Point::HOME) {
-											$h .= s("Livraison à domicile");
-										} else if($eSale['shopPoint']['type'] === \shop\Point::PLACE) {
-											$h .= encode($eSale['shopPoint']['name']);
-										}
-									$h .= '</td>';
-								$h .= '</tr>';
+								if($previousSegment !== NULL) {
+									$h .= '</tbody>';
+									$h .= '<tbody>';
+								}
+
+									$h .= '<tr class="tr-title">';
+										$h .= '<th class="td-checkbox">';
+											$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
+												$h .= '<input type="checkbox" class="batch-all batch-all-group" onclick="Sale.toggleGroupSelection(this)"/>';
+											$h .= '</label>';
+										$h .= '</th>';
+										$h .= '<td colspan="'.$columns.'">';
+											if($eSale['shopPoint']->empty()) {
+												$h .= s("Aucun mode de livraison");
+											} else if($eSale['shopPoint']['type'] === \shop\Point::HOME) {
+												$h .= s("Livraison à domicile");
+											} else if($eSale['shopPoint']['type'] === \shop\Point::PLACE) {
+												$h .= encode($eSale['shopPoint']['name']);
+											}
+										$h .= '</td>';
+									$h .= '</tr>';
+								$h .= '</tbody>';
+								$h .= '<tbody>';
 
 							}
 

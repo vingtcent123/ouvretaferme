@@ -537,7 +537,14 @@ a.game-tile-harvest:hover {
 	background-color: var(--game);
 	color: white;
 	display: flex;
+	align-items: start;
 	justify-content: space-between;
+}
+
+.game-home-links {
+	display: flex;
+	gap: 0.25rem;
+	flex-wrap: wrap;
 }
 
 .game-home h4 {
@@ -555,6 +562,14 @@ a.game-tile-harvest:hover {
 	margin-left: 1rem;
 	margin-bottom: 1rem;
 	border-radius: 1rem;
+}
+
+@media (max-width: 767px) {
+
+	.game-home img {
+		display: none;
+	}
+
 }
 
 .game-home-button {

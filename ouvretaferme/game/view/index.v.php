@@ -63,7 +63,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 		switch(GET('show')) {
 
 			case 'story' :
-				echo new \game\HelpUi()->getStory($data->ePlayer);
+				echo new \game\HelpUi()->getStory();
 				break;
 
 			case 'rules' :

@@ -34,9 +34,11 @@ class HelpUi {
 				$h .= '<div>';
 					$h .= '<h4 class="mb-2">'.s("Vous pensiez pouvoir partir tranquillement en vacances ?").'</h4>';
 					$h .= '<h2>'.s("Détrompez-vous, le père Noël 🎅 a une ultime mission pour vous à accomplir en décembre avant de profiter d'un moment de repos bien mérité !").'</h2>';
-					$h .= '<p class="mb-2">'.s("L'association qui édite {siteName} organise un jeu pour toutes celles et ceux qui utilisent le logiciel au quotidien pour gérer leur production biologique ou acheter leurs produits locaux préférés.").'</p>';
-					$h .= '<div>';
+					$h .= '<p>'.s("L'association qui édite {siteName} organise un jeu pour toutes celles et ceux qui utilisent le logiciel au quotidien pour gérer leur production biologique ou acheter leurs produits locaux préférés.").'</p>';
+					$h .= '<p class="mb-2">'.s("L'objectif est de lever des fonds pour financer et pérenniser l'association sur 2026 !").'</p>';
+					$h .= '<div class="game-home-links">';
 						$h .= '<a href="'.\Lime::getUrl().'/jouer" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Commencer à jouer").'</a> ';
+						$h .= '<a href="'.\association\AssociationSetting::URL.'" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Découvrir l'association").'</a> ';
 						if($ePlayer->getRole() === 'customer') {
 							$h .= '<a href="'.\Lime::getUrl().'/donner" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Faire un don").'</a>';
 						} else {

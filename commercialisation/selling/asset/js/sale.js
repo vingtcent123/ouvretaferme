@@ -38,13 +38,13 @@ class Sale {
 
 	static toggleSelection(target) {
 
-		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
+		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"], .batch-all-group');
 
 		this.changeSelection(target);
 
 	}
 
-	static toggleDaySelection(target) {
+	static toggleGroupSelection(target) {
 
 		CheckboxField.all(target.firstParent('tbody').nextSibling, target.checked, '[name^="batch[]"]');
 
