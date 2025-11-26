@@ -339,29 +339,6 @@ new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', functi
 		echo '<p><i>'.s("<p>Notre opinion : il ne faut pas être trop pressé et il est stratégiquement intéressant de laisser d'autres acteurs essuyer les plâtres et les bugs qui accompagneront le lancement de la réforme.").'</i></p>';
 	echo '</div>';
 
-	echo '<br/>';
-
-	echo '<h3>'.s("Vous souhaitez une synthèse simple en 4 points ?").'</h3>';
-
-	echo '<div class="home-points">';
-		echo '<div class="home-point">';
-			echo \Asset::icon('music-note');
-			echo '<h4>'.s("Il n'y a aucune urgence car personne n'est encore prêt.").'</h4>';
-		echo '</div>';
-		echo '<div class="home-point">';
-			echo \Asset::icon('wallet2');
-			echo '<h4>'.s("Cela ne vous coûtera pas grand chose si vous choisissez un bon logiciel.").'</h4>';
-		echo '</div>';
-		echo '<div class="home-point">';
-			echo \Asset::icon('heart');
-			echo '<h4>'.s("Ouvretaferme est un bon logiciel et nous travaillons activement le sujet.").'</h4>';
-		echo '</div>';
-		echo '<div class="home-point">';
-			echo \Asset::icon('basket3');
-			echo '<h4>'.s("Vous pouvez donner la priorité à vos productions bio et locales.").'</h4>';
-		echo '</div>';
-	echo '</div>';
-
 });
 
 new AdaptativeView('/presentation/formations', function($data, MainTemplate $t) {
