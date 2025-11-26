@@ -79,8 +79,8 @@ class FacturXLib {
 				$eInvoice['customer']['legalName'] = $buyer['name'];
 
 				// adresses électroniques
-				//$sellerAddress = '315143296_104';
-				//$buyerAddress = '315143296_103';
+				$sellerAddress = '315143296_104';
+				$buyerAddress = '315143296_103';
 
 			} else if($testChorusPro) {
 
