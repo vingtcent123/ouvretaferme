@@ -24,47 +24,72 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
-		$testChorusPro = FALSE;
-		$testSuperPDP = TRUE;
+		$testChorusPro = TRUE;
+		$testSuperPDP = FALSE;
 
 		// SuperPDP attend un SIREN (scheme 0002) mais ChorusPro attend un SIRET (0009)
 		// => On ne modifie pas pour le moment pour éviter que l'envoi des factures sur ChorusPro échoue.
-		$sellerDUNS = '281818298'; // JdT
 		$sellerVat = $eInvoice['farm']['configuration']['invoiceVat'];
-		if(LIME_ENV === 'dev') {
-
-			if($testChorusPro) {
-				$sellerSiret = '32046246515203';
-			} else if($testSuperPDP) {
-				$sellerSiret = '00000000200001';
-				$sellerVat = 'FR18000000002';
-			} else {
-				$sellerSiret = str_replace(' ', '', $eInvoice['farm']['siret'] ?? '');
-			}
-		} else {
-			$sellerSiret = str_replace(' ', '', $eInvoice['farm']['siret'] ?? '');
-		}
+		$sellerSiret = str_replace(' ', '', $eInvoice['farm']['siret'] ?? '');
 		$sellerSiren = mb_substr($sellerSiret, 0, 9);
 
 		$buyerVat = $eInvoice['customer']['invoiceVat'];
-		if(LIME_ENV === 'dev') {
-			if($testChorusPro) {
-				$buyerSiret = '33345262604899';
-			} else if($testSuperPDP) {
-				$buyerVat = 'FR15000000001';
-				$buyerSiret = '00000000100001';
-			} else {
-				$buyerSiret = str_replace(' ', '', $eInvoice['customer']['siret'] ?? '');
-			}
-		} else {
-			$buyerSiret = str_replace(' ', '', $eInvoice['customer']['siret'] ?? '');
-		}
+		$buyerSiret = str_replace(' ', '', $eInvoice['customer']['siret'] ?? '');
 		$buyerSiren = mb_substr($buyerSiret, 0, 9);
+		// Adresse électronique pour la facture électronique
+		$buyerAddress = '';
+		$sellerAddress = '';
 
 		$invoiceId = $eInvoice['name'];
+
 		if(LIME_ENV === 'dev') {
+
 			$invoiceId .= '-'.time();
 			$invoiceId = mb_substr($invoiceId, 0, 20);
+
+			if($testSuperPDP) {
+
+				/**
+				 * Super PDP :
+				 * 000000001 = Tricatel
+				 * 000000002 = Burger Queen
+				 */
+				$seller = [
+					'name' => 'Burger Queen',
+					'siren' => '000000002',
+					'siret' => '00000000200001',
+					'vat' => 'FR18000000002',
+				];
+
+				$buyer = [
+					'name' => 'Tricatel',
+					'siret' => '00000000100001',
+					'siren' => '000000001',
+					'vat' => 'FR15000000001',
+				];
+
+				$sellerSiret = $seller['siret'];
+				$sellerSiren = $seller['siren'];
+				$sellerVat = $seller['vat'];
+				$eInvoice['farm']['legalName'] = $seller['name'];
+
+				$buyerSiret = $buyer['siret'];
+				$buyerSiren = $buyer['siren'];
+				$buyerVat = $buyer['vat'];
+				$eInvoice['customer']['legalName'] = $buyer['name'];
+
+				// adresses électroniques
+				//$sellerAddress = '315143296_104';
+				//$buyerAddress = '315143296_103';
+
+			} else if($testChorusPro) {
+
+				$sellerSiret = '32046246515203';
+				$sellerSiren = '320462465';
+				$buyerSiret = '33345262604899';
+				$buyerSiren = '333452626';
+
+			}
 		}
 
 		$xml = '<?xml version="1.0" encoding="utf-8"?>
@@ -103,18 +128,21 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ram:GlobalID schemeID="0002">'.encode($sellerSiren).'</ram:GlobalID><!--BT-29-->
 				<ram:Name>'.encode($eInvoice['farm']['legalName']).'</ram:Name><!--BT-24-->
 				<ram:SpecifiedLegalOrganization><!--BT-30-->
-					<ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>'
-			./*
+					'./*
  passe sur SUPER PDP : <ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>
  passe sur Chorus Pro : <ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>
- */'
+ */
+				((LIME_ENV === 'dev' and $testSuperPDP)
+					? '<ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>'
+					: '<ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>'
+				).'
 				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
 				</ram:PostalTradeAddress>
-				<ram:URIUniversalCommunication><!--BT-34-00-->
-					<ram:URIID schemeID="9957">'.encode($sellerVat).'</ram:URIID><!--BT-34-->
-				</ram:URIUniversalCommunication>
+				'.($sellerAddress ? '<ram:URIUniversalCommunication><!--BT-34-00-->
+					<ram:URIID schemeID="0225">'.encode($sellerAddress).'</ram:URIID><!--BT-34-->
+				</ram:URIUniversalCommunication>' : '').'
 				'.($sellerVat !== NULL ? '
 				<ram:SpecifiedTaxRegistration><!--BT-31-00-->
 					<ram:ID schemeID="VA">'.encode($sellerVat).'</ram:ID><!--BT-31-->
@@ -129,9 +157,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ram:PostalTradeAddress><!--BG-8-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-55-->
 				</ram:PostalTradeAddress>
-				<ram:URIUniversalCommunication><!--BT-49-00-->
-					<ram:URIID schemeID="9957">'.encode($buyerVat).'</ram:URIID><!--BT-49-->
-				</ram:URIUniversalCommunication>
+				'.($buyerAddress ? '<ram:URIUniversalCommunication><!--BT-49-00-->
+					<ram:URIID schemeID="0225">'.encode($buyerAddress).'</ram:URIID><!--BT-49-->
+				</ram:URIUniversalCommunication>' : '').'
 			</ram:BuyerTradeParty>
 		</ram:ApplicableHeaderTradeAgreement>
 		<ram:ApplicableHeaderTradeDelivery/><!--BG-13-00-->
