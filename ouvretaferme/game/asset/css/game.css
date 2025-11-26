@@ -539,6 +539,7 @@ a.game-tile-harvest:hover {
 	display: flex;
 	align-items: start;
 	justify-content: space-between;
+	gap: 1rem;
 }
 
 .game-home-links {

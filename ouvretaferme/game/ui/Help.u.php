@@ -102,6 +102,10 @@ class HelpUi {
 				$h .= '</ul>';
 				$h .= '<p>'.s("Une soupe de légumes se cuisine en utilisant 1 légume de chacune des 5 espèces proposées dans le jeu.").'</p>';
 			$h .= '</div>';
+			$h .= '<h3>'.s("Ce qu'il y a à gagner").'</h3>';
+			$h .= '<div class="util-block mb-2">';
+				$h .= '<p>'.s("Personne ne le sait vraiment, c'est le Père Noël qui décidera le 25 décembre, mais encore faut-il qu'ils aient été attirés en masse sur le jeu...").'</p>';
+			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block mb-2">';
 				$h .= '<p>'.s("Une fois par jour, un ami peut vous remotiver pour vous faire gagner {value} de travail, et vous-même pouvez remotiver un ami.", PlayerUi::getTime(GameSetting::BONUS_MOTIVATION)).'</p>';
