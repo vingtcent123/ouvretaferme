@@ -276,18 +276,33 @@ class MembershipLib {
 
 		} else {
 
+			// On fait expirer les sessions précédentes avant de repartir sur celle ci (cas de plusieurs onglets : le dernier est le seul valable)
+			if($eHistoryDb['checkoutId'] !== NULL) {
+				$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
+				$eStripeFarm = self::getAssociationStripeFarm($eFarmOtf);
+				try {
+					\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $eHistoryDb['checkoutId']);
+				} catch(\Exception) {}
+			}
+
 			History::model()->update(
 				$eHistoryDb, [
 					'amount' => $eHistory['amount'],
 					'paymentStatus' => History::INITIALIZED,
 					'status' => History::PROCESSING,
 					'updatedAt' => new \Sql('NOW()'),
+					'checkoutId' => NULL,
 				]
 			);
 
-			$eHistoryDb['amount'] = $eHistory['amount'];
-
-			$eHistory = $eHistoryDb;
+			// On re-récupère l'entrée à jour
+			$eHistory = History::model()
+				->select(History::getSelection() + ['customer' => ['id', 'invoiceEmail']])
+				->whereCustomer($eCustomer)
+				->whereType($eHistory['type'])
+				->whereMembership($membershipYear)
+				->wherePaymentStatus(History::INITIALIZED)
+				->get();
 
 		}
 
