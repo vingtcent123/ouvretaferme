@@ -9,8 +9,8 @@ class GameSetting extends \Settings {
 
 	const BOARDS_OPENING = [
 		1 => NULL,
-		2 => '2025-12-01',
-		3 => '2025-12-05',
+		2 => '2025-11-30',
+		3 => '2025-12-04',
 		4 => '2025-12-10',
 	];
 
@@ -20,13 +20,14 @@ class GameSetting extends \Settings {
 	const EMOJI_HARVEST = '🧺';
 
 	const TIME_DAY = 8;
-	const TIME_DAY_PREMIUM = 12;
+	const TIME_DAY_PREMIUM = 11;
 
 	const TIME_HARVESTING = 4;
 	const TIME_WATERING = 1;
 	const TIME_WEED = 6;
 	const TIME_SEEDLING = 1.5;
 
+	const BONUS_MOTIVATION = 1;
 	const BONUS_WEED = 2;
 	const BONUS_SOUP = 2;
 	const BONUS_PIVOINE = 30;

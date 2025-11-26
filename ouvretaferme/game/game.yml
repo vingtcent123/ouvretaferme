@@ -43,8 +43,8 @@ Player:
   user: user\User
   time: decimal(8, 2, 0, null) = 0
   timeUpdatedAt: date = SPECIAL(now)
-  gift: int8(0, null) = 0
-  lastGift: date = SPECIAL(now)
+  giftSentAt: ?date
+  giftReceivedAt: ?date
   points: int(0, null) = 0
   createdAt: date = SPECIAL(now)
   UNIQUE: [

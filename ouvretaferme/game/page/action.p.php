@@ -37,9 +37,16 @@ new Page(function($data) {
 			throw new ReloadAction('game', 'Action::friendNotAdded');
 
 	})
-	->post('doFriendRemove', function($data) {
+	->post('doMotivation', function($data) {
 
 		$data->ePlayerFriend = \game\PlayerLib::getByUser(POST('friend', 'user\User'))->validate();
+
+		\game\PlayerLib::motivate($data->ePlayer, $data->ePlayerFriend) ?
+			throw new ReloadAction('game', 'Action::motivated') :
+			throw new ReloadAction('game', 'Action::notMotivated');
+
+	})
+	->post('doFriendRemove', function($data) {
 
 		\game\PlayerLib::removeFriend($data->ePlayer, $data->ePlayerFriend);
 

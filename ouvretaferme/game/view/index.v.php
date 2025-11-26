@@ -77,6 +77,15 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 			default :
 
 				echo new \game\DeskUi()->dashboard($data->ePlayer, $data->cGrowing, $data->cFood);
+
+				foreach(\game\GameSetting::BOARDS_OPENING as $board => $date) {
+
+					if($date === currentDate()) {
+						echo '<div class="game-intro text-center mt-2 font-lg">🎉 '.s("Vous pouvez maintenant jouer avec le plateau {value}", \Asset::icon($board.'-circle-fill')).' 🥳</div>';
+					}
+
+				}
+
 				echo new \game\DeskUi()->play($data->ePlayer, $data->board, $data->cTile, $data->cGrowing);
 				echo new \game\DeskUi()->tabs($data->ePlayer, $data->cPlayerRanking, $data->cPlayerFriend, $data->cGrowing, $data->cFood, $data->cHistory);
 

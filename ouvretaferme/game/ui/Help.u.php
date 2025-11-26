@@ -89,7 +89,7 @@ class HelpUi {
 				$h .= '</ul>';
 				$h .= '<p>'.s("Votre compteur de temps de travail est remis à zéro chaque nuit à minuit. Les actions décomptent votre temps de travail, mais vous n'avez pas à attendre, elles sont réalisées immédiatement !").'</p>';
 				$h .= '<p>'.s("Une fois qu'une parcelle est semée, elle est semée et vous ne pouvez pas revenir en arrière.").'</p>';
-				$h .= '<p>'.s("Le 1<sup>er</sup>, le 5 et le 10 décembre, vous débloquez des plateaux supplémentaires.").'</p>';
+				$h .= '<p>'.s("Le 30 novembre et les 4 et 10 décembre, vous débloquez des plateaux supplémentaires.").'</p>';
 			$h .= '</div>';
 			$h .= '<h3>'.s("Comment gagner ?").'</h3>';
 			$h .= '<div class="util-block mb-2">';
@@ -102,13 +102,14 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block mb-2">';
+				$h .= '<p>'.s("Une fois par jour, un ami peut vous remotiver pour vous faire gagner {value} de travail, et vous-même pouvez remotiver un ami.", PlayerUi::getTime(GameSetting::BONUS_MOTIVATION)).'</p>';
 				$h .= match($ePlayer->getRole()) {
 					'farmer' => '<p>'.s("Si vous êtes membre de l'équipe d'une ferme qui a adhéré à l'association Ouvretaferme ou si vous avez fait un don pour soutenir l'association, vous débloquez les deux bonus suivants :").'</p>',
 					'customer' => '<p>'.s("Si vous avez fait un don pour soutenir l'association, vous débloquez les deux bonus suivants :").'</p>'
 				};
 				$h .= '<ul class="mb-1">';
-					$h .= '<li>'.s("{premium} heures de travail par jour au lieu de {value} heures", ['value' => GameSetting::TIME_DAY, 'premium' => GameSetting::TIME_DAY_PREMIUM]).'</li>';
-					$h .= '<li>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir {value} heures de temps de travail en plus", GameSetting::BONUS_SOUP).'</li>';
+					$h .= '<li>'.s("{premium} de travail par jour au lieu de {value}", ['value' => PlayerUi::getTime(GameSetting::TIME_DAY), 'premium' => PlayerUi::getTime(GameSetting::TIME_DAY_PREMIUM)]).'</li>';
+					$h .= '<li>'.s("Manger une soupe que vous avez cuisinée vous permet d'obtenir {value} de temps de travail en plus", PlayerUi::getTime(GameSetting::BONUS_SOUP)).'</li>';
 				$h .= '</ul>';
 				$h .= '<p class="text-center">';
 					if($ePlayer->getRole() === 'farmer') {

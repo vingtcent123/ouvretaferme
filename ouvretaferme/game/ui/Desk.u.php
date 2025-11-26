@@ -17,7 +17,9 @@ class DeskUi {
 
 		$player = $ePlayer->isOnline() ? '' : '&player='.$ePlayer['id'];
 
-		$h = '<div class="game-boards">';
+		$h = '';
+
+		$h .= '<div class="game-boards">';
 			for($position = 1; $position <= GameSetting::BOARDS; $position++) {
 
 				if($ePlayer->getBoards() >= $position) {

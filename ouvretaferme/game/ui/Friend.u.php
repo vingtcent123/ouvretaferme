@@ -25,6 +25,8 @@ class FriendUi {
 			return $h;
 		}
 
+		$h .= '<div class="mb-1">'.s("Vous pouvez motiver un de vos amis par jour, ce qui lui rapporte {value} de temps de travail !", PlayerUi::getTime(GameSetting::BONUS_MOTIVATION)).'</div>';
+
 		$position = 1;
 
 		$h .= '<table class="game-table tr-bordered">';
@@ -43,7 +45,7 @@ class FriendUi {
 					$h .= '<tr>';
 						$h .= '<td class="td-min-content text-end">'.\util\TextUi::th($position++).'</td>';
 						$h .= '<td>';
-							$h .= encode($ePlayer['name']);
+							$h .= '<a href="/jouer?player='.$ePlayer['id'].'">'.encode($ePlayer['name']).'</a>';
 						$h .= '</td>';
 						$h .= '<td>';
 							$h .= match($ePlayer['user']['role']['fqn']) {
@@ -55,7 +57,12 @@ class FriendUi {
 							$h .= '<b>'.$ePlayer['points'].'</b>';
 						$h .= '</td>';
 						$h .= '<td class="td-min-content">';
-							$h .= '<a href="/jouer?player='.$ePlayer['id'].'" class="btn btn-outline-secondary">'.s('Voir la partie').'</a> ';
+							if(
+								$ePlayerOnline['giftSentAt'] !== currentDate() and
+								$ePlayer['giftReceivedAt'] !== currentDate()
+							) {
+								$h .= '<a data-ajax="/game/action:doMotivation" post-friend="'.$ePlayer['user']['id'].'" class="btn btn-outline-primary">'.s('💪 Motiver').'</a> ';
+							}
 							$h .= '<a data-ajax="/game/action:doFriendRemove" class="btn btn-outline-danger" post-friend="'.$ePlayer['user']['id'].'" data-confirm="'.s("Fin de l'amitié ?").'">'.\Asset::icon('trash').'</a>';
 						$h .= '</td>';
 					$h .= '</tr>';

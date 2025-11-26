@@ -75,6 +75,17 @@ class PlayerLib extends PlayerCrud {
 
 	}
 
+	public static function resetTime(): void {
+
+			Player::model()
+				->whereTimeUpdatedAt('!=', currentDate())
+				->update([
+					'time' => 0,
+					'timeUpdatedAt' => currentDate()
+				]);
+
+	}
+
 	public static function changeTime(Player $e, float $value): bool {
 
 		$affected = Player::model()
@@ -206,6 +217,37 @@ class PlayerLib extends PlayerCrud {
 		} catch(\DuplicateException) {
 			Friend::model()->rollBack();
 		}
+
+		return TRUE;
+
+	}
+
+	public static function motivate(Player $ePlayer, Player $ePlayerFriend): bool {
+
+		Friend::model()->beginTransaction();
+
+			if(
+				Friend::model()
+				->whereUser($ePlayer['user'])
+				->whereFriend($ePlayerFriend['user'])
+				->exists() and
+				$ePlayer['giftSentAt'] !== currentDate() and
+				$ePlayerFriend['giftReceivedAt'] !== currentDate()
+			) {
+
+				self::changeTime($ePlayerFriend, 1);
+
+				Player::model()->update($ePlayer, [
+					'giftSentAt' => new \Sql('CURRENT_DATE'),
+				]);
+
+				Player::model()->update($ePlayer, [
+					'giftReceivedAt' => new \Sql('CURRENT_DATE')
+				]);
+
+			}
+
+		Friend::model()->commit();
 
 		return TRUE;
 

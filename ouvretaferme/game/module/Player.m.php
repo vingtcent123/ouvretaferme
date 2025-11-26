@@ -42,14 +42,14 @@ class PlayerModel extends \ModuleModel {
 			'user' => ['element32', 'user\User', 'unique' => TRUE, 'cast' => 'element'],
 			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
 			'timeUpdatedAt' => ['date', 'cast' => 'string'],
-			'gift' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'lastGift' => ['date', 'cast' => 'string'],
+			'giftSentAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'giftReceivedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'points' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'code', 'user', 'time', 'timeUpdatedAt', 'gift', 'lastGift', 'points', 'createdAt'
+			'id', 'name', 'code', 'user', 'time', 'timeUpdatedAt', 'giftSentAt', 'giftReceivedAt', 'points', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -71,12 +71,6 @@ class PlayerModel extends \ModuleModel {
 				return 0;
 
 			case 'timeUpdatedAt' :
-				return new \Sql('CURDATE()');
-
-			case 'gift' :
-				return 0;
-
-			case 'lastGift' :
 				return new \Sql('CURDATE()');
 
 			case 'points' :
@@ -124,12 +118,12 @@ class PlayerModel extends \ModuleModel {
 		return $this->where('timeUpdatedAt', ...$data);
 	}
 
-	public function whereGift(...$data): PlayerModel {
-		return $this->where('gift', ...$data);
+	public function whereGiftSentAt(...$data): PlayerModel {
+		return $this->where('giftSentAt', ...$data);
 	}
 
-	public function whereLastGift(...$data): PlayerModel {
-		return $this->where('lastGift', ...$data);
+	public function whereGiftReceivedAt(...$data): PlayerModel {
+		return $this->where('giftReceivedAt', ...$data);
 	}
 
 	public function wherePoints(...$data): PlayerModel {
