@@ -933,11 +933,11 @@ class AnalyzeLib {
 
 			foreach($cItem as $eItem) {
 
-				$accountId = ($eSale['type'] === Sale::PRO) ? $eItem['product']['proAccount']['id'] ?? NULL : $eItem['product']['privateAccount']['id'] ?? NULL;
+				$accountId = ($eSale['type'] === Sale::PRO) ? ($eItem['product']['proAccount']['id'] ?? NULL) : ($eItem['product']['privateAccount']['id'] ?? NULL);
 				if($accountId === NULL) { // TODO cas de la vente 23234 et de la vente 65650 (items rattachés à des produits qui n'existent plus)
 					$eAccount = new \account\Account(['id' => NULL, 'vatRate' => $eItem['vatRate'], 'vatAccount' => $eAccountVatDefault]);
 				} else {
-					$eAccount = $cAccount->offsetGet(Item::PRO ? $eItem['product']['proAccount']['id'] : $eItem['product']['privateAccount']['id']);
+					$eAccount = $cAccount->offsetGet($accountId);
 				}
 
 				$debit = $eItem['price'] > 0 ? 0 : $eItem['price'];
