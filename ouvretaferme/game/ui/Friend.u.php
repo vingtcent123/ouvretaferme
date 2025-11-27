@@ -58,7 +58,7 @@ class FriendUi {
 						$h .= '</td>';
 						$h .= '<td class="td-min-content">';
 							if(
-								($ePlayerOnline['giftSentAt'] !== currentDate() or $ePlayer['name'] === 'VingtCent') /* Triche */ and
+								($ePlayerOnline['giftSentAt'] !== currentDate() or $ePlayerOnline['name'] === 'VingtCent') /* Triche */ and
 								$ePlayer['giftReceivedAt'] !== currentDate()
 							) {
 								$h .= '<a data-ajax="/game/action:doMotivation" post-friend="'.$ePlayer['user']['id'].'" class="btn btn-outline-primary">'.s('💪 Motiver').'</a> ';
