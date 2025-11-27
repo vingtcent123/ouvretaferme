@@ -2,7 +2,7 @@
 namespace account;
 
 class AccountLib extends AccountCrud {
-	
+
 	public static function getByClass(string $class): Account {
 
 		$eAccount = new Account();
@@ -93,7 +93,6 @@ class AccountLib extends AccountCrud {
 			->select(
         ['name' => new \Sql('CONCAT(class, ". ", description)')]
         + Account::getSelection()
-        + ['vatAccount' => ['class', 'vatRate', 'description']]
 				+ ['journalCode' => ['id']],
       )
 			->sort(['class' => SORT_ASC])

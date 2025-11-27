@@ -118,6 +118,8 @@ class AlertUi {
 
 			'Sale::ticket.email' => s("Veuillez vérifier l'adresse email"),
 
+			'Selling::preAccounting.noAccount' => s("Certains produits n'ont pas de classe de compte, veuillez les préciser pour faire votre export pré-comptable."),
+
 			default => NULL
 
 		};

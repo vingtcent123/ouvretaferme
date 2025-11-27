@@ -396,6 +396,13 @@ class ProductUi {
 
 		}
 
+		if($eFarm->hasAccounting() === FALSE) {
+			$class = ' disabled';
+		} else {
+			$class = '';
+		}
+		$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-menu-item'.$class.'">'.\Asset::icon('journal-text').'<span>'.s("Classe de compte").'</span></a>';
+
 		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
 			$menu .= \Asset::icon('toggle-on');
 			$menu .= '<span>'.s("Activer").'</span>';
@@ -937,6 +944,9 @@ class ProductUi {
 			$h .= '<br/>';
 			$h .= $this->getFieldPrices($form, $eProduct, 'create');
 
+			$h .= '<br/>';
+			$h .= $this->getFieldAccounting($form, $eProduct, 'create');
+
 			$h .= $form->group(
 				content: $form->submit(s("Créer le produit"))
 			);
@@ -1018,6 +1028,9 @@ class ProductUi {
 
 			$h .= '<br/>';
 			$h .= $this->getFieldPrices($form, $eProduct, 'update');
+
+			$h .= '<br/>';
+			$h .= $this->getFieldAccounting($form, $eProduct, 'update');
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -1201,6 +1214,68 @@ class ProductUi {
 			}
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function updateAccount(\farm\Farm $eFarm, \Collection $cProduct): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/selling/product:doUpdateAccountCollection', ['id' => 'product-update-account']);
+
+			$h .= $this->getFieldAccounting($form, new Product(['farm' => $eFarm, 'proAccount' => new \account\Account(), 'privateAccount' => new \account\Account()]), 'create');
+
+			foreach($cProduct as $eProduct) {
+				$h .= $form->hidden('ids[]', $eProduct['id']);
+			}
+
+			$h .= $form->submit(s("Enregistrer"));
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-product-create',
+			title: s("Classes de compte des produits sélectionnés"),
+			body: $h
+		);
+
+	}
+
+	private function getFieldAccounting(\util\FormUi $form, Product $eProduct, string $for): string {
+
+		$h = '<h3>'.s("Comptabilité - Classe de compte").'</h3>';
+
+		if($for === 'create') {
+			$h .= '<div class="util-block-help">'.s("Pour faciliter votre comptabilité, un produit peut être rattaché à une classe de compte. Ainsi, lors de l'export de vos données ou lors de l'import dans le module de comptabilité, vos ventes seront correctement réparties.").'</div>';
+		}
+
+		if($eProduct['farm']->hasAccounting() === FALSE) {
+			$h .= '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
+			return $h;
+		}
+
+		$h .= '<br/>';
+
+		$h .= '<div class="util-block bg-background-light">';
+
+			$h .= $form->group(
+				s("Vente aux clients professionnels"),
+				$form->inputGroup(
+					$form->dynamicField($eProduct, 'proAccount'),
+				)
+			);
+
+			$h .= $form->group(
+				s("Vente aux clients particuliers"),
+				$form->inputGroup(
+					$form->dynamicField($eProduct, 'privateAccount'),
+				)
+			);
+
+		$h .= '</div>';
+
 
 		return $h;
 
@@ -1494,6 +1569,17 @@ class ProductUi {
 				$d->attributes = [
 					'mandatory' => TRUE
 				];
+				break;
+
+			case 'proAccount':
+			case 'privateAccount':
+				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? $e->expects([$property]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'));
 				break;
 
 		}

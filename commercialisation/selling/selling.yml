@@ -277,6 +277,8 @@ Product:
   stockUpdatedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
+  privateAccount: ?company\GenericAccount
+  proAccount: ?company\GenericAccount
   INDEX: [
     ["farm"],
     ["unprocessedPlant"]

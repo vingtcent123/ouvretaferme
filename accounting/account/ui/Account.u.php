@@ -174,7 +174,7 @@ class AccountUi {
 
 	}
 
-	public static function getAutocomplete(int $farm, Account $eAccount, \Search $search = new \Search()): array {
+	public static function getAutocomplete(int $farm, Account|\company\GenericAccount $eAccount, \Search $search = new \Search()): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -225,7 +225,7 @@ class AccountUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE, array $query = []): void {
+	public function query(\PropertyDescriber $d, ?int $farm, bool $multiple = FALSE, array $query = []): void {
 
 		$d->prepend = \Asset::icon('journal-text');
 		$d->field = 'autocomplete';
@@ -233,9 +233,18 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir la classe...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
-		$d->autocompleteResults = function(Account $e) use ($farm) {
-			return self::getAutocomplete($farm, $e);
+		$d->autocompleteUrl = function(\util\FormUi $form, $e) use (&$farm, $query) {
+			if($farm === NULL) {
+				$farm = $e['farm']['id'];
+			}
+			return \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
+		};
+
+		$d->autocompleteResults = function(Account|\company\GenericAccount $eAccount, $e) use ($farm) {
+			if($farm === NULL) {
+				$farm = $e['farm']['id'];
+			}
+			return self::getAutocomplete($farm, $eAccount);
 		};
 
 	}

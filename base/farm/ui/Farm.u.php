@@ -661,6 +661,17 @@ class FarmUi {
 				$h .= \Asset::icon('boxes');
 			$h .= '</a>';
 
+			$linkAction = $eFarm->hasAccounting() ? 'href="/selling/csv:exportAccounting?id='.$eFarm['id'].'&year='.$year.'"' : 'onclick="void(0);"';
+			$h .= '<a '.$linkAction.' class="util-button '.($eFarm->hasAccounting() ? '' : ' disabled').'" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter la pré-comptabilité").'</h4>';
+					if($eFarm->hasAccounting() === FALSE) {
+						$h .= '<div class="util-annotation">'.s("Activez le module de comptabilité pour y accéder !").'</div>';
+					}
+				$h .= '</div>';
+				$h .= \Asset::icon('file-spreadsheet');
+			$h .= '</a>';
+
 		$h .= '</div>';
 
 		$h .= '<h3>'.s("Les données intégrales").'</h3>';

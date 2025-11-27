@@ -2155,5 +2155,21 @@ class AnalyzeUi {
 
 	}
 
+	public function getPreAccountingHeader(\farm\Farm $eFarm): array {
+
+		return [
+			'account',
+			'description',
+			'document',
+			'date',
+			'debit',
+			'credit',
+			'payment_method',
+			'customer_id',
+			'customer_name',
+		];
+
+	}
+
 }
 ?>

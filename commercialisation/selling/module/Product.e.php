@@ -6,11 +6,11 @@ class Product extends ProductElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'vignette'],
+			'farm' => ['name', 'vignette', 'hasAccounting'],
 			'unprocessedPlant' => ['name', 'fqn', 'vignette'],
 			'unit' => \selling\Unit::getSelection(),
 			'quality' => ['name', 'shortName', 'logo'],
-			'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool')
+			'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
 		];
 
 	}
@@ -470,6 +470,16 @@ class Product extends ProductElement {
 				} else {
 					return TRUE;
 				}
+
+			})
+			->setCallback('proAccount.check', function(\account\Account|\company\GenericAccount $eAccount) {
+
+				return $eAccount->empty() or \account\AccountLib::getById($eAccount['id'])->notEmpty();
+
+			})
+			->setCallback('privateAccount.check', function(\account\Account|\company\GenericAccount $eAccount) {
+
+				return $eAccount->empty() or \account\AccountLib::getById($eAccount['id'])->notEmpty();
 
 			});
 

@@ -6,7 +6,7 @@ class Account extends AccountElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'vatAccount' => ['id', 'class', 'vatRate'],
+			'vatAccount' => ['id', 'class', 'vatRate', 'description'],
 			'journalCode' => \journal\JournalCode::getSelection(),
 		];
 

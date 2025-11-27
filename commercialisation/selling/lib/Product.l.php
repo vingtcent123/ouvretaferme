@@ -10,7 +10,8 @@ class ProductLib extends ProductCrud {
 			'origin', 'additional', 'description', 'quality',
 			'pro', 'private', 'proOrPrivate',
 			'proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat',
-			'proOrPrivatePrice'
+			'proOrPrivatePrice',
+			'proAccount', 'privateAccount',
 		];
 	}
 
@@ -40,7 +41,8 @@ class ProductLib extends ProductCrud {
 				'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'processedComposition', 'mixedFrozen', 'processedPackaging', 'processedAllergen',
 				'origin', 'additional', 'description', 'quality',
 				'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep', 'privatePrice', 'privatePriceDiscount', 'privateStep', 'vat',
-				'proOrPrivatePrice'
+				'proOrPrivatePrice',
+				'proAccount', 'privateAccount',
 			]);
 
 			return $properties;
