@@ -104,7 +104,7 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Ce qu'il y a à gagner").'</h3>';
 			$h .= '<div class="util-block mb-2">';
-				$h .= '<p>'.s("Personne ne le sait vraiment, c'est le Père Noël qui décidera le 25 décembre, mais encore faut-il que les rennes aient été attirés en masse sur le jeu... Qui tirera le traineau sinon ?").'</p>';
+				$h .= '<p>'.s("Personne ne le sait vraiment, c'est le Père Noël qui décidera le 24 décembre, mais encore faut-il que les rennes aient été attirés en masse sur le jeu... Qui tirera le traineau sinon ?").'</p>';
 			$h .= '</div>';
 			$h .= '<h3>'.s("Les bonus").'</h3>';
 			$h .= '<div class="util-block mb-2">';

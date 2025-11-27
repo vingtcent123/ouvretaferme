@@ -48,6 +48,8 @@ new Page(function($data) {
 	})
 	->post('doFriendRemove', function($data) {
 
+		$data->ePlayerFriend = \game\PlayerLib::getByUser(POST('friend', 'user\User'))->validate();
+
 		\game\PlayerLib::removeFriend($data->ePlayer, $data->ePlayerFriend);
 
 		throw new ReloadAction();
