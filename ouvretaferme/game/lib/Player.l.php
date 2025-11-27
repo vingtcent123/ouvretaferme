@@ -241,7 +241,7 @@ class PlayerLib extends PlayerCrud {
 					'giftSentAt' => new \Sql('CURRENT_DATE'),
 				]);
 
-				Player::model()->update($ePlayer, [
+				Player::model()->update($ePlayerFriend, [
 					'giftReceivedAt' => new \Sql('CURRENT_DATE')
 				]);
 
