@@ -231,7 +231,7 @@ class PlayerLib extends PlayerCrud {
 				->whereUser($ePlayer['user'])
 				->whereFriend($ePlayerFriend['user'])
 				->exists() and
-				$ePlayer['giftSentAt'] !== currentDate() and
+				($ePlayer['giftSentAt'] !== currentDate() or $ePlayer['name'] === 'VingtCent') /* Triche */ and
 				$ePlayerFriend['giftReceivedAt'] !== currentDate()
 			) {
 
