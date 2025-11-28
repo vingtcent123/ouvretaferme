@@ -144,7 +144,26 @@ new Page(function($data) {
 		$data->cProduct = \selling\ProductLib::getByFarm($data->eFarm, $data->eCategory, selectSales: TRUE, search: $data->search);
 
 		if($data->cProduct->empty()) {
+
 			$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm);
+
+		} else if($data->eFarm->hasAccounting()) {
+
+			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			$cAccount = \account\AccountLib::getAll();
+
+			foreach($data->cProduct as &$eProduct) {
+
+				if($eProduct['proAccount']->notEmpty()) {
+					$eProduct['proAccount'] = $cAccount->offsetGet($eProduct['proAccount']['id']);
+				}
+
+				if($eProduct['privateAccount']->notEmpty()) {
+					$eProduct['privateAccount'] = $cAccount->offsetGet($eProduct['privateAccount']['id']);
+				}
+
+			}
+
 		}
 
 		throw new ViewAction($data);

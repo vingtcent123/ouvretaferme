@@ -11,6 +11,7 @@ class Product extends ProductElement {
 			'unit' => \selling\Unit::getSelection(),
 			'quality' => ['name', 'shortName', 'logo'],
 			'stockExpired' => new \Sql('stockUpdatedAt IS NOT NULL AND stockUpdatedAt < NOW() - INTERVAL 7 DAY', 'bool'),
+			'proAccount', 'privateAccount',
 		];
 
 	}

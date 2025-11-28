@@ -950,7 +950,7 @@ class AutocompleteField {
 						html += '<a href="'+ value['link'] +'" '+ (value['target'] !== undefined ? 'target="'+ value['target'] +'"' : '') +'>'+ value['itemHtml'] +'</a>';
 					html += '</li>';
 				} else {
-					html += '<li data-n="'+ key +'">';
+					html += '<li data-n="'+ key +'" data-dropdown-keep>';
 						html += value['itemHtml'];
 					html += '</li>';
 				}

@@ -161,13 +161,20 @@ new \selling\ProductPage()
 			$eProduct['proPriceDiscount'] = $eProduct['proPrice'];
 		}
 
+		if($eProduct['farm']->hasAccounting()) {
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eProduct['farm']);
+				$eProduct['proAccount'] = $eProduct['proAccount']->notEmpty() ? \account\AccountLib::getById($eProduct['proAccount']['id']) : $eProduct['proAccount'];
+				$eProduct['privateAccount'] = $eProduct['privateAccount']->notEmpty() ? \account\AccountLib::getById($eProduct['privateAccount']['id']) : $eProduct['privateAccount'];
+		}
+
 	})
 	->quick([
 		'privatePrice' => ['privatePrice', 'privatePriceDiscount'],
 		'privateStep',
 		'proPrice' => ['proPrice', 'proPriceDiscount'],
 		'proPackaging',
-		'proStep'
+		'proStep',
+		'proAccount', 'privateAccount',
 	]);
 
 new \selling\ProductPage()

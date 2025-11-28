@@ -87,8 +87,8 @@ class ProductModel extends \ModuleModel {
 			'stockUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE, \selling\Product::DELETED], 'cast' => 'enum'],
-			'privateAccount' => ['element32', 'company\GenericAccount', 'null' => TRUE, 'cast' => 'element'],
-			'proAccount' => ['element32', 'company\GenericAccount', 'null' => TRUE, 'cast' => 'element'],
+			'privateAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
+			'proAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
@@ -101,8 +101,8 @@ class ProductModel extends \ModuleModel {
 			'farm' => 'farm\Farm',
 			'unit' => 'selling\Unit',
 			'stockLast' => 'selling\Stock',
-			'privateAccount' => 'company\GenericAccount',
-			'proAccount' => 'company\GenericAccount',
+			'privateAccount' => 'account\Account',
+			'proAccount' => 'account\Account',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [

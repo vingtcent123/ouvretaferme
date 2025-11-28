@@ -174,6 +174,16 @@ class AccountUi {
 
 	}
 
+	public function getDropdownTitle(Account $eAccount): string {
+
+		$h = '<div class="dropdown-list bg-primary">';
+			$h .= '<span class="dropdown-item">'.encode($eAccount['class']).' '.encode($eAccount['description']).'</span>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public static function getAutocomplete(int $farm, Account|\company\GenericAccount $eAccount, \Search $search = new \Search()): array {
 
 		\Asset::css('media', 'media.css');
