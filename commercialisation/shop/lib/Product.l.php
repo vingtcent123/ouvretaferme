@@ -163,7 +163,9 @@ class ProductLib extends ProductCrud {
 		}
 
 		foreach($cProduct as $eProduct) {
-			$cProductSelling->offsetUnset($eProduct['id']);
+			if($eProduct->exists()) {
+				$cProductSelling->offsetUnset($eProduct['id']);
+			}
 		}
 
 	}
