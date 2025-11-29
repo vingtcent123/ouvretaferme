@@ -24,6 +24,7 @@ new Page(function($data) {
 		->select(['proAccount', 'count' => new Sql('COUNT(*)')])
 		->whereFarm($data->eFarm)
 		->whereStatus('!=', \selling\Product::INACTIVE)
+		->whereProAccount('!=', new \account\Account())
 		->group('proAccount')
 		->getCollection(NULL, NULL, 'proAccount');
 
@@ -31,6 +32,7 @@ new Page(function($data) {
 		->select(['privateAccount', 'count' => new Sql('COUNT(*)')])
 		->whereFarm($data->eFarm)
 		->whereStatus('!=', \selling\Product::INACTIVE)
+		->wherePrivateAccount('!=', new \account\Account())
 		->group('privateAccount')
 		->getCollection(NULL, NULL, 'privateAccount');
 

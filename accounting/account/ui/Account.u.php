@@ -89,11 +89,8 @@ class AccountUi {
 						$h .= '<th rowspan="2">';
 							$h .= s("Personnalisé ?");
 						$h .= '</th>';
-						$h .= '<th rowspan="2">';
-							$h .= s("Compte de TVA");
-						$h .= '</th>';
-						$h .= '<th rowspan="2">';
-							$h .= s("Taux de TVA");
+						$h .= '<th colspan="2" class="text-center">';
+							$h .= s("TVA");
 						$h .= '</th>';
 
 						if($displayOperationsCount) {
@@ -112,6 +109,12 @@ class AccountUi {
 					$h .= '</tr>';
 
 					$h .= '<tr>';
+						$h .= '<th class="text-center">';
+							$h .= s("Compte");
+						$h .= '</th>';
+						$h .= '<th class="text-center">';
+							$h .= s("Taux");
+						$h .= '</th>';
 						if($displayProductsCount) {
 							$h .= '<th class="text-center">';
 								$h .= s("Particuliers");
