@@ -73,8 +73,13 @@ new \selling\ProductPage()
 		if($eProduct['farm']->hasAccounting()) {
 
 			\company\CompanyLib::connectSpecificDatabaseAndServer($eProduct['farm']);
-			$eProduct['proAccount'] = $eProduct['proAccount']['id'] ? \account\AccountLib::getById($eProduct['proAccount']['id']) : new \account\Account();
-			$eProduct['privateAccount'] = $eProduct['proAccount']['id'] ? \account\AccountLib::getById($eProduct['privateAccount']['id']) : new \account\Account();
+
+			if($eProduct['proAccount']->notEmpty()) {
+				$eProduct['proAccount'] = \account\AccountLib::getById($eProduct['proAccount']['id']);
+			}
+			if($eProduct['privateAccount']->notEmpty()) {
+				$eProduct['privateAccount'] = \account\AccountLib::getById($eProduct['privateAccount']['id']);
+			}
 
 		}
 

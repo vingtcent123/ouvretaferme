@@ -1310,6 +1310,10 @@ class ItemUi {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
 			}
 
+			if($eItem['farm']->hasAccounting()) {
+				$h .= $form->dynamicGroup($eItem, 'account');
+			}
+
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
 			);
@@ -1395,7 +1399,8 @@ class ItemUi {
 			'unitPriceDiscount' => s("Prix remisé"),
 			'price' => s("Montant"),
 			'number' => s("Quantité vendue"),
-			'vatRate' => s("Taux de TVA")
+			'vatRate' => s("Taux de TVA"),
+			'account' => s("Classe de compte"),
 		]);
 
 		switch($property) {
@@ -1520,6 +1525,16 @@ class ItemUi {
 				self::applyLocking($d, Item::PRICE);
 
 				$d->append = fn(\util\FormUi $form, Item $eItem) => $form->addon(s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]));
+				break;
+
+			case 'account':
+				$d->autocompleteBody = function(\util\FormUi $form, Item $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				$d->autocompleteDefault = fn(Item $e) => $e['account'] ?? NULL;
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]);
 				break;
 
 		}

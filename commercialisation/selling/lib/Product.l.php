@@ -79,6 +79,30 @@ class ProductLib extends ProductCrud {
 
 		}
 
+		if($e['farm']->hasAccounting() and post_exists('apply')) {
+
+			$applyAccountForItems = POST('apply', 'array');
+			$applyOnProAccount = (bool)($applyAccountForItems['proAccount'] ?? FALSE);
+			$applyOnPrivateAccount = (bool)($applyAccountForItems['privateAccount'] ?? FALSE);
+
+			if($applyOnProAccount) {
+				Item::model()
+					->whereFarm($e['farm'])
+					->whereProduct($e)
+					->whereType(Item::PRO)
+					->update(['account' => $e['proAccount']]);
+			}
+
+			if($applyOnPrivateAccount) {
+				Item::model()
+					->whereFarm($e['farm'])
+					->whereProduct($e)
+					->whereType(Item::PRIVATE)
+					->update(['account' => $e['privateAccount']]);
+			}
+
+		}
+
 		Product::model()->commit();
 
 	}

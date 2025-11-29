@@ -75,13 +75,14 @@ class ItemModel extends \ModuleModel {
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 100, 'null' => TRUE, 'cast' => 'float'],
 			'stats' => ['bool', 'cast' => 'bool'],
 			'prepared' => ['bool', 'cast' => 'bool'],
+			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', Sale::model()->getPropertyEnum('preparationStatus'), 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'deliveredAt' => ['date', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -95,6 +96,7 @@ class ItemModel extends \ModuleModel {
 			'ingredientOf' => 'selling\Item',
 			'parent' => 'selling\Item',
 			'unit' => 'selling\Unit',
+			'account' => 'account\Account',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -275,6 +277,10 @@ class ItemModel extends \ModuleModel {
 
 	public function wherePrepared(...$data): ItemModel {
 		return $this->where('prepared', ...$data);
+	}
+
+	public function whereAccount(...$data): ItemModel {
+		return $this->where('account', ...$data);
 	}
 
 	public function whereStatus(...$data): ItemModel {

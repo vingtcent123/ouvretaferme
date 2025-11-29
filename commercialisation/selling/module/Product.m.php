@@ -86,13 +86,13 @@ class ProductModel extends \ModuleModel {
 			'stockLast' => ['element32', 'selling\Stock', 'null' => TRUE, 'cast' => 'element'],
 			'stockUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
-			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE, \selling\Product::DELETED], 'cast' => 'enum'],
 			'privateAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'proAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
+			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE, \selling\Product::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'status', 'privateAccount', 'proAccount'
+			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'privateAccount', 'proAccount', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -301,16 +301,16 @@ class ProductModel extends \ModuleModel {
 		return $this->where('createdAt', ...$data);
 	}
 
-	public function whereStatus(...$data): ProductModel {
-		return $this->where('status', ...$data);
-	}
-
 	public function wherePrivateAccount(...$data): ProductModel {
 		return $this->where('privateAccount', ...$data);
 	}
 
 	public function whereProAccount(...$data): ProductModel {
 		return $this->where('proAccount', ...$data);
+	}
+
+	public function whereStatus(...$data): ProductModel {
+		return $this->where('status', ...$data);
 	}
 
 

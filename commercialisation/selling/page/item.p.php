@@ -82,6 +82,18 @@ new \selling\SalePage()
 
 
 new \selling\ItemPage()
+	->applyElement(function($data, \selling\Item $eItem) {
+
+		if($eItem['farm']->hasAccounting()) {
+
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eItem['farm']);
+
+			if($eItem['account']->notEmpty()) {
+				$eItem['account'] = \account\AccountLib::getById($eItem['account']['id']);
+			}
+
+		}
+	})
 	->quick(['packaging', 'number', 'unitPrice', 'vatRate', 'price', 'additional'])
 	->update()
 	->doUpdate(function($data) {

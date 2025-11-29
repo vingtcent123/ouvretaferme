@@ -1289,16 +1289,12 @@ class ProductUi {
 
 			$h .= $form->group(
 				s("Vente aux clients professionnels"),
-				$form->inputGroup(
-					$form->dynamicField($eProduct, 'proAccount'),
-				)
+				$form->dynamicField($eProduct, 'proAccount'),
 			);
 
 			$h .= $form->group(
 				s("Vente aux clients particuliers"),
-				$form->inputGroup(
-					$form->dynamicField($eProduct, 'privateAccount'),
-				)
+				$form->dynamicField($eProduct, 'privateAccount'),
 			);
 
 		$h .= '</div>';
@@ -1609,6 +1605,8 @@ class ProductUi {
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? NULL;
 				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]);
+				$d->after = fn(\util\FormUi $form, Product $e) => $e->exists() ? $form->checkbox('apply['.$property.']', 1, ['callbackLabel' => fn($input) => $input.' '.s("Appliquer la modification rétroactivement sur les ventes déjà créées")]) : '';
+
 				break;
 
 		}

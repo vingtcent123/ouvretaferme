@@ -872,9 +872,8 @@ class AnalyzeLib {
 					)
 					->delegateCollection('sale', 'id'),
 				'cItem' => Item::model()
-					->select(['id', 'price', 'vatRate', 'product' => ['id', 'proAccount', 'privateAccount']])
+					->select(['id', 'price', 'vatRate', 'account'])
 					->delegateCollection('sale'),
-				'compositionOf' => ['id', 'proAccount', 'privateAccount'],
 			])
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
@@ -909,15 +908,14 @@ class AnalyzeLib {
 
 			$date = $eSale['deliveredAt'];
 
+			$cItem = $eSale['cItem'];
+
 			if($eSale->isComposition()) {
 
-				$cItem = new \Collection([new Item(['type' => $eSale['type'], 'price' => $eSale['priceIncludingVat'], 'product' => $eSale['compositionOf']])]);
 				$customerId = '';
 				$customerName = '';
 
 			} else {
-
-				$cItem = $eSale['cItem'];
 
 				if($eSaleParent->exists()) {
 					$customerId = $eSaleParent['customer']['id'];

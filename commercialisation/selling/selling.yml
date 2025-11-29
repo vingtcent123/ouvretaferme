@@ -190,6 +190,7 @@ Item:
   vatRate: ?decimal(4, 2, 0.0, 100)
   stats: bool = TRUE
   prepared: bool = FALSE
+  account: ?account\Account
   status: enum(PHP(Sale::model()->getPropertyEnum('preparationStatus')))
   createdAt: datetime = SPECIAL(now)
   deliveredAt: date
@@ -276,9 +277,9 @@ Product:
   stockLast: ?selling\Stock
   stockUpdatedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
-  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   privateAccount: ?account\Account
   proAccount: ?account\Account
+  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   INDEX: [
     ["farm"],
     ["unprocessedPlant"]
