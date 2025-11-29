@@ -53,13 +53,13 @@ class DateModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'status' => ['enum', [\shop\Date::ACTIVE, \shop\Date::INACTIVE, \shop\Date::CLOSED], 'cast' => 'enum'],
 			'source' => ['enum', [\shop\Date::DIRECT, \shop\Date::CATALOG], 'cast' => 'enum'],
-			'orderStartAt' => ['datetime', 'cast' => 'string'],
-			'orderEndAt' => ['datetime', 'cast' => 'string'],
+			'orderStartAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'orderEndAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'orderEndEmailedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'points' => ['json', 'cast' => 'array'],
 			'catalogs' => ['json', 'null' => TRUE, 'cast' => 'array'],
-			'deliveryDate' => ['date', 'cast' => 'string'],
+			'deliveryDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [

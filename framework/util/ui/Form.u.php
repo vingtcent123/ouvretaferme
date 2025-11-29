@@ -869,8 +869,8 @@ class FormUi {
 					in_array($optionValue, $formatSelectedValues, TRUE)
 				);
 
-				$h .= '<label>';
-					$h .= $this->inputCheckbox($name, $optionValue, ['checked' => $checked] + call_user_func($callbackCheckboxAttributes, $option, $key)).' <span>'.$label.'</span>';
+				$h .= '<label class="field-radio-group-item">';
+					$h .= $this->inputCheckbox($name, $optionValue, ['checked' => $checked] + call_user_func($callbackCheckboxAttributes, $option, $key)).' <div>'.$label.'</div>';
 				$h .= '</label>';
 
 			}
@@ -966,7 +966,11 @@ class FormUi {
 
 			if(empty($attributes['mandatory'])) {
 
-				$h .= '<label>'.$this->inputRadio($name, '', $attributes['placeholder'] ?? s("Aucun"), $selectedValue, call_user_func($callbackRadioAttributes, NULL, NULL)).'</label>';
+				$h .= '<label class="field-radio-group-item">';
+					$h .= $this->inputRadio($name, '', NULL, $selectedValue, call_user_func($callbackRadioAttributes, NULL, NULL));
+					$h .= '<div>'.($attributes['placeholder'] ?? s("Aucun")).'</div>';
+				$h .= '</label>';
+
 				unset($attributes['placeholder']);
 
 			}
@@ -983,7 +987,10 @@ class FormUi {
 					$label = $optionContent;
 				}
 
-				$h .= '<label>'.$this->inputRadio($name, $optionValue, $label, $selectedValue, call_user_func($callbackRadioAttributes, $option, $key)).'</label>';
+				$h .= '<label class="field-radio-group-item">';
+					$h .= $this->inputRadio($name, $optionValue, NULL, $selectedValue, call_user_func($callbackRadioAttributes, $option, $key));
+					$h .= '<div>'.$label.'</div>';
+				$h .= '</label>';
 
 			}
 

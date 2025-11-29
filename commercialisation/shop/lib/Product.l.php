@@ -255,6 +255,7 @@ class ProductLib extends ProductCrud {
 			$newData = Product::model()
 				->select(ProductElement::getSelection())
 				->whereCatalog('IN', $eDate['catalogs'])
+				->whereParent(NULL, if: $withParent === FALSE)
 				->getColumn($column);
 
 			if($newData instanceof \Collection) {

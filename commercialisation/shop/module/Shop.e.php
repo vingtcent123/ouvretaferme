@@ -20,6 +20,16 @@ class Shop extends ShopElement {
 
 	}
 
+	public function validateFrequency(): self {
+
+		if($this['opening'] !== \shop\Shop::FREQUENCY) {
+			throw new \NotAllowedAction();
+		}
+
+		return $this;
+
+	}
+
 	public function validateShare(\farm\Farm $eFarm, string $validatePersonal = 'canRead', string $validateShared = 'canRead'): self {
 
 		if($this->canShare($eFarm, $validatePersonal, $validateShared) === FALSE) {
@@ -293,6 +303,39 @@ class Shop extends ShopElement {
 					$this['paymentOffline'] or
 					$this['paymentTransfer']
 				);
+
+			})
+			->setCallback('opening.check', function(mixed &$value) use ($p){
+
+				if(FEATURE_ALWAYS === FALSE) {
+					$value = Shop::FREQUENCY;
+				}
+				return TRUE;
+
+
+			})
+			->setCallback('openingFrequency.cast', function(mixed &$value) use ($p){
+
+				if(
+					$p->isBuilt('opening') === FALSE or
+					$this['opening'] !== Shop::FREQUENCY
+				) {
+					$value = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('openingDelivery.cast', function(mixed &$value) use ($p) {
+
+				if(
+					$p->isBuilt('opening') === FALSE or
+					$this['opening'] !== Shop::ALWAYS
+				) {
+					$value = NULL;
+				}
+
+				return TRUE;
 
 			})
 			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {

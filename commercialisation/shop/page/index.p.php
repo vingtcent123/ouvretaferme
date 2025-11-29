@@ -20,10 +20,31 @@ new \farm\FarmPage()
 
 		$data->eShop['ccPoint'] = \shop\PointLib::getByFarm($data->e);
 
-		// Liste des dates de la boutique sélectionnée
-		$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
-
 		$data->eFarm = $data->e;
+
+		switch($data->eShop['opening']) {
+
+			case \shop\Shop::ALWAYS :
+
+				$data->eFarm['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+
+				$data->eShop['eDate'] = \shop\DateLib::getAlwaysByShop($data->eShop);
+				$data->eShop['hasDate'] = $data->eShop['eDate']->notEmpty();
+
+				if($data->eShop['eDate']->notEmpty()) {
+					\shop\DateLib::applyManagement($data->e, $data->eShop, $data->eShop['eDate']);
+				}
+
+				break;
+
+			case \shop\Shop::FREQUENCY :
+
+				$data->eShop['cDate'] = \shop\DateLib::getByShop($data->eShop);
+				$data->eShop['hasDate'] = $data->eShop['cDate']->notEmpty();
+
+				break;
+
+		}
 
 		throw new ViewAction($data);
 

@@ -5,7 +5,7 @@ class Date extends DateElement {
 
 	public static function getSelection(): array {
 		return Date::model()->getProperties() + [
-			'isOrderable' => new \Sql('orderStartAt < NOW() and orderEndAt > NOW()', 'bool'),
+			'isOrderable' => new \Sql('(orderStartAt < NOW() OR orderStartAt IS NULL) AND (orderEndAt > NOW() OR orderEndAt IS NULL)', 'bool'),
 			'isDeliverable' => new \Sql('deliveryDate = CURDATE()', 'bool'),
 			'isSoonOpen' => new \Sql('orderStartAt > NOW()', 'bool'),
 		];
@@ -49,14 +49,23 @@ class Date extends DateElement {
 
 	}
 
+	public function acceptSaleUpdatePreparationStatus(): bool {
+
+		return (
+			$this['deliveryDate'] === NULL or
+			$this->acceptOrder() === FALSE
+		);
+
+	}
+
 	public function acceptOrder(): bool {
 
 		$this->expects(['status', 'orderStartAt', 'orderEndAt']);
 
 		return (
 			$this['status'] === Date::ACTIVE and
-			$this['orderStartAt'] <= currentDatetime() and
-			currentDatetime() <= $this['orderEndAt']
+			($this['orderStartAt'] === NULL or $this['orderStartAt'] <= currentDatetime()) and
+			($this['orderEndAt'] === NULL or currentDatetime() <= $this['orderEndAt'])
 		);
 
 	}
@@ -84,7 +93,7 @@ class Date extends DateElement {
 	}
 
 	public function isPast(): bool {
-		return currentDate() > $this['deliveryDate'];
+		return ($this['deliveryDate'] !== NULL and currentDate() > $this['deliveryDate']);
 	}
 
 	public function isCatalog(): bool {
@@ -93,6 +102,10 @@ class Date extends DateElement {
 
 	public function isDirect(): bool {
 		return $this['source'] === Date::DIRECT;
+	}
+
+	public function acceptCustomerCancel(): bool {
+		return ($this['orderEndAt'] !== NULL and $this['orderEndAt'] > currentDatetime());
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
@@ -124,7 +137,13 @@ class Date extends DateElement {
 				return TRUE;
 
 			})
+			->setCallback('orderStartAt.prepare', function(mixed &$value) use ($p) {
+				return ($value !== NULL);
+			})
 			// End of order must be after start of order.
+			->setCallback('orderEndAt.prepare', function(mixed &$value) use ($p) {
+				return ($value !== NULL);
+			})
 			->setCallback('orderEndAt.consistency', function($orderEndAt) use($p): bool {
 
 				$p->expectsBuilt('orderStartAt');
@@ -132,11 +151,14 @@ class Date extends DateElement {
 				return $orderEndAt > $this['orderStartAt'];
 			})
 			// Delivery must be after order.
-			->setCallback('deliveryDate.consistency', function($deliveryDate) use($fw): bool {
+			->setCallback('deliveryDate.prepare', function(mixed &$value) use ($p) {
+				return ($value !== NULL);
+			})
+			->setCallback('deliveryDate.consistency', function($deliveryDate) use($p, $fw): bool {
 
 				if(
-					$fw->has('Date::orderEndAt.consistency') or
-					$fw->has('Date::orderEndAt.check') or
+					$p->isBuilt('orderEndAt') === FALSE or
+					$fw->has('Date::deliveryDate.prepare') or
 					$fw->has('Date::deliveryDate.check')
 				) { // L'action génère déjà une erreur.
 					return TRUE;

@@ -214,7 +214,7 @@ class FarmerUi {
 							$h .= '</div>';
 							if($ePresence->empty()) {
 								$h .= '<div class="mt-1">';
-									$h .= '<div class="btn btn-transparent">';
+									$h .= '<div class="btn btn-primary">';
 										$h .= s("Ajouter une présence");
 									$h .= '</div>';
 								$h .= '</div>';

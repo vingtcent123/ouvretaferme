@@ -217,7 +217,7 @@ END;
 
 				if(
 					$data->isModifying === FALSE and
-					$data->eDateSelected['isOrderable'] and
+					$data->eDateSelected->acceptOrder() and
 					$data->cSaleExisting->notEmpty() and
 					$data->cSaleExisting->first()['preparationStatus'] === \selling\Sale::BASKET
 				) {
@@ -292,7 +292,15 @@ new Page(function($data) {
 
 		}
 
-		$data->cSaleExisting = \shop\SaleLib::getByCustomersForDate($data->eShop, $data->eDate, $data->cCustomerExisting);
+		// Affichage des ventes données sur la page de confirmation
+		if(str_ends_with(LIME_REQUEST_PATH, '/confirmation')) {
+			$sales = GET('sales', 'array', fn() => NULL);
+		} else {
+			$sales = NULL;
+		}
+
+		$data->cSaleExisting = \shop\SaleLib::getByCustomersForDate($data->eShop, $data->eDate, $data->cCustomerExisting, $sales);
+
 		$data->eSaleReference = $data->cSaleExisting->notEmpty() ? $data->cSaleExisting->first() : new \selling\Sale();
 
 		$data->cItemExisting = \selling\SaleLib::getItemsBySales($data->cSaleExisting, withIngredients: TRUE, public: TRUE);
@@ -423,7 +431,7 @@ new Page(function($data) {
 		$data->step = \shop\BasketUi::STEP_CONFIRMATION;
 
 		($data->validateLogged)();
-		($data->validateSale)(new ViewAction($data, ':confirmationEmpty'));
+		($data->validateSale)($data->eDate['deliveryDate'] !== NULL ? new ViewAction($data, ':confirmationEmpty') : NULL);
 
 		($data->validatePayment)();
 
@@ -466,7 +474,7 @@ new Page(function($data) {
 		$data->eSaleReference['shop']['farm'] = $data->eSaleReference['farm'];
 
 		try {
-			$url = \shop\SaleLib::createPayment($data->payment, $data->eSaleReference);
+			$url = \shop\SaleLib::createPayment($data->payment, $data->cSaleExisting, $data->eSaleReference);
 		} catch(Exception $e) {
 			\dev\ErrorPhpLib::handle($e);
 			throw new FailAction($data->eDate->canWrite() ? 'shop\Shop::payment.createOwner' : 'shop\Shop::payment.create', ['message' => $e->getMessage()]);
@@ -573,7 +581,6 @@ new Page(function($data) {
 		} else {
 			$link = \shop\ShopUi::confirmationUrl($data->eShop, $data->eDate);
 		}
-
 
 		throw new RedirectAction($link);
 

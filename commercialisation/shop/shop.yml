@@ -29,13 +29,13 @@ Date:
   farm: farm\Farm
   status: enum(ACTIVE, INACTIVE, CLOSED) = ACTIVE
   source: enum(DIRECT, CATALOG)
-  orderStartAt: datetime
-  orderEndAt: datetime
+  orderStartAt: ?datetime
+  orderEndAt: ?datetime
   orderEndEmailedAt: ?date
   description: ?editor24
   points: json = PHP([])
   catalogs: ?json = PHP([])
-  deliveryDate: date
+  deliveryDate: ?date
   INDEX: [
     ["status"]
   ]
@@ -163,8 +163,9 @@ Shop:
   sharedGroup: ?enum(FARM, DEPARTMENT, PRODUCT)
   sharedHash: ?text8
   sharedHashExpiresAt: ?date
-  opening: enum(CALENDAR, FREQUENCY) = FREQUENCY
-  openingFrequency: enum(WEEKLY, BIMONTHLY, MONTHLY, OTHER) = WEEKLY
+  opening: enum(ALWAYS, FREQUENCY) = FREQUENCY
+  openingFrequency: ?enum(WEEKLY, BIMONTHLY, MONTHLY) = WEEKLY
+  openingDelivery: ?editor24
   hasPoint: bool = TRUE
   hasPayment: bool = TRUE
   paymentCard: bool = FALSE

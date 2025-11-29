@@ -20,16 +20,7 @@ new AdaptativeView('/ferme/{id}/boutique/{shop}', function($data, FarmTemplate $
 		if($data->eShop['shared']) {
 			echo $uiShopManage->getSharedContent($data->e, $data->eShop);
 		} else {
-
-			if(
-				$data->eShop['ccPoint']->notEmpty() and
-				$data->eShop['cDate']->notEmpty()
-			) {
-				echo $uiShopManage->getDateList($data->e, $data->eShop);
-			} else {
-				echo $uiShopManage->getInlineContent($data->e, $data->eShop);
-			}
-
+			echo $uiShopManage->getInlineContent($data->e, $data->eShop);
 		}
 
 	}

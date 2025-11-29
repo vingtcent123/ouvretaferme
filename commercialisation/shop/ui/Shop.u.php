@@ -151,7 +151,13 @@ class ShopUi {
 
 				}
 
-				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email'.($eShop['shared'] ? '*' : ''), 'openingFrequency', 'description'], [
+				$h .= $form->dynamicGroups($eShop, ['name*', 'type*', 'fqn*', 'email'.($eShop['shared'] ? '*' : '')], [
+					'type*' => self::getTypeDescriber($eFarm, 'create')
+				]);
+
+				$h .= $this->getOpeningFields($form, $eShop);
+
+				$h .= $form->dynamicGroups($eShop, ['description'], [
 					'type*' => self::getTypeDescriber($eFarm, 'create')
 				]);
 
@@ -238,7 +244,13 @@ class ShopUi {
 
 		$h .= $form->hidden('id', $eShop['id']);
 
-		$update = ['name', 'type', 'fqn', 'email', 'openingFrequency', 'approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
+		$h .= $form->dynamicGroups($eShop, ['name', 'type', 'fqn', 'email'], [
+			'type' => self::getTypeDescriber($eFarm, 'update')
+		]);
+
+		$h .= $this->getOpeningFields($form, $eShop);
+
+		$update = ['approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
 
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
@@ -247,13 +259,12 @@ class ShopUi {
 		}
 
 		$h .= $form->dynamicGroups($eShop, $update, [
-				'type' => self::getTypeDescriber($eFarm, 'update'),
-				'comment' => function(\PropertyDescriber $d) {
-					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'ShopManage.changeComment(this)'];
-				},
-				'commentCaption' => $eShop['comment'] ? NULL : function(\PropertyDescriber $d) {
-					$d->group['class'] = 'hide';
-				}
+			'comment' => function(\PropertyDescriber $d) {
+				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'ShopManage.changeComment(this)'];
+			},
+			'commentCaption' => $eShop['comment'] ? NULL : function(\PropertyDescriber $d) {
+				$d->group['class'] = 'hide';
+			}
 		]);
 
 		$h .= $form->group(
@@ -588,6 +599,26 @@ class ShopUi {
 
 	}
 
+	protected function getOpeningFields(\util\FormUi $form, Shop $eShop): string {
+
+		if(FEATURE_ALWAYS === FALSE) {
+
+			$h = '<div>';
+				$h .= $form->dynamicGroups($eShop, ['openingFrequency']);
+			$h .= '</div>';
+
+			return $h;
+
+		}
+
+		$h = '<div class="shop-write-opening">';
+			$h .= $form->dynamicGroups($eShop, ['opening', 'openingFrequency', 'openingDelivery']);
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	protected function getTypeDescriber(\farm\Farm $eFarm, string $for) {
 
 		return function(\PropertyDescriber $d) use($eFarm, $for) {
@@ -888,8 +919,12 @@ class ShopUi {
 		return self::dateUrl($eShop, $eDate, 'paiement');
 	}
 
-	public static function confirmationUrl(Shop $eShop, Date $eDate): string {
-		return self::dateUrl($eShop, $eDate, 'confirmation');
+	public static function confirmationUrl(Shop $eShop, Date $eDate, \Collection $cSale = new \Collection()): string {
+		$url = self::dateUrl($eShop, $eDate, 'confirmation');
+		if($cSale->notEmpty()) {
+			$url .= '?sales[]='.implode('&sales[]', $cSale->getIds());
+		}
+		return $url;
 	}
 
 	public static function userUrl(Shop $eShop, Date $eDate, string $page): string {
@@ -948,7 +983,7 @@ class ShopUi {
 				$h .= ShopUi::link($eShop);
 			$h .= '</h4>';
 			$h .= $this->getDateHeader($eDate);
-			if($eDate['isOrderable']) {
+			if($eDate->acceptOrder()) {
 				$h .= '<div class="shop-widget-order">';
 					$h .= '<a href="'.ShopUi::url($eShop).'" class="btn btn-secondary">'.s("Commander en ligne").'</a>';
 				$h .= '</div>';
@@ -996,7 +1031,12 @@ class ShopUi {
 
 						if($eShop->canWrite()) {
 							$h .= '<div class="util-block-help">';
-								$h .= '<p>'.s("Pour activer votre boutique, vous devez créer une première vente avec vos produits !").'</p>';
+								$h .= '<p>';
+									$h .= match($eShop['opening']) {
+										Shop::FREQUENCY => s("Votre boutique n'est pas encore ouverte car vous n'avez pas encore configuré de livraison !"),
+										Shop::ALWAYS => s("Votre boutique n'est pas encore ouverte car vous n'avez pas choisi les produits disponibles à la vente !")
+									};
+								$h .= '</p>';
 								$h .= '<a href="'.\Lime::getUrl().''.ShopUi::adminUrl($eShop['farm'], $eShop).'" class="btn btn-secondary">'.s("Configurer ma boutique").'</a>';
 							$h .= '</div>';
 						} else {
@@ -1017,16 +1057,24 @@ class ShopUi {
 
 	public function getDateHeader(Date $eDate, string $for = 'next', string $cssPrefix = 'shop'): string {
 
-		$h = '<div class="'.$cssPrefix.'-header-date">';
-
-			$h .= '<div class="'.$cssPrefix.'-header-block">';
-				$h .= new \shop\DateUi()->getDeliveryPeriod($eDate, $for, $cssPrefix);
+		if($eDate['deliveryDate'] === NULL) {
+			$h = '<div>';
+				$h .= new \shop\DateUi()->getOrderPeriod($eDate);
 			$h .= '</div>';
-			$h .= '<div class="'.$cssPrefix.'-header-block '.$cssPrefix.'-header-period">';
-				$h .= '<div>'.new \shop\DateUi()->getOrderPeriod($eDate).'</div>';
+		} else {
+
+			$h = '<div class="'.$cssPrefix.'-header-date">';
+
+				$h .= '<div class="'.$cssPrefix.'-header-block">';
+					$h .= new \shop\DateUi()->getDeliveryPeriod($eDate, $for, $cssPrefix);
+				$h .= '</div>';
+				$h .= '<div class="'.$cssPrefix.'-header-block '.$cssPrefix.'-header-period">';
+					$h .= '<div>'.new \shop\DateUi()->getOrderPeriod($eDate).'</div>';
+				$h .= '</div>';
+
 			$h .= '</div>';
 
-		$h .= '</div>';
+		}
 
 		return $h;
 
@@ -1087,12 +1135,25 @@ class ShopUi {
 					$h .= ShopUi::p('type')->values[$eShop['type']];
 				$h .= '</dd>';
 
-				$h .= '<dt>';
-					$h .= s("Fréquence des ventes");
-				$h .= '</dt>';
-				$h .= '<dd>';
-					$h .= self::p('openingFrequency')->values[$eShop['openingFrequency']];
-				$h .= '</dd>';
+				switch($eShop['opening']) {
+
+					case Shop::FREQUENCY :
+
+						if($eShop['openingFrequency'] !== NULL) {
+							$h .= '<dt>';
+								$h .= s("Fréquence des livraisons");
+							$h .= '</dt>';
+							$h .= '<dd>';
+								$h .= self::p('openingFrequency')->values[$eShop['openingFrequency']];
+							$h .= '</dd>';
+						}
+
+						break;
+
+					case Shop::ALWAYS :
+						break;
+
+				}
 
 				if($eShop['shared'] === FALSE) {
 
@@ -1153,7 +1214,9 @@ class ShopUi {
 			'description' => s("Description de la boutique"),
 			'type' => s("Grille tarifaire"),
 			'fqn' => s('Adresse internet'),
+			'opening' => s("Mode de prise des commandes"),
 			'openingFrequency' => s("Fréquence des livraisons"),
+			'openingDelivery' => s("Modalités de livraison après la commande"),
 			'name' => s("Nom de la boutique"),
 			'logo' => s("Image de présentation"),
 			'paymentCard' => s("Activer le choix du paiement en ligne avec {icon} Stripe", ['icon' => \Asset::icon('stripe')]),
@@ -1261,13 +1324,43 @@ class ShopUi {
 				);
 				break;
 
+			case 'opening':
+
+				$frequency = '<h4>'.s("Par jour de livraison").'</h4>';
+				$frequency .= '<ul>';
+					$frequency .= '<li>'.s("Vous définissez des jours de livraison pour lesquels vous choisissez la période de prise de commandes").'</li>';
+					$frequency .= '<li>'.s("Une commande par client et par jour de livraison").'</li>';
+					$frequency .= '<li>'.s("Les clients peuvent modifier leur commande pendant la période de prise de commandes").'</li>';
+				$frequency .= '</ul>';
+
+				$calendar = '<h4>'.s("En continu").'</h4>';
+				$calendar .= '<ul>';
+					$calendar .= '<li>'.s("Les prises de commandes sont toujours ouvertes").'</li>';
+					$calendar .= '<li>'.s("Vous indiquez vous-même aux clients les modalités de livraison").'</li>';
+					$calendar .= '<li>'.s("Les clients ne peuvent pas modifier les commandes réalisées").'</li>';
+				$calendar .= '</ul>';
+
+				$d->values = [
+					Shop::FREQUENCY => $frequency,
+					Shop::ALWAYS => $calendar,
+				];
+
+				break;
+
 			case 'openingFrequency':
+				$d->placeholder = s("Autre");
 				$d->values = [
 					Shop::BIMONTHLY => s("Bimensuelle"),
 					Shop::MONTHLY => s("Mensuelle"),
-					Shop::OTHER => s("Autre"),
 					Shop::WEEKLY => s("Hebdomadaire"),
 				];
+				break;
+
+			case 'openingDelivery' :
+
+				$label = '<p>'.s("Les délais de livraison seront indiqués aux clients au moment de la prise de commande.").'</p>';
+
+				$d->label .= \util\FormUi::info($label);
 				break;
 
 			case 'paymentCard':

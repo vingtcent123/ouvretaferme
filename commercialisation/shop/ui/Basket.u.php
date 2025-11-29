@@ -69,11 +69,17 @@ class BasketUi {
 
 	public function getDeliveryTitle(Date $eDate): string {
 
-		$h = '<h2>';
-			$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
-		$h .= '</h2>';
+		if($eDate['deliveryDate'] === NULL) {
+			return '';
+		} else {
 
-		return $h;
+			$h = '<h2>';
+				$h .= s("Livraison du {value}", \util\DateUi::getDayName(date('N', strtotime($eDate['deliveryDate']))).' '.\util\DateUi::textual($eDate['deliveryDate']));
+			$h .= '</h2>';
+
+			return $h;
+
+		}
 
 	}
 
@@ -774,16 +780,20 @@ class BasketUi {
 
 		$h .= '</div>';
 
-		$editCancel = \Asset::icon('check-lg').' '.s("Commande annulable et modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
-		$notEditCancel = s("Commande non annulable et non modifiable.");
+		if($eDate['deliveryDate'] !== NULL) {
 
-		$h .= '<div class="shop-payment-cancel">';
-			$h .= match($payment) {
-				\payment\MethodLib::ONLINE_CARD => $notEditCancel,
-				\payment\MethodLib::TRANSFER => $editCancel,
-				default => $editCancel,
-			};
-		$h .= '</div>';
+			$editCancel = \Asset::icon('check-lg').' '.s("Commande annulable et modifiable jusqu'au {value}.", ['value' => \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+			$notEditCancel = s("Commande non annulable et non modifiable.");
+
+			$h .= '<div class="shop-payment-cancel">';
+				$h .= match($payment) {
+					\payment\MethodLib::ONLINE_CARD => $notEditCancel,
+					\payment\MethodLib::TRANSFER => $editCancel,
+					default => $editCancel,
+				};
+			$h .= '</div>';
+
+		}
 
 		$h .= '<span class="btn btn-secondary">';
 

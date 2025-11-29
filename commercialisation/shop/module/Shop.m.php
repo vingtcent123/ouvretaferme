@@ -14,13 +14,12 @@ abstract class ShopElement extends \Element {
 	const DEPARTMENT = 'department';
 	const PRODUCT = 'product';
 
-	const CALENDAR = 'calendar';
+	const ALWAYS = 'always';
 	const FREQUENCY = 'frequency';
 
 	const WEEKLY = 'weekly';
 	const BIMONTHLY = 'bimonthly';
 	const MONTHLY = 'monthly';
-	const OTHER = 'other';
 
 	const SHOW = 'show';
 	const HIDE = 'hide';
@@ -69,8 +68,9 @@ class ShopModel extends \ModuleModel {
 			'sharedGroup' => ['enum', [\shop\Shop::FARM, \shop\Shop::DEPARTMENT, \shop\Shop::PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
 			'sharedHash' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'sharedHashExpiresAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'opening' => ['enum', [\shop\Shop::CALENDAR, \shop\Shop::FREQUENCY], 'cast' => 'enum'],
-			'openingFrequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY, \shop\Shop::OTHER], 'cast' => 'enum'],
+			'opening' => ['enum', [\shop\Shop::ALWAYS, \shop\Shop::FREQUENCY], 'cast' => 'enum'],
+			'openingFrequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY], 'null' => TRUE, 'cast' => 'enum'],
+			'openingDelivery' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'hasPoint' => ['bool', 'cast' => 'bool'],
 			'hasPayment' => ['bool', 'cast' => 'bool'],
 			'paymentCard' => ['bool', 'cast' => 'bool'],
@@ -104,7 +104,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -289,6 +289,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereOpeningFrequency(...$data): ShopModel {
 		return $this->where('openingFrequency', ...$data);
+	}
+
+	public function whereOpeningDelivery(...$data): ShopModel {
+		return $this->where('openingDelivery', ...$data);
 	}
 
 	public function whereHasPoint(...$data): ShopModel {

@@ -650,7 +650,7 @@ class CustomerUi {
 		}
 
 		if($cShop->notEmpty()) {
-			$h .= '<h2>'.s("Les prochaines ventes de mes producteurs").'</h2>';
+			$h .= '<h2>'.s("Les boutiques de mes producteurs").'</h2>';
 			$h .= new \shop\ShopUi()->getWidgetCollection($cShop);
 
 		}

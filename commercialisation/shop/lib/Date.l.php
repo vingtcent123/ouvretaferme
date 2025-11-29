@@ -8,16 +8,25 @@ class DateLib extends DateCrud {
 		return function(Date $eDate) {
 
 			$eDate->expects([
-				'shop' => ['hasPoint']
+				'shop' => ['hasPoint', 'opening']
 			]);
 
-			$properties = [
-				'orderStartAt', 'orderEndAt',
-				'deliveryDate',
+			$properties = [];
+
+			if($eDate['shop']['opening'] === Shop::FREQUENCY) {
+
+				$properties = array_merge($properties, [
+					'orderStartAt', 'orderEndAt',
+					'deliveryDate',
+				]);
+
+			}
+
+			$properties = array_merge($properties, [
 				'source',
 				'catalogs',
 				'productsList',
-			];
+			]);
 
 			if($eDate['shop']['hasPoint']) {
 				$properties[] = 'points';
@@ -37,10 +46,18 @@ class DateLib extends DateCrud {
 				'shop' => ['hasPoint']
 			]);
 
-			$properties = [
-				'orderStartAt', 'orderEndAt',
-				'deliveryDate', 'description',
-			];
+			$properties = [];
+
+			if($eDate['shop']['opening'] === Shop::FREQUENCY) {
+
+				$properties = array_merge($properties, [
+					'orderStartAt', 'orderEndAt',
+					'deliveryDate',
+				]);
+
+			}
+
+			$properties[] = 'description';
 
 			if(
 				$eDate['shop']['hasPoint'] and
@@ -55,6 +72,16 @@ class DateLib extends DateCrud {
 
 	}
 
+	public static function getAlwaysByShop(Shop $eShop): Date {
+
+		return Date::model()
+			->select(Date::model()->getProperties())
+			->whereShop($eShop)
+			->whereDeliveryDate(NULL)
+			->get();
+
+	}
+
 	public static function getByShop(Shop $eShop): \Collection {
 
 		$cDate = Date::model()
@@ -66,6 +93,7 @@ class DateLib extends DateCrud {
 
 			])
 			->whereShop($eShop)
+			->whereDeliveryDate('!=', NULL)
 			->sort(['deliveryDate' => SORT_DESC])
 			->getCollection(NULL, NULL, 'id');
 
@@ -231,6 +259,74 @@ class DateLib extends DateCrud {
 
 	}
 
+	public static function applyManagement(\farm\Farm $eFarm, Shop $eShop, Date $eDate): void {
+
+		if($eShop['shared']) {
+
+			if(get_exists('farm')) {
+				$eShareSelected = $eShop['cShare'][GET('farm', 'int')] ?? new \shop\Share();
+			} else {
+				$eShareSelected = $eShop['cShare'][$eFarm['id']] ?? new \shop\Share();
+			}
+
+			$eDate['eFarmSelected'] = $eShareSelected->empty() ? new \farm\Farm() : $eShareSelected['farm'];
+
+		} else {
+			$eDate['eFarmSelected'] = new \farm\Farm();
+		}
+
+		\shop\DateLib::applySales($eDate);
+
+		$eDate['cSale'] = \selling\SaleLib::getByDate($eDate, eFarm: $eDate['eFarmSelected'], select: \selling\Sale::getSelection() + [
+			'shopPoint' => \shop\PointElement::getSelection()
+		]);
+
+		$eDate['farm'] = $eShop['farm'];
+		$eDate['shop'] = $eShop;
+
+		$eDate['cCatalog'] = $eDate['catalogs'] ?
+			\shop\CatalogLib::getByIds($eDate['catalogs']) :
+			new Collection();
+
+		$cProduct = \shop\ProductLib::getByDate($eDate, reorderChildren: TRUE);
+		$eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($cProduct);
+		$eDate['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($cProduct);
+
+		// Uniquement les boutiques avec un seul producteur
+		$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($eDate['cSale'], $cProduct));
+		$cProduct->sort(['product' => ['name']], natural: TRUE);
+
+		if($eShop['shared']) {
+
+			$eDate['cFarm'] = $eShop['cShare']->getColumnCollection('farm', index: 'farm');
+
+			if($eDate['eFarmSelected']->notEmpty()) {
+				$cProduct->filter(fn($eProduct) => $eProduct['farm']['id'] === $eDate['eFarmSelected']['id']);
+			}
+
+		} else {
+
+			$eDate['cFarm'] = $eDate['catalogs'] ?
+				\farm\FarmLib::getByIds($eDate['cCatalog']->getColumnCollection('farm'), index: 'id') :
+				new Collection([
+					$eFarm['id'] => $eFarm
+				]);
+
+		}
+
+		if($eDate->isPast()) {
+			$cProduct->filter(fn($eProduct) => $eProduct['sold'] > 0);
+		}
+
+		\shop\ProductLib::applyIndexing($eShop, $eDate, $cProduct);
+		$eDate['nProduct'] = $cProduct->count();
+
+		$eDate['cCategory'] = \selling\CategoryLib::getByFarm($eFarm);
+		$eDate['ccPoint'] = \shop\PointLib::getByDate($eDate);
+		
+
+	}
+
 	public static function getMostRelevantByShop(Shop $eShop, bool $one = FALSE, bool $withSales = FALSE): Date|\Collection {
 
 		$select = Date::getSelection();
@@ -243,30 +339,49 @@ class DateLib extends DateCrud {
 
 		}
 
-		$cDate = Date::model()
-			->select($select)
-			->whereShop($eShop)
-			->whereStatus(Date::ACTIVE)
-			->whereDeliveryDate('>=', new \Sql('CURRENT_DATE'))
-			->sort([
-				'isOrderable' => SORT_DESC,
-				'deliveryDate' => SORT_ASC
-			])
-			->getCollection(index: 'id');
+		switch($eShop['opening']) {
 
-		// Pas de date ouverte ou à venir : chercher la dernière
-		if($cDate->empty()) {
+			case Shop::ALWAYS :
 
-			$eDatePast = Date::model()
-				->select($select)
-				->whereShop($eShop)
-				->whereDeliveryDate('<',  new \Sql('CURRENT_DATE'))
-				->sort(['deliveryDate' => SORT_DESC])
-				->get();
+				$cDate = Date::model()
+					->select($select)
+					->whereShop($eShop)
+					->whereStatus(Date::ACTIVE)
+					->whereDeliveryDate(NULL)
+					->getCollection(index: 'id');
 
-			if($eDatePast->notEmpty()) {
-				$cDate[$eDatePast['id']] = $eDatePast;
-			}
+				break;
+
+			case Shop::FREQUENCY :
+
+				$cDate = Date::model()
+					->select($select)
+					->whereShop($eShop)
+					->whereStatus(Date::ACTIVE)
+					->whereDeliveryDate('>=', new \Sql('CURRENT_DATE'))
+					->sort([
+						'isOrderable' => SORT_DESC,
+						'deliveryDate' => SORT_ASC
+					])
+					->getCollection(index: 'id');
+
+				// Pas de date ouverte ou à venir : chercher la dernière
+				if($cDate->empty()) {
+
+					$eDatePast = Date::model()
+						->select($select)
+						->whereShop($eShop)
+						->whereDeliveryDate('<',  new \Sql('CURRENT_DATE'))
+						->sort(['deliveryDate' => SORT_DESC])
+						->get();
+
+					if($eDatePast->notEmpty()) {
+						$cDate[$eDatePast['id']] = $eDatePast;
+					}
+
+				}
+
+				break;
 
 		}
 

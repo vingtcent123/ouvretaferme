@@ -905,11 +905,7 @@ class SaleUi {
 			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-closed-button" title="'.s("Il n'est pas possible de modifier une vente clôturée.").'">'.s("Clôturé").'  '.\Asset::icon('lock-fill').'</span>';
 		}
 
-		if(
-			$eSale['shopDate']->notEmpty() and
-			$eSale['customer']['user']->is($eSale['createdBy']) and
-			$eSale['shopDate']->acceptOrder()
-		) {
+		if($eSale->acceptUpdatePreparationStatus() === FALSE) {
 			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il sera possible de modifier le statut lorsque la période de prise des commandes sera close.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
 		}
 
@@ -2282,12 +2278,33 @@ class SaleUi {
 							continue;
 						}
 
-						$h .= '<h5>'.encode($eShop['name']).'</h5>';
+						switch($eShop['opening']) {
 
-						$h .= $form->radios('shopDate', $eShop['cDate'], $e['shopDate'] ?? new \shop\Date(), attributes: [
-							'callbackRadioContent' => fn($eDate) => s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])),
-							'mandatory' => TRUE,
-						]);
+							case \shop\Shop::FREQUENCY :
+
+								$cDate = $eShop['cDate']->find(fn($eDate) => $eDate['deliveryDate'] !== NULL);
+
+								if($cDate->notEmpty()) {
+
+									$h .= '<h5>'.encode($eShop['name']).'</h5>';
+
+									$h .= $form->radios('shopDate', $cDate, $e['shopDate'] ?? new \shop\Date(), attributes: [
+										'callbackRadioContent' => fn($eDate) => s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])),
+										'mandatory' => TRUE,
+									]);
+
+								}
+								break;
+
+							case \shop\Shop::ALWAYS :
+
+								$eDate = $eShop['cDate']->find(fn($eDate) => $eDate['deliveryDate'] === NULL, limit: 1);
+
+								$h .= '<h5>'.$form->radio('shopDate', $eDate['id'], encode($eShop['name'])).'</h5>';
+
+								break;
+
+						}
 
 						$h .= '<br/>';
 

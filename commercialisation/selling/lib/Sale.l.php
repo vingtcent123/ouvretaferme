@@ -987,8 +987,10 @@ class SaleLib extends SaleCrud {
 
 			$e['shopDate']->expects('deliveryDate');
 
-			$properties[] = 'deliveredAt';
-			$e['deliveredAt'] = $e['shopDate']['deliveryDate'];
+			if($e['shopDate']['deliveryDate'] !== NULL) {
+				$properties[] = 'deliveredAt';
+				$e['deliveredAt'] = $e['shopDate']['deliveryDate'];
+			}
 
 		}
 

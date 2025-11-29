@@ -83,7 +83,7 @@ class ProductUi {
 
 		$h .= '</div>';
 
-		if($eDate['isOrderable'] and ($canBasket or $isModifying)) {
+		if($eDate->acceptOrder() and ($canBasket or $isModifying)) {
 			$h .= $this->getOrderedProducts($eShop, $eDate, $cItem, $basketProducts, $isModifying);
 		}
 
@@ -843,7 +843,7 @@ class ProductUi {
 
 	public static function numberOrder(Shop $eShop, Date $eDate, \selling\Product $eProductSelling, Product $eProduct, float $number, ?float $available): string {
 
-		if($eDate['isOrderable'] === FALSE) {
+		if($eDate->acceptOrder() === FALSE) {
 			return '';
 		}
 

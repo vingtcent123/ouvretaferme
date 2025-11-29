@@ -193,7 +193,11 @@ class DateUi {
 		$h = '';
 
 		if($eDate->acceptOrder()) {
-			$h .= s("Commande possible jusqu'au {date}", ['date' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+			if($eDate['orderEndAt'] !== NULL) {
+				$h .= s("Commande possible jusqu'au {date}", ['date' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
+			} else {
+				$h .= s("Les ventes sont ouvertes !");
+			}
 		} else if($eDate->acceptOrderSoon()) {
 			$h .= s("Commandes ouvertes du {from} jusqu'au {to}", ['from' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt'])))).' '.\util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE), 'to' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE)]);
 		} else if($eDate->isExpired()) {
@@ -307,8 +311,10 @@ class DateUi {
 				$h .= $form->dynamicGroup($e, 'points*');
 			}
 
-			$h .= $this->getOrderField('create', $form, $e);
-			$h .= $form->dynamicGroup($e, 'deliveryDate*');
+			if($e['shop']['opening'] === Shop::FREQUENCY) {
+				$h .= $this->getOrderField('create', $form, $e);
+				$h .= $form->dynamicGroup($e, 'deliveryDate*');
+			}
 
 			$grid = match($e['shop']['type']) {
 				Shop::PRO => s("Professionnels"),
@@ -319,6 +325,8 @@ class DateUi {
 				s("Grille tarifaire"),
 				$form->fake($grid)
 			);
+
+			$canSubmit = TRUE;
 
 			if($e['shop']['shared'] === FALSE) {
 
@@ -332,17 +340,36 @@ class DateUi {
 				}
 
 				$h .= '<div data-ref="date-direct" class="'.($e['source'] === Date::DIRECT ? '' : 'hide').'">';
+
 					$h .= '<h3 class="mt-2">'.self::p('productsList')->label.'</h3>';
-					$h .= $form->dynamicField($e, 'productsList');
+
+					if($e['cProduct']->empty()) {
+
+						$canSubmit = FALSE;
+
+						$h .= '<div class="util-block-important">';
+							$h .= '<h4>'.s("Vous n'avez pas encore créé de produit").'</h4>';
+							$h .= '<p>'.s("Avant d'aller plus loin, vous devez d'abord constituer votre gamme de produits à proposer sur votre boutique en ligne.").'</p>';
+							$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($e['farm']).'" class="btn btn-transparent" target="_blank">'.s("Ajouter un premier produit").'</a>';
+						$h .= '</div>';
+
+					} else {
+						$h .= $form->dynamicField($e, 'productsList');
+					}
+
 				$h .= '</div>';
 
 			} else {
 
 				if($e['cCatalog']->empty()) {
+
+					$canSubmit = FALSE;
+
 					$h .= $form->group(
 						self::p('catalogs')->label,
-						'<div class="util-block-help">'.s("Vos producteurs n'ont pas encore connecté de catalogue à cette boutique. Vous devez d'abord battre le rappel des troupes avant de créer une première livraison !").'</div>'
+						'<div class="util-block-important">'.s("Vos producteurs n'ont pas encore connecté de catalogue à cette boutique. Vous devez d'abord battre le rappel des troupes avant de créer une première livraison !").'</div>'
 					);
+
 				} else {
 					$h .= $form->dynamicGroup($e, 'catalogs*');
 				}
@@ -350,14 +377,14 @@ class DateUi {
 
 			$h .= '<br/>';
 
-			if(
-				$e['shop']->isPersonal() or
-				$e['cCatalog']->notEmpty()
-			) {
+			if($canSubmit) {
 
 				$h .= $form->group(
 					content: '<p class="util-danger">'.s("Veuillez corriger les erreurs en rouge pour continuer.").'</p>'.
-					$form->submit(s("Ajouter la livraison"))
+					$form->submit(match($e['shop']['opening']) {
+						Shop::FREQUENCY => s("Ajouter la livraison"),
+						Shop::ALWAYS => s("Ouvrir les ventes"),
+					})
 				);
 
 			}
@@ -774,8 +801,14 @@ class DateUi {
 			$h .= $textDelivered;
 		} else {
 
-			if($eDate['orderStartAt'] < $now and $eDate['orderEndAt'] > $now) {
-				$h .= '<span class="color-order">'.s("Prises de commande ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1)).'</span>';
+			if($eDate->acceptOrder()) {
+				$h .= '<span class="color-order">';
+					if($eDate['orderEndAt'] === NULL) {
+						$h .= s("Prises de commande ouvertes");
+					} else {
+						$h .= s("Prises de commande ouvertes encore {value}", \util\DateUi::secondToDuration(strtotime($eDate['orderEndAt']) - time(), \util\DateUi::AGO, maxNumber: 1));
+					}
+				$h .= '</span>';
 			} else if($eDate['orderEndAt'] < $now) {
 				if(currentDate() === $eDate['deliveryDate']) {
 					$h .= s("Livraison aujourd'hui");
@@ -859,7 +892,7 @@ class DateUi {
 
 					if(
 						$eShop['shared'] === FALSE or
-						$eShop['eFarmSelected']->is($eFarm)
+						$eDate['eFarmSelected']->is($eFarm)
 					) {
 
 						if($eDate->acceptOrder() === FALSE) {
@@ -884,7 +917,7 @@ class DateUi {
 						$cSale->notEmpty() and
 						$eShop->canShare($eFarm, validateShared: 'canWrite')
 					) {
-						$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eShop['eFarmSelected']->empty() ? '' : '&farm='.$eShop['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
+						$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
 					}
 
 				$actions .= '</div>';
@@ -1074,7 +1107,8 @@ class DateUi {
 
 	private static function getSearchFarm(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
 
-		$eShop->expects(['cShare', 'eFarmSelected']);
+		$eShop->expects(['cShare']);
+		$eDate->expects(['eFarmSelected']);
 
 		$cShare = $eShop['cShare'];
 
@@ -1083,16 +1117,16 @@ class DateUi {
 		$h = '<div class="input-group">';
 			$h .= '<a data-dropdown="bottom-end" data-dropdown-id="'.$id.'" class="btn btn-outline-primary dropdown-toggle">';
 				$h .= \Asset::icon('search').'  ';
-				$h .= $eShop['eFarmSelected']->empty() ? s("Producteur") : encode($eShop['eFarmSelected']['name']);
+				$h .= $eDate['eFarmSelected']->empty() ? s("Producteur") : encode($eDate['eFarmSelected']['name']);
 			$h .= '</a>';
 
-			if($eShop['eFarmSelected']->notEmpty()) {
+			if($eDate['eFarmSelected']->notEmpty()) {
 				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm=" class="btn btn-primary">'.\Asset::icon('x-lg').'</a>';
 			}
 		$h .= '</div>';
 		$h .= '<div class="dropdown-list" data-dropdown-id="'.$id.'-list">';
 			foreach($cShare as $eShare) {
-				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm='.$eShare['farm']['id'].'" class="dropdown-item '.($eShare['farm']->is($eShop['eFarmSelected']) ? 'selected' : '').'">'.encode($eShare['farm']['name']).'</a>';
+				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm='.$eShare['farm']['id'].'" class="dropdown-item '.($eShare['farm']->is($eDate['eFarmSelected']) ? 'selected' : '').'">'.encode($eShare['farm']['name']).'</a>';
 			}
 		$h .= '</div>';
 
@@ -1343,6 +1377,7 @@ class DateUi {
 				$d->field = function(\util\FormUi $form, Date $e) {
 					return new DateUi()->getPoints($form, $e);
 				};
+				$d->labelAfter = fn(Date $e) => \util\FormUi::info(s("Vous pouvez <link>désactiver le choix du mode de livraison</link> par vos clients dans les paramètres de la boutique.", ['link' => '<a href="/shop/configuration:update?id='.$e['shop']['id'].'">']));
 				break;
 
 		}

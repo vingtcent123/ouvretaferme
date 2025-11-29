@@ -319,12 +319,17 @@ class OrderUi {
 					$h .= '<dd>'.\selling\SaleUi::getPaymentStatusForCustomer($eSale).'</dd>';
 				}
 
-				$h .= '<dt>'.s("Livraison").'</dt>';
-				$h .= '<dd>';
-					$h .= $eSale['preparationStatus'] === Sale::DELIVERED ?
-						\util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE) :
-						($eSale['deliveredAt'] ? s("Planifiée le {value}", \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE)) : s("Non planifié"));
-				$h .= '</dd>';
+				if(
+					$eSale['shopDate']->notEmpty() and
+					$eSale['shopDate']['deliveryDate'] !== NULL
+				) {
+					$h .= '<dt>'.s("Livraison").'</dt>';
+					$h .= '<dd>';
+						$h .= $eSale['preparationStatus'] === Sale::DELIVERED ?
+							\util\DateUi::numeric($eSale['shopDate']['deliveryDate'], \util\DateUi::DATE) :
+							 s("Planifiée le {value}", \util\DateUi::numeric($eSale['shopDate']['deliveryDate'], \util\DateUi::DATE));
+					$h .= '</dd>';
+				}
 
 			$h .= '</dl>';
 		$h .= '</div>';
@@ -357,7 +362,6 @@ class OrderUi {
 			$eSale['shopPoint']->notEmpty() and
 			$eSale->isLocked() === FALSE
 		) {
-			$h .= '<h3>'.encode($eSale['shop']['name']).'</h3>';
 			$h .= $this->getPointBySale($eSale);
 			$h .= '<br/>';
 		}

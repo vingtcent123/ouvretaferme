@@ -416,7 +416,7 @@ class Sale extends SaleElement {
 			(
 				$this['shopDate']->empty() or
 				$this['customer']['user']->is($this['createdBy']) === FALSE or
-				$this['shopDate']['isOrderable'] === FALSE
+				$this['shopDate']->acceptSaleUpdatePreparationStatus()
 			)
 		);
 
@@ -827,11 +827,16 @@ class Sale extends SaleElement {
 
 	public function acceptUpdatePaymentByCustomer(): bool {
 
+		$this->expects([
+			'shopDate' => ['deliveryDate']
+		]);
+
 		return (
 			$this['preparationStatus'] === Sale::CONFIRMED and
 			$this['paymentStatus'] !== Sale::PAID and
 			$this['shop']['hasPayment'] and
-			$this['shop']['shared'] === FALSE
+			$this['shop']['shared'] === FALSE and
+			$this['shopDate']['deliveryDate'] !== NULL
 		);
 
 	}
@@ -840,8 +845,11 @@ class Sale extends SaleElement {
 
 		// Autres que les commandes en brouillon ou confirmées => NON
 		if(
-			in_array($this['preparationStatus'], [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED]) === FALSE
-			or ($this['shop'] !== NULL and $this['shopDate']['orderEndAt'] <= date('Y-m-d H:i:s'))
+			in_array($this['preparationStatus'], [\selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED]) === FALSE	or
+			(
+				$this['shop']->notEmpty() !== NULL and
+				$this['shopDate']->acceptCustomerCancel() === FALSE
+			)
 		) {
 			return FALSE;
 		}
@@ -1095,7 +1103,10 @@ class Sale extends SaleElement {
 
 					$eDate = \shop\DateLib::getById($eDate);
 
-					if($eDate->empty()) {
+					if(
+						$eDate->empty() or
+						$eDate['type'] !== $this['type']
+					) {
 						return FALSE;
 					} else {
 

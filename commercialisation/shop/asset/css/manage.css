@@ -20,6 +20,14 @@ div.shop-write-fqn {
 
 }
 
+div.shop-write-opening:not(:has([name="opening"][value="frequency"]:checked)) [data-wrapper="openingFrequency"] {
+	display: none !important;
+}
+
+div.shop-write-opening:not(:has([name="opening"][value="always"]:checked)) [data-wrapper="openingDelivery"] {
+	display: none !important;
+}
+
 div.shop-write-fqn .input-group-addon {
 	font-size: 0.8rem;
 }

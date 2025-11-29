@@ -411,7 +411,7 @@ new \selling\SalePage()
 	})
 	->read('updateShop', function($data) {
 
-		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm']);
+		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm'], $data->e['type']);
 
 		throw new ViewAction($data);
 

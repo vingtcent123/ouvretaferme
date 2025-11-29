@@ -4,13 +4,13 @@ namespace shop;
 class ShopLib extends ShopCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['fqn', 'name', 'type', 'email', 'description', 'openingFrequency', 'shared'];
+		return ['fqn', 'name', 'type', 'email', 'description', 'opening', 'openingDelivery', 'openingFrequency', 'shared'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
 		return function($eShop) {
 
-			$properties = ['fqn', 'name', 'type', 'email', 'description', 'openingFrequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
+			$properties = ['fqn', 'name', 'type', 'email', 'description', 'opening', 'openingDelivery', 'openingFrequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
 
 			if($eShop['paymentCard'] === FALSE) {
 				$properties[] = 'approximate';
@@ -275,7 +275,7 @@ class ShopLib extends ShopCrud {
 
 	}
 
-	public static function getAroundByFarm(\farm\Farm $eFarm, ?string $type = NULL, string $period = '1 MONTH'): \Collection {
+	public static function getAroundByFarm(\farm\Farm $eFarm, string $type, string $period = '1 MONTH'): \Collection {
 
 		$cShop = self::getList($eFarm)['selling'];
 
@@ -284,10 +284,12 @@ class ShopLib extends ShopCrud {
 				'id', 'name',
 				'cDate' => Date::model()
 					->select(Date::getSelection())
-					->where('deliveryDate BETWEEN NOW() - INTERVAL '.$period.' AND NOW() + INTERVAL '.$period)
+					->where('deliveryDate IS NULL OR deliveryDate BETWEEN NOW() - INTERVAL '.$period.' AND NOW() + INTERVAL '.$period)
+					->whereType($type)
 					->sort(['deliveryDate' => SORT_ASC])
 					->delegateCollection('shop')
 			])
+			->whereType($type)
 			->sort('name')
 			->get($cShop);
 

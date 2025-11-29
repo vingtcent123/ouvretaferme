@@ -52,8 +52,6 @@ class ShopManageUi {
 
 	public function getHeader(\farm\Farm $eFarm, Shop $eShopCurrent, \Collection $ccShop): string {
 
-		$eShopCurrent->expects(['cDate']);
-
 		$h = '<div class="util-action">';
 			$h .= '<div class="shop-title">';
 				$h .= new \media\ShopLogoUi()->getCamera($eShopCurrent, size: '5rem');
@@ -165,22 +163,24 @@ class ShopManageUi {
 
 								$h .= '<h4>'.new DateUi()->getStatus($eShop, $eDate, withColor: FALSE).'</h4>';
 
-								$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
+								if($eDate['deliveryDate'] !== NULL) {
 
-									$h .= '<dt>'.s("Date").'</dt>';
-									$h .= '<dd>';
-										$h .= \util\DateUi::textual($eDate['deliveryDate']);
-									$h .= '</dd>';
+									$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
 
-									$h .= '<dt>'.s("Ventes").'</dt>';
-									$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
+										$h .= '<dt>'.s("Date").'</dt>';
+										$h .= '<dd>'.\util\DateUi::textual($eDate['deliveryDate']).'</dd>';
 
-									if($eDate['sales']['countValid'] > 0) {
-										$h .= '<dt>'.s("Montant").'</dt>';
-										$h .= '<dd>'.($eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-').'</dd>';
-									}
+										$h .= '<dt>'.s("Ventes").'</dt>';
+										$h .= '<dd>'.$eDate['sales']['countValid'].'</dd>';
 
-								$h .= '</dl>';
+										if($eDate['sales']['countValid'] > 0) {
+											$h .= '<dt>'.s("Montant").'</dt>';
+											$h .= '<dd>'.($eDate['sales']['amountValidIncludingVat'] ? \util\TextUi::money($eDate['sales']['amountValidIncludingVat']) : '-').'</dd>';
+										}
+
+									$h .= '</dl>';
+
+								}
 
 						} else {
 							if($eShop['status'] === Shop::CLOSED) {
@@ -271,7 +271,7 @@ class ShopManageUi {
 		$createPoint = (
 			$eShop['hasPoint'] and
 			$eShop['ccPoint']->empty() and
-			$eShop['cDate']->empty() and
+			$eShop['hasDate'] === FALSE and
 			$eShop->canWrite()
 		);
 
@@ -281,14 +281,14 @@ class ShopManageUi {
 			$h .= new PointUi()->createFirst($eShop);
 		}
 
-		if($eShop['cDate']->empty()) {
+		if($eShop['hasDate'] === FALSE) {
 
 			if($createPoint === FALSE or $eShop['shared']) {
 				$h .= $this->createFirstDate($eFarm, $eShop);
 			}
 
 		} else {
-			$h .= self::getDateList($eFarm, $eShop);
+			$h .= self::getOrders($eFarm, $eShop);
 		}
 
 		return $h;
@@ -301,47 +301,104 @@ class ShopManageUi {
 		}
 
 		$h = '';
-		$h .= '<div class="util-block-help">';
 
 		if($eShop['shared']) {
 
+
 			if($eShop['cShare']->empty()) {
 
-				$h .= '<h4>'.s("Il est trop tôt pour ajouter une première livraison !").'</h4>';
-
-				$h .= '<p>'.s("Vous devriez plutôt inviter des premiers producteurs et les inciter à associer un ou plusieurs de ses catalogues à la boutique.").'</p>';
-				$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Envoyer des invitations").'</a>';
+				$h .= '<div class="util-block-important">';
+					$h .= '<h4>'.s("Il est trop tôt pour commencer à vendre !").'</h4>';
+					$h .= '<p>'.s("Vous devez d'abord inviter des premiers producteurs et les inciter à associer un ou plusieurs de ses catalogues à la boutique.").'</p>';
+					$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-transparent">'.s("Envoyer des invitations").'</a>';
+				$h .= '</div>';
 
 			} else {
+				
+				$checklist = '<ul>';
+					$checklist .= '<li>'.s("Vous avez invité des producteurs sur la boutique ?").'</li>';
+					$checklist .= '<li>'.s("La personnalisation de la boutique est terminée ?").'</li>';
+				$checklist .= '</ul>';
 
-				$h .= '<h4>'.s("Ajouter une première livraison").'</h4>';
-				$h .= '<ul>';
-					$h .= '<li>'.s("Vous avez invité des producteurs sur la boutique ?").'</li>';
-					$h .= '<li>'.s("La configuration de la boutique est terminée ?").'</li>';
-				$h .= '</ul>';
-				$h .= '<p>'.s("Alors c'est le moment de configurer une première livraison à destination de vos clients !").'</p>';
-				$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Configurer une première livraison").'</a>';
+				switch($eShop['opening']) {
+	
+					case Shop::FREQUENCY :
+	
+						$h .= '<h2>'.s("Ajouter une première livraison").'</h2>';
+						$h .= $checklist;
+						$h .= '<p>'.s("Alors c'est le moment de configurer une première livraison à destination de vos clients !").'</p>';
+						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.s("Configurer une première livraison").'</a>';
+	
+						break;
+	
+					case Shop::ALWAYS :
+	
+						$h .= '<h2>'.s("Ouvrir les ventes").'</h2>';
+						$h .= $checklist;
+						$h .= '<p>'.s("Alors c'est le moment de préparer l'ouverture des ventes en choisissant les modes de livraison et les produits disponibles à la vente !").'</p>';
+						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.s("Terminer la configuration").'</a>';
+	
+						break;
+	
+				}
 
 			}
 
+
 		} else {
 
-			$h .= '<h4>'.s("Ajouter une première livraison").'</h4>';
-			$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment de configurer une première livraison en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
-			$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-secondary">'.s("Ajouter une première livraison").'</a>';
-			$h .= '<br/><br/>';
-			$h .= '<p>'.s("Vous voulez continuer à personnaliser l'expérience de vos clients ?<br/>Activez par exemple le paiement en ligne ou personnalisez les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
-			$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-outline-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
+
+			switch($eShop['opening']) {
+
+				case Shop::FREQUENCY :
+
+					$h .= '<h2>'.s("Ajouter une première livraison").'</h2>';
+					$h .= '<p>'.s("Vous êtes satisfait de la configuration de votre boutique ?<br/>Alors c'est le moment de configurer une première livraison en choisissant une date et la liste des produits que vous avez en stock et que vous souhaitez proposer à vos clients !").'</p>';
+					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.s("Ajouter une première livraison").'</a>';
+
+					break;
+
+				case Shop::ALWAYS :
+
+					$h .= '<h2>'.s("Ouvrir les ventes").'</h2>';
+					$h .= '<p>'.s("Pour commencer à vendre, il ne vous reste qu'à choisir les modes de livraison et les produits disponibles à la vente !").'</p>';
+					$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.s("Terminer la configuration").'</a>';
+
+					break;
+
+			}
+
+			$h .= '<div class="util-block-help mt-2">';
+				$h .= '<p>'.s("Vous voulez continuer à personnaliser l'expérience de vos clients ?<br/>Activez par exemple le paiement en ligne ou personnalisez les e-mails envoyés automatiquement à vos clients lors de leurs commandes.").'</p>';
+				$h .= '<a href="/shop/configuration:update?id='.$eShop['id'].'" class="btn btn-secondary">'.s("Continuer à personnaliser la boutique").'</a>';
+			$h .= '</div>';
 
 		}
-
-		$h .= '</div>';
 
 		return $h;
 		
 	}
 	
-	public function getDateList(\farm\Farm $eFarm, Shop $eShop): string {
+	public function getOrders(\farm\Farm $eFarm, Shop $eShop): string {
+
+		return match($eShop['opening']) {
+
+			Shop::ALWAYS => $this->getSales($eFarm, $eShop),
+			Shop::FREQUENCY => $this->getDates($eFarm, $eShop)
+
+		};
+
+	}
+
+	public function getSales(\farm\Farm $eFarm, Shop $eShop): string {
+
+		$h = new \shop\DateUi()->getContent($eFarm, $eShop, $eShop['eDate'], $eShop['eDate']['cSale'], $eFarm['cPaymentMethod']);
+
+		return $h;
+
+	}
+
+	public function getDates(\farm\Farm $eFarm, Shop $eShop): string {
 
 		$cDate = $eShop['cDate'];
 

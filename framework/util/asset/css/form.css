@@ -473,33 +473,45 @@ div.form-group.form-group-nested > .form-control-label {
 
 }
 
-.field-radio-group > label {
+.field-radio-group-item {
 	padding: 0.5rem;
 	cursor: pointer;
 	transition: background-color 0.5s;
 }
 
-.field-radio-group.field-radio-group-1 > label:not(:last-child) {
+.field-radio-group.field-radio-group-1 > .field-radio-group-item:not(:last-child) {
 	border-bottom: 1px dashed var(--border);
 }
 
-.field-radio-group > label:hover {
+.field-radio-group-item:hover {
 	background-color: #ccc2;
 }
 
-.field-radio-group > label {
+.field-radio-group-item {
 	display: grid;
 	grid-template-columns: auto 1fr;
 	grid-column-gap: 0.5rem;
-	align-items: center;
+	align-items: baseline;
 }
 
-.field-radio-group > label > input[type="radio"]:checked:not(:disabled) + span {
+.field-radio-group-item h4 {
+	font-size: 1.2rem;
+}
+
+.field-radio-group-item > input[type="radio"] {
+	transform: translate(0, 1px);
+}
+
+.field-radio-group-item:has( > input[type="radio"]:checked:not(:disabled)):not(:has(h4)) {
 	font-weight: bold;
 }
 
-.field-radio-group > label > input:disabled,
-.field-radio-group > label > input:disabled + span {
+.field-radio-group-item:has( > input[type="radio"]:checked:not(:disabled)):has(h4) h4 {
+	font-weight: bold;
+}
+
+.field-radio-group-item > input:disabled,
+.field-radio-group-item > input:disabled + span {
 	opacity: 0.5;
 }
 

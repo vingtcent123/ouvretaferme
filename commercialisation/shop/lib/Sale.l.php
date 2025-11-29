@@ -80,10 +80,22 @@ class SaleLib {
 
 	}
 
-	public static function getByCustomersForDate(Shop $eShop, Date $eDate, \Collection $cCustomer): \Collection {
+	public static function getByCustomersForDate(Shop $eShop, Date $eDate, \Collection $cCustomer, ?array $sales = NULL): \Collection {
 
 		if($cCustomer->empty()) {
 			return new \Collection();
+		}
+
+		$statuses = [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED];
+
+		if($eDate['deliveryDate'] === NULL) {
+
+			if($sales === NULL) {
+				$statuses = [\selling\Sale::BASKET];
+			} else {
+				\selling\Sale::model()->whereId('IN', $sales);
+			}
+
 		}
 
 		return \selling\Sale::model()
@@ -91,7 +103,7 @@ class SaleLib {
 			->whereShop($eShop)
 			->whereShopDate($eDate)
 			->whereCustomer('IN', $cCustomer)
-			->wherePreparationStatus('NOT IN', [\selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT])
+			->wherePreparationStatus('IN', $statuses)
 			->getCollection(index: 'farm');
 
 	}
@@ -147,6 +159,8 @@ class SaleLib {
 			$eSaleReference['customer'] = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
 		}
 
+		$cSale = new \Collection();
+
 		foreach($ccItem as $farm => $cItem) {
 
 			$eFarm = $cFarm[$farm];
@@ -173,6 +187,8 @@ class SaleLib {
 
 			self::autoCreatePayment($eFarm, $eShop, $eSale);
 
+			$cSale[] = $eSale;
+
 		}
 
 		if($eShop->isShared()) {
@@ -184,7 +200,7 @@ class SaleLib {
 		\selling\Sale::model()->commit();
 
 		if($eShop['hasPayment'] === FALSE) {
-			return ShopUi::confirmationUrl($eShop, $eDate);
+			return ShopUi::confirmationUrl($eShop, $eDate, $cSale);
 		} else {
 			return ShopUi::paymentUrl($eShop, $eDate);
 		}
@@ -232,7 +248,7 @@ class SaleLib {
 		$eSaleReference->merge([
 			'profile' => \selling\Sale::SALE,
 			'type' => $eSaleReference['shopDate']['type'],
-			'deliveredAt' => $eSaleReference['shopDate']['deliveryDate'],
+			'deliveredAt' => ($eSaleReference['shopDate']['deliveryDate'] === NULL) ? currentDate() : $eSaleReference['shopDate']['deliveryDate'],
 			'shopPoint' => PointLib::getById($eSaleReference['shopPoint'])
 		]);
 
@@ -429,23 +445,33 @@ class SaleLib {
 
 	}
 
-	public static function createPayment(?string $payment, \selling\Sale $eSale): string {
+	public static function createPayment(?string $payment, \Collection $cSale, \selling\Sale $eSaleReference): string {
 
-		if($eSale['cPayment']->notEmpty()) {
+		if($eSaleReference['cPayment']->notEmpty()) {
 
-			SaleLib::changePaymentForShop($eSale);
+			SaleLib::changePaymentForShop($eSaleReference);
 
 			// On annule les précédentes tentatives de paiement pour cette vente
-			\selling\PaymentLib::expiresPaymentSessions($eSale);
+			\selling\PaymentLib::expiresPaymentSessions($eSaleReference);
 
 		}
 
 		// On crée le paiement
-		return match($payment) {
-			\payment\MethodLib::ONLINE_CARD => self::createCardPayment($eSale),
-			\payment\MethodLib::TRANSFER => self::createDirectPayment(\payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), $eSale),
-			default => self::createDirectPayment(new \payment\Method(), $eSale),
+		switch($payment) {
+
+			case \payment\MethodLib::ONLINE_CARD :
+				return self::createCardPayment($eSaleReference);
+
+			case \payment\MethodLib::TRANSFER :
+				self::createDirectPayment(\payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), $eSaleReference);
+				return ShopUi::confirmationUrl($eSaleReference['shop'], $eSaleReference['shopDate'], $cSale);
+
+			default :
+				self::createDirectPayment(new \payment\Method(), $eSaleReference);
+				return ShopUi::confirmationUrl($eSaleReference['shop'], $eSaleReference['shopDate'], $cSale);
+
 		};
+
 
 	}
 
@@ -514,7 +540,7 @@ class SaleLib {
 
 	}
 
-	public static function createDirectPayment(\payment\Method $eMethod, \selling\Sale $eSale): string {
+	public static function createDirectPayment(\payment\Method $eMethod, \selling\Sale $eSale): void {
 
 		$eSale->expects([
 			'farm',
@@ -548,8 +574,6 @@ class SaleLib {
 		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem'], $group);
 
 		\selling\Sale::model()->commit();
-
-		return ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
 
 	}
 

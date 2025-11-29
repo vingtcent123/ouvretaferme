@@ -30,7 +30,7 @@ class WidgetUi {
 
 				$h .= new \shop\ShopUi()->getDateHeader($eDate, cssPrefix: 'website-widget');
 
-				if($eDate['isOrderable']) {
+				if($eDate->acceptOrder()) {
 
 					$url = $eShop['embedOnly'] ? $eShop['embedUrl'] : \shop\ShopUi::url($eShop);
 

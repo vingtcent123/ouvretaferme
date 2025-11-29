@@ -78,9 +78,14 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 	if($data->eDateSelected->notEmpty()) {
 
 		echo '<div class="util-title">';
-			echo '<h3>';
-				echo \shop\DateUi::name($data->eDateSelected);
-			echo '</h3>';
+
+			if($data->eDateSelected['deliveryDate'] !== NULL) {
+				echo '<h3>';
+					echo \shop\DateUi::name($data->eDateSelected);
+				echo '</h3>';
+			} else {
+				echo '<div></div>';
+			}
 			echo '<div>';
 				if($data->eShop['shared']) {
 					echo new \shop\BasketUi()->getSearch($data->eShop['cShare']);
@@ -96,7 +101,7 @@ new AdaptativeView('shop', function($data, ShopTemplate $t) {
 
 		$details = [];
 
-		if($data->eDateSelected['isOrderable']) {
+		if($data->eDateSelected->acceptOrder()) {
 
 			if(
 				$data->canBasket === FALSE and
@@ -283,6 +288,8 @@ new AdaptativeView('/shop/public/{fqn}/{date}/confirmation', function($data, Sho
 
 	$t->title = encode($data->eShop['name']);
 	$t->header = $uiBasket->getHeader($data->eShop);
+
+	//$t->js()->replaceHistory($t->canonical);
 
 	echo $uiBasket->getPaymentStatus($data->eShop, $data->eDate, $data->eSaleReference);
 	echo $uiBasket->getConfirmation($data->eShop, $data->eDate, $data->eSaleReference, $data->cSaleExisting, $data->cItemExisting);

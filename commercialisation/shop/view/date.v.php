@@ -4,7 +4,10 @@ new AdaptativeView('create', function($data, FarmTemplate $t) {
 	$t->nav = 'shop';
 	$t->subNav = 'shop';
 
-	$t->title = s("Ajouter une nouvelle livraison");
+	$t->title = match($data->e['shop']['opening']) {
+		\shop\Shop::ALWAYS => s("Ouvrir les ventes"),
+		\shop\Shop::FREQUENCY => s("Ajouter une nouvelle livraison"),
+	};
 
 	\Asset::js('shop', 'manage.js');
 
@@ -64,7 +67,7 @@ new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 
 	echo new \shop\DateUi()->getDetails($data->eShop, $data->eDate);
 
-	echo new \shop\DateUi()->getContent($data->e, $data->eShop, $data->eDate, $data->cSale, $data->cPaymentMethod);
+	echo new \shop\DateUi()->getContent($data->e, $data->eShop, $data->eDate, $data->eDate['cSale'], $data->cPaymentMethod);
 
 });
 
