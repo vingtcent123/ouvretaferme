@@ -1253,6 +1253,10 @@ class ItemUi {
 						);
 					}
 
+					if($eSale['farm']->hasAccounting()) {
+						$h .= $form->dynamicGroup($eItem, 'account[0]');
+					}
+
 				$h .= '</div>';
 
 			}
@@ -1310,7 +1314,7 @@ class ItemUi {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
 			}
 
-			if($eItem['farm']->hasAccounting()) {
+			if($eItem['farm']->hasAccounting() and $eItem['product']->empty()) {
 				$h .= $form->dynamicGroup($eItem, 'account');
 			}
 
