@@ -124,12 +124,6 @@ class ShopModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'opening' :
-				return Shop::FREQUENCY;
-
-			case 'openingFrequency' :
-				return Shop::WEEKLY;
-
 			case 'hasPoint' :
 				return TRUE;
 

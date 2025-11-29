@@ -39,7 +39,6 @@ abstract class FarmerElement extends \Element {
 	const PLANT = 'plant';
 	const FAMILY = 'family';
 
-	const SEEDLING = 'seedling';
 	const HARVESTING = 'harvesting';
 	const WORKING_TIME = 'working-time';
 
@@ -127,7 +126,7 @@ class FarmerModel extends \ModuleModel {
 			'viewPlanningSearch' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'viewPlanningUser' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'viewCultivationCategory' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::PLANT, \farm\Farmer::FAMILY], 'cast' => 'enum'],
-			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::SEEDLING, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME], 'cast' => 'enum'],
+			'viewSeries' => ['enum', [\farm\Farmer::AREA, \farm\Farmer::HARVESTING, \farm\Farmer::WORKING_TIME], 'cast' => 'enum'],
 			'viewSoil' => ['enum', [\farm\Farmer::PLAN, \farm\Farmer::ROTATION], 'cast' => 'enum'],
 			'viewSoilColor' => ['enum', [\farm\Farmer::WHITE, \farm\Farmer::BLACK, \farm\Farmer::PLANT], 'cast' => 'enum'],
 			'viewSoilOverlay' => ['bool', 'cast' => 'bool'],

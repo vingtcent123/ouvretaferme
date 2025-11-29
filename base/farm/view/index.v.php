@@ -171,20 +171,41 @@ new AdaptativeView('series', function($data, FarmTemplate $t) {
 	} else {
 
 		if($data->search !== NULL) {
-			echo $uiFarm->getCultivationSeriesSearch($view, $data->eFarm, $data->season, $data->search, $data->cSupplier, $data->cAction);
+			echo $uiFarm->getCultivationSeriesSearch($view, $data->eFarm, $data->season, $data->search, $data->cAction);
 		}
 
 		echo match($view)  {
 			\farm\Farmer::AREA => new \series\CultivationUi()->displayByArea($data->season, $data->eFarm, $data->ccCultivation),
-			\farm\Farmer::SEEDLING => ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
-				new \series\CultivationUi()->displayBySeedlingByStartWeek($data->eFarm, $data->season, $data->items, $data->cSupplier, $data->search) :
-				new \series\CultivationUi()->displayBySeedling($data->eFarm, $data->items, $data->cSupplier, $data->search),
 			\farm\Farmer::HARVESTING => new \series\CultivationUi()->displayByHarvesting($data->ccCultivation),
 			\farm\Farmer::WORKING_TIME => new \series\CultivationUi()->displayByWorkingTime($data->eFarm, $data->ccCultivation)
 		};
 
 
 	}
+
+});
+
+new AdaptativeView('seedling', function($data, FarmTemplate $t) {
+
+	$t->canonical = \farm\FarmUi::urlCultivationSeedling($data->eFarm, season: $data->season);
+	$t->title = s("Semences et plants de {value}", $data->eFarm['name']);
+	$t->nav = 'cultivation';
+	$t->subNav = 'seedling';
+
+	$t->js()->replaceHistory($t->canonical);
+
+	$uiFarm = new \farm\FarmUi();
+
+	$t->mainTitle = $uiFarm->getCultivationSeedlingTitle($data->eFarm);
+	$t->mainYear = $uiFarm->getSeasonsTabs($data->eFarm, fn($season) => \farm\FarmUi::urlCultivationSeedling($data->eFarm, season: $season), $data->season);
+
+	if($data->nSeries > 5) {
+		echo $uiFarm->getCultivationSeedlingSearch($data->eFarm, $data->season, $data->search, $data->cSupplier);
+	}
+
+	echo ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
+			new \series\CultivationUi()->displayBySeedlingByStartWeek($data->eFarm, $data->season, $data->items, $data->cSupplier, $data->search) :
+			new \series\CultivationUi()->displayBySeedling($data->eFarm, $data->items, $data->cSupplier, $data->search);
 
 });
 

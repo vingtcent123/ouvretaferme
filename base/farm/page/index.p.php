@@ -558,19 +558,6 @@ new Page(function($data) {
 				$data->ccCultivation = \series\CultivationLib::getForArea($data->eFarm, $data->season, $data->search);
 				break;
 
-			case \farm\Farmer::SEEDLING :
-
-				$data->search = new Search([
-					'supplier' => GET('supplier', 'farm\Supplier'),
-					'seedling' => \series\Cultivation::GET('seedling', 'seedling')
-				]);
-
-				$data->cSupplier = \farm\SupplierLib::getByFarm($data->eFarm);
-				$data->items = ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
-					\series\CultivationLib::getForSeedlingByStartWeek($data->eFarm, $data->season, $data->search) :
-					\series\CultivationLib::getForSeedling($data->eFarm, $data->season, $data->search);
-				break;
-
 			case \farm\Farmer::HARVESTING :
 				$data->search = NULL;
 				$data->ccCultivation = \series\CultivationLib::getForHarvesting($data->eFarm, $data->season);
@@ -597,9 +584,6 @@ new Page(function($data) {
 
 		$data->season = \farm\FarmerLib::getDynamicSeason($data->eFarm, GET('season', 'int'));
 
-		$data->cSupplier = new Collection();
-		$data->cAction = new Collection();
-
 		\farm\ActionLib::getMainByFarm($data->eFarm);
 
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'series-forecast-help');
@@ -609,6 +593,28 @@ new Page(function($data) {
 		$data->ccForecast = \plant\ForecastLib::getByFarm($data->eFarm, $data->season, $cccCultivation);
 
 		throw new ViewAction($data, ':forecast');
+
+	})
+	->get(['/ferme/{id}/semences-plants', '/ferme/{id}/semences-plants/{season}'], function($data) {
+
+		$data->eFarm->validate('canAnalyze');
+		$data->season = \farm\FarmerLib::getDynamicSeason($data->eFarm, GET('season', 'int'));
+
+		\farm\ActionLib::getMainByFarm($data->eFarm);
+
+		$data->nSeries = \series\SeriesLib::countByFarm($data->eFarm, $data->season);
+
+		$data->search = new Search([
+			'supplier' => GET('supplier', 'farm\Supplier'),
+			'seedling' => \series\Cultivation::GET('seedling', 'seedling')
+		]);
+
+		$data->cSupplier = \farm\SupplierLib::getByFarm($data->eFarm);
+		$data->items = ($data->search->get('seedling') === \series\Cultivation::YOUNG_PLANT_BOUGHT) ?
+			\series\CultivationLib::getForSeedlingByStartWeek($data->eFarm, $data->season, $data->search) :
+			\series\CultivationLib::getForSeedling($data->eFarm, $data->season, $data->search);
+
+		throw new ViewAction($data, ':seedling');
 
 	})
 	->get(['/ferme/{id}/carte', '/ferme/{id}/carte/{season}'], function($data) {

@@ -114,6 +114,7 @@ class FarmUi {
 		return match($view) {
 			'series' => self::urlCultivationSeries($eFarm, $subView),
 			'forecast' => self::urlCultivationForecast($eFarm),
+			'seedling' => self::urlCultivationSeedling($eFarm),
 			'soil' => self::urlCultivationSoil($eFarm, $subView),
 			'sequence' => self::urlCultivationSequences($eFarm),
 			'map' => self::urlCultivationCartography($eFarm)
@@ -132,6 +133,12 @@ class FarmUi {
 	public static function urlCultivationForecast(Farm $eFarm, ?int $season = NULL): string {
 
 		return self::url($eFarm).'/previsionnel'.($season ? '/'.$season : '');
+
+	}
+
+	public static function urlCultivationSeedling(Farm $eFarm, ?int $season = NULL): string {
+
+		return self::url($eFarm).'/semences-plants'.($season ? '/'.$season : '');
 
 	}
 
@@ -922,6 +929,7 @@ class FarmUi {
 			'cultivation' => match($name) {
 				'series' => s("Plan de culture"),
 				'soil' => s("Plan d'assolement"),
+				'seedling' => s("Semences et plants"),
 				'forecast' => s("Prévisionnel financier"),
 				'sequence' => s("Itinéraires techniques"),
 				'map' => s("Plan de la ferme"),
@@ -1350,7 +1358,6 @@ class FarmUi {
 					$h .=  '</div>';
 					break;
 
-				case \farm\Farmer::SEEDLING :
 				case \farm\Farmer::WORKING_TIME :
 					$h .=  '<div>';
 						if($nSeries >= 2) {
@@ -1384,7 +1391,51 @@ class FarmUi {
 
 	}
 
-	public function getCultivationSeriesSearch(string $view, \farm\Farm $eFarm, int $season, \Search $search, \Collection $cSupplier, \Collection $cAction): string {
+	public function getCultivationSeedlingTitle(\farm\Farm $eFarm): string {
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= $this->getCategoryName($eFarm, 'cultivation', 'seedling');
+			$h .= '</h1>';
+		$h .=  '</div>';
+
+		return $h;
+
+	}
+
+	public function getCultivationSeedlingSearch(\farm\Farm $eFarm, int $season, \Search $search, \Collection $cSupplier): string {
+
+		$h = '<div class="util-block-search">';
+
+			$form = new \util\FormUi();
+			$url = \farm\FarmUi::urlCultivationSeedling($eFarm, season: $season);
+
+			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+
+				$h .= '<div>';
+
+					$h .= $form->select('seedling', \series\CultivationUi::p('seedling')->values, $search->get('seedling'), ['placeholder' => s("Implantation")]);
+
+					if($cSupplier->notEmpty()) {
+						$h .= $form->select('supplier', $cSupplier, $search->get('supplier'), ['placeholder' => s("Fournisseur")]);
+					}
+
+
+					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+					if($search->notEmpty()) {
+						$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					}
+				$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getCultivationSeriesSearch(string $view, \farm\Farm $eFarm, int $season, \Search $search, \Collection $cAction): string {
 
 		$h = '<div id="series-search" class="util-block-search '.($search->empty(['cAction']) ? 'hide' : '').'">';
 
@@ -1394,16 +1445,6 @@ class FarmUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 				$h .= '<div>';
-
-					if($view === Farmer::SEEDLING) {
-
-						$h .= $form->select('seedling', \series\CultivationUi::p('seedling')->values, $search->get('seedling'), ['placeholder' => s("Implantation")]);
-
-						if($cSupplier->notEmpty()) {
-							$h .= $form->select('supplier', $cSupplier, $search->get('supplier'), ['placeholder' => s("Fournisseur")]);
-						}
-
-					}
 
 					if($view === Farmer::WORKING_TIME) {
 						$h .= $form->select('action', $cAction, $search->get('action'), ['placeholder' => s("Intervention")]);
@@ -1532,7 +1573,6 @@ class FarmUi {
 
 		$categories = [
 			Farmer::AREA => s("Plan de culture"),
-			Farmer::SEEDLING => s("Semences et plants"),
 			Farmer::HARVESTING => s("Récoltes"),
 			Farmer::WORKING_TIME => s("Temps de travail"),
 		];
@@ -1918,7 +1958,7 @@ class FarmUi {
 
 			case 'cultivation' :
 
-				$categories = ['series', 'soil', 'forecast', 'sequence', 'map'];
+				$categories = ['series', 'soil', 'forecast', 'seedling', 'sequence', 'map'];
 
 				if($eFarm->canAnalyze() === FALSE) {
 					array_delete($categories, 'forecast');

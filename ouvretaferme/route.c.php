@@ -273,6 +273,16 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'rotation', '{season}'],
 		],
+		'/ferme/{id}/semences-plants' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'semences-plants'],
+		],
+		'/ferme/{id}/semences-plants/{season}' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'semences-plants', '{season}'],
+		],
 		'/ferme/{id}/series' => [
 			'request' => 'farm/index',
 			'priority' => 5,

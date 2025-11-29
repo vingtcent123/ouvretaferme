@@ -27,12 +27,6 @@ class TipLib extends TipCrud {
 					->whereFarm($eFarm)
 					->exists()
 			],
-			'feature-seeds' => [
-				'minSeniority' => 10,
-				'match' => fn(\user\User $eUser, Farm $eFarm) => \series\Series::model()
-						->whereFarm($eFarm)
-						->exists()
-			],
 			'feature-team' => [
 				'minSeniority' => 10,
 				'match' => fn(\user\User $eUser, Farm $eFarm) => Farmer::model()

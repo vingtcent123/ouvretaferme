@@ -163,8 +163,8 @@ Shop:
   sharedGroup: ?enum(FARM, DEPARTMENT, PRODUCT)
   sharedHash: ?text8
   sharedHashExpiresAt: ?date
-  opening: enum(ALWAYS, FREQUENCY) = FREQUENCY
-  openingFrequency: ?enum(WEEKLY, BIMONTHLY, MONTHLY) = WEEKLY
+  opening: enum(ALWAYS, FREQUENCY)
+  openingFrequency: ?enum(WEEKLY, BIMONTHLY, MONTHLY)
   openingDelivery: ?editor24
   hasPoint: bool = TRUE
   hasPayment: bool = TRUE

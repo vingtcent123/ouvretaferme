@@ -109,20 +109,6 @@ class TipUi {
 					'button' => NULL,
 				];
 
-			case 'feature-seeds' :
-
-				$link = FarmUi::urlCultivationSeries($eFarm, Farmer::SEEDLING);
-
-				$h = '<p>'.s("Lorsque vous avez terminé de saisir votre plan de culture, {siteName} peut vous sortir les quantités de semences et plants à commander pour la saison. Vous pouvez même indiquer vos fournisseurs pour chaque variété pour avoir une liste de courses par fournisseur !").'</p>';
-
-				return [
-					'icon' => \Asset::icon('flower2'),
-					'title' => s("Consulter votre liste de semences et plants à commander !"),
-					'content' => $h,
-					'image' => TRUE,
-					'button' => [$link, s("Voir mes semences et plants")],
-				];
-
 			case 'feature-team' :
 
 				$link = FarmerUi::urlManage($eFarm);

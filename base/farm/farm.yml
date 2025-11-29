@@ -85,7 +85,7 @@ Farmer:
   viewPlanningSearch: ?json
   viewPlanningUser: ?user\User
   viewCultivationCategory: enum(AREA, PLANT, FAMILY) = AREA
-  viewSeries: enum(AREA, SEEDLING, HARVESTING, WORKING_TIME) = AREA
+  viewSeries: enum(AREA, HARVESTING, WORKING_TIME) = AREA
   viewSoil: enum(PLAN, ROTATION) = PLAN
   viewSoilColor: enum(WHITE, BLACK, PLANT) = WHITE
   viewSoilOverlay: bool = TRUE
