@@ -20,6 +20,35 @@ new Page(function($data) {
 		$eAccount['nOperation'] = $cOperation->offsetExists($eAccount['id']) === TRUE ? $cOperation[$eAccount['id']]['count'] : 0;
 	}
 
+	$cProductPro = \selling\Product::model()
+		->select(['proAccount', 'count' => new Sql('COUNT(*)')])
+		->whereFarm($data->eFarm)
+		->whereStatus('!=', \selling\Product::INACTIVE)
+		->group('proAccount')
+		->getCollection(NULL, NULL, 'proAccount');
+
+	$cProductPrivate = \selling\Product::model()
+		->select(['privateAccount', 'count' => new Sql('COUNT(*)')])
+		->whereFarm($data->eFarm)
+		->whereStatus('!=', \selling\Product::INACTIVE)
+		->group('privateAccount')
+		->getCollection(NULL, NULL, 'privateAccount');
+
+	foreach($data->cAccount as &$eAccount) {
+
+		$eAccount['nProductPro'] = 0;
+		$eAccount['nProductPrivate'] = 0;
+
+		if($cProductPro->offsetExists($eAccount['id'])) {
+			$eAccount['nProductPro'] += $cProductPro->offsetGet($eAccount['id'])['count'];
+		}
+
+		if($cProductPrivate->offsetExists($eAccount['id'])) {
+			$eAccount['nProductPrivate'] += $cProductPrivate->offsetGet($eAccount['id'])['count'];
+		}
+
+	}
+
 	throw new ViewAction($data);
 
 })

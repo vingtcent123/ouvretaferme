@@ -64,6 +64,9 @@ class AccountUi {
 			return '<div class="util-info">'.s("Aucun compte n'a encore été enregistré").'</div>';
 		}
 
+		$displayProductsCount = $cAccount->match(fn($eAccount) => ($eAccount['nProductPro'] ?? 0) > 0 or ($eAccount['nProductPrivate'] ?? 0) > 0);
+		$displayOperationsCount = $cAccount->match(fn($eAccount) => ($eAccount['nOperation'] ?? 0) > 0);
+
 		$h = '<div class="util-block-help">';
 			$h .= s("Il est possible de créer des classes de compte (dites “personnalisées“), par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos comptes.");
 		$h .= '</div>';
@@ -72,27 +75,51 @@ class AccountUi {
 
 			$h .= '<table id="account-list" class="tr-even tr-hover">';
 
-				$h .= '<thead>';
+				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Classe");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Libellé");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Journal");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Personnalisé ?");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Compte de TVA");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Taux de TVA");
 						$h .= '</th>';
-						$h .= '<th></th>';
+
+						if($displayOperationsCount) {
+							$h .= '<th rowspan="2" class="text-center">';
+								$h .= s("Opérations");
+							$h .= '</th>';
+						}
+
+						if($displayProductsCount) {
+							$h .= '<th colspan="2" class="text-center">';
+								$h .= s("Produits");
+							$h .= '</th>';
+						}
+
+						$h .= '<th rowspan="2"></th>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						if($displayProductsCount) {
+							$h .= '<th class="text-center">';
+								$h .= s("Particuliers");
+							$h .= '</th>';
+							$h .= '<th class="text-center">';
+								$h .= s("Professionnels");
+							$h .= '</th>';
+						}
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -155,13 +182,22 @@ class AccountUi {
 								$h .= $eAccount['vatRate'] !== NULL ? $eAccount['vatRate'].'%' : '';
 							}
 						$h .= '</td>';
+
+						if($displayOperationsCount) {
+							$h .= '<td class="text-center"><a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.$eAccount['class'].'&financialYear=0">'.(($eAccount['nOperation'] ?? 0) > 0 ? $eAccount['nOperation'] : '').'</a></td>';
+						}
+
+						if($displayProductsCount) {
+							$h .= '<td class="text-center"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?proAccount='.$eAccount['id'].'">'.(($eAccount['nProductPro'] ?? 0) > 0 ? $eAccount['nProductPro'] : '').'</a></td>';
+							$h .= '<td class="text-center"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?privateAccount='.$eAccount['id'].'">'.(($eAccount['nProductPrivate'] ?? 0) > 0 ? $eAccount['nProductPrivate'] : '').'</td>';
+						}
+
 						$h .= '<td>';
 							if($eAccount['custom'] === TRUE and $eAccount['nOperation'] === 0) {
 								$message = s("Confirmez-vous la suppression de cette classe de compte ?");
 								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
 							}
 						$h .= '</td>';
-
 					$h .= '</tr>';
 				}
 

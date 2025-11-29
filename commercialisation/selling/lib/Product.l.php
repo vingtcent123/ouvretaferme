@@ -247,6 +247,19 @@ class ProductLib extends ProductCrud {
 			Product::model()->whereUnprocessedPlant('IN', $cPlant);
 		}
 
+		if($eFarm->hasAccounting()) {
+			$where = [];
+			if($search->get('proAccount')) {
+				$where[] = 'proAccount = '.$search->get('proAccount');
+			}
+			if($search->get('privateAccount')) {
+				$where[] = 'privateAccount = '.$search->get('privateAccount');
+			}
+			if(count($where) > 0) {
+				Product::model()->where(join(' OR ', $where));
+			}
+		}
+
 	}
 
 	public static function getForSale(\farm\Farm $eFarm, string $type, array $ids = [], bool $excludeComposition = FALSE): \Collection {

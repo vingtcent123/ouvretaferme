@@ -137,6 +137,10 @@ new Page(function($data) {
 			'plant' => GET('plant')
 		], GET('sort', default: 'name'));
 
+		if($data->eFarm->hasAccounting()) {
+			$data->search->set('proAccount', GET('proAccount'));
+			$data->search->set('privateAccount', GET('privateAccount'));
+		}
 
 		$data->products = \selling\ProductLib::countByFarm($data->eFarm, $data->search);
 
