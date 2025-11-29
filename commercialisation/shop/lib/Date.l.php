@@ -286,7 +286,7 @@ class DateLib extends DateCrud {
 
 		$eDate['cCatalog'] = $eDate['catalogs'] ?
 			\shop\CatalogLib::getByIds($eDate['catalogs']) :
-			new Collection();
+			new \Collection();
 
 		$cProduct = \shop\ProductLib::getByDate($eDate, reorderChildren: TRUE);
 		$eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($cProduct);
@@ -308,7 +308,7 @@ class DateLib extends DateCrud {
 
 			$eDate['cFarm'] = $eDate['catalogs'] ?
 				\farm\FarmLib::getByIds($eDate['cCatalog']->getColumnCollection('farm'), index: 'id') :
-				new Collection([
+				new \Collection([
 					$eFarm['id'] => $eFarm
 				]);
 
