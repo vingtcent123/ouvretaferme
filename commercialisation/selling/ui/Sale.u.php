@@ -1828,6 +1828,10 @@ class SaleUi {
 
 		$h .= $form->hidden('farm', $eSale['farm']['id']);
 
+		if($eSale['shopDate']->notEmpty()) {
+			$h .= $form->hidden('shopDate', $eSale['shopDate']['id']);
+		}
+
 		if($eSale['cCustomer']->notEmpty()) {
 
 			$formId = 'sale-create-collection';
