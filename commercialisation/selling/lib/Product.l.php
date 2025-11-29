@@ -99,6 +99,8 @@ class ProductLib extends ProductCrud {
 
 			$keywords = [];
 
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
+
 			foreach(preg_split('/\s+/', $query) as $word) {
 				$keywords[] = '*'.$word.'*';
 			}
