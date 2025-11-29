@@ -81,7 +81,7 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 				foreach(\game\GameSetting::BOARDS_OPENING as $board => $date) {
 
 					if($date === currentDate()) {
-						echo '<div class="game-intro text-center mt-2 font-lg">🎉 '.s("Vous pouvez maintenant jouer avec le plateau {value}", \Asset::icon($board.'-circle-fill')).' 🥳</div>';
+						echo '<div class="game-intro text-center mt-2 font-lg" style="font-weight: bold">🎉 '.s("Vous pouvez maintenant jouer avec le plateau {value}", \Asset::icon($board.'-circle-fill')).' 🥳</div>';
 					}
 
 				}
