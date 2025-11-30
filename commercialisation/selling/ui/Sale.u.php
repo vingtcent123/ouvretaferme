@@ -1751,7 +1751,7 @@ class SaleUi {
 			} else {
 				$h .= $form->group(
 					(self::p('deliveredAt')->label)($eSale),
-					$form->fake(\util\DateUi::numeric($eSale['shopDate']['deliveryDate']))
+					$form->fake(\util\DateUi::numeric($eSale['shopDate']['deliveryDate'] ?? currentDate()))
 				);
 			}
 

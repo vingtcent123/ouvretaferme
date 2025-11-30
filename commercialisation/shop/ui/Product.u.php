@@ -32,7 +32,7 @@ class ProductUi {
 
 			$h .= '<div class="util-block-help">';
 				$h .= '<h4>'.s("Il n'y a pas encore de produit disponible à la vente !").'</h4>';
-				$h .= '<p>'.s("La vente du {value} est fermée pour le moment car votre producteur n'a pas encore indiqué les produits qu'il souhaite vous proposer.", \util\DateUi::textual($eDate['deliveryDate'])).'</p>';
+				$h .= '<p>'.s("La vente est fermée pour le moment car votre producteur n'a pas encore indiqué les produits qu'il souhaite vous proposer.").'</p>';
 			$h .= '</div>';
 
 			return $h;

@@ -112,12 +112,30 @@ L'équipe {siteName}", $arguments);
 		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale);
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale, $cItem, $group);
 
-		$arguments = $group ? ['date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])] : ['id' => $eSale['document'], 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])];
+		if($eSale['shopDate']['deliveryDate'] !== NULL) {
 
-		$title = match($type) {
-			'confirmed' => $group ? s("Commande validée pour le {date}", $arguments) : s("Commande n°{id} validée pour le {date}", $arguments),
-			'updated' => $group ? s("Commande modifiée pour le {date}", $arguments) : s("Commande n°{id} modifiée pour le {date}", $arguments),
-		};
+			$arguments = $group ?
+				[
+					'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])
+				] : [
+					'id' => $eSale['document'],
+					'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])
+				];
+
+			$title = match($type) {
+				'confirmed' => $group ? s("Commande validée pour le {date}", $arguments) : s("Commande n°{id} validée pour le {date}", $arguments),
+				'updated' => $group ? s("Commande modifiée pour le {date}", $arguments) : s("Commande n°{id} modifiée pour le {date}", $arguments),
+			};
+
+		} else {
+
+			$title = match($type) {
+				'confirmed' => s("Confirmation de commande"),
+				'updated' => s("Confirmation de la modification de commande"),
+			};
+
+		}
+
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eSale['shop']['farm'], $title, $content);
@@ -129,13 +147,31 @@ L'équipe {siteName}", $arguments);
 		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_HOME, $eSale);
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_HOME, $eSale, $cItem, $group);
 
+		if($eSale['shopDate']['deliveryDate'] !== NULL) {
 
-		$arguments = $group ? ['date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])] : ['id' => $eSale['document'], 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])];
+			$arguments = $group ?
+				[
+					'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])
+				] :
+				[
+					'id' => $eSale['document'],
+					'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])
+				];
 
-		$title = match($type) {
-			'confirmed' => $group ? s("Commande validée pour une livraison le {date}", $arguments) : s("Commande n°{id} validée pour une livraison le {date}", $arguments),
-			'updated' => $group ? s("Commande modifiée pour une livraison le {date}", $arguments) : s("Commande n°{id} modifiée pour une livraison le {date}", $arguments),
-		};
+			$title = match($type) {
+				'confirmed' => $group ? s("Commande validée pour une livraison le {date}", $arguments) : s("Commande n°{id} validée pour une livraison le {date}", $arguments),
+				'updated' => $group ? s("Commande modifiée pour une livraison le {date}", $arguments) : s("Commande n°{id} modifiée pour une livraison le {date}", $arguments),
+			};
+
+		} else {
+
+			$title = match($type) {
+				'confirmed' => s("Confirmation de commande"),
+				'updated' => s("Confirmation de la modification de commande"),
+			};
+
+		}
+
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eSale['shop']['farm'], $title, $content);
@@ -147,12 +183,31 @@ L'équipe {siteName}", $arguments);
 		$template ??= \mail\CustomizeUi::getDefaultTemplate(\mail\Customize::SHOP_CONFIRMED_PLACE, $eSale);
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_PLACE, $eSale, $cItem, $group);
 
-		$arguments = $group ? ['date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])] : ['id' => $eSale['document'], 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])];
+		if($eSale['shopDate']['deliveryDate'] !== NULL) {
 
-		$title = match($type) {
-			'confirmed' => $group ? s("Commande validée pour un retrait le {date}", $arguments) : s("Commande n°{id} validée pour un retrait le {date}", $arguments),
-			'updated' => $group ? s("Commande modifiée pour un retrait le {date}", $arguments) : s("Commande n°{id} modifiée pour un retrait le {date}", $arguments),
-		};
+			$arguments = $group ?
+				[
+					'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])
+				] :
+				[
+					'id' => $eSale['document'],
+					'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])
+				];
+
+			$title = match($type) {
+				'confirmed' => $group ? s("Commande confirmée pour un retrait le {date}", $arguments) : s("Commande n°{id} confirmée pour un retrait le {date}", $arguments),
+				'updated' => $group ? s("Commande modifiée pour un retrait le {date}", $arguments) : s("Commande n°{id} modifiée pour un retrait le {date}", $arguments),
+			};
+
+		} else {
+
+			$title = match($type) {
+				'confirmed' => s("Confirmation de commande"),
+				'updated' => s("Confirmation de la modification de commande"),
+			};
+
+		}
+
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eSale['shop']['farm'], $title, $content);

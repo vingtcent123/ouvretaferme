@@ -355,8 +355,15 @@ class CustomizeUi {
 					'products' => $products,
 					'payment' => $payment,
 					'link' => $link,
-					'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),
 				];
+
+				if($eSale['shopDate']['deliveryDate'] !== NULL) {
+
+					$variables += [
+						'delivery' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate']),
+					];
+
+				}
 
 				if($type !== Customize::SHOP_CONFIRMED_NONE) {
 
@@ -489,9 +496,15 @@ Cordialement,
 
 				if($eSale['shop']['shared']) {
 
+					if($eSale['shopDate']['deliveryDate'] === NULL) {
+						$delivery = s("Votre commande a bien été enregistrée.");
+					} else {
+						$delivery = s("Votre commande pour le @delivery a bien été enregistrée.");
+					}
+
 					return s("Bonjour,
 
-Votre commande pour le @delivery a bien été enregistrée.
+{delivery}
 
 Vous avez commandé auprès des producteurs suivants :
 
@@ -500,13 +513,19 @@ Vous avez commandé auprès des producteurs suivants :
 @link
 
 Merci et à bientôt,
-Vos producteurs");
+Vos producteurs", ['delivery' => $delivery]);
 
 				} else {
 
+					if($eSale['shopDate']['deliveryDate'] === NULL) {
+						$delivery = s("Votre commande n°@number d'un montant de @amount a bien été enregistrée.");
+					} else {
+						$delivery = s("Votre commande n°@number d'un montant de @amount pour le @delivery a bien été enregistrée.");
+					}
+
 					return s("Bonjour,
 
-Votre commande n°@number d'un montant de @amount pour le @delivery a bien été enregistrée.
+{delivery}
 
 Vous avez commandé :
 @products
@@ -516,12 +535,18 @@ Vous avez commandé :
 @link
 
 Merci et à bientôt,
-@farm");
+@farm", ['delivery' => $delivery]);
 
 				}
 
 			case Customize::SHOP_CONFIRMED_PLACE :
 
+				if($eSale['shopDate']['deliveryDate'] === NULL) {
+					$delivery = s("Vous pourrez venir retirer votre commande au point de retrait suivant :");
+				} else {
+					$delivery = s("Vous pourrez venir retirer votre commande le @delivery au point de retrait suivant :");
+				}
+
 				if($eSale['shop']['shared']) {
 
 					return s("Bonjour,
@@ -532,13 +557,13 @@ Vous avez commandé auprès des producteurs suivants :
 
 @products
 
-Vous pourrez venir retirer votre commande le @delivery au point de retrait suivant :
+{delivery}
 @address
 
 @link
 
 Merci et à bientôt,
-Vos producteurs");
+Vos producteurs", ['delivery' => $delivery]);
 
 				} else {
 
@@ -551,18 +576,24 @@ Vous avez commandé :
 
 @payment
 
-Vous pourrez venir retirer votre commande le @delivery au point de retrait suivant :
+{delivery}
 @address
 
 @link
 
 Merci et à bientôt,
-@farm");
+@farm", ['delivery' => $delivery]);
 
 				}
 
 			case Customize::SHOP_CONFIRMED_HOME :
 
+				if($eSale['shopDate']['deliveryDate'] === NULL) {
+					$delivery = s("Votre commande vous sera livrée à l'adresse suivante :");
+				} else {
+					$delivery = s("Votre commande vous sera livrée le @delivery à l'adresse suivante :");
+				}
+
 				if($eSale['shop']['shared']) {
 
 					return s("Bonjour,
@@ -573,13 +604,13 @@ Vous avez commandé auprès des producteurs suivants :
 
 @products
 
-Votre commande vous sera livrée le @delivery à l'adresse suivante :
+{delivery}
 @address
 
 @link
 
 Merci et à bientôt,
-Vos producteurs");
+Vos producteurs", ['delivery' => $delivery]);
 
 				} else {
 
@@ -592,13 +623,13 @@ Vous avez commandé :
 
 @payment
 
-Votre commande vous sera livrée le @delivery à l'adresse suivante :
+{delivery}
 @address
 
 @link
 
 Merci et à bientôt,
-@farm");
+@farm", ['delivery' => $delivery]);
 
 				}
 

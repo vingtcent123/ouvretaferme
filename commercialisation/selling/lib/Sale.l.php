@@ -117,7 +117,7 @@ class SaleLib extends SaleCrud {
 			$eSale['shop']['farm'] = $eFarm;
 			$eSale['shopDate'] = new \shop\Date([
 				'id' => 123,
-				'deliveryDate' => currentDate(),
+				'deliveryDate' => ($eShop['opening'] === \shop\Shop::ALWAYS) ? NULL : currentDate(),
 				'type' => $eShop['type']
 			]);
 			$eSale['shopPoints'] = [

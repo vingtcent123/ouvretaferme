@@ -1345,6 +1345,8 @@ class ShopUi {
 					Shop::ALWAYS => $calendar,
 				];
 
+				$d->labelAfter = fn(Shop $e) => $e->exists() ? \util\FormUi::info(s("Pensez mettre à jour les e-mails de confirmation de commande sur l'onglet d'à côté si vous changez le mode de prise de commande.", ['link' => '<a href="/shop/configuration:update?id='.$e['id'].'">'])) : NULL;
+
 				break;
 
 			case 'openingFrequency':

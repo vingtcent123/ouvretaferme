@@ -908,7 +908,7 @@ class DateUi {
 							$eDate->acceptOrder() and
 							$eDate->acceptNotShared()
 						) {
-							$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une commande").'</a> ';
+							$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
 						}
 
 					}

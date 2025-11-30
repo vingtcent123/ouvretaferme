@@ -276,10 +276,12 @@ class ProductLib extends ProductCrud {
 
 		$ids = self::getColumnByDate($eDate, 'id', function(ProductModel $m) use($eDate, $eCustomer, $public) {
 
+			$referenceDate = $eDate['deliveryDate'] ?? currentDate();
+
 			$m
 				->whereStatus(Product::ACTIVE, if: $public)
-				->where('limitStartAt IS NULL OR '.$m->format($eDate['deliveryDate']).' >= limitStartAt')
-				->where('limitEndAt IS NULL OR '.$m->format($eDate['deliveryDate']).' <= limitEndAt');
+				->where('limitStartAt IS NULL OR '.$m->format($referenceDate).' >= limitStartAt')
+				->where('limitEndAt IS NULL OR '.$m->format($referenceDate).' <= limitEndAt');
 
 			if($public) {
 
@@ -336,9 +338,11 @@ class ProductLib extends ProductCrud {
 
 			if($cProductSellingComposition->notEmpty()) {
 
+				$referenceDate = $eDate['deliveryDate'] ?? currentDate();
+
 				\selling\Product::model()
 					->select([
-						'cItemIngredient' => new \selling\SaleLib()->delegateIngredients($eDate['deliveryDate'], 'id')
+						'cItemIngredient' => new \selling\SaleLib()->delegateIngredients($referenceDate, 'id')
 					])
 					->get($cProductSellingComposition);
 

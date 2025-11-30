@@ -245,10 +245,12 @@ class SaleLib {
 
 	public static function buildReference(\selling\Sale $eSaleReference, \user\User $eUser, array &$properties = []): void {
 
+		$referenceDate = $eSaleReference['shopDate']['deliveryDate'] ?? currentDate();
+
 		$eSaleReference->merge([
 			'profile' => \selling\Sale::SALE,
 			'type' => $eSaleReference['shopDate']['type'],
-			'deliveredAt' => ($eSaleReference['shopDate']['deliveryDate'] === NULL) ? currentDate() : $eSaleReference['shopDate']['deliveryDate'],
+			'deliveredAt' => $referenceDate,
 			'shopPoint' => PointLib::getById($eSaleReference['shopPoint'])
 		]);
 
