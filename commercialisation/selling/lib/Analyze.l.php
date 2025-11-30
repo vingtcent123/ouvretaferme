@@ -844,16 +844,14 @@ class AnalyzeLib {
 
 	}
 
-	public static function getPreAccountingSales(\farm\Farm $eFarm, int $year): array {
+	public static function getPreAccountingSales(\farm\Farm $eFarm, string $from, string $to): array {
 
 		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
 		$cAccount = \account\AccountLib::getAll();
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
-		$cSale = Sale::model()
-			->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::COMPOSITION])
-			->wherePriceExcludingVat('!=', NULL)
+		$cSale = SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
 			->select([
 				'id',
 				'document',
@@ -875,18 +873,11 @@ class AnalyzeLib {
 					->select(['id', 'price', 'vatRate', 'account'])
 					->delegateCollection('sale'),
 			])
-			->whereFarm($eFarm)
-			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
 			->sort('id')
 			->getCollection(NULL, NULL, 'id');
 
 		$data = [];
 		foreach($cSale as $eSale) {
-
-			// On ignore les marchés (ce seront les ventes à l'intérieur qui seront traitées)
-			if($eSale->isMarket()) {
-				continue;
-			}
 
 			if($eSale->isMarketSale()) {
 				$eSaleParent = $cSale->offsetGet($eSale['marketParent']['id']);

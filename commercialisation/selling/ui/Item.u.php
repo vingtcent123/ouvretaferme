@@ -1389,6 +1389,33 @@ class ItemUi {
 
 	}
 
+	public function updateAccount(\farm\Farm $eFarm, \Collection $cItem): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/selling/item:doUpdateAccountCollection', ['id' => 'item-update-account']);
+
+		$h .= $form->group(
+			s("Classe de compte"),
+			$form->dynamicField(new Item(['farm' => $eFarm, 'account' => new \account\Account()]), 'account'),
+		);
+
+		foreach($cItem as $eItem) {
+			$h .= $form->hidden('ids[]', $eItem['id']);
+		}
+
+		$h .= $form->submit(s("Enregistrer"));
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-item-update-account',
+			title: s("Classes de compte des articles sélectionnés"),
+			body: $h
+		);
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Item::model()->describer($property, [

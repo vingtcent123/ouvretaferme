@@ -235,7 +235,8 @@ class FarmUi {
 			Farmer::ALL => self::urlSellingSalesAll($eFarm),
 			Farmer::PRIVATE => self::urlSellingSalesPrivate($eFarm),
 			Farmer::PRO => self::urlSellingSalesPro($eFarm),
-			Farmer::LABEL => self::urlSellingSalesLabel($eFarm)
+			Farmer::LABEL => self::urlSellingSalesLabel($eFarm),
+			Farmer::ACCOUNTING => self::urlSellingSalesAccounting($eFarm)
 		};
 
 	}
@@ -258,6 +259,9 @@ class FarmUi {
 
 	public static function urlSellingSalesLabel(Farm $eFarm): string {
 		return self::url($eFarm).'/etiquettes';
+	}
+	public static function urlSellingSalesAccounting(Farm $eFarm): string {
+		return self::url($eFarm).'/precomptabilite';
 	}
 
 	public static function urlShop(Farm $eFarm, string $view): string {
@@ -1742,6 +1746,9 @@ class FarmUi {
 			Farmer::PRIVATE => s("Ventes aux particuliers"),
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
+			NULL,
+			Farmer::ACCOUNTING => s("Précomptabilité"),
+
 		];
 	}
 

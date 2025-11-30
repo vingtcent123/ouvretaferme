@@ -90,7 +90,7 @@ Farmer:
   viewSoilColor: enum(WHITE, BLACK, PLANT) = WHITE
   viewSoilOverlay: bool = TRUE
   viewSoilTasks: bool = FALSE
-  viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL) = ALL
+  viewSellingSales: enum(ALL, PRIVATE, PRO, LABEL, ACCOUNTING) = ALL
   viewSellingProducts: enum(PRODUCT, CATEGORY) = PRODUCT
   viewSellingCustomers: enum(CUSTOMER, GROUP) = CUSTOMER
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM

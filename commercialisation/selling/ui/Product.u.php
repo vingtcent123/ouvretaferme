@@ -1262,7 +1262,7 @@ class ProductUi {
 		$h .= $form->close();
 
 		return new \Panel(
-			id: 'panel-product-create',
+			id: 'panel-product-update-account',
 			title: s("Classes de compte des produits sélectionnés"),
 			body: $h
 		);
@@ -1605,7 +1605,6 @@ class ProductUi {
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? NULL;
 				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]);
-				$d->after = fn(\util\FormUi $form, Product $e) => $e->exists() ? $form->checkbox('apply['.$property.']', 1, ['callbackLabel' => fn($input) => $input.' '.s("Appliquer la modification rétroactivement sur les ventes déjà créées")]) : '';
 
 				break;
 

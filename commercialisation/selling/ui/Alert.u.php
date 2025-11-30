@@ -148,6 +148,7 @@ class AlertUi {
 			'Product::created' => s("Le produit a bien été ajouté."),
 			'Product::createdComposition' => s("La composition a bien été ajoutée."),
 			'Product::updated' => s("Le produit a bien été mis à jour."),
+			'Product::updatedSeveral' => s("Les produits ont bien été mis à jour."),
 			'Product::updatedComposition' => s("La composition a bien été mise à jour."),
 			'Product::deleted' => s("Le produit a bien été supprimé."),
 			'Product::deletedComposition' => s("La composition a bien été supprimée."),
@@ -183,6 +184,7 @@ class AlertUi {
 
 			'Item::created' => s("Le(s) article(s) ont bien été ajoutés à la vente."),
 			'Item::updated' => s("L'article a bien été mis à jour."),
+			'Item::updatedSeveral' => s("Les articles ont bien été mis à jour."),
 			'Item::deleted' => s("L'article a bien été supprimé de la vente."),
 
 			'Unit::created' => s("L'unité a bien été créée."),

@@ -224,5 +224,6 @@ new \selling\ProductPage()
 		$c->validateProperty('farm', $eFarm);
 		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 	})
-	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], fn($data) => throw new ReloadAction())
+	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], fn($data) => throw new ReloadAction('selling', 'Product::updatedSeveral'));
+
 ?>

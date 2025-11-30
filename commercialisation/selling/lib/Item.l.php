@@ -484,7 +484,7 @@ class ItemLib extends ItemCrud {
 
 	public static function update(Item $e, array $properties): void {
 
-		if($e->canUpdate() === FALSE) {
+		if($e->canUpdate() === FALSE and ($properties === ['account'] and $e->canWriteAccounting() === FALSE)) {
 			Item::fail('canNotUpdate');
 		}
 
@@ -865,6 +865,37 @@ class ItemLib extends ItemCrud {
 			}
 
 		}
+
+	}
+
+	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): ItemModel {
+
+		return Item::model()
+			->join(Sale::model(), 'm1.sale = m2.id')
+      ->where('account IS NULL')
+			->where('m2.id IS NOT NULL')
+			->where('m2.profile IN ('.Sale::model()->format(Sale::SALE).', '.Sale::model()->format(Sale::SALE_MARKET).')')
+      ->where('m1.farm = '.$eFarm['id'])
+      ->where('m2.deliveredAt BETWEEN '.Item::model()->format($search->get('from')).' AND '.Item::model()->format($search->get('to')));
+
+	}
+	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
+
+		return self::filterForAccountingCheck($eFarm, $search)->count();
+
+	}
+
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+//dd('ici', array_merge(Item::getSelection(), ['sale' => Sale::getSelection(), 'customer' => ['id', 'name', 'type', 'destination']]));
+		return self::filterForAccountingCheck($eFarm, $search)
+      //->select(array_merge(Item::getSelection(), ['sale' => Sale::getSelection(), 'customer' => ['id', 'name', 'type', 'destination']]))
+      ->select([
+				'id', 'name',
+				'customer' => ['name', 'type', 'destination'],
+	      'sale' => ['id', 'document', 'deliveredAt', 'preparationStatus', 'taxes', 'hasVat', 'priceIncludingVat', 'priceExcludingVat'],
+      ])
+			->group(['sale', 'm1.id'])
+      ->getCollection(NULL, NULL, ['sale', NULL]);
 
 	}
 

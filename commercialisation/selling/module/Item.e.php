@@ -53,6 +53,27 @@ class Item extends ItemElement {
 
 	}
 
+	public function canWriteAccounting(): bool {
+
+		$this->expects([
+			'sale' => ['preparationStatus']
+		]);
+
+		if(
+			$this->canRead() === FALSE or
+			$this['sale']->isMarketSale()
+		) {
+			return FALSE;
+		}
+
+		if($this['sale']->isComposition()) {
+			return $this['sale']->acceptUpdateComposition();
+		} else {
+			return in_array($this['sale']['preparationStatus'], [Sale::DELIVERED]);
+		}
+
+	}
+
 	public function canDelete(): bool {
 
 		$this->expects([

@@ -726,7 +726,6 @@ new Page(function($data) {
 
 		throw new ViewAction($data, ':soil');
 
-
 	})
 	->get(['/ferme/{id}/analyses/planning', '/ferme/{id}/analyses/planning/{year}', '/ferme/{id}/analyses/planning/{year}/{category}'], function($data) {
 
@@ -1118,6 +1117,102 @@ new Page(function($data) {
 	->get('/ferme/{id}/configuration/commercialisation', function($data) {
 
 		$data->eFarm->validate('canManage');
+
+		throw new ViewAction($data);
+
+	});
+
+new Page(function($data) {
+
+	\user\ConnectionLib::checkLogged();
+
+	$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canWrite');
+
+	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+	$data->search = new Search([
+		'from' => GET('from'),
+		'to' => GET('to'),
+	]);
+
+	$data->isSearchValid = $data->search->get('from') and $data->search->get('to') and \util\DateLib::isValid($data->search->get('from')) and \util\DateLib::isValid($data->search->get('to'));
+
+	if($data->isSearchValid and $data->search->get('from') > $data->search->get('to')) {
+			$from = $data->search->get('from');
+			$data->search->set('from', $data->search->get('to'));
+			$data->search->set('to', $from);
+	}
+
+})
+	->get('/ferme/{id}/precomptabilite', function($data) {
+
+		\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::ACCOUNTING);
+
+		if($data->isSearchValid) {
+
+			$data->nProduct = \selling\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
+
+			$data->nItem = \selling\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+
+			$data->saleCount = \selling\SaleLib::countForAccountingCheck($data->eFarm, $data->search);
+
+		} else {
+
+			$data->nProduct = 0;
+			$data->nItem = 0;
+			$data->saleCount = [
+				'missingPayment' => 0,
+				'notClosed' => 0,
+				'notDeliveryDate' => 0,
+			];
+
+		}
+
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/precomptabilite/{type}', function($data) {
+
+		if($data->isSearchValid) {
+
+			$data->type = GET('type');
+
+			switch($data->type) {
+
+				case 'product':
+					$data->cProduct = \selling\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
+					break;
+
+				case 'item':
+					$data->cItem = \selling\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
+					break;
+
+				case 'sale':
+					$data->saleCount = \selling\SaleLib::countForAccountingCheck($data->eFarm, $data->search);
+					break;
+
+			}
+
+		} else {
+
+			throw new VoidAction();
+
+		}
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/precomptabilite/sale/', function($data) {
+
+		$data->type = GET('type');
+
+		if(in_array($data->type, ['missingPayment', 'notClosed', 'noDeliveryDate', 'preparationStatus']) === FALSE) {
+			throw new VoidAction();
+		}
+
+		$data->cSale = \selling\SaleLib::getForAccountingCheck($data->eFarm, $data->search, $data->type);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 
 		throw new ViewAction($data);
 
