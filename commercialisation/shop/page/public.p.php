@@ -561,11 +561,11 @@ new Page(function($data) {
 
 		$fw->validate();
 
-		$url = \shop\SaleLib::createForShop($eSaleReference, $data->eUserOnline, $data->discounts);
+		$data->url = \shop\SaleLib::createForShop($eSaleReference, $data->eUserOnline, $data->discounts);
 
 		$fw->validate();
 
-		throw new RedirectAction($url);
+		throw new ViewAction($data);
 
 	})
 	->post('/shop/public/{fqn}/{date}/:doUpdatePayment', function($data) {

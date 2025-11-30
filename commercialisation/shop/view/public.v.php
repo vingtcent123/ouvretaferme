@@ -317,17 +317,15 @@ new AdaptativeView('confirmationEmpty', function($data, ShopTemplate $t) {
 
 new AdaptativeView('/shop/public/{fqn}/{date}/:doCreateSale', function($data, AjaxTemplate $t) {
 
-	if($data->created) {
-		$t->js()->eval('BasketManage.deleteBasket('.$data->eSaleReference['shopDate']['id'].')');
-	}
+	$t->js()->eval('BasketManage.deleteBasket('.$data->eDate['id'].')');
 
-	$t->redirect(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));
+	$t->redirect($data->url);
 
 });
 
 new AdaptativeView('/shop/public/{fqn}/{date}/:doCancelCustomer', function($data, AjaxTemplate $t) {
 
-	$t->js()->eval('BasketManage.deleteBasket('.$data->eSaleReference['shopDate']['id'].')');
+	$t->js()->eval('BasketManage.deleteBasket('.$data->eDate['id'].')');
 	$t->redirect(\shop\ShopUi::dateUrl($data->eShop, $data->eDate).'?success=selling:Sale::userCanceled');
 
 });
