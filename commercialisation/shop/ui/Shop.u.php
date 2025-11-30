@@ -1151,6 +1151,19 @@ class ShopUi {
 						break;
 
 					case Shop::ALWAYS :
+
+						$eShop->expects(['eDate']);
+
+						if($eShop['eDate']->notEmpty()) {
+
+							$h .= '<dt>';
+								$h .= s("Prise des commandes");
+							$h .= '</dt>';
+							$h .= '<dd>';
+								$h .= new DateUi()->getOrderHours($eShop['eDate']);
+							$h .= '</dd>';
+
+						}
 						break;
 
 				}

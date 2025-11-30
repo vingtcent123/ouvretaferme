@@ -196,7 +196,9 @@ class DateUi {
 			if($eDate['orderEndAt'] !== NULL) {
 				$h .= s("Commande possible jusqu'au {date}", ['date' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 			} else {
-				$h .= s("Les ventes sont ouvertes !");
+				if($eDate['deliveryDate'] !== NULL) {
+					$h .= s("Les ventes sont ouvertes !");
+				}
 			}
 		} else if($eDate->acceptOrderSoon()) {
 			$h .= s("Commandes ouvertes du {from} jusqu'au {to}", ['from' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt'])))).' '.\util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE), 'to' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE)]);
@@ -427,9 +429,18 @@ class DateUi {
 			$h .= $form->dynamicGroup($eDate, 'points');
 		}
 
-		$h .= $this->getOrderField('update', $form, $eDate);
-		$h .= $form->dynamicGroup($eDate, 'deliveryDate');
-		$h .= $form->dynamicGroup($eDate, 'description');
+		if($eDate['deliveryDate'] !== NULL) {
+
+			$h .= $this->getOrderField('update', $form, $eDate);
+			$h .= $form->dynamicGroup($eDate, 'deliveryDate');
+			$h .= $form->dynamicGroup($eDate, 'description');
+
+		} else {
+
+			$h .= $form->dynamicGroups($eDate, ['orderStartAt', 'orderEndAt']);
+
+		}
+
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
@@ -439,7 +450,7 @@ class DateUi {
 
 		return new \Panel(
 			id: 'panel-date-update',
-			title: s("Paramétrer la livraison"),
+			title: ($eDate['deliveryDate'] === NULL) ? s("Paramétrer la prise de commande") : s("Paramétrer la livraison"),
 			body: $h
 		);
 	}
@@ -503,7 +514,13 @@ class DateUi {
 	public function getOrderHours(Date $eDate): string {
 
 		$h = '';
-		if(substr($eDate['orderStartAt'], 0, 10) !== substr($eDate['orderEndAt'], 0, 10)) {
+		if($eDate['orderStartAt'] === NULL and $eDate['orderEndAt'] === NULL) {
+			$h .= s("Ouvertes");
+		} else if($eDate['orderStartAt'] === NULL and $eDate['orderEndAt'] !== NULL) {
+			$h .= s("Jusqu'au {value}", \util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE));
+		} else if($eDate['orderEndAt'] === NULL and $eDate['orderStartAt'] !== NULL) {
+			$h .= s("Depuis le {value}", \util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DATE_HOUR_MINUTE));
+		} else if(substr($eDate['orderStartAt'], 0, 10) !== substr($eDate['orderEndAt'], 0, 10)) {
 
 			$h .= s("du {date} à {hour}", [
 				'date' => \util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DAY_MONTH),
@@ -524,6 +541,10 @@ class DateUi {
 				'hourEnd' => substr($eDate['orderEndAt'], 11, 5),
 				]);
 
+		}
+
+		if($eDate['deliveryDate'] === NULL) {
+			$h .= '  <a href="/shop/date:update?id='.$eDate['id'].'"class="btn btn-sm btn-outline-primary">'.\Asset::icon('calendar3').' '.s("Modifier").'</a>';
 		}
 
 		return $h;
@@ -793,7 +814,9 @@ class DateUi {
 		$h = '';
 		$now = currentDatetime();
 
-		$textDelivered = '<div class="color-success">'.\Asset::icon('check-lg').' '.s("Livré").'</div>';
+		$textDelivered = ($eDate['deliveryDate'] === NULL) ?
+			s("Prises de commande fermées") :
+			'<div class="color-success">'.\Asset::icon('check-lg').' '.s("Livré").'</div>';
 
 		if($eShop['status'] === Shop::CLOSED) {
 			$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Boutique fermée").'</div>';
@@ -913,11 +936,16 @@ class DateUi {
 
 					}
 
-					if(
-						$cSale->notEmpty() and
-						$eShop->canShare($eFarm, validateShared: 'canWrite')
-					) {
-						$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
+					if($eDate['deliveryDate'] === NULL) {
+
+						if(
+							$eDate['deliveryDate'] !== NULL and
+							$cSale->notEmpty() and
+							$eShop->canShare($eFarm, validateShared: 'canWrite')
+						) {
+							$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
+						}
+
 					}
 
 				$actions .= '</div>';
@@ -1316,7 +1344,15 @@ class DateUi {
 				break;
 
 			case 'description' ;
-				$d->label .= \util\FormUi::info(s("Utilisez cet espace pour donner à vos clients des informations valables uniquement pour cette livraison, comme par exemple <i>Dernière vente avant nos congés annuels !</i>"));
+				$d->labelAfter = \util\FormUi::info(s("Utilisez cet espace pour donner à vos clients des informations valables uniquement pour cette livraison, comme par exemple <i>Dernière vente avant nos congés annuels !</i>"));
+				break;
+
+			case 'orderStartAt' ;
+				$d->labelAfter = fn($e) => ($e->exists() and $e['deliveryDate'] === NULL) ? \util\FormUi::info(s("Vous pouvez laisser ce champ vide si vous souhaitez vendre immédiatement.")) : NULL;
+				break;
+
+			case 'orderEndAt' ;
+				$d->labelAfter = fn($e) => ($e->exists() and $e['deliveryDate'] === NULL) ? \util\FormUi::info(s("Vous pouvez laisser ce champ vide si vous les prises de commande sont ouvertes sans limitation de durée.")) : NULL;
 				break;
 
 			case 'deliveryDate' ;

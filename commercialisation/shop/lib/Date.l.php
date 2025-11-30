@@ -46,18 +46,15 @@ class DateLib extends DateCrud {
 				'shop' => ['hasPoint']
 			]);
 
-			$properties = [];
+			$properties = ['orderStartAt', 'orderEndAt'];
 
-			if($eDate['shop']['opening'] === Shop::FREQUENCY) {
+			if($eDate['deliveryDate'] !== NULL) {
 
 				$properties = array_merge($properties, [
-					'orderStartAt', 'orderEndAt',
-					'deliveryDate',
+					'deliveryDate', 'description'
 				]);
 
 			}
-
-			$properties[] = 'description';
 
 			if(
 				$eDate['shop']['hasPoint'] and

@@ -138,17 +138,27 @@ class Date extends DateElement {
 
 			})
 			->setCallback('orderStartAt.prepare', function(mixed &$value) use ($p) {
-				return ($value !== NULL);
+				return match($p->for) {
+					'create' => ($value !== NULL),
+					'update' => TRUE
+				};
 			})
 			// End of order must be after start of order.
 			->setCallback('orderEndAt.prepare', function(mixed &$value) use ($p) {
-				return ($value !== NULL);
+				return match($p->for) {
+					'create' => ($value !== NULL),
+					'update' => TRUE
+				};
 			})
-			->setCallback('orderEndAt.consistency', function($orderEndAt) use($p): bool {
+			->setCallback('orderEndAt.consistency', function(mixed $orderEndAt) use($p): bool {
 
 				$p->expectsBuilt('orderStartAt');
 
-				return $orderEndAt > $this['orderStartAt'];
+				return (
+					$this['orderStartAt'] === NULL or
+					$orderEndAt === NULL or
+					$orderEndAt > $this['orderStartAt']
+				);
 			})
 			// Delivery must be after order.
 			->setCallback('deliveryDate.prepare', function(mixed &$value) use ($p) {
