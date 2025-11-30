@@ -829,6 +829,8 @@ class SaleLib extends SaleCrud {
 		$eSaleNew = new Sale($eSale->extracts($properties));
 		$eSaleNew['preparationStatus'] = Sale::DRAFT;
 		$eSaleNew['closed'] = FALSE;
+		$eSaleNew['closedBy'] = new \user\User();
+		$eSaleNew['closedAt'] = NULL;
 		$eSaleNew['paymentStatus'] = NULL;
 
 		if($eSaleNew->isMarket()) {
