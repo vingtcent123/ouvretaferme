@@ -5,10 +5,31 @@ class MailUi {
 
 	public static function getNewFarmSale(string $type, \selling\Sale $eSale, \Collection $cItem): array {
 
-		$title = match($type) {
-			'confirmed' => s("Commande de {customer} reçue pour une livraison le {date}", ['customer' => $eSale['customer']->getName(), 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])]),
-			'updated' => s("Commande de {customer} modifiée pour une livraison le {date}", ['customer' => $eSale['customer']->getName(), 'date' => \util\DateUi::numeric($eSale['shopDate']['deliveryDate'])]),
-		};
+		$arguments = [
+			'customer' => $eSale['customer']->getName()
+		];
+
+		if($eSale['shopDate']['deliveryDate'] === NULL) {
+
+			$title = match($type) {
+				'confirmed' => s("Commande de {customer} reçue", $arguments),
+				'updated' => s("Commande de {customer} modifiée", $arguments),
+			};
+
+			$delivery = '';
+
+		} else {
+
+			$arguments['date'] = \util\DateUi::numeric($eSale['shopDate']['deliveryDate']);
+
+			$title = match($type) {
+				'confirmed' => s("Commande de {customer} reçue pour une livraison le {date}", $arguments),
+				'updated' => s("Commande de {customer} modifiée pour une livraison le {date}", $arguments),
+			};
+
+			$delivery = '- Date de livraison : @delivery'."\n";
+
+		}
 
 		$variables = \mail\CustomizeUi::getShopVariables(\mail\Customize::SHOP_CONFIRMED_NONE, $eSale, $cItem, FALSE);
 
@@ -32,15 +53,14 @@ Vous avez reçu une modification de commande de @customer.")
 		};
 		$template .= "\n\n";
 		$template .= s("- Boutique : {shop}
-- Date de livraison : @delivery
-- Montant de la commande : @amount
+{delivery}- Montant de la commande : @amount
 
 {comment}Contenu de la commande :
 
 @products
 
 Bonne réception,
-L'équipe {siteName}", ['shop' => encode($eSale['shop']['name']), 'comment' => $comment]);
+L'équipe {siteName}", ['shop' => encode($eSale['shop']['name']), 'comment' => $comment, 'delivery' => $delivery]);
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eSale['farm'], $title, $content, encapsulate: FALSE);
