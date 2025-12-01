@@ -60,12 +60,21 @@ class MembershipLib {
 		if($eFarm->notEmpty()) {
 
 			$eFarm->expects(['id', 'siret']);
-			if($eFarm['siret']) {
-				$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
-			} else {
-				$eCustomer = new \selling\Customer();
-			}
+
 			$eUser = $eUserConnected;
+
+			if($eFarm['siret']) {
+
+				$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
+
+			} else {
+
+				$eCustomer = \selling\Customer::model()
+          ->whereName($eFarm['name'])
+          ->whereLegalName($eFarm['legalName'])
+          ->get();
+
+			}
 
 		} else {
 
