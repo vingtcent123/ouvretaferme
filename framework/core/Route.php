@@ -236,8 +236,8 @@ abstract class Route {
 		// Handle exceptions
 		set_exception_handler(function($e) {
 
-			dev\ErrorPhpLib::handle($e);
 			ModuleModel::rollBackEverything();
+			dev\ErrorPhpLib::handle($e);
 
 			(new StatusAction(500))->run();
 
