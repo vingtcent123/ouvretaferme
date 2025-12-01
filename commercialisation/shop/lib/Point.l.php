@@ -9,7 +9,10 @@ class PointLib extends PointCrud {
 
 			return match($e['type']) {
 				Point::PLACE => ['name', 'description', 'place', 'address'],
-				Point::HOME => ['name', 'zone']
+				Point::HOME => match($e['mode']) {
+					Point::SHIPPING => ['name', 'description'],
+					Point::TOUR => ['name', 'zone']
+				}
 			};
 
 		};
@@ -28,7 +31,10 @@ class PointLib extends PointCrud {
 
 			return array_merge($options, match($e['type']) {
 				Point::PLACE => ['name', 'description', 'place', 'address'],
-				Point::HOME => ['name', 'zone']
+				Point::HOME => match($e['mode']) {
+					Point::SHIPPING => ['name', 'description'],
+					Point::TOUR => ['name', 'zone']
+				}
 			});
 
 		};

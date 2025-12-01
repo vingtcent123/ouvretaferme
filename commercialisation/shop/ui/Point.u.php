@@ -47,7 +47,7 @@ class PointUi {
 					}
 
 					if($eFarm->canManage()) {
-						$h .= '<a href="/shop/point:create?farm='.$eFarm['id'].'&type='.Point::PLACE.'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter un point de retrait").'</a>';
+						$h .= '<a href="/shop/point:create?farm='.$eFarm['id'].'&type='.Point::PLACE.'" class="btn btn-outline-primary">'.\Asset::icon('house-fill').' '.s("Ajouter un point de retrait").'</a>';
 					}
 
 				$h .= '</div>';
@@ -71,7 +71,8 @@ class PointUi {
 					}
 
 					if($eFarm->canManage()) {
-						$h .= '<a href="/shop/point:create?farm='.$eFarm['id'].'&type='.Point::HOME.'" class="btn btn-outline-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une tournée ").'</a>';
+						$h .= '<div style="margin-bottom: 0.5rem"><a href="/shop/point:create?farm='.$eFarm['id'].'&type='.Point::HOME.'&mode='.Point::TOUR.'" class="btn btn-outline-primary">'.\Asset::icon('geo-alt-fill').' '.s("Ajouter une tournée de livraison").'</a></div>';
+						$h .= '<div><a href="/shop/point:create?farm='.$eFarm['id'].'&type='.Point::HOME.'&mode='.Point::SHIPPING.'" class="btn btn-outline-primary">'.\Asset::icon('box-seam').' '.s("Ajouter une expédition par transporteur").'</a></div>';
 					}
 
 				$h .= '</div>';
@@ -116,16 +117,36 @@ class PointUi {
 				$h .= '</div>';
 			$h .= '</div>';
 			$h .= '<div>';
-				$h .= '<h3>'.s("Livraison à domicile").'</h3>';
-				$h .= '<div class="util-block point-home-wrapper">';
 
-					$h .= '<p>'.s("Vous pouvez choisir la livraison à domicile si vous habitez :").'</p>';
+				$cPointTour = $cc[Point::HOME]->find(fn($e) => $e['mode'] === Point::TOUR);
+				$cPointShipping = $cc[Point::HOME]->find(fn($e) => $e['mode'] === Point::SHIPPING);
 
-					$h .= $this->getPoints('update', $eShop, $cc[Point::HOME], ePointSelected: $ePointSelected);
+				if($cPointTour->notEmpty()) {
 
-					$h .= '<p>'.s("<b>Attention !</b> Si votre adresse ne correspond pas à l'une de ces zones, votre commande pourra être annulée.").'</p>';
+					$h .= '<h3>'.s("Livraison à domicile").'</h3>';
+					$h .= '<div class="util-block point-home-wrapper">';
 
-				$h .= '</div>';
+						$h .= '<p>'.s("Vous pouvez choisir la livraison à domicile si vous habitez :").'</p>';
+
+						$h .= $this->getPoints('update', $eShop, $cPointTour, ePointSelected: $ePointSelected);
+
+						$h .= '<p>'.s("<b>Attention !</b> Si votre adresse ne correspond pas à l'une de ces zones, votre commande pourra être annulée.").'</p>';
+
+					$h .= '</div>';
+
+				}
+
+				if($cPointShipping->notEmpty()) {
+
+					$h .= '<h3>'.s("Livraison par transporteur").'</h3>';
+					$h .= '<div class="util-block point-home-wrapper">';
+
+						$h .= $this->getPoints('update', $eShop, $cPointShipping, ePointSelected: $ePointSelected);
+
+					$h .= '</div>';
+
+				}
+
 			$h .= '</div>';
 
 
@@ -139,14 +160,37 @@ class PointUi {
 
 	public function getFieldHome(Shop $eShop, \Collection $c, Point $ePointSelected) {
 
+		$cPointTour = $c->find(fn($e) => $e['mode'] === Point::TOUR);
+		$cPointShipping = $c->find(fn($e) => $e['mode'] === Point::SHIPPING);
+
 		$h = '<h2>'.s("Mon mode de livraison").'</h2>';
 
-		$h .= '<p class="util-info">'.s("Les commandes sont livrées uniquement à domicile.<br/>Vous êtes éligible à la livraison à domicile si vous habitez dans l'une des zones suivantes :").'</p>';
+			if($cPointTour->notEmpty()) {
 
-		$h .= '<div class="util-block point-home-wrapper">';
-			$h .= $this->getPoints('update', $eShop, $c, ePointSelected: $ePointSelected);
-			$h .= '<p>'.s("<b>Attention !</b> Si votre adresse ne correspond pas à l'une de ces zones, votre commande sera annulée.").'</p>';
-		$h .= '</div>';
+				$h .= '<div class="util-block point-home-wrapper">';
+					if($cPointShipping->notEmpty()) {
+						$h .= '<h3>'.s("Livraison à domicile").'</h3>';
+						$h .= '<p class="mb-1">'.s("Vous êtes éligible à la livraison à domicile si vous habitez dans l'une des zones suivantes :").'</p>';
+					} else {
+						$h .= '<h3>'.s("Livraison uniquement à domicile").'</h3>';
+						$h .= '<p class="mb-1">'.s("Vous êtes éligible à la livraison à domicile si vous habitez dans l'une des zones suivantes :").'</p>';
+					}
+
+					$h .= $this->getPoints('update', $eShop, $cPointTour, ePointSelected: $ePointSelected);
+					$h .= '<p class="util-info">'.s("<b>Attention !</b><br/>Si votre adresse ne correspond pas à l'une de ces zones, votre commande sera annulée.").'</p>';
+				$h .= '</div>';
+			}
+
+			if($cPointShipping->notEmpty()) {
+
+				$h .= '<div class="util-block point-home-wrapper">';
+				if($cPointTour->notEmpty()) {
+					$h .= '<h3>'.s("Livraison par transporteur").'</h3>';
+				}
+				$h .= $this->getPoints('update', $eShop, $cPointShipping, ePointSelected: $ePointSelected);
+				$h .= '</div>';
+			}
+
 
 		$h .= '<br/>';
 
@@ -224,7 +268,7 @@ class PointUi {
 			$cPointSelected[] = $ePointSelected;
 		}
 
-		$h = '<div class="point-list">';
+		$h = '<div class="point-list point-list-'.$mode.'">';
 
 			foreach($c as $e) {
 				$h .= $this->getPoint($mode, $eShop, $e, $cPointSelected, $eDate, $pointsUsed);
@@ -257,7 +301,10 @@ class PointUi {
 
 			$icon = match($e['type']) {
 				Point::PLACE => \Asset::icon('house-fill', ['class' => 'point-icon']),
-				Point::HOME => \Asset::icon('geo-alt-fill', ['class' => 'point-icon']),
+				Point::HOME => match($e['mode']) {
+					Point::SHIPPING => \Asset::icon('box-seam', ['class' => 'point-icon']),
+					Point::TOUR => \Asset::icon('geo-alt-fill', ['class' => 'point-icon'])
+				},
 			};
 
 		}
@@ -271,21 +318,12 @@ class PointUi {
 			$h .= '<div class="point-name">';
 				$h .= $icon;
 				$h .= '<div>';
-					if(
-						$mode !== 'update' or
-						($mode === 'update' and $e['type'] === Point::PLACE)
-					) {
-						$h .= '<h4>'.encode($e['name']).'</h4>';
-					}
+					$h .= '<h4>'.encode($e['name']).'</h4>';
 					if($e['description'] !== NULL) {
-						$h .= '<span>'.encode($e['description']).'</span>';
+						$h .= '<span style="margin-top: 0.25rem">'.encode($e['description']).'</span>';
 					}
-					if($e['type'] === Point::HOME) {
-						if($mode === 'update') {
-							$h .= '<h4>'.nl2br(encode($e['zone'])).'</h4>';
-						} else {
-							$h .= '<div class="mt-1">'.nl2br(encode($e['zone'])).'</div>';
-						}
+					if($e['type'] === Point::HOME and $e['mode'] === Point::TOUR) {
+						$h .= '<div style="margin-top: 0.25rem">'.nl2br(encode($e['zone'])).'</div>';
 					}
 
 					if($e['type'] === Point::PLACE) {
@@ -370,8 +408,11 @@ class PointUi {
 
 		if($e['type'] === Point::HOME) {
 
-			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Indiquez les zones géographiques que vous autorisez pour la livraison à domicile. Cela peut être une liste de villes, de départements ou toutes autres localités pertinentes pour votre activité. Lorsqu'ils commandent, vos clients s'engagent à donner une adresse qui se situe dans les zones que vous avez ainsi définies.").'</p>';
+			$h .= '<div class="util-block-important">';
+				$h .= match($e['mode']) {
+					Point::TOUR => '<h4>'.s("Une tournée est une livraison qui vous effectuez vous-même pour livrer vos clients à domicile").'</h4><p>'.s("Indiquez les zones géographiques que vous autorisez pour la livraison à domicile des commandes. Cela peut être une liste de villes, de départements ou toute autre localité pertinente pour votre activité. Lorsqu'ils commandent, vos clients s'engagent à donner une adresse qui se situe dans les zones que vous avez ainsi définies.").'</p>',
+					Point::SHIPPING => '<h4>'.s("Une expédition par transporteur est une livraison que vous effectuez par l'intermédiaire d'un prestataire").'</h4><p>'.s("Indiquez les zones géographiques que vous autorisez pour l'expédition des commandes. Cela peut être une région, un pays ou toute autre localité pertinente pour votre activité. Lorsqu'ils commandent, vos clients s'engagent à donner une adresse qui se situe dans les zones que vous avez ainsi définies.").'</p><p>'.s("C'est à vous d'informer vos clients des délais de livraison et de choisir un prestataire adapté à votre situation.").'</p>',
+				};
 			$h .= '</div>';
 
 
@@ -381,10 +422,14 @@ class PointUi {
 
 			$h .= $form->hidden('farm', $e['farm']['id']);
 			$h .= $form->hidden('type', $e['type']);
+			$h .= $form->hidden('mode', $e['mode']);
 
 			$h .= match($e['type']) {
 				Point::PLACE => $form->dynamicGroups($e, ['name', 'description', 'place', 'address']),
-				Point::HOME => $form->dynamicGroups($e, ['name', 'zone'])
+				Point::HOME => match($e['mode']) {
+					Point::SHIPPING => $form->dynamicGroups($e, ['name', 'description']),
+					Point::TOUR => $form->dynamicGroups($e, ['name', 'zone'])
+				}
 			};
 
 			$h .= $form->group(
@@ -397,7 +442,10 @@ class PointUi {
 			id: 'panel-point-create',
 			title: match($e['type']) {
 				Point::PLACE => s("Ajouter un point de retrait"),
-				Point::HOME => s("Ajouter une tournée de livraison à domicile"),
+				Point::HOME => match($e['mode']) {
+					Point::TOUR => s("Ajouter une tournée de livraison à domicile"),
+					Point::SHIPPING => s("Ajouter une expédition par transporteur"),
+				},
 			},
 			body: $h
 		);
@@ -414,16 +462,22 @@ class PointUi {
 
 			$h .= $form->hidden('id', $e['id']);
 
-			$h .= match($e['type']) {
-				Point::PLACE => $form->dynamicGroups($e, ['name', 'description', 'place', 'address']),
-				Point::HOME => $form->dynamicGroups($e, ['name', 'zone'])
-			};
+			$h .= $form->dynamicGroups($e, match($e['type']) {
+				Point::PLACE => ['name', 'description', 'place', 'address'],
+				Point::HOME => match($e['mode']) {
+					Point::SHIPPING => ['name', 'description'],
+					Point::TOUR => ['name', 'zone']
+				}
+			});
 
 			$h .= '<div class="util-block-gradient">';
 
 				$title = match($e['type']) {
 					Point::PLACE => s("Personnalisation du point de retrait"),
-					Point::HOME => s("Personnalisation de la tournée")
+					Point::HOME => match($e['mode']) {
+						Point::TOUR => s("Personnalisation de la tournée"),
+						Point::SHIPPING => s("Personnalisation de l'expédition"),
+					}
 				};
 
 				$h .= $form->group(content: '<h3>'.$title.'</h3>');
@@ -446,7 +500,10 @@ class PointUi {
 			id: 'panel-point-update',
 			title: match($e['type']) {
 				Point::PLACE => s("Modifier un point de retrait"),
-				Point::HOME => s("Modifier une tournée de livraison à domicile"),
+				Point::HOME => match($e['mode']) {
+					Point::TOUR => s("Modifier une tournée de livraison à domicile"),
+					Point::SHIPPING => s("Modifier une expédition par transporteur"),
+				},
 			},
 			body: $h
 		);
@@ -459,7 +516,10 @@ class PointUi {
 		$d = Point::model()->describer($property, [
 			'zone' => s("Zones de livraison"),
 			'name' => s("Nom"),
-			'description' => s("Informations sur le point de retrait"),
+			'description' => fn(Point $e) => match($e['type']) {
+				Point::PLACE => s("Informations sur le point de retrait"),
+				Point::HOME => s("Informations sur l'expédition"),
+			},
 			'place' => s("Ville du point de retrait"),
 			'address' => s("Adresse du point de retrait"),
 			'orderMin' => s("Montant minimal de commande"),
@@ -481,18 +541,30 @@ class PointUi {
 
 			case 'name' :
 				$d->label = fn($e) => match($e['type']) {
-					Point::HOME => ("Nom de la tournée"),
-					Point::PLACE => ("Nom du point de retrait")
+					Point::HOME => match($e['mode']) {
+						Point::SHIPPING => s("Nom du transporteur"),
+						Point::TOUR => s("Nom de la tournée"),
+					},
+					Point::PLACE => s("Nom du point de retrait")
 				};
 				$d->placeholder = fn($e) => match($e['type']) {
-					Point::HOME => ("Exemple : Tournée du mardi"),
-					Point::PLACE => ("Exemple : Maison des Citoyens, À la ferme, ...")
+					Point::HOME => match($e['mode']) {
+						Point::SHIPPING => s("Exemple : Expédition par voie postale"),
+						Point::TOUR => s("Exemple : Tournée du mardi"),
+					},
+					Point::PLACE => s("Exemple : Maison des Citoyens, À la ferme, ...")
 				};
 				break;
 
 			case 'description' :
-				$d->placeholder = s("Exemple : Retrait des commandes de HH:MM à HH:MM");
-				$d->after = \util\FormUi::info(s("Vous pouvez indiquer ici toute information utile spécifique à ce point de retrait, pour être communiquée à vos clients."));
+				$d->placeholder = fn(Point $e) => match($e['type']) {
+					Point::HOME => s("Exemple : Livraison sous 72 heures"),
+					Point::PLACE => s("Exemple : Retrait des commandes de HH:MM à HH:MM"),
+				};
+				$d->after = fn(\util\FormUi $form, Point $e) => \util\FormUi::info(match($e['type']) {
+					Point::HOME => s("Vous pouvez indiquer ici toute information utile communiquer sur l'expédition à vos clients."),
+					Point::PLACE => s("Vous pouvez indiquer ici toute information utile spécifique à ce point de retrait, pour être communiquée à vos clients."),
+				});
 				break;
 
 			case 'place' :
@@ -504,8 +576,8 @@ class PointUi {
 				break;
 
 			case 'zone' :
-				$d->placeholder = s("Exemple :\n- Paris\n- New York\n- Ile de Pâques\n\nNous assurons la livraison en voilier.");
-				$d->after = \util\FormUi::info(s("Indiquez une zone géographique par ligne. Vous pouvez également ajouter du texte si vous souhaitez apporter des précisions supplémentaires à vos clients."));
+				$d->placeholder = s("Exemple :\n- Ce village\n- Cet autre village\n- Ce départment\n\nNous assurons la livraison en vélo.");
+				$d->after = s("Indiquez une zone géographique par ligne. Vous pouvez également ajouter du texte si vous souhaitez apporter des précisions supplémentaires à vos clients.");
 				break;
 
 			case 'paymentOffline' :

@@ -10,6 +10,9 @@ abstract class PointElement extends \Element {
 	const HOME = 'home';
 	const PLACE = 'place';
 
+	const TOUR = 'tour';
+	const SHIPPING = 'shipping';
+
 	const ACTIVE = 'active';
 	const DELETED = 'deleted';
 
@@ -46,6 +49,7 @@ class PointModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'type' => ['enum', [\shop\Point::HOME, \shop\Point::PLACE], 'cast' => 'enum'],
+			'mode' => ['enum', [\shop\Point::TOUR, \shop\Point::SHIPPING], 'null' => TRUE, 'cast' => 'enum'],
 			'zone' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'place' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -61,7 +65,7 @@ class PointModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'type', 'zone', 'description', 'place', 'address', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
+			'id', 'name', 'farm', 'type', 'mode', 'zone', 'description', 'place', 'address', 'paymentCard', 'paymentTransfer', 'paymentOffline', 'orderMin', 'shipping', 'shippingUntil', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -98,6 +102,9 @@ class PointModel extends \ModuleModel {
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'mode' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -130,6 +137,10 @@ class PointModel extends \ModuleModel {
 
 	public function whereType(...$data): PointModel {
 		return $this->where('type', ...$data);
+	}
+
+	public function whereMode(...$data): PointModel {
+		return $this->where('mode', ...$data);
 	}
 
 	public function whereZone(...$data): PointModel {

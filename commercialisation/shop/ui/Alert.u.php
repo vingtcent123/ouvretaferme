@@ -79,9 +79,9 @@ class AlertUi {
 			'Shop::joined' => s("Vous avez rejoint la boutique !"),
 			'Shop::deletedFarmer' => s("Le producteur a bien été retiré de la boutique !"),
 
-			'Point::home.created' => s("Le point de livraison à domicile a bien été créé. Vous pouvez aller l'activer sur les boutiques sur lequel vous souhaitez l'autoriser pour vos clients."),
-			'Point::home.updated' => s("Le point de livraison à domicile a bien été mis à jour."),
-			'Point::home.deleted' => s("Le point de livraison à domicile a bien été supprimé."),
+			'Point::home.created' => s("Le mode de livraison à domicile a bien été créé. Vous pouvez aller l'activer sur les boutiques sur lequel vous souhaitez l'autoriser pour vos clients."),
+			'Point::home.updated' => s("Le mode de livraison à domicile a bien été mis à jour."),
+			'Point::home.deleted' => s("Le mode de livraison à domicile a bien été supprimé."),
 
 			'Point::place.created' => s("Le point de retrait a bien été créé. Vous pouvez aller l'activer sur les boutiques sur lequel vous souhaitez l'autoriser pour vos clients."),
 			'Point::place.updated' => s("Le point de retrait a bien été mis à jour."),

@@ -45,6 +45,7 @@ Point:
   name: text8(1, null)
   farm: farm\Farm
   type: enum(HOME, PLACE)
+  mode: ?enum(TOUR, SHIPPING)
   zone: ?text16(1, null)
   description: ?text8(1, null)
   place: ?text8(1, null)

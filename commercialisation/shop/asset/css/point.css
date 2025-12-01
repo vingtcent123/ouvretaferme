@@ -37,6 +37,11 @@ label.point-element {
 	border-bottom: 1px solid var(--border);
 }
 
+.point-list-write .point-element:last-child {
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--border);
+}
+
 div.point-update {
 	width: 2.5rem;
 	height: 2.5rem;

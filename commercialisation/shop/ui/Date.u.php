@@ -493,9 +493,10 @@ class DateUi {
 							$h .= $form->inputCheckbox('points[]', $ePoint['id'], $attributes);
 						$h .= '</label>';
 						$h .= '<label class="date-points-label" for="'.$attributes['id'].'">';
+							$h .= encode($ePoint['name']);
 							$h .= match($type) {
-								Point::HOME => nl2br(encode($ePoint['zone'])),
-								Point::PLACE => encode($ePoint['name']).' <small class="color-muted">'.encode($ePoint['address']).' '.encode($ePoint['place']).'</small>'
+								Point::HOME => '<div class="color-muted font-sm">'.nl2br(encode($ePoint['zone'])).'</div>',
+								Point::PLACE => ' <small class="color-muted">'.encode($ePoint['address']).' '.encode($ePoint['place']).'</small>'
 							};
 						$h .= '</label>';
 

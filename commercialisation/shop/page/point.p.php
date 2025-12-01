@@ -5,10 +5,20 @@ new shop\PointPage()
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
 		$type = \shop\Point::INPUT('type', 'type', fn() => throw new NotExpectedAction());
+		$mode = \shop\Point::INPUT('mode', '?mode', fn() => throw new NotExpectedAction());
+
+		if($type === \shop\Point::HOME and $mode === NULL) {
+			new NotExpectedAction();
+		}
+
+		if($type === \shop\Point::PLACE and $mode !== NULL) {
+			new NotExpectedAction();
+		}
 
 		return new \shop\Point([
 			'farm' => $data->eFarm,
-			'type' => $type
+			'type' => $type,
+			'mode' => $mode
 		]);
 
 	})

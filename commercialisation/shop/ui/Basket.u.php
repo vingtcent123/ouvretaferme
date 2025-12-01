@@ -667,7 +667,7 @@ class BasketUi {
 		$h = '<div id="shop-basket-address-show">';
 
 			$h .= '<div class="util-title">';
-				$h .= '<h2>'.s("Mes coordonnées").'</h2>';
+				$h .= '<h2>'.s("Mes coordonnées de livraison").'</h2>';
 				$h .= '<a href="/user/settings:updateUser" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
 			$h .= '</div>';
 
