@@ -226,7 +226,12 @@ END;
 
 			}
 
-			\shop\ShopLib::applySharedCatalogs($data->eShop, $data->eDateSelected);
+			if(
+				$data->eShop->isShared() and
+				$data->eDateSelected['deliveryDate'] === NULL
+			) {
+				\shop\ShopLib::applySharedCatalogs($data->eShop, $data->eDateSelected);
+			}
 
 			$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 
@@ -307,7 +312,10 @@ new Page(function($data) {
 
 		$data->cItemExisting = \selling\SaleLib::getItemsBySales($data->cSaleExisting, withIngredients: TRUE, public: TRUE);
 
-		if($data->eShop->isSharedAlways()) {
+		if(
+			$data->eShop->isShared() and
+			$data->eDate['deliveryDate'] === NULL
+		) {
 
 			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
 			\shop\ShopLib::applySharedCatalogs($data->eShop, $data->eDate);

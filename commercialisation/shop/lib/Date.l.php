@@ -275,7 +275,13 @@ class DateLib extends DateCrud {
 			$eDate['eFarmSelected'] = new \farm\Farm();
 		}
 
-		\shop\ShopLib::applySharedCatalogs($eShop, $eDate);
+		if(
+			$eShop->isShared() and
+			$eDate['deliveryDate'] === NULL
+		) {
+			\shop\ShopLib::applySharedCatalogs($eShop, $eDate);
+		}
+
 		\shop\DateLib::applySales($eDate);
 
 		$eDate['cSale'] = \selling\SaleLib::getByDate($eDate, eFarm: $eDate['eFarmSelected'], select: \selling\Sale::getSelection() + [
