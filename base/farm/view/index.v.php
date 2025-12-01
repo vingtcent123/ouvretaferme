@@ -529,8 +529,10 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
 		$hasSearch = ($data->search->get('from') and $data->search->get('to'));
 
+		$errors = $data->nProduct + $data->nItem + array_sum($data->saleCount);
+
 		echo '<h3>'.s("1. Choix de la période").'</h3>';
-		echo new \selling\AccountingUi()->getSearch($data->search);
+		echo new \selling\AccountingUi()->getSearch($data->eFarm, $data->search, $data->isSearchValid, $errors);
 
 		echo '<h3 class="mt-2">';
 
@@ -609,7 +611,7 @@ new JsonView('/ferme/{id}/precomptabilite/{type}', function($data, AjaxTemplate 
 			break;
 
 		case 'item':
-			$t->qs('div[data-step="item"]')->innerHtml(new \selling\AccountingUi()->items($data->cItem));
+			$t->qs('div[data-step="item"]')->innerHtml(new \selling\AccountingUi()->items($data->cItem, $data->nItem));
 			break;
 
 		case 'sale':

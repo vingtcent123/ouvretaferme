@@ -10,7 +10,7 @@ Class AccountingUi {
 
 	}
 
-	public function getSearch(\Search $search): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, bool $isSearchValid, int $errors): string {
 
 		$h = '<div id="sale-search" class="util-block-search flex-justify-space-between">';
 
@@ -31,7 +31,21 @@ Class AccountingUi {
 
 		$h .= $form->close();
 
-		$h .= '<div>'.$form->button(s("Exporter"), ['class' => 'btn btn-warning', 'data-url' => '/selling/csv:exportAccounting?id=7', 'onclick' => 'SellingAccounting.export();', 'data-accounting-action' => 'export']).'</div>';
+		if($isSearchValid) {
+
+			$attributes = [
+				'href' => \farm\FarmUi::urlSellingSalesAccounting($eFarm).':fec?from='.$search->get('from').'&to='.$search->get('to'),
+				'data-ajax-navigation' => 'never',
+			];
+			$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
+
+		} else {
+			$attributes = [
+				'href' => 'javascript: void(0);',
+			];
+			$class = 'btn-secondary disabled';
+		}
+		$h .= '<a '.attrs($attributes).' style="height: 100%;">'.$form->button(s("Exporter"), ['class' => 'btn '.$class]).'</a>';
 
 		$h .= '</div>';
 
@@ -206,8 +220,11 @@ Class AccountingUi {
 
 	}
 
-	public function items(\Collection $ccItem): string {
+	public function items(\Collection $ccItem, int $nItem): string {
 
+		if($nItem > 1000) {
+			return '<div class="util-block-help">'.s("Il y a trop d'articles sans classe de compte. Commencez par configurer vos produits !").'</div>';
+		}
 		$h = '<table class="tr-even" data-batch="#batch-accounting-item">';
 			$h .= '<thead>';
 				$h .= '<tr>';

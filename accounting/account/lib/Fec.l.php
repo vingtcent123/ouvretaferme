@@ -118,12 +118,7 @@ class FecLib  {
 
 	}
 
-	/**
-	 * TODO : faire une notice justificative (?)
-	 * @param FinancialYear $eFinancialYear
-	 * @return string
-	 */
-	public static function generate(FinancialYear $eFinancialYear, string $startDate, string $endDate): string {
+	public static function getHeader(bool $isCashAccounting = TRUE): array {
 
 		$headers = [
 			'JournalCode', // peut être vide Alphanumérique
@@ -146,11 +141,24 @@ class FecLib  {
 			'IDevise', // peut être vide Alphanumérique
 		];
 
-		if($eFinancialYear['accountingType'] === FinancialYear::CASH) {
+		if($isCashAccounting) {
 			$headers[] = 'DateRglt'; // Utilisé en BA en compta de trésorerie uniquement Date
 			$headers[] = 'ModeRglt'; // Utilisé en BA en compta de trésorerie uniquement Alphanumérique
 			$headers[] = 'NatOp'; // peut être vide, Utilisé en BA en compta de trésorerie uniquement Alphanumérique
 		}
+
+		return $headers;
+
+	}
+
+	/**
+	 * TODO : faire une notice justificative (?)
+	 * @param FinancialYear $eFinancialYear
+	 * @return string
+	 */
+	public static function generate(FinancialYear $eFinancialYear, string $startDate, string $endDate): string {
+
+		$headers = self::getHeader($eFinancialYear->isCashAccounting());
 		$fecData = [
 			join('|', $headers),
 		];

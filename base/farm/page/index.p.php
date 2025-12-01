@@ -1134,8 +1134,7 @@ new Page(function($data) {
 		'from' => GET('from'),
 		'to' => GET('to'),
 	]);
-
-	$data->isSearchValid = $data->search->get('from') and $data->search->get('to') and \util\DateLib::isValid($data->search->get('from')) and \util\DateLib::isValid($data->search->get('to'));
+	$data->isSearchValid = ($data->search->get('from') and $data->search->get('to') and \util\DateLib::isValid($data->search->get('from')) and \util\DateLib::isValid($data->search->get('to')));
 
 	if($data->isSearchValid and $data->search->get('from') > $data->search->get('to')) {
 			$from = $data->search->get('from');
@@ -1168,7 +1167,6 @@ new Page(function($data) {
 
 		}
 
-
 		throw new ViewAction($data);
 
 	})
@@ -1185,7 +1183,12 @@ new Page(function($data) {
 					break;
 
 				case 'item':
-					$data->cItem = \selling\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
+					$data->nItem = \selling\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+					if($data->nItem < 1000) {
+						$data->cItem = \selling\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
+					} else {
+						$data->cItem = new Collection();
+					}
 					break;
 
 				case 'sale':
@@ -1216,5 +1219,19 @@ new Page(function($data) {
 
 		throw new ViewAction($data);
 
-	});
+	})
+	->get('/ferme/{id}/precomptabilite:fec', function($data) {
+
+		if($data->isSearchValid) {
+
+			$export = \farm\AccountingLib::getFec($data->eFarm, $data->search->get('from'), $data->search->get('to'));
+
+			throw new CsvAction($export, 'pre-comptabilite.csv');
+
+		}
+
+		throw new VoidAction();
+
+	})
+;
 ?>

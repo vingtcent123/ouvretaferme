@@ -263,6 +263,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'precomptabilite', '{type}'],
 		],
+		'/ferme/{id}/precomptabilite:fec' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'precomptabilite:fec'],
+		],
 		'/ferme/{id}/previsionnel' => [
 			'request' => 'farm/index',
 			'priority' => 5,

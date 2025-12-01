@@ -1599,24 +1599,35 @@ class SaleLib extends SaleCrud {
 		return Sale::model()
 			->wherePreparationStatus('NOT IN', [Sale::COMPOSITION, Sale::CANCELED, Sale::EXPIRED, Sale::DRAFT, Sale::BASKET])
 			->where('priceExcludingVat != 0.0')
+			->where('m1.farm = '.$eFarm['id'])
+			->where('deliveredAt BETWEEN '.Sale::model()->format($search->get('from')).' AND '.Sale::model()->format($search->get('to')))
+			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
+
+	}
+
+	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): SaleModel {
+
+		return Sale::model()
+			->wherePreparationStatus('NOT IN', [Sale::COMPOSITION, Sale::CANCELED, Sale::EXPIRED, Sale::DRAFT, Sale::BASKET])
+			->where('priceExcludingVat != 0.0')
 			->whereProfile('NOT IN', [Sale::MARKET])
 			->where('m1.farm = '.$eFarm['id'])
 			->where('deliveredAt BETWEEN '.Sale::model()->format($search->get('from')).' AND '.Sale::model()->format($search->get('to')))
-			->where(new \Sql('deliveredAt < NOW()'));
+			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
 
 	}
 	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
 
-		$nMissingPayment = self::filterForAccounting($eFarm, $search)
+		$nMissingPayment = self::filterForAccountingCheck($eFarm, $search)
        ->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
        ->where('m2.id IS NULL')
 			->count();
 
-		$nSaleNotClosed = self::filterForAccounting($eFarm, $search)
+		$nSaleNotClosed = self::filterForAccountingCheck($eFarm, $search)
 			->whereClosed(FALSE)
 			->count();
 
-		$nSalePreparationStatus = self::filterForAccounting($eFarm, $search)
+		$nSalePreparationStatus = self::filterForAccountingCheck($eFarm, $search)
 			->wherePreparationStatus('!=', Sale::DELIVERED)
 			->count();
 
@@ -1646,7 +1657,7 @@ class SaleLib extends SaleCrud {
 
 		if($type === 'missingPayment') {
 
-			return self::filterForAccounting($eFarm, $search)
+			return self::filterForAccountingCheck($eFarm, $search)
 	       ->select($select)
 	       ->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
 	       ->where('m2.id IS NULL')
@@ -1657,7 +1668,7 @@ class SaleLib extends SaleCrud {
 
 		if($type === 'notClosed') {
 
-			return self::filterForAccounting($eFarm, $search)
+			return self::filterForAccountingCheck($eFarm, $search)
 				->select($select)
 				->whereClosed(FALSE)
 	       ->sort(['deliveredAt' => SORT_DESC])
@@ -1667,7 +1678,7 @@ class SaleLib extends SaleCrud {
 
 		if($type === 'preparationStatus') {
 
-			return self::filterForAccounting($eFarm, $search)
+			return self::filterForAccountingCheck($eFarm, $search)
 				->select($select)
 				->wherePreparationStatus('!=', Sale::DELIVERED)
 				->sort(['deliveredAt' => SORT_DESC])

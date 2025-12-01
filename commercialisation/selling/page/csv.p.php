@@ -43,17 +43,5 @@ new \farm\FarmPage()
 
 		throw new CsvAction($export, 'clients.csv');
 
-	})
-	->read('exportAccounting', function($data) {
-
-		$data->e->validate('canAnalyze', 'canPersonalData');
-		$from = GET('from');
-		$to = GET('to');
-
-		$export = \selling\AnalyzeLib::getPreAccountingSales($data->e, $from, $to);
-		array_unshift($export, new \selling\AnalyzeUi()->getPreAccountingHeader($data->e));
-
-		throw new CsvAction($export, 'pre-comptabilite.csv');
-
 	});
 ?>

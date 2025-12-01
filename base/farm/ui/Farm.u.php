@@ -665,8 +665,7 @@ class FarmUi {
 				$h .= \Asset::icon('boxes');
 			$h .= '</a>';
 
-			$linkAction = $eFarm->hasAccounting() ? 'href="/selling/csv:exportAccounting?id='.$eFarm['id'].'&year='.$year.'"' : 'onclick="void(0);"';
-			$h .= '<a '.$linkAction.' class="util-button '.($eFarm->hasAccounting() ? '' : ' disabled').'" data-ajax-navigation="never">';
+			$h .= '<a href="'.FarmUi::urlSellingSalesAccounting($eFarm).'" class="util-button">';
 				$h .= '<div>';
 					$h .= '<h4>'.s("Exporter la pré-comptabilité").'</h4>';
 					if($eFarm->hasAccounting() === FALSE) {
