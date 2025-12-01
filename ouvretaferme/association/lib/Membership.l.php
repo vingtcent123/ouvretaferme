@@ -399,6 +399,15 @@ class MembershipLib {
 			return;
 		}
 
+		$alreadyValidated = (History::model()
+			->wherePaymentIntentId($object['id'])
+			->whereStatus(History::VALID)
+			->count() === 1);
+
+		if($alreadyValidated) {
+			return;
+		}
+
 		self::activateMembership($eHistory, new \payment\Method());
 	}
 
