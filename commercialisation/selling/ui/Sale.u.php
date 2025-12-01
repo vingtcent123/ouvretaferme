@@ -2274,13 +2274,11 @@ class SaleUi {
 
 					$e->expects(['cShop']);
 
-					$h = '<div class="util-block-gradient">';
+					$cShop = $e['cShop']->find(fn($eShop) => $eShop['cDate']->notEmpty());
 
-					foreach($e['cShop'] as $eShop) {
+					$list = '';
 
-						if($eShop['cDate']->empty()) {
-							continue;
-						}
+					foreach($cShop as $eShop) {
 
 						switch($eShop['opening']) {
 
@@ -2290,12 +2288,14 @@ class SaleUi {
 
 								if($cDate->notEmpty()) {
 
-									$h .= '<h5>'.encode($eShop['name']).'</h5>';
+									$list .= '<h5>'.encode($eShop['name']).'</h5>';
 
-									$h .= $form->radios('shopDate', $cDate, $e['shopDate'] ?? new \shop\Date(), attributes: [
+									$list .= $form->radios('shopDate', $cDate, $e['shopDate'] ?? new \shop\Date(), attributes: [
 										'callbackRadioContent' => fn($eDate) => s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])),
 										'mandatory' => TRUE,
 									]);
+									
+									$list .= '<br/>';
 
 								}
 								break;
@@ -2304,17 +2304,27 @@ class SaleUi {
 
 								$eDate = $eShop['cDate']->find(fn($eDate) => $eDate['deliveryDate'] === NULL, limit: 1);
 
-								$h .= '<h5>'.$form->radio('shopDate', $eDate['id'], encode($eShop['name'])).'</h5>';
+								$list .= '<h5>'.$form->radio('shopDate', $eDate['id'], encode($eShop['name'])).'</h5>';
+								$list .= '<br/>';
 
 								break;
 
 						}
 
-						$h .= '<br/>';
-
 					}
 
-					$h .= '</div>';
+					if($list) {
+						return '<div class="util-block-gradient">'.$list.'</div>';
+					} else {
+
+						$message = match($e['type']) {
+							Sale::PRIVATE => s("Nous n'avons pas trouvé de boutique pour clients particuliers à associer à cette vente."),
+							Sale::PRO => s("Nous n'avons pas trouvé de boutique pour clients professionnels à associer à cette vente."),
+						};
+
+						return '<div class="util-info">'.$message.'</div>';
+
+					}
 
 					return $h;
 
