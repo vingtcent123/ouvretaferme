@@ -72,10 +72,21 @@ class ProductLib extends ProductCrud {
 			throw new \Exception('Missing catalog or date');
 		}
 
+		if($withRelations === FALSE) {
+
+			Product::model()
+				->whereId('NOT IN', $cProductExclude, if: $cProductExclude->notEmpty())
+				->whereParent(FALSE);
+
+		}
+
 		$cProduct = Product::model()
 			->select(Product::getSelection())
-			->whereId('NOT IN', $cProductExclude, if: $cProductExclude->notEmpty())
 			->getCollection(index: 'product');
+
+		if($cProduct->empty()) {
+			return new \Collection();
+		}
 
 		$onlyIds = $cProduct
 			->getColumnCollection('product')

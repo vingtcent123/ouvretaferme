@@ -86,12 +86,6 @@ div.product-item-infos {
 	color: var(--muted);
 }
 
-@media (max-width: 575px) {
-	div.product-item-infos {
-		display: none;
-	}
-}
-
 div.product-item-presentation-wrapper {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
