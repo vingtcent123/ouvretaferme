@@ -533,6 +533,7 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 
 		echo '<h3>'.s("1. Choix de la période").'</h3>';
 		echo new \selling\AccountingUi()->getSearch($data->eFarm, $data->search, $data->isSearchValid, $errors);
+		echo new \selling\AccountingUi()->explainExport();
 
 		echo '<h3 class="mt-2">';
 

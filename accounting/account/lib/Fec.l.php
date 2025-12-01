@@ -175,8 +175,8 @@ class FecLib  {
 			}
 
 			$operationData = [
-				$eOperation['journalCode']['code'] ?? 'GEN',
-				$eOperation['journalCode']['name'] ?? 'Général',
+				$eOperation['journalCode']['code'] ?? '',
+				$eOperation['journalCode']['name'] ?? '',
 				str_pad($number++, 6, '0', STR_PAD_LEFT),
 				date('Ymd', strtotime($eOperation['date'])),
 				$eOperation['accountLabel'],

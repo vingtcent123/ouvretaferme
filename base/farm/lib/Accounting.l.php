@@ -11,6 +11,14 @@ Class AccountingLib {
 		return $eSale['invoice']['name'];
 
 	}
+	private static function getDocumentDate(\selling\Sale $eSale): string {
+
+		if($eSale['invoice']->empty()) {
+			return $eSale['deliveredAt'];
+		}
+		return $eSale['invoice']['date'];
+
+	}
 
 	private static function getPaymentMethod(\selling\Sale $eSale): string {
 
@@ -21,9 +29,12 @@ Class AccountingLib {
 		return '';
 	}
 
+	/**
+	 * TODO : améliorer
+	 * - la date de règlement (3è colonne en partant de la fin)
+	 * - la date de validation (16è colonne)
+	 */
 	public static function getFec(\farm\Farm $eFarm, string $from, string $to): array {
-
-		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
 		$cAccount = \account\AccountLib::getAll();
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
@@ -32,13 +43,10 @@ Class AccountingLib {
       ->select([
         'id',
         'document',
-        'items', 'discount',
         'type', 'profile', 'marketParent',
-        'customer' => ['name'],
-        'priceIncludingVat', 'priceExcludingVat', 'vat',
-        'shop' => ['name'],
+        'customer' => ['id', 'name'],
         'deliveredAt',
-        'invoice' => ['name'],
+        'invoice' => ['name', 'date'],
         'cPayment' => \selling\Payment::model()
 					->select(\selling\Payment::getSelection())
 					->or(
@@ -46,10 +54,6 @@ Class AccountingLib {
 						fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
 					)
 					->delegateCollection('sale', 'id'),
-        /*'cItem' => \selling\Item::model()
-                       ->select(['id', 'price', 'vatRate', 'account'])
-                       ->group(['account', 'vatRate'])
-                       ->delegateCollection('sale'),*/
       ])
       ->sort('deliveredAt')
       ->getCollection(NULL, NULL, 'id');
@@ -78,32 +82,33 @@ Class AccountingLib {
 				->getCollection(NULL, NULL, ['account', 'vatRate']);
 
 			$document = self::getDocument($eSaleReference);
+			$documentDate = self::getDocumentDate($eSaleReference);
 			$paymentMethod = self::getPaymentMethod($eSale);
+			$compAuxLib = $eSaleReference['customer']['name'];
 
 			$date = $eSaleReference['deliveredAt'];
 
-			$customerId = $eSaleReference['customer']['id'];
-			$customerName = $eSaleReference['customer']['name'];
-
-			$cAccountSale = new \Collection();
-
 			foreach($ccItem as $accountId => $cItem) {
-
-				$eAccount = $cAccount->offsetGet($accountId);
-				if($eAccount->empty()) { // Si les données n'ont pas été redressées on prend la classe de TVA par défaut
-					$eAccount = $eAccountDefault;
-				}
 
 				foreach($cItem as $vatRate => $eItem) {
 
 					$vatRate /= 100; // Multiplié par 100 dans le SQL pour l'index entier.
 
-					$eAccountDefault = new \account\Account(['id' => NULL, 'vatRate' => $eItem['vatRate'], 'vatAccount' => $eAccountVatDefault]);
+					$eAccountDefault = new \account\Account(['class' => '', 'description' => '', 'vatRate' => $eItem['vatRate'], 'vatAccount' => $eAccountVatDefault]);
+
+					if($accountId) {
+						$eAccount = $cAccount->offsetGet($accountId);
+					} else {
+						$eAccount = new \account\Account();
+					}
+					if($eAccount->empty()) { // Si les données n'ont pas été redressées on prend la classe de TVA par défaut
+						$eAccount = $eAccountDefault;
+					}
 
 					$amountExcludingVat = $eItem['priceStats'];
 
 					if(round($vatRate, 2) !== 0.0) {
-						$amountVat = round($amountExcludingVat * (1 + $vatRate / 100), 2);
+						$amountVat = round($amountExcludingVat * $vatRate / 100, 2);
 					} else {
 						$amountVat = 0;
 					}
@@ -117,15 +122,15 @@ Class AccountingLib {
 						\account\AccountLabelLib::pad($eAccount['class']),
 						$eAccount['description'],
 						'',
-						'',
+						$compAuxLib,
 						$document,
-						date('Ymd', strtotime($date)),
+						date('Ymd', strtotime($documentDate)),
 						'',
 						$amountExcludingVat > 0 ? $amountExcludingVat : 0,
 						$amountExcludingVat < 0 ? abs($amountExcludingVat) : 0,
 						'',
 						'',
-						date('Ymd', strtotime($date)),
+						'',
 						$amountExcludingVat,
 						'EUR',
 						date('Ymd', strtotime($date)),
@@ -149,15 +154,15 @@ Class AccountingLib {
 							\account\AccountLabelLib::pad($eAccountVat['class']),
 							$eAccountVat['description'],
 							'',
-							'',
+							$compAuxLib,
 							$document,
-							date('Ymd', strtotime($date)),
+							date('Ymd', strtotime($documentDate)),
 							'',
 							$amountVat > 0 ? $amountVat : 0,
 							$amountVat < 0 ? abs($amountVat) : 0,
 							'',
 							'',
-							date('Ymd', strtotime($date)),
+							'',
 							$amountVat,
 							'EUR',
 							date('Ymd', strtotime($date)),

@@ -236,7 +236,7 @@ class FarmUi {
 			Farmer::PRIVATE => self::urlSellingSalesPrivate($eFarm),
 			Farmer::PRO => self::urlSellingSalesPro($eFarm),
 			Farmer::LABEL => self::urlSellingSalesLabel($eFarm),
-			Farmer::ACCOUNTING => self::urlSellingSalesAccounting($eFarm)
+			'accounting' => self::urlSellingSalesAccounting($eFarm)
 		};
 
 	}
@@ -1746,7 +1746,7 @@ class FarmUi {
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
 			NULL,
-			Farmer::ACCOUNTING => s("Précomptabilité"),
+			'accounting' => s("Précomptabilité"),
 
 		];
 	}

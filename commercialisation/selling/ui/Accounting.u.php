@@ -53,6 +53,17 @@ Class AccountingUi {
 
 	}
 
+	public function explainExport(): string {
+
+		$h = '<div class="util-block-help">';
+
+			$h .= s("L'export qui vous est proposé est un export au format FEC.<br />Cependant, certaines informations obligatoires peuvent être manquantes et ne seront donc donc pas indiquées. Les données concernées sont les colonnes : <ul><li><i>EcritureNum</i> (numéro sur une séquence continue de l'écriture comptable),</li> <li><i>ValidDate</i> (date de validation de l'écriture comptable),</li></ul>D'autres colonnes sont facultatives et seront laissées vides dans l'export : <ul><li><i>JournalCode</i> (code journal de l'écriture comptable),</li> <li><i>JournalLib</i> (libellé journal de l'écriture comptable),</li> <li><i>CompAuxNum</i> (numéro de compte auxiliaire),</li> <li><i>EcritureLet</i> (lettrage de l'écriture),</li> <li><i>DateLet</i> (date de lettrage)</li></ul>");
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
 	public function salesTab(\farm\Farm $eFarm, \Search $search, array $nSale): string {
 
 		$url = \farm\FarmUi::urlSellingSalesAccounting($eFarm).'/sale/?from='.$search->get('from').'&to='.$search->get('to').'&type=';

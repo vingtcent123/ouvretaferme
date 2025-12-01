@@ -1145,8 +1145,6 @@ new Page(function($data) {
 })
 	->get('/ferme/{id}/precomptabilite', function($data) {
 
-		\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::ACCOUNTING);
-
 		if($data->isSearchValid) {
 
 			$data->nProduct = \selling\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
@@ -1172,9 +1170,9 @@ new Page(function($data) {
 	})
 	->get('/ferme/{id}/precomptabilite/{type}', function($data) {
 
-		if($data->isSearchValid) {
+		$data->type = GET('type');
 
-			$data->type = GET('type');
+		if($data->isSearchValid and in_array($data->type, ['product', 'item', 'sale'])) {
 
 			switch($data->type) {
 
@@ -1230,7 +1228,7 @@ new Page(function($data) {
 
 		}
 
-		throw new VoidAction();
+		throw new FailAction('farm\Accounting::invalidDatesForFec');
 
 	})
 ;
