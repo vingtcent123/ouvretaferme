@@ -411,7 +411,7 @@ class PointUi {
 			$h .= '<div class="util-block-important">';
 				$h .= match($e['mode']) {
 					Point::TOUR => '<h4>'.s("Une tournée est une livraison qui vous effectuez vous-même pour livrer vos clients à domicile").'</h4><p>'.s("Indiquez les zones géographiques que vous autorisez pour la livraison à domicile des commandes. Cela peut être une liste de villes, de départements ou toute autre localité pertinente pour votre activité. Lorsqu'ils commandent, vos clients s'engagent à donner une adresse qui se situe dans les zones que vous avez ainsi définies.").'</p>',
-					Point::SHIPPING => '<h4>'.s("Une expédition par transporteur est une livraison que vous effectuez par l'intermédiaire d'un prestataire").'</h4><p>'.s("Indiquez les zones géographiques que vous autorisez pour l'expédition des commandes. Cela peut être une région, un pays ou toute autre localité pertinente pour votre activité. Lorsqu'ils commandent, vos clients s'engagent à donner une adresse qui se situe dans les zones que vous avez ainsi définies.").'</p><p>'.s("C'est à vous d'informer vos clients des délais de livraison et de choisir un prestataire adapté à votre situation.").'</p>',
+					Point::SHIPPING => '<h4>'.s("Une expédition par transporteur est une livraison que vous effectuez par l'intermédiaire d'un prestataire").'</h4><p>'.s("C'est à vous d'informer vos clients des délais de livraison et de choisir un prestataire adapté à votre situation.").'</p>',
 				};
 			$h .= '</div>';
 
