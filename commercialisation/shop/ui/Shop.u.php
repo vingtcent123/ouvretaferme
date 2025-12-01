@@ -1373,7 +1373,7 @@ class ShopUi {
 
 			case 'openingDelivery' :
 
-				$label = '<p>'.s("Les modalités de livraison seront indiqués aux clients au moment de la prise de commande.").'</p>';
+				$label = '<p>'.s("Les modalités de livraison seront indiquées aux clients au moment de la prise de commande.").'</p>';
 
 				$d->label .= \util\FormUi::info($label);
 				break;

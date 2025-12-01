@@ -106,7 +106,7 @@ class PointUi {
 
 	public function getFieldBoth(Shop $eShop, \Collection $cc, Point $ePointSelected) {
 
-		$h = '<h2>'.s("Mon mode de livraison").'</h2>';
+		$h = '<h2>'.s("Mode de livraison").'</h2>';
 
 		$h .= '<div class="point-wrapper">';
 
@@ -163,7 +163,7 @@ class PointUi {
 		$cPointTour = $c->find(fn($e) => $e['mode'] === Point::TOUR);
 		$cPointShipping = $c->find(fn($e) => $e['mode'] === Point::SHIPPING);
 
-		$h = '<h2>'.s("Mon mode de livraison").'</h2>';
+		$h = '<h2>'.s("Mode de livraison").'</h2>';
 
 			if($cPointTour->notEmpty()) {
 
@@ -204,10 +204,10 @@ class PointUi {
 			$ePointSelected = $c->first();
 		}
 
-		$h = '<h2>'.s("Retrait des commandes").'</h2>';
-
 		if($c->count() > 1) {
-			$h .= '<h4>'.s("Choisissez un point de livraison pour retirer votre commande").'</h4>';
+			$h = '<h2>'.s("Choisissez un point de livraison").'</h2>';
+		} else {
+			$h = '<h2>'.s("Point de livraison").'</h2>';
 		}
 
 		$h .= '<div class="util-block point-place-wrapper">';

@@ -596,11 +596,25 @@ class BasketUi {
 
 	public function getDeliveryForm(Shop $eShop, Date $eDate, \Collection $ccPoint, \user\User $eUser, Point $ePointSelected): string {
 
-		if($ccPoint->empty()) {
-			return '';
+		$h = '';
+
+		if(
+			$eDate['deliveryDate'] === NULL and
+			$eShop['openingDelivery'] !== NULL
+		) {
+
+			$h .= '<h2>'.s("Modalités de livraison").'</h2>';
+			$h .= '<div class="util-block">';
+				$h .= new \editor\EditorUi()->value($eShop['openingDelivery']);
+			$h .= '</div>';
+
 		}
 
-		$h = '<div id="shop-basket-point">';
+		if($ccPoint->empty()) {
+			return $h;
+		}
+
+		$h .= '<div id="shop-basket-point">';
 			$h .= new PointUi()->getField($eShop, $ccPoint, $ePointSelected);
 		$h .= '</div>';
 
