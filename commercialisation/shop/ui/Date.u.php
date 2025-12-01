@@ -363,18 +363,23 @@ class DateUi {
 
 			} else {
 
-				if($e['cCatalog']->empty()) {
+				if($e['shop']['opening'] === Shop::FREQUENCY) {
 
-					$canSubmit = FALSE;
+					if($e['cCatalog']->empty()) {
 
-					$h .= $form->group(
-						self::p('catalogs')->label,
-						'<div class="util-block-important">'.s("Vos producteurs n'ont pas encore connecté de catalogue à cette boutique. Vous devez d'abord battre le rappel des troupes avant de créer une première livraison !").'</div>'
-					);
+						$canSubmit = FALSE;
 
-				} else {
-					$h .= $form->dynamicGroup($e, 'catalogs*');
+						$h .= $form->group(
+							self::p('catalogs')->label,
+							'<div class="util-block-important">'.s("Vos producteurs n'ont pas encore connecté de catalogue à cette boutique. Vous devez d'abord battre le rappel des troupes avant de créer une première livraison !").'</div>'
+						);
+
+					} else {
+						$h .= $form->dynamicGroup($e, 'catalogs*');
+					}
+
 				}
+
 			}
 
 			$h .= '<br/>';
@@ -853,9 +858,18 @@ class DateUi {
 	
 	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale, \Collection $cPaymentMethod): string {
 
-		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "products"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'products').'"' : '').')').'">';
+		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "sales"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'sales').'"' : '').')').'">';
 
 			$h .= '<div class="tabs-item">';
+
+				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
+					$h .= s("Ventes");
+					if($cSale->notEmpty()) {
+						$h .= '<span class="tab-item-count">'.$cSale
+							->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]))
+							->count().'</span>';
+					}
+				$h .= '</a>';
 
 				$h .= '<a class="tab-item" data-tab="products" onclick="Lime.Tab.select(this)">';
 					$h .= s("Produits");
@@ -866,29 +880,29 @@ class DateUi {
 
 				if($eShop['shared']) {
 
-					$h .= '<a class="tab-item" data-tab="farms" onclick="Lime.Tab.select(this)">';
+					$h .= '<a class="tab-item" data-tab="farmers" onclick="Lime.Tab.select(this)">';
 						$h .= s("Producteurs");
-						if($eShop['ccRange']->count() > 0) {
-							$h .= '<span class="tab-item-count">'.$eShop['ccRange']->count().'</span>';
+						if($eShop['cShare']->count() > 0) {
+							$h .= '<span class="tab-item-count">'.$eShop['cShare']->count().'</span>';
 						}
 					$h .= '</a>';
 
 				}
 
-				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
-					$h .= s("Ventes");
-					if($cSale->notEmpty()) {
-						$h .= '<span class="tab-item-count">'.$cSale
-							->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]))
-							->count().'</span>';
-					}
-				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="points" onclick="Lime.Tab.select(this)">';
 					$h .= s("Modes de livraison");
 					if($eShop['hasPoint']) {
 						$h .= '<span class="tab-item-count">'.(($eDate['ccPoint'][Point::HOME] ?? new \Collection())->count() + ($eDate['ccPoint'][Point::PLACE] ?? new \Collection())->count()).'</span>';
 					}
 				$h .= '</a>';
+				if($eShop->isSharedAlways()) {
+					$h .= '<a class="tab-item" data-tab="departments" onclick="Lime.Tab.select(this)">';
+						$h .= s("Rayons");
+						if($eShop['cDepartment']->count() > 0) {
+							$h .= '<span class="tab-item-count">'.$eShop['cDepartment']->count().'</span>';
+						}
+					$h .= '</a>';
+				}
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="products">';
@@ -897,8 +911,11 @@ class DateUi {
 
 			if($eShop['shared']) {
 
-				$h .= '<div class="tab-panel" data-tab="farms">';
-					$h .= $this->getFarms($eFarm, $eShop, $eDate, $eShop['cDepartment'], $eShop['ccRange']);
+				$h .= '<div class="tab-panel" data-tab="farmers">';
+					$h .= match($eShop['opening']) {
+						Shop::ALWAYS => new ShareUi()->getList($eFarm, $eShop, $eShop['cShare'], $eShop['cDepartment']),
+						Shop::FREQUENCY => $this->getFarms($eFarm, $eShop, $eDate, $eShop['cDepartment'], $eShop['ccRange'])
+					};
 				$h .= '</div>';
 
 			}
@@ -988,6 +1005,14 @@ class DateUi {
 					$h .= new ShopUi()->updateInactivePoint($eShop);
 				}
 			$h .= '</div>';
+
+			if($eShop->isSharedAlways()) {
+
+				$h .= '<div class="tab-panel" data-tab="departments">';
+					$h .= new DepartmentUi()->getManage($eShop, $eShop['cDepartment']);
+				$h .= '</div>';
+
+			}
 
 		$h .= '</div>';
 

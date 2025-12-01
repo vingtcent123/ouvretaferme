@@ -120,7 +120,9 @@ new Page()
 			'shop' => \shop\ShopElement::getSelection()
 		]);
 
-		$data->eDate['shop']->validateShare($data->eCatalog['farm']);
+		$data->eDate['shop']
+			->validateShare($data->eCatalog['farm'])
+			->validateFrequency();
 
 		// On ne vérifie l'existence du catalogue qu'en cas d'ajout à la vente
 		if($newStatus) {

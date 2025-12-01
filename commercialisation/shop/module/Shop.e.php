@@ -72,6 +72,10 @@ class Shop extends ShopElement {
 
 	}
 
+	public function isSharedAlways(): bool {
+		return ($this->isShared() and $this['opening'] === Shop::ALWAYS);
+	}
+
 	public function isShared(): bool {
 
 		$this->expects(['shared']);

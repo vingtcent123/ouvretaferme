@@ -548,14 +548,17 @@ class ShopUi {
 
 		$h .= '</div>';
 
+		if($eShop['opening'] === Shop::FREQUENCY) {
 
-		$h .= '<div class="util-title">';
-			$h .= '<h3>'.s("Commande annulée").'</h3>';
-			$h .= '<div class="btn disabled">'.s("Non personnalisable").'</div>';
-		$h .= '</div>';
+			$h .= '<div class="util-title">';
+				$h .= '<h3>'.s("Commande annulée").'</h3>';
+				$h .= '<div class="btn disabled">'.s("Non personnalisable").'</div>';
+			$h .= '</div>';
 
-		[$title, , $html] = new MailUi()->getSaleCanceled($eSaleExample);
-		$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
+			[$title, , $html] = new MailUi()->getSaleCanceled($eSaleExample);
+			$h .= new \mail\CustomizeUi()->getMailExample($title, $html);
+
+		}
 
 		if($eSaleExample->isPaymentOnline()) {
 
@@ -922,7 +925,7 @@ class ShopUi {
 	public static function confirmationUrl(Shop $eShop, Date $eDate, \Collection $cSale = new \Collection()): string {
 		$url = self::dateUrl($eShop, $eDate, 'confirmation');
 		if($cSale->notEmpty()) {
-			$url .= '?sales[]='.implode('&sales[]', $cSale->getIds());
+			$url .= '?sales[]='.implode('&sales[]=', $cSale->getIds());
 		}
 		return $url;
 	}
@@ -936,7 +939,11 @@ class ShopUi {
 	}
 
 	public static function adminDateUrl(\farm\Farm $eFarm, Date $eDate): string {
-		return '/ferme/'.$eFarm['id'].'/date/'.$eDate['id'];
+		if($eDate['deliveryDate'] === NULL) {
+			return '/ferme/'.$eFarm['id'].'/boutique/'.$eDate['shop']['id'];
+		} else {
+			return '/ferme/'.$eFarm['id'].'/date/'.$eDate['id'];
+		}
 	}
 
 	public static function getLogo(Shop $eShop, string $size): string {

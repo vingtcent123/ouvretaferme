@@ -126,6 +126,21 @@ class ShopLib extends ShopCrud {
 
 	}
 
+	public static function applySharedCatalogs(Shop $eShop, Date $eDate): void {
+
+		if($eShop->isSharedAlways()) {
+
+			$eDate['catalogs'] = [];
+			$eShop['ccRange']->map(function(Range $eShopRange) use ($eDate) {
+				if($eShopRange['status'] === Range::AUTO) {
+					$eDate['catalogs'][] = $eShopRange['catalog']['id'];
+				}
+			}, depth: 2);
+
+		}
+
+	}
+
 	public static function create(Shop $e): void {
 
 		$e->expects(['farm', 'shared']);

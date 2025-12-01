@@ -226,6 +226,8 @@ END;
 
 			}
 
+			\shop\ShopLib::applySharedCatalogs($data->eShop, $data->eDateSelected);
+
 			$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 
 			$cProduct = \shop\ProductLib::getByDate($data->eDateSelected, $data->eCustomer, cSaleExclude: $data->isModifying ? $data->cSaleExisting : new Collection(), withIngredients: TRUE, public: TRUE, reorderChildren: TRUE);
@@ -305,10 +307,16 @@ new Page(function($data) {
 
 		$data->cItemExisting = \selling\SaleLib::getItemsBySales($data->cSaleExisting, withIngredients: TRUE, public: TRUE);
 
+		if($data->eShop->isSharedAlways()) {
+
+			$data->eShop['ccRange'] = \shop\RangeLib::getByShop($data->eShop);
+			\shop\ShopLib::applySharedCatalogs($data->eShop, $data->eDate);
+
+		}
+
 		$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 
 		$data->eDate['shop'] = $data->eShop;
-
 		$data->eDate['cProduct'] = \shop\ProductLib::getByDate($data->eDate, $data->eCustomer, cSaleExclude: $data->cSaleExisting, public: TRUE);
 
 		$data->eDate['ccPoint'] = $data->eShop['ccPoint'];
@@ -494,7 +502,6 @@ new Page(function($data) {
 			throw new RedirectAction(\shop\ShopUi::url($data->eShop));
 		}
 
-		$data->discounts = \shop\SaleLib::getDiscounts($data->cSaleExisting, $data->cCustomerExisting);
 		$data->basket = \shop\BasketLib::checkAvailableProducts(POST('products', 'array', []), $data->eDate['cProduct'], $data->cItemExisting);
 
 		if($data->basket === []) {

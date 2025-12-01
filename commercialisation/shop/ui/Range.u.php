@@ -5,13 +5,19 @@ class RangeUi {
 
 	public function toggle(Range $eRange) {
 
-		return \util\TextUi::switch([
-			'id' => 'range-switch-'.$eRange['id'],
-			'disabled' => $eRange->canWrite() === FALSE,
-			'data-ajax' => $eRange->canWrite() ? '/shop/range:doUpdateStatus' : NULL,
-			'post-id' => $eRange['id'],
-			'post-status' => ($eRange['status'] === Range::AUTO) ? Range::MANUAL : Range::AUTO
-		], $eRange['status'] === Range::AUTO, s("Automatique"), s("Manuelle"), self::getStatusLabel(Range::AUTO), self::getStatusLabel(Range::MANUAL));
+		return \util\TextUi::switch(
+			[
+				'id' => 'range-switch-'.$eRange['id'],
+				'disabled' => $eRange->canWrite() === FALSE,
+				'data-ajax' => $eRange->canWrite() ? '/shop/range:doUpdateStatus' : NULL,
+				'post-id' => $eRange['id'],
+				'post-status' => ($eRange['status'] === Range::AUTO) ? Range::MANUAL : Range::AUTO
+			],
+			$eRange['status'] === Range::AUTO,
+			$eRange['shop']->isSharedAlways() ? s("En vente") : s("Automatique"),
+			$eRange['shop']->isSharedAlways() ? s("Pas en vente") : s("Manuelle"),
+			self::getStatusLabel(Range::AUTO), self::getStatusLabel(Range::MANUAL)
+		);
 
 	}
 

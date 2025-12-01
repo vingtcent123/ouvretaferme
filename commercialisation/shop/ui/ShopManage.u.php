@@ -226,41 +226,49 @@ class ShopManageUi {
 
 		}
 
-		$h .= '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "farmers"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'farmers', 'departments'], 'farmers').'"' : '').')').'">';
+		if($eShop['opening'] === Shop::ALWAYS and $eShop['eDate']->notEmpty()) {
+			$h .= $this->getInlineContent($eFarm, $eShop);
+		} else {
+			$h .= '<div class="tabs-h" id="shop-tabs" onrender="'.encode('Lime.Tab.restore(this, "farmers"'.(get_exists('tab') ? ', "'.GET('tab', ['dates', 'farmers', 'departments'], 'farmers').'"' : '').')').'">';
 
-			$h .= '<div class="tabs-item">';
+				$h .= '<div class="tabs-item">';
 
-				$h .= '<a class="tab-item" data-tab="dates" onclick="Lime.Tab.select(this)">';
-					$h .= s("Livraisons");
-				$h .= '</a>';
-				$h .= '<a class="tab-item" data-tab="farmers" onclick="Lime.Tab.select(this)">';
-					$h .= s("Producteurs");
-					if($eShop['cShare']->count() > 0) {
-						$h .= '<span class="tab-item-count">'.$eShop['cShare']->count().'</span>';
-					}
-				$h .= '</a>';
-				$h .= '<a class="tab-item" data-tab="departments" onclick="Lime.Tab.select(this)">';
-					$h .= s("Rayons");
-					if($eShop['cDepartment']->count() > 0) {
-						$h .= '<span class="tab-item-count">'.$eShop['cDepartment']->count().'</span>';
-					}
-				$h .= '</a>';
+					$h .= '<a class="tab-item" data-tab="dates" onclick="Lime.Tab.select(this)">';
+						$h .= match($eShop['opening']) {
+							Shop::FREQUENCY => s("Livraisons"),
+							Shop::ALWAYS => s("Ventes")
+						};
+					$h .= '</a>';
+					$h .= '<a class="tab-item" data-tab="farmers" onclick="Lime.Tab.select(this)">';
+						$h .= s("Producteurs");
+						if($eShop['cShare']->count() > 0) {
+							$h .= '<span class="tab-item-count">'.$eShop['cShare']->count().'</span>';
+						}
+					$h .= '</a>';
+					$h .= '<a class="tab-item" data-tab="departments" onclick="Lime.Tab.select(this)">';
+						$h .= s("Rayons");
+						if($eShop['cDepartment']->count() > 0) {
+							$h .= '<span class="tab-item-count">'.$eShop['cDepartment']->count().'</span>';
+						}
+					$h .= '</a>';
+
+				$h .= '</div>';
+
+				$h .= '<div class="tab-panel" data-tab="dates">';
+					$h .= $this->getInlineContent($eFarm, $eShop);
+				$h .= '</div>';
+
+				$h .= '<div class="tab-panel" data-tab="farmers">';
+					$h .= new ShareUi()->getList($eFarm, $eShop, $eShop['cShare'], $eShop['cDepartment']);
+				$h .= '</div>';
+
+				$h .= '<div class="tab-panel" data-tab="departments">';
+					$h .= new DepartmentUi()->getManage($eShop, $eShop['cDepartment']);
+				$h .= '</div>';
 
 			$h .= '</div>';
 
-			$h .= '<div class="tab-panel" data-tab="dates">';
-				$h .= $this->getInlineContent($eFarm, $eShop);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="farmers">';
-				$h .= new ShareUi()->getList($eFarm, $eShop, $eShop['cShare'], $eShop['cDepartment']);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="departments">';
-				$h .= new DepartmentUi()->getManage($eShop, $eShop['cDepartment']);
-			$h .= '</div>';
-
-		$h .= '</div>';
+		}
 
 		return $h;
 
@@ -335,7 +343,7 @@ class ShopManageUi {
 	
 						$h .= '<h2>'.s("Ouvrir les ventes").'</h2>';
 						$h .= $checklist;
-						$h .= '<p>'.s("Alors c'est le moment de préparer l'ouverture des ventes en choisissant les modes de livraison et les produits disponibles à la vente !").'</p>';
+						$h .= '<p>'.s("Alors c'est le moment de préparer l'ouverture des ventes en choisissant les modes de livraison !").'</p>';
 						$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="btn btn-primary">'.s("Terminer la configuration").'</a>';
 	
 						break;

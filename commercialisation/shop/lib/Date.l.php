@@ -11,9 +11,11 @@ class DateLib extends DateCrud {
 				'shop' => ['hasPoint', 'opening']
 			]);
 
+			$eShop = $eDate['shop'];
+
 			$properties = [];
 
-			if($eDate['shop']['opening'] === Shop::FREQUENCY) {
+			if($eShop['opening'] === Shop::FREQUENCY) {
 
 				$properties = array_merge($properties, [
 					'orderStartAt', 'orderEndAt',
@@ -22,11 +24,12 @@ class DateLib extends DateCrud {
 
 			}
 
-			$properties = array_merge($properties, [
-				'source',
-				'catalogs',
-				'productsList',
-			]);
+			$properties[] = 'source';
+
+			if($eShop['opening'] === Shop::FREQUENCY or $eShop->isPersonal()) {
+				$properties[] = 'catalogs';
+				$properties[] = 'productsList';
+			}
 
 			if($eDate['shop']['hasPoint']) {
 				$properties[] = 'points';
@@ -272,6 +275,7 @@ class DateLib extends DateCrud {
 			$eDate['eFarmSelected'] = new \farm\Farm();
 		}
 
+		\shop\ShopLib::applySharedCatalogs($eShop, $eDate);
 		\shop\DateLib::applySales($eDate);
 
 		$eDate['cSale'] = \selling\SaleLib::getByDate($eDate, eFarm: $eDate['eFarmSelected'], select: \selling\Sale::getSelection() + [
