@@ -14,8 +14,8 @@ abstract class ShopElement extends \Element {
 	const DEPARTMENT = 'department';
 	const PRODUCT = 'product';
 
-	const ALWAYS = 'always';
 	const FREQUENCY = 'frequency';
+	const ALWAYS = 'always';
 
 	const WEEKLY = 'weekly';
 	const BIMONTHLY = 'bimonthly';
@@ -68,7 +68,7 @@ class ShopModel extends \ModuleModel {
 			'sharedGroup' => ['enum', [\shop\Shop::FARM, \shop\Shop::DEPARTMENT, \shop\Shop::PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
 			'sharedHash' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'sharedHashExpiresAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'opening' => ['enum', [\shop\Shop::ALWAYS, \shop\Shop::FREQUENCY], 'cast' => 'enum'],
+			'opening' => ['enum', [\shop\Shop::FREQUENCY, \shop\Shop::ALWAYS], 'cast' => 'enum'],
 			'openingFrequency' => ['enum', [\shop\Shop::WEEKLY, \shop\Shop::BIMONTHLY, \shop\Shop::MONTHLY], 'null' => TRUE, 'cast' => 'enum'],
 			'openingDelivery' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'hasPoint' => ['bool', 'cast' => 'bool'],
@@ -123,6 +123,9 @@ class ShopModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'opening' :
+				return Shop::FREQUENCY;
 
 			case 'hasPoint' :
 				return TRUE;

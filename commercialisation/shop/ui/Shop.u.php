@@ -1342,6 +1342,7 @@ class ShopUi {
 					$frequency .= '<li>'.s("Une commande par client et par jour de livraison").'</li>';
 					$frequency .= '<li>'.s("Les clients peuvent modifier leur commande pendant la période de prise de commandes").'</li>';
 				$frequency .= '</ul>';
+				$frequency .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal si vous avez un point de vente hebdomadaire, une AMAP ou si vous faites des tournées à jours fixes.").'</i></p>';
 
 				$calendar = '<h4>'.s("En continu").'</h4>';
 				$calendar .= '<ul>';
@@ -1349,6 +1350,7 @@ class ShopUi {
 					$calendar .= '<li>'.s("Vous indiquez vous-même aux clients les modalités de livraison").'</li>';
 					$calendar .= '<li>'.s("Les clients ne peuvent pas modifier les commandes réalisées").'</li>';
 				$calendar .= '</ul>';
+				$calendar .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal si vous expédiez vos produits par transporteur ou si vendez sans interruption sur une longue période.").'</i></p>';
 
 				$d->values = [
 					Shop::FREQUENCY => $frequency,
