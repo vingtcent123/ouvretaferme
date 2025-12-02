@@ -211,7 +211,7 @@ class BaseTemplate extends SmartTemplate {
 	protected function getOg(): array {
 
 		$ogUrl = Lime::getUrl().LIME_REQUEST_PATH;
-		$ogSiteName = \Lime::getName();
+		$ogSiteName = $this->og['siteName'] ?? \Lime::getName();
 		$ogImg = $this->og['image'] ?? NULL;
 
 		$ogType = $this->og['type'] ?? 'website';

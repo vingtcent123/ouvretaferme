@@ -41,6 +41,8 @@ class WebsiteTemplate extends BaseTemplate {
 			$this->metaNoindex = TRUE;
 		}
 
+		$this->og['siteName'] = $this->data->eWebsite['name'];
+
 		$nav = $this->getNav();
 		$header = $this->getHeader();
 		$main = $this->getMain($stream);

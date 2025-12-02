@@ -29,6 +29,8 @@ class ShopTemplate extends MainTemplate {
 
 	protected function getHead(): string {
 
+		$this->og['siteName'] = $this->data->eShop['name'];
+
 		$h = parent::getHead();
 
 		if(
