@@ -97,8 +97,8 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
             qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').hide();
 
             const actualJournalCode = qs('[name="journalCode[' + index + ']"]').value;
-
-            if(actualJournalCode && e.detail.journalCode !== actualJournalCode) {
+d(actualJournalCode, e.detail.journalCode);
+            if(actualJournalCode && parseInt(e.detail.journalCode) !== parseInt(actualJournalCode)) {
 
                 const journalName = qs('[name="journalCode[' + index + ']"] option[value="'+ e.detail.journalCode +'"]').text;
                 qs('[data-journalCode="journal-name"][data-index="' + index + '"]').innerHTML = journalName;

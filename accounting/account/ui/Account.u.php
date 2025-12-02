@@ -289,8 +289,8 @@ class AccountUi {
 			return \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
 		};
 
-		$d->autocompleteResults = function(Account|\company\GenericAccount $eAccount, $e) use ($farm) {
-			if($farm === NULL) {
+		$d->autocompleteResults = function(Account|\company\GenericAccount $eAccount, $e = NULL) use ($farm) {
+			if($farm === NULL and $e !== NULL) {
 				$farm = $e['farm']['id'];
 			}
 			return self::getAutocomplete($farm, $eAccount);

@@ -102,7 +102,7 @@ Farmer:
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
   viewAccountingYear: ?int16(0, null)
-  viewAccountingType: enum(ACCRUAL, CASH) = CASH
+  viewAccountingType: enum(ACCRUAL, CASH, CASH_ACCRUAL) = CASH
   viewAccountingHasVat: ?bool
   viewAccountingFinancials: enum(BANK, CHARGES, RESULTS) = BANK
   viewAccountingStatements: enum(BALANCE_SHEET, TRIAL_BALANCE) = BALANCE_SHEET

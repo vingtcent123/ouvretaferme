@@ -191,5 +191,33 @@ class LetteringLib extends LetteringCrud {
 		}
 
 	}
+
+	/**
+	 * Supprime tous les lettrages d'une opération
+	 * (et repasse les statuts des contreparties de lettrage en partielles)
+	 */
+	public static function deleteByOperation(Operation $eOperation): void {
+
+		$cLettering = Lettering::model()
+			->select(Lettering::getSelection())
+			->where('credit = '.$eOperation['id'].' OR debit = '.$eOperation['id'])
+			->getCollection();
+
+		if($cLettering->count() === 0) {
+			return;
+		}
+
+		Lettering::model()
+			->where('credit = '.$eOperation['id'].' OR debit = '.$eOperation['id'])
+			->delete();
+
+		Operation::model()
+			->or(
+				fn() => $this->whereId('IN', $cLettering->getColumnCollection('debit')),
+				fn() => $this->whereId('IN', $cLettering->getColumnCollection('credit')),
+			)
+			->update(['letteringStatus' => Operation::PARTIAL]);
+
+	}
 }
 ?>

@@ -200,7 +200,7 @@ class OperationUi {
 		$h .= $this->getUtil($eFarm, $eOperation);
 		$h .= $this->getLinked($eFarm, $eOperation);
 
-		if($eOperation['financialYear']->isAccrualAccounting()) {
+		if($eOperation['financialYear']->isAccrualAccounting() or $eOperation['financialYear']->isCashAccrualAccounting()) {
 			$h .= $this->getLettering($eFarm, $eOperation);
 		}
 
@@ -329,6 +329,14 @@ class OperationUi {
 
 	public function getLettering(\farm\Farm $eFarm, Operation $eOperation): string {
 
+		// On ne doit lettrer que les opérations en 401 ou 411
+		if(
+			\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS) === FALSE and
+			\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS) === FALSE
+		) {
+			return '';
+		}
+
 		if($eOperation['type'] === Operation::CREDIT) {
 			$letteringField = 'cLetteringCredit';
 			$letteringOperation = Operation::DEBIT;
@@ -373,7 +381,7 @@ class OperationUi {
 			$h .= '</div>';
 
 			foreach($eOperation[$letteringField] as $eLettering) {
-				$h .= $this->getLinkedOperationDetails($eFarm, $eLettering[$letteringOperation], $eLettering['code']);
+				$h .= $this->getLinkedOperationDetails($eFarm, $eLettering[$letteringOperation], $eLettering);
 			}
 		}
 
@@ -515,7 +523,7 @@ class OperationUi {
 
 	}
 
-	protected function getLinkedOperationDetails(\farm\Farm $eFarm, Operation $eOperation, ?string $letteringCode = NULL): string {
+	protected function getLinkedOperationDetails(\farm\Farm $eFarm, Operation $eOperation, Lettering $eLettering = new Lettering()): string {
 
 		$h = '<table class="tr-even">';
 			$h .= '<tr>';
@@ -538,18 +546,6 @@ class OperationUi {
 				$h .= '</th>';
 			$h .= '</tr>';
 
-			if($letteringCode !== NULL) {
-				$h .= '<tr>';
-					$h .= '<td>';
-						$h .= '<div class="operation-view-label">';
-							$h .= s("Code lettrage");
-						$h .= '</div>';
-					$h .= '</td>';
-					$h .= '<td>';
-						$h .= encode($letteringCode);
-					$h .= '</td>';
-				$h .= '</tr>';
-			}
 			$h .= '<tr>';
 				$h .= '<td>';
 					$h .= '<div class="operation-view-label">';
@@ -560,6 +556,29 @@ class OperationUi {
 					$h .= \util\TextUi::money($eOperation['amount']);
 				$h .= '</td>';
 			$h .= '</tr>';
+
+			if($eLettering->notEmpty()) {
+				$h .= '<tr>';
+					$h .= '<td>';
+						$h .= '<div class="operation-view-label">';
+							$h .= s("Code lettrage");
+						$h .= '</div>';
+					$h .= '</td>';
+					$h .= '<td>';
+						$h .= encode($eLettering['code']);
+					$h .= '</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>';
+						$h .= '<div class="operation-view-label">';
+							$h .= s("Montant lettré");
+						$h .= '</div>';
+					$h .= '</td>';
+					$h .= '<td>';
+						$h .= \util\TextUi::money($eLettering['amount']);
+					$h .= '</td>';
+				$h .= '</tr>';
+			}
 			$h .= '<tr>';
 				$h .= '<td>';
 					$h .= '<div class="operation-view-label">';

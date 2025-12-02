@@ -5,7 +5,7 @@ new \account\FinancialYearPage(
 
 		$data->eFarm->validate('canManage');
 
-		$data->eFinancialYear = \account\FinancialYearLib::getById(GET('id'));
+		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	}
 )
 	->get('view', function($data) {

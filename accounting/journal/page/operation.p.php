@@ -12,7 +12,7 @@ new \journal\OperationPage(
 	})
 ->read('/journal/operation/{id}', function($data) {
 
-	if($data->e['financialYear']->isAccrualAccounting()) {
+	if($data->e['financialYear']->isAccrualAccounting() or $data->e['financialYear']->isCashAccrualAccounting()) {
 		$data->e['cLetteringCredit'] = \journal\LetteringLib::getByOperation('credit', $data->e);
 		$data->e['cLetteringDebit'] = \journal\LetteringLib::getByOperation('debit', $data->e);
 	}

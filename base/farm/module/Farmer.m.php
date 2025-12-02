@@ -73,6 +73,7 @@ abstract class FarmerElement extends \Element {
 
 	const ACCRUAL = 'accrual';
 	const CASH = 'cash';
+	const CASH_ACCRUAL = 'cash-accrual';
 
 	const BANK = 'bank';
 	const CHARGES = 'charges';
@@ -143,7 +144,7 @@ class FarmerModel extends \ModuleModel {
 			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewAccountingYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'viewAccountingType' => ['enum', [\farm\Farmer::ACCRUAL, \farm\Farmer::CASH], 'cast' => 'enum'],
+			'viewAccountingType' => ['enum', [\farm\Farmer::ACCRUAL, \farm\Farmer::CASH, \farm\Farmer::CASH_ACCRUAL], 'cast' => 'enum'],
 			'viewAccountingHasVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::RESULTS], 'cast' => 'enum'],
 			'viewAccountingStatements' => ['enum', [\farm\Farmer::BALANCE_SHEET, \farm\Farmer::TRIAL_BALANCE], 'cast' => 'enum'],

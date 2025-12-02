@@ -13,6 +13,11 @@ class FinancialYear extends FinancialYearElement {
 		return $this->empty() or $this['accountingType'] === FinancialYear::CASH;
 	}
 
+	// Comptabilité de trésorerie avec engagement pour les ventes
+	public function isCashAccrualAccounting() {
+		return $this->empty() or $this['accountingType'] === FinancialYear::CASH_ACCRUAL;
+	}
+
 	public function isCurrent() {
 
 		$this->expects(['startDate', 'endDate']);

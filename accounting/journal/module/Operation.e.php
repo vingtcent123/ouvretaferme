@@ -192,12 +192,23 @@ class Operation extends OperationElement {
 				return $eCashflow->exists();
 
 			})
-			->setCallback('paymentDate.empty', function(?string $paymentDate): bool {
+			->setCallback('paymentDate.empty', function(?string $paymentDate) use ($p): bool {
 
 				$this->expects(['financialYear']);
 
+				if($p->isBuilt('accountLabel') === FALSE) {
+					return TRUE;
+				}
+
 				if($this['financialYear']->isAccrualAccounting()) {
 					return TRUE;
+				}
+
+				if($this['financialYear']->isCashAccrualAccounting()) {
+					return (
+						\account\AccountLabelLib::isFromClass($this['accountLabel'], \account\AccountSetting::PRODUCT_ACCOUNT_CLASS) or
+						\account\AccountLabelLib::isFromClass($this['accountLabel'], \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)
+					);
 				}
 
 				return $paymentDate !== NULL;

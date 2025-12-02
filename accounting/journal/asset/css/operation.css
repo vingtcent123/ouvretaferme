@@ -260,8 +260,10 @@ body[data-touch="no"] #panel-operation-view .panel-header {
 }
 
 #panel-operation-view table tbody tr td:has(div.operation-view-label) {
-	max-width:66px;
-	width:66px;
+	max-width: 110px;
+	width: 110px;
+	padding-right: 0.5rem;
+	padding-left: 0.5rem;
 }
 .operation-linked-title {
 	display: flex;

@@ -82,6 +82,7 @@ class ThirdPartyUi {
 		}
 
 		$isAccrual = ($eFarm->getView('viewAccountingType') === FinancialYear::ACCRUAL);
+		$isCashAccrual = ($eFarm->getView('viewAccountingType') === FinancialYear::CASH_ACCRUAL);
 
 		$h = '';
 
@@ -101,11 +102,12 @@ class ThirdPartyUi {
 					$h .= '</th>';
 					$h .= '<th>'.s("Client").'</th>';
 
+					if($isAccrual or $isCashAccrual) {
+						$h .= '<th>'.s("Classe de compte Client").'</th>';
+					}
+
 					if($isAccrual) {
-
-						$h .= '<th>'.s("Compte Client").'</th>';
-						$h .= '<th>'.s("Compte Fournisseur").'</th>';
-
+						$h .= '<th>'.s("Classe de compte Fournisseur").'</th>';
 					}
 					
 					$h .= '<th class="text-end">'.s("Écritures comptables").'</th>';
@@ -133,17 +135,21 @@ class ThirdPartyUi {
 									$h .= $eThirdParty->quick('customer', $eThirdParty['customer']->exists() ? encode($eThirdParty['customer']['name']) : '<span class="undefined">'.s("Non renseigné").'</span>');
 								$h .= '</td>';
 
-							if($isAccrual) {
+								if($isAccrual or $isCashAccrual) {
 
-								$h .= '<td>';
-									$h .= $eThirdParty->quick('clientAccountLabel', $eThirdParty['clientAccountLabel'] ? encode($eThirdParty['clientAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
-								$h .= '</td>';
+									$h .= '<td>';
+										$h .= $eThirdParty->quick('clientAccountLabel', $eThirdParty['clientAccountLabel'] ? encode($eThirdParty['clientAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
+									$h .= '</td>';
 
-								$h .= '<td>';
-									$h .= $eThirdParty->quick('supplierAccountLabel', $eThirdParty['supplierAccountLabel'] ? encode($eThirdParty['supplierAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
-								$h .= '</td>';
+								}
 
-							}
+								if($isAccrual) {
+
+									$h .= '<td>';
+										$h .= $eThirdParty->quick('supplierAccountLabel', $eThirdParty['supplierAccountLabel'] ? encode($eThirdParty['supplierAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
+									$h .= '</td>';
+
+								}
 
 							$h .= '<td class="text-end">';
 								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?thirdParty='.$eThirdParty['id'].'"  title="'.s("Filtrer les opérations sur ce tiers").'">'.$eThirdParty['operations'].'</a>';
@@ -251,11 +257,13 @@ class ThirdPartyUi {
 			case 'clientAccountLabel':
 				$d->after = \util\FormUi::info(s("Le compte client commence toujours par {accountPrefix}", ['accountPrefix' => AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS]));
 				$d->placeholder = AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS;
+				$d->default = fn($e, $property) => $e[$property] ?? AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS;
 				break;
 
 			case 'supplierAccountLabel':
 				$d->after = \util\FormUi::info(s("Le compte fournisseur commence toujours par {accountPrefix}", ['accountPrefix' => AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]));
 				$d->placeholder = AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS;
+				$d->default = fn($e, $property) => $e[$property] ?? AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS;
 				break;
 
 			case 'name':

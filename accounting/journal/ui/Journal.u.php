@@ -30,7 +30,7 @@ class JournalUi {
 						if($eFinancialYear->isCashAccounting()) {
 							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?financialYear='.$eFinancialYear['id'].'&journalCode='.GET('journalCode').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
 						}
-						if($eFinancialYear->isAccrualAccounting()) {
+						if($eFinancialYear->isAccrualAccounting() or $eFinancialYear->isCashAccrualAccounting()) {
 
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter...").'</a>';
 							$h .= '<div class="dropdown-list">';
@@ -270,7 +270,7 @@ class JournalUi {
 		$canUpdateFinancialYear = ($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK);
 
 		// On affiche les données de lettrage si on a filtré sur un tiers + sa classe
-		$showLettering = ($eFinancialYearSelected->isAccrualAccounting() and $search->get('thirdParty') and $search->get('accountLabel'));
+		$showLettering = (($eFinancialYearSelected->isAccrualAccounting() or $eFinancialYearSelected->isCashAccrualAccounting()) and $search->get('thirdParty') and $search->get('accountLabel'));
 
 		$columns = 6;
 		if($journalCode === NULL) {

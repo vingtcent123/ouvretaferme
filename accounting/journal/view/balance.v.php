@@ -21,8 +21,8 @@ new AdaptativeView(
 
 	echo '<div class="tabs-h" id="balances">';
 
-	if($data->eFinancialYear->isAccrualAccounting()) {
-		echo new \journal\BalanceUi()->getTabs($data->eFarm, $data->tab);
+	if($data->eFinancialYear->isAccrualAccounting() or $data->eFinancialYear->isCashAccrualAccounting()) {
+		echo new \journal\BalanceUi()->getTabs($data->eFarm, $data->tab, $data->eFinancialYear);
 	}
 
 	switch($data->tab) {

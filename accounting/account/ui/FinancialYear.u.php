@@ -775,8 +775,9 @@ class FinancialYearUi {
 				$d->values = [
 					FinancialYear::ACCRUAL => s("Comptabilité à l'engagement"),
 					FinancialYear::CASH => s("Comptabilité de trésorerie"),
+					FinancialYear::CASH_ACCRUAL => s("Comptabilité de trésorerie et à l'engagement pour les ventes"),
 				];
-				$d->after = \util\FormUi::info(s("Généralement, la comptabilité de <b>trésorerie</b> est choisie en <b>micro-BA</b> ou <b>régime simplifié</b>.<br />La comptabilité à l'<b>engagement</b> est choisie en <b>régime réel</b> (normal ou simplifié)"));
+				$d->after = \util\FormUi::info(s("Généralement, la comptabilité de <b>trésorerie</b> est choisie en <b>micro-BA</b> ou <b>régime simplifié</b>.<br />La comptabilité à l'<b>engagement</b> est choisie en <b>régime réel</b> (normal ou simplifié)<br />Le mélange des deux permet de suivre les balances client plus facilement."));
 				break;
 
 			case 'startDate' :

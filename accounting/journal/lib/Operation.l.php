@@ -426,7 +426,7 @@ class OperationLib extends OperationCrud {
 			if($eOperation['thirdParty']['clientAccountLabel'] === NULL) {
 
 				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['clientAccountLabel' => $nextLabel]);
+				\account\ThirdParty::model()->update($eOperation['thirdParty'], ['clientAccountLabel' => $nextLabel]);
 				$accountLabel = $nextLabel;
 
 			} else {
@@ -535,6 +535,7 @@ class OperationLib extends OperationCrud {
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$isFromCashflow = $eCashflow->notEmpty();
 		$eThirdParty = new \account\ThirdParty();
+		$thirdPartys = [];
 
 		$totalAmount = 0; // Par défaut : débit - crédit
 
@@ -626,6 +627,7 @@ class OperationLib extends OperationCrud {
 				}
 
 				$eOperation['thirdParty'] = $eThirdParty;
+				$thirdPartys[] = $eThirdParty['id'];
 
 				// Vérifier si on doit enregistrer des données supplémentaires (issues de la facture pdf)
 				if($eOperation['thirdParty']['vatNumber'] === NULL and ($input['thirdPartyVatNumber'][$index] ?? NULL) !== NULL) {
@@ -761,28 +763,32 @@ class OperationLib extends OperationCrud {
 
 		}
 
+		// Liste des opérations AVANT d'ajouter l'opération du compte de tiers
 		$cOperationWithoutThirdParties = new \Collection();
 		foreach($cOperation as $eOperation) {
 			$cOperationWithoutThirdParties->append(clone $eOperation);
 		}
 
-		// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
-		$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $totalAmount, $hash, $cOperation, $eThirdParty, $for);
-		if($eOperationThirdParty->notEmpty()) {
-			$cOperation->append($eOperationThirdParty);
+		$thirdPartys = array_unique($thirdPartys);
+
+		if(count($thirdPartys) === 1 and $eThirdParty->notEmpty()) {
+
+			// On supprime les lettrages concernés (seront recalculés)
+			if($for === 'update') {
+				foreach($cOperation as $eOperation) {
+					LetteringLib::deleteByOperation($eOperation);
+				}
+			}
+
+			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
+			if($for === 'create') {
+				$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $totalAmount, $hash, $cOperation, $eThirdParty);
+				if($eOperationThirdParty->notEmpty()) {
+					$cOperation->append($eOperationThirdParty);
+				}
+			}
+
 		}
-
-		if(
-			$eFinancialYear->isAccrualAccounting() and
-			$eThirdParty->notEmpty() and
-			($eOperation['accountLabel'] === $eThirdParty['clientAccountLabel'] or
-			$eOperation['accountLabel'] === $eThirdParty['supplierAccountLabel'])
-		) {
-
-			LetteringLib::letterOperation($eOperation, $for);
-
-		}
-
 
 		// Ajout de la transaction sur la classe de compte bancaire 512 (seulement pour une création)
 		if($for === 'create' and $isFromCashflow === TRUE) {
@@ -808,9 +814,30 @@ class OperationLib extends OperationCrud {
 			$cOperation->append($eOperationBank);
 
 			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
-			$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $eCashflow['amount'], $hash, $cOperationWithoutThirdParties, $eThirdParty, $for);
-			$cOperation->append($eOperationThirdParty);
+			if(count($thirdPartys) === 1 and $eThirdParty->notEmpty()) {
+				$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $eCashflow['amount'], $hash, $cOperationWithoutThirdParties, $eThirdParty);
+				if($eOperationThirdParty->notEmpty()) {
+					$cOperation->append($eOperationThirdParty);
+				}
+			}
 
+		}
+
+		// On recalcule les lettrages (à faire en create et en update)
+		foreach($cOperation as $eOperation) {
+			if(
+				(
+					$eFinancialYear->isAccrualAccounting() and
+					in_array($eOperation['accountLabel'], [$eThirdParty['clientAccountLabel'], $eThirdParty['supplierAccountLabel']])
+				) or (
+					$eFinancialYear->isCashAccrualAccounting() and
+					$eOperation['accountLabel'] === $eThirdParty['clientAccountLabel']
+				)
+			) {
+
+				LetteringLib::letterOperation($eOperation, $for);
+
+			}
 		}
 
 		if(($eOperationDefault['invoice'] ?? NULL) !== NULL and $eOperationDefault['invoice']->exists() and $ePaymentMethodInvoice->exists()) {
@@ -837,22 +864,17 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	private static function createThirdPartyOperation(\account\FinancialYear $eFinancialYear, float $amount, string $hash, \Collection $cOperation, \account\ThirdParty $eThirdParty, string $for): Operation {
+	private static function createThirdPartyOperation(\account\FinancialYear $eFinancialYear, float $amount, string $hash, \Collection $cOperation, \account\ThirdParty $eThirdParty): Operation {
 
-		if($amount === 0.0 or $eFinancialYear->isAccrualAccounting() === FALSE) {
+		if($amount === 0.0 or $eFinancialYear->isCashAccounting()) {
 			return new Operation();
 		}
 
 		// On ne doit avoir qu'un seul type (charge ou produit) d'opération, pas les 2 en même temps
 		$hasCharge = FALSE;
 		$hasProduit = FALSE;
-		$thirdPartys = [];
 		$hasThirdPartyOperation = FALSE;
 		foreach($cOperation as $eOperation) {
-
-			if(isset($eOperation['thirdParty']) and $eOperation['thirdParty']->notEmpty()) {
-				$thirdPartys[] = $eOperation['thirdParty']['id'];
-			}
 
 			if(\account\AccountLabelLib::isChargeClass($eOperation['accountLabel'])) {
 				$hasCharge = TRUE;
@@ -868,12 +890,8 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
-		// On ne doit avoir qu'un seul tiers, pas plusieurs en même temps
-		if(count(array_unique($thirdPartys)) > 1) {
-			\Fail::log('Operation::thirdPartys.inconsistent');
-			return new Operation();
-		}
-		if(count(array_unique($thirdPartys)) === 0) {
+		// Le mix engagement / trésorerie n'est effectué que pour les opérations avec les clients
+		if($eFinancialYear->isCashAccrualAccounting() and $hasCharge) {
 			return new Operation();
 		}
 
@@ -882,7 +900,7 @@ class OperationLib extends OperationCrud {
 			return new Operation();
 		}
 
-		// Si dans le lot il y a une opération en 401 ou 411 => On ne crée pas d'opération Third Party
+		// Si dans le lot il y a déjà une opération en 401 ou 411 => On ne crée pas d'opération Third Party
 		if($hasThirdPartyOperation) {
 			return new Operation();
 		}
@@ -925,33 +943,25 @@ class OperationLib extends OperationCrud {
 			return new Operation();
 		}
 
-		if($for === 'create') {
+		$eOperationThirdParty = new Operation(
+			[
+				'thirdParty' => $eThirdParty,
+				'date' => $eOperation['date'],
+				'document' => $eOperation['document'],
+				'documentDate' => $eOperation['documentDate'],
+				'amount' => abs($amount),
+				'account' => $eAccountThirdParty,
+				'type' => $amount > 0 ? Operation::CREDIT : Operation::DEBIT,
+				'accountLabel' => $accountLabel,
+				'description' => $description,
+				'financialYear' => $eFinancialYear,
+				'hash' => $hash,
+				'journalCode' => $eOperation['journalCode'],
+				'paymentDate' => $eOperation['paymentDate'],
+			]
+		);
 
-			// On en profite pour affecter le numéro de accountLabel aux tiers
-			$eOperationThirdParty = new Operation(
-				[
-					'thirdParty' => $eThirdParty,
-					'date' => $eOperation['date'],
-					'document' => $eOperation['document'],
-					'documentDate' => $eOperation['documentDate'],
-					'amount' => abs($amount),
-					'account' => $eAccountThirdParty,
-					'type' => $amount > 0 ? Operation::CREDIT : Operation::DEBIT,
-					'accountLabel' => $accountLabel,
-					'description' => $description,
-					'financialYear' => $eFinancialYear,
-					'hash' => $hash,
-					'journalCode' => $eOperation['journalCode'],
-					'paymentDate' => $eOperation['paymentDate'],
-				]
-			);
-
-			\journal\Operation::model()->insert($eOperationThirdParty);
-
-			// On tente de le lettrer
-			LetteringLib::letterOperation($eOperationThirdParty, $for);
-
-		}
+		\journal\Operation::model()->insert($eOperationThirdParty);
 
 		return $eOperationThirdParty;
 
