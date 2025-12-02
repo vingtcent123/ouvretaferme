@@ -248,6 +248,26 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'planning', '{view}', '{period}', '{subPeriod}'],
 		],
+		'/ferme/{id}/precomptabilite' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'precomptabilite'],
+		],
+		'/ferme/{id}/precomptabilite/sale/' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'precomptabilite', 'sale'],
+		],
+		'/ferme/{id}/precomptabilite/{type}' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'precomptabilite', '{type}'],
+		],
+		'/ferme/{id}/precomptabilite:fec' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'precomptabilite:fec'],
+		],
 		'/ferme/{id}/previsionnel' => [
 			'request' => 'farm/index',
 			'priority' => 5,

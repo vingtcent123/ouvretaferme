@@ -82,6 +82,18 @@ new \selling\SalePage()
 
 
 new \selling\ItemPage()
+	->applyElement(function($data, \selling\Item $eItem) {
+
+		if($eItem['farm']->hasAccounting()) {
+
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eItem['farm']);
+
+			if($eItem['account']->notEmpty()) {
+				$eItem['account'] = \account\AccountLib::getById($eItem['account']['id']);
+			}
+
+		}
+	})
 	->quick(['packaging', 'number', 'unitPrice', 'vatRate', 'price', 'additional'])
 	->update()
 	->doUpdate(function($data) {
@@ -156,4 +168,26 @@ new Page()
 		throw new ViewAction($data);
 
 	});
+
+new Page()
+	->get('updateAccount', function($data) {
+
+		$ids = GET('ids', 'array');
+
+		$data->cItem = \selling\ItemLib::getByIds($ids);
+
+		$data->eFarm = $data->cItem->first()['farm']->validate('canManage');
+
+		throw new \ViewAction($data);
+
+	});
+
+new \selling\ItemPage()
+	->applyCollection(function($data, Collection $c) {
+
+		$eFarm = $c->first()['farm'];
+		$c->validateProperty('farm', $eFarm);
+		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+	})
+	->doUpdateCollectionProperties('doUpdateAccountCollection', ['account'], fn($data) => throw new ReloadAction('selling', 'Item::updatedSeveral'), validate: ['canWriteAccounting']);
 ?>

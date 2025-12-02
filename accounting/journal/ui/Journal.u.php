@@ -370,9 +370,7 @@ class JournalUi {
 									}
 									$h .= '<a href="'.$url.'" title="'.s("Filtrer sur ce compte").'">'.$text.'</a>';
 								$h .= '</div>';
-								$h .= '<div class="dropdown-list bg-primary">';
-									$h .= '<span class="dropdown-item">'.encode($eOperation['account']['class']).' '.encode($eOperation['account']['description']).'</span>';
-								$h .= '</div>';
+								$h .= new \account\AccountUi()->getDropdownTitle($eOperation['account']);
 							$h .= '</td>';
 
 							if($journalCode === NULL) {

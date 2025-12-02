@@ -10,7 +10,8 @@ class ProductLib extends ProductCrud {
 			'origin', 'additional', 'description', 'quality',
 			'pro', 'private', 'proOrPrivate',
 			'proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat',
-			'proOrPrivatePrice'
+			'proOrPrivatePrice',
+			'proAccount', 'privateAccount',
 		];
 	}
 
@@ -40,8 +41,12 @@ class ProductLib extends ProductCrud {
 				'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'processedComposition', 'mixedFrozen', 'processedPackaging', 'processedAllergen',
 				'origin', 'additional', 'description', 'quality',
 				'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep', 'privatePrice', 'privatePriceDiscount', 'privateStep', 'vat',
-				'proOrPrivatePrice'
+				'proOrPrivatePrice',
 			]);
+
+			if($eProduct['farm']->hasAccounting()) {
+				$properties = array_merge($properties, ['proAccount', 'privateAccount']);
+			}
 
 			return $properties;
 
@@ -77,7 +82,65 @@ class ProductLib extends ProductCrud {
 
 		}
 
+		if($e['farm']->hasAccounting()) {
+
+			Item::model()
+				->whereFarm($e['farm'])
+				->whereProduct($e)
+				->whereType(Item::PRO)
+				->update(['account' => $e['proAccount']]);
+
+			Item::model()
+				->whereFarm($e['farm'])
+				->whereProduct($e)
+				->whereType(Item::PRIVATE)
+				->update(['account' => $e['privateAccount']]);
+
+		}
+
 		Product::model()->commit();
+
+	}
+
+	private static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): ProductModel {
+
+		return Product::model()
+			->where('proAccount IS NULL OR privateAccount IS NULL')
+			->join(Item::model(), 'm1.id = m2.product', 'LEFT')
+			->where('m1.farm = '.$eFarm['id'])
+			->where('m2.product IS NOT NULL')
+			->where('m1.status != '.Product::model()->format(Product::DELETED))
+			->where('m2.deliveredAt BETWEEN '.Item::model()->format($search->get('from')).' AND '.Item::model()->format($search->get('to')));
+
+	}
+	/**
+	 * Gets all the products linked to a sale but without any account
+	 */
+	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
+
+		$eProduct = self::filterForAccountingCheck($eFarm, $search)
+			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
+			->get();
+
+		return ($eProduct['count'] ?? 0);
+
+	}
+
+	/**
+	 * Gets all the products linked to a sale but without any account
+	 */
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->select([
+				'id' => new \Sql('DISTINCT(m1.id)'), 'name' => new \Sql('m1.name'),
+				'proAccount' => ['id', 'class', 'description'], 'privateAccount' => ['id', 'class', 'description'],
+				'category' => ['id', 'name'],
+				'vignette', 'unprocessedPlant' => ['fqn', 'vignette'], 'profile', 'farm', 'status', 'unprocessedVariety', 'mixedFrozen', 'quality', 'additional', 'origin',
+			])
+			->sort(['m1.name' => SORT_ASC])
+			->group(['category', 'm1.id'])
+			->getCollection(NULL, NULL, ['category', 'id']);
 
 	}
 
@@ -219,6 +282,19 @@ class ProductLib extends ProductCrud {
 		if($search->get('plant')) {
 			$cPlant = \plant\PlantLib::getFromQuery($search->get('plant'), $eFarm);
 			Product::model()->whereUnprocessedPlant('IN', $cPlant);
+		}
+
+		if($eFarm->hasAccounting()) {
+			$where = [];
+			if($search->get('proAccount')) {
+				$where[] = 'proAccount = '.$search->get('proAccount');
+			}
+			if($search->get('privateAccount')) {
+				$where[] = 'privateAccount = '.$search->get('privateAccount');
+			}
+			if(count($where) > 0) {
+				Product::model()->where(join(' OR ', $where));
+			}
 		}
 
 	}

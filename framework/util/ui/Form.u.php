@@ -483,7 +483,11 @@ class FormUi {
 
 				case 'autocomplete' :
 
-					$url = $d->autocompleteUrl ?? throw new \Exception('Missing $d->autocompleteUrl for autocomplete field');
+					if(is_closure($d->autocompleteUrl)) {
+						$url = $d->autocompleteUrl->call($this, $this, $e);
+					} else {
+						$url = $d->autocompleteUrl ?? throw new \Exception('Missing $d->autocompleteUrl for autocomplete field');
+					}
 
 					if(is_closure($d->autocompleteBody)) {
 						$autocompleteBody = $d->autocompleteBody->call($this, $this, $e);
@@ -515,7 +519,7 @@ class FormUi {
 								$autocompleteDefault instanceof \Element === FALSE or
 								$autocompleteDefault->notEmpty()
 							) {
-								$default[] = ($d->autocompleteResults)($autocompleteDefault);
+								$default[] = ($d->autocompleteResults)($autocompleteDefault, $e);
 							}
 
 						} else {

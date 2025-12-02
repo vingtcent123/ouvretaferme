@@ -8,12 +8,13 @@ class Item extends ItemElement {
 		return parent::getSelection() + [
 			'sale' => SaleElement::getSelection(),
 			'customer' => ['name', 'type'],
-			'farm' => ['name'],
+			'farm' => ['name', 'hasAccounting'],
 			'unit' => \selling\Unit::getSelection(),
 			'product' => ProductElement::getSelection() + [
 				'unit' => \selling\Unit::getSelection(),
 			],
-			'quality' => ['name', 'fqn', 'logo']
+			'quality' => ['name', 'fqn', 'logo'],
+			'account',
 		];
 
 	}
@@ -48,6 +49,27 @@ class Item extends ItemElement {
 			return (
 				in_array($this['sale']['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED])
 			);
+		}
+
+	}
+
+	public function canWriteAccounting(): bool {
+
+		$this->expects([
+			'sale' => ['preparationStatus']
+		]);
+
+		if(
+			$this->canRead() === FALSE or
+			$this['sale']->isMarketSale()
+		) {
+			return FALSE;
+		}
+
+		if($this['sale']->isComposition()) {
+			return $this['sale']->acceptUpdateComposition();
+		} else {
+			return in_array($this['sale']['preparationStatus'], [Sale::DELIVERED]);
 		}
 
 	}

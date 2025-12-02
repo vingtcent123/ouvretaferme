@@ -1253,6 +1253,10 @@ class ItemUi {
 						);
 					}
 
+					if($eSale['farm']->hasAccounting()) {
+						$h .= $form->dynamicGroup($eItem, 'account[0]');
+					}
+
 				$h .= '</div>';
 
 			}
@@ -1308,6 +1312,10 @@ class ItemUi {
 
 			if($eItem['sale']['hasVat']) {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
+			}
+
+			if($eItem['farm']->hasAccounting() and $eItem['product']->empty()) {
+				$h .= $form->dynamicGroup($eItem, 'account');
 			}
 
 			$h .= $form->group(
@@ -1381,6 +1389,33 @@ class ItemUi {
 
 	}
 
+	public function updateAccount(\farm\Farm $eFarm, \Collection $cItem): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/selling/item:doUpdateAccountCollection', ['id' => 'item-update-account']);
+
+		$h .= $form->group(
+			s("Classe de compte"),
+			$form->dynamicField(new Item(['farm' => $eFarm, 'account' => new \account\Account()]), 'account'),
+		);
+
+		foreach($cItem as $eItem) {
+			$h .= $form->hidden('ids[]', $eItem['id']);
+		}
+
+		$h .= $form->submit(s("Enregistrer"));
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-item-update-account',
+			title: s("Classes de compte des articles sélectionnés"),
+			body: $h
+		);
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Item::model()->describer($property, [
@@ -1395,7 +1430,8 @@ class ItemUi {
 			'unitPriceDiscount' => s("Prix remisé"),
 			'price' => s("Montant"),
 			'number' => s("Quantité vendue"),
-			'vatRate' => s("Taux de TVA")
+			'vatRate' => s("Taux de TVA"),
+			'account' => s("Classe de compte"),
 		]);
 
 		switch($property) {
@@ -1520,6 +1556,16 @@ class ItemUi {
 				self::applyLocking($d, Item::PRICE);
 
 				$d->append = fn(\util\FormUi $form, Item $eItem) => $form->addon(s("€ {taxes}", ['taxes' => $eItem['sale']->getTaxes()]));
+				break;
+
+			case 'account':
+				$d->autocompleteBody = function(\util\FormUi $form, Item $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				$d->autocompleteDefault = fn(Item $e) => $e['account'] ?? NULL;
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]);
 				break;
 
 		}

@@ -137,6 +137,10 @@ new Page(function($data) {
 			'plant' => GET('plant')
 		], GET('sort', default: 'name'));
 
+		if($data->eFarm->hasAccounting()) {
+			$data->search->set('proAccount', GET('proAccount'));
+			$data->search->set('privateAccount', GET('privateAccount'));
+		}
 
 		$data->products = \selling\ProductLib::countByFarm($data->eFarm, $data->search);
 
@@ -144,7 +148,26 @@ new Page(function($data) {
 		$data->cProduct = \selling\ProductLib::getByFarm($data->eFarm, $data->eCategory, selectSales: TRUE, search: $data->search);
 
 		if($data->cProduct->empty()) {
+
 			$data->cUnit = \selling\UnitLib::getByFarm($data->eFarm);
+
+		} else if($data->eFarm->hasAccounting()) {
+
+			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			$cAccount = \account\AccountLib::getAll();
+
+			foreach($data->cProduct as &$eProduct) {
+
+				if($eProduct['proAccount']->notEmpty()) {
+					$eProduct['proAccount'] = $cAccount->offsetGet($eProduct['proAccount']['id']);
+				}
+
+				if($eProduct['privateAccount']->notEmpty()) {
+					$eProduct['privateAccount'] = $cAccount->offsetGet($eProduct['privateAccount']['id']);
+				}
+
+			}
+
 		}
 
 		throw new ViewAction($data);
@@ -703,7 +726,6 @@ new Page(function($data) {
 
 		throw new ViewAction($data, ':soil');
 
-
 	})
 	->get(['/ferme/{id}/analyses/planning', '/ferme/{id}/analyses/planning/{year}', '/ferme/{id}/analyses/planning/{year}/{category}'], function($data) {
 
@@ -1099,4 +1121,119 @@ new Page(function($data) {
 		throw new ViewAction($data);
 
 	});
+
+new Page(function($data) {
+
+	if(FEATURE_PRE_ACCOUNTING === FALSE) {
+		throw new NotExistsAction();
+	}
+
+	\user\ConnectionLib::checkLogged();
+
+	$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canWrite');
+
+	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+	$data->search = new Search([
+		'from' => GET('from'),
+		'to' => GET('to'),
+	]);
+	$data->isSearchValid = ($data->search->get('from') and $data->search->get('to') and \util\DateLib::isValid($data->search->get('from')) and \util\DateLib::isValid($data->search->get('to')));
+
+	if($data->isSearchValid and $data->search->get('from') > $data->search->get('to')) {
+			$from = $data->search->get('from');
+			$data->search->set('from', $data->search->get('to'));
+			$data->search->set('to', $from);
+	}
+
+})
+	->get('/ferme/{id}/precomptabilite', function($data) {
+
+		if($data->isSearchValid) {
+
+			$data->nProduct = \selling\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
+
+			$data->nItem = \selling\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+
+			$data->saleCount = \selling\SaleLib::countForAccountingCheck($data->eFarm, $data->search);
+
+		} else {
+
+			$data->nProduct = 0;
+			$data->nItem = 0;
+			$data->saleCount = [
+				'missingPayment' => 0,
+				'notClosed' => 0,
+				'notDeliveryDate' => 0,
+			];
+
+		}
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/precomptabilite/{type}', function($data) {
+
+		$data->type = GET('type');
+
+		if($data->isSearchValid and in_array($data->type, ['product', 'item', 'sale'])) {
+
+			switch($data->type) {
+
+				case 'product':
+					$data->cProduct = \selling\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
+					break;
+
+				case 'item':
+					$data->nItem = \selling\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+					if($data->nItem < 1000) {
+						$data->cItem = \selling\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
+					} else {
+						$data->cItem = new Collection();
+					}
+					break;
+
+				case 'sale':
+					$data->saleCount = \selling\SaleLib::countForAccountingCheck($data->eFarm, $data->search);
+					break;
+
+			}
+
+		} else {
+
+			throw new VoidAction();
+
+		}
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/precomptabilite/sale/', function($data) {
+
+		$data->type = GET('type');
+
+		if(in_array($data->type, ['missingPayment', 'notClosed', 'noDeliveryDate', 'preparationStatus']) === FALSE) {
+			throw new VoidAction();
+		}
+
+		$data->cSale = \selling\SaleLib::getForAccountingCheck($data->eFarm, $data->search, $data->type);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+
+		throw new ViewAction($data);
+
+	})
+	->get('/ferme/{id}/precomptabilite:fec', function($data) {
+
+		if($data->isSearchValid) {
+
+			$export = \farm\AccountingLib::getFec($data->eFarm, $data->search->get('from'), $data->search->get('to'));
+
+			throw new CsvAction($export, 'pre-comptabilite.csv');
+
+		}
+
+		throw new FailAction('farm\Accounting::invalidDatesForFec');
+
+	})
+;
 ?>

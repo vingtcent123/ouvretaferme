@@ -70,6 +70,19 @@ new \selling\ProductPage()
 		$eProduct['cCategory'] = \selling\CategoryLib::getByFarm($eProduct['farm']);
 		$eProduct['cUnit'] = \selling\UnitLib::getByFarmWithoutWeight($eProduct['farm']);
 
+		if($eProduct['farm']->hasAccounting()) {
+
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eProduct['farm']);
+
+			if($eProduct['proAccount']->notEmpty()) {
+				$eProduct['proAccount'] = \account\AccountLib::getById($eProduct['proAccount']['id']);
+			}
+			if($eProduct['privateAccount']->notEmpty()) {
+				$eProduct['privateAccount'] = \account\AccountLib::getById($eProduct['privateAccount']['id']);
+			}
+
+		}
+
 	})
 	->update(fn($data) => throw new ViewAction($data))
 	->doUpdate(fn() => throw new ReloadAction('selling', 'Product::updated'));
@@ -153,13 +166,20 @@ new \selling\ProductPage()
 			$eProduct['proPriceDiscount'] = $eProduct['proPrice'];
 		}
 
+		if($eProduct['farm']->hasAccounting()) {
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eProduct['farm']);
+				$eProduct['proAccount'] = $eProduct['proAccount']->notEmpty() ? \account\AccountLib::getById($eProduct['proAccount']['id']) : $eProduct['proAccount'];
+				$eProduct['privateAccount'] = $eProduct['privateAccount']->notEmpty() ? \account\AccountLib::getById($eProduct['privateAccount']['id']) : $eProduct['privateAccount'];
+		}
+
 	})
 	->quick([
 		'privatePrice' => ['privatePrice', 'privatePriceDiscount'],
 		'privateStep',
 		'proPrice' => ['proPrice', 'proPriceDiscount'],
 		'proPackaging',
-		'proStep'
+		'proStep',
+		'proAccount', 'privateAccount',
 	]);
 
 new \selling\ProductPage()
@@ -183,4 +203,27 @@ new Page()
 		throw new \ViewAction($data);
 
 	});
+
+new Page()
+	->get('updateAccount', function($data) {
+
+		$ids = GET('ids', 'array');
+
+		$data->cProduct = \selling\ProductLib::getByIds($ids);
+
+		$data->eFarm = $data->cProduct->first()['farm']->validate('canManage');
+
+		throw new \ViewAction($data);
+
+	});
+
+new \selling\ProductPage()
+	->applyCollection(function($data, Collection $c) {
+
+		$eFarm = $c->first()['farm'];
+		$c->validateProperty('farm', $eFarm);
+		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+	})
+	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], fn($data) => throw new ReloadAction('selling', 'Product::updatedSeveral'));
+
 ?>

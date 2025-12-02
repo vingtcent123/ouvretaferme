@@ -16,6 +16,10 @@ class ItemLib extends ItemCrud {
 				$properties[] = 'vatRate';
 			}
 
+			if($e['farm']->hasAccounting()) {
+				$properties[] = 'account';
+			}
+
 			return $properties;
 
 		};
@@ -480,7 +484,7 @@ class ItemLib extends ItemCrud {
 
 	public static function update(Item $e, array $properties): void {
 
-		if($e->canUpdate() === FALSE) {
+		if($e->canUpdate() === FALSE and ($properties === ['account'] and $e->canWriteAccounting() === FALSE)) {
 			Item::fail('canNotUpdate');
 		}
 
@@ -585,7 +589,7 @@ class ItemLib extends ItemCrud {
 
 		if($e['product']->notEmpty()) {
 
-			$e['product']->expects(['profile', 'origin', 'additional']);
+			$e['product']->expects(['profile', 'origin', 'additional', 'proAccount', 'privateAccount']);
 
 		}
 		
@@ -605,6 +609,16 @@ class ItemLib extends ItemCrud {
 
 			$e['additional'] = $e['product']['additional'];
 			$e['origin'] = $e['product']['origin'];
+
+			if($eSale['farm']->hasAccounting()) {
+
+				if($eSale['type'] === Sale::PRO and $e['product']['proAccount']->notEmpty()) {
+					$e['account'] = $e['product']['proAccount'];
+				} else if($eSale['type'] === Sale::PRIVATE and $e['product']['privateAccount']->notEmpty()) {
+					$e['account'] = $e['product']['privateAccount'];
+				}
+
+			}
 
 		}
 
@@ -851,6 +865,36 @@ class ItemLib extends ItemCrud {
 			}
 
 		}
+
+	}
+
+	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): ItemModel {
+
+		return Item::model()
+			->join(Sale::model(), 'm1.sale = m2.id')
+			->where('account IS NULL')
+			->where('m2.id IS NOT NULL')
+			->where('m2.profile IN ('.Sale::model()->format(Sale::SALE).', '.Sale::model()->format(Sale::SALE_MARKET).')')
+			->where('m1.farm = '.$eFarm['id'])
+			->where('m2.deliveredAt BETWEEN '.Item::model()->format($search->get('from')).' AND '.Item::model()->format($search->get('to')));
+
+	}
+	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
+
+		return self::filterForAccountingCheck($eFarm, $search)->count();
+
+	}
+
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->select([
+				'id', 'name',
+				'customer' => ['name', 'type', 'destination'],
+				'sale' => ['id', 'document', 'deliveredAt', 'preparationStatus', 'taxes', 'hasVat', 'priceIncludingVat', 'priceExcludingVat'],
+			])
+			->group(['sale', 'm1.id'])
+			->getCollection(NULL, NULL, ['sale', NULL]);
 
 	}
 

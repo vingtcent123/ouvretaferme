@@ -33,4 +33,7 @@ new AdaptativeView('doDelete', function($data, AjaxTemplate $t) {
 
 });
 
+new AdaptativeView('updateAccount', function($data, PanelTemplate $t) {
+	return new \selling\ItemUi()->updateAccount($data->eFarm, $data->cItem);
+});
 ?>

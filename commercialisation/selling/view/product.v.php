@@ -41,4 +41,8 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 	$t->push('results', $results);
 
 });
+
+new AdaptativeView('updateAccount', function($data, PanelTemplate $t) {
+	return new \selling\ProductUi()->updateAccount($data->eFarm, $data->cProduct);
+});
 ?>

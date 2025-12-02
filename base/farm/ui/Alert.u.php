@@ -43,6 +43,8 @@ class AlertUi {
 			'Invite::email.duplicate' => s("Une invitation a déjà été lancée pour cette adresse e-mail..."),
 			'Invite::email.duplicateCustomer' => s("Cette adresse e-mail est déjà utilisée pour un autre client de votre ferme..."),
 
+			'Accounting::invalidDatesForFec' => s("Vérifiez la période sélectionnée"),
+
 			default => null
 
 		};

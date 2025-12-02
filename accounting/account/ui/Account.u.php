@@ -40,7 +40,7 @@ class AccountUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 				$h .= '<div>';
-					$h .= $form->text('class', $search->get('class'), ['placeholder' => s("Classe de compte")]);
+					$h .= $form->text('classPrefix', $search->get('classPrefix'), ['placeholder' => s("Classe de compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Libellé")]);
 					$h .= $form->checkbox('vatFilter', 1, ['checked' => $search->get('vatFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Avec compte de TVA uniquement")]);
 					$h .= $form->checkbox('customFilter', 1, ['checked' => $search->get('customFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Personnalisés")]);
@@ -64,6 +64,9 @@ class AccountUi {
 			return '<div class="util-info">'.s("Aucun compte n'a encore été enregistré").'</div>';
 		}
 
+		$displayProductsCount = $cAccount->match(fn($eAccount) => ($eAccount['nProductPro'] ?? 0) > 0 or ($eAccount['nProductPrivate'] ?? 0) > 0);
+		$displayOperationsCount = $cAccount->match(fn($eAccount) => ($eAccount['nOperation'] ?? 0) > 0);
+
 		$h = '<div class="util-block-help">';
 			$h .= s("Il est possible de créer des classes de compte (dites “personnalisées“), par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos comptes.");
 		$h .= '</div>';
@@ -72,27 +75,54 @@ class AccountUi {
 
 			$h .= '<table id="account-list" class="tr-even tr-hover">';
 
-				$h .= '<thead>';
+				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Classe");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Libellé");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Journal");
 						$h .= '</th>';
-						$h .= '<th>';
+						$h .= '<th rowspan="2">';
 							$h .= s("Personnalisé ?");
 						$h .= '</th>';
-						$h .= '<th>';
-							$h .= s("Compte de TVA");
+						$h .= '<th colspan="2" class="text-center">';
+							$h .= s("TVA");
 						$h .= '</th>';
-						$h .= '<th>';
-							$h .= s("Taux de TVA");
+
+						if($displayOperationsCount) {
+							$h .= '<th rowspan="2" class="text-center">';
+								$h .= s("Opérations");
+							$h .= '</th>';
+						}
+
+						if($displayProductsCount) {
+							$h .= '<th colspan="2" class="text-center">';
+								$h .= s("Produits");
+							$h .= '</th>';
+						}
+
+						$h .= '<th rowspan="2"></th>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						$h .= '<th class="text-center">';
+							$h .= s("Compte");
 						$h .= '</th>';
-						$h .= '<th></th>';
+						$h .= '<th class="text-center">';
+							$h .= s("Taux");
+						$h .= '</th>';
+						if($displayProductsCount) {
+							$h .= '<th class="text-center">';
+								$h .= s("Particuliers");
+							$h .= '</th>';
+							$h .= '<th class="text-center">';
+								$h .= s("Professionnels");
+							$h .= '</th>';
+						}
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -155,13 +185,22 @@ class AccountUi {
 								$h .= $eAccount['vatRate'] !== NULL ? $eAccount['vatRate'].'%' : '';
 							}
 						$h .= '</td>';
+
+						if($displayOperationsCount) {
+							$h .= '<td class="text-center"><a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.$eAccount['class'].'&financialYear=0">'.(($eAccount['nOperation'] ?? 0) > 0 ? $eAccount['nOperation'] : '').'</a></td>';
+						}
+
+						if($displayProductsCount) {
+							$h .= '<td class="text-center"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?proAccount='.$eAccount['id'].'">'.(($eAccount['nProductPro'] ?? 0) > 0 ? $eAccount['nProductPro'] : '').'</a></td>';
+							$h .= '<td class="text-center"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?privateAccount='.$eAccount['id'].'">'.(($eAccount['nProductPrivate'] ?? 0) > 0 ? $eAccount['nProductPrivate'] : '').'</td>';
+						}
+
 						$h .= '<td>';
 							if($eAccount['custom'] === TRUE and $eAccount['nOperation'] === 0) {
 								$message = s("Confirmez-vous la suppression de cette classe de compte ?");
 								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
 							}
 						$h .= '</td>';
-
 					$h .= '</tr>';
 				}
 
@@ -174,7 +213,17 @@ class AccountUi {
 
 	}
 
-	public static function getAutocomplete(int $farm, Account $eAccount, \Search $search = new \Search()): array {
+	public function getDropdownTitle(Account $eAccount): string {
+
+		$h = '<div class="dropdown-list bg-primary">';
+			$h .= '<span class="dropdown-item">'.encode($eAccount['class']).' '.encode($eAccount['description']).'</span>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public static function getAutocomplete(int $farm, Account|\company\GenericAccount $eAccount, \Search $search = new \Search()): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -225,7 +274,7 @@ class AccountUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE, array $query = []): void {
+	public function query(\PropertyDescriber $d, ?int $farm, bool $multiple = FALSE, array $query = []): void {
 
 		$d->prepend = \Asset::icon('journal-text');
 		$d->field = 'autocomplete';
@@ -233,9 +282,18 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir la classe...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
-		$d->autocompleteResults = function(Account $e) use ($farm) {
-			return self::getAutocomplete($farm, $e);
+		$d->autocompleteUrl = function(\util\FormUi $form, $e) use (&$farm, $query) {
+			if($farm === NULL) {
+				$farm = $e['farm']['id'];
+			}
+			return \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
+		};
+
+		$d->autocompleteResults = function(Account|\company\GenericAccount $eAccount, $e) use ($farm) {
+			if($farm === NULL) {
+				$farm = $e['farm']['id'];
+			}
+			return self::getAutocomplete($farm, $eAccount);
 		};
 
 	}

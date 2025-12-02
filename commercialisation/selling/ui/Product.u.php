@@ -161,6 +161,7 @@ class ProductUi {
 		$yearBefore = $year - 1;
 
 		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
+		$displayAccounts = ($eFarm->hasAccounting() and $cProduct->match(fn($eProduct) => ($eProduct['proAccount']->notEmpty() or $eProduct['privateAccount']->notEmpty())));
 
 		$h .= '<div class="product-item-wrapper stick-md">';
 
@@ -187,6 +188,9 @@ class ProductUi {
 					if($eFarm->getSelling('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
+					if($displayAccounts) {
+						$h .= '<th colspan="2" class="text-center highlight">'.s("Classes de compte").'</th>';
+					}
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
@@ -196,6 +200,10 @@ class ProductUi {
 					$h .= '<th class="text-end highlight-stick-left product-item-year-before hide-md-down">'.$yearBefore.'</th>';
 					$h .= '<th class="text-end highlight-stick-right">'.s("particulier").'</th>';
 					$h .= '<th class="text-end highlight-stick-left">'.s("pro").'</th>';
+					if($displayAccounts) {
+						$h .= '<th class="text-end highlight-stick-right">'.s("particulier").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("pro").'</th>';
+					}
 				$h .= '</tr>';
 
 			$h .= '</thead>';
@@ -315,6 +323,27 @@ class ProductUi {
 
 						}
 
+						if($displayAccounts) {
+							$h .= '<td class="text-center">';
+								if($eProduct['privateAccount']->notEmpty()) {
+									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
+										$value .= $eProduct['privateAccount']['class'];
+									$value .= '</span>';
+									$value .= new \account\AccountUi()->getDropdownTitle($eProduct['privateAccount']);
+									$h .= $eProduct->quick('privateAccount', $value);
+								}
+							$h .= '</td>';
+							$h .= '<td class="text-center">';
+								if($eProduct['proAccount']->notEmpty()) {
+									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
+										$value .= $eProduct['proAccount']['class'];
+									$value .= '</span>';
+									$value .= new \account\AccountUi()->getDropdownTitle($eProduct['proAccount']);
+									$h .= $eProduct->quick('proAccount', $value);
+								}
+							$h .= '</td>';
+
+						}
 						$h .= '<td class="product-item-status td-min-content">';
 							$h .= $this->toggle($eProduct);
 						$h .= '</td>';
@@ -394,6 +423,10 @@ class ProductUi {
 				$menu .= '<a data-ajax-submit="/selling/product:doUpdateCategoryCollection" data-ajax-target="#batch-product-form" post-category="" class="dropdown-item"><i>'.s("Non catégorisé").'</i></a>';
 			$menu .= '</div>';
 
+		}
+
+		if($eFarm->hasAccounting()) {
+			$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Classe de compte").'</span></a>';
 		}
 
 		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
@@ -937,6 +970,9 @@ class ProductUi {
 			$h .= '<br/>';
 			$h .= $this->getFieldPrices($form, $eProduct, 'create');
 
+			$h .= '<br/>';
+			$h .= $this->getFieldAccounting($form, $eProduct, 'create');
+
 			$h .= $form->group(
 				content: $form->submit(s("Créer le produit"))
 			);
@@ -1018,6 +1054,9 @@ class ProductUi {
 
 			$h .= '<br/>';
 			$h .= $this->getFieldPrices($form, $eProduct, 'update');
+
+			$h .= '<br/>';
+			$h .= $this->getFieldAccounting($form, $eProduct, 'update');
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -1206,6 +1245,65 @@ class ProductUi {
 
 	}
 
+	public function updateAccount(\farm\Farm $eFarm, \Collection $cProduct): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/selling/product:doUpdateAccountCollection', ['id' => 'product-update-account']);
+
+			$h .= $this->getFieldAccounting($form, new Product(['farm' => $eFarm, 'proAccount' => new \account\Account(), 'privateAccount' => new \account\Account()]), 'create');
+
+			foreach($cProduct as $eProduct) {
+				$h .= $form->hidden('ids[]', $eProduct['id']);
+			}
+
+			$h .= $form->submit(s("Enregistrer"));
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-product-update-account',
+			title: s("Classes de compte des produits sélectionnés"),
+			body: $h
+		);
+
+	}
+
+	private function getFieldAccounting(\util\FormUi $form, Product $eProduct, string $for): string {
+
+		$h = '<h3>'.s("Comptabilité - Classe de compte").'</h3>';
+
+		if($eProduct['farm']->hasAccounting() === FALSE) {
+			$h .= '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
+			return $h;
+		}
+
+		if($for === 'create') {
+			$h .= '<div class="util-block-help">'.s("Pour faciliter votre comptabilité, un produit peut être rattaché à une classe de compte. Ainsi, lors de l'export de vos données ou lors de l'import dans le module de comptabilité, vos ventes seront correctement réparties.").'</div>';
+		}
+
+
+		$h .= '<br/>';
+
+		$h .= '<div class="util-block bg-background-light">';
+
+			$h .= $form->group(
+				s("Vente aux clients professionnels"),
+				$form->dynamicField($eProduct, 'proAccount'),
+			);
+
+			$h .= $form->group(
+				s("Vente aux clients particuliers"),
+				$form->dynamicField($eProduct, 'privateAccount'),
+			);
+
+		$h .= '</div>';
+
+
+		return $h;
+
+	}
+
 	public static function getFrozenIcon(): string {
 		return \Asset::icon('snow', ['style' => 'color: dodgerblue']);
 	}
@@ -1244,6 +1342,8 @@ class ProductUi {
 			'compositionVisibility' => s("Affichage de la composition aux clients"),
 			'vat' => s("Taux de TVA"),
 			'statut' => s("Statut"),
+			'proAccount' => s("Classe de compte pour professionnels"),
+			'privateAccount' => s("Classe de compte pour particuliers"),
 		]);
 
 		switch($property) {
@@ -1494,6 +1594,18 @@ class ProductUi {
 				$d->attributes = [
 					'mandatory' => TRUE
 				];
+				break;
+
+			case 'proAccount':
+			case 'privateAccount':
+				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? NULL;
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]);
+
 				break;
 
 		}
