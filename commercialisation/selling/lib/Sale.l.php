@@ -1658,10 +1658,10 @@ class SaleLib extends SaleCrud {
 		if($type === 'missingPayment') {
 
 			return self::filterForAccountingCheck($eFarm, $search)
-	       ->select($select)
-	       ->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
-	       ->where('m2.id IS NULL')
-	       ->sort(['deliveredAt' => SORT_DESC])
+				->select($select)
+				->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
+				->where('m2.id IS NULL')
+				->sort(['deliveredAt' => SORT_DESC])
 				->getCollection(NULL, NULL, 'id');
 
 		}
@@ -1671,7 +1671,7 @@ class SaleLib extends SaleCrud {
 			return self::filterForAccountingCheck($eFarm, $search)
 				->select($select)
 				->whereClosed(FALSE)
-	       ->sort(['deliveredAt' => SORT_DESC])
+				->sort(['deliveredAt' => SORT_DESC])
 				->getCollection(NULL, NULL, 'id');
 
 		}

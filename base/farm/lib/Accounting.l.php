@@ -29,11 +29,6 @@ Class AccountingLib {
 		return '';
 	}
 
-	/**
-	 * TODO : améliorer
-	 * - la date de règlement (3è colonne en partant de la fin)
-	 * - la date de validation (16è colonne)
-	 */
 	public static function getFec(\farm\Farm $eFarm, string $from, string $to): array {
 
 		$cAccount = \account\AccountLib::getAll();
@@ -43,7 +38,7 @@ Class AccountingLib {
 			->getCollection(NULL, NULL, 'customer');
 
 		$cSale = \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
-      ->select([
+			->select([
         'id',
         'document',
         'type', 'profile', 'marketParent',

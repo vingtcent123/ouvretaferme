@@ -84,17 +84,17 @@ class ProductLib extends ProductCrud {
 
 		if($e['farm']->hasAccounting()) {
 
-				Item::model()
-					->whereFarm($e['farm'])
-					->whereProduct($e)
-					->whereType(Item::PRO)
-					->update(['account' => $e['proAccount']]);
+			Item::model()
+				->whereFarm($e['farm'])
+				->whereProduct($e)
+				->whereType(Item::PRO)
+				->update(['account' => $e['proAccount']]);
 
-				Item::model()
-					->whereFarm($e['farm'])
-					->whereProduct($e)
-					->whereType(Item::PRIVATE)
-					->update(['account' => $e['privateAccount']]);
+			Item::model()
+				->whereFarm($e['farm'])
+				->whereProduct($e)
+				->whereType(Item::PRIVATE)
+				->update(['account' => $e['privateAccount']]);
 
 		}
 
@@ -105,12 +105,12 @@ class ProductLib extends ProductCrud {
 	private static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): ProductModel {
 
 		return Product::model()
-      ->where('proAccount IS NULL OR privateAccount IS NULL')
-      ->join(Item::model(), 'm1.id = m2.product', 'LEFT')
-      ->where('m1.farm = '.$eFarm['id'])
-      ->where('m2.product IS NOT NULL')
-      ->where('m1.status != '.Product::model()->format(Product::DELETED))
-      ->where('m2.deliveredAt BETWEEN '.Item::model()->format($search->get('from')).' AND '.Item::model()->format($search->get('to')));
+			->where('proAccount IS NULL OR privateAccount IS NULL')
+			->join(Item::model(), 'm1.id = m2.product', 'LEFT')
+			->where('m1.farm = '.$eFarm['id'])
+			->where('m2.product IS NOT NULL')
+			->where('m1.status != '.Product::model()->format(Product::DELETED))
+			->where('m2.deliveredAt BETWEEN '.Item::model()->format($search->get('from')).' AND '.Item::model()->format($search->get('to')));
 
 	}
 	/**
