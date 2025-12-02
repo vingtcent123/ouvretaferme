@@ -15,7 +15,6 @@ Lime::setName('Ouvretaferme');
 
 define('FEATURE_ACCOUNTING', LIME_ENV === 'dev');
 define('FEATURE_GAME', TRUE);
-define('FEATURE_ALWAYS', LIME_ENV === 'dev');
 
 require_once Lime::getPath().'/secret.c.php';
 

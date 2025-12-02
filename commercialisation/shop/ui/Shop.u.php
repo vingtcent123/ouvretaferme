@@ -604,16 +604,6 @@ class ShopUi {
 
 	protected function getOpeningFields(\util\FormUi $form, Shop $eShop): string {
 
-		if(FEATURE_ALWAYS === FALSE) {
-
-			$h = '<div>';
-				$h .= $form->dynamicGroups($eShop, ['openingFrequency']);
-			$h .= '</div>';
-
-			return $h;
-
-		}
-
 		$h = '<div class="shop-write-opening">';
 			$h .= $form->dynamicGroups($eShop, ['opening', 'openingFrequency', 'openingDelivery']);
 		$h .= '</div>';

@@ -309,15 +309,6 @@ class Shop extends ShopElement {
 				);
 
 			})
-			->setCallback('opening.check', function(mixed &$value) use ($p){
-
-				if(FEATURE_ALWAYS === FALSE) {
-					$value = Shop::FREQUENCY;
-				}
-				return TRUE;
-
-
-			})
 			->setCallback('openingFrequency.cast', function(mixed &$value) use ($p){
 
 				if(
