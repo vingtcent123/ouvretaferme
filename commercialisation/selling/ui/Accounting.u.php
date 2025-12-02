@@ -45,19 +45,49 @@ Class AccountingUi {
 			];
 			$class = 'btn-secondary disabled';
 		}
-		$h .= '<a '.attrs($attributes).' style="height: 100%;">'.$form->button(s("Exporter"), ['class' => 'btn '.$class]).'</a>';
-
+			$h .= '<div class="text-center">';
+				$h .= '<a '.attrs($attributes).' style="height: 100%;">'.$form->button(s("Exporter"), ['class' => 'btn '.$class]).'</a>';
+				$h .= '<div class="util-helper">';
+					$h .= '<a onclick="SellingAccounting.toggleExportDetails();" data-export-detail="more">'.s("(détails)").'</a>';
+					$h .= '<a class="hide" onclick="SellingAccounting.toggleExportDetails();" data-export-detail="less">'.s("(replier)").'</a>';
+				$h .= '</div>';
+			$h .= '</div>';
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public function explainExport(): string {
+	public function explainExport(\farm\Farm $eFarm): string {
 
-		$h = '<div class="util-block-help">';
+		$h = '<div class="util-block-help hide" data-export-detail="content">';
 
-			$h .= s("L'export qui vous est proposé est un export au format FEC.<br />Cependant, certaines informations obligatoires peuvent être manquantes et ne seront donc donc pas indiquées. Les données concernées sont les colonnes : <ul><li><i>EcritureNum</i> (numéro sur une séquence continue de l'écriture comptable),</li> <li><i>ValidDate</i> (date de validation de l'écriture comptable),</li></ul>D'autres colonnes sont facultatives et seront laissées vides dans l'export : <ul><li><i>JournalCode</i> (code journal de l'écriture comptable),</li> <li><i>JournalLib</i> (libellé journal de l'écriture comptable),</li> <li><i>CompAuxNum</i> (numéro de compte auxiliaire),</li> <li><i>EcritureLet</i> (lettrage de l'écriture),</li> <li><i>DateLet</i> (date de lettrage)</li></ul>");
+			$h .= '<p>'.s("L'export qui vous est proposé est un export au format FEC.<br />Cependant, certaines informations obligatoires peuvent être manquantes et ne seront donc donc pas indiquées.").'</p>';
+			$h .= '<p>';
+				$h .= s("Colonnes obligatoires inconnues : ");
+				$h .= '<ul>';
+					$h .= '<li><i>'.s("EcritureNum").'</i> '.s("(numéro sur une séquence continue de l'écriture comptable),").'</li>';
+					$h .= '<li><i>'.s("ValidDate").'</i> '.s("(date de validation de l'écriture comptable),").'</li>';
+				$h.= '</ul>';
+			$h .= '</p>';
+			$h .= '<p>';
+				$h .= s("Colonnes facultatives inconnues : ");
+				$h .= '<ul>';
+					$h .= '<li><i>'.s("EcritureLet").'</i> '.s("(lettrage de l'écriture),").'</li>';
+					$h .= '<li><i>'.s("DateLet").'</i> '.s("(date de lettrage),").'</li>';
+				$h .= '</ul>';
+			$h .= '</p>';
+			$h .= '<p>';
+				$h .= s("Colonnes remplies (s'il y a des données à indiquer) : ");
+				$h .= '<ul>';
+					$h .= '<li><i>'.s("JournalCode et JournalLib").'</i> '.s("(code journal et libellé de l'écriture comptable : vous pouvez <linkJournal>paramétrer vos journaux</linkJournal> puis <link>indiquer un journal par défaut à chaque classe de compte</link>),", [
+						'linkJournal' => '<a href ="'.\company\CompanyUi::urlJournal($eFarm).'/journalCode'.'">',
+						'link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account?classPrefix='.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'">',
+						]).'</li>';
+
+					$h .= '<li><i>'.s("CompAuxNum et CompAuxLib").'</i> '.s("(numéro de compte et libellé de compte auxiliaire : vous pouvez <link>faire le lien entre vos clients et vos tiers, et indiquer leurs numéros de compte</link>),", ['link' => '<a href ="'.\company\CompanyUi::urlAccount($eFarm).'/thirdParty'.'">',]).'</li>';
+				$h .= '</ul>';
+			$h .= '</p>';
 
 		$h .= '</div>';
 

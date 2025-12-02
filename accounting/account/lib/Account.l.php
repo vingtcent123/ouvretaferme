@@ -93,7 +93,7 @@ class AccountLib extends AccountCrud {
 			->select(
         ['name' => new \Sql('CONCAT(class, ". ", description)')]
         + Account::getSelection()
-				+ ['journalCode' => ['id']],
+				+ ['journalCode' => ['id', 'code', 'name']],
       )
 			->sort(['class' => SORT_ASC])
 			->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '')

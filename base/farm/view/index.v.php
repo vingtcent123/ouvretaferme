@@ -526,14 +526,14 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 
 	} else {
 
-		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
+		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, 'accounting');
 		$hasSearch = ($data->search->get('from') and $data->search->get('to'));
 
 		$errors = $data->nProduct + $data->nItem + array_sum($data->saleCount);
 
 		echo '<h3>'.s("1. Choix de la période").'</h3>';
 		echo new \selling\AccountingUi()->getSearch($data->eFarm, $data->search, $data->isSearchValid, $errors);
-		echo new \selling\AccountingUi()->explainExport();
+		echo new \selling\AccountingUi()->explainExport($data->eFarm);
 
 		echo '<h3 class="mt-2">';
 

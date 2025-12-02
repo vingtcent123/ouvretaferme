@@ -1,5 +1,18 @@
 class SellingAccounting {
 
+	static toggleExportDetails() {
+
+		if(qs('[data-export-detail="content"]').classList.contains('hide')) {
+			qs('[data-export-detail="content"]').removeHide();
+			qs('[data-export-detail="less"]').removeHide();
+			qs('[data-export-detail="more"]').hide();
+		} else {
+			qs('[data-export-detail="content"]').hide();
+			qs('[data-export-detail="less"]').hide();
+			qs('[data-export-detail="more"]').removeHide();
+		}
+	}
+
 	static export() {
 
 		if(qs('[data-accounting-action="export"]').classList.contains('btn-warning')) {

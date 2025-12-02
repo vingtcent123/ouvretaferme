@@ -38,6 +38,9 @@ Class AccountingLib {
 
 		$cAccount = \account\AccountLib::getAll();
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$cThirdParty = \account\ThirdParty::model()
+			->select(['id', 'name', 'clientAccountLabel', 'customer'])
+			->getCollection(NULL, NULL, 'customer');
 
 		$cSale = \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
       ->select([
@@ -85,6 +88,7 @@ Class AccountingLib {
 			$documentDate = self::getDocumentDate($eSaleReference);
 			$paymentMethod = self::getPaymentMethod($eSale);
 			$compAuxLib = $eSaleReference['customer']['name'];
+			$compAuxNum = ($cThirdParty[$eSaleReference['customer']['id']]['clientAccountLabel'] ?? '');
 
 			$date = $eSaleReference['deliveredAt'];
 
@@ -115,13 +119,13 @@ Class AccountingLib {
 
 					// Montant HT
 					$fecData[] = [
-						'',
-						'',
+						$eAccount['journalCode']['code'] ?? '',
+						$eAccount['journalCode']['name'] ?? '',
 						'',
 						date('Ymd', strtotime($date)),
 						\account\AccountLabelLib::pad($eAccount['class']),
 						$eAccount['description'],
-						'',
+						$compAuxNum,
 						$compAuxLib,
 						$document,
 						date('Ymd', strtotime($documentDate)),
@@ -147,13 +151,13 @@ Class AccountingLib {
 						}
 
 						$fecData[] = [
-							'',
-							'',
+							$eAccount['journalCode']['code'] ?? '',
+							$eAccount['journalCode']['name'] ?? '',
 							'',
 							date('Ymd', strtotime($date)),
 							\account\AccountLabelLib::pad($eAccountVat['class']),
 							$eAccountVat['description'],
-							'',
+							$compAuxNum,
 							$compAuxLib,
 							$document,
 							date('Ymd', strtotime($documentDate)),

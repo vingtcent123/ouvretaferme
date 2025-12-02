@@ -8,7 +8,7 @@ new Page(function($data) {
 ->get('index', function($data) {
 
 	$data->search = new Search([
-		'class' => GET('class'),
+		'classPrefix' => GET('classPrefix'),
 		'description' => GET('description'),
 		'vatFilter' => GET('vatFilter', 'bool', FALSE),
 		'customFilter' => GET('customFilter', 'bool', FALSE),
