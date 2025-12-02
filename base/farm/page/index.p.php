@@ -1124,6 +1124,10 @@ new Page(function($data) {
 
 new Page(function($data) {
 
+	if(FEATURE_PRE_ACCOUNTING === FALSE) {
+		throw new NotExistsAction();
+	}
+
 	\user\ConnectionLib::checkLogged();
 
 	$data->eFarm = \farm\FarmLib::getById(GET('id'))->validate('canWrite');

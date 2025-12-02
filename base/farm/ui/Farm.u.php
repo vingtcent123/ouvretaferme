@@ -665,15 +665,17 @@ class FarmUi {
 				$h .= \Asset::icon('boxes');
 			$h .= '</a>';
 
-			$h .= '<a href="'.FarmUi::urlSellingSalesAccounting($eFarm).'" class="util-button">';
-				$h .= '<div>';
-					$h .= '<h4>'.s("Exporter la pré-comptabilité").'</h4>';
-					if($eFarm->hasAccounting() === FALSE) {
-						$h .= '<div class="util-annotation">'.s("Activez le module de comptabilité pour y accéder !").'</div>';
-					}
-				$h .= '</div>';
-				$h .= \Asset::icon('file-spreadsheet');
-			$h .= '</a>';
+			if(FEATURE_PRE_ACCOUNTING) {
+				$h .= '<a href="'.FarmUi::urlSellingSalesAccounting($eFarm).'" class="util-button">';
+					$h .= '<div>';
+						$h .= '<h4>'.s("Exporter la pré-comptabilité").'</h4>';
+						if($eFarm->hasAccounting() === FALSE) {
+							$h .= '<div class="util-annotation">'.s("Activez le module de comptabilité pour y accéder !").'</div>';
+						}
+					$h .= '</div>';
+					$h .= \Asset::icon('file-spreadsheet');
+				$h .= '</a>';
+			}
 
 		$h .= '</div>';
 
@@ -1746,9 +1748,7 @@ class FarmUi {
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
 			NULL,
-			'accounting' => s("Précomptabilité"),
-
-		];
+		] + (FEATURE_PRE_ACCOUNTING ? ['accounting' => s("Précomptabilité")] : []);
 	}
 
 	public function getSellingProductsTitle(Farm $eFarm, string $selectedView, int $number = 0): string {

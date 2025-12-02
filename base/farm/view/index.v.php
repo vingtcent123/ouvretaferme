@@ -516,13 +516,24 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 		echo '<div class="util-block-help">';
 
 		echo '<h4>'.s("Vous êtes sur la page pour préparer vos données de vente avant l'intégration en comptabilité.").'</h4>';
-			echo '<p>'.s("Avec {siteName}, vous allez effectuer cette opération avec efficacité :").'</p>';
 
-			echo '<ul>';
-				echo '<li>'.s("Vérifier que toutes vos <link>références de produits</link> sont liées à une classe de compte", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</li>';
-				echo '<li>'.s("Vérifier que tous vos articles soit sont liés à une référence de produit, soit ont une classe de compte").'</li>';
-				echo '<li>'.s("Vérifier que toutes vos ventes sont bien clôturées").'</li>';
-			echo '</ul>';
+		echo '<p>'.s("{siteName} vous guide pour effectuer cette opération simplement.").'</p>';
+
+		echo '<p>'.s("Vous pourrez alors :").'</p>';
+
+		echo '<ul>';
+			echo '<li>'.s("Vérifier que toutes vos <link>références de produits</link> sont liées à une classe de compte", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</li>';
+			echo '<li>'.s("Vérifier que tous vos articles soit sont liés à une référence de produit, soit ont une classe de compte").'</li>';
+			echo '<li>'.s("Vérifier que toutes vos ventes sont bien clôturées").'</li>';
+			echo '<li>'.s("Exporter un fichier FEC de vos ventes pour l'intégrer dans votre outil comptable.").'</li>';
+		echo '</ul>';
+
+		echo '<p>'.s("Également, grâce au module de comptabilité, vous pourrez :").'</p>';
+
+		echo '<ul>';
+			echo '<li>'.s("Paramétrer vos tiers et clients").'</li>';
+			echo '<li>'.s("Paramétrer vos journaux et vos classes de compte").'</li>';
+		echo '</ul>';
 
 	} else {
 
