@@ -309,6 +309,10 @@ Class JournalCodeUi {
 				$d->field = 'switch';
 				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() ? \util\FormUi::info(s("Est-ce que ce journal doit être affiché dans les onglets du livre-journal ?")) : '');
 				break;
+
+			case 'code':
+				$d->attributes = ['data-limit' => 4];
+				break;
 		}
 		return $d;
 
