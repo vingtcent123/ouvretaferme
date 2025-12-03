@@ -248,7 +248,7 @@ Class AccountingUi {
 		$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").'</div>';
 		foreach($cPaymentMethod as $ePaymentMethod) {
 			if($ePaymentMethod['online'] === FALSE) {
-				$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-sale-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+				$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-sale-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 			}
 		}
 

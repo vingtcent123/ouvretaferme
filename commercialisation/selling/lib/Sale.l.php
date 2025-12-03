@@ -623,7 +623,6 @@ class SaleLib extends SaleCrud {
 			$e['preparationStatus'] = Sale::COMPOSITION;
 			$e['stats'] = FALSE;
 
-		} else {
 		}
 
 		$ePaymentMethod = new \payment\Method();
@@ -1031,6 +1030,7 @@ class SaleLib extends SaleCrud {
 
 		}
 
+
 		parent::update($e, $properties);
 
 		$newItems = [];
@@ -1098,7 +1098,8 @@ class SaleLib extends SaleCrud {
 
 			\selling\PaymentLib::deleteBySale($e);
 
-			if($e['cPayment']->notEmpty() and $e->isMarketSale() === FALSE) {
+			// Réglages effectués lors de l'export précomptable : on passe en force
+			if($e['cPayment']->notEmpty() and (POST('for') === 'preaccounting' or $e->isMarketSale() === FALSE)) {
 
 				foreach($e['cPayment'] as $ePayment) {
 					unset($ePayment['id']);

@@ -636,7 +636,11 @@ new Page(function($data) {
 	})
 	->post('doUpdatePaymentMethodCollection', function($data) {
 
-		$data->c->validate('canWrite', 'acceptUpdatePayment');
+		if(post_exists('for') and POST('for') === 'preaccounting') {
+			$data->c->validate('canWrite');
+		} else {
+			$data->c->validate('canWrite', 'acceptUpdatePayment');
+		}
 
 		$methodId = \payment\Method::POST('paymentMethod', 'id');
 		$eMethod = \payment\MethodLib::getById($methodId);
