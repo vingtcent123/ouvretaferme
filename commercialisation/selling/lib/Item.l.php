@@ -612,10 +612,14 @@ class ItemLib extends ItemCrud {
 
 			if($eSale['farm']->hasAccounting()) {
 
-				if($eSale['type'] === Sale::PRO and $e['product']['proAccount']->notEmpty()) {
-					$e['account'] = $e['product']['proAccount'];
-				} else if($eSale['type'] === Sale::PRIVATE and $e['product']['privateAccount']->notEmpty()) {
+				if($eSale['type'] === Sale::PRIVATE and $e['product']['privateAccount']->notEmpty()) {
 					$e['account'] = $e['product']['privateAccount'];
+				} else if($eSale['type'] === Sale::PRO) {
+					if($e['product']['proAccount']->notEmpty()) {
+						$e['account'] = $e['product']['proAccount'];
+					} else if($e['product']['privateAccount']->notEmpty()) {
+						$e['account'] = $e['product']['privateAccount'];
+					}
 				}
 
 			}
