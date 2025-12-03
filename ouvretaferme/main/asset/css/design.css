@@ -157,6 +157,9 @@
 .bg-production {
 	background-color: var(--production) !important;
 }
+.bg-accounting {
+	background-color: var(--accounting) !important;
+}
 
 .bg-pro {
 	background-color: var(--pro);
