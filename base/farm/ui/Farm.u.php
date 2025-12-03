@@ -666,7 +666,7 @@ class FarmUi {
 			$h .= '</a>';
 
 			if(FEATURE_PRE_ACCOUNTING) {
-				$h .= '<a href="'.FarmUi::urlSellingSalesAccounting($eFarm).'" class="util-button">';
+				$h .= '<a href="'.FarmUi::urlSellingSalesAccounting($eFarm).'?from='.$year.'-01-01&to='.$year.'-12-31" class="util-button">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Exporter la pré-comptabilité").'</h4>';
 						if($eFarm->hasAccounting() === FALSE) {
@@ -2253,7 +2253,7 @@ class FarmUi {
 				$newLast = $eFarm['seasonLast'] + 1;
 				$newFirst = $eFarm['seasonFirst'] - 1;
 
-				if($newLast > date('Y') + 10) {
+				if($newLast > (int)date('Y') + 10) {
 					$alert = s("Il n'est pas possible d'ajouter des saisons plus de dix ans en avance !");
 					$h .= '<div class="dropdown-item farm-tab-disabled" data-alert="'.$alert.'" title="'.$alert.'">';
 						$h .= s("Ajouter la saison {year}", ['year' => $newLast]);

@@ -539,6 +539,7 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 
 		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, 'accounting');
 		$hasSearch = ($data->search->get('from') and $data->search->get('to'));
+		$inFuture = ($data->search->get('from') > date('Y-m-d'));
 
 		$errors = $data->nProduct + $data->nItem + array_sum($data->saleCount);
 
@@ -550,7 +551,11 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 
 			echo s("2. Vérification des références de produits");
 
-			if($data->nProduct === 0) {
+			if($inFuture) {
+
+				echo '';
+
+			} else if($data->nProduct === 0) {
 
 				if($hasSearch) {
 					echo '<span class="color-success ml-1">'.Asset::icon('check-circle').'</span>';
@@ -571,7 +576,11 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 
 			echo s("3. Vérification des articles vendus");
 
-			if($data->nItem === 0) {
+			if($inFuture) {
+
+				echo '';
+
+			} else if($data->nItem === 0) {
 
 				if($hasSearch) {
 					echo '<span class="color-success ml-1">'.Asset::icon('check-circle').'</span>';
@@ -594,7 +603,11 @@ new AdaptativeView('/ferme/{id}/precomptabilite', function($data, FarmTemplate $
 
 			$nSale = array_sum($data->saleCount);
 
-			if($nSale === 0) {
+			if($inFuture) {
+
+				echo '';
+
+			} else if($nSale === 0) {
 
 				if($hasSearch) {
 					echo '<span class="color-success ml-1">'.Asset::icon('check-circle').'</span>';
@@ -860,7 +873,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 			echo s("Ouvretaferme sera pleinement compatible avec la réforme");
 			echo '  '.Asset::icon('arrow-right-circle-fill').'  ';
 			echo '<a href="/facturation-electronique-les-mains-dans-les-poches" class="btn btn-transparent">'.s("En savoir plus").'</a>';
-		'</p>';
+		echo '</p>';
 	echo '</div>';
 
 	if($data->transfer > 0) {
