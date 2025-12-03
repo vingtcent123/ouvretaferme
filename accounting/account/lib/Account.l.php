@@ -89,6 +89,9 @@ class AccountLib extends AccountCrud {
 		if($search->has('stock')) {
 			Account::model()->where('class LIKE "%'.$search->has('stock').'%"');
 		}
+		if($query !== '') {
+			$query = first(explode(' ', $query));
+		}
 		return Account::model()
 			->select(
         ['name' => new \Sql('CONCAT(class, ". ", description)')]

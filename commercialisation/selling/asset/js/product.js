@@ -16,6 +16,22 @@ class Product {
 
 	}
 
+	static accountDissociation() {
+
+		if(qs('[data-field="proAccount"]').classList.contains('hide')) {
+
+			qs('[data-field="proAccount"]').removeHide();
+			qs('[data-field-label="privateAccount"]').innerHTML = qs('[data-field-account-specific-label]').getAttribute('data-field-account-specific-label');
+
+
+		} else {
+
+			qs('[data-field="proAccount"]').hide();
+			qs('[data-field-label="privateAccount"]').innerHTML = qs('[data-field-account-generic-label]').getAttribute('data-field-account-generic-label');
+
+		}
+	}
+
 	static changeProfile(target) {
 
 		const profile = target.dataset.profile;

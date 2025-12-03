@@ -335,10 +335,17 @@ class ProductUi {
 							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-left">';
 								if($eProduct['proAccount']->notEmpty()) {
+									$eAccount = $eProduct['proAccount'];
+								} else if($eProduct['privateAccount']->notEmpty()) {
+									$eAccount = $eProduct['privateAccount'];
+								} else {
+									$eAccount = new \account\Account();
+								}
+								if($eAccount->notEmpty()) {
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
-										$value .= $eProduct['proAccount']['class'];
+										$value .= $eAccount['class'];
 									$value .= '</span>';
-									$value .= new \account\AccountUi()->getDropdownTitle($eProduct['proAccount']);
+									$value .= new \account\AccountUi()->getDropdownTitle($eAccount);
 									$h .= $eProduct->quick('proAccount', $value);
 								}
 							$h .= '</td>';
@@ -1272,7 +1279,7 @@ class ProductUi {
 			return '';
 		}
 
-		$h = '<h3>'.s("Classes de compte").'<span class="ml-1 util-badge bg-accounting">'.s("Comptabilité").'</span></h3>';
+		$h = '<h3><span class="ml-1 util-badge bg-accounting">'.s("Comptabilité").'</span></h3>';
 
 		if($eProduct['farm']->hasAccounting() === FALSE) {
 			$h .= '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
@@ -1288,15 +1295,25 @@ class ProductUi {
 
 		$h .= '<div class="util-block bg-background-light">';
 
-			$h .= $form->group(
-				s("Vente aux clients professionnels"),
-				$form->dynamicField($eProduct, 'proAccount'),
-			);
+			$genericLabel = s("Classe de compte");
+			$specificLabel = s("Vente aux clients particuliers");
 
 			$h .= $form->group(
-				s("Vente aux clients particuliers"),
-				$form->dynamicField($eProduct, 'privateAccount'),
+				'<span data-field-label="privateAccount">'.s("Classe de compte").'</span>',
+				$form->dynamicField($eProduct, 'privateAccount').
+				$form->checkbox('accountDissociation', '1', [
+					'callbackLabel' => fn($input) => $input.' '.s("Dissocier la classe pour la vente aux professionnels"),
+					'onclick' => 'Product.accountDissociation()',
+					'data-field-account-generic-label' => $genericLabel,
+					'data-field-account-specific-label' => $specificLabel,
+				])
 			);
+
+			$h .= '<div data-field="proAccount" class="hide">'.$form->group(
+				s("Vente aux clients professionnels"),
+				$form->dynamicField($eProduct, 'proAccount'),
+			).'</div>';
+
 
 		$h .= '</div>';
 
