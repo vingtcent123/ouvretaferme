@@ -1226,7 +1226,12 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
-			$export = \farm\AccountingLib::getFec($data->eFarm, $data->search->get('from'), $data->search->get('to'));
+			if($data->eFarm->hasAccounting()) {
+				$cFinancialYear = \account\FinancialYearLib::getAll();
+			} else {
+				$cFinancialYear = new Collection();
+			}
+			$export = \farm\AccountingLib::getFec($data->eFarm, $data->search->get('from'), $data->search->get('to'), $cFinancialYear);
 
 			throw new CsvAction($export, 'pre-comptabilite.csv');
 

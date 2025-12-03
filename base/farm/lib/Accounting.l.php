@@ -29,7 +29,7 @@ Class AccountingLib {
 		return '';
 	}
 
-	public static function getFec(\farm\Farm $eFarm, string $from, string $to): array {
+	public static function getFec(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear): array {
 
 		$cAccount = \account\AccountLib::getAll();
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
@@ -72,6 +72,16 @@ Class AccountingLib {
 				$eSaleReference = $eSale;
 			}
 
+			$hasVat = TRUE;
+			if($cFinancialYear->notEmpty()) {
+				$eFinancialYear = $cFinancialYear->find(
+					fn($e) => $e['startDate'] <= $eSaleReference['deliveredAt'] and $eSaleReference['deliveredAt'] <= $e['endDate']
+				)->first();
+				if($eFinancialYear->notEmpty() and $eFinancialYear['hasVat'] === FALSE) {
+					$hasVat = FALSE;
+				}
+			}
+
 			// Groupement des articles par classe de compte
 			$ccItem = \selling\Item::model()
 				->select(['account', 'price' => new \Sql('SUM(price)'), 'priceStats' => new \Sql('SUM(priceStats)'), 'vatRate' => new \Sql('vatRate * 100', 'int'), 'account'])
@@ -112,6 +122,12 @@ Class AccountingLib {
 						$amountVat = 0;
 					}
 
+					// Si on n'est pas assujetti à la TVA => On enregistre TTC
+					if($hasVat === FALSE) {
+						$amountExcludingVat += $amountVat;
+						$amountVat = 0.0;
+					}
+
 					// Montant HT
 					$fecData[] = [
 						$eAccount['journalCode']['code'] ?? '',
@@ -138,7 +154,7 @@ Class AccountingLib {
 					];
 
 					// TVA
-					if($amountVat !== 0.0) {
+					if($hasVat and $amountVat !== 0.0) {
 
 						$eAccountVat = $eAccount['vatAccount'];
 						if($eAccountVat->empty()) {
