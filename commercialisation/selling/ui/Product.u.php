@@ -958,7 +958,7 @@ class ProductUi {
 				];
 			});
 
-			$h .= $form->dynamicGroups($eProduct, ['quality']);
+			$h .= $form->dynamicGroups($eProduct, ['origin', 'quality']);
 			$h .= $form->dynamicGroup($eProduct, 'vat');
 
 			$h .= '<br/>';
