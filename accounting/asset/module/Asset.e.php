@@ -11,6 +11,12 @@ class Asset extends AssetElement {
 		return TRUE;
 	}
 
+	public function acceptUdpate(): bool {
+
+		return (AssetLib::hasAmortization($this) === FALSE);
+
+	}
+
 	public function canView(): bool {
 
 		if($this->empty()) {
@@ -239,6 +245,10 @@ class Asset extends AssetElement {
 
 			})
 			->setCallback('resumeDate.inconsistent', function(?string $resumeDate) use($p): bool {
+
+				if($resumeDate === NULL) {
+					return TRUE;
+				}
 
 				if($p->isBuilt('acquisitionDate') === FALSE) {
 					return TRUE;

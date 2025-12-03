@@ -1,5 +1,4 @@
 <?php
-
 new \asset\AssetPage(function($data) {
 
 	\user\ConnectionLib::checkLogged();
@@ -32,6 +31,24 @@ new \asset\AssetPage(function($data) {
 			throw new ReloadAction('asset', 'Asset::asset.created');
 		} elseif(\asset\AssetLib::isGrant($data->e['accountLabel'])) {
 			throw new ReloadAction('asset', 'Asset::grant.created');
+		}
+
+	})
+	->update(function($data) {
+
+		// Références de durées
+		$data->e['cAmortizationDuration'] = \company\AmortizationDurationLib::getAll();
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
+
+		throw new ViewAction($data);
+
+	})
+	->doUpdate(function($data) {
+
+		if(\asset\AssetLib::isAsset($data->e['accountLabel'])) {
+			throw new ReloadAction('asset', 'Asset::asset.updated');
+		} elseif(\asset\AssetLib::isGrant($data->e['accountLabel'])) {
+			throw new ReloadAction('asset', 'Asset::grant.updated');
 		}
 
 	})

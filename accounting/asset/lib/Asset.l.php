@@ -10,10 +10,13 @@ class AssetLib extends \asset\AssetCrud {
 			'economicMode', 'fiscalMode',
 			'startDate', // Doit venir après les modes (pour le check)
 			'description',
-			'duration', 'economicDuration', 'fiscalDuration',
+			'economicDuration', 'fiscalDuration',
 			'isExcess',
 			'resumeDate', 'economicAmortization',
 		];
+	}
+	public static function getPropertiesUpdate(): array {
+		return self::getPropertiesCreate();
 	}
 
 	public static function isOutOfDurationRange(Asset $eAsset, string $type): bool {
@@ -32,6 +35,12 @@ class AssetLib extends \asset\AssetCrud {
 			$eAsset[$type.'Duration'] < $eAmortizationDuration['durationMin'] * 12 * (1 - AssetSetting::AMORTIZATION_DURATION_TOLERANCE) or
 			$eAsset[$type.'Duration'] > $eAmortizationDuration['durationMax'] * 12 * (1 + AssetSetting::AMORTIZATION_DURATION_TOLERANCE)
 		);
+	}
+
+	public static function hasAmortization(Asset $eAsset): bool {
+
+		return (Amortization::model()->whereAsset($eAsset)->count() > 0);
+
 	}
 
 	public static function create(Asset $e): void {

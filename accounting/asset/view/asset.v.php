@@ -2,7 +2,7 @@
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()->create($data->eFarm, $data->cFinancialYear, $data->e);
+	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->cFinancialYear, $data->e);
 
 });
 
@@ -19,6 +19,12 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 	//$results[] = \account\AccountUi::getAutocompleteCreate($data->eFarm);
 
 	$t->push('results', $results);
+
+});
+
+new AdaptativeView('update', function($data, PanelTemplate $t) {
+
+	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->cFinancialYear, $data->e);
 
 });
 ?>

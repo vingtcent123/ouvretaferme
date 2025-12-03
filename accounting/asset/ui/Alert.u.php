@@ -29,6 +29,8 @@ Class AlertUi {
 
 			'Asset::asset.created' => s("L'immobilisation a bien été enregistrée"),
 			'Asset::grant.created' => s("La subvention a bien été enregistrée"),
+			'Asset::asset.updated' => s("L'immobilisation a bien été modifiée"),
+			'Asset::grant.updated' => s("La subvention a bien été modifiée"),
 			'Asset::disposed' => s("L'immobilisation a bien été cédée"),
 
 			default => null,

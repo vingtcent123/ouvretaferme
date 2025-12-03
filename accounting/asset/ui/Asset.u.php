@@ -57,7 +57,7 @@ Class AssetUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset = new Asset()): \Panel {
+	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset = new Asset()): \Panel {
 
 		$script = '<script type="text/javascript">';
 			$script .= 'Asset.initFiscalDurations('.json_encode($eAsset['cAmortizationDuration']).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
@@ -67,12 +67,22 @@ Class AssetUi {
 
 		$h = $script;
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAsset($eFarm).'/asset:doCreate', ['id' => 'asset-asset-create', 'autocomplete' => 'off']);
+		if($eAsset->exists()) {
+			$page = 'doUpdate';
+		} else {
+			$page = 'doCreate';
+		}
+
+		$h .= $form->openAjax(\company\CompanyUi::urlAsset($eFarm).'/asset:'.$page, ['id' => 'asset-asset-create', 'autocomplete' => 'off']);
 
 		$h .= $form->asteriskInfo();
 
+		if($eAsset->exists()) {
+			$h .= $form->hidden('id', $eAsset['id']);
+		}
+
 		$h .= $form->dynamicGroups($eAsset, ['description*']);
-		
+
 		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset) {
 			$d->autocompleteDispatch = '[data-account="'.$form->getId().'"]';
 			$d->attributes['data-wrapper'] = 'account';
@@ -136,8 +146,14 @@ Class AssetUi {
 			$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration']);
 		$h .= '</div>';
 
+		if($eAsset->exists()) {
+			$text = s("Enregistrer");
+		} else {
+			$text = s("Créer l'immobilisation");
+		}
+
 		$h .= $form->group(
-			content: $form->submit(s("Créer l'immobilisation"))
+			content: $form->submit($text)
 		);
 
 		$h .= $form->close();
@@ -575,8 +591,12 @@ Class AssetUi {
 
 		if($eAsset['status'] === AssetElement::ONGOING) {
 
-
 			$h .= '<div class="mt-1 mb-1">';
+
+				if($eAsset->acceptUdpate()) {
+					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/asset:update?id='.$eAsset['id'].'" class="btn btn-primary mr-1">'.s("Modifier l'immobilisation").'</a>';
+				}
+
 				$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:dispose?id='.$eAsset['id'].'" class="btn btn-primary">'.\Asset::icon('box-arrow-right').' '.s("Céder l'immobilisation").'</a>';
 			$h .= '</div>';
 
