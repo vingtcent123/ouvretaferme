@@ -2366,7 +2366,7 @@ class SaleUi {
 
 					$e->expects(['shop']);
 
-					$hide = $e['shop']->empty() ? '' : 'hide';
+					$hide = ($e['shop']->empty() or $e['shopDate']['deliveryDate'] === NULL) ? '' : 'hide';
 
 					return [
 						'id' => 'sale-write-delivered-at',
