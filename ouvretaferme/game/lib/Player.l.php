@@ -120,7 +120,9 @@ class PlayerLib extends PlayerCrud {
 
 		$cPlayer = Player::model()
 			->select([
-				'position' => fn() => $position++,
+				'position' => function() use (&$position) {
+					return $position++;
+				},
 				'id',
 				'name',
 				'points',
@@ -135,7 +137,7 @@ class PlayerLib extends PlayerCrud {
 				'id' => SORT_ASC
 			])
 			->getCollection(0, 20);
-		
+
 		if(
 			$cPlayer->contains(fn($ePlayer) => $ePlayerOnline->is($ePlayer)) === FALSE and
 			$ePlayerOnline['points'] > 0
