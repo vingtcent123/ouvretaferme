@@ -324,7 +324,7 @@ class ProductUi {
 						}
 
 						if($displayAccounts) {
-							$h .= '<td class="text-center">';
+							$h .= '<td class="text-end highlight-stick-right">';
 								if($eProduct['privateAccount']->notEmpty()) {
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
 										$value .= $eProduct['privateAccount']['class'];
@@ -333,7 +333,7 @@ class ProductUi {
 									$h .= $eProduct->quick('privateAccount', $value);
 								}
 							$h .= '</td>';
-							$h .= '<td class="text-center">';
+							$h .= '<td class="text-end highlight-stick-left">';
 								if($eProduct['proAccount']->notEmpty()) {
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
 										$value .= $eProduct['proAccount']['class'];
@@ -969,9 +969,6 @@ class ProductUi {
 
 			$h .= '<br/>';
 			$h .= $this->getFieldPrices($form, $eProduct, 'create');
-
-			$h .= '<br/>';
-			$h .= $this->getFieldAccounting($form, $eProduct, 'create');
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer le produit"))

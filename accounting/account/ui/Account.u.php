@@ -263,12 +263,12 @@ class AccountUi {
 
 	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
 
-		$item = \Asset::icon('plus-circle');
-		$item .= '<div>'.s("Créer une classe de compte").'</div>';
+		$item = \Asset::icon('gear');
+		$item .= '<div>'.s("Gérer les classes de compte").'</div>';
 
 		return [
 			'type' => 'link',
-			'link' => \company\CompanyUi::urlAccount($eFarm).'/account:create',
+			'link' => \company\CompanyUi::urlAccount($eFarm).'/account',
 			'itemHtml' => $item
 		];
 
