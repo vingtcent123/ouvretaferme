@@ -40,12 +40,13 @@ class JournalCodeModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'code' => ['text8', 'min' => 2, 'max' => 4, 'unique' => TRUE, 'cast' => 'string'],
 			'isCustom' => ['bool', 'cast' => 'bool'],
+			'isDisplayed' => ['bool', 'cast' => 'bool'],
 			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'isReversable' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'code', 'isCustom', 'color', 'isReversable'
+			'id', 'name', 'code', 'isCustom', 'isDisplayed', 'color', 'isReversable'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -59,6 +60,9 @@ class JournalCodeModel extends \ModuleModel {
 		switch($property) {
 
 			case 'isCustom' :
+				return TRUE;
+
+			case 'isDisplayed' :
 				return TRUE;
 
 			case 'isReversable' :
@@ -93,6 +97,10 @@ class JournalCodeModel extends \ModuleModel {
 
 	public function whereIsCustom(...$data): JournalCodeModel {
 		return $this->where('isCustom', ...$data);
+	}
+
+	public function whereIsDisplayed(...$data): JournalCodeModel {
+		return $this->where('isDisplayed', ...$data);
 	}
 
 	public function whereColor(...$data): JournalCodeModel {

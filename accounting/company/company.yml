@@ -24,6 +24,7 @@ JournalCode:
   name: text8(1, null) @collate(general)
   code: text8(2,4)
   isCustom: bool = TRUE
+  isDisplayed: bool = TRUE
   color: ?color
   isReversable: bool = FALSE
   UNIQUE: [

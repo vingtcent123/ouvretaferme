@@ -28,6 +28,7 @@ function setAccountingBetaTestFarms(): void {
 		1679, // Aëlle Le Gall
 		1608, // Asso OTF
 		368, // Tomates & Potirons
+		86,
 	];
 }
 
