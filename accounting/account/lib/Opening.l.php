@@ -105,7 +105,10 @@ Class OpeningLib {
 	public static function getResultOperation(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, string $hash): \journal\Operation {
 
 		$result = \overview\IncomeStatementLib::computeResult($eFinancialYearPrevious);
-		
+
+		if($result === 0.0) {
+			return new \journal\Operation();
+		}
 		if($result >= 0) {
 			
 			$class = \account\AccountSetting::PROFIT_CLASS;
@@ -145,13 +148,20 @@ Class OpeningLib {
 		$cOperation = \account\OpeningLib::getRetainedEarnings($eFinancialYearPrevious, $eFinancialYear, $hash);
 
 		$eOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
-		$cOperation->append($eOperationResult);
+
+		if($eOperationResult->notEmpty()) {
+			$cOperation->append($eOperationResult);
+		}
 
 		[$cJournalCode, $ccOperationReversed] = \account\OpeningLib::getReversableData($eFinancialYearPrevious, $eFinancialYear, $hash);
 		foreach($cJournalCode as $eJournalCode) {
 			if(in_array((string)$eJournalCode['id'], $journalCodes)) {
 				$cOperation->mergeCollection($ccOperationReversed->offsetGet($eJournalCode['id']));
 			}
+		}
+
+		if($cOperation->empty()) {
+			return;
 		}
 
 		\journal\Operation::model()->insert($cOperation);

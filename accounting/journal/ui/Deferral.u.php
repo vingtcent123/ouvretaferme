@@ -18,14 +18,17 @@ class DeferralUi {
 
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
-				$h .= '<dt>'.s("Écriture").'</dt>';
+				$h .= '<dt>'.s("Dates de l'exercice courant").'</dt>';
+				$h .= '<dd>'.s("du {startDate} au {endDate}", ['startDate' => \util\DateUi::numeric($eOperation['financialYear']['startDate']), 'endDate' => \util\DateUi::numeric($eOperation['financialYear']['endDate'])]).'</dd>';
+
+				$h .= '<dt>'.s("Date de l'écriture").'</dt>';
+				$h .= '<dd>'.\util\DateUi::numeric($eOperation['date']).'</dd>';
+
+				$h .= '<dt>'.s("Libellé de l'écriture").'</dt>';
 				$h .= '<dd>'.encode($eOperation['description']).'</dd>';
 
 				$h .= '<dt>'.s("Montant").'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eOperation['amount']).'</dd>';
-
-				$h .= '<dt>'.s("Date").'</dt>';
-				$h .= '<dd>'.\util\DateUi::numeric($eOperation['date']).'</dd>';
 
 			$h .= '</dl>';
 		$h .= '</div>';

@@ -369,6 +369,16 @@ class FinancialYearUi {
 
 		$h = '<h3>'.s("1. Report des soldes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
 
+		if($eFinancialYearPrevious->empty()) {
+
+			$h .= '<div class="util-info">';
+				$h .= s("Il n'y a aucune écriture à reprendre.");
+			$h .= '</div>';
+
+			return $h;
+
+		}
+
 		if($cOperation->empty()) {
 
 			$h .= '<div class="util-info">';
@@ -466,6 +476,10 @@ class FinancialYearUi {
 
 		$h = '<h3 class="mt-1 mb-2">'.s("2. Enregistrement du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
 
+		if($eOperationResult->empty()) {
+			return $h.'<div class="util-info">'.s("Il n'y a rien à enregistrer").'</div>';
+		}
+
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
 			$h .= '<table class="financialYear-item-table tr-even tr-hover">';
@@ -512,6 +526,21 @@ class FinancialYearUi {
 	private function reversal(\util\FormUi $form, \Collection $cJournalCode, \Collection $ccOperation, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
 		$h = '<h3>'.s("3. Extournes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+
+		if($eFinancialYearPrevious->empty()) {
+
+			$h .= '<div class="util-info">'.s("Il n'y a aucune écriture à extourner").'</div>';
+
+			return $h;
+		}
+
+		if($cJournalCode->empty()) {
+
+			$h .= '<div class="util-info">'.s("Vous n'avez aucun journal configuré comme \"extournable\". Il n'y a donc aucune écriture à extourner.").'</div>';
+
+			return $h;
+
+		}
 
 		$h .= '<div class="util-block-help">'.s("Sélectionnez les journaux dont les écritures doivent être extournées").'</div>';
 
@@ -643,7 +672,15 @@ class FinancialYearUi {
 			$h .= $this->reversal($form, $cJournalCode, $ccOperationReversed, $eFinancialYear, $eFinancialYearPrevious);
 
 
-			$h .= $form->submit(s("Générer les écritures et le bilan d'ouverture"));
+			if($eFinancialYearPrevious->empty()) {
+
+				$h .= $form->submit(s("Ouvrir l'exercice"));
+
+			} else {
+
+				$h .= $form->submit(s("Générer les écritures et le bilan d'ouverture"));
+
+			}
 
 		$h .= $form->close();
 
@@ -673,13 +710,13 @@ class FinancialYearUi {
 				]).')</dd>';
 
 				$h .= '<dt>'.self::p('hasVat')->label.'</dt>';
-				$h .= '<dd>'.$eFinancialYear['hasVat'] ? s("Oui") : s("Non").'</dd>';
+				$h .= '<dd>'.($eFinancialYear['hasVat'] ? s("Oui") : s("Non")).'</dd>';
 
 				$h .= '<dt>'.self::p('taxSystem')->label.'</dt>';
 				$h .= '<dd>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</dd>';
 
 				$h .= '<dt>'.self::p('vatFrequency')->label.'</dt>';
-				$h .= '<dd>'.$eFinancialYear['vatFrequency'] ? self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']] : ''.'</dd>';
+				$h .= '<dd>'.($eFinancialYear['vatFrequency'] ? self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']] : '').'</dd>';
 
 			$h .= '</dl>';
 		$h .= '</div>';
