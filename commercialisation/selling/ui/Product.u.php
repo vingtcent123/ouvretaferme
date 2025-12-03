@@ -1271,6 +1271,10 @@ class ProductUi {
 
 	private function getFieldAccounting(\util\FormUi $form, Product $eProduct, string $for): string {
 
+		if(FEATURE_PRE_ACCOUNTING === FALSE) {
+			return '';
+		}
+
 		$h = '<h3>'.s("Comptabilité - Classe de compte").'</h3>';
 
 		if($eProduct['farm']->hasAccounting() === FALSE) {
