@@ -1272,7 +1272,7 @@ class ProductUi {
 			return '';
 		}
 
-		$h = '<h3>'.s("Comptabilité - Classe de compte").'</h3>';
+		$h = '<h3>'.s("Classes de compte").'<span class="ml-1 util-badge bg-accounting">'.s("Comptabilité").'</span></h3>';
 
 		if($eProduct['farm']->hasAccounting() === FALSE) {
 			$h .= '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
