@@ -41,18 +41,18 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		Configuration::model()->beginTransaction();
 
+		$newValue = Configuration::model()
+			->whereFarm($eFarm)
+			->getValue('documentSales');
+
 		for($i = 0; ; $i++) {
 
-			$currentValue = Configuration::model()
-				->whereFarm($eFarm)
-				->getValue('documentSales');
-
-			$newValue = $currentValue + 1;
+			$newValue++;
 
 			if(
 				Configuration::model()
 					->whereFarm($eFarm)
-					->where('documentSales', $currentValue)
+					->whereDocumentSales('<', $newValue)
 					->update([
 						'documentSales' => $newValue
 					]) > 0
