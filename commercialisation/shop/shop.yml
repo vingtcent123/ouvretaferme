@@ -1,6 +1,6 @@
 Catalog:
   id: serial32
-  name: ?text8(1, 50)
+  name: text8(1, 50)
   comment: ?text24
   farm: farm\Farm
   type: enum(PRIVATE, PRO)

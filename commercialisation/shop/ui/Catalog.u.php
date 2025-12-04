@@ -61,17 +61,43 @@ class CatalogUi {
 
 		if($cCatalog->notEmpty()) {
 
-			$h .= '<div class="tabs-item">';
+			$list = function(string $class) use ($cCatalog, $eCatalogSelected, $products) {
+
+				$h = '';
 
 				foreach($cCatalog as $eCatalog) {
 
 					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'catalog', $eCatalog['id'], FALSE);
 
-					$h .= '<a href="'.$url.'" class="tab-item '.(($eCatalogSelected->notEmpty() and $eCatalogSelected['id'] === $eCatalog['id']) ? 'selected' : '').'">'.encode($eCatalog['name']).' <small class="tab-item-count">'.($products[$eCatalog['id']] ?? 0).'</small></a>';
+					$h .= '<a href="'.$url.'" class="'.$class.' '.(($eCatalogSelected->notEmpty() and $eCatalogSelected['id'] === $eCatalog['id']) ? 'selected' : '').'">'.encode($eCatalog['name']).' <small class="'.$class.'-count">'.($products[$eCatalog['id']] ?? 0).'</small></a>';
 
 				}
 
-			$h .= '</div>';
+				return $h;
+
+			};
+
+			if($cCatalog->count() > 5) {
+
+				$h .= '<div class="btn-group mb-1">';
+					$h .= '<div class="btn btn-group-addon btn-outline-primary">'.s("Catalogue").'</div>';
+					$h .= '<a class="dropdown-toggle btn btn-primary" data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-id="product-dropdown-categories">';
+						$h .= encode($cCatalog[$eCatalogSelected['id']]['name']);
+						$h .= '<small class="dropdown-item-count">'.($products[$eCatalogSelected->notEmpty() ? $eCatalogSelected['id'] : NULL] ?? 0).'</small>';
+					$h .= '</a>';
+				$h .= '</div>';
+				$h .= '<div class="dropdown-list '.($cCatalog->count() > 10 ? 'dropdown-list-2' : '').'" data-dropdown-id="product-dropdown-categories-list">';
+					$h .= '<div class="dropdown-title">'.s("Catalogues").'</div>';
+					$h .= $list('dropdown-item');
+				$h .= '</div>';
+
+			} else {
+
+				$h .= '<div class="tabs-item">';
+					$h .= $list('tab-item');
+				$h .= '</div>';
+
+			}
 
 		}
 
@@ -170,6 +196,7 @@ class CatalogUi {
 		$d = Catalog::model()->describer($property, [
 			'type' => s("Grille tarifaire"),
 			'name' => s("Nom du catalogue"),
+			'comment' => s("Observations"),
 		]);
 
 		switch($property) {
