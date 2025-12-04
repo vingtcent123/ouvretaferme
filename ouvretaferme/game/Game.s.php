@@ -7,6 +7,8 @@ class GameSetting extends \Settings {
 
 	const BOARDS = 4;
 
+	const ADMIN = ['VingtCent'];
+
 	const BOARDS_OPENING = [
 		1 => NULL,
 		2 => '2025-11-30',

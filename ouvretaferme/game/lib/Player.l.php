@@ -130,6 +130,7 @@ class PlayerLib extends PlayerCrud {
 					'role' => ['fqn']
 				]
 			])
+			->whereName('NOT IN', GameSetting::ADMIN)
 			->wherePoints('>', 0)
 			->sort([
 				'points' => SORT_DESC,
@@ -145,6 +146,7 @@ class PlayerLib extends PlayerCrud {
 
 			$cPlayer[] = (clone $ePlayerOnline)->merge([
 				'position' => Player::model()
+					->whereName('NOT IN', GameSetting::ADMIN)
 					->wherePoints('>', $ePlayerOnline['points'])
 					->count() + 1
 			]);
@@ -233,7 +235,7 @@ class PlayerLib extends PlayerCrud {
 				->whereUser($ePlayer['user'])
 				->whereFriend($ePlayerFriend['user'])
 				->exists() and
-				($ePlayer['giftSentAt'] !== currentDate() or $ePlayer['name'] === 'VingtCent') /* Triche */ and
+				($ePlayer['giftSentAt'] !== currentDate() or in_array($ePlayer['name'], GameSetting::ADMIN)) and
 				$ePlayerFriend['giftReceivedAt'] !== currentDate()
 			) {
 
