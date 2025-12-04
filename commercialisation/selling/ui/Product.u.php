@@ -401,13 +401,15 @@ class ProductUi {
 
 			$eCategorySelected = $search->get('category');
 
-			$h .= '<div class="tabs-item">';
+			$list = function(string $class) use ($cCategory, $eCategorySelected, $products) {
+
+				$h = '';
 
 				foreach($cCategory as $eCategory) {
 
 					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', $eCategory['id'], FALSE);
 
-					$h .= '<a href="'.$url.'" class="tab-item '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'">'.encode($eCategory['name']).' <small class="tab-item-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
+					$h .= '<a href="'.$url.'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'">'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
 
 				}
 
@@ -417,11 +419,35 @@ class ProductUi {
 
 					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'category', '', FALSE);
 
-					$h .= '<a href="'.$url.'" class="tab-item '.($eCategorySelected->empty() ? 'selected' : '').'">'.s("Non catégorisé").' <small class="tab-item-count">'.$uncategorized.'</small></a>';
+					$h .= '<a href="'.$url.'" class="'.$class.' '.($eCategorySelected->empty() ? 'selected' : '').'">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
 
 				}
 
-			$h .= '</div>';
+				return $h;
+
+			};
+
+			if($cCategory->count() > 4) {
+
+				$h .= '<div class="btn-group mb-1">';
+					$h .= '<div class="btn btn-group-addon btn-outline-primary">'.s("Catégorie").'</div>';
+					$h .= '<a class="dropdown-toggle btn btn-primary" data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-id="product-dropdown-categories">';
+						$h .= ($eCategorySelected->notEmpty() ? encode($cCategory[$eCategorySelected['id']]['name']) : s("Non catégorisé"));
+						$h .= '<small class="dropdown-item-count">'.($products[$eCategorySelected->notEmpty() ? $eCategorySelected['id'] : NULL] ?? 0).'</small>';
+					$h .= '</a>';
+				$h .= '</div>';
+				$h .= '<div class="dropdown-list '.($cCategory->count() > 10 ? 'dropdown-list-2' : '').'" data-dropdown-id="product-dropdown-categories-list">';
+					$h .= '<div class="dropdown-title">'.s("Catégories").'</div>';
+					$h .= $list('dropdown-item');
+				$h .= '</div>';
+
+			} else {
+
+				$h .= '<div class="tabs-item">';
+					$h .= $list('tab-item');
+				$h .= '</div>';
+
+			}
 
 		}
 
