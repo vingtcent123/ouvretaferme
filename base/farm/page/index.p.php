@@ -138,10 +138,16 @@ new Page(function($data) {
 		], GET('sort', default: 'name'));
 
 		if($data->eFarm->hasAccounting()) {
-			$data->search->set('proAccount', GET('proAccount'));
-			$data->search->set('privateAccount', GET('privateAccount'));
+			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			if(get_exists('account')) {
+				if(GET('account') === '0') {
+					$data->search->set('noAccount', TRUE);
+				} else {
+					$eAccount = \account\AccountLib::getById(GET('account'));
+					$data->search->set('account', $eAccount);
+				}
+			}
 		}
-
 		$data->products = \selling\ProductLib::countByFarm($data->eFarm, $data->search);
 
 		$data->nProduct = array_sum($data->products);

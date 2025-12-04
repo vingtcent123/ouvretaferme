@@ -310,15 +310,10 @@ class ProductLib extends ProductCrud {
 		}
 
 		if($eFarm->hasAccounting()) {
-			$where = [];
-			if($search->get('proAccount')) {
-				$where[] = 'proAccount = '.$search->get('proAccount');
-			}
-			if($search->get('privateAccount')) {
-				$where[] = 'privateAccount = '.$search->get('privateAccount');
-			}
-			if(count($where) > 0) {
-				Product::model()->where(join(' OR ', $where));
+			if($search->get('noAccount') === TRUE) {
+				Product::model()->where('privateAccount IS NULL');
+			} else if($search->get('account') and $search->get('account')->notEmpty()) {
+				Product::model()->where('privateAccount = '.$search->get('account')['id'].' OR proAccount = '.$search->get('account')['id']);
 			}
 		}
 

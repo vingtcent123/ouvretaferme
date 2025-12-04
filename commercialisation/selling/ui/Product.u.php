@@ -127,6 +127,24 @@ class ProductUi {
 					$h .= $form->select('profile', self::p('profile')->values, $search->get('profile'), ['placeholder' => s("Type")]);
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
+					if($eFarm->hasAccounting()) {
+						$eAccount = $search->get('account');
+						if($search->get('noAccount') === TRUE) {
+							$eAccount = new \account\Account(['id' => 0]);
+						}
+						$h .= $form->dynamicField(new Product(['farm' => $eFarm, 'privateAccount' => $eAccount]), 'privateAccount', function($d) use($form, $eAccount) {
+							$d->name = 'account';
+
+							$query = ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS];
+							$query['canHaveNoAccountOption'] = TRUE;
+							$d->autocompleteUrl = function(\util\FormUi $form, $e) use (&$farm, $query) {
+								if($farm === NULL) {
+									$farm = $e['farm']['id'];
+								}
+								return \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
+							};
+						});
+					}
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
@@ -189,7 +207,7 @@ class ProductUi {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
 					if($displayAccounts) {
-						$h .= '<th colspan="2" class="text-center highlight">'.s("Classes de compte").'</th>';
+						$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Classes de compte").'</th>';
 					}
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
@@ -201,8 +219,8 @@ class ProductUi {
 					$h .= '<th class="text-end highlight-stick-right">'.s("particulier").'</th>';
 					$h .= '<th class="text-end highlight-stick-left">'.s("pro").'</th>';
 					if($displayAccounts) {
-						$h .= '<th class="text-end highlight-stick-right">'.s("particulier").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("pro").'</th>';
+						$h .= '<th class="text-end highlight-stick-right hide-md-down">'.s("particulier").'</th>';
+						$h .= '<th class="text-end highlight-stick-left hide-md-down">'.s("pro").'</th>';
 					}
 				$h .= '</tr>';
 
@@ -324,7 +342,7 @@ class ProductUi {
 						}
 
 						if($displayAccounts) {
-							$h .= '<td class="text-end highlight-stick-right">';
+							$h .= '<td class="text-end highlight-stick-right hide-md-down">';
 								if($eProduct['privateAccount']->notEmpty()) {
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
 										$value .= $eProduct['privateAccount']['class'];
@@ -333,7 +351,7 @@ class ProductUi {
 									$h .= $eProduct->quick('privateAccount', $value);
 								}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-left">';
+							$h .= '<td class="text-end highlight-stick-left hide-md-down">';
 								if($eProduct['proAccount']->notEmpty()) {
 									$eAccount = $eProduct['proAccount'];
 								} else if($eProduct['privateAccount']->notEmpty()) {
@@ -1617,7 +1635,11 @@ class ProductUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? NULL;
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]);
+				$query = ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS];
+				if(get_exists('account') and GET('account') === '0') {
+					$query['noAccount'] = TRUE;
+				}
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: $query);
 
 				break;
 

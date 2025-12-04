@@ -19,6 +19,12 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 	$found = FALSE;
 	$others = FALSE;
 
+	if(GET('canHaveNoAccountOption', 'bool') === TRUE) {
+
+		$results[] = \account\AccountUi::getAutocompleteWithout($data->eFarm['id']);
+
+	}
+
 	foreach($data->cAccount as $eAccount) {
 
 		if($found === FALSE and ($eAccount['thirdParty'] ?? FALSE) === TRUE and $others === FALSE) {

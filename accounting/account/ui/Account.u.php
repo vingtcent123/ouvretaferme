@@ -261,6 +261,24 @@ class AccountUi {
 
 	}
 
+	public static function getAutocompleteWithout(int $farm): array {
+
+		$text = s("Sans classe de compte");
+
+		return [
+			'value' => 0,
+			'class' => '',
+			'description' => $text,
+			'vatRate' => 0,
+			'vatClass' => '',
+			'farm' => $farm,
+			'itemHtml' => $text,
+			'itemText' => $text,
+			'journalCode' => NULL,
+		];
+
+	}
+
 	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
 
 		$item = \Asset::icon('gear');
@@ -292,6 +310,9 @@ class AccountUi {
 		$d->autocompleteResults = function(Account|\company\GenericAccount $eAccount, $e = NULL) use ($farm) {
 			if($farm === NULL and $e !== NULL) {
 				$farm = $e['farm']['id'];
+			}
+			if($eAccount['id'] === 0) {
+				return self::getAutocompleteWithout($farm);
 			}
 			return self::getAutocomplete($farm, $eAccount);
 		};
