@@ -945,10 +945,7 @@ class DateUi {
 							}
 						}
 
-						if(
-							($eDate['deliveryDate'] === NULL or $eDate->isPast() === FALSE) and
-							$eDate->acceptNotShared()
-						) {
+						if($eDate->acceptCreateSale()) {
 							$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
 						}
 

@@ -202,7 +202,7 @@ class SaleLib extends SaleCrud {
 
 			$eDate = \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])
 				->validateProperty('farm', $eSale['farm'])
-				->validate('acceptOrder', 'acceptNotShared');
+				->validate('acceptCreateSale');
 
 		} else {
 			$eDate = new \shop\Date();
