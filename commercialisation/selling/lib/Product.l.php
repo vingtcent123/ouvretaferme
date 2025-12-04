@@ -15,6 +15,22 @@ class ProductLib extends ProductCrud {
 		];
 	}
 
+	public static function create(Product $e): void {
+
+		if($e['farm']->hasAccounting()) {
+
+			$eConfiguration = $e['farm']->selling();
+
+			if(isset($eConfiguration['profileAccount'][$e['profile']])) {
+				$e['privateAccount'] = new \account\Account(['id' => $eConfiguration['profileAccount'][$e['profile']]]);
+			}
+
+		}
+
+		parent::create($e);
+
+	}
+
 	public static function getPropertiesUpdate(): \Closure {
 
 		return function(Product $eProduct) {

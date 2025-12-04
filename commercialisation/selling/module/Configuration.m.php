@@ -70,10 +70,11 @@ class ConfigurationModel extends \ModuleModel {
 			'marketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'marketSaleDefaultDecimal' => ['enum', [\selling\Configuration::NUMBER, \selling\Configuration::PRICE], 'cast' => 'enum'],
 			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
+			'profileAccount' => ['json', 'null' => TRUE, 'cast' => 'array'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -127,6 +128,9 @@ class ConfigurationModel extends \ModuleModel {
 			case 'pdfNaturalOrder' :
 				return FALSE;
 
+			case 'profileAccount' :
+				return [];
+
 			default :
 				return parent::getDefaultValue($property);
 
@@ -144,8 +148,25 @@ class ConfigurationModel extends \ModuleModel {
 			case 'marketSaleDefaultDecimal' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'profileAccount' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'profileAccount' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -261,6 +282,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function wherePdfNaturalOrder(...$data): ConfigurationModel {
 		return $this->where('pdfNaturalOrder', ...$data);
+	}
+
+	public function whereProfileAccount(...$data): ConfigurationModel {
+		return $this->where('profileAccount', ...$data);
 	}
 
 

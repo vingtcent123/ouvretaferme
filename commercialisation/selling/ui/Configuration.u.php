@@ -26,7 +26,7 @@ class ConfigurationUi {
 		return s("AV");
 	}
 
-	public function update(\farm\Farm $eFarm, \Collection $cCustomize, Sale $eSaleExample): string {
+	public function update(\farm\Farm $eFarm, \Collection $cCustomize, Sale $eSaleExample, \Collection $cAccount): string {
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
 
@@ -35,6 +35,9 @@ class ConfigurationUi {
 				$h .= '<a class="tab-item" data-tab="orderForm" onclick="Lime.Tab.select(this)">'.s("Devis").'</a>';
 				$h .= '<a class="tab-item" data-tab="deliveryNote" onclick="Lime.Tab.select(this)">'.s("Bons de livraisons").'</a>';
 				$h .= '<a class="tab-item" data-tab="invoice" onclick="Lime.Tab.select(this)">'.s("Factures").'</a>';
+				if(FEATURE_PRE_ACCOUNTING) {
+					$h .= '<a class="tab-item tab-item-accounting" data-tab="accounting" onclick="Lime.Tab.select(this)">'.s("Comptabilité").'</a>';
+				}
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
@@ -52,6 +55,12 @@ class ConfigurationUi {
 			$h .= '<div class="tab-panel" data-tab="invoice">';
 				$h .= $this->updateInvoice($eFarm, $eSaleExample, $cCustomize);
 			$h .= '</div>';
+
+			if(FEATURE_PRE_ACCOUNTING) {
+				$h .= '<div class="tab-panel" data-tab="accounting">';
+					$h .= $this->updateAccounting($eFarm, $cAccount);
+				$h .= '</div>';
+			}
 
 		$h .= '</div>';
 
@@ -213,6 +222,49 @@ class ConfigurationUi {
 
 		return $h;
 
+	}
+
+	public function updateAccounting(\farm\Farm $eFarm, \Collection $cAccount): string {
+
+		if($eFarm->hasAccounting() === FALSE) {
+			return '<div class="util-block-help">'.s("Activez le <link>module de comptabilité</link> pour vous servir de cette fonctionnalité !", ['link' => '<a href="'.\company\CompanyUi::urlSettings($eFarm).'">']).'</div>';
+		}
+
+		$eConfiguration = $eFarm->selling();
+
+		$profiles = ProductUi::p('profile')->values;
+
+		$h = '<div class="util-info">'.s("En configurant directement vos types de produits, tous les produits de ce type que vous créerez auront la bonne classe de compte, ce qui facilitera votre comptabilité.").'</div>';
+
+		$form = new \util\FormUi();
+
+		$h .= $form->openAjax('/selling/configuration:doUpdateProfileAccount', ['id' => 'farm-update-profile', 'autocomplete' => 'off']);
+
+		$h .= $form->hidden('id', $eConfiguration['id']);
+
+		foreach($profiles as $key => $profile) {
+
+			$e = new Product(['farm' => $eFarm]);
+			if(($eConfiguration['profileAccount'][$key] ?? NULL) !== NULL) {
+				$e['privateAccount'] = $cAccount->offsetGet($eConfiguration['profileAccount'][$key]);
+			}
+
+			$h .= $form->group(
+				$profile,
+				$form->dynamicField($e, 'privateAccount', function($d) use($key, $eConfiguration) {
+					$d->name = 'profileAccount['.$key.']';
+				})
+			);
+
+		}
+
+		$h .= $form->group(
+			content: $form->submit(s("Enregistrer"))
+		);
+
+		$h .= $form->close();
+
+		return $h;
 	}
 
 	public function updateDeliveryNote(\farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
@@ -418,9 +470,6 @@ class ConfigurationUi {
 			'orderFormFooter' => s("Ajouter un texte personnalisé affiché en bas des devis"),
 			'creditPrefix' => s("Préfixe pour la numérotation des avoirs"),
 			'invoicePrefix' => s("Préfixe pour la numérotation des factures"),
-			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
-			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
-			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),

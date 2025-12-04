@@ -35,6 +35,7 @@ Configuration:
   marketSalePaymentMethod: ?payment\Method
   marketSaleDefaultDecimal: enum(NUMBER, PRICE) = PRICE
   pdfNaturalOrder: bool = FALSE
+  profileAccount: ?json = PHP([])
   UNIQUE: [
     ["farm"]
   ]

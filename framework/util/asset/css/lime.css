@@ -2922,6 +2922,12 @@ a.tab-item {
 	background-color: var(--secondary);
 }
 
+.tab-item-accounting:hover,
+.tab-item-accounting.selected {
+	color: white;
+	background-color: var(--accounting) !important;
+}
+
 a.tab-item:hover,
 a.tab-item.selected {
 	color: white;

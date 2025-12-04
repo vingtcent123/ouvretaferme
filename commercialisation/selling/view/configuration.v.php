@@ -11,7 +11,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	
 	$t->mainTitle = $h;
 	
-	echo new \selling\ConfigurationUi()->update($data->e, $data->cCustomize, $data->eSaleExample);
+	echo new \selling\ConfigurationUi()->update($data->e, $data->cCustomize, $data->eSaleExample, $data->cAccount);
 
 });
 ?>
