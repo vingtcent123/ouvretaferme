@@ -686,6 +686,8 @@ div.input-group > .field-checkbox {
 	--container-lg-padding: 2rem;
 	--container-xl-padding: 2rem;
 
+	--container-width: calc(var(--screen-width) - 2 * var(--container-padding) - var(--nav-width));
+
 }
 
 @media (max-width: 575px) {
@@ -2850,7 +2852,8 @@ div.tabs-item + div.tabs-panel.util-block {
 	column-gap: 0.5rem;
 	align-items: stretch;
 	margin-bottom: 1.5rem;
-	overflow-x: auto;
+	width: var(--container-width);
+	overflow: auto;
 }
 
 div.tabs-b > div.tabs-item {
