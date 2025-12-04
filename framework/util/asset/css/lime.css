@@ -1508,8 +1508,15 @@ ul.util-summarize li > a:not(.btn) {
 	border: 0px solid var(--secondary);
 }
 
-ul.util-summarize li.selected > a:not(.btn),
 ul.util-summarize li > a:hover {
+	text-decoration: none;
+}
+ul.util-summarize li > a.no-hover:hover {
+	cursor: initial;
+}
+
+ul.util-summarize li.selected > a:not(.btn),
+ul.util-summarize li > a:not(.no-hover):hover {
 	text-decoration: none;
 	background: var(--secondary);
 	color: white;
@@ -1525,7 +1532,7 @@ ul.util-summarize li h5 {
 }
 
 ul.util-summarize li.selected > a h5,
-ul.util-summarize li > a:not(.btn):hover h5 {
+ul.util-summarize li > a:not(.no-hover):not(.btn):hover h5 {
 	color: white;
 	border-bottom: 1px solid #fff8;
 }

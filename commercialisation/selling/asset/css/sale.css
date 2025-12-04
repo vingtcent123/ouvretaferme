@@ -369,3 +369,10 @@ a.sale-document-new .sale-document-status {
 	font-weight: bold;
 	font-size: 1.2rem;
 }
+
+a.sale-preaccounting-title {
+	color: inherit;
+}
+a.sale-preaccounting-title:hover {
+	text-decoration: none;
+}

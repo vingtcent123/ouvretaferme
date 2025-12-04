@@ -118,10 +118,14 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	private static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): ProductModel {
+	private static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search, bool $searchProblems = TRUE): ProductModel {
 
+		if($searchProblems) {
+			Product::model()->wherePrivateAccount(NULL);
+		} else {
+			Product::model()->where('privateAccount IS NOT NULL');
+		}
 		return Product::model()
-			->where('proAccount IS NULL OR privateAccount IS NULL')
 			->join(Item::model(), 'm1.id = m2.product', 'LEFT')
 			->where('m1.farm = '.$eFarm['id'])
 			->where('m2.product IS NOT NULL')
@@ -134,20 +138,18 @@ class ProductLib extends ProductCrud {
 	 */
 	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
 
-		$eProduct = self::filterForAccountingCheck($eFarm, $search)
+		return (self::filterForAccountingCheck($eFarm, $search)
 			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
-			->get();
-
-		return ($eProduct['count'] ?? 0);
+			->get()['count'] ?? 0);
 
 	}
 
 	/**
 	 * Gets all the products linked to a sale but without any account
 	 */
-	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
 
-		return self::filterForAccountingCheck($eFarm, $search)
+		$cProduct = self::filterForAccountingCheck($eFarm, $search)
 			->select([
 				'id' => new \Sql('DISTINCT(m1.id)'), 'name' => new \Sql('m1.name'),
 				'proAccount' => ['id', 'class', 'description'], 'privateAccount' => ['id', 'class', 'description'],
@@ -158,6 +160,13 @@ class ProductLib extends ProductCrud {
 			->group(['category', 'm1.id'])
 			->getCollection(NULL, NULL, ['category', 'id']);
 
+		$nToCheck = self::countForAccountingCheck($eFarm, $search);
+
+		$nVerified = (self::filterForAccountingCheck($eFarm, $search, FALSE)
+			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
+			->get()['count'] ?? 0);
+
+		return [$nToCheck, $nVerified, $cProduct];
 	}
 
 	public static function getCompositionById(mixed $id, array $properties = []): Product {

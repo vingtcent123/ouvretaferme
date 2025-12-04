@@ -666,7 +666,12 @@ class FarmUi {
 			$h .= '</a>';
 
 			if(FEATURE_PRE_ACCOUNTING) {
-				$h .= '<a href="'.FarmUi::urlSellingSalesAccounting($eFarm).'?from='.$year.'-01-01&to='.$year.'-12-31" class="util-button">';
+				if($eFarm->hasAccounting() === FALSE) {
+					$url = \company\CompanyUi::urlSettings($eFarm);
+				} else {
+					$url = FarmUi::urlSellingSalesAccounting($eFarm).'?from='.$year.'-01-01&to='.$year.'-12-31';
+				}
+				$h .= '<a href="'.$url.'" class="util-button">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Exporter la pré-comptabilité").'</h4>';
 						if($eFarm->hasAccounting() === FALSE) {

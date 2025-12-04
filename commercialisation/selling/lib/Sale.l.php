@@ -1161,7 +1161,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod): void {
+	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod, bool $isPaid = FALSE): void {
 
 		Sale::model()->beginTransaction();
 
@@ -1189,7 +1189,15 @@ class SaleLib extends SaleCrud {
 						'onlineStatus' => NULL,
 					])
 				);
-				$e['paymentStatus'] = Sale::NOT_PAID;
+				if($isPaid) {
+
+					$e['paymentStatus'] = Sale::PAID;
+
+				} else {
+
+					$e['paymentStatus'] = Sale::NOT_PAID;
+
+				}
 			}
 
 			self::update($e, ['paymentMethod', 'paymentStatus']);
@@ -1617,30 +1625,31 @@ class SaleLib extends SaleCrud {
 			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
 
 	}
-	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
+	public static function countForAccountingCheck(string $type, \farm\Farm $eFarm, \Search $search): int {
 
-		$nMissingPayment = self::filterForAccountingCheck($eFarm, $search)
-       ->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
-       ->where('m2.id IS NULL')
-			->count();
+		switch($type) {
 
-		$nSaleNotClosed = self::filterForAccountingCheck($eFarm, $search)
-			->whereClosed(FALSE)
-			->count();
+			case 'delivered':
+				return self::filterForAccountingCheck($eFarm, $search)
+					->wherePreparationStatus('!=', Sale::DELIVERED)
+					->count();
 
-		$nSalePreparationStatus = self::filterForAccountingCheck($eFarm, $search)
-			->wherePreparationStatus('!=', Sale::DELIVERED)
-			->count();
+			case 'payment':
+				return self::filterForAccountingCheck($eFarm, $search)
+					->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
+					->where('m2.id IS NULL')
+					->count();
 
-		return [
-			'missingPayment' => $nMissingPayment,
-			'notClosed' => $nSaleNotClosed,
-			'preparationStatus' => $nSalePreparationStatus,
-		];
+			case 'closed':
+				return self::filterForAccountingCheck($eFarm, $search)
+					->whereClosed(FALSE)
+					->count();
+
+		}
 
 	}
 
-	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search, string $type): \Collection {
+	public static function getForAccountingCheck(string $type, \farm\Farm $eFarm, \Search $search): array {
 
 		$select = [
 			'id', 'customer' => ['name', 'type', 'destination'], 'preparationStatus', 'priceIncludingVat',
@@ -1656,37 +1665,45 @@ class SaleLib extends SaleCrud {
 				->delegateCollection('sale', 'id')
 		];
 
-		if($type === 'missingPayment') {
+		$nToCheck = self::countForAccountingCheck($type, $eFarm, $search);
 
-			return self::filterForAccountingCheck($eFarm, $search)
+		$cSale = match($type) {
+			'payment' => self::filterForAccountingCheck($eFarm, $search)
 				->select($select)
 				->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
 				->where('m2.id IS NULL')
 				->sort(['deliveredAt' => SORT_DESC])
-				->getCollection(NULL, NULL, 'id');
+				->getCollection(NULL, NULL, 'id'),
 
-		}
-
-		if($type === 'notClosed') {
-
-			return self::filterForAccountingCheck($eFarm, $search)
+			'closed' => self::filterForAccountingCheck($eFarm, $search)
 				->select($select)
 				->whereClosed(FALSE)
 				->sort(['deliveredAt' => SORT_DESC])
-				->getCollection(NULL, NULL, 'id');
+				->getCollection(NULL, NULL, 'id'),
 
-		}
-
-		if($type === 'preparationStatus') {
-
-			return self::filterForAccountingCheck($eFarm, $search)
+			'delivered' => self::filterForAccountingCheck($eFarm, $search)
 				->select($select)
 				->wherePreparationStatus('!=', Sale::DELIVERED)
 				->sort(['deliveredAt' => SORT_DESC])
-				->getCollection(NULL, NULL, 'id');
-		}
+				->getCollection(NULL, NULL, 'id'),
+		};
 
-		return new \Collection();
+		$nVerified = match($type) {
+			'payment' => self::filterForAccountingCheck($eFarm, $search)
+				->join(Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.Payment::model()->format(Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
+				->where('m2.id IS NOT NULL')
+				->count(),
+
+			'closed' => self::filterForAccountingCheck($eFarm, $search)
+				->whereClosed(TRUE)
+				->count(),
+
+			'delivered' => self::filterForAccountingCheck($eFarm, $search)
+				->wherePreparationStatus(Sale::DELIVERED)
+				->count(),
+		};
+
+		return [$nToCheck, $nVerified, $cSale];
 
 	}
 }

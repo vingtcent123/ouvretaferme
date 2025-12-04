@@ -308,6 +308,30 @@ class TipUi {
 					'button' => [$link, s("Configurer mes tiers")],
 				];
 
+			case 'accounting-pre-accounting' :
+
+				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité.").'</p>';
+				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes :").'</p>';
+				$h .= '<ol>';
+					$h .= '<li>'.s("<link>Toutes les références de produits</link> doivent être liées à une classe de compte", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">']).'</li>';
+					$h .= '<li>'.s("Tous vos articles vendus doivent soit être liés à une référence de produit, soit avoir une classe de compte").'</li>';
+					$h .= '<li>'.s("Toutes vos ventes doivent être livrées, avoir un moyen de paiement, et être clôturées").'</li>';
+				$h .= '</ol>';
+				$h .= '<p>'.s("Vous pourrez ainsi exporter un fichier FEC de vos ventes pour l'intégrer dans votre outil comptable, ou valider directement dans le module de comptabilité les ventes importées depuis le module de commercialisation sur {siteName}.").'</p>';
+				$h .= '<p>'.s("Également, grâce au module de comptabilité, vous pourrez").'</p>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("Paramétrer <link>tiers et clients</link>", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/thirdParty">']).'</li>';
+					$h .= '<li>'.s("Personnaliser vos <linkJournal>journaux</linkJournal> et vos <linkClass>classes de compte</linkClass>", ['linkJournal' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/journalCode">', 'linkClass' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">']).'</li>';
+				$h .= '</ol>';
+
+				return [
+					'icon' => \Asset::icon('file-spreadsheet'),
+					'title' => s("Qu'est-ce que la précomptabilité ?"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => NULL,
+				];
+
 			default:
 				throw new \Exception('Invalid tip \''.$fqn.'\'');
 

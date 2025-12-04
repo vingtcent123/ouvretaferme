@@ -636,7 +636,8 @@ new Page(function($data) {
 	})
 	->post('doUpdatePaymentMethodCollection', function($data) {
 
-		if(post_exists('for') and POST('for') === 'preaccounting') {
+		$isForPreAccounting = (POST('for') === 'preaccounting');
+		if(post_exists('for') and $isForPreAccounting) {
 			$data->c->validate('canWrite');
 		} else {
 			$data->c->validate('canWrite', 'acceptUpdatePayment');
@@ -648,7 +649,7 @@ new Page(function($data) {
 			$eMethod->validate('canUse', 'acceptManualUpdate');
 		}
 
-		\selling\SaleLib::updatePaymentMethodCollection($data->c, $eMethod);
+		\selling\SaleLib::updatePaymentMethodCollection($data->c, $eMethod, $isForPreAccounting);
 
 		throw new ReloadAction('selling', 'Sale::paymentMethodUpdated');
 

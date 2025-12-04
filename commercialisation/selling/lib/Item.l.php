@@ -872,11 +872,17 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): ItemModel {
+	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search, bool $searchProblems = TRUE): ItemModel {
+
+		if($searchProblems) {
+			Item::model()->whereAccount(NULL);
+		} else {
+			Item::model()->where('account IS NOT NULL');
+		}
 
 		return Item::model()
 			->join(Sale::model(), 'm1.sale = m2.id')
-			->where('account IS NULL')
+			->whereProduct(NULL)
 			->where('m2.id IS NOT NULL')
 			->where('m2.profile IN ('.Sale::model()->format(Sale::SALE).', '.Sale::model()->format(Sale::SALE_MARKET).')')
 			->where('m1.farm = '.$eFarm['id'])
@@ -889,9 +895,9 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
 
-		return self::filterForAccountingCheck($eFarm, $search)
+		$cItem = self::filterForAccountingCheck($eFarm, $search)
 			->select([
 				'id', 'name',
 				'customer' => ['name', 'type', 'destination'],
@@ -900,6 +906,10 @@ class ItemLib extends ItemCrud {
 			->group(['sale', 'm1.id'])
 			->getCollection(NULL, NULL, ['sale', NULL]);
 
+		$nToCheck = self::countForAccountingCheck($eFarm, $search);
+		$nVerified = self::filterForAccountingCheck($eFarm, $search, FALSE)->count();
+
+		return [$nToCheck, $nVerified, $cItem];
 	}
 
 }

@@ -1059,8 +1059,13 @@ class ProductUi {
 			$h .= '<br/>';
 			$h .= $this->getFieldPrices($form, $eProduct, 'update');
 
-			$h .= '<br/>';
-			$h .= $this->getFieldAccounting($form, $eProduct, 'update');
+			if($eProduct['farm']['hasAccounting']) {
+
+				$h .= '<br/>';
+				$h .= '<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>';
+				$h .= $this->getFieldAccounting($form, $eProduct);
+
+			}
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -1255,7 +1260,7 @@ class ProductUi {
 
 		$h = $form->openAjax('/selling/product:doUpdateAccountCollection', ['id' => 'product-update-account']);
 
-			$h .= $this->getFieldAccounting($form, new Product(['farm' => $eFarm, 'proAccount' => new \account\Account(), 'privateAccount' => new \account\Account()]), 'create');
+			$h .= $this->getFieldAccounting($form, new Product(['farm' => $eFarm, 'proAccount' => new \account\Account(), 'privateAccount' => new \account\Account()]));
 
 			foreach($cProduct as $eProduct) {
 				$h .= $form->hidden('ids[]', $eProduct['id']);
@@ -1267,33 +1272,23 @@ class ProductUi {
 
 		return new \Panel(
 			id: 'panel-product-update-account',
-			title: s("Classes de compte des produits sélectionnés"),
+			title: s("Classe de compte des produits sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
 			body: $h
 		);
 
 	}
 
-	private function getFieldAccounting(\util\FormUi $form, Product $eProduct, string $for): string {
+	private function getFieldAccounting(\util\FormUi $form, Product $eProduct): string {
 
 		if(FEATURE_PRE_ACCOUNTING === FALSE) {
 			return '';
 		}
 
-		$h = '<h3><span class="ml-1 util-badge bg-accounting">'.s("Comptabilité").'</span></h3>';
-
 		if($eProduct['farm']->hasAccounting() === FALSE) {
-			$h .= '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
-			return $h;
+			return '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
 		}
 
-		if($for === 'create') {
-			$h .= '<div class="util-block-help">'.s("Pour faciliter votre comptabilité, un produit peut être rattaché à une classe de compte. Ainsi, lors de l'export de vos données ou lors de l'import dans le module de comptabilité, vos ventes seront correctement réparties.").'</div>';
-		}
-
-
-		$h .= '<br/>';
-
-		$h .= '<div class="util-block bg-background-light">';
+		$h = '<div class="util-block bg-background-light">';
 
 			$genericLabel = s("Classe de compte");
 			$specificLabel = s("Vente aux clients particuliers");
@@ -1301,12 +1296,12 @@ class ProductUi {
 			$h .= $form->group(
 				'<span data-field-label="privateAccount">'.s("Classe de compte").'</span>',
 				$form->dynamicField($eProduct, 'privateAccount').
-				$form->checkbox('accountDissociation', '1', [
+				'<div class="form-info">'.$form->checkbox('accountDissociation', '1', [
 					'callbackLabel' => fn($input) => $input.' '.s("Dissocier la classe pour la vente aux professionnels"),
 					'onclick' => 'Product.accountDissociation()',
 					'data-field-account-generic-label' => $genericLabel,
 					'data-field-account-specific-label' => $specificLabel,
-				])
+				]).'</div>'
 			);
 
 			$h .= '<div data-field="proAccount" class="hide">'.$form->group(
@@ -1622,7 +1617,7 @@ class ProductUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? NULL;
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]);
 
 				break;
 

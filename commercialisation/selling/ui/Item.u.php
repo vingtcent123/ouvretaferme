@@ -1410,7 +1410,7 @@ class ItemUi {
 
 		return new \Panel(
 			id: 'panel-item-update-account',
-			title: s("Classes de compte des articles sélectionnés"),
+			title: s("Classe de compte des articles sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
 			body: $h
 		);
 
@@ -1565,7 +1565,7 @@ class ItemUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Item $e) => $e['account'] ?? NULL;
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]);
+				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]);
 				break;
 
 		}
