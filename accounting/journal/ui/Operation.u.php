@@ -209,7 +209,7 @@ class OperationUi {
 			title: s("Détail d'écriture"),
 			body: $h,
 			close: 'passthrough',
-			url: \company\CompanyUi::urlJournal($eFarm).'/operations?operation='.$eOperation['id'].'&'.http_build_query($args),
+			url: \company\CompanyUi::urlJournal($eFarm).'/livre-journal?operation='.$eOperation['id'].'&'.http_build_query($args),
 		);
 	}
 	public function getSummary(Operation $eOperation): string {
@@ -1039,7 +1039,7 @@ class OperationUi {
 					$d->label .=  ' '.\util\FormUi::asterisk();
 				});
 				$h .= '<div data-account="asset-create" class="hide" data-index="'.$index.'">';
-					$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true" href="'.\company\CompanyUi::urlAsset($eFarm).'/asset:create">';
+					$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true" href="'.\company\CompanyUi::urlAsset($eFarm).'/:create">';
 						$h .= \Asset::icon('house-add');
 					$h .= '</a>';
 					$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
@@ -1332,7 +1332,7 @@ class OperationUi {
 
 	public static function url(\farm\Farm $eFarm, Operation $eOperation): string {
 
-		return \company\CompanyUi::urlJournal($eFarm).'/operations?id='.$eOperation['id'];
+		return \company\CompanyUi::urlJournal($eFarm).'/livre-journal?id='.$eOperation['id'];
 
 	}
 

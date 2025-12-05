@@ -21,7 +21,7 @@ class ImportUi {
 			) {
 
 				$h .= '<div>';
-					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/import:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
 				$h .= '</div>';
 
 			}
@@ -145,7 +145,7 @@ class ImportUi {
 
 				if(in_array($eImport['status'], [ImportElement::FULL, ImportElement::PARTIAL]) === TRUE) {
 
-					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?import='.$eImport['id'].'" class="color-text">';
+					$h.= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?import='.$eImport['id'].'" class="color-text">';
 						$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 						$h.= p(
 							"{number} mouvement enregistré",

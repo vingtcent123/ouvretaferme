@@ -82,6 +82,7 @@ class FarmModel extends \ModuleModel {
 			'hasSales' => ['bool', 'cast' => 'bool'],
 			'hasCultivations' => ['bool', 'cast' => 'bool'],
 			'hasAccounting' => ['bool', 'cast' => 'bool'],
+			'accountingYears' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'membership' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'null' => TRUE, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],

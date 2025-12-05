@@ -5,7 +5,7 @@ new Page(
 		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
 		$data->eFarm->validate('canManage');
 		if($data->eFarm['hasAccounting']) {
-			throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/operations');
+			throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal');
 		}
 	}
 )
@@ -25,7 +25,7 @@ new Page(
 
 		$fw->validate();
 
-		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/operations?success=company:Company::created');
+		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal?success=company:Company::created');
 
 	});
 

@@ -22,6 +22,9 @@ class CompanyUi {
 	public static function urlJournal(int|\farm\Farm $farm): string {
 		return '/'.(is_int($farm) ? $farm : $farm['id']).'/journal';
 	}
+	public static function urlFarm(int|\farm\Farm $farm): string {
+		return '/'.(is_int($farm) ? $farm : $farm['id']);
+	}
 
 	public static function urlOverview(int|\farm\Farm $farm, ?string $view = NULL): string {
 		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview'.($view !== NULL ? '/'.$view : '');
@@ -29,10 +32,6 @@ class CompanyUi {
 
 	public static function urlAnalyze(int|\farm\Farm $farm, ?string $view = NULL): string {
 		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview/analyze'.($view !== NULL ? '/'.$view : '');
-	}
-
-	public static function urlSummary(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview/summary'.($view !== NULL ? '/'.$view : '');
 	}
 
 	public static function urlAsset(int|\farm\Farm $farm): string {

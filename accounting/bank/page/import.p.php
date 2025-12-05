@@ -7,7 +7,7 @@ new Page(
 
 	}
 )
-	->get('index', function($data) {
+	->get('/banque/imports', function($data) {
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
@@ -26,21 +26,21 @@ new Page(
 
 	}
 )
-	->get('import', function($data) {
+	->get('/banque/imports:import', function($data) {
 
 		throw new ViewAction($data);
 
 	})
-	->post('doImport', function($data) {
+	->post('/banque/imports:doImport', function($data) {
 
 		$fw = new FailWatch();
 
 		$result = \bank\ImportLib::importBankStatement($data->eFarm);
 
 		if($fw->ok()) {
-			throw new RedirectAction(\company\CompanyUi::urlBank($data->eFarm).'/import?success=bank:Import::'.$result);
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports?success=bank:Import::'.$result);
 		} else {
-			throw new RedirectAction(\company\CompanyUi::urlBank($data->eFarm).'/import:import?error='.$fw->getLast());
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import?error='.$fw->getLast());
 		}
 
 	});

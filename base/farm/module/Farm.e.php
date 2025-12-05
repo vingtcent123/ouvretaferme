@@ -390,7 +390,7 @@ class Farm extends FarmElement {
 	}
 
 	public function getAccountingUrl(): string {
-		return \company\CompanyUi::urlJournal($this).'/operations';
+		return \company\CompanyUi::urlJournal($this).'/livre-journal';
 	}
 
 	public function getGameUrl(): string {

@@ -1,21 +1,13 @@
 <?php
-new AdaptativeView('index', function($data, FarmTemplate $t) {
+new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
-	$t->nav = 'journal';
+	$t->nav = 'accounting';
 	$t->subNav = 'operations';
 
 	$t->title = s("Le livre journal de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/operations';
+	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/livre-journal';
 
 	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, $data->eFinancialYear);
-
-	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
-		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlJournal($data->eFarm).'/operations?financialYear='.$eFinancialYear['id'].'&'.http_build_query($data->search->getFiltered(['financialYear']));
-			},
-		$data->cFinancialYear,
-		$data->eFinancialYear,
-	);
 
 	if($data->eFinancialYear->notEmpty()) {
 		echo new \journal\JournalUi()->getSearch(
@@ -44,7 +36,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	echo ' data-batch="#batch-journal">';
 
 		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode, $data->cJournalCode);
-
 
 		switch($selectedJournalCode) {
 
@@ -76,7 +67,8 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 		echo new \journal\JournalUi()->getBatch($data->eFarm, $data->cPaymentMethod, $data->cJournalCode);
 
-
 	echo '</div>';
+
+	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
 
 });

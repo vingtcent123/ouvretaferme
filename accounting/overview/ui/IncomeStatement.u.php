@@ -7,28 +7,11 @@ class IncomeStatementUi {
 		\Asset::css('overview', 'incomeStatement.css');
 	}
 
-	public function getTitle(): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= s("Compte de Résultat");
-			$h .= '</h1>';
-
-			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-	}
-
 	public function getSearch(\Search $search, \Collection $cFinancialYear, \account\FinancialYear $eFinancialYear): string {
 
 		$excludedProperties = ['ids'];
-		if($search->get('view') === IncomeStatementLib::VIEW_BASIC) {
-			$excludedProperties[] = 'view';
+		if($search->get('type') === IncomeStatementLib::VIEW_BASIC) {
+			$excludedProperties[] = 'type';
 		}
 
 		$h = '<div id="income-statement-search" class="util-block-search '.($search->empty($excludedProperties) === TRUE ? 'hide' : '').'">';
@@ -38,18 +21,20 @@ class IncomeStatementUi {
 
 		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 		$h .= '<div>';
-			$h .= $form->select('view', [
+			$h .= $form->select('type', [
 				IncomeStatementLib::VIEW_BASIC => s("Vue synthétique"),
 				IncomeStatementLib::VIEW_DETAILED => s("Vue détaillée"),
-			], $search->get('view'), ['mandatory' => TRUE]);
+			], $search->get('type'), ['mandatory' => TRUE]);
 
 			if($cFinancialYear->count() > 1) {
-				$h .= $form->select('financialYearComparison', $cFinancialYear
-					->filter(fn($e) => !$e->is($eFinancialYear))
-					->makeArray(function($e, &$key) {
-						$key = $e['id'];
-						return s("Exercice {value}", \account\FinancialYearUi::getYear($e));
-					}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
+				$values = [];
+				foreach($cFinancialYear as $eFinancialYearCurrent) {
+					if($eFinancialYearCurrent->is($eFinancialYear)) {
+						continue;
+					}
+					$values[] = [$eFinancialYearCurrent['id'], 'label' => s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearCurrent))];
+				}
+				$h .= $form->select('financialYearComparison', $values, $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
 			}
 
 			$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);

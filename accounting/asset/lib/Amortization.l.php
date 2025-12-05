@@ -861,12 +861,12 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 			Amortization::model()->insert($eAmortization);
 
-			if(($eAccountExcessAmortization ?? 0) > 0) {
+			if($amortizationExcessValue > 0) {
 
 				$eAmortization = new Amortization(
 					[
 						'asset' => $eAsset,
-						'amount' => $eAccountExcessAmortization,
+						'amount' => $amortizationExcessValue,
 						'type' => Amortization::EXCESS,
 						'date' => $endDate,
 						'financialYear' => $eFinancialYear,

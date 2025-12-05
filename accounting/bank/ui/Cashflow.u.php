@@ -56,7 +56,7 @@ class CashflowUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openUrl(\company\CompanyUi::urlBank($eFarm).'/cashflow', ['method' => 'get', 'class' => 'mb-1']);
+		$h = $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/operations', ['method' => 'get', 'class' => 'mb-1']);
 		$h .= $form->checkbox('status', Cashflow::WAITING, [
 			'checked' => $search->get('status') === Cashflow::WAITING,
 			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non comptabilisées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
@@ -87,7 +87,7 @@ class CashflowUi {
 			return '<div class="util-info">'.
 				s("Aucun import bancaire n'a été réalisé pour l'exercice {year} (<link>importer</link>)", [
 					'year' => \account\FinancialYearUi::getYear($eFinancialYearSelected),
-					'link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/import">',
+					'link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports">',
 				]).
 			'</div>';
 		}
@@ -204,7 +204,7 @@ class CashflowUi {
 
 						} else {
 
-							$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">';
+							$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'">';
 								$h .= s("Voir les écritures");
 							$h .= '</a>';
 
@@ -229,7 +229,7 @@ class CashflowUi {
 		if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
 			$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
 				$h .= s("Voir les écritures");
 			$h .= '</a>';
 
@@ -252,7 +252,7 @@ class CashflowUi {
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Voir les écritures");
 				$h .= '</a>';
 
@@ -553,7 +553,7 @@ class CashflowUi {
 		$h .= '<div class="util-info">'.s("Si le compte bancaire n'existe pas encore, il sera automatiquement créé (et vous pourrez paramétrer son libellé dans Paramétrage > Les comptes bancaires).").'</div>';
 
 
-		$h .= $form->openUrl(\company\CompanyUi::urlBank($eFarm).'/import:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
+		$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/imports:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= '<label class="btn btn-primary">';
 				$h .= $form->file('ofx', ['onchange' => 'this.form.submit()', 'accept' => '.ofx']);

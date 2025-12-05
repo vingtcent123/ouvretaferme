@@ -8,26 +8,6 @@ Class AmortizationUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public static function getTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= s("Immobilisations & amortissements");
-			$h .= '</h1>';
-
-			if($eFinancialYear->acceptUpdate()) {
-				$h .= '<div>';
-					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/asset:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une immobilisation").'</a> ';
-				$h .= '</div>';
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	private static function getAmortizationLine(\farm\Farm $eFarm, array $amortization): string {
 
 		$isTotalLine = match($amortization['economicMode']) {
@@ -53,7 +33,7 @@ Class AmortizationUi {
 
 		if($amortization['id'] !== NULL and $amortization['id'] !== '') {
 
-			$link = \company\CompanyUi::urlAsset($eFarm).'/'.$amortization['id'].'/';
+			$link = \company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$amortization['id'].'/';
 			$description = '<a href="'.$link.'">'.encode($amortization['description']).'</a>';
 
 		} else {

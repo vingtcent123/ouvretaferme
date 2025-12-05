@@ -77,10 +77,11 @@ abstract class FarmerElement extends \Element {
 
 	const BANK = 'bank';
 	const CHARGES = 'charges';
-	const RESULTS = 'results';
+	const INTERMEDIATE = 'intermediate';
 
+	const VAT = 'vat';
 	const BALANCE_SHEET = 'balance-sheet';
-	const TRIAL_BALANCE = 'trial-balance';
+	const INCOME_STATEMENT = 'income-statement';
 
 	public static function getSelection(): array {
 		return Farmer::model()->getProperties();
@@ -146,15 +147,15 @@ class FarmerModel extends \ModuleModel {
 			'viewAccountingYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewAccountingType' => ['enum', [\farm\Farmer::ACCRUAL, \farm\Farmer::CASH, \farm\Farmer::CASH_ACCRUAL], 'cast' => 'enum'],
 			'viewAccountingHasVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::RESULTS], 'cast' => 'enum'],
-			'viewAccountingStatements' => ['enum', [\farm\Farmer::BALANCE_SHEET, \farm\Farmer::TRIAL_BALANCE], 'cast' => 'enum'],
+			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::INTERMEDIATE], 'cast' => 'enum'],
+			'viewAccountingSummary' => ['enum', [\farm\Farmer::VAT, \farm\Farmer::BALANCE_SHEET, \farm\Farmer::INCOME_STATEMENT], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewShopCurrent' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingType', 'viewAccountingHasVat', 'viewAccountingFinancials', 'viewAccountingStatements', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingType', 'viewAccountingHasVat', 'viewAccountingFinancials', 'viewAccountingSummary', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -245,7 +246,7 @@ class FarmerModel extends \ModuleModel {
 			case 'viewAccountingFinancials' :
 				return Farmer::BANK;
 
-			case 'viewAccountingStatements' :
+			case 'viewAccountingSummary' :
 				return Farmer::BALANCE_SHEET;
 
 			case 'createdAt' :
@@ -331,7 +332,7 @@ class FarmerModel extends \ModuleModel {
 			case 'viewAccountingFinancials' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'viewAccountingStatements' :
+			case 'viewAccountingSummary' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -510,8 +511,8 @@ class FarmerModel extends \ModuleModel {
 		return $this->where('viewAccountingFinancials', ...$data);
 	}
 
-	public function whereViewAccountingStatements(...$data): FarmerModel {
-		return $this->where('viewAccountingStatements', ...$data);
+	public function whereViewAccountingSummary(...$data): FarmerModel {
+		return $this->where('viewAccountingSummary', ...$data);
 	}
 
 	public function whereViewSeason(...$data): FarmerModel {

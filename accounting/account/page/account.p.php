@@ -100,11 +100,13 @@ new Page(function($data) {
 			$labels[] = $accountClass;
 		}
 
-		if($eThirdParty['clientAccountLabel'] !== NULL and \account\AccountLabelLib::isFromClass($eThirdParty['clientAccountLabel'], $eAccount['class'])) {
-			$labels[] = $eThirdParty['clientAccountLabel'];
-		}
-		if($eThirdParty['supplierAccountLabel'] !== NULL and \account\AccountLabelLib::isFromClass($eThirdParty['supplierAccountLabel'], $eAccount['class'])) {
-			$labels[] = $eThirdParty['supplierAccountLabel'];
+		if($eThirdParty->notEmpty()) {
+			if($eThirdParty['clientAccountLabel'] !== NULL and \account\AccountLabelLib::isFromClass($eThirdParty['clientAccountLabel'], $eAccount['class'])) {
+				$labels[] = $eThirdParty['clientAccountLabel'];
+			}
+			if($eThirdParty['supplierAccountLabel'] !== NULL and \account\AccountLabelLib::isFromClass($eThirdParty['supplierAccountLabel'], $eAccount['class'])) {
+				$labels[] = $eThirdParty['supplierAccountLabel'];
+			}
 		}
 	}
 
