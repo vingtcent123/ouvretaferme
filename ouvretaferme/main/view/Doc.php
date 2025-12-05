@@ -27,6 +27,8 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';
 				$h .= '<a href="/doc/import" '.$this->menuSelected('import').'>'.s("Importer un plan de culture").'</a>';
+				$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
+				$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Préparer les données de vente pour la comptabilité").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Divers").'</div>';
 				$h .= '<a href="/doc/editor" '.$this->menuSelected('editor').'>'.s("Utiliser l'éditeur de texte").'</a>';
 			$h .= '</div>';
