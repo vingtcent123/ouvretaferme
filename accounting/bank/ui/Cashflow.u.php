@@ -202,13 +202,13 @@ class CashflowUi {
 
 							if($eCashflow['status'] === Cashflow::DELETED) {
 
-								$h .= '<a class="btn btn-outline-danger" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete post-id="'.$eCashflow['id'].'">';
-									$h .= \Asset::icon('trash');
+								$h .= '<a class="btn btn-outline-secondary" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete" post-id="'.$eCashflow['id'].'">';
+									$h .= s("Récupérer");
 								$h .= '</a>';
 
 							} else {
 
-								$h .= '<a class="btn btn-outline-danger" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete post-id="'.$eCashflow['id'].'">';
+								$h .= '<a class="btn btn-outline-danger" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete" post-id="'.$eCashflow['id'].'">';
 									$h .= \Asset::icon('trash');
 								$h .= '</a>';
 
