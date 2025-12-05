@@ -36,19 +36,19 @@ class StripeFarmLib extends StripeFarmCrud {
 
 		StripeFarm::model()->beginTransaction();
 
-		\shop\Shop::model()
-			->whereFarm($e['farm'])
-			->update([
-				'paymentCard' => FALSE
-			]);
+			\shop\Shop::model()
+				->whereFarm($e['farm'])
+				->update([
+					'paymentCard' => FALSE
+				]);
 
-		\shop\Point::model()
-			->whereFarm($e['farm'])
-			->update([
-				'paymentCard' => NULL
-			]);
+			\shop\Point::model()
+				->whereFarm($e['farm'])
+				->update([
+					'paymentCard' => NULL
+				]);
 
-		parent::delete($e);
+			parent::delete($e);
 
 		StripeFarm::model()->commit();
 

@@ -2,22 +2,20 @@
 new Page()
 	->cli('index', function($data) {
 
-		$cCultivation = \series\Cultivation::model()
-			->select(\series\Cultivation::getSelection())
+		$c = \payment\StripeFarm::model()
+			->select([
+				'id',
+				'aSK' => new Sql('apiSecretKey'),
+				'wSK' => new Sql('webhookSecretKey'),
+			])
 			->getCollection();
 
-		foreach($cCultivation as $eCultivation) {
+		foreach($c as $e) {
 
-			\series\TaskLib::recalculateHarvest($eCultivation['farm'], $eCultivation, $eCultivation['plant']);
-			echo '.';
-
-		}
-
-
-		foreach($cCultivation as $eCultivation) {
-
-			\series\SeriesLib::recalculate($eCultivation['farm'], $eCultivation['series']);
-			echo '!';
+			\payment\StripeFarm::model()->update($e, [
+				'apiSecretKey' => $e['aSK'],
+				'webhookSecretKey' => $e['wSK'],
+			]);
 
 		}
 

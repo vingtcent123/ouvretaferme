@@ -38,10 +38,10 @@ class StripeFarmModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
-			'apiSecretKey' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
-			'apiSecretKeyTest' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'webhookSecretKey' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'webhookSecretKeyTest' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'apiSecretKey' => ['text16', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
+			'apiSecretKeyTest' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'webhookSecretKey' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'webhookSecretKeyTest' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
@@ -73,6 +73,40 @@ class StripeFarmModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'apiSecretKey' :
+				return \main\CryptLib::encrypt($value, 'payment');
+
+			case 'webhookSecretKey' :
+				return \main\CryptLib::encrypt($value, 'payment');
+
+			default :
+				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'apiSecretKey' :
+				return \main\CryptLib::decrypt($value, 'payment');
+
+			case 'webhookSecretKey' :
+				return \main\CryptLib::decrypt($value, 'payment');
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
