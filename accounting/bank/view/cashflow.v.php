@@ -4,7 +4,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 	$t->nav = 'bank';
 
 	$t->title = s("Les opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlBank($data->eFarm).'/cashflow';
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/banque/operations';
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingBankTitle($data->eFarm, 'bank', $data->nCashflow['all']['count']);
 

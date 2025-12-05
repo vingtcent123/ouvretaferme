@@ -336,6 +336,7 @@ class FarmTemplate extends MainTemplate {
 				break;
 
 			case 'bank' :
+			case 'invoicing' :
 			case 'accounting' :
 			case 'settings-accounting' :
 				$this->section = 'accounting';

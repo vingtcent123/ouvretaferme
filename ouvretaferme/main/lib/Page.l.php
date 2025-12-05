@@ -69,7 +69,7 @@ class PageLib {
 		if(
 			REQUEST('app') === 'accounting'
 			and mb_strpos(SERVER('REQUEST_URI'), '/company/public:create') === FALSE
-			and mb_strpos(SERVER('REQUEST_URI'), '/company/public:inactive') === FALSE
+			and mb_strpos(SERVER('REQUEST_URI'), '/comptabilite/inactive') === FALSE
 		) {
 
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
@@ -84,7 +84,7 @@ class PageLib {
 			if(
 				$data->pageType !== 'remote' and $canAccounting === FALSE
 			) {
-				throw new \RedirectAction('/company/public:inactive?farm='.$data->eFarm['id']);
+				throw new \RedirectAction('/comptabilite/inactive?farm='.$data->eFarm['id']);
 			}
 
 			if($hasAccounting) {

@@ -36,6 +36,13 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isMember(): bool {
+		return \association\History::model()
+			->whereFarm($this)
+			->whereMembership('=', date('Y'))
+			->found();
+	}
+
 	public function getFirstValidSeason(): int {
 
 		$this->expects(['seasonFirst']);

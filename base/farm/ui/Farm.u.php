@@ -907,6 +907,10 @@ class FarmUi {
 				'icon' => \Asset::icon('piggy-bank'),
 				'label' => s("Banque")
 			],
+			'invoicing' => [
+				'icon' => \Asset::icon('file-ruled'),
+				'label' => s("Facturation")
+			],
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
 				'label' => s("Exercice")
@@ -1236,6 +1240,12 @@ class FarmUi {
 			$h .= '<div class="farm-tab-wrapper farm-nav-bank">';
 
 				$h .= $this->getNav('bank', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/banque/operations');
+
+			$h .= '</div>';
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-invoicing">';
+
+				$h .= $this->getNav('invoicing', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/facturation-electronique');
 
 			$h .= '</div>';
 

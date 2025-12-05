@@ -415,9 +415,8 @@ class OperationUi {
 				$h .= '<table class="tr-even">';
 					$h .= '<tr>';
 						$h .= '<th colspan="2" class="text-center">';
-							$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eCashflow['id'].'" target="_blank">';
+							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?id='.$eCashflow['id'].'" target="_blank">';
 								$h .= s("Opération #{id} du {date}", [
-									'link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eCashflow['id'].'" target="_blank">',
 									'id' => encode($eCashflow['id']),
 									'icon' => \Asset::icon('box-arrow-up-right').'</a>',
 									'date' => \util\DateUi::numeric($eCashflow['date']),
