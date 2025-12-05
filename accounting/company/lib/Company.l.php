@@ -30,6 +30,16 @@ class CompanyLib {
 		return 'dev_farm_'.$eFarm['id'];
 	}
 
+	public static function initialize(\farm\Farm $eFarm): void {
+
+		if(OTF_DEMO === FALSE) {
+			self::createSpecificDatabaseAndTables($eFarm);
+		}
+
+		\farm\Farm::model()->update($eFarm, ['hasAccounting' => TRUE]);
+
+	}
+
 	public static function initializeAccounting(\farm\Farm $eFarm, array $input): void {
 
 		$fw = new \FailWatch();
@@ -95,6 +105,7 @@ class CompanyLib {
 		foreach($cJournalCode as $eJournalCode) {
 			\journal\JournalCode::model()->insert($eJournalCode);
 		}
+
 	}
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {

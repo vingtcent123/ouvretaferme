@@ -23,6 +23,7 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Company::initialized' => s("La comptabilité a bien été activée sur votre compte, à vous de jouer !"),
 			'Company::created' => s("Votre ferme a bien été configurée, à vous de jouer !"),
 
 			default => null

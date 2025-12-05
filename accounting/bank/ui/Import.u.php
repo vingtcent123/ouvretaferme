@@ -55,9 +55,7 @@ class ImportUi {
 		\Asset::css('bank', 'import.css');
 
 		if($cImport->empty() === TRUE) {
-			return '<div class="util-info">'.
-				s("Aucun import bancaire n'a été réalisé pour l'exercice {year}", ['year' => \account\FinancialYearUi::getYear($eFinancialYearSelected)]).
-				'</div>';
+			return '<div class="util-info">'.s("Aucun import bancaire n'a été réalisé").'</div>';
 		}
 
 		$h = '<div class="import-timeline-wrapper stick-xs">';
@@ -84,7 +82,7 @@ class ImportUi {
 				$h .= '<div class="import-timeline import-timeline-only">';
 					$h .= '<div class="import-timeline-item">';
 						$h .= '<div class="import-timeline-circle">';
-							if($eFinancialYearSelected->isCurrent() and substr($endPeriod, 0, 5) === date('d/m')) {
+							if(substr($endPeriod, 0, 5) === date('d/m')) {
 								$h .= s("Aujourd'hui");
 							} else {
 								$h .= $endPeriod;

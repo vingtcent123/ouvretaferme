@@ -239,6 +239,14 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function create(FinancialYear $e): void {
+
+		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
+
+		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => \account\FinancialYearUi::getYear($e)]);
+		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
+
+	}
 	public static function update(FinancialYear $e, array $properties): void {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'));

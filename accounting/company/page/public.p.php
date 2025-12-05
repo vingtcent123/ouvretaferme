@@ -1,20 +1,32 @@
 <?php
-new Page(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
-		$data->eFarm->validate('canManage');
-		if($data->eFarm['hasAccounting']) {
-			throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal');
-		}
+new Page(function($data) {
+	\user\ConnectionLib::checkLogged();
+	$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
+	$data->eFarm->validate('canManage');
+
+	if($data->eFarm->usesAccounting()) {
+		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal');
 	}
-)
+
+})
 	->get('/comptabilite/inactive', function($data) {
 		throw new ViewAction($data);
 	})
-	->get('create', function ($data) {
+	->get('/comptabilite/decouvrir', function ($data) {
 
 		throw new ViewAction($data);
+
+	})
+	->get('/comptabilite/parametrer', function ($data) {
+
+		throw new ViewAction($data);
+
+	})
+	->post('doInitialize', function($data) {
+
+		\company\CompanyLib::initialize($data->eFarm);
+
+		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/company/configuration?success=company:Company::initialized');
 
 	})
 	->post('doCreate', function($data) {
