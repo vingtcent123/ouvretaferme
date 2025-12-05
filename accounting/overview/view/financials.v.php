@@ -5,7 +5,7 @@ new AdaptativeView(\farm\Farmer::CHARGES, function($data, FarmTemplate $t) {
 	$t->subNav = 'financials';
 
 	$t->title = s("Les charges de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlAnalyze($data->eFarm, 'expenses');
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/gestion/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
@@ -26,8 +26,9 @@ new AdaptativeView(\farm\Farmer::CHARGES, function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
-
+	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
+	$t->js()->replaceHistory($t->canonical);
+	
 });
 
 new AdaptativeView(\farm\Farmer::BANK, function($data, FarmTemplate $t) {
@@ -36,14 +37,15 @@ new AdaptativeView(\farm\Farmer::BANK, function($data, FarmTemplate $t) {
 	$t->subNav = 'financials';
 
 	$t->title = s("La trésorerie de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlAnalyze($data->eFarm, 'finance');
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/gestion/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
 	echo new overview\BankUi()->get($data->ccOperationBank, $data->ccOperationCash);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
-
+	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
+	$t->js()->replaceHistory($t->canonical);
+	
 });
 
 new AdaptativeView(\farm\Farmer::INTERMEDIATE, function($data, FarmTemplate $t) {
@@ -52,7 +54,7 @@ new AdaptativeView(\farm\Farmer::INTERMEDIATE, function($data, FarmTemplate $t) 
 	$t->subNav = 'financials';
 
 	$t->title = s("Le solde intermédiaire de gestion de de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlAnalyze($data->eFarm, 'sig');
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/gestion/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
@@ -64,6 +66,7 @@ new AdaptativeView(\farm\Farmer::INTERMEDIATE, function($data, FarmTemplate $t) 
 		eFinancialYearComparison: $data->eFinancialYearComparison,
 	);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
-
+	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
+	$t->js()->replaceHistory($t->canonical);
+	
 });

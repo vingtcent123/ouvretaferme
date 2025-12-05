@@ -69,6 +69,6 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
+	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
