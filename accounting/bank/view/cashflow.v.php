@@ -14,7 +14,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 		echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nCashflow, $data->search);
 		echo new \bank\CashflowUi()->getCashflow($data->eFarm, $data->cCashflow, $data->eFinancialYear, $data->eImport, $data->search);
 
-		$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
+		$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 	} else {
 

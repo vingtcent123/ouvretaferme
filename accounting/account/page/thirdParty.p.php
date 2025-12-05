@@ -4,11 +4,11 @@ new \account\ThirdPartyPage(
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm->validate('canManage');
-	}
-)
-	->get('index', function($data) {
-
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+
+	})
+	->get('index', function($data) {
 
 		$data->search = new Search([
 			'name' => GET('name'),

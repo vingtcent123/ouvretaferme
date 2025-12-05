@@ -10,7 +10,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	echo new \journal\JournalCodeUi()->getManage($data->eFarm, $data->cJournalCode);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
+	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 

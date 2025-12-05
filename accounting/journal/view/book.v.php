@@ -12,6 +12,6 @@ new AdaptativeView('/journal/grand-livre', function($data, FarmTemplate $t) {
 	echo new \journal\BookUi()->getSearch($data->search, $data->eFinancialYear);
 	echo new \journal\BookUi()->getBook($data->eFarm, $data->cOperation, $data->eFinancialYear, $data->search);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
+	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
