@@ -835,7 +835,10 @@ class AnalyzeLib {
 					$eInvoice['customer']['invoiceVat'],
 					\util\DateUi::numeric($eInvoice['date']),
 					$eInvoice['paymentMethod']->empty() ? '' : $eInvoice['paymentMethod']['name'],
-					$eInvoice['paymentStatus'] ? 'paid' : 'not_paid',
+					match($eInvoice['paymentStatus']) {
+						Invoice::PAID => 'paid',
+						Invoice::NOT_PAID => 'not_paid',
+					},
 					\util\TextUi::csvNumber($eInvoice['priceExcludingVat']),
 				];
 
