@@ -198,7 +198,7 @@ class HelpUi {
 							$h .= '<td colspan="2" class="game-table-bonus">';
 								$h .= match($eGrowing['fqn']) {
 									'luzerne' => s("<b>+ {value}</b> de rendement sur les cultures des parcelles adjacentes", GameSetting::BONUS_LUZERNE),
-									'pivoine' => s("<b>- {value}<small>min</small></b> de temps de récolte sur toutes les autres cultures du plateau", GameSetting::BONUS_PIVOINE)
+									'pivoine' => s("<b>- {value}<small>min</small></b> de temps de récolte sur toutes les autres cultures du plateau", GameSetting::BONUS_PIVOINE).'<br/>'.s("<b>- maximum 6 pivoines par plateau")
 								};
 							$h .= '</td>';
 						}
