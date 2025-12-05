@@ -34,7 +34,7 @@ class AlertUi {
 			'Action::friendAdded' => s("Vous avez un nouvel ami !"),
 			'Action::friendNotAdded' => s("Le code que vous avez saisi correspond à un ami imaginaire !"),
 
-			'Action::motivated' => s("Vous ami est remotivé et peut travailler plus longtemps !"),
+			'Action::motivated' => s("Votre ami est remotivé et peut travailler plus longtemps !"),
 			'Action::friendNotAdded' => s("Votre ami est épuisé et n'a pas pu être remotivé."),
 
 			'Action::planted' => s("C'est semé !"),

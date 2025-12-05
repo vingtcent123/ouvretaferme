@@ -12,10 +12,8 @@ new Page()
 
 		if(POST('user')) {
 			$eUser = \user\UserLib::getById(POST('user'), ['id', 'email']);
-			$data->message = 'confirmationSentOther';
 		} else {
 			$eUser = new \user\User();
-			$data->message = 'confirmationSent';
 		}
 
 		if($eUser->empty()) {
@@ -24,9 +22,9 @@ new Page()
 
 		\user\UserLib::triggerSendVerifyEmail($eUser, FALSE);
 
-	$fw->validate();
+		$fw->validate();
 
-	throw new ViewAction($data);
+		throw new ReloadAction('user', 'User::forgottenPasswordSend');
 
 	})
 	/**

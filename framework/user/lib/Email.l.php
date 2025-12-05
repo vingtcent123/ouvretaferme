@@ -86,20 +86,21 @@ class EmailLib {
 	 */
 	public static function validate(string $actualHash) {
 
-		if(strpos($actualHash, '.') !== FALSE) {
+		$value = \main\CryptLib::decrypt($actualHash, 'user');
 
-			$userId = (int)explode('.', $actualHash)[1];
-
-			$eUser = UserLib::getById($userId, ['id', 'email']);
-
-			if($eUser->empty()) {
-				return User::fail('invalidHash');
-			}
-
-		} else {
-
+		if($value === NULL) {
 			return User::fail('invalidHash');
+		}
 
+		[$userId, $userEmail] = explode('/', $value);
+
+		$eUser = UserLib::getById($userId, ['id', 'email']);
+
+		if(
+			$eUser->empty() or
+			$eUser['email'] !== $userEmail
+		) {
+			return User::fail('invalidHash');
 		}
 
 		if(ConnectionLib::isLogged()) {
@@ -112,20 +113,13 @@ class EmailLib {
 
 		}
 
-		$expectedHash = self::computeHash($eUser);
 
-		if($expectedHash === $actualHash) {
+		// Swith the user as verified
+		$eUser['verified'] = TRUE;
 
-			// Swith the user as verified
-			$eUser['verified'] = TRUE;
-
-			\user\User::model()
-				->select('verified')
-				->update($eUser);
-
-		} else {
-			return User::fail('invalidHash');
-		}
+		\user\User::model()
+			->select('verified')
+			->update($eUser);
 
 	}
 
@@ -136,7 +130,7 @@ class EmailLib {
 
 		$eUser->expects(['id', 'email']); // Mail can be null
 
-		return hash('sha256', random_bytes(1024)).'.'.$eUser['id'];
+		return \main\CryptLib::encrypt($eUser['id'].'/'.$eUser['email'], 'user');
 
 	}
 
