@@ -43,6 +43,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['commandes', 'professionnels', '{farm}'],
 		],
+		'/comptabilite/inactive' => [
+			'request' => 'company/public',
+			'priority' => 5,
+			'route' => ['comptabilite', 'inactive'],
+		],
 		'/donner' => [
 			'request' => 'association/donation',
 			'priority' => 5,
@@ -52,6 +57,11 @@ Route::register([
 			'request' => 'plant/plant',
 			'priority' => 5,
 			'route' => ['espece', '{id@int}'],
+		],
+		'/facturation-electronique' => [
+			'request' => 'invoicing/index',
+			'priority' => 5,
+			'route' => ['facturation-electronique'],
 		],
 		'/facturation-electronique-les-mains-dans-les-poches' => [
 			'request' => 'main/index',

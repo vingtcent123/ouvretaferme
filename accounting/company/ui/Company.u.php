@@ -26,10 +26,6 @@ class CompanyUi {
 		return '/'.(is_int($farm) ? $farm : $farm['id']);
 	}
 
-	public static function urlAnalyze(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview/analyze'.($view !== NULL ? '/'.$view : '');
-	}
-
 	public static function urlAsset(int|\farm\Farm $farm): string {
 		return '/'.(is_int($farm) ? $farm : $farm['id']).'/asset';
 	}

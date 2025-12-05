@@ -9,7 +9,7 @@ new Page(
 		}
 	}
 )
-	->get('inactive', function($data) {
+	->get('/comptabilite/inactive', function($data) {
 		throw new ViewAction($data);
 	})
 	->get('create', function ($data) {
