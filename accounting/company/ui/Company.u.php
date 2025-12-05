@@ -38,20 +38,6 @@ class CompanyUi {
 		return '/'.(is_int($farm) ? $farm : $farm['id']).'/account';
 	}
 
-	public function warnFinancialYear(\farm\Farm $eFarm, \Collection $cFinancialYear): string {
-
-		if($cFinancialYear->notEmpty()) {
-			return '';
-		}
-
-		$h = '<div class="util-info">';
-			$h .= \Asset::icon('leaf').' '.s("Avant de démarrer, rendez-vous <link>dans les paramètres de votre exploitation</link> pour créer votre premier exercice comptable !", ['link' => '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/">']);
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function create(\farm\Farm $eFarm): string {
 
 		\Asset::js('account', 'financialYear.js');
@@ -107,7 +93,7 @@ class CompanyUi {
 		]);
 
 		$h .= $form->group(
-			content: $form->submit(s("Enregistrer les paramètres de ma ferme"))
+			content: $form->submit(s("Enregistrer"))
 		);
 
 		$h .= $form->close();

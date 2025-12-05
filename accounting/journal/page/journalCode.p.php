@@ -3,7 +3,7 @@ new Page(function($data) {
 
 	\user\ConnectionLib::checkLogged();
 
-	$data->eFarm->validate('canManage');
+	$data->eFarm->validate('canManage', 'hasAccounting');
 })
 	->get('index', function($data) {
 

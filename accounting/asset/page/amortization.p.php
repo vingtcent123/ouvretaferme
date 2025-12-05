@@ -3,6 +3,10 @@ new Page(function($data) {
 
 	$data->eFarm->validate('canManage');
 
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 })

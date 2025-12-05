@@ -1,19 +1,22 @@
 <?php
-new Page(
-	function($data) {
+new Page(function($data) {
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm->validate('canManage');
 
-	}
-)
+})
 	->get('/banque/operations', function($data) {
 
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
 		$data->tipNavigation = 'close';
 
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
+		if($data->eFarm->usesAccounting()) {
+			$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+			$data->cFinancialYear = \account\FinancialYearLib::getAll();
+		} else {
+			$data->eFinancialYear = new \account\FinancialYear();
+			$data->cFinancialYear = new Collection();
+		}
 
 		$search = new Search([
 			'date' => GET('date'),

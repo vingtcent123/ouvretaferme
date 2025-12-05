@@ -6,9 +6,29 @@ class ImportLib extends ImportCrud {
 	public static function formatCurrentFinancialYearImports(\account\FinancialYear $eFinancialYear): array {
 
 		$cImport = self::getAll($eFinancialYear);
-		$startDate = $eFinancialYear['startDate'];
 
-		if($eFinancialYear['endDate'] !== NULL) {
+		if($eFinancialYear->empty()) {
+
+			if($cImport->empty()) {
+
+				$eAccount = \account\Account::model()
+					->select(['date' => new \Sql('MIN(DATE(createdAt))')])
+					->get();
+
+				$startDate = $eAccount['date'];
+
+			} else {
+
+				$startDate = date('Y-m-d', strtotime(min($cImport->getColumn('startDate'))));
+			}
+
+		} else {
+
+			$startDate = $eFinancialYear['startDate'];
+
+		}
+
+		if($eFinancialYear->notEmpty() and $eFinancialYear['endDate'] !== NULL) {
 			$endDate = $eFinancialYear['endDate'];
 		} else {
 			$endDate = date('Y-m-d');
@@ -94,10 +114,15 @@ class ImportLib extends ImportCrud {
 	}
 
 	public static function getAll(\account\FinancialYear $eFinancialYear): \Collection {
+
+		if($eFinancialYear->notEmpty()) {
+			Import::model()
+				->whereStartDate('>=', $eFinancialYear['startDate'].' 00:00:00')
+				->whereEndDate('<=', $eFinancialYear['endDate'].' 23:59:59');
+		}
 		return Import::model()
 			->select(Import::getSelection() + ['account' => BankAccount::getSelection()])
-			->whereStartDate('>=', $eFinancialYear['startDate'].' 00:00:00')
-			->whereEndDate('<=', $eFinancialYear['endDate'].' 23:59:59')
+			->whereStatus('IN', [Import::PARTIAL, Import::FULL])
 			->sort(['startDate' => SORT_ASC])
 			->getCollection();
 	}
@@ -140,13 +165,9 @@ class ImportLib extends ImportCrud {
 			$result = \bank\CashflowLib::insertMultiple($cashflows);
 
 			if(count($result['imported']) === 0) {
-				if(count($result['noFinancialYear']) > 0) {
-					\Fail::log('Import::nothingImportedNoFinancialYear');
-				} else {
-					\Fail::log('Import::nothingImported');
-				}
+				\Fail::log('Import::nothingImported');
 				$status = ImportElement::NONE;
-			} else if(count($result['alreadyImported']) > 0 or count($result['invalidDate']) > 0 or count($result['noFinancialYear']) > 0) {
+			} else if(count($result['alreadyImported']) > 0 or count($result['invalidDate']) > 0) {
 				$status = ImportElement::PARTIAL;
 			} else {
 				$status = ImportElement::FULL;

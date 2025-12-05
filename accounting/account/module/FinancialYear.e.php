@@ -19,11 +19,7 @@ class FinancialYear extends FinancialYearElement {
 	}
 
 	public function isCurrent() {
-
-		$this->expects(['startDate', 'endDate']);
-
 		return $this['startDate'] <= date('Y-m-d') and $this['endDate'] >= date('Y-m-d');
-
 	}
 
 	public function acceptUpdate(): bool {

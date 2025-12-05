@@ -4,6 +4,10 @@ new \journal\OperationPage(function($data) {
 
 	$data->eFarm->validate('canManage');
 
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
 })
 	->applyElement(function($data, \journal\Operation $e) {
 
@@ -31,6 +35,9 @@ new \journal\DeferralPage(function($data) {
 
 	$data->eFarm->validate('canManage');
 
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
 })
 	->applyElement(function($data, \journal\Deferral $e) {
 

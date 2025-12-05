@@ -4,6 +4,10 @@ new Page()
 
 		$data->eFarm->validate('canManage');
 
+		if($data->eFarm->usesAccounting() === FALSE) {
+			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+		}
+
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
