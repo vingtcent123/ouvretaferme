@@ -14,7 +14,7 @@ new Page(function($data) {
 	$data->search = clone $search;
 
 })
-	->get('index', function($data) {
+	->get('/journal/grand-livre', function($data) {
 
 		$data->cOperation = \journal\OperationLib::getAllForBook($data->search);
 		$data->cAccount = \account\AccountLib::getAll();

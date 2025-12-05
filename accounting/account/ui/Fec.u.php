@@ -131,7 +131,7 @@ class FecUi {
 					$h .= '</td>';
 					$h .= '<td>';
 					 $h .= p("{value} écriture n'a pas de journal", "{value} écritures n'ont pas de journal", $data['noJournal']);
-						$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?financialYear='.$eFinancialYear['id'].'&journalCode=-1">']).'</div>';
+						$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&journalCode=-1">']).'</div>';
 					$h .= '</td>';
 				$h .= '</tr>';
 
@@ -147,7 +147,7 @@ class FecUi {
 					$h .= '<td>';
 						if($data['noDocument'] > 0) {
 							$h .= p("{value} écriture n'a pas de document comptable", "{value} écritures n'ont pas de document comptable", $data['noDocument']);
-							$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?financialYear='.$eFinancialYear['id'].'&hasDocument=1">']).'</div>';
+							$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&hasDocument=1">']).'</div>';
 						}
 					$h .= '</td>';
 				$h .= '</tr>';
@@ -192,11 +192,11 @@ class FecUi {
 
 								if($eJournalCode->empty()) {
 
-									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures sans journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?financialYear='.$eFinancialYear['id'].'&journalCode=-1">']).'</div>';
+									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures sans journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&journalCode=-1">']).'</div>';
 
 								} else {
 
-									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures du journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?financialYear='.$eFinancialYear['id'].'&journalCode='.$eJournalCode['id'].'">']).'</div>';
+									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures du journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&journalCode='.$eJournalCode['id'].'">']).'</div>';
 
 								}
 							} else {

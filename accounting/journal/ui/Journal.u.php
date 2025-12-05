@@ -61,7 +61,7 @@ class JournalUi {
 
 	public function getBaseUrl(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear = new \account\FinancialYear()): string {
 
-		return \company\CompanyUi::urlJournal($eFarm).'/operations'.'?financialYear='.($eFinancialYear['id'] ?? '');
+		return \company\CompanyUi::urlJournal($eFarm).'/livre-journal'.'?financialYear='.($eFinancialYear['id'] ?? '');
 
 	}
 	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod, \Collection $cJournalCode): string {
@@ -155,9 +155,9 @@ class JournalUi {
 				}
 			$h .= '</style>';
 
-			$h .= '<a class="tab-item '.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?'.$args.'">'.s("Général").'</a>';
+			$h .= '<a class="tab-item '.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?'.$args.'">'.s("Général").'</a>';
 
-			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
+			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
 				$h .= '<div class="text-center">';
 					$h .= s("Banque");
 					$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
@@ -172,7 +172,7 @@ class JournalUi {
 
 				$attributes = [
 					'class' => 'tab-item journal-code-'.$eJournalCode['id'], 'data-tab' => 'journal-'.$eJournalCode['id'],
-					'href' => \company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.$eJournalCode['id'].'&'.$args,
+					'href' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eJournalCode['id'].'&'.$args,
 				];
 				if((int)$selectedJournalCode === $eJournalCode['id']) {
 					$attributes['style'] = 'color: white; background-color: ';
@@ -196,7 +196,7 @@ class JournalUi {
 			if($eFinancialYear['hasVat']) {
 
 				$journalCode = 'vat-buy';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.$journalCode.'&'.$args.'">';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Achats").')</span></small>';
@@ -204,7 +204,7 @@ class JournalUi {
 				$h .= '</a>';
 
 				$journalCode = 'vat-sell';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.$journalCode.'&'.$args.'">';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Ventes").')</span></small>';
@@ -378,7 +378,7 @@ class JournalUi {
 								$h .= '<td>';
 									$h .= $eOperation['journalCode']->empty()
 										? ''
-										: new JournalCodeUi()->getColoredButton($eOperation['journalCode'], link: \company\CompanyUi::urlJournal($eFarm).'/operations?journalCode='.$eOperation['journalCode']['id'], title: s("Filtrer sur le journal : {value}", encode($eOperation['journalCode']['name'])));
+										: new JournalCodeUi()->getColoredButton($eOperation['journalCode'], link: \company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eOperation['journalCode']['id'], title: s("Filtrer sur le journal : {value}", encode($eOperation['journalCode']['name'])));
 								$h .= '</td>';
 
 							}
@@ -388,7 +388,7 @@ class JournalUi {
 								$h .= '<div class="description'.$class.'">';
 									if($eOperation['asset']->exists() === TRUE) {
 										$attributes = [
-											'href' => \company\CompanyUi::urlAsset($eFarm).'/'.$eOperation['asset']['id'].'/',
+											'href' => \company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eOperation['asset']['id'].'/',
 											'data-dropdown' => 'bottom-end',
 											'data-dropdown-hover' => TRUE,
 											'data-dropdown-offset-x' => 0,

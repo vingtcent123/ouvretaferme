@@ -9,7 +9,7 @@ new Page(function($data) {
 	$data->cJournalCode = \journal\JournalCodeLib::getAll();
 
 })
-	->get('index', function($data) {
+	->get('/journal/livre-journal', function($data) {
 
 		\user\ConnectionLib::checkLogged();
 

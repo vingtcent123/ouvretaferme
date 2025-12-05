@@ -1,27 +1,20 @@
 <?php
-new AdaptativeView('index', function($data, FarmTemplate $t) {
+new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 
 	$t->nav = 'bank';
-	$t->subNav = 'cashflow';
 
 	$t->title = s("Les opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlBank($data->eFarm).'/cashflow';
 
-	$t->mainTitle = new \bank\BankUi()->getBankTitle($data->eFarm, $data->eFinancialYear, $data->nCashflow['all']['count']);
-
-	$t->mainYear = new \account\FinancialYearUi()->getFinancialYearTabs(
-		function(\account\FinancialYear $eFinancialYear) use ($data) {
-			return \company\CompanyUi::urlBank($data->eFarm).'/cashflow?financialYear='.$eFinancialYear['id'];
-		},
-		$data->cFinancialYear,
-		$data->eFinancialYear,
-	);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingBankTitle($data->eFarm, 'bank', $data->nCashflow['all']['count']);
 
 	if($data->eFinancialYear->notEmpty()) {
 
 		echo new \bank\CashflowUi()->getSearch($data->search, $data->eFinancialYear);
 		echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nCashflow, $data->search);
 		echo new \bank\CashflowUi()->getCashflow($data->eFarm, $data->cCashflow, $data->eFinancialYear, $data->eImport, $data->search);
+
+		$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm, $data->eFinancialYear['id']));
 
 	} else {
 

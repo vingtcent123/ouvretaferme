@@ -133,7 +133,7 @@ Class BalanceUi {
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 							$h .= '<div class="dropdown-list">';
 								$h .= '<div class="dropdown-title">'.encode($eOperation['accountLabel']).' '.encode($eOperation['thirdParty']['name']).'</div>';
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.$eOperation['accountLabel'].'&thirdParty='.$eOperation['thirdParty']['id'].'" class="dropdown-item">'.s("Voir le détail des écritures").'</a>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?accountLabel='.$eOperation['accountLabel'].'&thirdParty='.$eOperation['thirdParty']['id'].'" class="dropdown-item">'.s("Voir le détail des écritures").'</a>';
 								$h .= '</div>';
 							$h .= '</div>';
 						$h .= '</td>';

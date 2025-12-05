@@ -7,28 +7,11 @@ class BalanceSheetUi {
 		\Asset::css('overview', 'balance.css');
 	}
 
-	public function getTitle(): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= s("Bilan");
-			$h .= '</h1>';
-
-			$h .= '<div>';
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-	}
-
 	public function getSearch(\Search $search, \Collection $cFinancialYear, \account\FinancialYear $eFinancialYear): string {
 
 		$excludedProperties = ['ids'];
-		if($search->get('view') === BalanceSheetLib::VIEW_BASIC) {
-			$excludedProperties[] = 'view';
+		if($search->get('type') === BalanceSheetLib::VIEW_BASIC) {
+			$excludedProperties[] = 'type';
 		}
 
 		$h = '<div id="balance-sheet-search" class="util-block-search '.($search->empty($excludedProperties) === TRUE ? 'hide' : '').'">';
@@ -39,10 +22,10 @@ class BalanceSheetUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 				$h .= '<div>';
-					$h .= $form->select('view', [
+					$h .= $form->select('type', [
 						BalanceSheetLib::VIEW_BASIC => s("Vue synthétique"),
 						BalanceSheetLib::VIEW_DETAILED => s("Vue détaillée"),
-					], $search->get('view'), ['mandatory' => TRUE]);
+					], $search->get('type'), ['mandatory' => TRUE]);
 
 					if($cFinancialYear->count() > 1) {
 						$h .= $form->select('financialYearComparison', $cFinancialYear
