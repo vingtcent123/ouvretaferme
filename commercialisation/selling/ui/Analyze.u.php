@@ -2064,6 +2064,34 @@ class AnalyzeUi {
 
 	}
 
+	public function getExportInvoicesHeader(\farm\Farm $eFarm, array $vatRates): array {
+
+		$header = [
+			'invoice_number',
+			'customer_name',
+			'customer_siret',
+			'customer_vat',
+			'date',
+			'payment_method',
+			'payment_status'
+		];
+
+		if($eFarm->getSelling('hasVat')) {
+			$header[] = 'amount_excluding_vat';
+			foreach($vatRates as $vatRate) {
+				$header[] = 'vat_'.$vatRate;
+			}
+			$header[] = 'amount_including_vat';
+		} else {
+			$header[] = 'amount';
+		}
+
+		$header[] = 'url';
+
+		return $header;
+
+	}
+
 	public function getExportSalesHeader(\farm\Farm $eFarm): array {
 
 		$header = [

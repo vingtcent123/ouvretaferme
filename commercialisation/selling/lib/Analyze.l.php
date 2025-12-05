@@ -793,6 +793,80 @@ class AnalyzeLib {
 
 	}
 
+	public static function getExportInvoices(\farm\Farm $eFarm, int $year): array {
+
+		$cInvoice = Invoice::model()
+			->select([
+				'id', 'document',
+				'farm',
+				'name',
+				'customer' => ['name', 'siret', 'invoiceVat'],
+				'priceIncludingVat', 'priceExcludingVat',
+				'vat', 'vatByRate',
+				'date',
+				'paymentMethod' => ['name'],
+				'paymentStatus',
+			])
+			->whereFarm($eFarm)
+			->whereGeneration(Invoice::SUCCESS)
+			->where('EXTRACT(YEAR FROM date) = '.$year)
+			->sort('id')
+			->getCollection();
+
+		$vatRates = $cInvoice->reduce(function($eInvoice, $vatRates) {
+
+			if($eInvoice['vatByRate'] !== NULL) {
+				return array_merge($vatRates, array_column($eInvoice['vatByRate'], 'vatRate'));
+			} else {
+				return $vatRates;
+			}
+
+		}, []);
+
+		$vatRates = array_unique($vatRates);
+		sort($vatRates);
+
+		$data = $cInvoice->toArray(function(Invoice $eInvoice) use($eFarm, $vatRates) {
+
+				$data = [
+					$eInvoice->getInvoice($eInvoice['farm']),
+					$eInvoice['customer']->getName(),
+					$eInvoice['customer']['siret'],
+					$eInvoice['customer']['invoiceVat'],
+					\util\DateUi::numeric($eInvoice['date']),
+					$eInvoice['paymentMethod']->empty() ? '' : $eInvoice['paymentMethod']['name'],
+					$eInvoice['paymentStatus'] ? 'paid' : 'not_paid',
+					\util\TextUi::csvNumber($eInvoice['priceExcludingVat']),
+				];
+
+				if($vatRates) {
+
+					$vatList = [];
+					foreach($eInvoice['vatByRate'] as ['vat' => $vat, 'vatRate' => $vatRate]) {
+						$vatList[(string)$vatRate] = $vat;
+					}
+
+					foreach($vatRates as $rate) {
+						if(isset($vatList[(string)$rate])) {
+							$data[] = \util\TextUi::csvNumber($vatList[(string)$rate]);
+						} else {
+							$data[] = '';
+						}
+					}
+
+					$data[] = \util\TextUi::csvNumber($eInvoice['priceIncludingVat']);
+
+				}
+
+				$data[] = \Lime::getUrl().InvoiceUi::url($eInvoice);
+
+				return $data;
+			});
+
+		return [$data, $vatRates];
+
+	}
+
 	public static function getExportSales(\farm\Farm $eFarm, int $year): array {
 
 		self::filterSaleStats();

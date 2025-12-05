@@ -1,5 +1,17 @@
 <?php
 new \farm\FarmPage()
+	->read('exportInvoices', function($data) {
+
+		$data->e->validate('canAnalyze', 'canPersonalData');
+
+		$year = GET('year', 'int');
+
+		[$export, $vatRates] = \selling\AnalyzeLib::getExportInvoices($data->e, $year);
+		array_unshift($export, new \selling\AnalyzeUi()->getExportInvoicesHeader($data->e, $vatRates));
+
+		throw new CsvAction($export, 'factures-'.$year.'.csv');
+
+	})
 	->read('exportSales', function($data) {
 
 		$data->e->validate('canAnalyze', 'canPersonalData');

@@ -665,6 +665,13 @@ class FarmUi {
 				$h .= \Asset::icon('boxes');
 			$h .= '</a>';
 
+			$h .= '<a href="/selling/csv:exportInvoices?id='.$eFarm['id'].'&year='.$year.'" class="util-button" data-ajax-navigation="never">';
+				$h .= '<div>';
+					$h .= '<h4>'.s("Exporter les factures").'</h4>';
+				$h .= '</div>';
+				$h .= \Asset::icon('receipt');
+			$h .= '</a>';
+
 			if(FEATURE_PRE_ACCOUNTING) {
 				if($eFarm->hasAccounting() === FALSE) {
 					$url = \company\CompanyUi::urlSettings($eFarm);
