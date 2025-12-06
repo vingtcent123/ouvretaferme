@@ -74,7 +74,11 @@ class WidgetLib {
 
 	public static function getDonationForm(Website $eWebsite): ?\Closure {
 
-		return fn() => new \association\AssociationUi()->donationForm(eWebsite: $eWebsite);
+		$eUser = new \user\User([
+			'cCountry' => \user\CountryLib::getForSignUp()
+		]);
+
+		return fn() => new \association\AssociationUi()->donationForm($eUser, eWebsite: $eWebsite);
 
 	}
 

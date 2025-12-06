@@ -16,7 +16,6 @@ class AlertUi {
 			'Farm::legalEmail.empty' => s("Merci de renseigner l'adresse e-mail de la ferme !"),
 			'Farm::name.check' => s("Merci de renseigner le nom de la ferme !"),
 			'Farm::cultivationPlace.check' => s("Veuillez sélectionner une ville dans le menu déroulant."),
-			'Farm::cultivationPlace.required' => s("Merci de renseigner la ville du siège d'exploitation de la ferme."),
 			'Farm::defaultBedWidth.size' => s("La largeur de planche par défaut ne peut pas être inférieure à 5 cm."),
 			'Farmer::demo.write' => s("Vous ne pouvez pas modifier l'équipe sur la démo !"),
 			'Farmer::user.check' => s("Vous n'avez pas sélectionné d'utilisateur."),

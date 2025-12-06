@@ -459,17 +459,6 @@ class Farm extends FarmElement {
 				return TRUE;
 
 			})
-			->setCallback('place.required', function(?string $place) use($input) {
-
-				$required = $input['placeRequired'] ?? FALSE;
-
-				if($required) {
-					return ($place !== NULL);
-				} else {
-					return TRUE;
-				}
-
-			})
 			->setCallback('legalEmail.empty', function(?string $email) {
 				return ($email !== NULL);
 			})

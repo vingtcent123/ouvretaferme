@@ -75,7 +75,7 @@ class AssociationUi {
 
 	}
 
-	public function donationForm(\user\User $eUser = new \user\User(), \website\Website $eWebsite = new \website\Website()): string {
+	public function donationForm(\user\User $eUser, \website\Website $eWebsite = new \website\Website()): string {
 
 		\Asset::css('association', 'association.css');
 		\Asset::js('association', 'association.js');

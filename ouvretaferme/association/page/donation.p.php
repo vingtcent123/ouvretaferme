@@ -35,6 +35,7 @@ new Page()
 		}
 
 		$data->eUser = \user\ConnectionLib::getOnline();
+		$data->eUser['cCountry'] = \user\CountryLib::getForSignUp();
 
 		throw new ViewAction($data);
 

@@ -3,19 +3,17 @@ namespace main;
 
 class PlaceLib {
 
-	public static function searchCitiesByName(string $name): array {
+	public static function searchCitiesByName(\farm\Farm $eFarm, string $name): array {
 
 		$arguments = [];
 
-		$eUser = \user\ConnectionLib::getOnline();
-
-		if($eUser->notEmpty()) {
+		if($eFarm->notEmpty()) {
 
 			\user\Country::model()
 				->select('code')
-				->get($eUser['invoiceCountry']);
+				->get($eFarm['legalCountry']);
 
-			$arguments['invoiceCountry'] = $eUser['invoiceCountry']['code'];
+			$arguments['country'] = $eFarm['legalCountry']['code'];
 
 		}
 

@@ -3,7 +3,9 @@ new Page()
 	->post('cities', function($data) {
 
 		$query = POST('query');
-		$data->locations = \main\PlaceLib::searchCitiesByName($query);
+		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canWrite');
+
+		$data->locations = \main\PlaceLib::searchCitiesByName($eFarm, $query);
 
 		throw new ViewAction($data);
 

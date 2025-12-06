@@ -2581,6 +2581,11 @@ class FarmUi {
 				break;
 
 			case 'cultivationPlace' :
+				$d->autocompleteBody = function(\util\FormUi $form, Farm $e) {
+					return [
+						'farm' => $e['id']
+					];
+				};
 				new \main\PlaceUi()->query($d);
 				break;
 

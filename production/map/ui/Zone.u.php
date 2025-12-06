@@ -514,8 +514,8 @@ class ZoneUi {
 		if($canCartography === FALSE) {
 
 			$map = '<div class="form-control-block">';
-				$map .= '<p>'.s("Si vous souhaitez dessiner votre parcelle sur la carte, vous devez d'abord renseigner le siège d'exploitation de la ferme. Vous pouvez aussi sauter cette étape et saisir directement la surface de cette parcelle.").'</p>';
-				$map .= '<a href="/farm/farm:update?id='.$eZone['farm']['id'].'" class="btn btn-outline-secondary">'.s("Renseigner le siège d'exploitation").'</a>';
+				$map .= '<p>'.s("Si vous souhaitez dessiner votre parcelle sur la carte, vous devez d'abord renseigner le lieu de production de la ferme. Vous pouvez aussi sauter cette étape et saisir directement la surface de cette parcelle.").'</p>';
+				$map .= '<a href="/farm/farm:update?id='.$eZone['farm']['id'].'" class="btn btn-outline-secondary">'.s("Renseigner le lieu de production").'</a>';
 			$map .= '</div>';
 
 		} else {
