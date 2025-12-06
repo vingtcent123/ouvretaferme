@@ -13,6 +13,7 @@ L::setVariables([
 
 Lime::setName('Ouvretaferme');
 
+define('FEATURE_DROPBOX', FALSE);
 define('FEATURE_ACCOUNTING', LIME_ENV === 'dev');
 define('FEATURE_PRE_ACCOUNTING', LIME_ENV === 'dev');
 define('FEATURE_GAME', TRUE);
