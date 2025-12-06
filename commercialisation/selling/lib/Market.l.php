@@ -249,11 +249,16 @@ class MarketLib {
 			$eSale['cPayment'] = PaymentLib::getBySale($eSale);
 
 			if($eSale['cPayment']->empty()) {
-				\Fail::log('Market::emptyPayment');
-				return;
-			} else {
 
-				self::validatePaymentConsistency($eSale);
+				Sale::model()->rollBack();
+				\Fail::log('selling\Market::emptyPayment');
+				return;
+
+			} else if(self::hasPaymentConsistency($eSale) === FALSE) {
+
+				Sale::model()->rollBack();
+				\Fail::log('selling\Market::inconsistencyTotal');
+				return;
 
 			}
 
@@ -269,8 +274,13 @@ class MarketLib {
 
 			$eSale['cPayment'] = PaymentLib::getBySale($eSale);
 
-			if($eSale['cPayment']->notEmpty()) {
-				self::validatePaymentConsistency($eSale);
+			if(
+				$eSale['cPayment']->notEmpty() and
+				self::hasPaymentConsistency($eSale) === FALSE
+			) {
+				Sale::model()->rollBack();
+				\Fail::log('selling\Market::inconsistencyTotal');
+				return;
 			}
 
 			// On sort la vente du logiciel de caisse
@@ -295,13 +305,11 @@ class MarketLib {
 
 	}
 
-	public static function validatePaymentConsistency(Sale $eSale): void {
+	public static function hasPaymentConsistency(Sale $eSale): bool {
 
 		$totalPayments = $eSale['cPayment']->reduce(fn($e, $v) => $v + $e['amountIncludingVat'], 0);
 
-		if($totalPayments !== $eSale['priceIncludingVat']) {
-			throw new \FailException('selling\Market::inconsistencyTotal');
-		}
+		return ($totalPayments === $eSale['priceIncludingVat']);
 
 	}
 

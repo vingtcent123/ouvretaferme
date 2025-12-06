@@ -80,7 +80,11 @@ new \selling\SalePage()
 
 		$eSaleMarket = $data->e['marketParent'];
 
+		$fw = new FailWatch();
+
 		\selling\MarketLib::doNotPaidMarketSale($data->e);
+
+		$fw->validate();
 
 		throw new RedirectAction(\selling\SaleUi::urlMarket($eSaleMarket).'?success=selling:Market::saleExcluded');
 
