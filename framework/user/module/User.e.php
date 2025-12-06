@@ -156,7 +156,7 @@ class User extends UserElement {
 				);
 
 			})
-			->setCallback('country.check', function($eCountry): bool {
+			->setCallback('invoiceCountry.check', function($eCountry): bool {
 
 				return Country::model()->exists($eCountry);
 

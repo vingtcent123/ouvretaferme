@@ -439,7 +439,7 @@ class Farm extends FarmElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('country.check', function($eCountry): bool {
+			->setCallback('legalCountry.check', function($eCountry): bool {
 
 				return \user\Country::model()->exists($eCountry);
 
