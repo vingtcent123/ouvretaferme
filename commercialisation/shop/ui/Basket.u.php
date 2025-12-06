@@ -665,7 +665,7 @@ class BasketUi {
 
 			$h .= $form->openAjax(\shop\ShopUi::userUrl($eShop, $eDate, ':doUpdateAddress'), ['style' => 'max-width: 40rem']);
 
-				$h .= $form->address(NULL, $eUser).'<br/>';
+				$h .= $form->address('invoice', $eUser).'<br/>';
 				$h .= $form->submit(s("Enregistrer l'adresse").' '.\Asset::icon('chevron-right'), ['class' => 'btn btn-lg btn-secondary']);
 
 			$h .= $form->close();

@@ -49,10 +49,10 @@ class UserModel extends \ModuleModel {
 			'email' => ['email', 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'birthdate' => ['date', 'min' => toDate('NOW - 100 YEARS'), 'max' => toDate('NOW - 10 YEARS'), 'null' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'street1' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'street2' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'postcode' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'city' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'invoiceStreet1' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'invoiceStreet2' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'invoicePostcode' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'invoiceCity' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'verified' => ['bool', 'cast' => 'bool'],
 			'country' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'visibility' => ['enum', [\user\User::PUBLIC, \user\User::PRIVATE], 'cast' => 'enum'],
@@ -71,7 +71,7 @@ class UserModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'firstName', 'lastName', 'email', 'birthdate', 'phone', 'street1', 'street2', 'postcode', 'city', 'verified', 'country', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
+			'id', 'firstName', 'lastName', 'email', 'birthdate', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'verified', 'country', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
 		]);
 
 		$this->propertiesToModule += [
@@ -180,20 +180,20 @@ class UserModel extends \ModuleModel {
 		return $this->where('phone', ...$data);
 	}
 
-	public function whereStreet1(...$data): UserModel {
-		return $this->where('street1', ...$data);
+	public function whereInvoiceStreet1(...$data): UserModel {
+		return $this->where('invoiceStreet1', ...$data);
 	}
 
-	public function whereStreet2(...$data): UserModel {
-		return $this->where('street2', ...$data);
+	public function whereInvoiceStreet2(...$data): UserModel {
+		return $this->where('invoiceStreet2', ...$data);
 	}
 
-	public function wherePostcode(...$data): UserModel {
-		return $this->where('postcode', ...$data);
+	public function whereInvoicePostcode(...$data): UserModel {
+		return $this->where('invoicePostcode', ...$data);
 	}
 
-	public function whereCity(...$data): UserModel {
-		return $this->where('city', ...$data);
+	public function whereInvoiceCity(...$data): UserModel {
+		return $this->where('invoiceCity', ...$data);
 	}
 
 	public function whereVerified(...$data): UserModel {

@@ -29,8 +29,8 @@ class AlertUi {
 			'User::email.auth' => s("Vous ne pouvez pas changer d'adresse e-mail car vous n'êtes pas en authentification standard."),
 			'User::email.empty' => s("Saisissez votre adresse e-mail ici !"),
 			'User::email.duplicate' => s("Vous ne pouvez pas utiliser cette adresse e-mail, car elle a déjà été utilisée pour s'inscrire sur {siteName} (<link>mot de passe oublié ?</link>).", ['link' => '<a href="/user/log:forgottenPassword" target="_blank">']),
-			'User::address.empty' => s("Vous devez saisir au moins la première ligne de l'adresse, un code postal et une ville pour que votre adresse soit complète !"),
-			'User::addressMandatory.check' => s("Merci de saisir votre adresse !"),
+			'User::invoiceAddress.empty' => s("Vous devez saisir au moins la première ligne de l'adresse, un code postal et une ville pour que votre adresse soit complète !"),
+			'User::invoiceAddressMandatory.check' => s("Merci de saisir votre adresse !"),
 			'User::invalidHash' => s("Désolé, ce code de confirmation n'est pas valide."),
 			'User::internal' => s("Une erreur interne est survenue."),
 

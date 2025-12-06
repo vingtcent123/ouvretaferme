@@ -48,7 +48,7 @@ class DemoLib {
 	];
 
 	const COPY_PROPERTY_EXCLUDE = [
-		'user\User' => ['birthdate', 'phone', 'vignette', 'street1', 'street2', 'postcode', 'city'],
+		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
 		'selling\Sale' => ['invoice', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity'],

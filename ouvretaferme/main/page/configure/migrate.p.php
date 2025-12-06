@@ -2,14 +2,33 @@
 new Page()
 	->cli('index', function($data) {
 
-		$c = \payment\StripeFarm::model()
-			->select()
-			->getCollection();
+		$l = \util\CsvLib::parseCsv('/tmp/a.csv', ',');
 
-		foreach($c as $e) {
+		$u = [];
 
+		foreach($l as [$n, $c]) {
+
+			if(
+				\user\Country::model()
+					->whereCode($c)
+					->update([
+						'name' => $n
+					]) > 0
+			) {
+				$u[] = $c;
+				echo $c.': UPDATED'."\n";
+			} else if(
+				\user\Country::model()
+					->whereCode($c)
+					->whereName($n)
+					->exists()
+			) {
+				$u[] = $c;
+			}
 
 		}
+
+		dd(\user\Country::model()->select(\user\Country::getSelection())->whereCode('NOT IN', $u)->getCollection());
 
 	});
 ?>

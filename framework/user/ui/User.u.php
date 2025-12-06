@@ -195,7 +195,7 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 			)
 		);
 		$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName', 'phone']);
-		$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
+		$h .= $form->addressGroup(s("Adresse"), 'invoice', $eUser);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary'])
@@ -614,9 +614,9 @@ L'équipe");
 			'lastName' => s("Nom"),
 			'firstName' => s("Prénom"),
 			'birthdate' => s("Date de naissance"),
-			'street' => s("Adresse"),
-			'postcode' => s("Code postal"),
-			'city' => s("Ville"),
+			'invoiceStreet' => s("Adresse"),
+			'invoicePostcode' => s("Code postal"),
+			'invoiceCity' => s("Ville"),
 		]);
 
 		switch($property) {

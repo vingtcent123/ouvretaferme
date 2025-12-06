@@ -704,7 +704,7 @@ class FormUi {
 
 	}
 
-	public function addressGroup(string $label, ?string $prefix, \Element $e): string {
+	public function addressGroup(string $label, string $prefix, \Element $e): string {
 
 		$field = fn($name) => ($prefix === NULL) ? $name : $prefix.ucfirst($name);
 
@@ -1932,7 +1932,7 @@ class FormUi {
 		return $this->input('email', $name, $value, $attributes);
 	}
 
-	public function address(?string $prefix, \Element $e) {
+	public function address(string $prefix, \Element $e) {
 
 		$field = fn($name) => ($prefix === NULL) ? $name : $prefix.ucfirst($name);
 

@@ -666,5 +666,5 @@ new Page(function($data) {
 new \user\UserPage()
 	->getElement(fn() => \user\ConnectionLib::getOnline())
 	->doUpdateProperties('/shop/public/{fqn}/{date}/:doUpdatePhone', ['phone'], fn($data) => throw new ViewAction($data))
-	->doUpdateProperties('/shop/public/{fqn}/{date}/:doUpdateAddress', ['street1', 'street2', 'postcode', 'city', 'addressMandatory'], fn($data) => throw new ViewAction($data));
+	->doUpdateProperties('/shop/public/{fqn}/{date}/:doUpdateAddress', ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceAddressMandatory'], fn($data) => throw new ViewAction($data));
 ?>

@@ -85,18 +85,18 @@ class User extends UserElement {
 			return NULL;
 		}
 
-		$address = $this['street1']."\n";
-		if($this['street2'] !== NULL) {
-			$address .= $this['street2']."\n";
+		$address = $this['invoiceStreet1']."\n";
+		if($this['invoiceStreet2'] !== NULL) {
+			$address .= $this['invoiceStreet2']."\n";
 		}
-		$address .= $this['postcode'].' '.$this['city'];
+		$address .= $this['invoicePostcode'].' '.$this['invoiceCity'];
 
 		return $address;
 
 	}
 
 	public function hasAddress(): bool {
-		return ($this['city'] !== NULL);
+		return ($this['invoiceCity'] !== NULL);
 	}
 
 	public function isPrivate(): bool {
@@ -116,7 +116,7 @@ class User extends UserElement {
 			unset($properties[$emailKey]);
 		}
 
-		$address = count(array_intersect($properties, ['street1', 'street2', 'postcode', 'city']));
+		$address = count(array_intersect($properties, ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity']));
 
 		if($address === 4) {
 			$properties[] = 'address';
@@ -176,33 +176,33 @@ class User extends UserElement {
 			})
 			->setCallback('address.empty', function(): bool {
 
-				if($this['street1'] === NULL and $this['street2'] === NULL and $this['postcode'] === NULL and $this['city'] === NULL) {
+				if($this['invoiceStreet1'] === NULL and $this['invoiceStreet2'] === NULL and $this['invoicePostcode'] === NULL and $this['invoiceCity'] === NULL) {
 					return TRUE;
 				}
 
 				$fw = new \FailWatch();
 
-				if($this['street1'] === NULL) {
-					User::fail('street1.check');
+				if($this['invoiceStreet1'] === NULL) {
+					User::fail('invoiceStreet1.check');
 				}
 
-				if($this['postcode'] === NULL) {
-					User::fail('postcode.check');
+				if($this['invoicePostcode'] === NULL) {
+					User::fail('invoicePostcode.check');
 				}
 
-				if($this['city'] === NULL) {
-					User::fail('city.check');
+				if($this['invoiceCity'] === NULL) {
+					User::fail('invoiceCity.check');
 				}
 
 				return $fw->ok();
 
 			})
-			->setCallback('addressMandatory.check', function(): bool {
+			->setCallback('invoiceAddressMandatory.check', function(): bool {
 
 				return (
-					$this['street1'] !== NULL and
-					$this['postcode'] !== NULL and
-					$this['city'] !== NULL
+					$this['invoiceStreet1'] !== NULL and
+					$this['invoicePostcode'] !== NULL and
+					$this['invoiceCity'] !== NULL
 				);
 
 			});

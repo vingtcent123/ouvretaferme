@@ -16,7 +16,7 @@ class UserLib extends UserCrud {
 	private static ?\Collection $cCountryList = NULL;
 
 	public static function getPropertiesUpdate(): array {
-		return ['firstName', 'lastName', 'phone', 'street1', 'street2', 'postcode', 'city'];
+		return ['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'];
 	}
 
 	public static function count(): int {
@@ -352,7 +352,7 @@ class UserLib extends UserCrud {
 
 		}
 
-		array_delete($properties, 'addressMandatory');
+		array_delete($properties, 'invoiceAddressMandatory');
 
 		if($properties) {
 

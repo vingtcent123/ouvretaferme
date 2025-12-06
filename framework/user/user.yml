@@ -49,10 +49,10 @@ User:
   email: ?email(1, 100) @collate(general)
   birthdate: ?date(PHP(toDate('NOW - 100 YEARS')), PHP(toDate('NOW - 10 YEARS')))
   phone: ?text8(1, null)
-  street1: ?text8(1, null)
-  street2: ?text8(1, null)
-  postcode: ?text8(1, null)
-  city: ?text8(1, null)
+  invoiceStreet1: ?text8(1, null)
+  invoiceStreet2: ?text8(1, null)
+  invoicePostcode: ?text8(1, null)
+  invoiceCity: ?text8(1, null)
   verified: bool = FALSE
   country: ?user\Country
   visibility: enum(PUBLIC, PRIVATE) = PUBLIC

@@ -88,9 +88,9 @@ class MembershipLib {
 				\user\User::fail('email.check');
 			}
 
-			$eUser->build(['firstName', 'lastName', 'phone', 'street1', 'street2', 'postcode', 'city'], $_POST);
+			$eUser->build(['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'], $_POST);
 
-			if($eUser['street1'] === NULL and $eUser['street2'] === NULL and $eUser['postcode'] === NULL and $eUser['city'] === NULL) {
+			if($eUser['invoiceStreet1'] === NULL and $eUser['invoiceStreet2'] === NULL and $eUser['invoicePostcode'] === NULL and $eUser['invoiceCity'] === NULL) {
 				\user\User::fail('address.check');
 			}
 			$fw->validate();
@@ -102,10 +102,10 @@ class MembershipLib {
 				->whereFirstName($eUser['firstName'])
 				->whereLastName($eUser['lastName'])
 				->wherePhone($eUser['phone'])
-				->whereInvoiceStreet1($eUser['street1'])
-				->whereInvoiceStreet2($eUser['street2'])
-				->whereInvoicePostcode($eUser['postcode'])
-				->whereInvoiceCity($eUser['city'])
+				->whereInvoiceStreet1($eUser['invoiceStreet1'])
+				->whereInvoiceStreet2($eUser['invoiceStreet2'])
+				->whereInvoicePostcode($eUser['invoicePostcode'])
+				->whereInvoiceCity($eUser['invoiceCity'])
 				->sort(['createdAt' => SORT_DESC])
 				->get();
 
@@ -143,10 +143,10 @@ class MembershipLib {
 					'name' => $eUser->getName(),
 					'type' => \selling\Customer::PRIVATE,
 					'destination' => \selling\Customer::INDIVIDUAL,
-					'invoiceStreet1' => $eUser['street1'],
-					'invoiceStreet2' => $eUser['street2'],
-					'invoicePostcode' => $eUser['postcode'],
-					'invoiceCity' => $eUser['city'],
+					'invoiceStreet1' => $eUser['invoiceStreet1'],
+					'invoiceStreet2' => $eUser['invoiceStreet2'],
+					'invoicePostcode' => $eUser['invoicePostcode'],
+					'invoiceCity' => $eUser['invoiceCity'],
 					'invoiceEmail' => $eUser['email'],
 				]);
 

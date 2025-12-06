@@ -104,7 +104,7 @@ class AssociationUi {
 
 					$h .= $form->hidden('from', LIME_URL);
 					$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'phone']);
-					$h .= $form->addressGroup(s("Adresse"), NULL, $eUser);
+					$h .= $form->addressGroup(s("Adresse"), 'invoice', $eUser);
 
 					if($eWebsite->empty()) {
 						$h .= '<h3>'.s("Montant de votre don").'</h3>';

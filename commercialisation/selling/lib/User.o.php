@@ -38,7 +38,7 @@ class UserObserverLib {
 			$values['email'] = $eUser['email'];
 		}
 
-		$address = ['street1', 'street2', 'postcode', 'city'];
+		$address = ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'];
 
 		if(array_intersect($address, $properties)) {
 
