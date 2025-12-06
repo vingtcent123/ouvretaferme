@@ -1643,6 +1643,7 @@ class SaleLib extends SaleCrud {
 			case 'closed':
 				return self::filterForAccountingCheck($eFarm, $search)
 					->whereClosed(FALSE)
+					->whereProfile('!=', Sale::SALE_MARKET)
 					->count();
 
 		}
@@ -1678,6 +1679,7 @@ class SaleLib extends SaleCrud {
 			'closed' => self::filterForAccountingCheck($eFarm, $search)
 				->select($select)
 				->whereClosed(FALSE)
+				->whereProfile('!=', Sale::SALE_MARKET)
 				->sort(['deliveredAt' => SORT_DESC])
 				->getCollection(NULL, NULL, 'id'),
 
@@ -1696,6 +1698,7 @@ class SaleLib extends SaleCrud {
 
 			'closed' => self::filterForAccountingCheck($eFarm, $search)
 				->whereClosed(TRUE)
+				->whereProfile('!=', Sale::SALE_MARKET)
 				->count(),
 
 			'delivered' => self::filterForAccountingCheck($eFarm, $search)
