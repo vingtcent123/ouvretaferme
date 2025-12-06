@@ -34,7 +34,7 @@ class SignUpLib {
 
 		$fw = new \FailWatch;
 
-		$eUser->build(['role', 'email', 'birthdate', 'firstName', 'lastName'], $input);
+		$eUser->build(['role', 'email', 'birthdate', 'firstName', 'lastName', 'country'], $input);
 
 		if($eUser->offsetExists('id') === FALSE) {
 
@@ -130,9 +130,7 @@ class SignUpLib {
 	 */
 	public static function create(\Element $eUser, bool $verifiedByDefault = TRUE) {
 
-		$eUser->expects(['auth', 'visibility']);
-
-		$eUser['country'] = UserLib::getCountry();
+		$eUser->expects(['auth', 'visibility', 'country']);
 
 		// Required by doLogIn() for log in just after create
 		$eUser['status'] = User::ACTIVE;
@@ -252,8 +250,8 @@ class SignUpLib {
 			->getCollection(NULL, NULL, 'type');
 
 		$values = [
-			'drop' => ($cUserAuth->offsetExists(UserAuth::IMAP) === FALSE or $cUserAuth->count() > 1),
-			'email' => ($cUserAuth->offsetExists(UserAuth::IMAP) === FALSE or $cUserAuth->count() > 1),
+			'drop' => TRUE,
+			'email' => TRUE,
 			'password' => TRUE,
 			'hasPassword' => $cUserAuth->offsetExists(UserAuth::BASIC),
 			'cUserAuth' => $cUserAuth

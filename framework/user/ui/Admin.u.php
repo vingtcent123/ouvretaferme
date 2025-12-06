@@ -158,9 +158,6 @@ class AdminUi {
 							case 'basic':
 								$auth[] = \Asset::icon('envelope', ['title' => s("Email")]);
 								break;
-							case 'imap':
-								$auth[] = \Asset::icon('at', ['title' => s("Imap")]);
-								break;
 							default:
 								$auth[] = ucfirst($eUserAuth['type']);
 						}

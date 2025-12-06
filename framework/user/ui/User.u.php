@@ -114,6 +114,8 @@ class UserUi {
 	 */
 	public function signUp(User $e, Role $eRole, ?string $redirect = NULL): string {
 
+		$e->expects(['cCountry']);
+
 		$form = new \util\FormUi([
 			'firstColumnSize' => 40
 		]);
@@ -126,7 +128,7 @@ class UserUi {
 
 			$h .= implode('', self::notify('signUpFormTop', $form, $eRole));
 
-			$h .= $form->dynamicGroups($e, ['firstName', 'lastName', 'email']);
+			$h .= $form->dynamicGroups($e, ['firstName', 'lastName', 'country', 'email']);
 
 			$h .= $form->group(
 				s("Votre mot de passe"),
@@ -545,9 +547,6 @@ L'équipe", ['how' => self::getSignUpType($eUser), 'url' => \Lime::getUrl()]);
 
 		switch($eUser['auth']['type']) {
 
-			case UserAuth::IMAP :
-				return s("Vous venez de vous inscrire sur {siteName} en utilisant un compte IMAP !");
-
 			case UserAuth::BASIC :
 				return s("Vous venez de vous inscrire sur {siteName} avec votre adresse e-mail {value}.", ['value' => encode($eUser['email'])]);
 
@@ -609,6 +608,7 @@ L'équipe");
 
 		$d = User::model()->describer($property, [
 			'role' => s("Profil"),
+			'country' => s("Pays"),
 			'email' => s("Adresse e-mail"),
 			'phone' => s("Numéro de téléphone"),
 			'lastName' => s("Nom"),
@@ -647,6 +647,14 @@ L'équipe");
 				};
 				$d->values = fn(User $e) => $e['cRole'] ?? $e->expects(['cRole']);
 				$d->attributes['mandatory'] = TRUE;
+				break;
+
+			case 'country' :
+				$d->values = fn(User $e) => $e['cCountry'] ?? $e->expects(['cCountry']);
+				$d->attributes = fn(\util\FormUi $form, User $e) => [
+					'group' => is_array($e['cCountry']),
+					'mandatory' => TRUE
+				];
 				break;
 
 			case 'birthdate' :

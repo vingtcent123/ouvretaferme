@@ -136,8 +136,7 @@ class ErrorPhpLib {
 		// Exclude errors with iconv(), getimagesize()
 		if(
 			strpos($message, 'iconv()') !== FALSE or
-			strpos($message, 'getimagesize()') !== FALSE or
-			strpos($message, 'Can not authenticate to IMAP server') !== FALSE
+			strpos($message, 'getimagesize()') !== FALSE
 		) {
 			return;
 		}

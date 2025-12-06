@@ -14,7 +14,8 @@ Ban:
 Country:
   id: serial32
   code: textFixed(2, 2)
-  name: text8
+  name: text8 @collate(general)
+  position: ?int16(1, null)
   UNIQUE: [
     ["code"]
   ]
@@ -79,7 +80,7 @@ UserAuth:
   id: serial32
   user: ?user\User
   userArchive: ?user\User
-  type: enum(BASIC, IMAP)
+  type: enum(BASIC)
   login: ?text8(0, 100) @collate(general)
   loginArchive: ?text8(0, 100) @collate(general)
   password: ?text8(1, null)

@@ -349,8 +349,6 @@ class ConnectionLib {
 
 			if($auth === UserAuth::BASIC and $login !== NULL and $password !== NULL) {
 				$eUserAuth = self::logInBasic($login, $password);
-			} else if($auth === UserAuth::IMAP and $login !== NULL and $password !== NULL) {
-				$eUserAuth = self::logInImap($params, $login, $password);
 			} else {
 				$eUserAuth = new UserAuth();
 			}
@@ -431,96 +429,6 @@ class ConnectionLib {
 		}
 
 		return $eUserAuth;
-
-	}
-
-	protected static function logInImap(array $params, string $login, string $password): UserAuth {
-
-		if(
-			strpos($login, '@') === FALSE or
-			strstr($login, '@') !== $params['domain']
-		) {
-			return new UserAuth();
-		}
-
-		$autoCreate = FALSE;
-
-		$eUserAuth = UserAuth::model()
-			->select([
-				'id',
-				'user' => self::selectLogIn()
-			])
-			->whereType(UserAuth::IMAP)
-			->whereLogin($login)
-			->get();
-
-		if($eUserAuth->empty()) {
-
-			if(empty($params['autoCreate'])) {
-				return $eUserAuth;
-			} else {
-				$autoCreate = TRUE;
-			}
-
-		}
-
-		$imap = self::checkImap($login, $password, $params);
-
-		if($imap) {
-
-			if($autoCreate) {
-
-				$eUser = new User();
-
-				$input = [
-					'email' => $login
-				];
-
-				if(SignUpLib::match(UserAuth::IMAP, $eUser, $input)) {
-					SignUpLib::create($eUser);
-				} else {
-					return new UserAuth();
-				}
-
-				$eUserAuth = $eUser['auth'];
-
-
-			}
-
-			return $eUserAuth;
-
-		}
-
-		return new UserAuth();
-
-	}
-
-	private static function checkImap(string $login, string $password, array $params): bool {
-
-		if(function_exists('imap_open') === FALSE) {
-			throw new \Exception('Function imap_open() does not exist');
-		}
-
-		\dev\ErrorPhpLib::$doNothingFromError = TRUE;
-
-		$imap = imap_open(
-				'{'.$params['host'].':'.$params['port'].'/imap/'.$params['options'].'}',
-				$login,
-				$password,
-				OP_READONLY |  OP_HALFOPEN |  OP_SILENT,
-				0
-		);
-
-		\dev\ErrorPhpLib::$doNothingFromError = FALSE;
-
-		if($imap === FALSE) {
-			imap_errors();
-			imap_alerts();
-			return FALSE;
-		} else {
-			imap_close($imap);
-			return TRUE;
-		}
 
 	}
 

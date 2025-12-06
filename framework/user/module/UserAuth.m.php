@@ -8,7 +8,6 @@ abstract class UserAuthElement extends \Element {
 	private static ?UserAuthModel $model = NULL;
 
 	const BASIC = 'basic';
-	const IMAP = 'imap';
 
 	public static function getSelection(): array {
 		return UserAuth::model()->getProperties();
@@ -42,7 +41,7 @@ class UserAuthModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'userArchive' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
-			'type' => ['enum', [\user\UserAuth::BASIC, \user\UserAuth::IMAP], 'cast' => 'enum'],
+			'type' => ['enum', [\user\UserAuth::BASIC], 'cast' => 'enum'],
 			'login' => ['text8', 'min' => 0, 'max' => 100, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'loginArchive' => ['text8', 'min' => 0, 'max' => 100, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'password' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],

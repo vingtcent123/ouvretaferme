@@ -31,7 +31,7 @@ class UserObserverLib {
 			if($data->eInvite->isValid()) {
 				$data->eRole = $data->cRole[$data->eInvite['type']];
 				$data->chooseRole = FALSE;
-				$data->eUserOnline['email'] = $data->eInvite['email'];
+				$data->eUser['email'] = $data->eInvite['email'];
 			} else {
 				throw new \RedirectAction('/presentation/invitation');
 			}

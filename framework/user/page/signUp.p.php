@@ -7,7 +7,10 @@ new Page(function($data) {
 	 */
 	->get('index', function($data) {
 
-		$data->eUserOnline = new \user\User();
+		$data->eUser = new \user\User([
+			'country' => \user\UserLib::getDefaultCountry(),
+			'cCountry' => \user\CountryLib::getForSignUp()
+		]);
 
 		$data->cRole = \user\RoleLib::getForSignUp();
 
@@ -25,24 +28,6 @@ new Page(function($data) {
 		user\ConnectionLib::loadSignUp($data);
 
 		throw new ViewAction($data, path: \user\UserSetting::$signUpView);
-
-	})
-	/**
-	 * Check that the email/password requested for sign up are valid.
-	 * /!\ Used for mobile api only
-	 */
-	->post('check', function($data) {
-
-		$fw = new FailWatch;
-
-		$eUser = new \user\User();
-
-		user\SignUpLib::match(user\UserAuth::BASIC, $eUser, $_POST);
-		user\SignUpLib::matchBasicPassword('check', $eUser, $_POST);
-
-		$fw->validate();
-
-		throw new VoidAction();
 
 	})
 	/**

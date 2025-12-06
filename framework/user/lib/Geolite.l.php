@@ -100,11 +100,12 @@ class GeoliteLib {
 				return new Country();
 			}
 
-			$code = strtolower($record['country']['iso_code']);
+			$code = strtoupper($record['country']['iso_code']);
 
 			return \user\Country::model()
 				->select('id')
 				->whereCode($code)
+				->wherePosition('!=', NULL)
 				->get();
 
 		 } catch(Exception $e) {

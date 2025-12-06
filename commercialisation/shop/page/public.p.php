@@ -342,7 +342,11 @@ new Page(function($data) {
 
 			if($data->isLogged === FALSE) {
 
-				$data->eUserOnline = new \user\User();
+				$data->eUser = new \user\User([
+					'country' => \user\UserLib::getDefaultCountry(),
+					'cCountry' => \user\CountryLib::getForSignUp()
+				]);
+
 				user\ConnectionLib::loadSignUp($data);
 				$data->eRole = \shop\ShopLib::getRoleForSignUp();
 

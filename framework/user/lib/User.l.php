@@ -294,7 +294,6 @@ class UserLib extends UserCrud {
 
 		$e->expects(['firstName', 'lastName', 'email', 'visibility']);
 
-		$e['country'] = self::getCountry();
 		$e['verified'] = $verifiedByDefault;
 
 		try {
@@ -313,25 +312,8 @@ class UserLib extends UserCrud {
 	 *
 	 * @return array
 	 */
-	public static function getCountry(): Country {
-
-		$eCountry = new GeoliteLib()->getCountry();
-
-		if($eCountry->empty()) {
-			return self::getDefaultCountry();
-		}
-
-		return $eCountry;
-
-	}
-
 	public static function getDefaultCountry(): Country {
-
-		return Country::model()
-			->select('id')
-			->whereCode('FR')
-			->get();
-
+		return new GeoliteLib()->getCountry();
 	}
 
 	/**

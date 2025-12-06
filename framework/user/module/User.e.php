@@ -224,6 +224,9 @@ class User extends UserElement {
 		$fw = new \FailWatch;
 		
 		$p = new \Properties()
+			->setCallback('country.check', function(Country $eCountry) use($auth) {
+				return Country::model()->exists($eCountry);
+			})
 			->setCallback('email.auth', function($email) use($auth) {
 				return ($auth === UserAuth::BASIC);
 			})
@@ -238,19 +241,6 @@ class User extends UserElement {
 					$this->offsetGet('email') === $email
 				) {
 					return TRUE;
-				}
-
-				// Block emails that can be used with IMAP auth
-				foreach(UserSetting::AUTH as $key => $params) {
-
-					if($key === \user\UserAuth::IMAP) {
-
-						if(str_ends_with($email, $params['domain'])) {
-							return FALSE;
-						}
-
-					}
-
 				}
 
 				// Checks that email is not already used

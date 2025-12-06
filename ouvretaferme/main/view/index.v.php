@@ -263,7 +263,7 @@ new AdaptativeView('signUp', function($data, MainTemplate $t) {
 			echo '<div class="util-info">'.s("Renseignez quelques informations qui vous permettront ensuite de vous connecter sur {siteName}. Vous pourrez créer votre ferme ou rejoindre une ferme existante juste après cette étape !").'</div>';
 		}
 
-		echo new \user\UserUi()->signUp($data->eUserOnline, $data->eRole, REQUEST('redirect'));
+		echo new \user\UserUi()->signUp($data->eUser, $data->eRole, REQUEST('redirect'));
 	}
 
 

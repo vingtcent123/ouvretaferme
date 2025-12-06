@@ -265,7 +265,7 @@ new AdaptativeView('authenticate', function($data, ShopTemplate $t) {
 	}
 
 	echo $uiBasket->getAuthenticateText($data->step);
-	echo $uiBasket->getAuthenticateForm($data->eUserOnline, $data->eRole);
+	echo $uiBasket->getAuthenticateForm($data->eUser, $data->eRole);
 
 });
 

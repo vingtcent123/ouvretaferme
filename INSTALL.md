@@ -3,7 +3,7 @@ INSTALLER OUVRETAFERME
 **Stack**
 
 - Nginx
-- PHP 8.4+ (extensions requises : bcmath, cli, curl, fpm, imagick, imap, intl, mbstring, pdo, redis, xml, yaml)
+- PHP 8.4+ (extensions requises : bcmath, cli, curl, fpm, imagick, intl, mbstring, pdo, redis, xml, yaml)
 - MySQL 8+
 - Redis
 

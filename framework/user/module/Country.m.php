@@ -38,11 +38,12 @@ class CountryModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'code' => ['textFixed', 'min' => 2, 'max' => 2, 'unique' => TRUE, 'cast' => 'string'],
-			'name' => ['text8', 'cast' => 'string'],
+			'name' => ['text8', 'collate' => 'general', 'cast' => 'string'],
+			'position' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'code', 'name'
+			'id', 'code', 'name', 'position'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -69,6 +70,10 @@ class CountryModel extends \ModuleModel {
 
 	public function whereName(...$data): CountryModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function wherePosition(...$data): CountryModel {
+		return $this->where('position', ...$data);
 	}
 
 
