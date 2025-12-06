@@ -7,6 +7,7 @@ new Page(function($data) {
 	$data->eFarm->validate('canManage');
 
 	$data->eUser = \user\ConnectionLib::getOnline();
+	$data->eFarm['cCountry'] = \user\CountryLib::getForSignUp();
 
 	$data->hasJoined = FALSE;
 

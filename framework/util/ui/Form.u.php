@@ -704,14 +704,14 @@ class FormUi {
 
 	}
 
-	public function addressGroup(string $label, string $prefix, \Element $e): string {
+	public function addressGroup(string $label, string $prefix, \Element $e, array $attributes = []): string {
 
 		$field = fn($name) => ($prefix === NULL) ? $name : $prefix.ucfirst($name);
 
 		return $this->group(
 			$label,
-			'<div class="form-control-block">'.$this->address($prefix, $e).'</div>',
-			['wrapper' => $field('address').' '.$field('street1').' '.$field('street2').' '.$field('postcode').' '.$field('city')]
+			'<div class="form-control-block">'.$this->address($prefix, $e, $attributes).'</div>',
+			['wrapper' => $field('address').' '.$field('street1').' '.$field('street2').' '.$field('postcode').' '.$field('city').' '.$field('country')]
 		);
 
 	}
@@ -1932,7 +1932,7 @@ class FormUi {
 		return $this->input('email', $name, $value, $attributes);
 	}
 
-	public function address(string $prefix, \Element $e) {
+	public function address(string $prefix, \Element $e, array $attributes = []) {
 
 		$field = fn($name) => ($prefix === NULL) ? $name : $prefix.ucfirst($name);
 
@@ -1963,11 +1963,15 @@ class FormUi {
 
 		$h .= '</div>';
 
-		$h .= $this->group(
-			s("Pays"),
-			$this->dynamicField($e, $field('country')),
-			nested: TRUE
-		);
+		if(($attributes['country'] ?? TRUE)) {
+
+			$h .= $this->group(
+				s("Pays"),
+				$this->dynamicField($e, $field('country')),
+				nested: TRUE
+			);
+
+		}
 
 		return $h;
 

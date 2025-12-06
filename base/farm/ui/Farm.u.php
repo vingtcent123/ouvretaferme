@@ -472,14 +472,17 @@ class FarmUi {
 				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
 			);
 			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail']);
-			$h .= $form->group(
-				self::p('legalCountry')->label,
-				$eFarm['legalCountry']->empty() ?
-					$form->dynamicField($eFarm, 'legalCountry') :
-					$form->fake($eFarm['legalCountry']['name'])
-			);
 			$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName']);
-			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
+			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm, ['country' => $eFarm['legalCountry']->empty()]);
+
+			if($eFarm['legalCountry']->notEmpty()) {
+
+				$h .= $form->group(
+					content: $form->fake($eFarm['legalCountry']['name'])
+				);
+
+			}
+
 			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality']);
 
 			$h .= $form->group(
@@ -2542,7 +2545,7 @@ class FarmUi {
 
 		$d = Farm::model()->describer($property, [
 			'name' => s("Nom de la ferme"),
-			'legalCountry' => s("Pays d'implantation de la ferme"),
+			'legalCountry' => s("Siège social de la ferme"),
 			'legalName' => s("Raison sociale de la ferme"),
 			'legalEmail' => s("Adresse e-mail de la ferme"),
 			'siret' => s("Numéro d'immatriculation SIRET"),
