@@ -6,10 +6,12 @@ class Invoice extends InvoiceElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'customer' => CustomerElement::getSelection(),
+			'customer' => CustomerElement::getSelection() + [
+				'cCountry?' => fn($e) => fn(\user\Country $eCountry) => \user\CountryLib::ask($eCountry),
+			],
 			'paymentMethod' => ['name', 'fqn'],
 			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.SellingSetting::DOCUMENT_EXPIRES.' MONTH)'),
-			'farm' => ['id', 'name', 'url', 'siret', 'legalName', 'legalEmail', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette'],
+			'farm' => \farm\FarmElement::getSelection(),
 		];
 
 	}

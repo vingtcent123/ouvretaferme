@@ -11,7 +11,16 @@ new \selling\CustomerPage()
 		]);
 
 	})
-	->create()
+	->create(function($data) {
+
+		$data->e->merge([
+			'cCountry' => \user\CountryLib::getForSignUp(),
+			'invoiceCountry' => $data->eFarm['legalCountry']
+		]);
+
+		throw new ViewAction($data);
+
+	})
 	->doCreate(function($data) {
 		throw new RedirectAction(\selling\CustomerUi::url($data->e));
 	});
@@ -57,6 +66,7 @@ new \selling\CustomerPage()
 
 		$data->e['nGroup'] = \selling\CustomerGroupLib::countByFarm($data->e['farm']);
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
 
 		throw new ViewAction($data);
 

@@ -6,11 +6,23 @@ class FarmLib extends FarmCrud {
 	private static ?\Collection $cFarmOnline = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'legalEmail', 'cultivationPlace', 'cultivationLngLat', 'quality'];
+		return ['name', 'legalEmail', 'legalCountry', 'quality'];
 	}
 
-	public static function getPropertiesUpdate(): array {
-		return ['name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
+	public static function getPropertiesUpdate(): \Closure {
+
+		return function(Farm $e) {
+
+			$properties = ['name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
+
+			if($e['legalCountry']->empty()) {
+				$properties[] = 'legalCountry';
+			}
+
+			return $properties;
+
+		};
+
 	}
 
 	public static function getOnline(): \Collection {

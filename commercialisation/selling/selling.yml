@@ -60,12 +60,14 @@ Customer:
   invoiceStreet2: ?text8
   invoicePostcode: ?text8
   invoiceCity: ?text8
+  invoiceCountry: ?user\Country
   siret: ?text8
   invoiceVat: ?text8
   deliveryStreet1: ?text8
   deliveryStreet2: ?text8
   deliveryPostcode: ?text8
   deliveryCity: ?text8
+  deliveryCountry: ?user\Country
   defaultPaymentMethod: ?payment\Method
   phone: ?text8
   color: ?color
@@ -335,6 +337,7 @@ Sale:
   deliveryStreet2: ?text8
   deliveryPostcode: ?text8
   deliveryCity: ?text8
+  deliveryCountry: ?user\Country
   comment: ?text24
   stats: bool = TRUE
   createdAt: datetime = SPECIAL(now)

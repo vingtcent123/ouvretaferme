@@ -48,11 +48,11 @@ class DemoLib {
 	];
 
 	const COPY_PROPERTY_EXCLUDE = [
-		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'],
+		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
-		'selling\Sale' => ['invoice', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity'],
-		'selling\Customer' => ['name', 'firstName', 'lastName', 'email', 'phone', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']
+		'selling\Sale' => ['invoice', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry'],
+		'selling\Customer' => ['name', 'firstName', 'lastName', 'email', 'phone', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']
 	];
 
 	private static array $ms = [];

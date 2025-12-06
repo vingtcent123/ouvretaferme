@@ -47,6 +47,7 @@ class FarmModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalEmail' => ['email', 'null' => TRUE, 'cast' => 'string'],
+			'legalCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'siret' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -88,10 +89,11 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'membership', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'membership', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
+			'legalCountry' => 'user\Country',
 			'stockNotesUpdatedBy' => 'user\User',
 		];
 
@@ -215,6 +217,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereLegalEmail(...$data): FarmModel {
 		return $this->where('legalEmail', ...$data);
+	}
+
+	public function whereLegalCountry(...$data): FarmModel {
+		return $this->where('legalCountry', ...$data);
 	}
 
 	public function whereSiret(...$data): FarmModel {

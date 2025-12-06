@@ -3,6 +3,22 @@ namespace user;
 
 class CountryLib extends CountryCrud {
 
+	public static function ask(Country $eCountry): Country {
+
+		if($eCountry->empty()) {
+			return $eCountry;
+		}
+
+		$callback = fn() => Country::model()
+			->select([
+				'id', 'name'
+			])
+			->getCollection(index: 'id');
+
+		return self::getCache('list', $callback)[$eCountry['id']];
+
+	}
+
 	public static function getForSignUp(): array|Country {
 
 		$ccCountry = Country::model()

@@ -1003,6 +1003,13 @@ class CustomerUi {
 				$d->placeholder = s("Utiliser l'adresse e-mail par défaut");
 				break;
 
+			case 'invoiceCountry' :
+				$d->values = fn(Customer $e) => $e['cCountry'] ?? $e->expects(['cCountry']);
+				$d->attributes = fn(\util\FormUi $form, Customer $e) => [
+					'group' => is_array($e['cCountry']),
+				];
+				break;
+
 			case 'discount' :
 				$d->append = s("%");
 				$d->after = \util\FormUi::info(s("Si vous modifiez la remise commerciale, elle s'appliquera automatiquement à toutes les futures ventes créées pour ce client."));

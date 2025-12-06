@@ -1,13 +1,17 @@
 <?php
-(new Page(function($data) {
+new Page(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
 		$data->eUserOnline['canUpdate'] = user\SignUpLib::canUpdate($data->eUserOnline);
 
-	}))
+	})
 	->get('updateUser', function($data) {
+
+		$data->eUserOnline['cCountry'] = \user\CountryLib::getForSignUp();
+
 		throw new ViewAction($data);
+
 	})
 	->get('updateEmail', function($data) {
 

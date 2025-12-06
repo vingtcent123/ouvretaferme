@@ -559,7 +559,7 @@ class SaleUi {
 									][$eSale['shopPoint']['type']];
 									$h .= '<div class="util-annotation">';
 										$h .= match($eSale['shopPoint']['type']) {
-											\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.$eSale->getDeliveryAddress('html').'</a>',
+											\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.$eSale->getDeliveryAddress('html', $eFarm).'</a>',
 											\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
 										};
 									$h .= '</div>';
@@ -1266,7 +1266,7 @@ class SaleUi {
 							$h .= \shop\PointUi::p('type')->values[$eSale['shopPoint']['type']];
 							$h .= '<div class="sale-display-address">';
 								$h .= match($eSale['shopPoint']['type']) {
-									\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.$eSale->getDeliveryAddress('html').'</a>',
+									\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.$eSale->getDeliveryAddress('html', $eSale['farm']).'</a>',
 									\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
 								};
 							$h .= '</div>';

@@ -7,7 +7,14 @@ new \farm\FarmPage(
 	->getCreateElement(fn($data) => new \farm\Farm([
 		'owner' => \user\ConnectionLib::getOnline()
 	]))
-	->create()
+	->create(function($data) {
+
+		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
+		$data->e['legalCountry'] = $data->eUserOnline['invoiceCountry'];
+
+		throw new ViewAction($data);
+
+	})
 	->read('start', function($data) {
 
 		$data->eFarm = $data->e;
@@ -21,11 +28,19 @@ new \farm\FarmPage(
 
 new \farm\FarmPage()
 	->applyElement(function($data, \farm\Farm $e) {
+
 		$e->validate('canManage');
+
 	})
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
+
+		if($data->e['legalCountry']->notEmpty()) {
+			$data->e['legalCountry'] = \user\CountryLib::getById($data->e['legalCountry']);
+		}
+
+		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
 
 		throw new ViewAction($data);
 

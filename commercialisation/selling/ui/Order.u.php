@@ -383,7 +383,7 @@ class OrderUi {
 						$h .= '<dt>'.s("Nom").'</dt>';
 						$h .= '<dd>'.$eSale['customer']->getName().'</dd>';
 						$h .= '<dt>'.s("Adresse").'</dt>';
-						$h .= '<dd style="line-height: 1.2">'.$eSale->getDeliveryAddress('html').'</dd>';
+						$h .= '<dd style="line-height: 1.2">'.$eSale->getDeliveryAddress('html', $eSale['farm']).'</dd>';
 						if($eSale['customer']['phone'] !== NULL) {
 							$h .= '<dt>'.s("Téléphone").'</dt>';
 							$h .= '<dd>'.encode($eSale['customer']['phone']).'</dd>';

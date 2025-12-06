@@ -16,7 +16,7 @@ class UserLib extends UserCrud {
 	private static ?\Collection $cCountryList = NULL;
 
 	public static function getPropertiesUpdate(): array {
-		return ['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'];
+		return ['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'];
 	}
 
 	public static function count(): int {

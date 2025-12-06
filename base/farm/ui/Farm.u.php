@@ -402,9 +402,7 @@ class FarmUi {
 
 	}
 
-	public function create(): \Panel {
-
-		$eFarm = new Farm();
+	public function create(Farm $eFarm): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -414,7 +412,7 @@ class FarmUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'cultivationPlace', 'cultivationLngLat', 'quality']);
+			$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'legalCountry', 'quality']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer ma ferme"))
@@ -473,7 +471,14 @@ class FarmUi {
 				self::p('vignette')->label,
 				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
 			);
-			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail', 'siret', 'legalName']);
+			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail']);
+			$h .= $form->group(
+				self::p('legalCountry')->label,
+				$eFarm['legalCountry']->empty() ?
+					$form->dynamicField($eFarm, 'legalCountry') :
+					$form->fake($eFarm['legalCountry']['name'])
+			);
+			$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName']);
 			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
 			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality']);
 
@@ -2537,6 +2542,7 @@ class FarmUi {
 
 		$d = Farm::model()->describer($property, [
 			'name' => s("Nom de la ferme"),
+			'legalCountry' => s("Pays d'implantation de la ferme"),
 			'legalName' => s("Raison sociale de la ferme"),
 			'legalEmail' => s("Adresse e-mail de la ferme"),
 			'siret' => s("Numéro d'immatriculation SIRET"),
@@ -2559,6 +2565,15 @@ class FarmUi {
 		]);
 
 		switch($property) {
+
+			case 'legalCountry' :
+				$d->values = fn(Farm $e) => $e['cCountry'] ?? $e->expects(['cCountry']);
+				$d->attributes = fn(\util\FormUi $form, Farm $e) => [
+					'group' => is_array($e['cCountry']),
+					'mandatory' => ($e->exists() === FALSE) /* Obligatoire pour les nouvelles fermes, les anciennes doivent finir leur migration -> À supprimer en 2029 */
+				];
+				$d->after = \util\FormUi::info(s("Le choix du pays est définitif et ne pourra pas être modifié par la suite."));
+				break;
 
 			case 'siret' :
 				$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
@@ -2619,8 +2634,7 @@ class FarmUi {
 
 			case 'quality' :
 				$d->values = self::getQualities();
-				$d->placeholder = s("Aucun");
-				$d->after = \util\FormUi::info(s("Pour rappel, {siteName} ne peut être utilisé que par les fermes sous l'un de ces signes de qualité."));
+				$d->placeholder = s("Non applicable");
 				break;
 
 			case 'emailDefaultTime' :

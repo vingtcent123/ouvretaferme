@@ -108,6 +108,7 @@ class SaleModel extends \ModuleModel {
 			'deliveryStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'deliveryCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'comment' => ['text24', 'null' => TRUE, 'cast' => 'string'],
 			'stats' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -119,7 +120,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -132,6 +133,7 @@ class SaleModel extends \ModuleModel {
 			'shop' => 'shop\Shop',
 			'shopDate' => 'shop\Date',
 			'shopPoint' => 'shop\Point',
+			'deliveryCountry' => 'user\Country',
 			'createdBy' => 'user\User',
 			'statusBy' => 'user\User',
 		];
@@ -434,6 +436,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereDeliveryCity(...$data): SaleModel {
 		return $this->where('deliveryCity', ...$data);
+	}
+
+	public function whereDeliveryCountry(...$data): SaleModel {
+		return $this->where('deliveryCountry', ...$data);
 	}
 
 	public function whereComment(...$data): SaleModel {

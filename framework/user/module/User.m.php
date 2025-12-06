@@ -49,12 +49,12 @@ class UserModel extends \ModuleModel {
 			'email' => ['email', 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'birthdate' => ['date', 'min' => toDate('NOW - 100 YEARS'), 'max' => toDate('NOW - 10 YEARS'), 'null' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'invoiceCountry' => ['element32', 'user\Country', 'cast' => 'element'],
 			'invoiceStreet1' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceStreet2' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoicePostcode' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCity' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'verified' => ['bool', 'cast' => 'bool'],
-			'country' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'visibility' => ['enum', [\user\User::PUBLIC, \user\User::PRIVATE], 'cast' => 'enum'],
 			'status' => ['enum', [\user\User::ACTIVE, \user\User::SUSPENDED, \user\User::CLOSED], 'cast' => 'enum'],
 			'referer' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -71,11 +71,11 @@ class UserModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'firstName', 'lastName', 'email', 'birthdate', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'verified', 'country', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
+			'id', 'firstName', 'lastName', 'email', 'birthdate', 'phone', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'verified', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
 		]);
 
 		$this->propertiesToModule += [
-			'country' => 'user\Country',
+			'invoiceCountry' => 'user\Country',
 			'referer' => 'user\User',
 			'role' => 'user\Role',
 		];
@@ -180,6 +180,10 @@ class UserModel extends \ModuleModel {
 		return $this->where('phone', ...$data);
 	}
 
+	public function whereInvoiceCountry(...$data): UserModel {
+		return $this->where('invoiceCountry', ...$data);
+	}
+
 	public function whereInvoiceStreet1(...$data): UserModel {
 		return $this->where('invoiceStreet1', ...$data);
 	}
@@ -198,10 +202,6 @@ class UserModel extends \ModuleModel {
 
 	public function whereVerified(...$data): UserModel {
 		return $this->where('verified', ...$data);
-	}
-
-	public function whereCountry(...$data): UserModel {
-		return $this->where('country', ...$data);
 	}
 
 	public function whereVisibility(...$data): UserModel {

@@ -21,6 +21,7 @@ class Farm extends FarmElement {
 
 		return parent::getSelection() + [
 			'calendarMonths' => new \Sql('IF(calendarMonthStart IS NULL, 0, 12 - calendarMonthStart + 1) + 12 + IF(calendarMonthStop IS NULL, 0, calendarMonthStop)', 'int'),
+			'cCountry?' => fn($e) => fn(\user\Country $eCountry) => \user\CountryLib::ask($eCountry),
 		];
 
 	}
@@ -252,6 +253,7 @@ class Farm extends FarmElement {
 	public function isLegal(): bool {
 
 		return (
+			$this['legalCountry']->notEmpty() and
 			$this['legalName'] !== NULL and
 			$this['legalEmail'] !== NULL
 		);
@@ -362,6 +364,10 @@ class Farm extends FarmElement {
 		}
 		$address .= $this['legalPostcode'].' '.$this['legalCity'];
 
+		if($this['legalCountry']->notEmpty()) {
+			$address .= "\n".$this['cCountry?']($this['legalCountry'])['name'];
+		}
+
 		return ($type === 'text') ? $address : nl2br(encode($address));
 
 	}
@@ -433,6 +439,11 @@ class Farm extends FarmElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('country.check', function($eCountry): bool {
+
+				return \user\Country::model()->exists($eCountry);
+
+			})
 			->setCallback('rotationExclude.prepare', function(mixed &$plants): bool {
 
 				$this->expects(['id']);
@@ -507,7 +518,7 @@ class Farm extends FarmElement {
 						$cultivationLngLat === NULL or
 						Farm::model()->check('cultivationLngLat', $cultivationLngLat) === FALSE
 					) {
-						Farm::fail('place.check');
+						Farm::fail('cultivationPlace.check');
 					}
 
 				} else {

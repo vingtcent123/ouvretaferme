@@ -158,10 +158,7 @@ class User extends UserElement {
 			})
 			->setCallback('country.check', function($eCountry): bool {
 
-				return (
-					$eCountry->empty() === FALSE and
-					Country::model()->exists($eCountry)
-				);
+				return Country::model()->exists($eCountry);
 
 			})
 			->setCallback('firstName.empty', function(?string $firstName): bool {
@@ -224,9 +221,6 @@ class User extends UserElement {
 		$fw = new \FailWatch;
 		
 		$p = new \Properties()
-			->setCallback('country.check', function(Country $eCountry) use($auth) {
-				return Country::model()->exists($eCountry);
-			})
 			->setCallback('email.auth', function($email) use($auth) {
 				return ($auth === UserAuth::BASIC);
 			})

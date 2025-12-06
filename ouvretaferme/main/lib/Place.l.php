@@ -13,9 +13,9 @@ class PlaceLib {
 
 			\user\Country::model()
 				->select('code')
-				->get($eUser['country']);
+				->get($eUser['invoiceCountry']);
 
-			$arguments['country'] = $eUser['country']['code'];
+			$arguments['invoiceCountry'] = $eUser['invoiceCountry']['code'];
 
 		}
 

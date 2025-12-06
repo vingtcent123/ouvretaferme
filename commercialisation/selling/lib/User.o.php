@@ -38,14 +38,14 @@ class UserObserverLib {
 			$values['email'] = $eUser['email'];
 		}
 
-		$address = ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'];
+		$address = ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'];
 
 		if(array_intersect($address, $properties)) {
 
 			$eUser->expects($address);
 
 			foreach($address as $property) {
-				$values['delivery'.ucfirst($property)] = $eUser[$property];
+				$values[str_replace('invoice', 'delivery', $property)] = $eUser[$property];
 			}
 
 		}

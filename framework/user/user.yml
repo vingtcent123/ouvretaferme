@@ -50,12 +50,12 @@ User:
   email: ?email(1, 100) @collate(general)
   birthdate: ?date(PHP(toDate('NOW - 100 YEARS')), PHP(toDate('NOW - 10 YEARS')))
   phone: ?text8(1, null)
+  invoiceCountry: user\Country
   invoiceStreet1: ?text8(1, null)
   invoiceStreet2: ?text8(1, null)
   invoicePostcode: ?text8(1, null)
   invoiceCity: ?text8(1, null)
   verified: bool = FALSE
-  country: ?user\Country
   visibility: enum(PUBLIC, PRIVATE) = PUBLIC
   status: enum(ACTIVE, SUSPENDED, CLOSED) = ACTIVE
   referer: ?user\User

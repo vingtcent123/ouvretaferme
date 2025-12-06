@@ -1954,6 +1954,7 @@ class FormUi {
 				$this->dynamicField($e, $field('postcode')),
 				nested: TRUE
 			);
+
 			$h .= $this->group(
 				s("Ville"),
 				$this->dynamicField($e, $field('city')),
@@ -1961,6 +1962,12 @@ class FormUi {
 			);
 
 		$h .= '</div>';
+
+		$h .= $this->group(
+			s("Pays"),
+			$this->dynamicField($e, $field('country')),
+			nested: TRUE
+		);
 
 		return $h;
 

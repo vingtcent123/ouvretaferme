@@ -10,7 +10,7 @@ class Sale extends SaleElement {
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl', 'farm' => ['name', 'legalEmail']],
 			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
-			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'url', 'vignette', 'emailBanner', 'emailFooter', 'hasSales', 'hasAccounting'],
+			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'legalCountry', 'url', 'vignette', 'emailBanner', 'emailFooter', 'hasSales', 'hasAccounting'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => ['name', 'emailedAt', 'createdAt', 'priceExcludingVat', 'generation'],
 			'compositionOf' => ['name'],
@@ -19,6 +19,7 @@ class Sale extends SaleElement {
 			],
 			'paymentStatus',
 			'cPayment' => PaymentLib::delegateBySale(),
+			'cCountry?' => fn($e) => fn(\user\Country $eCountry) => \user\CountryLib::ask($eCountry),
 		];
 
 	}
@@ -84,7 +85,7 @@ class Sale extends SaleElement {
 
 	}
 
-	public function getDeliveryAddress(string $type = 'text'): ?string {
+	public function getDeliveryAddress(string $type = 'text', \farm\Farm $eFarm = new \farm\Farm()): ?string {
 
 		if($this->hasDeliveryAddress() === FALSE) {
 			return NULL;
@@ -96,6 +97,13 @@ class Sale extends SaleElement {
 		}
 		$address .= $this['deliveryPostcode'].' '.$this['deliveryCity'];
 
+		if(
+			$this['deliveryCountry']->notEmpty() and
+			($eFarm->empty() or $this['deliveryCountry']->is($eFarm['legalCountry']) === FALSE)
+		) {
+			$address .= "\n".$this['cCountry?']($this['deliveryCountry'])['name'];
+		}
+
 		return ($type === 'text') ? $address : nl2br(encode($address));
 
 	}
@@ -106,7 +114,7 @@ class Sale extends SaleElement {
 			return NULL;
 		}
 
-		return 'https://www.google.com/maps/place/'.str_replace('%0A', ',', urlencode($this->getDeliveryAddress(','))).'/';
+		return 'https://www.google.fr/maps/place/'.str_replace('%0A', ',', urlencode($this->getDeliveryAddress())).'/';
 
 	}
 
@@ -121,9 +129,10 @@ class Sale extends SaleElement {
 			'deliveryStreet2' => $eUser['invoiceStreet2'],
 			'deliveryPostcode' => $eUser['invoicePostcode'],
 			'deliveryCity' => $eUser['invoiceCity'],
+			'deliveryCountry' => $eUser['invoiceCountry'],
 		]);
 
-		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']);
+		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']);
 
 	}
 
@@ -134,9 +143,10 @@ class Sale extends SaleElement {
 			'deliveryStreet2' => NULL,
 			'deliveryPostcode' => NULL,
 			'deliveryCity' => NULL,
+			'deliveryCountry' => NULL,
 		]);
 
-		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity']);
+		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']);
 
 	}
 

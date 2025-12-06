@@ -3,8 +3,6 @@ namespace farm;
 
 class MethodLib extends MethodCrud {
 
-	private static $cDemand = NULL;
-
 	public static function getPropertiesCreate(): array {
 		return ['name', 'action'];
 	}

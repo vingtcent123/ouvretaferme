@@ -17,7 +17,7 @@ class PlaceUi {
 		$d->prepend = \Asset::icon('geo-fill');
 		$d->field = 'autocomplete';
 		$d->group = function() {
-			return ['wrapper' => 'place'];
+			return ['wrapper' => 'cultivationPlace'];
 		};
 
 		$d->placeholder = s("Tapez une ville...");
@@ -34,22 +34,22 @@ class PlaceUi {
 			];
 		};
 
-		$d->after = function(\util\FormUi $form, \Element $e, string $property) use($mapId, $lngLatId) {
+		$d->after = function(\util\FormUi $form, \Element $e) use($mapId, $lngLatId) {
 
-			$valueLngLat = $e[$property.'LngLat'] ?? NULL;
+			$valueLngLat = $e['cultivationLngLat'] ?? NULL;
 
 			// Doit être décrit en premier pour que ce soit le champ 'place' qui communique son nom au groupe
-			$h = $form->hidden($property.'LngLat', $valueLngLat ? json_encode($valueLngLat) : '', ['id' => $lngLatId]);
+			$h = $form->hidden('cultivationLngLat', $valueLngLat ? json_encode($valueLngLat) : '', ['id' => $lngLatId]);
 
 			\map\MapboxUi::load();
 
 			$h .= '<div id="'.$mapId.'" class="place-map"></div>';
 
-			if($e[$property.'LngLat'] ?? NULL) {
+			if($e['cultivationLngLat'] ?? NULL) {
 
 				$h .= '<script>';
 					$h .= 'document.ready(() => setTimeout(() => {';
-						$h .= 'Place.updateMap("'.$mapId.'", ['.implode(',', $e[$property.'LngLat']).']);';
+						$h .= 'Place.updateMap("'.$mapId.'", ['.implode(',', $e['cultivationLngLat']).']);';
 					$h .= '}, 100));';
 				$h .= '</script>';
 

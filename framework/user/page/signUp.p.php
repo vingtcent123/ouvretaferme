@@ -8,7 +8,7 @@ new Page(function($data) {
 	->get('index', function($data) {
 
 		$data->eUser = new \user\User([
-			'country' => \user\UserLib::getDefaultCountry(),
+			'invoiceCountry' => \user\UserLib::getDefaultCountry(),
 			'cCountry' => \user\CountryLib::getForSignUp()
 		]);
 

@@ -128,7 +128,7 @@ class UserUi {
 
 			$h .= implode('', self::notify('signUpFormTop', $form, $eRole));
 
-			$h .= $form->dynamicGroups($e, ['firstName', 'lastName', 'country', 'email']);
+			$h .= $form->dynamicGroups($e, ['firstName', 'lastName', 'invoiceCountry', 'email']);
 
 			$h .= $form->group(
 				s("Votre mot de passe"),
@@ -608,7 +608,7 @@ L'équipe");
 
 		$d = User::model()->describer($property, [
 			'role' => s("Profil"),
-			'country' => s("Pays"),
+			'invoiceCountry' => s("Pays"),
 			'email' => s("Adresse e-mail"),
 			'phone' => s("Numéro de téléphone"),
 			'lastName' => s("Nom"),
@@ -649,7 +649,7 @@ L'équipe");
 				$d->attributes['mandatory'] = TRUE;
 				break;
 
-			case 'country' :
+			case 'invoiceCountry' :
 				$d->values = fn(User $e) => $e['cCountry'] ?? $e->expects(['cCountry']);
 				$d->attributes = fn(\util\FormUi $form, User $e) => [
 					'group' => is_array($e['cCountry']),

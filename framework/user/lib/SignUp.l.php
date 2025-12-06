@@ -34,7 +34,7 @@ class SignUpLib {
 
 		$fw = new \FailWatch;
 
-		$eUser->build(['role', 'email', 'birthdate', 'firstName', 'lastName', 'country'], $input);
+		$eUser->build(['role', 'email', 'birthdate', 'firstName', 'lastName', 'invoiceCountry'], $input);
 
 		if($eUser->offsetExists('id') === FALSE) {
 
@@ -130,7 +130,7 @@ class SignUpLib {
 	 */
 	public static function create(\Element $eUser, bool $verifiedByDefault = TRUE) {
 
-		$eUser->expects(['auth', 'visibility', 'country']);
+		$eUser->expects(['auth', 'visibility', 'invoiceCountry']);
 
 		// Required by doLogIn() for log in just after create
 		$eUser['status'] = User::ACTIVE;

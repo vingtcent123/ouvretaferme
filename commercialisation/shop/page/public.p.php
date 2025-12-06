@@ -343,7 +343,7 @@ new Page(function($data) {
 			if($data->isLogged === FALSE) {
 
 				$data->eUser = new \user\User([
-					'country' => \user\UserLib::getDefaultCountry(),
+					'invoiceCountry' => $data->eShop['farm']['legalCountry'],
 					'cCountry' => \user\CountryLib::getForSignUp()
 				]);
 
@@ -412,6 +412,8 @@ new Page(function($data) {
 		$data->ePointSelected = \shop\PointLib::getSelected($data->eShop, $data->eDate['ccPoint'], $data->eCustomer, $data->eSaleReference);
 
 		$data->basketProducts = \shop\BasketLib::getProductsFromQuery();
+
+		$data->eUserOnline['cCountry'] = \user\CountryLib::getForSignUp();
 
 		throw new ViewAction($data);
 

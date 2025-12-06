@@ -88,6 +88,7 @@ class SaleLib extends SaleCrud {
 		$eSale['deliveryStreet2'] = $eSale['customer']['invoiceStreet2'];
 		$eSale['deliveryPostcode'] = $eSale['customer']['invoicePostcode'];
 		$eSale['deliveryCity'] = $eSale['customer']['invoiceCity'];
+		$eSale['deliveryCountry'] = $eSale['customer']['invoiceCountry'];
 		$eSale['customer']['email'] = 'client@email.com';
 		$eSale['orderFormValidUntil'] = currentDate();
 		$eSale['orderFormPaymentCondition'] = $eFarm->getSelling('orderFormPaymentCondition');
