@@ -51,7 +51,7 @@ class TileUi {
 
 			if($ePlayer->isOnline()) {
 
-				$h = '<a data-ajax="/game/action:doWeed" post-id="'.$e['id'].'" data-dropdown="bottom-center" class="game-tile-action dropdown-toggle">';
+				$h = '<a data-ajax="/game/action:doWeed" post-id="'.$e['id'].'" data-dropdown="bottom-center" class="game-tile-action dropdown-toggle" title="'.s("Récolte le {value}", \util\DateUi::numeric($e['harvestedAt'], \util\DateUi::DATE_HOUR_MINUTE)).'">';
 					$h .= $tile;
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list">';
