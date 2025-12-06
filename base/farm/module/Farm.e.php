@@ -497,21 +497,21 @@ class Farm extends FarmElement {
 				return $fw->ok();
 
 			})
-			->setCallback('placeLngLat.check', function(?array &$placeLngLat) {
+			->setCallback('cultivationLngLat.check', function(?array &$cultivationLngLat) {
 
-				$this->expects(['place']);
+				$this->expects(['cultivationPlace']);
 
-				if($this['place'] !== NULL) {
+				if($this['cultivationPlace'] !== NULL) {
 
 					if(
-						$placeLngLat === NULL or
-						Farm::model()->check('placeLngLat', $placeLngLat) === FALSE
+						$cultivationLngLat === NULL or
+						Farm::model()->check('cultivationLngLat', $cultivationLngLat) === FALSE
 					) {
 						Farm::fail('place.check');
 					}
 
 				} else {
-					$placeLngLat = NULL;
+					$cultivationLngLat = NULL;
 				}
 
 				return TRUE;

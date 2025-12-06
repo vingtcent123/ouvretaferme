@@ -107,8 +107,8 @@ class AdminUi {
 							$h .= '</a>';
 						$h .= '</td>';
 						$h .= '<td>';
-							if($eFarm['place'] !== NULL) {
-								$h .= encode($eFarm['place']);
+							if($eFarm['cultivationPlace'] !== NULL) {
+								$h .= encode($eFarm['cultivationPlace']);
 							}
 						$h .= '</td>';
 						$h .= '<td>';

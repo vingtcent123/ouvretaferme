@@ -53,14 +53,14 @@ class FarmModel extends \ModuleModel {
 			'legalPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'place' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'placeLngLat' => ['point', 'null' => TRUE, 'cast' => 'json'],
 			'url' => ['url', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'logo' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'emailBanner' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'emailFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'emailDefaultTime' => ['time', 'null' => TRUE, 'cast' => 'string'],
+			'cultivationPlace' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'cultivationLngLat' => ['point', 'null' => TRUE, 'cast' => 'json'],
 			'seasonFirst' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'seasonLast' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'rotationYears' => ['int8', 'min' => 2, 'max' => 5, 'cast' => 'int'],
@@ -88,7 +88,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'place', 'placeLngLat', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'membership', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'membership', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -157,7 +157,7 @@ class FarmModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'placeLngLat' :
+			case 'cultivationLngLat' :
 				return $value === NULL ? NULL : new \Sql($this->pdo()->api->getPoint($value));
 
 			case 'rotationExclude' :
@@ -180,7 +180,7 @@ class FarmModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'placeLngLat' :
+			case 'cultivationLngLat' :
 				return $value === NULL ? NULL : json_encode(json_decode($value, TRUE)['coordinates']);
 
 			case 'rotationExclude' :
@@ -241,14 +241,6 @@ class FarmModel extends \ModuleModel {
 		return $this->where('vignette', ...$data);
 	}
 
-	public function wherePlace(...$data): FarmModel {
-		return $this->where('place', ...$data);
-	}
-
-	public function wherePlaceLngLat(...$data): FarmModel {
-		return $this->where('placeLngLat', ...$data);
-	}
-
 	public function whereUrl(...$data): FarmModel {
 		return $this->where('url', ...$data);
 	}
@@ -271,6 +263,14 @@ class FarmModel extends \ModuleModel {
 
 	public function whereEmailDefaultTime(...$data): FarmModel {
 		return $this->where('emailDefaultTime', ...$data);
+	}
+
+	public function whereCultivationPlace(...$data): FarmModel {
+		return $this->where('cultivationPlace', ...$data);
+	}
+
+	public function whereCultivationLngLat(...$data): FarmModel {
+		return $this->where('cultivationLngLat', ...$data);
 	}
 
 	public function whereSeasonFirst(...$data): FarmModel {

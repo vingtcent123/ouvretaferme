@@ -506,7 +506,7 @@ class ZoneUi {
 	public function drawMap(\util\FormUi $form, Zone $eZone, string $label, string $helper, \Collection $cZone): string {
 
 		$eZone->expects([
-			'farm' => ['placeLngLat']
+			'farm' => ['cultivationLngLat']
 		]);
 
 		$canCartography = MapUi::canCartography($eZone['farm']);
@@ -540,7 +540,7 @@ class ZoneUi {
 					new Cartography("'.$container.'", '.$eZone['farm']['seasonLast'].', false, true, {
 							zoom: 14,
 							scrollZoom: true,
-							center: ['.$eZone['farm']['placeLngLat'][0].', '.$eZone['farm']['placeLngLat'][1].']
+							center: ['.$eZone['farm']['cultivationLngLat'][0].', '.$eZone['farm']['cultivationLngLat'][1].']
 						})';
 						if($cZone->notEmpty()) {
 							foreach($cZone as $eZoneDisplay) {

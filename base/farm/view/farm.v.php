@@ -16,8 +16,8 @@ new AdaptativeView('start', function($data, MainTemplate $t) {
 
 	$t->header = '<h1>'.encode($data->e['name']).'</h1>';
 
-	if($data->e['place']) {
-		$t->header .= '<h4>'.\Asset::icon('geo-fill').' '.encode($data->e['place']).'</h4>';
+	if($data->e['cultivationPlace']) {
+		$t->header .= '<h4>'.\Asset::icon('geo-fill').' '.encode($data->e['cultivationPlace']).'</h4>';
 	}
 
 	$t->header .= '<h2>'.Asset::icon('check-lg').' '.s("Votre ferme a bien été créée sur {siteName} !").'</h2>';

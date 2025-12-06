@@ -389,8 +389,8 @@ class FarmUi {
 		$item = self::getVignette($eFarm, '2.5rem');
 		$item .= '<div>';
 		$item .= encode($eFarm['name']).'<br/>';
-			if($eFarm['place'] !== NULL) {
-				$item .= '<small>'.encode($eFarm['place']).'</small>';
+			if($eFarm['cultivationPlace'] !== NULL) {
+				$item .= '<small>'.encode($eFarm['cultivationPlace']).'</small>';
 			}
 		$item .= '</div>';
 
@@ -414,7 +414,7 @@ class FarmUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'place', 'placeLngLat', 'quality']);
+			$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'cultivationPlace', 'cultivationLngLat', 'quality']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Créer ma ferme"))
@@ -475,7 +475,7 @@ class FarmUi {
 			);
 			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail', 'siret', 'legalName']);
 			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
-			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'place', 'placeLngLat', 'url', 'quality']);
+			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -2416,8 +2416,8 @@ class FarmUi {
 
 					$infos = [];
 
-					if($eFarm['place']) {
-						$infos[] = \Asset::icon('geo-fill').' '.encode($eFarm['place']);
+					if($eFarm['cultivationPlace']) {
+						$infos[] = \Asset::icon('geo-fill').' '.encode($eFarm['cultivationPlace']);
 					}
 
 					$h .= implode(' | ', $infos);
@@ -2543,7 +2543,7 @@ class FarmUi {
 			'vignette' => s("Photo de présentation"),
 			'description' => s("Présentation de la ferme"),
 			'startedAt' => s("Année de création"),
-			'place' => s("Lieu de production"),
+			'cultivationPlace' => s("Lieu de production"),
 			'url' => s("Site internet"),
 			'rotationYears' => s("Temps de suivi des rotations"),
 			'rotationExclude' => s("Espèces cultivées exclues du suivi des rotations"),
@@ -2565,11 +2565,11 @@ class FarmUi {
 				$d->attributes['oninput'] = 'Farm.getFarmDataBySiret(this)';
 				break;
 
-			case 'place' :
+			case 'cultivationPlace' :
 				new \main\PlaceUi()->query($d);
 				break;
 
-			case 'placeLngLat' :
+			case 'cultivationLngLat' :
 				$d->field = NULL;
 				break;
 

@@ -30,7 +30,7 @@ class MapUi {
 	}
 
 	public static function canCartography(\farm\Farm $eFarm): bool {
-		return ($eFarm['placeLngLat'] !== NULL);
+		return ($eFarm['cultivationLngLat'] !== NULL);
 	}
 
 	public function getMap(\farm\Farm $eFarm, int $season, \Collection $cZone, Zone $eZoneSelected): string {
@@ -53,10 +53,10 @@ class MapUi {
 					$h .= '</div>';
 				$h .= '</div>';
 
-			if($eFarm['placeLngLat'] !== NULL) {
+			if($eFarm['cultivationLngLat'] !== NULL) {
 				$center = '{
 					zoom: 14,
-					center: ['.$eFarm['placeLngLat'][0].', '.$eFarm['placeLngLat'][1].']
+					center: ['.$eFarm['cultivationLngLat'][0].', '.$eFarm['cultivationLngLat'][1].']
 				}';
 			} else {
 				$center = '{}';

@@ -6,7 +6,7 @@ class Photo extends PhotoElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['vignette', 'name', 'place'],
+			'farm' => ['vignette', 'name', 'cultivationPlace'],
 			'sequence' => ['name', 'mode', 'status', 'farm'],
 			'series' => ['name', 'mode'],
 			'author' => ['firstName', 'lastName', 'visibility', 'email', 'vignette']
