@@ -581,7 +581,7 @@ class Sale extends SaleElement {
 		return (
 			$this['customer']->notEmpty() and
 			$this['customer']['destination'] !== Customer::COLLECTIVE and
-			$this->isMarket() === FALSE
+			$this->isSale()
 		);
 
 	}

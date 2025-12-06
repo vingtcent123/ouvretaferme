@@ -487,7 +487,7 @@ class SaleLib extends SaleCrud {
 			->whereId('IN', $ids)
 			->whereItems('>', 0)
 			->whereInvoice(NULL, if: $checkInvoice)
-			->whereProfile('!=', Sale::MARKET)
+			->whereProfile(Sale::SALE)
 			->wherePreparationStatus(Sale::DELIVERED)
 			->sort(['id' => SORT_ASC])
 			->getCollection();
