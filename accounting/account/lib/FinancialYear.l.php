@@ -118,7 +118,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
 			->sort(['startDate' => SORT_DESC])
-			->getCollection();
+			->getCollection(NULL, NULL, 'id');
 
 	}
 
@@ -239,6 +239,14 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function create(FinancialYear $e): void {
+
+		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
+
+		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => \account\FinancialYearUi::getYear($e)]);
+		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
+
+	}
 	public static function update(FinancialYear $e, array $properties): void {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'));
@@ -250,6 +258,9 @@ class FinancialYearLib extends FinancialYearCrud {
 		if($eFarm->getView('viewAccountingYear') === $e['id']) {
 			self::setDefaultView($eFarm, $e);
 		}
+
+		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => \account\FinancialYearUi::getYear($e)]);
+		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
 
 		FinancialYear::model()->commit();
 

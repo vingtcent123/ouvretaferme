@@ -3,8 +3,11 @@ new \journal\OperationPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm->validate('canManage');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+		$data->eFarm->validate('canManage', 'hasAccounting');
+
+		if($data->eFarm->usesAccounting() === FALSE) {
+			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+		}
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
@@ -61,7 +64,10 @@ new \journal\OperationPage(
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm->validate('canManage');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+		if($data->eFarm->usesAccounting() === FALSE) {
+			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+		}
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
@@ -257,7 +263,11 @@ new Page(
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm->validate('canManage');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+		if($data->eFarm->usesAccounting() === FALSE) {
+			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+		}
+
 	})
 	->post('getWaiting', function($data) {
 
@@ -271,7 +281,11 @@ new \journal\OperationPage(
 	function($data) {
 		\user\ConnectionLib::checkLogged();
 		$data->eFarm->validate('canManage');
-		\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+		if($data->eFarm->usesAccounting() === FALSE) {
+			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+		}
+
 		$data->eOperation = \journal\OperationLib::getById(REQUEST('id', 'int'))->validate('canDelete');
 	}
 )
@@ -291,7 +305,10 @@ new \journal\OperationPage(
 new \journal\OperationPage(function($data) {
 
 	$data->eFarm->validate('canManage');
-	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
 
 })
 	->get('createCommentCollection', function($data) {

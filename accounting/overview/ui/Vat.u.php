@@ -8,46 +8,34 @@ Class VatUi {
 		\Asset::js('overview', 'vat.js');
 	}
 
-	public function getTitle(\farm\Farm $eFarm, \Collection $cFinancialYear): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= s("La TVA");
-			$h .= '</h1>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function getVatTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, ?string $selectedTab = NULL): string {
+
+		$baseUrl = \company\CompanyUi::urlFarm($eFarm).'/synthese/declaration-de-tva';
 
 		$h = '<div class="tabs-item">';
 
-			$h .= '<a class="tab-item'.($selectedTab === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlSummary($eFarm).'/vat">'.s("Général").'</a>';
-			$h .= '<a class="tab-item'.($selectedTab === 'journal-sell' ? ' selected' : '').'" data-tab="journal-sell" href="'.\company\CompanyUi::urlSummary($eFarm).'/vat?tab=journal-sell">';
+			$h .= '<a class="tab-item'.($selectedTab === NULL ? ' selected' : '').'" data-tab="journal" href="'.$baseUrl.'">'.s("Général").'</a>';
+			$h .= '<a class="tab-item'.($selectedTab === 'journal-sell' ? ' selected' : '').'" data-tab="journal-sell" href="'.$baseUrl.'?tab=journal-sell">';
 					$h .= '<div class="text-center">';
 						$h .= s("Écritures de vente");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("TVA collectée").')</span></small>';
 					$h .= '</div>';
 			$h .= '</a>';
-			$h .= '<a class="tab-item'.($selectedTab === 'journal-buy' ? ' selected' : '').'" data-tab="journal-buy" href="'.\company\CompanyUi::urlSummary($eFarm).'/vat?tab=journal-buy">';
+			$h .= '<a class="tab-item'.($selectedTab === 'journal-buy' ? ' selected' : '').'" data-tab="journal-buy" href="'.$baseUrl.'?tab=journal-buy">';
 					$h .= '<div class="text-center">';
 						$h .= s("Écritures d'achat");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("TVA déductible").')</span></small>';
 					$h .= '</div>';
 			$h .= '</a>';
-			$h .= '<a class="tab-item'.($selectedTab === 'check' ? ' selected' : '').'" data-tab="journal-check" href="'.\company\CompanyUi::urlSummary($eFarm).'/vat?tab=check">'.s("Contrôle").'</a>';
+			$h .= '<a class="tab-item'.($selectedTab === 'check' ? ' selected' : '').'" data-tab="journal-check" href="'.$baseUrl.'?tab=check">'.s("Contrôle").'</a>';
 			if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
 				$textCerfa = s("Formulaire CA12");
 			} else {
 				$textCerfa = s("Formulaire CA3");
 			}
-			$h .= '<a class="tab-item'.($selectedTab === 'cerfa' ? ' selected' : '').'" data-tab="cerfa" href="'.\company\CompanyUi::urlSummary($eFarm).'/vat?tab=cerfa">'.$textCerfa.'</a>';
+			$h .= '<a class="tab-item'.($selectedTab === 'cerfa' ? ' selected' : '').'" data-tab="cerfa" href="'.$baseUrl.'?tab=cerfa">'.$textCerfa.'</a>';
 
-			$h .= '<a class="tab-item'.($selectedTab === 'history' ? ' selected' : '').'" data-tab="history" href="'.\company\CompanyUi::urlSummary($eFarm).'/vat?tab=history">'.s("Historique").'</a>';
+			$h .= '<a class="tab-item'.($selectedTab === 'history' ? ' selected' : '').'" data-tab="history" href="'.$baseUrl.'?tab=history">'.s("Historique").'</a>';
 
 		$h .= '</div>';
 
@@ -559,7 +547,7 @@ Class VatUi {
 		}
 
 
-		$h .= $form->openAjax(\company\CompanyUi::urlSummary($eFarm).'/vat:saveCerfa', ['id' => 'cerfa-12', 'data-precision' => $precision, 'onrender' => 'Vat12.recalculateAll();']);
+		$h .= $form->openAjax(\company\CompanyUi::urlFarm($eFarm).'/vat/saveCerfa', ['id' => 'cerfa-12', 'data-precision' => $precision, 'onrender' => 'Vat12.recalculateAll();']);
 
 			$h .= $form->hidden('from', $vatParameters['from']);
 			$h .= $form->hidden('to', $vatParameters['to']);
@@ -2423,7 +2411,7 @@ Class VatUi {
 
 				if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
 
-					$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \company\CompanyUi::urlSummary($eFarm).'/vat:reset', 'post-from' => $vatParameters['from'], 'post-to' => $vatParameters['to'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
+					$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/vat/reset', 'post-from' => $vatParameters['from'], 'post-to' => $vatParameters['to'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
 
 				}
 
@@ -2433,9 +2421,9 @@ Class VatUi {
 
 				}
 
-				if($eVatDeclaration->notEmpty() and $eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
+				if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
 
-					$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \company\CompanyUi::urlSummary($eFarm).'/vat:doDeclare', 'post-id' => $eVatDeclaration['id']]);
+					$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
 
 				}
 
@@ -2459,7 +2447,7 @@ Class VatUi {
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= $form->openAjax(\company\CompanyUi::urlSummary($eFarm).'/vat:saveCerfa', ['id' => 'cerfa-3', 'data-precision' => $precision, 'onrender' => 'Vat3.recalculateAll();']);
+			$h .= $form->openAjax(\company\CompanyUi::urlFarm($eFarm).'/vat/saveCerfa', ['id' => 'cerfa-3', 'data-precision' => $precision, 'onrender' => 'Vat3.recalculateAll();']);
 
 				$h .= $form->hidden('from', $vatParameters['from']);
 				$h .= $form->hidden('to', $vatParameters['to']);
@@ -3448,7 +3436,7 @@ Class VatUi {
 
 			if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
 
-				$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \company\CompanyUi::urlSummary($eFarm).'/vat:reset', 'post-from' => $vatParameters['from'], 'post-to' => $vatParameters['to'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
+				$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/vat/reset', 'post-from' => $vatParameters['from'], 'post-to' => $vatParameters['to'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
 
 			}
 
@@ -3460,7 +3448,7 @@ Class VatUi {
 
 			if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate() and $eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
 
-				$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \company\CompanyUi::urlSummary($eFarm).'/vat:doDeclare', 'post-id' => $eVatDeclaration['id']]);
+				$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
 
 			}
 
@@ -3492,7 +3480,7 @@ Class VatUi {
 		$form = new \util\FormUi();
 
 		$dialogOpen = $form->openAjax(
-			\company\CompanyUi::urlSummary($eFarm).'/vat:doCreateOperations',
+			\company\CompanyUi::urlFarm($eFarm).'/vat/doCreateOperations',
 			[
 				'id' => 'vat-declaration-create-operations',
 				'class' => 'panel-dialog',
@@ -3511,8 +3499,8 @@ Class VatUi {
 			$h .= '</ul>';
 			$h .= \Asset::icon('exclamation-square', ['class' => 'mr-1']).s("Vérifiez que <link>vos écritures comptables {icon}</link> correspondent bien à <link2>ce que vous avez déclaré {icon}</link2> pour que les écritures proposées soient correctes.",
 				[
-					'link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.\account\AccountSetting::VAT_CLASS.'" target="_blank">',
-					'link2' => '<a href="'.\company\CompanyUi::urlSummary($eFarm).'/vat?tab=cerfa&id='.$eVatDeclaration['id'].'" target="_blank">',
+					'link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?accountLabel='.\account\AccountSetting::VAT_CLASS.'" target="_blank">',
+					'link2' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/declaration-de-tva?tab=cerfa&id='.$eVatDeclaration['id'].'" target="_blank">',
 					'icon' => \Asset::icon('box-arrow-up-right'),
 				]);
 		$h .= '</div>';

@@ -21,7 +21,7 @@ class ImportUi {
 			) {
 
 				$h .= '<div>';
-					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/import:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
 				$h .= '</div>';
 
 			}
@@ -55,9 +55,7 @@ class ImportUi {
 		\Asset::css('bank', 'import.css');
 
 		if($cImport->empty() === TRUE) {
-			return '<div class="util-info">'.
-				s("Aucun import bancaire n'a été réalisé pour l'exercice {year}", ['year' => \account\FinancialYearUi::getYear($eFinancialYearSelected)]).
-				'</div>';
+			return '<div class="util-info">'.s("Aucun import bancaire n'a été réalisé").'</div>';
 		}
 
 		$h = '<div class="import-timeline-wrapper stick-xs">';
@@ -84,7 +82,7 @@ class ImportUi {
 				$h .= '<div class="import-timeline import-timeline-only">';
 					$h .= '<div class="import-timeline-item">';
 						$h .= '<div class="import-timeline-circle">';
-							if($eFinancialYearSelected->isCurrent() and substr($endPeriod, 0, 5) === date('d/m')) {
+							if(substr($endPeriod, 0, 5) === date('d/m')) {
 								$h .= s("Aujourd'hui");
 							} else {
 								$h .= $endPeriod;
@@ -145,7 +143,7 @@ class ImportUi {
 
 				if(in_array($eImport['status'], [ImportElement::FULL, ImportElement::PARTIAL]) === TRUE) {
 
-					$h.= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?import='.$eImport['id'].'" class="color-text">';
+					$h.= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?import='.$eImport['id'].'" class="color-text">';
 						$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 						$h.= p(
 							"{number} mouvement enregistré",

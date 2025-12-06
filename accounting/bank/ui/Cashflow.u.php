@@ -9,12 +9,12 @@ class CashflowUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYearSelected): string {
+	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYear): string {
 
 		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids', 'status']) ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
-		$url = LIME_REQUEST_PATH.'?financialYear='.$eFinancialYearSelected['id'];
+		$url = LIME_REQUEST_PATH.'?financialYear='.($eFinancialYear['id'] ?? NULL);
 		$statuses = CashflowUi::p('status')->values;
 
 		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
@@ -56,7 +56,7 @@ class CashflowUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openUrl(\company\CompanyUi::urlBank($eFarm).'/cashflow', ['method' => 'get', 'class' => 'mb-1']);
+		$h = $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/operations', ['method' => 'get', 'class' => 'mb-1']);
 		$h .= $form->checkbox('status', Cashflow::WAITING, [
 			'checked' => $search->get('status') === Cashflow::WAITING,
 			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non comptabilisées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
@@ -70,7 +70,7 @@ class CashflowUi {
 	public function getCashflow(
 		\farm\Farm $eFarm,
 		\Collection $cCashflow,
-		\account\FinancialYear $eFinancialYearSelected,
+		\account\FinancialYear $eFinancialYear,
 		Import $eImport,
 		\Search $search,
 	): string {
@@ -85,9 +85,8 @@ class CashflowUi {
 
 			}
 			return '<div class="util-info">'.
-				s("Aucun import bancaire n'a été réalisé pour l'exercice {year} (<link>importer</link>)", [
-					'year' => \account\FinancialYearUi::getYear($eFinancialYearSelected),
-					'link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/import">',
+				s("Aucun import bancaire n'a été réalisé (<link>importer</link>)", [
+					'link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports">',
 				]).
 			'</div>';
 		}
@@ -130,7 +129,9 @@ class CashflowUi {
 						$h .= '</th>';
 						$h .= '<th class="text-end highlight-stick-right td-vertical-align-middle">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left td-vertical-align-middle">'.s("Crédit (C)").'</th>';
-						if($eFinancialYearSelected->canUpdate()) {
+						if($eFarm->usesAccounting() === FALSE) {
+							$h .= '<th class="text-center td-vertical-align-middle">'.s("Action").'</th>';
+						} else if($eFinancialYear->acceptUpdate()) {
 							$h .= '<th class="text-center td-vertical-align-middle">'.s("Statut").'</th>';
 						} else {
 							$h .= '<th></th>';
@@ -197,17 +198,32 @@ class CashflowUi {
 
 					$h .= '<td class="td-min-content text-center">';
 
-						if($eFinancialYearSelected->canUpdate()) {
+						if($eFarm->usesAccounting() === FALSE) {
+
+							if($eCashflow['status'] === Cashflow::DELETED) {
+
+								$h .= '<a class="btn btn-outline-secondary" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete" post-id="'.$eCashflow['id'].'">';
+									$h .= s("Récupérer");
+								$h .= '</a>';
+
+							} else {
+
+								$h .= '<a class="btn btn-outline-danger" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete" post-id="'.$eCashflow['id'].'">';
+									$h .= \Asset::icon('trash');
+								$h .= '</a>';
+
+							}
+
+						} else if($eFinancialYear->acceptUpdate()) {
 
 							$h .= '<a data-dropdown="bottom-end" class="cashflow-status-label cashflow-status-'.$eCashflow['status'].' dropdown-toggle btn btn-outline-secondary">'.CashflowUi::p('status')->values[$eCashflow['status']].'</a>';
-							$h .= $this->getAction($eFarm, $eFinancialYearSelected, $eCashflow);
+							$h .= $this->getAction($eFarm, $eFinancialYear, $eCashflow);
 
 						} else {
 
-							$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'">';
+							$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'">';
 								$h .= s("Voir les écritures");
 							$h .= '</a>';
-
 
 						}
 					$h .= '</td>';
@@ -229,7 +245,7 @@ class CashflowUi {
 		if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
 			$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
 				$h .= s("Voir les écritures");
 			$h .= '</a>';
 
@@ -246,13 +262,17 @@ class CashflowUi {
 			return '';
 		}
 
+
 		$h = '<div class="dropdown-list">';
 
 			$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
 
+			$actions = FALSE;
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
+				$actions = TRUE;
+
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Voir les écritures");
 				$h .= '</a>';
 
@@ -269,7 +289,9 @@ class CashflowUi {
 					$h .= s("Supprimer <div>(<b><u>Supprimera</u></b> les écritures)</div>", ['div' => '<div class="operations-delete-more">']);
 				$h .= '</a>';
 
-			} else if($eCashflow['status'] === CashflowElement::WAITING) {
+			} else if($eCashflow['status'] === CashflowElement::WAITING and $eFarm->usesAccounting()) {
+
+				$actions = TRUE;
 
 				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
 					$h .= s("Créer de nouvelles écritures");
@@ -289,8 +311,6 @@ class CashflowUi {
 
 			} else if($eCashflow['status'] === Cashflow::ALLOCATED) {
 
-				$h .= '<div class="dropdown-divider"></div>';
-
 				$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
 
 				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les écritures liées)</div>", ['div' => '<div class="operations-delete-more">']);
@@ -298,9 +318,12 @@ class CashflowUi {
 
 			} else {
 
-				$h .= '<div class="dropdown-divider"></div>';
+				if($actions) {
 
-				$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
+					$h .= '<div class="dropdown-divider"></div>';
+					$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
+
+				}
 
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Supprimer l'opération bancaire");
@@ -553,7 +576,7 @@ class CashflowUi {
 		$h .= '<div class="util-info">'.s("Si le compte bancaire n'existe pas encore, il sera automatiquement créé (et vous pourrez paramétrer son libellé dans Paramétrage > Les comptes bancaires).").'</div>';
 
 
-		$h .= $form->openUrl(\company\CompanyUi::urlBank($eFarm).'/import:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
+		$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/imports:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= '<label class="btn btn-primary">';
 				$h .= $form->file('ofx', ['onchange' => 'this.form.submit()', 'accept' => '.ofx']);

@@ -22,17 +22,8 @@ class CompanyUi {
 	public static function urlJournal(int|\farm\Farm $farm): string {
 		return '/'.(is_int($farm) ? $farm : $farm['id']).'/journal';
 	}
-
-	public static function urlOverview(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview'.($view !== NULL ? '/'.$view : '');
-	}
-
-	public static function urlAnalyze(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview/analyze'.($view !== NULL ? '/'.$view : '');
-	}
-
-	public static function urlSummary(int|\farm\Farm $farm, ?string $view = NULL): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/overview/summary'.($view !== NULL ? '/'.$view : '');
+	public static function urlFarm(int|\farm\Farm $farm): string {
+		return '/'.(is_int($farm) ? $farm : $farm['id']);
 	}
 
 	public static function urlAsset(int|\farm\Farm $farm): string {
@@ -45,20 +36,6 @@ class CompanyUi {
 
 	public static function urlAccount(int|\farm\Farm $farm): string {
 		return '/'.(is_int($farm) ? $farm : $farm['id']).'/account';
-	}
-
-	public function warnFinancialYear(\farm\Farm $eFarm, \Collection $cFinancialYear): string {
-
-		if($cFinancialYear->notEmpty()) {
-			return '';
-		}
-
-		$h = '<div class="util-info">';
-			$h .= \Asset::icon('leaf').' '.s("Avant de démarrer, rendez-vous <link>dans les paramètres de votre exploitation</link> pour créer votre premier exercice comptable !", ['link' => '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/">']);
-		$h .= '</div>';
-
-		return $h;
-
 	}
 
 	public function create(\farm\Farm $eFarm): string {
@@ -116,7 +93,7 @@ class CompanyUi {
 		]);
 
 		$h .= $form->group(
-			content: $form->submit(s("Enregistrer les paramètres de ma ferme"))
+			content: $form->submit(s("Enregistrer"))
 		);
 
 		$h .= $form->close();

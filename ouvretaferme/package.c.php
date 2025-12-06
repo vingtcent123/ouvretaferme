@@ -14,6 +14,7 @@ Package::setList([
 	'gallery' => 'production',
 	'game' => 'ouvretaferme',
 	'hr' => 'base',
+	'invoicing' => 'accounting',
 	'journal' => 'accounting',
 	'language' => 'framework',
 	'mail' => 'base',

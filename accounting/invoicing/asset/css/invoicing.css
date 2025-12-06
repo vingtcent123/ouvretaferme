@@ -1,0 +1,6 @@
+.invoicing-presentation {
+	background: linear-gradient(135deg, var(--commercialisation) 0, var(--production) 50%, var(--accounting) 100%);
+	color: white;
+	text-align: center;
+	min-height: 20rem;
+}

@@ -73,7 +73,7 @@ Class AssetUi {
 			$page = 'doCreate';
 		}
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAsset($eFarm).'/asset:'.$page, ['id' => 'asset-asset-create', 'autocomplete' => 'off']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAsset($eFarm).'/:'.$page, ['id' => 'asset-asset-create', 'autocomplete' => 'off']);
 
 		$h .= $form->asteriskInfo();
 
@@ -175,7 +175,7 @@ Class AssetUi {
 		$d->placeholder ??= s("Commencez à saisir l'immobilisation...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAsset($farm).'/asset:query?'.http_build_query($query);
+		$d->autocompleteUrl = \company\CompanyUi::urlAsset($farm).'/:query?'.http_build_query($query);
 		$d->autocompleteResults = function(Asset $e) use ($farm) {
 			return self::getAutocomplete($farm, $e);
 		};
@@ -252,7 +252,7 @@ Class AssetUi {
 									$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
 								$h .= '</div>';
 							$h .= '</td>';
-							$h .= '<td><a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
+							$h .= '<td><a href="'.\company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['economicMode']) {
 									AssetElement::LINEAR => s("LIN"),
@@ -586,7 +586,7 @@ Class AssetUi {
 		$h = self::getHeader($eAsset);
 
 		$h .= '<div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?asset='.$eAsset['id'].'&financialYear=0" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?asset='.$eAsset['id'].'&financialYear=0" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
 		$h .= '</div>';
 
 		if($eAsset['status'] === AssetElement::ONGOING) {
@@ -594,7 +594,7 @@ Class AssetUi {
 			$h .= '<div class="mt-1 mb-1">';
 
 				if($eAsset->acceptUdpate()) {
-					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/asset:update?id='.$eAsset['id'].'" class="btn btn-primary mr-1">'.s("Modifier l'immobilisation").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:update?id='.$eAsset['id'].'" class="btn btn-primary mr-1">'.s("Modifier l'immobilisation").'</a>';
 				}
 
 				$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:dispose?id='.$eAsset['id'].'" class="btn btn-primary">'.\Asset::icon('box-arrow-right').' '.s("Céder l'immobilisation").'</a>';
