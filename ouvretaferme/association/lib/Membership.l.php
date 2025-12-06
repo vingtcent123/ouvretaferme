@@ -120,7 +120,6 @@ class MembershipLib {
 				'defaultPaymentMethod' => $ePaymentMethod,
 				'phone' => $eUser['phone'],
 				'farm' => $eFarmOtf,
-				'user' => $eUserConnected,
 			]);
 
 			if($eFarm->notEmpty()) {
@@ -450,6 +449,11 @@ class MembershipLib {
 		]);
 		\selling\SaleLib::create($eSale);
 
+		$eProduct = \selling\Product::model()
+			->select(\selling\Product::getSelection())
+			->whereName($eHistory['type'] === History::MEMBERSHIP ? 'Adhésion' : 'Don')
+			->get();
+
 		$eItem = new \selling\Item([
 				'farm' => $eFarmOtf,
 				'sale' => $eSale,
@@ -457,7 +461,7 @@ class MembershipLib {
 				'customer' => $eCustomer,
 				'unitPrice' => $eHistory['amount'],
 				'number' => 1,
-				'product' => new \selling\Product(),
+				'product' => $eProduct,
 				'locked' => \selling\Item::PRICE,
 				'packaging' => NULL,
 		]);
