@@ -41,7 +41,7 @@ new Lime.Instruction('main')
 
 		if(qs('#farm-tab-financial-year-container')) {
 			qs('#farm-tab-financial-year-container').replaceWith(div.firstChild);
-		} else {
+		} else if(qs('[data-nav="accounting"]')) {
 			qs('[data-nav="accounting"]').prepend(financialYears);
 		}
 
