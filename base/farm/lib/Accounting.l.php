@@ -3,8 +3,10 @@ namespace farm;
 
 Class AccountingLib {
 
+	const FEC_COLUMN_DATE = 3;
 	const FEC_COLUMN_ACCOUNT_LABEL = 4;
 	const FEC_COLUMN_PAYMENT_METHOD = 19;
+	const FEC_COLUMN_DOCUMENT = 8;
 	const FEC_COLUMN_DEBIT = 11;
 	const FEC_COLUMN_CREDIT = 12;
 	const FEC_COLUMN_DEVISE_AMOUNT = 16;
@@ -22,7 +24,20 @@ Class AccountingLib {
 		// Tout le reste des ventes (ni caisse, ni factures)
 		$salesFec = self::extractSales($eFarm, $from, $to, $cFinancialYear, $cAccount);
 
-		return array_merge($saleMarketFec, $invoiceFec, $salesFec);
+		$contentFec = array_merge($saleMarketFec, $invoiceFec, $salesFec);
+
+		// Tri par date puis numéro de document
+		usort($contentFec, function($entry1, $entry2) {
+			if($entry1[self::FEC_COLUMN_DATE] < $entry2[self::FEC_COLUMN_DATE]) {
+				return -1;
+			}
+			if($entry1[self::FEC_COLUMN_DATE] > $entry2[self::FEC_COLUMN_DATE]) {
+				return 1;
+			}
+			return $entry1[self::FEC_COLUMN_DOCUMENT] < $entry2[self::FEC_COLUMN_DOCUMENT] ? -1 : 1;
+		});
+
+		return array_merge([\account\FecLib::getHeader()], $contentFec);
 
 	}
 
@@ -41,7 +56,12 @@ Class AccountingLib {
 			  'id',
 			  'document',
 			  'type', 'profile', 'marketParent',
-			  'customer' => ['id', 'name'],
+			  'customer' => [
+					'id', 'name',
+				  'thirdParty' => \account\ThirdParty::model()
+						->select('id', 'clientAccountLabel')
+						->delegateElement('customer')
+			  ],
 			  'deliveredAt',
 			  'cPayment' => \selling\Payment::model()
 					->select(\selling\Payment::getSelection())
@@ -76,7 +96,7 @@ Class AccountingLib {
 			$document = $eSale['document'];
 			$documentDate = $eSale['deliveredAt'];
 			$compAuxLib = ($eSale['customer']['name'] ?? '');
-			$compAuxNum = '';
+			$compAuxNum = ($eSale['customer']['thirdParty']['clientAccountLabel'] ?? '');
 
 			$items = []; // groupement par accountlabel, moyen de paiement
 
@@ -84,7 +104,7 @@ Class AccountingLib {
 
 			foreach($eSale['cItem'] as $eItem) {
 
-				$eAccountDefault = new \account\Account(['class' => '', 'description' => '', 'vatRate' => $eItem['vatRate'], 'vatAccount' => $eAccountVatDefault]);
+				$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
 
 				if($eItem['account']->empty() or $cAccount->offsetExists($eItem['account']['id']) === FALSE) {
 					$eAccount = $eAccountDefault;
@@ -108,31 +128,18 @@ Class AccountingLib {
 						$amountVat = 0.0;
 					}
 
-
 					// Montant HT
-					$fecDataExcludingVat = [
-						$eAccount['journalCode']['code'] ?? '',
-						$eAccount['journalCode']['name'] ?? '',
-						'',
-						date('Ymd', strtotime($eSale['deliveredAt'])),
-						$eAccount['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccount['class']),
-						$eAccount['description'],
-						$compAuxNum,
-						$compAuxLib,
-						$document,
-						date('Ymd', strtotime($documentDate)),
-						'',
-						$amountExcludingVat > 0 ? $amountExcludingVat : 0,
-						$amountExcludingVat < 0 ? abs($amountExcludingVat) : 0,
-						'',
-						'',
-						'',
-						$amountExcludingVat,
-						'EUR',
-						date('Ymd', strtotime($eSale['deliveredAt'])),
-						$payment['label'] ?? '',
-						''
-					];
+					$fecDataExcludingVat = self::getFecLine(
+						eAccount    : $eAccount,
+						date        : $eSale['deliveredAt'],
+						eCode       : $eAccount['journalCode'],
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $amountExcludingVat,
+						payment     : $payment['label'] ?? '',
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
 
@@ -144,29 +151,17 @@ Class AccountingLib {
 							$eAccountVat = $eAccountVatDefault;
 						}
 
-						$fecDataVat = [
-							$eAccount['journalCode']['code'] ?? '',
-							$eAccount['journalCode']['name'] ?? '',
-							'',
-							date('Ymd', strtotime($eSale['deliveredAt'])),
-							$eAccountVat['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccountVat['class']),
-							$eAccountVat['description'],
-							$compAuxNum,
-							$compAuxLib,
-							$document,
-							date('Ymd', strtotime($documentDate)),
-							'',
-							$amountVat > 0 ? $amountVat : 0,
-							$amountVat < 0 ? abs($amountVat) : 0,
-							'',
-							'',
-							'',
-							$amountVat,
-							'EUR',
-							date('Ymd', strtotime($eSale['deliveredAt'])),
-							$payment['label'] ?? 0,
-							''
-						];
+						$fecDataVat = self::getFecLine(
+							eAccount    : $eAccountVat,
+							date        : $eSale['deliveredAt'],
+							eCode       : $eAccount['journalCode'],
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $amountVat,
+							payment     : $payment['label'],
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+						);
 
 						self::mergeFecLineIntoItemData($items, $fecDataVat);
 
@@ -196,7 +191,13 @@ Class AccountingLib {
 		$cInvoice = \selling\Invoice::model()
 			->select([
 				'id', 'date', 'name',
-				'customer' => ['id', 'name'],
+				'customer' => [
+					'id', 'name',
+					'thirdParty' => \account\ThirdParty::model()
+						->select('id', 'clientAccountLabel')
+						->delegateElement('customer')
+
+				],
 				'paymentMethod' => ['name'],
 				'cSale' => \selling\Sale::model()
 					->select([
@@ -217,7 +218,7 @@ Class AccountingLib {
 			$document = $eInvoice['name'];
 			$documentDate = $eInvoice['date'];
 			$compAuxLib = ($eInvoice['customer']['name'] ?? '');
-			$compAuxNum = '';
+			$compAuxNum = ($eInvoice['customer']['thirdParty']['clientAccountLabel'] ?? '');
 
 			$hasVat = TRUE;
 			if($cFinancialYear->notEmpty()) {
@@ -236,7 +237,7 @@ Class AccountingLib {
 
 				foreach($eSale['cItem'] as $eItem) {
 
-					$eAccountDefault = new \account\Account(['class' => '', 'description' => '', 'vatRate' => $eItem['vatRate'], 'vatAccount' => $eAccountVatDefault]);
+					$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
 
 					if($eItem['account']->empty() or $cAccount->offsetExists($eItem['account']['id']) === FALSE) {
 						$eAccount = $eAccountDefault;
@@ -259,29 +260,17 @@ Class AccountingLib {
 					}
 
 					// Montant HT
-					$fecDataExcludingVat = [
-						$eAccount['journalCode']['code'] ?? '',
-						$eAccount['journalCode']['name'] ?? '',
-						'',
-						date('Ymd', strtotime($eInvoice['date'])),
-						$eAccount['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccount['class']),
-						$eAccount['description'],
-						$compAuxNum,
-						$compAuxLib,
-						$document,
-						date('Ymd', strtotime($documentDate)),
-						'',
-						$amountExcludingVat > 0 ? $amountExcludingVat : 0,
-						$amountExcludingVat < 0 ? abs($amountExcludingVat) : 0,
-						'',
-						'',
-						'',
-						$amountExcludingVat,
-						'EUR',
-						date('Ymd', strtotime($eInvoice['date'])),
-						$payment,
-						''
-					];
+					$fecDataExcludingVat = self::getFecLine(
+						eAccount    : $eAccount,
+						date        : $eInvoice['date'],
+						eCode       : $eAccount['journalCode'],
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $amountExcludingVat,
+						payment     : $payment,
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
 
@@ -293,29 +282,17 @@ Class AccountingLib {
 							$eAccountVat = $eAccountVatDefault;
 						}
 
-						$fecDataVat = [
-							$eAccount['journalCode']['code'] ?? '',
-							$eAccount['journalCode']['name'] ?? '',
-							'',
-							date('Ymd', strtotime($eInvoice['date'])),
-							$eAccountVat['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccountVat['class']),
-							$eAccountVat['description'],
-							$compAuxNum,
-							$compAuxLib,
-							$document,
-							date('Ymd', strtotime($documentDate)),
-							'',
-							$amountVat > 0 ? $amountVat : 0,
-							$amountVat < 0 ? abs($amountVat) : 0,
-							'',
-							'',
-							'',
-							$amountVat,
-							'EUR',
-							date('Ymd', strtotime($eInvoice['date'])),
-							$payment,
-							''
-						];
+						$fecDataVat = self::getFecLine(
+							eAccount    : $eAccountVat,
+							date        : $eInvoice['date'],
+							eCode       : $eAccount['journalCode'],
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $amountVat,
+							payment     : $payment,
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+						);
 
 						self::mergeFecLineIntoItemData($items, $fecDataVat);
 
@@ -347,7 +324,12 @@ Class AccountingLib {
 			  'id',
 			  'document',
 			  'type', 'profile', 'marketParent',
-			  'customer' => ['id', 'name'],
+			  'customer' => [
+					'id', 'name',
+				  'thirdParty' => \account\ThirdParty::model()
+						->select('id', 'clientAccountLabel')
+						->delegateElement('customer')
+			  ],
 			  'deliveredAt',
 				'cSale' => $saleModule
 					->select([
@@ -385,7 +367,7 @@ Class AccountingLib {
 			$document = $eSale['document'];
 			$documentDate = $eSale['deliveredAt'];
 			$compAuxLib = ($eSale['customer']['name'] ?? '');
-			$compAuxNum = '';
+			$compAuxNum = ($eSale['customer']['thirdParty']['clientAccountLabel'] ?? '');
 
 			$items = []; // groupement par accountlabel, moyen de paiement
 			foreach($eSale['cSale'] as $eSaleMarket) {
@@ -395,7 +377,7 @@ Class AccountingLib {
 
 				foreach($eSaleMarket['cItem'] as $eItem) {
 
-					$eAccountDefault = new \account\Account(['class' => '', 'description' => '', 'vatRate' => $eItem['vatRate'], 'vatAccount' => $eAccountVatDefault]);
+					$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
 
 					if($eItem['account']->empty() or $cAccount->offsetExists($eItem['account']['id']) === FALSE) {
 						$eAccount = $eAccountDefault;
@@ -419,31 +401,18 @@ Class AccountingLib {
 							$amountVat = 0.0;
 						}
 
-
 						// Montant HT
-						$fecDataExcludingVat = [
-							$eAccount['journalCode']['code'] ?? '',
-							$eAccount['journalCode']['name'] ?? '',
-							'',
-							date('Ymd', strtotime($eSale['deliveredAt'])),
-							$eAccount['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccount['class']),
-							$eAccount['description'],
-							$compAuxNum,
-							$compAuxLib,
-							$document,
-							date('Ymd', strtotime($documentDate)),
-							'',
-							$amountExcludingVat > 0 ? $amountExcludingVat : 0,
-							$amountExcludingVat < 0 ? abs($amountExcludingVat) : 0,
-							'',
-							'',
-							'',
-							$amountExcludingVat,
-							'EUR',
-							date('Ymd', strtotime($eSale['deliveredAt'])),
-							$payment['label'],
-							''
-						];
+						$fecDataExcludingVat = self::getFecLine(
+							eAccount    : $eAccount,
+							date        : $eSale['deliveredAt'],
+							eCode       : $eAccount['journalCode'],
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $amountExcludingVat,
+							payment     : $payment['label'],
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+						);
 
 						self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
 
@@ -455,29 +424,17 @@ Class AccountingLib {
 								$eAccountVat = $eAccountVatDefault;
 							}
 
-							$fecDataVat = [
-								$eAccount['journalCode']['code'] ?? '',
-								$eAccount['journalCode']['name'] ?? '',
-								'',
-								date('Ymd', strtotime($eSale['deliveredAt'])),
-								$eAccountVat['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccountVat['class']),
-								$eAccountVat['description'],
-								$compAuxNum,
-								$compAuxLib,
-								$document,
-								date('Ymd', strtotime($documentDate)),
-								'',
-								$amountVat > 0 ? $amountVat : 0,
-								$amountVat < 0 ? abs($amountVat) : 0,
-								'',
-								'',
-								'',
-								$amountVat,
-								'EUR',
-								date('Ymd', strtotime($eSale['deliveredAt'])),
-								$payment['label'],
-								''
-							];
+							$fecDataVat = self::getFecLine(
+								eAccount    : $eAccountVat,
+								date        : $eSale['deliveredAt'],
+								eCode       : $eAccount['journalCode'],
+								document    : $document,
+								documentDate: $documentDate,
+								amount      : $amountVat,
+								payment     : $payment['label'],
+								compAuxNum  : $compAuxNum,
+								compAuxLib  : $compAuxLib,
+							);
 
 							self::mergeFecLineIntoItemData($items, $fecDataVat);
 
@@ -486,7 +443,6 @@ Class AccountingLib {
 					}
 
 				}
-
 
 			}
 
@@ -497,6 +453,47 @@ Class AccountingLib {
 
 		return $fecData;
 
+	}
+
+	private static function getDefaultAccount(float $vatRate, \account\Account $eAccountVatDefault): \account\Account {
+
+		return new \account\Account([
+			'class' => '',
+			'description' => '',
+			'vatRate' => $vatRate,
+			'vatAccount' => $eAccountVatDefault,
+			'journalCode' => new \journal\JournalCode()
+		]);
+	}
+
+	private static function getFecLine(
+		\account\Account $eAccount, string $date, \journal\JournalCode $eCode,
+		string $document, string $documentDate, float $amount, string $payment, string $compAuxNum, string $compAuxLib
+	): array {
+
+		return [
+			$eCode['code'] ?? '',
+			$eCode['name'] ?? '',
+			'',
+			date('Ymd', strtotime($date)),
+			$eAccount['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccount['class']),
+			$eAccount['description'],
+			$compAuxNum,
+			$compAuxLib,
+			$document,
+			date('Ymd', strtotime($documentDate)),
+			'',
+			$amount > 0 ? $amount : 0,
+			$amount < 0 ? abs($amount) : 0,
+			'',
+			'',
+			'',
+			$amount,
+			'EUR',
+			date('Ymd', strtotime($date)),
+			$payment,
+			''
+		];
 	}
 
 	private static function explodePaymentsRatio(\Collection $cPayment): array {
@@ -520,7 +517,6 @@ Class AccountingLib {
 
 	private static function mergeFecLineIntoItemData(array &$items, array $fecLine): void {
 
-		// merge into item list
 		$added = FALSE;
 		foreach($items as &$item) {
 			if(
