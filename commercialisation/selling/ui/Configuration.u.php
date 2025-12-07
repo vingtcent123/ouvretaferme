@@ -487,7 +487,7 @@ class ConfigurationUi {
 
 			case 'hasVat' :
 				$d->field = 'yesNo';
-				$d->after = \util\FormUi::info(s("Le changement d'assujettissement n'est pris en compte que pour les ventes créées ultérieurement."));
+				$d->after = \util\FormUi::info(s("Le changement dans la redevabilité de la TVA n'est pris en compte que pour les ventes créées ultérieurement."));
 				break;
 
 			case 'documentInvoices' :

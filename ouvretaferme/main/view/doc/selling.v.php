@@ -19,7 +19,7 @@ new AdaptativeView('pricing', function($data, DocTemplate $t) {
 			echo '<li>'.s("Un groupe de clients ne peut contenir que des professionnels ou que des particuliers").'</li>';
 			echo '<li>'.s("Et ainsi de suite...").'</li>';
 		echo '</ul>';
-		echo '<p>'.s("Si vous êtes assujetti à la TVA, les ventes et les prix sont ainsi expimés <b>HT</b> pour vos clients professionnels et <b>TTC</b> pour vos clients particuliers. Si vous n'êtes pas assujetti à la TVA, il n'y a pas de distinction <b>HT</b> / <b>TTC</b> mais les prix de vente restent découplés.").'</p>';
+		echo '<p>'.s("Si vous êtes redevable de la TVA, les ventes et les prix sont ainsi expimés <b>HT</b> pour vos clients professionnels et <b>TTC</b> pour vos clients particuliers. Si vous n'êtes pas redevable de la TVA, il n'y a pas de distinction <b>HT</b> / <b>TTC</b> mais les prix de vente restent découplés.").'</p>';
 
 	echo '</div>';
 

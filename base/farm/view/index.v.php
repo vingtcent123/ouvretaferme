@@ -424,7 +424,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer votre clientèle").'</h4>';
-			echo '<p>'.s("Pour vendre, vous devez avoir des clients et c'est ici que ça se passe pour créer un premier client. Deux champs du formulaire sont obligatoires, le nom du client et la catégorie. Les clients professionnels sont facturés HT et les clients particuliers TTC si vous êtes assujetti à la TVA.").'</p>';
+			echo '<p>'.s("Pour vendre, vous devez avoir des clients et c'est ici que ça se passe pour créer un premier client. Deux champs du formulaire sont obligatoires, le nom du client et la catégorie. Les clients professionnels sont facturés HT et les clients particuliers TTC si vous êtes redevable de la TVA.").'</p>';
 			echo '<p>'.s("Si vous souhaitez utiliser le logiciel de caisse, vous devez utiliser un point de vente pour les particuliers !").'</p>';
 		echo '</div>';
 

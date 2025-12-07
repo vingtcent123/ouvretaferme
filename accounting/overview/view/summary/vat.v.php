@@ -18,7 +18,7 @@ new AdaptativeView('noVat', function($data, FarmTemplate $t) {
 	);
 
 	echo '<div class="util-info">';
-		echo s("Cet exercice comptable n'a pas été configuré pour être assujetti à la TVA.");
+		echo s("Cet exercice comptable n'a pas été configuré pour être redevable de la TVA.");
 		if($data->eFinancialYear['status'] === \account\FinancialYear::OPEN) {
 			echo s("(<link>modifier les paramètres</link>).", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/:update?id='.$data->eFinancialYear['id'].'">']);
 		} else {
