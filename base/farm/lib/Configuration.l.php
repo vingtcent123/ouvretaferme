@@ -14,7 +14,7 @@ class ConfigurationLib extends ConfigurationCrud {
 		$e = new Configuration([
 			'farm' => $eFarm,
 			'taxCountry' => $eFarm['legalCountry'],
-			'defaultVat' => SellingSetting::VAT_RATE_INITIAL
+			'defaultVat' => \selling\SellingSetting::VAT_RATE_INITIAL
 		]);
 
 		parent::create($e);
@@ -35,7 +35,7 @@ class ConfigurationLib extends ConfigurationCrud {
 		if(in_array('taxCountry', $properties)) {
 
 			$e['taxCountryVerified'] = TRUE;
-			$e['defaultVat'] = SellingSetting::getStartVat($e['taxCountry']);
+			$e['defaultVat'] = \selling\SellingSetting::getStartVat($e['taxCountry']);
 
 			$properties[] = 'taxCountryVerified';
 			$properties[] = 'defaultVat';
