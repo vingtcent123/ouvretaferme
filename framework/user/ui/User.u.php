@@ -648,9 +648,9 @@ L'équipe");
 				break;
 
 			case 'invoiceCountry' :
-				$d->values = fn(User $e) => \user\Country::all();
+				$d->values = fn(User $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, User $e) => [
-					'group' => is_array(\user\Country::all()),
+					'group' => is_array(\user\Country::form()),
 					'mandatory' => TRUE
 				];
 				break;

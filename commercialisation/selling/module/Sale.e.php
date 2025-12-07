@@ -19,7 +19,6 @@ class Sale extends SaleElement {
 			],
 			'paymentStatus',
 			'cPayment' => PaymentLib::delegateBySale(),
-			'cCountry?' => fn($e) => fn(\user\Country $eCountry) => \user\CountryLib::ask($eCountry),
 		];
 
 	}
@@ -101,7 +100,7 @@ class Sale extends SaleElement {
 			$this['deliveryCountry']->notEmpty() and
 			($eFarm->empty() or $this['deliveryCountry']->is($eFarm['legalCountry']) === FALSE)
 		) {
-			$address .= "\n".$this['cCountry?']($this['deliveryCountry'])['name'];
+			$address .= "\n".\user\Country::ask($this['deliveryCountry'])['name'];
 		}
 
 		return ($type === 'text') ? $address : nl2br(encode($address));

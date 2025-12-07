@@ -21,7 +21,6 @@ class Farm extends FarmElement {
 
 		return parent::getSelection() + [
 			'calendarMonths' => new \Sql('IF(calendarMonthStart IS NULL, 0, 12 - calendarMonthStart + 1) + 12 + IF(calendarMonthStop IS NULL, 0, calendarMonthStop)', 'int'),
-			'cCountry?' => fn($e) => fn(\user\Country $eCountry) => \user\CountryLib::ask($eCountry),
 		];
 
 	}
@@ -365,7 +364,7 @@ class Farm extends FarmElement {
 		$address .= $this['legalPostcode'].' '.$this['legalCity'];
 
 		if($this['legalCountry']->notEmpty()) {
-			$address .= "\n".$this['cCountry?']($this['legalCountry'])['name'];
+			$address .= "\n".\user\Country::ask($this['legalCountry'])['name'];
 		}
 
 		return ($type === 'text') ? $address : nl2br(encode($address));

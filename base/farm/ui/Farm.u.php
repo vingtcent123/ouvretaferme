@@ -2608,9 +2608,9 @@ class FarmUi {
 		switch($property) {
 
 			case 'legalCountry' :
-				$d->values = fn(Farm $e) => \user\Country::all();
+				$d->values = fn(Farm $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, Farm $e) => [
-					'group' => is_array(\user\Country::all()),
+					'group' => is_array(\user\Country::form()),
 					'mandatory' => ($e->exists() === FALSE) /* Obligatoire pour les nouvelles fermes, les anciennes doivent finir leur migration -> À supprimer en 2029 */
 				];
 				$d->after = \util\FormUi::info(s("Le choix du pays est définitif et ne pourra pas être modifié par la suite."));

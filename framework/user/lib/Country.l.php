@@ -21,7 +21,7 @@ class CountryLib extends CountryCrud {
 
 	}
 
-	public static function getForSignUp(): array|Country {
+	public static function getForForm(): array|Country {
 
 		if(self::$countries === NULL) {
 

@@ -6,9 +6,7 @@ class Invoice extends InvoiceElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'customer' => CustomerElement::getSelection() + [
-				'cCountry?' => fn($e) => fn(\user\Country $eCountry) => \user\CountryLib::ask($eCountry),
-			],
+			'customer' => CustomerElement::getSelection(),
 			'paymentMethod' => ['name', 'fqn'],
 			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.SellingSetting::DOCUMENT_EXPIRES.' MONTH)'),
 			'farm' => \farm\FarmElement::getSelection(),

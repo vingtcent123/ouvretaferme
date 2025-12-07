@@ -9,7 +9,6 @@ class Customer extends CustomerElement {
 			'farm' => \farm\FarmElement::getSelection(),
 			'user' => ['email'],
 			'cGroup?' => fn($e) => fn() => \selling\CustomerGroupLib::askByFarm($e['farm'], $e['groups']),
-			'cCountry?' => fn($e) => fn(\user\Country $eCountry) => \user\CountryLib::ask($eCountry),
 		];
 
 	}
@@ -142,7 +141,7 @@ class Customer extends CustomerElement {
 		$address .= $this['invoicePostcode'].' '.$this['invoiceCity'];
 
 		if($this['invoiceCountry']->notEmpty()) {
-			$address .= "\n".$this['cCountry?']($this['invoiceCountry'])['name'];
+			$address .= "\n".\user\Country::ask($this['invoiceCountry'])['name'];
 		}
 
 		return ($type === 'text') ? $address : nl2br(encode($address));
