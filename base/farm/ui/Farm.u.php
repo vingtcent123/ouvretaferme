@@ -2589,6 +2589,13 @@ class FarmUi {
 
 		switch($property) {
 
+			case 'legalEmail' :
+				$d->default = fn(Farm $e) => $e->exists() ? NULL : \user\ConnectionLib::getOnline()['email'];
+				$d->attributes = [
+					'onfocus' => 'this.select()'
+				];
+				break;
+
 			case 'legalCountry' :
 				$d->values = fn(Farm $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, Farm $e) => [
@@ -2599,7 +2606,6 @@ class FarmUi {
 
 			case 'siret' :
 				$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
-				$d->attributes['oninput'] = 'Farm.getFarmDataBySiret(this)';
 				break;
 
 			case 'cultivationPlace' :

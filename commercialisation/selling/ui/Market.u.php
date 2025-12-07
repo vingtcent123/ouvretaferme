@@ -744,38 +744,26 @@ class MarketUi {
 
 	public function getTicketForm(Sale $eSaleMarket): \Panel {
 
-		$h = '';
+		$form = new \util\FormUi();
 
-		if($eSaleMarket['farm']['legalEmail'] === NULL) {
-			$h .= '<div class="util-box-danger">';
-				$h .= '<p>'.s("Pour envoyer un ticket de caisse, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
-				$h .= '<a href="/farm/farm:update?id='.$eSaleMarket['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
+		$h = $form->openAjax('/selling/market:doSendTicket');
+
+			$h .= $form->hidden('id', $eSaleMarket['id']);
+
+			$h .= '<div class="util-block-help">';
+				$h .= s("Lorsque vous aurez envoyé le ticket au client par e-mail, la vente sera clôturée et ne pourra plus être modifiée.");
 			$h .= '</div>';
 
- 		} else {
+			$h .= $form->group(
+				label: s("E-mail du client"),
+				content: $form->email('email', $eSaleMarket['customer']->empty() ? '' : ($eSaleMarket['customer']['email'] ?? '')),
+			);
 
-			$form = new \util\FormUi();
+			$h .= $form->group(
+				content: $form->submit(s("Envoyer"))
+			);
 
-			$h .= $form->openAjax('/selling/market:doSendTicket');
-
-				$h .= $form->hidden('id', $eSaleMarket['id']);
-
-				$h .= '<div class="util-block-help">';
-					$h .= s("Lorsque vous aurez envoyé le ticket au client par e-mail, la vente sera clôturée et ne pourra plus être modifiée.");
-				$h .= '</div>';
-
-				$h .= $form->group(
-					label: s("E-mail du client"),
-					content: $form->email('email', $eSaleMarket['customer']->empty() ? '' : ($eSaleMarket['customer']['email'] ?? '')),
-				);
-
-				$h .= $form->group(
-					content: $form->submit(s("Envoyer"))
-				);
-
-			$h .= $form->close();
-
-		}
+		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-sale-send-ticket',

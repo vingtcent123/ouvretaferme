@@ -241,28 +241,10 @@ class Farm extends FarmElement {
 
 	}
 
-	public function isEmail(): bool {
-
-		return (
-			$this['legalEmail'] !== NULL
-		);
-
-	}
-
 	public function isLegal(): bool {
 
 		return (
-			$this['legalCountry']->notEmpty() and
 			$this['legalName'] !== NULL and
-			$this['legalEmail'] !== NULL
-		);
-
-	}
-
-	public function isLegalComplete(): bool {
-
-		return (
-			$this->isLegal() and
 			$this['legalCity'] !== NULL
 		);
 
@@ -279,17 +261,6 @@ class Farm extends FarmElement {
 		}
 
 		return $this->getFarmer()->notEmpty();
-
-	}
-
-	public function canShop(): bool {
-
-		$this->expects(['legalEmail', 'legalName']);
-
-		return (
-			$this['legalEmail'] !== NULL and
-			$this['legalName'] !== NULL
-		);
 
 	}
 
@@ -317,12 +288,6 @@ class Farm extends FarmElement {
 		}
 	}
 
-	public function validateEmailComplete(): void {
-
-		$this->isEmail() ?: throw new \FailAction('farm\Farm::notEmail', ['farm' => $this]);
-
-	}
-
 	public function validateLegalComplete(): void {
 
 		$this->isLegal() ?: throw new \FailAction('farm\Farm::notLegal', ['farm' => $this]);
@@ -331,7 +296,7 @@ class Farm extends FarmElement {
 
 	public function validateSellingComplete(): void {
 
-		$this->isLegalComplete() ?: throw new \FailAction('farm\Farm::notSelling', ['farm' => $this]);
+		$this->isLegal() ?: throw new \FailAction('farm\Farm::notSelling', ['farm' => $this]);
 
 	}
 
@@ -467,11 +432,25 @@ class Farm extends FarmElement {
 				}
 				return ($legalName !== NULL);
 			})
+			->setCallback('siret.prepare', function(?string &$siret) use($p) {
+				if($siret !== NULL) {
+					$siret = preg_replace('/\s+/i', '', $siret);
+				}
+			})
 			->setCallback('siret.empty', function(?string $siret) use($p) {
 				if($p->for !== 'legal') {
 					return TRUE;
 				}
 				return ($siret !== NULL);
+			})
+			->setCallback('siret.check', function(?string $siret) use($p) {
+
+				if($siret === NULL) {
+					return TRUE;
+				} else {
+					return preg_match('/^[0-9]{14}$/', $siret) > 0;
+				}
+
 			})
 			->setCallback('legalCity.empty', function(?string $legalCity) use($p) {
 

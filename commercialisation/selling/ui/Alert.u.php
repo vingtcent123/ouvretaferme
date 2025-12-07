@@ -89,7 +89,6 @@ class AlertUi {
 			'Stock::newValue.negative' => s("Le stock ne peut pas être négatif"),
 
 			'Pdf::noCustomerEmail' => s("Vous n'avez pas renseigné d'adresse e-mail pour ce client"),
-			'Pdf::noFarmEmail' => s("Vous n'avez pas renseigné d'adresse e-mail pour votre ferme"),
 			'Pdf::emptySale' => s("Vous pourrez générer ce document dès que vous aurez ajouté au moins un article à la vente !"),
 			'Pdf::fileAlreadySent' => s("Ce fichier a déjà été envoyé au client"),
 			'Pdf::fileEmpty' => s("Ce fichier PDF n'existe pas."),

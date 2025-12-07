@@ -7,10 +7,6 @@ class NewsletterUi {
 
 		$form = new \util\FormUi();
 
-		if($eWebsite['farm']['legalEmail'] === NULL) {
-			return '<div class="util-box-danger">'.s("Le formulaire d'inscription à la lettre d'informations ne peut pas être affiché car le producteur n'a pas renseigné d'adresse e-mail pour sa ferme.").'</div>';
-		}
-
 		$h = $form->openAjax(WebsiteUi::url($eWebsite, '/:doNewsletter'), ['id' => 'website-newsletter']);
 
 			$h .= $form->dynamicGroups(new Contact(), ['email']);

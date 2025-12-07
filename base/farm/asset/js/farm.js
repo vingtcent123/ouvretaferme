@@ -163,46 +163,5 @@ class Farm {
 			.fetch();
 
 	}
-	static getFarmDataBySiret(target) {
-
-		const siret = target.value.replaceAll(' ', '');
-
-		if(siret.length !== 14) {
-			return;
-		}
-
-		const form = target.firstParent('form');
-
-		new Ajax.Query(form)
-			.method('get')
-			.url('https://suggestions.pappers.fr/v2?cibles=siret&q='+ siret)
-			.fetch()
-			.then((response) => {
-
-				if(response.resultats_siret[0] === undefined) {
-					return;
-				}
-
-				target.value = siret;
-
-				if(form.qs('[name="legalName"]').value.length === 0) {
-					form.qs('[name="legalName"]').value = response.resultats_siret[0].nom_entreprise;
-				}
-
-				if(
-					form.qs('[name="legalStreet1"]').value.length === 0 &&
-					form.qs('[name="legalStreet2"]').value.length === 0 &&
-					form.qs('[name="legalPostcode"]').value.length === 0 &&
-					form.qs('[name="legalCity"]').value.length === 0
-				) {
-					form.qs('[name="legalStreet1"]').value = response.resultats_siret[0].siege.adresse_ligne_1;
-					form.qs('[name="legalStreet2"]').value = response.resultats_siret[0].siege.adresse_ligne_2;
-					form.qs('[name="legalPostcode"]').value = response.resultats_siret[0].siege.code_postal;
-					form.qs('[name="legalCity"]').value = response.resultats_siret[0].siege.ville;
-				}
-
-			});
-
-	}
 
 }

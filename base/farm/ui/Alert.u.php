@@ -15,6 +15,8 @@ class AlertUi {
 			'Farm::demo.delete' => s("Vous ne pouvez pas supprimer la démo !"),
 			'Farm::legalEmail.empty' => s("Merci de renseigner l'adresse e-mail de la ferme !"),
 			'Farm::name.check' => s("Merci de renseigner le nom de la ferme !"),
+			'Farm::siret.empty' => s("Un numéro de SIRET est obligatoire pour utiliser le service de facturation."),
+			'Farm::siret.check' => s("Le numéro de SIRET doit contenir exactement 15 chiffres."),
 			'Farm::cultivationPlace.check' => s("Veuillez sélectionner une ville dans le menu déroulant."),
 			'Farm::defaultBedWidth.size' => s("La largeur de planche par défaut ne peut pas être inférieure à 5 cm."),
 			'Farmer::demo.write' => s("Vous ne pouvez pas modifier l'équipe sur la démo !"),

@@ -28,9 +28,9 @@ Farm:
   id: serial32
   name: text8(1, null) @collate(general)
   legalName: ?text8
-  legalEmail: ?email
+  legalEmail: email
   legalCountry: user\Country
-  siret: ?text8
+  siret: ?text8(15, 15)
   legalStreet1: ?text8
   legalStreet2: ?text8
   legalPostcode: ?text8

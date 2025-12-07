@@ -91,11 +91,6 @@ class PdfLib extends PdfCrud {
 			return;
 		}
 
-		if($eFarm['legalEmail'] === NULL) {
-			Pdf::fail('noFarmEmail');
-			return;
-		}
-
 		$ePdf = Pdf::model()
 			->select(Pdf::getSelection())
 			->select([
@@ -198,11 +193,6 @@ class PdfLib extends PdfCrud {
 
 		if($customerEmail === NULL) {
 			Pdf::fail('noCustomerEmail');
-			return;
-		}
-
-		if($eFarm['legalEmail'] === NULL) {
-			Pdf::fail('noFarmEmail');
 			return;
 		}
 

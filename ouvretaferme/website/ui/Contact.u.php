@@ -7,10 +7,6 @@ class ContactUi {
 
 		$form = new \util\FormUi();
 
-		if($eWebsite['farm']['legalEmail'] === NULL) {
-			return '<div class="util-box-danger">'.s("Le formulaire de contact ne peut pas être affiché car le producteur n'a pas renseigné d'adresse e-mail pour sa ferme.").'</div>';
-		}
-
 		$h = $form->openAjax(WebsiteUi::url($eWebsite, '/:doContact'), ['id' => 'website-contact']);
 
 			$h .= $form->dynamicGroups(new Contact(), ['name', 'email', 'title', 'content']);

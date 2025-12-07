@@ -121,7 +121,7 @@ class ConfigurationUi {
 
 		$h = '';
 
-		if($eFarm->isLegalComplete() === FALSE) {
+		if($eFarm->isLegal() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= \farm\AlertUi::getError('Farm::notLegal', [
@@ -176,7 +176,7 @@ class ConfigurationUi {
 
 		$h = '';
 
-		if($eFarm->isLegalComplete() === FALSE) {
+		if($eFarm->isLegal() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= \farm\AlertUi::getError('Farm::notLegal', [
@@ -273,7 +273,7 @@ class ConfigurationUi {
 
 		$h = '';
 
-		if($eFarm->isLegalComplete() === FALSE) {
+		if($eFarm->isLegal() === FALSE) {
 
 			$h .= '<div class="util-block-help">';
 				$h .= \farm\AlertUi::getError('Farm::notLegal', [

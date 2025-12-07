@@ -739,7 +739,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 				echo '<li>'.s("Envoyez automatiquement les factures par e-mail à vos clients").'</li>';
 			echo '</ul>';
 			if($data->hasSales) {
-				if($data->eFarm->isLegalComplete()) {
+				if($data->eFarm->isLegal()) {
 					echo '<a href="/selling/invoice:create?farm='.$data->eFarm['id'].'" class="btn btn-secondary">'.s("Créer une première facture").'</a> ';
 				} else {
 					echo '<p>'.s("Il manque encore quelques informations sur votre ferme pour facturer vos premières ventes.").'</p>';
@@ -750,7 +750,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 			}
 		echo '</div>';
 
-		if($data->eFarm->isLegalComplete() === FALSE) {
+		if($data->eFarm->isLegal() === FALSE) {
 			echo '<h3>'.s("Informations requises pour facturer vos ventes").'</h3>';
 			echo new \farm\FarmUi()->updateLegal($data->eFarm);
 		}

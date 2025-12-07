@@ -3,7 +3,6 @@ new \mail\CampaignPage()
 	->getCreateElement(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-		$data->eFarm->validateEmailComplete();
 
 		$eCampaign = new \mail\Campaign([
 			'farm' => $data->eFarm,

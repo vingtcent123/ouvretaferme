@@ -23,7 +23,7 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 	if($data->eFarm['membership'] === FALSE) {
 
-		if($data->eFarm->isLegalComplete()) {
+		if($data->eFarm->isLegal()) {
 
 			echo new \association\MembershipUi()->getJoinForm($data->eFarm, $data->eUser);
 
