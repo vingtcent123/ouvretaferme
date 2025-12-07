@@ -107,8 +107,13 @@ class AdminUi {
 							$h .= '</a>';
 						$h .= '</td>';
 						$h .= '<td>';
-							if($eFarm['cultivationPlace'] !== NULL) {
-								$h .= encode($eFarm['cultivationPlace']);
+							if($eFarm['legalCity'] !== NULL) {
+								$h .= encode($eFarm['legalCity']);
+								if($eFarm['legalPostcode'] !== NULL) {
+									$h .= ' <small class="color-muted">'.$eFarm['legalPostcode'].'</small>';
+								}
+							} else {
+								$h .= encode($eFarm['cultivationPlace'] ?? '');
 							}
 						$h .= '</td>';
 						$h .= '<td>';

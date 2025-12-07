@@ -14,7 +14,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '<div class="home-features home-features-3">';
 
-		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel gratuit qui contribue à l'autonomie des fermes en circuits courts").'</h3>';
+		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel gratuit qui contribue à l'autonomie de plus de 2500 producteurs").'</h3>';
 
 		echo '<div class="home-feature">';
 
@@ -174,7 +174,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '<div class="home-story-wrapper">';
 		echo '<div class="home-story">';
-			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.").'</p>';
+			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits en circuits courts. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.").'</p>';
 			echo '<a href="'.\association\AssociationSetting::URL.'" target="_blank" class="btn btn-secondary">'.S("Découvrir l'association").'</a> ';
 			echo '<a href="'.\association\AssociationSetting::URL.'/nous-soutenir" target="_blank" class="btn btn-outline-secondary">'.S("Nous soutenir").'</a>';
 		echo '</div>';

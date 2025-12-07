@@ -2192,11 +2192,20 @@ class SaleUi {
 		/* La ferme permettra ultérieurement de personnaliser la TVA en fonction du pays */
 
 		return [
+
+			// FR
 			0 => $short ? s("0 %") : s("0 % - Pas de TVA"),
 			1 => $short ? s("2.1 %") : s("2.1 % - Taux particulier"),
 			2 => $short ? s("5.5 %") : s("5.5 % - Taux réduit"),
 			3 => $short ? s("10 %") : s("10 % - Taux intermédiaire"),
-			4 => $short ? s("20 %") : s("20 % - Taux normal")
+			4 => $short ? s("20 %") : s("20 % - Taux normal"),
+
+			// BE
+			100 => $short ? s("0 %") : s("0 % - Pas de TVA"),
+			101 => $short ? s("6 %") : s("6 % - Taux réduit"),
+			102 => $short ? s("12 %") : s("12 % - Taux intermédiaire"),
+			103 => $short ? s("21 %") : s("21 % - Taux standard"),
+
 		];
 
 	}

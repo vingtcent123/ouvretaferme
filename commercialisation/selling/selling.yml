@@ -274,7 +274,7 @@ Product:
   proPriceInitial: ?decimal(8, 2)
   proPackaging: ?float32(0.01, null)
   proStep: ?decimal(6, 2, 0.01, null)
-  vat: int8(1, null)
+  vat: int16(1, null)
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   stock: ?decimal(8, 2, 0.0, null)
   stockLast: ?selling\Stock
