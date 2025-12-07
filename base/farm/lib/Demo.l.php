@@ -288,7 +288,7 @@ class DemoLib {
 				'logo' => NULL,
 				'emailBanner' => NULL,
 				'legalName' => 'GAEC de Démo',
-				'legalEmail' => NULL,
+				'legalEmail' => 'demo@ouvretaferme.org',
 				'legalStreet1' => NULL,
 				'legalStreet2' => NULL,
 				'legalPostcode' => NULL,
