@@ -251,6 +251,10 @@ class Farm extends FarmElement {
 
 	}
 
+	public function hasVatCountry(): bool {
+		return TRUE;
+	}
+
 	public function isFR(): bool {
 
 		return (
@@ -523,7 +527,7 @@ class Farm extends FarmElement {
 
 	}
 
-	public static function checkVatNumber(string $element, Farm|Customer $e, ?string &$vat): bool {
+	public static function checkVatNumber(string $element, Farm|\selling\Customer $e, ?string &$vat): bool {
 
 		if($e->isFR()) {
 
@@ -554,7 +558,13 @@ class Farm extends FarmElement {
 		} else {
 
 			if($vat !== NULL) {
-				\Fail::log($element.'::vatNumber.country');
+
+				if($e->hasVatCountry()) {
+					\Fail::log($element.'::vatNumber.country');
+				} else {
+					\Fail::log($element.'::vatNumber.noCountry');
+				}
+
 			}
 
 		}

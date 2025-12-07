@@ -21,6 +21,7 @@ class AlertUi {
 			'Customer::siret.check' => \farm\AlertUi::getErrorSiret(),
 			'Customer::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),
 			'Customer::vatNumber.country' => s("Vous ne pouvez pas saisir de numéro de TVA intracommunautaire pour les clients hors Belgique et France."),
+			'Customer::vatNumber.noCountry' => s("Veuillez indiquer le pays de ce client dans l'adresse de facturation pour saisir un numéro de TVA intracommunautaire."),
 			'Customer::category.user' => s("Un client ne peut pas être transformé en point de vente."),
 			'Customer::deletedUsed' => s("Ce client ne peut pas être supprimé car des factures ou des ventes lui sont associées."),
 			'Customer::firstName.empty' => s("Veuillez indiquer le prénom de votre client."),

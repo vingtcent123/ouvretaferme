@@ -98,6 +98,15 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function hasVatCountry(): bool {
+
+		return (
+			$this->isPro() and
+			$this['invoiceCountry']->notEmpty()
+		);
+
+	}
+
 	public function isFR(): bool {
 
 		return (
@@ -309,6 +318,7 @@ class Customer extends CustomerElement {
 
 			})
 			->setCallback('siret.check', fn(?string &$siret) => \farm\Farm::checkSiret($siret))
+			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('selling\Customer', $this, $vat))
 			->setCallback('defaultPaymentMethod.check', function(\payment\Method $eMethod): bool {
 
 				if($eMethod->empty()) {
