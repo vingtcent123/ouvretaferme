@@ -9,19 +9,9 @@ class FarmLib extends FarmCrud {
 		return ['name', 'legalEmail', 'legalCountry', 'quality'];
 	}
 
-	public static function getPropertiesUpdate(): \Closure {
+	public static function getPropertiesUpdate(): array {
 
-		return function(Farm $e) {
-
-			$properties = ['name', 'legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
-
-			if($e['legalCountry']->empty()) {
-				$properties[] = 'legalCountry';
-			}
-
-			return $properties;
-
-		};
+		return ['name', 'legalName', 'legalEmail', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'legalCountry', 'siret', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
 
 	}
 

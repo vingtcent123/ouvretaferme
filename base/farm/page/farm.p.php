@@ -35,10 +35,6 @@ new \farm\FarmPage()
 
 		$data->eFarm = $data->e;
 
-		if($data->e['legalCountry']->notEmpty()) {
-			$data->e['legalCountry'] = \user\CountryLib::getById($data->e['legalCountry']);
-		}
-
 		throw new ViewAction($data);
 
 	})
@@ -57,14 +53,9 @@ new \farm\FarmPage()
 
 		$data->eFarm = $data->e;
 
-		if($data->e['legalCountry']->notEmpty()) {
-			$data->e['legalCountry'] = \user\CountryLib::getById($data->e['legalCountry']);
-		}
-
 		throw new ViewAction($data);
 
 	}, page: 'updatePlace')
-	->doUpdateProperties('doUpdateCountry', fn(\farm\Farm $e) => $e['legalCountry']->empty() ? ['legalCountry'] : [], fn() => throw new ReloadLayerAction())
 	->doUpdateProperties('doUpdatePlace', ['cultivationPlace', 'cultivationLngLat'], fn() => throw new ReloadAction('farm', 'Farm::updatedPlace'))
 	->update(function($data) {
 
@@ -73,7 +64,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateEmail')
-	->doUpdateProperties('doUpdateLegal', fn(\farm\Farm $e) => array_merge($e['legalCountry']->empty() ? ['legalCountry'] : [], ['legalName', 'legalEmail', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity']), fn() => throw new ReloadAction('farm', 'Farm::updatedLegal'), for: 'legal')
+	->doUpdateProperties('doUpdateLegal', fn(\farm\Farm $e) => ['legalName', 'legalEmail', 'legalCountry', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'], fn() => throw new ReloadAction('farm', 'Farm::updatedLegal'), for: 'legal')
 	->doUpdateProperties('doUpdateEmail', ['emailFooter', 'emailDefaultTime'], fn() => throw new ReloadAction('farm', 'Farm::updatedEmail'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())
 	->read('calendarMonth', function($data) {

@@ -447,7 +447,7 @@ class FarmUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->dynamicGroups($eFarm, $properties);
-			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => $eFarm['legalCountry']->empty()]);
+			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
 
 			$h .= $form->group(
 				content: $form->submit(s("Valider"))
@@ -473,15 +473,7 @@ class FarmUi {
 			);
 			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail']);
 			$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName']);
-			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm, ['country' => $eFarm['legalCountry']->empty()]);
-
-			if($eFarm['legalCountry']->notEmpty()) {
-
-				$h .= $form->group(
-					content: $form->fake($eFarm['legalCountry']['name'])
-				);
-
-			}
+			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
 
 			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality']);
 
@@ -583,25 +575,15 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		if($eFarm['legalCountry']->empty()) {
-			$url = '/farm/farm:doUpdateCountry';
-		} else {
-			$url = '/farm/farm:doUpdatePlace';
-		}
-
-		$h = $form->openAjax($url);
+		$h = $form->openAjax('/farm/farm:doUpdatePlace');
 
 			$h .= $form->hidden('id', $eFarm);
 
-			if($eFarm['legalCountry']->empty()) {
-				$h .= $form->dynamicGroups($eFarm, ['legalCountry']);
-			} else {
-				$h .= $form->group(
-					self::p('legalCountry')->label,
-					content: $form->fake($eFarm['legalCountry']['name'])
-				);
-				$h .= $form->dynamicGroups($eFarm, ['cultivationPlace', 'cultivationLngLat']);
-			}
+			$h .= $form->group(
+				s("Pays"),
+				content: '<b>'.\user\Country::ask($eFarm['legalCountry'])['name'].'</b>'
+			);
+			$h .= $form->dynamicGroups($eFarm, ['cultivationPlace', 'cultivationLngLat']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -2611,9 +2593,8 @@ class FarmUi {
 				$d->values = fn(Farm $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, Farm $e) => [
 					'group' => is_array(\user\Country::form()),
-					'mandatory' => ($e->exists() === FALSE) /* Obligatoire pour les nouvelles fermes, les anciennes doivent finir leur migration -> À supprimer en 2029 */
+					'mandatory' => TRUE
 				];
-				$d->after = \util\FormUi::info(s("Le choix du pays est définitif et ne pourra pas être modifié par la suite."));
 				break;
 
 			case 'siret' :
