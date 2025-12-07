@@ -433,7 +433,7 @@ class FarmUi {
 		$form = new \util\FormUi();
 
 		$properties = [];
-		foreach(['legalEmail', 'siret', 'legalName'] as $property) {
+		foreach(['siret', 'legalName'] as $property) {
 			if(in_array($property, $requiredProperties)) {
 				$properties[] = $property.'*';
 			} else {
