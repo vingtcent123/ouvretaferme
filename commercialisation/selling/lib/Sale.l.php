@@ -1461,7 +1461,7 @@ class SaleLib extends SaleCrud {
 		if($e['shippingVatFixed'] === FALSE) {
 
 			$newValues += [
-				'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : SellingSetting::DEFAULT_VAT_RATE,
+				'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : SellingSetting::getStandardVatRate($e['farm']),
 			];
 
 		}
@@ -1520,7 +1520,7 @@ class SaleLib extends SaleCrud {
 				$eConfiguration = \selling\ConfigurationLib::getByFarm($e['farm']);
 
 				if($eConfiguration['defaultVatShipping'] !== NULL) {
-					$newValues['shippingVatRate'] = SellingSetting::VAT_RATES[$eConfiguration['defaultVatShipping']];
+					$newValues['shippingVatRate'] = SellingSetting::getVatRate($e['farm'], $eConfiguration['defaultVatShipping']);
 				}
 
 				$shippingVatRate = $newValues['shippingVatRate'];
@@ -1580,18 +1580,6 @@ class SaleLib extends SaleCrud {
 		Sale::model()
 			->select(array_keys($newValues))
 			->update($e);
-
-	}
-
-	public static function getDefaultVat(\farm\Farm $eFarm): int {
-		return 2;
-	}
-
-	public static function getVatRates(\farm\Farm $eFarm): array {
-
-		// A filtrer selon les pays le cas échéant
-
-		return SellingSetting::VAT_RATES;
 
 	}
 

@@ -9,9 +9,12 @@ class ConfigurationLib extends ConfigurationCrud {
 
 	public static function createForFarm(\farm\Farm $eFarm): void {
 
+		$eFarm->expects(['legalCountry']);
+
 		$e = new Configuration([
 			'farm' => $eFarm,
-			'defaultVat' => SaleLib::getDefaultVat($eFarm)
+			'taxCountry' => $eFarm['legalCountry'],
+			'defaultVat' => SellingSetting::VAT_RATE_INITIAL
 		]);
 
 		parent::create($e);
@@ -24,6 +27,22 @@ class ConfigurationLib extends ConfigurationCrud {
 			->select(Configuration::getSelection())
 			->whereFarm($eFarm)
 			->get();
+
+	}
+
+	public static function update(Configuration $e, array $properties): void {
+
+		if(in_array('taxCountry', $properties)) {
+
+			$e['taxCountryVerified'] = TRUE;
+			$e['defaultVat'] = SellingSetting::getStartVat($e['taxCountry']);
+
+			$properties[] = 'taxCountryVerified';
+			$properties[] = 'defaultVat';
+
+		}
+
+		parent::update($e, $properties);
 
 	}
 

@@ -1041,7 +1041,7 @@ class ItemUi {
 					}
 
 					if($eSale['hasVat']) {
-						$h .= $form->hidden('vatRate['.$eProduct['id'].']', SellingSetting::VAT_RATES[$eProduct['vat']]);
+						$h .= $form->hidden('vatRate['.$eProduct['id'].']', SellingSetting::getVatRate($eSale['farm'], $eProduct['vat']));
 					}
 
 					$h .= $form->inputCheckbox('product['.$eProduct['id'].']', $eProduct['id'], $attributes);
@@ -1203,10 +1203,10 @@ class ItemUi {
 					$h .= $form->hidden('locked[0]', Item::PRICE);
 
 					if($eItem['sale']['hasVat']) {
-						$h .= $form->hidden('vatRate[0]', SellingSetting::VAT_RATES[$eProduct['vat']]);
+						$h .= $form->hidden('vatRate[0]', SellingSetting::getVatRate($eSale['farm'], $eProduct['vat']));
 						$h .= $form->group(
 							s("Taux de TVA"),
-							$form->fake(s("{value} %", SellingSetting::VAT_RATES[$eProduct['vat']]))
+							$form->fake(s("{value} %", SellingSetting::getVatRate($eSale['farm'], $eProduct['vat'])))
 						);
 					}
 

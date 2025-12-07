@@ -48,9 +48,11 @@ class ConfigurationModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
 			'documentSales' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'documentInvoices' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'taxCountry' => ['element32', 'user\Country', 'cast' => 'element'],
+			'taxCountryVerified' => ['bool', 'cast' => 'bool'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
-			'defaultVat' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'defaultVatShipping' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'defaultVat' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'defaultVatShipping' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'organicCertifier' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMode' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
@@ -74,11 +76,12 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
+			'taxCountry' => 'user\Country',
 			'marketSalePaymentMethod' => 'payment\Method',
 		];
 
@@ -97,6 +100,9 @@ class ConfigurationModel extends \ModuleModel {
 
 			case 'documentInvoices' :
 				return 0;
+
+			case 'taxCountryVerified' :
+				return FALSE;
 
 			case 'hasVat' :
 				return TRUE;
@@ -194,6 +200,14 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereDocumentInvoices(...$data): ConfigurationModel {
 		return $this->where('documentInvoices', ...$data);
+	}
+
+	public function whereTaxCountry(...$data): ConfigurationModel {
+		return $this->where('taxCountry', ...$data);
+	}
+
+	public function whereTaxCountryVerified(...$data): ConfigurationModel {
+		return $this->where('taxCountryVerified', ...$data);
 	}
 
 	public function whereHasVat(...$data): ConfigurationModel {

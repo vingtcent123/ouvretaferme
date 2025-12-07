@@ -15,7 +15,7 @@ new \selling\InvoicePage()
 		$eCustomer->validate('canManage');
 
 		$eFarm = $eCustomer['farm'];
-		$eFarm->validateLegalComplete();
+		$eFarm->validateLegal();
 
 		return new \selling\Invoice([
 			'customer' => $eCustomer,
@@ -127,7 +127,7 @@ new \selling\InvoicePage()
 new Page(function($data) {
 
 	$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
-	$data->eFarm->validateLegalComplete();
+	$data->eFarm->validateLegal();
 
 	})
 	->get('createCollection', function($data) {

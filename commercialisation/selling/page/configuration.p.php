@@ -20,11 +20,15 @@ new \farm\FarmPage()
 	});
 
 new \selling\ConfigurationPage()
+	->doUpdateProperties('doUpdateTax', ['taxCountry'], fn() => throw new ReloadAction());
+
+new \selling\ConfigurationPage()
 	->applyElement(function($data, \selling\Configuration $eConfiguration) {
 
-		$eConfiguration['farm'] = \farm\FarmLib::getById($eConfiguration['farm']);
+		$eConfiguration['farm'] = \farm\FarmLib::getById($eConfiguration['farm'])->validateTax();
 
 	})
+	->doUpdateProperties('doUpdateTax', ['taxCountry'], fn() => throw new ReloadAction())
 	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNotePrefix'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))

@@ -167,6 +167,18 @@ class FarmLib extends FarmCrud {
 
 		parent::update($e, $properties);
 
+		// On fait suivre le pays tant qu'il n'a pas été vérifié par l'utilisateur
+		if(in_array('legalCountry', $properties)) {
+
+			\selling\Configuration::model()
+				->whereFarm($e)
+				->whereTaxCountryVerified(FALSE)
+				->update([
+					'taxCountry' => $e['legalCountry']
+				]);
+
+		}
+
 		if(in_array('status', $properties)) {
 
 			Farmer::model()

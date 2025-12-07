@@ -336,7 +336,7 @@ class ProductUi {
 						if($eFarm->getSelling('hasVat')) {
 
 							$h .= '<td class="text-center product-item-vat">';
-								$h .= s("{value} %", SellingSetting::VAT_RATES[$eProduct['vat']]);
+								$h .= s("{value} %", SellingSetting::getVatRate($eFarm, $eProduct['vat']));
 							$h .= '</td>';
 
 						}
@@ -679,7 +679,7 @@ class ProductUi {
 				}
 				if($eProduct['farm']->getSelling('hasVat')) {
 					$h .= '<dt>'.self::p('vat')->label.'</dt>';
-					$h .= '<dd>'.s("{value} %", SellingSetting::VAT_RATES[$eProduct['vat']]).'</dd>';
+					$h .= '<dd>'.s("{value} %", SellingSetting::getVatRate($eProduct['farm'], $eProduct['vat'])).'</dd>';
 				}
 
 				if($eProduct['profile'] === Product::COMPOSITION) {

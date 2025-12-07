@@ -32,6 +32,9 @@ class UserSetting extends \Settings {
 	// Maximum ban displayed per page on ban admin page
 	const MAX_BY_PAGE = 50;
 	const LOG_SPLIT = 1;
+
+	const FR = 75;
+	const BE = 20;
 }
 
 ?>

@@ -388,7 +388,11 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		echo '<a href="/selling/sale:create?farm='.$data->eFarm['id'].'" class="btn btn-primary btn-lg">'.s("Ajouter une première vente").'</a>';
+		if($data->eFarm->isTax()) {
+			echo '<a href="/selling/sale:create?farm='.$data->eFarm['id'].'" class="btn btn-primary btn-lg">'.s("Ajouter une première vente").'</a>';
+		} else {
+			echo new \selling\ConfigurationUi()->updateTax($data->eFarm);
+		}
 
 	} else {
 
@@ -430,15 +434,21 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		echo '<h3>'.s("Ajouter un premier client").'</h3>';
+		if($data->eFarm->isTax()) {
 
-		$eCustomer = new \selling\Customer([
-			'farm' => $data->eFarm,
-			'user' => new \user\User(),
-			'nGroup' => $data->cCustomerGroup->count()
-		]);
+			echo '<h3>'.s("Ajouter un premier client").'</h3>';
 
-		echo new \selling\CustomerUi()->create($eCustomer)->body;
+			$eCustomer = new \selling\Customer([
+				'farm' => $data->eFarm,
+				'user' => new \user\User(),
+				'nGroup' => $data->cCustomerGroup->count()
+			]);
+
+			echo new \selling\CustomerUi()->create($eCustomer)->body;
+
+		} else {
+			echo new \selling\ConfigurationUi()->updateTax($data->eFarm);
+		}
 
 	} else {
 		
@@ -475,18 +485,24 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		echo '<h3>'.s("Ajouter un premier produit").'</h3>';
+		if($data->eFarm->isTax()) {
 
-		echo new \selling\ProductUi()->create(new \selling\Product([
-			'farm' => $data->eFarm,
-			'profile' => NULL,
-			'cCategory' => $data->cCategory,
-			'cUnit' => $data->cUnit,
-			'unit' => new \selling\Unit(),
-			'private' => TRUE,
-			'pro' => FALSE,
-			'vat' => $data->eFarm->getSelling('defaultVat'),
-		]))->body;
+			echo '<h3>'.s("Ajouter un premier produit").'</h3>';
+
+			echo new \selling\ProductUi()->create(new \selling\Product([
+				'farm' => $data->eFarm,
+				'profile' => NULL,
+				'cCategory' => $data->cCategory,
+				'cUnit' => $data->cUnit,
+				'unit' => new \selling\Unit(),
+				'private' => TRUE,
+				'pro' => FALSE,
+				'vat' => $data->eFarm->getSelling('defaultVat'),
+			]))->body;
+
+		} else {
+			echo new \selling\ConfigurationUi()->updateTax($data->eFarm);
+		}
 
 	} else {
 		

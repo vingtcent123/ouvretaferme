@@ -10,8 +10,12 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	$h .= '</h1>';
 	
 	$t->mainTitle = $h;
-	
-	echo new \selling\ConfigurationUi()->update($data->e, $data->cCustomize, $data->eSaleExample, $data->cAccount);
+
+	if($data->eFarm->isTax()) {
+		echo new \selling\ConfigurationUi()->update($data->e, $data->cCustomize, $data->eSaleExample, $data->cAccount);
+	} else {
+		echo new \selling\ConfigurationUi()->updateTax($data->eFarm);
+	}
 
 });
 ?>

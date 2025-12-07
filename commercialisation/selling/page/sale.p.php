@@ -2,7 +2,7 @@
 new \selling\SalePage()
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateTax();
 
 		if(input_exists('compositionOf')) {
 			$profile = \selling\Sale::COMPOSITION;
@@ -74,7 +74,9 @@ new \selling\SalePage()
 
 new Page(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))
+			->validateTax()
+			->validate('canSelling');
 
 	})
 	->get('createCollection', function($data) {
@@ -318,7 +320,7 @@ new \selling\SalePage()
 		$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
 
 		$data->eFarm = $data->e['farm'];
-		$data->eFarm->validateLegalComplete();
+		$data->eFarm->validateLegal();
 
 		$data->ePdf = \selling\PdfLib::getOne($data->e, \selling\Pdf::ORDER_FORM);
 
@@ -337,7 +339,7 @@ new \selling\SalePage()
 
 		$data->e->acceptDocumentTarget($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
 
-		$data->e['farm']->validateLegalComplete();
+		$data->e['farm']->validateLegal();
 
 		$type = POST('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());
 

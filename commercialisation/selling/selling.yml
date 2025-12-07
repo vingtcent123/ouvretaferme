@@ -13,9 +13,11 @@ Configuration:
   farm: farm\Farm
   documentSales: int32(0, null) = 0
   documentInvoices: int32(0, null) = 0
+  taxCountry: user\Country
+  taxCountryVerified: bool = FALSE
   hasVat: bool = TRUE
-  defaultVat: int8(0, null)
-  defaultVatShipping: ?int8(0, null)
+  defaultVat: int16(0, null)
+  defaultVatShipping: ?int16(0, null)
   vatNumber: ?text8
   organicCertifier: ?text8
   paymentMode: ?editor16(1, 400)

@@ -1280,7 +1280,7 @@ class Sale extends SaleElement {
 			->setCallback('shippingVatRate.check', function(?float $vat): bool {
 				return (
 					$vat === NULL or
-					in_array($vat, SellingSetting::VAT_RATES)
+					in_array($vat, SellingSetting::getVatRates($this['farm']))
 				);
 			})
 			->setCallback('orderFormValidUntil.check', function(?string &$date): bool {

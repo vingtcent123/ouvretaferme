@@ -2,7 +2,7 @@
 new \selling\ProductPage()
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateTax();
 
 		return new \selling\Product([
 			'farm' => $data->eFarm,

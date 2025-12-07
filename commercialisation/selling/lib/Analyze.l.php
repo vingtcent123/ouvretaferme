@@ -1039,7 +1039,7 @@ class AnalyzeLib {
 					$eProduct['quality'] ? ProductUi::p('quality')->values[$eProduct['quality']] : '',
 					($eProduct['proPrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['proPrice']) : '',
 					($eProduct['privatePrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['privatePrice']) : '',
-					$eFarm->getSelling('hasVat') ? \util\TextUi::csvNumber(SellingSetting::VAT_RATES[$eProduct['vat']]) : '',
+					$eFarm->getSelling('hasVat') ? \util\TextUi::csvNumber(SellingSetting::getVatRate($eProduct['farm'], $eProduct['vat'])) : '',
 				];
 			});
 

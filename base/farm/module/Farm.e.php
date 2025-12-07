@@ -269,25 +269,33 @@ class Farm extends FarmElement {
 
 	}
 
+	public function validateLegal(): self {
+		return $this->isLegal() ? $this : throw new \FailAction('farm\Farm::notLegal', ['farm' => $this]);
+	}
+
+	public function isTax(): bool {
+
+		return $this->getSelling('taxCountryVerified');
+
+	}
+
+	public function validateTax(): self {
+		return $this->isTax() ? $this : throw new \FailAction('farm\Farm::notTax', ['farm' => $this]);
+	}
+
 	public function hasVatCountry(): bool {
 		return TRUE;
 	}
 
 	public function isFR(): bool {
 
-		return (
-			$this['legalCountry']->notEmpty() and
-			$this['legalCountry']['id'] === 75
-		);
+		return ($this['legalCountry']['id'] === \user\UserSetting::FR);
 
 	}
 
 	public function isBE(): bool {
 
-		return (
-			$this['legalCountry']->notEmpty() and
-			$this['legalCountry']['id'] === 20
-		);
+		return ($this['legalCountry']['id'] === \user\UserSetting::BE);
 
 	}
 
@@ -327,12 +335,6 @@ class Farm extends FarmElement {
 		} else {
 			return new FarmerModel()->getDefaultValue($name);
 		}
-	}
-
-	public function validateLegalComplete(): void {
-
-		$this->isLegal() ?: throw new \FailAction('farm\Farm::notLegal', ['farm' => $this]);
-
 	}
 
 	public function saveFeaturesAsSettings(): void {

@@ -76,7 +76,7 @@ class ItemLib extends ItemCrud {
 			'farm' => $eFarm,
 			'sale' => $eSale,
 			'product' => $eProduct,
-			'vatRate' => SellingSetting::VAT_RATES[$eFarm->getSelling('defaultVat')],
+			'vatRate' => SellingSetting::getVatRate($eFarm, $eFarm->getSelling('defaultVat')),
 			'quality' => $eProduct->empty() ? new \plant\Size() : $eProduct['quality'],
 			'customer' => $eSale['customer'],
 			'locked' => \selling\Item::PRICE,

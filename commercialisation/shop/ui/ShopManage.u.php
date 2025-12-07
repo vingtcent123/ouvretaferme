@@ -26,15 +26,20 @@ class ShopManageUi {
 
 		$h .= '<br/>';
 
+		if($eFarm->isTax()) {
 
-		$h .= '<h3>'.s("Créer une boutique").'</h3>';
+			$h .= '<h3>'.s("Créer une boutique").'</h3>';
 
-		$eShop = new Shop([
-			'farm' => $eFarm,
-			'shared' => NULL
-		]);
+			$eShop = new Shop([
+				'farm' => $eFarm,
+				'shared' => NULL
+			]);
 
-		$h .= new ShopUi()->create($eShop)->body;
+			$h .= new ShopUi()->create($eShop)->body;
+
+		} else {
+			$h .= new \selling\ConfigurationUi()->updateTax($eFarm);
+		}
 
 		return $h;
 

@@ -2189,19 +2189,38 @@ class SaleUi {
 
 	public static function getVat(\farm\Farm $eFarm, bool $short = FALSE): array {
 
-		/* La ferme permettra ultérieurement de personnaliser la TVA en fonction du pays */
+		$eCountry = $eFarm->getSelling('taxCountry');
 
-		return [
+		if($eCountry['id'] === \user\UserSetting::FR) {
 
-			// FR
-			0 => $short ? s("0 %") : s("0 % - Pas de TVA"),
-			1 => $short ? s("2.1 %") : s("2.1 % - Taux particulier"),
-			2 => $short ? s("5.5 %") : s("5.5 % - Taux réduit"),
-			3 => $short ? s("10 %") : s("10 % - Taux intermédiaire"),
-			4 => $short ? s("20 %") : s("20 % - Taux normal"),
+			return [
+				// FR
+				0 => $short ? s("0 %") : s("0 % - Pas de TVA"),
+				1 => $short ? s("2.1 %") : s("2.1 % - Taux particulier"),
+				2 => $short ? s("5.5 %") : s("5.5 % - Taux réduit"),
+				3 => $short ? s("10 %") : s("10 % - Taux intermédiaire"),
+				4 => $short ? s("20 %") : s("20 % - Taux normal"),
+			];
 
+		} else if($eCountry['id'] === \user\UserSetting::BE) {
 
-		];
+			return [
+				// BE
+				100 => $short ? s("0 %") : s("0 % - Pas de TVA"),
+				101 => $short ? s("6 %") : s("6 % - Taux réduit"),
+				102 => $short ? s("12 %") : s("12 % - Taux intermédiaire"),
+				103 => $short ? s("21 %") : s("21 % - Taux standard"),
+			];
+
+		} else {
+
+			return [
+
+				9999 => $short ? s("0 %") : s("0 % - Pas de TVA"),
+
+			];
+
+		}
 
 	}
 
@@ -2211,7 +2230,7 @@ class SaleUi {
 		$vatRates = [];
 
 		foreach($vat as $key => $text) {
-			$vatRates[(string)SellingSetting::VAT_RATES[$key]] = $text;
+			$vatRates[(string)SellingSetting::getVatRate($eFarm, $key)] = $text;
 		}
 
 		return $vatRates;
@@ -2408,11 +2427,11 @@ class SaleUi {
 					$values = [];
 
 					foreach(SaleUi::getVat($e['farm']) as $position => $text) {
-						$rate = SellingSetting::VAT_RATES[$position];
+						$rate = SellingSetting::getVatRate($e['farm'], $position);
 						$values[(string)$rate] = s("Personnalisé - {value}", $text);
 					}
 
-					$defaultVatRate = $e['farm']->getSelling('defaultVatShipping') ? SellingSetting::VAT_RATES[$e['farm']->getSelling('defaultVatShipping')] : NULL;
+					$defaultVatRate = $e['farm']->getSelling('defaultVatShipping') ? SellingSetting::getVatRate($e['farm'], $e['farm']->getSelling('defaultVatShipping')) : NULL;
 					$calculatedVatRate = ($e['shippingVatFixed'] ? NULL : $e['shippingVatRate']) ?? $defaultVatRate;
 
 					return $form->select('shippingVatRate', $values, $e['shippingVatFixed'] ? $e['shippingVatRate'] : NULL, [
