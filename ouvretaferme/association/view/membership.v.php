@@ -37,7 +37,7 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 			echo '</div>';
 
-			echo new \farm\FarmUi()->updateLegal($data->eFarm);
+			echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 
 		}
 

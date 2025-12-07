@@ -428,7 +428,17 @@ class FarmUi {
 
 	}
 
-	public function updateLegal(Farm $eFarm): string {
+	public function updateLegal(Farm $eFarm): \Panel {
+
+		return new \Panel(
+			id: 'panel-farm-update-legal',
+			title: s("Informations requises pour facturer vos ventes"),
+			body: $this->getLegalForm($eFarm)
+		);
+
+	}
+
+	public function getLegalForm(Farm $eFarm): string {
 
 		$form = new \util\FormUi();
 

@@ -768,7 +768,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 		if($data->eFarm->isLegal() === FALSE) {
 			echo '<h3>'.s("Informations requises pour facturer vos ventes").'</h3>';
-			echo new \farm\FarmUi()->updateLegal($data->eFarm);
+			echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 		}
 
 	} else {

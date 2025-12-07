@@ -298,7 +298,7 @@ class DemoLib {
 				'hasAccounting' => FALSE,
 			]);
 
-		configuration::model()
+		Configuration::model()
 			->whereFarm(Farm::DEMO)
 			->update([
 				'hasVat' => TRUE,

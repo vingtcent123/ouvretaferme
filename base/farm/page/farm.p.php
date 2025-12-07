@@ -64,6 +64,13 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateEmail')
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data);
+
+	}, page: 'updateLegal')
 	->doUpdateProperties('doUpdateLegal', fn(\farm\Farm $e) => \farm\FarmLib::getPropertiesLegal($e), fn() => throw new ReloadAction('farm', 'Farm::updatedLegal'), for: 'legal')
 	->doUpdateProperties('doUpdateEmail', ['emailFooter', 'emailDefaultTime'], fn() => throw new ReloadAction('farm', 'Farm::updatedEmail'))
 	->doUpdateProperties('doUpdatePlanningDelayedMax', ['planningDelayedMax'], fn() => throw new ReloadAction())

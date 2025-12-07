@@ -80,7 +80,7 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 	if($data->eFarm->isLegal() === FALSE) {
 
 		echo '<h3>'.s("Informations requises sur votre ferme").'</h3>';
-		echo new \farm\FarmUi()->updateLegal($data->eFarm);
+		echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 
 	} else { // 2è étape : l'exercice
 
