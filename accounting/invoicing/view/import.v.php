@@ -29,9 +29,9 @@ new AdaptativeView('/ventes/importer', function($data, FarmTemplate $t) {
 	echo '</div>';
 
 	echo match($tab) {
-		'market' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->cSale),
-		'sales' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->cSale),
-		'invoice' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->cSale),
+		'market' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->eFinancialYear, $data->cSale),
+		'sales' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->eFinancialYear, $data->cSale),
+		'invoice' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->eFinancialYear, $data->cSale),
 	};
 
 });

@@ -5,7 +5,6 @@ Class AccountingLib {
 
 	const FEC_COLUMN_DATE = 3;
 	const FEC_COLUMN_ACCOUNT_LABEL = 4;
-	const FEC_COLUMN_DESCRIPTION = 5;
 	const FEC_COLUMN_PAYMENT_METHOD = 19;
 	const FEC_COLUMN_DOCUMENT = 8;
 	const FEC_COLUMN_DEBIT = 11;
@@ -312,17 +311,11 @@ Class AccountingLib {
 
 	}
 
-	/**
-	 * Extrait les données FEC des ventes rattachées à des marchés.
-	 *
-	 */
-	public static function extractMarket(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
+	private static function getMarkets(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE): \Collection {
 
-		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$saleModule = clone \selling\Sale::model();
 
-		$saleModule = new \selling\SaleModel();
-
-		$cSale = \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
 			->select([
 			  'id',
 			  'document',
@@ -355,6 +348,22 @@ Class AccountingLib {
 			->whereProfile(\selling\Sale::MARKET)
 			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->getCollection(NULL, NULL, 'id');
+	}
+	/**
+	 * Extrait les données FEC des ventes rattachées à des marchés.
+	 *
+	 */
+	public static function extractMarket(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
+
+		$cSale = self::getMarkets($eFarm, $from, $to, $forImport);
+
+		return self::generateMarketFec($cSale, $cFinancialYear, $cAccount);
+
+	}
+
+	public static function generateMarketFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount): array {
+
+		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
 		$fecData = [];
 		foreach($cSale as $eSale) {
@@ -492,8 +501,8 @@ Class AccountingLib {
 			$document,
 			date('Ymd', strtotime($documentDate)),
 			'',
-			$amount > 0 ? $amount : 0,
 			$amount < 0 ? abs($amount) : 0,
+			$amount > 0 ? $amount : 0,
 			'',
 			'',
 			'',

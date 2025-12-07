@@ -8,7 +8,7 @@ Class ImportUi {
 		\Asset::js('invoicing', 'invoicing.js');
 	}
 
-	public function displayMarket(\farm\Farm $eFarm, \Collection $cSale): string {
+	public function displayMarket(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cSale): string {
 
 		if($cSale->empty()) {
 			return '<div class="util-info">'.s("Il n'y a aucune vente de marché à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
@@ -74,7 +74,7 @@ Class ImportUi {
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 
 								$h .= '<div class="dropdown-list">';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnore" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Importer").'</a>';
+									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImport" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
 									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnore" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
 								$h .= '</div>';
 
@@ -102,13 +102,13 @@ Class ImportUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
-		$h .= $this->getBatch($eFarm, 'market');
+		$h .= $this->getBatch($eFinancialYear, 'market');
 		return $h;
 
 	}
 
 
-	public function getBatch(\farm\Farm $eFarm, string $type): string {
+	public function getBatch(\account\FinancialYear $eFinancialYear, string $type): string {
 
 		$url = match($type) {
 			'market' => '/selling/product:updateAccount',
@@ -130,11 +130,17 @@ Class ImportUi {
 		$menu .= '</a>';
 
 
-		$menu .= '<a data-ajax-submit="'.$url.'" class="batch-menu-import batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.$url.'" class="batch-menu-import batch-menu-item" post-financial-year="'.$eFinancialYear['id'].'">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.$url.'" class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 
 		return \util\BatchUi::group('batch-'.$type, $menu, title: $title);
+
+	}
+
+	public function getDescription(\selling\Sale $eSale): string {
+
+		return s("Vente du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
 
 	}
 }

@@ -525,7 +525,7 @@ class OperationLib extends OperationCrud {
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
-		$invoiceFile = var_filter($input['invoiceFile'] ?? NULL, 'string');
+		$invoiceFile = var_filter($input['invoiceFile'] ?? NULL);
 		$invoiceId = var_filter($input['invoice']['id'] ?? NULL, '?int');
 		$ePaymentMethodInvoice = var_filter($input['invoice']['paymentMethod'] ?? NULL, 'payment\Method');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
