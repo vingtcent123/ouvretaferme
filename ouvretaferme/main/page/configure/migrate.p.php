@@ -19,7 +19,8 @@ new Page()
 				->get();
 
 			if(
-				$f->notEmpty()
+				$f->notEmpty() and
+				$f['user']['email'] !== NULL
 			) {
 
 				\farm\Farm::model()->update($e, [
