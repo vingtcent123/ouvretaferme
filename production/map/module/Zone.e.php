@@ -6,7 +6,7 @@ class Zone extends ZoneElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'seasonFirst', 'seasonLast', 'cultivationLngLat', 'rotationYears'],
+			'farm' => \farm\FarmElement::getSelection(),
 		];
 
 	}

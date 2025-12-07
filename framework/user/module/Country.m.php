@@ -40,15 +40,44 @@ class CountryModel extends \ModuleModel {
 			'code' => ['textFixed', 'min' => 2, 'max' => 2, 'unique' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'collate' => 'general', 'cast' => 'string'],
 			'position' => ['int16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'center' => ['point', 'null' => TRUE, 'cast' => 'json'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'code', 'name', 'position'
+			'id', 'code', 'name', 'position', 'center'
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['code']
 		]);
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'center' :
+				return $value === NULL ? NULL : new \Sql($this->pdo()->api->getPoint($value));
+
+			default :
+				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'center' :
+				return $value === NULL ? NULL : json_encode(json_decode($value, TRUE)['coordinates']);
+
+			default :
+				return parent::decode($property, $value);
+
+		}
 
 	}
 
@@ -74,6 +103,10 @@ class CountryModel extends \ModuleModel {
 
 	public function wherePosition(...$data): CountryModel {
 		return $this->where('position', ...$data);
+	}
+
+	public function whereCenter(...$data): CountryModel {
+		return $this->where('center', ...$data);
 	}
 
 

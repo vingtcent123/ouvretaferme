@@ -511,54 +511,73 @@ class ZoneUi {
 
 		$canCartography = MapUi::canCartography($eZone['farm']);
 
+		$map = '';
+
 		if($canCartography === FALSE) {
 
-			$map = '<div class="form-control-block">';
-				$map .= '<p>'.s("Si vous souhaitez dessiner votre parcelle sur la carte, vous devez d'abord renseigner le lieu de production de la ferme. Vous pouvez aussi sauter cette étape et saisir directement la surface de cette parcelle.").'</p>';
-				$map .= '<a href="/farm/farm:update?id='.$eZone['farm']['id'].'" class="btn btn-outline-secondary">'.s("Renseigner le lieu de production").'</a>';
+			$map .= '<div class="util-block-important">';
+				$map .= '<p>'.s("Si vous souhaitez dessiner plus facilement votre parcelle sur la carte, vous devez d'abord renseigner le lieu de production de la ferme. Vous pouvez aussi sauter cette étape et saisir directement la surface de cette parcelle.").'</p>';
+				$map .= '<a href="/farm/farm:updatePlace?id='.$eZone['farm']['id'].'" class="btn btn-transparent">'.s("Renseigner le lieu de production").'</a>';
 			$map .= '</div>';
 
-		} else {
-
-			$eZone->add([
-				'id' => NULL,
-				'area' => NULL,
-				'coordinates' => NULL
-			]);
-
-
-			$container = 'zone-map-write';
-
-			$map = '<div class="form-control-block" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0">';
-				$map .= s("Dessiner cette parcelle sur la carte n'est pas obligatoire, vous pouvez sauter cette étape et saisir directement la surface de la parcelle.");
-			$map .= '</div>';
-
-			$map .= new MapboxUi()->getDrawingPolygon($container, $form, $eZone);
-
-			$map .= '<script>';
-				$map .= 'document.ready(() => setTimeout(() => {
-					new Cartography("'.$container.'", '.$eZone['farm']['seasonLast'].', false, true, {
-							zoom: 14,
-							scrollZoom: true,
-							center: ['.$eZone['farm']['cultivationLngLat'][0].', '.$eZone['farm']['cultivationLngLat'][1].']
-						})';
-						if($cZone->notEmpty()) {
-							foreach($cZone as $eZoneDisplay) {
-								$display = ($eZone['id'] === NULL or $eZone['id'] !== $eZoneDisplay['id']);
-								$map .= '.addZone('.$eZoneDisplay['id'].', "'.addcslashes($eZoneDisplay['name'], '"').'", '.json_encode($eZoneDisplay['coordinates']).', '.($display ? 'true' : 'false').')';
-							}
-							if($eZone['id'] === NULL) {
-								$map .= '.fitFarmBounds({duration: 0})';
-							} else {
-								$map .= '.fitZoneBounds('.$eZone['id'].', {duration: 0})';
-							}
-						}
-					$map .= '.drawShape()';
-					$map .= '.drawPolygon('.json_encode($eZone['coordinates']).');
-				}, 100));';
-			$map .= '</script>';
+			if($eZone['farm']['legalCountry']->empty()) {
+				return $map;
+			}
 
 		}
+
+		$eZone->add([
+			'id' => NULL,
+			'area' => NULL,
+			'coordinates' => NULL
+		]);
+
+
+		$container = 'zone-map-write';
+
+		$map .= '<div class="form-control-block" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0">';
+			$map .= s("Dessiner cette parcelle sur la carte n'est pas obligatoire, vous pouvez sauter cette étape et saisir directement la surface de la parcelle.");
+		$map .= '</div>';
+
+		$map .= new MapboxUi()->getDrawingPolygon($container, $form, $eZone);
+
+		if($eZone['farm']['cultivationLngLat']) {
+			$center = $eZone['farm']['cultivationLngLat'];
+			$zoom = 14;
+		} else {
+
+			\user\Country::model()
+				->select('center')
+				->get($eZone['farm']['legalCountry']);
+
+			$center = array_reverse($eZone['farm']['legalCountry']['center']);
+			$zoom = 5;
+
+		}
+
+		$map .= '<script>';
+			$map .= 'document.ready(() => setTimeout(() => {
+				new Cartography("'.$container.'", '.$eZone['farm']['seasonLast'].', false, true, {
+						zoom: '.$zoom.',
+						scrollZoom: true,
+						center: ['.$center[0].', '.$center[1].']
+					})';
+					if($cZone->notEmpty()) {
+						foreach($cZone as $eZoneDisplay) {
+							$display = ($eZone['id'] === NULL or $eZone['id'] !== $eZoneDisplay['id']);
+							$map .= '.addZone('.$eZoneDisplay['id'].', "'.addcslashes($eZoneDisplay['name'], '"').'", '.json_encode($eZoneDisplay['coordinates']).', '.($display ? 'true' : 'false').')';
+						}
+						if($eZone['id'] === NULL) {
+							$map .= '.fitFarmBounds({duration: 0})';
+						} else {
+							$map .= '.fitZoneBounds('.$eZone['id'].', {duration: 0})';
+						}
+					}
+				$map .= '.drawShape()';
+				$map .= '.drawPolygon('.json_encode($eZone['coordinates']).');
+			}, 100));';
+		$map .= '</script>';
+
 
 		if($canCartography) {
 			$label .= $helper;

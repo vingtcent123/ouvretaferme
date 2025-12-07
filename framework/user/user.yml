@@ -16,6 +16,7 @@ Country:
   code: textFixed(2, 2)
   name: text8 @collate(general)
   position: ?int16(1, null)
+  center: ?point
   UNIQUE: [
     ["code"]
   ]

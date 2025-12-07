@@ -579,6 +579,44 @@ class FarmUi {
 
 	}
 
+	public function updatePlace(Farm $eFarm): \Panel {
+
+		$form = new \util\FormUi();
+
+		if($eFarm['legalCountry']->empty()) {
+			$url = '/farm/farm:doUpdateCountry';
+		} else {
+			$url = '/farm/farm:doUpdatePlace';
+		}
+
+		$h = $form->openAjax($url);
+
+			$h .= $form->hidden('id', $eFarm);
+
+			if($eFarm['legalCountry']->empty()) {
+				$h .= $form->dynamicGroups($eFarm, ['legalCountry']);
+			} else {
+				$h .= $form->group(
+					self::p('legalCountry')->label,
+					content: $form->fake($eFarm['legalCountry']['name'])
+				);
+				$h .= $form->dynamicGroups($eFarm, ['cultivationPlace', 'cultivationLngLat']);
+			}
+
+			$h .= $form->group(
+				content: $form->submit(s("Enregistrer"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-farm-place',
+			title: s("Lieu de production"),
+			body: $h
+		);
+
+	}
+
 	public function updateEmail(Farm $eFarm): string {
 
 		$form = new \util\FormUi();
@@ -2545,7 +2583,7 @@ class FarmUi {
 
 		$d = Farm::model()->describer($property, [
 			'name' => s("Nom de la ferme"),
-			'legalCountry' => s("Siège social de la ferme"),
+			'legalCountry' => s("Pays de la ferme"),
 			'legalName' => s("Raison sociale de la ferme"),
 			'legalEmail' => s("Adresse e-mail de la ferme"),
 			'siret' => s("Numéro d'immatriculation SIRET"),

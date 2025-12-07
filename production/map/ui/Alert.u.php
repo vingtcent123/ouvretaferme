@@ -11,6 +11,7 @@ class AlertUi {
 			'Plot::greenhouse' => s("Vous ne pouvez pas supprimer un jardin sur lequel se trouve un abri."),
 			'Plot::deleteUsed' => s("Vous ne pouvez pas supprimer un jardin qui a déjà été cultivé. Vous devez soit modifier les dates d'exploitation du jardin, soit supprimer préalablement les séries qui s'y trouvent."),
 
+			'Zone::name.check' => s("Veuillez choisir un nom pour votre parcelle."),
 			'Zone::seasonLast.consistency' => s("Merci d'être cohérent entre la saison de début et la saison de fin."),
 			'Zone::greenhouse' => s("Vous ne pouvez pas supprimer une parcelle sur laquelle se trouve un abri."),
 			'Zone::deleteUsed' => s("Vous ne pouvez pas supprimer une parcelle qui a déjà été cultivée. Vous devez soit modifier les dates d'exploitation de la parcelle, soit supprimer préalablement les séries qui s'y trouvent."),

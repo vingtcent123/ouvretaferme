@@ -60,10 +60,17 @@ new \farm\FarmPage()
 
 		$data->eFarm = $data->e;
 
+		if($data->e['legalCountry']->notEmpty()) {
+			$data->e['legalCountry'] = \user\CountryLib::getById($data->e['legalCountry']);
+		}
+
+		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
+
 		throw new ViewAction($data);
 
 	}, page: 'updatePlace')
-	->doUpdateProperties('doUpdatePlace', fn(\farm\Farm $e) => array_merge($e['legalCountry']->empty() ? ['legalCountry'] : [], ['cultivationPlace', 'cultivationLngLat']), fn() => throw new ReloadAction('farm', 'Farm::updatedPlace'))
+	->doUpdateProperties('doUpdateCountry', fn(\farm\Farm $e) => $e['legalCountry']->empty() ? ['legalCountry'] : [], fn() => throw new ReloadLayerAction())
+	->doUpdateProperties('doUpdatePlace', ['cultivationPlace', 'cultivationLngLat'], fn() => throw new ReloadAction('farm', 'Farm::updatedPlace'))
 	->update(function($data) {
 
 		$data->eFarm = $data->e;

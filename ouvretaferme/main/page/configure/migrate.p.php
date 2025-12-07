@@ -2,33 +2,17 @@
 new Page()
 	->cli('index', function($data) {
 
-		$l = \util\CsvLib::parseCsv('/tmp/a.csv', ',');
+		$l = \util\CsvLib::parseCsv('/home/vincent/Documents/a.csv', ',');
 
-		$u = [];
+		foreach($l as [$c, $lat, $lon]) {
 
-		foreach($l as [$n, $c]) {
-
-			if(
-				\user\Country::model()
-					->whereCode($c)
-					->update([
-						'name' => $n
-					]) > 0
-			) {
-				$u[] = $c;
-				echo $c.': UPDATED'."\n";
-			} else if(
-				\user\Country::model()
-					->whereCode($c)
-					->whereName($n)
-					->exists()
-			) {
-				$u[] = $c;
-			}
+			\user\Country::model()
+				->whereCode($c)
+				->update([
+					'center' => [$lat, $lon]
+				]);
 
 		}
-
-		dd(\user\Country::model()->select(\user\Country::getSelection())->whereCode('NOT IN', $u)->getCollection());
 
 	});
 ?>

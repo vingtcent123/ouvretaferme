@@ -124,6 +124,12 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('updatePlace', function($data, PanelTemplate $t) {
+
+	return new \farm\FarmUi()->updatePlace($data->e);
+
+});
+
 new AdaptativeView('updateProduction', function($data, FarmTemplate $t) {
 
 	$t->title = s("Les réglages de base de {value}", $data->e['name']);
