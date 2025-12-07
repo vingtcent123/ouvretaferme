@@ -536,6 +536,7 @@ class Farm extends FarmElement {
 			}
 			
 			$vat = preg_replace('/\s+/i', '', $vat);
+			$vat = strtoupper($vat);
 
 			if(preg_match('/^FR[0-9]{11}$/', $vat) === 0) {
 				\Fail::log($element.'::vatNumber.check', ['FR']);
@@ -550,6 +551,7 @@ class Farm extends FarmElement {
 			}
 
 			$vat = preg_replace('/\s+/i', '', $vat);
+			$vat = strtoupper($vat);
 
 			if(preg_match('/^BE[01]{1}[0-9]{9}$/', $vat) === 0) {
 				\Fail::log($element.'::vatNumber.check', ['BE']);
