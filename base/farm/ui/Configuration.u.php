@@ -26,7 +26,7 @@ class ConfigurationUi {
 		return s("AV");
 	}
 
-	public function update(\farm\Farm $eFarm, \Collection $cCustomize, Sale $eSaleExample, \Collection $cAccount): string {
+	public function update(\farm\Farm $eFarm, \Collection $cCustomize, \selling\Sale $eSaleExample, \Collection $cAccount): string {
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
 
@@ -147,7 +147,7 @@ class ConfigurationUi {
 
 	}
 
-	public function updateOrderForm(\farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
+	public function updateOrderForm(\farm\Farm $eFarm, \selling\Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$eConfiguration = $eFarm->conf();
 
@@ -194,7 +194,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= new \selling\PdfUi()->getDocument($eSaleExample, Pdf::ORDER_FORM, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::ORDER_FORM, $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -202,7 +202,7 @@ class ConfigurationUi {
 
 	}
 
-	public function updateInvoice(\farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
+	public function updateInvoice(\farm\Farm $eFarm, \selling\Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$eConfiguration = $eFarm->conf();
 
@@ -250,7 +250,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= new \selling\PdfUi()->getDocument($eSaleExample, Pdf::INVOICE, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::INVOICE, $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -266,7 +266,7 @@ class ConfigurationUi {
 
 		$eConfiguration = $eFarm->conf();
 
-		$profiles = ProductUi::p('profile')->values;
+		$profiles = \selling\ProductUi::p('profile')->values;
 
 		$h = '<div class="util-info">'.s("En configurant directement vos types de produits, tous les produits de ce type que vous créerez auront la bonne classe de compte, ce qui facilitera votre comptabilité.").'</div>';
 
@@ -278,7 +278,7 @@ class ConfigurationUi {
 
 		foreach($profiles as $key => $profile) {
 
-			$e = new Product(['farm' => $eFarm]);
+			$e = new \selling\Product(['farm' => $eFarm]);
 			if(($eConfiguration['profileAccount'][$key] ?? NULL) !== NULL) {
 				$e['privateAccount'] = $cAccount->offsetGet($eConfiguration['profileAccount'][$key]);
 			}
@@ -301,7 +301,7 @@ class ConfigurationUi {
 		return $h;
 	}
 
-	public function updateDeliveryNote(\farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
+	public function updateDeliveryNote(\farm\Farm $eFarm, \selling\Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$eConfiguration = $eFarm->conf();
 
@@ -352,7 +352,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= new \selling\PdfUi()->getDocument($eSaleExample, Pdf::DELIVERY_NOTE, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::DELIVERY_NOTE, $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -360,7 +360,7 @@ class ConfigurationUi {
 
 	}
 
-	public function updateDocumentMail(string $type, \farm\Farm $eFarm, Sale $eSaleExample, \Collection $cCustomize): string {
+	public function updateDocumentMail(string $type, \farm\Farm $eFarm, \selling\Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$customizePrivate = match($type) {
 			'order-form' => \mail\Customize::SALE_ORDER_FORM_PRIVATE,
@@ -465,20 +465,20 @@ class ConfigurationUi {
 
 	}
 
-	protected function getMailExample(string $type, \farm\Farm $eFarm, Sale $eSaleExample, string $customize, ?string $template): string {
+	protected function getMailExample(string $type, \farm\Farm $eFarm, \selling\Sale $eSaleExample, string $customize, ?string $template): string {
 
 		switch($type) {
 
 			case 'order-form' :
-				[$title, , $html] = new PdfUi()->getOrderFormMail($eFarm, $eSaleExample, $customize, $template);
+				[$title, , $html] = new \selling\PdfUi()->getOrderFormMail($eFarm, $eSaleExample, $customize, $template);
 				return new \mail\CustomizeUi()->getMailExample($title, $html);
 
 			case 'delivery-note' :
-				[$title, , $html] = new PdfUi()->getDeliveryNoteMail($eFarm, $eSaleExample, $customize, $template);
+				[$title, , $html] = new \selling\PdfUi()->getDeliveryNoteMail($eFarm, $eSaleExample, $customize, $template);
 				return new \mail\CustomizeUi()->getMailExample($title, $html);
 
 			case 'invoice' :
-				[$title, , $html] = new PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $customize,$template);
+				[$title, , $html] = new \selling\PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $customize,$template);
 				return new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		}
@@ -540,7 +540,7 @@ class ConfigurationUi {
 			case 'defaultVat' :
 				$d->field = 'select';
 				$d->values = function(Configuration $e) {
-					return SaleUi::getVat($e['farm']);
+					return \selling\SaleUi::getVat($e['farm']);
 				};
 				$d->attributes = [
 					'mandatory' => TRUE
@@ -550,7 +550,7 @@ class ConfigurationUi {
 			case 'defaultVatShipping' :
 				$d->field = 'select';
 				$d->values = function(Configuration $e) {
-					return SaleUi::getVat($e['farm']);
+					return \selling\SaleUi::getVat($e['farm']);
 				};
 				$d->attributes = [
 					'placeholder' => s("Calculé automatiquement en fonction du taux de TVA des articles vendus")
