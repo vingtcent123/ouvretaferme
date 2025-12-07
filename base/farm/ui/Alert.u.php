@@ -27,7 +27,7 @@ class AlertUi {
 			'Farmer::deleteItself' => s("Vous ne pouvez pas vous sortir vous-même de la ferme."),
 			'Farm::notEmail' => '<p>'.s("Vous devez configurer l'adresse e-mail de votre ferme pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
 			'Farm::notLegal' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (numéro d'immatriculation, raison sociale...) pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
-			'Farm::notTax' => '<p>'.s("Vous devez vérifier le pays de votre structure juridique avant de pouvoir accéder à cette page.").'</p>',
+			'Farm::notTax' => '<p>'.s("Vous devez vérifier le pays de votre entité avant de pouvoir accéder à cette page.").'</p>',
 
 			'Action::deleteMandatory' => s("Cette intervention ne peut pas être supprimée car elle est indispensable au bon fonctionnement du site."),
 			'Action::deleteUsed' => s("Vous ne pouvez pas supprimer une action qui est déjà utilisée sur les itinéraires techniques ou les séries..."),

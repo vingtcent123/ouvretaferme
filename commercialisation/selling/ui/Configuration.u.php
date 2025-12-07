@@ -78,8 +78,8 @@ class ConfigurationUi {
 
 			$h .= $form->openAjax('/selling/configuration:doUpdateTax');
 
-				$h .= '<h3>'.s("Confirmer le pays de votre structure juridique").'</h3>';
-				$h .= '<p>'.s("Merci de confirmer le pays de votre structure juridique pour que Ouvretaferme puissent vous proposer des fonctionnalités adaptées à sa situation.<br/><b>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.</b>").'</p>';
+				$h .= '<h3>'.s("Confirmer le pays de votre entité").'</h3>';
+				$h .= '<p>'.s("Merci de confirmer le pays de votre entité pour que Ouvretaferme puissent vous proposer des fonctionnalités adaptées à sa situation.<br/><b>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.</b>").'</p>';
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
@@ -491,7 +491,7 @@ class ConfigurationUi {
 			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
 			'documentTarget' => s("Permettre l'édition de devis et de bons de livraison"),
 			'taxCountry' => s("Pays"),
-			'hasVat' => s("Êtes-vous redevable de la TVA"),
+			'hasVat' => s("Êtes-vous redevable de la TVA ?"),
 			'vatNumber' => s("Numéro de TVA intracommunautaire"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
 			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),

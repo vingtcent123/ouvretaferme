@@ -798,7 +798,7 @@ class FinancialYearUi {
 		$d = FinancialYear::model()->describer($property, [
 			'startDate' => s("Date de début"),
 			'endDate' => s("Date de fin"),
-			'hasVat' => s("Êtes-vous redevable de la TVA"),
+			'hasVat' => s("Êtes-vous redevable de la TVA ?"),
 			'vatFrequency' => s("Fréquence de déclaration de TVA"),
 			'taxSystem' => s("Régime fiscal"),
 			'accountingType' => s("Type de comptabilité"),
