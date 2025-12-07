@@ -304,6 +304,10 @@ class Farm extends FarmElement {
 
 	}
 
+	public function getCountries(): mixed {
+		return \user\CountryLib::getForSignUp();
+	}
+
 	public function getSelling(string $name): mixed {
 		return $this->selling()[$name];
 	}

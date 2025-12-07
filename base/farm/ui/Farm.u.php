@@ -447,7 +447,7 @@ class FarmUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->dynamicGroups($eFarm, $properties);
-			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
+			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => $eFarm['legalCountry']->empty()]);
 
 			$h .= $form->group(
 				content: $form->submit(s("Valider"))
@@ -2608,9 +2608,9 @@ class FarmUi {
 		switch($property) {
 
 			case 'legalCountry' :
-				$d->values = fn(Farm $e) => $e['cCountry'] ?? $e->expects(['cCountry']);
+				$d->values = fn(Farm $e) => $e->getCountries();
 				$d->attributes = fn(\util\FormUi $form, Farm $e) => [
-					'group' => is_array($e['cCountry']),
+					'group' => is_array($e->getCountries()),
 					'mandatory' => ($e->exists() === FALSE) /* Obligatoire pour les nouvelles fermes, les anciennes doivent finir leur migration -> À supprimer en 2029 */
 				];
 				$d->after = \util\FormUi::info(s("Le choix du pays est définitif et ne pourra pas être modifié par la suite."));
