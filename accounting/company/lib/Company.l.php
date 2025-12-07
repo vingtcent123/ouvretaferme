@@ -3,7 +3,7 @@ namespace company;
 
 class CompanyLib {
 
-	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'pdf'];
+	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'invoicing', 'pdf'];
 
 	public static function connectSpecificDatabaseAndServer(\farm\Farm $eFarm): void {
 
@@ -28,6 +28,16 @@ class CompanyLib {
 		}
 
 		return 'dev_farm_'.$eFarm['id'];
+	}
+
+	public static function initialize(\farm\Farm $eFarm): void {
+
+		if(OTF_DEMO === FALSE) {
+			self::createSpecificDatabaseAndTables($eFarm);
+		}
+
+		\farm\Farm::model()->update($eFarm, ['hasAccounting' => TRUE]);
+
 	}
 
 	public static function initializeAccounting(\farm\Farm $eFarm, array $input): void {
@@ -95,6 +105,7 @@ class CompanyLib {
 		foreach($cJournalCode as $eJournalCode) {
 			\journal\JournalCode::model()->insert($eJournalCode);
 		}
+
 	}
 
   public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {

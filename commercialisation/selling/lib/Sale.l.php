@@ -1099,8 +1099,7 @@ class SaleLib extends SaleCrud {
 
 			\selling\PaymentLib::deleteBySale($e);
 
-			// Réglages effectués lors de l'export précomptable : on passe en force
-			if($e['cPayment']->notEmpty() and (POST('for') === 'preaccounting' or $e->isMarketSale() === FALSE)) {
+			if($e['cPayment']->notEmpty() and $e->isMarketSale() === FALSE) {
 
 				foreach($e['cPayment'] as $ePayment) {
 					unset($ePayment['id']);
@@ -1162,7 +1161,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod, bool $isPaid = FALSE): void {
+	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod): void {
 
 		Sale::model()->beginTransaction();
 
@@ -1190,15 +1189,7 @@ class SaleLib extends SaleCrud {
 						'onlineStatus' => NULL,
 					])
 				);
-				if($isPaid) {
-
-					$e['paymentStatus'] = Sale::PAID;
-
-				} else {
-
-					$e['paymentStatus'] = Sale::NOT_PAID;
-
-				}
+				$e['paymentStatus'] = Sale::NOT_PAID;
 			}
 
 			self::update($e, ['paymentMethod', 'paymentStatus']);
@@ -1611,6 +1602,7 @@ class SaleLib extends SaleCrud {
 			->where('priceExcludingVat != 0.0')
 			->where('m1.farm = '.$eFarm['id'])
 			->where('deliveredAt BETWEEN '.Sale::model()->format($search->get('from')).' AND '.Sale::model()->format($search->get('to')))
+			->whereId($search->get('id'), if: $search->get('id'))
 			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
 
 	}

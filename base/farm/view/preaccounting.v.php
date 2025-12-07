@@ -211,7 +211,6 @@ new JsonView('/ferme/{id}/precomptabilite/{type}', function($data, AjaxTemplate 
 				new \selling\AccountingUi()->sales($data->eFarm, $data->type, $data->cSale, $data->cPaymentMethod, $data->nToCheck, $data->nVerified)
 			);
 			break;
-//	public function sales(\farm\Farm $eFarm, string $type, array $cSale, \Collection $cPaymentMethod, int $nToCheck, int $nVerified): string {
 	}
 
 		$t->qs('div[data-step-container="'.$data->type.'"]')->removeHide();

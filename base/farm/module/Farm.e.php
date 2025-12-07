@@ -36,6 +36,13 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isMember(): bool {
+		return \association\History::model()
+			->whereFarm($this)
+			->whereMembership('=', date('Y'))
+			->found();
+	}
+
 	public function getFirstValidSeason(): int {
 
 		$this->expects(['seasonFirst']);
@@ -114,9 +121,20 @@ class Farm extends FarmElement {
 		return ($this['status'] === Farm::ACTIVE);
 	}
 
-	// Est-ce que la ferme a la comptabilité d'activée ?
+	// Est-ce que la ferme a ses bases de données de comptabilité ?
 	public function hasAccounting(): bool {
 		return (!OTF_DEMO and $this['hasAccounting']);
+	}
+	// Est-ce que la ferme utilise la comptabilité d'OTF ?
+	public function usesAccounting(): bool {
+
+		if($this->hasAccounting() === FALSE) {
+			return FALSE;
+		}
+
+		\company\CompanyLib::connectSpecificDatabaseAndServer($this);
+		return \account\FinancialYear::model()->count() > 0;
+
 	}
 
 	public function canSection(string $section): bool {
@@ -390,7 +408,7 @@ class Farm extends FarmElement {
 	}
 
 	public function getAccountingUrl(): string {
-		return \company\CompanyUi::urlJournal($this).'/operations';
+		return \company\CompanyUi::urlJournal($this).'/livre-journal';
 	}
 
 	public function getGameUrl(): string {

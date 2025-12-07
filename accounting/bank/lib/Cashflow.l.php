@@ -12,11 +12,16 @@ class CashflowLib extends CashflowCrud {
 					fn() => $this->where('amount BETWEEN '.(-1 * $search->get('amountMax')).' AND '.(-1 * $search->get('amountMin')), if: ($search->has('amountMin') and $search->has('amountMax'))),
 				);
 		}
+
+		if($search->get('financialYear') !== NULL and $search->get('financialYear')->notEmpty()) {
+			Cashflow::model()
+				->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
+				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
+		}
+
 		return Cashflow::model()
 			->whereImport('=', $search->get('import'), if: $search->has('import'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
-			->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
-			->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'))
 			->whereFitid('LIKE', '%'.$search->get('fitid').'%', if: $search->get('fitid'))
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
@@ -48,10 +53,8 @@ class CashflowLib extends CashflowCrud {
 	public static function insertMultiple(array $cashflows): array {
 
 		$alreadyImported = [];
-		$noFinancialYear = [];
 		$imported = [];
 		$invalidDate = [];
-		$cFinancialYear = \account\FinancialYearLib::getAll();
 
 		foreach($cashflows as $cashflow) {
 
@@ -68,11 +71,6 @@ class CashflowLib extends CashflowCrud {
 				default => $cashflow['amount'] > 0 ? CashflowElement::CREDIT : CashflowElement::DEBIT,
 			};
 			$date = substr($cashflow['date'], 0, 4).'-'.substr($cashflow['date'], 4, 2).'-'.substr($cashflow['date'], 6, 2);
-
-			if(\account\FinancialYearLib::isDateLinkedToFinancialYear($date, $cFinancialYear) === FALSE) {
-				$noFinancialYear[] = $cashflow['fitid'];
-				continue;
-			}
 
 			if(\util\DateLib::isValid($date) === FALSE) {
 				$invalidDate[] = $cashflow['fitid'];
@@ -94,7 +92,7 @@ class CashflowLib extends CashflowCrud {
 
 		}
 
-		return ['alreadyImported' => $alreadyImported, 'invalidDate' => $invalidDate, 'imported' => $imported, 'noFinancialYear' => $noFinancialYear];
+		return ['alreadyImported' => $alreadyImported, 'invalidDate' => $invalidDate, 'imported' => $imported];
 
 	}
 

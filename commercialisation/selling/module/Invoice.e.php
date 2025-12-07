@@ -119,6 +119,16 @@ class Invoice extends InvoiceElement {
 
 	}
 
+	//-------- Accounting features -------
+
+	public function acceptAccountingIgnore(): bool {
+		return $this['accountingHash'] === NULL;
+	}
+
+	public function acceptAccountingImport(): bool {
+		return TRUE;
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

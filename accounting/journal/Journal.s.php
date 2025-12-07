@@ -12,6 +12,7 @@ class JournalSetting extends \Settings {
 	const HASH_LETTER_DEFERRAL = 'd'; // hash des écritures d'inventaire (PCA et CCA)
 
 	const HASH_LETTER_PAYMENT = 'p'; // hash des écritures de paiement
+	const HASH_LETTER_IMPORT = 'v'; // Hash des écritures importées depuis le module de vente
 }
 
 ?>

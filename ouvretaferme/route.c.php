@@ -8,20 +8,20 @@ Route::register([
 			'priority' => 5,
 			'route' => ['adherer'],
 		],
-		'/asset/acquisition' => [
-			'request' => 'asset/acquisition',
+		'/banque/imports' => [
+			'request' => 'bank/import',
 			'priority' => 5,
-			'route' => ['asset', 'acquisition'],
+			'route' => ['banque', 'imports'],
 		],
-		'/asset/amortization' => [
-			'request' => 'asset/amortization',
+		'/banque/imports:import' => [
+			'request' => 'bank/import',
 			'priority' => 5,
-			'route' => ['asset', 'amortization'],
+			'route' => ['banque', 'imports:import'],
 		],
-		'/asset/{id}/' => [
-			'request' => 'asset/index',
+		'/banque/operations' => [
+			'request' => 'bank/cashflow',
 			'priority' => 5,
-			'route' => ['asset', '{id}'],
+			'route' => ['banque', 'operations'],
 		],
 		'/client/{id}' => [
 			'request' => 'selling/customer',
@@ -43,6 +43,21 @@ Route::register([
 			'priority' => 5,
 			'route' => ['commandes', 'professionnels', '{farm}'],
 		],
+		'/comptabilite/decouvrir' => [
+			'request' => 'company/public',
+			'priority' => 5,
+			'route' => ['comptabilite', 'decouvrir'],
+		],
+		'/comptabilite/inactive' => [
+			'request' => 'company/public',
+			'priority' => 5,
+			'route' => ['comptabilite', 'inactive'],
+		],
+		'/comptabilite/parametrer' => [
+			'request' => 'company/public',
+			'priority' => 5,
+			'route' => ['comptabilite', 'parametrer'],
+		],
 		'/donner' => [
 			'request' => 'association/donation',
 			'priority' => 5,
@@ -52,6 +67,11 @@ Route::register([
 			'request' => 'plant/plant',
 			'priority' => 5,
 			'route' => ['espece', '{id@int}'],
+		],
+		'/facturation-electronique' => [
+			'request' => 'invoicing/index',
+			'priority' => 5,
+			'route' => ['facturation-electronique'],
 		],
 		'/facturation-electronique-les-mains-dans-les-poches' => [
 			'request' => 'main/index',
@@ -338,6 +358,26 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'ventes', 'professionnels'],
 		],
+		'/gestion' => [
+			'request' => 'overview/financials',
+			'priority' => 5,
+			'route' => ['gestion'],
+		],
+		'/immobilisation/{id}/' => [
+			'request' => 'asset/index',
+			'priority' => 5,
+			'route' => ['immobilisation', '{id}'],
+		],
+		'/immobilisations' => [
+			'request' => 'asset/amortization',
+			'priority' => 5,
+			'route' => ['immobilisations'],
+		],
+		'/immobilisations/acquisitions' => [
+			'request' => 'asset/amortization',
+			'priority' => 5,
+			'route' => ['immobilisations', 'acquisitions'],
+		],
 		'/in/{key}' => [
 			'request' => 'farm/invite',
 			'priority' => 5,
@@ -352,6 +392,16 @@ Route::register([
 			'request' => 'game/index',
 			'priority' => 5,
 			'route' => ['jouer'],
+		],
+		'/journal/grand-livre' => [
+			'request' => 'journal/book',
+			'priority' => 5,
+			'route' => ['journal', 'grand-livre'],
+		],
+		'/journal/livre-journal' => [
+			'request' => 'journal/operations',
+			'priority' => 5,
+			'route' => ['journal', 'livre-journal'],
 		],
 		'/journal/operation/{id}' => [
 			'request' => 'journal/operation',
@@ -513,6 +563,21 @@ Route::register([
 			'priority' => 5,
 			'route' => ['sitemap.xml'],
 		],
+		'/synthese' => [
+			'request' => 'overview/summary',
+			'priority' => 5,
+			'route' => ['synthese'],
+		],
+		'/synthese/declaration-de-tva/operations' => [
+			'request' => 'overview/summary',
+			'priority' => 5,
+			'route' => ['synthese', 'declaration-de-tva', 'operations'],
+		],
+		'/synthese/{view}' => [
+			'request' => 'overview/summary',
+			'priority' => 5,
+			'route' => ['synthese', '{view}'],
+		],
 		'/tache/{id}' => [
 			'request' => 'series/task',
 			'priority' => 5,
@@ -552,6 +617,11 @@ Route::register([
 			'request' => 'selling/market',
 			'priority' => 5,
 			'route' => ['vente', '{id}', 'marche', 'ventes'],
+		],
+		'/ventes/importer' => [
+			'request' => 'invoicing/import',
+			'priority' => 5,
+			'route' => ['ventes', 'importer'],
 		],
 	],
 	'HEAD' => [
@@ -867,6 +937,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'website', 'News', 'quick'],
 		],
+		'/banque/imports:doImport' => [
+			'request' => 'bank/import',
+			'priority' => 5,
+			'route' => ['banque', 'imports:doImport'],
+		],
 		'/journal/operation/{id}/doUpdate' => [
 			'request' => 'journal/operation',
 			'priority' => 5,
@@ -931,6 +1006,26 @@ Route::register([
 			'request' => 'shop/public',
 			'priority' => 5,
 			'route' => ['shop', 'public', '{fqn}', '{date}', 'paiement'],
+		],
+		'/vat/doCreateOperations' => [
+			'request' => 'overview/summary',
+			'priority' => 5,
+			'route' => ['vat', 'doCreateOperations'],
+		],
+		'/vat/doDeclare' => [
+			'request' => 'overview/summary',
+			'priority' => 5,
+			'route' => ['vat', 'doDeclare'],
+		],
+		'/vat/reset' => [
+			'request' => 'overview/summary',
+			'priority' => 5,
+			'route' => ['vat', 'reset'],
+		],
+		'/vat/saveCerfa' => [
+			'request' => 'overview/summary',
+			'priority' => 5,
+			'route' => ['vat', 'saveCerfa'],
 		],
 	],
 	'PUT' => [

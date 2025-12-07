@@ -47,7 +47,7 @@ Class AccountingLib {
 	 * - ni dans un marché
 	 */
 
-	private static function extractSales(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount): array {
+	public static function extractSales(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
@@ -76,6 +76,7 @@ Class AccountingLib {
 			])
 			->sort('deliveredAt')
 			->whereInvoice(NULL)
+			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->whereProfile('NOT IN', [\selling\Sale::SALE_MARKET, \selling\Sale::MARKET])
 			->getCollection();
 
@@ -184,13 +185,20 @@ Class AccountingLib {
 	 * Caractéristique : 1 facture = 1 moyen de paiement
 	 *
 	 */
-	private static function extractInvoice(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount): array {
+	public static function extractInvoice(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
-		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$cInvoice = self::getInvoices($eFarm, $from, $to, $forImport);
 
-		$cInvoice = \selling\Invoice::model()
+		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount);
+
+	}
+
+	private static function getInvoices(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE) {
+
+		return \selling\Invoice::model()
 			->select([
 				'id', 'date', 'name',
+				'priceExcludingVat', 'vat',
 				'customer' => [
 					'id', 'name',
 					'thirdParty' => \account\ThirdParty::model()
@@ -209,8 +217,15 @@ Class AccountingLib {
 					->delegateCollection('invoice'),
 			])
 			->whereFarm($eFarm)
+			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($from).' AND '.\selling\Invoice::model()->format($to))
 			->getCollection();
+
+	}
+
+	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount) {
+
+		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
 		$fecData = [];
 		foreach($cInvoice as $eInvoice) {
@@ -233,7 +248,17 @@ Class AccountingLib {
 			$items = []; // groupement par accountlabel
 			$payment = ($eInvoice['paymentMethod']['name'] ?? '');
 
+			$totalExcludingVat = $eInvoice['priceExcludingVat'];
+			$totalVat = $eInvoice['vat'];
+
+			$currentExcludingVat = 0;
+			$currentVat = 0;
+
+			$eSaleLast = $eInvoice['cSale']->last();
+
 			foreach($eInvoice['cSale'] as $eSale) {
+
+				$eItemLast = $eSale['cItem']->last();
 
 				foreach($eSale['cItem'] as $eItem) {
 
@@ -252,6 +277,19 @@ Class AccountingLib {
 					} else {
 						$amountVat = 0.0;
 					}
+
+					// On utilise la dernière vente pour réharmoniser les centimes
+					if($eSale->is($eSaleLast) and $eItem->is($eItemLast)) {
+						if($amountExcludingVat !== round($totalExcludingVat - $currentExcludingVat, 2)) {
+							$amountExcludingVat = round($totalExcludingVat - $currentExcludingVat, 2);
+						}
+						if($amountVat !== round($totalVat - $currentVat, 2)) {
+							$amountVat = round($totalVat - $currentVat, 2);
+						}
+					}
+
+					$currentExcludingVat += $amountExcludingVat;
+					$currentVat += $amountVat;
 
 					// Si on n'est pas redevable de la TVA => On enregistre TTC
 					if($hasVat === FALSE) {
@@ -309,17 +347,11 @@ Class AccountingLib {
 
 	}
 
-	/**
-	 * Extrait les données FEC des ventes rattachées à des marchés.
-	 *
-	 */
-	private static function extractMarket(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount): array {
+	private static function getMarkets(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE): \Collection {
 
-		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$saleModule = clone \selling\Sale::model();
 
-		$saleModule = new \selling\SaleModel();
-
-		$cSale = \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
 			->select([
 			  'id',
 			  'document',
@@ -345,11 +377,29 @@ Class AccountingLib {
 							->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
 							->delegateCollection('sale')
 					])
+					->wherePreparationStatus(\selling\Sale::DELIVERED)
 					->delegateCollection('marketParent'),
 			])
 			->sort('deliveredAt')
 			->whereProfile(\selling\Sale::MARKET)
+			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->getCollection(NULL, NULL, 'id');
+	}
+	/**
+	 * Extrait les données FEC des ventes rattachées à des marchés.
+	 *
+	 */
+	public static function extractMarket(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
+
+		$cSale = self::getMarkets($eFarm, $from, $to, $forImport);
+
+		return self::generateMarketFec($cSale, $cFinancialYear, $cAccount);
+
+	}
+
+	public static function generateMarketFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount): array {
+
+		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
 		$fecData = [];
 		foreach($cSale as $eSale) {
@@ -370,10 +420,14 @@ Class AccountingLib {
 			$compAuxNum = ($eSale['customer']['thirdParty']['clientAccountLabel'] ?? '');
 
 			$items = []; // groupement par accountlabel, moyen de paiement
+
 			foreach($eSale['cSale'] as $eSaleMarket) {
 
 				// Il faut déterminer le montant par moyen de paiement pour en extraire un prorata
 				$payments = self::explodePaymentsRatio($eSaleMarket['cPayment']);
+				if(empty($payments)) { // pas de paiement enregistré !
+					$payments = [['rate' => 100, 'label' => '']];
+				}
 
 				foreach($eSaleMarket['cItem'] as $eItem) {
 
@@ -390,7 +444,7 @@ Class AccountingLib {
 						$amountExcludingVat = round(($eItem['priceStats'] * $payment['rate'] / 100), 2);
 
 						if(round($eItem['vatRate'], 2) !== 0.0) {
-							$amountVat = round($amountExcludingVat * $eItem['vatRate'] / 100, 2);
+							$amountVat = round(($eItem['price'] - $eItem['priceStats']) * $payment['rate'] / 100, 2);
 						} else {
 							$amountVat = 0.0;
 						}
@@ -483,8 +537,8 @@ Class AccountingLib {
 			$document,
 			date('Ymd', strtotime($documentDate)),
 			'',
-			$amount > 0 ? $amount : 0,
 			$amount < 0 ? abs($amount) : 0,
+			$amount > 0 ? $amount : 0,
 			'',
 			'',
 			'',

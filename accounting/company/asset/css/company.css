@@ -179,3 +179,33 @@ tr.account_not-visible {
 	display: flex;
 	gap: 0.5rem;
 }
+
+.company-accounting-choose-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 2rem;
+	align-items: end;
+	margin: 1rem 0 2rem;
+}
+
+.company-accounting-choose-option:hover {
+	background-color: var(--secondary);
+	color: white;
+	text-decoration: none;
+}
+.company-accounting-choose-option {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius);
+	height: 8rem;
+	font-size: 1.5rem;
+	padding: 2rem;
+	text-align: center;
+	cursor: pointer;
+	width: 100%;
+	border: 2px solid var(--secondary);
+	background-color: white;
+	transition: 0.25s all;
+	text-decoration: none;
+}

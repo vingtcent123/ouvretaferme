@@ -187,7 +187,7 @@ class AccountUi {
 						$h .= '</td>';
 
 						if($displayOperationsCount) {
-							$h .= '<td class="text-center"><a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations?accountLabel='.$eAccount['class'].'&financialYear=0">'.(($eAccount['nOperation'] ?? 0) > 0 ? $eAccount['nOperation'] : '').'</a></td>';
+							$h .= '<td class="text-center"><a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?accountLabel='.$eAccount['class'].'&financialYear=0">'.(($eAccount['nOperation'] ?? 0) > 0 ? $eAccount['nOperation'] : '').'</a></td>';
 						}
 
 						if($displayProductsCount) {

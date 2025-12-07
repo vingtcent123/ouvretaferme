@@ -118,6 +118,12 @@ div.farm-nav-planning {
 	column-gap: 0.25rem;
 }
 
+div.farm-nav-accounting-selector {
+	display: flex;
+	align-items: center;
+	column-gap: 0.25rem;
+}
+
 a.farm-subnav-item {
 	display: block;
 	color: white;
@@ -825,32 +831,20 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		grid-area: bank;
 	}
 
-	.farm-nav-journal {
-		grid-area: journal;
-	}
-
-	.farm-nav-assets {
-		grid-area: assets;
-	}
-
-	.farm-nav-analyze-accounting {
-		grid-area: analyze;
+	.farm-nav-accounting {
+		grid-area: accounting;
 	}
 
 	.farm-nav-settings-accounting {
-		grid-area: settings;
+		grid-area: settings-accounting;
 	}
 
-	.farm-nav-summary-accounting {
-		grid-area: summary;
-	}
-
-	@media (min-width: 992px) {
+@media (min-width: 992px) {
 
 		.farm-section-accounting {
 			display: grid;
 			align-items: start;
-			grid-template: "bank journal assets analyze summary settings" auto / auto auto auto auto auto auto;
+			grid-template: "accounting bank settings-accounting" / auto auto auto;
 		}
 
 
@@ -861,10 +855,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		.farm-section-accounting {
 			display: grid;
 			align-items: start;
-			grid-template:
-				"bank journal assets analyze" auto
-				"settings journal assets summary" 1fr / auto auto auto auto auto;
-				"settings journal assets summary" 1fr / auto auto auto auto auto;
+			grid-template: "accounting bank settings-accounting" / auto auto auto;
 		}
 
 
@@ -876,9 +867,8 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 			display: grid;
 			align-items: start;
 			grid-template:
-				"bank journal analyze" auto
-				"assets journal summary" auto
-				"assets journal settings" 1fr / auto auto auto;
+				"accounting bank" auto
+				"accounting settings-accounting" 1fr / auto auto;
 		}
 
 
@@ -890,11 +880,9 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 			display: grid;
 			align-items: start;
 			grid-template:
-				"bank assets" auto
-				"journal analyze" auto
-				"settings summary" auto / auto auto;
+				"accounting bank" auto
+				"accounting settings-accounting" 1fr / auto auto;
 		}
-
 
 	}
 

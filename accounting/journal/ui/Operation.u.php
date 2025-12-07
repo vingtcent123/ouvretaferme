@@ -209,7 +209,7 @@ class OperationUi {
 			title: s("Détail d'écriture"),
 			body: $h,
 			close: 'passthrough',
-			url: \company\CompanyUi::urlJournal($eFarm).'/operations?operation='.$eOperation['id'].'&'.http_build_query($args),
+			url: \company\CompanyUi::urlJournal($eFarm).'/livre-journal?operation='.$eOperation['id'].'&'.http_build_query($args),
 		);
 	}
 	public function getSummary(Operation $eOperation): string {
@@ -415,9 +415,8 @@ class OperationUi {
 				$h .= '<table class="tr-even">';
 					$h .= '<tr>';
 						$h .= '<th colspan="2" class="text-center">';
-							$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eCashflow['id'].'" target="_blank">';
+							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?id='.$eCashflow['id'].'" target="_blank">';
 								$h .= s("Opération #{id} du {date}", [
-									'link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow?id='.$eCashflow['id'].'" target="_blank">',
 									'id' => encode($eCashflow['id']),
 									'icon' => \Asset::icon('box-arrow-up-right').'</a>',
 									'date' => \util\DateUi::numeric($eCashflow['date']),
@@ -1039,7 +1038,7 @@ class OperationUi {
 					$d->label .=  ' '.\util\FormUi::asterisk();
 				});
 				$h .= '<div data-account="asset-create" class="hide" data-index="'.$index.'">';
-					$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true" href="'.\company\CompanyUi::urlAsset($eFarm).'/asset:create">';
+					$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true" href="'.\company\CompanyUi::urlAsset($eFarm).'/:create">';
 						$h .= \Asset::icon('house-add');
 					$h .= '</a>';
 					$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
@@ -1332,7 +1331,7 @@ class OperationUi {
 
 	public static function url(\farm\Farm $eFarm, Operation $eOperation): string {
 
-		return \company\CompanyUi::urlJournal($eFarm).'/operations?id='.$eOperation['id'];
+		return \company\CompanyUi::urlJournal($eFarm).'/livre-journal?id='.$eOperation['id'];
 
 	}
 

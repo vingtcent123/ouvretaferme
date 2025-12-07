@@ -898,6 +898,78 @@ class Sale extends SaleElement {
 
 	}
 
+	//-------- Accounting features -------
+
+	public function acceptAccountingIgnore(): bool {
+		return $this['accountingHash'] === NULL;
+	}
+
+	public function acceptAccountingImport(): bool {
+
+		if(
+			$this['accountingHash'] !== NULL or
+			$this['profile'] === Sale::SALE_MARKET or
+			$this['invoice']->notEmpty()  // On doit passer par la facture
+		) {
+			return FALSE;
+		}
+
+		if($this['profile'] === Sale::MARKET) {
+
+			if($this['preparationStatus'] !== Sale::DELIVERED or $this['closed'] !== TRUE) {
+				return FALSE;
+			}
+
+			$cSaleMarket = Sale::model()
+				->select([
+					'id',
+					'cPayment' => Payment::model()
+						->select(Payment::getSelection())
+						->or(
+							fn() => $this->whereOnlineStatus(NULL),
+							fn() => $this->whereOnlineStatus(Payment::SUCCESS)
+						)
+						->delegateCollection('sale'),
+				])
+				->whereMarketParent($this)
+				->wherePreparationStatus(Sale::DELIVERED)
+				->getCollection();
+
+			$payments = $cSaleMarket->getColumnCollection('cPayment');
+			foreach($payments as $cPayment) {
+				if($cPayment->empty()) {
+					return FALSE;
+				}
+			}
+
+			if(Item::model()
+				->whereSale('IN', $cSaleMarket)
+				->whereAccount(NULL)
+				->count() > 0) {
+				return FALSE;
+			}
+
+		} else {
+			if(Payment::model()
+				->whereSale($this)
+				->or(
+					fn() => $this->whereOnlineStatus(NULL),
+					fn() => $this->whereOnlineStatus(Payment::SUCCESS)
+				)
+				->count() === 0) {
+				return FALSE;
+			}
+			if(Item::model()
+			->whereSale($this)
+			->whereAccount(NULL)
+			->count() > 0) {
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$fw = new \FailWatch();

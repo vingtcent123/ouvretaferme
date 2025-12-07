@@ -7,24 +7,6 @@ Class SigUi {
 		\Asset::css('overview', 'sig.css');
 	}
 
-	public function getTitle(\Collection $cFinancialYear): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= s("Soldes Intermédiaires de Gestion");
-			$h .= '</h1>';
-
-			if($cFinancialYear->count() > 1) {
-				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sig-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-				$h .= '</div>';
-			}
-
-		$h .= '</div>';
-
-		return $h;
-	}
 	public function getSearch(\Search $search, \Collection $cFinancialYear, \account\FinancialYear $eFinancialYear): string {
 
 		if($cFinancialYear->count() === 1) {

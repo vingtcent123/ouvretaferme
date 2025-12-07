@@ -31,7 +31,7 @@ class PdfUi {
 
 	public static function urlJournal(\farm\Farm $eFarm): string {
 
-		return \company\CompanyUi::urlJournal($eFarm).'/operations:pdf';
+		return \company\CompanyUi::urlJournal($eFarm).'/livre-journal:pdf';
 
 	}
 
