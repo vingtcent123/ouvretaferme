@@ -10,7 +10,7 @@ new Page()
 		foreach($c as $e) {
 
 			\farm\Farm::model()->update($e, [
-				'cultivationLngLat' => $e['cultivationLngLat']
+				'cultivationLngLat' => array_reverse($e['cultivationLngLat'])
 			]);
 
 		}
