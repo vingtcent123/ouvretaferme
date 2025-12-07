@@ -103,7 +103,16 @@ class WebpageLib extends WebpageCrud {
 
 		Webpage::model()->beginTransaction();
 
-		parent::update($e, $properties);
+		try {
+			parent::update($e, $properties);
+		} catch(\DuplicateException) {
+
+			Webpage::fail('url.duplicate');
+
+			Webpage::model()->rollBack();
+			return;
+
+		}
 
 		if(in_array('status', $properties)) {
 
