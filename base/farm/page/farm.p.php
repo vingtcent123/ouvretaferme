@@ -9,7 +9,6 @@ new \farm\FarmPage(
 	]))
 	->create(function($data) {
 
-		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
 		$data->e['legalCountry'] = $data->eUserOnline['invoiceCountry'];
 
 		throw new ViewAction($data);
@@ -40,8 +39,6 @@ new \farm\FarmPage()
 			$data->e['legalCountry'] = \user\CountryLib::getById($data->e['legalCountry']);
 		}
 
-		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
-
 		throw new ViewAction($data);
 
 	})
@@ -63,8 +60,6 @@ new \farm\FarmPage()
 		if($data->e['legalCountry']->notEmpty()) {
 			$data->e['legalCountry'] = \user\CountryLib::getById($data->e['legalCountry']);
 		}
-
-		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
 
 		throw new ViewAction($data);
 

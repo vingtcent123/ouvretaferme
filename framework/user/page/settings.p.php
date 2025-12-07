@@ -8,8 +8,6 @@ new Page(function($data) {
 	})
 	->get('updateUser', function($data) {
 
-		$data->eUserOnline['cCountry'] = \user\CountryLib::getForSignUp();
-
 		throw new ViewAction($data);
 
 	})

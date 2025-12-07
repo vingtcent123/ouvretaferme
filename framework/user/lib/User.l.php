@@ -8,13 +8,6 @@ class UserLib extends UserCrud {
 
 	use \Notifiable;
 
-	/**
-	 * Cache for country list
-	 *
-	 * @var \Collection
-	 */
-	private static ?\Collection $cCountryList = NULL;
-
 	public static function getPropertiesUpdate(): array {
 		return ['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'];
 	}
@@ -352,30 +345,6 @@ class UserLib extends UserCrud {
 
 	public static function delete(User $e): void {
 		throw new \Exception('Not implemented yet');
-	}
-
-	/**
-	 * Get a list of countries
-	 *
-	 * @return \Collection
-	 */
-	public static function getCountries(): \Collection {
-
-		if(self::$cCountryList === NULL) {
-
-			$cCountry = Country::model()
-				->select([
-					'id', 'name', 'code'
-				])
-				->sort('name')
-				->getCollection(NULL, NULL, 'id');
-
-			self::$cCountryList = $cCountry;
-
-		}
-
-		return self::$cCountryList;
-
 	}
 
 	public function getDailyUsersStats(\Collection $cRole): \Collection {

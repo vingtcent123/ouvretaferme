@@ -9,7 +9,6 @@ new Page(function($data) {
 
 		$data->eUser = new \user\User([
 			'invoiceCountry' => \user\UserLib::getDefaultCountry(),
-			'cCountry' => \user\CountryLib::getForSignUp()
 		]);
 
 		$data->cRole = \user\RoleLib::getForSignUp();

@@ -14,7 +14,6 @@ new \selling\CustomerPage()
 	->create(function($data) {
 
 		$data->e->merge([
-			'cCountry' => \user\CountryLib::getForSignUp(),
 			'invoiceCountry' => $data->eFarm['legalCountry']
 		]);
 
@@ -66,7 +65,6 @@ new \selling\CustomerPage()
 
 		$data->e['nGroup'] = \selling\CustomerGroupLib::countByFarm($data->e['farm']);
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
-		$data->e['cCountry'] = \user\CountryLib::getForSignUp();
 
 		throw new ViewAction($data);
 

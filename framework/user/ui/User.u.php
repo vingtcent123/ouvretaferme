@@ -114,8 +114,6 @@ class UserUi {
 	 */
 	public function signUp(User $e, Role $eRole, ?string $redirect = NULL): string {
 
-		$e->expects(['cCountry']);
-
 		$form = new \util\FormUi([
 			'firstColumnSize' => 40
 		]);
@@ -650,9 +648,9 @@ L'équipe");
 				break;
 
 			case 'invoiceCountry' :
-				$d->values = fn(User $e) => $e['cCountry'] ?? $e->expects(['cCountry']);
+				$d->values = fn(User $e) => \user\Country::all();
 				$d->attributes = fn(\util\FormUi $form, User $e) => [
-					'group' => is_array($e['cCountry']),
+					'group' => is_array(\user\Country::all()),
 					'mandatory' => TRUE
 				];
 				break;

@@ -1004,9 +1004,9 @@ class CustomerUi {
 				break;
 
 			case 'invoiceCountry' :
-				$d->values = fn(Customer $e) => $e['cCountry'] ?? $e->expects(['cCountry']);
+				$d->values = fn(Customer $e) => \user\Country::all();
 				$d->attributes = fn(\util\FormUi $form, Customer $e) => [
-					'group' => is_array($e['cCountry']),
+					'group' => is_array(\user\Country::all()),
 				];
 				break;
 

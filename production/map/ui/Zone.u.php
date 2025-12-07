@@ -516,7 +516,7 @@ class ZoneUi {
 		if($canCartography === FALSE) {
 
 			$map .= '<div class="util-block-important">';
-				$map .= '<p>'.s("Si vous souhaitez dessiner plus facilement votre parcelle sur la carte, vous devez d'abord renseigner le lieu de production de la ferme. Vous pouvez aussi sauter cette étape et saisir directement la surface de cette parcelle.").'</p>';
+				$map .= '<p>'.s("Si vous souhaitez dessiner plus facilement votre parcelle sur la carte, vous pouvez renseigner le lieu précis de production de la ferme. Vous pouvez aussi sauter cette étape et saisir directement la surface de cette parcelle.").'</p>';
 				$map .= '<a href="/farm/farm:updatePlace?id='.$eZone['farm']['id'].'" class="btn btn-transparent">'.s("Renseigner le lieu de production").'</a>';
 			$map .= '</div>';
 
@@ -535,9 +535,13 @@ class ZoneUi {
 
 		$container = 'zone-map-write';
 
-		$map .= '<div class="form-control-block" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0">';
-			$map .= s("Dessiner cette parcelle sur la carte n'est pas obligatoire, vous pouvez sauter cette étape et saisir directement la surface de la parcelle.");
-		$map .= '</div>';
+		if($canCartography) {
+
+			$map .= '<div class="form-control-block" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0">';
+				$map .= s("Dessiner cette parcelle sur la carte n'est pas obligatoire, vous pouvez sauter cette étape et saisir directement la surface de la parcelle.");
+			$map .= '</div>';
+
+		}
 
 		$map .= new MapboxUi()->getDrawingPolygon($container, $form, $eZone);
 
