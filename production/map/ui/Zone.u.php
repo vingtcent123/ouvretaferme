@@ -554,7 +554,7 @@ class ZoneUi {
 				->select('center')
 				->get($eZone['farm']['legalCountry']);
 
-			$center = array_reverse($eZone['farm']['legalCountry']['center']);
+			$center = $eZone['farm']['legalCountry']['center'];
 			$zoom = 5;
 
 		}
