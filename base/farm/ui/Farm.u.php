@@ -2590,7 +2590,7 @@ class FarmUi {
 		switch($property) {
 
 			case 'legalEmail' :
-				$d->default = fn(Farm $e) => $e->exists() ? NULL : \user\ConnectionLib::getOnline()['email'];
+				$d->default = fn(Farm $e) => $e->exists() ? $e['legalEmail'] : \user\ConnectionLib::getOnline()['email'];
 				$d->attributes = [
 					'onfocus' => 'this.select()'
 				];
