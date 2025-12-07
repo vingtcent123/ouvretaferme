@@ -187,11 +187,18 @@ Class AccountingLib {
 	 */
 	public static function extractInvoice(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
-		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$cInvoice = self::getInvoices($eFarm, $from, $to, $forImport);
 
-		$cInvoice = \selling\Invoice::model()
+		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount);
+
+	}
+
+	private static function getInvoices(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE) {
+
+		return \selling\Invoice::model()
 			->select([
 				'id', 'date', 'name',
+				'priceExcludingVat', 'vat',
 				'customer' => [
 					'id', 'name',
 					'thirdParty' => \account\ThirdParty::model()
@@ -214,6 +221,12 @@ Class AccountingLib {
 			->where('date BETWEEN '.\selling\Invoice::model()->format($from).' AND '.\selling\Invoice::model()->format($to))
 			->getCollection();
 
+	}
+
+	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount) {
+
+		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+
 		$fecData = [];
 		foreach($cInvoice as $eInvoice) {
 
@@ -235,7 +248,17 @@ Class AccountingLib {
 			$items = []; // groupement par accountlabel
 			$payment = ($eInvoice['paymentMethod']['name'] ?? '');
 
+			$totalExcludingVat = $eInvoice['priceExcludingVat'];
+			$totalVat = $eInvoice['vat'];
+
+			$currentExcludingVat = 0;
+			$currentVat = 0;
+
+			$eSaleLast = $eInvoice['cSale']->last();
+
 			foreach($eInvoice['cSale'] as $eSale) {
+
+				$eItemLast = $eSale['cItem']->last();
 
 				foreach($eSale['cItem'] as $eItem) {
 
@@ -254,6 +277,19 @@ Class AccountingLib {
 					} else {
 						$amountVat = 0.0;
 					}
+
+					// On utilise la dernière vente pour réharmoniser les centimes
+					if($eSale->is($eSaleLast) and $eItem->is($eItemLast)) {
+						if($amountExcludingVat !== round($totalExcludingVat - $currentExcludingVat, 2)) {
+							$amountExcludingVat = round($totalExcludingVat - $currentExcludingVat, 2);
+						}
+						if($amountVat !== round($totalVat - $currentVat, 2)) {
+							$amountVat = round($totalVat - $currentVat, 2);
+						}
+					}
+
+					$currentExcludingVat += $amountExcludingVat;
+					$currentVat += $amountVat;
 
 					// Si on n'est pas redevable de la TVA => On enregistre TTC
 					if($hasVat === FALSE) {

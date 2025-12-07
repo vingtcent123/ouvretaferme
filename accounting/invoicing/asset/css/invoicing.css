@@ -23,6 +23,9 @@
 	background-color: rgba(0, 0, 0, 0.06) !important;
 }
 
+.invoicing-import-table tbody td.invoicing-import-td-operation {
+	white-space: nowrap;
+}
 .invoicing-import-table tbody tr:first-child td.invoicing-import-td-operation {
 	padding-bottom: 0;
 }

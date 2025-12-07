@@ -14,19 +14,55 @@ new Page(
 	$from = $data->eFinancialYear['startDate'];
 	$to = $data->eFinancialYear['endDate'];
 
-	$data->cSale = match($data->selectedTab) {
+	$data->c = match($data->selectedTab) {
 		'market' => \invoicing\ImportLib::getMarketSales($data->eFarm, $from, $to),
+		'invoice' => \invoicing\ImportLib::getInvoiceSales($data->eFarm, $from, $to),
 	};
 
 	throw new ViewAction($data);
 
 })
-->post('doImport', function($data) {
+->post('doImportInvoice', function($data) {
+
+	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
+
+	$eInvoice = \selling\InvoiceLib::getById(POST('id'), \selling\Invoice::getSelection() + [
+		'cSale' => \selling\Sale::model()
+			->select([
+				'id',
+				'cPayment' => \selling\Payment::model()
+					->select(\selling\Payment::getSelection())
+					->or(
+					  fn() => $this->whereOnlineStatus(NULL),
+					  fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+					)
+					->delegateCollection('sale'),
+				'cItem' => \selling\Item::model()
+					->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+					->delegateCollection('sale')
+			])
+			->wherePreparationStatus(\selling\Sale::DELIVERED)
+			->delegateCollection('invoice'),]);
+
+	$eInvoice->validate('acceptAccountingImport');
+
+	$fw = new FailWatch();
+
+	\invoicing\ImportLib::importInvoice($data->eFarm, $eInvoice, $eFinancialYear);
+
+	$fw->validate();
+
+	throw new ReloadAction('invoicing', 'Invoice::imported');
+
+})
+->post('doImportMarket', function($data) {
 
 	$saleModule = clone \selling\Sale::model();
 	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
 
-	$eSale = \selling\SaleLib::filterForAccounting($data->eFarm, new Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate'], 'id' => POST('id')]))
+	$eSale = \selling\SaleLib::filterForAccounting(
+		$data->eFarm, new Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate'], 'id' => POST('id')])
+	)
 		->select([
 		'id',
 		'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
@@ -73,13 +109,22 @@ new Page(
 
 
 })
-->post('doIgnore', function($data) {
+->post('doIgnoreMarket', function($data) {
 
 	$eSale = \selling\SaleLib::getById(POST('id'))->validate('acceptAccountingIgnore');
 
 	\invoicing\ImportLib::ignoreSale($eSale);
 
 	throw new ReloadAction('invoicing', $eSale['profile'] === \selling\Sale::MARKET ? 'Sale::ignored.market' : 'Sale::ignored');
-});
+})
+->post('doIgnoreInvoice', function($data) {
+
+	$eInvoice = \selling\InvoiceLib::getById(POST('id'))->validate('acceptAccountingIgnore');
+
+	\invoicing\ImportLib::ignoreInvoice($eInvoice);
+
+	throw new ReloadAction('invoicing', 'Invoice::ignored');
+})
+;
 
 ?>

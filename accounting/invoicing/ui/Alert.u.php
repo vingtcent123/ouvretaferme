@@ -21,6 +21,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Invoice::imported' => s("La facture a bien été importée."),
+			'Invoice::ignored' => s("La facture a bien été ignorée."),
 			'Sale::ignored' => s("La vente a bien été ignorée."),
 			'Sale::ignored.market' => s("Le marché a bien été ignoré."),
 
