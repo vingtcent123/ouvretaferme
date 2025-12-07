@@ -29,7 +29,7 @@ Farm:
   name: text8(1, null) @collate(general)
   legalName: ?text8
   legalEmail: ?email
-  legalCountry: ?user\Country
+  legalCountry: user\Country
   siret: ?text8
   legalStreet1: ?text8
   legalStreet2: ?text8
