@@ -71,12 +71,13 @@ class InvoiceModel extends \ModuleModel {
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'cast' => 'enum'],
+			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'accountingHash', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -254,6 +255,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereGeneration(...$data): InvoiceModel {
 		return $this->where('generation', ...$data);
+	}
+
+	public function whereAccountingHash(...$data): InvoiceModel {
+		return $this->where('accountingHash', ...$data);
 	}
 
 	public function whereEmailedAt(...$data): InvoiceModel {

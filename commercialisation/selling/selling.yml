@@ -155,6 +155,7 @@ Invoice:
   header: ?editor16(1, 400)
   footer: ?editor16(1, 400)
   generation : enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
+  accountingHash: ?textFixed(20, 20) @charset(ascii)
   emailedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
   INDEX: [
@@ -346,6 +347,7 @@ Sale:
   expiresAt: ?datetime
   statusAt: ?datetime
   statusBy: ?user\User
+  accountingHash: ?textFixed(20, 20) @charset(ascii)
   INDEX: [
     ["customer"],
     ["shopDate"],

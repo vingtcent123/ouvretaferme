@@ -5,6 +5,7 @@ Class AccountingLib {
 
 	const FEC_COLUMN_DATE = 3;
 	const FEC_COLUMN_ACCOUNT_LABEL = 4;
+	const FEC_COLUMN_DESCRIPTION = 5;
 	const FEC_COLUMN_PAYMENT_METHOD = 19;
 	const FEC_COLUMN_DOCUMENT = 8;
 	const FEC_COLUMN_DEBIT = 11;
@@ -47,7 +48,7 @@ Class AccountingLib {
 	 * - ni dans un marché
 	 */
 
-	private static function extractSales(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount): array {
+	public static function extractSales(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
@@ -76,6 +77,7 @@ Class AccountingLib {
 			])
 			->sort('deliveredAt')
 			->whereInvoice(NULL)
+			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->whereProfile('NOT IN', [\selling\Sale::SALE_MARKET, \selling\Sale::MARKET])
 			->getCollection();
 
@@ -184,7 +186,7 @@ Class AccountingLib {
 	 * Caractéristique : 1 facture = 1 moyen de paiement
 	 *
 	 */
-	private static function extractInvoice(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount): array {
+	public static function extractInvoice(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
@@ -209,6 +211,7 @@ Class AccountingLib {
 					->delegateCollection('invoice'),
 			])
 			->whereFarm($eFarm)
+			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($from).' AND '.\selling\Invoice::model()->format($to))
 			->getCollection();
 
@@ -313,7 +316,7 @@ Class AccountingLib {
 	 * Extrait les données FEC des ventes rattachées à des marchés.
 	 *
 	 */
-	private static function extractMarket(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount): array {
+	public static function extractMarket(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
@@ -345,10 +348,12 @@ Class AccountingLib {
 							->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
 							->delegateCollection('sale')
 					])
+					->wherePreparationStatus(\selling\Sale::DELIVERED)
 					->delegateCollection('marketParent'),
 			])
 			->sort('deliveredAt')
 			->whereProfile(\selling\Sale::MARKET)
+			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->getCollection(NULL, NULL, 'id');
 
 		$fecData = [];
@@ -370,10 +375,14 @@ Class AccountingLib {
 			$compAuxNum = ($eSale['customer']['thirdParty']['clientAccountLabel'] ?? '');
 
 			$items = []; // groupement par accountlabel, moyen de paiement
+
 			foreach($eSale['cSale'] as $eSaleMarket) {
 
 				// Il faut déterminer le montant par moyen de paiement pour en extraire un prorata
 				$payments = self::explodePaymentsRatio($eSaleMarket['cPayment']);
+				if(empty($payments)) { // pas de paiement enregistré !
+					$payments = [['rate' => 100, 'label' => '']];
+				}
 
 				foreach($eSaleMarket['cItem'] as $eItem) {
 
@@ -390,7 +399,7 @@ Class AccountingLib {
 						$amountExcludingVat = round(($eItem['priceStats'] * $payment['rate'] / 100), 2);
 
 						if(round($eItem['vatRate'], 2) !== 0.0) {
-							$amountVat = round($amountExcludingVat * $eItem['vatRate'] / 100, 2);
+							$amountVat = round(($eItem['price'] - $eItem['priceStats']) * $payment['rate'] / 100, 2);
 						} else {
 							$amountVat = 0.0;
 						}

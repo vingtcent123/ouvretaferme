@@ -618,6 +618,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['vente', '{id}', 'marche', 'ventes'],
 		],
+		'/ventes/importer' => [
+			'request' => 'invoicing/import',
+			'priority' => 5,
+			'route' => ['ventes', 'importer'],
+		],
 	],
 	'HEAD' => [
 	],

@@ -1,0 +1,88 @@
+class Invoicing {
+
+	static toggleGroupSelection(target) {
+
+		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
+
+		this.changeSelection(target);
+
+	}
+
+	static toggleSelection(target) {
+
+		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
+
+		this.changeSelection(target);
+
+	}
+
+	static changeSelection(target) {
+
+		const type = target.getAttribute('batch-type');
+
+		return Batch.changeSelection('#batch-' + type, null, function(selection) {
+
+			let ids = '';
+			let idsList = [];
+			let actions = 0;
+
+			let taxes = null;
+			let amountIncluding = 0.0;
+			let amountExcluding = 0.0;
+
+			selection.forEach(node => {
+
+				amountIncluding += parseFloat(node.dataset.batchAmountIncluding);
+				amountExcluding += parseFloat(node.dataset.batchAmountExcluding);
+
+				if(node.dataset.batchTaxes !== '') {
+
+					if(taxes === null) {
+						taxes = node.dataset.batchTaxes;
+					} else if(taxes !== node.dataset.batchTaxes) {
+						taxes = 'excluding';
+					}
+
+				}
+
+				ids += '&ids[]='+ node.value;
+				idsList[idsList.length] = node.value;
+
+			});
+
+			const amount = (taxes === 'excluding') ? amountExcluding : amountIncluding;
+
+			qs(
+				'.batch-menu-item-number',
+				node => {
+					node.innerHTML = money(amount, 2);
+				}
+			);
+
+			qs(
+				'.batch-menu-import',
+				selection.filter('[data-batch~="not-import"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+						actions++;
+					}
+			);
+
+			qs(
+				'.batch-menu-ignore',
+				selection.filter('[data-batch~="not-ignore"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+						actions++;
+					}
+			);
+
+			return actions;
+
+		});
+
+	}
+
+}

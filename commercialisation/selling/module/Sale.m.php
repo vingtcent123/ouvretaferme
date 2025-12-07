@@ -117,10 +117,11 @@ class SaleModel extends \ModuleModel {
 			'expiresAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'statusAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'statusBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash'
 		]);
 
 		$this->propertiesToModule += [
@@ -472,6 +473,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereStatusBy(...$data): SaleModel {
 		return $this->where('statusBy', ...$data);
+	}
+
+	public function whereAccountingHash(...$data): SaleModel {
+		return $this->where('accountingHash', ...$data);
 	}
 
 
