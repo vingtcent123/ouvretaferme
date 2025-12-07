@@ -61,7 +61,7 @@ Customer:
   invoicePostcode: ?text8
   invoiceCity: ?text8
   invoiceCountry: ?user\Country
-  siret: ?text8
+  siret: ?text8(1, null)
   invoiceVat: ?text8
   deliveryStreet1: ?text8
   deliveryStreet2: ?text8

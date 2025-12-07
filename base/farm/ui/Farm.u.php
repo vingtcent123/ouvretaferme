@@ -428,25 +428,20 @@ class FarmUi {
 
 	}
 
-	public function updateLegal(Farm $eFarm, array $requiredProperties = ['legalEmail', 'legalName']): string {
+	public function updateLegal(Farm $eFarm): string {
 
 		$form = new \util\FormUi();
-
-		$properties = [];
-		foreach(['siret', 'legalName'] as $property) {
-			if(in_array($property, $requiredProperties)) {
-				$properties[] = $property.'*';
-			} else {
-				$properties[] = $property;
-			}
-		}
 
 		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eFarm['id']);
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eFarm, $properties);
+			if($eFarm->isFR()) {
+				$h .= $form->dynamicGroup($eFarm, 'siret*');
+			}
+
+			$h .= $form->dynamicGroup($eFarm, 'legalName*');
 			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
 
 			$h .= $form->group(
@@ -2568,7 +2563,7 @@ class FarmUi {
 			'legalCountry' => s("Pays de la ferme"),
 			'legalName' => s("Raison sociale de la ferme"),
 			'legalEmail' => s("Adresse e-mail de la ferme"),
-			'siret' => s("Numéro d'immatriculation SIRET"),
+			'siret' => s("Numéro d'immatriculation SIRET de la ferme"),
 			'vignette' => s("Photo de présentation"),
 			'description' => s("Présentation de la ferme"),
 			'startedAt' => s("Année de création"),

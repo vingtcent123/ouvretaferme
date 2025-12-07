@@ -16,7 +16,7 @@ class AlertUi {
 			'Farm::legalEmail.empty' => s("Merci de renseigner l'adresse e-mail de la ferme !"),
 			'Farm::name.check' => s("Merci de renseigner le nom de la ferme !"),
 			'Farm::siret.empty' => s("Un numéro de SIRET à 14 chiffres est obligatoire pour utiliser le service de facturation."),
-			'Farm::siret.check' => s("Le numéro de SIRET doit contenir exactement 14 chiffres."),
+			'Farm::siret.check' => self::getErrorSiret(),
 			'Farm::cultivationPlace.check' => s("Veuillez sélectionner une ville dans le menu déroulant."),
 			'Farm::defaultBedWidth.size' => s("La largeur de planche par défaut ne peut pas être inférieure à 5 cm."),
 			'Farmer::demo.write' => s("Vous ne pouvez pas modifier l'équipe sur la démo !"),
@@ -26,8 +26,7 @@ class AlertUi {
 			'Farmer::deleteGhost' => s("Vous ne pouvez pas supprimer un utilisateur créé spécifiquement pour la ferme."),
 			'Farmer::deleteItself' => s("Vous ne pouvez pas vous sortir vous-même de la ferme."),
 			'Farm::notEmail' => '<p>'.s("Vous devez configurer l'adresse e-mail de votre ferme pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
-			'Farm::notLegal' => '<p>'.s("Vous devez configurer le pays, la raison sociale et l'adresse e-mail de votre ferme pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
-			'Farm::notSelling' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (adresse e-mail, raison sociale...) pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
+			'Farm::notLegal' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (numéro d'immatriculation, raison sociale...) pour accéder à cette page !").'</p><a href="/farm/farm:update?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
 
 			'Action::deleteMandatory' => s("Cette intervention ne peut pas être supprimée car elle est indispensable au bon fonctionnement du site."),
 			'Action::deleteUsed' => s("Vous ne pouvez pas supprimer une action qui est déjà utilisée sur les itinéraires techniques ou les séries..."),
@@ -50,6 +49,10 @@ class AlertUi {
 
 		};
 
+	}
+
+	public static function getErrorSiret(): string {
+		return s("Le numéro de SIRET doit contenir exactement 14 chiffres.");
 	}
 
 	public static function getSuccess(string $fqn): ?string {

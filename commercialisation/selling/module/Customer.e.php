@@ -288,6 +288,7 @@ class Customer extends CustomerElement {
 				);
 
 			})
+			->setCallback('siret.check', fn(?string &$siret) => \farm\Farm::checkSiret($siret))
 			->setCallback('defaultPaymentMethod.check', function(\payment\Method $eMethod): bool {
 
 				if($eMethod->empty()) {

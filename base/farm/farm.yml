@@ -30,7 +30,7 @@ Farm:
   legalName: ?text8
   legalEmail: email
   legalCountry: user\Country
-  siret: ?text8(15, 15)
+  siret: ?text8(1, null)
   legalStreet1: ?text8
   legalStreet2: ?text8
   legalPostcode: ?text8

@@ -65,7 +65,7 @@ class CustomerModel extends \ModuleModel {
 			'invoicePostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
-			'siret' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'siret' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceVat' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],

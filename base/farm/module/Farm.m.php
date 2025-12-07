@@ -48,7 +48,7 @@ class FarmModel extends \ModuleModel {
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalEmail' => ['email', 'cast' => 'string'],
 			'legalCountry' => ['element32', 'user\Country', 'cast' => 'element'],
-			'siret' => ['text8', 'min' => 15, 'max' => 15, 'null' => TRUE, 'cast' => 'string'],
+			'siret' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'legalStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],

@@ -30,7 +30,7 @@ new Page()
 		}
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
-		$data->eFarm->validateSellingComplete();
+		$data->eFarm->validateLegalComplete();
 
 		$data->cItem = \selling\SaleLib::getItems($data->e);
 

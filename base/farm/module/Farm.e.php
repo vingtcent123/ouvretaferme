@@ -244,8 +244,27 @@ class Farm extends FarmElement {
 	public function isLegal(): bool {
 
 		return (
+			($this->isFR() === FALSE or $this['siret'] !== NULL) and
 			$this['legalName'] !== NULL and
 			$this['legalCity'] !== NULL
+		);
+
+	}
+
+	public function isFR(): bool {
+
+		return (
+			$this['legalCountry']->notEmpty() and
+			$this['legalCountry']['id'] === 75
+		);
+
+	}
+
+	public function isBE(): bool {
+
+		return (
+			$this['legalCountry']->notEmpty() and
+			$this['legalCountry']['id'] === 20
 		);
 
 	}
@@ -291,12 +310,6 @@ class Farm extends FarmElement {
 	public function validateLegalComplete(): void {
 
 		$this->isLegal() ?: throw new \FailAction('farm\Farm::notLegal', ['farm' => $this]);
-
-	}
-
-	public function validateSellingComplete(): void {
-
-		$this->isLegal() ?: throw new \FailAction('farm\Farm::notSelling', ['farm' => $this]);
 
 	}
 
@@ -432,26 +445,16 @@ class Farm extends FarmElement {
 				}
 				return ($legalName !== NULL);
 			})
-			->setCallback('siret.prepare', function(?string &$siret) use($p) {
-				if($siret !== NULL) {
-					$siret = preg_replace('/\s+/i', '', $siret);
-				}
-			})
-			->setCallback('siret.empty', function(?string $siret) use($p) {
+			->setCallback('siret.empty', function(?string &$siret) use($p) {
+
 				if($p->for !== 'legal') {
 					return TRUE;
 				}
+
 				return ($siret !== NULL);
-			})
-			->setCallback('siret.check', function(?string $siret) use($p) {
-
-				if($siret === NULL) {
-					return TRUE;
-				} else {
-					return preg_match('/^[0-9]{14}$/', $siret) > 0;
-				}
 
 			})
+			->setCallback('siret.check', fn(?string &$siret) => Farm::checkSiret($siret))
 			->setCallback('legalCity.empty', function(?string $legalCity) use($p) {
 
 				if($p->for !== 'legal') {
@@ -506,6 +509,28 @@ class Farm extends FarmElement {
 			});
 		
 		parent::build($properties, $input, $p);
+
+	}
+
+	public static function checkSiret(?string &$siret): bool {
+
+		if($siret === NULL) {
+			return TRUE;
+		} else {
+			$siret = preg_replace('/\s+/i', '', $siret);
+			return preg_match('/^[0-9]{14}$/', $siret) > 0;
+		}
+
+	}
+
+	public static function checkVatNumber(Farm $eFarm, ?string &$vat): bool {
+
+		if($siret === NULL) {
+			return TRUE;
+		} else {
+			$siret = preg_replace('/\s+/i', '', $siret);
+			return preg_match('/^[0-9]{14}$/', $siret) > 0;
+		}
 
 	}
 

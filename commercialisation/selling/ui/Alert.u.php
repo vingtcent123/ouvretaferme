@@ -16,6 +16,7 @@ class AlertUi {
 
 			'Customer::name.empty' => s("Un nom de client valide est obligatoire."),
 			'Customer::phone.check' => s("Le numéro de téléphone est invalide."),
+			'Customer::siret.check' => \farm\AlertUi::getErrorSiret(),
 			'Customer::category.user' => s("Un client ne peut pas être transformé en point de vente."),
 			'Customer::deletedUsed' => s("Ce client ne peut pas être supprimé car des factures ou des ventes lui sont associées."),
 			'Customer::firstName.empty' => s("Veuillez indiquer le prénom de votre client."),

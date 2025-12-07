@@ -27,24 +27,14 @@ class ShopManageUi {
 		$h .= '<br/>';
 
 
-		if($eFarm->isLegal()) {
+		$h .= '<h3>'.s("Créer une boutique").'</h3>';
 
-			$h .= '<h3>'.s("Créer une boutique").'</h3>';
+		$eShop = new Shop([
+			'farm' => $eFarm,
+			'shared' => NULL
+		]);
 
-			$eShop = new Shop([
-				'farm' => $eFarm,
-				'shared' => NULL
-			]);
-
-			$h .= new ShopUi()->create($eShop)->body;
-
-		} else {
-
-			$h .= '<h3>'.s("Informations requises pour créer une boutique en ligne").'</h3>';
-
-			$h .= new \farm\FarmUi()->updateLegal($eFarm);
-
-		}
+		$h .= new ShopUi()->create($eShop)->body;
 
 		return $h;
 

@@ -318,7 +318,7 @@ new \selling\SalePage()
 		$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
 
 		$data->eFarm = $data->e['farm'];
-		$data->eFarm->validateSellingComplete();
+		$data->eFarm->validateLegalComplete();
 
 		$data->ePdf = \selling\PdfLib::getOne($data->e, \selling\Pdf::ORDER_FORM);
 
@@ -337,7 +337,7 @@ new \selling\SalePage()
 
 		$data->e->acceptDocumentTarget($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
 
-		$data->e['farm']->validateSellingComplete();
+		$data->e['farm']->validateLegalComplete();
 
 		$type = POST('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());
 
