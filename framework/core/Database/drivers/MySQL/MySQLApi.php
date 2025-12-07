@@ -44,7 +44,7 @@ class MySQLApi extends DatabaseApi {
 	}
 
 	public function getPoint(array $point): string {
-		return 'ST_PointFromText(\'POINT('.(float)$point[0].' '.(float)$point[1].')\', 4326)';
+		return 'ST_PointFromText(\'POINT('.(float)$point[1].' '.(float)$point[0].')\', 4326)';
 	}
 
 	public function getPolygon(array $points): string {

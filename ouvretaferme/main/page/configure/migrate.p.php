@@ -2,15 +2,16 @@
 new Page()
 	->cli('index', function($data) {
 
-		$l = \util\CsvLib::parseCsv('/home/vincent/Documents/a.csv', ',');
+		$c = \farm\Farm::model()
+			->select('id', 'cultivationLngLat')
+			->whereCultivationLngLat('!=', NULL)
+			->getCollection();
 
-		foreach($l as [$c, $lat, $lon]) {
+		foreach($c as $e) {
 
-			\user\Country::model()
-				->whereCode($c)
-				->update([
-					'center' => [$lat, $lon]
-				]);
+			\farm\Farm::model()->update($e, [
+				'cultivationLngLat' => $e['cultivationLngLat']
+			]);
 
 		}
 

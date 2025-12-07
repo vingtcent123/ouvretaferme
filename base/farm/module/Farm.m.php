@@ -183,7 +183,7 @@ class FarmModel extends \ModuleModel {
 		switch($property) {
 
 			case 'cultivationLngLat' :
-				return $value === NULL ? NULL : json_encode(json_decode($value, TRUE)['coordinates']);
+				return $value === NULL ? NULL : json_encode(array_reverse(json_decode($value, TRUE)['coordinates']));
 
 			case 'rotationExclude' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);

@@ -72,7 +72,7 @@ class CountryModel extends \ModuleModel {
 		switch($property) {
 
 			case 'center' :
-				return $value === NULL ? NULL : json_encode(json_decode($value, TRUE)['coordinates']);
+				return $value === NULL ? NULL : json_encode(array_reverse(json_decode($value, TRUE)['coordinates']));
 
 			default :
 				return parent::decode($property, $value);
