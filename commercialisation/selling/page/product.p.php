@@ -29,7 +29,7 @@ new \selling\ProductPage()
 			$data->e->merge([
 				'profile' => \selling\Product::GET('profile', 'profile'),
 				'quality' => $data->eFarm['quality'],
-				'vat' => $data->eFarm->getSelling('defaultVat'),
+				'vat' => $data->eFarm->getConf('defaultVat'),
 				'private' => TRUE,
 				'pro' => TRUE,
 				'unit' => new \selling\Unit(),

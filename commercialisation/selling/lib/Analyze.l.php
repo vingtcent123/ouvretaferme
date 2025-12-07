@@ -909,7 +909,7 @@ class AnalyzeLib {
 					\util\TextUi::csvNumber($eSale['priceExcludingVat']),
 				];
 
-				if($eFarm->getSelling('hasVat')) {
+				if($eFarm->getConf('hasVat')) {
 					$data[] = \util\TextUi::csvNumber($eSale['vat']);
 					$data[] = \util\TextUi::csvNumber($eSale['priceIncludingVat']);
 				}
@@ -961,7 +961,7 @@ class AnalyzeLib {
 					\util\TextUi::csvNumber($eItem['priceStats']),
 				];
 
-				if($eFarm->getSelling('hasVat')) {
+				if($eFarm->getConf('hasVat')) {
 					$data[] = \util\TextUi::csvNumber($eItem['vatRate']);
 					$data[] = match($eItem['type']) {
 						Item::PRO => \util\TextUi::csvNumber($eItem['price'] * (1 + $eItem['vatRate'] / 100), 2),
@@ -1039,7 +1039,7 @@ class AnalyzeLib {
 					$eProduct['quality'] ? ProductUi::p('quality')->values[$eProduct['quality']] : '',
 					($eProduct['proPrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['proPrice']) : '',
 					($eProduct['privatePrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['privatePrice']) : '',
-					$eFarm->getSelling('hasVat') ? \util\TextUi::csvNumber(SellingSetting::getVatRate($eProduct['farm'], $eProduct['vat'])) : '',
+					$eFarm->getConf('hasVat') ? \util\TextUi::csvNumber(SellingSetting::getVatRate($eProduct['farm'], $eProduct['vat'])) : '',
 				];
 			});
 

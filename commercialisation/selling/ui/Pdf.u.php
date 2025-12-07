@@ -24,7 +24,7 @@ class PdfUi {
 
 	public function getLabels(\farm\Farm $eFarm, \Collection $cSale): string {
 
-		$eConfiguration = $eFarm->selling();
+		$eConfiguration = $eFarm->conf();
 
 		$items = [];
 
@@ -151,8 +151,8 @@ class PdfUi {
 					if($quality) {
 						$h .= \Asset::image('main', $quality.'.png', ['style' => 'height: 0.75cm']);
 					}
-					if($quality === \farm\Farm::ORGANIC and $eFarm->getSelling('organicCertifier')) {
-						$h .= '<span>'.s("Certifié par").'<br/>'.$eFarm->getSelling('organicCertifier').'</span>';
+					if($quality === \farm\Farm::ORGANIC and $eFarm->getConf('organicCertifier')) {
+						$h .= '<span>'.s("Certifié par").'<br/>'.$eFarm->getConf('organicCertifier').'</span>';
 					}
 				$h .= '</div>';
 			$h .= '</div>';
@@ -254,7 +254,7 @@ class PdfUi {
 			}
 
 			$top = match($type) {
-				Pdf::ORDER_FORM => $eFarm->getSelling('orderFormHeader'),
+				Pdf::ORDER_FORM => $eFarm->getConf('orderFormHeader'),
 				Pdf::INVOICE => $eSale['invoice']['header'],
 				Pdf::DELIVERY_NOTE => NULL,
 			};
@@ -311,7 +311,7 @@ class PdfUi {
 				};
 
 				$footer = match($type) {
-					Pdf::ORDER_FORM => $eFarm->getSelling('orderFormFooter'),
+					Pdf::ORDER_FORM => $eFarm->getConf('orderFormFooter'),
 					Pdf::INVOICE => $eSale['invoice']['footer'],
 					Pdf::DELIVERY_NOTE => NULL
 				};
@@ -538,21 +538,21 @@ class PdfUi {
 
 					$h .= '<div class="pdf-document-quality">';
 						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
-						$h .= '<div>'.s("Produits issus de l’agriculture biologique ou en conversion vers l'agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getSelling('organicCertifier').'</span>').'</div>';
+						$h .= '<div>'.s("Produits issus de l’agriculture biologique ou en conversion vers l'agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getConf('organicCertifier').'</span>').'</div>';
 					$h .= '</div>';
 
 				} else if($e['organic']) {
 
 					$h .= '<div class="pdf-document-quality">';
 						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
-						$h .= '<div>'.s("Produits issus de l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getSelling('organicCertifier').'</span>').'</div>';
+						$h .= '<div>'.s("Produits issus de l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getConf('organicCertifier').'</span>').'</div>';
 					$h .= '</div>';
 
 				} else if($e['conversion']) {
 
 					$h .= '<div class="pdf-document-quality">';
 						$h .= \Asset::image('main', 'organic.png', ['style' => 'width: 5rem; margin-right: 1rem']);
-						$h .= '<div>'.s("Produits en conversion vers l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getSelling('organicCertifier').'</span>').'</div>';
+						$h .= '<div>'.s("Produits en conversion vers l’agriculture biologique certifiés par {value}", '<span style="white-space: nowrap">'.$eFarm->getConf('organicCertifier').'</span>').'</div>';
 					$h .= '</div>';
 
 				}
@@ -685,9 +685,9 @@ class PdfUi {
 						$h .= s("SIRET <u>{value}</u>", encode($eFarm['siret']));
 					$h .= '</div>';
 				}
-				if($e['hasVat'] and $eFarm->getSelling('vatNumber')) {
+				if($e['hasVat'] and $eFarm->getConf('vatNumber')) {
 					$h .= '<div class="pdf-document-vendor-registration">';
-						$h .= s("TVA intracommunautaire<br/><u>{value}</u>", encode($eFarm->getSelling('vatNumber')));
+						$h .= s("TVA intracommunautaire<br/><u>{value}</u>", encode($eFarm->getConf('vatNumber')));
 					$h .= '</div>';
 				}
 			$h .= '</div>';
@@ -771,8 +771,8 @@ class PdfUi {
 		}
 
 		$paymentMode = match($type) {
-			Pdf::ORDER_FORM => $eFarm->getSelling('paymentMode'),
-			Pdf::INVOICE => $eFarm->getSelling('paymentMode'),
+			Pdf::ORDER_FORM => $eFarm->getConf('paymentMode'),
+			Pdf::INVOICE => $eFarm->getConf('paymentMode'),
 			Pdf::DELIVERY_NOTE => NULL
 		};
 
@@ -1035,7 +1035,7 @@ class PdfUi {
 
 	protected function getSalesContent(\farm\Farm $eFarm, \Collection $cSale): string {
 
-		$eConfiguration = $eFarm->selling();
+		$eConfiguration = $eFarm->conf();
 
 		$items = [];
 		$farms = array_count_values($cSale->getColumnCollection('farm')->getIds());

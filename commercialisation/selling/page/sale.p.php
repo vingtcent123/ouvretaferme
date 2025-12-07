@@ -49,7 +49,7 @@ new \selling\SalePage()
 			$data->e->isComposition()
 		) {
 
-			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
+			$data->e['hasVat'] = $data->e['farm']->getConf('hasVat');
 			$data->e['taxes'] = $data->e->getTaxesFromType();
 
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
@@ -148,7 +148,7 @@ new Page(function($data) {
 			$data->e['type'] = $eCustomer['type'];
 			$data->e['discount'] = $eCustomer['discount'];
 
-			$data->e['hasVat'] = $data->e['farm']->getSelling('hasVat');
+			$data->e['hasVat'] = $data->e['farm']->getConf('hasVat');
 			$data->e['taxes'] = $data->e->getTaxesFromType();
 
 			$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
@@ -325,7 +325,7 @@ new \selling\SalePage()
 		$data->ePdf = \selling\PdfLib::getOne($data->e, \selling\Pdf::ORDER_FORM);
 
 		if($data->e['orderFormPaymentCondition'] === NULL) {
-			$data->e['orderFormPaymentCondition'] = $data->eFarm->getSelling('orderFormPaymentCondition');
+			$data->e['orderFormPaymentCondition'] = $data->eFarm->getConf('orderFormPaymentCondition');
 		}
 
 		throw new ViewAction($data);

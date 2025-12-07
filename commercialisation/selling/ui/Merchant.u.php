@@ -31,9 +31,9 @@ class MerchantUi {
 			2 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, 2) : '-,--'
 		};
 
-		$unitInteger = match($eSale['farm']->getSelling('marketSaleDefaultDecimal')) {
-			Configuration::NUMBER => '1',
-			Configuration::PRICE => (($eItem['unit']->notEmpty() and $eItem['unit']['approximate']) ? '0' : '1')
+		$unitInteger = match($eSale['farm']->getConf('marketSaleDefaultDecimal')) {
+			\Farm\Configuration::NUMBER => '1',
+			\Farm\Configuration::PRICE => (($eItem['unit']->notEmpty() and $eItem['unit']['approximate']) ? '0' : '1')
 		};
 
 		$h = '<div id="merchant-'.$eItem['id'].'" class="merchant hide" data-number-default="'.$unitInteger.'" data-item="'.$eItem['id'].'">';

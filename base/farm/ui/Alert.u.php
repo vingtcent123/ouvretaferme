@@ -11,6 +11,15 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Configuration::error' => s("Il y a des erreurs à corriger sur le formulaire."),
+			'Configuration::creditPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::invoicePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::documentInvoices.consistency' => fn($e) => s("Par souci de cohérence avec les factures existantes, le numéro ne peut pas être inférieur à {value}", $e['invoicePrefixMin']),
+			'Configuration::orderFormPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::deliveryNotePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),
+			'Configuration::vatNumber.country' => s("Vous ne pouvez pas saisir de numéro de TVA intracommunautaire si votre ferme n'est ni en France, ni en Belgique."),
+
 			'Farm::disabled' => s("Vous avez désactivé cette fonctionnalité sur votre ferme."),
 			'Farm::demo.delete' => s("Vous ne pouvez pas supprimer la démo !"),
 			'Farm::legalEmail.empty' => s("Merci de renseigner l'adresse e-mail de la ferme !"),
@@ -66,6 +75,8 @@ class AlertUi {
 	public static function getSuccess(string $fqn): ?string {
 
 		return match($fqn) {
+
+			'Configuration::updated' => s("La configuration a bien été mis à jour."),
 
 			'Action::created' => s("L'intervention a bien été créée."),
 			'Action::updated' => s("L'intervention a bien été mise à jour."),

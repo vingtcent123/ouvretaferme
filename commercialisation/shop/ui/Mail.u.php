@@ -371,7 +371,7 @@ Merci et à bientôt,
 
 	public static function getOrderEnd(Date $eDate, array $sales, \Collection $cItem): array {
 
-		$hasVat = $eDate['farm']->getSelling('hasVat');
+		$hasVat = $eDate['farm']->getConf('hasVat');
 
 		if($sales['number'] === 0) {
 

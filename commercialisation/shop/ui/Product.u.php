@@ -702,7 +702,7 @@ class ProductUi {
 					$h .= '</div>';
 					$h .= '<div>';
 						$h .= s("Prix unitaire");
-						if($eFarm->getSelling('hasVat')) {
+						if($eFarm->getConf('hasVat')) {
 							$h .= ' <span class="util-annotation">'.\selling\CustomerUi::getTaxes($type).'</span>';
 						}
 					$h .= '</div>';
@@ -733,13 +733,13 @@ class ProductUi {
 
 					case Date::PRIVATE :
 						$priceInitial = $eProduct['privatePriceInitial'];
-						$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'));
+						$price = $eProduct['privatePrice'] ?? $eProduct->calcPrivateMagicPrice($eFarm->getConf('hasVat'));
 						$packaging = NULL;
 						break;
 
 					case Date::PRO :
 						$priceInitial = $eProduct['proPriceInitial'];
-						$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'));
+						$price = $eProduct['proPrice'] ?? $eProduct->calcProMagicPrice($eFarm->getConf('hasVat'));
 						$packaging = $eProduct['proPackaging'];
 						break;
 
@@ -832,7 +832,7 @@ class ProductUi {
 
 		if(
 			$eProduct['type'] === Shop::PRO and
-			$eProduct['farm']->getSelling('hasVat')
+			$eProduct['farm']->getConf('hasVat')
 		) {
 			return \selling\CustomerUi::getTaxes($eProduct['type']);
 		} else {
@@ -952,7 +952,7 @@ class ProductUi {
 
 	public function getListByDate(\farm\Farm $eFarm, Date $eDate, \Collection $cProduct, bool $isExpired, bool $showFarm): string {
 
-		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eDate['type']).'</span>' : '';
+		$taxes = $eFarm->getConf('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eDate['type']).'</span>' : '';
 		$hasSold = $cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL);
 		$columns = 2;
 
@@ -1202,7 +1202,7 @@ class ProductUi {
 
 	public function getListByCatalog(\farm\Farm $eFarm, Catalog $eCatalog, \Collection $cProduct): string {
 
-		$taxes = $eFarm->getSelling('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eCatalog['type']).'</span>' : '';
+		$taxes = $eFarm->getConf('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eCatalog['type']).'</span>' : '';
 		$columns = 2;
 
 		$h = '<div class="util-overflow-sm stick-xs">';
@@ -1807,7 +1807,7 @@ class ProductUi {
 			'available' => s("Disponible"),
 			'packaging' => s("Colisage"),
 			'promotion' => s("Mise en avant"),
-			'price' => fn($e) => s("Prix unitaire").($e['farm']->getSelling('hasVat') ? ' <span class="util-annotation">'.$e->getTaxes().'</span>' : ''),
+			'price' => fn($e) => s("Prix unitaire").($e['farm']->getConf('hasVat') ? ' <span class="util-annotation">'.$e->getTaxes().'</span>' : ''),
 			'priceDiscount' => s("Prix remisé"),
 			'date' => s("Vente"),
 			'limitStartAt' => s("Proposer pour les commandes livrées à partir de"),

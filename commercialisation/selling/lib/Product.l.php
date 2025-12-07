@@ -19,7 +19,7 @@ class ProductLib extends ProductCrud {
 
 		if($e['farm']->hasAccounting()) {
 
-			$eConfiguration = $e['farm']->selling();
+			$eConfiguration = $e['farm']->conf();
 
 			if(isset($eConfiguration['profileAccount'][$e['profile']])) {
 				$e['privateAccount'] = new \account\Account(['id' => $eConfiguration['profileAccount'][$e['profile']]]);

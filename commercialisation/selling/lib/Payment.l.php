@@ -232,7 +232,7 @@ class PaymentLib extends PaymentCrud {
 
 	public static function fillDefaultMarketPayment(Sale $eSale): void {
 
-		$eMethod = $eSale['farm']->getSelling('marketSalePaymentMethod');
+		$eMethod = $eSale['farm']->getConf('marketSalePaymentMethod');
 
 		if($eMethod->notEmpty()) {
 			$eMethod = \payment\MethodLib::getById($eMethod['id']);

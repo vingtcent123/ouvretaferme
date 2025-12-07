@@ -7,15 +7,6 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Configuration::error' => s("Il y a des erreurs à corriger sur le formulaire."),
-			'Configuration::creditPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
-			'Configuration::invoicePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
-			'Configuration::documentInvoices.consistency' => fn($e) => s("Par souci de cohérence avec les factures existantes, le numéro ne peut pas être inférieur à {value}", $e['invoicePrefixMin']),
-			'Configuration::orderFormPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
-			'Configuration::deliveryNotePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
-			'Configuration::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),
-			'Configuration::vatNumber.country' => s("Vous ne pouvez pas saisir de numéro de TVA intracommunautaire si votre ferme n'est ni en France, ni en Belgique."),
-
 			'Customer::name.empty' => s("Un nom de client valide est obligatoire."),
 			'Customer::phone.check' => s("Le numéro de téléphone est invalide."),
 			'Customer::siret.check' => \farm\AlertUi::getErrorSiret(),
@@ -195,8 +186,6 @@ class AlertUi {
 			'Unit::created' => s("L'unité a bien été créée."),
 			'Unit::updated' => s("L'unité a bien été mise à jour."),
 			'Unit::deleted' => s("L'unité a bien été supprimée."),
-
-			'Configuration::updated' => s("La configuration a bien été mis à jour."),
 
 			'Quality::updated' => s("Le signe de qualité a bien été modifié."),
 			'Quality::deleted' => s("Le signe de qualité a bien été supprimé et retiré des produits."),

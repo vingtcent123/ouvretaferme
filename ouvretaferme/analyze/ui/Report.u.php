@@ -696,7 +696,7 @@ class ReportUi {
 
 					$sales = '<p class="util-info mt-1">';
 						$sales .= s("Sélectionnez les ventes qui correspondent aux séries que vous avez indiquées. Cela vous permettra d'obtenir des informations intéressantes comme un chiffre d'affaires au mètre carré ou par heure travaillée pour ces séries.");
-						if($e['farm']->getSelling('hasVat')) {
+						if($e['farm']->getConf('hasVat')) {
 							$sales .= ' '.s("Les ventes sont exprimées hors taxes.");
 						}
 					$sales .= '</p>';
@@ -746,7 +746,7 @@ class ReportUi {
 
 		$h = '<p class="util-info mt-1">';
 			$h .= s("Sélectionnez les séries que vous voulez inclure au rapport. Cela permettra d'importer automatiquement le temps de travail et les surfaces utilisées. Les coûts directs correspondent par exemple au prix des semences ou des plants.");
-			if($eReport['farm']->getSelling('hasVat')) {
+			if($eReport['farm']->getConf('hasVat')) {
 				$h .= ' '.s("Les coûts directs sont exprimées hors taxes.");
 			}
 		$h .= '</p>';

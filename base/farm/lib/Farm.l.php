@@ -137,7 +137,7 @@ class FarmLib extends FarmCrud {
 
 		}
 
-		\selling\ConfigurationLib::createForFarm($e);
+		configurationLib::createForFarm($e);
 
 		\farm\ActionLib::duplicateForFarm($e);
 		\plant\PlantLib::duplicateForFarm($e);
@@ -170,7 +170,7 @@ class FarmLib extends FarmCrud {
 		// On fait suivre le pays tant qu'il n'a pas été vérifié par l'utilisateur
 		if(in_array('legalCountry', $properties)) {
 
-			\selling\Configuration::model()
+			configuration::model()
 				->whereFarm($e)
 				->whereTaxCountryVerified(FALSE)
 				->update([

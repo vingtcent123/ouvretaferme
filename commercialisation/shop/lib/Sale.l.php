@@ -170,7 +170,7 @@ class SaleLib {
 				'farm' => $eFarm,
 				'customer' => $eCustomer,
 				'discount' => $discounts[$farm] ?? 0,
-				'hasVat' => \selling\ConfigurationLib::getByFarm($eFarm)['hasVat'],
+				'hasVat' => \farm\ConfigurationLib::getByFarm($eFarm)['hasVat'],
 				'cItem' => $cItem
 			]);
 
@@ -410,7 +410,7 @@ class SaleLib {
 							'farm' => $eFarm,
 							'customer' => $eCustomer,
 							'discount' => $discounts[$eFarm['id']] ?? 0,
-							'hasVat' => \selling\ConfigurationLib::getByFarm($eFarm)['hasVat'],
+							'hasVat' => \farm\ConfigurationLib::getByFarm($eFarm)['hasVat'],
 							'cItem' => $cItem
 						]);
 

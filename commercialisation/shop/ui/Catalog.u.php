@@ -177,7 +177,7 @@ class CatalogUi {
 
 		return function(\PropertyDescriber $d) use($eFarm, $for) {
 
-			$d->values = $eFarm->getSelling('hasVat') ?
+			$d->values = $eFarm->getConf('hasVat') ?
 				[
 					Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("/ affichage TTC sur le catalogue").'</span>',
 					Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("/ affichage HT sur le catalogue").'</span>',
@@ -204,7 +204,7 @@ class CatalogUi {
 			case 'type' :
 				$d->values = function(Catalog $e) {
 
-					return $e['farm']->getSelling('hasVat') ?
+					return $e['farm']->getConf('hasVat') ?
 						[
 							Shop::PRIVATE => s("Utiliser les prix particuliers").' <span class="util-annotation">'.s("/ affichage TTC sur le catalogue").'</span>',
 							Shop::PRO => s("Utiliser les prix professionnels").' <span class="util-annotation">'.s("/ affichage HT sur le catalogue").'</span>',

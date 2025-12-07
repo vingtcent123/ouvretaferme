@@ -119,7 +119,7 @@ class GridUi {
 								continue;
 							}
 
-							$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eGrid->getType()) : '';
+							$taxes = $eProduct['farm']->getConf('hasVat') ? CustomerUi::getTaxes($eGrid->getType()) : '';
 
 							$h .= '<tr>';
 
@@ -280,7 +280,7 @@ class GridUi {
 
 						$eProduct = $eGrid['product'];
 
-						$taxes = $eSource['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($eSource['type']) : '';
+						$taxes = $eSource['farm']->getConf('hasVat') ? CustomerUi::getTaxes($eSource['type']) : '';
 						$priceSuffix = $taxes.\selling\UnitUi::getBy($eProduct['unit'], short: TRUE);
 
 						$isExcluded = ($exclude !== NULL and in_array($eGrid['product']['id'], $exclude));
@@ -399,7 +399,7 @@ class GridUi {
 			case 'price':
 				$d->field = function(\util\FormUi $form, Grid $e) {
 
-					$taxes = $e['farm']->getSelling('hasVat') ? CustomerUi::getTaxes($e->getType()) : '';
+					$taxes = $e['farm']->getConf('hasVat') ? CustomerUi::getTaxes($e->getType()) : '';
 					$unit = s("€ {taxes}", ['taxes' => $taxes.\selling\UnitUi::getBy($e['product']['unit'], short: TRUE)]);
 
 					$price = ($e['priceInitial'] ?? NULL) !== NULL ? $e['priceInitial'] : $e['price'] ?? '';

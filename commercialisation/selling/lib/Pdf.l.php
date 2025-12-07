@@ -160,7 +160,7 @@ class PdfLib extends PdfCrud {
 
 		$libSend = new \mail\SendLib();
 
-		if($eFarm->getSelling('documentCopy')) {
+		if($eFarm->getConf('documentCopy')) {
 			$libSend->setBcc($eFarm['legalEmail']);
 		}
 
@@ -238,7 +238,7 @@ class PdfLib extends PdfCrud {
 
 		$libSend = new \mail\SendLib();
 
-		if($eFarm->getSelling('documentCopy')) {
+		if($eFarm->getConf('documentCopy')) {
 			$libSend->setBcc($eFarm['legalEmail']);
 		}
 

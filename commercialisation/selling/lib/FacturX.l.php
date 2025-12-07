@@ -205,7 +205,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 		$eInvoice->expects(['name', 'date', 'priceExcludingVat', 'vat', 'priceIncludingVat', 'farm' => ['id', 'siret'], 'customer' => ['name']]);
 
-		$eInvoice['farm']['configuration'] =  \selling\ConfigurationLib::getByFarm($eInvoice['farm']);
+		$eInvoice['farm']['configuration'] =  \farm\ConfigurationLib::getByFarm($eInvoice['farm']);
 
 		$originalInvoiceFilepath = '/tmp/'.$eInvoice['id'].'-1.7.pdf';
 		file_put_contents($originalInvoiceFilepath, $pdfContent);

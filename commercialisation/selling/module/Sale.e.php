@@ -288,11 +288,11 @@ class Sale extends SaleElement {
 
 		$this->expects(['type', 'farm']);
 
-		$target = $this['farm']->getSelling('documentTarget');
+		$target = $this['farm']->getConf('documentTarget');
 
 		return match($this['type']) {
-			\selling\Sale::PRO => in_array($target, [\selling\Configuration::ALL, \selling\Configuration::PRO]),
-			\selling\Sale::PRIVATE => in_array($target, [\selling\Configuration::ALL, \selling\Configuration::PRIVATE]),
+			\selling\Sale::PRO => in_array($target, [\farm\Configuration::ALL, \farm\Configuration::PRO]),
+			\selling\Sale::PRIVATE => in_array($target, [\farm\Configuration::ALL, \farm\Configuration::PRIVATE]),
 		};
 
 	}
@@ -655,9 +655,9 @@ class Sale extends SaleElement {
 
 		$this->expects(['document']);
 
-		$code = $eFarm->getSelling('orderFormPrefix');
+		$code = $eFarm->getConf('orderFormPrefix');
 
-		return Configuration::getNumber($code, $this['document']);
+		return \Farm\Configuration::getNumber($code, $this['document']);
 
 	}
 
@@ -665,9 +665,9 @@ class Sale extends SaleElement {
 
 		$this->expects(['document']);
 
-		$code = $eFarm->getSelling('deliveryNotePrefix');
+		$code = $eFarm->getConf('deliveryNotePrefix');
 
-		return Configuration::getNumber($code, $this['document']);
+		return \Farm\Configuration::getNumber($code, $this['document']);
 
 	}
 
@@ -1001,7 +1001,7 @@ class Sale extends SaleElement {
 
 							$this['type'] = $this['compositionOf']['private'] ? Sale::PRIVATE : Sale::PRO;
 							$this['taxes'] = $this->getTaxesFromType();
-							$this['hasVat'] = $this['farm']->getSelling('hasVat');
+							$this['hasVat'] = $this['farm']->getConf('hasVat');
 							$this['discount'] = 0;
 
 							return TRUE;
@@ -1021,7 +1021,7 @@ class Sale extends SaleElement {
 
 					$this['type'] = $eCustomer['type'];
 					$this['taxes'] = $this->getTaxesFromType();
-					$this['hasVat'] = $this['farm']->getSelling('hasVat');
+					$this['hasVat'] = $this['farm']->getConf('hasVat');
 					$this['discount'] = $eCustomer['discount'];
 
 					return TRUE;

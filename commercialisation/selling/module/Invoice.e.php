@@ -98,12 +98,12 @@ class Invoice extends InvoiceElement {
 		$this->expects(['document']);
 
 		if($this->isCreditNote()) {
-			$code = $eFarm->getSelling('creditPrefix');
+			$code = $eFarm->getConf('creditPrefix');
 		} else {
-			$code = $eFarm->getSelling('invoicePrefix');
+			$code = $eFarm->getConf('invoicePrefix');
 		}
 
-		return Configuration::getNumber($code, $this['document']);
+		return \Farm\Configuration::getNumber($code, $this['document']);
 
 	}
 

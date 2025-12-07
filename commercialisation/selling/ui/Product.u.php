@@ -203,7 +203,7 @@ class ProductUi {
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Ventes").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix de base").'</th>';
-					if($eFarm->getSelling('hasVat')) {
+					if($eFarm->getConf('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
 					if($displayAccounts) {
@@ -285,7 +285,7 @@ class ProductUi {
 								$h .= \Asset::icon('x');
 							} else {
 
-								$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
+								$taxes = $eFarm->getConf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 
 								if($eProduct['privatePrice'] !== NULL) {
 									$value = \util\TextUi::money($eProduct['privatePrice']).$taxes;
@@ -294,7 +294,7 @@ class ProductUi {
 									}
 								} else if($eProduct['proPrice'] !== NULL) {
 									$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA.").'">'.\Asset::icon('magic').' ';
-										$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
+										$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eFarm->getConf('hasVat'))).$taxes;
 									$value .= '</span>';
 								} else {
 									$value = \Asset::icon('question');
@@ -312,7 +312,7 @@ class ProductUi {
 								$h .= \Asset::icon('x');
 							} else {
 
-								$taxes = $eFarm->getSelling('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
+								$taxes = $eFarm->getConf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';
 
 								if($eProduct['proPrice']) {
 									$value = \util\TextUi::money($eProduct['proPrice']).$taxes;
@@ -321,7 +321,7 @@ class ProductUi {
 									}
 								} else if($eProduct['privatePrice']) {
 									$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA.").'">'.\Asset::icon('magic').' ';
-										$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eFarm->getSelling('hasVat'))).$taxes;
+										$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eFarm->getConf('hasVat'))).$taxes;
 									$value .= '</span>';
 								} else {
 									$value = \Asset::icon('question');
@@ -333,7 +333,7 @@ class ProductUi {
 
 						$h .= '</td>';
 
-						if($eFarm->getSelling('hasVat')) {
+						if($eFarm->getConf('hasVat')) {
 
 							$h .= '<td class="text-center product-item-vat">';
 								$h .= s("{value} %", SellingSetting::getVatRate($eFarm, $eProduct['vat']));
@@ -677,7 +677,7 @@ class ProductUi {
 					$h .= '<dt>'.self::p('category')->label.'</dt>';
 					$h .= '<dd>'.encode($eProduct['category']['name']).'</dd>';
 				}
-				if($eProduct['farm']->getSelling('hasVat')) {
+				if($eProduct['farm']->getConf('hasVat')) {
 					$h .= '<dt>'.self::p('vat')->label.'</dt>';
 					$h .= '<dd>'.s("{value} %", SellingSetting::getVatRate($eProduct['farm'], $eProduct['vat'])).'</dd>';
 				}
@@ -807,7 +807,7 @@ class ProductUi {
 
 				if($eProduct['private']) {
 
-					$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
+					$taxes = $eProduct['farm']->getConf('hasVat') ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
@@ -820,7 +820,7 @@ class ProductUi {
 							$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 						} else if($eProduct['proPrice']) {
 							$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les professionnels augmenté de la TVA, cliquez pour le personnaliser.").'">'.\Asset::icon('magic').' ';
-								$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eProduct['farm']->getSelling('hasVat')));
+								$value .= \util\TextUi::money($eProduct->calcPrivateMagicPrice($eProduct['farm']->getConf('hasVat')));
 								$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 							$value .= '</span>';
 						} else {
@@ -867,7 +867,7 @@ class ProductUi {
 
 				if($eProduct['pro']) {
 
-					$taxes = $eProduct['farm']->getSelling('hasVat') ? CustomerUi::getTaxes(Customer::PRO) : '';
+					$taxes = $eProduct['farm']->getConf('hasVat') ? CustomerUi::getTaxes(Customer::PRO) : '';
 
 					$h .= '<dt>'.s("Prix de base").'</dt>';
 					$h .= '<dd>';
@@ -880,7 +880,7 @@ class ProductUi {
 							$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 						} else if($eProduct['privatePrice']) {
 							$value = '<span class="color-muted" title="'.s("Prix calculé à partir du prix pour les particuliers diminué de la TVA, cliquez pour le personnaliser.").'">'.\Asset::icon('magic').' ';
-								$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eProduct['farm']->getSelling('hasVat')));
+								$value .= \util\TextUi::money($eProduct->calcProMagicPrice($eProduct['farm']->getConf('hasVat')));
 								$value .= ' '.$taxes.\selling\UnitUi::getBy($eProduct['unit']);
 							$value .= '</span>';
 						} else {
@@ -1521,7 +1521,7 @@ class ProductUi {
 
 				$d->field = function(\util\FormUi $form, Product $e) {
 
-					$taxes = $e['farm']->getSelling('hasVat') ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
+					$taxes = $e['farm']->getConf('hasVat') ? CustomerUi::getTaxes(Customer::PRIVATE) : '';
 					$unit = ($e['unit']->notEmpty() ? encode($e['unit']['singular']) : ProductUi::p('unit')->placeholder);
 					$suffix = '€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span>';
 
@@ -1577,7 +1577,7 @@ class ProductUi {
 
 				$d->field = function(\util\FormUi $form, Product $e) {
 
-					$taxes = $e['farm']->getSelling('hasVat') ? CustomerUi::getTaxes(Customer::PRO) : '';
+					$taxes = $e['farm']->getConf('hasVat') ? CustomerUi::getTaxes(Customer::PRO) : '';
 					$unit = ($e['unit']->notEmpty() ? encode($e['unit']['singular']) : ProductUi::p('unit')->placeholder);
 					$suffix = '€ '.$taxes.' / <span data-ref="product-unit">'.$unit.'</span>';
 

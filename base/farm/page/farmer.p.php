@@ -163,9 +163,9 @@ new \farm\FarmerPage(function($data) {
 		$eMethod = \payment\MethodLib::getById($paymentMethodId)->validate('canUse');
 
 		if($action === 'add') {
-			\selling\ConfigurationLib::updateProperty($data->e['farm'], 'marketSalePaymentMethod', $eMethod);
+			\farm\ConfigurationLib::updateProperty($data->e['farm'], 'marketSalePaymentMethod', $eMethod);
 		} else {
-			\selling\ConfigurationLib::updateProperty($data->e['farm'], 'marketSalePaymentMethod', new \farm\Method());
+			\farm\ConfigurationLib::updateProperty($data->e['farm'], 'marketSalePaymentMethod', new \farm\Method());
 		}
 
 		throw new ReloadAction();

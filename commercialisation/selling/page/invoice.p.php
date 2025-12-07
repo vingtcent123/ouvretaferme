@@ -50,9 +50,9 @@ new \selling\InvoicePage()
 		$lastDate = \selling\InvoiceLib::getLastDate($data->e['farm']);
 
 		$data->e->merge([
-			'paymentCondition' => $data->e['farm']->getSelling('invoicePaymentCondition'),
-			'header' => $data->e['farm']->getSelling('invoiceHeader'),
-			'footer' => $data->e['farm']->getSelling('invoiceFooter'),
+			'paymentCondition' => $data->e['farm']->getConf('invoicePaymentCondition'),
+			'header' => $data->e['farm']->getConf('invoiceHeader'),
+			'footer' => $data->e['farm']->getConf('invoiceFooter'),
 			'lastDate' => $lastDate,
 			'date' => max(currentDate(), $lastDate)
 		]);
@@ -143,9 +143,9 @@ new Page(function($data) {
 
 		$data->e = new \selling\Invoice([
 			'farm' => $data->eFarm,
-			'paymentCondition' => $data->eFarm->getSelling('invoicePaymentCondition'),
-			'header' => $data->eFarm->getSelling('invoiceHeader'),
-			'footer' => $data->eFarm->getSelling('invoiceFooter'),
+			'paymentCondition' => $data->eFarm->getConf('invoicePaymentCondition'),
+			'header' => $data->eFarm->getConf('invoiceHeader'),
+			'footer' => $data->eFarm->getConf('invoiceFooter'),
 			'lastDate' => \selling\InvoiceLib::getLastDate($data->eFarm)
 		]);
 

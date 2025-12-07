@@ -562,7 +562,7 @@ class DateUi {
 			return '<div class="util-empty">'.s("Il n'y a aucune vente à afficher.").'</div>';
 		}
 
-		$hasFarmTaxes = $eFarm->getSelling('hasVat');
+		$hasFarmTaxes = $eFarm->getConf('hasVat');
 		$hasSameTaxes = ($hasFarmTaxes and count(array_count_values($cDate->getColumn('type'))) === 1);
 
 		$h = '<div class="stick-sm util-overflow-sm">';

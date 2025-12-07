@@ -391,7 +391,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 		if($data->eFarm->isTax()) {
 			echo '<a href="/selling/sale:create?farm='.$data->eFarm['id'].'" class="btn btn-primary btn-lg">'.s("Ajouter une première vente").'</a>';
 		} else {
-			echo new \selling\ConfigurationUi()->updateTax($data->eFarm);
+			echo new \farm\ConfigurationUi()->updateTax($data->eFarm);
 		}
 
 	} else {
@@ -447,7 +447,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 			echo new \selling\CustomerUi()->create($eCustomer)->body;
 
 		} else {
-			echo new \selling\ConfigurationUi()->updateTax($data->eFarm);
+			echo new \farm\ConfigurationUi()->updateTax($data->eFarm);
 		}
 
 	} else {
@@ -497,11 +497,11 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 				'unit' => new \selling\Unit(),
 				'private' => TRUE,
 				'pro' => FALSE,
-				'vat' => $data->eFarm->getSelling('defaultVat'),
+				'vat' => $data->eFarm->getConf('defaultVat'),
 			]))->body;
 
 		} else {
-			echo new \selling\ConfigurationUi()->updateTax($data->eFarm);
+			echo new \farm\ConfigurationUi()->updateTax($data->eFarm);
 		}
 
 	} else {

@@ -2189,7 +2189,7 @@ class SaleUi {
 
 	public static function getVat(\farm\Farm $eFarm, bool $short = FALSE): array {
 
-		$eCountry = $eFarm->getSelling('taxCountry');
+		$eCountry = $eFarm->getConf('taxCountry');
 
 		if($eCountry['id'] === \user\UserSetting::FR) {
 
@@ -2431,7 +2431,7 @@ class SaleUi {
 						$values[(string)$rate] = s("Personnalisé - {value}", $text);
 					}
 
-					$defaultVatRate = $e['farm']->getSelling('defaultVatShipping') ? SellingSetting::getVatRate($e['farm'], $e['farm']->getSelling('defaultVatShipping')) : NULL;
+					$defaultVatRate = $e['farm']->getConf('defaultVatShipping') ? SellingSetting::getVatRate($e['farm'], $e['farm']->getConf('defaultVatShipping')) : NULL;
 					$calculatedVatRate = ($e['shippingVatFixed'] ? NULL : $e['shippingVatRate']) ?? $defaultVatRate;
 
 					return $form->select('shippingVatRate', $values, $e['shippingVatFixed'] ? $e['shippingVatRate'] : NULL, [

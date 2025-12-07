@@ -38,7 +38,7 @@ class ShopManageUi {
 			$h .= new ShopUi()->create($eShop)->body;
 
 		} else {
-			$h .= new \selling\ConfigurationUi()->updateTax($eFarm);
+			$h .= new \farm\ConfigurationUi()->updateTax($eFarm);
 		}
 
 		return $h;

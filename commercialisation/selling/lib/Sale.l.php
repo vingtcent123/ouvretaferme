@@ -78,7 +78,7 @@ class SaleLib extends SaleCrud {
 		$eSale = \selling\SaleLib::getById($id);
 		$eSale['document'] = '123';
 		$eSale['farm'] = $eFarm;
-		$eSale['hasVat'] = $eFarm->getSelling('hasVat');
+		$eSale['hasVat'] = $eFarm->getConf('hasVat');
 		$eSale['customer']['legalName'] = '[Nom du client]';
 		$eSale['customer']['invoiceStreet1'] = '[Addresse]';
 		$eSale['customer']['invoiceStreet2'] = NULL;
@@ -91,16 +91,16 @@ class SaleLib extends SaleCrud {
 		$eSale['deliveryCountry'] = $eSale['customer']['invoiceCountry'];
 		$eSale['customer']['email'] = 'client@email.com';
 		$eSale['orderFormValidUntil'] = currentDate();
-		$eSale['orderFormPaymentCondition'] = $eFarm->getSelling('orderFormPaymentCondition');
+		$eSale['orderFormPaymentCondition'] = $eFarm->getConf('orderFormPaymentCondition');
 		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
-		$eSale['invoice']['hasVat'] = $eFarm->getSelling('hasVat');
-		$eSale['invoice']['name'] = Configuration::getNumber($eFarm->getSelling('invoicePrefix'), 123);
+		$eSale['invoice']['hasVat'] = $eFarm->getConf('hasVat');
+		$eSale['invoice']['name'] = \Farm\Configuration::getNumber($eFarm->getConf('invoicePrefix'), 123);
 		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
 		$eSale['invoice']['date'] = currentDate();
-		$eSale['invoice']['paymentCondition'] = $eFarm->getSelling('invoicePaymentCondition');
-		$eSale['invoice']['header'] = $eFarm->getSelling('invoiceHeader');
-		$eSale['invoice']['footer'] = $eFarm->getSelling('invoiceFooter');
+		$eSale['invoice']['paymentCondition'] = $eFarm->getConf('invoicePaymentCondition');
+		$eSale['invoice']['header'] = $eFarm->getConf('invoiceHeader');
+		$eSale['invoice']['footer'] = $eFarm->getConf('invoiceFooter');
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
 		$eSale['cPayment'] = $cPayment;
@@ -652,7 +652,7 @@ class SaleLib extends SaleCrud {
 			$e['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
 		}
 
-		$e['document'] = ConfigurationLib::getNextDocumentSales($e['farm']);
+		$e['document'] = \farm\ConfigurationLib::getNextDocumentSales($e['farm']);
 
 		try {
 
@@ -791,7 +791,7 @@ class SaleLib extends SaleCrud {
 		$e['profile'] = Sale::SALE_MARKET;
 		$e['type'] = Customer::PRIVATE;
 		$e['taxes'] = $e->getTaxesFromType();
-		$e['hasVat'] = $e['farm']->getSelling('hasVat');
+		$e['hasVat'] = $e['farm']->getConf('hasVat');
 		$e['deliveredAt'] = $eSale['deliveredAt'];
 		$e['marketParent'] = $eSale;
 		$e['stats'] = FALSE;
@@ -1517,7 +1517,7 @@ class SaleLib extends SaleCrud {
 			if($e['shippingVatFixed'] === FALSE) {
 
 				// On écrase le taux de TVA calculé
-				$eConfiguration = \selling\ConfigurationLib::getByFarm($e['farm']);
+				$eConfiguration = \farm\ConfigurationLib::getByFarm($e['farm']);
 
 				if($eConfiguration['defaultVatShipping'] !== NULL) {
 					$newValues['shippingVatRate'] = SellingSetting::getVatRate($e['farm'], $eConfiguration['defaultVatShipping']);

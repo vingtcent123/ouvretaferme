@@ -584,7 +584,7 @@ class MarketUi {
 
 			$paymentMethodDropdown .= '<div>';
 
-			$eMethodDefault = $eSale['farm']->getSelling('marketSalePaymentMethod');
+			$eMethodDefault = $eSale['farm']->getConf('marketSalePaymentMethod');
 
 				foreach($cMethod as $eMethod) {
 

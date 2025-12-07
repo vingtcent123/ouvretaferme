@@ -2505,7 +2505,7 @@ class FarmUi {
 
 		$h = '<div class="util-buttons">';
 
-			$h .= '<a href="/selling/configuration:update?id='.$eFarm['id'].'" class="util-button">';
+			$h .= '<a href="/farm/configuration:update?id='.$eFarm['id'].'" class="util-button">';
 				$h .= '<h4>'.s("Les réglages de base").'</h4>';
 				$h .= \Asset::icon('gear-fill');
 			$h .= '</a>';

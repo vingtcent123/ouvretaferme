@@ -8,40 +8,6 @@ Category:
     ["farm"]
   ]
   
-Configuration:
-  id: serial32
-  farm: farm\Farm
-  documentSales: int32(0, null) = 0
-  documentInvoices: int32(0, null) = 0
-  taxCountry: user\Country
-  taxCountryVerified: bool = FALSE
-  hasVat: bool = TRUE
-  defaultVat: int16(0, null)
-  defaultVatShipping: ?int16(0, null)
-  vatNumber: ?text8
-  organicCertifier: ?text8
-  paymentMode: ?editor16(1, 400)
-  documentCopy: bool = FALSE
-  documentTarget: enum(ALL, PRIVATE, PRO, DISABLED) = PRO
-  orderFormPrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultOrderFormPrefix())
-  orderFormDelivery: bool = TRUE
-  orderFormPaymentCondition: ?editor16(1, 400)
-  orderFormHeader: ?editor16(1, 400)
-  orderFormFooter: ?editor16(1, 400)
-  deliveryNotePrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultDeliveryNotePrefix())
-  creditPrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultCreditPrefix())
-  invoicePrefix: text8(1, 15) = PHP(\selling\ConfigurationUi::getDefaultInvoicePrefix())
-  invoicePaymentCondition: ?editor16(1, 400)
-  invoiceHeader: ?editor16(1, 400)
-  invoiceFooter: ?editor16(1, 400)
-  marketSalePaymentMethod: ?payment\Method
-  marketSaleDefaultDecimal: enum(NUMBER, PRICE) = PRICE
-  pdfNaturalOrder: bool = FALSE
-  profileAccount: ?json = PHP([])
-  UNIQUE: [
-    ["farm"]
-  ]
-  
 Customer:
   id: serial32
   name: ?text8(1, 50) @collate(general)

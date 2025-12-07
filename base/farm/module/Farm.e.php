@@ -5,7 +5,7 @@ class Farm extends FarmElement {
 
 	const DEMO = 1;
 
-	protected static array $selling = [];
+	protected static array $conf = [];
 
 	public function __construct(array $array = []) {
 
@@ -275,7 +275,7 @@ class Farm extends FarmElement {
 
 	public function isTax(): bool {
 
-		return $this->getSelling('taxCountryVerified');
+		return $this->getConf('taxCountryVerified');
 
 	}
 
@@ -313,18 +313,18 @@ class Farm extends FarmElement {
 
 	}
 
-	public function selling(): \selling\Configuration {
+	public function conf(): \farm\Configuration {
 
-		if(array_key_exists($this['id'], self::$selling) === FALSE) {
-			self::$selling[$this['id']] = \selling\ConfigurationLib::getByFarm($this);
+		if(array_key_exists($this['id'], self::$conf) === FALSE) {
+			self::$conf[$this['id']] = \farm\ConfigurationLib::getByFarm($this);
 		}
 
-		return self::$selling[$this['id']];
+		return self::$conf[$this['id']];
 
 	}
 
-	public function getSelling(string $name): mixed {
-		return $this->selling()[$name];
+	public function getConf(string $name): mixed {
+		return $this->conf()[$name];
 	}
 
 	public function getView(string $name): mixed {

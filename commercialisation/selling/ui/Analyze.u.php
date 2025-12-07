@@ -2076,7 +2076,7 @@ class AnalyzeUi {
 			'payment_status'
 		];
 
-		if($eFarm->getSelling('hasVat')) {
+		if($eFarm->getConf('hasVat')) {
 			$header[] = 'amount_excluding_vat';
 			foreach($vatRates as $vatRate) {
 				$header[] = 'vat_'.$vatRate;
@@ -2104,7 +2104,7 @@ class AnalyzeUi {
 			'payment_method'
 		];
 
-		if($eFarm->getSelling('hasVat')) {
+		if($eFarm->getConf('hasVat')) {
 			$header[] = 'amount_excluding_vat';
 			$header[] = 'vat';
 			$header[] = 'amount_including_vat';
@@ -2131,7 +2131,7 @@ class AnalyzeUi {
 			'unit'
 		];
 
-		if($eFarm->getSelling('hasVat')) {
+		if($eFarm->getConf('hasVat')) {
 			$header[] = 'amount_excluding_vat';
 			$header[] = 'vat';
 			$header[] = 'amount_including_vat';
