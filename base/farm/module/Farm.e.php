@@ -523,14 +523,43 @@ class Farm extends FarmElement {
 
 	}
 
-	public static function checkVatNumber(Farm $eFarm, ?string &$vat): bool {
+	public static function checkVatNumber(string $element, Farm|Customer $e, ?string &$vat): bool {
 
-		if($siret === NULL) {
+		if($e->isFR()) {
+
+			if($vat === NULL) {
+				return TRUE;
+			}
+			
+			$vat = preg_replace('/\s+/i', '', $vat);
+
+			if(preg_match('/^FR[0-9]{11}$/', $vat) === 0) {
+				\Fail::log($element.'::vatNumber.check', ['FR']);
+			}
+
 			return TRUE;
+
+		} else if($e->isBE()) {
+
+			if($vat === NULL) {
+				return TRUE;
+			}
+
+			$vat = preg_replace('/\s+/i', '', $vat);
+
+			if(preg_match('/^BE[01]{1}[0-9]{9}$/', $vat) === 0) {
+				\Fail::log($element.'::vatNumber.check', ['BE']);
+			}
+
 		} else {
-			$siret = preg_replace('/\s+/i', '', $siret);
-			return preg_match('/^[0-9]{14}$/', $siret) > 0;
+
+			if($vat !== NULL) {
+				\Fail::log($element.'::vatNumber.country');
+			}
+
 		}
+
+		return TRUE;
 
 	}
 

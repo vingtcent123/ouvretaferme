@@ -89,7 +89,7 @@ class ConfigurationUi {
 				$h .= $form->dynamicGroup($eConfiguration, 'hasVat', function(\PropertyDescriber $d) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'Configuration.changeHasVat(this)'];
 				});
-				$h .= $form->dynamicGroup($eConfiguration, 'invoiceVat', $eConfiguration['hasVat'] ? NULL : function(\PropertyDescriber $d) {
+				$h .= $form->dynamicGroup($eConfiguration, 'vatNumber', $eConfiguration['hasVat'] ? NULL : function(\PropertyDescriber $d) {
 					$d->group['class'] = 'hide';
 				});
 				$h .= $form->dynamicGroup($eConfiguration, 'defaultVat', $eConfiguration['hasVat'] ? NULL : function(\PropertyDescriber $d) {
@@ -457,7 +457,7 @@ class ConfigurationUi {
 			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
 			'documentTarget' => s("Permettre l'édition de devis et de bons de livraison"),
 			'hasVat' => s("Assujettissement à la TVA"),
-			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
+			'vatNumber' => s("Numéro de TVA intracommunautaire"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
 			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),
 			'organicCertifier' => s("Organisme de certification pour l'Agriculture Biologique"),
@@ -480,7 +480,7 @@ class ConfigurationUi {
 
 		switch($property) {
 
-			case 'invoiceVat' :
+			case 'vatNumber' :
 				$d->palceholder = s("Exemple : {value}", 'FR01234567890');
 				$d->after = \util\FormUi::info(s("Indiquez ici un numéro de TVA intracommunautaire si vous souhaitez le voir apparaître sur les factures."));
 				break;

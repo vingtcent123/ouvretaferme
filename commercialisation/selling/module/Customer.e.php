@@ -98,6 +98,26 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function isFR(): bool {
+
+		return (
+			$this->isPro() and
+			$this['invoiceCountry']->notEmpty() and
+			$this['invoiceCountry']['id'] === 75
+		);
+
+	}
+
+	public function isBE(): bool {
+
+		return (
+			$this->isPro() and
+			$this['invoiceCountry']->notEmpty() and
+			$this['invoiceCountry']['id'] === 20
+		);
+
+	}
+
 	public function isPro(): bool {
 		$this->expects(['type']);
 		return $this['type'] === Customer::PRO;

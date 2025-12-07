@@ -4,7 +4,7 @@ namespace selling;
 class ConfigurationLib extends ConfigurationCrud {
 
 	public static function getPropertiesUpdate(): array {
-		return ['hasVat', 'invoiceVat', 'defaultVat', 'defaultVatShipping', 'organicCertifier', 'paymentMode', 'documentCopy', 'pdfNaturalOrder', 'marketSaleDefaultDecimal'];
+		return ['hasVat', 'vatNumber', 'defaultVat', 'defaultVatShipping', 'organicCertifier', 'paymentMode', 'documentCopy', 'pdfNaturalOrder', 'marketSaleDefaultDecimal'];
 	}
 
 	public static function createForFarm(\farm\Farm $eFarm): void {

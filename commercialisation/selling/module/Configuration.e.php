@@ -71,6 +71,7 @@ class Configuration extends ConfigurationElement {
 			->setCallback('orderFormPrefix.fqn', function(string $prefix): bool {
 				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', rtrim($prefix, '#')) > 0;
 			})
+			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('selling\Configuration', $this['farm'], $vat))
 			->setCallback('defaultVat.check', function(int $vat): bool {
 				return array_key_exists($vat, SaleLib::getVatRates($this['farm']));
 			})

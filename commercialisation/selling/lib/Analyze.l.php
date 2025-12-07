@@ -800,7 +800,7 @@ class AnalyzeLib {
 				'id', 'document',
 				'farm',
 				'name',
-				'customer' => ['name', 'siret', 'invoiceVat'],
+				'customer' => ['name', 'siret', 'vatNumber'],
 				'priceIncludingVat', 'priceExcludingVat',
 				'vat', 'vatByRate',
 				'date',
@@ -832,7 +832,7 @@ class AnalyzeLib {
 					$eInvoice->getInvoice($eInvoice['farm']),
 					$eInvoice['customer']->getName(),
 					$eInvoice['customer']['siret'],
-					$eInvoice['customer']['invoiceVat'],
+					$eInvoice['customer']['vatNumber'],
 					\util\DateUi::numeric($eInvoice['date']),
 					$eInvoice['paymentMethod']->empty() ? '' : $eInvoice['paymentMethod']['name'],
 					match($eInvoice['paymentStatus']) {

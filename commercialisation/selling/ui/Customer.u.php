@@ -834,7 +834,7 @@ class CustomerUi {
 			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-pro">';
 				$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
-				$h .= $form->dynamicGroups($eCustomer, ['siret', 'invoiceVat']);
+				$h .= $form->dynamicGroups($eCustomer, ['siret', 'vatNumber']);
 			$h .= '</div>';
 			if($action === 'update') {
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
@@ -893,7 +893,7 @@ class CustomerUi {
 			'phone' => s("Numéro de téléphone"),
 			'color' => s("Couleur de représentation"),
 			'siret' => s("Numéro d'immatriculation SIRET"),
-			'invoiceVat' => s("Numéro de TVA intracommunautaire"),
+			'vatNumber' => s("Numéro de TVA intracommunautaire"),
 		]);
 
 		switch($property) {

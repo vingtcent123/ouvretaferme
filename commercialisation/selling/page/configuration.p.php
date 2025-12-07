@@ -20,6 +20,11 @@ new \farm\FarmPage()
 	});
 
 new \selling\ConfigurationPage()
+	->applyElement(function($data, \selling\Configuration $eConfiguration) {
+
+		$eConfiguration['farm'] = \farm\FarmLib::getById($eConfiguration['farm']);
+
+	})
 	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNotePrefix'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('selling', 'Configuration::updated'))

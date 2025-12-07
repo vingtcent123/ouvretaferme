@@ -29,11 +29,11 @@ class FacturXLib {
 
 		// SuperPDP attend un SIREN (scheme 0002) mais ChorusPro attend un SIRET (0009)
 		// => On ne modifie pas pour le moment pour éviter que l'envoi des factures sur ChorusPro échoue.
-		$sellerVat = $eInvoice['farm']['configuration']['invoiceVat'];
+		$sellerVat = $eInvoice['farm']['configuration']['vatNumber'];
 		$sellerSiret = str_replace(' ', '', $eInvoice['farm']['siret'] ?? '');
 		$sellerSiren = mb_substr($sellerSiret, 0, 9);
 
-		$buyerVat = $eInvoice['customer']['invoiceVat'];
+		$buyerVat = $eInvoice['customer']['vatNumber'];
 		$buyerSiret = str_replace(' ', '', $eInvoice['customer']['siret'] ?? '');
 		$buyerSiren = mb_substr($buyerSiret, 0, 9);
 		// Adresse électronique pour la facture électronique

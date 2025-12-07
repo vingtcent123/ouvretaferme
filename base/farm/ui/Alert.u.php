@@ -55,6 +55,13 @@ class AlertUi {
 		return s("Le numéro de SIRET doit contenir exactement 14 chiffres.");
 	}
 
+	public static function getErrorVatNumber(string $country): string {
+		return match($country) {
+			'FR' => s("Le numéro de TVA intracommunautaire pour une entité française doit commencer par FR et contenir 11 chiffres"),
+			'BE' => s("Le numéro de TVA intracommunautaire pour une entité belge doit commencer par BE et contenir 10 chiffres"),
+		};
+	}
+
 	public static function getSuccess(string $fqn): ?string {
 
 		return match($fqn) {

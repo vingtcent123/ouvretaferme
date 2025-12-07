@@ -51,7 +51,7 @@ class ConfigurationModel extends \ModuleModel {
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'defaultVat' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'defaultVatShipping' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'invoiceVat' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'organicCertifier' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMode' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'documentCopy' => ['bool', 'cast' => 'bool'],
@@ -74,7 +74,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'invoiceVat', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -208,8 +208,8 @@ class ConfigurationModel extends \ModuleModel {
 		return $this->where('defaultVatShipping', ...$data);
 	}
 
-	public function whereInvoiceVat(...$data): ConfigurationModel {
-		return $this->where('invoiceVat', ...$data);
+	public function whereVatNumber(...$data): ConfigurationModel {
+		return $this->where('vatNumber', ...$data);
 	}
 
 	public function whereOrganicCertifier(...$data): ConfigurationModel {

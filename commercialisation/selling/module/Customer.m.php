@@ -66,7 +66,7 @@ class CustomerModel extends \ModuleModel {
 			'invoiceCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'siret' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'invoiceVat' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -80,7 +80,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'invoiceVat', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -253,8 +253,8 @@ class CustomerModel extends \ModuleModel {
 		return $this->where('siret', ...$data);
 	}
 
-	public function whereInvoiceVat(...$data): CustomerModel {
-		return $this->where('invoiceVat', ...$data);
+	public function whereVatNumber(...$data): CustomerModel {
+		return $this->where('vatNumber', ...$data);
 	}
 
 	public function whereDeliveryStreet1(...$data): CustomerModel {

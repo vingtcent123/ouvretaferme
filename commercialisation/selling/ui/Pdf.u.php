@@ -685,9 +685,9 @@ class PdfUi {
 						$h .= s("SIRET <u>{value}</u>", encode($eFarm['siret']));
 					$h .= '</div>';
 				}
-				if($e['hasVat'] and $eFarm->getSelling('invoiceVat')) {
+				if($e['hasVat'] and $eFarm->getSelling('vatNumber')) {
 					$h .= '<div class="pdf-document-vendor-registration">';
-						$h .= s("TVA intracommunautaire<br/><u>{value}</u>", encode($eFarm->getSelling('invoiceVat')));
+						$h .= s("TVA intracommunautaire<br/><u>{value}</u>", encode($eFarm->getSelling('vatNumber')));
 					$h .= '</div>';
 				}
 			$h .= '</div>';
@@ -725,7 +725,7 @@ class PdfUi {
 						$h .= '</div>';
 					}
 
-					if($eCustomer['siret'] !== NULL or $eCustomer['invoiceVat'] !== NULL) {
+					if($eCustomer['siret'] !== NULL or $eCustomer['vatNumber'] !== NULL) {
 						$h .= '<br/>';
 					}
 
@@ -734,9 +734,9 @@ class PdfUi {
 							$h .= s("SIRET <u>{value}</u>", encode($eCustomer['siret']));
 						$h .= '</div>';
 					}
-					if($eCustomer['invoiceVat'] !== NULL) {
+					if($eCustomer['vatNumber'] !== NULL) {
 						$h .= '<div class="pdf-document-customer-registration">';
-							$h .= s("TVA intracommunautaire <u>{value}</u>", encode($eCustomer['invoiceVat']));
+							$h .= s("TVA intracommunautaire <u>{value}</u>", encode($eCustomer['vatNumber']));
 						$h .= '</div>';
 					}
 

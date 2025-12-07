@@ -302,7 +302,7 @@ class DemoLib {
 			->whereFarm(Farm::DEMO)
 			->update([
 				'hasVat' => TRUE,
-				'invoiceVat' => NULL,
+				'vatNumber' => NULL,
 				'invoiceHeader' => NULL,
 				'invoiceFooter' => NULL
 			]);

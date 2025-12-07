@@ -199,7 +199,7 @@ Class MindeeLib {
 
 	private static function scoreCurrentFarm(\farm\Farm $eFarm, array $data): float {
 
-		$farmVatNumber = $eFarm->getSelling('invoiceVat');
+		$farmVatNumber = $eFarm->getSelling('vatNumber');
 		$farmSiret = $eFarm['siret'];
 		$farmLegalName = $eFarm['legalName'];
 

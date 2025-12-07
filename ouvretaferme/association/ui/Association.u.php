@@ -309,7 +309,7 @@ Cordialement,
 					$h .= '</div>';
 				}
 
-				if($eCustomer['siret'] !== NULL or $eCustomer['invoiceVat'] !== NULL) {
+				if($eCustomer['siret'] !== NULL or $eCustomer['vatNumber'] !== NULL) {
 					$h .= '<br/>';
 				}
 
@@ -318,9 +318,9 @@ Cordialement,
 						$h .= s("SIRET <u>{value}</u>", encode($eCustomer['siret']));
 					$h .= '</div>';
 				}
-				if($eCustomer['invoiceVat'] !== NULL) {
+				if($eCustomer['vatNumber'] !== NULL) {
 					$h .= '<div class="pdf-document-customer-registration">';
-						$h .= s("TVA intracommunautaire <u>{value}</u>", encode($eCustomer['invoiceVat']));
+						$h .= s("TVA intracommunautaire <u>{value}</u>", encode($eCustomer['vatNumber']));
 					$h .= '</div>';
 				}
 
