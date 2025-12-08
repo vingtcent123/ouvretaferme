@@ -77,7 +77,11 @@ Class ImportUi {
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
-								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+								$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+									$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+								$h .= '</div>';
+								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
@@ -184,7 +188,11 @@ Class ImportUi {
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
-								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+								$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+									$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+								$h .= '</div>';
+								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
@@ -282,7 +290,11 @@ Class ImportUi {
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
-								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+								$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+									$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+								$h .= '</div>';
+								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
@@ -332,7 +344,11 @@ Class ImportUi {
 					if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 						$h .= $this->emptyData();
 					} else {
-						$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+						$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+						$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+							$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+						$h .= '</div>';
+						$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 					}
 				$h .= '</td>';
 				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">';
