@@ -111,7 +111,7 @@ class ConfigurationLib extends ConfigurationCrud {
 				Configuration::getNumber($eConfiguration['invoicePrefix'], $newValue),
 			];
 
-			if(Invoice::model()
+			if(\selling\Invoice::model()
 				->whereFarm($eFarm)
 				->whereName('IN', $names)
 				->exists()) {

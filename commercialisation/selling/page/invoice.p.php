@@ -141,12 +141,15 @@ new Page(function($data) {
 
 		$data->cCustomerGroup = \selling\CustomerGroupLib::getByFarm($data->eFarm);
 
+		$lastDate = \selling\InvoiceLib::getLastDate($data->eFarm);
+
 		$data->e = new \selling\Invoice([
 			'farm' => $data->eFarm,
 			'paymentCondition' => $data->eFarm->getConf('invoicePaymentCondition'),
 			'header' => $data->eFarm->getConf('invoiceHeader'),
 			'footer' => $data->eFarm->getConf('invoiceFooter'),
-			'lastDate' => \selling\InvoiceLib::getLastDate($data->eFarm)
+			'lastDate' => $lastDate,
+			'date' => max(currentDate(), $lastDate)
 		]);
 
 		throw new ViewAction($data);
