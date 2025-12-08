@@ -42,7 +42,7 @@ class Configuration extends ConfigurationElement {
 
 				$this->expects(['invoicePrefix']);
 
-				$max = Invoice::model()
+				$max = \selling\Invoice::model()
 					->whereFarm($this['farm'])
 					->whereName('LIKE', $this['invoicePrefix'].'%')
 					->getValue(new \Sql('MAX(document)'));
