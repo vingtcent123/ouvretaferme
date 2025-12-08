@@ -5,6 +5,82 @@ Class ImportLib {
 
 	const IGNORED_SALE_HASH = '0000000000000000000';
 
+	public static function getSales(\farm\Farm $eFarm, string $from, string $to): \Collection {
+
+		$cFinancialYear = \account\FinancialYearLib::getAll();
+		$cAccount = \account\AccountLib::getAll();
+		$extraction = \farm\AccountingLib::extractSales($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
+
+		$cSale = \selling\Sale::model()
+			->select([
+				'id', 'document', 'customer' => ['id', 'name', 'type', 'destination'],
+				'deliveredAt', 'accountingHash', 'profile', 'invoice',
+				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat'
+			])
+			->whereDocument('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
+			->whereFarm($eFarm)
+			->sort(['deliveredAt' => SORT_ASC])
+			->getCollection(NULL, NULL, 'document');
+
+		foreach($cSale as &$eSale) {
+
+			$eSale['operations'] = self::sortOperations($extraction, (string)$eSale['document']);
+
+		}
+
+		return $cSale;
+
+	}
+
+	public static function getInvoiceSales(\farm\Farm $eFarm, string $from, string $to): \Collection {
+
+		$cFinancialYear = \account\FinancialYearLib::getAll();
+		$cAccount = \account\AccountLib::getAll();
+		$extraction = \farm\AccountingLib::extractInvoice($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
+
+		$cInvoice = \selling\Invoice::model()
+			->select([
+				'id', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
+				'date', 'accountingHash',
+				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat'
+			])
+			->whereName('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
+			->whereFarm($eFarm)
+			->sort(['date' => SORT_ASC])
+			->getCollection(NULL, NULL, 'name');
+
+		foreach($cInvoice as &$eInvoice) {
+
+			$eInvoice['operations'] = self::sortOperations($extraction, (string)$eInvoice['name']);;
+
+		}
+
+		return $cInvoice;
+
+	}
+
+	public static function getMarketSales(\farm\Farm $eFarm, string $from, string $to): \Collection {
+
+		$cFinancialYear = \account\FinancialYearLib::getAll();
+		$cAccount = \account\AccountLib::getAll();
+		$extraction = \farm\AccountingLib::extractMarket($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
+
+		$documents = array_unique(array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT));
+
+		$cSale = \selling\Sale::model()
+			->select(\selling\Sale::getSelection())
+			->whereDocument('IN', $documents)
+			->getCollection(NULL, NULL, 'document');
+
+		foreach($cSale as &$eSale) {
+
+			$eSale['operations'] = self::sortOperations($extraction, (string)$eSale['document']);
+
+		}
+
+		return $cSale;
+	}
+
 	public static function ignoreSale(\selling\Sale $eSale): void {
 
 		\selling\Sale::model()->update($eSale, ['accountingHash' => self::IGNORED_SALE_HASH]);
@@ -12,7 +88,91 @@ Class ImportLib {
 	}
 	public static function ignoreInvoice(\selling\Invoice $eInvoice): void {
 
-		\selling\Sale::model()->update($eInvoice, ['accountingHash' => self::IGNORED_SALE_HASH]);
+		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => self::IGNORED_SALE_HASH]);
+
+	}
+	public static function ignoreInvoices(\Collection $cInvoice): void {
+
+		\selling\Invoice::model()
+			->whereId('IN', $cInvoice->getIds())
+			->update(['accountingHash' => self::IGNORED_SALE_HASH]);
+
+	}
+	public static function ignoreSales(\Collection $cSale): void {
+
+		\selling\Sale::model()
+			->whereId('IN', $cSale->getIds())
+			->update(['accountingHash' => self::IGNORED_SALE_HASH]);
+
+	}
+
+	public static function getSaleById(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $saleId): \selling\Sale {
+
+		$eSale = \selling\SaleLib::filterForAccounting(
+				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate'], 'id' => $saleId])
+			)
+			->select([
+				'id',
+				'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
+				'type', 'profile',
+				'customer' => [
+				'id', 'name',
+				'thirdParty' => \account\ThirdParty::model()
+					->select('id', 'clientAccountLabel')
+					->delegateElement('customer')
+				],
+				'deliveredAt',
+				'cItem' => \selling\Item::model()
+					->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+					->delegateCollection('sale'),
+				'cPayment' => \selling\Payment::model()
+	        ->select(\selling\Payment::getSelection())
+	        ->or(
+	          fn() => $this->whereOnlineStatus(NULL),
+	          fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+	        )
+	        ->delegateCollection('sale'),
+			])
+			->whereId($saleId)
+			->whereAccountingHash(NULL)
+			->get();
+
+		return $eSale;
+
+	}
+	public static function importSale(\farm\Farm $eFarm, \selling\Sale $eSale, \account\FinancialYear $eFinancialYear): void {
+
+		$fw = new \FailWatch();
+
+		if($eFinancialYear->empty()) {
+			\Fail::log('Sale::importNoFinancialYear');
+			return;
+		}
+
+		$fw->validate();
+
+		$cAccount = \account\AccountLib::getAll();
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT;
+		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
+
+		\journal\Operation::model()->beginTransaction();
+
+		$eThirdParty = self::getOrCreateThirdParty($eSale['customer']);
+
+		$cSale = new \Collection();
+		$cSale->append($eSale);
+		$fecData = \farm\AccountingLib::generateSalesFec($cSale, new \Collection([$eFinancialYear]), $cAccount);
+
+		$eOperation = new \journal\Operation([
+			'thirdParty' => $eThirdParty,
+			'hash' => $hash,
+			'description' => new ImportUi()->getSaleDescription($eSale),
+		]);
+		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperation);
+
+		\selling\Sale::model()->update($eSale, ['accountingHash' => $hash]);
+
+		\journal\Operation::model()->commit();
 
 	}
 
@@ -33,21 +193,7 @@ Class ImportLib {
 
 		\journal\Operation::model()->beginTransaction();
 
-		// Get or create third party
-		$eThirdParty = \account\ThirdPartyLib::getByCustomer($eInvoice['customer']);
-
-		if($eThirdParty->empty()) {
-
-			$eThirdParty = new \account\ThirdParty([
-				'name' => $eInvoice['customer']->getName(),
-				'customer' => $eInvoice['customer'],
-				'clientAccountLabel' => \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS),
-			]);
-
-			\account\ThirdPartyLib::create($eThirdParty);
-			$eThirdParty = \account\ThirdPartyLib::getByCustomer($eInvoice['customer']);
-
-		}
+		$eThirdParty = self::getOrCreateThirdParty($eInvoice['customer']);
 
 		$cInvoice = new \Collection();
 		$cInvoice->append($eInvoice);
@@ -83,21 +229,7 @@ Class ImportLib {
 
 		\journal\Operation::model()->beginTransaction();
 
-		// Get or create third party
-		$eThirdParty = \account\ThirdPartyLib::getByCustomer($eSale['customer']);
-
-		if($eThirdParty->empty()) {
-
-			$eThirdParty = new \account\ThirdParty([
-				'name' => $eSale['customer']->getName(),
-				'customer' => $eSale['customer'],
-				'clientAccountLabel' => \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS),
-			]);
-
-			\account\ThirdPartyLib::create($eThirdParty);
-			$eThirdParty = \account\ThirdPartyLib::getByCustomer($eSale['customer']);
-
-		}
+		$eThirdParty = self::getOrCreateThirdParty($eSale['customer']);
 
 		$cSale = new \Collection();
 		$cSale->append($eSale);
@@ -106,13 +238,53 @@ Class ImportLib {
 		$eOperation = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
 			'hash' => $hash,
-			'description' => new ImportUi()->getDescription($eSale),
+			'description' => new ImportUi()->getSaleDescription($eSale),
 		]);
 		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperation);
 
 		\selling\Sale::model()->update($eSale, ['accountingHash' => $hash]);
 
 		\journal\Operation::model()->commit();
+
+	}
+
+	protected static function getOrCreateThirdParty(\selling\Customer $eCustomer): \account\ThirdParty {
+
+		$eThirdParty = \account\ThirdPartyLib::getByCustomer($eCustomer);
+
+		if($eThirdParty->empty()) {
+
+			$eThirdParty = new \account\ThirdParty([
+				'name' => $eCustomer->getName(),
+				'customer' => $eCustomer,
+				'clientAccountLabel' => \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS),
+			]);
+
+			\account\ThirdPartyLib::create($eThirdParty);
+
+			$eThirdParty = \account\ThirdPartyLib::getByCustomer($eCustomer);
+
+		}
+
+		return $eThirdParty;
+
+	}
+
+	protected static function sortOperations(array $extraction, string $document) {
+
+		$operations = array_filter($extraction, fn($line) => $line[\farm\AccountingLib::FEC_COLUMN_DOCUMENT] === $document);
+
+		usort($operations, function($entry1, $entry2) {
+			if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] < (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
+				return -1;
+			}
+			if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] > (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
+				return 1;
+			}
+			return strcmp($entry1[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD], $entry2[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+		});
+
+		return $operations;
 
 	}
 
@@ -151,71 +323,6 @@ Class ImportLib {
 
 		return $cOperation;
 
-	}
-
-	public static function getInvoiceSales(\farm\Farm $eFarm, string $from, string $to): \Collection {
-
-		$cFinancialYear = \account\FinancialYearLib::getAll();
-		$cAccount = \account\AccountLib::getAll();
-		$extraction = \farm\AccountingLib::extractInvoice($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
-
-		$cInvoice = \selling\Invoice::model()
-			->select([
-				'id', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
-				'date', 'accountingHash',
-				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat'
-			])
-			->whereName('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
-			->whereFarm($eFarm)
-			->sort(['date' => SORT_ASC])
-			->getCollection(NULL, NULL, 'name');
-
-		foreach($cInvoice as &$eInvoice) {
-			$operations = array_filter($extraction, fn($line) => $line[\farm\AccountingLib::FEC_COLUMN_DOCUMENT] === (string)$eInvoice['name']);
-			usort($operations, function($entry1, $entry2) {
-				if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] < (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
-					return -1;
-				}
-				if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] > (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
-					return 1;
-				}
-				return strcmp($entry1[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD], $entry2[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
-			});
-			$eInvoice['operations'] = $operations;
-		}
-
-		return $cInvoice;
-
-	}
-
-	public static function getMarketSales(\farm\Farm $eFarm, string $from, string $to): \Collection {
-
-		$cFinancialYear = \account\FinancialYearLib::getAll();
-		$cAccount = \account\AccountLib::getAll();
-		$extraction = \farm\AccountingLib::extractMarket($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
-
-		$documents = array_unique(array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT));
-
-		$cSale = \selling\Sale::model()
-			->select(\selling\Sale::getSelection())
-			->whereDocument('IN', $documents)
-			->getCollection(NULL, NULL, 'document');
-
-		foreach($cSale as &$eSale) {
-			$operations = array_filter($extraction, fn($line) => $line[\farm\AccountingLib::FEC_COLUMN_DOCUMENT] === (string)$eSale['document']);
-			usort($operations, function($entry1, $entry2) {
-				if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] < (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
-					return -1;
-				}
-				if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] > (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
-					return 1;
-				}
-				return strcmp($entry1[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD], $entry2[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
-			});
-			$eSale['operations'] = $operations;
-		}
-
-		return $cSale;
 	}
 
 }

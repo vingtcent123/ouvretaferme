@@ -17,6 +17,7 @@ new Page(
 	$data->c = match($data->selectedTab) {
 		'market' => \invoicing\ImportLib::getMarketSales($data->eFarm, $from, $to),
 		'invoice' => \invoicing\ImportLib::getInvoiceSales($data->eFarm, $from, $to),
+		'sales' => \invoicing\ImportLib::getSales($data->eFarm, $from, $to),
 	};
 
 	throw new ViewAction($data);
@@ -95,21 +96,48 @@ new Page(
 		->whereAccountingHash(NULL)
 		->get();
 
-	$eSale->validate('acceptAccountingImport');
+	$eSale->validate('acceptAccountingImport', 'isMarket');
 
 	$fw = new FailWatch();
 
-	if($eSale['profile'] === \selling\Sale::MARKET) {
-		\invoicing\ImportLib::importMarket($data->eFarm, $eSale, $eFinancialYear);
-	}
+	\invoicing\ImportLib::importMarket($data->eFarm, $eSale, $eFinancialYear);
 
 	$fw->validate();
 
-	throw new ReloadAction('invoicing', $eSale['profile'] === \selling\Sale::MARKET ? 'Sale::imported.market' : 'Sale::imported');
-
+	throw new ReloadAction('invoicing', 'Sale::imported.market');
 
 })
-->post('doIgnoreMarket', function($data) {
+->post('doImportMarket', function($data) {
+
+	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
+
+	$eSale = \invoicing\ImportLib::getSaleById($data->eFarm, $eFinancialYear, POST('id', 'int'))->validate('acceptAccountingImport', 'isMarket');
+
+	$fw = new FailWatch();
+
+	\invoicing\ImportLib::importSale($data->eFarm, $eSale, $eFinancialYear);
+
+	$fw->validate();
+
+	throw new ReloadAction('invoicing', 'Sale::imported');
+
+})
+->post('doImportSale', function($data) {
+
+	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
+
+	$eSale = \invoicing\ImportLib::getSaleById($data->eFarm, $eFinancialYear, POST('id', 'int'))->validate('acceptAccountingImport', 'isSale');
+
+	$fw = new FailWatch();
+
+	\invoicing\ImportLib::importSale($data->eFarm, $eSale, $eFinancialYear);
+
+	$fw->validate();
+
+	throw new ReloadAction('invoicing', 'Sale::imported');
+
+})
+->post('doIgnoreSale', function($data) {
 
 	$eSale = \selling\SaleLib::getById(POST('id'))->validate('acceptAccountingIgnore');
 
@@ -124,6 +152,30 @@ new Page(
 	\invoicing\ImportLib::ignoreInvoice($eInvoice);
 
 	throw new ReloadAction('invoicing', 'Invoice::ignored');
+})
+->post('doIgnoreCollection', function($data) {
+
+	switch(POST('type')) {
+
+		case 'invoice':
+			$cInvoice = \selling\InvoiceLib::getByIds(POST('ids', 'array'))->validate('acceptAccountingIgnore');
+			\selling\Invoice::validateBatch($cInvoice);
+			\invoicing\ImportLib::ignoreInvoices($cInvoice);
+			break;
+
+		case 'sales':
+		case 'market':
+			$cSale = \selling\SaleLib::getByIds(POST('ids', 'array'))->validate('acceptAccountingIgnore');
+			\selling\Sale::validateBatch($cSale);
+			\invoicing\ImportLib::ignoreSales($cSale);
+			break;
+
+		default:
+			throw new \FailAction('accouting\Invoicing::salesOrInvoices.check');
+
+	}
+
+	throw new ReloadAction('invoicing', mb_ucfirst(POST('type')).'::ignoredSeveral');
 })
 ;
 

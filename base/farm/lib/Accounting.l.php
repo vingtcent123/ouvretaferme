@@ -49,9 +49,15 @@ Class AccountingLib {
 
 	public static function extractSales(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
-		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$cSale = self::getSales($eFarm, $from, $to, $forImport);
 
-		$cSale = \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+		return self::generateSalesFec($cSale, $cFinancialYear, $cAccount);
+
+	}
+
+	private static function getSales(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE): \Collection {
+
+		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
 			->select([
 			  'id',
 			  'document',
@@ -80,6 +86,11 @@ Class AccountingLib {
 			->whereProfile('NOT IN', [\selling\Sale::SALE_MARKET, \selling\Sale::MARKET])
 			->getCollection();
 
+		}
+
+		public static function generateSalesFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount): array {
+
+		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
 		$fecData = [];
 		foreach($cSale as $eSale) {

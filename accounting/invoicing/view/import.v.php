@@ -31,7 +31,7 @@ new AdaptativeView('/ventes/importer', function($data, FarmTemplate $t) {
 	echo match($data->selectedTab) {
 		'market' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->eFinancialYear, $data->c),
 		'invoice' => new \invoicing\ImportUi()->displayInvoice($data->eFarm, $data->eFinancialYear, $data->c),
-		'sales' => new \invoicing\ImportUi()->displayInvoice($data->eFarm, $data->eFinancialYear, $data->c),
+		'sales' => new \invoicing\ImportUi()->displaySales($data->eFarm, $data->eFinancialYear, $data->c),
 	};
 
 });
