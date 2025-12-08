@@ -82,12 +82,12 @@ class Configuration extends ConfigurationElement {
 			})
 			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('farm\Configuration', $this['farm'], $vat))
 			->setCallback('defaultVat.check', function(int $vat): bool {
-				return array_key_exists($vat, SellingSetting::getVatRates($this['farm']));
+				return array_key_exists($vat, \selling\SellingSetting::getVatRates($this['farm']));
 			})
 			->setCallback('defaultVatShipping.check', function(?int $vat): bool {
 				return (
 					$vat === NULL or
-					array_key_exists($vat, SellingSetting::getVatRates($this['farm']))
+					array_key_exists($vat, \selling\SellingSetting::getVatRates($this['farm']))
 				);
 			});
 	
