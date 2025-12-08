@@ -137,7 +137,7 @@ class FarmLib extends FarmCrud {
 
 		}
 
-		configurationLib::createForFarm($e);
+		ConfigurationLib::createForFarm($e);
 
 		\farm\ActionLib::duplicateForFarm($e);
 		\plant\PlantLib::duplicateForFarm($e);
