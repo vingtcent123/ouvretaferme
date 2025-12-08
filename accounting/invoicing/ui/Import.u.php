@@ -98,8 +98,12 @@ Class ImportUi {
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 
 								$h .= '<div class="dropdown-list">';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportSale" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+									if($eSale->acceptAccountingImport()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportSale" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
+									}
+									if($eSale->acceptAccountingIgnore()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+									}
 								$h .= '</div>';
 
 							$h .= '</td>';
@@ -209,8 +213,12 @@ Class ImportUi {
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 
 								$h .= '<div class="dropdown-list">';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportInvoice" post-id="'.$eInvoice['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreInvoice" post-id="'.$eInvoice['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+									if($eInvoice->acceptAccountingImport()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportInvoice" post-id="'.$eInvoice['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
+									}
+									if($eInvoice->acceptAccountingIgnore()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreInvoice" post-id="'.$eInvoice['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+									}
 								$h .= '</div>';
 
 							$h .= '</td>';
@@ -311,8 +319,12 @@ Class ImportUi {
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 
 								$h .= '<div class="dropdown-list">';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportMarket" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+									if($eSale->acceptAccountingImport()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportMarket" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
+									}
+									if($eSale->acceptAccountingIgnore()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+									}
 								$h .= '</div>';
 
 							$h .= '</td>';
