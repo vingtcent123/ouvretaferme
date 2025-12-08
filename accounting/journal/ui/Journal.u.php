@@ -455,6 +455,8 @@ class JournalUi {
 
 									if($eOperation->canUpdate() and $eOperation->acceptUpdate()) {
 
+										$more = null;
+
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
 
 										// ACTION "SUPPRIMER"
@@ -470,6 +472,29 @@ class JournalUi {
 
 												$more = s("Cette écriture est liée à une autre écriture. Supprimer l'autre écriture supprimera celle-ci.");
 
+												$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+
+												$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+
+											} else if($eOperation['hash'] !== NULL and $eOperation->isFromImport()) {
+
+												$confirmText = match($eOperation->importType()) {
+													JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture. Confirmez-vous la suppression de ces écritures et du lien avec la facture ?"),
+													JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente. Confirmez-vous la suppression de ces écritures et du lien avec la vente ?"),
+													JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché. Confirmez-vous la suppression de ces écritures et du lien avec le marché ?"),
+												};
+												$attributes = [
+													'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
+													'post-id' => $eOperation['id'],
+													'data-confirm' => $confirmText,
+													'class' => 'dropdown-item',
+												];
+
+												$more = match($eOperation->importType()) {
+													JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture"),
+													JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente"),
+													JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché"),
+												};
 												$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
 
 												$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';

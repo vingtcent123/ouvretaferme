@@ -99,6 +99,24 @@ class Operation extends OperationElement {
 
 	}
 
+	public function isFromImport(): bool {
+
+		return in_array(substr($this['hash'], -1), [
+			JournalSetting::HASH_LETTER_IMPORT_INVOICE, JournalSetting::HASH_LETTER_IMPORT_SALE, JournalSetting::HASH_LETTER_IMPORT_MARKET
+		]);
+
+	}
+
+	public function importType(): ?string {
+
+		if($this->isFromImport() === FALSE) {
+			return NULL;
+		}
+
+		return substr($this['hash'], -1);
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

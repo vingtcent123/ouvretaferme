@@ -186,7 +186,7 @@ Class ImportLib {
 		$fw->validate();
 
 		$cAccount = \account\AccountLib::getAll();
-		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT;
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_SALE;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
 		\journal\Operation::model()->beginTransaction();
 
@@ -299,7 +299,7 @@ Class ImportLib {
 		$fw->validate();
 
 		$cAccount = \account\AccountLib::getAll();
-		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT;
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
 
 		\journal\Operation::model()->beginTransaction();
@@ -433,7 +433,7 @@ Class ImportLib {
 		$fw->validate();
 
 		$cAccount = \account\AccountLib::getAll();
-		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT;
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_MARKET;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
 
 		\journal\Operation::model()->beginTransaction();

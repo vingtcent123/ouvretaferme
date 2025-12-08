@@ -1086,11 +1086,31 @@ class OperationLib extends OperationCrud {
 
 		parent::delete($e);
 
-		\journal\Operation::model()->commit();
+		// Si l'opération est issue d'un import en compta => supprimer les copines + le lien
+		if($e->isFromImport()) {
+
+			Operation::model()->whereHash($e['hash'])->delete();
+
+			switch($e->importType()) {
+
+				case JournalSetting::HASH_LETTER_IMPORT_MARKET:
+				case JournalSetting::HASH_LETTER_IMPORT_SALE:
+					\selling\Sale::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
+					break;
+
+				case JournalSetting::HASH_LETTER_IMPORT_INVOICE:
+					\selling\InvoiceLib::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
+					break;
+
+			}
+
+		}
 
 		OperationCashflow::model()
 			->whereOperation($e)
 			->delete();
+
+		\journal\Operation::model()->commit();
 
 		\account\LogLib::save('delete', 'Operation', ['id' => $e['id']]);
 
