@@ -22,8 +22,11 @@ class AlertUi {
 		return match($fqn) {
 
 			'Sale::imported' => s("La vente a bien été importée."),
+			'Sale::importedSeveral' => s("Les ventes ont bien été importées."),
 			'Sale::imported.market' => s("Le marché a bien été importé."),
+			'Sale::imported.marketSeveral' => s("Les marchés ont bien été importés."),
 			'Invoice::imported' => s("La facture a bien été importée."),
+			'Invoice::importedSeveral' => s("Les factures ont bien été importées."),
 
 			'Invoice::ignored' => s("La facture a bien été ignorée."),
 			'Invoice::ignoredSeveral' => s("Les factures ont bien été ignorées."),

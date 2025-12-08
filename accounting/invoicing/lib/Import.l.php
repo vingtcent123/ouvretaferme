@@ -106,33 +106,38 @@ Class ImportLib {
 
 	}
 
+	public static function saleSelection(): array {
+
+		return [
+			'id',
+			'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
+			'type', 'profile',
+			'customer' => [
+			'id', 'name',
+			'thirdParty' => \account\ThirdParty::model()
+				->select('id', 'clientAccountLabel')
+				->delegateElement('customer')
+			],
+			'deliveredAt',
+			'cItem' => \selling\Item::model()
+				->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+				->delegateCollection('sale'),
+			'cPayment' => \selling\Payment::model()
+	      ->select(\selling\Payment::getSelection())
+	      ->or(
+	        fn() => $this->whereOnlineStatus(NULL),
+	        fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+	      )
+	      ->delegateCollection('sale'),
+		];
+
+	}
 	public static function getSaleById(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $saleId): \selling\Sale {
 
 		$eSale = \selling\SaleLib::filterForAccounting(
-				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate'], 'id' => $saleId])
+				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
 			)
-			->select([
-				'id',
-				'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
-				'type', 'profile',
-				'customer' => [
-				'id', 'name',
-				'thirdParty' => \account\ThirdParty::model()
-					->select('id', 'clientAccountLabel')
-					->delegateElement('customer')
-				],
-				'deliveredAt',
-				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
-					->delegateCollection('sale'),
-				'cPayment' => \selling\Payment::model()
-	        ->select(\selling\Payment::getSelection())
-	        ->or(
-	          fn() => $this->whereOnlineStatus(NULL),
-	          fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
-	        )
-	        ->delegateCollection('sale'),
-			])
+			->select(self::saleSelection())
 			->whereId($saleId)
 			->whereAccountingHash(NULL)
 			->get();
@@ -140,6 +145,35 @@ Class ImportLib {
 		return $eSale;
 
 	}
+
+	public static function getSalesByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $saleIds): \Collection {
+
+		$cSale = \selling\SaleLib::filterForAccounting(
+				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
+			)
+			->select(self::saleSelection())
+			->whereId('IN', $saleIds)
+			->whereAccountingHash(NULL)
+			->getCollection();
+
+		return $cSale;
+
+	}
+
+	public static function importSales(\farm\Farm $eFarm, \Collection $cSale, \account\FinancialYear $eFinancialYear): void {
+
+		\journal\Operation::model()->beginTransaction();
+
+		foreach($cSale as $eSale) {
+
+			self::importSale($eFarm, $eSale, $eFinancialYear);
+
+		}
+
+		\journal\Operation::model()->commit();
+
+	}
+
 	public static function importSale(\farm\Farm $eFarm, \selling\Sale $eSale, \account\FinancialYear $eFinancialYear): void {
 
 		$fw = new \FailWatch();
@@ -176,6 +210,53 @@ Class ImportLib {
 
 	}
 
+	public static function invoiceSelection(): array {
+
+		return \selling\Invoice::getSelection() + [
+			'cSale' => \selling\Sale::model()
+				->select([
+					'id',
+					'cPayment' => \selling\Payment::model()
+						->select(\selling\Payment::getSelection())
+						->or(
+							fn() => $this->whereOnlineStatus(NULL),
+							fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+						)
+						->delegateCollection('sale'),
+					'cItem' => \selling\Item::model()
+						->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+						->delegateCollection('sale')
+				])
+				->wherePreparationStatus(\selling\Sale::DELIVERED)
+				->delegateCollection('invoice'),];
+
+	}
+
+	public static function getInvoiceById(int $id): \selling\Invoice {
+
+		return \selling\InvoiceLib::getById($id, self::invoiceSelection());
+
+	}
+
+	public static function getInvoicesByIds(array $ids): \Collection {
+
+		return \selling\InvoiceLib::getByIds($ids, self::invoiceSelection());
+
+	}
+
+	public static function importInvoices(\farm\Farm $eFarm, \Collection $cInvoice, \account\FinancialYear $eFinancialYear): void {
+
+		\journal\Operation::model()->beginTransaction();
+
+		foreach($cInvoice as $eInvoice) {
+
+			self::importInvoice($eFarm, $eInvoice, $eFinancialYear);
+
+		}
+
+		\journal\Operation::model()->commit();
+
+	}
 	public static function importInvoice(\farm\Farm $eFarm, \selling\Invoice $eInvoice, \account\FinancialYear $eFinancialYear): void {
 
 		$fw = new \FailWatch();
@@ -212,6 +293,78 @@ Class ImportLib {
 
 	}
 
+	public static function marketSelection(): array {
+
+		$saleModule = clone \selling\Sale::model();
+
+		return [
+			'id',
+			'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
+			'type', 'profile', 'marketParent',
+			'customer' => [
+				'id', 'name',
+				'thirdParty' => \account\ThirdParty::model()
+					->select('id', 'clientAccountLabel')
+					->delegateElement('customer')
+			],
+			'deliveredAt',
+			'cSale' => $saleModule
+				->select([
+					'id',
+					'cPayment' => \selling\Payment::model()
+						->select(\selling\Payment::getSelection())
+						->or(
+							fn() => $this->whereOnlineStatus(NULL),
+							fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+						)
+						->delegateCollection('sale'),
+					'cItem' => \selling\Item::model()
+						->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+						->delegateCollection('sale')
+				])
+				->wherePreparationStatus(\selling\Sale::DELIVERED)
+				->delegateCollection('marketParent'),
+		];
+
+	}
+
+	public static function getMarketById(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $id): \selling\Sale {
+
+		return \selling\SaleLib::filterForAccounting(
+					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
+				)
+			->select(self::marketSelection())
+			->whereId($id)
+			->whereAccountingHash(NULL)
+			->get();
+
+	}
+
+	public static function getMarketsByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $ids): \Collection {
+
+		return \selling\SaleLib::filterForAccounting(
+					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
+				)
+			->select(self::marketSelection())
+			->whereId('IN', $ids)
+			->whereAccountingHash(NULL)
+			->getCollection();
+
+	}
+
+	public static function importMarkets(\farm\Farm $eFarm, \Collection $cSale, \account\FinancialYear $eFinancialYear): void {
+
+		\journal\Operation::model()->beginTransaction();
+
+		foreach($cSale as $eSale) {
+
+			self::importMarket($eFarm, $eSale, $eFinancialYear);
+
+		}
+
+		\journal\Operation::model()->commit();
+
+	}
 	public static function importMarket(\farm\Farm $eFarm, \selling\Sale $eSale, \account\FinancialYear $eFinancialYear): void {
 
 		$fw = new \FailWatch();

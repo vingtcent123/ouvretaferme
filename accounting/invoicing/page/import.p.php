@@ -22,34 +22,25 @@ new Page(
 
 	throw new ViewAction($data);
 
-})
+});
+
+new Page(
+	function($data) {
+		\user\ConnectionLib::checkLogged();
+
+		$data->eFarm->validate('canManage');
+		$data->eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
+
+	})
 ->post('doImportInvoice', function($data) {
 
-	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
-
-	$eInvoice = \selling\InvoiceLib::getById(POST('id'), \selling\Invoice::getSelection() + [
-		'cSale' => \selling\Sale::model()
-			->select([
-				'id',
-				'cPayment' => \selling\Payment::model()
-					->select(\selling\Payment::getSelection())
-					->or(
-					  fn() => $this->whereOnlineStatus(NULL),
-					  fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
-					)
-					->delegateCollection('sale'),
-				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
-					->delegateCollection('sale')
-			])
-			->wherePreparationStatus(\selling\Sale::DELIVERED)
-			->delegateCollection('invoice'),]);
+	$eInvoice = \invoicing\ImportLib::getInvoiceById(POST('id', 'int'));
 
 	$eInvoice->validate('acceptAccountingImport');
 
 	$fw = new FailWatch();
 
-	\invoicing\ImportLib::importInvoice($data->eFarm, $eInvoice, $eFinancialYear);
+	\invoicing\ImportLib::importInvoice($data->eFarm, $eInvoice, $data->eFinancialYear);
 
 	$fw->validate();
 
@@ -58,79 +49,24 @@ new Page(
 })
 ->post('doImportMarket', function($data) {
 
-	$saleModule = clone \selling\Sale::model();
-	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
-
-	$eSale = \selling\SaleLib::filterForAccounting(
-		$data->eFarm, new Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate'], 'id' => POST('id')])
-	)
-		->select([
-		'id',
-		'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
-		'type', 'profile', 'marketParent',
-		'customer' => [
-			'id', 'name',
-			'thirdParty' => \account\ThirdParty::model()
-				->select('id', 'clientAccountLabel')
-				->delegateElement('customer')
-		],
-		'deliveredAt',
-		'cSale' => $saleModule
-			->select([
-				'id',
-				'cPayment' => \selling\Payment::model()
-	        ->select(\selling\Payment::getSelection())
-	        ->or(
-	          fn() => $this->whereOnlineStatus(NULL),
-	          fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
-	        )
-	        ->delegateCollection('sale'),
-				'cItem' => \selling\Item::model()
-	        ->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
-	        ->delegateCollection('sale')
-			])
-			->wherePreparationStatus(\selling\Sale::DELIVERED)
-			->delegateCollection('marketParent'),
-	])
-		->whereId(POST('id'))
-		->whereAccountingHash(NULL)
-		->get();
-
-	$eSale->validate('acceptAccountingImport', 'isMarket');
+	$eSale = \invoicing\ImportLib::getMarketById($data->eFarm, $data->eFinancialYear, POST('id', 'int'))->validate('acceptAccountingImport', 'isMarket');
 
 	$fw = new FailWatch();
 
-	\invoicing\ImportLib::importMarket($data->eFarm, $eSale, $eFinancialYear);
+	\invoicing\ImportLib::importMarket($data->eFarm, $eSale, $data->eFinancialYear);
 
 	$fw->validate();
 
 	throw new ReloadAction('invoicing', 'Sale::imported.market');
 
 })
-->post('doImportMarket', function($data) {
-
-	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
-
-	$eSale = \invoicing\ImportLib::getSaleById($data->eFarm, $eFinancialYear, POST('id', 'int'))->validate('acceptAccountingImport', 'isMarket');
-
-	$fw = new FailWatch();
-
-	\invoicing\ImportLib::importSale($data->eFarm, $eSale, $eFinancialYear);
-
-	$fw->validate();
-
-	throw new ReloadAction('invoicing', 'Sale::imported');
-
-})
 ->post('doImportSale', function($data) {
 
-	$eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
-
-	$eSale = \invoicing\ImportLib::getSaleById($data->eFarm, $eFinancialYear, POST('id', 'int'))->validate('acceptAccountingImport', 'isSale');
+	$eSale = \invoicing\ImportLib::getSaleById($data->eFarm, $data->eFinancialYear, POST('id', 'int'))->validate('acceptAccountingImport', 'isSale');
 
 	$fw = new FailWatch();
 
-	\invoicing\ImportLib::importSale($data->eFarm, $eSale, $eFinancialYear);
+	\invoicing\ImportLib::importSale($data->eFarm, $eSale, $data->eFinancialYear);
 
 	$fw->validate();
 
@@ -153,6 +89,36 @@ new Page(
 
 	throw new ReloadAction('invoicing', 'Invoice::ignored');
 })
+->post('doImportSalesCollection', function($data) {
+
+	$cSale = \invoicing\ImportLib::getSalesByIds($data->eFarm, $data->eFinancialYear, POST('ids', 'array'));
+	\selling\Sale::validateBatch($cSale);
+
+	\invoicing\ImportLib::importSales($data->eFarm, $cSale, $data->eFinancialYear);
+
+	throw new ReloadAction('invoicing', 'Sale::importedSeveral');
+
+})
+->post('doImportMarketCollection', function($data) {
+
+	$cSale = \invoicing\ImportLib::getMarketsByIds($data->eFarm, $data->eFinancialYear, POST('ids', 'array'));
+	\selling\Sale::validateBatch($cSale);
+
+	\invoicing\ImportLib::importMarkets($data->eFarm, $cSale, $data->eFinancialYear);
+
+	throw new ReloadAction('invoicing', 'Sale::importedSeveral');
+
+})
+->post('doImportInvoiceCollection', function($data) {
+
+	$cInvoice = \invoicing\ImportLib::getInvoicesByIds(POST('ids', 'array'));
+	\selling\Invoice::validateBatch($cInvoice);
+
+	\invoicing\ImportLib::importInvoices($data->eFarm, $cInvoice, $data->eFinancialYear);
+
+	throw new ReloadAction('invoicing', 'Invoice::importedSeveral');
+
+})
 ->post('doIgnoreCollection', function($data) {
 
 	switch(POST('type')) {
@@ -171,7 +137,7 @@ new Page(
 			break;
 
 		default:
-			throw new \FailAction('accouting\Invoicing::salesOrInvoices.check');
+			throw new \FailAction('Accounting\Invoicing::salesOrInvoices.check');
 
 	}
 
