@@ -111,7 +111,7 @@ Class ImportLib {
 		return [
 			'id',
 			'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
-			'type', 'profile',
+			'type', 'profile', 'priceIncludingVat',
 			'customer' => [
 			'id', 'name',
 			'thirdParty' => \account\ThirdParty::model()
@@ -188,7 +188,6 @@ Class ImportLib {
 		$cAccount = \account\AccountLib::getAll();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
-
 		\journal\Operation::model()->beginTransaction();
 
 		$eThirdParty = self::getOrCreateThirdParty($eSale['customer']);
@@ -203,6 +202,37 @@ Class ImportLib {
 			'description' => new ImportUi()->getSaleDescription($eSale),
 		]);
 		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperation);
+
+		if($eFinancialYear->isCashAccrualAccounting()) {
+
+			$date = $eSale['deliveredAt'];
+			$eAccount = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS)->first();
+
+			if($eSale['cPayment']->count() === 1) {
+				$ePaymentMethod = $eSale['cPayment']->first()['method'];
+			} else {
+				$ePaymentMethod = new \payment\Method();
+			}
+			$eOperationThirdParty = new \journal\Operation($eOperation->getArrayCopy() + [
+				'id' => NULL,
+				'financialYear' => $eFinancialYear,
+				'account' => $eAccount,
+				'accountLabel' => $eThirdParty['clientAccountLabel'],
+				'date' => $date,
+				'document' => $eSale['document'],
+				'documentDate' => $date,
+				'amount' => abs($eSale['priceIncludingVat']),
+				'type' => $eSale['priceIncludingVat'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
+				'vatRate' => 0,
+				'vatAccount' => new \account\Account(),
+				'operation' => new \journal\Operation(),
+				'paymentDate' => $date,
+				'paymentMethod' => $ePaymentMethod,
+			]);
+
+			\journal\Operation::model()->insert($eOperationThirdParty);
+
+		}
 
 		\selling\Sale::model()->update($eSale, ['accountingHash' => $hash]);
 
@@ -286,6 +316,32 @@ Class ImportLib {
 			'description' => $eInvoice['name'],
 		]);
 		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperation);
+
+		if($eFinancialYear->isCashAccrualAccounting()) {
+
+			$date = $eInvoice['date'];
+			$eAccount = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS)->first();
+
+			$eOperationThirdParty = new \journal\Operation($eOperation->getArrayCopy() + [
+				'id' => NULL,
+				'financialYear' => $eFinancialYear,
+				'account' => $eAccount,
+				'accountLabel' => $eThirdParty['clientAccountLabel'],
+				'date' => $date,
+				'document' => $eInvoice['name'],
+				'documentDate' => $date,
+				'amount' => abs($eInvoice['priceIncludingVat']),
+				'type' => $eInvoice['priceIncludingVat'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
+				'vatRate' => 0,
+				'vatAccount' => new \account\Account(),
+				'operation' => new \journal\Operation(),
+				'paymentDate' => $date,
+				'paymentMethod' => $eInvoice['paymentMethod'],
+			]);
+
+			\journal\Operation::model()->insert($eOperationThirdParty);
+
+		}
 
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);
 
@@ -416,6 +472,13 @@ Class ImportLib {
 			\account\ThirdPartyLib::create($eThirdParty);
 
 			$eThirdParty = \account\ThirdPartyLib::getByCustomer($eCustomer);
+
+		} else if($eThirdParty['clientAccountLabel'] === NULL) {
+
+			$label = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
+
+			\account\ThirdParty::model()->update($eThirdParty, ['clientAccountLabel' => $label]);
+			$eThirdParty['clientAccountLabel'] = $label;
 
 		}
 

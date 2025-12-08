@@ -14,7 +14,15 @@ Class ImportUi {
 			return '<div class="util-info">'.s("Il n'y a aucune vente à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
 		}
 
-		$h = '<div class="stick-sm util-overflow-sm">';
+		$h = '';
+
+		if($eFinancialYear->isCashAccrualAccounting()) {
+
+			$h .= '<div class="util-info">'.s("Lors de l'import des ventes, les écritures client (compte {value}) de contrepartie correspondantes seront automatiquement créées.", \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS).'</div>';
+
+		}
+
+		$h .= '<div class="stick-sm util-overflow-sm">';
 
 			$h .= '<table class="invoicing-import-table" data-batch="#batch-sales">';
 
@@ -101,7 +109,15 @@ Class ImportUi {
 			return '<div class="util-info">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
 		}
 
-		$h = '<div class="stick-sm util-overflow-sm">';
+		$h = '';
+
+		if($eFinancialYear->isCashAccrualAccounting()) {
+
+			$h .= '<div class="util-info">'.s("Lors de l'import des factures, les écritures client (compte {value}) de contrepartie correspondantes seront automatiquement créées.", \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS).'</div>';
+
+		}
+
+		$h .= '<div class="stick-sm util-overflow-sm">';
 
 			$h .= '<table class="invoicing-import-table" data-batch="#batch-invoice">';
 
