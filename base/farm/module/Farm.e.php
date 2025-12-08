@@ -132,8 +132,7 @@ class Farm extends FarmElement {
 			return FALSE;
 		}
 
-		\company\CompanyLib::connectSpecificDatabaseAndServer($this);
-		return \account\FinancialYear::model()->count() > 0;
+		return ($this['accountingYears'] !== NULL);
 
 	}
 

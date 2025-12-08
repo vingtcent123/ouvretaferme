@@ -243,8 +243,14 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
 
-		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => \account\FinancialYearUi::getYear($e)]);
-		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
+		FinancialYear::model()->beginTransaction();
+
+		FinancialYear::model()->insert($e);
+
+		self::updateAccountingYears($eFarm);
+
+		FinancialYear::model()->commit();
+
 
 	}
 	public static function update(FinancialYear $e, array $properties): void {
@@ -259,10 +265,16 @@ class FinancialYearLib extends FinancialYearCrud {
 			self::setDefaultView($eFarm, $e);
 		}
 
-		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => \account\FinancialYearUi::getYear($e)]);
-		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
+		self::updateAccountingYears($eFarm);
 
 		FinancialYear::model()->commit();
+
+	}
+
+	public static function updateAccountingYears(\farm\Farm $eFarm): void {
+
+		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => \account\FinancialYearUi::getYear($e)]);
+		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
 
 	}
 

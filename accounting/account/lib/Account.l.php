@@ -81,7 +81,7 @@ class AccountLib extends AccountCrud {
 		return $eAccount;
 	}
 
-	public static function getAll(?\Search $search = new \Search(), string $query = '', string $index = 'id'): \Collection {
+	public static function getAll(?\Search $search = new \Search(), string $query = ''): \Collection {
 
 		if($search->get('classPrefixes')) {
 			Account::model()->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->get('classPrefixes'));
@@ -107,7 +107,7 @@ class AccountLib extends AccountCrud {
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
 			->whereVisible(TRUE, if: $search->get('visible') === TRUE)
 			->where('vatAccount IS NOT NULL', if: $search->get('vatFilter') === TRUE)
-			->getCollection(NULL, NULL, $index);
+			->getCollection(NULL, NULL, 'id');
 	}
 
 	public static function orderAccounts(\Collection $cAccount, ?int $thirdParty, array $accountsAlreadyUsed): \Collection {
