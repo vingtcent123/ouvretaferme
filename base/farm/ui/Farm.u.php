@@ -1843,6 +1843,52 @@ class FarmUi {
 			'import' => ['url' => '/banque/imports', 'label' => s("Imports")],
 		];
 	}
+
+	public function getAccountingInvoiceTitle(Farm $eFarm, \account\FinancialYear $eFinancialYear, string $selectedView, array $numbers): string {
+
+		$categories = $this->getAccountingInvoicesCategories();
+		if($eFinancialYear->isCashAccounting()) {
+			unset($categories['reconciliate']);
+		}
+		$number = $numbers[$selectedView];
+
+		$title = $categories[$selectedView]['label'];
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">';
+						$h .= $title;
+					$h .= '</span>';
+				$h .= '</a>';
+				$h .= '<div class="dropdown-list bg-primary">';
+					foreach($categories as $key => $value) {
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
+							$h .= $value['label'];
+							if(($numbers[$key] ?? 0) > 0) {
+								$h .= ' <small>('.$numbers[$key].')</small>';
+							}
+						$h .= '</a>';
+					}
+				$h .= '</div>';
+				if($number !== NULL) {
+					$h .= '<span class="util-counter ml-1">'.$number.'</span>';
+				}
+			$h .= '</h1>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+	protected static function getAccountingInvoicesCategories(): array {
+
+		return [
+			'import' => ['url' => '/ventes/importer', 'label' => s("Importer les ventes")],
+			'reconciliate' => ['url' => '/ventes/rapprocher', 'label' => s("Rapprocher les factures")],
+		];
+	}
 	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, \account\FinancialYear $eFinancialYear): string {
 
 		$categories = $this->getAccountingAssetsCategories();

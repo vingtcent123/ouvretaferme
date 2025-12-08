@@ -1120,6 +1120,7 @@ class OperationLib extends OperationCrud {
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
 			->where('m2.id IS NULL')
 			->where('m1.operation is null')
+			->where(new \Sql('SUBSTRING(accountLabel, 1, 1) IN ('.join(',', [\account\AccountSetting::PRODUCT_ACCOUNT_CLASS, \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).')'))
 			->sort(['date' => SORT_ASC])
 			->getCollection();
 

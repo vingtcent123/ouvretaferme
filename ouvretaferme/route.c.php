@@ -623,6 +623,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ventes', 'importer'],
 		],
+		'/ventes/rapprocher' => [
+			'request' => 'invoicing/reconciliate',
+			'priority' => 5,
+			'route' => ['ventes', 'rapprocher'],
+		],
 	],
 	'HEAD' => [
 	],

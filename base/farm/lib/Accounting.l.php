@@ -55,6 +55,16 @@ Class AccountingLib {
 
 	}
 
+	public static function countSales(\farm\Farm $eFarm, string $from, string $to): int {
+
+		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+			->whereInvoice(NULL)
+			->whereAccountingHash(NULL)
+			->whereProfile('NOT IN', [\selling\Sale::SALE_MARKET, \selling\Sale::MARKET])
+			->count();
+
+		}
+
 	private static function getSales(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE): \Collection {
 
 		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
@@ -201,6 +211,16 @@ Class AccountingLib {
 		$cInvoice = self::getInvoices($eFarm, $from, $to, $forImport);
 
 		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount);
+
+	}
+
+	public static function countInvoices(\farm\Farm $eFarm, string $from, string $to) {
+
+		return \selling\Invoice::model()
+     ->whereFarm($eFarm)
+     ->whereAccountingHash(NULL)
+     ->where('date BETWEEN '.\selling\Invoice::model()->format($from).' AND '.\selling\Invoice::model()->format($to))
+     ->count();
 
 	}
 
@@ -356,6 +376,13 @@ Class AccountingLib {
 
 		return $fecData;
 
+	}
+
+	public static function countMarkets(\farm\Farm $eFarm, string $from, string $to): int {
+		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+	    ->whereProfile(\selling\Sale::MARKET)
+	    ->whereAccountingHash(NULL)
+	    ->count();
 	}
 
 	private static function getMarkets(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE): \Collection {

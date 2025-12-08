@@ -92,6 +92,41 @@ class LogUi {
 			'cashflow' => [s("Flux bancaire"), $this->getCashflowAction($action, $params)],
 			'deferral' => [s("CCA / PCA"), $this->getDeferralAction($action, $params)],
 			'superpdp' => [s("Factures électroniques"), $this->getSuperPdpAction($action, $params)],
+			'sales' => [s("Ventes", $this->getSalesAction($action, $params))],
+			'invoice' => [s("Factures", $this->getInvoiceAction($action, $params))],
+			'market' => [s("Marchés", $this->getMarketAction($action, $params))],
+		};
+
+	}
+
+	public function getMarketAction(string $action, array $params): string {
+
+		return match(strtolower($action)) {
+			'import' => s("Import d'un marché"),
+			'ignore' => s("Marché ignoré pour l'import"),
+			'importSeveral' => s("Import de marchés"),
+			'ignoreSeveral' => s("Marchés ignorés pour l'import"),
+		};
+
+	}
+
+	public function getInvoiceAction(string $action, array $params): string {
+
+		return match(strtolower($action)) {
+			'import' => s("Import de facture"),
+			'ignore' => s("Facture ignorée pour l'import"),
+			'importSeveral' => s("Import de factures"),
+			'ignoreSeveral' => s("Factures ignorées pour l'import"),
+		};
+
+	}
+	public function getSalesAction(string $action, array $params): string {
+
+		return match(strtolower($action)) {
+			'import' => s("Import de vente"),
+			'ignore' => s("Vente ignorée pour l'import"),
+			'importSeveral' => s("Import de ventes"),
+			'ignoreSeveral' => s("Ventes ignorées pour l'import"),
 		};
 
 	}

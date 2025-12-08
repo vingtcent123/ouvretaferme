@@ -73,9 +73,21 @@ Class ImportUi {
 								}
 							$h .= '</td>';
 							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]).'</td>';
+							$h .= '<td class="text-center invoicing-import-td-operation">';
+							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+								$h .= $this->emptyData();
+							} else {
+								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+							}
+							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
-							$h .= '<td class="invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]).'</td>';
+							$h .= '<td class="invoicing-import-td-operation">';
+							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+								$h .= $this->emptyData();
+							} else {
+								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+							}
+							$h .= '</td>';
 
 							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 
@@ -168,9 +180,21 @@ Class ImportUi {
 								}
 							$h .= '</td>';
 							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eInvoice).'</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]).'</td>';
+							$h .= '<td class="text-center invoicing-import-td-operation">';
+							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+								$h .= $this->emptyData();
+							} else {
+								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+							}
+							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
-							$h .= '<td class="invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]).'</td>';
+							$h .= '<td class="invoicing-import-td-operation">';
+							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+								$h .= $this->emptyData();
+							} else {
+								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+							}
+							$h .= '</td>';
 
 							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 
@@ -254,9 +278,21 @@ Class ImportUi {
 								}
 							$h .= '</td>';
 							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]).'</td>';
+							$h .= '<td class="text-center invoicing-import-td-operation">';
+							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+								$h .= $this->emptyData();
+							} else {
+								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+							}
+							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
-							$h .= '<td class="invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]).'</td>';
+							$h .= '<td class="invoicing-import-td-operation">';
+							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+								$h .= $this->emptyData();
+							} else {
+								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+							}
+							$h .= '</td>';
 
 							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 
@@ -292,17 +328,35 @@ Class ImportUi {
 
 			$h .= '<tr>';
 
-				$h .= '<td class="text-center invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]).'</td>';
+				$h .= '<td class="text-center invoicing-import-td-operation">';
+					if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+						$h .= $this->emptyData();
+					} else {
+						$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+					}
+				$h .= '</td>';
 				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">';
 					$h .= \util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
 				$h .= '</td>';
-				$h .= '<td class="invoicing-import-td-operation">'.encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]).'</td>';
+				$h .= '<td class="invoicing-import-td-operation">';
+					if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+						$h .= $this->emptyData();
+					} else {
+						$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+					}
+				$h .= '</td>';
 
 			$h .= '</tr>';
 
 		}
 
 		return $h;
+
+	}
+
+	public function emptyData(): string {
+
+		return '<span class="color-danger" title="'.s("Information manquante").'">'.\Asset::icon('three-dots').'</span>';
 
 	}
 
