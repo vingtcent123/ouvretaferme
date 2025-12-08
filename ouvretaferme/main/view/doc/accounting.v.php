@@ -19,7 +19,9 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Configurer les classes de compte").'</h2>';
 		echo '<p>';
-			echo s("Vous pouvez personnaliser des classes de compte directement dans les <link>paramètres du module de Comptabilité</link>. En associant vos catégories de produits ou vos produits à ces classes de compte, vous exporterez pour chaque vente des lignes affectées aux bonnes classes de compte.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">']);
+			echo s("Vous pouvez personnaliser des classes de compte directement dans les <link>paramètres du module de Comptabilité</link>. En associant vos catégories de produits ou vos produits à ces classes de compte, vous exporterez pour chaque vente des lignes affectées aux bonnes classes de compte.", [
+				'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">'
+			]);
 		echo '</p>';
 
 	echo '</div>';
@@ -31,10 +33,12 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo s("Les journaux peuvent être automatiquement attribués à chaque ligne de vente.");
 		echo '</p>';
 		echo '<p>';
-			echo s("Vous pouvez personnaliser vos journaux directement dans les <link>paramètres du module de Comptabilité</link>.", ['link' => '<a href="'.\company\CompanyUi::urlJournal($data->eFarm).'/journalCode">']);
+			echo s("Vous pouvez personnaliser vos journaux directement dans les <link>paramètres du module de Comptabilité</link>.", [
+				'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlJournal($data->eFarm).'/journalCode">'
+			]);
 		echo '</p>';
 		echo '<p>';
-			echo s("Ensuite, associez vos journaux à vos classes de compte directement dans les <link>paramètres des classe de compte du module de Comptabilité</link>, cette information..", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">']);
+			echo s("Ensuite, associez vos journaux à vos classes de compte directement dans les <link>paramètres des classe de compte du module de Comptabilité</link>, cette information..", ['link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">']);
 		echo '</p>';
 
 	echo '</div>';
