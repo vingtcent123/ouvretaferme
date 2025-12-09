@@ -14,16 +14,17 @@ Class AccountingLib {
 
 	public static function generateFec(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear): array {
 
+		$search = new \Search(['from' => $from, 'to' => $to]);
 		$cAccount = \account\AccountLib::getAll();
 
 		// Par caisse
 		$saleMarketFec = self::extractMarket($eFarm, $from, $to, $cFinancialYear, $cAccount);
 
 		// Par factures
-		$invoiceFec = self::extractInvoice($eFarm, $from, $to, $cFinancialYear, $cAccount);
+		$invoiceFec = self::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount);
 
 		// Tout le reste des ventes (ni caisse, ni factures)
-		$salesFec = self::extractSales($eFarm, $from, $to, $cFinancialYear, $cAccount);
+		$salesFec = self::extractSales($eFarm, $search, $cFinancialYear, $cAccount);
 
 		$contentFec = array_merge($saleMarketFec, $invoiceFec, $salesFec);
 
@@ -48,17 +49,23 @@ Class AccountingLib {
 	 * - ni dans un marché
 	 */
 
-	public static function extractSales(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
+	public static function extractSales(\farm\Farm $eFarm, \Search $search, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
-		$cSale = self::getSales($eFarm, $from, $to, $forImport);
+		$cSale = self::getSales($eFarm, $search, $forImport);
 
 		return self::generateSalesFec($cSale, $cFinancialYear, $cAccount);
 
 	}
 
-	public static function countSales(\farm\Farm $eFarm, string $from, string $to): int {
+	public static function countSales(\farm\Farm $eFarm, \Search $search): int {
 
-		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+		if($search->get('type')) {
+			\selling\Sale::model()
+				->join(\selling\Customer::model(), 'm1.customer = m2.id')
+				->where('m2.type = '.\selling\Customer::model()->format($search->get('type')));
+		}
+
+		return \selling\SaleLib::filterForAccounting($eFarm,$search)
 			->whereInvoice(NULL)
 			->whereAccountingHash(NULL)
 			->whereProfile('NOT IN', [\selling\Sale::SALE_MARKET, \selling\Sale::MARKET])
@@ -66,9 +73,15 @@ Class AccountingLib {
 
 		}
 
-	private static function getSales(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE): \Collection {
+	private static function getSales(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE): \Collection {
 
-		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+		if($search->get('type')) {
+			\selling\Sale::model()
+				->join(\selling\Customer::model(), 'm1.customer = m2.id')
+				->where('m2.type = '.\selling\Customer::model()->format($search->get('type')));
+		}
+
+		return \selling\SaleLib::filterForAccounting($eFarm, $search)
 			->select([
 			  'id',
 			  'document',
@@ -207,26 +220,50 @@ Class AccountingLib {
 	 * Caractéristique : 1 facture = 1 moyen de paiement
 	 *
 	 */
-	public static function extractInvoice(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
+	public static function extractInvoice(\farm\Farm $eFarm, \Search $search, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport = FALSE): array {
 
-		$cInvoice = self::getInvoices($eFarm, $from, $to, $forImport);
+		$cInvoice = self::getInvoices($eFarm, $search, $forImport);
 
 		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount);
 
 	}
 
-	public static function countInvoices(\farm\Farm $eFarm, string $from, string $to) {
+	public static function countInvoices(\farm\Farm $eFarm, \Search $search) {
 
+		if($search->get('type')) {
+
+			\selling\Invoice::model()
+				->join(\selling\Customer::model(), 'm1.customer = m2.id')
+				->where('m2.type = '.\selling\Customer::model()->format($search->get('type')))
+				->where('m1.farm = '.$eFarm['id']);
+
+		} else {
+
+			\selling\Invoice::model()->whereFarm($eFarm);
+
+		}
 		return \selling\Invoice::model()
-     ->whereFarm($eFarm)
-     ->whereAccountingHash(NULL)
-     ->where('date BETWEEN '.\selling\Invoice::model()->format($from).' AND '.\selling\Invoice::model()->format($to))
-     ->count();
+			->whereAccountingHash(NULL)
+			->wherereadyForAccounting(TRUE)
+			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
+			->count();
 
 	}
 
-	private static function getInvoices(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE) {
+	private static function getInvoices(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
 
+		if($search->get('type')) {
+
+			\selling\Invoice::model()
+	      ->join(\selling\Customer::model(), 'm1.customer = m2.id')
+	      ->where('m2.type = '.\selling\Customer::model()->format($search->get('type')))
+				->where('m1.farm = '.$eFarm['id']);
+
+		} else {
+
+			\selling\Invoice::model()->whereFarm($eFarm);
+
+		}
 		return \selling\Invoice::model()
 			->select([
 				'id', 'date', 'name',
@@ -248,9 +285,8 @@ Class AccountingLib {
 					])
 					->delegateCollection('invoice'),
 			])
-			->whereFarm($eFarm)
 			->whereAccountingHash(NULL, if: $forImport === TRUE)
-			->where('date BETWEEN '.\selling\Invoice::model()->format($from).' AND '.\selling\Invoice::model()->format($to))
+			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
 			->getCollection();
 
 	}
@@ -380,10 +416,12 @@ Class AccountingLib {
 	}
 
 	public static function countMarkets(\farm\Farm $eFarm, string $from, string $to): int {
+
 		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
 	    ->whereProfile(\selling\Sale::MARKET)
 	    ->whereAccountingHash(NULL)
 	    ->count();
+
 	}
 
 	private static function getMarkets(\farm\Farm $eFarm, string $from, string $to, bool $forImport = FALSE): \Collection {

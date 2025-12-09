@@ -126,7 +126,7 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptAccountingImport(): bool {
-		return TRUE;
+		return $this['readyForAccounting'] === TRUE;
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {

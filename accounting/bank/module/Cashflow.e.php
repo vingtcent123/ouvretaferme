@@ -6,9 +6,8 @@ class Cashflow extends CashflowElement {
 	public static function getSelection(): array {
 
 		return Cashflow::model()->getProperties() + [
-
-			'createdBy' => \user\User::getSelection(),
-			'cInvoice' => CashflowInvoiceLib::delegateByInvoice(),
+			'import' => ['account' => ['label']],
+			'createdBy' => ['id', 'firstName', 'lastName'],
 
 		];
 

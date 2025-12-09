@@ -71,13 +71,17 @@ class InvoiceModel extends \ModuleModel {
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'cast' => 'enum'],
+			'closed' => ['bool', 'cast' => 'bool'],
+			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'readyForAccounting' => ['bool', 'cast' => 'bool'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'accountingHash', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'closed', 'closedAt', 'closedBy', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -85,6 +89,7 @@ class InvoiceModel extends \ModuleModel {
 			'content' => 'selling\PdfContent',
 			'farm' => 'farm\Farm',
 			'paymentMethod' => 'payment\Method',
+			'closedBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -103,6 +108,12 @@ class InvoiceModel extends \ModuleModel {
 
 			case 'paymentStatus' :
 				return Invoice::NOT_PAID;
+
+			case 'closed' :
+				return FALSE;
+
+			case 'readyForAccounting' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -257,8 +268,24 @@ class InvoiceModel extends \ModuleModel {
 		return $this->where('generation', ...$data);
 	}
 
+	public function whereClosed(...$data): InvoiceModel {
+		return $this->where('closed', ...$data);
+	}
+
+	public function whereClosedAt(...$data): InvoiceModel {
+		return $this->where('closedAt', ...$data);
+	}
+
+	public function whereClosedBy(...$data): InvoiceModel {
+		return $this->where('closedBy', ...$data);
+	}
+
 	public function whereAccountingHash(...$data): InvoiceModel {
 		return $this->where('accountingHash', ...$data);
+	}
+
+	public function wherereadyForAccounting(...$data): InvoiceModel {
+		return $this->where('readyForAccounting', ...$data);
 	}
 
 	public function whereEmailedAt(...$data): InvoiceModel {

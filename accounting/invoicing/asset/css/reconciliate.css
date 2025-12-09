@@ -1,0 +1,34 @@
+
+.reconciliate-table {
+
+}
+.reconciliate-table tbody:nth-of-type(even) {
+	background-color: var(--background-even);
+}
+.reconciliate-table tbody:nth-of-type(odd) {
+	background-color: var(--background-odd);
+}
+
+.reconciliate-table tbody:hover td {
+	background-color: rgba(0, 0, 0, 0.03) !important;
+}
+.reconciliate-table tbody:hover tr:has(td.reconciliate-td-operation:hover) td.reconciliate-td-operation {
+	background-color: rgba(0, 0, 0, 0.06) !important;
+}
+.reconciliate-table tbody:has(input[type="checkbox"]:checked) {
+	background-color: rgba(201, 236, 253, 0.25) !important
+}
+
+.reconciliate-table tbody td.reconciliate-td-operation {
+	white-space: nowrap;
+}
+.reconciliate-table tbody tr:first-child td.reconciliate-td-operation {
+	padding-bottom: 0;
+}
+.reconciliate-table tbody tr:last-child td.reconciliate-td-operation {
+	padding-top: 0;
+}
+.reconciliate-table tbody tr:not(:first-child):not(:last-child) td.reconciliate-td-operation {
+	padding-top: 0;
+	padding-bottom: 0;
+}

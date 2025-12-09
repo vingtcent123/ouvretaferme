@@ -5,17 +5,17 @@ Class ImportLib {
 
 	const IGNORED_SALE_HASH = '0000000000000000000';
 
-	public static function getSales(\farm\Farm $eFarm, string $from, string $to): \Collection {
+	public static function getSales(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$cFinancialYear = \account\FinancialYearLib::getAll();
 		$cAccount = \account\AccountLib::getAll();
-		$extraction = \farm\AccountingLib::extractSales($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
+		$extraction = \farm\AccountingLib::extractSales($eFarm, $search, $cFinancialYear, $cAccount, forImport: TRUE);
 
 		$cSale = \selling\Sale::model()
 			->select([
 				'id', 'document', 'customer' => ['id', 'name', 'type', 'destination'],
 				'deliveredAt', 'accountingHash', 'profile', 'invoice',
-				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat'
+				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'readyForAccounting'
 			])
 			->whereDocument('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
 			->whereFarm($eFarm)
@@ -32,18 +32,20 @@ Class ImportLib {
 
 	}
 
-	public static function getInvoiceSales(\farm\Farm $eFarm, string $from, string $to): \Collection {
+	public static function getInvoiceSales(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$cFinancialYear = \account\FinancialYearLib::getAll();
 		$cAccount = \account\AccountLib::getAll();
-		$extraction = \farm\AccountingLib::extractInvoice($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
+		$extraction = \farm\AccountingLib::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: TRUE);
 
 		$cInvoice = \selling\Invoice::model()
 			->select([
 				'id', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
 				'date', 'accountingHash',
-				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat'
+				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat',
+				'readyForAccounting',
 			])
+			->wherereadyForAccounting(TRUE)
 			->whereName('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
 			->whereFarm($eFarm)
 			->sort(['date' => SORT_ASC])
@@ -232,6 +234,8 @@ Class ImportLib {
 
 			\journal\Operation::model()->insert($eOperationThirdParty);
 
+			SuggestionLib::calculateForOperation($eOperationThirdParty);
+
 		}
 
 		\selling\Sale::model()->update($eSale, ['accountingHash' => $hash]);
@@ -341,6 +345,7 @@ Class ImportLib {
 
 			\journal\Operation::model()->insert($eOperationThirdParty);
 
+			SuggestionLib::calculateForOperation($eOperationThirdParty);
 		}
 
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);
@@ -396,7 +401,7 @@ Class ImportLib {
 
 	}
 
-	public static function getMarketsByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $ids): \Collection {
+	public static function getMarketsByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $ids): \Collection {
 
 		return \selling\SaleLib::filterForAccounting(
 					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
@@ -463,10 +468,19 @@ Class ImportLib {
 
 		if($eThirdParty->empty()) {
 
+			$eThirdParty = \account\ThirdParty::model()
+	      ->select(\account\ThirdParty::getSelection())
+	      ->whereName($eCustomer->getName())
+	      ->get();
+
+		}
+
+		if($eThirdParty->empty()) {
 			$eThirdParty = new \account\ThirdParty([
 				'name' => $eCustomer->getName(),
 				'customer' => $eCustomer,
 				'clientAccountLabel' => \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS),
+				'normalizedName' => \account\ThirdPartyLib::normalizeName($eCustomer->getName()),
 			]);
 
 			\account\ThirdPartyLib::create($eThirdParty);

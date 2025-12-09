@@ -23,6 +23,11 @@
 	background-color: rgba(0, 0, 0, 0.06) !important;
 }
 
+.invoicing-import-table tbody:has(input[type="checkbox"]:checked) {
+	background-color: rgba(201, 236, 253, 0.25) !important
+}
+
+
 .invoicing-import-table tbody td.invoicing-import-td-operation {
 	white-space: nowrap;
 }

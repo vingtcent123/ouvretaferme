@@ -14,16 +14,24 @@ new Page(
 	$from = $data->eFinancialYear['startDate'];
 	$to = $data->eFinancialYear['endDate'];
 
+	$data->search = new Search([
+		'from' => $data->eFinancialYear['startDate'],
+		'to' => $data->eFinancialYear['endDate'],
+		'type' => GET('type'),
+	]);
+
 	$data->numberImport = [
-		'market' => \farm\AccountingLib::countMarkets($data->eFarm, $from, $to),
-		'invoice' => \farm\AccountingLib::countInvoices($data->eFarm, $from, $to),
-		'sales' => \farm\AccountingLib::countSales($data->eFarm, $from, $to)
+		'market' => \farm\AccountingLib::countMarkets($data->eFarm,  $from, $to),
+		'invoice' => \farm\AccountingLib::countInvoices($data->eFarm, $data->search),
+		'sales' => \farm\AccountingLib::countSales($data->eFarm, $data->search)
 	];
+
+	$data->numberReconciliate = \invoicing\SuggestionLib::countWaitingOperations();
 
 	$data->c = match($data->selectedTab) {
 		'market' => \invoicing\ImportLib::getMarketSales($data->eFarm, $from, $to),
-		'invoice' => \invoicing\ImportLib::getInvoiceSales($data->eFarm, $from, $to),
-		'sales' => \invoicing\ImportLib::getSales($data->eFarm, $from, $to),
+		'invoice' => \invoicing\ImportLib::getInvoiceSales($data->eFarm, $data->search),
+		'sales' => \invoicing\ImportLib::getSales($data->eFarm, $data->search),
 	};
 
 	throw new ViewAction($data);

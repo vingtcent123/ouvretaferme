@@ -218,15 +218,8 @@ class Operation extends OperationElement {
 					return TRUE;
 				}
 
-				if($this['financialYear']->isAccrualAccounting()) {
+				if($this['financialYear']->isAccrualAccounting() or $this['financialYear']->isCashAccrualAccounting()) {
 					return TRUE;
-				}
-
-				if($this['financialYear']->isCashAccrualAccounting()) {
-					return (
-						\account\AccountLabelLib::isFromClass($this['accountLabel'], \account\AccountSetting::PRODUCT_ACCOUNT_CLASS) or
-						\account\AccountLabelLib::isFromClass($this['accountLabel'], \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)
-					);
 				}
 
 				return $paymentDate !== NULL;

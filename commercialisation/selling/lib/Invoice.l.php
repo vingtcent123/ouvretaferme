@@ -288,7 +288,35 @@ class InvoiceLib extends InvoiceCrud {
 
 			}
 
+			if(self::isReadyForAccounting($e)) {
+				Invoice::model()->update($e, ['readyForAccounting' => TRUE]);
+			}
+
 		Invoice::model()->commit();
+
+	}
+
+	public static function isReadyForAccounting(Invoice $eInvoice): bool {
+
+		if(
+			$eInvoice['closed'] === FALSE or
+			$eInvoice['accountingHash'] !== NULL or
+			$eInvoice['paymentMethod']->empty() or
+			$eInvoice['readyForAccounting'] === TRUE // On l'a déjà setté
+		) {
+			return FALSE;
+		}
+
+		if(
+			Item::model()
+				->whereSale('IN', $eInvoice['sales'])
+				->whereAccount(NULL)
+				->count() > 0
+		) {
+			return FALSE;
+		}
+
+		return TRUE;
 
 	}
 

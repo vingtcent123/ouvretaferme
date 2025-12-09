@@ -76,6 +76,47 @@ class LetteringLib extends LetteringCrud {
 			->count() > 0);
 	}
 
+	public static function letterOperations(Operation $eOperationCredit, Operation $eOperationDebit): void {
+
+		$letteringCode = self::generateNewCode();
+
+		$eLettering = new Lettering([
+			'credit' => $eOperationCredit,
+			'debit' => $eOperationDebit,
+			'code' => $letteringCode,
+		]);
+
+		$amount = min($eOperationDebit['amount'], $eOperationCredit['amount']);
+
+		if($eOperationDebit['amount'] === $eOperationCredit['amount']) {
+
+			$values = ['letteringStatus' => Operation::TOTAL];
+			Operation::model()
+				->whereId('IN', [$eOperationDebit['id'], $eOperationCredit['id']])
+				->update($values);
+
+			$eLettering['amount'] = $eOperationDebit['amount'];
+
+		} else if($eOperationDebit['amount'] < $eOperationCredit['amount']) {
+
+			Operation::model()->update($eOperationCredit, ['letteringStatus' => Operation::PARTIAL]);
+			Operation::model()->update($eOperationDebit, ['letteringStatus' => Operation::TOTAL]);
+
+			$eLettering['amount'] = $eOperationDebit['amount'];
+
+		} else {
+
+			Operation::model()->update($eOperationCredit, ['letteringStatus' => Operation::TOTAL]);
+			Operation::model()->update($eOperationDebit, ['letteringStatus' => Operation::PARTIAL]);
+
+			$eLettering['amount'] = $eOperationCredit['amount'];
+
+		}
+
+		Lettering::model()->insert($eLettering);
+
+	}
+
 	/**
 	 *
 	 * @param Operation $eOperationToLetter
@@ -98,6 +139,14 @@ class LetteringLib extends LetteringCrud {
 		$letteringCode = self::generateNewCode();
 
 		// Récupère toutes les opérations non lettrées
+		$where = [];
+		if($eOperationToLetter['thirdParty']['clientAccountLabel'] !== NULL) {
+			$where[] = 'accountLabel = '.Operation::model()->format($eOperationToLetter['thirdParty']['clientAccountLabel']);
+		}
+		if($eOperationToLetter['thirdParty']['supplierAccountLabel'] !== NULL) {
+			$where[] = 'accountLabel = '.Operation::model()->format($eOperationToLetter['thirdParty']['supplierAccountLabel']);
+		}
+
 		$cOperation = Operation::model()
 			->select(
 				Operation::getSelection()
@@ -112,6 +161,7 @@ class LetteringLib extends LetteringCrud {
 				fn() => $this->whereLetteringStatus('!=', Operation::TOTAL)
 			)
 			->whereThirdParty($eOperationToLetter['thirdParty'])
+			->where(join(' OR ', $where), if: count($where) > 0)
 			->where('accountLabel LIKE "'.\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS.'%" OR accountLabel LIKE "'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%"')
 			->sort(['date' => SORT_ASC])
 			->getCollection();

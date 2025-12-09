@@ -63,6 +63,9 @@ ThirdParty:
   customer: ?selling\Customer
   names: ?text16 # Quels autres noms récupère-t-on de ce tiers (sur les factures ou autres docs) ?
   memos: ?json = PHP([])
+  normalizedName: ?json = PHP([])
   UNIQUE: [
-    ["name"]
+    ["name"],
+    ["clientAccountLabel"],
+    ["supplierAccountLabel"],
   ]

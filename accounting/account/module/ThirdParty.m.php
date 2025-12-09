@@ -38,16 +38,17 @@ class ThirdPartyModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
-			'clientAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
-			'supplierAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
+			'clientAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'supplierAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'names' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'memos' => ['json', 'null' => TRUE, 'cast' => 'array'],
+			'normalizedName' => ['json', 'null' => TRUE, 'cast' => 'array'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'customer', 'names', 'memos'
+			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'customer', 'names', 'memos', 'normalizedName'
 		]);
 
 		$this->propertiesToModule += [
@@ -55,7 +56,9 @@ class ThirdPartyModel extends \ModuleModel {
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['name']
+			['name'],
+			['clientAccountLabel'],
+			['supplierAccountLabel']
 		]);
 
 	}
@@ -65,6 +68,9 @@ class ThirdPartyModel extends \ModuleModel {
 		switch($property) {
 
 			case 'memos' :
+				return [];
+
+			case 'normalizedName' :
 				return [];
 
 			default :
@@ -81,6 +87,9 @@ class ThirdPartyModel extends \ModuleModel {
 			case 'memos' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
+			case 'normalizedName' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+
 			default :
 				return parent::encode($property, $value);
 
@@ -93,6 +102,9 @@ class ThirdPartyModel extends \ModuleModel {
 		switch($property) {
 
 			case 'memos' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'normalizedName' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			default :
@@ -140,6 +152,10 @@ class ThirdPartyModel extends \ModuleModel {
 
 	public function whereMemos(...$data): ThirdPartyModel {
 		return $this->where('memos', ...$data);
+	}
+
+	public function whereNormalizedName(...$data): ThirdPartyModel {
+		return $this->where('normalizedName', ...$data);
 	}
 
 

@@ -6,11 +6,11 @@ new AdaptativeView('/ventes/importer', function($data, FarmTemplate $t) {
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/ventes/importer';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'import', ['import' => array_sum($data->numberImport)]);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'import', ['import' => array_sum($data->numberImport), 'reconciliate' => $data->numberReconciliate]);
 
 	echo '<div class="util-block-help">';
 		echo '<p>'.s("Cette page vous permet de vérifier et importer vos ventes depuis le module de commercialisation directement en comptabilité.").'</p>';
-		echo '<p>'.s("Le symbole {symbol} indique que l'import en comptabilité ne pourra pas être réalisé car des informations sont manquantes. <link>Cliquez ici</link> pour préparer les données de vos ventes à votre comptabilité.", ['symbol' => new \invoicing\ImportUi()->emptyData(), 'link' => '<a href="'.\farm\FarmUi::urlSellingSalesAccounting($data->eFarm).'&from='.$data->eFinancialYear['startDate'].'&to='.$data->eFinancialYear['endDate'].'">']).'</p>';
+		echo '<p>'.s("Si des ventes n'apparaissent pas, vérifiez si les données de vos ventes sont bien préparées pour la comptabilité sur <link>cette page</link>.", ['link' => '<a href="'.\farm\FarmUi::urlSellingSalesAccounting($data->eFarm).'&from='.$data->eFinancialYear['startDate'].'&to='.$data->eFinancialYear['endDate'].'">']).'</p>';
 	echo '</div>';
 
 	echo '<div class="tabs-item">';
@@ -32,8 +32,8 @@ new AdaptativeView('/ventes/importer', function($data, FarmTemplate $t) {
 
 	echo match($data->selectedTab) {
 		'market' => new \invoicing\ImportUi()->displayMarket($data->eFarm, $data->eFinancialYear, $data->c),
-		'invoice' => new \invoicing\ImportUi()->displayInvoice($data->eFarm, $data->eFinancialYear, $data->c),
-		'sales' => new \invoicing\ImportUi()->displaySales($data->eFarm, $data->eFinancialYear, $data->c),
+		'invoice' => new \invoicing\ImportUi()->displayInvoice($data->eFarm, $data->eFinancialYear, $data->c, $data->search),
+		'sales' => new \invoicing\ImportUi()->displaySales($data->eFarm, $data->eFinancialYear, $data->c, $data->search),
 	};
 
 });

@@ -35,6 +35,11 @@ class AlertUi {
 			'Sale::ignored.market' => s("Le marché a bien été ignoré."),
 			'Market::ignoredSeveral' => s("Les marchés ont bien été ignorés."),
 
+			'Reconciliation::reconciliate' => s("Le rapprochement sélectionné a bien été réalisé."),
+			'Reconciliation::reconciliateSeveral' => s("Les rapprochements sélectionnés ont bien été réalisés."),
+			'Reconciliation::ignored' => s("Le rapprochement sélectionné a bien été ignoré."),
+			'Reconciliation::ignoredSeveral' => s("Les rapprochements sélectionnés ont bien été ignorés."),
+
 			default => null
 
 		};

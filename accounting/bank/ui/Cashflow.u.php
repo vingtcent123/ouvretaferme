@@ -174,12 +174,7 @@ class CashflowUi {
 						$h .= '</td>';
 
 						$h .= '<td class="td-description color-primary">';
-							$h .= '<div>';
-								if($eCashflow['cInvoice']->notEmpty()) {
-									$h .= '<span class="cashflow-invoice" title="'.s("Une facture en attente de paiement a été trouvée").'">'.\Asset::icon('magic').'</span>&nbsp;';
-								}
-								$h .= encode($eCashflow['memo']);
-							$h .= '</div>';
+							$h .= encode($eCashflow['memo']);
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right">';
@@ -509,33 +504,6 @@ class CashflowUi {
 				'data-confirm-text' => s("Il y a une incohérence entre les écritures saisies et le montant de l'opération bancaire. Voulez-vous vraiment les enregistrer tel quel ?"),
 			],
 		);
-
-		if($eCashflow['cInvoice']->notEmpty()) {
-
-			if($eCashflow['cInvoice']->count() > 1) {
-
-				$h .= '<div class="mt-1">';
-					$h .= p("Une facture a été trouvée !", "{value} factures ont été trouvées !", $eCashflow['cInvoice']->count()).' ';
-					$h .= s("Sélectionnez celle qui correspond à l'opération bancaire.");
-				$h .= '</div>';
-
-			}
-
-			foreach($eCashflow['cInvoice'] as $eCashflowInvoice) {
-
-				$eInvoice = $eCashflowInvoice['invoice'];
-
-				$h .= '<div class="single-checkbox mt-1">'.$form->checkbox('invoice[id]', $eInvoice['id'], ['callbackLabel' => fn($input) => '<div>'.$input.'</div><div>'.s("Une facture {number} adressée à {clientName} d'un montant de {amount} du {date} a été trouvée.<br />Souhaitez-vous l'enregistrer comme <b>payée</b> ? Si oui, vous pouvez modifier le moyen de paiement si nécessaire :<br />{paymentMethod}", [
-					'number' => '<b>'.encode($eInvoice['name']).'</b>',
-					'date' => '<b>'.\util\DateUi::numeric($eInvoice['date']).'</b>',
-					'paymentMethod' => $form->select('invoice[paymentMethod]', $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::SELLING)), $defaultValues['paymentMethod'] ?? NULL, ['mandatory' => TRUE]),
-					'clientName' => '<b>'.encode($eInvoice['customer']->getName()).'</b>',
-					'amount' => '<b>'.\util\TextUi::money($eInvoice['priceIncludingVat']).'</b>',
-					])]).'</div></div>';
-
-			}
-
-		}
 
 		return new \Panel(
 			id         : 'panel-bank-cashflow-allocate',

@@ -8,13 +8,33 @@ Class ImportUi {
 		\Asset::js('invoicing', 'invoicing.js');
 	}
 
-	public function displaySales(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cSale): string {
+	public function displaySales(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cSale, \Search  $search): string {
 
 		if($cSale->empty()) {
 			return '<div class="util-info">'.s("Il n'y a aucune vente à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
 		}
 
-		$h = '';
+		$h = '<div id="invoice-search" class="util-block-search">';
+
+			$form = new \util\FormUi();
+			$url = LIME_REQUEST_PATH.'?tab=sales';
+
+			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+
+				$h .= '<div>';
+					$h .= $form->select('type', [
+						NULL => s("Type de client"),
+						\selling\Customer::PRO => s("Professionnels"),
+						\selling\Customer::PRIVATE => s("Particuliers"),
+					], $search->get('type', 'int', 0), ['mandatory' => TRUE]);
+					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
+
 
 		if($eFinancialYear->isCashAccrualAccounting()) {
 
@@ -58,13 +78,15 @@ Class ImportUi {
 					$operations = $eSale['operations'];
 					$operation = array_shift($operations);
 
+					$onclick = ' onclick="Invoicing.updateSelection(this);"';
+
 					$h .= '<tbody>';
 						$h .= '<tr>';
 							$h .= '<td rowspan="'.$rowspan.'" class="td-checkbox td-vertical-align-top">';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" batch-type="sales" oninput="Invoicing.changeSelection(this)" data-batch-amount-excluding="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eSale['priceIncludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 								$h .= encode($eSale['customer']->getName());
 								if($eSale['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
@@ -72,8 +94,8 @@ Class ImportUi {
 									$h .= '</div>';
 								}
 							$h .= '</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
+							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
@@ -84,8 +106,8 @@ Class ImportUi {
 								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
-							$h .= '<td class="invoicing-import-td-operation">';
+							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
+							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 								$h .= $this->emptyData();
 							} else {
@@ -93,7 +115,7 @@ Class ImportUi {
 							}
 							$h .= '</td>';
 
-							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 
@@ -110,7 +132,7 @@ Class ImportUi {
 
 						$h .= '</tr>';
 
-						$h .= $this->operations($operations);
+						$h .= $this->operations($operations, $onclick);
 
 					$h .= '</tbody>';
 				}
@@ -122,14 +144,33 @@ Class ImportUi {
 		return $h;
 	}
 
-	public function displayInvoice(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice): string {
+	public function displayInvoice(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice, \Search $search): string {
 
 
 		if($cInvoice->empty()) {
 			return '<div class="util-info">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
 		}
 
-		$h = '';
+		$h = '<div id="invoice-search" class="util-block-search">';
+
+			$form = new \util\FormUi();
+			$url = LIME_REQUEST_PATH.'?tab=invoice';
+
+			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+
+			$h .= '<div>';
+				$h .= $form->select('type', [
+					NULL => s("Type de client"),
+					\selling\Customer::PRO => s("Professionnels"),
+					\selling\Customer::PRIVATE => s("Particuliers"),
+				], $search->get('type', 'int', 0), ['mandatory' => TRUE]);
+				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+				$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+			$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
 
 		if($eFinancialYear->isCashAccrualAccounting()) {
 
@@ -173,13 +214,15 @@ Class ImportUi {
 					$operations = $eInvoice['operations'];
 					$operation = array_shift($operations);
 
+					$onclick = 'onclick="Invoicing.updateSelection(this)"';
+
 					$h .= '<tbody>';
 						$h .= '<tr>';
 							$h .= '<td rowspan="'.$rowspan.'" class="td-checkbox td-vertical-align-top">';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" batch-type="invoice" oninput="Invoicing.changeSelection(this)" data-batch-amount-excluding="'.($eInvoice['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eInvoice['priceIncludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eInvoice['date']).'</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eInvoice['date']).'</td>';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 								$h .= encode($eInvoice['customer']->getName());
 								if($eInvoice['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
@@ -187,8 +230,8 @@ Class ImportUi {
 									$h .= '</div>';
 								}
 							$h .= '</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eInvoice).'</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eInvoice).'</td>';
+							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
@@ -199,8 +242,8 @@ Class ImportUi {
 								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
-							$h .= '<td class="invoicing-import-td-operation">';
+							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
+							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 								$h .= $this->emptyData();
 							} else {
@@ -208,7 +251,7 @@ Class ImportUi {
 							}
 							$h .= '</td>';
 
-							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 
@@ -225,7 +268,7 @@ Class ImportUi {
 
 						$h .= '</tr>';
 
-						$h .= $this->operations($operations);
+						$h .= $this->operations($operations, $onclick);
 
 					$h .= '</tbody>';
 				}
@@ -279,12 +322,14 @@ Class ImportUi {
 					$operations = $eSale['operations'];
 					$operation = array_shift($operations);
 
+					$onclick = ' onclick="Invoicing.updateSelection(this);"';
+
 					$h .= '<tbody>';
 						$h .= '<tr>';
 							$h .= '<td rowspan="'.$rowspan.'" class="td-checkbox td-vertical-align-top">';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" batch-type="market" oninput="Invoicing.changeSelection(this)" data-batch-amount-excluding="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eSale['priceIncludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
 							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 								$h .= encode($eSale['customer']->getName());
 								if($eSale['customer']->notEmpty()) {
@@ -293,8 +338,8 @@ Class ImportUi {
 									$h .= '</div>';
 								}
 							$h .= '</td>';
-							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
+							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
@@ -305,8 +350,8 @@ Class ImportUi {
 								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
-							$h .= '<td class="invoicing-import-td-operation">';
+							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
+							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
 							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 								$h .= $this->emptyData();
 							} else {
@@ -314,7 +359,7 @@ Class ImportUi {
 							}
 							$h .= '</td>';
 
-							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 
@@ -331,7 +376,7 @@ Class ImportUi {
 
 						$h .= '</tr>';
 
-						$h .= $this->operations($operations);
+						$h .= $this->operations($operations, $onclick);
 
 					$h .= '</tbody>';
 				}
@@ -344,13 +389,13 @@ Class ImportUi {
 
 	}
 
-	public function operations(array $operations): string {
+	public function operations(array $operations, string $onclick): string {
 
 		$h = '';
 
 		foreach($operations as $operation) {
 
-			$h .= '<tr>';
+			$h .= '<tr '.$onclick.'>';
 
 				$h .= '<td class="text-center invoicing-import-td-operation">';
 					if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {

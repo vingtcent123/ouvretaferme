@@ -144,37 +144,6 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getForAccounting(int $id): Operation {
-
-		$search = new \Search(['id' => $id]);
-
-		return self::applySearch($search)
-			->select(
-				Operation::getSelection()
-				+ ['account' => ['class', 'description']]
-				+ ['thirdParty' => ['id', 'name']]
-				+ ['cLetteringCredit' => LetteringLib::delegate('credit', ['credit' => Operation::getSelection()])]
-				+ ['cLetteringDebit' => LetteringLib::delegate('debit', ['debit' => Operation::getSelection()])]
-			)
-			->whereThirdParty('!=', NULL)
-			->get();
-	}
-
-	public static function getAllForAccounting(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
-
-		return self::applySearch($search)
-			->select(
-				Operation::getSelection()
-				+ ['account' => ['class', 'description']]
-				+ ['thirdParty' => ['id', 'name']]
-				+ ['cLetteringCredit' => LetteringLib::delegate('credit')]
-				+ ['cLetteringDebit' => LetteringLib::delegate('debit')]
-			)
-			->whereThirdParty('!=', NULL)
-			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_ASC, 'id' => SORT_ASC])
-			->getCollection();
-	}
-
 	public static function getByThirdParty(\account\FinancialYear $eFinancialYear, string $type): \Collection {
 
 		$search = new \Search(['financialYear' => $eFinancialYear]);
@@ -648,33 +617,8 @@ class OperationLib extends OperationCrud {
 
 				// Enregistre les termes du libellé de banque pour améliorer les prédictions
 				if($isFromCashflow === TRUE) {
-					$memos = explode(' ', $eCashflow['memo']);
-					if($eOperation['thirdParty']['memos'] === NULL) {
-						$eOperation['thirdParty']['memos'] = [];
-					}
 
-					foreach($memos as $memo) {
-						$loweredMemo = mb_strtolower($memo);
-						if(
-							mb_strlen($loweredMemo) <= 3
-							or in_array($loweredMemo, ['paiement', 'carte', 'votre', 'inst', 'faveur', 'virement', 'emis', 'vers', 'facture', 'remise', 'cheque', 'especes', 'versement', 'prelevement'])
-						) {
-							continue;
-						}
-
-						$textToArray = str_split(str_replace(' ', '', $loweredMemo));
-						$numbers = count(array_filter($textToArray, function ($item) { return is_numeric($item); }));
-
-						// On ne garde pas les memo avec plus de 3 chiffres (comme des dates ou des numéros de référence)
-						if($numbers >= 3) {
-							continue;
-						}
-
-						if(isset($eOperation['thirdParty']['memos'][$loweredMemo]) === FALSE) {
-							$eOperation['thirdParty']['memos'][$loweredMemo] = 0;
-						}
-						$eOperation['thirdParty']['memos'][$loweredMemo]++;
-					}
+					$eOperation['thirdParty'] = \account\ThirdPartyLib::recalculateMemos($eCashflow, $eOperation['thirdParty']);
 
 				}
 
@@ -1099,7 +1043,7 @@ class OperationLib extends OperationCrud {
 					break;
 
 				case JournalSetting::HASH_LETTER_IMPORT_INVOICE:
-					\selling\InvoiceLib::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
+					\selling\Invoice::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
 					break;
 
 			}
@@ -1261,7 +1205,7 @@ class OperationLib extends OperationCrud {
 			'operation', 'paymentDate', 'paymentMethod', 'hash', 'journalCode',
 		], $values, new \Properties('create'));
 
-		if($document !== NULL) {
+		if($document !== NULL and $eOperationBank['documentDate'] === NULL) {
 			$eOperationBank['documentDate'] = new \Sql('NOW()');
 		}
 

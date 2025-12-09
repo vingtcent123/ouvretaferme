@@ -69,7 +69,7 @@ class Item extends ItemElement {
 		if($this['sale']->isComposition()) {
 			return $this['sale']->acceptUpdateComposition();
 		} else {
-			return in_array($this['sale']['preparationStatus'], [Sale::DELIVERED]);
+			return in_array($this['sale']['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED]);
 		}
 
 	}

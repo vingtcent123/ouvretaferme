@@ -100,21 +100,36 @@ class ProductLib extends ProductCrud {
 
 		if($e['farm']->hasAccounting()) {
 
-			Item::model()
-				->whereFarm($e['farm'])
-				->whereProduct($e)
-				->whereType(Item::PRO)
-				->update(['account' => $e['proAccount']]);
-
-			Item::model()
-				->whereFarm($e['farm'])
-				->whereProduct($e)
-				->whereType(Item::PRIVATE)
-				->update(['account' => $e['privateAccount']]);
+			self::updateItemsAccount($e);
 
 		}
 
 		Product::model()->commit();
+
+	}
+
+	private static function updateItemsAccount(Product $eProduct): void {
+
+		$proAccount = $eProduct['proAccount']->empty() ? $eProduct['privateAccount'] : $eProduct['proAccount'];
+
+		$cItem = Item::model()
+			->select(Item::getSelection())
+			->whereProduct($eProduct)
+			->getCollection();
+
+		foreach($cItem as $eItem) {
+
+			if($eItem['type'] === Item::PRO) {
+				$eItem['account'] = $proAccount;
+			} else {
+				$eItem['account'] = $eProduct['privateAccount'];
+			}
+
+			if($eItem->canWriteAccounting()) {
+				ItemLib::update($eItem, ['account']);
+			}
+
+		}
 
 	}
 
