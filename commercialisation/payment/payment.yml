@@ -8,10 +8,8 @@ StripeFarm:
   createdBy: user\User = SPECIAL(user)
   createdAt: datetime = SPECIAL(now)
   ENCODE:
-    apiSecretKey: |
-      $value === NULL ? NULL : \main\CryptLib::encrypt($value, 'payment')
-    webhookSecretKey: |
-      $value === NULL ? NULL : \main\CryptLib::encrypt($value, 'payment')
+    apiSecretKey: \main\CryptLib::encrypt($value, 'payment')
+    webhookSecretKey: \main\CryptLib::encrypt($value, 'payment')
   DECODE:
     apiSecretKey: \main\CryptLib::decrypt($value, 'payment')
     webhookSecretKey: \main\CryptLib::decrypt($value, 'payment')

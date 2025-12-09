@@ -5,7 +5,11 @@ class CryptLib {
 
 	const METHOD = 'AES256';
 
-	public static function encrypt(string $data, string $secret): string {
+	public static function encrypt(?string $data, string $secret): ?string {
+
+		if($data === NULL) {
+			return NULL;
+		}
 
 		$passphrase = MainSetting::$crypt[$secret] ?? throw new \Exception('Missing secret');
 
@@ -16,7 +20,11 @@ class CryptLib {
 
 	}
 
-	public static function decrypt(string $data, string $secret): ?string {
+	public static function decrypt(?string $data, string $secret): ?string {
+
+		if($data === NULL) {
+			return NULL;
+		}
 
 		$passphrase = MainSetting::$crypt[$secret] ?? throw new \Exception('Missing secret');
 		$decodedData = base64_decode($data);
