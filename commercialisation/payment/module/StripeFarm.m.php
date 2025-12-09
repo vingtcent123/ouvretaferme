@@ -83,10 +83,12 @@ class StripeFarmModel extends \ModuleModel {
 		switch($property) {
 
 			case 'apiSecretKey' :
-				return \main\CryptLib::encrypt($value, 'payment');
+				return $value === NULL ? NULL : \main\CryptLib::encrypt($value, 'payment')
+;
 
 			case 'webhookSecretKey' :
-				return \main\CryptLib::encrypt($value, 'payment');
+				return $value === NULL ? NULL : \main\CryptLib::encrypt($value, 'payment')
+;
 
 			default :
 				return parent::encode($property, $value);
