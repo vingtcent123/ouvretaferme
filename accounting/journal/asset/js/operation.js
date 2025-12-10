@@ -114,6 +114,8 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
         Operation.updateType(e.detail);
         Operation.refreshVAT(e.detail);
 
+        qs('[data-account-label="journal-operation-create"][data-index="' + index + '"]').focus();
+
     } else {
 
         Operation.resetVat(index);
