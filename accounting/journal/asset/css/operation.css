@@ -100,6 +100,7 @@
 	padding-left: 0.5rem;
 	border-left: 3px solid #0001;
 }
+.operation-create-buttons,
 .operation-create-button-add {
 	display: flex;
 	justify-content: end;
