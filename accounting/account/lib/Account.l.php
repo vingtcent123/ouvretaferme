@@ -86,11 +86,26 @@ class AccountLib extends AccountCrud {
 		if($search->get('classPrefixes')) {
 			Account::model()->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->get('classPrefixes'));
 		}
+
 		if($search->has('stock')) {
 			Account::model()->where('class LIKE "%'.$search->has('stock').'%"');
 		}
+
 		if($query !== '') {
+
 			$query = first(explode(' ', $query));
+
+			// Recherche par classe de compte
+			if($query === (string)(int)($query)) {
+
+				Account::model()->whereClass('LIKE', $query.'%');
+
+			// Recherche textuelle
+			} else {
+
+				Account::model()->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '');
+
+			}
 		}
 		return Account::model()
 			->select(
@@ -99,9 +114,7 @@ class AccountLib extends AccountCrud {
 				+ ['journalCode' => ['id', 'code', 'name']],
       )
 			->sort(['class' => SORT_ASC])
-			->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '')
 			->where('class LIKE "'.$search->get('classPrefix').'%"', if: $search->get('classPrefix'))
-			->whereClass('LIKE', fn() => '%'.$search->get('class').'%', if: $search->get('class') and is_string($search->get('class')))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
@@ -110,15 +123,15 @@ class AccountLib extends AccountCrud {
 			->getCollection(NULL, NULL, 'id');
 	}
 
+	/**
+	 * @param \Collection $cAccount Tous les comptes (potentiellement filtrés par la recherche)
+	 * @param int|null $thirdParty Filtre par tiers
+	 * @param array $accountsAlreadyUsed Accounts déjà utilisés dans le formulaire de création
+	 * @return \Collection Tous les comptes retriés
+	 */
 	public static function orderAccounts(\Collection $cAccount, ?int $thirdParty, array $accountsAlreadyUsed): \Collection {
 
-		if($thirdParty === NULL and count($accountsAlreadyUsed) === 0) {
-			return $cAccount;
-		}
-
-		$eThirdParty = ThirdPartyLib::getById($thirdParty);
-
-		$cOperationThirdParty = \journal\OperationLib::getByThirdPartyAndOrderedByUsage($eThirdParty);
+		$cOperationByUsage = \journal\OperationLib::getOrderedByUsage();
 
 		$cAccountByThirdParty = new \Collection();
 		$cAccountOthers = new \Collection();
@@ -126,19 +139,29 @@ class AccountLib extends AccountCrud {
 		// Comptes liés au tiers en priorité :
 		// - triés par nombre d'usages décroissants
 		// - en mettant classes 4 (comptes de tiers : TVA) et classe 5 (comptes financiers) et classes déjà utilisées
+		// Ensuite, comptes utilisés dans l'ordre décroissant d'usage (groupés par classe principale)
 		$cAccountClassThird = new \Collection();
+		$cAccountClassUsed = new \Collection();
 		$cAccountClassAfter = new \Collection();
 
-		foreach($cOperationThirdParty as $eOperation) {
+		if($thirdParty !== NULL) {
 
-			if($cAccount->offsetExists($eOperation['account']['id']) === TRUE) {
+			$eThirdParty = ThirdPartyLib::getById($thirdParty);
+			$cOperationThirdParty = \journal\OperationLib::getByThirdPartyAndOrderedByUsage($eThirdParty);
+
+			foreach($cOperationThirdParty as $eOperation) {
+
+				if($cAccount->findById($eOperation['account'])->empty()) {
+					continue;
+				}
 
 				$eAccount = $cAccount->offsetGet($eOperation['account']['id']);
 				$eAccount['thirdParty'] = TRUE;
+				$eAccount['used'] = FALSE;
 
 				if(in_array($eAccount['id'], $accountsAlreadyUsed) === TRUE) {
 
-						$cAccountClassAfter->append($eAccount);
+					$cAccountClassAfter->append($eAccount);
 
 				} else {
 
@@ -153,27 +176,61 @@ class AccountLib extends AccountCrud {
 							break;
 
 						default:
-							$cAccountByThirdParty->append($cAccount->offsetGet($eOperation['account']['id']));
+							$cAccountByThirdParty->append($eAccount);
 					}
 
 				}
 
 			}
-
 		}
 
 		$cAccountByThirdParty->mergeCollection($cAccountClassThird);
 		$cAccountByThirdParty->mergeCollection($cAccountClassAfter);
 
-		// On empile tous les autres comptes
-		foreach($cAccount as $eAccount) {
-			if($cOperationThirdParty->offsetExists($eAccount['id']) === FALSE) {
-				$eAccount['thirdParty'] = FALSE;
-				$cAccountOthers->append($eAccount);
-			}
+		$cAccountClassUsedGrouped = [];
+
+		foreach([AccountSetting::CAPITAL_GENERAL_CLASS, AccountSetting::ASSET_GENERAL_CLASS, AccountSetting::STOCK_GENERAL_CLASS, AccountSetting::THIRD_PARTY_GENERAL_CLASS, AccountSetting::FINANCIAL_GENERAL_CLASS, AccountSetting::CHARGE_ACCOUNT_CLASS, AccountSetting::PRODUCT_ACCOUNT_CLASS] as $class) {
+			$cAccountClassUsedGrouped[$class] = new \Collection();
 		}
 
-		return $cAccountByThirdParty->mergeCollection($cAccountOthers);
+		foreach($cOperationByUsage as $eOperation) {
+
+			if(
+				$cAccount->findById($eOperation['account'])->empty() or
+				$cAccountByThirdParty->findById($eOperation['account'])->notEmpty()
+			) {
+				continue;
+			}
+
+			$eAccount = $cAccount->offsetGet($eOperation['account']['id']);
+			$eAccount['thirdParty'] = FALSE;
+			$eAccount['used'] = TRUE;
+			$class = (int)mb_substr($eAccount['class'], 0, 1);
+			$cAccountClassUsedGrouped[$class]->append($eAccount);
+
+		}
+
+		foreach($cAccountClassUsedGrouped as $cAccountClassUsedUngrouped) {
+			$cAccountClassUsed->mergeCollection($cAccountClassUsedUngrouped);
+		}
+
+		// On empile tous les autres comptes
+		foreach($cAccount as $eAccount) {
+
+			if(
+				$cAccountByThirdParty->findById($eAccount)->notEmpty() or
+				$cAccountClassUsed->findById($eAccount)->notEmpty()
+			) {
+				continue;
+			}
+
+			$eAccount['thirdParty'] = FALSE;
+			$eAccount['used'] = FALSE;
+			$cAccountOthers->append($eAccount);
+
+		}
+
+		return $cAccountByThirdParty->mergeCollection($cAccountClassUsed)->mergeCollection($cAccountOthers);
 
 	}
 

@@ -16,8 +16,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = [];
-	$found = FALSE;
-	$others = FALSE;
 
 	if(GET('canHaveNoAccountOption', 'bool') === TRUE) {
 
@@ -25,31 +23,58 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	}
 
+	$cAccountThirdParty = new Collection();
+	$cAccountUsed = new Collection();
+	$cAccountOthers = new Collection();
+
 	foreach($data->cAccount as $eAccount) {
+		if($eAccount['thirdParty'] === TRUE) {
+			$cAccountThirdParty->append($eAccount);
+		} else if($eAccount['used'] === TRUE) {
+			$cAccountUsed->append($eAccount);
+		} else {
+			$cAccountOthers->append($eAccount);
+		}
+	}
 
-		if($found === FALSE and ($eAccount['thirdParty'] ?? FALSE) === TRUE and $others === FALSE) {
+	if($cAccountThirdParty->notEmpty()) {
 
-			$results[] = [
-				'type' => 'title',
-				'itemHtml' => '<div>'.s("Classes de compte trouvées automatiquement").'</div>',
-				'itemText' => s("Classes de compte trouvées automatiquement"),
-			];
+		$results[] = [
+			'type' => 'title',
+			'itemHtml' => '<div>'.s("Classes de compte trouvées par le tiers").'</div>',
+			'itemText' => s("Classes de compte trouvées par le tiers"),
+		];
 
-			$found = TRUE;
-
-		} else if($found === TRUE and ($eAccount['thirdParty'] ?? FALSE) === FALSE and $others === FALSE) {
-
-			$results[] = [
-				'type' => 'title',
-				'itemHtml' => '<div>'.s("Toutes les autres classes de compte").'</div>',
-				'itemText' => s("Toutes les autres classes de compte"),
-			];
-
-			$others = TRUE;
-
+		foreach($cAccountThirdParty as $eAccount) {
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
 		}
 
-		$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
+	}
+
+	if($cAccountUsed->notEmpty()) {
+
+		$results[] = [
+			'type' => 'title',
+			'itemHtml' => '<div>'.s("Classes de compte déjà utilisées (par classe puis ordre décroissant d'utilisation)").'</div>',
+			'itemText' => s("Classes de compte déjà utilisées (par classe puis ordre décroissant d'utilisation)"),
+		];
+
+		foreach($cAccountUsed as $eAccount) {
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
+		}
+	}
+
+	if($cAccountOthers->notEmpty()) {
+
+		$results[] = [
+			'type' => 'title',
+			'itemHtml' => '<div>'.s("Toutes les autres classes de compte").'</div>',
+			'itemText' => s("Toutes les autres classes de compte"),
+		];
+
+		foreach($cAccountOthers as $eAccount) {
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
+		}
 
 	}
 

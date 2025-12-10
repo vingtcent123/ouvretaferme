@@ -97,6 +97,15 @@ class OperationLib extends OperationCrud {
 			->getCollection(NULL, NULL, 'account');
 
 	}
+	public static function getOrderedByUsage(): \Collection {
+
+		return \journal\Operation::model()
+			->select(['account', 'count' => new \Sql('COUNT(*)')])
+			->group('account')
+			->sort(['count' => SORT_DESC])
+			->getCollection(NULL, NULL, 'account');
+
+	}
 
 	public static function getByHash(string $hash): \Collection {
 

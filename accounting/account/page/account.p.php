@@ -77,9 +77,9 @@ new Page(function($data) {
 	}
 	$data->search->set('visible', TRUE);
 
-	$data->cAccount = \account\AccountLib::getAll(query: $query, search: $data->search);
+	$cAccount = \account\AccountLib::getAll(query: $query, search: $data->search);
 
-	$data->cAccount = \account\AccountLib::orderAccounts($data->cAccount, $thirdParty, $accountsAlreadyUsed);
+	$data->cAccount = \account\AccountLib::orderAccounts($cAccount, $thirdParty, $accountsAlreadyUsed);
 
 	throw new \ViewAction($data);
 

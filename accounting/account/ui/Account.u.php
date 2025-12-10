@@ -287,7 +287,8 @@ class AccountUi {
 		return [
 			'type' => 'link',
 			'link' => \company\CompanyUi::urlAccount($eFarm).'/account',
-			'itemHtml' => $item
+			'itemHtml' => $item,
+			'target' => '_blank',
 		];
 
 	}
