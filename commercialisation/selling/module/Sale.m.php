@@ -483,7 +483,7 @@ class SaleModel extends \ModuleModel {
 		return $this->where('accountingHash', ...$data);
 	}
 
-	public function wherereadyForAccounting(...$data): SaleModel {
+	public function whereReadyForAccounting(...$data): SaleModel {
 		return $this->where('readyForAccounting', ...$data);
 	}
 

@@ -45,7 +45,7 @@ Class ImportLib {
 				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat',
 				'readyForAccounting',
 			])
-			->wherereadyForAccounting(TRUE)
+			->whereReadyForAccounting(TRUE)
 			->whereName('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
 			->whereFarm($eFarm)
 			->sort(['date' => SORT_ASC])

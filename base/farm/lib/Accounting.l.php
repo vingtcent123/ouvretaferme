@@ -244,7 +244,7 @@ Class AccountingLib {
 		}
 		return \selling\Invoice::model()
 			->whereAccountingHash(NULL)
-			->wherereadyForAccounting(TRUE)
+			->whereReadyForAccounting(TRUE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
 			->count();
 

@@ -1663,7 +1663,7 @@ class SaleLib extends SaleCrud {
 			->where('priceExcludingVat != 0.0')
 			->where('m1.farm = '.$eFarm['id'])
 			->where('deliveredAt BETWEEN '.Sale::model()->format($search->get('from')).' AND '.Sale::model()->format($search->get('to')))
-			->wherereadyForAccounting(TRUE)
+			->whereReadyForAccounting(TRUE)
 			->whereId($search->get('id'), if: $search->get('id'))
 			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
 

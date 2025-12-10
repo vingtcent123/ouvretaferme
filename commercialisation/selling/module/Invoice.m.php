@@ -284,7 +284,7 @@ class InvoiceModel extends \ModuleModel {
 		return $this->where('accountingHash', ...$data);
 	}
 
-	public function wherereadyForAccounting(...$data): InvoiceModel {
+	public function whereReadyForAccounting(...$data): InvoiceModel {
 		return $this->where('readyForAccounting', ...$data);
 	}
 
