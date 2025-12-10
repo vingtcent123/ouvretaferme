@@ -1259,7 +1259,7 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting" data-nav="accounting">';
+			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting">';
 
 				$h .= '<div class="farm-nav-accounting-selector">';
 
