@@ -3,7 +3,7 @@ new Page(function($data) {
 
 	$cFarmer = \farm\FarmerLib::getOnline();
 	$cFarm = \farm\Farm::model()
-		->select('id', 'hasAccounting')
+		->select('id', 'hasAccounting', 'accountingYears')
 		->whereId('IN', $cFarmer->getColumnCollection('farm')->getIds())
 		->getCollection();
 

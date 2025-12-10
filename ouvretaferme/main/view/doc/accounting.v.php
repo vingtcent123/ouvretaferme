@@ -55,6 +55,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo '<li>'.s("Le séparateur des nombres décimaux est le point (.) et non la virgule (,)").'</li>';
 		echo '</ul>';
 		echo '<br/>';
+		echo '<div class="util-warning-outline">'.s("Attention, pour que votre fichier soit valide, vos ventes et factures doivent être <b>clôturées</b> et chaque article doit avoir la <b>classe de compte</b> qui lui correspond.").'</div>';
 		echo '<h3>'.s("Format des données du fichier").'</h3>';
 
 		$data = [
@@ -164,7 +165,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				'IDevise',
 				s("Devise (€)"),
 				s("Sera toujours égal à EUR."),
-				'-5.90'
+				'EUR'
 			],
 			[
 				'DateRglt',
