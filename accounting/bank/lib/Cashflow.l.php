@@ -22,6 +22,8 @@ class CashflowLib extends CashflowCrud {
 		return Cashflow::model()
 			->whereImport('=', $search->get('import'), if: $search->has('import'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
+			->whereDate('>=', $search->get('from').'%', if: $search->get('from'))
+			->whereDate('<=', $search->get('to').'%', if: $search->get('to'))
 			->whereFitid('LIKE', '%'.$search->get('fitid').'%', if: $search->get('fitid'))
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
@@ -40,6 +42,23 @@ class CashflowLib extends CashflowCrud {
 
 	}
 
+	public static function getMinMaxDate(): array {
+
+		$eCashflow = Cashflow::model()
+			->select([
+				'min' => new \Sql('MIN(date)'),
+				'max' => new \Sql('MAX(date)'),
+			])
+			->where(TRUE)
+			->get();
+
+		if($eCashflow->empty()) {
+			return ['', ''];
+		}
+
+		return array_values($eCashflow->getArrayCopy());
+
+	}
 	public static function countByStatus(\Search $search): \Collection {
 
 		$searchWithoutStatus = new \Search($search->getFiltered(['status']));

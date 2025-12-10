@@ -1167,15 +1167,42 @@ class FormUi {
 
 			if($display === 'auto' or $display === 'fallback') {
 
+				$yearAttributes = [
+					'data-fallback' => 'year',
+					'placeholder' => s("Année")
+				];
+
+				if(isset($attributes['min']) and isset($attributes['max'])) {
+
+					$minYear = min([date_year($attributes['min']), date_year($attributes['max'])]);
+					$maxYear = max([date_year($attributes['min']), date_year($attributes['max'])]);
+					$values = [];
+
+					for($currentYear = $minYear; $currentYear <= $maxYear; $currentYear++) {
+						$values[] = ['value' => $currentYear, 'label' => $currentYear];
+					}
+
+					if(count($values) === 1) {
+						$year = $this->hidden($name.'Year', $values[0]['value'], $yearAttributes);
+					} else {
+						$year = $this->select($name.'Year', $values, $value ? date_year($value) : NULL, $yearAttributes);
+					}
+
+				} else {
+
+					$year = $this->number($name.'Year', $value ? date_year($value) : NULL, [
+						'data-fallback' => 'year',
+						'placeholder' => s("Année")
+					]);
+
+				}
+
 				$h .= '<div class="field-month-fallback input-group hide">';
 					$h .= $this->select($name.'Month', DateUi::months(), $value ? date_month($value) : NULL, [
 						'placeholder' => s("Mois"),
 						'data-fallback' => 'monthNumber',
 					]).' ';
-					$h .= $this->number($name.'Year', $value ? date_year($value) : NULL, [
-						'data-fallback' => 'year',
-						'placeholder' => s("Année")
-					]);
+					$h .= $year;
 				$h .= '</div>';
 
 			}

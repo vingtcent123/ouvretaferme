@@ -18,6 +18,17 @@ new Page(function($data) {
 			$data->cFinancialYear = new Collection();
 		}
 
+		if(GET('periodStart')) {
+			$periodStart = GET('periodStart').'-01';
+		} else {
+			$periodStart = '';
+		}
+
+		if(GET('periodEnd') and \util\DateLib::isValid(GET('periodEnd').'-01')) {
+			$periodEnd = date('Y-m-d', strtotime(GET('periodEnd').'-01 + 1 month - 1 day'));
+		} else {
+			$periodEnd = '';
+		}
 		$search = new Search([
 			'date' => GET('date'),
 			'fitid' => GET('fitid'),
@@ -25,6 +36,11 @@ new Page(function($data) {
 			'status' => GET('status'),
 			'amount' => GET('amount'),
 			'margin' => GET('margin'),
+			'from' => $periodStart,
+			'to' => $periodEnd,
+			'periodStart' => GET('periodStart'),
+			'periodEnd' => GET('periodEnd'),
+			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
 		], GET('sort'));
 
 		if(GET('amount')) {
@@ -41,9 +57,6 @@ new Page(function($data) {
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 
-		// Ne pas ouvrir le bloc de recherche pour ces champs
-		$search->set('financialYear', $data->eFinancialYear);
-
 		if($search->get('statusWithDeleted') === FALSE) {
 			$search->set('statusNotDeleted', TRUE);
 		}
@@ -54,6 +67,7 @@ new Page(function($data) {
 			$data->eImport = new \bank\Import();
 		}
 
+		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
 		$data->nCashflow = \bank\CashflowLib::countByStatus($search);
 		$data->nCashflow->offsetSet('all', new \bank\Cashflow(['count' => array_sum($data->nCashflow->getColumn('count'))]));
 		$data->cCashflow = \bank\CashflowLib::getAll($search, $hasSort);

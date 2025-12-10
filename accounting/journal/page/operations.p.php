@@ -21,6 +21,17 @@ new Page(function($data) {
 			? account\ThirdPartyLib::getById(GET('thirdParty', 'int'))
 			: NULL;
 
+		if(GET('periodStart')) {
+			$periodStart = GET('periodStart').'-01';
+		} else {
+			$periodStart = '';
+		}
+
+		if(GET('periodEnd') and \util\DateLib::isValid(GET('periodEnd').'-01')) {
+			$periodEnd = date('Y-m-d', strtotime(GET('periodEnd').'-01 + 1 month - 1 day'));
+		} else {
+			$periodEnd = '';
+		}
 		$search = new Search([
 			'date' => GET('date'),
 			'accountLabel' => GET('accountLabel'),
@@ -31,6 +42,10 @@ new Page(function($data) {
 			'asset' => GET('asset'),
 			'paymentMethod' => GET('paymentMethod'),
 			'hasDocument' => GET('hasDocument'),
+			'minDate' => $periodStart,
+			'maxDate' => $periodEnd,
+			'periodStart' => GET('periodStart'),
+			'periodEnd' => GET('periodEnd'),
 		], GET('sort'));
 
 		$search->set('cashflowFilter', GET('cashflowFilter', 'bool'));
@@ -106,7 +121,6 @@ new Page(function($data) {
 			}
 
 		}
-
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 		$data->cJournalCode = \journal\JournalCodeLib::getAll();

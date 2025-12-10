@@ -78,7 +78,12 @@ class JournalUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 				$h .= '<div>';
-					$h .= $form->month('date', $search->get('date'), ['placeholder' => s("Mois")]);
+					$h .= $form->inputGroup($form->addon(s("entre")).
+						$form->month('periodStart', $search->get('periodStart'), ['min' => $eFinancialYearSelected['startDate'], 'max' => $eFinancialYearSelected['endDate'], 'placeholder' => s("Début")]).
+						$form->addon("et").
+						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $eFinancialYearSelected['startDate'], 'max' => $eFinancialYearSelected['endDate'], 'placeholder' => s("Fin")]),
+						['class' => 'company-period-input-group']
+					);
 					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Classe de compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
 					$h .= $form->select('type', $statuses, $search->get('type'), ['placeholder' => s("Type")]);

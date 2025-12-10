@@ -3,8 +3,6 @@ namespace journal;
 
 class OperationLib extends OperationCrud {
 
-	const TMP_INVOICE_FOLDER = 'tmp-invoice';
-
 	public static function getPropertiesCreate(): array {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}

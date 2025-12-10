@@ -9,18 +9,30 @@ class CashflowUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYear): string {
+	public function getSearch(\Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate): string {
 
 		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids', 'status']) ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
-		$url = LIME_REQUEST_PATH.'?financialYear='.($eFinancialYear['id'] ?? NULL);
+		$url = LIME_REQUEST_PATH;
 		$statuses = CashflowUi::p('status')->values;
 
 		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 		$h .= '<div>';
-			$h .= $form->month('date', $search->get('date'), ['placeholder' => s("Mois")]);
+			if($cFinancialYear->count() > 1) {
+				$values = [];
+				foreach($cFinancialYear as $eFinancialYearCurrent) {
+					$values[] = ['value' => $eFinancialYearCurrent['id'], 'label' => s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearCurrent))];
+				}
+				$h .= $form->select('year', $values, $search->get('financialYear')['id'] ?? NULL, ['placeholder' => s("Exercice comptable")]);
+			}
+			$h .= $form->inputGroup($form->addon(s("entre")).
+				$form->month('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
+				$form->addon("et").
+				$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")]),
+				['class' => 'company-period-input-group']
+			);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut")]);
 			$h .= $form->inputGroup($form->addon(s('Montant'))
@@ -29,7 +41,7 @@ class CashflowUi {
 					.$form->number('margin', $search->get('margin', 1))
 					.$form->addon(s('€'))
 			);
-			$h .= $form->checkbox('statusWithDeleted', 1, ['checked' => $search->get('statusWithDeleted'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher aussi les opérations supprimées")]);
+			$h .= $form->checkbox('statusWithDeleted', 1, ['checked' => $search->get('statusWithDeleted'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher également les opérations supprimées")]);
 		$h .= '</div>';
 		$h .= '<div>';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
