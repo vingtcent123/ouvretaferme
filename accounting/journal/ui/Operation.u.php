@@ -636,7 +636,14 @@ class OperationUi {
 			],
 		);
 
-		$h = $form->hidden('farm', $eFarm['id']);
+		$h = '<div class="util-block-help">';
+			$h .= s("En renseignant un paiement, une écriture sur le compte de banque {bankAccount} et une écriture sur le compte fournisseur {supplierAccount} ou le compte client {clientAccount} seront automatiquement créés.<br />De même, le lettrage avec le compte de tiers sera effectué s'il y a des opérations dans le sens inverse !", [
+				'bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>',
+				'clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>',
+				'supplierAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS.'</b>',
+			]);
+		$h .= '</div>';
+		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
 		$h .= $form->group(

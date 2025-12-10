@@ -27,10 +27,10 @@ class JournalUi {
 						and $eFinancialYear['status'] === \account\FinancialYearElement::OPEN
 						and $eFarm->canManage()
 					) {
-						if($eFinancialYear->isCashAccounting()) {
+						if($eFinancialYear->isCashAccounting() or $eFinancialYear->isCashAccrualAccounting()) {
 							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?financialYear='.$eFinancialYear['id'].'&journalCode='.GET('journalCode').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
 						}
-						if($eFinancialYear->isAccrualAccounting() or $eFinancialYear->isCashAccrualAccounting()) {
+						if($eFinancialYear->isAccrualAccounting()) {
 
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter...").'</a>';
 							$h .= '<div class="dropdown-list">';
