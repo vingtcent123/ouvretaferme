@@ -32,7 +32,7 @@ new \account\ThirdPartyPage(
 	})
 	->doCreate(function($data) {
 
-		throw new ReloadAction('account', 'ThirdParty::created');
+		throw new ViewAction($data);
 
 	})
 	->quick(['name', 'customer', 'clientAccountLabel', 'supplierAccountLabel'])
