@@ -5,22 +5,23 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	$t->menuSelected = 'accounting';
 
 	$t->title = s("Prendre en main le module de comptabilité");
-	$t->subTitle = s("Utiliser OTF pour tenir sa comptabilité simplement");
+	$t->subTitle = s("Utiliser Ouvretaferme pour tenir sa comptabilité simplement");
 
 	echo '<div class="util-block">';
 
 	echo '<h5 style="text-transform: uppercase">'.s("Introduction à la comptabilité sur Ouvretaferme").'</h5>';
 	echo '<h2>'.s("Utiliser Ouvretaferme pour préparer (puis tenir) sa comptabilité").'</h2>';
-	echo '<p>'.s("Sur Ouvretaferme, nous avons fait le choix de vous permettre de préparer vos données de vente à votre comptabilité sans être obligé·e·s d'utiliser le module de comptabilité. Cela signifie que : ").'</p>';
+	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer vos données de vente à votre comptabilité sans être obligé·e·s d'utiliser le module de comptabilité. Cela signifie que : ").'</p>';
 	echo '<ul>';
 		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, comptes de clients, comptes de produits de vos ventes)").'</li>';
 		echo '<li>'.s("Vous indiquez pour chaque produit à quel compte le rattacher").'</li>';
 		echo '<li>'.s("Vous clôturez vos ventes (moyen de paiement, date de livraison)").'</li>';
 	echo '</ul>';
-	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format FEC et vous l'importez dans votre logiciel de comptabilité habituel");
+	echo '<p>'.s("Au final, ").'</p>';
+	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format FEC puis l'importez dans votre logiciel de comptabilité habituel");
 	echo '<br />';
 	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos ventes dans le module de comptabilité d'Ouvretaferme");
-	echo '<p class="mt-1">'.s("...C'est <b>vous qui choisissez</b> le niveau d'utilisation de la comptabilité proposé par Ouvretaferme !").'</p>';
+	echo '<p class="mt-1">'.s("... C'est <b>vous qui choisissez</b> le niveau d'utilisation de la comptabilité proposé par Ouvretaferme !").'</p>';
 
 	echo '</div>';
 
