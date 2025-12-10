@@ -113,7 +113,7 @@ Class ImportLib {
 		return [
 			'id',
 			'document', 'invoice', 'accountingHash', 'preparationStatus', 'closed',
-			'type', 'profile', 'priceIncludingVat',
+			'type', 'profile', 'priceIncludingVat', 'readyForAccounting',
 			'customer' => [
 			'id', 'name',
 			'thirdParty' => \account\ThirdParty::model()

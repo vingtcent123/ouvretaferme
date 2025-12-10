@@ -16,7 +16,11 @@ new Page(function($data) {
 		'from' => GET('from'),
 		'to' => GET('to'),
 	]);
-	$data->isSearchValid = ($data->search->get('from') and $data->search->get('to') and \util\DateLib::isValid($data->search->get('from')) and \util\DateLib::isValid($data->search->get('to')));
+	$data->isSearchValid = (
+		$data->search->get('from') and $data->search->get('to') and
+		\util\DateLib::isValid($data->search->get('from')) and
+		\util\DateLib::isValid($data->search->get('to'))
+	);
 
 	if($data->isSearchValid and $data->search->get('from') > $data->search->get('to')) {
 		$from = $data->search->get('from');
