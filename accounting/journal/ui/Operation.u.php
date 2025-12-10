@@ -856,6 +856,7 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('comment')->label.'</div>';
+			$h .= '<div class="operation-create-header amount-header"></div>';
 			$h .= '<div class="operation-create-header">'.s("Montant TTC").'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -943,13 +944,6 @@ class OperationUi {
 				$h .= '<h4>'.s("Écriture #{number}", ['number' => $index + 1]).'</h4>';
 
 					$h .= '<div class="operation-create-actions">';
-						if($isFromCashflow === TRUE) {
-
-							$h .= '<div data-index="'.$index.'">';
-								$h .= '<a onclick="Cashflow.recalculate('.$index.')" class="btn btn-outline-primary" title="'.s("Réinitialiser par rapport aux autres écritures").'">'.\Asset::icon('magic').'</a>';
-							$h .= '</div>';
-
-						}
 					$h .= '<div class="hide" data-index="'.$index.'" data-operation-delete>';
 						$h .= '<a onclick="Operation.deleteOperation(this)" class="btn btn-outline-primary">'.\Asset::icon('trash').'</a>';
 					$h .= '</div>';
@@ -1055,6 +1049,16 @@ class OperationUi {
 				$h .= $form->dynamicField($eOperation, 'comment'.$suffix, function($d) {
 					$d->default = $defaultValues['comment'] ?? '';
 				});
+			$h .='</div>';
+
+			$h .= '<div data-wrapper="amounts" class="operation-create-title">';
+				if($isFromCashflow === TRUE) {
+					$h .= '<h4 style="margin: auto 0;">'.s("Montants").'</h4>';
+					$h .= '<div data-index="'.$index.'">';
+						$h .= '<a onclick="Cashflow.recalculate('.$index.')" class="btn btn-outline-primary" title="'.s("Réinitialiser par rapport aux autres écritures").'">'.\Asset::icon('magic').'</a>';
+					$h .= '</div>';
+
+				}
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="amountIncludingVAT'.$suffix.'">';
@@ -1207,6 +1211,7 @@ class OperationUi {
 		$h = '<div class="operation-create operation-create-validation">';
 
 			$h .= '<h4></h4>';
+			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
