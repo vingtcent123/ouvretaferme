@@ -130,24 +130,6 @@ new \journal\OperationPage(
 		throw new ViewAction($data);
 
 	})
-	->post('readInvoice', function($data) {
-
-		if(POST('columns', 'int') !== 1) {
-			throw new NotExpectedAction('Impossible to read an invoice when there are more than 1 operation in form.');
-		}
-
-		$fw = new FailWatch();
-
-		$data->operation = \journal\OperationLib::readInvoice($data->eFarm, $_FILES['invoice']);
-		$data->eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
-
-		$fw->validate();
-
-		$data->ePartner = \account\DropboxLib::getPartner();
-
-		throw new ViewAction($data);
-
-	})
 	->post('selectAccount', function($data) {
 
 		$data->index = POST('index');
@@ -206,8 +188,6 @@ new \journal\OperationPage(
 		}
 
 		$fw->validate();
-
-		\journal\OperationLib::saveInvoiceToDropbox(POST('invoiceFile'), $cOperation);
 
 		\journal\Operation::model()->commit();
 

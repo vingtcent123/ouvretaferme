@@ -25,12 +25,6 @@ class AccountSetting extends \Settings {
 
 	public static $remoteKey;
 
-	public static $dropbox = [
-		'appKey' => '',
-		'appSecret' => '',
-		'redirectDomain' => '',
-	];
-
 	const FIRST_CUSTOM_ID = 100000;
 
 	const LOANS_CLASS = 16;

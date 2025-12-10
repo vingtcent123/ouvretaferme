@@ -110,10 +110,6 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 
 	}
 
-	if($data->ePartner->empty()) {
-		$t->qs('[data-help="dropbox"]')->removeHide();
-	}
-
 });
 
 new JsonView('selectThirdParty', function($data, AjaxTemplate $t) {

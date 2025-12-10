@@ -236,16 +236,8 @@ class Operation extends OperationElement {
 			})
 			->setCallback('document.empty', function(?string $document) use($input): bool {
 
-				if(!var_filter($input['invoiceFile'] ?? NULL, 'string')) {
-					return TRUE;
-				}
-
-				$ePartner = \account\DropboxLib::getPartner();
-				if($ePartner->empty()) {
-					return TRUE;
-				}
-
 				return $document !== NULL;
+
 			})
 			->setCallback('invoice.check', function(?\selling\Invoice $eInvoice) use($input): bool {
 

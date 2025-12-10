@@ -48,9 +48,6 @@ class AlertUi {
 			'ThirdParty::created' => s("Le tiers a bien été créé."),
 			'ThirdParty::deleted' => s("Le tiers a bien été supprimé."),
 
-			'Partner::Dropbox.connected' => s("Votre compte Dropbox a bien été connecté !"),
-			'Partner::Dropbox.revoked' => s("L'accès à votre compte Dropbox a bien été revoqué."),
-
 			default => null
 
 		};

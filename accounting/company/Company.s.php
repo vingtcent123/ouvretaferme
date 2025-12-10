@@ -3,8 +3,6 @@ namespace company;
 
 class CompanySetting extends \Settings {
 
-	public static $mindeeApiKey;
-
 	public static $accountingBetaTestFarms = [];
 
 	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
@@ -12,8 +10,6 @@ class CompanySetting extends \Settings {
 	const CATEGORIE_GAEC = 6533;
 
 }
-
-CompanySetting::$mindeeApiKey = fn() => throw new \Exception("No Mindee Api Key set.");
 
 function setAccountingBetaTestFarms(): void {
 

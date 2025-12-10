@@ -799,28 +799,15 @@ class OperationUi {
 
 		$h = '';
 
-		$h .= '<div class="util-block-help hide" data-help="dropbox">';
-			$h .= s("Le saviez-vous ? En connectant votre compte {siteName} à un gestionnaire de fichiers comme Dropbox, vos documents comptables seront automatiquement rangés lorsque vous les importez lors de la saisie de vos opérations ! Vous pouvez le faire <link>dans les réglages de comptabilité de votre ferme</link>.",
-				['link' => '<a href="'.\company\CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" target="_blank">']);
-		$h .= '</div>';
-		$h .= '<div>';
+		$h .= '<div style="display: flex;">';
 
-			$h .= '<div style="display: flex;">';
+			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
-				$h .= $form->hidden('farm', $eFarm['id']);
-				$h .= $form->hidden('financialYear', $eFinancialYear['id']);
+			$index = 0;
+			$defaultValues = $eOperation->getArrayCopy();
 
-				$index = 0;
-				$defaultValues = $eOperation->getArrayCopy();
-
-				$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
-
-				$h .= '<div class="operation-invoice-preview hide">';
-					$h .= '<embed class="hide"/>';
-					$h .= '<img class="hide"/>';
-					$h .= $form->hidden('invoiceFile', '');
-				$h .= '</div>';
-			$h .= '</div>';
+			$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
 
 		$h .= '</div>';
 
@@ -841,16 +828,7 @@ class OperationUi {
 
 		$dialogClose = $form->close();
 
-		$footer = '<div class="operation-create-buttons">'
-			.'<div class="import-invoice-button">';
-
-				$footer .= '<label class="btn btn-outline-secondary" onclick="Operation.openInvoiceFileForm();">'
-						.s("Importer une facture")
-					.'</label>';
-
-			$footer .= '</div>'
-			.'<div class="operation-create-button-add">'.$addButton.$saveButton.'</div>'
-		.'</div>';
+		$footer = '<div class="operation-create-button-add">'.$addButton.$saveButton.'</div>';
 
 		$defaultTitle = s("Ajouter une écriture");
 		return new \Panel(

@@ -87,7 +87,6 @@ class LogUi {
 			'financialyear' => [s("Exercice comptable"), $this->getFinancialYearAction($action, $params)],
 			'operation' => [s("Écriture"), $this->getOperationAction($action, $params)],
 			'account' => [s("Classe de compte"), $this->getAccountAction($action, $params)],
-			'dropbox' => [s("Dropbox"), $this->getDropboxAction($action, $params)],
 			'bank' => [s("Compte bancaire"), $this->getBankAction($action, $params)],
 			'cashflow' => [s("Flux bancaire"), $this->getCashflowAction($action, $params)],
 			'deferral' => [s("CCA / PCA"), $this->getDeferralAction($action, $params)],
@@ -195,18 +194,6 @@ class LogUi {
 			'getinvoice' => s("Récupération des informatons de facture #{value}", $params['invoiceId']),
 			'getinvoices' => s("Récupération des factures"),
 			'getaccesstoken' => s("Récupération d'un token d'accès"),
-		};
-
-	}
-
-	public function getDropboxAction(string $action, array $params): string {
-
-		return match(strtolower($action)) {
-			'upload' => s("Upload du fichier sur Dropbox : {value}", $params['localFile']),
-			'delete' => s("Suppression de la connexion Dropbox", $params['localFile']),
-			'refreshtoken' => s("Regénération du token de connexion à Dropbox"),
-			'getaccesstoken' => s("Récupération d'un token de connexion à Dropbox"),
-			'revoke' => s("Suppression de la connexion à Dropbox"),
 		};
 
 	}
