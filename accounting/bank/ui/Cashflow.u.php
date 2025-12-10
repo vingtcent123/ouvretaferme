@@ -582,9 +582,13 @@ class CashflowUi {
 
 		if($cOperation->empty() === TRUE) {
 
-			$h .='<div class="util-warning">'.s("Aucune écriture comptable ne peut être actuellement rattachée à cette opération bancaire.").'</div>';
+			$h .='<div class="util-warning-outline">'.s("Aucune écriture comptable n'a été trouvée pour être rattachée à cette opération bancaire.").'</div>';
 
 		} else {
+
+			$h .= '<div class="util-info">';
+				$h .= s("Vous pouvez rattacher directement des écritures comptables déjà saisies avec les opérations bancaires. La contrepartie en compte de banque {bankAccount} sera automatiquement saisie.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+			$h .= '</div>';
 
 			$h .= '<h3>'.s("1. Sélectionnez les écritures liées à cette opération bancaire").'</h3>';
 
@@ -694,6 +698,7 @@ class CashflowUi {
 			'<div>'.s("Total sélectionné : {value}", '<span data-field="totalAmount" class="mr-2">'.\util\TextUi::money(0).'</span>').'</div>'.
 			$form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']).
 			'</div>';
+
 		return new \Panel(
 			id: 'panel-cashflow-attach',
 			title: s("Rattacher l'opération bancaire à une ou plusieurs écritures comptables"),

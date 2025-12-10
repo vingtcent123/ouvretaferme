@@ -1080,6 +1080,8 @@ class OperationLib extends OperationCrud {
 	}
 	public static function getOperationsForAttach(\bank\Cashflow $eCashflow): \Collection {
 
+		$cThirdParty = \account\ThirdPartyLib::filterByCashflow(\account\ThirdPartyLib::getAll(new \Search()), $eCashflow)->filter(fn($e) => $e['weight'] > 50);
+
 		$amount = abs($eCashflow['amount']);
 
 		$properties = Operation::getSelection()
@@ -1089,6 +1091,7 @@ class OperationLib extends OperationCrud {
 		$cOperation = self::addOpenFinancialYearCondition()
 			->select($properties)
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+			->whereThirdParty('IN', $cThirdParty->getIds(), if: $cThirdParty->notEmpty())
 			->where('m2.id IS NULL')
 			->where('m1.operation is null')
 			->where(new \Sql('SUBSTRING(accountLabel, 1, 1) IN ('.join(',', [\account\AccountSetting::PRODUCT_ACCOUNT_CLASS, \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).')'))

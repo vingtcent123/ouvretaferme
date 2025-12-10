@@ -234,11 +234,6 @@ class Operation extends OperationElement {
 
 				return $paymentDate !== NULL;
 			})
-			->setCallback('document.empty', function(?string $document) use($input): bool {
-
-				return $document !== NULL;
-
-			})
 			->setCallback('invoice.check', function(?\selling\Invoice $eInvoice) use($input): bool {
 
 				if($eInvoice->empty()) {
