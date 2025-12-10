@@ -994,6 +994,7 @@ tbody .td-checkbox > label {
 }
 
 .util-info,
+.util-info-outline,
 .util-success,
 .util-warning,
 .util-warning-outline,
@@ -1006,6 +1007,7 @@ tbody .td-checkbox > label {
 @media print {
 
 	.util-info,
+	.util-info-outline,
 	.util-success,
 	.util-warning,
 	.util-warning-outline,
@@ -1016,6 +1018,7 @@ tbody .td-checkbox > label {
 }
 
 .util-info p:last-child,
+.util-info-outline p:last-child,
 .util-success p:last-child,
 .util-warning p:last-child,
 .util-warning-outline p:last-child,
@@ -1028,6 +1031,16 @@ tbody .td-checkbox > label {
 	color: var(--secondary);
 }
 
+.util-info-outline {
+	border: 1px solid var(--secondary);
+	border-radius: var(--radius);
+	color: var(--secondary);
+}
+
+.util-info-outline a:not(.btn) {
+	color: var(--secondary);
+	text-decoration: underline;
+}
 .util-info a:not(.btn) {
 	text-decoration: underline;
 }

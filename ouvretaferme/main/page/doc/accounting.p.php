@@ -22,5 +22,7 @@ new Page(function($data) {
 
 
 })
-	->get('index', fn($data) => throw new ViewAction($data));
+	->get('index', fn($data) => throw new ViewAction($data))
+	->get('import', fn($data) => throw new ViewAction($data))
+;
 ?>
