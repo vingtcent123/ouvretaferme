@@ -849,9 +849,9 @@ class OperationUi {
 			$h .= '<h4>&nbsp;</h4>';
 			$h .= '<div class="operation-create-header">'.self::p('date')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('document')->label.'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('journalCode')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('thirdParty')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="operation-create-header">'.self::p('journalCode')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -972,24 +972,6 @@ class OperationUi {
 				});
 			$h .='</div>';
 
-			$h .= '<div data-wrapper="journalCode'.$suffix.'" class="company_form_group-with-tip">';
-				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($index) {
-					$d->attributes['data-index'] = $index;
-					$d->attributes['data-field'] = 'journalCode';
-					$d->default = fn() => GET('journalCode');
-				});
-				$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
-					$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true">';
-						$h .= \Asset::icon('exclamation-triangle');
-					$h .= '</a>';
-					$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-						$h .= '<span class="dropdown-item">';
-						$h .= s("Cette classe de compte est normalement configurée pour être dans le journal \"{value}\".", ['value' => '<span data-index="'.$index.'" data-journalCode="journal-name"></span>']);
-						$h .= '</span>';
-					$h .= '</div>';
-				$h .= '</div>';
-			$h .='</div>';
-
 			$h .= '<div data-wrapper="thirdParty'.$suffix.'">';
 
 			$h .= $form->dynamicField($eOperation, 'thirdParty'.$suffix, function($d) use($form, $index, $disabled, $suffix) {
@@ -1025,6 +1007,24 @@ class OperationUi {
 						$h .= '</span>';
 					$h .= '</div>';
 				$h .='</div>';
+			$h .='</div>';
+
+			$h .= '<div data-wrapper="journalCode'.$suffix.'" class="company_form_group-with-tip">';
+				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($index) {
+					$d->attributes['data-index'] = $index;
+					$d->attributes['data-field'] = 'journalCode';
+					$d->default = fn() => GET('journalCode');
+				});
+				$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
+					$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true">';
+						$h .= \Asset::icon('exclamation-triangle');
+					$h .= '</a>';
+					$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+						$h .= '<span class="dropdown-item">';
+						$h .= s("Cette classe de compte est normalement configurée pour être dans le journal \"{value}\".", ['value' => '<span data-index="'.$index.'" data-journalCode="journal-name"></span>']);
+						$h .= '</span>';
+					$h .= '</div>';
+				$h .= '</div>';
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="accountLabel'.$suffix.'">';
@@ -1207,6 +1207,8 @@ class OperationUi {
 		$h = '<div class="operation-create operation-create-validation">';
 
 			$h .= '<h4></h4>';
+			$h .= '<div class="cashflow-create-operation-validate"></div>';
+			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
