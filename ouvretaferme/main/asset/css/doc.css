@@ -97,3 +97,12 @@ div.doc-example {
 	padding: 0.125rem 0.5rem;
 	border-radius: var(--radius);
 }
+
+.doc-annotation {
+	color: var(--muted) !important;
+	font-style: italic;
+}
+ul.doc-two-choices {
+	list-style-type: none;
+	padding-left: 0.75rem;
+}

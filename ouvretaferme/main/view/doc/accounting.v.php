@@ -46,8 +46,8 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			]);
 		echo '</p>';
 
-		echo '<p>';
-			echo '<i>'.s("Note : cette fonctionnalité n'est pas accessible si votre exercice comptable en cours est une comptabilité à la trésorerie.").'</i>';
+		echo '<p class="doc-annotation">';
+			echo s("Note : cette fonctionnalité n'est pas accessible si votre exercice comptable en cours est une comptabilité à la trésorerie.");
 		echo '</p>';
 
 		echo '<h3>'.s("Les journaux").'</h3>';
@@ -58,7 +58,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			]);
 		echo '</p>';
 		echo '<p>';
-			echo s("Ensuite, associez vos journaux à vos comptes dans les <link>paramètres des comptes du module de Comptabilité</link>.", ['link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">']);
+			echo s("Ensuite, associez un journal à chaque compte de vente (classe {productAccount}) dans les <link>paramètres des comptes du module de Comptabilité</link>.", ['productAccount' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS, 'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">']);
 		echo '</p>';
 
 		echo '<h3>'.s("Les données sont-elles obligatoires ?").'</h3>';
@@ -69,14 +69,17 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				echo '<li>'.s("Marchés, ventes et factures sont clôturés.").'</li>';
 			echo '</ul>';
 		echo '</p>';
+		echo '<p>';
+			echo s("Si des données venaient à manquer, la valeur sera vide.");
+		echo '</p>';
 
 		echo '<p>';
 			echo s("Si vous préparez vos données pour l'import dans le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'import puisse être réalisé : ");
 			echo '<ul>';
 				echo '<li>'.s("Tous les articles vendus ont bien un compte associé (via leur produit, via la catégorie du produit ou directement sur l'article)").'</li>';
 				echo '<li>'.s("La date de livraison est indiquée").'</li>';
-				echo '<li>'.s("Un moyen de paiement a été renseigné").'</li>';
-				echo '<li>'.s("Et enfin, marchés, ventes et factures sont clôturés.").'</li>';
+				echo '<li>'.s("Un moyen de paiement est renseigné").'</li>';
+				echo '<li>'.s("Et enfin : marchés, ventes et factures sont clôturés.").'</li>';
 			echo '</ul>';
 		echo '</p>';
 
@@ -101,7 +104,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Télécharger l'export précomptable").'</h2>';
 		echo '<p>';
-			echo s("Le fichier CSV que vous téléchargerez répond aux normes codifiées à <link>l'article 1.47 A-1 du livre des procédures fiscales {icon}</link> (FEC).", ['icon' => Asset::icon('box-arrow-up-right'), 'link' => '<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027804775">']);
+			echo s("Le fichier CSV téléchargé répond aux normes codifiées à <link>l'article 1.47 A-1 du livre des procédures fiscales {icon}</link> (FEC).", ['icon' => Asset::icon('box-arrow-up-right'), 'link' => '<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027804775">']);
 		echo '</p>';
 		echo '<ul>';
 			echo '<li>'.s("La première ligne du fichier CSV correspond aux en-têtes").'</li>';
@@ -285,15 +288,15 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Importer les ventes").'</h2>';
 		echo '<p>'.s("Tous les marchés, les factures et les ventes dont les données sont préparées sont affichés dans la page d'import. Vous pouvez :").'</p>';
-		echo '<ul style="list-style-type: none; padding-left: 0.75rem;">';
+		echo '<ul class="doc-two-choices">';
 		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les intégrer en comptabilité").'</li>';
-		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, ils ne vous seront alors plus proposés à l'import)</span>", ['span' => '<span class="color-muted" style="font-style: italic">']).'</li>';
+		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, ils ne vous seront alors plus proposés à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 		echo '<p>'.s("En les intégrant dans votre comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Classe {productAccount} pour tous vos comptes de produits (autant d'écritures que de comptes différents)", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
-			echo '<li>'.s("Classe {vatAccount} pour la TVA (autant d'écritures que de comptes et taux de TVA différents). <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="color-muted" style="font-style: italic">']).'</li>';
-			echo '<li>'.s("Classe {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="color-muted" style="font-style: italic">']).'</li>';
+			echo '<li>'.s("Classe {vatAccount} pour la TVA (autant d'écritures que de comptes et taux de TVA différents). <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
+			echo '<li>'.s("Classe {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 
 	echo '</div>';
@@ -301,28 +304,28 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Rapprocher écritures comptables & opérations bancaires").'</h2>';
-		echo '<p>'.s("Pré-requis : Avoir réalisé un import du fichier <i>.ofx</i> de votre compte bancaire, et avoir importé vos marchés, factures et ventes en comptabilité.").'</p>';
-		echo '<p>'.s("Ouvretaferme vous proposera automatiquement les opérations bancaires qui seront les plus proches des imports du module de vente.<br />Les critères de décision sont : ").'</p>';
+		echo '<p>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : Avoir réalisé un import du fichier <i>.ofx</i> de votre compte bancaire, et avoir importé vos marchés, factures et ventes en comptabilité.").'</p>';
+		echo '<p>'.s("Ouvretaferme proposera automatiquement les opérations bancaires détectées comme les plus pertinentes par rapport à la vente à rapprocher.<br />Les critères de décision sont : ").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client").'</li>';
 			echo '<li>'.s("Le montant").'</li>';
 			echo '<li>'.s("La présence de la référence de facture dans la description du paiement").'</li>';
 			echo '<li>'.s("L'adéquation entre la date d'opération bancaire et la date de la vente").'</li>';
 		echo '</ul>';
-		echo '<p>'.s("Pour chaque suggestion, vous avez ensuite le choix :").'</p>';
-		echo '<ul style="list-style-type: none; padding-left: 0.75rem;">';
+		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous avez ensuite le choix :").'</p>';
+		echo '<ul class="doc-two-choices">';
 			echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("de l'accepter").'</li>';
-			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre opération est éligible, elle vous sera présentée à son tour.</span>", ['span' => '<span class="color-muted" style="font-style: italic">']).'</li>';
+			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre opération est éligible, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
-		echo '<p>'.s("Pour chaque suggestion acceptée, les actions suivantes sont réalisées :").'</p>';
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, les actions suivantes sont réalisées :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("saisie de l'écriture du compte de banque {bankAccount} du montant total de la vente", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</li>';
-			echo '<li>'.s("l'opération bancaire est notée \"traitée\"").'</li>';
+			echo '<li>'.s("saisie de l'écriture du compte de banque {bankAccount} du montant total de la vente,", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</li>';
+			echo '<li>'.s("l'opération bancaire devient \"traitée\"").'</li>';
 			echo '<li>'.s("saisie de l'écriture du compte de tiers {clientAccount} du montant total de la vente", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>']).'</li>';
 			echo '<li>'.s("lettrage du tiers").'</li>';
 			echo '<li>'.s("la vente ou la facture est marquée comme payée dans le module de Commercialisation").'</li>';
 		echo '</ul>';
-		echo '<p class="color-muted" style="font-style: italic">'.s("Note : Les opérations liées aux tiers ne sont réalisées que dans le cas d'une comptabilité à l'engagement (globalement ou uniquement pour les ventes)").'</p>';
+		echo '<p class="doc-annotation">'.s("Note : Les opérations liées aux tiers (saisie de l'écriture et lettrage) ne sont réalisées que dans le cas d'une comptabilité à l'engagement (globalement ou uniquement pour les ventes)").'</p>';
 	echo '</div>';
 
 	echo '<br /><br />';
