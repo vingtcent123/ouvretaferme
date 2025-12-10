@@ -587,7 +587,7 @@ class CashflowUi {
 		} else {
 
 			$h .= '<div class="util-info">';
-				$h .= s("Vous pouvez rattacher directement des écritures comptables déjà saisies avec les opérations bancaires. La contrepartie en compte de banque {bankAccount} sera automatiquement saisie.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+				$h .= s("Vous pouvez rattacher directement des écritures comptables déjà saisies avec l'opération bancaire. La contrepartie en compte de banque {bankAccount} sera automatiquement saisie.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
 			$h .= '</div>';
 
 			$h .= '<h3>'.s("1. Sélectionnez les écritures liées à cette opération bancaire").'</h3>';

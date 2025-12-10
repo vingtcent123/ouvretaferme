@@ -83,14 +83,7 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
 
     const index = e.detail.input.getAttribute('data-index');
 
-    if(Operation.hasVat() && e.detail.value.length !== 0) { // Else : l'utilisateur a supprimé la classe
-
-        if(e.detail.vatClass) {
-            qs('[data-index="' + index + '"][data-vat="account-info"]').removeHide();
-            qs('[data-index="' + index + '"][data-vat="account-value"]').innerHTML = e.detail.vatClass;
-        } else {
-            qs('[data-index="' + index + '"][data-vat="account-info"]').hide();
-        }
+    if(e.detail.value.length !== 0) {
 
         if(e.detail.journalCode) {
 
@@ -112,13 +105,28 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
             }
         }
         Operation.updateType(e.detail);
-        Operation.refreshVAT(e.detail);
 
-        qs('[data-account-label="journal-operation-create"][data-index="' + index + '"]').focus();
+        if(Operation.hasVat()) {
+
+            if(e.detail.vatClass) {
+                qs('[data-index="' + index + '"][data-vat="account-info"]').removeHide();
+                qs('[data-index="' + index + '"][data-vat="account-value"]').innerHTML = e.detail.vatClass;
+            } else {
+                qs('[data-index="' + index + '"][data-vat="account-info"]').hide();
+            }
+
+            Operation.refreshVAT(e.detail);
+
+
+        }
+
+        qs('[data-account-label="' + this.dataset.account + '"][data-index="' + index + '"]').focus();
 
     } else {
 
-        Operation.resetVat(index);
+        if(Operation.hasVat()) {
+            Operation.resetVat(index);
+        }
 
         Operation.resetAccountLabel(index);
         Operation.resetJournalCode(index);
