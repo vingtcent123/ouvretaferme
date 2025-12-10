@@ -300,7 +300,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Rapprocher écritures & opérations bancaires").'</h2>';
+		echo '<h2>'.s("Rapprocher écritures comptables & opérations bancaires").'</h2>';
 		echo '<p>'.s("Pré-requis : Avoir réalisé un import du fichier <i>.ofx</i> de votre compte bancaire, et avoir importé vos marchés, factures et ventes en comptabilité.").'</p>';
 		echo '<p>'.s("Ouvretaferme vous proposera automatiquement les opérations bancaires qui seront les plus proches des imports du module de vente.<br />Les critères de décision sont : ").'</p>';
 		echo '<ul>';
