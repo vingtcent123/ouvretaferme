@@ -121,6 +121,7 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
         Operation.resetVat(index);
 
         Operation.resetAccountLabel(index);
+        Operation.resetJournalCode(index);
 
     }
 
@@ -274,6 +275,10 @@ class Operation {
             qs('[name="journalCode[' + index + ']"]').value = qs('[name="journalCode[' + (index - 1) + ']"]').value || null
         }
 
+    }
+
+    static resetJournalCode(index) {
+        qs('[data-field="journalCode"][data-index="0"]').value = '';
     }
 
     static resetAccountLabel(index) {
