@@ -4,7 +4,7 @@ namespace selling;
 class InvoiceLib extends InvoiceCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['customer', 'sales', 'date', 'paymentCondition', 'header', 'footer'];
+		return ['customer', 'sales', 'date', 'dueDate', 'paymentCondition', 'header', 'footer'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {

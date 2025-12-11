@@ -657,7 +657,7 @@ class Sale extends SaleElement {
 
 		$code = $eFarm->getConf('orderFormPrefix');
 
-		return \Farm\Configuration::getNumber($code, $this['document']);
+		return \farm\Configuration::getNumber($code, $this['document']);
 
 	}
 
@@ -667,7 +667,7 @@ class Sale extends SaleElement {
 
 		$code = $eFarm->getConf('deliveryNotePrefix');
 
-		return \Farm\Configuration::getNumber($code, $this['document']);
+		return \farm\Configuration::getNumber($code, $this['document']);
 
 	}
 

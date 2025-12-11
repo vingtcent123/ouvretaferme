@@ -46,6 +46,9 @@ Configuration:
   orderFormFooter: ?editor16(1, 400)
   deliveryNotePrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultDeliveryNotePrefix())
   creditPrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultCreditPrefix())
+  invoiceDue: bool = FALSE
+  invoiceDueDays: ?int(0, 360)
+  invoiceDueMonth: ?bool
   invoicePrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultInvoicePrefix())
   invoicePaymentCondition: ?editor16(1, 400)
   invoiceHeader: ?editor16(1, 400)

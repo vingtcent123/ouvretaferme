@@ -117,6 +117,7 @@ Invoice:
   priceExcludingVat: decimal(8, 2)
   priceIncludingVat: decimal(8, 2)
   date: date
+  dueDate: ?date
   paymentMethod: ?payment\Method
   paymentStatus: enum(PAID, NOT_PAID) = NOT_PAID
   paymentCondition: ?editor16(1, 400)

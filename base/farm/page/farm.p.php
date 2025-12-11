@@ -115,7 +115,7 @@ new \farm\FarmPage()
 	->read('export', function($data) {
 
 		$data->eFarm = $data->e;
-		$data->year = GET('year', default: $data->e['seasonLast']);
+		$data->year = GET('year', default: date('Y'));
 
 		throw new \ViewAction($data);
 

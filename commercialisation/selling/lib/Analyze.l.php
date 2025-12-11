@@ -803,7 +803,7 @@ class AnalyzeLib {
 				'customer' => ['name', 'siret', 'vatNumber'],
 				'priceIncludingVat', 'priceExcludingVat',
 				'vat', 'vatByRate',
-				'date',
+				'date', 'dueDate',
 				'paymentMethod' => ['name'],
 				'paymentStatus',
 			])
@@ -834,6 +834,7 @@ class AnalyzeLib {
 					$eInvoice['customer']['siret'],
 					$eInvoice['customer']['vatNumber'],
 					\util\DateUi::numeric($eInvoice['date']),
+					$eInvoice['dueDate'] === NULL ? '' : \util\DateUi::numeric($eInvoice['dueDate']),
 					$eInvoice['paymentMethod']->empty() ? '' : $eInvoice['paymentMethod']['name'],
 					match($eInvoice['paymentStatus']) {
 						Invoice::PAID => 'paid',

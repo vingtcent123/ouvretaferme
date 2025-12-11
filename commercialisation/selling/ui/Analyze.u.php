@@ -2072,6 +2072,7 @@ class AnalyzeUi {
 			'customer_siret',
 			'customer_vat',
 			'date',
+			'due_date',
 			'payment_method',
 			'payment_status'
 		];

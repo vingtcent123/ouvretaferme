@@ -34,6 +34,7 @@ class AlertUi {
 			'Invoice::date.check' => s("Merci d'indiquer une date de facturation"),
 			'Invoice::date.future' => s("Vous ne pouvez pas facturer dans le futur"),
 			'Invoice::date.past' => s("Vous ne pouvez pas facturer antérieurement au {value}", \util\DateUi::numeric($options[0]['lastDate'])),
+			'Invoice::dueDate.consistency' => s("La date d'échéance ne peut pas être antérieure à la date de facturation"),
 			'Invoice::emptySales' => s("Vous devez ajouter au moins une vente à votre facture !"),
 			'Invoice::invoices.check' => s("Merci de sélectionner au moins une facture."),
 			'Invoice::inconsistencySales' => s("Vous ne pouvez pas regénérer cette facture car une ou plusieurs ventes ne sont plus éligibles à la facturation !"),

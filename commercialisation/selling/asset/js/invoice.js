@@ -1,3 +1,43 @@
+document.delegateEventListener('input', '#invoice-dates [name="date"]', function(e) {
+
+	const inputDate = e.target;
+	const inputDueDate = qs('#invoice-dates [name="dueDate"]');
+
+	if(e.target.value === '') {
+		inputDueDate.value = '';
+		qs('#invoice-dates').dataset.user = '0';
+		return;
+	}
+
+	if(qs('#invoice-dates').dataset.user === '1') {
+		return;
+	}
+
+	const dueDays = inputDueDate.dataset.dueDays === '' ? null : parseInt(inputDueDate.dataset.dueDays);
+	const dueMonth = inputDueDate.dataset.dueMonth;
+
+	const date = new Date(e.target.value);
+
+	if(dueDays !== null) {
+		date.setDate(date.getDate() + dueDays);
+	}
+
+	if(dueMonth === '1') {
+		date.setMonth(date.getMonth() + 1);
+		date.setDate(0);
+	}
+
+	inputDueDate.value = date.toISOString().split('T')[0];
+
+
+});
+
+document.delegateEventListener('input', '#invoice-dates [name="dueDate"]', function(e) {
+
+	qs('#invoice-dates').dataset.user = '1';
+
+});
+
 class Invoice {
 
 	static customize(target) {

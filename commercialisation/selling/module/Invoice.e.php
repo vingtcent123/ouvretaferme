@@ -103,7 +103,7 @@ class Invoice extends InvoiceElement {
 			$code = $eFarm->getConf('invoicePrefix');
 		}
 
-		return \Farm\Configuration::getNumber($code, $this['document']);
+		return \farm\Configuration::getNumber($code, $this['document']);
 
 	}
 
@@ -222,6 +222,20 @@ class Invoice extends InvoiceElement {
 				$this['lastDate'] = \selling\InvoiceLib::getLastDate($this['farm']);
 
 				return ($this['lastDate'] === NULL or $date >= $this['lastDate']);
+
+			})
+			->setCallback('dueDate.consistency', function(?string $dueDate) use ($p): bool {
+
+				if(
+					$dueDate === NULL or
+					$p->isInvalid('date')
+				) {
+					return TRUE;
+				}
+
+				$this->expects(['date']);
+
+				return ($dueDate >= $this['date']);
 
 			})
 			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {

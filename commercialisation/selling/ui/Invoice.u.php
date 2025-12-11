@@ -481,7 +481,10 @@ class InvoiceUi {
 					self::getCustomers($form, $eFarm, $cSale)
 				);
 
-				$h .= $form->dynamicGroup($e, 'date');
+				$h .= '<div id="invoice-dates">';
+					$h .= $form->dynamicGroup($e, 'date');
+					$h .= $form->dynamicGroup($e, 'dueDate');
+				$h .= '</div>';
 
 				$h .= '<div id="invoice-customize" class="hide">';
 					$h .= $form->dynamicGroups($e, ['paymentCondition', 'header', 'footer']);
@@ -634,16 +637,25 @@ class InvoiceUi {
 
 			}
 
-			if($eInvoice->exists()) {
+			$h .= '<div id="invoice-dates">';
 
-				$h .= $form->group(
-					self::p('date')->label,
-					\util\DateUi::numeric($eInvoice['date'])
-				);
+				if($eInvoice->exists()) {
 
-			} else {
-				$h .= $form->dynamicGroup($eInvoice, 'date');
-			}
+					$h .= $form->group(
+						self::p('date')->label,
+						\util\DateUi::numeric($eInvoice['date'])
+					);
+
+					// N'est pas pris en compte à l'édition, juste présent pour les routines JS de dueDate
+					$h .= $form->hidden('date', $eInvoice['date']);
+
+				} else {
+					$h .= $form->dynamicGroup($eInvoice, 'date');
+				}
+
+				$h .= $form->dynamicGroup($eInvoice, 'dueDate');
+
+			$h .= '</div>';
 
 			$h .= '<div id="invoice-customize" class="hide">';
 				$h .= $form->dynamicGroups($eInvoice, ['paymentCondition', 'header', 'footer']);
@@ -781,6 +793,7 @@ class InvoiceUi {
 
 		$d = Invoice::model()->describer($property, [
 			'date' => s("Date de facturation"),
+			'dueDate' => s("Date d'échéance"),
 			'paymentCondition' => s("Conditions de paiement"),
 			'header' => s("Texte personnalisé affiché en haut de facture"),
 			'footer' => s("Texte personnalisé affiché en bas de facture"),
@@ -804,6 +817,64 @@ class InvoiceUi {
 
 			case 'date' :
 				$d->labelAfter = fn(Invoice $e) => \util\FormUi::info($e['lastDate'] !== NULL ? s("Vous devez légalement respecter la chronologie des dates de facturation dans l'édition de vos factures. Compte tenu des factures que vous avez déjà générées, vous ne pouvez pas facturer antérieurement au {value}.", \util\DateUi::numeric($e['lastDate'])) : s("Vous devez légalement respecter la chronologie des dates de facturation dans l'édition de vos factures. Dès lors que vous aurez généré une première facture, vous ne pourrez plus générer d'autres factures à une date antérieure."));
+				break;
+
+			case 'dueDate' :
+				$d->labelAfter = function(Invoice $e) {
+
+					if(
+						$e->exists() or
+						$e['farm']->getConf('invoiceDue') === FALSE
+					) {
+						return '';
+					}
+
+					$dueDays = $e['farm']->getConf('invoiceDueDays');
+					$dueMonth = $e['farm']->getConf('invoiceDueMonth');
+
+					$update = ' (<a href="/farm/configuration:update?id='.$e['farm']['id'].'" target="_blank">'.s("modifier").'</a>)';
+
+					if($dueDays !== NULL and $dueMonth) {
+						return \util\FormUi::info(p("La date d'échéance est calculée à la date de facturation + {value} jour fin de mois", "La date d'échéance est calculée à la date de facturation + {value} jours fin de mois", $dueDays).$update);
+					} else if($dueDays !== NULL) {
+						return \util\FormUi::info(p("La date d'échéance est calculée à la date de facturation + {value} jour", "La date d'échéance est calculée à la date de facturation + {value} jours", $dueDays).$update);
+					} else if($dueMonth) {
+						return \util\FormUi::info(s("La date d'échéance est calculée à la fin du mois de la date de facturation").$update);
+					}
+
+				};
+				$d->default = function(Invoice $e) {
+
+					if($e->exists()) {
+						return $e['dueDate'];
+					} else {
+
+						$dueDays = $e['farm']->getConf('invoiceDueDays');
+						$dueMonth = $e['farm']->getConf('invoiceDueMonth');
+
+						if($dueDays === NULL and $dueMonth === NULL) {
+							return NULL;
+						}
+
+						if($dueDays !== NULL) {
+							$calculatedDate = date('Y-m-d', strtotime($e['date'].' + '.$dueDays.' days'));
+						} else {
+							$calculatedDate = $e['date'];
+						}
+
+						if($dueMonth) {
+							$calculatedDate = substr($calculatedDate, 0, 8).date('t', strtotime($calculatedDate));
+						}
+
+						return $calculatedDate;
+
+					}
+
+				};
+				$d->attributes = fn(\util\FormUi $form, Invoice $e) => [
+					'data-due-days' => $e['farm']->getConf('invoiceDueDays') ?? '',
+					'data-due-month' => (int)$e['farm']->getConf('invoiceDueMonth'),
+				];
 				break;
 
 			case 'paymentCondition' :

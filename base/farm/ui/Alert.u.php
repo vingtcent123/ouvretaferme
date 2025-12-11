@@ -15,6 +15,7 @@ class AlertUi {
 			'Configuration::creditPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::invoicePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::documentInvoices.consistency' => fn($e) => s("Par souci de cohérence avec les factures existantes, le numéro ne peut pas être inférieur à {value}", $e['invoicePrefixMin']),
+			'Configuration::invoiceDueMonth.consistency' => s("Vous devez préciser la date d'échéance par rapport à la date de facturation"),
 			'Configuration::orderFormPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::deliveryNotePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),

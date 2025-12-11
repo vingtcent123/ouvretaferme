@@ -11,3 +11,16 @@ div.configuration-sale-example {
 	padding: 1cm;
 	font-size: 12px;
 }
+
+div.configuration-field-due-date {
+	margin-top: 1rem;
+	display: none;
+}
+
+div.configuration-field-due:has(input[name="invoiceDue"][value="1"]:checked) div.configuration-field-due-date {
+	display: grid;
+	grid-template-columns: 1fr max-content;
+	gap: 1rem;
+	align-items: center;
+	max-width: 40rem;
+}

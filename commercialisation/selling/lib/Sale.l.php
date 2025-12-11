@@ -94,7 +94,7 @@ class SaleLib extends SaleCrud {
 		$eSale['orderFormPaymentCondition'] = $eFarm->getConf('orderFormPaymentCondition');
 		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
 		$eSale['invoice']['hasVat'] = $eFarm->getConf('hasVat');
-		$eSale['invoice']['name'] = \Farm\Configuration::getNumber($eFarm->getConf('invoicePrefix'), 123);
+		$eSale['invoice']['name'] = \farm\Configuration::getNumber($eFarm->getConf('invoicePrefix'), 123);
 		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
 		$eSale['invoice']['date'] = currentDate();

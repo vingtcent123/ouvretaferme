@@ -231,7 +231,13 @@ class ConfigurationUi {
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
 				$eConfiguration['documentInvoices']++;
-				$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
+				$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices']);
+				$h .= $form->group(
+					self::p('invoiceDue')->label,
+					$this->getInvoiceDueField($form, $eConfiguration),
+					['wrapper' => 'invoiceDue invoiceDueDays invoiceDueMonth']
+				);
+				$h .= $form->dynamicGroups($eConfiguration, ['invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
 
 				$h .= $form->group(
 					content: $form->submit(s("Enregistrer"))
@@ -251,6 +257,22 @@ class ConfigurationUi {
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
 				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::INVOICE, $eFarm, $eSaleExample['cItem']);
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getInvoiceDueField(\util\FormUi $form, Configuration $e): string {
+
+		$h = '<div class="configuration-field-due">';
+			$h .= '<div>';
+				$h .= $form->dynamicField($e, 'invoiceDue');
+			$h .= '</div>';
+			$h .= '<div class="configuration-field-due-date">';
+				$h .= $form->dynamicField($e, 'invoiceDueDays');
+				$h .= $form->dynamicField($e, 'invoiceDueMonth');
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -505,6 +527,7 @@ class ConfigurationUi {
 			'orderFormFooter' => s("Ajouter un texte personnalisé affiché en bas des devis"),
 			'creditPrefix' => s("Préfixe pour la numérotation des avoirs"),
 			'invoicePrefix' => s("Préfixe pour la numérotation des factures"),
+			'invoiceDue' => s("Date d'échéance par défaut sur les factures"),
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
@@ -534,7 +557,7 @@ class ConfigurationUi {
 				break;
 
 			case 'documentInvoices' :
-				$d->after = \util\FormUi::info(s("Si ce numéro est déjà utilisé, alors le système affectera le premier numéro suivant non utilisé."));
+				$d->labelAfter = \util\FormUi::info(s("Si le numéro indiqué est déjà utilisé, alors le système affectera le premier numéro suivant non utilisé."));
 				break;
 
 			case 'defaultVat' :
@@ -594,7 +617,6 @@ class ConfigurationUi {
 
 				break;
 
-
 			case 'documentTarget' :
 
 				$d->values = [
@@ -614,6 +636,19 @@ class ConfigurationUi {
 			case 'orderFormPaymentCondition' :
 				$d->placeholder = s("Exemple : Acompte de 20 % à la signature du devis, et solde à la livraison.");
 				$d->after = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients après acceptation d'un devis."));
+				break;
+
+			case 'invoiceDue' :
+				$d->field = 'yesNo';
+				break;
+
+			case 'invoiceDueDays' :
+				$d->prepend = s("Date de facturation").'   '.\Asset::icon('plus');
+				$d->append = s("jours");
+				break;
+
+			case 'invoiceDueMonth' :
+				$d->attributes['callbackLabel'] = fn($input) => $input.'  '.s("Fin de mois");
 				break;
 
 			case 'invoicePrefix' :

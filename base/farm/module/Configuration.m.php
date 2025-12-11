@@ -65,6 +65,9 @@ class ConfigurationModel extends \ModuleModel {
 			'orderFormFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryNotePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'creditPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
+			'invoiceDue' => ['bool', 'cast' => 'bool'],
+			'invoiceDueDays' => ['int16', 'min' => 0, 'max' => 360, 'null' => TRUE, 'cast' => 'int'],
+			'invoiceDueMonth' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'invoicePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
@@ -76,7 +79,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -124,6 +127,9 @@ class ConfigurationModel extends \ModuleModel {
 
 			case 'creditPrefix' :
 				return \farm\ConfigurationUi::getDefaultCreditPrefix();
+
+			case 'invoiceDue' :
+				return FALSE;
 
 			case 'invoicePrefix' :
 				return \farm\ConfigurationUi::getDefaultInvoicePrefix();
@@ -268,6 +274,18 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereCreditPrefix(...$data): ConfigurationModel {
 		return $this->where('creditPrefix', ...$data);
+	}
+
+	public function whereInvoiceDue(...$data): ConfigurationModel {
+		return $this->where('invoiceDue', ...$data);
+	}
+
+	public function whereInvoiceDueDays(...$data): ConfigurationModel {
+		return $this->where('invoiceDueDays', ...$data);
+	}
+
+	public function whereInvoiceDueMonth(...$data): ConfigurationModel {
+		return $this->where('invoiceDueMonth', ...$data);
 	}
 
 	public function whereInvoicePrefix(...$data): ConfigurationModel {

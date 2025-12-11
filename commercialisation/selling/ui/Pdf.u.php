@@ -246,8 +246,13 @@ class PdfUi {
 
 				case Pdf::INVOICE :
 
-					$dateDocument = '<div class="pdf-document-detail-label">'.s("Date").'</div>';
+					$dateDocument = '<div class="pdf-document-detail-label">'.s("Date de facturation").'</div>';
 					$dateDocument .= '<div>'.\util\DateUi::numeric($eSale['invoice']['date']).'</div>';
+
+					if($eSale['invoice']['dueDate'] !== NULL) {
+						$dateDocument .= '<div class="pdf-document-detail-label">'.s("Date d'échéance").'</div>';
+						$dateDocument .= '<div>'.\util\DateUi::numeric($eSale['invoice']['dueDate']).'</div>';
+					}
 
 					break;
 
@@ -334,8 +339,13 @@ class PdfUi {
 
 		$h .= '<div class="pdf-document-wrapper">';
 
-			$dateDocument = '<div class="pdf-document-detail-label">'.s("Date").'</div>';
+			$dateDocument = '<div class="pdf-document-detail-label">'.s("Date de facturation").'</div>';
 			$dateDocument .= '<div>'.\util\DateUi::numeric($eInvoice['date']).'</div>';
+
+			if($eInvoice['dueDate'] !== NULL) {
+				$dateDocument .= '<div class="pdf-document-detail-label">'.s("Date d'échéance").'</div>';
+				$dateDocument .= '<div>'.\util\DateUi::numeric($eInvoice['dueDate']).'</div>';
+			}
 
 			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $eInvoice['name'], $dateDocument, $eInvoice['header']);
 

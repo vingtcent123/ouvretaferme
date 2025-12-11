@@ -52,6 +52,35 @@ class Configuration extends ConfigurationElement {
 				return ($value > $this['invoicePrefixMin']);
 
 			})
+			->setCallback('invoiceDueDays.prepare', function(?int &$days) use ($p): bool {
+				if($this['invoiceDue'] === FALSE) {
+					$days = NULL;
+				}
+				return TRUE;
+			})
+			->setCallback('invoiceDueMonth.prepare', function(?bool &$month): bool {
+				if($this['invoiceDue'] === FALSE) {
+					$month = NULL;
+				} else {
+					$month ??= FALSE;
+				}
+				return TRUE;
+			})
+			->setCallback('invoiceDueMonth.consistency', function(?bool &$month) use ($p): bool {
+
+				if(
+					$this['invoiceDue'] === FALSE or
+					$p->isBuilt('invoiceDueDays') === FALSE
+				) {
+					return TRUE;
+				}
+
+				return (
+					$this['invoiceDueDays'] !== NULL or
+					$month !== FALSE
+				);
+
+			})
 			->setCallback('creditPrefix.prepare', function(string &$prefix): bool {
 				$prefix = strtoupper($prefix);
 				return TRUE;

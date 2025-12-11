@@ -99,7 +99,7 @@ new \selling\InvoicePage()
 
 		throw new ViewAction($data);
 
-	}, propertiesUpdate: ['paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
+	}, propertiesUpdate: ['dueDate', 'paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
 
 		if($data->e['content']->empty()) {
@@ -163,7 +163,7 @@ new Page(function($data) {
 
 		$fw = new FailWatch();
 
-		$eInvoice->build(['date', 'paymentCondition', 'header', 'footer'], $_POST);
+		$eInvoice->build(['date', 'dueDate', 'paymentCondition', 'header', 'footer'], $_POST);
 
 		$fw->validate();
 
