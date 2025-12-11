@@ -329,9 +329,8 @@ class TipUi {
 					'title' => s("Qu'est-ce que la précomptabilité ?"),
 					'content' => $h,
 					'image' => FALSE,
-					'button' => NULL,
+					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("Aide")],
 				];
-
 			default:
 				throw new \Exception('Invalid tip \''.$fqn.'\'');
 
