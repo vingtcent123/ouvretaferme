@@ -8,8 +8,6 @@ class SellingSetting extends \Settings {
 	const EXAMPLE_SALE_PRO = 1736;
 	const EXAMPLE_SALE_PRIVATE = 3133;
 
-	const VAT_RATE_INITIAL = 9999;
-
 	public static function getStandardVatRate(\farm\Farm $eFarm): float {
 
 		$eCountry = $eFarm->getConf('taxCountry');
