@@ -102,7 +102,7 @@ div.doc-example {
 	color: var(--muted) !important;
 	font-style: italic;
 }
-ul.doc-two-choices {
+ul.doc-list-icons {
 	list-style-type: none;
 	padding-left: 0.75rem;
 }

@@ -289,7 +289,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Importer les ventes").'</h2>';
 		echo '<p>'.s("Tous les marchés, les factures et les ventes dont les données sont préparées sont affichés dans la page d'import. Vous pouvez :").'</p>';
-		echo '<ul class="doc-two-choices">';
+		echo '<ul class="doc-list-icons">';
 		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les intégrer en comptabilité").'</li>';
 		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, ils ne vous seront alors plus proposés à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
@@ -307,14 +307,14 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 		echo '<h2>'.s("Rapprocher écritures comptables & opérations bancaires").'</h2>';
 		echo '<p>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : Avoir réalisé un import du fichier <i>.ofx</i> de votre compte bancaire, et avoir importé vos marchés, factures et ventes en comptabilité.").'</p>';
 		echo '<p>'.s("Ouvretaferme proposera automatiquement les opérations bancaires détectées comme les plus pertinentes par rapport à la vente à rapprocher.<br />Les critères de décision sont : ").'</p>';
-		echo '<ul>';
-			echo '<li>'.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client").'</li>';
-			echo '<li>'.s("Le montant").'</li>';
-			echo '<li>'.s("La présence de la référence de facture dans la description du paiement").'</li>';
-			echo '<li>'.s("L'adéquation entre la date d'opération bancaire et la date de la vente").'</li>';
+		echo '<ul class="doc-list-icons">';
+			echo '<li>'.Asset::icon('file-person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
+			echo '<li>'.Asset::icon('currency-euro').' '.s("Le montant de l'opération bancaire et de la vente ou la facture").'</li>';
+			echo '<li>'.Asset::icon('123').' '.s("La présence de la référence de facture dans la description de l'opération bancaire").'</li>';
+			echo '<li>'.Asset::icon('calendar-range').' '.s("L'adéquation entre la date d'opération bancaire et la date de la vente ou de la facture").'</li>';
 		echo '</ul>';
 		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous avez ensuite le choix :").'</p>';
-		echo '<ul class="doc-two-choices">';
+		echo '<ul class="doc-list-icons">';
 			echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("de l'accepter").'</li>';
 			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre opération est éligible, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
