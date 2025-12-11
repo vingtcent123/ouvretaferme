@@ -482,7 +482,7 @@ class InvoiceUi {
 				);
 
 				$h .= '<div id="invoice-dates">';
-					$h .= $form->dynamicGroup($e, 'date');
+					$h .= $form->dynamicGroup($e, 'date*');
 					$h .= $form->dynamicGroup($e, 'dueDate');
 				$h .= '</div>';
 
@@ -650,7 +650,7 @@ class InvoiceUi {
 					$h .= $form->hidden('date', $eInvoice['date']);
 
 				} else {
-					$h .= $form->dynamicGroup($eInvoice, 'date');
+					$h .= $form->dynamicGroup($eInvoice, 'date*');
 				}
 
 				$h .= $form->dynamicGroup($eInvoice, 'dueDate');
@@ -822,11 +822,12 @@ class InvoiceUi {
 			case 'dueDate' :
 				$d->labelAfter = function(Invoice $e) {
 
-					if(
-						$e->exists() or
-						$e['farm']->getConf('invoiceDue') === FALSE
-					) {
+					if($e->exists()) {
 						return '';
+					}
+
+					if($e['farm']->getConf('invoiceDue') === FALSE) {
+						return \util\FormUi::info(s("Vous pouvez <link>définir une date d'échéance</link> par défaut.", ['link' => '<a href="/farm/configuration:update?id='.$e['farm']['id'].'" target="_blank">']));
 					}
 
 					$dueDays = $e['farm']->getConf('invoiceDueDays');

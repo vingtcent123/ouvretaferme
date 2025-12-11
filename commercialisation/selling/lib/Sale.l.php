@@ -98,6 +98,7 @@ class SaleLib extends SaleCrud {
 		$eSale['invoice']['priceExcludingVat'] = $eSale['priceExcludingVat'];
 		$eSale['invoice']['priceIncludingVat'] = $eSale['priceIncludingVat'];
 		$eSale['invoice']['date'] = currentDate();
+		$eSale['invoice']['dueDate'] = date('Y-m-d', time() + 86400 * 7);
 		$eSale['invoice']['paymentCondition'] = $eFarm->getConf('invoicePaymentCondition');
 		$eSale['invoice']['header'] = $eFarm->getConf('invoiceHeader');
 		$eSale['invoice']['footer'] = $eFarm->getConf('invoiceFooter');
