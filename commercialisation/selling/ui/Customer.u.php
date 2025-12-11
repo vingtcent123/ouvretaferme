@@ -904,12 +904,12 @@ class CustomerUi {
 
 					$values = [];
 					$values[Customer::PRIVATE] = s("Client particulier");
+					$values[Customer::PRO] = s("Client professionnel");
 
 					if($e['type'] === NULL) {
-						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<span class="hide-sm-up"><br/></span><span class="hide-xs-down">  </span><small class="color-muted">'.\Asset::icon('arrow-right').'  '.s("Marché / Vente à la ferme / AMAP / ...").'</small>';
+						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<span class="hide-sm-up"><br/></span><span class="hide-xs-down">  </span><small class="color-muted">'.s("(marché, vente à la ferme, AMAP, ...)").'</small><br/><div class="btn btn-xs btn-selling" style="margin-top: 0.5rem">'.\Asset::icon('cart4').' '.s("Logiciel de caisse").'</div>';
 					}
 
-					$values[Customer::PRO] = s("Client professionnel");
 
 					return $values;
 
