@@ -73,7 +73,7 @@ div.doc-content {
 
 div.doc-content h2 {
 	font-family: 'Itim', cursive;
-	font-size: 1.9rem;
+	font-size: 2.2rem;
 	color: var(--secondary);
 }
 
@@ -87,6 +87,7 @@ div.doc-content img {
 	max-width: 100%;
 	border: 2px solid var(--border);
 	border-radius: var(--radius);
+	margin-top: 1rem;
 	margin-bottom: 1rem;
 }
 

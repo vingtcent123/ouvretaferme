@@ -1,9 +1,126 @@
 <?php
+new AdaptativeView('market', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+
+	$t->title = s("Le logiciel de caisse");
+	$t->subTitle = s("Comment utiliser le logiciel de caisse proposé par Ouvretaferme ?");
+
+	$t->menuSelected = 'sellingMarket';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("À quoi sert le logiciel de caisse ?").'</h2>';
+		echo '<p>'.s("Le logiciel de caisse proposé par {siteName} vous permet d'enregistrer les ventes que vous réalisez pendant vos marché avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure sans difficulté.").'</p>';
+
+		echo '<p>'.s("Il fonctionne de la manière suivante :").'</p>';
+
+		echo '<ol>';
+			echo '<li>'.s("Vous créez une nouvelle vente en activant le logiciel de caisse").'</li>';
+			echo '<li>'.s("Vous choisissez la gamme de produits disponibles à la vente").'</li>';
+			echo '<li>'.s("Vous amenez une tablette ou votre téléphone au marché").'</li>';
+			echo '<li>'.s("Lorsque les ventes démarrent, vous saisissez les commandes de vos clients directement sur votre tablette").'</li>';
+			echo '<li>'.s("Une fois le marché terminé, vous clôturez la caisse").'</li>';
+			echo '<li>'.s("En fin de saison, vous retrouver dans l'analyse des ventes une synthèse complète de ce que vous avez vendu dans l'année").'</li>';
+		echo '</ol>';
+
+		echo '<p>'.s("Le logiciel de caisse est pleinement utilisable pour toutes les productions.<br/>Il est utilisé quotidiennement par des paysans boulangers, des apiculteurs, des éleveurs ou des maraîchers...").'</p>';
+
+		echo '<h5 class="mt-2" style="text-transform: uppercase">'.s("L'interface du logiciel de caisse").'</h5>';
+
+		echo Asset::image('main', 'doc/market-example.png');
+
+		echo '<p>';
+			echo s("Le logiciel de caisse est conforme à la réglementation sur les logiciels de caisse (inaltérabilité, sécurisation, conservation et archivage des données). Un audit de conformité a été engagé auprès de LNE conformément à la loi. Si cette fonctionnalité vous plait, nous vous invitons à <link>adhérer à notre association</link> pour nous aider à financer cet audit dont le coût s'élève 11 000 €.", ['link' => '<a href="/adherer">']);
+		echo '</p>';
+
+	echo '</div>';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Utiliser le logiciel de caisse pas à pas").'</h2>';
+
+		echo '<h3>'.s("Activer le logiciel de caisse").'</h3>';
+
+		echo '<h4>'.Asset::icon('1-circle').' '.s("Créez un client").'</h4>';
+
+		echo '<p>'.s("Vous devez créer un client de type <i>Point de vente pour les particuliers</i> en indiquant le nom de votre marché comme nom de client.").'</p>';
+		echo Asset::image('main', 'doc/market-customer.png');
+
+		echo '<h4>'.Asset::icon('2-circle').' '.s("Créez une vente pour ce client").'</h4>';
+
+		echo '<p>'.s("Une fois le client créé, vous pouvez maintenant lui créer une vente en veillant à activer le logiciel de caisse pour cette vente. Vous pouvez en profiter pour sélectionner les produits que vous voulez proposer à la vente. Il n'est pas indispensable de sélectionner les produits à cette étape, vous pourrez également le faire à l'étape suivante.").'</p>';
+		echo Asset::image('main', 'doc/market-sale.png');
+
+		echo '<h4>'.Asset::icon('3-circle').' '.s("Configurez votre vente").'</h4>';
+
+		echo '<p>'.s("Une fois la vente créée, vous pouvez encore compléter votre gamme. Pour chaque produit, vous pouvez indiquer la quantité que vous souhaitez emporter au marché. Cela peut vous être notamment utile pour préparer vos récoltes ou vos conditionnements.").'</p>';
+		echo Asset::image('main', 'doc/market-configure.png');
+
+		echo '<h4>'.Asset::icon('4-circle').' '.s("Démarrer la vente").'</h4>';
+
+		echo '<p>'.s("Vous avez complété votre gamme ? Votre étal est prêt ?").'</p>';
+		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling">'.Asset::icon('cart4').' ']).'</p>';
+		echo Asset::image('main', 'doc/market-welcome.png');
+
+
+		echo '<h3>'.s("Face au client").'</h3>';
+
+		echo '<p>'.s("Utilisez tout simplement le bouton <i>Créer une vente</i> pour commencer à saisir les produits achetés par un client.").'</p>';
+		echo '<p>';
+			echo s("Pour chaque produit, un clavier numérique vous permet d'effectuer une saisie rapide, et vous avez également la possibilité d'ajouter des remises pour vos clients préférés.");
+			echo Asset::image('main', 'doc/market-item.png');
+		echo '</p>';
+
+		echo '<p>'.s("Pour terminer une vente avec un client avec le bouton <i>Vente payée</i>, vous devez préalablement indiquer au moins un moyen de paiement, ce qui est une obligation légale.").'</p>';
+
+		echo '<h3>'.s("Clôturer la caisse").'</h3>';
+
+		echo '<p>'.s("Lorsque votre marché est terminé, vous avez l'obligation de clôturer la caisse. Une fois la clôture réalisée, les données de vente sont figées et peuvent être intégrées à votre comptabilité.").'</p>';
+
+	echo '</div>';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Astuces").'</h2>';
+
+		echo '<h3>'.s("Configurer les marchés suivants en un clic").'</h3>';
+		echo '<div class="util-info">';
+			echo '<p>'.s("Créer votre premier marché avec le logiciel de caisse va prendre un peu de temps, car vous devrez ajouter manuellement les produits que vous souhaitez vendre dans le logiciel. Pour les marchés suivants, nous vous recommandons d'utiliser la fonctionnalité <u>Dupliquer une vente</u>.").'</p>';
+			echo '<p>'.s("En dupliquant votre marché précédent, vous n'avez plus qu'à choisir la nouvelle date de vente et la liste des produits que vous avez vendus la dernière fois est automatiquement reportée. Il vous restera éventuellement à supprimer les quelques produits que vous avez sortis de la vente et ajouter ceux qui entrent dans la gamme !").'</p>';
+		echo '</div>';
+		echo Asset::image('main', 'doc/market-duplicate.png');
+
+		echo '<h3>'.s("Vendre à plusieurs").'</h3>';
+		echo '<p class="util-info">'.s("Vous pouvez être plusieurs à utiliser le logiciel de caisse simultanément sur un même marché. Dans ce cas, nous vous suggérons de vous connecter avec des comptes différents pour que chacun puisse retrouver facilement les ventes qu'ils gèrent avec son avatar.").'</p>';
+
+		echo '<h3>'.s("Ajouter un produit au dernier moment dans le logiciel de caisse").'</h3>';
+		echo '<p class="util-info">'.s("Si vous avez oublié d'ajouter un produit à votre caisse, utilisez l'onglet <i>Articles</i> pour ajouter le produit manquant. Cet onglet vous permet également de modifier les prix de vente.").'</p>';
+
+		echo '<h3>'.s("Vous permettez à certains clients de payer plus tard ?").'</h3>';
+		echo '<p class="util-info">';
+			echo s("Si vous permettez à certains clients de payer plus tard (par exemple sur facture en fin de mois), vous avez la possibilité de sélectionner l'option <i>Vente en paiement différé</i> à la place de <i>Vente payée</i>. En choisissant cette option, la vente sera sortie du logiciel de caisse et sera intégrée à la page des ventes de votre ferme.");
+		echo '</p>';
+		echo Asset::image('main', 'doc/market-later.png');
+
+		echo '<h3>'.s("Mettre le curseur sur la quantité par défaut").'</h3>';
+		echo '<p class="util-info">';
+			echo s("Par défaut, c'est le champ de <i>Prix</i> qui est sélectionné pour les produits vendus au poids. Si cela nous vous convient pas, vous pouvez sélectionner le champ <i>Quantité</i> par défaut dans les réglages de base du module <i>Vendre</i>.");
+		echo '</p>';
+		echo Asset::image('main', 'doc/market-settings.png');
+
+	echo '</div>';
+
+	echo '<br/>';
+	echo '<br/>';
+
+});
+
 new AdaptativeView('pricing', function($data, DocTemplate $t) {
 
 	$t->template = 'doc';
 
-	$t->title = s("Les gestion des prix");
+	$t->title = s("La gestion des prix");
 	$t->subTitle = s("Comment définir avec Ouvretaferme vos prix de vente en fonction de vos clients ?");
 
 	$t->menuSelected = 'sellingPricing';
