@@ -24,7 +24,7 @@ class FacturXLib {
 			$typeCode = '380';
 		}
 
-		$testChorusPro = TRUE;
+		$testChorusPro = FALSE;
 		$testSuperPDP = FALSE;
 
 		// SuperPDP attend un SIREN (scheme 0002) mais ChorusPro attend un SIRET (0009)
@@ -132,9 +132,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  passe sur SUPER PDP : <ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>
  passe sur Chorus Pro : <ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>
  */
-				((LIME_ENV === 'dev' and $testSuperPDP)
-					? '<ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>'
-					: '<ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>'
+				((LIME_ENV === 'dev' and $testChorusPro)
+					? '<ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>'
+					: '<ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>'
 				).'
 				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-5-->
@@ -181,7 +181,14 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ram:Description>
 					'.encode($eInvoice['farm']['configuration']['invoicePaymentCondition'] ?? '').'
 				</ram:Description>
-			</ram:SpecifiedTradePaymentTerms>
+				';
+			if($eInvoice['dueDate'] !== NULL) {
+				$xml .= '<ram:DueDateDateTime><!--BT-9-->
+					<udt:DateTimeString format="102">'.date('Ymd', strtotime($eInvoice['date'])).'</udt:DateTimeString>
+				</ram:DueDateDateTime>
+				';
+			}
+			$xml .= '</ram:SpecifiedTradePaymentTerms>
 			<ram:SpecifiedTradeSettlementHeaderMonetarySummation><!--BG-22-->
         <ram:LineTotalAmount>'.$eInvoice['priceExcludingVat'].'</ram:LineTotalAmount><!--BT-106-->
 				<ram:TaxBasisTotalAmount>'.$eInvoice['priceExcludingVat'].'</ram:TaxBasisTotalAmount><!--BT-109-->
