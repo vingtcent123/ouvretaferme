@@ -151,7 +151,6 @@ Item:
   shopDate: ?shop\Date
   shopProduct: ?shop\Product
   product: ?selling\Product
-  productComposition: bool
   composition: ?selling\Sale
   ingredientOf: ?selling\Item
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)

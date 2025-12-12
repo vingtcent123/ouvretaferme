@@ -552,7 +552,7 @@ class AnalyzeLib {
 
 		($mItem ?? Item::model())
 			->whereIngredientOf(NULL, if: $display === \farm\Farmer::COMPOSITION)
-			->whereProductComposition(FALSE, if: $display === \farm\Farmer::INGREDIENT);
+			->whereComposition(new Sale(), if: $display === \farm\Farmer::INGREDIENT);
 
 	}
 
