@@ -32,6 +32,10 @@ class CompanyLib {
 
 	public static function initialize(\farm\Farm $eFarm): void {
 
+		if($eFarm->hasAccounting() === TRUE) {
+			return;
+		}
+
 		if(OTF_DEMO === FALSE) {
 			self::createSpecificDatabaseAndTables($eFarm);
 		}

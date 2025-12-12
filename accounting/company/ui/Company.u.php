@@ -135,16 +135,11 @@ class CompanyUi {
 
 		$h = '';
 
+			$h .= '<div class="text-end mb-1">';
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/log">'.s("Activité du compte").'</a>';
+			$h .= '</div>';
+
 			$h .= '<div class="util-buttons">';
-
-				if($eFarm->canManage() === TRUE) {
-
-					$h .= '<a href="'.CompanyUi::url($eFarm).'/company:update?id='.$eFarm['id'].'" class="util-button">';
-						$h .= '<h4>'.s("Les réglages de base").'</h4>';
-						$h .= \Asset::icon('gear-fill');
-					$h .= '</a>';
-
-				}
 
 				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/account" class="util-button">';
 					$h .= '<h4>'.s("Les comptes bancaires").'</h4>';
@@ -173,9 +168,6 @@ class CompanyUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="text-end">';
-				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/log">'.s("Activité du compte").'</a>';
-			$h .= '</div>';
 
 		return $h;
 

@@ -52,7 +52,7 @@ class CashflowLib extends CashflowCrud {
 			->where(TRUE)
 			->get();
 
-		if($eCashflow->empty()) {
+		if($eCashflow->empty() or $eCashflow['min'] === NULL) {
 			return ['', ''];
 		}
 

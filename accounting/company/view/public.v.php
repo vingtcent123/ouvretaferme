@@ -125,7 +125,7 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 	echo '<div class="util-block-help">';
 		echo '<h4>'.s("Bienvenue sur le module de comptabilité de {siteName}").'</h4>';
 		echo '<p>';
-			echo s("Pour faire la comptabilité de votre ferme avec {siteName}, vous devez préalablement renseigner quelques informations de base sur votre entité et les choix juridiques et fiscaux que vous avez fait.");
+			echo s("Pour tenir la comptabilité de votre ferme avec {siteName}, vous devez préalablement renseigner quelques informations de base sur votre entité et les choix juridiques et fiscaux que vous avez faits.");
 		echo '</p>';
 	echo '</div>';
 
