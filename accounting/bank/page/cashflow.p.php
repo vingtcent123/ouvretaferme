@@ -147,7 +147,9 @@ new \bank\CashflowPage(
 	})
 	->get('attach', function($data) {
 
-		$data->cOperation = \journal\OperationLib::getOperationsForAttach($data->eCashflow);
+		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
+		$data->cOperation = \journal\OperationLib::getByIds(GET('operations', 'array'));
+		\journal\OperationLib::setLinkedOperations($data->cOperation);
 
 		throw new ViewAction($data);
 
@@ -168,15 +170,15 @@ new \bank\CashflowPage(
 			\bank\Cashflow::fail('internal');
 		}
 
-		if(post_exists('operation') === FALSE) {
+		if(post_exists('operations') === FALSE) {
 			\bank\Cashflow::fail('noSelectedOperation');
 		}
 
-		// Payment methods
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
+		$cOperation = \journal\OperationLib::getOperationsForAttach(POST('operations', 'array'));
+		\journal\Operation::validateBatchAttach($data->eCashflow, $cOperation);
 
-		\bank\CashflowLib::attach($data->eCashflow, POST('operation', 'array'), $eThirdParty, $data->cPaymentMethod);
+		\bank\CashflowLib::attach($data->eCashflow, $cOperation, $eThirdParty);
 
 		$fw->validate();
 

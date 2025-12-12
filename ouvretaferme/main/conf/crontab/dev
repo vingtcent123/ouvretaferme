@@ -23,7 +23,6 @@
 0 6 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme user/cron/log
 15 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme shop/cron/clean:expired
 15 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme shop/cron/delivery:email
-15 2 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme journal/cron/cleanInvoices
 17 7 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme dev/cron/minifyClean
 19 5 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme selling/cron/clean:pdf
 28 4 * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme website/cron/certbot:clean

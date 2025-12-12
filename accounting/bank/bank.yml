@@ -28,16 +28,6 @@ Cashflow:
     ["fitid"]
   ]
 
-CashflowInvoice:
-  id: serial32
-  cashflow: bank\Cashflow
-  invoice: selling\Invoice
-  createdAt: datetime = SPECIAL(now)
-  UNIQUE: [
-    ["cashflow", "invoice"]
-  ]
-
-
 Import:
   id: serial32
   filename: text8(1, null)

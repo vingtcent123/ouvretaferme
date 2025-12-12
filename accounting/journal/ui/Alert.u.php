@@ -34,6 +34,7 @@ class AlertUi {
 			'Operation::invoice.unknownExtension' => s("Le format du fichier n'est pas reconnu, veuillez essayer avec un autre fichier ou faire une saisie manuelle."),
 
 			'Operation::document.empty' => s("Le nom de la pièce comptable est nécessaire pour enregistrer le document dans votre espace de stockage."),
+			'Operation::attach.check' => s("Il n'y a pas d'opération à rattacher ?"),
 
 			'Operation::FinancialYear.notUpdatable' => s("Il n'est plus possible d'écrire dans cet exercice comptable."),
 

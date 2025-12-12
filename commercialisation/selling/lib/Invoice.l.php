@@ -249,8 +249,6 @@ class InvoiceLib extends InvoiceCrud {
 					'invoice' => $e
 				]);
 
-			\bank\CashflowInvoiceLib::associateInvoiceToCashflow($e);
-
 		Invoice::model()->commit();
 
 		if($e['generation'] === Invoice::NOW) {

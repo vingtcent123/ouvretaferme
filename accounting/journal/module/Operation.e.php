@@ -117,6 +117,30 @@ class Operation extends OperationElement {
 
 	}
 
+	public static function validateBatchAttach(\bank\Cashflow $eCashflow, \Collection $cOperation) {
+
+		if($cOperation->empty()) {
+
+			throw new \FailAction('journal\Operation::attach.check');
+
+		} else {
+
+			foreach($cOperation as $eOperation) {
+				if($eOperation->empty()) {
+					throw new \NotExpectedAction('Operation to attach empty');
+				}
+
+				if(OperationCashflow::model()->whereOperation($eOperation)->count() > 0) {
+					throw new \NotExpectedAction('Operation already attached');
+				}
+
+				if($eOperation['date'] > $eCashflow['date']) {
+					throw new \NotExpectedAction('Cashflow date is before operation date');
+				}
+			}
+		}
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

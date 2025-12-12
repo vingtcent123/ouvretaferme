@@ -350,4 +350,22 @@ new \journal\OperationPage(function($data) {
 
 		throw new ReloadAction('journal', 'Operations::updated');
 	});
+
+new Page(function($data) {
+
+	\user\ConnectionLib::checkLogged();
+
+	$data->eFarm->validate('canManage');
+})
+	->post('query', function($data) {
+
+		$eCashflow = \bank\CashflowLib::getById(POST('cashflow'));
+		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
+		$excludedOperationIds = explode(',', POST('excludedOperations'));
+
+		$data->cOperation = \journal\OperationLib::getForAttachQuery($eCashflow, POST('query'), $eThirdParty, $excludedOperationIds);
+
+		throw new \ViewAction($data);
+
+	});
 ?>

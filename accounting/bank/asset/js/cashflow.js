@@ -2,10 +2,6 @@ document.delegateEventListener('panelAfterPaint', '#panel-bank-cashflow-allocate
     Cashflow.checkValidationValues();
 });
 
-document.delegateEventListener('change', 'input[name="invoice[id]"]', function(e) {
-    const element = e.delegateTarget;
-    CashflowInvoice.updateInvoiceSelection(element);
-});
 
 class Cashflow {
 
@@ -228,55 +224,121 @@ class CashflowList {
 }
 
 
-document.delegateEventListener('click', '#cashflow-doAttach input[type="checkbox"]', function() {
-    CashflowAttach.updateTotal();
+document.delegateEventListener('autocompleteBeforeQuery', '[data-third-party="cashflow-doAttach"]', function(e) {
+
+    if(e.detail.input.firstParent('form').qs('[name="id"]') === null) {
+        return;
+    }
+
+    const cashflow = e.detail.input.firstParent('form').qs('[name="id"]').value;
+    e.detail.body.append('cashflowId', cashflow);
+
+});
+
+document.delegateEventListener('autocompleteBeforeQuery', '[data-operation="cashflow-doAttach"]', function(e) {
+
+    if(e.detail.input.firstParent('form').qs('[name="id"]') === null) {
+        return;
+    }
+
+    const cashflow = e.detail.input.firstParent('form').qs('[name="id"]').value;
+    e.detail.body.append('cashflow', cashflow);
+
+    if(e.detail.input.firstParent('form').qs('[name="thirdParty"]') !== null) {
+        const thirdParty = e.detail.input.firstParent('form').qs('[name="thirdParty"]').getAttribute('value');
+        e.detail.body.append('thirdParty', thirdParty);
+    }
+
+    let excludedOperations = [];
+    qsa('form [name="operations[]"]', node => excludedOperations.push(node.value));
+    e.detail.body.append('excludedOperations', excludedOperations);
+
+});
+
+document.delegateEventListener('autocompleteSelect', '[data-third-party="cashflow-doAttach"]', function(e) {
+
+    CashflowAttach.replaceState();
+
+});
+document.delegateEventListener('autocompleteSelect', '[data-operation="cashflow-doAttach"]', function(e) {
+
+    if(this.disabled) {
+        return;
+    }
+
+    if(e.detail.tableRow) {
+
+        qs('#cashflow-operations tbody').insertAdjacentHTML('beforeend', e.detail.tableRow);
+
+    }
+
+    CashflowAttach.recalculate();
+    CashflowAttach.replaceState();
+    CashflowAttach.emptyOperationAutocomplete();
+
 });
 class CashflowAttach {
 
-    static updateTotal() {
+    static emptyOperationAutocomplete() {
+
+        const element = qs('[data-operation="cashflow-doAttach"]').firstParent('div').qs('a[class="autocomplete-empty"]');
+        element.click();
+        AutocompleteField.empty(element);
+
+    }
+    static replaceState() {
+
+        const url = new URL(document.location.href);
+        const thirdParty = qs('form [name="thirdParty"]').getAttribute('value');
+        url.searchParams.set('thirdParty', thirdParty);
+        url.searchParams.delete('operations[]');
+        qsa('form [name="operations[]"]', node => url.searchParams.append('operations[]', node.value));
+
+        Lime.History.replaceState(url.toString());
+
+        CashflowAttach.recalculate();
+
+    }
+
+    static removeOperation(operationId) {
+
+        qs('[data-operation="'+ operationId +'"]').remove();
+
+        CashflowAttach.recalculate();
+
+        CashflowAttach.replaceState();
+
+    }
+
+    static recalculate() {
 
         let total = 0;
-        qsa('input[type="checkbox"][name="operation[]"]:checked', function (operation) {
-            const amountElement = qs('span[data-operation="' + operation.value + '"][name="amount"]');
-            const amount = parseFloat(qs('span[data-operation="' + operation.value + '"][name="amount"]').innerHTML);
-            const type = amountElement.getAttribute('data-type');
-            if(type === 'debit') {
-                total -= amount;
-            } else {
-                total += amount;
-            }
-        });
-        total = round(total);
+        qsa('[name="amounts[]"]', node => total += parseFloat(node.value));
+        total = Math.round(total * 100) / 100;
+
         qs('span[data-field="totalAmount"]').innerHTML = money(total);
 
         const cashflowAmount = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
 
-        const difference = cashflowAmount - total;
+        const difference = total > cashflowAmount ? total - cashflowAmount : cashflowAmount - total;
 
-        if(qsa('input[type="checkbox"][name="operation[]"]:checked').length > 0 && Math.abs(cashflowAmount) !== Math.abs(total)) {
+        if(qsa('[name="amounts[]"]').length > 0 && Math.abs(cashflowAmount) !== Math.abs(total)) {
             qs('#cashflow-attach-difference-warning').classList.remove('hide');
             qs('#cashflow-attach-missing-value').innerHTML = money(difference);
         } else {
             qs('#cashflow-attach-difference-warning').classList.add('hide');
         }
 
+
+        if(qsa('#cashflow-operations tbody tr')?.length === 0) {
+
+            qs('#cashflow-operations').hide();
+
+        } else {
+
+            qs('#cashflow-operations').removeHide();
+
+        }
     }
-}
 
-class CashflowInvoice {
-
-    // Nécessaire pour un comportement identique à un bouton radio avec un unselect.
-    static updateInvoiceSelection(element) {
-
-        const isChecked = element.checked;
-        const valueChecked = element.value;
-
-        qsa('input[name="invoice[id]"]', checkbox => {
-            if(isChecked && checkbox.value === valueChecked) {
-                return;
-            }
-            checkbox.checked = false;
-        });
-
-    }
 }

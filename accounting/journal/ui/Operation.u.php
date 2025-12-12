@@ -1349,6 +1349,73 @@ class OperationUi {
 
 	}
 
+	public static function getAutocomplete(Operation $eOperation): array {
+
+		\Asset::css('media', 'media.css');
+
+		if($eOperation['document']) {
+			$document = '<br /><small class="color-muted">'.s("Pièce comptable : ").encode($eOperation['document']).'</small>';
+		} else {
+			$document = '';
+		}
+
+		$tableRow = \bank\CashflowUi::getOperationLineForAttachment($eOperation);
+
+		$amountIncludingVat = $eOperation['type'] === \journal\Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
+		foreach($eOperation['cOperationLinked'] as $eOperationLinked) {
+			$amountIncludingVat += $eOperationLinked['type'] === \journal\Operation::DEBIT ? $eOperationLinked['amount'] : -1 * $eOperationLinked['amount'];
+		}
+
+		$itemHtml = '<div style="display: flex; gap: 0.5rem;">';
+			$itemHtml .= '<div class="text-end">';
+				$itemHtml .= \util\DateUi::numeric($eOperation['date']);
+				$itemHtml .= '<br />';
+				$itemHtml .= encode($eOperation['accountLabel']);
+			$itemHtml .= '</div>';
+			$itemHtml .= '<div>';
+				if($eOperation['cOperationLinked']->notEmpty()) {
+					$itemHtml .= encode($eOperation['description']).' - '.s("{type} de {amount} <small>HT</small> ({amountIncludingVat} <small>TTC</small>)", [
+						'type' => self::p('type')->values[$eOperation['type']],
+						'amount' => \util\TextUi::money($eOperation['amount']),
+						'amountIncludingVat' => \util\TextUi::money($amountIncludingVat),
+					]);
+				} else {
+					$itemHtml .= encode($eOperation['description']).' - '.s("{type} de {amount}", [
+						'type' => self::p('type')->values[$eOperation['type']],
+						'amount' => \util\TextUi::money($eOperation['amount']),
+					]);
+
+				}
+				$itemHtml .= '<br />';
+				$itemHtml .= \Asset::icon('person-rolodex').' '.encode($eOperation['thirdParty']['name']);
+				$itemHtml .= $document;
+			$itemHtml .= '</div>';
+		$itemHtml .= '</div>';
+
+		return [
+			'value' => $eOperation['id'],
+			'itemText' => encode($eOperation['description']),
+			'itemHtml' => $itemHtml,
+			'tableRow' => $tableRow,
+		];
+
+	}
+
+	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE) {
+
+		$d->prepend = \Asset::icon('journal-bookmark');
+		$d->field = 'autocomplete';
+
+		$d->placeholder ??= s("Opération...");
+		$d->multiple = $multiple;
+
+		$d->autocompleteUrl = \company\CompanyUi::urlFarm(new \farm\Farm(['id' => $farm])).'/journal/operation:query';
+		$d->autocompleteResults = function(Operation $eOperation) {
+			return self::getAutocomplete($eOperation);
+		};
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Operation::model()->describer($property, [

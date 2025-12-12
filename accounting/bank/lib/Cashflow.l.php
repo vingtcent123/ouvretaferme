@@ -116,7 +116,7 @@ class CashflowLib extends CashflowCrud {
 	}
 
 
-	public static function attach(Cashflow $eCashflow, array $operations, \account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): void {
+	public static function attach(Cashflow $eCashflow, \Collection $cOperation, \account\ThirdParty $eThirdParty): void {
 
 		Cashflow::model()->beginTransaction();
 
@@ -124,7 +124,7 @@ class CashflowLib extends CashflowCrud {
 			throw new \NotExpectedAction('Cashflow #'.$eCashflow['id'].' already attached');
 		}
 
-		\journal\OperationLib::attachIdsToCashflow($eCashflow, $operations, $eThirdParty, $cPaymentMethod);
+		\journal\OperationLib::attachOperationsToCashflow($eCashflow, $cOperation, $eThirdParty);
 
 		$properties = ['status', 'updatedAt'];
 		$eCashflow['status'] = Cashflow::ALLOCATED;
@@ -137,7 +137,7 @@ class CashflowLib extends CashflowCrud {
 
 		Cashflow::model()->commit();
 
-		\account\LogLib::save('attach', 'Cashflow', ['id' => $eCashflow['id'], 'operations' => $operations]);
+		\account\LogLib::save('attach', 'Cashflow', ['id' => $eCashflow['id'], 'operations' => $cOperation->getIds()]);
 	}
 
 	public static function deleteCasfhlow(Cashflow $eCashflow): void {

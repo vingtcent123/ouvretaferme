@@ -210,4 +210,43 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 
 });
 
+new JsonView('query', function($data, AjaxTemplate $t) {
+
+	$results = [];
+	$found = FALSE;
+
+	foreach($data->cOperation as $eOperation) {
+
+		if($found === FALSE and $eOperation['isThirdParty'] === TRUE) {
+
+			$results[] = [
+				'type' => 'title',
+				'itemHtml' => '<div>'.s("Écritures comptables liées au tiers").'</div>',
+				'itemText' => s("Écritures comptables liées au tiers"),
+			];
+
+			$found = TRUE;
+
+		} else if($found === TRUE and $eOperation['isThirdParty'] === FALSE) {
+
+			$results[] = [
+				'type' => 'title',
+				'itemHtml' => '<div>'.s("Toutes les autres écritures comptables").'</div>',
+				'itemText' => s("Toutes les autres écritures comptables"),
+			];
+
+			$found = NULL;
+
+		}
+
+		$results[] = \journal\OperationUi::getAutocomplete($eOperation);
+
+	}
+
+
+	$t->push('results', $results);
+
+});
+
+
 ?>

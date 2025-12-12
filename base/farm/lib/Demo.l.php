@@ -25,7 +25,6 @@ class DemoLib {
 		'association\History',
 		'bank\BankAccount',
 		'bank\Cashflow',
-		'bank\CashflowInvoice',
 		'bank\Import',
 		'journal\Lettering',
 		'journal\Operation',

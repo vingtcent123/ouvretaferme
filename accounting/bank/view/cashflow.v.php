@@ -44,7 +44,7 @@ new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('attach', function($data, PanelTemplate $t) {
 
-		return new \bank\CashflowUi()->getAttach($data->eFarm, $data->eCashflow, $data->cOperation);
+		return new \bank\CashflowUi()->getAttach($data->eFarm, $data->eCashflow, $data->eThirdParty, $data->cOperation);
 
 });
 ?>

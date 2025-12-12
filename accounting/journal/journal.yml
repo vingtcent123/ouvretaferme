@@ -79,6 +79,9 @@ Operation:
   INDEX: [
     ["document"]
   ]
+  SEARCH: [
+    ["accountLabel", "description", "document"]
+  ]
 
 OperationCashflow:
   id: serial32

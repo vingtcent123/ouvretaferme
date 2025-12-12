@@ -1078,50 +1078,6 @@ class OperationLib extends OperationCrud {
 		return Operation::model()->where(join(' OR ', $dateConditions), if: empty($dateConditions) === FALSE);
 
 	}
-	public static function getOperationsForAttach(\bank\Cashflow $eCashflow): \Collection {
-
-		$cThirdParty = \account\ThirdPartyLib::filterByCashflow(\account\ThirdPartyLib::getAll(new \Search()), $eCashflow)->filter(fn($e) => $e['weight'] > 50);
-
-		$amount = abs($eCashflow['amount']);
-
-		$properties = Operation::getSelection()
-			+ ['account' => ['class', 'description']]
-			+ ['thirdParty' => \account\ThirdParty::getSelection()];
-
-		$cOperation = self::addOpenFinancialYearCondition()
-			->select($properties)
-			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
-			->whereThirdParty('IN', $cThirdParty->getIds(), if: $cThirdParty->notEmpty())
-			->where('m2.id IS NULL')
-			->where('m1.operation is null')
-			->where(new \Sql('SUBSTRING(accountLabel, 1, 1) IN ('.join(',', [\account\AccountSetting::PRODUCT_ACCOUNT_CLASS, \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).')'))
-			->sort(['date' => SORT_ASC])
-			->getCollection();
-
-		$cOperationLinked = $cOperation->empty() === FALSE ? Operation::model()
-			->select($properties)
-			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
-			->where('m2.id IS NULL')
-			->where('m1.operation IN ('.join(',', $cOperation->getIds()).')')
-			->getCollection() : new \Collection();
-
-		// Tri pour optimiser le montant
-		foreach($cOperation as &$eOperation) {
-			$eOperation['links'] = new \Collection();
-			$sum = 0;
-			foreach($cOperationLinked as $eOperationLinked) {
-				if($eOperationLinked['operation']['id'] === $eOperation['id']) {
-					$sum += $eOperationLinked['amount'];
-					$eOperation['links']->append($eOperationLinked);
-				}
-			}
-			$eOperation['totalVATIncludedAmount'] = $eOperation['amount'] + $sum;
-			$eOperation['difference'] = abs($eOperation['totalVATIncludedAmount'] - $amount);
-		}
-
-		return $cOperation;
-
-	}
 
 	public static function countByCashflow(\bank\Cashflow $eCashflow): int {
 
@@ -1131,16 +1087,79 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function attachIdsToCashflow(\bank\Cashflow $eCashflow, array $operationIds, \account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): void {
+	public static function getForAttachQuery(\bank\Cashflow $eCashflow, string $query, \account\ThirdParty $eThirdParty, array $excludedOperationIds): \Collection {
+
+		$selection = Operation::getSelection();
+		if($eThirdParty->notEmpty()) {
+			$selection['isThirdParty'] = new \Sql('IF(thirdParty = '.$eThirdParty['id'].', 1, 0)', 'bool');
+			$sort = ['m1_isThirdParty' => SORT_DESC];
+		} else {
+			$sort = [];
+		}
+
+		if($query !== '') {
+
+			$keywords = [];
+
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
+
+			foreach(preg_split('/\s+/', $query) as $word) {
+				$keywords[] = '*'.$word.'*';
+			}
+
+			$match = 'MATCH(accountLabel, description, document) AGAINST ('.Operation::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+			Operation::model()->where($match.' > 0');
+
+		}
+
+		$excludedOperationIds = array_filter($excludedOperationIds, fn($val) => $val);
+		if(count($excludedOperationIds) > 0) {
+			Operation::model()->where(new \Sql('m1.id NOT IN ('.implode(', ', $excludedOperationIds).')'));
+		}
+
+		$cOperation = Operation::model()
+			->select($selection)
+			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+			->whereDate('<=', $eCashflow['date'])
+			->sort($sort + ['m1_date' => SORT_DESC])
+			->where(new \Sql('m2.id IS NULL'))
+			->getCollection();
+
+		return self::setLinkedOperations($cOperation);
+
+	}
+
+	public static function setLinkedOperations(\Collection $cOperation): \Collection {
+
+		$cOperationLinked = Operation::model()
+			->select('id', 'amount', 'type', 'operation')
+			->whereOperation('IN', $cOperation->getIds())
+			->getCollection(NULL, NULL, ['operation', 'id']);
+
+		foreach($cOperation as &$eOperation) {
+			$eOperation['cOperationLinked'] = $cOperationLinked->offsetExists($eOperation['id']) ? $cOperationLinked->offsetGet($eOperation['id']) : new \Collection();
+		}
+
+		return $cOperation;
+
+	}
+
+	public static function getOperationsForAttach(array $operationIds): \Collection {
 
 		// Get the operations AND linked Operations
-		$cOperation = Operation::model()
+		return Operation::model()
 			->select(Operation::getSelection())
 			->or(
 				fn() => $this->whereId('IN', $operationIds),
 				fn() => $this->whereOperation('IN', $operationIds),
 			)
 			->getCollection();
+
+	}
+
+	public static function attachOperationsToCashflow(\bank\Cashflow $eCashflow, \Collection $cOperation, \account\ThirdParty $eThirdParty): void {
+
 		$properties = ['updatedAt', 'paymentDate'];
 		$eOperation = new Operation([
 			'updatedAt' => Operation::model()->now(),

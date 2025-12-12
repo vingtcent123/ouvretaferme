@@ -92,6 +92,10 @@ class OperationModel extends \ModuleModel {
 			['document']
 		]);
 
+		$this->searchConstraints = array_merge($this->searchConstraints, [
+			['accountLabel', 'description', 'document']
+		]);
+
 	}
 
 	public function getDefaultValue(string $property) {
