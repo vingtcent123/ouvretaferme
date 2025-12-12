@@ -207,19 +207,23 @@ class ItemLib extends ItemCrud {
 
 	public static function getSummaryBySales(\Collection $cSale): \Collection {
 
-		return Item::model()
+		$cItem = Item::model()
 			->select([
 				'name', 'quality',
 				'unit' => \selling\Unit::getSelection(),
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ProductElement::getSelection(),
-				'composition' => fn() => new Sale()
+				'product' => ProductElement::getSelection()
 			])
 			->whereSale('IN', $cSale)
 			->group(['product', 'name', 'unit', 'quality'])
 			->sort('name')
 			->getCollection();
+
+		$cItem->setColumn('composition', new Sale());
+
+		return $cItem;
+
 	}
 
 	public static function getForPastStock(\farm\Farm $eFarm): \Collection {
