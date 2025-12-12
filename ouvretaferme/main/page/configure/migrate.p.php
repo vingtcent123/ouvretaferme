@@ -2,31 +2,24 @@
 new Page()
 	->cli('index', function($data) {
 
-		$c = \farm\Farm::model()
-			->select('id')
-			->whereLegalEmail(NULL)
+		$c = \selling\Item::model()
+			->select(\selling\Item::getSelection())
+			->whereProductComposition(TRUE)
 			->getCollection();
 
 		foreach($c as $e) {
 
-			$f = \farm\Farmer::model()
-				->select([
-					'user' => ['email']
-				])
-				->whereFarm($e)
-				->whereRole(\farm\Farmer::OWNER)
-				->sort(['id' => SORT_ASC])
-				->get();
+			\selling\Item::model()->select([
+				'cItemIngredient' => \selling\SaleLib::delegateIngredients($e['sale']['deliveredAt'], 'product')
+			])->get($e);
 
-			if(
-				$f->notEmpty() and
-				$f['user']['email'] !== NULL
-			) {
-
-				\farm\Farm::model()->update($e, [
-					'legalEmail' => $f['user']['email']
+			if($e['cItemIngredient']->notEmpty()) {
+				$s = $e['cItemIngredient']->first()['sale'];
+				\selling\Item::model()->update($e, [
+					'composition' => $s
 				]);
-
+			} else {
+				echo '?';
 			}
 
 		}

@@ -530,7 +530,7 @@ class AnalyzeLib {
 				'unit' => \selling\Unit::getSelection(),
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),
 				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'containsComposition' => new \Sql('SUM(productComposition) > 0', 'bool'),
+				'containsComposition' => new \Sql('SUM(composition IS NOT NULL) > 0', 'bool'),
 				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
@@ -666,7 +666,7 @@ class AnalyzeLib {
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'turnover' => new \Sql('SUM(priceStats)', 'float'),
 				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'containsComposition' => new \Sql('SUM(productComposition) > 0', 'bool'),
+				'containsComposition' => new \Sql('SUM(composition IS NOT NULL) > 0', 'bool'),
 				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
 			->join(Product::model()
@@ -932,7 +932,7 @@ class AnalyzeLib {
 				'id',
 				'name',
 				'product' => ProductElement::getSelection(),
-				'productComposition',
+				'composition',
 				'ingredientOf',
 				'sale' => ['document',  'type'],
 				'customer' => ['type', 'name'],
@@ -953,7 +953,7 @@ class AnalyzeLib {
 					$eItem['id'],
 					$eItem['name'],
 					$eItem['product']->empty() ? '' : $eItem['product']['id'],
-					$eItem['ingredientOf']->notEmpty() ? 'ingredient' : ($eItem['productComposition'] ? 'composed' : 'simple'),
+					$eItem['ingredientOf']->notEmpty() ? 'ingredient' : ($eItem['composition']->notEmpty() ? 'composed' : 'simple'),
 					$eItem['customer']->notEmpty() ? $eItem['customer']->getName() : '',
 					CustomerUi::getType($eItem['sale']),
 					\util\DateUi::numeric($eItem['deliveredAt']),

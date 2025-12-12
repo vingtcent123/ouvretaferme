@@ -60,6 +60,7 @@ class ItemModel extends \ModuleModel {
 			'shopProduct' => ['element32', 'shop\Product', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'productComposition' => ['bool', 'cast' => 'bool'],
+			'composition' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'ingredientOf' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
 			'quality' => ['enum', [\selling\Item::ORGANIC, \selling\Item::NATURE_PROGRES, \selling\Item::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
@@ -82,7 +83,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'productComposition', 'composition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -93,6 +94,7 @@ class ItemModel extends \ModuleModel {
 			'shopDate' => 'shop\Date',
 			'shopProduct' => 'shop\Product',
 			'product' => 'selling\Product',
+			'composition' => 'selling\Sale',
 			'ingredientOf' => 'selling\Item',
 			'parent' => 'selling\Item',
 			'unit' => 'selling\Unit',
@@ -217,6 +219,10 @@ class ItemModel extends \ModuleModel {
 
 	public function whereProductComposition(...$data): ItemModel {
 		return $this->where('productComposition', ...$data);
+	}
+
+	public function whereComposition(...$data): ItemModel {
+		return $this->where('composition', ...$data);
 	}
 
 	public function whereIngredientOf(...$data): ItemModel {

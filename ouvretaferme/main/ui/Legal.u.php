@@ -248,7 +248,7 @@ class LegalUi {
 			$h .= '<p>'.s("Votre demande de nouvelle fonctionnalité ne sera pas prise en compte. Ce ne sont pas les idées qui manquent sur {siteName} mais plutôt le temps disponible pour ajouter de nouvelles fonctionnalités. La feuille de route est déjà bien chargée, et il est d'ailleurs probable que votre besoin s'y trouve déjà.").'</p>';
 			$h .= '<p><a href="https://blog.ouvretaferme.org/feuille-de-route" class="btn btn-secondary mb-1">'.s("Voir la feuille de route").'</a></p>';
 
-			$h .= '<p>'.s("Les priorités de développement sont choisies en fonction des besoins d'un groupe de maraîchers situé en Auvergne, des affinités du développeur et du temps disponible. Si vous pensez qu'il manque des fonctionnalités structurantes pour votre ferme, <b>n'utilisez pas {siteName}</b> et privilégiez des solutions qui vous correspondront mieux.").'</p>';
+			$h .= '<p>'.s("Les priorités de développement sont choisies en fonction des besoins des adhérents à l'association, des affinités du développeur et du temps disponible. Si vous pensez qu'il manque des fonctionnalités structurantes pour votre ferme, <b>n'utilisez pas {siteName}</b> et privilégiez des solutions qui vous correspondront mieux.").'</p>';
 
 		$h .= '</div>';
 

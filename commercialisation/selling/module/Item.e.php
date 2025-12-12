@@ -119,6 +119,19 @@ class Item extends ItemElement {
 
 
 			})
+			->setCallback('product.composition', function(Product $eProduct) use ($p): bool {
+
+				if(
+					$p->isInvalid('product') or
+					$eProduct->empty() or
+					$this['sale']->isComposition() === FALSE
+				) {
+					return TRUE;
+				}
+
+				return ($eProduct['profile'] !== Product::COMPOSITION);
+
+			})
 			->setCallback('vatRate.check', function(?float &$vatRate): bool {
 
 				if($this['sale']['hasVat'] === FALSE) {
@@ -133,7 +146,10 @@ class Item extends ItemElement {
 
 				if($p->for === 'create') {
 
-					if($this['product']->notEmpty()) {
+					if(
+						$p->isBuilt('product') and
+						$this['product']->notEmpty()
+					) {
 
 						$name = $this['product']->getName();
 

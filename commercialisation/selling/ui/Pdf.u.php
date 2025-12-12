@@ -482,7 +482,7 @@ class PdfUi {
 			'unitPrice' => NULL,
 			'price' => $eSale['shipping'],
 			'vatRate' => $eSale['shippingVatRate'],
-			'productComposition' => FALSE,
+			'composition' => new Sale(),
 			'ingredientOf' => new Item()
 		]);
 
@@ -1152,7 +1152,7 @@ class PdfUi {
 		$h = '';
 
 		if(
-			$eItem['productComposition'] and
+			$eItem['composition']->notEmpty() and
 			$eItem['cItemIngredient']->notEmpty()
 		) {
 
@@ -1212,7 +1212,7 @@ class PdfUi {
 			$cItemFormated[] = $eItem;
 
 			if(
-				$eItem['productComposition'] and
+				$eItem['composition']->notEmpty() and
 				$eSale['ccItem']->offsetExists($eItem['id'])
 			) {
 
@@ -1239,7 +1239,7 @@ class PdfUi {
 				$quantity = $eItem['number'];
 			}
 
-			$item = $eItem['productComposition'] ? \Asset::icon('puzzle-fill', ['class' => 'font-lg']) : \Asset::icon('circle', ['class' => 'font-lg']);
+			$item = $eItem['composition']->notEmpty() ? \Asset::icon('puzzle-fill', ['class' => 'font-lg']) : \Asset::icon('circle', ['class' => 'font-lg']);
 			$item .= '<div class="pdf-sales-label-content-item '.(mb_strlen($eItem['name']) > 50 ? 'pdf-sales-label-content-shrink-strong' : (mb_strlen($eItem['name']) > 40 ? 'pdf-sales-label-content-shrink' : '')).'">';
 				$item .= '<div class="pdf-sales-label-content-value">';
 

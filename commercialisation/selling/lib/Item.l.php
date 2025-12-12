@@ -36,7 +36,7 @@ class ItemLib extends ItemCrud {
 				'customer' => ['type', 'name'],
 				'packaging', 'number',
 				'unit' => \selling\Unit::getSelection(),
-				'containsComposition' => new \Sql('productComposition', 'bool'),
+				'containsComposition' => new \Sql('composition IS NOT NULL', 'bool'),
 				'containsIngredient' => new \Sql('ingredientOf IS NOT NULL', 'bool')
 			])
 			->join(Product::model(), 'm2.id = m1.product')
@@ -191,7 +191,7 @@ class ItemLib extends ItemCrud {
 				'packaging',
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product' => ['vignette', 'farm', 'profile'],
-				'productComposition',
+				'composition',
 				'deliveredAt' => fn() => $eDate['deliveryDate'],
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])
@@ -199,7 +199,7 @@ class ItemLib extends ItemCrud {
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
 			->whereIngredientOf(NULL)
 			->whereShopDate($eDate)
-			->group(['product', 'productComposition', 'name', 'unit', 'packaging', 'quality'])
+			->group(['product', 'composition', 'name', 'unit', 'packaging', 'quality'])
 			->sort('name')
 			->getCollection();
 
@@ -214,7 +214,7 @@ class ItemLib extends ItemCrud {
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product' => ProductElement::getSelection(),
-				'productComposition' => fn() => FALSE
+				'composition' => fn() => new Sale()
 			])
 			->whereSale('IN', $cSale)
 			->group(['product', 'name', 'unit', 'quality'])
@@ -342,7 +342,7 @@ class ItemLib extends ItemCrud {
 
 				Item::model()->insert($e);
 
-				if($e['productComposition']) {
+				if($e['isComposition']) {
 					self::createIngredients($e);
 				}
 
@@ -364,7 +364,7 @@ class ItemLib extends ItemCrud {
 
 		Item::model()->insert($e);
 
-		if($e['productComposition']) {
+		if($e['isComposition']) {
 			self::createIngredients($e);
 		}
 
@@ -419,11 +419,7 @@ class ItemLib extends ItemCrud {
 
 	public static function createIngredients(Item $e): void {
 
-		$e->expects(['productComposition', 'deliveredAt']);
-
-		if($e['productComposition'] === FALSE) {
-			throw new \Exception('Invalid call');
-		}
+		$e->expects(['id', 'deliveredAt']);
 
 		Item::model()
 			->select([
@@ -434,6 +430,10 @@ class ItemLib extends ItemCrud {
 		if($e['cItemIngredient']->empty()) {
 			return;
 		}
+
+		Item::model()->update($e, [
+			'composition' => $e['cItemIngredient']->first()['sale']
+		]);
 
 		$cItemIngredient = new \Collection();
 		self::buildIngredients($cItemIngredient, $e, $e['cItemIngredient']);
@@ -459,7 +459,7 @@ class ItemLib extends ItemCrud {
 			  'id' => NULL,
 			  'name' => $eItemCopy['name'],
 			  'product' => $eItemCopy['product'],
-			  'productComposition' => FALSE,
+			  'composition' => new Sale(),
 			  'ingredientOf' => $eItemComposition,
 			  'quality' => $eItemCopy['quality'],
 			  'parent' => new Item(),
@@ -508,7 +508,7 @@ class ItemLib extends ItemCrud {
 			SaleLib::recalculate($e['sale']);
 		}
 
-		if($e['productComposition']) {
+		if($e['composition']->notEmpty()) {
 			self::updateIngredients($e);
 		}
 
@@ -519,7 +519,19 @@ class ItemLib extends ItemCrud {
 	public static function updateIngredients(Item $e): void {
 
 		self::deleteIngredients($e);
-		self::createIngredients($e);
+
+		$cItemCopy = Item::model()
+			->select(Item::getSelection())
+			->whereSale($e['composition'])
+			->sort([
+				'name' => SORT_ASC,
+				'id' => SORT_ASC
+			])
+			->delegateCollection('sale');
+
+		$cItemIngredient = new \Collection();
+		self::buildIngredients($cItemIngredient, $e, $cItemCopy);
+		Item::model()->insert($cItemIngredient);
 
 	}
 
@@ -533,7 +545,7 @@ class ItemLib extends ItemCrud {
 
 			parent::delete($e);
 
-			if($e['productComposition']) {
+			if($e['composition']->notEmpty()) {
 				self::deleteIngredients($e);
 			}
 
@@ -553,7 +565,7 @@ class ItemLib extends ItemCrud {
 
 				parent::delete($e);
 
-				if($e['productComposition']) {
+				if($e['composition']->notEmpty()) {
 					self::deleteIngredients($e);
 				}
 
@@ -569,7 +581,9 @@ class ItemLib extends ItemCrud {
 
 	public static function deleteIngredients(Item $e): void {
 
-		if($e['productComposition'] === FALSE) {
+		$e->expects(['id']);
+
+		if($e['composition']->empty()) {
 			throw new \Exception('Invalid call');
 		}
 
@@ -603,7 +617,8 @@ class ItemLib extends ItemCrud {
 		$e['discount'] = $eSale['discount'];
 		$e['stats'] = $eSale['stats'];
 		$e['status'] = $eSale['preparationStatus'];
-		$e['productComposition'] = $e['product']->notEmpty() ? ($e['product']['profile'] === Product::COMPOSITION) : FALSE;
+		$e['isComposition'] = $e['product']->notEmpty() ? ($e['product']['profile'] === Product::COMPOSITION) : FALSE;
+		$e['composition'] = new Sale(); // La composition est affectée à l'étape suivante
 
 		if($e['product']->notEmpty()) {
 

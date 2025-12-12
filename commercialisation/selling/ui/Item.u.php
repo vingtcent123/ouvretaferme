@@ -523,7 +523,7 @@ class ItemUi {
 
 		$h = '';
 
-		if($eItem['productComposition']) {
+		if($eItem['composition']->notEmpty()) {
 
 			if($eItem['cItemIngredient']->empty()) {
 
@@ -1440,11 +1440,12 @@ class ItemUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Item $e) {
 					$e->expects([
 						'farm',
-						'sale' => ['type']
+						'sale' => ['type', 'profile']
 					]);
 					return [
 						'farm' => $e['farm']['id'],
 						'type' => $e['sale']['type'],
+						'withComposition' => ($e['sale']['profile'] !== Sale::COMPOSITION),
 					];
 				};
 				new ProductUi()->query($d);

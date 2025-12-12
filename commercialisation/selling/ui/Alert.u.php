@@ -94,6 +94,7 @@ class AlertUi {
 			'Pdf::fileLocked' => s("Ce fichier est déjà en cours de génération, réactualisez la page d'ici quelques instants !"),
 
 			'Item::vatRate.check' => s("Vous devez renseigner la TVA de tous les produits que vous vendez !"),
+			'Item::product.composition' => s("Vous ne pouvez pas ajouter de produit composé à une composition !"),
 			'Item::number.empty' => s("La quantité vendue ne peut pas être vide !"),
 			'Item::price.locked' => s("Veuillez indiquer le montant total !"),
 			'Item::unitPrice.check' => s("Veuillez indiquer le prix unitaire !"),

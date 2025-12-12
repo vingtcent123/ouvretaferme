@@ -173,13 +173,7 @@ class SaleUi {
 	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
 
 		if($cSale->empty()) {
-
-			$h = '<div class="util-empty">';
-				$h .= s("Il n'y a aucune vente à afficher.");
-			$h .= '</div>';
-
-			return $h;
-
+			return '';
 		}
 
 		$link ??= fn($eSale) => '/vente/'.$eSale['id'];
@@ -1446,7 +1440,7 @@ class SaleUi {
 		) {
 
 			$confirm = $eSale->isComposition() ?
-				s("Confirmer la suppression de la composition ?") :
+				s("Confirmer la suppression de la composition ? Les éventuelles ventes qui utilisent cette composition ne seront pas modifiées.") :
 				s("Confirmer la suppression de la vente ?");
 
 			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
@@ -1661,7 +1655,7 @@ class SaleUi {
 
 		$h .= $form->dynamicGroup($eSale, 'deliveredAt');
 
-		$arguments = ['product' => '<b>'.encode($eSale['compositionOf']['name']).'</b>', 'price' => '<b>'.\util\TextUi::money($eSale['compositionOf'][$eSale['type'].'Price']).'</b>'];
+		$arguments = ['product' => '<u>'.encode($eSale['compositionOf']['name']).'</u>', 'price' => '<b>'.\util\TextUi::money($eSale['compositionOf'][$eSale['type'].'Price']).'</b>'];
 
 		if($eSale['cProduct']->notEmpty()) {
 
@@ -2385,6 +2379,17 @@ class SaleUi {
 
 			case 'deliveredAt' :
 				$d->default = currentDate();
+				$d->labelAfter = function(Sale $e) {
+
+					if($e->isComposition()) {
+						return \util\FormUi::info(
+							$e->exists() ?
+								s("Les ventes déjà créées avec un {product} ne seront pas modifiées.",  ['product' => '<u>'.encode($e['compositionOf']['name']).'</u>']) :
+								s("Les ventes déjà créées avec un {product} garderont leur composition actuelle.",  ['product' => '<u>'.encode($e['compositionOf']['name']).'</u>'])
+						);
+					}
+
+				};
 				$d->group = function(Sale $e) {
 
 					$e->expects(['shop']);

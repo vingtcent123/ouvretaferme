@@ -424,7 +424,7 @@ class CustomerUi {
 
 	}
 
-	public function getOne(Customer $eCustomer): string {
+	public function getOne(Customer $eCustomer, \Collection $cSale): string {
 
 		$eCustomer->expects(['invite']);
 
@@ -506,7 +506,16 @@ class CustomerUi {
 			$h .= '</div>';
 
 		} else {
-			$h .= '<div class="util-block">'.s("Ce client est un point de vente aux particuliers.").'</div>';
+
+			if($cSale->empty()) {
+				$h .= '<div class="util-block-help">';
+					$h .= '<h3>'.s("Point de vente aux particuliers").'</h3>';
+					$h .= '<p>'.s("Le logiciel de caisse proposé par Ouvretaferme peut être utilisé pour ce point de vente aux particuliers.").'</p>';
+					$h .= '<a href="/doc/selling:market" class="btn btn-secondary">'.s("En savoir plus sur le logiciel de caisse").'</a>';
+				$h .= '</div>';
+			} else {
+				$h .= '<div class="util-block">'.s("Ce client est un point de vente aux particuliers.").'</div>';
+			}
 		}
 
 		return $h;
@@ -552,6 +561,7 @@ class CustomerUi {
 					$h .= new \selling\SaleUi()->getList($eCustomer['farm'], $cSale, hide: ['customer'], show: ['average'], cPaymentMethod: $cPaymentMethod);
 
 					if($cSale->empty()) {
+
 						$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="btn btn-primary btn-lg">'.s("Créer une première vente").'</a>';
 					}
 

@@ -851,16 +851,27 @@ class SaleLib extends SaleCrud {
 			$eItem['deliveredAt'] = $eSaleNew['deliveredAt'];
 
 			if($eSaleNew->isMarket()) {
-
 				unset($eItem['price'], $eItem['priceStats']);
-
 			}
 
 			unset($eItem['id'], $eItem['createdAt']);
 
+			$eItem['isComposition'] = $eItem['composition']->notEmpty();
+			$eItem['composition'] = new Sale();
+
+			// Requis pour récupérer les IDs
+			Item::model()->insert($eItem);
+
 		}
 
-		Item::model()->insert($cItem);
+		// Traitement des produits composés
+		foreach($cItem as $eItem) {
+
+			if($eItem['isComposition']) {
+				ItemLib::createIngredients($eItem);
+			}
+
+		}
 
 		Sale::model()->commit();
 
@@ -1353,13 +1364,13 @@ class SaleLib extends SaleCrud {
 
 				$cItemMain[$key] = $eItem;
 
-				if($eItem['productComposition']) {
+				if($eItem['composition']->notEmpty()) {
 
 					if($public === FALSE or $eItem['product']['compositionVisibility'] === Product::PUBLIC) {
 						$cItemIngredient[$eItem['id']] = new \Collection();
 						$cItemMain[$key]['cItemIngredient'] = $cItemIngredient[$eItem['id']];
 					} else {
-						$cItemMain[$key]['productComposition'] = FALSE;
+						$cItemMain[$key]['composition'] = new Sale();
 					}
 
 				}

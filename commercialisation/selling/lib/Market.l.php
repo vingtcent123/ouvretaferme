@@ -190,7 +190,7 @@ class MarketLib {
 				->select('number', 'price', 'priceStats')
 				->update($eItemMarket);
 
-			if($eItemMarket['productComposition']) {
+			if($eItemMarket['composition']->notEmpty()) {
 				ItemLib::updateIngredients($eItemMarket);
 			}
 

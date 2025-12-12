@@ -11,7 +11,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("À quoi sert le logiciel de caisse ?").'</h2>';
-		echo '<p>'.s("Le logiciel de caisse proposé par {siteName} vous permet d'enregistrer les ventes que vous réalisez pendant vos marché avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure sans difficulté.").'</p>';
+		echo '<p>'.s("Le logiciel de caisse proposé par {siteName} vous permet d'enregistrer les ventes que vous réalisez pendant vos marchés avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure.").'</p>';
 
 		echo '<p>'.s("Il fonctionne de la manière suivante :").'</p>';
 
@@ -21,7 +21,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 			echo '<li>'.s("Vous amenez une tablette ou votre téléphone au marché").'</li>';
 			echo '<li>'.s("Lorsque les ventes démarrent, vous saisissez les commandes de vos clients directement sur votre tablette").'</li>';
 			echo '<li>'.s("Une fois le marché terminé, vous clôturez la caisse").'</li>';
-			echo '<li>'.s("En fin de saison, vous retrouver dans l'analyse des ventes une synthèse complète de ce que vous avez vendu dans l'année").'</li>';
+			echo '<li>'.s("En fin de saison, vous retrouvez dans l'analyse des ventes une synthèse complète de ce que vous avez vendu dans l'année").'</li>';
 		echo '</ol>';
 
 		echo '<p>'.s("Le logiciel de caisse est pleinement utilisable pour toutes les productions.<br/>Il est utilisé quotidiennement par des paysans boulangers, des apiculteurs, des éleveurs ou des maraîchers...").'</p>';
@@ -92,7 +92,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 		echo Asset::image('main', 'doc/market-duplicate.png');
 
 		echo '<h3>'.s("Vendre à plusieurs").'</h3>';
-		echo '<p class="util-info">'.s("Vous pouvez être plusieurs à utiliser le logiciel de caisse simultanément sur un même marché. Dans ce cas, nous vous suggérons de vous connecter avec des comptes différents pour que chacun puisse retrouver facilement les ventes qu'ils gèrent avec son avatar.").'</p>';
+		echo '<p class="util-info">'.s("Vous pouvez être plusieurs à utiliser le logiciel de caisse simultanément sur un même marché. Dans ce cas, nous vous suggérons de vous connecter avec des comptes différents pour que chacun puisse retrouver facilement les ventes qu'il gère avec son avatar.").'</p>';
 
 		echo '<h3>'.s("Ajouter un produit au dernier moment dans le logiciel de caisse").'</h3>';
 		echo '<p class="util-info">'.s("Si vous avez oublié d'ajouter un produit à votre caisse, utilisez l'onglet <i>Articles</i> pour ajouter le produit manquant. Cet onglet vous permet également de modifier les prix de vente.").'</p>';
