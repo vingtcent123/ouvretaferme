@@ -283,7 +283,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	$t->title = s("Importer et rapprocher les ventes dans la comptabilité d'Ouvretaferme");
 	$t->subTitle = s("Créer les écritures comptables et rapprocher les paiements");
 
-	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vente</link>", ['link' => '<a href="/doc/accounting">']).' '.Asset::icon('arrow-left-short').'</h4>';
+	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vente</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';
 
 	echo '<div class="util-block">';
 
@@ -302,10 +302,11 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 
 	echo '</div>';
 
+	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link> (et importé les ventes, factures, et/ou marchés, cf. {icon})", ['link' => '<a href="/doc/accounting:bank">', 'icon' => Asset::icon('arrow-up-short')]).'</h4>';
+
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Rapprocher écritures comptables & opérations bancaires").'</h2>';
-		echo '<p>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : Avoir réalisé un import du fichier <i>.ofx</i> de votre compte bancaire, et avoir importé vos marchés, factures et ventes en comptabilité.").'</p>';
 		echo '<p>'.s("Ouvretaferme proposera automatiquement les opérations bancaires détectées comme les plus pertinentes par rapport à la vente à rapprocher.<br />Les critères de décision sont : ").'</p>';
 		echo '<ul class="doc-list-icons">';
 			echo '<li>'.Asset::icon('file-person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
@@ -329,6 +330,67 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 		echo '<p class="doc-annotation">'.s("Note : Les opérations liées aux tiers (saisie de l'écriture et lettrage) ne sont réalisées que dans le cas d'une comptabilité à l'engagement (globalement ou uniquement pour les ventes)").'</p>';
 	echo '</div>';
 
+	echo '<br /><br />';
+
+});
+
+new AdaptativeView('bank', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+	$t->menuSelected = 'accounting:bank';
+
+	$t->title = s("Manipuler les opérations bancaires");
+	$t->subTitle = s("Gérer les flux bancaires avec Ouvretaferme");
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Importer les opérations bancaires").'</h2>';
+		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>.ofx</i> (la plupart des banques proposent ce format).<br />Ensuite, rendez-vous sur la page Banque > Onglet \"Imports\" > Bouton \"Importer un relevé .ofx\" et sélectionnez votre fichier.").'</p>';
+		echo '<p>'.s("Et c'est tout !").'</p>';
+		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page des Opérations bancaires (Banque > Onglet \"Opérations bancaires\").").'</p>';
+		echo '<p class="doc-annotation">'.s("Note : Cette fonctionnalité est accessible dès lors que vous avez accès au module de comptabilité.").'</p>';
+
+	echo '</div>';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Traiter les opérations bancaires").'</h2>';
+		echo '<p>'.s("Si certaines opérations bancaires ne concernent pas votre exploitation et que vous ne souhaitez pas les voir dans la liste, vous pouvez simplement les <i>Supprimer</i>. Si vous le souhaitez, vous pourrez les réintégrer si besoin en choisissant, via le menu de recherche, de les réafficher (Option \"Afficher également les opérations supprimées\").").'</p>';
+		echo '<p>'.s("Pour chaque opération bancaire, il est possible de :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("Créer des écritures comptables correspondantes").'</li>';
+			echo '<li>'.s("Rattacher des écritures comptables déjà saisies").'</li>';
+		echo '</ul>';
+		echo '<div class="util-info">'.Asset::icon('info-circle').' '.s("Si vous souhaitez <b>rapprocher un paiement</b> avec une facture importée, passez directement par le menu de facturation > Rapprocher les factures").'<div class="doc-annotation">'.s("Note : cette dernière fonctionnalité n'est disponible que si votre exploitation est en comptabilité d'engagement (globalement ou juste pour les ventes).").'</div></div>';
+
+		echo '<h3>'.s("Création ou Rattacher des écritures comptables").'</h3>';
+		echo '<p>'.s("Une écriture de contrepartie en compte {bankAccount} sera automatiquement créée et reliée aux écritures comptables concernées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
+		echo '<p>'.s("Attention, il faut veiller à ce que l'équilibre de l'ensemble de vos écritures comptables soit bien respecté. Ouvretaferme vous indiquera un message si ce n'est pas le cas.").'</p>';
+		echo '<p>'.s("Ouvretaferme ne créera pas d'écriture de contrepartie avec le tiers concerné (compte client {clientAccount} ou compte fournisseur {supplierAccount}), même si le tiers est indiqué, et même si vous êtes à la comptabilité à l'engagement.", ['clientAccount' => \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, 'supplierAccount' => \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]).'</p>';
+	echo '</div>';
+
+		echo '<h2>'.s("Exemples d'usage").'</h2>';
+
+	echo '<div class="util-block">';
+		echo '<h4>'.s("Cas n°1 : Un achat apparaît sur mon relevé bancaire et rien n'est indiqué dans mon journal à ce sujet.").'</h4>';
+		echo '<p>'.s("En sélectionnant <b>\"Créer des écritures\"</b>, vous pourrez saisir votre achat (en classe {chargeAccount}), éventuellement son montant de TVA, et valider.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
+		echo '<p>'.s("Ouvretaferme créera les écritures suivantes :").'</p>';
+		echo '<ul class="doc-list-icons">';
+			echo '<li>'.Asset::icon('1-circle').' '.s("Compte {bankAccount} (banque) pour l'opération bancaire", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
+			echo '<li>'.Asset::icon('2-circle').' '.s("Compte {chargeAccount} (charge) pour votre achat (HT)", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</li>';
+			echo '<li>'.Asset::icon('3-circle').' '.s("Compte {vatAccount} (TVA sur Biens et Services) pour la TVA de votre achat", ['vatAccount' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT]).'</li>';
+		echo '</ul>';
+		echo '<p>'.Asset::icon('arrow-right-short').' '.s("Le montant de l'écriture de banque {icon1} devra être égal au total des écritures {icon2} + {icon3}", ['icon1' => Asset::icon('1-circle'), 'icon2' => Asset::icon('2-circle'), 'icon3' => Asset::icon('3-circle')]).'</p>';
+	echo '</div>';
+
+	echo '<div class="util-block">';
+		echo '<h4>'.s("Cas n°2 : Mon associé·e a enregistré l'achat d'un petit matériel et l'opération bancaire vient d'apparaître sur le relevé.").'</h4>';
+		echo '<p>'.s("Pré-requis : l'achat doit avoir été saisi dans le journal (écritures en classe {chargeAccount} et compte {vatAccount}).", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS, 'vatAccount' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT]).'</p>';
+		echo '<p>'.s("En sélectionnant <b>\"Rattacher des écritures\"</b>, vous pourrez choisir directement l'écriture comptable.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
+		echo '<p>'.s("Ouvretaferme créera uniquement l'écriture comptable du compte banque {bankAccount}. Les 3 écritures seront liées et équilibrées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
+		echo '<p><i>'.s("Ce cas peut se présenter si une personne s'occupe de la comptabilité depuis le compte bancaire tandis que toutes les autres saisissent leurs dépenses au fur et à mesure, par exemple.").'</i></p>';
+
+	echo '</div>';
 	echo '<br /><br />';
 
 });
