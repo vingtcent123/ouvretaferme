@@ -13,8 +13,12 @@ class VarietyUi {
 
 		if($weight > 1000) {
 			return \selling\UnitUi::getValue(ceil($weight / 100) / 10, 'kg', short: TRUE);
-		} else {
+		} else if($weight >= 10) {
 			return \selling\UnitUi::getValue(ceil($weight), 'gram', short: TRUE);
+		} else if($weight >= 1) {
+			return \selling\UnitUi::getValue(ceil($weight * 10) / 10, 'gram', short: TRUE);
+		} else {
+			return \selling\UnitUi::getValue(ceil($weight * 100) / 100, 'gram', short: TRUE);
 		}
 
 	}
