@@ -1825,7 +1825,7 @@ class ProductUi {
 				$d->attributes['mandatory'] = TRUE;
 				$d->field = 'select';
 				$d->prepend = \Asset::icon('star-fill');
-				$d->labelAfter = \util\FormUi::info(s("Les produits mis en avant sont affichés en tête de liste."));
+				$d->labelAfter = \util\FormUi::info(s("Les produits mis en avant sont affichés en tête de leur catégorie."));
 				$d->values = [
 					Product::NONE => s("Pas de mise en avant"),
 					Product::BASIC => s("Mise en avant sans mention"),
