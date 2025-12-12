@@ -328,7 +328,10 @@ class DateLib extends DateCrud {
 		\shop\ProductLib::applyIndexing($eShop, $eDate, $cProduct);
 		$eDate['nProduct'] = $cProduct->count();
 
-		$eDate['cCategory'] = \selling\CategoryLib::getByFarm($eFarm);
+		$eDate['cCategory'] = $eShop->isShared() ?
+			\selling\CategoryLib::getByFarms($eShop['cShare']->getColumnCollection('farm')) :
+			\selling\CategoryLib::getByFarm($eShop['farm']);
+
 		$eDate['ccPoint'] = \shop\PointLib::getByDate($eDate);
 		
 

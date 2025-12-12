@@ -20,6 +20,7 @@ class ShopLib extends ShopCrud {
 
 			if($eShop['shared']) {
 				$properties[] = 'sharedGroup';
+				$properties[] = 'sharedCategory';
 				array_delete($properties, 'shipping');
 				array_delete($properties, 'shippingUntil');
 			}
@@ -148,6 +149,7 @@ class ShopLib extends ShopCrud {
 			if($e['shared']) {
 
 				$e['sharedGroup'] = Shop::PRODUCT;
+				$e['sharedCategory'] = FALSE;
 				$e['hasPayment'] = FALSE;
 				$e['paymentOffline'] = FALSE;
 			}

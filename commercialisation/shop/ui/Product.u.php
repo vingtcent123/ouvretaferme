@@ -46,11 +46,11 @@ class ProductUi {
 			switch($eDate['productsIndex']) {
 
 				case 'product'  :
-					$h .= $callback($eDate['cProduct']);
+					$h .= $this->getListByProduct($cCategory, $eShop, $eDate, $callback);
 					break;
 
 				case 'farm' :
-					$h .= $this->getListByFarm($eShop['cShare'], $eDate['ccProduct'], $callback);
+					$h .= $this->getListByFarm($cCategory, $eShop, $eDate, $callback);
 					break;
 
 				case 'department' :
@@ -72,7 +72,7 @@ class ProductUi {
 
 					$h .= '</div>';
 
-					$h .= $this->getListByDepartment($eShop['cDepartment'], $eDate['ccProduct'], $callback);
+					$h .= $this->getListByDepartment($eShop['cDepartment'], $cCategory, $eShop, $eDate, $callback);
 
 					break;
 
@@ -91,15 +91,33 @@ class ProductUi {
 
 	}
 
-	protected function getListByFarm(\Collection $cShare, \Collection $ccProduct, \Closure $callback): string {
+	protected function getListByProduct(\Collection $cCategory, Shop $eShop, Date $eDate, \Closure $callback): string {
+
+		if($eShop['sharedCategory']) {
+			return $this->getListByCategory($cCategory, $eDate['ccProduct'], $callback);
+		} else {
+			return $callback($eDate['cProduct']);
+		}
+
+	}
+
+	protected function getListByFarm(\Collection $cCategory, Shop $eShop, Date $eDate, \Closure $callback): string {
+
+		$cShare = $eShop['cShare'];
 
 		$h = '';
+
+		if($eShop['sharedCategory']) {
+			$xProduct = $eDate['cccProduct'];
+		} else {
+			$xProduct = $eDate['ccProduct'];
+		}
 
 		foreach($cShare as $eShare) {
 
 			$eFarm = $eShare['farm'];
 
-			if($ccProduct->offsetExists($eFarm['id']) === FALSE) {
+			if($xProduct->offsetExists($eFarm['id']) === FALSE) {
 				continue;
 			}
 
@@ -110,15 +128,24 @@ class ProductUi {
 						$h .= '<span class="shop-title-group-label">  /  '.encode($eShare['label']).'</span>';
 					}
 				$h .= '</h3>';
-				$h .= $callback($ccProduct[$eFarm['id']]);
+
+				if($eShop['sharedCategory']) {
+					$h .= $this->getListByCategory($cCategory, $xProduct[$eFarm['id']], $callback);
+				} else {
+					$h .= $callback($xProduct[$eFarm['id']]);
+				}
 			$h .= '</div>';
 
 		}
 
-		if($ccProduct->offsetExists('')) {
+		if($xProduct->offsetExists('')) {
 			$h .= '<div data-filter-farm="">';
 				$h .= '<h3 class="shop-title-group">'.s("Autres producteurs").'</h3>';
-				$h .= $callback($ccProduct['']);
+				if($eShop['sharedCategory']) {
+					$h .= $this->getListByCategory($cCategory, $xProduct[''], $callback);
+				} else {
+					$h .= $callback($xProduct['']);
+				}
 			$h .= '</div>';
 		}
 
@@ -126,31 +153,58 @@ class ProductUi {
 
 	}
 
-	protected function getListByDepartment(\Collection $cDepartment, \Collection $ccProduct, \Closure $callback, string $header = ''): string {
+	protected function getListByDepartment(\Collection $cDepartment, \Collection $cCategory, Shop $eShop, Date $eDate, \Closure $callback, string $header = ''): string {
+
+		if($eShop['sharedCategory']) {
+			$xProduct = $eDate['cccProduct'];
+		} else {
+			$xProduct = $eDate['ccProduct'];
+		}
 
 		$h = '<div id="product-department-wrapper">';
 
 			foreach($cDepartment as $eDepartment) {
 
-				if($ccProduct->offsetExists($eDepartment['id']) === FALSE) {
+				if($xProduct->offsetExists($eDepartment['id']) === FALSE) {
 					continue;
 				}
 
-				$farms = array_unique($ccProduct[$eDepartment['id']]->makeArray(fn($eProduct) => $eProduct['product']['farm']['id']));
+
+				$farms = $xProduct[$eDepartment['id']]->reduce(function($yProduct, $farms) use ($eShop) {
+
+					if($eShop['sharedCategory']) {
+						$farms = array_merge($farms, $yProduct->getColumnCollection('product')->getColumnCollection('farm')->getIds());
+					} else {
+						$farms[] = $yProduct['product']['farm']['id'];
+					}
+
+					return $farms;
+
+				}, []);
+
+				$farms = array_unique($farms);
 
 				$h .= '<div class="product-department-element" data-department="'.$eDepartment['id'].'" data-filter-farm="'.implode(' ', $farms).'">';
 					$h .= '<h3 class="shop-title-group">';
 						$h .= encode($eDepartment['name']);
 					$h .= '</h3>';
-					$h .= $callback($ccProduct[$eDepartment['id']]);
+					if($eShop['sharedCategory']) {
+						$h .= $this->getListByCategory($cCategory, $xProduct[$eDepartment['id']], $callback);
+					} else {
+						$h .= $callback($xProduct[$eDepartment['id']]);
+					}
 				$h .= '</div>';
 
 			}
 
-			if($ccProduct->offsetExists('')) {
+			if($xProduct->offsetExists('')) {
 				$h .= '<div>';
 					$h .= '<h3 class="shop-title-group">'.s("Autres").'</h3>';
-					$h .= $callback($ccProduct['']);
+					if($eShop['sharedCategory']) {
+						$h .= $this->getListByCategory($cCategory, $xProduct[''], $callback);
+					} else {
+						$h .= $callback($xProduct['']);
+					}
 				$h .= '</div>';
 			}
 		$h .= '</div>';
@@ -320,12 +374,6 @@ class ProductUi {
 							$h .= encode($eProduct['parentName']);
 							$h .= '<div class="shop-product-additional">'.p("{value} format", "{value} formats", $eProduct['cProductChild']->count()).'</div>';
 						$h .= '</h4>';
-
-						if($showFarm) {
-							$h .= '<div class="shop-product-farm">';
-								$h .= \Asset::icon('person-fill').' '.encode($eShop['cShare'][$eFarm['id']]['farm']['name']);
-							$h .= '</div>';
-						}
 
 					$h .= '</div>';
 					$h .= '<div class="shop-product-title">';
@@ -930,9 +978,9 @@ class ProductUi {
 		$callback = fn(\Collection $cProduct) => $this->getListByDate($eFarm, $eDate, $cProduct, $isExpired, $showFarm);
 
 		return match($eDate['productsIndex']) {
-			'product' => $callback($eDate['cProduct']),
-			'farm' => $this->getListByFarm($eShop['cShare'], $eDate['ccProduct'], $callback),
-			'department' => $this->getListByDepartment($eShop['cDepartment'], $eDate['ccProduct'], $callback),
+			'product' => $this->getListByProduct($eDate['cCategory'], $eShop, $eDate, $callback),
+			'farm' => $this->getListByFarm($eDate['cCategory'], $eShop, $eDate, $callback),
+			'department' => $this->getListByDepartment($eShop['cDepartment'], $eDate['cCategory'], $eShop, $eDate, $callback),
 			'category' => $this->getListByCategory($eDate['cCategory'], $eDate['ccProduct'], $callback),
 		};
 

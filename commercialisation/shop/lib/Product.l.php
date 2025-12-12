@@ -609,10 +609,24 @@ class ProductLib extends ProductCrud {
 
 				case 'product' :
 					$eDate['cProduct'] = $cProduct;
+
+					if($eShop['sharedCategory']) {
+						$eDate['ccProduct'] = $cProduct->reindex(['product', 'category']);
+					}
 					break;
 
 				case 'farm' :
 					$eDate['ccProduct'] = $cProduct->reindex(['product', 'farm']);
+
+					if($eShop['sharedCategory']) {
+
+						$eDate['cccProduct'] = new \Collection();
+						foreach($eDate['ccProduct'] as $farm => $cProductByFarm) {
+							$eDate['cccProduct'][$farm] = $cProductByFarm->reindex(['product', 'category']);
+
+						}
+
+					}
 					break;
 
 				case 'department' :
@@ -632,6 +646,16 @@ class ProductLib extends ProductCrud {
 							return $eRange['department']['id'];
 						}
 					});
+
+					if($eShop['sharedCategory']) {
+
+						$eDate['cccProduct'] = new \Collection();
+						foreach($eDate['ccProduct'] as $farm => $cProductByFarm) {
+							$eDate['cccProduct'][$farm] = $cProductByFarm->reindex(['product', 'category']);
+
+						}
+
+					}
 					break;
 
 			}

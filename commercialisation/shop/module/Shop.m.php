@@ -66,6 +66,7 @@ class ShopModel extends \ModuleModel {
 			'type' => ['enum', [\shop\Shop::PRIVATE, \shop\Shop::PRO], 'cast' => 'enum'],
 			'shared' => ['bool', 'cast' => 'bool'],
 			'sharedGroup' => ['enum', [\shop\Shop::FARM, \shop\Shop::DEPARTMENT, \shop\Shop::PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
+			'sharedCategory' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'sharedHash' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'sharedHashExpiresAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'opening' => ['enum', [\shop\Shop::FREQUENCY, \shop\Shop::ALWAYS], 'cast' => 'enum'],
@@ -104,7 +105,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -270,6 +271,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereSharedGroup(...$data): ShopModel {
 		return $this->where('sharedGroup', ...$data);
+	}
+
+	public function whereSharedCategory(...$data): ShopModel {
+		return $this->where('sharedCategory', ...$data);
 	}
 
 	public function whereSharedHash(...$data): ShopModel {

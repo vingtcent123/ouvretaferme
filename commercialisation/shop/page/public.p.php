@@ -246,7 +246,9 @@ END;
 			$data->eDateSelected['ccPoint'] = $data->eShop['ccPoint'];
 			$data->eDateSelected['ccPoint']->filter(fn($ePoint) => in_array($ePoint['id'], $data->eDateSelected['points']), depth: 2);
 
-			$data->cCategory = \selling\CategoryLib::getByFarm($data->eShop['farm']);
+			$data->cCategory = $data->eShop->isShared() ?
+				\selling\CategoryLib::getByFarms($data->eShop['cShare']->getColumnCollection('farm')) :
+				\selling\CategoryLib::getByFarm($data->eShop['farm']);
 
 			if($data->isModifying) {
 				$data->basketProducts = \shop\BasketLib::getProductsFromItem($data->cItemExisting);

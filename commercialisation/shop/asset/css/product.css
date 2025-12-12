@@ -13,6 +13,7 @@ body:not([data-template~="shop-embedded"]) {
 .shop-title-group {
 	color: var(--secondary);
 	font-weight: normal;
+	margin-bottom: 2rem;
 }
 
 .shop-title-group-label {
@@ -260,6 +261,7 @@ body:not([data-template~="shop-embedded"]) {
 	background-color: transparent;
 }
 
+.shop-product-pro .shop-product-parent .shop-product-farm,
 .shop-product-pro .shop-product-parent .shop-product-additional,
 .shop-product-pro .shop-product-parent .shop-product-image,
 .shop-product-pro .shop-product-parent .shop-product-title,
@@ -269,7 +271,7 @@ body:not([data-template~="shop-embedded"]) {
 
 .shop-product-pro .shop-product-parent .shop-product-name-link {
 	color: var(--primary);
-	font-size: 1.2rem;
+	font-size: 1rem;
 	font-weight: bold;
 	text-transform: uppercase;
 }

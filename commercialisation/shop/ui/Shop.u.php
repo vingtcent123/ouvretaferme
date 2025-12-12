@@ -256,6 +256,7 @@ class ShopUi {
 			array_delete($update, 'shipping');
 			array_delete($update, 'shippingUntil');
 			$update[] = 'sharedGroup';
+			$update[] = 'sharedCategory';
 		}
 
 		$h .= $form->dynamicGroups($eShop, $update, [
@@ -1236,6 +1237,7 @@ class ShopUi {
 			'paymentTransferHow' => s("Modalités du paiement par virement bancaire"),
 			'paymentMethod' => s("Moyen de paiement"),
 			'sharedGroup' => s("Groupage des produits sur la boutique"),
+			'sharedCategory' => s("Conserver les catégories créées par les producteurs à l'affichage des produits"),
 			'orderMin' => s("Montant minimal de commande"),
 			'limitCustomers' => s("Limiter l'accès à cette boutique à certains clients seulement"),
 			'shipping' => s("Frais de livraison par commande"),
@@ -1495,6 +1497,10 @@ class ShopUi {
 				$d->attributes = [
 					'mandatory' => TRUE
 				];
+				break;
+
+			case 'sharedCategory' :
+				$d->field = 'yesNo';
 				break;
 
 			case 'sharedGroup':

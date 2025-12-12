@@ -33,6 +33,19 @@ class CategoryLib extends CategoryCrud {
 
 	}
 
+	public static function getByFarms(\Collection $cFarm): \Collection {
+
+		return Category::model()
+			->select(Category::getSelection())
+			->whereFarm('IN', $cFarm)
+			->sort([
+				'position' => SORT_ASC,
+				'id' => SORT_ASC
+			])
+			->getCollection();
+
+	}
+
 	public static function create(Category $e): void {
 
 		Category::model()->beginTransaction();
