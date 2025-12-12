@@ -26,6 +26,8 @@ class AlertUi {
 			'Company::initialized' => s("La comptabilité a bien été activée sur votre compte, à vous de jouer !"),
 			'Company::created' => s("Votre ferme a bien été configurée, à vous de jouer !"),
 
+			'Beta::registered' => s("Votre candidature a bien été enregistrée, nous prendrons contact avec vous d'ici quelques jours ! Nous vous remercions pour votre soutien."),
+
 			default => null
 
 		};

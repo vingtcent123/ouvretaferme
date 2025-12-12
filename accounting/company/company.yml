@@ -19,6 +19,23 @@ AmortizationDuration:
   durationMin: int(0, null) # en années
   durationMax: int(0, null) # en années
 
+BetaApplication:
+  farm: farm\Farm
+  user: user\User = SPECIAL(user)
+  accountingType: enum(ACCRUAL, CASH, CASH_ACCRUAL)
+  taxSystem: enum(MICRO_BA, BA_REEL_SIMPLIFIE, BA_REEL_NORMAL, OTHER_BIC, OTHER_BNC, OTHER)
+  hasVat: bool
+  vatFrequency: ?enum(MONTHLY, QUARTERLY, ANNUALLY)
+  discord: bool
+  accountingHelped: bool
+  helpComment: ?text8(0, null)
+  accountingLevel: enum(BEGINNER, INITIATED, COMFORTABLE, EXPERT)
+  comment: ?text16(0, null)
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["farm"]
+  ]
+
 JournalCode:
   id: serial32
   name: text8(1, null) @collate(general)

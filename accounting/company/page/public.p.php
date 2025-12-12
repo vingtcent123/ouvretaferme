@@ -14,6 +14,8 @@ new Page(function($data) {
 	})
 	->get('/comptabilite/decouvrir', function ($data) {
 
+		$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
+
 		throw new ViewAction($data);
 
 	})
