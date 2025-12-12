@@ -12,13 +12,7 @@ new Page(function($data) {
 		$to = $data->eFinancialYear['endDate'];
 		$search = new Search(['from' => $from, 'to' => $to]);
 
-		$data->numberImport = [
-			'market' => \farm\AccountingLib::countMarkets($data->eFarm, $from, $to),
-			'invoice' => \farm\AccountingLib::countInvoices($data->eFarm, $search),
-			'sales' => \farm\AccountingLib::countSales($data->eFarm, $search)
-		];
-
-		$data->numberReconciliate = \invoicing\SuggestionLib::countWaitingOperations();
+		$data->counts = \invoicing\InvoiceLib::counts($data->eFarm, $from, $to, $search);
 
 		$data->ccSuggestion = \invoicing\SuggestionLib::getAllWaiting();
 

@@ -1844,9 +1844,30 @@ class FarmUi {
 		];
 	}
 
-	public function getAccountingInvoiceTitle(Farm $eFarm, \account\FinancialYear $eFinancialYear, string $selectedView, array $numbers): string {
+	public function getAccountingInvoiceTitle(Farm $eFarm, array $numbers): string {
 
-		$categories = $this->getAccountingInvoicesCategories();
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= s("Factures");
+			$h .= '</h1>';
+
+				$h .= '<div>';
+					if(array_sum($numbers['import']) > 0) {
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/ventes/importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
+					}
+					if($numbers['reconciliate'] > 0) {
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/ventes/rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
+					}
+				$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getPreAccountingInvoiceTitle(Farm $eFarm, \account\FinancialYear $eFinancialYear, string $selectedView, array $numbers): string {
+
+		$categories = $this->getPreAccountingInvoicesCategories();
 		if($eFinancialYear->isCashAccounting()) {
 			unset($categories['reconciliate']);
 		}
@@ -1882,13 +1903,14 @@ class FarmUi {
 		return $h;
 
 	}
-	protected static function getAccountingInvoicesCategories(): array {
+	protected static function getPreAccountingInvoicesCategories(): array {
 
 		return [
 			'import' => ['url' => '/ventes/importer', 'label' => s("Importer les ventes")],
 			'reconciliate' => ['url' => '/ventes/rapprocher', 'label' => s("Rapprocher les factures")],
 		];
 	}
+
 	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, \account\FinancialYear $eFinancialYear): string {
 
 		$categories = $this->getAccountingAssetsCategories();
@@ -1912,7 +1934,7 @@ class FarmUi {
 
 			if($eFinancialYear->acceptUpdate()) {
 				$h .= '<div>';
-				$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une immobilisation").'</a> ';
+					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une immobilisation").'</a> ';
 				$h .= '</div>';
 			}
 		$h .= '</div>';

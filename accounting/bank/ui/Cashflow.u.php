@@ -66,15 +66,25 @@ class CashflowUi {
 			return '';
 		}
 
-		$form = new \util\FormUi();
+		$h = '<div class="flex-justify-space-between td-vertical-align-top mb-1">';
+			$h .= '<div class="">';
+				$form = new \util\FormUi();
 
-		$h = $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/operations', ['method' => 'get', 'class' => 'mb-1']);
-		$h .= $form->checkbox('status', Cashflow::WAITING, [
-			'checked' => $search->get('status') === Cashflow::WAITING,
-			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non comptabilisées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
-			'onchange' => 'this.form.submit()',
-		]);
-		$h .= $form->close();
+				$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/operations', ['method' => 'get']);
+				$h .= $form->checkbox('status', Cashflow::WAITING, [
+					'checked' => $search->get('status') === Cashflow::WAITING,
+					'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non comptabilisées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
+					'onchange' => 'this.form.submit()',
+				]);
+				$h .= $form->close();
+
+			$h .= '</div>';
+
+			$h .= '<div>';
+			$h .= '<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a> ';
+			$h .= '</div>';
+
+		$h .= '</div>';
 
 		return $h;
 	}

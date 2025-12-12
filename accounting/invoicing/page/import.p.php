@@ -20,13 +20,7 @@ new Page(
 		'type' => GET('type'),
 	]);
 
-	$data->numberImport = [
-		'market' => \farm\AccountingLib::countMarkets($data->eFarm,  $from, $to),
-		'invoice' => \farm\AccountingLib::countInvoices($data->eFarm, $data->search),
-		'sales' => \farm\AccountingLib::countSales($data->eFarm, $data->search)
-	];
-
-	$data->numberReconciliate = \invoicing\SuggestionLib::countWaitingOperations();
+	$data->counts = \invoicing\InvoiceLib::counts($data->eFarm, $from, $to, $data->search);
 
 	$data->c = match($data->selectedTab) {
 		'market' => \invoicing\ImportLib::getMarketSales($data->eFarm, $from, $to),

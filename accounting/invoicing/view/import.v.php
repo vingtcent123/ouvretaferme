@@ -6,7 +6,7 @@ new AdaptativeView('/ventes/importer', function($data, FarmTemplate $t) {
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/ventes/importer';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'import', ['import' => array_sum($data->numberImport), 'reconciliate' => $data->numberReconciliate]);
+	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'import', ['import' => array_sum($data->counts['import']), 'reconciliate' => $data->counts['reconciliate']]);
 
 	echo '<div class="util-block-help">';
 		echo '<p>'.s("Cette page vous permet de vérifier et importer vos ventes depuis le module de commercialisation directement en comptabilité.").'</p>';
@@ -23,7 +23,7 @@ new AdaptativeView('/ventes/importer', function($data, FarmTemplate $t) {
 					'invoice' => s("Factures"),
 					'sales' => s("Autres ventes"),
 				};
-				echo ' <small class="tab-item-count">'.$data->numberImport[$tab].'</small>';
+				echo ' <small class="tab-item-count">'.$data->counts['import'][$tab].'</small>';
 			echo '</a>';
 
 		}

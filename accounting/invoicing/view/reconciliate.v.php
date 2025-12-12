@@ -6,7 +6,7 @@ new AdaptativeView('/ventes/rapprocher', function($data, FarmTemplate $t) {
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/ventes/rapprocher';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'reconciliate', ['import' => array_sum($data->numberImport), 'reconciliate' => $data->numberReconciliate]);
+	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'reconciliate', ['import' => array_sum($data->counts['import']), 'reconciliate' => $data->counts['reconciliate']]);
 
 	echo '<div class="util-block-help">';
 		echo s("Cette page vous permet de rapprocher vos ventes et factures, importées en comptabilité, avec les opérations bancaires que vous avez importées.");
