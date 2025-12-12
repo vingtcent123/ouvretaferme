@@ -712,17 +712,6 @@ class BasketUi {
 
 		$payments = $eShop->getPayments($ePoint);
 
-		foreach($payments as $key => $payment) {
-
-			if(
-				$eStripeFarm->empty() and
-				$payment === \payment\MethodLib::ONLINE_CARD
-			) {
-				unset($payments[$key]);
-			}
-
-		}
-
 		$h = '<h2>'.s("Mon moyen de paiement").'</h2>';
 
 		switch(count($payments)) {

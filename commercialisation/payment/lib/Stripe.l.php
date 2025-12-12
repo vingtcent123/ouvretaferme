@@ -9,12 +9,16 @@ class StripeLib {
 
 	const API_URL = 'https://api.stripe.com/v1/';
 
+	private static array $cache = [];
+
 	public static function getByFarm(\farm\Farm $eFarm): StripeFarm {
 
-		return StripeFarm::model()
+		self::$cache[$eFarm['id']] ??= StripeFarm::model()
 			->select(StripeFarm::getSelection())
 			->whereFarm($eFarm)
 			->get();
+
+		return self::$cache[$eFarm['id']];
 
 	}
 

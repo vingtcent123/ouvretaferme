@@ -215,6 +215,17 @@ class Shop extends ShopElement {
 
 		}
 
+		foreach($payments as $key => $payment) {
+
+			if(
+				$payment === \payment\MethodLib::ONLINE_CARD and
+				\payment\StripeLib::getByFarm($ePoint['farm'])->empty()
+			) {
+				unset($payments[$key]);
+			}
+
+		}
+
 		return $payments;
 
 	}

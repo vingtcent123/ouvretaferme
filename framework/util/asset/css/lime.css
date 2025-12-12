@@ -1392,6 +1392,10 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	content: '!';
 }
 
+.util-block-important a {
+	color: white;
+}
+
 .util-block-dark {
 	color: white;
 }
