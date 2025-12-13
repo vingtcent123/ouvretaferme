@@ -1976,6 +1976,25 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
+		switch($selectedView) {
+
+			case Farmer::INCOME_STATEMENT:
+
+				$h .= '<div>';
+					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
+				$h .= '</div>';
+
+				break;
+
+			case Farmer::BALANCE_SHEET:
+
+				$h .= '<div>';
+					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
+				$h .= '</div>';
+
+				break;
+		}
+
 		$h .= '</div>';
 
 		return $h;
