@@ -279,7 +279,11 @@ class Farm extends FarmElement {
 	}
 
 	public function validateTax(): self {
+
+		$this->validate();
+
 		return $this->isTax() ? $this : throw new \FailAction('farm\Farm::notTax', ['farm' => $this]);
+
 	}
 
 	public function hasVatCountry(): bool {
