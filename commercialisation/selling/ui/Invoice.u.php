@@ -233,7 +233,7 @@ class InvoiceUi {
 
 									if($eInvoice['paymentMethod']->empty()) {
 
-										$h .= '<a href="/selling/invoice:update?id='.$eInvoice['id'].'" class="btn btn-outline-primary">'.s("Choisir").'</a>';
+										$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="btn btn-outline-primary">'.s("Choisir").'</a>';
 
 									} else {
 										$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
@@ -275,7 +275,9 @@ class InvoiceUi {
 										$h .= '<a href="/selling/invoice:regenerate?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Regénérer la facture").'</a>';
 									}
 
-									$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Modifier le règlement").'</a>';
+									$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="dropdown-item">';
+										$h .= $eInvoice['paymentMethod']->empty() ? s("Choisir le règlement") : s("Modifier le règlement");
+									$h .= '</a>';
 
 									$h .= '<a href="/selling/invoice:updateComment?id='.$eInvoice['id'].'" class="dropdown-item">';
 										$h .= $eInvoice['comment'] === NULL ? s("Ajouter un commentaire") : s("Modifier le commentaire");
@@ -813,7 +815,9 @@ class InvoiceUi {
 
 		return new \Panel(
 			id: 'panel-invoice-update',
-			title: s("Modifier le règlement"),
+			title: $eInvoice['paymentMethod']->empty() ?
+				s("Choisir le règlement") :
+				s("Modifier le règlement"),
 			body: $h
 		);
 
