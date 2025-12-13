@@ -892,45 +892,5 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search, bool $searchProblems = TRUE): ItemModel {
-
-		if($searchProblems) {
-			Item::model()->whereAccount(NULL);
-		} else {
-			Item::model()->where('account IS NOT NULL');
-		}
-
-		return Item::model()
-			->join(Sale::model(), 'm1.sale = m2.id')
-			->whereProduct(NULL)
-			->where('m2.id IS NOT NULL')
-			->where('m2.profile IN ('.Sale::model()->format(Sale::SALE).', '.Sale::model()->format(Sale::SALE_MARKET).')')
-			->where('m1.farm = '.$eFarm['id'])
-			->where('m2.deliveredAt BETWEEN '.Item::model()->format($search->get('from')).' AND '.Item::model()->format($search->get('to')));
-
-	}
-	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
-
-		return self::filterForAccountingCheck($eFarm, $search)->count();
-
-	}
-
-	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
-
-		$cItem = self::filterForAccountingCheck($eFarm, $search)
-			->select([
-				'id', 'name',
-				'customer' => ['name', 'type', 'destination'],
-				'sale' => ['id', 'document', 'deliveredAt', 'preparationStatus', 'taxes', 'hasVat', 'priceIncludingVat', 'priceExcludingVat'],
-			])
-			->group(['sale', 'm1.id'])
-			->getCollection(NULL, NULL, ['sale', NULL]);
-
-		$nToCheck = self::countForAccountingCheck($eFarm, $search);
-		$nVerified = self::filterForAccountingCheck($eFarm, $search, FALSE)->count();
-
-		return [$nToCheck, $nVerified, $cItem];
-	}
-
 }
 ?>

@@ -1,0 +1,43 @@
+.invoicing-presentation {
+	background: linear-gradient(135deg, var(--commercialisation) 0, var(--production) 50%, var(--accounting) 100%);
+	color: white;
+	text-align: center;
+	min-height: 20rem;
+}
+
+
+.invoicing-import-table {
+
+}
+.invoicing-import-table tbody:nth-of-type(even) {
+	background-color: var(--background-even);
+}
+.invoicing-import-table tbody:nth-of-type(odd) {
+	background-color: var(--background-odd);
+}
+
+.invoicing-import-table tbody:hover td {
+	background-color: rgba(0, 0, 0, 0.03) !important;
+}
+.invoicing-import-table tbody:hover tr:has(td.invoicing-import-td-operation:hover) td.invoicing-import-td-operation {
+	background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.invoicing-import-table tbody:has(input[type="checkbox"]:checked) {
+	background-color: rgba(201, 236, 253, 0.25) !important
+}
+
+
+.invoicing-import-table tbody td.invoicing-import-td-operation {
+	white-space: nowrap;
+}
+.invoicing-import-table tbody tr:first-child td.invoicing-import-td-operation {
+	padding-bottom: 0;
+}
+.invoicing-import-table tbody tr:last-child td.invoicing-import-td-operation {
+	padding-top: 0;
+}
+.invoicing-import-table tbody tr:not(:first-child):not(:last-child) td.invoicing-import-td-operation {
+	padding-top: 0;
+	padding-bottom: 0;
+}

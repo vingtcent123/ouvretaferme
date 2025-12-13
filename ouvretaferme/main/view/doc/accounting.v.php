@@ -275,6 +275,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 });
 
+
 new AdaptativeView('import', function($data, DocTemplate $t) {
 
 	$t->template = 'doc';
@@ -288,7 +289,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Importer les ventes").'</h2>';
-		echo '<p>'.s("Tous les marchés, les factures et les ventes dont les données sont préparées sont affichés dans la page d'import. Vous pouvez :").'</p>';
+		echo '<p>'.s("Tous les marchés, les factures et les ventes dont les données sont préparées sont affichés dans la page d'import (dans le menu Précomptabilité). Vous pouvez :").'</p>';
 		echo '<ul class="doc-list-icons">';
 		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les intégrer en comptabilité").'</li>';
 		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, ils ne vous seront alors plus proposés à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
@@ -300,34 +301,6 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 			echo '<li>'.s("Classe {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 
-	echo '</div>';
-
-	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link> (et importé les ventes, factures, et/ou marchés, cf. {icon})", ['link' => '<a href="/doc/accounting:bank">', 'icon' => Asset::icon('arrow-up-short')]).'</h4>';
-
-	echo '<div class="util-block">';
-
-		echo '<h2>'.s("Rapprocher écritures comptables & opérations bancaires").'</h2>';
-		echo '<p>'.s("Ouvretaferme proposera automatiquement les opérations bancaires détectées comme les plus pertinentes par rapport à la vente à rapprocher.<br />Les critères de décision sont : ").'</p>';
-		echo '<ul class="doc-list-icons">';
-			echo '<li>'.Asset::icon('file-person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
-			echo '<li>'.Asset::icon('currency-euro').' '.s("Le montant de l'opération bancaire et de la vente ou la facture").'</li>';
-			echo '<li>'.Asset::icon('123').' '.s("La présence de la référence de facture dans la description de l'opération bancaire").'</li>';
-			echo '<li>'.Asset::icon('calendar-range').' '.s("L'adéquation entre la date d'opération bancaire et la date de la vente ou de la facture").'</li>';
-		echo '</ul>';
-		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous avez ensuite le choix :").'</p>';
-		echo '<ul class="doc-list-icons">';
-			echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("de l'accepter").'</li>';
-			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre opération est éligible, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
-		echo '</ul>';
-		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, les actions suivantes sont réalisées :").'</p>';
-		echo '<ul>';
-			echo '<li>'.s("saisie de l'écriture du compte de banque {bankAccount} du montant total de la vente,", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</li>';
-			echo '<li>'.s("l'opération bancaire devient \"traitée\"").'</li>';
-			echo '<li>'.s("saisie de l'écriture du compte de tiers {clientAccount} du montant total de la vente", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>']).'</li>';
-			echo '<li>'.s("lettrage du tiers").'</li>';
-			echo '<li>'.s("la vente ou la facture est marquée comme payée dans le module de Commercialisation").'</li>';
-		echo '</ul>';
-		echo '<p class="doc-annotation">'.s("Note : Les opérations liées aux tiers (saisie de l'écriture et lettrage) ne sont réalisées que dans le cas d'une comptabilité à l'engagement (globalement ou uniquement pour les ventes)").'</p>';
 	echo '</div>';
 
 	echo '<br /><br />';
@@ -342,12 +315,12 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	$t->title = s("Manipuler les opérations bancaires");
 	$t->subTitle = s("Gérer les flux bancaires avec Ouvretaferme");
 
-	echo '<div class="util-block">';
+	echo '<div id="bank-import" class="util-block">';
 
 		echo '<h2>'.s("Importer les opérations bancaires").'</h2>';
-		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>.ofx</i> (la plupart des banques proposent ce format).<br />Ensuite, rendez-vous sur la page Banque > Onglet \"Imports\" > Bouton \"Importer un relevé .ofx\" et sélectionnez votre fichier.").'</p>';
+		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>.ofx</i> (la plupart des banques proposent ce format).<br />Ensuite, rendez-vous sur la page Banque > Bouton \"Importer un relevé .ofx\" et sélectionnez votre fichier.").'</p>';
 		echo '<p>'.s("Et c'est tout !").'</p>';
-		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page des Opérations bancaires (Banque > Onglet \"Opérations bancaires\").").'</p>';
+		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page de la banque.").'</p>';
 		echo '<p class="doc-annotation">'.s("Note : Cette fonctionnalité est accessible dès lors que vous avez accès au module de comptabilité.").'</p>';
 
 	echo '</div>';
@@ -355,13 +328,13 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Traiter les opérations bancaires").'</h2>';
-		echo '<p>'.s("Si certaines opérations bancaires ne concernent pas votre exploitation et que vous ne souhaitez pas les voir dans la liste, vous pouvez simplement les <i>Supprimer</i>. Si vous le souhaitez, vous pourrez les réintégrer si besoin en choisissant, via le menu de recherche, de les réafficher (Option \"Afficher également les opérations supprimées\").").'</p>';
+		echo '<p>'.s("Si certaines opérations bancaires ne concernent pas votre exploitation et que vous ne souhaitez pas les voir dans la liste, vous pouvez simplement les <i>Supprimer</i>.<br />Pas de panqiue, si vous voulez les réafficher, utilisez la case à cocher dans le formulaire de recherche (Option \"Afficher également les opérations supprimées\"), ce qui vous permettra de les réintégrer si besoin.").'</p>';
 		echo '<p>'.s("Pour chaque opération bancaire, il est possible de :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Créer des écritures comptables correspondantes").'</li>';
 			echo '<li>'.s("Rattacher des écritures comptables déjà saisies").'</li>';
 		echo '</ul>';
-		echo '<div class="util-info">'.Asset::icon('info-circle').' '.s("Si vous souhaitez <b>rapprocher un paiement</b> avec une facture importée, passez directement par le menu de facturation > Rapprocher les factures").'<div class="doc-annotation">'.s("Note : cette dernière fonctionnalité n'est disponible que si votre exploitation est en comptabilité d'engagement (globalement ou juste pour les ventes).").'</div></div>';
+		echo '<div class="util-info">'.Asset::icon('info-circle').' '.s("Si vous souhaitez <b>rapprocher un paiement</b> avec une facture importée, passez directement par le menu de Précomptabilité > Rapprocher les factures").'<div class="doc-annotation">'.s("Note : cette dernière fonctionnalité n'est disponible que si votre exploitation est en comptabilité d'engagement (globalement ou juste pour les ventes).").'</div></div>';
 
 		echo '<h3>'.s("Création ou Rattacher des écritures comptables").'</h3>';
 		echo '<p>'.s("Une écriture de contrepartie en compte {bankAccount} sera automatiquement créée et reliée aux écritures comptables concernées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
@@ -385,12 +358,80 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 		echo '<h4>'.s("Cas n°2 : Mon associé·e a enregistré l'achat d'un petit matériel et l'opération bancaire vient d'apparaître sur le relevé.").'</h4>';
-		echo '<p>'.s("Pré-requis : l'achat doit avoir été saisi dans le journal (écritures en classe {chargeAccount} et compte {vatAccount}).", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS, 'vatAccount' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT]).'</p>';
+		echo '<p>'.s("Pré-requis : l'achat doit avoir été saisi dans le journal (écritures en classe {chargeAccount} et éventuellement compte {vatAccount}).", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS, 'vatAccount' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT]).'</p>';
 		echo '<p>'.s("En sélectionnant <b>\"Rattacher des écritures\"</b>, vous pourrez choisir directement l'écriture comptable.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Ouvretaferme créera uniquement l'écriture comptable du compte banque {bankAccount}. Les 3 écritures seront liées et équilibrées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
 		echo '<p><i>'.s("Ce cas peut se présenter si une personne s'occupe de la comptabilité depuis le compte bancaire tandis que toutes les autres saisissent leurs dépenses au fur et à mesure, par exemple.").'</i></p>';
 
 	echo '</div>';
+
+
+	echo '<br /><br />';
+
+});
+
+new AdaptativeView('reconciliate', function($data, DocTemplate $t) {
+
+	Asset::css('selling', 'sale.css');
+
+	$t->template = 'doc';
+	$t->menuSelected = 'accounting:reconciliate';
+
+	$t->title = s("Rapprochement bancaire");
+	$t->subTitle = s("Gérer les flux bancaires, les ventes et les opérations avec Ouvretaferme");
+
+	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link>", ['link' => '<a href="/doc/accounting:bank#bank-import">']).'</h4>';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Rapprocher les <u>ventes</u> avec les opérations bancaires").'</h2>';
+
+		echo '<p class="doc-annotation">'.s("Note : cette fonctionnalité est aussi accessible si vous n'utilisez pas la comptabilité sur {siteName}.").'</p>';
+
+		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos ventes (ou factures) qui semblent correspondre (menu \"Précomptabilité > Rapprocher les ventes\")").'</p>';
+		echo '<p>'.s("Les critères de décision sont : ").'</p>';
+		echo '<ul class="doc-list-icons">';
+			echo '<li>'.Asset::icon('file-person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
+			echo '<li>'.Asset::icon('currency-euro').' '.s("Le montant de l'opération bancaire et de la vente ou la facture").'</li>';
+			echo '<li>'.Asset::icon('123').' '.s("La présence de la référence de facture dans la description de l'opération bancaire").'</li>';
+			echo '<li>'.Asset::icon('calendar-range').' '.s("L'adéquation entre la date d'opération bancaire et la date de la vente ou de la facture").'</li>';
+		echo '</ul>';
+		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous avez ensuite le choix :").'</p>';
+		echo '<ul class="doc-list-icons">';
+			echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("de l'accepter").'</li>';
+			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
+		echo '</ul>';
+
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> dans le module de Commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</p>';
+
+	echo '</div>';
+
+	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link> et <linkImportSales>importé les ventes, factures, et/ou marchés</linkImportSales>", ['link' => '<a href="/doc/accounting:bank">', 'linkImportSales' => '<a href="/doc/accounting:import">']).'</h4>';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Rapprocher les <u>écritures comptables</u> avec les opérations bancaires").'</h2>';
+
+		echo '<p class="doc-annotation">'.s("Note : cette fonctionnalité n'est disponible que si vous utilisez {siteName} pour tenir votre comptabilité.").'</p>';
+
+		echo '<p>'.s("Ouvretaferme proposera automatiquement les opérations bancaires détectées comme les plus pertinentes par rapport à vos écritures comptables (menu \"Précomptabilité > Rapprocher les écritures\").<br />Les critères de décision sont les mêmes que dans le rapprochement entre l'opération bancaire et les ventes (cf. ci-dessus).").'</p>';
+
+		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous avez ensuite le choix :").'</p>';
+		echo '<ul class="doc-list-icons">';
+			echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("de l'accepter").'</li>';
+			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre opération est éligible, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
+		echo '</ul>';
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, les actions suivantes sont réalisées :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("saisie de l'écriture du compte de banque {bankAccount} du montant total de la vente,", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</li>';
+			echo '<li>'.s("l'opération bancaire devient \"traitée\"").'</li>';
+			echo '<li>'.s("saisie de l'écriture du compte de tiers {clientAccount} du montant total de la vente", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>']).'<sup>*</sup></li>';
+			echo '<li>'.s("lettrage du tiers").'<sup>*</sup></li>';
+			echo '<li>'.s("la vente ou la facture est marquée <span>payée</span> dans le module de Commercialisation", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</li>';
+		echo '</ul>';
+		echo '<p class="doc-annotation"><sup>*</sup>'.s("Note : Les opérations liées aux tiers (saisie de l'écriture et lettrage) ne sont réalisées que dans le cas d'une comptabilité à l'engagement (globalement ou uniquement pour les ventes)").'</p>';
+	echo '</div>';
+
 	echo '<br /><br />';
 
 });

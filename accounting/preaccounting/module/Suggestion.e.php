@@ -1,0 +1,52 @@
+<?php
+namespace preaccounting;
+
+class Suggestion extends SuggestionElement {
+
+	public static function getSelection(): array {
+
+		return parent::getSelection() + [
+				'cashflow' => \bank\Cashflow::getSelection(),
+				'invoice' => \selling\Invoice::getSelection() + ['cSale' => \selling\Sale::model()
+					->select([
+						'id',
+						'cItem' => \selling\Item::model()
+						->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+						->delegateCollection('sale')
+					])
+					->delegateCollection('invoice'),],
+				'sale' => \selling\Sale::getSelection(),
+				'operation' => [
+					'id', 'hash', 'date', 'description', 'accountLabel', 'amount', 'type',
+					'account' => ['id', 'class', 'description'],
+					'thirdParty' => ['id', 'name', 'clientAccountLabel'],
+				],
+			];
+
+	}
+
+	public function acceptAction(): bool {
+
+		return $this['status'] === \preaccounting\Suggestion::WAITING;
+
+	}
+
+	public static function validateBatch(\Collection $cSuggestion): void {
+
+		if($cSuggestion->empty()) {
+
+			throw new \FailAction('preaccounting\Suggestion::suggestions.check');
+
+		} else {
+
+			foreach($cSuggestion as $eInvoice) {
+
+				$eInvoice->validate('acceptAction');
+
+			}
+		}
+
+	}
+
+}
+?>

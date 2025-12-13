@@ -1,11 +1,11 @@
 <?php
-namespace invoicing;
+namespace preaccounting;
 
 Class ImportUi {
 
 	public function __construct() {
-		\Asset::css('invoicing', 'invoicing.css');
-		\Asset::js('invoicing', 'invoicing.js');
+		\Asset::css('preaccounting', 'invoicing.css');
+		\Asset::js('preaccounting', 'invoicing.js');
 	}
 
 	public function displaySales(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cSale, \Search  $search): string {
@@ -96,22 +96,22 @@ Class ImportUi {
 							$h .= '</td>';
 							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
 							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
-							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
-								$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+								$eAccount = new \account\Account(['class' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
 								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-									$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+									$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
 								$h .= '</div>';
 								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
-							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
+							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
 							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
-							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 								$h .= $this->emptyData();
 							} else {
-								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+								$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
 							}
 							$h .= '</td>';
 
@@ -121,10 +121,10 @@ Class ImportUi {
 
 								$h .= '<div class="dropdown-list">';
 									if($eSale->acceptAccountingImport()) {
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportSale" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportSale" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
 									}
 									if($eSale->acceptAccountingIgnore()) {
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
 									}
 								$h .= '</div>';
 
@@ -232,22 +232,22 @@ Class ImportUi {
 							$h .= '</td>';
 							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eInvoice).'</td>';
 							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
-							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
-								$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+								$eAccount = new \account\Account(['class' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
 								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-									$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+									$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
 								$h .= '</div>';
 								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
-							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
+							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
 							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
-							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 								$h .= $this->emptyData();
 							} else {
-								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+								$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
 							}
 							$h .= '</td>';
 
@@ -257,10 +257,10 @@ Class ImportUi {
 
 								$h .= '<div class="dropdown-list">';
 									if($eInvoice->acceptAccountingImport()) {
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportInvoice" post-id="'.$eInvoice['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoice" post-id="'.$eInvoice['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
 									}
 									if($eInvoice->acceptAccountingIgnore()) {
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreInvoice" post-id="'.$eInvoice['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreInvoice" post-id="'.$eInvoice['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
 									}
 								$h .= '</div>';
 
@@ -340,22 +340,22 @@ Class ImportUi {
 							$h .= '</td>';
 							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eSale).'</td>';
 							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
-							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 								$h .= $this->emptyData();
 							} else {
-								$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+								$eAccount = new \account\Account(['class' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
 								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-									$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+									$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
 								$h .= '</div>';
 								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 							}
 							$h .= '</td>';
-							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
+							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
 							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
-							if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 								$h .= $this->emptyData();
 							} else {
-								$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+								$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
 							}
 							$h .= '</td>';
 
@@ -365,10 +365,10 @@ Class ImportUi {
 
 								$h .= '<div class="dropdown-list">';
 									if($eSale->acceptAccountingImport()) {
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportMarket" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportMarket" post-id="'.$eSale['id'].'" post-financial-year="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Importer").'</a>';
 									}
 									if($eSale->acceptAccountingIgnore()) {
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreSale" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Ignorer").'</a>';
 									}
 								$h .= '</div>';
 
@@ -398,24 +398,24 @@ Class ImportUi {
 			$h .= '<tr '.$onclick.'>';
 
 				$h .= '<td class="text-center invoicing-import-td-operation">';
-					if(empty($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 						$h .= $this->emptyData();
 					} else {
-						$eAccount = new \account\Account(['class' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
+						$eAccount = new \account\Account(['class' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
 						$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-							$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+							$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
 						$h .= '</div>';
 						$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 					}
 				$h .= '</td>';
 				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">';
-					$h .= \util\TextUi::money($operation[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
+					$h .= \util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
 				$h .= '</td>';
 				$h .= '<td class="invoicing-import-td-operation">';
-					if(empty($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
+					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 						$h .= $this->emptyData();
 					} else {
-						$h .= encode($operation[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+						$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
 					}
 				$h .= '</td>';
 
@@ -436,11 +436,11 @@ Class ImportUi {
 	public function getBatch(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type): string {
 
 		$url = match($type) {
-			'market' => \company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportMarketCollection',
-			'invoice' => \company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportInvoiceCollection',
-			'sales' => \company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doImportSalesCollection',
+			'market' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportMarketCollection',
+			'invoice' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoiceCollection',
+			'sales' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportSalesCollection',
 		};
-		$urlIgnore = \company\CompanyUi::urlFarm($eFarm).'/invoicing/import:doIgnoreCollection';
+		$urlIgnore = \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreCollection';
 		$title = match($type) {
 			'market' => s("Pour les marchés sélectionnés"),
 			'invoice' => s("Pour les factures sélectionnées"),

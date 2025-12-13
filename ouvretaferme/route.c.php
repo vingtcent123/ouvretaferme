@@ -98,11 +98,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['facture', '{id}'],
 		],
-		'/factures/' => [
-			'request' => 'invoicing/index',
-			'priority' => 5,
-			'route' => ['factures'],
-		],
 		'/factures/particuliers' => [
 			'request' => 'selling/order',
 			'priority' => 5,
@@ -288,26 +283,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'planning', '{view}', '{period}', '{subPeriod}'],
 		],
-		'/ferme/{id}/precomptabilite' => [
-			'request' => 'farm/preaccounting',
-			'priority' => 5,
-			'route' => ['ferme', '{id}', 'precomptabilite'],
-		],
-		'/ferme/{id}/precomptabilite/sale/' => [
-			'request' => 'farm/preaccounting',
-			'priority' => 5,
-			'route' => ['ferme', '{id}', 'precomptabilite', 'sale'],
-		],
-		'/ferme/{id}/precomptabilite/{type}' => [
-			'request' => 'farm/preaccounting',
-			'priority' => 5,
-			'route' => ['ferme', '{id}', 'precomptabilite', '{type}'],
-		],
-		'/ferme/{id}/precomptabilite:fec' => [
-			'request' => 'farm/preaccounting',
-			'priority' => 5,
-			'route' => ['ferme', '{id}', 'precomptabilite:fec'],
-		],
 		'/ferme/{id}/previsionnel' => [
 			'request' => 'farm/index',
 			'priority' => 5,
@@ -437,6 +412,41 @@ Route::register([
 			'request' => 'farm/tool',
 			'priority' => 5,
 			'route' => ['outil', '{id@int}'],
+		],
+		'/precomptabilite' => [
+			'request' => 'preaccounting/index',
+			'priority' => 5,
+			'route' => ['precomptabilite'],
+		],
+		'/precomptabilite/sale/' => [
+			'request' => 'preaccounting/index',
+			'priority' => 5,
+			'route' => ['precomptabilite', 'sale'],
+		],
+		'/precomptabilite/{type}' => [
+			'request' => 'preaccounting/index',
+			'priority' => 5,
+			'route' => ['precomptabilite', '{type}'],
+		],
+		'/precomptabilite:fec' => [
+			'request' => 'preaccounting/index',
+			'priority' => 5,
+			'route' => ['precomptabilite:fec'],
+		],
+		'/precomptabilite:importer' => [
+			'request' => 'preaccounting/index',
+			'priority' => 5,
+			'route' => ['precomptabilite:importer'],
+		],
+		'/precomptabilite:rapprocher-ecritures' => [
+			'request' => 'preaccounting/index',
+			'priority' => 5,
+			'route' => ['precomptabilite:rapprocher-ecritures'],
+		],
+		'/precomptabilite:rapprocher-ventes' => [
+			'request' => 'preaccounting/index',
+			'priority' => 5,
+			'route' => ['precomptabilite:rapprocher-ventes'],
 		],
 		'/presentation/faq' => [
 			'request' => 'main/index',
@@ -617,16 +627,6 @@ Route::register([
 			'request' => 'selling/market',
 			'priority' => 5,
 			'route' => ['vente', '{id}', 'marche', 'ventes'],
-		],
-		'/ventes/importer' => [
-			'request' => 'invoicing/import',
-			'priority' => 5,
-			'route' => ['ventes', 'importer'],
-		],
-		'/ventes/rapprocher' => [
-			'request' => 'invoicing/reconciliate',
-			'priority' => 5,
-			'route' => ['ventes', 'rapprocher'],
 		],
 	],
 	'HEAD' => [

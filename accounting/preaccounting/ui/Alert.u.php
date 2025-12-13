@@ -1,5 +1,5 @@
 <?php
-namespace invoicing;
+namespace preaccounting;
 
 /**
  * Alert messages

@@ -1,5 +1,5 @@
 <?php
-namespace invoicing;
+namespace preaccounting;
 
 Class ImportLib {
 
@@ -9,7 +9,7 @@ Class ImportLib {
 
 		$cFinancialYear = \account\FinancialYearLib::getAll();
 		$cAccount = \account\AccountLib::getAll();
-		$extraction = \farm\AccountingLib::extractSales($eFarm, $search, $cFinancialYear, $cAccount, forImport: TRUE);
+		$extraction = \preaccounting\AccountingLib::extractSales($eFarm, $search, $cFinancialYear, $cAccount, forImport: TRUE);
 
 		$cSale = \selling\Sale::model()
 			->select([
@@ -17,7 +17,7 @@ Class ImportLib {
 				'deliveredAt', 'accountingHash', 'profile', 'invoice',
 				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'readyForAccounting'
 			])
-			->whereDocument('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
+			->whereDocument('IN', array_column($extraction, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT))
 			->whereFarm($eFarm)
 			->sort(['deliveredAt' => SORT_ASC])
 			->getCollection(NULL, NULL, 'document');
@@ -36,7 +36,7 @@ Class ImportLib {
 
 		$cFinancialYear = \account\FinancialYearLib::getAll();
 		$cAccount = \account\AccountLib::getAll();
-		$extraction = \farm\AccountingLib::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: TRUE);
+		$extraction = \preaccounting\AccountingLib::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: TRUE);
 
 		$cInvoice = \selling\Invoice::model()
 			->select([
@@ -46,7 +46,7 @@ Class ImportLib {
 				'readyForAccounting',
 			])
 			->whereReadyForAccounting(TRUE)
-			->whereName('IN', array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT))
+			->whereName('IN', array_column($extraction, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT))
 			->whereFarm($eFarm)
 			->sort(['date' => SORT_ASC])
 			->getCollection(NULL, NULL, 'name');
@@ -65,9 +65,9 @@ Class ImportLib {
 
 		$cFinancialYear = \account\FinancialYearLib::getAll();
 		$cAccount = \account\AccountLib::getAll();
-		$extraction = \farm\AccountingLib::extractMarket($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
+		$extraction = \preaccounting\AccountingLib::extractMarket($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: TRUE);
 
-		$documents = array_unique(array_column($extraction, \farm\AccountingLib::FEC_COLUMN_DOCUMENT));
+		$documents = array_unique(array_column($extraction, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
 
 		$cSale = \selling\Sale::model()
 			->select(\selling\Sale::getSelection())
@@ -136,7 +136,7 @@ Class ImportLib {
 	}
 	public static function getSaleById(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $saleId): \selling\Sale {
 
-		$eSale = \selling\SaleLib::filterForAccounting(
+		$eSale = \preaccounting\SaleLib::filterForAccounting(
 				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
 			)
 			->select(self::saleSelection())
@@ -150,7 +150,7 @@ Class ImportLib {
 
 	public static function getSalesByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $saleIds): \Collection {
 
-		$cSale = \selling\SaleLib::filterForAccounting(
+		$cSale = \preaccounting\SaleLib::filterForAccounting(
 				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
 			)
 			->select(self::saleSelection())
@@ -196,7 +196,7 @@ Class ImportLib {
 
 		$cSale = new \Collection();
 		$cSale->append($eSale);
-		$fecData = \farm\AccountingLib::generateSalesFec($cSale, new \Collection([$eFinancialYear]), $cAccount);
+		$fecData = \preaccounting\AccountingLib::generateSalesFec($cSale, new \Collection([$eFinancialYear]), $cAccount);
 
 		$eOperation = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
@@ -234,7 +234,7 @@ Class ImportLib {
 
 			\journal\Operation::model()->insert($eOperationThirdParty);
 
-			SuggestionLib::calculateForOperation($eOperationThirdParty);
+			\preaccounting\SuggestionLib::calculateForOperation($eOperationThirdParty);
 
 		}
 
@@ -312,7 +312,7 @@ Class ImportLib {
 
 		$cInvoice = new \Collection();
 		$cInvoice->append($eInvoice);
-		$fecData = \farm\AccountingLib::generateInvoiceFec($cInvoice, new \Collection([$eFinancialYear]), $cAccount);
+		$fecData = \preaccounting\AccountingLib::generateInvoiceFec($cInvoice, new \Collection([$eFinancialYear]), $cAccount);
 
 		$eOperation = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
@@ -345,7 +345,7 @@ Class ImportLib {
 
 			\journal\Operation::model()->insert($eOperationThirdParty);
 
-			SuggestionLib::calculateForOperation($eOperationThirdParty);
+			\preaccounting\SuggestionLib::calculateForOperation($eOperationThirdParty);
 		}
 
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);
@@ -391,7 +391,7 @@ Class ImportLib {
 
 	public static function getMarketById(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $id): \selling\Sale {
 
-		return \selling\SaleLib::filterForAccounting(
+		return \preaccounting\SaleLib::filterForAccounting(
 					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
 				)
 			->select(self::marketSelection())
@@ -403,7 +403,7 @@ Class ImportLib {
 
 	public static function getMarketsByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $ids): \Collection {
 
-		return \selling\SaleLib::filterForAccounting(
+		return \preaccounting\SaleLib::filterForAccounting(
 					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
 				)
 			->select(self::marketSelection())
@@ -447,7 +447,7 @@ Class ImportLib {
 
 		$cSale = new \Collection();
 		$cSale->append($eSale);
-		$fecData = \farm\AccountingLib::generateMarketFec($cSale, new \Collection([$eFinancialYear]), $cAccount);
+		$fecData = \preaccounting\AccountingLib::generateMarketFec($cSale, new \Collection([$eFinancialYear]), $cAccount);
 
 		$eOperation = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
@@ -502,16 +502,16 @@ Class ImportLib {
 
 	protected static function sortOperations(array $extraction, string $document) {
 
-		$operations = array_filter($extraction, fn($line) => $line[\farm\AccountingLib::FEC_COLUMN_DOCUMENT] === $document);
+		$operations = array_filter($extraction, fn($line) => $line[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT] === $document);
 
 		usort($operations, function($entry1, $entry2) {
-			if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] < (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
+			if((int)$entry1[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] < (int)$entry2[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
 				return -1;
 			}
-			if((int)$entry1[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] > (int)$entry2[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
+			if((int)$entry1[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] > (int)$entry2[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
 				return 1;
 			}
-			return strcmp($entry1[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD], $entry2[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
+			return strcmp($entry1[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD], $entry2[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
 		});
 
 		return $operations;
@@ -524,20 +524,20 @@ Class ImportLib {
 
 		foreach($fecData as $data) {
 
-			$eAccount = $cAccount->find(fn($e) => $e['class'] === trim($data[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], '0'))->first();
-			$date = mb_substr($data[\farm\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\farm\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\farm\AccountingLib::FEC_COLUMN_DATE], -2);
-			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\farm\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
+			$eAccount = $cAccount->find(fn($e) => $e['class'] === trim($data[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], '0'))->first();
+			$date = mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], -2);
+			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
 
 			$eOperation = new \journal\Operation(array_merge($eOperationBase->getArrayCopy(), [
 				'id' => NULL,
 				'financialYear' => $eFinancialYear,
 				'account' => $eAccount,
-				'accountLabel' => $data[\farm\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
+				'accountLabel' => $data[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
 				'date' => $date,
-				'document' => $data[\farm\AccountingLib::FEC_COLUMN_DOCUMENT],
+				'document' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT],
 				'documentDate' => $date,
-				'amount' => abs($data[\farm\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]),
-				'type' => $data[\farm\AccountingLib::FEC_COLUMN_DEBIT] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
+				'amount' => abs($data[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]),
+				'type' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
 				'vatRate' => 0,
 				'vatAccount' => new \account\Account(),
 				'operation' => new \journal\Operation(),

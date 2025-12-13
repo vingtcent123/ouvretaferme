@@ -89,7 +89,7 @@ class ThirdPartyLib extends ThirdPartyCrud {
 		}
 
 		// Recherche par name
-		$weight += self::scoreNameMatch($eThirdParty, $eCashflow['name']);
+		$weight += self::scoreNameMatch($eThirdParty['name'], $eCashflow['name']);
 
 		return $weight;
 
@@ -246,10 +246,10 @@ class ThirdPartyLib extends ThirdPartyCrud {
 		return $jaro + $l * 0.1 * (1 - $jaro);
 	}
 
-	public static function scoreNameMatch(ThirdParty $eThirdParty, string $comparisonString): float {
+	public static function scoreNameMatch(string $thirdPartyName, string $comparisonString): float {
 
 		$comparisonNormalized = self::normalizeName($comparisonString);
-		$thirdPartyNormalized = $eThirdParty['normalizedName'];
+		$thirdPartyNormalized = self::normalizeName($thirdPartyName);
 
 		$score = 0;
 		$matches = 0;
@@ -280,8 +280,8 @@ class ThirdPartyLib extends ThirdPartyCrud {
 			}
 		}
 
-		// ratio : il faut au moins 70% des mots du tiers présents
-		if (count($thirdPartyNormalized) > 0 && ($matches / count($thirdPartyNormalized)) < 0.60) {
+		// ratio : il faut au moins 30% des mots du tiers présents
+		if(count($thirdPartyNormalized) > 0 && ($matches / count($thirdPartyNormalized)) < 0.30) {
 			return 0; // rejet direct
 		}
 
@@ -300,23 +300,6 @@ class ThirdPartyLib extends ThirdPartyCrud {
 
 	}
 
-	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
-
-		$p
-			->setCallback('name.duplicate', function(string $name) use($p): bool {
-
-				if($p->for === 'update') {
-					return TRUE;
-				}
-
-				return (ThirdParty::model()->whereName($name)->count() === 0);
-
-			})
-		;
-
-		parent::build($properties, $input, $p);
-
-	}
 
 }
 ?>

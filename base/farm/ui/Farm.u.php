@@ -705,23 +705,6 @@ class FarmUi {
 				$h .= \Asset::icon('receipt');
 			$h .= '</a>';
 
-			if(FEATURE_PRE_ACCOUNTING) {
-				if($eFarm->hasAccounting() === FALSE) {
-					$url = \company\CompanyUi::urlSettings($eFarm);
-				} else {
-					$url = FarmUi::urlSellingSalesAccounting($eFarm).'?from='.$year.'-01-01&to='.$year.'-12-31';
-				}
-				$h .= '<a href="'.$url.'" class="util-button">';
-					$h .= '<div>';
-						$h .= '<h4>'.s("Exporter la pré-comptabilité").'</h4>';
-						if($eFarm->hasAccounting() === FALSE) {
-							$h .= '<div class="util-annotation">'.s("Activez le module de comptabilité pour y accéder !").'</div>';
-						}
-					$h .= '</div>';
-					$h .= \Asset::icon('file-spreadsheet');
-				$h .= '</a>';
-			}
-
 		$h .= '</div>';
 
 		$h .= '<h3>'.s("Les données intégrales").'</h3>';
@@ -917,8 +900,12 @@ class FarmUi {
 				'icon' => \Asset::icon('piggy-bank'),
 				'label' => s("Banque")
 			],
+			'preaccounting' => [
+				'icon' => \Asset::icon('file-spreadsheet'),
+				'label' => s("Précomptabilité")
+			],
 			'invoicing' => [
-				'icon' => \Asset::icon('file-ruled'),
+				'icon' => \Asset::icon('currency-euro'),
 				'label' => s("Facturation")
 			],
 			'accounting' => [
@@ -960,6 +947,7 @@ class FarmUi {
 			'analyze-commercialisation' => FarmUi::urlAnalyzeCommercialisation($eFarm, $name),
 
 			'bank' => \company\CompanyUi::urlFarm($eFarm).'/banque/operations',
+			'preaccounting' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite',
 			'accounting' => match($name) {
 				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
@@ -1252,6 +1240,12 @@ class FarmUi {
 			$h .= '<div class="farm-tab-wrapper farm-nav-bank">';
 
 				$h .= $this->getNav('bank', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/banque/operations');
+
+			$h .= '</div>';
+
+			$h .= '<div class="farm-tab-wrapper farm-nav-preaccounting">';
+
+				$h .= $this->getNav('preaccounting', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/precomptabilite');
 
 			$h .= '</div>';
 
@@ -1724,6 +1718,7 @@ class FarmUi {
 	}
 
 	public function getAccountingMenu(Farm $eFarm, ?string $subNav = NULL): string {
+
 		return $this->getSubNav(
 			$eFarm,
 			'accounting',
@@ -1791,8 +1786,7 @@ class FarmUi {
 			Farmer::PRIVATE => s("Ventes aux particuliers"),
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
-			NULL,
-		] + (FEATURE_PRE_ACCOUNTING ? ['accounting' => s("Précomptabilité")] : []);
+		];
 	}
 
 	public function getAccountingBankTitle(Farm $eFarm, string $selectedView, ?int $number): string {
@@ -1853,10 +1847,10 @@ class FarmUi {
 
 				$h .= '<div>';
 					if(array_sum($numbers['import']) > 0) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/ventes/importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
 					}
 					if($numbers['reconciliate'] > 0) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/ventes/rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
 					}
 				$h .= '</div>';
 		$h .= '</div>';
@@ -1867,11 +1861,8 @@ class FarmUi {
 
 	public function getPreAccountingInvoiceTitle(Farm $eFarm, \account\FinancialYear $eFinancialYear, string $selectedView, array $numbers): string {
 
-		$categories = $this->getPreAccountingInvoicesCategories();
-		if($eFinancialYear->isCashAccounting()) {
-			unset($categories['reconciliate']);
-		}
-		$number = $numbers[$selectedView];
+		$categories = $this->getPreAccountingInvoicesCategories($eFarm, $eFinancialYear);
+		$number = ($numbers[$selectedView] ?? NULL);
 
 		$title = $categories[$selectedView]['label'];
 
@@ -1903,12 +1894,14 @@ class FarmUi {
 		return $h;
 
 	}
-	protected static function getPreAccountingInvoicesCategories(): array {
+	protected static function getPreAccountingInvoicesCategories(Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
 
 		return [
-			'import' => ['url' => '/ventes/importer', 'label' => s("Importer les ventes")],
-			'reconciliate' => ['url' => '/ventes/rapprocher', 'label' => s("Rapprocher les factures")],
-		];
+			'prepare' => ['url' => '/precomptabilite', 'label' => s("Préparer les données de vente")],
+			] +
+			(($eFarm->hasAccounting() or $eFinancialYear->isCashAccounting() === FALSE) ? ['reconciliate-sales' => ['url' => '/precomptabilite:rapprocher-ventes', 'label' => s("Rapprocher les ventes")]] : []) +
+			(($eFarm->usesAccounting() or $eFinancialYear->isCashAccounting() === FALSE) ? ['reconciliate-operations' => ['url' => '/precomptabilite:rapprocher-ecritures', 'label' => s("Rapprocher les écritures")]] : []) +
+			($eFarm->usesAccounting() ? ['import' => ['url' => '/precomptabilite:importer', 'label' => s("Importer les ventes")],] : []);
 	}
 
 	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, \account\FinancialYear $eFinancialYear): string {

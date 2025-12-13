@@ -34,6 +34,7 @@ class DemoLib {
 		'payment\StripeFarm',
 		'pdf\Pdf',
 		'pdf\Content',
+		'preaccounting\Suggestion',
 		'selling\Grid',
 		'selling\History',
 		'selling\Invoice',

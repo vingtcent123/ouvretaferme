@@ -1,5 +1,5 @@
 <?php
-namespace farm;
+namespace preaccounting;
 
 Class AccountingLib {
 
@@ -65,7 +65,7 @@ Class AccountingLib {
 				->where('m2.type = '.\selling\Customer::model()->format($search->get('type')));
 		}
 
-		return \selling\SaleLib::filterForAccounting($eFarm,$search)
+		return \preaccounting\SaleLib::filterForAccounting($eFarm,$search)
 			->whereInvoice(NULL)
 			->whereAccountingHash(NULL)
 			->whereProfile('NOT IN', [\selling\Sale::SALE_MARKET, \selling\Sale::MARKET])
@@ -81,7 +81,7 @@ Class AccountingLib {
 				->where('m2.type = '.\selling\Customer::model()->format($search->get('type')));
 		}
 
-		return \selling\SaleLib::filterForAccounting($eFarm, $search)
+		return \preaccounting\SaleLib::filterForAccounting($eFarm, $search)
 			->select([
 			  'id',
 			  'document',
@@ -245,7 +245,7 @@ Class AccountingLib {
 		return \selling\Invoice::model()
 			->whereAccountingHash(NULL)
 			->whereReadyForAccounting(TRUE)
-			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
+			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
 			->count();
 
 	}
@@ -417,7 +417,7 @@ Class AccountingLib {
 
 	public static function countMarkets(\farm\Farm $eFarm, string $from, string $to): int {
 
-		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+		return \preaccounting\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
 	    ->whereProfile(\selling\Sale::MARKET)
 	    ->whereAccountingHash(NULL)
 	    ->count();
@@ -428,7 +428,7 @@ Class AccountingLib {
 
 		$saleModule = clone \selling\Sale::model();
 
-		return \selling\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
+		return \preaccounting\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]))
 			->select([
 			  'id',
 			  'document',

@@ -25,6 +25,7 @@ Package::setList([
 	'payment' => 'commercialisation',
 	'pdf' => 'accounting',
 	'plant' => 'production',
+	'preaccounting' => 'accounting',
 	'selling' => 'commercialisation',
 	'sequence' => 'production',
 	'series' => 'production',

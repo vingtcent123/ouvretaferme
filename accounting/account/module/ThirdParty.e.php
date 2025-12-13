@@ -51,17 +51,19 @@ class ThirdParty extends ThirdPartyElement {
 					->count() === 0);
 
 			})
-			->setCallback('name.duplicate', function(?string $name): bool {
+			->setCallback('name.duplicate', function(?string $name) use($p): bool {
 
-				return (ThirdParty::model()
-					->whereName($name)
-					->whereId('!=', fn() => $this['id'], if: $this->exists())
-					->count() === 0);
+				if($p->for === 'update') {
+					return TRUE;
+				}
+
+				return (ThirdParty::model()->whereName($name)->count() === 0);
 
 			});
 
 		parent::build($properties, $input, $p);
 
 	}
+
 }
 ?>

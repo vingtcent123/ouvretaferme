@@ -1,5 +1,5 @@
 <?php
-namespace invoicing;
+namespace preaccounting;
 
 abstract class SuggestionElement extends \Element {
 
@@ -37,9 +37,9 @@ abstract class SuggestionElement extends \Element {
 
 class SuggestionModel extends \ModuleModel {
 
-	protected string $module = 'invoicing\Suggestion';
-	protected string $package = 'invoicing';
-	protected string $table = 'invoicingSuggestion';
+	protected string $module = 'preaccounting\Suggestion';
+	protected string $package = 'preaccounting';
+	protected string $table = 'preaccountingSuggestion';
 
 	public function __construct() {
 
@@ -48,24 +48,30 @@ class SuggestionModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
-			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
-			'status' => ['enum', [\invoicing\Suggestion::WAITING, \invoicing\Suggestion::REJECTED, \invoicing\Suggestion::VALIDATED, \invoicing\Suggestion::OUT], 'cast' => 'enum'],
-			'reason' => ['set', [\invoicing\Suggestion::AMOUNT, \invoicing\Suggestion::THIRD_PARTY, \invoicing\Suggestion::REFERENCE, \invoicing\Suggestion::DATE], 'cast' => 'set'],
+			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
+			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
+			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
+			'status' => ['enum', [\preaccounting\Suggestion::WAITING, \preaccounting\Suggestion::REJECTED, \preaccounting\Suggestion::VALIDATED, \preaccounting\Suggestion::OUT], 'cast' => 'enum'],
+			'reason' => ['set', [\preaccounting\Suggestion::AMOUNT, \preaccounting\Suggestion::THIRD_PARTY, \preaccounting\Suggestion::REFERENCE, \preaccounting\Suggestion::DATE], 'cast' => 'set'],
 			'weight' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'cashflow', 'operation', 'status', 'reason', 'weight', 'createdAt'
+			'id', 'cashflow', 'sale', 'invoice', 'operation', 'status', 'reason', 'weight', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'cashflow' => 'bank\Cashflow',
+			'sale' => 'selling\Sale',
+			'invoice' => 'selling\Invoice',
 			'operation' => 'journal\Operation',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['cashflow', 'operation']
+			['cashflow', 'operation'],
+			['cashflow', 'sale'],
+			['cashflow', 'invoice']
 		]);
 
 	}
@@ -115,6 +121,14 @@ class SuggestionModel extends \ModuleModel {
 
 	public function whereCashflow(...$data): SuggestionModel {
 		return $this->where('cashflow', ...$data);
+	}
+
+	public function whereSale(...$data): SuggestionModel {
+		return $this->where('sale', ...$data);
+	}
+
+	public function whereInvoice(...$data): SuggestionModel {
+		return $this->where('invoice', ...$data);
 	}
 
 	public function whereOperation(...$data): SuggestionModel {
@@ -241,7 +255,7 @@ abstract class SuggestionCrud extends \ModuleCrud {
 
 class SuggestionPage extends \ModulePage {
 
-	protected string $module = 'invoicing\Suggestion';
+	protected string $module = 'preaccounting\Suggestion';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
