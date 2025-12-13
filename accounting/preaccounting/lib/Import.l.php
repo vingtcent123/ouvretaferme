@@ -137,7 +137,7 @@ Class ImportLib {
 	public static function getSaleById(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $saleId): \selling\Sale {
 
 		$eSale = \preaccounting\SaleLib::filterForAccounting(
-				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
+				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']]), TRUE
 			)
 			->select(self::saleSelection())
 			->whereId($saleId)
@@ -151,7 +151,7 @@ Class ImportLib {
 	public static function getSalesByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $saleIds): \Collection {
 
 		$cSale = \preaccounting\SaleLib::filterForAccounting(
-				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
+				$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']]), TRUE
 			)
 			->select(self::saleSelection())
 			->whereId('IN', $saleIds)
@@ -392,7 +392,7 @@ Class ImportLib {
 	public static function getMarketById(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, int $id): \selling\Sale {
 
 		return \preaccounting\SaleLib::filterForAccounting(
-					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
+					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']]), TRUE
 				)
 			->select(self::marketSelection())
 			->whereId($id)
@@ -404,7 +404,7 @@ Class ImportLib {
 	public static function getMarketsByIds(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $ids): \Collection {
 
 		return \preaccounting\SaleLib::filterForAccounting(
-					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']])
+					$eFarm, new \Search(['from' => $eFinancialYear['startDate'], 'to' => $eFinancialYear['endDate']]), TRUE
 				)
 			->select(self::marketSelection())
 			->whereId('IN', $ids)

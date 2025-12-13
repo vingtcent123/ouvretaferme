@@ -3,14 +3,14 @@ namespace preaccounting;
 
 Class SaleLib {
 
-	public static function filterForAccounting(\farm\Farm $eFarm, \Search $search): \selling\SaleModel {
+	public static function filterForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\SaleModel {
 
 		return \selling\Sale::model()
 			->wherePreparationStatus('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT, \selling\Sale::BASKET])
 			->where('priceExcludingVat != 0.0')
 			->where('m1.farm = '.$eFarm['id'])
 			->where('deliveredAt BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
-			->whereReadyForAccounting(TRUE)
+			->whereReadyForAccounting(TRUE, if: $forImport)
 			->whereId($search->get('id'), if: $search->get('id'))
 			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
 

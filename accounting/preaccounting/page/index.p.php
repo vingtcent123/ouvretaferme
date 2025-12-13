@@ -132,7 +132,7 @@ new Page(function($data) {
 			} else {
 				$cFinancialYear = new Collection();
 			}
-			$export = \preaccounting\AccountingLib::generateFec($data->eFarm, $data->search->get('from'), $data->search->get('to'), $cFinancialYear);
+			$export = \preaccounting\AccountingLib::generateFec($data->eFarm, $data->search->get('from'), $data->search->get('to'), $cFinancialYear, forImport: FALSE);
 
 			throw new CsvAction($export, 'pre-comptabilite.csv');
 

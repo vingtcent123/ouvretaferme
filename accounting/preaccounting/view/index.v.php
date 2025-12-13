@@ -168,7 +168,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	if($data->isSearchValid) {
 
 		$attributes = [
-			'href' => \farm\FarmUi::urlSellingSalesAccounting($data->eFarm).':fec?from='.$data->search->get('from').'&to='.$data->search->get('to'),
+			'href' => \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:fec?from='.$data->search->get('from').'&to='.$data->search->get('to'),
 			'data-ajax-navigation' => 'never',
 		];
 		$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
