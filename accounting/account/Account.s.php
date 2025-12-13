@@ -113,6 +113,7 @@ class AccountSetting extends \Settings {
 
 	// PRODUITS
 	const PRODUCT_SOLD_ACCOUNT_CLASS = 70;
+	const PRODUCT_OTHER_ACCOUNT_CLASS = 75;
 	const PRODUCT_SUBVENTION_ACCOUNT_CLASS = 74;
 	const PRODUCT_OTHER_CLASS = '758'; // Indemnités et autres produits
 	const PRODUCT_FINANCIAL_ACCOUNT_CLASS = 76;

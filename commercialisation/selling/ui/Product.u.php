@@ -127,7 +127,9 @@ class ProductUi {
 					$h .= $form->select('profile', self::p('profile')->values, $search->get('profile'), ['placeholder' => s("Type")]);
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
+
 					if($eFarm->hasAccounting()) {
+
 						$eAccount = $search->get('account');
 						if($search->get('noAccount') === TRUE) {
 							$eAccount = new \account\Account(['id' => 0]);
@@ -135,7 +137,7 @@ class ProductUi {
 						$h .= $form->dynamicField(new Product(['farm' => $eFarm, 'privateAccount' => $eAccount]), 'privateAccount', function($d) use($form, $eAccount) {
 							$d->name = 'account';
 
-							$query = ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS];
+							$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::PRODUCT_OTHER_ACCOUNT_CLASS];
 							$query['canHaveNoAccountOption'] = TRUE;
 							$d->autocompleteUrl = function(\util\FormUi $form, $e) use (&$farm, $query) {
 								if($farm === NULL) {
@@ -144,7 +146,9 @@ class ProductUi {
 								return \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
 							};
 						});
+
 					}
+
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
@@ -1661,7 +1665,7 @@ class ProductUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? NULL;
-				$query = ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS];
+				$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::PRODUCT_OTHER_ACCOUNT_CLASS];
 				if(get_exists('account') and GET('account') === '0') {
 					$query['noAccount'] = TRUE;
 				}
