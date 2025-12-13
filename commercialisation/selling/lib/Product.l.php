@@ -98,7 +98,7 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		if($e['farm']->hasAccounting()) {
+		if($e['farm']->hasAccounting() and empty(array_intersect(['proAccount', 'privateAccount'], $properties) === FALSE)) {
 
 			self::updateItemsAccount($e);
 
@@ -112,24 +112,15 @@ class ProductLib extends ProductCrud {
 
 		$proAccount = $eProduct['proAccount']->empty() ? $eProduct['privateAccount'] : $eProduct['proAccount'];
 
-		$cItem = Item::model()
-			->select(Item::getSelection())
+		$eItem = new Item([
+			'account' => new \Sql('account = IF(type = "'.Item::PRO.'", '.$proAccount['id'].', '.$eProduct['privateAccount']['id'].')')
+		]);
+
+		Item::model()
+			->select('account')
+			->whereProfile('!=', Item::SALE_MARKET)
 			->whereProduct($eProduct)
-			->getCollection();
-
-		foreach($cItem as $eItem) {
-
-			if($eItem['type'] === Item::PRO) {
-				$eItem['account'] = $proAccount;
-			} else {
-				$eItem['account'] = $eProduct['privateAccount'];
-			}
-
-			if($eItem->canWriteAccounting()) {
-				ItemLib::update($eItem, ['account']);
-			}
-
-		}
+	    ->update($eItem);
 
 	}
 
