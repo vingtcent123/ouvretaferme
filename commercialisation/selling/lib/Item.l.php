@@ -601,7 +601,7 @@ class ItemLib extends ItemCrud {
 
 		$e->expects([
 			'sale' => [
-				'deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat', 'discount'
+				'deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat', 'discount', 'profile'
 			],
 		]);
 
@@ -613,6 +613,7 @@ class ItemLib extends ItemCrud {
 		
 		$eSale = $e['sale'];
 
+		$e['profile'] = $eSale['profile'];
 		$e['deliveredAt'] = $eSale['deliveredAt'];
 		$e['shop'] = $eSale['shop'];
 		$e['shopDate'] = $eSale['shopDate'];

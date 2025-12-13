@@ -144,6 +144,7 @@ Item:
   sale: selling\Sale
   customer: ?selling\Customer
   type: enum(PRIVATE, PRO)
+  profile: enum(SALE, SALE_MARKET, MARKET, COMPOSITION) = SALE
   additional: ?text8
   origin: ?text8(1, null)
   farm: farm\Farm

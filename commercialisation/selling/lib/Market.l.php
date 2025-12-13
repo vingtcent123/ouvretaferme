@@ -296,7 +296,8 @@ class MarketLib {
 				->whereSale($eSale)
 				->update([
 					'parent' => new Item(),
-					'stats' => TRUE
+					'stats' => TRUE,
+					'profile' => $eSale['profile'],
 				]);
 
 			self::doPaymentStatusMarketSale($eSale, $eSale['cPayment']->notEmpty() ? Sale::NOT_PAID : NULL);

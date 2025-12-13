@@ -1069,6 +1069,10 @@ class SaleLib extends SaleCrud {
 			$newItems['deliveredAt'] = $e['deliveredAt'];
 		}
 
+		if(in_array('profile', $properties)) {
+			$newItems['profile'] = $e['profile'];
+		}
+
 		if(in_array('type', $properties)) {
 			$newItems['type'] = $e['type'];
 		}
