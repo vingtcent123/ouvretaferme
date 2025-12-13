@@ -66,12 +66,15 @@ class BetaApplicationModel extends \ModuleModel {
 			'accountingHelped' => ['bool', 'cast' => 'bool'],
 			'helpComment' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'accountingLevel' => ['enum', [\company\BetaApplication::BEGINNER, \company\BetaApplication::INITIATED, \company\BetaApplication::COMFORTABLE, \company\BetaApplication::EXPERT], 'cast' => 'enum'],
+			'hasSoftware' => ['bool', 'cast' => 'bool'],
+			'software' => ['text8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'hasStocks' => ['bool', 'cast' => 'bool'],
 			'comment' => ['text16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'farm', 'user', 'accountingType', 'taxSystem', 'hasVat', 'vatFrequency', 'discord', 'accountingHelped', 'helpComment', 'accountingLevel', 'comment', 'createdAt'
+			'farm', 'user', 'accountingType', 'taxSystem', 'hasVat', 'vatFrequency', 'discord', 'accountingHelped', 'helpComment', 'accountingLevel', 'hasSoftware', 'software', 'hasStocks', 'comment', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -171,6 +174,18 @@ class BetaApplicationModel extends \ModuleModel {
 
 	public function whereAccountingLevel(...$data): BetaApplicationModel {
 		return $this->where('accountingLevel', ...$data);
+	}
+
+	public function whereHasSoftware(...$data): BetaApplicationModel {
+		return $this->where('hasSoftware', ...$data);
+	}
+
+	public function whereSoftware(...$data): BetaApplicationModel {
+		return $this->where('software', ...$data);
+	}
+
+	public function whereHasStocks(...$data): BetaApplicationModel {
+		return $this->where('hasStocks', ...$data);
 	}
 
 	public function whereComment(...$data): BetaApplicationModel {

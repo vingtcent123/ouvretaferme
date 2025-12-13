@@ -30,6 +30,9 @@ BetaApplication:
   accountingHelped: bool
   helpComment: ?text8(0, null)
   accountingLevel: enum(BEGINNER, INITIATED, COMFORTABLE, EXPERT)
+  hasSoftware: bool
+  software: ?text8(0, null)
+  hasStocks: bool
   comment: ?text16(0, null)
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [

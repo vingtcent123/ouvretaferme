@@ -14,18 +14,26 @@ Class BetaApplicationUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/company/beta:doCreate', ['onrender' => 'CompanyConfiguration.changeHasVat(); CompanyConfiguration.changeHelpComment()', 'id' => 'beta-form']);
+		$h .= $form->openAjax('/company/beta:doCreate', ['onrender' => 'CompanyConfiguration.changeHasVat(); CompanyConfiguration.changeHelpComment(); CompanyConfiguration.changeHasSoftware();', 'id' => 'beta-form']);
 
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->hidden('farm', $eFarm['id']);
 
-		$h .= $form->dynamicGroups($eBetaApplication, ['accountingLevel*', 'accountingHelped*', 'helpComment', 'accountingType*', 'taxSystem*', 'hasVat*', 'vatFrequency', 'discord', 'comment'], [
+		$h .= $form->dynamicGroups($eBetaApplication, [
+			'accountingLevel*', 'accountingHelped*', 'helpComment',
+			'hasSoftware*', 'software',
+			'accountingType*', 'taxSystem*', 'hasVat*', 'vatFrequency',
+			'hasStocks',
+			'discord', 'comment'], [
 			'accountingHelped*' => function($d) use($form) {
 				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'CompanyConfiguration.changeHelpComment()'];
 			},
 			'hasVat*' => function($d) use($form) {
 				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'CompanyConfiguration.changeHasVat()'];
+			},
+			'hasSoftware*' => function($d) use($form) {
+				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'CompanyConfiguration.changeHasSoftware()'];
 			},
 		]);
 
@@ -44,8 +52,11 @@ Class BetaApplicationUi {
 			'accountingLevel' => s("Votre niveau de connaissances en comptabilité"),
 			'accountingHelped' => s("Êtes-vous accompagné·e par un cabinet comptable ou un organisme pour la comptabilité ?"),
 			'helpComment' => s("Si oui, qui vous accompagne ?"),
+			'hasSoftware' => s("Utilisez-vous un logiciel de comptabilité actuellement ?"),
+			'software' => s("Si oui, lequel ?"),
 			'accountingType' => s("Type de comptabilité"),
 			'taxSystem' => s("Régime fiscal"),
+			'hasStocks' => s("Gérez-vous des stocks ?"),
 			'comment' => s("Commentaire"),
 			'hasVat' => s("Votre ferme est-elle redevable de la TVA ?"),
 			'notPayingVat' => s("Régime de franchise de TVA ?"),
@@ -94,6 +105,8 @@ Class BetaApplicationUi {
 			case 'accountingHelped' :
 			case 'hasVat' :
 			case 'discord' :
+			case 'hasStocks' :
+			case 'hasSoftware' :
 				$d->field = 'yesNo';
 				break;
 
