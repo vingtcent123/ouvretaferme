@@ -127,7 +127,7 @@ class ImportLib extends ImportCrud {
 			->getCollection();
 	}
 
-	public static function importBankStatement(\farm\Farm $eFarm): ?string {
+	public static function importBankStatement(): ?string {
 
 		if(isset($_FILES['ofx']) === FALSE) {
 			return null;
@@ -183,7 +183,8 @@ class ImportLib extends ImportCrud {
 
 		$eImport['result'] = $result;
 		$eImport['status'] = $status;
-		$eImport['processedAt'] = Import::model()->now();
+		$eImport['processedAt'] = new \Sql('NOW()');
+
 		self::update($eImport, ['result', 'status', 'processedAt']);
 
 		return $status;

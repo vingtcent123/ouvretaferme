@@ -35,12 +35,12 @@ new Page(
 
 		$fw = new FailWatch();
 
-		$result = \bank\ImportLib::importBankStatement($data->eFarm);
+		$result = \bank\ImportLib::importBankStatement();
 
 		if($fw->ok()) {
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports?success=bank:Import::'.$result);
+			throw new ReloadAction('bank', 'Import::'.$result);
 		} else {
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import?error='.$fw->getLast());
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?error='.$fw->getLast());
 		}
 
 	});

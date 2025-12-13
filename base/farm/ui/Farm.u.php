@@ -1819,16 +1819,14 @@ class FarmUi {
 				}
 			$h .= '</h1>';
 
-			if($selectedView === 'bank') {
 
-				$h .= '<div>';
+		if($selectedView === 'bank') {
+
+				$h .= '<div class="flex-align-center">';
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#cashflow-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-				$h .= '</div>';
-
-			} else if($selectedView === 'import') {
-
-				$h .= '<div>';
-					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+					$h .= '<div>';
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+					$h .= '</div>';
 				$h .= '</div>';
 
 			}
