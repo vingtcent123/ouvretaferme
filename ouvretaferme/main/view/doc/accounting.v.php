@@ -34,9 +34,12 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<h3>'.s("Les comptes").'</h3>';
 
 		echo '<p>';
-			echo s("Vous pouvez personnaliser des comptes dans les <link>paramètres du module de Comptabilité</link>. En associant vos catégories de produits ou vos produits à ces comptes, vous exporterez pour chaque vente des lignes affectées aux bons comptes.", [
+			echo s("Vous pouvez personnaliser des comptes dans les <link>paramètres du module de Comptabilité</link>.", [
 				'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">'
 			]);
+		echo '</p>';
+		echo '<p>';
+			echo s("Vous pouvez également paramétrer des numéros de compte par catégorie de produit dans la page \"Vendre > Paramétrage > Les réglages de base > Comptabilité\". Ainsi, toutes les articles vendus seront immédiatement configurés correctement.");
 		echo '</p>';
 
 		echo '<h3>'.s("Les comptes des clients (411)").'</h3>';

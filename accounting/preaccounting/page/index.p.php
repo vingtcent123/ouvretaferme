@@ -1,10 +1,6 @@
 <?php
 new Page(function($data) {
 
-	if(FEATURE_PRE_ACCOUNTING === FALSE) {
-		throw new NotExistsAction();
-	}
-
 	\user\ConnectionLib::checkLogged();
 
 	$data->eFarm->validate('canManage');
