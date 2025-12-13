@@ -112,7 +112,7 @@ class VatDeclarationUi {
 									if($eVatDeclaration['accountedAt'] === NULL) {
 										$h .= s("Non");
 										if($eVatDeclaration['declaredAt'] !== NULL) {
-											$h .= '<br /><a class="font-sm" href="'.\company\CompanyUi::urlFarm($eFarm).'/synthese/declaration-de-tva/operations?id='.$eVatDeclaration['id'].'">'.s("Voir les écritures proposées").'</a>';
+											$h .= '<br /><a class="font-sm" href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/declaration-de-tva/operations?id='.$eVatDeclaration['id'].'">'.s("Voir les écritures proposées").'</a>';
 										}
 									} else {
 										$h .= \util\DateUi::numeric($eVatDeclaration['accountedAt']);

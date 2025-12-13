@@ -77,8 +77,7 @@ abstract class FarmerElement extends \Element {
 
 	const BANK = 'bank';
 	const CHARGES = 'charges';
-	const INTERMEDIATE = 'intermediate';
-
+	const SIG = 'sig';
 	const VAT = 'vat';
 	const BALANCE_SHEET = 'balance-sheet';
 	const INCOME_STATEMENT = 'income-statement';
@@ -147,15 +146,14 @@ class FarmerModel extends \ModuleModel {
 			'viewAccountingYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewAccountingType' => ['enum', [\farm\Farmer::ACCRUAL, \farm\Farmer::CASH, \farm\Farmer::CASH_ACCRUAL], 'cast' => 'enum'],
 			'viewAccountingHasVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::INTERMEDIATE], 'cast' => 'enum'],
-			'viewAccountingSummary' => ['enum', [\farm\Farmer::VAT, \farm\Farmer::BALANCE_SHEET, \farm\Farmer::INCOME_STATEMENT], 'cast' => 'enum'],
+			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::SIG, \farm\Farmer::VAT, \farm\Farmer::BALANCE_SHEET, \farm\Farmer::INCOME_STATEMENT], 'cast' => 'enum'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewShopCurrent' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingType', 'viewAccountingHasVat', 'viewAccountingFinancials', 'viewAccountingSummary', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingType', 'viewAccountingHasVat', 'viewAccountingFinancials', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -246,9 +244,6 @@ class FarmerModel extends \ModuleModel {
 			case 'viewAccountingFinancials' :
 				return Farmer::BANK;
 
-			case 'viewAccountingSummary' :
-				return Farmer::BALANCE_SHEET;
-
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
@@ -330,9 +325,6 @@ class FarmerModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewAccountingFinancials' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'viewAccountingSummary' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -509,10 +501,6 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewAccountingFinancials(...$data): FarmerModel {
 		return $this->where('viewAccountingFinancials', ...$data);
-	}
-
-	public function whereViewAccountingSummary(...$data): FarmerModel {
-		return $this->where('viewAccountingSummary', ...$data);
 	}
 
 	public function whereViewSeason(...$data): FarmerModel {

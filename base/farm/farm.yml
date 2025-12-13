@@ -143,8 +143,7 @@ Farmer:
   viewAccountingYear: ?int16(0, null)
   viewAccountingType: enum(ACCRUAL, CASH, CASH_ACCRUAL) = CASH
   viewAccountingHasVat: ?bool
-  viewAccountingFinancials: enum(BANK, CHARGES, INTERMEDIATE) = BANK
-  viewAccountingSummary: enum(VAT, BALANCE_SHEET, INCOME_STATEMENT) = BALANCE_SHEET
+  viewAccountingFinancials: enum(BANK, CHARGES, SIG, VAT, BALANCE_SHEET, INCOME_STATEMENT) = BANK
   viewSeason: ?int16(0, null)
   viewShopCurrent: ?shop\Shop
   createdAt: datetime = SPECIAL(now)

@@ -965,6 +965,7 @@ class FarmUi {
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
 				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
 				'assets' => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
+				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers',
 				'financials' => \company\CompanyUi::urlFarm($eFarm).'/gestion',
 				'summary' => \company\CompanyUi::urlFarm($eFarm).'/synthese',
 			},
@@ -1026,6 +1027,7 @@ class FarmUi {
 				'book' => s("Grand livre"),
 				'balance' => s("Balance"),
 				'assets' => s("Immobilisations"),
+				'analyze' => s("États financiers"),
 				'financials' => s("Gestion"),
 				'summary' => s("Synthèse"),
 			},
@@ -1953,45 +1955,6 @@ class FarmUi {
 
 		$categories = $this->getAccountingFinancialsCategories();
 
-		$title = $categories[$selectedView];
-
-		$h = '<div class="util-action">';
-			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= self::getNavigation();
-					$h .= '<span class="h-menu-label">';
-						$h .= $title;
-					$h .= '</span>';
-				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
-					foreach($categories as $key => $value) {
-						if($value === NULL) {
-							$h .= '<div class="dropdown-divider"></div>';
-						} else {
-							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/gestion?view='.$key.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a>';
-						}
-					}
-				$h .= '</div>';
-			$h .= '</h1>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected static function getAccountingFinancialsCategories(): array {
-		return [
-			Farmer::BANK => s("Trésorerie"),
-			Farmer::CHARGES => s("Charges et résultat"),
-			Farmer::INTERMEDIATE => s("Soldes intermédiaires de gestion"),
-		];
-	}
-
-	public function getAccountingSummaryTitle(Farm $eFarm, string $selectedView): string {
-
-		$categories = $this->getAccountingSummaryCategories();
-
 		$title = $categories[$selectedView]['label'];
 
 		$h = '<div class="util-action">';
@@ -2007,37 +1970,24 @@ class FarmUi {
 						if($value === NULL) {
 							$h .= '<div class="dropdown-divider"></div>';
 						} else {
-							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/synthese/'.$value['fqn'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
+							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/'.$value['fqn'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
 						}
 					}
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			switch($selectedView) {
-
-				case Farmer::INCOME_STATEMENT:
-
-					$h .= '<div>';
-						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-					$h .= '</div>';
-					break;
-
-				case Farmer::BALANCE_SHEET:
-
-					$h .= '<div>';
-						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-					$h .= '</div>';
-					break;
-
-			}
 		$h .= '</div>';
 
 		return $h;
 
 	}
 
-	public static function getAccountingSummaryCategories(): array {
+	public static function getAccountingFinancialsCategories(): array {
 		return [
+			Farmer::BANK => ['fqn' => 'tresorerie', 'label' => s("Trésorerie")],
+			Farmer::CHARGES => ['fqn' => 'charges', 'label' => s("Charges et résultat")],
+			Farmer::SIG => ['fqn' => 'sig', 'label' => s("Soldes intermédiaires de gestion")],
+			NULL => NULL,
 			Farmer::INCOME_STATEMENT => ['fqn' => 'compte-de-resultat', 'label' => s("Compte de résultat")],
 			Farmer::BALANCE_SHEET => ['fqn' => 'bilan', 'label' => s("Bilan")],
 			Farmer::VAT => ['fqn' => 'declaration-de-tva', 'label' => s("Déclaration de TVA")],
@@ -2343,7 +2293,7 @@ class FarmUi {
 				return $categories;
 
 			case 'accounting':
-				return ['operations', 'book', 'balance', 'assets', 'financials', 'summary'];
+				return ['operations', 'book', 'balance', 'assets', 'analyze'];
 
 		};
 

@@ -10,7 +10,7 @@ Class VatUi {
 
 	public function getVatTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, ?string $selectedTab = NULL): string {
 
-		$baseUrl = \company\CompanyUi::urlFarm($eFarm).'/synthese/declaration-de-tva';
+		$baseUrl = \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/declaration-de-tva';
 
 		$h = '<div class="tabs-item">';
 

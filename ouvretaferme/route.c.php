@@ -68,6 +68,21 @@ Route::register([
 			'priority' => 5,
 			'route' => ['espece', '{id@int}'],
 		],
+		'/etats-financiers/' => [
+			'request' => 'overview/index',
+			'priority' => 5,
+			'route' => ['etats-financiers'],
+		],
+		'/etats-financiers/declaration-de-tva/operations' => [
+			'request' => 'overview/vat',
+			'priority' => 5,
+			'route' => ['etats-financiers', 'declaration-de-tva', 'operations'],
+		],
+		'/etats-financiers/{view}' => [
+			'request' => 'overview/index',
+			'priority' => 5,
+			'route' => ['etats-financiers', '{view}'],
+		],
 		'/facturation-electronique' => [
 			'request' => 'invoicing/index',
 			'priority' => 5,
@@ -363,11 +378,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'ventes', 'professionnels'],
 		],
-		'/gestion' => [
-			'request' => 'overview/financials',
-			'priority' => 5,
-			'route' => ['gestion'],
-		],
 		'/immobilisation/{id}/' => [
 			'request' => 'asset/index',
 			'priority' => 5,
@@ -567,21 +577,6 @@ Route::register([
 			'request' => 'main/sitemap',
 			'priority' => 5,
 			'route' => ['sitemap.xml'],
-		],
-		'/synthese' => [
-			'request' => 'overview/summary',
-			'priority' => 5,
-			'route' => ['synthese'],
-		],
-		'/synthese/declaration-de-tva/operations' => [
-			'request' => 'overview/summary',
-			'priority' => 5,
-			'route' => ['synthese', 'declaration-de-tva', 'operations'],
-		],
-		'/synthese/{view}' => [
-			'request' => 'overview/summary',
-			'priority' => 5,
-			'route' => ['synthese', '{view}'],
 		],
 		'/tache/{id}' => [
 			'request' => 'series/task',
@@ -1018,22 +1013,22 @@ Route::register([
 			'route' => ['shop', 'public', '{fqn}', '{date}', 'paiement'],
 		],
 		'/vat/doCreateOperations' => [
-			'request' => 'overview/summary',
+			'request' => 'overview/vat',
 			'priority' => 5,
 			'route' => ['vat', 'doCreateOperations'],
 		],
 		'/vat/doDeclare' => [
-			'request' => 'overview/summary',
+			'request' => 'overview/vat',
 			'priority' => 5,
 			'route' => ['vat', 'doDeclare'],
 		],
 		'/vat/reset' => [
-			'request' => 'overview/summary',
+			'request' => 'overview/vat',
 			'priority' => 5,
 			'route' => ['vat', 'reset'],
 		],
 		'/vat/saveCerfa' => [
-			'request' => 'overview/summary',
+			'request' => 'overview/vat',
 			'priority' => 5,
 			'route' => ['vat', 'saveCerfa'],
 		],

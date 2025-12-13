@@ -1,4 +1,5 @@
 <?php
+
 new Page(function($data) {
 	\user\ConnectionLib::checkLogged();
 
@@ -11,21 +12,21 @@ new Page(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
-	$views = array_column(\farm\FarmUi::getAccountingSummaryCategories(), 'fqn');
+	$views = array_column(\farm\FarmUi::getAccountingFinancialsCategories(), 'fqn');
 
 	if(get_exists('view') and in_array(GET('view'), $views)) {
 
-		$view = array_find_key(\farm\FarmUi::getAccountingSummaryCategories(), fn($category) => $category['fqn'] === GET('view'));
-		$data->view = \farm\FarmerLib::setView('viewAccountingSummary', $data->eFarm, $view);
+		$view = array_find_key(\farm\FarmUi::getAccountingFinancialsCategories(), fn($category) => $category !== NULL and $category['fqn'] === GET('view'));
+		$data->view = \farm\FarmerLib::setView('viewAccountingFinancials', $data->eFarm, $view);
 
 	} else {
 
-		$data->view = $data->eFarm->getView('viewAccountingSummary');
+		$data->view = $data->eFarm->getView('viewAccountingFinancials');
 
 	}
 
 })
-	->get(['/synthese', '/synthese/{view}'], function($data) {
+	->get(['/etats-financiers/', '/etats-financiers/{view}'], function($data) {
 
 		$data->search = new Search([
 			'financialYearComparison' => GET('financialYearComparison'),
@@ -38,6 +39,37 @@ new Page(function($data) {
 		}
 
 		switch($data->view) {
+
+			case \farm\Farmer::BANK:
+				$data->ccOperationBank = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'bank');
+				$data->ccOperationCash = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'cash');
+				break;
+
+			case \farm\Farmer::CHARGES:
+				[$data->cOperation, $data->cAccount] = \overview\AnalyzeLib::getChargeOperationsByMonth($data->eFinancialYear);
+				$data->cOperationResult = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFinancialYear);
+				break;
+
+			case \farm\Farmer::SIG:
+
+				$data->search = new Search([
+					'financialYearComparison' => GET('financialYearComparison'),
+				], GET('sort'));
+
+				$values = \overview\SigLib::compute($data->eFinancialYear);
+				$data->values = [
+					$data->eFinancialYear['id'] => $values
+				];
+
+				if($data->search->get('financialYearComparison') and (int)$data->search->get('financialYearComparison') !== $data->eFinancialYear['id']) {
+					$data->eFinancialYearComparison = \account\FinancialYearLib::getById($data->search->get('financialYearComparison'));
+					if($data->eFinancialYearComparison->notEmpty()) {
+						$data->values[$data->eFinancialYearComparison['id']] = \overview\SigLib::compute($data->eFinancialYearComparison);
+					}
+				} else {
+					$data->eFinancialYearComparison = new \account\FinancialYear();
+				}
+				break;
 
 			case \farm\Farmer::BALANCE_SHEET:
 
@@ -146,93 +178,10 @@ new Page(function($data) {
 					case 'history':
 						$data->cVatDeclaration = \overview\VatDeclarationLib::getHistory($data->eFinancialYear);
 						break;
-				}
-
+			}
 		}
 
 		throw new ViewAction($data, ':'.$data->view);
 
-	});
-
-
-new Page(function($data) {
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-
-	if($data->eFarm->usesAccounting() === FALSE) {
-		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-	}
-
-	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-	$data->cFinancialYear = \account\FinancialYearLib::getAll();
-
-})
-	->post('/vat/saveCerfa', function($data) {
-
-		$from = POST('from');
-		$to = POST('to');
-		$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFinancialYear);
-
-		if($data->vatParameters['from'] !== $from and $data->vatParameters['to'] !== $to) {
-			throw new NotExpectedAction('Unable to update for this VAT declaration dates');
-		}
-
-		$input = $_POST;
-		unset($input['from']);
-		unset($input['to']);
-		unset($input['financialYear']);
-
-		\overview\VatDeclarationLib::saveCerfa($data->eFinancialYear, $from, $to, $input, $data->vatParameters['limit']);
-
-		throw new ReloadAction('overview', 'VatDeclaration::saved');
-
 	})
-	->post('/vat/reset', function($data) {
-
-		$eVatDeclaration = \overview\VatDeclarationLib::getByDates(POST('from'), POST('to'))->validate('canUpdate');
-
-		\overview\VatDeclarationLib::delete($eVatDeclaration);
-
-		throw new ReloadAction('overview', 'VatDeclaration::reset');
-
-	})
-	->post('/vat/doDeclare', function($data) {
-
-		$eVatDeclaration = \overview\VatDeclarationLib::getById(POST('id'))->validate('canUpdate');
-
-		\overview\VatDeclarationLib::declare($eVatDeclaration);
-
-		throw new ReloadAction('overview', 'VatDeclaration::declared');
-
-	})
-	->get('/synthese/declaration-de-tva/operations', function($data) {
-
-		$data->eVatDeclaration = \overview\VatDeclarationLib::getById(GET('id'));
-
-		if($data->eVatDeclaration->empty()) {
-			throw new NotExistsAction('Unknown declaration');
-		}
-
-		$dataFromDeclaration = \overview\VatLib::generateOperationsFromDeclaration($data->eVatDeclaration, $data->eFinancialYear);
-		$data->cerfaCalculated = $dataFromDeclaration['cerfaCalculated'];
-		$data->cerfaDeclared = $dataFromDeclaration['cerfaDeclared'];
-		$data->cOperation = $dataFromDeclaration['cOperation'];
-
-		throw new ViewAction($data);
-
-	})
-	->post('/vat/doCreateOperations', function($data) {
-
-		$eVatDeclaration = \overview\VatDeclarationLib::getById(POST('id'));
-
-		if($eVatDeclaration['status'] !== \overview\VatDeclaration::DECLARED) {
-			throw new NotExpectedAction('Unable to create operations from non-declared vat declaration');
-		}
-
-		\overview\VatLib::createOperations($data->eFarm, $eVatDeclaration, $data->eFinancialYear);
-
-		throw new ReloadAction('overview', 'VatDeclaration::operationsCreated');
-
-	});
-?>
+;
