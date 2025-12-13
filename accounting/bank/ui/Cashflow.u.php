@@ -151,13 +151,10 @@ class CashflowUi {
 						$h .= '</th>';
 						$h .= '<th class="text-end highlight-stick-right td-vertical-align-middle">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left td-vertical-align-middle">'.s("Crédit (C)").'</th>';
-						if($eFarm->usesAccounting() === FALSE) {
-							$h .= '<th class="text-center td-vertical-align-middle">'.s("Action").'</th>';
-						} else if($eFinancialYear->acceptUpdate()) {
-							$h .= '<th class="text-center td-vertical-align-middle">'.s("Statut").'</th>';
-						} else {
-							$h .= '<th></th>';
+						if($eFarm->usesAccounting()) {
+							$h .= '<th class="text-center">'.s("Écritures").'</th>';
 						}
+						$h .= '<th class="text-center td-vertical-align-middle"></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -213,37 +210,58 @@ class CashflowUi {
 							};
 						$h .= '</td>';
 
-					$h .= '<td class="td-min-content text-center">';
+						if($eFarm->usesAccounting()) {
 
-						if($eFarm->usesAccounting() === FALSE) {
+							$h .= '<td class="td-min-content text-center">';
 
-							if($eCashflow['status'] === Cashflow::DELETED) {
+								if($eCashflow['status'] === Cashflow::WAITING) {
 
-								$h .= '<a class="btn btn-outline-secondary" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete" post-id="'.$eCashflow['id'].'">';
-									$h .= s("Récupérer");
-								$h .= '</a>';
+									$h .= '<a data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'</a>';
 
-							} else {
+									$h .= '<div class="dropdown-list">';
+										$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
+											$h .= s("Créer de nouvelles écritures");
+										$h .= '</a>';
 
-								$h .= '<a class="btn btn-outline-danger" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete" post-id="'.$eCashflow['id'].'">';
-									$h .= \Asset::icon('trash');
-								$h .= '</a>';
+										$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
+											$h .= s("Rattacher des écritures comptables");
+										$h .= '</a>';
+									$h .= '</div>';
 
-							}
+								} else {
 
-						} else if($eFinancialYear->acceptUpdate()) {
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'">'.p("{value} écriture", "{value} écritures", $eCashflow['cOperationCashflow']->count()).'</a>';
 
-							$h .= '<a data-dropdown="bottom-end" class="cashflow-status-label cashflow-status-'.$eCashflow['status'].' dropdown-toggle btn btn-outline-secondary">'.CashflowUi::p('status')->values[$eCashflow['status']].'</a>';
-							$h .= $this->getAction($eFarm, $eFinancialYear, $eCashflow);
-
-						} else {
-
-							$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'">';
-								$h .= s("Voir les écritures");
-							$h .= '</a>';
+								}
+							$h .= '</td>';
 
 						}
-					$h .= '</td>';
+
+						$h .= '<td class="td-min-content text-center">';
+
+							if($eFarm->usesAccounting() === FALSE) {
+
+								if($eCashflow['status'] === Cashflow::DELETED) {
+
+									$h .= '<a class="btn btn-outline-secondary" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete" post-id="'.$eCashflow['id'].'">';
+										$h .= s("Récupérer");
+									$h .= '</a>';
+
+								} else {
+
+									$h .= '<a class="btn btn-outline-danger" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete" post-id="'.$eCashflow['id'].'">';
+										$h .= \Asset::icon('trash');
+									$h .= '</a>';
+
+								}
+
+							} else if($eFinancialYear->acceptUpdate()) {
+
+								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+								$h .= $this->getAction($eFarm, $eFinancialYear, $eCashflow);
+
+							}
+						$h .= '</td>';
 
 					$h .= '</tr>';
 				}
@@ -255,24 +273,7 @@ class CashflowUi {
 		return $h;
 
 	}
-	protected function getView(\farm\Farm $eFarm, Cashflow $eCashflow): string {
 
-		$h = '<div class="dropdown-list">';
-
-		if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-
-			$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
-				$h .= s("Voir les écritures");
-			$h .= '</a>';
-
-		}
-
-		$h .= '</div>';
-
-		return $h;
-		
-	}
 	protected function getAction(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow): string {
 
 		if($eFarm->canManage() === FALSE) {
@@ -289,11 +290,6 @@ class CashflowUi {
 
 				$actions = TRUE;
 
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'" class="dropdown-item">';
-					$h .= s("Voir les écritures");
-				$h .= '</a>';
-
-				$h .= '<div class="dropdown-divider"></div>';
 				$h .= '<div class="dropdown-title">'.s("Actions sur les écritures comptables liées").'</div>';
 
 				$confirm = s("Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?");
@@ -306,17 +302,7 @@ class CashflowUi {
 					$h .= s("Supprimer <div>(<b><u>Supprimera</u></b> les écritures)</div>", ['div' => '<div class="operations-delete-more">']);
 				$h .= '</a>';
 
-			} else if($eCashflow['status'] === CashflowElement::WAITING and $eFarm->usesAccounting()) {
-
-				$actions = TRUE;
-
-				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
-					$h .= s("Créer de nouvelles écritures");
-				$h .= '</a>';
-
-				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
-					$h .= s("Rattacher des écritures comptables");
-				$h .= '</a>';
+				$h .= '<div class="dropdown-divider"></div>';
 
 			}
 

@@ -36,7 +36,9 @@ class CashflowLib extends CashflowCrud {
 	public static function getAll(\Search $search, bool $hasSort): \Collection {
 
 		return self::applySearch($search)
-			->select(Cashflow::getSelection())
+			->select(Cashflow::getSelection() + ['cOperationCashflow' =>
+					\journal\OperationCashflow::model()->select(['operation'])->delegateCollection('cashflow')
+				])
 			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_DESC, 'fitid' => SORT_DESC])
 			->getCollection();
 
