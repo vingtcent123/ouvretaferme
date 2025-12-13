@@ -632,6 +632,11 @@ div.input-group > .field-checkbox {
 	border: 1px solid #0002;
 }
 
+div.input-group > .input-group-addon.input-group-addon-for-input {
+	background-color: white;
+	border-left: 0;
+}
+
 @media (max-width: 575px) {
 
 	div.input-group > .input-group-addon,
@@ -1394,6 +1399,10 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 
 .util-block-important a {
 	color: white;
+}
+
+.util-block-important .form-info {
+	color: #fff8;
 }
 
 .util-block-dark {

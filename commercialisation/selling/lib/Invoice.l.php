@@ -11,7 +11,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		return function(Invoice $e) {
 
-			$properties = ['description'];
+			$properties = ['comment'];
 
 			if($e->isPaymentOnline() === FALSE) {
 				$properties[] = 'paymentMethod';
@@ -60,6 +60,7 @@ class InvoiceLib extends InvoiceCrud {
 			->option('count')
 			->whereId('=', $search->get('invoice'), if: $search->get('invoice'))
 			->whereFarm($eFarm)
+			->whereStatus('LIKE', $search->get('status'), if: $search->get('status'))
 			->wherePaymentStatus('LIKE', $search->get('paymentStatus'), if: $search->get('paymentStatus'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->sort($search->buildSort())

@@ -101,14 +101,14 @@ History:
   
 Invoice:
   id: serial32
-  document: int32(1, null)
+  document: ?int32(1, null)
   name: text8
   customer: selling\Customer
   sales: json
   taxes: enum(INCLUDING, EXCLUDING)
   organic: bool
   conversion: bool
-  description: ?text16
+  comment: ?text16
   content: ?selling\PdfContent
   farm: farm\Farm
   hasVat: bool
@@ -123,7 +123,8 @@ Invoice:
   paymentCondition: ?editor16(1, 400)
   header: ?editor16(1, 400)
   footer: ?editor16(1, 400)
-  generation : enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
+  status: enum(DRAFT, CONFIRMED, GENERATED, CANCELED) = GENERATED
+  generation: ?enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
   closed: bool = FALSE
   closedAt: ?datetime
   closedBy: ?user\User

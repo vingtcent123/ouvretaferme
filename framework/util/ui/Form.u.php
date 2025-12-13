@@ -795,6 +795,15 @@ class FormUi {
 	}
 
 	/**
+	 * Create a input text
+	 *
+	 */
+	public function inputAddon(string $content, array $attributes = []): string {
+		$h = '<span class="input-group-addon input-group-addon-for-input" '.attrs($attributes).'>'.$content.'</span>';
+		return $h;
+	}
+
+	/**
 	 * Display help for a field
 	 *
 	 * @param string $content

@@ -11,7 +11,7 @@ tr.invoice-item-paid td {
 	background-color: #beb6;
 }
 
-.invoice-item-description {
+.invoice-item-comment {
 	margin-top: 0.5rem;
 	margin-bottom: 0;
 }
@@ -32,4 +32,54 @@ td.invoice-item-amount {
 	font-weight: bold;
 	text-transform: uppercase;
 	margin-right: 1rem;
+}
+
+.invoice-item-due {
+	white-space: nowrap;
+	letter-spacing: -0.3px;
+}
+
+.invoice-status-draft {
+	color: var(--draft);
+}
+
+.invoice-status-draft-button {
+	color: white !important;
+	background-color: var(--draft);
+}
+
+.invoice-status-confirmed {
+	color: var(--confirmed);
+}
+
+.invoice-status-confirmed-button {
+	background-color: var(--confirmed);
+	color: white !important;
+}
+
+.invoice-status-generated {
+	color: var(--prepared);
+}
+
+.invoice-status-generated-button {
+	background-color: var(--prepared);
+	color: white !important;
+}
+
+.invoice-status-closed {
+	color: var(--primary);
+}
+
+.invoice-status-closed-button {
+	background-color: var(--primary);
+	color: white !important;
+}
+
+.invoice-status-canceled {
+	color: var(--muted);
+}
+
+.invoice-status-canceled-button {
+	background-color: var(--muted);
+	color: white !important;
 }

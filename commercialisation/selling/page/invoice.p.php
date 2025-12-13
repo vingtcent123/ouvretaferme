@@ -118,10 +118,12 @@ new \selling\InvoicePage()
 
 		throw new ViewAction($data);
 
-	})
-	->doUpdateProperties('doUpdatePaymentStatus', ['paymentStatus'], fn($data) => throw new ViewAction($data))
-	->quick(['description'])
-	->doUpdate(fn() => throw new ReloadAction('selling', 'Invoice::updated'))
+	}, page: 'updatePayment', validate: ['canWrite', 'acceptUpdatePayment'])
+	->update(page: 'updateComment')
+	->doUpdateProperties('doUpdateComment', ['comment'], fn() => throw new ReloadAction())
+	->doUpdateProperties('doUpdatePayment', ['paymentMethod', 'paymentStatus'], fn($data) => throw new ReloadAction('selling', 'Invoice::updatedPayment'), validate: ['canWrite', 'acceptUpdatePayment'])
+	->doUpdateProperties('doUpdatePaymentStatus', ['paymentStatus'], fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptUpdatePayment'])
+	->quick(['comment'])
 	->doDelete(fn() => throw new ReloadAction('selling', 'Invoice::deleted'));
 
 new Page(function($data) {

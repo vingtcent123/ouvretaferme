@@ -13,6 +13,11 @@ abstract class InvoiceElement extends \Element {
 	const PAID = 'paid';
 	const NOT_PAID = 'not-paid';
 
+	const DRAFT = 'draft';
+	const CONFIRMED = 'confirmed';
+	const GENERATED = 'generated';
+	const CANCELED = 'canceled';
+
 	const WAITING = 'waiting';
 	const NOW = 'now';
 	const PROCESSING = 'processing';
@@ -49,14 +54,14 @@ class InvoiceModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'document' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
+			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'name' => ['text8', 'cast' => 'string'],
 			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
 			'sales' => ['json', 'cast' => 'array'],
 			'taxes' => ['enum', [\selling\Invoice::INCLUDING, \selling\Invoice::EXCLUDING], 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
 			'conversion' => ['bool', 'cast' => 'bool'],
-			'description' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'comment' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'content' => ['element32', 'selling\PdfContent', 'null' => TRUE, 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
@@ -71,7 +76,8 @@ class InvoiceModel extends \ModuleModel {
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
-			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'cast' => 'enum'],
+			'status' => ['enum', [\selling\Invoice::DRAFT, \selling\Invoice::CONFIRMED, \selling\Invoice::GENERATED, \selling\Invoice::CANCELED], 'cast' => 'enum'],
+			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'null' => TRUE, 'cast' => 'enum'],
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -82,7 +88,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'description', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'generation', 'closed', 'closedAt', 'closedBy', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'closed', 'closedAt', 'closedBy', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -109,6 +115,9 @@ class InvoiceModel extends \ModuleModel {
 
 			case 'paymentStatus' :
 				return Invoice::NOT_PAID;
+
+			case 'status' :
+				return Invoice::GENERATED;
 
 			case 'closed' :
 				return FALSE;
@@ -140,6 +149,9 @@ class InvoiceModel extends \ModuleModel {
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'paymentStatus' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'generation' :
@@ -209,8 +221,8 @@ class InvoiceModel extends \ModuleModel {
 		return $this->where('conversion', ...$data);
 	}
 
-	public function whereDescription(...$data): InvoiceModel {
-		return $this->where('description', ...$data);
+	public function whereComment(...$data): InvoiceModel {
+		return $this->where('comment', ...$data);
 	}
 
 	public function whereContent(...$data): InvoiceModel {
@@ -267,6 +279,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereFooter(...$data): InvoiceModel {
 		return $this->where('footer', ...$data);
+	}
+
+	public function whereStatus(...$data): InvoiceModel {
+		return $this->where('status', ...$data);
 	}
 
 	public function whereGeneration(...$data): InvoiceModel {

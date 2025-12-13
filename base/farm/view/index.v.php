@@ -711,7 +711,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 		$h .= '<h1>'.s("Factures").'</h1>';
 		$h .= '<div>';
 			if($data->hasInvoices) {
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#invoice-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 			}
 			if($data->hasSales) {
 				$h .= '<a class="btn btn-primary" data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
@@ -727,15 +727,6 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 	$t->mainTitle = $h;
 
 	echo new \selling\InvoiceUi()->getSearch($data->search);
-
-	echo '<div class="util-block-important">';
-		echo '<h3>'.s("Vous vous questionnez sur la facturation électronique ?").'</h3>';
-		echo '<p>';
-			echo s("Ouvretaferme sera pleinement compatible avec la réforme");
-			echo '  '.Asset::icon('arrow-right-circle-fill').'  ';
-			echo '<a href="/facturation-electronique-les-mains-dans-les-poches" class="btn btn-transparent">'.s("En savoir plus").'</a>';
-		echo '</p>';
-	echo '</div>';
 
 	if($data->transfer > 0) {
 

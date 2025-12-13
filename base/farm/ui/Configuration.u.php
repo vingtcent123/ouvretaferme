@@ -225,19 +225,25 @@ class ConfigurationUi {
 
 		$h .= '<h2 class="mb-2">'.s("Personnalisation des factures").'</h2>';
 
-		$h .= '<div class="util-section mb-2">';
+		$h .= '<div class="mb-2">';
 			$h .= $form->openAjax('/farm/configuration:doUpdateInvoice', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
-				$eConfiguration['documentInvoices']++;
-				$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices']);
 				$h .= $form->group(
 					self::p('invoiceDue')->label,
 					$this->getInvoiceDueField($form, $eConfiguration),
 					['wrapper' => 'invoiceDue invoiceDueDays invoiceDueMonth']
 				);
 				$h .= $form->dynamicGroups($eConfiguration, ['invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
+
+				$eConfiguration['documentInvoices']++;
+
+				$h .= '<div class="util-block-important">';
+					$h .= '<h4>'.S("Personnaliser la nomenclature des factures").'</h4>';
+					$h .= '<p>'.s("La loi interdit de supprimer une facture et les documents comptables doivent être tenus sans altération d’aucune sorte. L’administration fiscale a besoin de vérifier la bonne continuité de votre numérotation de facturation. Un trou dans la numérotation constitue une infraction fiscale.").'</p>';
+					$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices']);
+				$h .= '</div>';
 
 				$h .= $form->group(
 					content: $form->submit(s("Enregistrer"))
@@ -248,7 +254,7 @@ class ConfigurationUi {
 
 		$h .= '<h2 class="mb-2">'.s("Envoi des factures par e-mail").'</h2>';
 
-		$h .= '<div class="util-section mb-2">';
+		$h .= '<div class="mb-2">';
 			$h .= $this->updateDocumentMail('invoice', $eFarm, $eSaleExample, $cCustomize);
 		$h .= '</div>';
 

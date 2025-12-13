@@ -29,8 +29,12 @@ new AdaptativeView('doRegenerate', function($data, AjaxTemplate $t) {
 
 });
 
-new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return new \selling\InvoiceUi()->update($data->e);
+new AdaptativeView('updatePayment', function($data, PanelTemplate $t) {
+	return new \selling\InvoiceUi()->updatePayment($data->e);
+});
+
+new AdaptativeView('updateComment', function($data, PanelTemplate $t) {
+	return new \selling\InvoiceUi()->updateComment($data->e);
 });
 
 new JsonView('doUpdatePaymentStatus', function($data, AjaxTemplate $t) {

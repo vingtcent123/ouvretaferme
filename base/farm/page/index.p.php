@@ -327,6 +327,7 @@ new Page(function($data) {
 			'document' => GET('document'),
 			'customer' => GET('customer'),
 			'date' => GET('date'),
+			'status' => \selling\Invoice::GET('status', 'status'),
 			'paymentStatus' => \selling\Invoice::GET('paymentStatus', 'paymentStatus')
 		], GET('sort'));
 

@@ -48,7 +48,7 @@ class InvoiceUi {
 
 	public function getSearch(\Search $search): string {
 
-		$h = '<div id="sale-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="invoice-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
@@ -57,6 +57,7 @@ class InvoiceUi {
 				$h .= '<div>';
 					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Numéro")]);
 					$h .= $form->text('customer', $search->get('customer'), ['placeholder' => s("Client")]);
+					$h .= $form->select('status', InvoiceUi::p('status')->values, $search->get('status'), ['placeholder' => s("État")]);
 					$h .= $form->text('date', $search->get('date'), ['placeholder' => s("Date de facturation")]);
 					$h .= $form->select('paymentStatus', self::p('paymentStatus')->values, $search->get('paymentStatus'), ['placeholder' => s("Payée ?")]);
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -78,25 +79,26 @@ class InvoiceUi {
 
 		$h = '<div class="util-overflow-sm stick-xs">';
 
-			$columns = 7;
+			$columns = 9;
 
 			$h .= '<table class="tr-even" data-batch="#batch-invoice">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th class="td-min-content">';
-						$h .= '</th>';
-						$h .= '<th class="text-center">#</th>';
+						$h .= '<th class="td-min-content"></th>';
+						$h .= '<th class="text-center">'.s("Numéro").'</th>';
 						if(in_array('customer', $hide) === FALSE) {
 							$columns++;
 							$h .= '<th class="invoice-item-customer">'.s("Client").'</th>';
 						}
-						$h .= '<th class="text-center">'.s("Date de facturation").'</th>';
+						//$h .= '<th class="text-center">'.s("État").'</th>';
+						$h .= '<th class="text-center">'.s("Date de<br/>facturation").'</th>';
 						$h .= '<th class="text-end invoice-item-amount">'.s("Montant").'</th>';
 						$h .= '<th class="td-min-content text-center">'.s("Envoyée<br/>par e-mail").'</th>';
 						$h .= '<th>'.s("Règlement").'</th>';
-						$h .= '<th class="hide-sm-down">'.s("Ventes").'</th>';
 						$h .= '<th></th>';
+					$h .= '</tr>';
+					$h .= '<tr>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 				$h .= '<tbody>';
@@ -147,7 +149,11 @@ class InvoiceUi {
 						$class = 'invoice-item-'.$eInvoice['paymentStatus'];
 					}
 
-					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'" class="'.$class.'">';
+					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'" class="'.$class.'"';
+						if($eInvoice['status'] === Invoice::CANCELED) {
+							$h .= ' style="opacity: 0.5"';
+						}
+					$h .= '>';
 						$h .= '<td class="td-checkbox">';
 							$h .= '<label>';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Invoice.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
@@ -167,15 +173,38 @@ class InvoiceUi {
 								$h .= '<div class="util-annotation">';
 									$h .= CustomerUi::getCategory($eInvoice['customer']);
 								$h .= '</div>';
+								if($eInvoice['comment']) {
+									$h .= '<div class="invoice-item-comment util-info">';
+										$h .= $eInvoice->quick('comment', encode($eInvoice['comment']));
+									$h .= '</div>';
+								}
 							$h .= '</td>';
 						}
-
+/*
+						$h .= '<td class="text-center">';
+							$h .= $this->getStatusForUpdate($eInvoice, 'btn-xs');
+						$h .= '</td>';
+*/
 						$h .= '<td class="text-center">';
 							$h .= \util\DateUi::numeric($eInvoice['date']);
+							if($eInvoice['dueDate'] !== NULL) {
+								$h .= '<div class="util-annotation invoice-item-due">';
+									if($eInvoice['dueDate'] > currentDate()) {
+										$h .= s("échoit le {value}", \util\DateUi::numeric($eInvoice['dueDate']));
+									} else {
+										$h .= s("échue le {value}", \util\DateUi::numeric($eInvoice['dueDate']));
+									}
+								$h .= '</div>';
+							}
 						$h .= '</td>';
 
 						$h .= '<td class="text-end invoice-item-amount">';
 							$h .= SaleUi::getIncludingTaxesTotal($eInvoice);
+							$h .= '<div class="util-annotation">';
+								$cSale = $eInvoice['cSale'];
+
+								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm']).'?ids='.implode(',', $cSale->getIds()).'">'.p("{value} vente", "{value} ventes", $cSale->count()).'</a>';
+							$h .= '</div>';
 						$h .= '</td>';
 
 						switch($eInvoice['generation']) {
@@ -224,28 +253,11 @@ class InvoiceUi {
 									}
 								$h .= '</td>';
 
-								$h .= '<td class="hide-sm-down">';
-
-									$cSale = $eInvoice['cSale'];
-
-									$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm']).'?ids='.implode(',', $cSale->getIds()).'">'.p("{value} vente", "{value} ventes", $cSale->count()).'</a>';
-
-									if($eInvoice['description']) {
-										$h .= '<div class="invoice-item-description util-info">';
-											$h .= $eInvoice->quick('description', encode($eInvoice['description']));
-										$h .= '</div>';
-									}
-								$h .= '</td>';
-
 								break;
 
 						}
 
 						$h .= '<td class="text-end td-min-content">';
-
-							if($eInvoice['content']->notEmpty()) {
-								$h .= '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').'</a> ';
-							}
 
 							if($eInvoice->canWrite()) {
 
@@ -253,11 +265,21 @@ class InvoiceUi {
 								$h .= '<div class="dropdown-list">';
 									$h .= '<div class="dropdown-title">'.s("Facture {value}", encode($eInvoice['name'])).'</div>';
 
-									$h .= '<a href="/selling/invoice:update?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Modifier la facture").'</a>';
+									if($eInvoice['content']->notEmpty()) {
+										$h .= '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger la facture").'</a>';
+									}
+
+									$h .= '<div class="dropdown-divider"></div>';
 
 									if($eInvoice->acceptRegenerate()) {
 										$h .= '<a href="/selling/invoice:regenerate?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Regénérer la facture").'</a>';
 									}
+
+									$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Modifier le règlement").'</a>';
+
+									$h .= '<a href="/selling/invoice:updateComment?id='.$eInvoice['id'].'" class="dropdown-item">';
+										$h .= $eInvoice['comment'] === NULL ? s("Ajouter un commentaire") : s("Modifier le commentaire");
+									$h .= '</a>';
 
 									if($eInvoice['emailedAt']) {
 										$h .= '<div class="dropdown-divider"></div>';
@@ -305,6 +327,52 @@ class InvoiceUi {
 		}
 
 		$h .= $this->getBatch();
+
+		return $h;
+
+	}
+
+	public function getStatusForUpdate(Invoice $eInvoice, string $btn = ''): string {
+
+		if($eInvoice->canWrite() === FALSE) {
+			return '<span class="btn btn-readonly '.$btn.' invoice-status-'.$eInvoice['status'].'-button">'.self::p('status')->values[$eInvoice['status']].'</span>';
+		}
+
+		if($eInvoice['closed']) {
+			return '<span class="btn btn-readonly '.$btn.' invoice-status-closed-button" title="'.s("Il n'est pas possible de modifier une facture clôturée.").'">'.s("Clôturé").'  '.\Asset::icon('lock-fill').'</span>';
+		}
+
+		$button = function(string $status, ?string $confirm = NULL) use ($eInvoice) {
+
+			$h = '<a data-ajax="/selling/invoice:doUpdate'.ucfirst($status).'Collection" post-ids="'.$eInvoice['id'].'" class="dropdown-item" '.($confirm ? attr('data-confirm', $confirm) : '').'>';
+				$h .= \Asset::icon('arrow-right').'  <span class="btn btn-sm invoice-status-'.$status.'-button">'.self::p('status')->values[$status].'</span>';
+			$h .= '</a>';
+
+			return $h;
+
+		};
+
+		$to = '';
+
+		if($eInvoice->acceptStatusConfirmed()) {
+			$to .= $button(Invoice::CONFIRMED);
+		}
+
+		if($eInvoice->acceptStatusCanceled()) {
+			$to .= '<div class="dropdown-divider"></div>';
+			$to .= $button(Invoice::CANCELED);
+		}
+
+		if($to) {
+
+			$h = '<a data-dropdown="bottom-start" data-dropdown-id="sale-dropdown-'.$eInvoice['id'].'" data-dropdown-hover="true" class="btn '.$btn.' invoice-status-'.$eInvoice['status'].'-button dropdown-toggle">'.self::p('status')->values[$eInvoice['status']].'</a>';
+			$h .= '<div data-dropdown-id="sale-dropdown-'.$eInvoice['id'].'-list" class="dropdown-list bg-primary">';
+				$h .= $to;
+			$h .= '</div>';
+
+		} else {
+			$h = '<span class="btn btn-readonly '.$btn.' invoice-status-'.$eInvoice['status'].'-button">'.self::p('status')->values[$eInvoice['status']].'</span>';
+		}
 
 		return $h;
 
@@ -386,9 +454,9 @@ class InvoiceUi {
 						$sales .= $form->inputGroup(
 							$form->addon(s("Ventes de moins de")).
 							$form->number('delivered', $search->get('delivered'), ['onkeypress' => 'return event.keyCode != 13;']).
-							$form->addon(s("jours"))
+							$form->inputAddon(s("jours")).
+							$form->button(\Asset::icon('search'), ['onclick' => 'Sale.submitInvoiceSearch(this)'])
 						);
-						$sales .= $form->button(s("Filtrer"), ['onclick' => 'Sale.submitInvoiceSearch(this)']);
 					$sales .= '</div>';
 
 					if($cSaleMore->notEmpty()) {
@@ -477,7 +545,7 @@ class InvoiceUi {
 			if($cSale->notEmpty()) {
 
 				$h .= $form->group(
-					s("Ventes à facturer"),
+					s("Clients à facturer"),
 					self::getCustomers($form, $eFarm, $cSale)
 				);
 
@@ -611,7 +679,7 @@ class InvoiceUi {
 			$h .= $form->hidden('origin', GET('origin'));
 			$h .= $form->hidden('customer', $eInvoice['customer']['id']);
 
-			if($eInvoice->offsetExists('id')) {
+			if($eInvoice->exists()) {
 
 				$h .= $form->group(
 					s("Facture"),
@@ -622,9 +690,15 @@ class InvoiceUi {
 
 			}
 
+			$customer = '<b>'.$eInvoice['customer']->getName().'</b>';
+
+			if($eInvoice->exists() === FALSE) {
+				$customer .= '<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-sm btn-secondary ml-1">'.s("Changer").'</a>';
+			}
+
 			$h .= $form->group(
 				s("Client"),
-				'<div class="input-group">'.$form->text(value: $eInvoice['customer']->getName(), attributes: ['disabled']).'<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-secondary">'.s("Changer").'</a></div>'
+				 $customer
 			);
 
 			if($sales !== NULL) {
@@ -716,30 +790,20 @@ class InvoiceUi {
 		
 	}
 
-	public function update(Invoice $eInvoice): \Panel {
+	public function updatePayment(Invoice $eInvoice): \Panel {
 
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		$h .= $form->openAjax('/selling/invoice:doUpdate');
+		$h .= $form->openAjax('/selling/invoice:doUpdatePayment');
 
 			$h .= $form->hidden('id', $eInvoice['id']);
 
-			if($eInvoice->isPaymentOnline() === FALSE) {
-
-				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
-					$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
-						$d->default = fn(Invoice $eInvoice) => $eInvoice['paymentStatus'] ?? Sale::NOT_PAID;
-					});
-				$h .= '</div>';
-
-			}
-
-			$h .= $form->dynamicGroups($eInvoice, ['description']);
-
+			$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
+			$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
+				$d->default = fn(Invoice $eInvoice) => $eInvoice['paymentStatus'] ?? Sale::NOT_PAID;
+			});
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -749,7 +813,34 @@ class InvoiceUi {
 
 		return new \Panel(
 			id: 'panel-invoice-update',
-			title: s("Modifier une facture"),
+			title: s("Modifier le règlement"),
+			body: $h
+		);
+
+	}
+
+	public function updateComment(Invoice $eInvoice): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/invoice:doUpdateComment');
+
+			$h .= $form->hidden('id', $eInvoice['id']);
+			$h .= $form->dynamicGroup($eInvoice, 'comment');
+
+			$h .= $form->group(
+				content: $form->submit(s("Enregistrer"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-invoice-update',
+			title: $eInvoice['comment'] === NULL ?
+				s("Ajouter un commentaire interne") :
+				s("Modifier le commentaire"),
 			body: $h
 		);
 
@@ -799,7 +890,7 @@ class InvoiceUi {
 			'footer' => s("Texte personnalisé affiché en bas de facture"),
 			'paymentMethod' => s("Moyen de paiement"),
 			'paymentStatus' => s("État du paiement"),
-			'description' => s("Commentaire interne"),
+			'comment' => s("Commentaire interne"),
 		]);
 
 		switch($property) {
@@ -815,8 +906,23 @@ class InvoiceUi {
 				new CustomerUi()->query($d);
 				break;
 
+			case 'status' :
+				$d->values = [
+					Invoice::DRAFT => s("Brouillon"),
+					Invoice::CONFIRMED => s("Confirmée"),
+					Invoice::GENERATED => s("Générée"),
+					Invoice::CANCELED => s("Annulée"),
+				];
+				$d->shortValues = [
+					Invoice::DRAFT => s("B"),
+					Invoice::CONFIRMED => s("C"),
+					Invoice::GENERATED => s("G"),
+					Invoice::CANCELED => s("A"),
+				];
+				break;
+
 			case 'date' :
-				$d->labelAfter = fn(Invoice $e) => \util\FormUi::info($e['lastDate'] !== NULL ? s("Vous devez légalement respecter la chronologie des dates de facturation dans l'édition de vos factures. Compte tenu des factures que vous avez déjà générées, vous ne pouvez pas facturer antérieurement au {value}.", \util\DateUi::numeric($e['lastDate'])) : s("Vous devez légalement respecter la chronologie des dates de facturation dans l'édition de vos factures. Dès lors que vous aurez généré une première facture, vous ne pourrez plus générer d'autres factures à une date antérieure."));
+				$d->labelAfter = fn(Invoice $e) => \util\FormUi::info($e['lastDate'] !== NULL ? s("Vous devez respecter la chronologie des dates de facturation dans l'édition de vos factures. Compte tenu des factures déjà générées, vous ne pouvez pas facturer antérieurement au {value}.", \util\DateUi::numeric($e['lastDate'])) : s("Vous devez respecter la chronologie des dates de facturation dans l'édition de vos factures. Dès lors que vous aurez généré une première facture, vous ne pourrez plus générer d'autres factures à une date antérieure."));
 				break;
 
 			case 'dueDate' :

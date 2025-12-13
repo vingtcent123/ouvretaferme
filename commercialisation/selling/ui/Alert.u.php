@@ -176,7 +176,7 @@ class AlertUi {
 			'Invoice::sent' => s("La facture a bien été envoyée par e-mail au client."),
 			'Invoice::sentCollection' => s("Les factures ont bien été envoyées par e-mail aux clients."),
 			'Invoice::regenerated' => s("La facture a bien été regénérée !").($options['actions'] ?? ''),
-			'Invoice::updated' => s("La facture a bien été mise à jour."),
+			'Invoice::updatedPayment' => s("La règlement a bien été mis à jour."),
 			'Invoice::deleted' => s("La facture a bien été supprimée."),
 			'Invoice::deletedCollection' => s("Les factures ont bien été supprimées."),
 

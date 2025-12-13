@@ -89,6 +89,10 @@ class Invoice extends InvoiceElement {
 
 	}
 
+	public function acceptUpdatePayment(): bool {
+		return $this->isPaymentOnline() === FALSE;
+	}
+
 	public function isCreditNote(): bool {
 		return ($this['priceExcludingVat'] < 0.0);
 	}
@@ -117,6 +121,14 @@ class Invoice extends InvoiceElement {
 			return '';
 		}
 
+	}
+
+	public function acceptStatusCanceled(): bool {
+		return ($this['status'] === Invoice::DRAFT);
+	}
+
+	public function acceptStatusConfirmed(): bool {
+		return ($this['status'] === Invoice::DRAFT);
 	}
 
 	//-------- Accounting features -------
