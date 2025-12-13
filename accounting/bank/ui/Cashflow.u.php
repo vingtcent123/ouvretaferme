@@ -73,7 +73,7 @@ class CashflowUi {
 				$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/operations', ['method' => 'get']);
 				$h .= $form->checkbox('status', Cashflow::WAITING, [
 					'checked' => $search->get('status') === Cashflow::WAITING,
-					'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non comptabilisées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
+					'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
 					'onchange' => 'this.form.submit()',
 				]);
 				$h .= $form->close();
