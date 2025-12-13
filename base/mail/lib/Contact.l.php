@@ -212,7 +212,9 @@ class ContactLib extends ContactCrud {
 		}
 
 		// On recrée un contact
-		\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email']);
+		if($eCustomer['email'] !== NULL) {
+			\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email']);
+		}
 
 	}
 
