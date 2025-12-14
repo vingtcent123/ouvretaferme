@@ -92,3 +92,12 @@ td.invoice-item-amount {
 	text-decoration: none;
 	margin-bottom: 0.25rem;
 }
+
+
+#panel-invoice-create:not(:has(input[name="sales[]"]:checked)) #invoice-sales-required {
+	display: none;
+}
+
+#panel-invoice-create-collection:not(:has(input[name="sales[]"]:checked)) #invoice-sales-required {
+	display: none;
+}

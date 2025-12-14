@@ -575,21 +575,23 @@ class InvoiceUi {
 					self::getCustomers($form, $eFarm, $cSale)
 				);
 
-				$h .= '<div id="invoice-dates">';
-					$h .= $form->dynamicGroup($e, 'date*');
-					$h .= $form->dynamicGroup($e, 'dueDate');
+				$h .= '<div id="invoice-sales-required">';
+					$h .= '<div id="invoice-dates">';
+						$h .= $form->dynamicGroup($e, 'date*');
+						$h .= $form->dynamicGroup($e, 'dueDate');
+					$h .= '</div>';
+
+					$h .= $this->getStatusField($form);
+
+					$h .= '<div id="invoice-customize" class="hide">';
+						$h .= $form->dynamicGroups($e, ['paymentCondition', 'header', 'footer']);
+					$h .= '</div>';
+
+
+					$h .= $form->group(
+						content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer les factures")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
+					);
 				$h .= '</div>';
-
-				$h .= $this->getStatusField($form);
-
-				$h .= '<div id="invoice-customize" class="hide">';
-					$h .= $form->dynamicGroups($e, ['paymentCondition', 'header', 'footer']);
-				$h .= '</div>';
-
-
-				$h .= $form->group(
-					content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer les factures")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
-				);
 
 			} else {
 
@@ -739,38 +741,42 @@ class InvoiceUi {
 
 			}
 
-			$h .= '<div id="invoice-dates">';
+			$h .= '<div id="invoice-sales-required">';
 
-				if($eInvoice->exists()) {
+				$h .= '<div id="invoice-dates">';
 
-					$h .= $form->group(
-						self::p('date')->label,
-						\util\DateUi::numeric($eInvoice['date'])
-					);
+					if($eInvoice->exists()) {
 
-					// N'est pas pris en compte à l'édition, juste présent pour les routines JS de dueDate
-					$h .= $form->hidden('date', $eInvoice['date']);
+						$h .= $form->group(
+							self::p('date')->label,
+							\util\DateUi::numeric($eInvoice['date'])
+						);
 
-				} else {
-					$h .= $form->dynamicGroup($eInvoice, 'date*');
-				}
+						// N'est pas pris en compte à l'édition, juste présent pour les routines JS de dueDate
+						$h .= $form->hidden('date', $eInvoice['date']);
 
-				$h .= $form->dynamicGroup($eInvoice, 'dueDate');
+					} else {
+						$h .= $form->dynamicGroup($eInvoice, 'date*');
+					}
 
-				if($eInvoice->exists() === FALSE) {
-					$h .= $this->getStatusField($form);
-				}
+					$h .= $form->dynamicGroup($eInvoice, 'dueDate');
+
+					if($eInvoice->exists() === FALSE) {
+						$h .= $this->getStatusField($form);
+					}
+
+				$h .= '</div>';
+
+				$h .= '<div id="invoice-customize" class="hide">';
+					$h .= $form->dynamicGroups($eInvoice, ['paymentCondition', 'header', 'footer']);
+				$h .= '</div>';
+
+
+				$h .= $form->group(
+					content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer la facture")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
+				);
 
 			$h .= '</div>';
-
-			$h .= '<div id="invoice-customize" class="hide">';
-				$h .= $form->dynamicGroups($eInvoice, ['paymentCondition', 'header', 'footer']);
-			$h .= '</div>';
-
-
-			$h .= $form->group(
-				content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer la facture")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
-			);
 
 		$h .= $form->close();
 
