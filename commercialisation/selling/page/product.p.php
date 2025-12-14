@@ -105,7 +105,7 @@ new \selling\ProductPage()
 		$data->cItemYear = \selling\AnalyzeLib::getProductYear($data->eFarm, $data->e);
 
 		if($data->e['profile'] === \selling\Product::UNPROCESSED_PLANT) {
-			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'selling-photo');
+			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'selling-photo', closedByUser: FALSE);
 			$data->tipNavigation = 'inline';
 		}
 
