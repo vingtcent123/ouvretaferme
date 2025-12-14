@@ -43,11 +43,15 @@ class MySQLApi extends DatabaseApi {
 		return 'RAND()';
 	}
 
-	public function getPoint(array $point): string {
+	public function encodePoint(array $point): string {
 		return 'ST_PointFromText(\'POINT('.(float)$point[1].' '.(float)$point[0].')\', 4326)';
 	}
 
-	public function getPolygon(array $points): string {
+	public function decodePoint(string $value): string {
+		return json_encode(array_reverse(json_decode($value, TRUE)['coordinates']));
+	}
+
+	public function encodePolygon(array $points): string {
 
 		// Last point must be the same as first point
 		if($points[0] !== $points[count($points) - 1]) {
@@ -55,11 +59,23 @@ class MySQLApi extends DatabaseApi {
 		}
 
 		$list = array_reduce($points, function(array $carry, array $point) {
-			$carry[] = (float)$point[0].' '.(float)$point[1];
+			$carry[] = (float)$point[1].' '.(float)$point[0];
 			return $carry;
 		}, []);
 
 		return 'ST_PolygonFromText(\'POLYGON(('.implode(', ', $list).'))\', 4326)';
+
+	}
+
+	public function decodePolygon(string $value): string {
+
+		$polygon = [];
+
+		foreach(json_decode($value, TRUE)['coordinates'][0] as $point) {
+			$polygon[] = [$point[1], $point[0]];
+		}
+
+		return json_encode($polygon);
 
 	}
 

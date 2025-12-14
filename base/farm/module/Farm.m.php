@@ -161,7 +161,7 @@ class FarmModel extends \ModuleModel {
 		switch($property) {
 
 			case 'cultivationLngLat' :
-				return $value === NULL ? NULL : new \Sql($this->pdo()->api->getPoint($value));
+				return $value === NULL ? NULL : new \Sql($this->pdo()->api->encodePoint($value));
 
 			case 'rotationExclude' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
@@ -187,7 +187,7 @@ class FarmModel extends \ModuleModel {
 		switch($property) {
 
 			case 'cultivationLngLat' :
-				return $value === NULL ? NULL : json_encode(array_reverse(json_decode($value, TRUE)['coordinates']));
+				return $value === NULL ? NULL : $this->pdo()->api->decodePoint($value);
 
 			case 'rotationExclude' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);

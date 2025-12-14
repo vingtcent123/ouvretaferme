@@ -102,7 +102,7 @@ class PlotModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'coordinates' :
-				return $value === NULL ? NULL : new \Sql($this->pdo()->api->getPolygon($value));
+				return $value === NULL ? NULL : new \Sql($this->pdo()->api->encodePolygon($value));
 
 			default :
 				return parent::encode($property, $value);
@@ -116,7 +116,7 @@ class PlotModel extends \ModuleModel {
 		switch($property) {
 
 			case 'coordinates' :
-				return $value === NULL ? NULL : json_encode(json_decode($value, TRUE)['coordinates'][0]);
+				return $value === NULL ? NULL : $this->pdo()->api->decodePolygon($value);
 
 			default :
 				return parent::decode($property, $value);

@@ -1596,11 +1596,11 @@ class ModuleLib {
 					} else if($parse['type'] === 'enum') {
 						$encode = '($value === NULL) ? NULL : (string)$value';
 					} else if($parse['type'] === 'point') {
-						$encode = '$value === NULL ? NULL : new \Sql($this->pdo()->api->getPoint($value))';
-						$decode = '$value === NULL ? NULL : json_encode(array_reverse(json_decode($value, TRUE)[\'coordinates\']))';
+						$encode = '$value === NULL ? NULL : new \Sql($this->pdo()->api->encodePoint($value))';
+						$decode = '$value === NULL ? NULL : $this->pdo()->api->decodePoint($value)';
 					} else if($parse['type'] === 'polygon') {
-						$encode = '$value === NULL ? NULL : new \Sql($this->pdo()->api->getPolygon($value))';
-						$decode = '$value === NULL ? NULL : json_encode(json_decode($value, TRUE)[\'coordinates\'][0])';
+						$encode = '$value === NULL ? NULL : new \Sql($this->pdo()->api->encodePolygon($value))';
+						$decode = '$value === NULL ? NULL : $this->pdo()->api->decodePolygon($value)';
 					}
 
 					if($encode !== NULL) {

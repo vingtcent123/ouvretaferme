@@ -58,7 +58,7 @@ class CountryModel extends \ModuleModel {
 		switch($property) {
 
 			case 'center' :
-				return $value === NULL ? NULL : new \Sql($this->pdo()->api->getPoint($value));
+				return $value === NULL ? NULL : new \Sql($this->pdo()->api->encodePoint($value));
 
 			default :
 				return parent::encode($property, $value);
@@ -72,7 +72,7 @@ class CountryModel extends \ModuleModel {
 		switch($property) {
 
 			case 'center' :
-				return $value === NULL ? NULL : json_encode(array_reverse(json_decode($value, TRUE)['coordinates']));
+				return $value === NULL ? NULL : $this->pdo()->api->decodePoint($value);
 
 			default :
 				return parent::decode($property, $value);
