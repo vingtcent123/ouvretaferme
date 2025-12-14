@@ -18,9 +18,11 @@ class DocTemplate extends MainTemplate {
 
 		Asset::css('main', 'font-itim.css');
 		Asset::css('main', 'doc.css');
+		Asset::js('main', 'doc.js');
 
-		$h = '<div class="doc-wrapper">';
-			$h .= '<div class="doc-menu">';
+		$h = '<a id="doc-menu-open" onclick="Doc.toggleMenu()">'.Asset::icon('list').' '.s("Menu").'</a>';
+		$h .= '<div class="doc-wrapper">';
+			$h .= '<div id="doc-menu">';
 				$h .= '<div class="doc-menu-title">'.s("Généralités").'</div>';
 				$h .= '<a href="/doc/" '.$this->menuSelected('mainUse').'>'.s("Introduction").'</a>';
 				$h .= '<a href="/doc/main:help" '.$this->menuSelected('mainHelp').'>'.s("Obtenir de l'aide").'</a>';

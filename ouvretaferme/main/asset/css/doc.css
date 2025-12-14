@@ -8,16 +8,65 @@
 
 div.doc-wrapper {
 	display: grid;
-	grid-template:
-		"menu header" auto
-		"menu content" auto / minmax(15rem, 20vw) 1fr;
-	min-width: 700px;
 }
 
-div.doc-menu {
-	grid-area: menu;
-	background-color: var(--background);
-	box-shadow: 0 0 1rem #0003;
+@media (min-width: 576px) {
+
+	div.doc-wrapper {
+		grid-template:
+			"menu header" auto
+			"menu content" auto / minmax(15rem, 20vw) 1fr;
+	}
+
+	#doc-menu {
+		grid-area: menu;
+		background-color: var(--background);
+		box-shadow: 0 0 1rem #0003;
+	}
+
+	#doc-menu-open {
+		display: none;
+	}
+
+}
+
+@media (max-width: 575px) {
+
+	div.doc-wrapper {
+		grid-template:
+			"header" auto
+			"content" auto / 1fr;
+	}
+
+	#doc-menu {
+		position: absolute;
+		top: 10rem;
+		left: 2rem;
+		right: 2rem;
+		border-radius: var(--radius);
+		border: 2px solid var(--primary);
+		box-shadow: 0 0 2rem #0009;
+		background-color: white;
+		font-size: 1.2rem;
+	}
+
+	#doc-menu:not(.selected) {
+		display: none;
+	}
+
+	#doc-menu-open {
+		position: absolute;
+		top: calc(var(--mainNav) + 1rem);
+		left: 1rem;
+		font-size: 1.75rem;
+		padding: 1rem;
+		line-height: 1;
+		color: white;
+		border-radius: var(--radius);
+		background-color: var(--primary);
+		text-decoration: none;
+	}
+
 }
 
 div.doc-menu-title {
@@ -25,12 +74,12 @@ div.doc-menu-title {
 	padding: 1rem;
 }
 
-div.doc-menu a {
+#doc-menu a {
 	display: block;
 	padding: 0.5rem 1rem;
 }
 
-div.doc-menu a.selected {
+#doc-menu a.selected {
 	background-color: var(--secondary);
 	color: white;
 }
