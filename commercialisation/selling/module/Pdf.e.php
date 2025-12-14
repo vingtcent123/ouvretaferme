@@ -3,12 +3,6 @@ namespace selling;
 
 class Pdf extends PdfElement {
 
-	public static function getSelection(): array {
-		return parent::getSelection() + [
-			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.SellingSetting::DOCUMENT_EXPIRES.' MONTH)')
-		];
-	}
-
 	public function canSend(): bool {
 
 		$this->expects(['type', 'emailedAt', 'createdAt']);

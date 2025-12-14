@@ -3,7 +3,7 @@ document.delegateEventListener('input', '#invoice-dates [name="date"]', function
 	const inputDate = e.target;
 	const inputDueDate = qs('#invoice-dates [name="dueDate"]');
 
-	if(e.target.value === '') {
+	if(inputDate.value === '') {
 		inputDueDate.value = '';
 		qs('#invoice-dates').dataset.user = '0';
 		return;
@@ -16,7 +16,7 @@ document.delegateEventListener('input', '#invoice-dates [name="date"]', function
 	const dueDays = inputDueDate.dataset.dueDays === '' ? null : parseInt(inputDueDate.dataset.dueDays);
 	const dueMonth = inputDueDate.dataset.dueMonth;
 
-	const date = new Date(e.target.value);
+	const date = new Date(inputDate.value);
 
 	if(dueDays !== null) {
 		date.setDate(date.getDate() + dueDays);
@@ -69,7 +69,34 @@ class Invoice {
 
 			qsa(
 				'.batch-menu-send',
-				selection.filter('[data-batch~="not-sent"]').length > 0 ?
+				selection.filter('[data-batch~="not-send"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+					}
+			);
+
+			qsa(
+				'.batch-menu-cancel',
+				selection.filter('[data-batch~="not-canceled"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+					}
+			);
+
+			qsa(
+				'.batch-menu-confirm',
+				selection.filter('[data-batch~="not-confirmed"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+					}
+			);
+
+			qsa(
+				'.batch-menu-delete',
+				selection.filter('[data-batch~="not-delete"]').length > 0 ?
 					node => node.hide() :
 					node => {
 						node.removeHide();

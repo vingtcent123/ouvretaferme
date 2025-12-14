@@ -4,7 +4,7 @@ namespace selling;
 class InvoiceLib extends InvoiceCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['customer', 'sales', 'date', 'dueDate', 'paymentCondition', 'header', 'footer'];
+		return ['customer', 'sales', 'date', 'dueDate', 'paymentCondition', 'header', 'footer', 'status'];
 	}
 
 	public static function getPropertiesUpdate(): \Closure {
@@ -137,7 +137,6 @@ class InvoiceLib extends InvoiceCrud {
 	public static function createCollection(\Collection $c): void {
 
 		foreach($c as $e) {
-			$e['generation'] = Invoice::WAITING;
 			self::create($e);
 		}
 
@@ -150,12 +149,18 @@ class InvoiceLib extends InvoiceCrud {
 			'customer',
 			'date', 'paymentCondition',
 			'cSale', 'sales',
-			'generation'
+			'status'
 		]);
 
 		Invoice::model()->beginTransaction();
 
-			$e['document'] = \farm\ConfigurationLib::getNextDocumentInvoices($e['farm']);
+			$e['document'] = NULL;
+
+			$e['generation'] = match($e['status']) {
+				Invoice::DRAFT => NULL,
+				Invoice::CONFIRMED => $e['generation'] ?? Invoice::WAITING,
+			};
+
 			$e['taxes'] = $e['cSale']->first()['taxes'];
 			$e['hasVat'] = $e['cSale']->first()['hasVat'];
 			$e['organic'] = FALSE;
@@ -237,8 +242,6 @@ class InvoiceLib extends InvoiceCrud {
 				},
 			]);
 
-			$e['name'] = $e->getInvoice($e['farm']);
-
 			$e['paymentMethod'] = $cSale->first()['cPayment']->first()['method'] ?? NULL;
 			$e['paymentStatus'] = $cSale->first()['paymentStatus'] ?? Invoice::NOT_PAID;
 
@@ -253,10 +256,37 @@ class InvoiceLib extends InvoiceCrud {
 		Invoice::model()->commit();
 
 		if($e['generation'] === Invoice::NOW) {
+
 			$e['customer'] = CustomerLib::getById($e['customer']['id']);
 			$e['farm'] = \farm\FarmLib::getById($e['farm']['id']);
+
 			self::generate($e);
+
 		}
+
+	}
+
+	public static function updateStatus(Invoice $e, string $newStatus): void {
+
+		if($e['status'] === $newStatus) {
+			return;
+		}
+
+		$e['status'] = $newStatus;
+
+		self::update($e, ['status']);
+
+	}
+
+	public static function updateStatusCollection(\Collection $c, string $newStatus): void {
+
+		Invoice::model()->beginTransaction();
+
+		foreach($c as $e) {
+			self::updateStatus($e, $newStatus);
+		}
+
+		Invoice::model()->commit();
 
 	}
 
@@ -264,12 +294,40 @@ class InvoiceLib extends InvoiceCrud {
 
 		Invoice::model()->beginTransaction();
 
+			if(in_array('status', $properties)) {
+
+				if($e['status'] === Invoice::CONFIRMED) {
+					$e['generation'] = Invoice::WAITING;
+					$properties[] = 'generation';
+				}
+
+			}
+
 			parent::update($e, $properties);
 
 			$updateValues = [];
 
 			if(in_array('paymentStatus', $properties)) {
 				$updateValues['paymentStatus'] = $e['paymentStatus'];
+			}
+
+			if(in_array('status', $properties)) {
+
+				switch($e['status']) {
+
+					case Invoice::CANCELED :
+
+						Sale::model()
+							->whereFarm($e['farm'])
+							->whereInvoice($e)
+							->update([
+								'invoice' => NULL
+							]);
+
+						break;
+
+				}
+
 			}
 
 			if($updateValues) {
@@ -332,6 +390,7 @@ class InvoiceLib extends InvoiceCrud {
 		}
 
 	}
+
 	public static function generateWaiting() {
 
 		$cInvoice = Invoice::model()
@@ -344,6 +403,27 @@ class InvoiceLib extends InvoiceCrud {
 			$eInvoice['cSale'] = SaleLib::getByIds($eInvoice['sales']);
 
 			self::generate($eInvoice);
+
+		}
+
+	}
+
+	public static function generateFail() {
+
+		// Si la génération dure depuis plus d'une heure c'est que ça a planté
+		$cInvoice = Invoice::model()
+			->select(Invoice::getSelection())
+			->whereStatus(Invoice::CONFIRMED)
+			->whereGeneration(Invoice::PROCESSING)
+			->whereGenerationAt('<', new \Sql('NOW() - INTERVAL 1 HOUR'))
+			->getCollection();
+
+		foreach($cInvoice as $eInvoice) {
+
+			Invoice::model()->update($eInvoice, [
+				'generation' => Invoice::FAIL,
+				'status' => Invoice::DRAFT
+			]);
 
 		}
 
@@ -363,35 +443,63 @@ class InvoiceLib extends InvoiceCrud {
 		if(Invoice::model()
 			->whereGeneration('IN', [Invoice::NOW, Invoice::WAITING])
 			->update($e, [
-				'generation' => Invoice::PROCESSING
+				'generation' => Invoice::PROCESSING,
+				'generationAt' => currentDatetime()
 			]) === 0) {
 			return;
 		}
 
-		if($e['cSale']->count() === 1) {
+		self::associateDocument($e);
 
-			$callback = function() use ($e) {
-				$e['customer'] = CustomerLib::getById($e['customer']['id']);
-				return FacturXLib::generate($e, PdfLib::build('/selling/pdf:getDocument?id='.$e['cSale']->first()['id'].'&type='.Pdf::INVOICE));
-			};
+		Invoice::model()->beginTransaction();
 
-			$ePdf = \selling\PdfLib::generate(Pdf::INVOICE, $e['cSale']->first(), $callback);
+			if($e['cSale']->count() === 1) {
 
-			$e['content'] = $ePdf['content'];
+				$callback = function() use ($e) {
+					$e['customer'] = CustomerLib::getById($e['customer']['id']);
+					return FacturXLib::generate($e, PdfLib::build('/selling/pdf:getDocumentInvoice?id='.$e['id']));
+				};
 
-		} else {
+				$ePdfContent = \selling\PdfLib::generateDocument(Pdf::INVOICE, $e['cSale']->first(), $callback);
 
-			$cPdf = \selling\PdfLib::generateInvoice($e);
+			} else {
 
-			$e['content'] = $cPdf->first()['content'];
+				$ePdfContent = \selling\PdfLib::generateInvoice($e);
 
-		}
+			}
 
-		$e['generation'] = Invoice::SUCCESS;
+			$e['content'] = $ePdfContent;
+			$e['status'] = Invoice::GENERATED;
+			$e['generation'] = Invoice::SUCCESS;
 
-		Invoice::model()
-			->select('content', 'createdAt', 'emailedAt', 'generation')
-			->update($e);
+			Invoice::model()
+				->select('content', 'createdAt', 'emailedAt', 'status', 'generation')
+				->update($e);
+
+		Invoice::model()->commit();
+
+	}
+
+	public static function associateDocument(Invoice $eInvoice): void {
+
+		Invoice::model()->beginTransaction();
+
+			Invoice::model()
+				->select('document')
+				->get($eInvoice);
+
+			if($eInvoice['document'] === NULL) {
+
+				$eInvoice['document'] = \farm\ConfigurationLib::getNextDocumentInvoices($eInvoice['farm']);
+				$eInvoice['name'] = $eInvoice->getInvoice($eInvoice['farm']);
+
+				Invoice::model()
+					->select('document', 'name')
+					->update($eInvoice);
+
+			}
+
+		Invoice::model()->commit();
 
 	}
 
@@ -439,10 +547,6 @@ class InvoiceLib extends InvoiceCrud {
 			if(Invoice::model()
 				->select(['farm', 'content'])
 				->get($e)) {
-
-				Pdf::model()
-					->whereContent($e['content'])
-					->delete();
 
 				if($e['content']->notEmpty()) {
 					PdfContent::model()->delete($e['content']);

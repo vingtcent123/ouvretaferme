@@ -71,7 +71,6 @@ class SellingSetting extends \Settings {
 
 	}
 
-	const DOCUMENT_EXPIRES = 15; // Délai d'expiration des documents avant suppression de la base de données (en mois)
 	const COMPOSITION_LOCKED = 30; // Nombre de jours qui permet de créer, modifier ou supprimer une composition dans le passé
 
 	public static $remoteKey;

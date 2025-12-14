@@ -17,17 +17,10 @@ new Page()
 	})
 	->remote('getDocument', 'selling',  function($data) {
 
-		$data->type = GET('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM, \selling\Pdf::INVOICE], fn() => throw new NotExpectedAction());
+		$data->type = GET('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());
 		$data->e = \selling\SaleLib::getById(GET('id'))->validate(fn($e) => $e->acceptDocument($data->type));
 
 		$data->e['customer']['user'] = \user\UserLib::getById($data->e['customer']['user']); // Récupération de l'e-mail
-
-		if($data->type === \selling\Pdf::INVOICE) {
-			$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice']);
-			if($data->e['invoice']->empty()) {
-				throw new NotExpectedAction('No invoice');
-			}
-		}
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$data->eFarm->validateLegal();

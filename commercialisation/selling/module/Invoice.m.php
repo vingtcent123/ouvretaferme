@@ -16,6 +16,7 @@ abstract class InvoiceElement extends \Element {
 	const DRAFT = 'draft';
 	const CONFIRMED = 'confirmed';
 	const GENERATED = 'generated';
+	const DELIVERED = 'delivered';
 	const CANCELED = 'canceled';
 
 	const WAITING = 'waiting';
@@ -55,7 +56,7 @@ class InvoiceModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'name' => ['text8', 'cast' => 'string'],
+			'name' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
 			'sales' => ['json', 'cast' => 'array'],
 			'taxes' => ['enum', [\selling\Invoice::INCLUDING, \selling\Invoice::EXCLUDING], 'cast' => 'enum'],
@@ -76,8 +77,9 @@ class InvoiceModel extends \ModuleModel {
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
-			'status' => ['enum', [\selling\Invoice::DRAFT, \selling\Invoice::CONFIRMED, \selling\Invoice::GENERATED, \selling\Invoice::CANCELED], 'cast' => 'enum'],
+			'status' => ['enum', [\selling\Invoice::DRAFT, \selling\Invoice::CONFIRMED, \selling\Invoice::GENERATED, \selling\Invoice::DELIVERED, \selling\Invoice::CANCELED], 'cast' => 'enum'],
 			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'null' => TRUE, 'cast' => 'enum'],
+			'generationAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -88,7 +90,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'closed', 'closedAt', 'closedBy', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -115,9 +117,6 @@ class InvoiceModel extends \ModuleModel {
 
 			case 'paymentStatus' :
 				return Invoice::NOT_PAID;
-
-			case 'status' :
-				return Invoice::GENERATED;
 
 			case 'closed' :
 				return FALSE;
@@ -287,6 +286,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereGeneration(...$data): InvoiceModel {
 		return $this->where('generation', ...$data);
+	}
+
+	public function whereGenerationAt(...$data): InvoiceModel {
+		return $this->where('generationAt', ...$data);
 	}
 
 	public function whereClosed(...$data): InvoiceModel {

@@ -983,14 +983,6 @@ class PdfUi {
 				'sendConfirm' => s("Confirmer l'envoi du devis au client par e-mail ?"),
 				'deleteConfirm' => s("Voulez-vous vraiment supprimer ce devis ?"),
 			],
-			Pdf::INVOICE => [
-				'generate' => s("Générer une facture"),
-				'generateConfirm' => NULL,
-				'generateNew' => s("Regénérer la facture"),
-				'generateNewConfirm' => NULL,
-				'sendConfirm' => s("Confirmer l'envoi de la facture au client par e-mail ?"),
-				'deleteConfirm' => s("Voulez-vous vraiment supprimer cette facture ?"),
-			],
 		][$type];
 	}
 

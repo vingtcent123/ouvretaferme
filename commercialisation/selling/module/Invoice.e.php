@@ -8,7 +8,6 @@ class Invoice extends InvoiceElement {
 		return parent::getSelection() + [
 			'customer' => CustomerElement::getSelection(),
 			'paymentMethod' => ['name', 'fqn'],
-			'expiresAt' => new \Sql('IF(content IS NULL, NULL, createdAt + INTERVAL '.SellingSetting::DOCUMENT_EXPIRES.' MONTH)'),
 			'farm' => \farm\FarmElement::getSelection(),
 		];
 
@@ -48,14 +47,32 @@ class Invoice extends InvoiceElement {
 		$this->expects(['emailedAt', 'createdAt', 'generation']);
 
 		return (
-			$this['generation'] === Invoice::SUCCESS and
+			$this->acceptUpdate() and
+			$this->acceptStatusDelivered() and
+			$this['status'] === Invoice::GENERATED and
 			$this['emailedAt'] === NULL
 		);
 
 	}
 
 	public function acceptRegenerate(): bool {
-		return in_array($this['generation'], [Invoice::FAIL, Invoice::SUCCESS]);
+		return $this->acceptUpdate();
+	}
+
+	public function acceptAccounting(): bool {
+		return in_array($this['status'], [Invoice::GENERATED, Invoice::DELIVERED]);
+	}
+
+	public function acceptDownload(): bool {
+		return $this['content']->notEmpty();
+	}
+
+	public function acceptUpdate(): bool {
+		return in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED]);
+	}
+
+	public function acceptDelete(): bool {
+		return ($this['status'] === Invoice::DRAFT);
 	}
 
 	public static function validateBatch(\Collection $cInvoice): void {
@@ -90,14 +107,21 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptUpdatePayment(): bool {
-		return $this->isPaymentOnline() === FALSE;
+		return (
+			in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED, Invoice::DELIVERED]) and
+			$this->isPaymentOnline() === FALSE
+		);
 	}
 
 	public function isCreditNote(): bool {
 		return ($this['priceExcludingVat'] < 0.0);
 	}
 
-	public function getInvoice(\farm\Farm $eFarm): string {
+	public function isValid(): bool {
+		return in_array($this['status'], [Invoice::GENERATED, Invoice::DELIVERED]);
+	}
+
+	public function getInvoice(\farm\Farm $eFarm): ?string {
 
 		$this->expects(['document']);
 
@@ -107,7 +131,11 @@ class Invoice extends InvoiceElement {
 			$code = $eFarm->getConf('invoicePrefix');
 		}
 
-		return \farm\Configuration::getNumber($code, $this['document']);
+		if($this['document'] === NULL) {
+			return NULL;
+		} else {
+			return \farm\Configuration::getNumber($code, $this['document']);
+		}
 
 	}
 
@@ -124,11 +152,15 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptStatusCanceled(): bool {
-		return ($this['status'] === Invoice::DRAFT);
+		return ($this['status'] === Invoice::GENERATED);
 	}
 
 	public function acceptStatusConfirmed(): bool {
 		return ($this['status'] === Invoice::DRAFT);
+	}
+
+	public function acceptStatusDelivered(): bool {
+		return ($this['status'] === Invoice::GENERATED);
 	}
 
 	//-------- Accounting features -------
@@ -259,6 +291,11 @@ class Invoice extends InvoiceElement {
 				$this->expects(['farm']);
 
 				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
+
+			})
+			->setCallback('status.check', function(string &$status) use($p): bool {
+
+				return in_array($status, [Invoice::DRAFT, Invoice::CONFIRMED]);
 
 			})
 			->setCallback('paymentStatus.check', function(string &$status) use($p): bool {

@@ -74,19 +74,6 @@ new \selling\InvoicePage()
 		throw new ViewAction($data);
 
 	}, validate: ['canWrite', 'acceptRegenerate'])
-	->write('doSend', function($data) {
-
-		$eFarm = \farm\FarmLib::getById($data->e['farm']);
-
-		$fw = new FailWatch();
-
-		\selling\PdfLib::sendByInvoice($eFarm, $data->e);
-
-		$fw->validate();
-
-		throw new ReloadAction('selling', 'Invoice::sent');
-
-	}, validate: ['canWrite', 'acceptSend'])
 	->doUpdate(function($data) {
 
 		$data->e['cSale'] = \selling\SaleLib::getForInvoice($data->e['customer'], $data->e['sales'], checkInvoice: FALSE);
@@ -119,8 +106,8 @@ new \selling\InvoicePage()
 		throw new ViewAction($data);
 
 	}, page: 'updatePayment', validate: ['canWrite', 'acceptUpdatePayment'])
-	->update(page: 'updateComment')
-	->doUpdateProperties('doUpdateComment', ['comment'], fn() => throw new ReloadAction())
+	->update(page: 'updateComment', validate: ['canWrite'])
+	->doUpdateProperties('doUpdateComment', ['comment'], fn() => throw new ReloadAction(), validate: ['canWrite'])
 	->doUpdateProperties('doUpdatePayment', ['paymentMethod', 'paymentStatus'], fn($data) => throw new ReloadAction('selling', 'Invoice::updatedPayment'), validate: ['canWrite', 'acceptUpdatePayment'])
 	->doUpdateProperties('doUpdatePaymentStatus', ['paymentStatus'], fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptUpdatePayment'])
 	->quick(['comment'])
@@ -165,7 +152,7 @@ new Page(function($data) {
 
 		$fw = new FailWatch();
 
-		$eInvoice->build(['date', 'dueDate', 'paymentCondition', 'header', 'footer'], $_POST);
+		$eInvoice->build(['date', 'dueDate', 'paymentCondition', 'header', 'footer', 'status'], $_POST);
 
 		$fw->validate();
 
@@ -185,17 +172,39 @@ new Page(function($data) {
 
 
 	}))
+	->post('doUpdateConfirmedCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptStatusConfirmed');
+
+		\selling\InvoiceLib::updateStatusCollection($data->c, \selling\Sale::CONFIRMED);
+
+		throw new ReloadAction();
+
+	})
+	->post('doUpdateCanceledCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptStatusCanceled');
+
+		\selling\InvoiceLib::updateStatusCollection($data->c, \selling\Sale::CANCELED);
+
+		throw new ReloadAction();
+
+	})
 	->post('doSendCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptSend');
 
 		$data->eFarm = \farm\FarmLib::getById($data->c->first()['farm']);
 
+		$fw = new FailWatch();
+
 		foreach($data->c as $e) {
 			\selling\PdfLib::sendByInvoice($data->eFarm, $e);
 		}
 
-		throw new ReloadAction('selling', 'Invoice::sentCollection');
+		$fw->validate();
+
+		throw new ReloadAction('selling', $data->c->count() > 1 ? 'Invoice::sentCollection' : 'Invoice::sent');
 
 	})
 	->post('doDeleteCollection', function($data) {

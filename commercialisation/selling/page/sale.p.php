@@ -373,7 +373,7 @@ new \selling\SalePage()
 
 		};
 
-		$data->ePdf = \selling\PdfLib::generate($type, $data->e);
+		$data->ePdf = \selling\PdfLib::generateBusiness($type, $data->e);
 
 		throw new ViewAction($data);
 	})

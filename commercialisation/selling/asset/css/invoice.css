@@ -2,15 +2,6 @@ td.invoice-item-date {
 	border-bottom: 1px solid var(--border);
 }
 
-
-tr.invoice-item-waiting td {
-	background-color: #ebe6;
-}
-
-tr.invoice-item-paid td {
-	background-color: #beb6;
-}
-
 .invoice-item-comment {
 	margin-top: 0.5rem;
 	margin-bottom: 0;
@@ -31,7 +22,11 @@ td.invoice-item-amount {
 .invoice-item-generation {
 	font-weight: bold;
 	text-transform: uppercase;
-	margin-right: 1rem;
+	line-height: 1.3;
+}
+
+.invoice-item-email {
+	margin-top: 0.125rem;
 }
 
 .invoice-item-due {
@@ -66,6 +61,15 @@ td.invoice-item-amount {
 	color: white !important;
 }
 
+.invoice-status-delivered {
+	color: var(--delivered);
+}
+
+.invoice-status-delivered-button {
+	background-color: var(--delivered);
+	color: white !important;
+}
+
 .invoice-status-closed {
 	color: var(--primary);
 }
@@ -82,4 +86,9 @@ td.invoice-item-amount {
 .invoice-status-canceled-button {
 	background-color: var(--muted);
 	color: white !important;
+}
+
+.invoice-status-batch {
+	text-decoration: none;
+	margin-bottom: 0.25rem;
 }

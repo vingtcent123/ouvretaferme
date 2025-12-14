@@ -1888,6 +1888,26 @@ class Element extends ArrayObject {
 		return $this->canWrite();
 	}
 
+	public function acceptCreate(): bool {
+		return $this->acceptWrite();
+	}
+
+	public function acceptRead(): bool {
+		return TRUE;
+	}
+
+	public function acceptWrite(): bool {
+		return $this->acceptRead();
+	}
+
+	public function acceptUpdate(): bool {
+		return $this->acceptWrite();
+	}
+
+	public function acceptDelete(): bool {
+		return $this->acceptWrite();
+	}
+
 	public function __toString(): string {
 		return $this->toString(3);
 	}

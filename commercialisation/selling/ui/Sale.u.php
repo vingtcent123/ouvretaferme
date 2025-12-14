@@ -673,190 +673,10 @@ class SaleUi {
 
 		if($eSale['items'] > 0) {
 
-			$list = [];
-
-			foreach([Pdf::ORDER_FORM, Pdf::DELIVERY_NOTE, Pdf::INVOICE] as $type) {
-
-				if($eSale->acceptDocument($type) === FALSE) {
-					$list[] = NULL;
-					continue;
-				}
-
-				$ePdf = $cPdf[$type] ?? new Pdf();
-
-				$emailedAt = match($type) {
-					Pdf::DELIVERY_NOTE, Pdf::ORDER_FORM => $ePdf->empty() ? NULL : $ePdf['emailedAt'],
-					Pdf::INVOICE => $eSale['invoice']->empty() ? NULL : $eSale['invoice']['emailedAt']
-				};
-
-				$canSend = match($type) {
-					Pdf::DELIVERY_NOTE, Pdf::ORDER_FORM => $ePdf->empty() ? FALSE : $ePdf->canSend(),
-					Pdf::INVOICE => $eSale['invoice']->empty() ? FALSE : $eSale['invoice']->acceptSend()
-				};
-
-				$label = PdfUi::getName($type, $eSale);
-				$shortLabel = PdfUi::getName($type, $eSale, TRUE);
-				$texts = PdfUi::getTexts($type);
-
-				$acceptGenerate = $eSale->acceptGenerateDocument($type);
-				$acceptRegenerate = $eSale->acceptRegenerateDocument($type);
-
-				$urlGenerate = match($type) {
-					Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
-					Pdf::ORDER_FORM => 'href="/selling/sale:generateOrderForm?id='.$eSale['id'].'"',
-					Pdf::INVOICE => 'href="/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales"',
-				};
-
-				if($acceptRegenerate) {
-
-					$urlRegenerate = match($type) {
-						Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
-						Pdf::ORDER_FORM => 'href="/selling/sale:generateOrderForm?id='.$eSale['id'].'"',
-						Pdf::INVOICE => 'href="/selling/invoice:regenerate?id='.$eSale['invoice']['id'].'"',
-					};
-
-				} else {
-					$urlRegenerate = NULL;
-				}
-
-				if($ePdf->empty()) {
-
-					if(
-						$acceptGenerate and
-						$eSale->canDocument($type)
-					) {
-
-						$document = '<a '.$urlGenerate.' class="btn btn-sm sale-document sale-document-new" title="'.$texts['generate'].'" '.attr('data-confirm', $texts['generateConfirm']).'>';
-							$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
-							$document .= '<div class="sale-document-status">';
-								$document .= \Asset::icon('plus');
-							$document .= '</div>';
-						$document .= '</a> ';
-
-					} else {
-						$document = NULL;
-					}
-
-				} else {
-
-					$dropdown = match($origin) {
-						'list' => 'bottom-end',
-						'element' => 'bottom-start',
-					};
-
-					$document = '<a class="btn sale-document" title="'.$label.'" data-dropdown="'.$dropdown.'">';
-						$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
-						$document .= '<div class="sale-document-status">';
-
-							if($emailedAt) {
-								$document .= \Asset::icon('check-all');
-							} else {
-								$document .= \Asset::icon('check');
-							}
-
-						$document .= '</div>';
-						if(
-							$type === Pdf::INVOICE and
-							$ePdf['used'] > 1
-						) {
-							$document .= '<div class="sale-document-count">';
-								$document .= $ePdf['used'];
-							$document .= '</div>';
-
-						}
-					$document .= '</a> ';
-
-					$document .= '<div class="dropdown-list bg-primary">';
-						$document .= '<div class="dropdown-title">';
-							$document .= $label.'<br/>';
-							$document .= '<small>';
-								$date = \util\DateUi::numeric($ePdf['createdAt'], \util\DateUi::DATE_HOUR_MINUTE);
-								$document .= s("Généré le {value}", $date);
-								if($ePdf['used'] > 1) {
-									$document .= '<br/>'.s("Généré à partir de {value} ventes", $ePdf['used']);
-								}
-							$document .= '</small>';
-						$document .= '</div>';
-
-						if($type === Pdf::INVOICE) {
-							$document .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.s("Consulter la facture").'</a>';
-						}
-
-						if($ePdf['content']->notEmpty()) {
-
-							if($type === Pdf::INVOICE) {
-								$document .= '<a href="'.InvoiceUi::url($eSale['invoice']).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
-							} else {
-								$document .= '<a href="'.PdfUi::url($ePdf).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
-							}
-
-						} else {
-							$document .= '<span class="dropdown-item">';
-								$document .= '<span class="sale-document-forbidden">'.s("Télécharger").'</span>';
-								$document .= ' <span class="sale-document-expired">'.s("Document expiré").'</span>';
-							$document .= '</span>';
-						}
-
-						if($eSale->canDocument($type)) {
-
-							if($texts['generateNew'] !== NULL) {
-
-								if($acceptRegenerate) {
-									$class = '';
-								} else {
-									$class = 'sale-document-forbidden';
-								}
-
-								$document .= '<a '.$urlRegenerate.' class="dropdown-item '.$class.'" '.attr('data-confirm', $texts['generateNewConfirm']).'>'.$texts['generateNew'].'</a>';
-
-							}
-
-							if($emailedAt) {
-								$document .= '<div class="dropdown-divider"></div>';
-								$document .= ' <div class="dropdown-item">'.\Asset::icon('check-all').'&nbsp;&nbsp;'.s("Envoyé par e-mail le {value}", \util\DateUi::numeric($emailedAt, \util\DateUi::DATE)).'</div>';
-							} else {
-
-								$document .= '<div class="dropdown-divider"></div>';
-
-								if($canSend) {
-									$text = s("Envoyer au client par e-mail").'</a>';
-								} else {
-									$text = '<span class="sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
-								}
-
-								$urlSend = match($type) {
-									Pdf::DELIVERY_NOTE, Pdf::ORDER_FORM => 'data-ajax="/selling/sale:doSendDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
-									Pdf::INVOICE => 'data-ajax="/selling/invoice:doSend" post-id="'.$eSale['invoice']['id'].'"'
-								};
-
-								$document .= '<a '.$urlSend.' data-confirm="'.$texts['sendConfirm'].'" class="dropdown-item">'.$text.'</a>';
-
-							}
-
-							$document .= '<div class="dropdown-divider"></div>';
-
-							$urlDelete = match($type) {
-								Pdf::DELIVERY_NOTE, Pdf::ORDER_FORM => 'data-ajax="/selling/sale:doDeleteDocument" post-id="'.$ePdf['id'].'"',
-								Pdf::INVOICE => 'data-ajax="/selling/invoice:doDelete" post-id="'.$eSale['invoice']['id'].'"',
-							};
-
-							if($eSale->canManage()) {
-								$document .= ' <a '.$urlDelete.' data-confirm="'.$texts['deleteConfirm'].'" class="dropdown-item">'.s("Supprimer le document").'</a>';
-							}
-
-							if($ePdf['expiresAt'] !== NULL) {
-								$document .= '<span class="dropdown-item sale-document-expires">'.s("Le fichier PDF de ce document<br/>expirera automatiquement le {value}.", \util\DateUi::numeric($ePdf['expiresAt'], \util\DateUi::DATE)).'</span>';
-							}
-
-						}
-
-					$document .= '</div>';
-
-				}
-
-				$list[] = $document;
-
-			}
+			$list = array_merge(
+				$this->getBusinessDocuments($eSale, $cPdf, $origin),
+				[$this->getInvoiceDocument($eSale, $origin)],
+			);
 
 		} else {
 			$list = [NULL, NULL, NULL];
@@ -883,6 +703,264 @@ class SaleUi {
 		}
 
 		return $h;
+
+	}
+
+	protected function getInvoiceDocument(Sale $eSale, string $origin): ?string {
+
+		if($eSale->acceptDocument(Pdf::INVOICE) === FALSE) {
+			return NULL;
+		}
+
+		$type = Pdf::INVOICE;
+
+		if($eSale['invoice']->empty()) {
+
+			if(
+				$eSale->acceptGenerateInvoice() and
+				$eSale->canDocument(Pdf::INVOICE)
+			) {
+
+				$document = '<a href="/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales" class="btn btn-sm sale-document sale-document-new" title="'.s("Créer une facture").'">';
+					$document .= '<div class="sale-document-name">'.PdfUi::getName(Pdf::INVOICE, $eSale, TRUE).'</div>';
+					$document .= '<div class="sale-document-status">';
+						$document .= \Asset::icon('plus');
+					$document .= '</div>';
+				$document .= '</a> ';
+
+				return $document;
+
+			} else {
+				return NULL;
+			}
+
+		} else {
+
+			$eInvoice = $eSale['invoice'];
+			$sales = count($eInvoice['sales']);
+
+			$label = PdfUi::getName($type, $eSale);
+			if($eInvoice['name'] !== NULL) {
+				$label .= ' '.encode($eInvoice['name']);
+			}
+
+			$dropdown = match($origin) {
+				'list' => 'bottom-end',
+				'element' => 'bottom-start',
+			};
+
+			$document = '<a class="btn sale-document" title="'.$label.'" data-dropdown="'.$dropdown.'">';
+				$document .= '<div class="sale-document-name">';
+					$document .= PdfUi::getName(Pdf::INVOICE, $eSale, TRUE);
+				$document .= '</div>';
+				$document .= '<div class="sale-document-status">';
+
+					if($eSale['invoice']['emailedAt']) {
+						$document .= \Asset::icon('check-all');
+					} else {
+						$document .= \Asset::icon('check');
+					}
+
+				$document .= '</div>';
+				$document .= '<div class="sale-document-count">';
+					$document .= $sales;
+				$document .= '</div>';
+			$document .= '</a> ';
+
+			$document .= '<div class="dropdown-list bg-primary">';
+				$document .= '<div class="dropdown-title">';
+					$document .= $label;
+					$document .= '  <span class="btn btn-sm btn-readonly invoice-status-'.$eInvoice['status'].'-button">'.InvoiceUi::p('status')->values[$eInvoice['status']].'</span>';
+					$document .= '<div class="font-sm">';
+						$document .= \util\DateUi::numeric($eInvoice['date']).'  ';
+					$document .= '</div>';
+				$document .= '</div>';
+
+				$document .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.s("Consulter la facture").'</a>';
+
+				if($eInvoice->acceptDownload()) {
+					$document .= '<a href="'.InvoiceUi::url($eSale['invoice']).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
+				}
+
+				if($eSale['invoice']->acceptSend()) {
+
+					$document .= '<div class="dropdown-divider"></div>';
+
+					if($eSale['invoice']->acceptSend()) {
+						$text = s("Envoyer au client par e-mail").'</a>';
+					} else {
+						$text = '<span class="sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
+					}
+
+					$document .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eSale['invoice']['id'].'" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ?").'" class="dropdown-item">'.$text.'</a>';
+
+				}
+
+				if(
+					$eInvoice->acceptDelete() and
+					$eSale->canWrite()
+				) {
+
+					$document .= '<div class="dropdown-divider"></div>';
+					$document .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("La suppression d'une facture est définitive. Voulez-vous continuer ?").'">'.s("Supprimer la facture").'</a>';
+
+				}
+
+			$document .= '</div>';
+
+			return $document;
+
+		}
+
+	}
+
+	protected function getBusinessDocuments(Sale $eSale, \Collection $cPdf, string $origin): array {
+
+		$list = [];
+
+		foreach([Pdf::ORDER_FORM, Pdf::DELIVERY_NOTE] as $type) {
+
+			if($eSale->acceptDocument($type) === FALSE) {
+				$list[] = NULL;
+				continue;
+			}
+
+			$ePdf = $cPdf[$type] ?? new Pdf();
+
+			$canSend = $ePdf->empty() ? FALSE : $ePdf->canSend();
+
+			$label = PdfUi::getName($type, $eSale);
+			$shortLabel = PdfUi::getName($type, $eSale, TRUE);
+			$texts = PdfUi::getTexts($type);
+
+			$acceptGenerate = $eSale->acceptGenerateDocument($type);
+			$acceptRegenerate = $eSale->acceptRegenerateDocument($type);
+
+			$urlGenerate = match($type) {
+				Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
+				Pdf::ORDER_FORM => 'href="/selling/sale:generateOrderForm?id='.$eSale['id'].'"',
+			};
+
+			if($acceptRegenerate) {
+
+				$urlRegenerate = match($type) {
+					Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
+					Pdf::ORDER_FORM => 'href="/selling/sale:generateOrderForm?id='.$eSale['id'].'"',
+				};
+
+			} else {
+				$urlRegenerate = NULL;
+			}
+
+			if($ePdf->empty()) {
+
+				if(
+					$acceptGenerate and
+					$eSale->canDocument($type)
+				) {
+
+					$document = '<a '.$urlGenerate.' class="btn btn-sm sale-document sale-document-new" title="'.$texts['generate'].'" '.attr('data-confirm', $texts['generateConfirm']).'>';
+						$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
+						$document .= '<div class="sale-document-status">';
+							$document .= \Asset::icon('plus');
+						$document .= '</div>';
+					$document .= '</a> ';
+
+				} else {
+					$document = '';
+				}
+
+			} else {
+
+				$dropdown = match($origin) {
+					'list' => 'bottom-end',
+					'element' => 'bottom-start',
+				};
+
+				$document = '<a class="btn sale-document" title="'.$label.'" data-dropdown="'.$dropdown.'">';
+					$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
+					$document .= '<div class="sale-document-status">';
+
+						if($ePdf['emailedAt']) {
+							$document .= \Asset::icon('check-all');
+						} else {
+							$document .= \Asset::icon('check');
+						}
+
+					$document .= '</div>';
+				$document .= '</a> ';
+
+				$document .= '<div class="dropdown-list bg-primary">';
+					$document .= '<div class="dropdown-title">';
+						$document .= $label.'<br/>';
+						$document .= '<small>';
+							$date = \util\DateUi::numeric($ePdf['createdAt'], \util\DateUi::DATE);
+							$document .= s("Généré le {value}", $date);
+							if($ePdf['used'] > 1) {
+								$document .= '<br/>'.s("Généré à partir de {value} ventes", $ePdf['used']);
+							}
+						$document .= '</small>';
+					$document .= '</div>';
+
+					if($ePdf['content']->notEmpty()) {
+						$document .= '<a href="'.PdfUi::url($ePdf).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
+					} else {
+						$document .= '<span class="dropdown-item">';
+							$document .= '<span class="sale-document-forbidden">'.s("Télécharger").'</span>';
+							$document .= ' <span class="sale-document-expired">'.s("Document expiré").'</span>';
+						$document .= '</span>';
+					}
+
+					if($eSale->canDocument($type)) {
+
+						if($texts['generateNew'] !== NULL) {
+
+							if($acceptRegenerate) {
+								$class = '';
+							} else {
+								$class = 'sale-document-forbidden';
+							}
+
+							$document .= '<a '.$urlRegenerate.' class="dropdown-item '.$class.'" '.attr('data-confirm', $texts['generateNewConfirm']).'>'.$texts['generateNew'].'</a>';
+
+						}
+
+						if($ePdf['emailedAt']) {
+							$document .= '<div class="dropdown-divider"></div>';
+							$document .= ' <div class="dropdown-item">'.\Asset::icon('check-all').'&nbsp;&nbsp;'.s("Envoyé par e-mail le {value}", \util\DateUi::numeric($ePdf['emailedAt'], \util\DateUi::DATE)).'</div>';
+						} else {
+
+							$document .= '<div class="dropdown-divider"></div>';
+
+							if($canSend) {
+								$text = s("Envoyer au client par e-mail").'</a>';
+							} else {
+								$text = '<span class="sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
+							}
+
+							$document .= '<a data-ajax="/selling/sale:doSendDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'" data-confirm="'.$texts['sendConfirm'].'" class="dropdown-item">'.$text.'</a>';
+
+						}
+
+						$document .= '<div class="dropdown-divider"></div>';
+
+						if($eSale->canManage()) {
+
+							$document .= ' <a data-ajax="/selling/sale:doDeleteDocument" post-id="'.$ePdf['id'].'" data-confirm="'.$texts['deleteConfirm'].'" class="dropdown-item">'.s("Supprimer le document").'</a>';
+
+						}
+
+					}
+
+				$document .= '</div>';
+
+			}
+
+			$list[] = $document;
+
+		}
+
+		return $list;
 
 	}
 
@@ -2002,8 +2080,6 @@ class SaleUi {
 
 				$h .= '<div class="util-block bg-background-light">';
 					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->group(SaleUi::p('paymentMethod')->label, SaleUi::getPaymentMethodName($eSale));
-					$h .= $form->group(SaleUi::p('paymentStatus')->label, SaleUi::getPaymentStatus($eSale));
 					$h .= $form->group(content: $paymentInfo);
 				$h .= '</div>';
 

@@ -808,6 +808,7 @@ class AnalyzeLib {
 				'paymentStatus',
 			])
 			->whereFarm($eFarm)
+			->whereStatus('NOT IN', [Invoice::DRAFT, Invoice::CONFIRMED, Invoice::CANCELED])
 			->whereGeneration(Invoice::SUCCESS)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->sort('id')

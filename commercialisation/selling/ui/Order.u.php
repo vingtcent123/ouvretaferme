@@ -205,7 +205,7 @@ class OrderUi {
 
 							$h .= '<td class="text-end">';
 
-								if($eInvoice['content']->notEmpty()) {
+								if($eInvoice->acceptDownload()) {
 									$h .= '<a href="'.InvoiceUi::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.\Asset::icon('download').' '.s("Télécharger").'</a> ';
 								}
 							$h .= '</td>';

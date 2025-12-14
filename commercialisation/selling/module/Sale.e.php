@@ -12,7 +12,7 @@ class Sale extends SaleElement {
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'legalCountry', 'url', 'vignette', 'emailBanner', 'emailFooter', 'hasSales', 'hasAccounting'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
-			'invoice' => ['name', 'emailedAt', 'createdAt', 'priceExcludingVat', 'generation'],
+			'invoice' => ['name', 'emailedAt', 'sales', 'date', 'content', 'createdAt', 'priceExcludingVat', 'generation', 'status'],
 			'compositionOf' => ['name'],
 			'marketParent' => [
 				'customer' => ['type', 'name']
@@ -554,7 +554,6 @@ class Sale extends SaleElement {
 		return match($type) {
 			Pdf::DELIVERY_NOTE => $this->acceptGenerateDeliveryNote(),
 			Pdf::ORDER_FORM => $this->acceptGenerateOrderForm(),
-			Pdf::INVOICE => $this->acceptGenerateInvoice()
 		};
 
 	}
@@ -565,8 +564,7 @@ class Sale extends SaleElement {
 
 		return match($type) {
 			Pdf::DELIVERY_NOTE => $this->acceptGenerateDocument($type),
-			Pdf::ORDER_FORM => $this->acceptGenerateDocument($type),
-			Pdf::INVOICE => $this['invoice']->notEmpty()
+			Pdf::ORDER_FORM => $this->acceptGenerateDocument($type)
 		};
 
 	}

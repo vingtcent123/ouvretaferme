@@ -32,7 +32,7 @@ new \journal\JournalCodePage(function($data) {
 	})
 	->doDelete(function($data) {
 		throw new ReloadAction('journal', 'JournalCode::deleted');
-	}, validate: ['canDelete', 'acceptDelete'])
+	})
 	->read('accounts', function($data) {
 
 		$data->cAccount = \account\AccountLib::getAll();

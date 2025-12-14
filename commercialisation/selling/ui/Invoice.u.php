@@ -14,7 +14,11 @@ class InvoiceUi {
 	}
 
 	public static function link(Invoice $eInvoice, bool $newTab = FALSE): string {
-		return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.encode($eInvoice['name']).'</a>';
+		if($eInvoice['document'] === NULL) {
+			return '<span class="btn btn-sm btn-readonly btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>?</a>';
+		} else {
+			return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.encode($eInvoice['name']).'</a>';
+		}
 	}
 
 	public static function url(Invoice $e): string {
@@ -24,12 +28,13 @@ class InvoiceUi {
 	}
 	
 	public function getSuccessActions(Invoice $eInvoice): string {
+
+		if($eInvoice->acceptDownload() === FALSE) {
+			return '';
+		}
 			
 		$h = '<div class="mt-1">';
 			$h .= '<a href="'.\selling\InvoiceUi::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-transparent">'.s("Télécharger").'</a>';
-			if($eInvoice->acceptSend()) {
-				$h .= ' <a data-ajax="/selling/invoice:doSend" post-id="'.$eInvoice['id'].'" class="btn btn-transparent" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ?").'">'.\Asset::icon('send').' '.s("Envoyer au client par e-mail").'</a>';
-			}
 		$h .= '</div>';
 
 		return $h;
@@ -79,7 +84,7 @@ class InvoiceUi {
 
 		$h = '<div class="util-overflow-sm stick-xs">';
 
-			$columns = 9;
+			$columns = 7;
 
 			$h .= '<table class="tr-even" data-batch="#batch-invoice">';
 
@@ -91,14 +96,11 @@ class InvoiceUi {
 							$columns++;
 							$h .= '<th class="invoice-item-customer">'.s("Client").'</th>';
 						}
-						//$h .= '<th class="text-center">'.s("État").'</th>';
+						$h .= '<th>'.s("État").'</th>';
 						$h .= '<th class="text-center">'.s("Date de<br/>facturation").'</th>';
 						$h .= '<th class="text-end invoice-item-amount">'.s("Montant").'</th>';
-						$h .= '<th class="td-min-content text-center">'.s("Envoyée<br/>par e-mail").'</th>';
 						$h .= '<th>'.s("Règlement").'</th>';
 						$h .= '<th></th>';
-					$h .= '</tr>';
-					$h .= '<tr>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 				$h .= '<tbody>';
@@ -140,31 +142,48 @@ class InvoiceUi {
 					$batch = [];
 
 					if($eInvoice->acceptSend() === FALSE) {
-						$batch[] = 'not-sent';
+						$batch[] = 'not-send';
 					}
 
-					if(in_array($eInvoice['generation'], [Invoice::PROCESSING, Invoice::WAITING])) {
-						$class = 'invoice-item-waiting';
-					} else {
-						$class = 'invoice-item-'.$eInvoice['paymentStatus'];
+					if($eInvoice->acceptDelete() === FALSE) {
+						$batch[] = 'not-delete';
 					}
 
-					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'" class="'.$class.'"';
+					if($eInvoice->acceptStatusCanceled() === FALSE) {
+						$batch[] = 'not-canceled';
+					}
+
+					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'"';
 						if($eInvoice['status'] === Invoice::CANCELED) {
 							$h .= ' style="opacity: 0.5"';
 						}
 					$h .= '>';
 						$h .= '<td class="td-checkbox">';
-							$h .= '<label>';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Invoice.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
-							$h .= '</label>';
+							if($eInvoice->acceptUpdate()) {
+								$h .= '<label>';
+									$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Invoice.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
+								$h .= '</label>';
+							}
 						$h .= '</td>';
 						$h .= '<td class="text-center td-min-content">';
-							if($eInvoice['content']->empty()) {
-								$h .= '<span class="btn disabled">'.encode($eInvoice['name']).'</span>';
+
+							if($eInvoice['status'] === Invoice::CONFIRMED) {
+
+								if(in_array($eInvoice['generation'], [Invoice::WAITING, Invoice::PROCESSING])) {
+									$h .= '<div class="invoice-item-generation" style="color: var(--confirmed)">'.s("Génération<br/>en cours").'</div>';
+									$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eInvoice['farm']).'" class="btn btn-sm">'.s("Actualiser").'</a>';
+								}
+
 							} else {
-								$h .= InvoiceUi::link($eInvoice);
+
+								if($eInvoice['generation'] === Invoice::FAIL) {
+									$h .= '<div class="invoice-item-generation color-danger">'.s("Génération<br/>échouée").'</div>';
+								} else {
+									$h .= InvoiceUi::link($eInvoice);
+								}
 							}
+
+
 						$h .= '</td>';
 
 						if(in_array('customer', $hide) === FALSE) {
@@ -180,19 +199,19 @@ class InvoiceUi {
 								}
 							$h .= '</td>';
 						}
-/*
-						$h .= '<td class="text-center">';
+
+						$h .= '<td>';
 							$h .= $this->getStatusForUpdate($eInvoice, 'btn-xs');
 						$h .= '</td>';
-*/
+
 						$h .= '<td class="text-center">';
 							$h .= \util\DateUi::numeric($eInvoice['date']);
-							if($eInvoice['dueDate'] !== NULL) {
+							if($eInvoice['status'] !== Invoice::CANCELED and $eInvoice['dueDate'] !== NULL) {
 								$h .= '<div class="util-annotation invoice-item-due">';
 									if($eInvoice['dueDate'] > currentDate()) {
-										$h .= s("échoit le {value}", \util\DateUi::numeric($eInvoice['dueDate']));
+										$h .= s("Échoit le {value}", \util\DateUi::numeric($eInvoice['dueDate']));
 									} else {
-										$h .= s("échue le {value}", \util\DateUi::numeric($eInvoice['dueDate']));
+										$h .= s("Échue le {value}", \util\DateUi::numeric($eInvoice['dueDate']));
 									}
 								$h .= '</div>';
 							}
@@ -207,105 +226,92 @@ class InvoiceUi {
 							$h .= '</div>';
 						$h .= '</td>';
 
-						switch($eInvoice['generation']) {
+						$h .= '<td>';
 
-							case Invoice::WAITING :
-							case Invoice::PROCESSING :
-								$h .= '<td colspan="3">';
-									$h .= '<span class="invoice-item-generation color-selling">'.\Asset::icon('arrow-clockwise').' '.s("Génération en cours").'</span>';
-									$h .= '<a href="'.\farm\FarmUi::urlSellingSalesInvoice($eInvoice['farm']).'" class="btn btn-outline-secondary">'.s("Actualiser").'</a>';
-								$h .= '</td>';
-								break;
+							if($eInvoice['status'] !== Invoice::CANCELED) {
 
-							case Invoice::FAIL :
-								$h .= '<td colspan="3">';
-									$h .= '<span class="invoice-item-generation color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Génération échouée").'</span>';
-								$h .= '</td>';
-								break;
+								if($eInvoice['paymentMethod']->empty()) {
 
-							case Invoice::SUCCESS :
+									$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="btn btn-outline-primary">'.s("Choisir").'</a>';
 
-								$h .= '<td class="text-center">';
-									$h .= $this->getIconEmail($eInvoice);
-								$h .= '</td>';
+								} else {
+									$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
 
-								$h .= '<td>';
-
-									if($eInvoice['paymentMethod']->empty()) {
-
-										$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="btn btn-outline-primary">'.s("Choisir").'</a>';
-
-									} else {
-										$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
-
-										if($eInvoice->isCreditNote() === FALSE) {
-											$h .= '<div>';
-												$h .= \util\TextUi::switch([
-													'id' => 'invoice-switch-'.$eInvoice['id'],
-													'class' => 'field-switch-sm',
-													'disabled' => $eInvoice->isPaymentOnline(),
-													'data-ajax' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
-													'post-id' => $eInvoice['id'],
-													'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
-												], $eInvoice['paymentStatus'] === Invoice::PAID, textOn: self::p('paymentStatus')->values[Sale::PAID],textOff: self::p('paymentStatus')->values[Sale::NOT_PAID]);
-											$h .= '</div>';
-										}
+									if($eInvoice->isCreditNote() === FALSE) {
+										$h .= '<div>';
+											$h .= \util\TextUi::switch([
+												'id' => 'invoice-switch-'.$eInvoice['id'],
+												'class' => 'field-switch-sm',
+												'disabled' => $eInvoice->isPaymentOnline(),
+												'data-ajax' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
+												'post-id' => $eInvoice['id'],
+												'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
+											], $eInvoice['paymentStatus'] === Invoice::PAID, textOn: self::p('paymentStatus')->values[Sale::PAID],textOff: self::p('paymentStatus')->values[Sale::NOT_PAID]);
+										$h .= '</div>';
 									}
-								$h .= '</td>';
+								}
 
-								break;
-
-						}
+							}
 
 						$h .= '<td class="text-end td-min-content">';
 
-							if($eInvoice->canWrite()) {
+							if(
+								$eInvoice->canUpdate() and
+								$eInvoice['status'] !== Invoice::CONFIRMED
+							) {
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.s("Facture {value}", encode($eInvoice['name'])).'</div>';
+									$h .= '<div class="dropdown-title">'.s("Facture {value}", encode($eInvoice['name'] ?? '')).'</div>';
 
-									if($eInvoice['content']->notEmpty()) {
-										$h .= '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger la facture").'</a>';
+									if(
+										$eInvoice->acceptDownload() or
+										$eInvoice->acceptSend()
+									) {
+
+										if($eInvoice->acceptDownload()) {
+											$h .= '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger la facture").'</a>';
+										}
+
+										if($eInvoice->acceptSend()) {
+											$h .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("Envoyez cette facture au client par e-mail ?").'" class="dropdown-item">'.s("Envoyer au client par e-mail").'</a>';
+										}
+
+										$h .= '<div class="dropdown-divider"></div>';
+
 									}
-
-									$h .= '<div class="dropdown-divider"></div>';
 
 									if($eInvoice->acceptRegenerate()) {
-										$h .= '<a href="/selling/invoice:regenerate?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Regénérer la facture").'</a>';
+										$h .= '<a href="/selling/invoice:regenerate?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Modifier la facture").'</a>';
 									}
 
-									$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="dropdown-item">';
-										$h .= $eInvoice['paymentMethod']->empty() ? s("Choisir le règlement") : s("Modifier le règlement");
-									$h .= '</a>';
+									if($eInvoice->acceptUpdatePayment()) {
+										$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="dropdown-item">';
+											$h .= $eInvoice['paymentMethod']->empty() ? s("Choisir le règlement") : s("Changer le règlement");
+										$h .= '</a>';
+									}
 
 									$h .= '<a href="/selling/invoice:updateComment?id='.$eInvoice['id'].'" class="dropdown-item">';
 										$h .= $eInvoice['comment'] === NULL ? s("Ajouter un commentaire") : s("Modifier le commentaire");
 									$h .= '</a>';
 
-									if($eInvoice['emailedAt']) {
-										$h .= '<div class="dropdown-divider"></div>';
-										$h .= ' <div class="dropdown-item">'.\Asset::icon('check-all').'&nbsp;&nbsp;'.s("Envoyé par e-mail le {value}", \util\DateUi::numeric($eInvoice['emailedAt'], \util\DateUi::DATE)).'</div>';
-									} else {
+
+									if(
+										$eInvoice->acceptDelete() and
+										$eInvoice->canDelete()
+									) {
 
 										$h .= '<div class="dropdown-divider"></div>';
-
-										if($eInvoice->acceptSend()) {
-											$h .= '<a data-ajax="/selling/invoice:doSend" post-id="'.$eInvoice['id'].'" data-confirm="'.PdfUi::getTexts(Pdf::INVOICE)['sendConfirm'].'" class="dropdown-item">'.s("Envoyer au client par e-mail").'</a>';
-										} else {
-											$h .= '<span class="dropdown-item sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
-										}
+										$h .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("La suppression d'une facture est définitive. Voulez-vous continuer ?").'">'.s("Supprimer la facture").'</a>';
 
 									}
 
-									if($eInvoice->canDelete()) {
+									if(
+										$eInvoice->acceptStatusCanceled()
+									) {
 
 										$h .= '<div class="dropdown-divider"></div>';
-										$h .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression définitive de la facture ?").'">'.s("Supprimer la facture").'</a>';
-
-										if($eInvoice['expiresAt'] !== NULL) {
-											$h .= '<span class="dropdown-item sale-document-expires">'.s("Le fichier PDF de cette facture<br/>expirera automatiquement le {value}.", \util\DateUi::numeric($eInvoice['expiresAt'], \util\DateUi::DATE)).'</span>';
-										}
+										$h .= '<a data-ajax="/selling/invoice:doUpdateCanceledCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("L'annulation d'une facture est définitive. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Annuler la facture").'</a>';
 
 									}
 
@@ -360,8 +366,16 @@ class InvoiceUi {
 			$to .= $button(Invoice::CONFIRMED);
 		}
 
+		if($eInvoice->acceptSend()) {
+			$to .= ' <a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ?").'">';
+				$to .= \Asset::icon('send').'  <span class="btn btn-sm invoice-status-'.Invoice::DELIVERED.'-button">'.s("Envoi au client par e-mail").'</span>';
+			$to .= '</a>';
+		}
+
 		if($eInvoice->acceptStatusCanceled()) {
-			$to .= '<div class="dropdown-divider"></div>';
+			if($to !== '') {
+				$to .= '<div class="dropdown-divider"></div>';
+			}
 			$to .= $button(Invoice::CANCELED);
 		}
 
@@ -387,7 +401,17 @@ class InvoiceUi {
 			$menu .= '<span>'.s("Envoyer par e-mail").'</span>';
 		$menu .= '</a>';
 
-		$danger = '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-menu-item batch-menu-item-danger">';
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateConfirmedCollection" data-confirm="'.s("Confirmer ces factures ?").'" class="batch-menu-confirm batch-menu-item">';
+			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-confirmed-button">'.self::p('status')->shortValues[Sale::CONFIRMED].'</span>';
+			$menu .= '<span>'.s("Confirmer").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces factures ?").'" class="batch-menu-cancel batch-menu-item">';
+			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-canceled-button">'.self::p('status')->shortValues[Sale::CANCELED].'</span>';
+			$menu .= '<span>'.s("Annuler").'</span>';
+		$menu .= '</a>';
+
+		$danger = '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
@@ -419,7 +443,7 @@ class InvoiceUi {
 
 		return new \Panel(
 			id: 'panel-invoice-create',
-			title: s("Générer une facture pour un client"),
+			title: s("Créer une facture pour un client"),
 			body: $h
 		);
 
@@ -478,7 +502,7 @@ class InvoiceUi {
 
 		return new \Panel(
 			id: 'panel-invoice-create',
-			title: s("Générer une facture pour un client"),
+			title: s("Créer une facture pour un client"),
 			body: $body
 		);
 
@@ -555,6 +579,8 @@ class InvoiceUi {
 					$h .= $form->dynamicGroup($e, 'date*');
 					$h .= $form->dynamicGroup($e, 'dueDate');
 				$h .= '</div>';
+
+				$h .= $this->getStatusField($form);
 
 				$h .= '<div id="invoice-customize" class="hide">';
 					$h .= $form->dynamicGroups($e, ['paymentCondition', 'header', 'footer']);
@@ -662,7 +688,7 @@ class InvoiceUi {
 
 		return new \Panel(
 			id: 'panel-invoice-regenerate',
-			title: s("Regénérer une facture"),
+			title: s("Modifier une facture"),
 			body: $body
 		);
 
@@ -731,6 +757,10 @@ class InvoiceUi {
 
 				$h .= $form->dynamicGroup($eInvoice, 'dueDate');
 
+				if($eInvoice->exists() === FALSE) {
+					$h .= $this->getStatusField($form);
+				}
+
 			$h .= '</div>';
 
 			$h .= '<div id="invoice-customize" class="hide">';
@@ -745,6 +775,26 @@ class InvoiceUi {
 		$h .= $form->close();
 
 		return $h;
+
+	}
+
+	protected function getStatusField(\util\FormUi $form): string {
+
+		$confirmed = '<span class="btn btn-sm invoice-status-'.Invoice::GENERATED.'-button">'.s("Oui, générer la facture").'</span>';
+		$confirmed .= '<ul class="mt-1">';
+			$confirmed .= '<li>'.s("Un numéro sera attribué à la facture").'</li>';
+			$confirmed .= '<li>'.s("La facture ne pourra pas être modifiée ni supprimée").'</li>';
+		$confirmed .= '</ul>';
+
+		$draft = '<span class="btn btn-sm invoice-status-'.Invoice::DRAFT.'-button">'.s("Non, créer un brouillon").'</span>';
+
+		return $form->group(
+			s("Générer la facture immédiatement"),
+			$form->radios('status', [
+				Invoice::CONFIRMED => $confirmed,
+				Invoice::DRAFT => $draft,
+			], Invoice::CONFIRMED, attributes: ['mandatory' => TRUE])
+		);
 
 	}
 	
@@ -817,7 +867,7 @@ class InvoiceUi {
 			id: 'panel-invoice-update',
 			title: $eInvoice['paymentMethod']->empty() ?
 				s("Choisir le règlement") :
-				s("Modifier le règlement"),
+				s("Changer le règlement"),
 			body: $h
 		);
 
@@ -850,20 +900,6 @@ class InvoiceUi {
 
 	}
 
-	public function getIconEmail(Invoice $eInvoice): string {
-
-		if($eInvoice['emailedAt'] !== NULL) {
-			$color = '--success';
-			$text = \Asset::icon('check-lg');
-		} else {
-			$color = '--muted';
-			$text = \Asset::icon('x-lg');
-		}
-
-		return '<span style="color: var('.$color.')">'.$text.'</span>';
-
-	}
-
 	public function getIconPaid(Invoice $eInvoice): string {
 
 		switch($eInvoice['paymentStatus']) {
@@ -887,6 +923,7 @@ class InvoiceUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Invoice::model()->describer($property, [
+			'status' => s("État"),
 			'date' => s("Date de facturation"),
 			'dueDate' => s("Date d'échéance"),
 			'paymentCondition' => s("Conditions de paiement"),
@@ -913,15 +950,17 @@ class InvoiceUi {
 			case 'status' :
 				$d->values = [
 					Invoice::DRAFT => s("Brouillon"),
-					Invoice::CONFIRMED => s("Confirmée"),
-					Invoice::GENERATED => s("Générée"),
-					Invoice::CANCELED => s("Annulée"),
+					Invoice::CONFIRMED => s("Confirmé"),
+					Invoice::GENERATED => s("Généré"),
+					Invoice::CANCELED => s("Annulé"),
+					Invoice::DELIVERED => s("Envoyé"),
 				];
 				$d->shortValues = [
 					Invoice::DRAFT => s("B"),
 					Invoice::CONFIRMED => s("C"),
 					Invoice::GENERATED => s("G"),
 					Invoice::CANCELED => s("A"),
+					Invoice::DELIVERED => s("E"),
 				];
 				break;
 

@@ -105,7 +105,7 @@ new \mail\CampaignPage()
 		throw new ReloadAction('mail', 'Campaign::test');
 
 	})
-	->doDelete(fn() => throw new ReloadAction(), validate: ['canDelete', 'acceptDelete'])
+	->doDelete(fn() => throw new ReloadAction())
 	->update(function($data) {
 
 		$data->e['cContact'] = \mail\ContactLib::getByEmails($data->e['farm'], $data->e['to'], withCustomer: TRUE);
@@ -115,6 +115,6 @@ new \mail\CampaignPage()
 
 		throw new ViewAction($data);
 
-	}, validate: ['canUpdate', 'acceptUpdate'])
-	->doUpdate(fn() => throw new ReloadAction('mail', 'Campaign::updated'), validate: ['canUpdate', 'acceptUpdate']);
+	})
+	->doUpdate(fn() => throw new ReloadAction('mail', 'Campaign::updated'));
 ?>

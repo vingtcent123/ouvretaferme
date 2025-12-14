@@ -205,17 +205,19 @@ class PdfLib extends PdfCrud {
 			return;
 		}
 
-		if($eInvoice['emailedAt'] !== NULL) {
+		if($eInvoice->acceptSend() === FALSE) {
 			Invoice::fail('fileAlreadySent');
 			return;
 		}
 
-		if($eInvoice->acceptSend() === FALSE) {
-			Invoice::fail('fileTooOld');
-			return;
-		}
-
-		if(Invoice::model()->update($eInvoice, ['emailedAt' => new \Sql('NOW()')]) === 0) {
+		if(
+			Invoice::model()
+				->whereStatus(Invoice::GENERATED)
+				->update($eInvoice, [
+					'status' => Invoice::DELIVERED,
+					'emailedAt' => new \Sql('NOW()')
+				]) === 0
+		) {
 			Invoice::fail('fileAlreadySent');
 			return;
 		}
@@ -256,33 +258,23 @@ class PdfLib extends PdfCrud {
 
 	}
 
-	public static function generate(string $type, Sale $eSale, ?\Closure $callback = NULL): Pdf {
-
-		$eSale->expects(['farm']);
-
-		$callback ??= fn() => self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
-
-		$content = $callback();
+	public static function generateBusiness(string $type, Sale $eSale, ?\Closure $callback = NULL): Pdf {
 
 		Pdf::model()->beginTransaction();
 
-		$ePdfContent = new PdfContent();
-		PdfContent::model()->insert($ePdfContent);
+			$ePdfContent = self::generateDocument($type, $eSale, $callback);
 
-		$hash = NULL;
-		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
+			$ePdf = new Pdf([
+				'type' => $type,
+				'sale' => $eSale,
+				'farm' => $eSale['farm'],
+				'content' => $ePdfContent,
+				'createdAt' => Pdf::model()->now() // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée
+			]);
 
-		$ePdf = new Pdf([
-			'type' => $type,
-			'sale' => $eSale,
-			'farm' => $eSale['farm'],
-			'content' => $ePdfContent,
-			'createdAt' => Pdf::model()->now() // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée
-		]);
-
-		Pdf::model()
-			->option('add-replace')
-			->insert($ePdf);
+			Pdf::model()
+				->option('add-replace')
+				->insert($ePdf);
 
 		Pdf::model()->commit();
 
@@ -290,13 +282,13 @@ class PdfLib extends PdfCrud {
 
 	}
 
-	public static function generateInvoice(Invoice $eInvoice): \Collection {
+	public static function generateDocument(string $type, Sale $eSale, ?\Closure $callback = NULL): PdfContent {
 
-		$eInvoice->expects(['farm', 'sales']);
+		$eSale->expects(['farm']);
 
-		$content = FacturXLib::generate($eInvoice, self::build('/selling/pdf:getDocumentInvoice?id='.$eInvoice['id']));
+		$callback ??= fn() => self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
 
-		Pdf::model()->beginTransaction();
+		$content = $callback();
 
 		$ePdfContent = new PdfContent();
 		PdfContent::model()->insert($ePdfContent);
@@ -304,30 +296,23 @@ class PdfLib extends PdfCrud {
 		$hash = NULL;
 		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
 
-		$cPdf = new \Collection();
+		return $ePdfContent;
 
-		$pdf = [
-			'used' => $eInvoice['cSale']->count(),
-			'farm' => $eInvoice['farm'],
-			'content' => $ePdfContent,
-			'type' => Pdf::INVOICE
-		];
+	}
 
-		foreach($eInvoice['cSale'] as $eSale) {
+	public static function generateInvoice(Invoice $eInvoice): PdfContent {
 
-			$cPdf[] = new Pdf($pdf + [
-				'sale' => $eSale,
-			]);
+		$eInvoice->expects(['farm', 'sales']);
 
-		}
+		$content = FacturXLib::generate($eInvoice, self::build('/selling/pdf:getDocumentInvoice?id='.$eInvoice['id']));
 
-		Pdf::model()
-			->option('add-replace')
-			->insert($cPdf);
+		$ePdfContent = new PdfContent();
+		PdfContent::model()->insert($ePdfContent);
 
-		Pdf::model()->commit();
+		$hash = NULL;
+		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
 
-		return $cPdf;
+		return $ePdfContent;
 
 	}
 
@@ -385,32 +370,6 @@ class PdfLib extends PdfCrud {
 			Pdf::model()->delete($e);
 
 		Pdf::model()->commit();
-
-	}
-
-	public static function clean() {
-
-		// Nettoyage des PDF
-		Pdf::model()
-			->where('createdAt < NOW() - INTERVAL '.SellingSetting::DOCUMENT_EXPIRES.' MONTH')
-			->whereContent('!=', NULL)
-			->update([
-				'content' => NULL
-			]);
-
-		// Suppression du contenu nettoyé
-		PdfContent::model()
-			->join(Pdf::model(), 'm1.id = m2.content', 'LEFT')
-			->where('m2.content IS NULL')
-			->delete();
-
-		// Suppression de la référence au PDF dans la facture
-		Invoice::model()
-			->join(PdfContent::model(), 'm1.content = m2.id', 'LEFT')
-			->where('m2.id IS NULL')
-			->update([
-				'content' => NULL
-			]);
 
 	}
 
