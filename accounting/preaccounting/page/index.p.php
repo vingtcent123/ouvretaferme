@@ -52,19 +52,15 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
-			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search) +
+				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
 
-			$data->nItem = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
-
-			$data->nSaleDelivered = \preaccounting\SaleLib::countForAccountingCheck('delivered', $data->eFarm, $data->search);
-			$data->nSalePayment = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search);
-			$data->nSaleClosed = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search);
+			$data->nSalePayment = array_sum(\preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search));
+			$data->nSaleClosed = array_sum(\preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search));
 
 		} else {
 
 			$data->nProduct = 0;
-			$data->nItem = 0;
-			$data->nSaleDelivered = 0;
 			$data->nSalePayment = 0;
 			$data->nSaleClosed = 0;
 
@@ -79,22 +75,24 @@ new Page(function($data) {
 
 		$data->type = GET('type');
 
-		if($data->isSearchValid and in_array($data->type, ['product', 'item', 'delivered', 'payment', 'closed'])) {
+		if($data->isSearchValid and in_array($data->type, ['product', 'payment', 'closed'])) {
 
 			switch($data->type) {
 
 				case 'product':
-					[$data->nToCheck, $data->nVerified, $data->cProduct] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
+					$data->search->set('category', \selling\CategoryLib::getById(GET('category')));
+					$data->search->set('tab', GET('tab'));
+					[$data->nToCheck, $data->nVerified, $data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
+					[$data->nToCheckItem, $data->nVerifiedItem, $data->cItem] = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
+					if(get_exists('category') === FALSE and GET('tab') !== 'items' and empty($data->products) and $data->cItem->notEmpty()) {
+						$data->search->set('tab', 'items');
+					}
 					break;
 
-				case 'item':
-					[$data->nToCheck, $data->nVerified, $data->cItem] = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
-					break;
-
-				case 'delivered':
 				case 'payment':
 				case 'closed':
-					[$data->nToCheck, $data->nVerified, $data->cSale] = \preaccounting\SaleLib::getForAccountingCheck($data->type, $data->eFarm, $data->search);
+					$data->search->set('tab', GET('tab'));
+					[$data->nToCheck, $data->nVerified, $data->cSale, $data->cInvoice] = \preaccounting\SaleLib::getForAccountingCheck($data->type, $data->eFarm, $data->search);
 					$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 					break;
 

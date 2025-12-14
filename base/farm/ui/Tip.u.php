@@ -327,7 +327,7 @@ class TipUi {
 				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité.").'</p>';
 				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes :").'</p>';
 				$h .= '<ol>';
-					$h .= '<li>'.s("<link>Toutes les références de produits</link> doivent être liées à une classe de compte", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">']).'</li>';
+					$h .= '<li>'.s("<link>Tous les produits</link> doivent être liées à une classe de compte", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">']).'</li>';
 					$h .= '<li>'.s("Tous vos articles vendus doivent soit être liés à une référence de produit, soit avoir une classe de compte").'</li>';
 					$h .= '<li>'.s("Toutes vos ventes doivent être livrées, avoir un moyen de paiement, et être clôturées").'</li>';
 				$h .= '</ol>';

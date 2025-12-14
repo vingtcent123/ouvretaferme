@@ -1,4 +1,4 @@
-class SellingAccounting {
+class Preaccounting {
 
 	static export() {
 
@@ -17,9 +17,14 @@ class SellingAccounting {
 
 		const isCollapsed = qs('[data-step-container="' + step + '"]').classList.contains('hide');
 
+		qsa('div[data-step]', node => node.hide());
+		qsa('div[data-step-container]', node => node.hide());
+		qsa('a.step', node => node.classList.remove('selected'));
+
 		if(isCollapsed) {
 
 			const url = qs('a[data-url][data-step="' + step + '"]')?.dataset?.url ?? null;
+
 			if(url) {
 
 				const from = qs('#form-search input[name="from"]').value;
@@ -46,13 +51,20 @@ class SellingAccounting {
 
 			qs('div[data-step="' + step + '"]').removeHide();
 			qs('div[data-step-container="' + step + '"]').removeHide();
-
-		} else {
-
-			qs('div[data-step="' + step + '"]').hide();
-			qs('div[data-step-container="' + step + '"]').hide();
+			qs('a.step[data-step="' + step + '"]').classList.add('selected');
 
 		}
+
+	}
+
+	static load(target) {
+
+		const url = target.dataset.url;
+
+		new Ajax.Query()
+			.url(url)
+			.method('get')
+			.fetch();
 
 	}
 
