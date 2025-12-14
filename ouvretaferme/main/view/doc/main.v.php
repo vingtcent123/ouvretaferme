@@ -144,7 +144,7 @@ new AdaptativeView('help', function($data, DocTemplate $t) {
 
 		echo '<h2>'.Asset::icon('2-circle').' '.s("Utiliser la ferme démo").'</h2>';
 
-		echo '<p>'.s("Nous avons mis en place une ferme démo partagée entre tous les producteurs. Cette ferme démo reprend les données d'une ferme réelle qui utiliser {siteName}.").'</p>';
+		echo '<p>'.s("Nous avons mis en place une ferme démo partagée entre tous les producteurs. Cette ferme démo reprend les données d'une ferme réelle qui utilise {siteName}.").'</p>';
 		echo '<h3>'.s("Le principe de la démo est simple : vous pouvez faire n'importe quoi dessus !<br/>C'est l'endroit idéal pour tester {siteName} sans risquer de corrompre les données de votre ferme.").'</h3>';
 		echo '<ul>';
 			echo '<li>'.s("Testez la création de ventes et de produits").'</li>';
@@ -189,7 +189,7 @@ new AdaptativeView('help', function($data, DocTemplate $t) {
 
 		echo '<h3>'.s("Demandez à vos GAB, chambres... des formations sur Ouvretaferme !").'</h3>';
 
-		echo '<p>'.s("Vous trouverez facilement une dzaine de collègues prêts à se former à l'outil avec vous. Si votre organisme de formation a besoin de formateurs, il est possible de contacter l'association pour que nous puissions vous donner des contacts.").'</p>';
+		echo '<p>'.s("Vous trouverez facilement une dizaine de collègues prêts à se former à l'outil avec vous. Si votre organisme de formation a besoin de formateurs, il est possible de contacter l'association pour que nous puissions vous donner des contacts.").'</p>';
 
 		echo '<p>'.s("Vous organisez une formation sur Ouvretaferme finançable avec Vivea ?<br/>Contactez-nous également pour que nous en fassions la promotion.").'</p>';
 

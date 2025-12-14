@@ -15,7 +15,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<ul>';
 		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, comptes de clients, comptes de produits de vos ventes)").'</li>';
 		echo '<li>'.s("Vous indiquez pour chaque produit à quel compte le rattacher").'</li>';
-		echo '<li>'.s("Vous clôturez vos ventes (moyen de paiement, date de livraison)").'</li>';
+		echo '<li>'.s("Vous indiquez le moyen de paiement et clôturez vos ventes").'</li>';
 	echo '</ul>';
 	echo '<p>'.s("Au final, ").'</p>';
 	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format FEC puis l'importez dans votre logiciel de comptabilité habituel");
@@ -81,7 +81,6 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo s("Si vous préparez vos données pour l'import dans le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'import puisse être réalisé : ");
 			echo '<ul>';
 				echo '<li>'.s("Tous les articles vendus ont bien un compte associé (via leur produit, via la catégorie du produit ou directement sur l'article)").'</li>';
-				echo '<li>'.s("La date de livraison est indiquée").'</li>';
 				echo '<li>'.s("Un moyen de paiement est renseigné").'</li>';
 				echo '<li>'.s("Et enfin : marchés, ventes et factures sont clôturés.").'</li>';
 			echo '</ul>';
@@ -101,7 +100,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo '</ul>';
 		echo '</p>';
 		echo '<div class="util-info-outline">';
-			echo Asset::icon('exclamation-triangle').' '.s("La complétude de l'export est soumise à la complétude de la phase préparatoire. Plus vos données seront remplies, plus votre import sera complet et facile à importer par la suite.");
+			echo Asset::icon('exclamation-triangle').' '.s("La complétude de l'export est soumise à la complétude de la phase préparatoire. Plus vos données seront remplies, plus votre import sera complet et facile à utiliser par la suite.");
 		echo '</div>';
 
 	echo '<div class="util-block">';
@@ -324,7 +323,6 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>.ofx</i> (la plupart des banques proposent ce format).<br />Ensuite, rendez-vous sur la page Banque > Bouton \"Importer un relevé .ofx\" et sélectionnez votre fichier.").'</p>';
 		echo '<p>'.s("Et c'est tout !").'</p>';
 		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page de la banque.").'</p>';
-		echo '<p class="doc-annotation">'.s("Note : Cette fonctionnalité est accessible dès lors que vous avez accès au module de comptabilité.").'</p>';
 
 	echo '</div>';
 
@@ -339,7 +337,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 		echo '</ul>';
 		echo '<div class="util-info">'.Asset::icon('info-circle').' '.s("Si vous souhaitez <b>rapprocher un paiement</b> avec une facture importée, passez directement par le menu de Précomptabilité > Rapprocher les factures").'<div class="doc-annotation">'.s("Note : cette dernière fonctionnalité n'est disponible que si votre exploitation est en comptabilité d'engagement (globalement ou juste pour les ventes).").'</div></div>';
 
-		echo '<h3>'.s("Création ou Rattacher des écritures comptables").'</h3>';
+		echo '<h3>'.s("Créer ou Rattacher des écritures comptables").'</h3>';
 		echo '<p>'.s("Une écriture de contrepartie en compte {bankAccount} sera automatiquement créée et reliée aux écritures comptables concernées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Attention, il faut veiller à ce que l'équilibre de l'ensemble de vos écritures comptables soit bien respecté. Ouvretaferme vous indiquera un message si ce n'est pas le cas.").'</p>';
 		echo '<p>'.s("Ouvretaferme ne créera pas d'écriture de contrepartie avec le tiers concerné (compte client {clientAccount} ou compte fournisseur {supplierAccount}), même si le tiers est indiqué, et même si vous êtes à la comptabilité à l'engagement.", ['clientAccount' => \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, 'supplierAccount' => \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]).'</p>';
@@ -389,8 +387,6 @@ new AdaptativeView('reconciliate', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Rapprocher les <u>ventes</u> avec les opérations bancaires").'</h2>';
 
-		echo '<p class="doc-annotation">'.s("Note : cette fonctionnalité est aussi accessible si vous n'utilisez pas la comptabilité sur {siteName}.").'</p>';
-
 		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos ventes (ou factures) qui semblent correspondre (menu \"Précomptabilité > Rapprocher les ventes\")").'</p>';
 		echo '<p>'.s("Les critères de décision sont : ").'</p>';
 		echo '<ul class="doc-list-icons">';
@@ -415,8 +411,6 @@ new AdaptativeView('reconciliate', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Rapprocher les <u>écritures comptables</u> avec les opérations bancaires").'</h2>';
 
-		echo '<p class="doc-annotation">'.s("Note : cette fonctionnalité n'est disponible que si vous utilisez {siteName} pour tenir votre comptabilité.").'</p>';
-
 		echo '<p>'.s("Ouvretaferme proposera automatiquement les opérations bancaires détectées comme les plus pertinentes par rapport à vos écritures comptables (menu \"Précomptabilité > Rapprocher les écritures\").<br />Les critères de décision sont les mêmes que dans le rapprochement entre l'opération bancaire et les ventes (cf. ci-dessus).").'</p>';
 
 		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous avez ensuite le choix :").'</p>';
@@ -427,7 +421,6 @@ new AdaptativeView('reconciliate', function($data, DocTemplate $t) {
 		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, les actions suivantes sont réalisées :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("saisie de l'écriture du compte de banque {bankAccount} du montant total de la vente,", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</li>';
-			echo '<li>'.s("l'opération bancaire devient \"traitée\"").'</li>';
 			echo '<li>'.s("saisie de l'écriture du compte de tiers {clientAccount} du montant total de la vente", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>']).'<sup>*</sup></li>';
 			echo '<li>'.s("lettrage du tiers").'<sup>*</sup></li>';
 			echo '<li>'.s("la vente ou la facture est marquée <span>payée</span> dans le module de Commercialisation", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</li>';
