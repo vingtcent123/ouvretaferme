@@ -9,7 +9,7 @@ class TipLib extends TipCrud {
 
 	public static function getPrivate(): array {
 		return [
-			'sequence-weeks', 'mailing-contact-help', 'mailing-campaign-help', 'series-forecast-help', 'feature-rotation',
+			'sequence-weeks', 'mailing-contact-help', 'mailing-campaign-help', 'series-forecast-help', 'feature-rotation', 'selling-photo',
 			'accounting-invoice-cashflow', 'accounting-pre-accounting'
 		];
 	}

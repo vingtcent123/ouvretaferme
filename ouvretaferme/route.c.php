@@ -58,6 +58,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['comptabilite', 'parametrer'],
 		],
+		'/doc/' => [
+			'request' => 'main/doc/main',
+			'priority' => 5,
+			'route' => ['doc'],
+		],
 		'/donner' => [
 			'request' => 'association/donation',
 			'priority' => 5,

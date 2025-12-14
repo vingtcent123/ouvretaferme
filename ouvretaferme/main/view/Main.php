@@ -211,6 +211,7 @@ class MainTemplate extends BaseTemplate {
 							$h .= '<div>';
 								$h .= '<h4>'.s("Ressources").'</h4>';
 								$h .= '<a href="https://blog.ouvretaferme.org/" target="_blank">'.s("Blog").'</a><br/>';
+								$h .= '<a href="/doc/" target="_blank">'.s("Documentation").'</a><br/>';
 								$h .= '<a href="/presentation/faq">'.s("Questions fréquentes").'</a><br/>';
 								$h .= '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area">'.s("Explorer la ferme démo").'</a><br/>';
 								$h .= '<a href="/presentation/producteur">'.s("Liste des fonctionnalités").'</a>';

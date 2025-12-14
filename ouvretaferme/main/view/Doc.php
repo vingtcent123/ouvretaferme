@@ -21,9 +21,14 @@ class DocTemplate extends MainTemplate {
 
 		$h = '<div class="doc-wrapper">';
 			$h .= '<div class="doc-menu">';
+				$h .= '<div class="doc-menu-title">'.s("Généralités").'</div>';
+				$h .= '<a href="/doc/" '.$this->menuSelected('mainUse').'>'.s("Introduction").'</a>';
+				$h .= '<a href="/doc/main:help" '.$this->menuSelected('mainHelp').'>'.s("Obtenir de l'aide").'</a>';
+				$h .= '<a href="/doc/main:design" '.$this->menuSelected('mainDesign').'>'.s("Principes ergonomiques").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Commercialisation").'</div>';
 				$h .= '<a href="/doc/selling:pricing" '.$this->menuSelected('sellingPricing').'>'.s("La gestion des prix").'</a>';
 				$h .= '<a href="/doc/selling:market" '.$this->menuSelected('sellingMarket').'>'.s("Le logiciel de caisse").'</a>';
+				$h .= '<a href="/doc/selling:product" '.$this->menuSelected('sellingProduct').'>'.s("Photos libres de droits pour vos produits").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Boutiques en ligne").'</div>';
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';

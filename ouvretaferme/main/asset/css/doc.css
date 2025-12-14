@@ -1,3 +1,11 @@
+@media (min-width: 1400px) {
+
+	html:has(> body[data-template~="doc"]) {
+		font-size: 16px;
+	}
+
+}
+
 div.doc-wrapper {
 	display: grid;
 	grid-template:
@@ -75,6 +83,7 @@ div.doc-content h2 {
 	font-family: 'Itim', cursive;
 	font-size: 2.2rem;
 	color: var(--secondary);
+	margin-bottom: 2rem;
 }
 
 div.doc-content pre {
@@ -88,7 +97,21 @@ div.doc-content img {
 	border: 2px solid var(--border);
 	border-radius: var(--radius);
 	margin-top: 1rem;
-	margin-bottom: 1rem;
+	margin-bottom: 1rem !important;
+}
+
+div.doc-content .doc-icon {
+	width: 2.5rem;
+	height: 2.5rem;
+	font-size: 1.25rem;
+	display: inline-flex;
+	margin: 0 0.25rem;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	color: white;
+	background-color: var(--primary);
+	border-radius: 50%;
 }
 
 div.doc-example {

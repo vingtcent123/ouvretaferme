@@ -119,6 +119,22 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 });
 
+new AdaptativeView('product', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+
+	$t->title = s("Photos libres de droit");
+	$t->subTitle = s("Nous mettons à votre disposition des photos libres de droit pour les principaux légumes cultivés dans les systèmes maraîchers. Vous pouvez notamment les utiliser pour vos produits sur Ouvretaferme !");
+
+	$t->subTitle .= '<div class="mt-3"><a href="'.\main\MainSetting::URL_PHOTOS.'" target="_blank" class="btn btn-transparent btn-xl">'.s("Accéder aux photos").'</a></div>';
+
+	$t->menuSelected = 'sellingProduct';
+
+	echo '<br/>';
+	echo '<br/>';
+
+});
+
 new AdaptativeView('pricing', function($data, DocTemplate $t) {
 
 	$t->template = 'doc';

@@ -181,13 +181,9 @@
 	background-color: #0006;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.5rem;
+	gap: 1rem;
 	border-bottom-left-radius: var(--radius);
 	border-bottom-right-radius: var(--radius);
-}
-
-.tip-button:has(> *:not(:only-child)) {
-	justify-content: space-between;
 }
 
 .tip-button .btn-tip {

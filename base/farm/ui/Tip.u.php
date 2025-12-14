@@ -17,7 +17,7 @@ class TipUi {
 					$h .= str_repeat($content['icon'], 9);
 				$h .= '</div>';
 				$h .= '<div class="tip-header">';
-					$h .= '<div class="tip-intro">'.\Asset::icon('info-circle').'</div>';
+					$h .= '<div class="tip-intro">'.\Asset::icon('lightbulb').'</div>';
 					$h .= match($navigation) {
 						'close' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-transparent btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Toutes les astuces").'</a>',
 						'next' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-transparent btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Astuce suivante").'</a>',
@@ -30,7 +30,7 @@ class TipUi {
 					if($content['image']) {
 						$h .= '<div class="tip-image"">';
 							if($content['button'] !== NULL) {
-								$h .= '<a href="/farm/tip:click?id='.$tip.'&redirect='.urlencode($content['button'][0]).'" data-ajax-navigation="never">'.\Asset::image('farm', $tip.'.png').'</a>';
+								$h .= '<a href="/farm/tip:click?id='.$tip.'&redirect='.urlencode($content['button'][0]).'" data-ajax-navigation="never" target="_blank">'.\Asset::image('farm', $tip.'.png').'</a>';
 							} else {
 								$h .= \Asset::image('farm', $tip.'.png');
 							}
@@ -39,10 +39,10 @@ class TipUi {
 				$h .= '</div>';
 				$h .= '<div class="tip-button">';
 					if($content['button'] !== NULL) {
-						$h .= '<a href="/farm/tip:click?id='.$tip.'&redirect='.urlencode($content['button'][0]).'" data-ajax-navigation="never" class="btn btn-outline-tip">'.$content['button'][1].'</a>';
+						$h .= '<a href="/farm/tip:click?id='.$tip.'&redirect='.urlencode($content['button'][0]).'" data-ajax-navigation="never" target="_blank" class="btn btn-outline-tip">'.$content['button'][1].'</a>';
 					}
 					if($navigation === 'close' or $navigation === 'inline') {
-						$h .= '<a data-ajax="/farm/tip:close?id='.$tip.'" data-ajax-method="get" class="btn btn-tip">'.\Asset::icon('x-lg').'  '.s("Cacher ce message").'</a>';
+						$h .= '<a data-ajax="/farm/tip:close?id='.$tip.'" data-ajax-method="get" class="btn btn-tip">'.\Asset::icon('x-lg').'  '.s("Cacher cette astuce").'</a>';
 					}
 				$h .= '</div>';
 			$h .= '</div>';
@@ -178,6 +178,20 @@ class TipUi {
 					'content' => $h,
 					'image' => TRUE,
 					'button' => [$link, s("Aller aux ventes")],
+				];
+
+			case 'selling-photo' :
+
+				$link = \main\MainSetting::URL_PHOTOS;
+
+				$h = '<p>'.s("Nous mettons à votre disposition des photos libres de droit pour les principaux légumes cultivés dans les systèmes maraîchers.<br/>Vous pouvez notamment les utiliser pour vos produits sur Ouvretaferme !").'</p>';
+
+				return [
+					'icon' => \Asset::icon('image'),
+					'title' => s("Des photos libres de droit pour vos produits"),
+					'content' => $h,
+					'image' => TRUE,
+					'button' => [$link, s("Voir les photos")],
 				];
 
 			case 'selling-pdf' :
