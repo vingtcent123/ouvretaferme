@@ -66,11 +66,10 @@ Class PreaccountingUi {
 						$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="sale-'.$type.'" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 					$h .= '</th>';
 					$h .= '<th>#</th>';
-
+					$h .= '<th>'.s("Date").'</th>';
 					$h .= '<th>'.s("Client").'</th>';
-					$h .= '<th class="text-center">'.s("Statut").'</th>';
-					$h .= '<th class="text-center">'.s("Vente").'</th>';
 					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
+					$h .= '<th class="text-center">'.s("Statut").'</th>';
 				$h .= '</tr>';
 
 			$h .= '</thead>';
@@ -89,6 +88,10 @@ Class PreaccountingUi {
 							$h .= '<a href="/vente/'.$eSale['id'].'" target="_blank" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 						$h .= '</td>';
 
+						$h .= '<td>';
+							$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
+						$h .= '</td>';
+
 						$h .= '<td class="sale-item-name">';
 							if($eSale['profile'] === \selling\Sale::SALE_MARKET) {
 								$h .= encode($eSale['marketParent']['customer']->getName());
@@ -104,6 +107,10 @@ Class PreaccountingUi {
 							}
 						$h .= '</td>';
 
+						$h .= '<td class="highlight-stick-right sale-item-price text-end">';
+							$h .= \selling\SaleUi::getTotal($eSale);
+						$h .= '</td>';
+
 						$h .= '<td class="sale-item-status text-center">';
 						if($eSale['closed']) {
 							$h .= '<span class="color-success">'.\Asset::icon('check-lg').' '.s("Clôturée").'</span>';
@@ -112,14 +119,6 @@ Class PreaccountingUi {
 						} else {
 							$h .= '<span class="btn btn-md sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.\selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 						}
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-created-at text-center">';
-							$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
-						$h .= '</td>';
-
-						$h .= '<td class="highlight-stick-right sale-item-price text-end">';
-							$h .= \selling\SaleUi::getTotal($eSale);
 						$h .= '</td>';
 
 					$h .= '</tr>';
@@ -144,19 +143,22 @@ Class PreaccountingUi {
 
 		$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/'.$type.'?from='.$search->get('from').'&to='.$search->get('to');
 
-		$h .= '<div class="tabs-item">';
-			foreach($nToCheck as $tab => $count) {
+		if(count($nToCheck) > 1) {
 
-				$h .= '<a onclick="Preaccounting.load(this);" data-url="'.$url.'&tab='.$tab.'" class="tab-item '.(($search->get('tab') === $tab) ? 'selected' : '').'">';
-					$h .= match($tab) {
-						\selling\Sale::SALE => s("Ventes"),
-						\selling\Sale::SALE_MARKET => s("Ventes de marchés"),
-						'invoice' => s("Factures"),
-					} ;
-				$h .= ' <small class="tab-item-count">'.$count.'</small></a>';
+			$h .= '<div class="tabs-item">';
+				foreach($nToCheck as $tab => $count) {
 
-			}
-		$h .= '</div>';
+					$h .= '<a onclick="Preaccounting.load(this);" data-url="'.$url.'&tab='.$tab.'" class="tab-item '.(($search->get('tab') === $tab) ? 'selected' : '').'">';
+						$h .= match($tab) {
+							\selling\Sale::SALE => s("Ventes"),
+							'invoice' => s("Factures"),
+						} ;
+					$h .= ' <small class="tab-item-count">'.$count.'</small></a>';
+
+				}
+			$h .= '</div>';
+
+		}
 
 		if($search->get('tab') === 'invoice') {
 
@@ -170,9 +172,8 @@ Class PreaccountingUi {
 							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="invoice-'.$type.'" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 						$h .= '</th>';
 						$h .= '<th>#</th>';
-
+						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th>'.s("Client").'</th>';
-						$h .= '<th class="text-center">'.s("Vente").'</th>';
 						$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
 						$h .= '<th>'.s("Moyen de paiement").'</th>';
 					$h .= '</tr>';
@@ -193,6 +194,10 @@ Class PreaccountingUi {
 								$h .= '<a href="/facture/'.$eInvoice['id'].'" target="_blank" class="btn btn-sm btn-outline-primary">'.encode($eInvoice['name']).'</a>';
 							$h .= '</td>';
 
+							$h .= '<td>';
+								$h .= \util\DateUi::numeric($eInvoice['date'], \util\DateUi::DATE);
+							$h .= '</td>';
+
 							$h .= '<td class="sale-item-name">';
 								$h .= encode($eInvoice['customer']->getName());
 								if($eInvoice['customer']->notEmpty()) {
@@ -200,10 +205,6 @@ Class PreaccountingUi {
 										$h .= \selling\CustomerUi::getCategory($eInvoice['customer']);
 									$h .= '</div>';
 								}
-							$h .= '</td>';
-
-							$h .= '<td class="sale-item-created-at text-center">';
-								$h .= \util\DateUi::numeric($eInvoice['date'], \util\DateUi::DATE);
 							$h .= '</td>';
 
 							$h .= '<td class="highlight-stick-right sale-item-price text-end">';
@@ -251,9 +252,8 @@ Class PreaccountingUi {
 							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="sale-'.$type.'" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 						$h .= '</th>';
 						$h .= '<th>#</th>';
-
+						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th>'.s("Client").'</th>';
-						$h .= '<th class="text-center">'.s("Vente").'</th>';
 						$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
 						if($type !== 'payment') {
 							$h .= '<th>'.s("Moyen de paiement").'</th>';
@@ -276,6 +276,10 @@ Class PreaccountingUi {
 								$h .= '<a href="/vente/'.$eSale['id'].'" target="_blank" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 							$h .= '</td>';
 
+							$h .= '<td>';
+								$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
+							$h .= '</td>';
+
 							$h .= '<td class="sale-item-name">';
 								$h .= encode($eSale['customer']->getName());
 								if($eSale['customer']->notEmpty()) {
@@ -283,10 +287,6 @@ Class PreaccountingUi {
 										$h .= \selling\CustomerUi::getCategory($eSale['customer']);
 									$h .= '</div>';
 								}
-							$h .= '</td>';
-
-							$h .= '<td class="sale-item-created-at text-center">';
-								$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
 							$h .= '</td>';
 
 							$h .= '<td class="highlight-stick-right sale-item-price text-end">';

@@ -80,7 +80,7 @@ Class SaleLib {
 		foreach($cSale as $eSale) {
 			$count[$eSale['profile']] = $eSale['count'];
 		}
-		if($type === 'closed') {
+		if($type === 'closed' and $nInvoice > 0) {
 			$count['invoice'] = $nInvoice;
 		}
 
