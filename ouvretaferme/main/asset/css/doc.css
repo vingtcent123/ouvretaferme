@@ -98,6 +98,14 @@ div.doc-header {
 	margin-bottom: 2rem;
 }
 
+@media (max-width: 575px) {
+
+	div.doc-header {
+		padding: 7rem 0 2rem;
+	}
+
+}
+
 div.doc-header h1 {
 	color: white;
 	text-align: center;
