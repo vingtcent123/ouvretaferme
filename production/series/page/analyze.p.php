@@ -18,11 +18,11 @@ new \farm\FarmPage()
 			'year' => $data->year,
 			'month' => $data->month,
 			'week' => $data->week,
-			'plant' => get_exists('plant') ? \plant\PlantLib::getById(GET('plant')) : NULL,
-			'user' => get_exists('user') ? \user\UserLib::getById(GET('user')) : new \user\User(),
-			'action' => get_exists('action') ? \farm\ActionLib::getByFarm($data->eFarm, id: GET('action')) : NULL,
-			'series' => get_exists('series') ? \series\SeriesLib::getById(GET('series'), ['id', 'name']) : NULL,
-			'category' => get_exists('category') ? \farm\CategoryLib::getByFarm($data->eFarm, id: GET('category')) : NULL,
+			'plant' => get_exists('plant') ? \plant\PlantLib::getById(GET('plant'))->validate() : NULL,
+			'user' => get_exists('user') ? \user\UserLib::getById(GET('user'))->validate() : new \user\User(),
+			'action' => get_exists('action') ? \farm\ActionLib::getByFarm($data->eFarm, id: GET('action'))->validate() : NULL,
+			'series' => get_exists('series') ? \series\SeriesLib::getById(GET('series'), ['id', 'name'])->validate() : NULL,
+			'category' => get_exists('category') ? \farm\CategoryLib::getByFarm($data->eFarm, id: GET('category'))->validate() : NULL,
 			'status' => \series\Task::GET('status', 'status'),
 		]);
 
