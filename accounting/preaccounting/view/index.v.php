@@ -86,12 +86,10 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 				echo match($step['type']) {
 					'product' =>
-						s("Les comptes associés aux produits sont automatiquement répercutés sur les articles référencés par ces produits dans vos ventes. Ainsi, votre export de précomptabilité sera le plus juste possible et vous économisera de fastidieux contrôles à l'import dans votre comptabilité.").
-						'<br />'.s("Pour aller plus vite, vous pouvez modifier vos produits en masse grâce aux cases à cocher."),
+						s("En associant les comptes de classe {productAccount} avec vos produits, l'information sera automatiquement répercutée sur tous les articles vendus qui référencent ces produits.", ['productAccount' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]),
 					'payment' =>
-						'<p>'.s("Renseignez ici le moyen de paiement qui a été utilisé dans vos ventes pour transférer cette information automatiquement dans votre comptabilité").'</p>'.
-						'<p>'.s("Ces ventes seront également <b>automatiquement marquées comme payées</b>.").'</p>',
-					'closed' => '<p>'.s("Une vente clôturée n'est plus modifiable. Ainsi, votre import en comptabilité reflètera ce qui a été réellement enregistré au niveau de la facturation et respectera la réglementation en vigueur.").'</p>'
+						'<p>'.s("Renseignez ici le moyen de paiement qui a été utilisé dans vos ventes pour transférer cette information automatiquement dans votre comptabilité.").'</p>',
+					'closed' => '<p>'.s("Les ventes et factures doivent être clôturées pour les importer en comptabilité.").'</p>'
 				};
 
 			echo '</div>';
@@ -144,6 +142,11 @@ new JsonView('/precomptabilite/{type}', function($data, AjaxTemplate $t) {
 			break;
 
 		case 'payment':
+			$t->qs('div[data-step="'.$data->type.'"]')->innerHtml(
+				new \preaccounting\PreaccountingUi()->salesPayment($data->type, $data->cSale, $data->cPaymentMethod, $data->nToCheck, $data->nVerified)
+			);
+			break;
+
 		case 'closed':
 			$t->qs('div[data-step="'.$data->type.'"]')->innerHtml(
 				new \preaccounting\PreaccountingUi()->sales($data->eFarm, $data->type, $data->cSale, $data->cInvoice, $data->cPaymentMethod, $data->nToCheck, $data->nVerified, $data->search)

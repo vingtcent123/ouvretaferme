@@ -50,6 +50,92 @@ Class PreaccountingUi {
 		return $h;
 	}
 
+	public function salesPayment(string $type, \Collection $cSale, \Collection $cPaymentMethod, int $nToCheck, int $nVerified): string {
+
+		\Asset::css('selling', 'sale.css');
+
+		$h = $this->getSummary($nToCheck, $nVerified);
+
+		$h .= '<table class="tr-even" data-batch="#batch-accounting-sale-'.$type.'">';
+
+			$h .= '<thead>';
+
+				$h .= '<tr>';
+
+					$h .= '<th class="text-center">';
+						$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="sale-'.$type.'" onclick="Preaccounting.toggleGroupSelection(this)"/>';
+					$h .= '</th>';
+					$h .= '<th>#</th>';
+
+					$h .= '<th>'.s("Client").'</th>';
+					$h .= '<th class="text-center">'.s("Statut").'</th>';
+					$h .= '<th class="text-center">'.s("Vente").'</th>';
+					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
+				$h .= '</tr>';
+
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+
+				foreach($cSale as $eSale) {
+
+					$h .= '<tr>';
+
+						$h .= '<td class="td-checkbox">';
+							$h .= '<input type="checkbox" name="batch[]" batch-type="sale-'.$type.'" value="'.$eSale['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
+						$h .= '</td>';
+
+						$h .= '<td>';
+							$h .= '<a href="/vente/'.$eSale['id'].'" target="_blank" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
+						$h .= '</td>';
+
+						$h .= '<td class="sale-item-name">';
+							if($eSale['profile'] === \selling\Sale::SALE_MARKET) {
+								$h .= encode($eSale['marketParent']['customer']->getName());
+							} else {
+
+								$h .= encode($eSale['customer']->getName());
+								if($eSale['customer']->notEmpty()) {
+									$h .= '<div class="util-annotation">';
+										$h .= \selling\CustomerUi::getCategory($eSale['customer']);
+									$h .= '</div>';
+								}
+
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="sale-item-status text-center">';
+						if($eSale['closed']) {
+							$h .= '<span class="color-success">'.\Asset::icon('check-lg').' '.s("Clôturée").'</span>';
+						} else if($eSale['preparationStatus'] === \selling\Sale::DELIVERED) {
+							$h .= '<span class="color-success">'.\Asset::icon('check-lg').' '.\selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+						} else {
+							$h .= '<span class="btn btn-md sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.\selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+						}
+						$h .= '</td>';
+
+						$h .= '<td class="sale-item-created-at text-center">';
+							$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
+						$h .= '</td>';
+
+						$h .= '<td class="highlight-stick-right sale-item-price text-end">';
+							$h .= \selling\SaleUi::getTotal($eSale);
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
+			$h .= '</tbody>';
+
+		$h .= '</table>';
+
+		$h .= $this->getBatchSales($type, $cPaymentMethod);
+
+		return $h;
+
+	}
+
 	public function sales(\farm\Farm $eFarm, string $type, \Collection $cSale, \Collection $cInvoice, \Collection $cPaymentMethod, array $nToCheck, int $nVerified, \Search $search): string {
 
 		\Asset::css('selling', 'sale.css');
@@ -86,15 +172,9 @@ Class PreaccountingUi {
 						$h .= '<th>#</th>';
 
 						$h .= '<th>'.s("Client").'</th>';
-						$h .= '<th class="text-center">'.s("État").'</th>';
-						if($type !== 'closed') {
-							$h .= '<th class="text-center">'.s("Clôturée").'</th>';
-						}
 						$h .= '<th class="text-center">'.s("Vente").'</th>';
 						$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
-						if($type !== 'payment') {
-							$h .= '<th>'.s("Moyen de paiement").'</th>';
-						}
+						$h .= '<th>'.s("Moyen de paiement").'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -122,20 +202,6 @@ Class PreaccountingUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="sale-item-status text-center">';
-							$h.= '<span class="btn btn-sm btn-readonly invoice-status-'.$eInvoice['status'].'-button">'.\selling\InvoiceUi::p('status')->values[$eInvoice['status']].'</span>';
-							$h .= '</td>';
-
-							if($type !== 'closed') {
-								$h .= '<td class="sale-item-status text-center">';
-									if($eInvoice['closed']) {
-										$h .= '<span class="color-success">'.\Asset::icon('check-lg').'</span>';
-									} else {
-										$h .= '<span>'.\Asset::icon('x-lg').'</span>';
-									}
-								$h .= '</td>';
-							}
-
 							$h .= '<td class="sale-item-created-at text-center">';
 								$h .= \util\DateUi::numeric($eInvoice['date'], \util\DateUi::DATE);
 							$h .= '</td>';
@@ -144,26 +210,24 @@ Class PreaccountingUi {
 								$h .= \selling\SaleUi::getTotal($eInvoice);
 							$h .= '</td>';
 
-							if($type !== 'payment') {
-								$h .= '<td class="sale-item-payment-type">';
+							$h .= '<td class="sale-item-payment-type">';
 
-									if($eInvoice['paymentMethod']->empty()) {
+								if($eInvoice['paymentMethod']->empty()) {
 
-										$h .= '<span>'.\Asset::icon('x-lg').'</span>';
+									$h .= '<span>'.\Asset::icon('x-lg').'</span>';
 
-									} else {
+								} else {
 
-										$h .= encode($eInvoice['paymentMethod']['name']);
+									$h .= encode($eInvoice['paymentMethod']['name']);
 
-										$paymentStatus = \selling\InvoiceUi::getPaymentStatus($eInvoice);
-										if($paymentStatus) {
-											$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-										}
-
+									$paymentStatus = \selling\InvoiceUi::getPaymentStatus($eInvoice);
+									if($paymentStatus) {
+										$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
 									}
 
-								$h .= '</td>';
-							}
+								}
+
+							$h .= '</td>';
 
 						$h .= '</tr>';
 
@@ -189,10 +253,6 @@ Class PreaccountingUi {
 						$h .= '<th>#</th>';
 
 						$h .= '<th>'.s("Client").'</th>';
-						$h .= '<th class="text-center">'.s("État").'</th>';
-						if($type !== 'closed') {
-							$h .= '<th class="text-center">'.s("Clôturée").'</th>';
-						}
 						$h .= '<th class="text-center">'.s("Vente").'</th>';
 						$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
 						if($type !== 'payment') {
@@ -217,37 +277,13 @@ Class PreaccountingUi {
 							$h .= '</td>';
 
 							$h .= '<td class="sale-item-name">';
-								if($eSale['profile'] === \selling\Sale::SALE_MARKET) {
-									$h .= encode($eSale['marketParent']['customer']->getName());
-								} else {
-
-									$h .= encode($eSale['customer']->getName());
-									if($eSale['customer']->notEmpty()) {
-										$h .= '<div class="util-annotation">';
-											$h .= \selling\CustomerUi::getCategory($eSale['customer']);
-										$h .= '</div>';
-									}
-
+								$h .= encode($eSale['customer']->getName());
+								if($eSale['customer']->notEmpty()) {
+									$h .= '<div class="util-annotation">';
+										$h .= \selling\CustomerUi::getCategory($eSale['customer']);
+									$h .= '</div>';
 								}
 							$h .= '</td>';
-
-							$h .= '<td class="sale-item-status text-center">';
-							if($eSale['preparationStatus'] === \selling\Sale::DELIVERED) {
-								$h .= '<span class="color-success">'.\Asset::icon('check-lg').'</span>';
-							} else {
-								$h .= '<span class="btn btn-md sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.\selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
-							}
-							$h .= '</td>';
-
-							if($type !== 'closed') {
-								$h .= '<td class="sale-item-status text-center">';
-									if($eSale['closed']) {
-										$h .= '<span class="color-success">'.\Asset::icon('check-lg').'</span>';
-									} else {
-										$h .= '<span>'.\Asset::icon('x-lg').'</span>';
-									}
-								$h .= '</td>';
-							}
 
 							$h .= '<td class="sale-item-created-at text-center">';
 								$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
@@ -257,26 +293,24 @@ Class PreaccountingUi {
 								$h .= \selling\SaleUi::getTotal($eSale);
 							$h .= '</td>';
 
-							if($type !== 'payment') {
-								$h .= '<td class="sale-item-payment-type">';
+							$h .= '<td class="sale-item-payment-type">';
 
-									if($eSale['cPayment']->empty()) {
+								if($eSale['cPayment']->empty()) {
 
-										$h .= '<span>'.\Asset::icon('x-lg').'</span>';
+									$h .= '<span>'.\Asset::icon('x-lg').'</span>';
 
-									} else {
+								} else {
 
-										$h .= \selling\SaleUi::getPaymentMethodName($eSale);
+									$h .= \selling\SaleUi::getPaymentMethodName($eSale);
 
-										$paymentStatus = \selling\SaleUi::getPaymentStatus($eSale);
-										if($paymentStatus) {
-											$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-										}
-
+									$paymentStatus = \selling\SaleUi::getPaymentStatus($eSale);
+									if($paymentStatus) {
+										$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
 									}
 
-								$h .= '</td>';
-							}
+								}
+
+							$h .= '</td>';
 
 						$h .= '</tr>';
 
@@ -303,12 +337,12 @@ Class PreaccountingUi {
 
 			$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
 				$menu .= \Asset::icon('cash-coin');
-				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen et statut<br />de paiement").'</span>';
+				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de<br />paiement").'</span>';
 			$menu .= '</a>';
 
 			$menu .= '<div class="dropdown-list bg-secondary">';
 
-				$menu .= '<div class="dropdown-title">'.s("Moyen et statut de paiement").'</div>';
+				$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
 				foreach($cPaymentMethod as $ePaymentMethod) {
 					if($ePaymentMethod['online'] === FALSE) {
 						$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-sale-'.$type.'-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
@@ -331,12 +365,12 @@ Class PreaccountingUi {
 
 			$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
 				$menu .= \Asset::icon('cash-coin');
-				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen et statut<br />de paiement").'</span>';
+				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de<br />paiement").'</span>';
 			$menu .= '</a>';
 
 			$menu .= '<div class="dropdown-list bg-secondary">';
 
-				$menu .= '<div class="dropdown-title">'.s("Moyen et statut de paiement").'</div>';
+				$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
 				foreach($cPaymentMethod as $ePaymentMethod) {
 					if($ePaymentMethod['online'] === FALSE) {
 						$menu .= '<a data-ajax-submit="/selling/invoice:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-invoice-'.$type.'-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';

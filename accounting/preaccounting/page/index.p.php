@@ -90,6 +90,10 @@ new Page(function($data) {
 					break;
 
 				case 'payment':
+					[$data->nToCheck, $data->nVerified, $data->cSale] = \preaccounting\SaleLib::getForPaymentAccountingCheck($data->eFarm, $data->search);
+					$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+					break;
+
 				case 'closed':
 					$data->search->set('tab', GET('tab'));
 					[$data->nToCheck, $data->nVerified, $data->cSale, $data->cInvoice] = \preaccounting\SaleLib::getForAccountingCheck($data->type, $data->eFarm, $data->search);
