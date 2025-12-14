@@ -586,8 +586,7 @@ class Sale extends SaleElement {
 	public function acceptInvoice(): bool {
 
 		return (
-			$this['customer']->notEmpty() and
-			$this['customer']['destination'] !== Customer::COLLECTIVE and
+			$this['customer']->acceptInvoice() and
 			$this->isSale()
 		);
 

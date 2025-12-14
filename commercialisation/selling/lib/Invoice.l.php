@@ -513,9 +513,13 @@ class InvoiceLib extends InvoiceCrud {
 
 			// Get customer based on the first ID
 			$eCustomer = Sale::model()
+				->select([
+					'customer' => ['destination']
+				])
 				->whereId(first($ids))
 				->whereFarm($eFarm)
-				->getValue('customer');
+				->getValue('customer')
+				->validate('acceptInvoice');
 
 			$cSale = SaleLib::getForInvoice($eCustomer, $ids);
 

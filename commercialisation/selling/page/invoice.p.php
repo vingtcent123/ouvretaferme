@@ -12,7 +12,7 @@ new \selling\InvoicePage()
 
 		}
 
-		$eCustomer->validate('canManage');
+		$eCustomer->validate('canManage', 'acceptInvoice');
 
 		$eFarm = $eCustomer['farm'];
 		$eFarm->validateLegal();

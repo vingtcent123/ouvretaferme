@@ -49,6 +49,15 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function acceptInvoice(): bool {
+
+		return (
+			$this->notEmpty() and
+			$this['destination'] !== Customer::COLLECTIVE
+		);
+
+	}
+
 	public function canRead(): bool {
 		return $this->canWrite();
 	}

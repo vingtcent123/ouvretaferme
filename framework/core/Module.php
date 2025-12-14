@@ -3021,7 +3021,7 @@ abstract class ModuleModel {
 	 * @param mixed $property The property to get the value from
 	 * @return mixed A value
 	 */
-	public function getValue($property, mixed $defaultValue = NULL): mixed {
+	public function getValue(string|Sql $property, mixed $defaultValue = NULL): mixed {
 
 		if($property instanceof Sql) {
 			$select = ['_' => $property];
