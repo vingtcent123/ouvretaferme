@@ -102,7 +102,7 @@ new AdaptativeView('design', function($data, DocTemplate $t) {
 		echo Asset::image('main', 'doc/page-checkbox.png');
 
 		echo '<h3>'.s("... Et lorsque vous voyez une case à cocher à côté d'un titre, c'est qu'elle permet de cocher automatiquement tout ce qui est en dessous !", ['icon' => '<span class="doc-icon">'.Asset::icon('lightbulb').'</span>']).'</h3>';
-		echo '<p class="util-info">'.s("Dans l'exemple ci-dessous, vous pouvez sélectionner en un clic tous les interventions <i>Matériel</i>.").'</p>';
+		echo '<p class="util-info">'.s("Dans l'exemple ci-dessous, vous pouvez sélectionner en un clic toutes les interventions <i>Matériel</i>.").'</p>';
 		echo Asset::image('main', 'doc/page-all.png');
 
 	echo '</div>';
