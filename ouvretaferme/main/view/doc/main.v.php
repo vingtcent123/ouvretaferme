@@ -97,6 +97,14 @@ new AdaptativeView('design', function($data, DocTemplate $t) {
 		echo '<p class="util-info">'.s("Vous pouvez soit la lire car les astuces contiennent parfois des informations qui pourraient vous intéresser, soit la cacher définitivement en cliquant sur le bouton approprié.").'</p>';
 		echo '<a href="/doc/selling:product">'.Asset::image('main', 'doc/page-tip.png').'</a>';
 
+		echo '<h3>'.s("Dès que vous voyez des cases à cocher à côté à gauche d'un tableau, c'est que vous pouvez réaliser des actions groupées ...", ['icon' => '<span class="doc-icon">'.Asset::icon('lightbulb').'</span>']).'</h3>';
+		echo '<p class="util-info">'.s("Dans l'exemple ci-dessous, assignez à plusieurs produits simultanément une nouvelle catégorie.").'</p>';
+		echo Asset::image('main', 'doc/page-checkbox.png');
+
+		echo '<h3>'.s("... Et lorsque vous voyez une case à cocher à côté d'un titre, c'est qu'elle permet de cocher automatiquement tout ce qui est en dessous !", ['icon' => '<span class="doc-icon">'.Asset::icon('lightbulb').'</span>']).'</h3>';
+		echo '<p class="util-info">'.s("Dans l'exemple ci-dessous, vous pouvez sélectionner en un clic tous les interventions <i>Matériel</i>.").'</p>';
+		echo Asset::image('main', 'doc/page-all.png');
+
 	echo '</div>';
 
 	echo '<br/>';
