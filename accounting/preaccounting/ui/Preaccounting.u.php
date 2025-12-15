@@ -5,9 +5,6 @@ Class PreaccountingUi {
 
 	public function __construct() {
 
-		\Asset::css('preaccounting', 'sale.css');
-		\Asset::js('preaccounting', 'accounting.js');
-
 	}
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
