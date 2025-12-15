@@ -45,7 +45,7 @@ Class ProductLib {
 			$productsByCategory[$product['category']['id'] ?? 0] = $product['count'];
 		}
 
-		if($search->get('category')->empty() and isset($products[NULL]) === FALSE) {
+		if($search->get('category')->empty() and isset($products[0]) === FALSE) {
 			$search->set('category', $cCategories->find(fn($e) => $e['id'] === first($products->getKeys()))->first());
 		}
 
