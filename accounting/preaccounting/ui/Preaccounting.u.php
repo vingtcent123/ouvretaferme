@@ -508,8 +508,12 @@ Class PreaccountingUi {
 
 		if($cCategory->notEmpty()) {
 
-			$eCategorySelected = $search->get('category');
 			$isItemSelected = ($search->get('tab') === 'items');
+			if($isItemSelected) {
+				$eCategorySelected = new \selling\Category();
+			} else {
+				$eCategorySelected = $search->get('tab');
+			}
 
 			$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/product?from='.$search->get('from').'&to='.$search->get('to');
 
@@ -520,7 +524,7 @@ Class PreaccountingUi {
 				foreach($cCategory as $eCategory) {
 
 					if(($products[$eCategory['id']] ?? 0) > 0) {
-						$h .= '<a onclick="Preaccounting.load(this);" data-url="'.$url.'&category='.$eCategory['id'].'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'">'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
+						$h .= '<a onclick="Preaccounting.load(this);" data-url="'.$url.'&tab='.$eCategory['id'].'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'">'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
 					}
 
 				}
@@ -529,7 +533,7 @@ Class PreaccountingUi {
 
 				if($uncategorized > 0) {
 
-					$h .= '<a onclick="Preaccounting.load(this);" data-url="'.$url.'&category=0" class="'.$class.' '.(($eCategorySelected->empty() and $isItemSelected === FALSE) ? 'selected' : '').'">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
+					$h .= '<a onclick="Preaccounting.load(this);" data-url="'.$url.'&tab=0" class="'.$class.' '.(($eCategorySelected->empty() and $isItemSelected === FALSE) ? 'selected' : '').'">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
 
 				}
 

@@ -80,11 +80,17 @@ new Page(function($data) {
 			switch($data->type) {
 
 				case 'product':
-					$data->search->set('category', \selling\CategoryLib::getById(GET('category')));
-					$data->search->set('tab', GET('tab'));
+
+					$data->search->set('tab', new \selling\Category());
+					if(GET('tab') === 'items') {
+						$data->search->set('tab', GET('tab'));
+					} else {
+						$data->search->set('tab', \selling\CategoryLib::getById(GET('tab')));
+					}
 					[$data->nToCheck, $data->nVerified, $data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
 					[$data->nToCheckItem, $data->nVerifiedItem, $data->cItem] = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
-					if(get_exists('category') === FALSE and GET('tab') !== 'items' and empty($data->products) and $data->cItem->notEmpty()) {
+
+					if($data->search->get('tab') !== 'items' and empty($data->products) and $data->cItem->notEmpty()) {
 						$data->search->set('tab', 'items');
 					}
 					break;

@@ -28,6 +28,9 @@ Class ItemLib {
 
 	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
 
+		$nToCheck = self::countForAccountingCheck($eFarm, $search);
+		$nVerified = self::filterForAccountingCheck($eFarm, $search, FALSE)->count();
+
 		$cItem = self::filterForAccountingCheck($eFarm, $search)
 			->select([
 				'id', 'name',
@@ -37,8 +40,6 @@ Class ItemLib {
 			->group(['sale', 'm1.id'])
 			->getCollection(NULL, NULL, ['sale', NULL]);
 
-		$nToCheck = self::countForAccountingCheck($eFarm, $search);
-		$nVerified = self::filterForAccountingCheck($eFarm, $search, FALSE)->count();
 
 		return [$nToCheck, $nVerified, $cItem];
 	}

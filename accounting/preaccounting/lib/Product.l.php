@@ -45,8 +45,18 @@ Class ProductLib {
 			$productsByCategory[$product['category']['id'] ?? 0] = $product['count'];
 		}
 
-		if($search->get('category')->empty() and isset($products[0]) === FALSE) {
-			$search->set('category', $cCategories->find(fn($e) => $e['id'] === first($products->getKeys()))->first());
+		if($search->get('tab') !== 'items' and isset($products[0]) === FALSE) {
+			$search->set('tab', $cCategories->find(fn($e) => $e['id'] === first($products->getKeys()))->first());
+		}
+
+		$nToCheck = self::countForAccountingCheck($eFarm, $search);
+
+		$nVerified = (self::filterForAccountingCheck($eFarm, $search, FALSE)
+			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
+			->get()['count'] ?? 0);
+
+		if($search->get('tab') === 'items') {
+			return [$nToCheck, $nVerified, new \Collection(), $cCategories, $productsByCategory];
 		}
 
 		$cProduct = self::filterForAccountingCheck($eFarm, $search)
@@ -56,16 +66,12 @@ Class ProductLib {
 				'category',
 				'vignette', 'unprocessedPlant' => ['fqn', 'vignette'], 'profile', 'farm', 'status', 'unprocessedVariety', 'mixedFrozen', 'quality', 'additional', 'origin',
 			])
-			->whereCategory($search->get('category'))
+			->whereCategory($search->get('tab'), if: $search->get('tab') !== 'items')
 			->sort(['m1.name' => SORT_ASC])
 			->getCollection();
 
-		$nToCheck = self::countForAccountingCheck($eFarm, $search);
-
-		$nVerified = (self::filterForAccountingCheck($eFarm, $search, FALSE)
-			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
-			->get()['count'] ?? 0);
 		return [$nToCheck, $nVerified, $cProduct, $cCategories, $productsByCategory];
+
 	}
 	
 }
