@@ -45,7 +45,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			'description' => s("Clôturez vos ventes"),
 		],
 	];
-	echo '<div class="step-process">';
+	echo '<div class="step-process" onrender="'.(in_array(GET('type'), ['product', 'payment', 'closed']) ? 'Preaccounting.toggle(\''.GET('type').'\', \''.GET('tab').'\');' : '') .'">';
 
 		foreach($steps as $step) {
 
@@ -63,7 +63,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		  echo '</a>';
 
 		}
-/*echo '<a class="sale-preaccounting-title" data-step="'.$key.'" onclick="SellingAccounting.toggle(\''.$key.'\'); return true;">';*/
+
 		echo '<a class="step last" data-step="export" onclick="Preaccounting.toggle(\'export\'); return true;">';
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';

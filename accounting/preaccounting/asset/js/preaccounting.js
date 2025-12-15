@@ -13,7 +13,7 @@ class Preaccounting {
 			.method('get')
 			.fetch();
 	}
-	static toggle(step) {
+	static toggle(step, tab) {
 
 		const isCollapsed = qs('[data-step-container="' + step + '"]').classList.contains('hide');
 
@@ -42,10 +42,14 @@ class Preaccounting {
 					qs('#form-search input[name="to"]').classList.remove('form-error-field');
 				}
 
+				const currentUrl = window.location.origin + window.location.pathname + '?type=' + step;
+				Lime.History.replaceState(currentUrl);
+
 				new Ajax.Query()
 					.url(url + '?from=' + from + '&to=' + to)
 					.method('get')
-					.fetch();
+					.fetch()
+					.then(() => Preaccounting.load(step, tab));
 
 			}
 
@@ -57,9 +61,17 @@ class Preaccounting {
 
 	}
 
-	static load(target) {
+	static load(step, tab) {
 
+		if(!tab) {
+			return;
+		}
+
+		const target = qs('[data-step="' +  step + '"][data-tab="' + tab + '"]');
 		const url = target.dataset.url;
+
+		const currentUrl = window.location.origin + window.location.pathname + '?type=' + step + '&tab=' + tab;
+		Lime.History.replaceState(currentUrl);
 
 		new Ajax.Query()
 			.url(url)
