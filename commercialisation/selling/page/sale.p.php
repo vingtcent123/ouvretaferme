@@ -510,7 +510,7 @@ new \selling\SalePage()
 
 		$fw = new \FailWatch();
 
-		$data->e->build(['deliveredAt'], $_POST, new \Properties('create'));
+		$data->e->build(['deliveredAt', 'preparationStatus'], $_POST, new \Properties('create'));
 
 		$fw->validate();
 

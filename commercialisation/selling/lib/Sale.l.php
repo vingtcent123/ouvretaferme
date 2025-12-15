@@ -828,7 +828,6 @@ class SaleLib extends SaleCrud {
 
 		// Ajouter une nouvelle vente
 		$eSaleNew = new Sale($eSale->extracts($properties));
-		$eSaleNew['preparationStatus'] = Sale::DRAFT;
 		$eSaleNew['closed'] = FALSE;
 		$eSaleNew['closedBy'] = new \user\User();
 		$eSaleNew['closedAt'] = NULL;

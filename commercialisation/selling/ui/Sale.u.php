@@ -2027,8 +2027,10 @@ class SaleUi {
 				$form->dynamicField($eSale, 'deliveredAt')
 			);
 
+			$h .= $this->getPreparationStatusField($form, $eSale);
+
 			$h .= $form->group(
-				content: '<div class="util-info">'.s("La vente sera dupliquée avec l'ensemble des articles de la vente initiale, et placée en état <i>Brouillon</i>.").'</div>'
+				content: '<div class="util-info">'.s("La vente sera dupliquée avec l'ensemble des articles de la vente initiale.").'</div>'
 			);
 
 			$h .= $form->group(
