@@ -531,7 +531,7 @@ class ItemLib extends ItemCrud {
 				'name' => SORT_ASC,
 				'id' => SORT_ASC
 			])
-			->delegateCollection('sale');
+			->getCollection();
 
 		$cItemIngredient = new \Collection();
 		self::buildIngredients($cItemIngredient, $e, $cItemCopy);
