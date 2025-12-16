@@ -449,6 +449,10 @@ class MembershipLib {
 		]);
 		\selling\SaleLib::create($eSale);
 
+		\selling\Payment::model()
+			->whereSale($eSale)
+			->update(['checkoutId' => $eHistory['checkoutId'], 'paymentIntentId' => $eHistory['paymentIntentId'], 'onlineStatus' => \selling\Payment::SUCCESS]);
+
 		$eProduct = \selling\Product::model()
 			->select(\selling\Product::getSelection())
 			->whereName($eHistory['type'] === History::MEMBERSHIP ? 'Adhésion' : 'Don')

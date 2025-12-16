@@ -82,7 +82,7 @@ Class PreaccountingUi {
 						$h .= '</td>';
 
 						$h .= '<td>';
-							$h .= '<a href="/vente/'.$eSale['id'].'" target="_blank" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
+							$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -270,7 +270,7 @@ Class PreaccountingUi {
 							$h .= '</td>';
 
 							$h .= '<td>';
-								$h .= '<a href="/vente/'.$eSale['id'].'" target="_blank" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
+								$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 							$h .= '</td>';
 
 							$h .= '<td>';
