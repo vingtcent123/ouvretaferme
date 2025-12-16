@@ -20,9 +20,9 @@ Class ItemLib {
 			->where('m2.deliveredAt BETWEEN '.\selling\Item::model()->format($search->get('from')).' AND '.\selling\Item::model()->format($search->get('to')));
 
 	}
-	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
+	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search, bool $searchProblems = FALSE): int {
 
-		return self::filterForAccountingCheck($eFarm, $search)->count();
+		return self::filterForAccountingCheck($eFarm, $search, $searchProblems)->count();
 
 	}
 

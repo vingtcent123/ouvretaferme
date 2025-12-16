@@ -10,15 +10,20 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'prepare', ['import' => array_sum($data->counts['import']), 'reconciliate-sales' => $data->counts['reconciliate']['sales'], 'reconciliate-operations' => $data->counts['reconciliate']['operations']]);
 
-	$hasSearch = ($data->search->get('from') and $data->search->get('to'));
-	$inFuture = ($data->search->get('from') > date('Y-m-d'));
-
 	$errors = $data->nProduct + $data->nSalePayment + $data->nSaleClosed;
 
 	echo '<div class="util-block">';
 		echo '<h3>'.s("Choix de la période").'</h3>';
 		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search);
 	echo '</div>';
+
+	if($errors === 0 and $data->nProductVerified === 0 and $data->nSalePaymentVerified === 0 and $data->nSaleClosedVerified === 0) {
+
+		echo '<div class="util-block-important">';
+			echo s("Il n'a aucune vente à afficher. Avez-vous choisi la bonne période ?");
+		echo '</div>';
+		return;
+	}
 
 	Asset::css('preaccounting', 'step.css');
 

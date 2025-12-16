@@ -21,9 +21,9 @@ Class ProductLib {
 	/**
 	 * Gets all the products linked to a sale but without any account
 	 */
-	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
+	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search, bool $searchProblems = TRUE): int {
 
-		return (self::filterForAccountingCheck($eFarm, $search)
+		return (self::filterForAccountingCheck($eFarm, $search, $searchProblems)
 			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
 			->get()['count'] ?? 0);
 

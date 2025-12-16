@@ -49,7 +49,7 @@ Class SaleLib {
 			->count();
 
 	}
-	public static function countForAccountingCheck(string $type, \farm\Farm $eFarm, \Search $search): array {
+	public static function countForAccountingCheck(string $type, \farm\Farm $eFarm, \Search $search, bool $searchProblems = TRUE): array {
 
 		switch($type) {
 
@@ -57,7 +57,8 @@ Class SaleLib {
 				$cSale = self::filterForAccountingCheck($eFarm, $search)
 					->select(['count' => new \Sql('COUNT(*)'), 'profile'])
 					->join(\selling\Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
-					->where('m2.id IS NULL')
+					->where('m2.id IS NULL', if: $searchProblems === TRUE)
+					->where('m2.id IS NOT NULL', if: $searchProblems === FALSE)
 					->group('profile')
 					->getCollection();
 				break;
@@ -65,7 +66,8 @@ Class SaleLib {
 			case 'closed':
 				$cSale = self::filterForAccountingCheck($eFarm, $search)
 					->select(['count' => new \Sql('COUNT(*)'), 'profile'])
-					->whereClosed(FALSE)
+					->whereClosed(FALSE, if: $searchProblems === TRUE)
+					->whereClosed(TRUE, if: $searchProblems === FALSE)
 					->whereProfile('!=', \selling\Sale::SALE_MARKET)
 					->group('profile')
 					->getCollection();

@@ -54,15 +54,23 @@ new Page(function($data) {
 
 			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search) +
 				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search, FALSE) +
+				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
 
 			$data->nSalePayment = array_sum(\preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search));
+			$data->nSalePaymentVerified = array_sum(\preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search, FALSE));
+
 			$data->nSaleClosed = array_sum(\preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search));
+			$data->nSaleClosedVerified = array_sum(\preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search, FALSE));
 
 		} else {
 
 			$data->nProduct = 0;
 			$data->nSalePayment = 0;
 			$data->nSaleClosed = 0;
+			$data->nProductVerified = 0;
+			$data->nSalePaymentVerified = 0;
+			$data->nSaleClosedVerified = 0;
 
 		}
 

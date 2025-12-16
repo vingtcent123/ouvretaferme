@@ -15,6 +15,11 @@ class Preaccounting {
 	}
 	static toggle(step, tab) {
 
+		const isSuccess = qs('a[data-step="' + step + '"]').classList.contains('success');
+		if(isSuccess) {
+			return;
+		}
+
 		const isCollapsed = qs('div[data-step="' + step + '"]').classList.contains('hide');
 
 		qsa('div[data-step]', node => node.hide());
