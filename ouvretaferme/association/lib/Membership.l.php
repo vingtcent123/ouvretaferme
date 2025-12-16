@@ -233,24 +233,16 @@ class MembershipLib {
 
 			if($type === History::MEMBERSHIP) {
 
-				$currentYear = date('Y');
-
-				// On cotise pour l'année prochaine
-				if(
-					History::model()
-						->whereFarm($eFarm)
-						->whereMembership($currentYear)
-						->whereType(History::MEMBERSHIP)
-						->whereStatus(History::VALID)
-						->exists()
-				) {
-
-					$membershipYear = nextYear();
-
+				$eHistoryLast = History::model()
+					->select(['year' => new \Sql('MAX(membership)', 'int')])
+					->whereFarm($eFarm)
+					->whereType(History::MEMBERSHIP)
+					->whereStatus(History::VALID)
+					->get();
+				if($eHistoryLast->empty() or $eHistoryLast['year'] === NULL) {
+					$membershipYear = date('Y');
 				} else {
-
-					$membershipYear = $currentYear;
-
+					$membershipYear = $eHistoryLast['year'] + 1;
 				}
 
 			} else {
@@ -407,7 +399,7 @@ class MembershipLib {
 			return;
 		}
 
-		self::activateMembership($eHistory, new \payment\Method());
+		self::activateMembership($eHistory, \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD));
 	}
 
 	private static function activateMembership(History $eHistory, \payment\Method $eMethod): void {
@@ -449,10 +441,6 @@ class MembershipLib {
 		]);
 		\selling\SaleLib::create($eSale);
 
-		\selling\Payment::model()
-			->whereSale($eSale)
-			->update(['checkoutId' => $eHistory['checkoutId'], 'paymentIntentId' => $eHistory['paymentIntentId'], 'onlineStatus' => \selling\Payment::SUCCESS]);
-
 		$eProduct = \selling\Product::model()
 			->select(\selling\Product::getSelection())
 			->whereName($eHistory['type'] === History::MEMBERSHIP ? 'Adhésion' : 'Don')
@@ -471,6 +459,14 @@ class MembershipLib {
 		]);
 
 		\selling\ItemLib::create($eItem);
+
+		if($eMethod->notEmpty() and $eMethod->isOnline()) {
+
+			\selling\Payment::model()
+				->whereSale($eSale)
+				->update(['checkoutId' => $eHistory['checkoutId'], 'paymentIntentId' => $eHistory['paymentIntentId'], 'onlineStatus' => \selling\Payment::SUCCESS]);
+
+		}
 
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
 		\selling\Sale::model()
