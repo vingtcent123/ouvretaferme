@@ -1,6 +1,7 @@
 .step-process {
 	display: flex;
 	margin-bottom: 1rem;
+	background: none;
 }
 
 a.step {
@@ -20,7 +21,7 @@ a.step:hover {
 	background-color: rgba(0, 0, 0, 0.05);
 
 	/* chevauchement */
-	margin-left: -18px;
+	margin-left: -20px;
 
 	clip-path: polygon(
 			0 0,
@@ -30,6 +31,9 @@ a.step:hover {
 			0 100%,
 			8% 50%
 	);
+}
+.step:first-child {
+	padding-left: 20px;
 }
 
 .step.active .step-number {
@@ -46,24 +50,25 @@ a.step:hover {
 
 /* première sans encoche */
 .step-process > *:first-child {
+	margin-left: 0;
+
 	clip-path: polygon(
 			0 0,
 			92% 0,
 			100% 50%,
 			92% 100%,
 			0 100%
-
 	);
 }
 
 /* dernière sans flèche */
 .step-process > *:last-child {
 	clip-path: polygon(
-			0 0,
-			100% 0,
-			100% 100%,
-			0 100%,
-			8% 50%
+		0 0,
+		100% 0,
+		100% 100%,
+		0 100%,
+		8% 50%
 	);
 }
 
@@ -105,14 +110,62 @@ a.step:hover {
 }
 
 /* Responsive */
-@media (max-width: 900px) {
-	.process {
-		flex-direction: column;
+@media (max-width: 1199px) and (min-width: 992px) {
+	.step {
+		padding: 16px 32px 16px 32px;
+		margin-left: -18px;
+
+		clip-path: polygon(
+				0 0,
+				95% 0,
+				100% 50%,
+				95% 100%,
+				0 100%,
+				5% 50%
+		);
 	}
 
+	.step:first-child {
+		margin-left: 0;
+		clip-path: polygon(
+				0 0,
+				95% 0,
+				100% 50%,
+				95% 100%,
+				0 100%
+		);
+	}
+
+	.step:last-child {
+		clip-path: polygon(
+				0 0,
+				100% 0,
+				100% 100%,
+				0 100%,
+				5% 50%
+		);
+	}
+}
+
+
+@media (max-width: 991px) {
+	.step-process {
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.step:first-child,
+	.step:last-child {
+		clip-path: none;
+	}
 	.step {
 		margin-left: 0;
 		clip-path: none;
-		border-radius: 12px;
+		border-radius: 14px;
+		padding: 16px;
+	}
+
+	.step > *:last-child {
+		clip-path: none;
 	}
 }

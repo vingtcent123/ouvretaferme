@@ -41,7 +41,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			'position' => 3,
 			'number' => $data->nSaleClosed,
 			'type' => 'closed',
-			'title' => s("Statuts"),
+			'title' => s("Clôture"),
 			'description' => s("Clôturez vos ventes"),
 		],
 	];
@@ -64,7 +64,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<a class="step last" data-step="export" onclick="Preaccounting.toggle(\'export\'); return true;">';
+		echo '<a class="step last '.($step['number'] > 0 ? 'active' : 'success').'" data-step="export" onclick="Preaccounting.toggle(\'export\'); return true;">';
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
@@ -73,29 +73,14 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 				echo '</div>';
 			echo '</div>';
 			echo '<p class="step-desc">';
-				echo s("Télécharger un Fichier des Écritures Comptables (FEC)");
+				echo s("Téléchargez un Fichier des Écritures Comptables (FEC)");
 			echo '</p>';
 		echo '</a>';
 
 	echo '</div>';
 
 	foreach($steps as $step) {
-
-		echo '<div data-step-container="'.$step['type'].'" class="hide">';
-			echo '<div class="util-block-help">';
-
-				echo match($step['type']) {
-					'product' =>
-						s("En associant les comptes de classe {productAccount} avec vos produits, l'information sera automatiquement répercutée sur tous les articles vendus qui référencent ces produits.", ['productAccount' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]),
-					'payment' =>
-						'<p>'.s("Renseignez ici le moyen de paiement qui a été utilisé dans vos ventes pour transférer cette information automatiquement dans votre comptabilité.").'</p>',
-					'closed' => '<p>'.s("Les ventes et factures doivent être clôturées pour les importer en comptabilité.").'</p>'
-				};
-
-			echo '</div>';
-		echo '</div>';
-
-		echo '<div data-step="'.$step['type'].'"></div>';
+		echo '<div data-step="'.$step['type'].'" class="hide"></div>';
 	}
 
 	$form = new \util\FormUi();
@@ -114,12 +99,51 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		$class = 'btn-secondary disabled';
 	}
 
-	echo '<div data-step-container="export" class="hide">';
-	echo new \preaccounting\PreaccountingUi()->explainExport($data->eFarm);
-	echo '</div>';
-
 	echo '<div data-step="export" class="hide">';
-	echo '<a '.attrs($attributes).' style="height: 100%;">'.$form->button(s("Exporter"), ['class' => 'btn '.$class]).'</a>';
+		if($errors > 0) {
+			if($data->nProduct > 0) {
+				if($data->nSalePayment > 0) {
+					if($data->nSaleClosed > 0) {
+						$check = s("Vérifiez <link>{icon} vos produits</link>, <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
+							'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
+							'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
+							'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
+						]);
+					} else {
+						$check = s("Vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>.", [
+							'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
+							'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
+						]);
+					}
+				} else if($data->nSaleClosed > 0) {
+					$check = s("Vérifiez <link>{icon} vos produits</link> et <link3>{icon3} la clôture de vos ventes</link3>.", [
+						'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
+						'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
+					]);
+				} else {
+					$check = s("Vérifiez <link>{icon} vos produits</link>.", [
+						'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
+					]);
+				}
+			} else if($data->nSalePayment > 0) {
+				if($data->nSaleClosed > 0) {
+					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
+						'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
+						'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
+					]);
+				} else {
+					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2>.", [
+						'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
+					]);
+				}
+			} else {
+					$check = s("Vérifiez <link3>{icon3} la clôture de vos ventes</link3>.", [
+						'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
+					]);
+			}
+			echo '<div class="util-block-important">'.s("Certaines données sont manquantes ({check}).<br />Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import.<br />Si vous souhaitez importer les données de vente dans votre comptabilité sur {siteName}, vous ne pourrez pas importer les ventes dont des données manquent.", ['check' => $check]).'</div>';
+		}
+		echo '<a '.attrs($attributes).' style="height: 100%;">'.$form->button(s("Exporter"), ['class' => 'btn '.$class]).'</a>';
 	echo '</div>';
 
 });
@@ -154,7 +178,6 @@ new JsonView('/precomptabilite/{type}', function($data, AjaxTemplate $t) {
 			break;
 	}
 
-	$t->qs('div[data-step-container="'.$data->type.'"]')->removeHide();
 });
 
 

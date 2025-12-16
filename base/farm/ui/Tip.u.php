@@ -325,25 +325,28 @@ class TipUi {
 			case 'accounting-pre-accounting' :
 
 				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité.").'</p>';
-				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes :").'</p>';
-				$h .= '<ol>';
-					$h .= '<li>'.s("<link>Tous les produits</link> doivent être liées à une classe de compte", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">']).'</li>';
-					$h .= '<li>'.s("Tous vos articles vendus doivent soit être liés à une référence de produit, soit avoir une classe de compte").'</li>';
-					$h .= '<li>'.s("Toutes vos ventes doivent être livrées, avoir un moyen de paiement, et être clôturées").'</li>';
-				$h .= '</ol>';
-				$h .= '<p>'.s("Vous pourrez ainsi exporter un fichier FEC de vos ventes pour l'intégrer dans votre outil comptable, ou valider directement dans le module de comptabilité les ventes importées depuis le module de commercialisation sur {siteName}.").'</p>';
-				$h .= '<p>'.s("Également, grâce au module de comptabilité, vous pourrez").'</p>';
-				$h .= '<ul>';
-					$h .= '<li>'.s("Paramétrer <link>tiers et clients</link>", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/thirdParty">']).'</li>';
-					$h .= '<li>'.s("Personnaliser vos <linkJournal>journaux</linkJournal> et vos <linkClass>classes de compte</linkClass>", ['linkJournal' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/journalCode">', 'linkClass' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">']).'</li>';
-				$h .= '</ol>';
+				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes, si elles ne sont pas déjà réalisées au fur et à mesure :").'</p>';
+				$h .= '<ul style="list-style-type: none;">';
+					$h .= '<li>'.\Asset::icon('1-circle').' '.s("Associer un compte à <link>chaque produit</link> ou <linkType>chaque type de produit</linkType> et aux articles sans référence produit", [
+						'link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">',
+						'linkType' => '<a href="/farm/configuration:update?id='.$eFarm['id'].'">',
+					]).'</li>';
+					$h .= '<li>'.\Asset::icon('2-circle').' '.s("Renseigner le moyen de paiement des ventes").'</li>';
+					$h .= '<li>'.\Asset::icon('3-circle').' '.s("Clôturer les ventes").'</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Vous pourrez ainsi :").'</p>';
+
+				$h .= \Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("soit exporter un fichier FEC{star} de vos ventes pour l'intégrer dans votre outil comptable", ['star' => '<sup><small>'.\Asset::icon('asterisk').'</small></sup>']);
+				$h .= '<br />';
+				$h .= \Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("soit importer vos ventes dans le module de comptabilité d'Ouvretaferme");
+				$h .= '<p><small><sup>'.\Asset::icon('asterisk').'</sup> '.s("FEC : Fichier des Écritures Comptables").'</small></p>';
 
 				return [
 					'icon' => \Asset::icon('file-spreadsheet'),
 					'title' => s("Qu'est-ce que la précomptabilité ?"),
 					'content' => $h,
 					'image' => FALSE,
-					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("Aide")],
+					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("En savoir plus avec l'Aide")],
 				];
 			default:
 				throw new \Exception('Invalid tip \''.$fqn.'\'');

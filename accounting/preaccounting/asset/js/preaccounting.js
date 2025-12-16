@@ -15,10 +15,9 @@ class Preaccounting {
 	}
 	static toggle(step, tab) {
 
-		const isCollapsed = qs('[data-step-container="' + step + '"]').classList.contains('hide');
+		const isCollapsed = qs('div[data-step="' + step + '"]').classList.contains('hide');
 
 		qsa('div[data-step]', node => node.hide());
-		qsa('div[data-step-container]', node => node.hide());
 		qsa('a.step', node => node.classList.remove('selected'));
 
 		if(isCollapsed) {
@@ -54,7 +53,6 @@ class Preaccounting {
 			}
 
 			qs('div[data-step="' + step + '"]').removeHide();
-			qs('div[data-step-container="' + step + '"]').removeHide();
 			qs('a.step[data-step="' + step + '"]').classList.add('selected');
 
 		}

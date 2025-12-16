@@ -45,7 +45,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<h3>'.s("Les comptes des clients (411)").'</h3>';
 
 		echo '<p>';
-			echo s("Vous pouvez personnaliser des comptes pour vos différents clients dans les <link>paramètres du module de Comptabilité</link>. En reliant un client avec un tiers et un numéro de compte spécifique, toutes vos ventes sont rattachées au bon numéro de compte de tiers.", [
+			echo s("Vous pouvez personnaliser des comptes pour vos différents clients dans les <link>paramètres du module de comptabilité</link>. En reliant un client avec un tiers et un numéro de compte spécifique, toutes vos ventes sont rattachées au bon numéro de compte de tiers.", [
 				'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">'
 			]);
 		echo '</p>';
@@ -57,12 +57,12 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<h3>'.s("Les journaux").'</h3>';
 
 		echo '<p>';
-			echo s("Les journaux peuvent être automatiquement attribués à chaque ligne de vente. Vous pouvez personnaliser vos journaux dans les <link>paramètres du module de Comptabilité</link>.", [
+			echo s("Les journaux peuvent être automatiquement attribués à chaque ligne de vente. Vous pouvez personnaliser vos journaux dans les <link>paramètres du module de comptabilité</link>.", [
 				'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlJournal($data->eFarm).'/journalCode">'
 			]);
 		echo '</p>';
 		echo '<p>';
-			echo s("Ensuite, associez un journal à chaque compte de vente (classe {productAccount}) dans les <link>paramètres des comptes du module de Comptabilité</link>.", ['productAccount' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS, 'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">']);
+			echo s("Ensuite, associez un journal à chaque compte de vente (classe {productAccount}) dans les <link>paramètres des comptes du module de comptabilité</link>.", ['productAccount' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS, 'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">']);
 		echo '</p>';
 
 		echo '<h3>'.s("Les données sont-elles obligatoires ?").'</h3>';
@@ -401,7 +401,7 @@ new AdaptativeView('reconciliate', function($data, DocTemplate $t) {
 			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 
-		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> dans le module de Commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</p>';
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</p>';
 
 	echo '</div>';
 
@@ -423,7 +423,7 @@ new AdaptativeView('reconciliate', function($data, DocTemplate $t) {
 			echo '<li>'.s("saisie de l'écriture du compte de banque {bankAccount} du montant total de la vente,", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</li>';
 			echo '<li>'.s("saisie de l'écriture du compte de tiers {clientAccount} du montant total de la vente", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>']).'<sup>*</sup></li>';
 			echo '<li>'.s("lettrage du tiers").'<sup>*</sup></li>';
-			echo '<li>'.s("la vente ou la facture est marquée <span>payée</span> dans le module de Commercialisation", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</li>';
+			echo '<li>'.s("la vente ou la facture est marquée <span>payée</span> dans le module de commercialisation", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</li>';
 		echo '</ul>';
 		echo '<p class="doc-annotation"><sup>*</sup>'.s("Note : Les opérations liées aux tiers (saisie de l'écriture et lettrage) ne sont réalisées que dans le cas d'une comptabilité à l'engagement (globalement ou uniquement pour les ventes)").'</p>';
 	echo '</div>';
