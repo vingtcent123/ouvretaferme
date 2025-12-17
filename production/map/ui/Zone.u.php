@@ -242,29 +242,36 @@ class ZoneUi {
 
 		$h = '<div class="zone-corner util-print-invisible">';
 
-			if($cZone->count() >= 2) {
+			if(
+				$cZone->count() >= 2 or
+				($cZone->count() === 1 and $cZone->first()['cPlot']->count() >= 2)
+			) {
 
 				$h .= '<a data-dropdown="bottom-start" class="zone-button btn btn-secondary dropdown-toggle" data-dropdown-hover="true">';
 					$h .= '<span class="zone-dropdown" data-placeholder="'.s("Mes parcelles").'">';
 						$h .= $eZoneSelected->notEmpty() ? encode($cZone->findById($eZoneSelected)['name']) : s("Mes parcelles");
 					$h .= '</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list" data-wrapper="#zone-container">';
+				$h .= '<div id="zone-selector" class="dropdown-list dropdown-list-2" data-wrapper="#zone-container">';
 
-					$h .= '<a class="dropdown-item '.($eZoneSelected->empty() ? 'selected' : '').'" data-tab="" onclick="Zone.select(this)">';
+					$h .= '<a class="dropdown-item '.($eZoneSelected->empty() ? 'selected' : '').'" data-tab="" onclick="Zone.select(undefined)" style="grid-column: span 2">';
 						$h .= s("Toutes mes parcelles");
 					$h .= '</a>';
+
+					$h .= '<div class="dropdown-divider"></div>';
 
 					if($this->eUpdate->notEmpty()) {
 						$zones = array_count_values($this->eUpdate['cPlace']->getColumnCollection('zone')->getIds());
 						asort($zones);
+						$plots = array_count_values($this->eUpdate['cPlace']->getColumnCollection('plot')->getIds());
+						asort($plots);
 					}
 
 					foreach($cZone as $eZone) {
 
 						$beds = $zones[$eZone['id']] ?? 0;
 
-						$h .= '<a class="dropdown-item '.($eZoneSelected->is($eZone) ? 'selected' : '').'" data-zone="'.$eZone['id'].'" onclick="Zone.select(this)" '.attr('data-placeholder', encode($eZone['name'])).'>';
+						$h .= '<a class="dropdown-item '.($eZoneSelected->is($eZone) ? 'selected' : '').'" data-zone="'.$eZone['id'].'" onclick="Zone.select('.$eZone['id'].')" '.attr('data-placeholder', encode($eZone['name'])).' style="grid-column: span 2">';
 							$h .= s("Parcelle {value}", encode($eZone['name']));
 							if($this->eUpdate->notEmpty()) {
 								$h .= '<span class="util-badge bg-primary zone-count" id="zone-count-'.$eZone['id'].'">';
@@ -274,6 +281,27 @@ class ZoneUi {
 								$h .= '</span>';
 							}
 						$h .= '</a>';
+
+						foreach($eZone['cPlot'] as $ePlot) {
+
+							if($ePlot['zoneFill']) {
+								continue;
+							}
+
+							$beds = $plots[$ePlot['id']] ?? 0;
+
+							$h .= '<a class="dropdown-item" data-plot="'.$ePlot['id'].'" onclick="Zone.select('.$eZone['id'].', '.$ePlot['id'].')" '.attr('data-placeholder', encode($ePlot['name'])).'>';
+								$h .= \Asset::icon('chevron-right').' '.s("Jardin {value}", encode($ePlot['name']));
+								if($this->eUpdate->notEmpty()) {
+									$h .= '<span class="util-badge bg-primary zone-count" id="plot-count-'.$ePlot['id'].'">';
+										if($beds > 0) {
+											$h .= $beds;
+										}
+									$h .= '</span>';
+								}
+							$h .= '</a>';
+
+						}
 
 					}
 

@@ -41,7 +41,7 @@ class TileUi {
 
 			if($ePlayer->isOnline()) {
 				$h .= '<a data-ajax="/game/action:doHarvest" post-id="'.$e['id'].'" class="game-tile-harvest game-tile-harvest-now">';;
-					$h .= s("Récolter");
+					$h .= s("Récolte");
 					$h .= '<br/>';
 					$h .= \Asset::icon('clock').'  '.PlayerUi::getTime($ePlayer->getHarvestTime($cTile));
 				$h .= '</a>';

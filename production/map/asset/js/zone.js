@@ -42,14 +42,15 @@ if(isTouch()) {
 
 class Zone {
 
-	static select(target) {
+	static select(zoneId, plotId = undefined) {
+
+		const zoneTarget = qs('#zone-selector [data-zone="'+ zoneId +'"]');
 
 		let location;
 
-		const zone = target.dataset.zone;
 		const zoneDropdown = qs('#zone-container .zone-dropdown');
 
-		if(zone === undefined) {
+		if(zoneId === undefined) {
 
 			qsa('#zone-container .zone-wrapper', wrapper => wrapper.removeHide());
 			qsa('[data-wrapper="#zone-container"] .dropdown-item', item => item.dataset.zone === undefined ? item.classList.add('selected') : item.classList.remove('selected'));
@@ -60,12 +61,21 @@ class Zone {
 
 		} else {
 
-			qsa('#zone-container .zone-wrapper', tab => tab.dataset.zone === zone ? tab.removeHide() : tab.hide());
-			qsa('[data-wrapper="#zone-container"] .dropdown-item', tab => tab.dataset.zone === zone ? tab.classList.add('selected') : tab.classList.remove('selected'));
+			qsa('#zone-container .zone-wrapper', tab => tab.dataset.zone === zoneTarget.dataset.zone ? tab.removeHide() : tab.hide());
+			qsa('[data-wrapper="#zone-container"] .dropdown-item', tab => tab.dataset.zone === zoneTarget.dataset.zone ? tab.classList.add('selected') : tab.classList.remove('selected'));
 
-			location = document.location.href.setArgument('zone', zone);
+			location = document.location.href.setArgument('zone', zoneId);
 
-			zoneDropdown.innerHTML = target.dataset.placeholder;
+			zoneDropdown.innerHTML = zoneTarget.dataset.placeholder;
+
+		}
+
+		if(plotId !== undefined) {
+
+			qs('#plot-item-'+ plotId).scrollIntoView({
+				block: 'center',
+				inline: 'center'
+			});
 
 		}
 

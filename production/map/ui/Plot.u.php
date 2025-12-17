@@ -22,7 +22,7 @@ class PlotUi {
 
 		foreach($cPlot as $ePlot) {
 
-			$h .= '<div class="plot-wrapper '.($ePlot['cBed']->count() <= 10 ? 'plot-wrapper-preserve' : '').'">';
+			$h .= '<div class="plot-wrapper '.($ePlot['cBed']->count() <= 10 ? 'plot-wrapper-preserve' : '').'" data-plot="'.$ePlot['id'].'">';
 
 			if($ePlot['zoneFill']) {
 				$h .= new BedUi()->displayBedsFromPlot($eFarm, $ePlot, $season, $eUpdate, $print);
@@ -172,30 +172,24 @@ class PlotUi {
 
 		foreach($cPlot as $ePlot) {
 
+			$h .= '<div class="plot-wrapper">';
+
 			if($ePlot['zoneFill']) {
-
-				$h .= '<div class="plot-wrapper">';
-					$h .= new BedUi()->getRotations($eFarm, $ePlot['cBed'], $season);
-				$h .= '</div>';
-
+				$h .= new BedUi()->getRotations($eFarm, $ePlot['cBed'], $season);
 			} else {
 
-				$h .= '<div class="plot-wrapper">';
+				$h .= '<div class="plot-title">';
 
-					$h .= '<div class="plot-title">';
-
-						$h .= '<div class="util-action">';
-							$h .= '<h4>';
-								$h .= s("Jardin {value}", encode($ePlot['name']));
-								$h .= '<span class="plot-title-area">'.$ePlot->getArea().'</span>';
-							$h .= '</h4>';
-						$h .= '</div>';
-
+					$h .= '<div class="util-action">';
+						$h .= '<h4>';
+							$h .= s("Jardin {value}", encode($ePlot['name']));
+							$h .= '<span class="plot-title-area">'.$ePlot->getArea().'</span>';
+						$h .= '</h4>';
 					$h .= '</div>';
 
-					$h .= new BedUi()->getRotations($eFarm, $ePlot['cBed'], $season);
-
 				$h .= '</div>';
+
+				$h .= new BedUi()->getRotations($eFarm, $ePlot['cBed'], $season);
 
 			}
 

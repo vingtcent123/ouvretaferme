@@ -125,6 +125,7 @@ class SeriesSelector {
 
 		qsa('#zone-content .bed-item-grid.selected', node => node.classList.remove('selected'));
 		qs("#series-selector-list .series-selector-cultivation.selected", node => node.classList.remove('selected'));
+		qsa('#zone-selector .zone-count, #zone-selector .plot-count', node => node.innerHTML = '');
 
 		document.body.classList.remove('bed-updating');
 

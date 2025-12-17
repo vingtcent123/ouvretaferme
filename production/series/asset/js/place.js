@@ -166,6 +166,16 @@ class Place {
 
 		}
 
+		const plotWrapper = target.firstParent('.plot-wrapper');
+		const plotCount = qs('#plot-count-'+ plotWrapper.dataset.plot);
+
+		if(plotCount) {
+
+			const beds = plotWrapper.qsa('[name="beds[]"]:checked').length;
+			plotCount.innerHTML = (beds > 0) ? beds : '';
+
+		}
+
 	}
 
 	static submitUpdate() {
