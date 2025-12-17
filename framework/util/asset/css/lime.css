@@ -2852,10 +2852,10 @@ div.tabs-v .tab-panel:not(.selected) {
 div.tabs-item-wrapper {
 	display: grid;
 	grid-template:
-		"tabs label" 1fr / 1fr max-content;
+		"tabs label" auto / 1fr max-content;
 }
 
-@media (max-width: 575px) {
+@media (max-width: 768px) {
 
 	div.tabs-item-wrapper {
 		grid-template:
@@ -2903,7 +2903,7 @@ div.tabs-item + div.tabs-panel.util-block {
 	column-gap: 0.5rem;
 	align-items: stretch;
 	margin-bottom: 1.5rem;
-	width: var(--container-width);
+	max-width: var(--container-width);
 	overflow: auto;
 }
 
