@@ -98,12 +98,12 @@ class JournalUi {
 						0 => s("Toutes les écritures"),
 						1 => s("Écritures non rattachées à une opération bancaire"),
 					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
-					$journalCode = [];
+					$selectedJournalCode = [];
 					foreach($cJournalCode as $eJournalCode) {
-						$journalCode[$eJournalCode['id']] = $eJournalCode['name'];
+						$selectedJournalCode[$eJournalCode['id']] = $eJournalCode['name'];
 					}
-					$journalCode[-1] = s("Sans journal");
-					$h .= $form->select('journalCode', $journalCode, $search->get('journalCode'), ['placeholder' => s("Journal")]);
+					$selectedJournalCode[-1] = s("Sans journal");
+					$h .= $form->select('journalCode', $selectedJournalCode, $search->get('journalCode'), ['placeholder' => s("Journal")]);
 					$h .= $form->select('hasDocument', [
 						0 => s("Avec ou sans pièce comptable"),
 						1 => s("Sans pièce comptable"),
@@ -200,16 +200,16 @@ class JournalUi {
 			// Journaux de TVA
 			if($eFinancialYear['hasVat']) {
 
-				$journalCode = 'vat-buy';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
+				$selectedJournalCode = 'vat-buy';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $selectedJournalCode ? ' selected' : '').'" data-tab="journal-'.$selectedJournalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$selectedJournalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Achats").')</span></small>';
 					$h .= '</div>';
 				$h .= '</a>';
 
-				$journalCode = 'vat-sell';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
+				$selectedJournalCode = 'vat-sell';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $selectedJournalCode ? ' selected' : '').'" data-tab="journal-'.$selectedJournalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$selectedJournalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Ventes").')</span></small>';
@@ -248,11 +248,10 @@ class JournalUi {
 
 	public function getTableContainer(
 		\farm\Farm $eFarm,
-		?string $journalCode,
+		?string $selectedJournalCode,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
-		\Search $search = new \Search(),
-		array $hide = [],
+		\Search $search = new \Search()
 	): string {
 
 		if($cOperation->empty() === TRUE) {
@@ -272,13 +271,13 @@ class JournalUi {
 
 		\Asset::js('journal', 'journal.js');
 
-		$canUpdateFinancialYear = ($eFinancialYearSelected->canUpdate() and $journalCode !== JournalSetting::JOURNAL_CODE_BANK);
+		$canUpdateFinancialYear = ($eFinancialYearSelected->canUpdate() and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
 
 		// On affiche les données de lettrage si on a filtré sur un tiers + sa classe
 		$showLettering = (($eFinancialYearSelected->isAccrualAccounting() or $eFinancialYearSelected->isCashAccrualAccounting()) and $search->get('thirdParty') and $search->get('accountLabel'));
 
 		$columns = 6;
-		if($journalCode === NULL) {
+		if($selectedJournalCode === NULL) {
 			$columns++;
 		}
 		if($showLettering) {
@@ -304,8 +303,8 @@ class JournalUi {
 
 						$h .= '<th>'.s("Compte").'</th>';
 
-						if($journalCode === NULL) {
-							$h .= '<th></th>';
+						if($selectedJournalCode === NULL) {
+							$h .= '<th class="hide-sm-down"></th>';
 						}
 
 						$h .= '<th>'.s("Libellé").'</th>';
@@ -315,8 +314,11 @@ class JournalUi {
 							$h .= '<th>'.s("Lettrage").'</th>';
 						}
 
-						$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-center td-min-content hide-md-up">'.s("D/C").'</th>';
+						$h .= '<th class="text-end highlight-stick-right hide-md-up">'.s("Montant").'</th>';
+
+						$h .= '<th class="text-end highlight-stick-right hide-sm-down">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left hide-sm-down">'.s("Crédit (C)").'</th>';
 						$h .= '<th></th>';
 
 					$h .= '</tr>';
@@ -350,13 +352,13 @@ class JournalUi {
 										$attributesCheckbox = [
 											'data-batch-type' => $eOperation['type'],
 											'data-batch-amount' => $eOperation['amount'],
-											'data-journal-code' => (string)$journalCode,
+											'data-journal-code' => (string)$selectedJournalCode,
 										];
 										if($eOperation['operation']->notEmpty()) {
 											$attributesCheckbox['class'] = 'hide';
 											$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
 										} else {
-											$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$journalCode.'")';
+											$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$selectedJournalCode.'")';
 										}
 										$h .= '<label>';
 											$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
@@ -364,7 +366,7 @@ class JournalUi {
 									}
 								$h .= '</td>';
 							}
-							$h .= '<td>';
+							$h .= '<td class="td-vertical-align-top">';
 								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
 									if($eOperation['accountLabel'] !== NULL) {
 										$text = encode($eOperation['accountLabel']);
@@ -376,11 +378,18 @@ class JournalUi {
 									$h .= '<a href="'.$url.'" title="'.s("Filtrer sur ce compte").'">'.$text.'</a>';
 								$h .= '</div>';
 								$h .= new \account\AccountUi()->getDropdownTitle($eOperation['account']);
+								if($selectedJournalCode === NULL) {
+									$h .= '<div class="hide-md-up">';
+										$h .= $eOperation['journalCode']->empty()
+											? ''
+											: new JournalCodeUi()->getColoredButton($eOperation['journalCode'], link: \company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eOperation['journalCode']['id'], title: s("Filtrer sur le journal : {value}", encode($eOperation['journalCode']['name'])));
+									$h .= '</div>';
+								}
 							$h .= '</td>';
 
-							if($journalCode === NULL) {
+							if($selectedJournalCode === NULL) {
 
-								$h .= '<td>';
+								$h .= '<td class="hide-sm-down td-vertical-align-top">';
 									$h .= $eOperation['journalCode']->empty()
 										? ''
 										: new JournalCodeUi()->getColoredButton($eOperation['journalCode'], link: \company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eOperation['journalCode']['id'], title: s("Filtrer sur le journal : {value}", encode($eOperation['journalCode']['name'])));
@@ -409,7 +418,7 @@ class JournalUi {
 
 							$h .= '</td>';
 
-							$h .= '<td>';
+							$h .= '<td class="td-vertical-align-top">';
 								if($eOperation['thirdParty']->exists() === TRUE) {
 									$url = $this->getFilterUrl($eOperation, $search, 'thirdParty', $eFarm, $eFinancialYearSelected);
 									$h .= '<a href="'.$url.'" title="'.s("Filtrer sur ce tiers").'">'.encode($eOperation['thirdParty']['name']).'</a>';
@@ -436,13 +445,25 @@ class JournalUi {
 								$h .= '</td>';
 							}
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+							$h .= '<td class="text-center td-min-content td-vertical-align-top hide-md-up">';
+								if($eOperation['type'] === Operation::DEBIT) {
+									$h .= s("D");
+								} else {
+									$h .= s("C");
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+								$h .= \util\TextUi::money($eOperation['amount']);
+							$h .= '</td>';
+
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">';
 								if($eOperation['type'] === Operation::DEBIT) {
 									$h .= \util\TextUi::money($eOperation['amount']);
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">';
 								if($eOperation['type'] === Operation::CREDIT) {
 									$h .= \util\TextUi::money($eOperation['amount']);
 								}
@@ -591,7 +612,7 @@ class JournalUi {
 
 					if($showLettering) {
 
-						$colspan = ($journalCode === NULL ? 5 : 4);
+						$colspan = ($selectedJournalCode === NULL ? 5 : 4);
 
 						$h .= '<tr class="row-highlight row-bold">';
 

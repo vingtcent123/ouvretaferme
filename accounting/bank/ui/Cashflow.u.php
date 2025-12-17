@@ -149,8 +149,9 @@ class CashflowUi {
 							$label = s("Libellé");
 							$h .= ($search ? $search->linkSort('memo', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th class="text-end highlight-stick-right td-vertical-align-middle">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left td-vertical-align-middle">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-md-up">'.s("Montant").'</th>';
+						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">'.s("Crédit (C)").'</th>';
 						if($eFarm->usesAccounting()) {
 							$h .= '<th class="text-center">'.s("Écritures").'</th>';
 						}
@@ -184,11 +185,11 @@ class CashflowUi {
 					}
 					$h .= '<tr name="cashflow-'.$eCashflow['id'].'" class="'.join(' ', $class).'">';
 
-						$h .= '<td class="text-left">';
+						$h .= '<td class="text-left td-vertical-align-top">';
 							$h .= encode($eCashflow['id']);
 						$h .= '</td>';
 
-						$h .= '<td>';
+						$h .= '<td class="td-vertical-align-top">';
 							$h .= \util\DateUi::numeric($eCashflow['date']);
 						$h .= '</td>';
 
@@ -196,14 +197,17 @@ class CashflowUi {
 							$h .= encode($eCashflow['memo']);
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-right">';
+						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+							$h .= \util\TextUi::money($eCashflow['amount']);
+						$h .= '</td>';
+						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::DEBIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => '',
 							};
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-left">';
+						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::CREDIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => '',
