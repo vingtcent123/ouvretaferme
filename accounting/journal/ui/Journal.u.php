@@ -200,16 +200,16 @@ class JournalUi {
 			// Journaux de TVA
 			if($eFinancialYear['hasVat']) {
 
-				$selectedJournalCode = 'vat-buy';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $selectedJournalCode ? ' selected' : '').'" data-tab="journal-'.$selectedJournalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$selectedJournalCode.'&'.$args.'">';
+				$journalCode = 'vat-buy';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Achats").')</span></small>';
 					$h .= '</div>';
 				$h .= '</a>';
 
-				$selectedJournalCode = 'vat-sell';
-				$h .= '<a class="tab-item'.($selectedJournalCode === $selectedJournalCode ? ' selected' : '').'" data-tab="journal-'.$selectedJournalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$selectedJournalCode.'&'.$args.'">';
+				$journalCode = 'vat-sell';
+				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Ventes").')</span></small>';
