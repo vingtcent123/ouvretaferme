@@ -981,9 +981,7 @@ class ItemUi {
 		$hasPrice = ($eSale->isMarket() === FALSE);
 		$hasStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
 
-		$class = 'items-products items-products-'.((int)$hasQuantity + (int)$hasPackaging + (int)$hasPrice).' '.($hasStock ? 'items-products-with-stock' : '');
-
-		$h = '<div class="'.$class.' util-grid-header">';
+		$h = '<div class="items-products items-products-'.$eSale['type'].' util-grid-header">';
 
 			$h .= '<div style="grid-column: span 3">';
 				$h .= s("Produit");
@@ -991,19 +989,19 @@ class ItemUi {
 
 			$h .= '<div class="items-products-fields">';
 				if($hasPackaging) {
-					$h .= '<div>'.s("Colisage").'</div>';
+					$h .= '<div class="items-products-packaging">'.s("Colisage").'</div>';
 				}
-				$h .= '<div>';
+				$h .= '<div class="items-products-unit-price">';
 					$h .= s("Prix unitaire");
 					if($eSale['hasVat']) {
 						$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
 					}
 				$h .= '</div>';
 				if($hasQuantity) {
-					$h .= '<div>'.s("Quantité vendue").'</div>';
+					$h .= '<div class="items-products-number">'.s("Quantité vendue").'</div>';
 				}
 				if($hasPrice) {
-					$h .= '<div>';
+					$h .= '<div class="items-products-price">';
 						$h .= s("Montant total");
 						if($eSale['hasVat']) {
 							$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
@@ -1011,7 +1009,7 @@ class ItemUi {
 					$h .= '</div>';
 				}
 				if($hasStock) {
-					$h .= '<div>';
+					$h .= '<div class="items-products-stock">';
 						$h .= s("Stock");
 					$h .= '</div>';
 				}
@@ -1028,7 +1026,7 @@ class ItemUi {
 				'onclick' => 'Item.selectProduct(this)'
 			];
 
-			$h .= '<div class="'.$class.' item-write">';
+			$h .= '<div class="items-products items-products-'.$eSale['type'].' item-write">';
 
 				$h .= '<label class="items-products-select">';
 					$h .= $form->hidden('discount['.$eProduct['id'].']', $eItem['sale']['discount']);
@@ -1058,14 +1056,14 @@ class ItemUi {
 
 					if($hasPackaging) {
 
-						$h .= '<div data-wrapper="packaging['.$eProduct['id'].']">';
+						$h .= '<div class="items-products-packaging" data-wrapper="packaging['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Colisage").'</h4>';
 							$h .= self::getPackagingField($form, 'packaging['.$eProduct['id'].']', $eItem);
 						$h .= '</div>';
 
 
 					}
-					$h .= '<div data-wrapper="unitPrice['.$eProduct['id'].']">';
+					$h .= '<div class="items-products-unit-price" data-wrapper="unitPrice['.$eProduct['id'].']">';
 
 						$h .= '<h4>'.s("Prix unitaire").'</h4>';
 						$h .= $form->dynamicField($eItem, 'unitPrice['.$eProduct['id'].']*');
@@ -1073,14 +1071,14 @@ class ItemUi {
 					$h .= '</div>';
 
 					if($hasQuantity) {
-						$h .= '<div data-wrapper="number['.$eProduct['id'].']">';
+						$h .= '<div class="items-products-number" data-wrapper="number['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Quantité vendue").'</h4>';
 							$h .= $form->dynamicField($eItem, $eSale->isMarket() ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
 						$h .= '</div>';
 					}
 
 					if($hasPrice) {
-						$h .= '<div data-wrapper="price['.$eProduct['id'].']">';
+						$h .= '<div class="items-products-price" data-wrapper="price['.$eProduct['id'].']">';
 							$h .= '<h4>'.s("Montant total").'</h4>';
 							$h .= $form->dynamicField($eItem, 'price['.$eProduct['id'].']*', function(\PropertyDescriber $d) use($eItem) {
 								$d->append = s("€");
@@ -1089,7 +1087,7 @@ class ItemUi {
 					}
 
 					if($hasStock) {
-						$h .= '<div>';
+						$h .= '<div class="items-products-stock">';
 							if($eProduct['stock'] !== NULL) {
 								$h .= '<h4>'.s("Stock").'</h4>';
 								$h .= '<div>';
