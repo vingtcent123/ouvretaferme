@@ -147,6 +147,9 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 					]);
 			}
 			echo '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).<br />Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import.<br />Si vous souhaitez importer les données de vente dans votre comptabilité sur {siteName}, vous ne pourrez pas importer les ventes dont des données manquent.", ['check' => $check]).'</div>';
+		} else {
+
+			echo '<div class="util-info">'.s("Tout est OK ! Votre export sera le plus complet possible.").'</div>';
 		}
 		echo '<a '.attrs($attributes).' style="height: 100%;">'.$form->button(s("Exporter"), ['class' => 'btn '.$class]).'</a>';
 	echo '</div>';
