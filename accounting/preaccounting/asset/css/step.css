@@ -17,7 +17,7 @@ a.step:hover {
 .step.success,
 .step.success:hover {
 	cursor: default;
-	background-color: rgba(0, 255, 0, 0.05)
+	background-color: rgba(25, 135, 84, 0.25)
 }
 .step {
 	position: relative;
@@ -26,7 +26,7 @@ a.step:hover {
 	background-color: rgba(0, 0, 0, 0.05);
 
 	/* chevauchement */
-	margin-left: -20px;
+	margin-left: -10px;
 
 	clip-path: polygon(
 			0 0,

@@ -1275,7 +1275,8 @@ a.util-badge {
 .util-block,
 .util-block-secondary,
 .util-block-help,
-.util-block-important {
+.util-block-important,
+.util-outline-block-important {
 	border-radius: var(--radius);
 	margin-bottom: 1rem;
 	padding: 1rem;
@@ -1284,7 +1285,8 @@ a.util-badge {
 .util-block *:last-child,
 .util-block-secondary *:last-child,
 .util-block-help *:last-child,
-.util-block-important *:last-child {
+.util-block-important *:last-child,
+.util-outline-block-important *:last-child {
 	margin-bottom: 0;
 }
 
@@ -1323,7 +1325,8 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help,
-.util-block-important {
+.util-block-important,
+.util-outline-block-important {
 	padding: 1.25rem 1rem  1rem;
 	line-height: 1.5;
 	position: relative;
@@ -1339,13 +1342,21 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	color: white;
 }
 
+.util-outline-block-important {
+	border: 1px solid var(--secondary);
+	background: white;
+	color: var(--secondary);
+}
+
 .util-block-help,
-.util-block-important {
+.util-block-important,
+.util-outline-block-important {
 	padding-left: 4.5rem;
 }
 
 .util-block-help h4,
-.util-block-important h4 {
+.util-block-important h4,
+.util-outline-block-important h4 {
 	font-weight: bold;
 	height: 2.5rem;
 	margin-bottom: 0.5rem;
@@ -1354,7 +1365,8 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help h4:first-child,
-.util-block-important h4:first-child {
+.util-block-important h4:first-child,
+.util-outline-block-important h4:first-child {
 	margin-top: -0.5rem;
 }
 
@@ -1363,12 +1375,14 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	color: var(--text);
 }
 
-.util-block-important a:not(.btn) {
+.util-block-important a:not(.btn),
+.util-outline-block-important a:not(.btn) {
 	text-decoration: underline;
 }
 
 .util-block-help:before,
-.util-block-important:before {
+.util-block-important:before,
+.util-outline-block-important:before {
 	position: absolute;
 	font-style: italic;
 	float: left;
@@ -1394,6 +1408,11 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 .util-block-important:before {
 	background-color: white;
 	color: var(--secondary);
+	content: '!';
+}
+.util-outline-block-important:before {
+	background-color: var(--secondary);
+	color: white;
 	content: '!';
 }
 
