@@ -1419,7 +1419,7 @@ class OperationUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Operation::model()->describer($property, [
-			'account' => s("Classe de compte"),
+			'account' => s("Compte"),
 			'accountLabel' => s("Compte"),
 			'asset' => s("Immobilisation liée"),
 			'date' => s("Date de l'opération"),

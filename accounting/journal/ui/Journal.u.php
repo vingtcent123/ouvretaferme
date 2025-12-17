@@ -84,7 +84,7 @@ class JournalUi {
 						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $eFinancialYearSelected['startDate'], 'max' => $eFinancialYearSelected['endDate'], 'placeholder' => s("Fin")]),
 						['class' => 'company-period-input-group']
 					);
-					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Classe de compte")]);
+					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
 					$h .= $form->select('type', $statuses, $search->get('type'), ['placeholder' => s("Type")]);
 					$h .= $form->select('paymentMethod', $cPaymentMethod, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);

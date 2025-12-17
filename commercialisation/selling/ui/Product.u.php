@@ -211,7 +211,7 @@ class ProductUi {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
 					if($displayAccounts) {
-						$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Classes de compte").'</th>';
+						$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Comptes").'</th>';
 					}
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
@@ -356,19 +356,32 @@ class ProductUi {
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-left hide-md-down">';
+
 								if($eProduct['proAccount']->notEmpty()) {
+
 									$eAccount = $eProduct['proAccount'];
+									$details = encode($eAccount['class']);
+
 								} else if($eProduct['privateAccount']->notEmpty()) {
+
 									$eAccount = $eProduct['privateAccount'];
+									$details = '<span class="color-muted" title="'.s("Compte pour particuliers utilisé pour les professionnels").'">'.\Asset::icon('magic').' ';
+										$details .= encode($eAccount['class']);
+									$details .= '</span>';
+
 								} else {
 									$eAccount = new \account\Account();
 								}
+
 								if($eAccount->notEmpty()) {
+
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
-										$value .= $eAccount['class'];
+										$value .= $details;
 									$value .= '</span>';
 									$value .= new \account\AccountUi()->getDropdownTitle($eAccount);
+
 									$h .= $eProduct->quick('proAccount', $value);
+
 								}
 							$h .= '</td>';
 
@@ -481,7 +494,7 @@ class ProductUi {
 		}
 
 		if($eFarm->hasAccounting()) {
-			$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Classe de compte").'</span></a>';
+			$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Compte").'</span></a>';
 		}
 
 		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
@@ -1320,7 +1333,7 @@ class ProductUi {
 
 		return new \Panel(
 			id: 'panel-product-update-account',
-			title: s("Classe de compte des produits sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
+			title: s("Compte des produits sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
 			body: $h
 		);
 
@@ -1338,14 +1351,14 @@ class ProductUi {
 
 		$h = '<div class="util-block bg-background-light">';
 
-			$genericLabel = s("Classe de compte");
+			$genericLabel = s("Compte");
 			$specificLabel = s("Vente aux clients particuliers");
 
 			$h .= $form->group(
-				'<span data-field-label="privateAccount">'.s("Classe de compte").'</span>',
+				'<span data-field-label="privateAccount">'.s("Compte").'</span>',
 				$form->dynamicField($eProduct, 'privateAccount').
 				'<div class="form-info">'.$form->checkbox('accountDissociation', '1', [
-					'callbackLabel' => fn($input) => $input.' '.s("Dissocier la classe pour la vente aux professionnels"),
+					'callbackLabel' => fn($input) => $input.' '.s("Dissocier le compte pour la vente aux professionnels"),
 					'onclick' => 'Product.accountDissociation()',
 					'data-field-account-generic-label' => $genericLabel,
 					'data-field-account-specific-label' => $specificLabel,
@@ -1403,8 +1416,8 @@ class ProductUi {
 			'compositionVisibility' => s("Affichage de la composition aux clients"),
 			'vat' => s("Taux de TVA"),
 			'statut' => s("Statut"),
-			'proAccount' => s("Classe de compte pour professionnels"),
-			'privateAccount' => s("Classe de compte pour particuliers"),
+			'proAccount' => s("Compte pour professionnels"),
+			'privateAccount' => s("Compte pour particuliers"),
 		]);
 
 		switch($property) {

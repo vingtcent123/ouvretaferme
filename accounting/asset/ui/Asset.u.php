@@ -933,7 +933,7 @@ Class AssetUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Asset::model()->describer($property, [
-			'account' => s("Classe de compte"),
+			'account' => s("Compte"),
 			'accountLabel' => s("Compte"),
 			'value' => s("Valeur d'acquisition (HT)"),
 			'amortizableBase' => s("Base amortissable (HT)"),

@@ -86,7 +86,7 @@ class LogUi {
 		return match(strtolower($element)) {
 			'financialyear' => [s("Exercice comptable"), $this->getFinancialYearAction($action, $params)],
 			'operation' => [s("Écriture"), $this->getOperationAction($action, $params)],
-			'account' => [s("Classe de compte"), $this->getAccountAction($action, $params)],
+			'account' => [s("Compte"), $this->getAccountAction($action, $params)],
 			'bank' => [s("Compte bancaire"), $this->getBankAction($action, $params)],
 			'cashflow' => [s("Flux bancaire"), $this->getCashflowAction($action, $params)],
 			'deferral' => [s("CCA / PCA"), $this->getDeferralAction($action, $params)],

@@ -103,11 +103,11 @@ class ThirdPartyUi {
 					$h .= '<th>'.s("Client").'</th>';
 
 					if($isAccrual or $isCashAccrual) {
-						$h .= '<th>'.s("Classe de compte Client").'</th>';
+						$h .= '<th>'.s("Compte Client").'</th>';
 					}
 
 					if($isAccrual) {
-						$h .= '<th>'.s("Classe de compte Fournisseur").'</th>';
+						$h .= '<th>'.s("Compte Fournisseur").'</th>';
 					}
 					
 					$h .= '<th class="text-end">'.s("Écritures comptables").'</th>';

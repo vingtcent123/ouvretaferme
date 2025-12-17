@@ -602,7 +602,7 @@ Class PreaccountingUi {
 						$h .= '</th>';
 						$h .= '<th rowspan="2"></th>';
 						$h .= '<th rowspan="2">'.s("Nom").'</th>';
-						$h .= '<th colspan="2" class="text-center">'.s("Classe de compte").'</th>';
+						$h .= '<th colspan="2" class="text-center">'.s("Compte").'</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Particulier").'</th>';
@@ -693,7 +693,7 @@ Class PreaccountingUi {
 			'item' => s("Pour les articles sélectionnés"),
 		};
 
-		$menu = '<a data-ajax-submit="'.$url.'" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Classe de compte").'</span></a>';
+		$menu = '<a data-ajax-submit="'.$url.'" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Compte").'</span></a>';
 
 		return \util\BatchUi::group('batch-accounting-'.$type, $menu, title: $title);
 

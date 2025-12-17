@@ -40,7 +40,7 @@ class AccountUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 				$h .= '<div>';
-					$h .= $form->text('classPrefix', $search->get('classPrefix'), ['placeholder' => s("Classe de compte")]);
+					$h .= $form->text('classPrefix', $search->get('classPrefix'), ['placeholder' => s("Compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Libellé")]);
 					$h .= $form->checkbox('vatFilter', 1, ['checked' => $search->get('vatFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Avec compte de TVA uniquement")]);
 					$h .= $form->checkbox('customFilter', 1, ['checked' => $search->get('customFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Personnalisés")]);
