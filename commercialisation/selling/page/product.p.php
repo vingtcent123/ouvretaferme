@@ -228,7 +228,14 @@ new \selling\ProductPage()
 		$eFarm = $c->first()['farm'];
 		$c->validateProperty('farm', $eFarm);
 		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+
 	})
-	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], fn($data) => throw new ReloadAction('selling', 'Product::updatedSeveral'));
+	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], function($data) {
+
+			\preaccounting\SaleLib::setReadyForAccountingByProducts($data->c);
+
+			throw new ReloadAction('selling', 'Product::updatedSeveral');
+	})
+;
 
 ?>

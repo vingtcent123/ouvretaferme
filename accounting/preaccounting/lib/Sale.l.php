@@ -3,6 +3,73 @@ namespace preaccounting;
 
 Class SaleLib {
 
+	/**
+	 * Récupère toutes les ventes concernées
+	 *  - si elles ont un moyen de paiement
+	 *  - si elles sont clôturées
+	 * Vérifie si tous leurs items ont un account
+	 * Set ReadyForAccounting à TRUE
+	 */
+	public static function setReadyForAccountingSaleCollection(\Collection $cSale): void {
+
+		// Re-récupération de toutes ces ventes qui réunissent le critère moyen de paiement et clôturée
+		$cSaleFiltered = \selling\Sale::model()
+			->select(['id', 'items', 'count' => new \Sql('COUNT(*)')])
+			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
+			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.onlineStatus IS NULL)', 'LEFT') // Moyen de paiement OK
+			->where('m1.closed = 1') // vente clôturée OK
+			->where('m2.account IS NOT NULL') // Exclusion des items avec account à NULL
+			->where('m3.id IS NOT NULL') // Moyen de paiement existe
+			->where('m1.id IN ('.join(',', $cSale->getIds()).')')
+			->where('m1.readyForAccounting = 0')
+			->group('m1_id')
+			->having('m1_count = m1_items')
+			->getCollection();
+
+		if($cSaleFiltered->notEmpty()) {
+
+			\selling\Sale::model()
+				->whereId('IN', $cSaleFiltered->getIds())
+				->update(['readyForAccounting' => TRUE]);
+
+		}
+
+	}
+
+	public static function setReadyForAccountingByProducts(\Collection $cProduct): void {
+
+		// Ventes qui contiennent ces produits
+		$cSale = \selling\Sale::model()
+			->select(['id'])
+			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
+			->whereReadyForAccounting(FALSE)
+			->where('m2.product IN ('.join(', ', $cProduct->getIds()).')')
+			->getCollection();
+
+		if($cSale->notEmpty()) {
+			self::setReadyForAccountingSaleCollection($cSale);
+		}
+
+		// Factures qui contiennent ces produits
+		$cInvoiceFiltered = \selling\Sale::model()
+			->select(['invoice', 'total' => new \Sql('COUNT(*)'), 'countOk' => new \Sql('SUM(IF(m1.readyForAccounting = 1, 1, 0))')])
+			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
+			->whereInvoice('!=', NULL)
+			->where('m2.product IN ('.join(', ', $cProduct->getIds()).')')
+			->group('invoice')
+			->having('m1_total = m1_countOk')
+			->getCollection()
+			->getColumnCollection('invoice');
+
+		if($cInvoiceFiltered->notEmpty()) {
+
+			\selling\Invoice::model()
+        ->whereId('IN', $cInvoiceFiltered->getIds())
+        ->update(['readyForAccounting' => TRUE]);
+		}
+
+	}
+
 	public static function filterForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\SaleModel {
 
 		return \selling\Sale::model()

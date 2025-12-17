@@ -32,6 +32,7 @@ new Page(function($data) {
 		]);
 
 	}
+
 	$data->isSearchValid = (
 		$data->search->get('from') and $data->search->get('to') and
 		\util\DateLib::isValid($data->search->get('from')) and
@@ -83,6 +84,10 @@ new Page(function($data) {
 
 		$data->type = GET('type');
 
+		if(Route::getRequestedWith() !== 'ajax') {
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type='.GET('type').'&from='.GET('from').'&to='.GET('to'));
+		}
+
 		if($data->isSearchValid and in_array($data->type, ['product', 'payment', 'closed'])) {
 
 			switch($data->type) {
@@ -92,7 +97,7 @@ new Page(function($data) {
 					$data->search->set('tab', new \selling\Category());
 					if(GET('tab') === 'items') {
 						$data->search->set('tab', GET('tab'));
-					} else {
+					} else {;
 						$data->search->set('tab', \selling\CategoryLib::getById(GET('tab')));
 					}
 					[$data->nToCheck, $data->nVerified, $data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);

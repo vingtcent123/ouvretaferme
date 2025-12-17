@@ -45,8 +45,14 @@ Class ProductLib {
 			$productsByCategory[$product['category']['id'] ?? 0] = $product['count'];
 		}
 
-		if($search->get('tab') !== 'items' and isset($products[0]) === FALSE) {
-			$search->set('tab', $cCategories->find(fn($e) => $e['id'] === first($products->getKeys()))->first());
+		if($search->get('tab') !== 'items' and $products->notEmpty()) {
+			if($search->get('tab')->notEmpty()) {
+				if(isset($products[$search->get('tab')['id']]) === FALSE) {
+					$search->set('tab', $cCategories->find(fn($e) => $e['id'] === first($products->getKeys()))->first());
+				}
+			} else {
+				$search->set('tab', $cCategories->find(fn($e) => $e['id'] === first($products->getKeys()))->first());
+			}
 		}
 
 		$nToCheck = self::countForAccountingCheck($eFarm, $search);

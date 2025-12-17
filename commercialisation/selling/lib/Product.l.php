@@ -126,6 +126,8 @@ class ProductLib extends ProductCrud {
 			->whereProduct($eProduct)
 	    ->update($eItem);
 
+		\preaccounting\SaleLib::setReadyForAccountingByProducts(new \Collection($eProduct));
+
 	}
 
 	public static function getCompositionById(mixed $id, array $properties = []): Product {
