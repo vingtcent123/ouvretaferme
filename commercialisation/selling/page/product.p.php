@@ -225,7 +225,7 @@ new Page()
 new \selling\ProductPage()
 	->applyCollection(function($data, Collection $c) {
 
-		$eFarm = $c->first()['farm'];
+		$eFarm = $c->first()['farm']->validate('hasAccounting');
 		$c->validateProperty('farm', $eFarm);
 		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
