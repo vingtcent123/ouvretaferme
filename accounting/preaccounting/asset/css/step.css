@@ -19,6 +19,10 @@ a.step:hover {
 	cursor: default;
 	background-color: rgba(25, 135, 84, 0.25)
 }
+.step.success[data-step="export"],
+.step.success[data-step="export"]:hover {
+	cursor: pointer;
+}
 .step {
 	position: relative;
 	flex: 1;

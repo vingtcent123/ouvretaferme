@@ -16,7 +16,7 @@ class Preaccounting {
 	static toggle(step, tab) {
 
 		const isSuccess = qs('a[data-step="' + step + '"]').classList.contains('success');
-		if(isSuccess) {
+		if(isSuccess && step !== 'export') {
 			return;
 		}
 
