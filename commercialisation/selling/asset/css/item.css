@@ -330,33 +330,23 @@ td.item-item-composition-number {
 	}
 
 	.items-products-packaging {
-		width: 13vw;
-		min-width: 13rem;
-		max-width: 15rem;
+		width: 13rem;
 	}
 
 	.items-products-unit-price {
-		width: 16vw;
-		min-width: 16rem;
-		max-width: 20rem;
+		width: 15rem;
 	}
 
 	.items-products-number {
-		width: 13vw;
-		min-width: 13rem;
-		max-width: 16rem;
+		width: 12rem;
 	}
 
 	.items-products-price {
-		width: 11vw;
-		min-width: 11rem;
-		max-width: 14rem;
+		width: 11rem;
 	}
 
 	.items-products-stock {
-		width: 9vw;
-		min-width: 9rem;
-		max-width: 12rem;
+		width: 8rem;
 	}
 
 }
