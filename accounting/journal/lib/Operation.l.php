@@ -1050,6 +1050,7 @@ class OperationLib extends OperationCrud {
 					break;
 
 				case JournalSetting::HASH_LETTER_IMPORT_INVOICE:
+					\selling\Sale::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
 					\selling\Invoice::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
 					break;
 

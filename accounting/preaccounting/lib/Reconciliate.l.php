@@ -169,6 +169,10 @@ Class ReconciliateLib {
 						->whereAccountingHash($eOperation['hash'])
 						->wherePaymentStatus(\selling\Invoice::NOT_PAID)
 						->update(['paymentStatus' => \selling\Invoice::PAID]);
+					\selling\Sale::model()
+						->whereAccountingHash($eOperation['hash'])
+						->wherePaymentStatus(\selling\Sale::NOT_PAID)
+						->update(['paymentStatus' => \selling\Sale::PAID]);
 					break;
 
 				case \journal\JournalSetting::HASH_LETTER_IMPORT_SALE:

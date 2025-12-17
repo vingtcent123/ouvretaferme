@@ -7,7 +7,7 @@ Class SaleLib {
 	 * Récupère toutes les ventes concernées
 	 *  - si elles ont un moyen de paiement
 	 *  - si elles sont clôturées
-	 * Vérifie si tous leurs items ont un account
+	 *  - si leur nombre d'items OK est égal au nombre d'items enregistrés
 	 * Set ReadyForAccounting à TRUE
 	 */
 	public static function setReadyForAccountingSaleCollection(\Collection $cSale): void {
@@ -21,9 +21,10 @@ Class SaleLib {
 			->where('m2.account IS NOT NULL') // Exclusion des items avec account à NULL
 			->where('m3.id IS NOT NULL') // Moyen de paiement existe
 			->where('m1.id IN ('.join(',', $cSale->getIds()).')')
-			->where('m1.readyForAccounting = 0')
+			->where('m1.readyForAccounting = 0') // Uniquement des ventes non déjà prêtes
+			->where('m1.accountingHash IS NULL')
 			->group('m1_id')
-			->having('m1_count = m1_items')
+			->having('m1_count = m1_items') // Nombre d'items OK  = nombre d'items totaux
 			->getCollection();
 
 		if($cSaleFiltered->notEmpty()) {
@@ -43,6 +44,7 @@ Class SaleLib {
 			->select(['id'])
 			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
 			->whereReadyForAccounting(FALSE)
+			->whereAccountingHash(NULL)
 			->where('m2.product IN ('.join(', ', $cProduct->getIds()).')')
 			->getCollection();
 
@@ -56,6 +58,7 @@ Class SaleLib {
 			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
 			->whereInvoice('!=', NULL)
 			->where('m2.product IN ('.join(', ', $cProduct->getIds()).')')
+			->where('m1.accountingHash IS NULL')
 			->group('invoice')
 			->having('m1_total = m1_countOk')
 			->getCollection()

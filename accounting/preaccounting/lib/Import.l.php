@@ -349,6 +349,7 @@ Class ImportLib {
 		}
 
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);
+		\selling\Sale::model()->whereInvoice($eInvoice)->update(['accountingHash' => $hash]);
 
 		\journal\Operation::model()->commit();
 
