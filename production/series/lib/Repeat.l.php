@@ -22,7 +22,7 @@ class RepeatLib extends RepeatCrud {
 
 		do {
 
-			self::createForElement($eRepeat, $week);
+			self::createForElement($eRepeat, $week, FALSE);
 
 			$week = toWeek(strtotime($week.' + 1 WEEK'));
 
@@ -124,12 +124,12 @@ class RepeatLib extends RepeatCrud {
 	public static function createForCollection(\Collection $cRepeat, string $week): void {
 
 		foreach($cRepeat as $eRepeat) {
-			self::createForElement($eRepeat, $week);
+			self::createForElement($eRepeat, $week, TRUE);
 		}
 
 	}
 
-	public static function createForElement(Repeat $eRepeat, string $week): void {
+	public static function createForElement(Repeat $eRepeat, string $week, bool $isDiscrete): void {
 
 		if(
 			$eRepeat['completed'] or
@@ -188,24 +188,31 @@ class RepeatLib extends RepeatCrud {
 
 			TaskLib::createFromRepeat($eRepeat, $week);
 
-			// Ajout à la suite discrète
-			$eRepeat['discrete'][] = $week;
-			sort($eRepeat['discrete']);
+			if($isDiscrete) {
 
-			foreach($eRepeat['discrete'] as $key => $discreteWeek) {
+				// Ajout à la suite discrète
+				$eRepeat['discrete'][] = $week;
 
-				$nextTimestamp = self::addFrequency($eRepeat, $eRepeat['current'] ?? $eRepeat['start']);
-				$nextDate = date('Y-m-d', $nextTimestamp);
-				$nextWeek = toWeek($nextTimestamp);
+				sort($eRepeat['discrete']);
 
-				if($discreteWeek === $nextWeek) {
-					$eRepeat['current'] = $nextDate;
-					unset($eRepeat['discrete'][$key]);
+				foreach($eRepeat['discrete'] as $key => $discreteWeek) {
+
+					$nextTimestamp = self::addFrequency($eRepeat, $eRepeat['current'] ?? $eRepeat['start']);
+					$nextDate = date('Y-m-d', $nextTimestamp);
+					$nextWeek = toWeek($nextTimestamp);
+
+					if($discreteWeek === $nextWeek) {
+						$eRepeat['current'] = $nextDate;
+						unset($eRepeat['discrete'][$key]);
+					}
+
 				}
 
-			}
+				sort($eRepeat['discrete']);
 
-			sort($eRepeat['discrete']);
+			} else {
+				$eRepeat['current'] = date('Y-m-d', self::addFrequency($eRepeat, $eRepeat['current'] ?? $eRepeat['start']));
+			}
 
 			self::calculateCompleted($eRepeat);
 
