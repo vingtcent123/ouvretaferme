@@ -80,12 +80,19 @@ div.zone-header-season {
 	overflow: hidden;
 }
 
-.zone-count {
+.zone-count,
+.plot-count {
 	margin-left: .5rem;
 }
 
+.plot-count:empty,
 .zone-count:empty {
 	display: none;
+}
+
+#zone-selector [data-plot] {
+	padding-top: 0.375rem;
+	padding-bottom: 0.375rem;
 }
 
 /* Cartographie */

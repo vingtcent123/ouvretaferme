@@ -72,11 +72,13 @@ class Zone {
 
 		if(plotId !== undefined) {
 
-			qs('#plot-item-'+ plotId).scrollIntoView({
+			setTimeout(() => qs('#plot-item-'+ plotId).scrollIntoView({
 				block: 'center',
 				inline: 'center'
-			});
+			}), 10);
 
+		} else {
+			window.scrollTo(0, 0);
 		}
 
 		Lime.Dropdown.purge();
