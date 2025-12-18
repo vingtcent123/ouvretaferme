@@ -365,7 +365,7 @@ class ProductUi {
 								} else if($eProduct['privateAccount']->notEmpty()) {
 
 									$eAccount = $eProduct['privateAccount'];
-									$details = '<span class="color-muted" title="'.s("Compte pour particuliers utilisé pour les professionnels").'">'.\Asset::icon('magic').' ';
+									$details = '<span class="color-muted" title="'.s("Numéro de compte pour particuliers utilisé pour les professionnels").'">'.\Asset::icon('magic').' ';
 										$details .= encode($eAccount['class']);
 									$details .= '</span>';
 
@@ -494,7 +494,7 @@ class ProductUi {
 		}
 
 		if($eFarm->hasAccounting()) {
-			$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Compte").'</span></a>';
+			$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Numéro de compte").'</span></a>';
 		}
 
 		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
@@ -1333,7 +1333,7 @@ class ProductUi {
 
 		return new \Panel(
 			id: 'panel-product-update-account',
-			title: s("Compte des produits sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
+			title: s("Numéro de compte des produits sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
 			body: $h
 		);
 
@@ -1351,11 +1351,11 @@ class ProductUi {
 
 		$h = '<div class="util-block bg-background-light">';
 
-			$genericLabel = s("Compte");
+			$genericLabel = s("Numéro de compte");
 			$specificLabel = s("Vente aux clients particuliers");
 
 			$h .= $form->group(
-				'<span data-field-label="privateAccount">'.s("Compte").'</span>',
+				'<span data-field-label="privateAccount">'.s("Numéro de compte").'</span>',
 				$form->dynamicField($eProduct, 'privateAccount').
 				'<div class="form-info">'.$form->checkbox('accountDissociation', '1', [
 					'callbackLabel' => fn($input) => $input.' '.s("Choisir un autre numéro de compte pour la vente aux professionnels"),
@@ -1416,8 +1416,8 @@ class ProductUi {
 			'compositionVisibility' => s("Affichage de la composition aux clients"),
 			'vat' => s("Taux de TVA"),
 			'statut' => s("Statut"),
-			'proAccount' => s("Compte pour professionnels"),
-			'privateAccount' => s("Compte pour particuliers"),
+			'proAccount' => s("Numéro de compte pour professionnels"),
+			'privateAccount' => s("Numéro de compte pour particuliers"),
 		]);
 
 		switch($property) {

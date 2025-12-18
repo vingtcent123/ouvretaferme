@@ -16,7 +16,7 @@ class AccountUi {
 
 			$h .= '<h1>';
 				$h .= '<a href="'.\company\CompanyUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-				$h .= s("Les classes de comptes");
+				$h .= s("Les comptes");
 			$h .= '</h1>';
 
 			$h .= '<div>';
@@ -40,7 +40,7 @@ class AccountUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 				$h .= '<div>';
-					$h .= $form->text('classPrefix', $search->get('classPrefix'), ['placeholder' => s("Compte")]);
+					$h .= $form->text('classPrefix', $search->get('classPrefix'), ['placeholder' => s("Numéro de compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Libellé")]);
 					$h .= $form->checkbox('vatFilter', 1, ['checked' => $search->get('vatFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Avec compte de TVA uniquement")]);
 					$h .= $form->checkbox('customFilter', 1, ['checked' => $search->get('customFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Personnalisés")]);
@@ -68,7 +68,7 @@ class AccountUi {
 		$displayOperationsCount = $cAccount->match(fn($eAccount) => ($eAccount['nOperation'] ?? 0) > 0);
 
 		$h = '<div class="util-block-help">';
-			$h .= s("Il est possible de créer des classes de compte (dites “personnalisées“), par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos comptes.");
+			$h .= s("Il est possible de créer des numéros de compte personnalisés, par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos flux.");
 		$h .= '</div>';
 
 		$h .= '<div class="util-overflow-sm">';
@@ -78,7 +78,7 @@ class AccountUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 						$h .= '<th rowspan="2">';
-							$h .= s("Classe");
+							$h .= s("Numéro de compte");
 						$h .= '</th>';
 						$h .= '<th rowspan="2">';
 							$h .= s("Libellé");
@@ -90,7 +90,6 @@ class AccountUi {
 							$h .= s("Personnalisé ?");
 						$h .= '</th>';
 						$h .= '<th colspan="2" class="text-center">';
-							$h .= s("TVA");
 						$h .= '</th>';
 
 						if($displayOperationsCount) {
@@ -110,10 +109,10 @@ class AccountUi {
 
 					$h .= '<tr>';
 						$h .= '<th class="text-center">';
-							$h .= s("Compte");
+							$h .= s("Compte de TVA");
 						$h .= '</th>';
 						$h .= '<th class="text-center">';
-							$h .= s("Taux");
+							$h .= s("Taux de TVA");
 						$h .= '</th>';
 						if($displayProductsCount) {
 							$h .= '<th class="text-center">';
@@ -197,7 +196,7 @@ class AccountUi {
 
 						$h .= '<td>';
 							if($eAccount['custom'] === TRUE and $eAccount['nOperation'] === 0) {
-								$message = s("Confirmez-vous la suppression de cette classe de compte ?");
+								$message = s("Confirmez-vous la suppression de ce numéro de compte ?");
 								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
 							}
 						$h .= '</td>';
@@ -263,7 +262,7 @@ class AccountUi {
 
 	public static function getAutocompleteWithout(int $farm): array {
 
-		$text = s("Sans classe de compte");
+		$text = s("Sans numéro de compte");
 
 		return [
 			'value' => 0,
@@ -298,7 +297,7 @@ class AccountUi {
 		$d->prepend = \Asset::icon('journal-text');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Commencez à saisir la classe...");
+		$d->placeholder ??= s("Commencez à saisir le numéro de compte...");
 		$d->multiple = $multiple;
 
 		$d->autocompleteUrl = function(\util\FormUi $form, $e) use (&$farm, $query) {
@@ -338,7 +337,7 @@ class AccountUi {
 		$d->prepend = \Asset::icon('123');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Commencez à saisir le compte...");
+		$d->placeholder ??= s("Commencez à saisir le numéro de compte...");
 		$d->multiple = $multiple;
 
 		$d->autocompleteUrl = \company\CompanyUi::urlAccount($farm).'/account:queryLabel';
@@ -368,14 +367,14 @@ class AccountUi {
 		);
 
 		$h .= $form->group(
-			content: $form->submit(s("Créer la classe"))
+			content: $form->submit(s("Créer le numéro de compte"))
 		);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-account-create',
-			title: s("Ajouter une classe de compte personnalisée"),
+			title: s("Ajouter un numéro de compte personnalisé"),
 			body: $h
 		);
 

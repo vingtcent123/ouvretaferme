@@ -296,7 +296,7 @@ class ConfigurationUi {
 
 		$profiles = \selling\ProductUi::p('profile')->values;
 
-		$h = '<div class="util-info">'.s("En configurant directement vos types de produits, tous les produits de ce type que vous créerez auront la bonne classe de compte, ce qui facilitera votre comptabilité.").'</div>';
+		$h = '<div class="util-info">'.s("En configurant directement vos types de produits, tous les produits de ce type que vous créerez auront le bon numéro de compte, ce qui facilitera votre comptabilité.").'</div>';
 
 		$form = new \util\FormUi();
 

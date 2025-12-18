@@ -623,7 +623,7 @@ class CashflowUi {
 							$h .= s("Date");
 						$h .= '</th>';
 						$h .= '<th class="text-center">';
-							$h .= s("Compte");
+							$h .= s("Numéro de compte");
 						$h .= '</th>';
 						$h .= '<th>';
 							$h .= s("Description");
@@ -731,7 +731,7 @@ class CashflowUi {
 			'fitid' => s("Id transaction"),
 			'name' => s("Nom"),
 			'memo' => s("Libellé"),
-			'account' => s("Compte"),
+			'account' => s("Compte bancaire"),
 			'cashflow' => s("Flux"),
 		]);
 

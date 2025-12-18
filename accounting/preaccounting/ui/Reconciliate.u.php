@@ -141,7 +141,7 @@ Class ReconciliateUi {
 							$h .= '</label>';
 						$h .= '</th>';
 						$h .= '<th>'.\Asset::icon('calendar-range').' '.s("Date").'</th>';
-						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.\Asset::icon('file-person').' '.s("Client").'</th>';
 						$h .= '<th>'.\Asset::icon('123').' '.s("Libellé").'</th>';
 						$h .= '<th class="td-min-content text-center" title="'.s("Débit / Crédit").'">'.s("D/C").'</th>';

@@ -763,7 +763,7 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		// Ajout de la transaction sur la classe de compte bancaire 512 (seulement pour une création)
+		// Ajout de la transaction sur le numéro de compte bancaire 512 (seulement pour une création)
 		if($for === 'create' and $isFromCashflow === TRUE) {
 
 			// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;

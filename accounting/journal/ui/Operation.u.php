@@ -229,7 +229,7 @@ class OperationUi {
 			$h .= '</tr>';
 
 			$h .= '<tr>';
-				$h .= '<th>'.s("Compte").'</th>';
+				$h .= '<th>'.s("Numéro de compte").'</th>';
 				$h .= '<td>'.encode($eOperation['accountLabel']).' - '.encode($eOperation['account']['description']).'</td>';
 			$h .= '</tr>';
 
@@ -581,7 +581,7 @@ class OperationUi {
 			$h .= '<tr>';
 				$h .= '<td>';
 					$h .= '<div class="operation-view-label">';
-						$h .= s("Compte");
+						$h .= s("Numéro de compte");
 					$h .= '</div>';
 				$h .= '</td>';
 				$h .= '<td>';
@@ -692,7 +692,7 @@ class OperationUi {
 			)
 		);
 
-		$h .= $form->group(s("Compte"), $form->text('accountLabel', NULL, ['disabled' => TRUE]).\util\FormUi::info(s("Le numéro de compte (fournisseur ou client) est automatiquement rempli")));
+		$h .= $form->group(s("Numéro de compte"), $form->text('accountLabel', NULL, ['disabled' => TRUE]).\util\FormUi::info(s("Le numéro de compte (fournisseur ou client) est automatiquement rempli")));
 
 		$h .= '<div id="waiting-operations-list-container" class="hide">'
 			.$form->group(
@@ -732,7 +732,7 @@ class OperationUi {
 				$h .= '<th class="text-center">#</th>';
 				$h .= '<th>'.s("Date").'</th>';
 				$h .= '<th>'.s("Libellé").'</th>';
-				$h .= '<th>'.s("Compte").'</th>';
+				$h .= '<th>'.s("Numéro de compte").'</th>';
 				$h .= '<th class="text-end">'.s("Débit (restant à lettrer)").'</th>';
 				$h .= '<th class="text-end">'.s("Crédit (restant à lettrer)").'</th>';
 			$h .= '</tr>';
@@ -1022,7 +1022,7 @@ class OperationUi {
 					$h .= '</a>';
 					$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
 						$h .= '<span class="dropdown-item">';
-						$h .= s("Cette classe de compte est normalement configurée pour être dans le journal \"{value}\".", ['value' => '<span data-index="'.$index.'" data-journalCode="journal-name"></span>']);
+						$h .= s("Ce numéro de compte est normalement configuré pour être dans le journal \"{value}\".", ['value' => '<span data-index="'.$index.'" data-journalCode="journal-name"></span>']);
 						$h .= '</span>';
 					$h .= '</div>';
 				$h .= '</div>';
@@ -1420,7 +1420,7 @@ class OperationUi {
 
 		$d = Operation::model()->describer($property, [
 			'account' => s("Compte"),
-			'accountLabel' => s("Compte"),
+			'accountLabel' => s("Numéro de compte"),
 			'asset' => s("Immobilisation liée"),
 			'date' => s("Date de l'opération"),
 			'description' => s("Libellé"),

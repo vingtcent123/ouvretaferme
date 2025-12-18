@@ -11,9 +11,9 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Operation::accountLabel.check' => s("Sélectionnez une classe de compte proposée."),
+			'Operation::accountLabel.check' => s("Sélectionnez un numéro de compte proposé."),
 
-			'Operation::allocate.accountsCheck' => s("Veuillez sélectionner au moins une classe de compte."),
+			'Operation::allocate.accountsCheck' => s("Veuillez sélectionner au moins un numéro de compte."),
 			'Operation::allocate.noOperation' => s("Aucune opération n'a pu être enregistrée."),
 
 			'Operation::payment.noOperation' => s("Aucun paiement n'a pu être enregistré."),
@@ -27,8 +27,8 @@ class AlertUi {
 			'thirdParty.empty' => s("Choisissez un tiers pour ce paiement."),
 
 			'Operation::date.check' => s("La date doit correspondre à l'exercice comptable actuellement ouvert."),
-			'Operation::account.check' => s("N'oubliez pas de choisir une classe de compte !"),
-			'Operation::accountLabel.inconsistency' => s("Le compte doit commencer par les mêmes chiffres que la classe de compte."),
+			'Operation::account.check' => s("N'oubliez pas de choisir un numéro de compte !"),
+			'Operation::accountLabel.inconsistency' => s("Le compte doit commencer par les mêmes chiffres que le numéro de compte."),
 
 			'Operation::invoice.incorrectType' => s("Le fichier n'est pas reconnu comme une facture. Vous pouvez effectuer la saisie manuellement ou réessayer."),
 			'Operation::invoice.unknownExtension' => s("Le format du fichier n'est pas reconnu, veuillez essayer avec un autre fichier ou faire une saisie manuelle."),
@@ -81,7 +81,7 @@ class AlertUi {
 
 			'JournalCode::created' => s("Le journal a bien été créé."),
 			'JournalCode::deleted' => s("Le journal a bien été supprimé."),
-			'JournalCode::accountsUpdated' => s("Les classes de compte de ce journal ont bien été modifiées."),
+			'JournalCode::accountsUpdated' => s("Les numéros de compte de ce journal ont bien été modifiés."),
 
 			default => null
 

@@ -84,7 +84,7 @@ class JournalUi {
 						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $eFinancialYearSelected['startDate'], 'max' => $eFinancialYearSelected['endDate'], 'placeholder' => s("Fin")]),
 						['class' => 'company-period-input-group']
 					);
-					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Compte")]);
+					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
 					$h .= $form->select('type', $statuses, $search->get('type'), ['placeholder' => s("Type")]);
 					$h .= $form->select('paymentMethod', $cPaymentMethod, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);
@@ -301,7 +301,7 @@ class JournalUi {
 							$h .= '</th>';
 						}
 
-						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
 
 						if($selectedJournalCode === NULL) {
 							$h .= '<th class="hide-sm-down"></th>';

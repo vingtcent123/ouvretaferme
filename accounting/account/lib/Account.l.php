@@ -95,7 +95,7 @@ class AccountLib extends AccountCrud {
 
 			$query = first(explode(' ', $query));
 
-			// Recherche par classe de compte
+			// Recherche par numéro de compte
 			if($query === (string)(int)($query)) {
 
 				Account::model()->whereClass('LIKE', $query.'%');

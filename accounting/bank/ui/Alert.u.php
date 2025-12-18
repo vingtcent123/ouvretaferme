@@ -9,7 +9,7 @@ Class AlertUi {
 
 			'BankAccount::label.numbers' => s("Le libellé d'un compte de banque doit obligatoirement commencer par {value}", \account\AccountSetting::BANK_ACCOUNT_CLASS),
 
-			'Cashflow::allocate.accountsCheck' => s("Veuillez sélectionner au moins une classe de compte."),
+			'Cashflow::allocate.accountsCheck' => s("Veuillez sélectionner au moins un numéro de compte."),
 			'Cashflow::allocate.noOperation' => s("Aucune opération n'a pu être enregistrée."),
 			'Cashflow::internal' => s("Une erreur interne est survenue."),
 			'Cashflow::noSelectedOperation' => s("Sélectionnez au moins une écriture à rattacher."),

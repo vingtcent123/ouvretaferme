@@ -66,7 +66,7 @@ class ChargesUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>';
-							$h .= s("Compte");
+							$h .= s("Numéro de compte");
 						$h .= '</th>';
 						$h .= '<th class="text-end">';
 							$h .= s("Montant");

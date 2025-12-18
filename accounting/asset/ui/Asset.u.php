@@ -432,7 +432,7 @@ Class AssetUi {
 
 		$h = '<div class="util-block stick-xs bg-background-light">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
-				$h .= '<dt>'.s("Compte").'</dt>';
+				$h .= '<dt>'.s("Numéro de compte").'</dt>';
 				$h .= '<dd>'.encode($eAsset['accountLabel']).' - <span class="font-sm" style="font-weight: normal;">'.encode($eAsset['account']['description']).'</span></dd>';
 				$h .= '<dt>'.self::p('description')->label.'</dt>';
 				$h .= '<dd>'.encode($eAsset['description']).'</dd>';
@@ -750,8 +750,8 @@ Class AssetUi {
 
 					$h .= '<tr>';
 
-						$h .= '<th class="text-center">'.s("Compte Débit").'</th>';
-						$h .= '<th class="text-center">'.s("Compte Crédit").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte Débit").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte Crédit").'</th>';
 
 					$h .= '</tr>';
 
@@ -843,8 +843,8 @@ Class AssetUi {
 
 					$h .= '<tr>';
 
-						$h .= '<th class="text-center">'.s("Compte Débit").'</th>';
-						$h .= '<th class="text-center">'.s("Compte Crédit").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte Débit").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte Crédit").'</th>';
 
 					$h .= '</tr>';
 
@@ -934,7 +934,7 @@ Class AssetUi {
 
 		$d = Asset::model()->describer($property, [
 			'account' => s("Compte"),
-			'accountLabel' => s("Compte"),
+			'accountLabel' => s("Numéro de compte"),
 			'value' => s("Valeur d'acquisition (HT)"),
 			'amortizableBase' => s("Base amortissable (HT)"),
 			'type' => s("Type d'amortissement"),

@@ -189,8 +189,8 @@ Class JournalCodeUi {
 
 		$h .= '<div class="util-block-help">'.s("Ces modifications n'impacteront pas les écritures déjà saisies en comptabilité.").'</div>';
 
-		$h .= '<span class="hide" data-warning="journal-code-overwrite" data-singular>'.s("Une classe est déjà rattachée à un autre journal, cette modification écrasera la configuration actuelle, voulez-vous continuer ?").'</span>';
-		$h .= '<span class="hide" data-warning="journal-code-overwrite" data-plural>'.s("Certaines classes sont rattachées à d'autres journaux, cette modification écrasera la configuration actuelle, voulez-vous continuer ?").'</span>';
+		$h .= '<span class="hide" data-warning="journal-code-overwrite" data-singular>'.s("Un numéro de compte est déjà rattaché à un autre journal, cette modification écrasera la configuration actuelle, voulez-vous continuer ?").'</span>';
+		$h .= '<span class="hide" data-warning="journal-code-overwrite" data-plural>'.s("Certains numéro de compte sont rattachés à d'autres journaux, cette modification écrasera la configuration actuelle, voulez-vous continuer ?").'</span>';
 
 		$dialogOpen = $form->openAjax(
 			\company\CompanyUi::urlJournal($eFarm).'/journalCode:doAccounts', [

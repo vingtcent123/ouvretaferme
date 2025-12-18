@@ -156,7 +156,7 @@ class LogUi {
 	public function getAccountAction(string $action, array $params): string {
 
 		return match(strtolower($action)) {
-			'delete' => s("Suppression d'une classe de compte : {value}", $params['class']),
+			'delete' => s("Suppression d'un numéro de compte : {value}", $params['class']),
 		};
 
 	}

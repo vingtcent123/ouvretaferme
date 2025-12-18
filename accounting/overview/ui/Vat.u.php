@@ -3510,7 +3510,7 @@ Class VatUi {
 		$h .= '<table class="tr-even tr-hover">';
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<th>'.s("Compte").'</th>';
+					$h .= '<th>'.s("Numéro de compte").'</th>';
 					$h .= '<th>'.s("Libellé").'</th>';
 					$h .= '<th>'.s("Tiers").'</th>';
 					$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';

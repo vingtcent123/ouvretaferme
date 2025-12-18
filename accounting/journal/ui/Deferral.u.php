@@ -100,7 +100,7 @@ class DeferralUi {
 					$h .= '<tr>';
 
 						$h .= '<th>'.s("Type").'</th>';
-						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Libellé du compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
 						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
@@ -200,7 +200,7 @@ class DeferralUi {
 
 							$h .= '<th>'.s("Type").'</th>';
 							$h .= '<th>'.s("Date").'</th>';
-							$h .= '<th>'.s("Compte").'</th>';
+							$h .= '<th>'.s("Numéro de compte").'</th>';
 							$h .= '<th>'.s("Libellé").'</th>';
 							$h .= '<th class="text-end highlight-stick-right">'.s("Montant HT").'</th>';
 							$h .= '<th>'.s("Période de<br />consommation").'</th>';

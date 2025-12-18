@@ -60,7 +60,7 @@ Class ImportUi {
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
-						$h .= '<th class="text-center">'.s("N° Compte").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Montant").'</th>';
 						$h .= '<th>'.s("Paiement").'</th>';
 					$h .= '</tr>';
@@ -196,7 +196,7 @@ Class ImportUi {
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
-						$h .= '<th class="text-center">'.s("N° Compte").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Montant").'</th>';
 						$h .= '<th>'.s("Paiement").'</th>';
 					$h .= '</tr>';
@@ -304,7 +304,7 @@ Class ImportUi {
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
-						$h .= '<th class="text-center">'.s("N° Compte").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Montant").'</th>';
 						$h .= '<th>'.s("Paiement").'</th>';
 					$h .= '</tr>';

@@ -89,7 +89,7 @@ Class BalanceSheetLib {
 				continue;
 			}
 
-			// Recherche des détails d'opération (même exercice comptable + classe de compte ou amortissement/dépréciation de cette classe)
+			// Recherche des détails d'opération (même exercice comptable + numéro de compte ou amortissement/dépréciation de cette classe)
 			$operationsSubClasses = $cOperationDetail->find(function($e) use($eOperation): bool {
 
 				$isSameClass = (mb_substr($e['class'], 0, 3) === $eOperation['class']);

@@ -33,12 +33,12 @@ Class BalanceUi {
 		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
 		$h .= '<div>';
-			$h .= $form->text('accountLabel', $search->get('accountLabel') !== '' ? $search->get('accountLabel') : '', ['placeholder' => s("Compte")]);
+			$h .= $form->text('accountLabel', $search->get('accountLabel') !== '' ? $search->get('accountLabel') : '', ['placeholder' => s("Numéro de compte")]);
 			$h .= $form->inputGroup($form->addon(s('Du'))
 				.$form->date('startDate', $search->get('startDate'), ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
 				.$form->addon(s('au'))
 				.$form->date('endDate', $search->get('endDate'), ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]));
-			$h .= $form->inputGroup($form->addon(s("Précision du compte en chiffres")).$form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 2, 'max' => 8]));
+			$h .= $form->inputGroup($form->addon(s("Précision du numéro de compte en chiffres")).$form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 2, 'max' => 8]));
 		$h .= '</div>';
 		$h .= '<div class="mb-1">';
 			$h .= $form->checkbox('summary', 1, ['checked' => $search->get('summary'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher la synthèse par compte")]);
@@ -92,7 +92,7 @@ Class BalanceUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 
-						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
 						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
@@ -178,7 +178,7 @@ Class BalanceUi {
 
 				$h .= '<thead class="thead-sticky">';
 				$h .= '<tr>';
-					$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content">'.s("N° de compte").'</th>';
+					$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content">'.s("Numéro de compte").'</th>';
 					$h .= '<th rowspan="2" class="td-vertical-align-middle hide-sm-down">'.s("Libellé").'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Totaux").'</th>';
 					$h .= '<th colspan="2" class="text-center">';

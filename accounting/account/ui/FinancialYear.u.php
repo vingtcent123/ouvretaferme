@@ -397,7 +397,7 @@ class FinancialYearUi {
 					$h .= '<tr>';
 
 						$h .= '<th>'.s("Date").'</th>';
-						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Libellé du compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
 						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
@@ -486,7 +486,7 @@ class FinancialYearUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("Date").'</th>';
-						$h .= '<th>'.s("Compte").'</th>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Libellé du compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
 						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
@@ -573,7 +573,7 @@ class FinancialYearUi {
 						$h .= '<tr>';
 
 							$h .= '<th>'.s("Date").'</th>';
-							$h .= '<th>'.s("Compte").'</th>';
+							$h .= '<th>'.s("Numéro de compte").'</th>';
 							$h .= '<th>'.s("Libellé du compte").'</th>';
 							$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
 							$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';

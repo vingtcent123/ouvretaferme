@@ -145,19 +145,19 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			[
 				'CompteNum',
 				s("Numéro de compte"),
-				s("Numéro de la classe de compte correspondant à la ligne sur 8 caractères."),
+				s("Numéro de compte correspondant à la ligne sur 8 caractères."),
 				'70120000'
 			],
 			[
 				'CompteLib',
-				s("Libellé de la classe de compte"),
-				s("Le nom au sens du Plan Comptable de la classe de compte"),
+				s("Libellé du compte"),
+				s("Le nom au sens du Plan Comptable du compte"),
 				s("Vente de produits végétaux")
 			],
 			[
 				'CompAuxNum',
 				s("Numéro de compte auxiliaire"),
-				s("Numéro de la classe de compte du tiers concerné par cette vente."),
+				s("Numéro du compte du tiers concerné par cette vente."),
 				'41100001'
 			],
 			[

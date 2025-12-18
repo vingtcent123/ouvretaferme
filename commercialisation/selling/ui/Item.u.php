@@ -1394,7 +1394,7 @@ class ItemUi {
 		$h = $form->openAjax('/selling/item:doUpdateAccountCollection', ['id' => 'item-update-account']);
 
 		$h .= $form->group(
-			s("Compte"),
+			s("Numéro de compte"),
 			$form->dynamicField(new Item(['farm' => $eFarm, 'account' => new \account\Account()]), 'account'),
 		);
 
@@ -1408,7 +1408,7 @@ class ItemUi {
 
 		return new \Panel(
 			id: 'panel-item-update-account',
-			title: s("Compte des articles sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
+			title: s("Numéro de compte des articles sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
 			body: $h
 		);
 
@@ -1429,7 +1429,7 @@ class ItemUi {
 			'price' => s("Montant"),
 			'number' => s("Quantité vendue"),
 			'vatRate' => s("Taux de TVA"),
-			'account' => s("Compte"),
+			'account' => s("Numéro de compte"),
 		]);
 
 		switch($property) {

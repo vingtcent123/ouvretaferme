@@ -55,8 +55,8 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		$results[] = [
 			'type' => 'title',
-			'itemHtml' => '<div>'.s("Classes de compte déjà utilisées (par classe puis ordre décroissant d'utilisation)").'</div>',
-			'itemText' => s("Classes de compte déjà utilisées (par classe puis ordre décroissant d'utilisation)"),
+			'itemHtml' => '<div>'.s("Numéros de compte déjà utilisés (par numéro puis ordre décroissant d'utilisation)").'</div>',
+			'itemText' => s("Numéros de compte déjà utilisés (par numéro puis ordre décroissant d'utilisation)"),
 		];
 
 		foreach($cAccountUsed as $eAccount) {

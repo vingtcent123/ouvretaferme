@@ -152,7 +152,7 @@ class CompanyUi {
 				$h .= '</a>';
 
 				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/account" class="util-button">';
-					$h .= '<h4>'.s("Les classes de compte").'</h4>';
+					$h .= '<h4>'.s("Les comptes").'</h4>';
 					$h .= \Asset::icon('list-columns-reverse');
 				$h .= '</a>';
 
