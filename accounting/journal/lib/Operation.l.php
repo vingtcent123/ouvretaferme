@@ -806,7 +806,7 @@ class OperationLib extends OperationCrud {
 					$eFinancialYear->isAccrualAccounting() and
 					in_array($eOperation['accountLabel'], [$eThirdParty['clientAccountLabel'], $eThirdParty['supplierAccountLabel']])
 				) or (
-					$eFinancialYear->isCashAccrualAccounting() and
+					(FEATURE_ACCOUNTING_CASH_ACCRUAL and $eFinancialYear->isCashAccrualAccounting()) and
 					$eOperation['accountLabel'] === $eThirdParty['clientAccountLabel']
 				)
 			) {
@@ -867,7 +867,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		// Le mix engagement / trésorerie n'est effectué que pour les opérations avec les clients
-		if($eFinancialYear->isCashAccrualAccounting() and $hasCharge) {
+		if(FEATURE_ACCOUNTING_CASH_ACCRUAL and $eFinancialYear->isCashAccrualAccounting() and $hasCharge) {
 			return new Operation();
 		}
 

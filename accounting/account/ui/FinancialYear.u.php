@@ -287,7 +287,19 @@ class FinancialYearUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'accountingType*', 'hasVat*', 'vatFrequency', 'legalCategory*', 'associates*', 'taxSystem*'],  [
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*']);
+
+			$h .= $form->group(
+				self::p('accountingType')->label.\util\FormUi::asterisk(),
+				$form->radios('accountingType', self::p('accountingType')->values, $eFinancialYear['accountingType'], attributes: ['mandatory' => TRUE, 'callbackRadioAttributes' => function($option, $key) {
+					if(FEATURE_ACCOUNTING_ACCRUAL === FALSE and $key === FinancialYear::ACCRUAL) {
+						return ['disabled' => 'disabled'];
+					}
+					return [];
+				}])
+			);
+
+			$h .= $form->dynamicGroups($eFinancialYear, ['hasVat*', 'vatFrequency', 'legalCategory*', 'associates*', 'taxSystem*'],  [
 				'hasVat*' => function($d) use($form) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},
@@ -335,7 +347,16 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['accountingType*', 'startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*'], [
+			$h .= $form->group(
+				self::p('accountingType')->label.\util\FormUi::asterisk(),
+				$form->radios('accountingType', self::p('accountingType')->values, $eFinancialYear['accountingType'], attributes: ['mandatory' => TRUE, 'callbackRadioAttributes' => function($option, $key) {
+					if(FEATURE_ACCOUNTING_ACCRUAL === FALSE and $key === FinancialYear::ACCRUAL) {
+						return ['disabled' => 'disabled'];
+					}
+					return [];
+				}])
+			);
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*'], [
 				'hasVat*' => function($d) use($form) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},
@@ -809,12 +830,36 @@ class FinancialYearUi {
 		switch($property) {
 
 			case 'accountingType' :
+				$accrual = '<h4>'.s("Comptabilité à l'engagement").'</h4>';
+				$accrual .= '<ul>';
+					$accrual .= '<li>'.s("Généralement choisie lorsque l'exploitation est imposée au régime réel.").'</li>';
+				$accrual .= '</ul>';
+				$accrual .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour tenir une comptabilité complète.").'</i></p>';
+				if(FEATURE_ACCOUNTING_ACCRUAL === FALSE) {
+					$accrual .= '<p>'.\Asset::icon('exclamation-triangle').' <i>'.s("Cette option n'est pas encore disponible.").'</i></p>';
+				}
+
+				$cash = '<h4>'.s("Comptabilité de trésorerie").'</h4>';
+				$cash .= '<ul>';
+					$cash .= '<li>'.s("Généralement lorsque l'exploitation est imposée au régime du micro-BA ou au réel simplifié").'</li>';
+				$cash .= '</ul>';
+				$cash .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour tenir une comptabilité de façon simple.").'</i></p>';
+
+
+				$cashAccrual = '<h4>'.s("Comptabilité de trésorerie et à l'engagement pour les ventes").'</h4>';
+				$cashAccrual .= '<ul>';
+					$cashAccrual .= '<li>'.s("Peut être choisie lorsque l'exploitation est imposée au régime du micro-BA ou au réel simplifié").'</li>';
+				$cashAccrual .= '</ul>';
+				$cashAccrual .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour tenir une comptabilité de façon simple, tout en suivant ses encours client en comptabilité.").'</i></p>';
+
 				$d->values = [
-					FinancialYear::ACCRUAL => s("Comptabilité à l'engagement"),
-					FinancialYear::CASH => s("Comptabilité de trésorerie"),
-					FinancialYear::CASH_ACCRUAL => s("Comptabilité de trésorerie et à l'engagement pour les ventes"),
+					FinancialYear::CASH => $cash,
+					FinancialYear::ACCRUAL => $accrual,
 				];
-				$d->after = \util\FormUi::info(s("Généralement, la comptabilité de <b>trésorerie</b> est choisie en <b>micro-BA</b> ou <b>régime simplifié</b>.<br />La comptabilité à l'<b>engagement</b> est choisie en <b>régime réel</b> (normal ou simplifié)<br />Le mélange des deux permet de suivre les balances client plus facilement."));
+
+				if(FEATURE_ACCOUNTING_CASH_ACCRUAL) {
+					$d->values[FinancialYear::CASH_ACCRUAL] = $cashAccrual;
+				}
 				break;
 
 			case 'startDate' :

@@ -81,8 +81,8 @@ class ThirdPartyUi {
 
 		}
 
-		$isAccrual = ($eFarm->getView('viewAccountingType') === FinancialYear::ACCRUAL);
-		$isCashAccrual = (($eFarm->getView('viewAccountingType') === FinancialYear::CASH_ACCRUAL) or $eFarm->usesAccounting() === FALSE);
+		$isAccrual = (FEATURE_ACCOUNTING_ACCRUAL and ($eFarm->getView('viewAccountingType') === FinancialYear::ACCRUAL));
+		$isCashAccrual = (FEATURE_ACCOUNTING_CASH_ACCRUAL and (($eFarm->getView('viewAccountingType') === FinancialYear::CASH_ACCRUAL) or $eFarm->usesAccounting() === FALSE));
 
 		$h = '';
 

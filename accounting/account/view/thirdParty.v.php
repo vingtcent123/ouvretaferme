@@ -13,7 +13,10 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	if($data->eFarm->usesAccounting()) {
 
 		echo '<div class="util-block-help">';
-			if($data->eFinancialYear->isAccrualAccounting() or $data->eFinancialYear->isCashAccrualAccounting()) {
+			if(
+				(FEATURE_ACCOUNTING_ACCRUAL and $data->eFinancialYear->isAccrualAccounting()) or
+				(FEATURE_ACCOUNTING_CASH_ACCRUAL and $data->eFinancialYear->isCashAccrualAccounting())
+			) {
 				echo s("Les tiers sont des personnes ou des organismes avec qui votre ferme échange des flux. Un tiers peut être un client, un fournisseur, l'état... En fonction de son statut (la plupart du temps client/fournisseur), vos tiers auront un numéro de compte personnalisé, ce qui vous permet une analyse plus fine de vos encours (créances, dettes) et de vos flux financiers.");
 				echo '<br />';
 			}

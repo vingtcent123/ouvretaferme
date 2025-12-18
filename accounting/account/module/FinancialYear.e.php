@@ -5,7 +5,7 @@ class FinancialYear extends FinancialYearElement {
 
 	// Comptabilité à l'engagement
 	public function isAccrualAccounting() {
-		return $this['accountingType'] === FinancialYear::ACCRUAL;
+		return FEATURE_ACCOUNTING_ACCRUAL and $this['accountingType'] === FinancialYear::ACCRUAL;
 	}
 
 	// Comptabilité de trésorerie
@@ -15,7 +15,7 @@ class FinancialYear extends FinancialYearElement {
 
 	// Comptabilité de trésorerie avec engagement pour les ventes
 	public function isCashAccrualAccounting() {
-		return $this['accountingType'] === FinancialYear::CASH_ACCRUAL;
+		return FEATURE_ACCOUNTING_CASH_ACCRUAL and $this['accountingType'] === FinancialYear::CASH_ACCRUAL;
 	}
 
 	public function isCurrent() {
