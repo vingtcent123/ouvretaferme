@@ -1,0 +1,6 @@
+.dropdown-list-minimalist:has([data-ajax-form="/@module/selling/Product/doQuick"]) {
+	min-width: 50%;
+}
+.dropdown-list-minimalist:has([data-ajax-form="/@module/selling/Product/doQuick"]) div.util-quick-form > div {
+	margin: 1rem 0 2rem;
+}

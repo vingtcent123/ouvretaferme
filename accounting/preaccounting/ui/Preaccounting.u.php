@@ -5,6 +5,8 @@ Class PreaccountingUi {
 
 	public function __construct() {
 
+		\Asset::css('preaccounting', 'preaccounting.css');
+
 	}
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
@@ -33,18 +35,6 @@ Class PreaccountingUi {
 
 		return $h;
 
-	}
-
-	public function explainExport(\farm\Farm $eFarm): string {
-
-		$h = '<div class="util-block-help">';
-
-			$h .= '<p>'.s("L'export qui vous est proposé est un export au format FEC.<br />Cependant, certaines informations obligatoires peuvent être manquantes et ne seront donc donc pas indiquées.").'</p>';
-			$h .= '<p>'.s("Vous trouverez plus de détails <link>dans l'aide {icon}</link>.", ['link' => '<a href="/doc/accounting" target="_blank">', 'icon' => \Asset::icon('person-raised-hand')]).'</p>';
-
-		$h .= '</div>';
-
-		return $h;
 	}
 
 	public function salesPayment(string $type, \Collection $cSale, \Collection $cPaymentMethod, int $nToCheck, int $nVerified): string {
@@ -570,16 +560,12 @@ Class PreaccountingUi {
 			$h .= '<table class="tr-even" data-batch="#batch-accounting-product">';
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th rowspan="2" class="td-checkbox">';
+						$h .= '<th class="td-checkbox">';
 							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="product" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 						$h .= '</th>';
-						$h .= '<th rowspan="2"></th>';
-						$h .= '<th rowspan="2">'.s("Nom").'</th>';
-						$h .= '<th colspan="2" class="text-center">'.s("Compte").'</th>';
-					$h .= '</tr>';
-					$h .= '<tr>';
-						$h .= '<th class="text-center">'.s("Particulier").'</th>';
-						$h .= '<th class="text-center">'.s("Professionnel").'</th>';
+						$h .= '<th></th>';
+						$h .= '<th>'.s("Nom").'</th>';
+						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -607,37 +593,17 @@ Class PreaccountingUi {
 								if($eProduct['privateAccount']->notEmpty()) {
 
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
-									$value .= $eProduct['privateAccount']['class'];
+										$value .= $eProduct['privateAccount']['class'];
 									$value .= '</span>';
 									$value .= new \account\AccountUi()->getDropdownTitle($eProduct['privateAccount']);
 
 								} else {
 
-									$value = '<i>'.s("Non défini").'</i>';
+									$value = '<span class="btn btn-outline-secondary">'.s("Définir").'</span>';
 
 								}
 
 								$h .= $eProduct->quick('privateAccount', $value);
-
-							$h .= '</td>';
-
-							$h .= '<td class="text-center">';
-
-								if($eProduct['proAccount']->notEmpty()) {
-
-									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
-									$value .= $eProduct['proAccount']['class'];
-									$value .= '</span>';
-									$value .= new \account\AccountUi()->getDropdownTitle($eProduct['proAccount']);
-
-
-								} else {
-
-									$value = '<i>'.s("Non défini").'</i>';
-
-								}
-
-								$h .= $eProduct->quick('proAccount', $value);
 
 							$h .= '</td>';
 						$h .= '</tr>';
