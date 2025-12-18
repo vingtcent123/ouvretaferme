@@ -162,7 +162,7 @@ class JournalUi {
 
 			$h .= '<a class="tab-item '.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?'.$args.'">'.s("Général").'</a>';
 
-			$h .= '<a class="tab-item'.((int)$selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
+			$h .= '<a class="tab-item'.($selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
 				$h .= '<div class="text-center">';
 					$h .= s("Banque");
 					$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
@@ -176,7 +176,8 @@ class JournalUi {
 				}
 
 				$attributes = [
-					'class' => 'tab-item journal-code-'.$eJournalCode['id'], 'data-tab' => 'journal-'.$eJournalCode['id'],
+					'class' => 'tab-item journal-code-'.$eJournalCode['id'],
+					'data-tab' => 'journal-'.$eJournalCode['id'],
 					'href' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eJournalCode['id'].'&'.$args,
 				];
 				if((int)$selectedJournalCode === $eJournalCode['id']) {
