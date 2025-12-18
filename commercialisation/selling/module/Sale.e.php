@@ -613,7 +613,7 @@ class Sale extends SaleElement {
 
 	public function acceptGenerateDeliveryNote(): bool {
 
-		return $this->acceptDeliveryNote() and ($this['preparationStatus'] === Sale::DELIVERED);
+		return $this->acceptDeliveryNote() and in_array($this['preparationStatus'], [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED]);
 
 	}
 
@@ -1226,6 +1226,11 @@ class Sale extends SaleElement {
 						$date >= currentDate()
 					)
 				);
+
+			})
+			->setCallback('deliveryNoteDate.check', function(?string &$date): bool {
+
+				return \Filter::check('date', $date);
 
 			})
 			->setCallback('productsList.check', function(mixed $list) use($p): bool {

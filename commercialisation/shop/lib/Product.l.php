@@ -231,6 +231,7 @@ class ProductLib extends ProductCrud {
 				'date' => new Date(),
 				'promotion' => Product::NONE,
 				'limitMax' => NULL,
+				'limitMin' => NULL,
 				'limitCustomers' => [],
 				'limitGroups' => [],
 				'limitStartAt' => NULL,

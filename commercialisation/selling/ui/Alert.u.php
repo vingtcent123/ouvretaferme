@@ -72,7 +72,8 @@ class AlertUi {
 			'Sale::shippingExcludedVat.check' => s("Les frais de livraison doivent être supérieurs à zéro ou laissés vide."),
 			'Sale::downloadEmpty' => s("Sélectionnez au moins une vente pour générer des étiquettes"),
 			'Sale::canNotSell' => s("La caisse virtuelle n'est plus accessible pour cette vente !"),
-			'Sale::orderFormValidUntil.check' => s("La date d'échéance doit être au plus tôt la date d'aujourd'hui."),
+			'Sale::orderFormValidUntil.check' => s("La date d'échéance ne peut pas être dans le passé"),
+			'Sale::deliveryNoteDate.check' => s("Vous n'avez pas renseigné de date de livraison"),
 			'Sale::sales.check' => s("Merci de sélectionner au moins une vente"),
 			'Sale::from.check' => s("Vous n'avez pas indiqué l'origine de la vente"),
 			'Sale::market.status' => s("Vous ne pouvez pas mettre à jour une vente terminée ou annulée."),
@@ -80,8 +81,8 @@ class AlertUi {
 			'Sale::productsBasket.expired' => s("Votre panier a expiré, mais vous pouvez reprendre votre commande si les ventes sont encore ouvertes."),
 
 
-			'Sale::generateDeliveryNote' => s("Vous ne pouvez générer de bon de livraison que pour les ventes livrées !"),
-			'Sale::generateOrderForm' => s("Vous ne pouvez générer de bon de commande que pour les ventes à l'état de brouillon ou confirmées !"),
+			'Sale::generateDeliveryNote' => s("Vous ne pouvez générer de bon de livraison que pour les ventes confirmées, préparées ou livrées !"),
+			'Sale::generateOrderForm' => s("Vous ne pouvez générer de devis que pour les ventes à l'état de brouillon ou confirmées !"),
 
 			'Stock::newValue.check' => s("Merci d'indiquer une valeur supérieure ou égale à zéro"),
 			'Stock::newValue.negative' => s("Le stock ne peut pas être négatif"),

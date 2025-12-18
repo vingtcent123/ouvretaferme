@@ -91,8 +91,13 @@ class SaleLib extends SaleCrud {
 		$eSale['deliveryCountry'] = $eSale['customer']['invoiceCountry'];
 		$eSale['customer']['name'] = 'Julien Laferme';
 		$eSale['customer']['email'] = 'client@email.com';
+		$eSale['deliveryNoteDate'] = currentDate();
+		$eSale['deliveryNoteHeader'] = $eFarm->getConf('deliveryNoteHeader');
+		$eSale['deliveryNoteFooter'] = $eFarm->getConf('deliveryNoteFooter');
 		$eSale['orderFormValidUntil'] = currentDate();
 		$eSale['orderFormPaymentCondition'] = $eFarm->getConf('orderFormPaymentCondition');
+		$eSale['orderFormHeader'] = $eFarm->getConf('orderFormHeader');
+		$eSale['orderFormFooter'] = $eFarm->getConf('orderFormFooter');
 		$eSale['invoice']['taxes'] = \selling\Invoice::INCLUDING;
 		$eSale['invoice']['hasVat'] = $eFarm->getConf('hasVat');
 		$eSale['invoice']['name'] = \farm\Configuration::getNumber($eFarm->getConf('invoicePrefix'), 123);

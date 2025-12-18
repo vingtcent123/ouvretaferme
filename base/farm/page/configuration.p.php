@@ -29,7 +29,7 @@ new \farm\ConfigurationPage()
 
 	})
 	->doUpdateProperties('doUpdateTax', ['taxCountry'], fn() => throw new ReloadAction())
-	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNotePrefix'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNotePrefix', 'deliveryNoteHeader', 'deliveryNoteFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdate(fn() => throw new ReloadAction('farm', 'Configuration::updated'), onKo: fn() => \farm\Configuration::fail('error'))

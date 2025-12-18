@@ -10,6 +10,13 @@ document.delegateEventListener('autocompleteSelect', '#sale-create', function(e)
 
 class Sale {
 
+	static customize(target) {
+
+		target.classList.add('hide');
+		qs('#sale-customize').classList.remove('hide');
+
+	}
+
 	static refreshCustomerCreate(customer) {
 
 		let request = document.location.href;

@@ -54,7 +54,11 @@ new AdaptativeView('salePreparing', function($data, FarmTemplate $t) {
 });
 
 new AdaptativeView('generateOrderForm', function($data, PanelTemplate $t) {
-	return new \selling\PdfUi()->createOrderForm($data->e, $data->ePdf);
+	return new \selling\PdfUi()->createOrderForm($data->e);
+});
+
+new AdaptativeView('generateDeliveryNote', function($data, PanelTemplate $t) {
+	return new \selling\PdfUi()->createDeliveryNote($data->e);
 });
 
 new AdaptativeView('doGenerateDocument', function($data, AjaxTemplate $t) {

@@ -837,20 +837,9 @@ class SaleUi {
 			$acceptRegenerate = $eSale->acceptRegenerateDocument($type);
 
 			$urlGenerate = match($type) {
-				Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
+				Pdf::DELIVERY_NOTE => 'href="/selling/sale:generateDeliveryNote?id='.$eSale['id'].'"',
 				Pdf::ORDER_FORM => 'href="/selling/sale:generateOrderForm?id='.$eSale['id'].'"',
 			};
-
-			if($acceptRegenerate) {
-
-				$urlRegenerate = match($type) {
-					Pdf::DELIVERY_NOTE => 'data-ajax="/selling/sale:doGenerateDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'"',
-					Pdf::ORDER_FORM => 'href="/selling/sale:generateOrderForm?id='.$eSale['id'].'"',
-				};
-
-			} else {
-				$urlRegenerate = NULL;
-			}
 
 			if($ePdf->empty()) {
 
@@ -859,7 +848,7 @@ class SaleUi {
 					$eSale->canDocument($type)
 				) {
 
-					$document = '<a '.$urlGenerate.' class="btn btn-sm sale-document sale-document-new" title="'.$texts['generate'].'" '.attr('data-confirm', $texts['generateConfirm']).'>';
+					$document = '<a '.$urlGenerate.' class="btn btn-sm sale-document sale-document-new" title="'.$texts['generate'].'">';
 						$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
 						$document .= '<div class="sale-document-status">';
 							$document .= \Asset::icon('plus');
@@ -921,7 +910,7 @@ class SaleUi {
 								$class = 'sale-document-forbidden';
 							}
 
-							$document .= '<a '.$urlRegenerate.' class="dropdown-item '.$class.'" '.attr('data-confirm', $texts['generateNewConfirm']).'>'.$texts['generateNew'].'</a>';
+							$document .= '<a '.$urlGenerate.' class="dropdown-item '.$class.'">'.$texts['generateNew'].'</a>';
 
 						}
 
@@ -2320,6 +2309,11 @@ class SaleUi {
 			'paymentStatus' => s("État du paiement"),
 			'orderFormValidUntil' => s("Date d'échéance du devis"),
 			'orderFormPaymentCondition' => s("Conditions de paiement"),
+			'orderFormHeader' => s("Texte personnalisé affiché en haut du devis"),
+			'orderFormFooter' => s("Texte personnalisé affiché en bas du devis"),
+			'deliveryNoteDate' => s("Date de livraison"),
+			'deliveryNoteHeader' => s("Texte personnalisé affiché en haut du bon de livraison"),
+			'deliveryNoteFooter' => s("Texte personnalisé affiché en bas du bon de livraison"),
 			'discount' => s("Remise commerciale"),
 			'shipping' => self::getShippingName(),
 			'shippingVatRate' => s("Taux de TVA sur les frais de livraison"),

@@ -240,7 +240,7 @@ class PdfUi {
 				case Pdf::DELIVERY_NOTE :
 
 					$dateDocument = '<div class="pdf-document-detail-label">'.s("Date de livraison").'</div>';
-					$dateDocument .= '<div>'.\util\DateUi::numeric($eSale['deliveredAt']).'</div>';
+					$dateDocument .= '<div>'.\util\DateUi::numeric($eSale['deliveryNoteDate']).'</div>';
 
 					break;
 
@@ -259,9 +259,9 @@ class PdfUi {
 			}
 
 			$top = match($type) {
-				Pdf::ORDER_FORM => $eFarm->getConf('orderFormHeader'),
+				Pdf::ORDER_FORM => $eSale['orderFormHeader'],
 				Pdf::INVOICE => $eSale['invoice']['header'],
-				Pdf::DELIVERY_NOTE => NULL,
+				Pdf::DELIVERY_NOTE => $eSale['deliveryNoteHeader'],
 			};
 
 			$h .= $this->getDocumentTop($type, $eSale, $eFarm, $number, $dateDocument, $top);
@@ -316,9 +316,9 @@ class PdfUi {
 				};
 
 				$footer = match($type) {
-					Pdf::ORDER_FORM => $eFarm->getConf('orderFormFooter'),
+					Pdf::ORDER_FORM => $eSale['orderFormFooter'],
 					Pdf::INVOICE => $eSale['invoice']['footer'],
-					Pdf::DELIVERY_NOTE => NULL
+					Pdf::DELIVERY_NOTE => $eSale['deliveryNoteFooter']
 				};
 
 				$h .= $this->getDocumentBottom($type, $eFarm, $paymentCondition, $footer);
@@ -894,7 +894,7 @@ class PdfUi {
 
 	}
 
-	public function createOrderForm(Sale $eSale, Pdf $ePdf): \Panel {
+	public function createOrderForm(Sale $eSale): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -910,11 +910,20 @@ class PdfUi {
 				'<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-primary" target="_blank">'.$eSale->getNumber().'</a> '.CustomerUi::link($eSale['customer'], newTab: TRUE)
 			);
 
-			$h .= $form->dynamicGroups($eSale, ['orderFormValidUntil', 'orderFormPaymentCondition']);
+			$h .= $form->dynamicGroups($eSale, ['orderFormValidUntil']);
 
+			$h .= '<div id="sale-customize" class="hide">';
+				$h .= $form->dynamicGroups($eSale, ['orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
+			$h .= '</div>';
+
+
+			$submit = '<div class="flex-justify-space-between">';
+				$submit .= $form->submit(s("Générer le devis"));
+				$submit .= '<a onclick="Sale.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a>';
+			$submit .= '</div>';
 
 			$h .= $form->group(
-				content: $form->submit($ePdf->empty() ? s("Générer le devis") : s("Regénérer le devis"))
+				content: $submit
 			);
 
 		$h .= $form->close();
@@ -922,6 +931,48 @@ class PdfUi {
 		return new \Panel(
 			id: 'panel-pdf-create-order-form',
 			title: s("Générer un devis"),
+			body: $h
+		);
+
+	}
+
+	public function createDeliveryNote(Sale $eSale): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/sale:doGenerateDocument');
+
+			$h .= $form->hidden('id', $eSale);
+			$h .= $form->hidden('type', Pdf::DELIVERY_NOTE);
+
+			$h .= $form->group(
+				s("Vente"),
+				'<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-primary" target="_blank">'.$eSale->getNumber().'</a> '.CustomerUi::link($eSale['customer'], newTab: TRUE)
+			);
+
+			$h .= $form->dynamicGroups($eSale, ['deliveryNoteDate']);
+
+			$h .= '<div id="sale-customize" class="hide">';
+				$h .= $form->dynamicGroups($eSale, ['deliveryNoteHeader', 'deliveryNoteFooter']);
+			$h .= '</div>';
+
+
+			$submit = '<div class="flex-justify-space-between">';
+				$submit .= $form->submit(s("Générer le bon de livraison"));
+				$submit .= '<a onclick="Sale.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a>';
+			$submit .= '</div>';
+
+			$h .= $form->group(
+				content: $submit
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-pdf-create-delivery-note',
+			title: s("Générer un bon de livraison"),
 			body: $h
 		);
 
@@ -969,17 +1020,13 @@ class PdfUi {
 		return [
 			Pdf::DELIVERY_NOTE => [
 				'generate' => s("Générer le bon de livraison"),
-				'generateConfirm' => s("Générer le bon de livraison maintenant ?"),
 				'generateNew' => s("Regénérer le bon de livraison"),
-				'generateNewConfirm' => s("Générer un nouveau bon de livraison à jour ?"),
 				'sendConfirm' => s("Confirmer l'envoi du bon de livraison au client par e-mail ?"),
 				'deleteConfirm' => s("Voulez-vous vraiment supprimer ce bon de livraison ?"),
 			],
 			Pdf::ORDER_FORM => [
 				'generate' => s("Générer un devis"),
-				'generateConfirm' => NULL,
 				'generateNew' => s("Regénérer le devis"),
-				'generateNewConfirm' => NULL,
 				'sendConfirm' => s("Confirmer l'envoi du devis au client par e-mail ?"),
 				'deleteConfirm' => s("Voulez-vous vraiment supprimer ce devis ?"),
 			],

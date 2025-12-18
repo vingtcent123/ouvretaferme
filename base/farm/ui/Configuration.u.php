@@ -358,7 +358,7 @@ class ConfigurationUi {
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
-				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'deliveryNotePrefix']);
+				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'deliveryNotePrefix', 'deliveryNoteHeader', 'deliveryNoteFooter']);
 
 				$h .= $form->group(
 					content: $form->submit(s("Enregistrer"))
@@ -526,6 +526,8 @@ class ConfigurationUi {
 			'organicCertifier' => s("Organisme de certification pour l'Agriculture Biologique"),
 			'paymentMode' => s("Moyens de paiement affichés sur les devis et les factures"),
 			'deliveryNotePrefix' => s("Préfixe pour la numérotation des bons de livraison"),
+			'deliveryNoteHeader' => s("Ajouter un texte personnalisé affiché en haut des bons de livraison"),
+			'deliveryNoteFooter' => s("Ajouter un texte personnalisé affiché en bas des bons de livraison"),
 			'orderFormPrefix' => s("Préfixe pour la numérotation des devis"),
 			'orderFormDelivery' => s("Afficher la date de livraison de la commande sur les devis"),
 			'orderFormPaymentCondition' => s("Conditions de paiement affichées sur les devis"),

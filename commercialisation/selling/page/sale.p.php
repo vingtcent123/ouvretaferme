@@ -322,11 +322,25 @@ new \selling\SalePage()
 		$data->eFarm = $data->e['farm'];
 		$data->eFarm->validateLegal();
 
-		$data->ePdf = \selling\PdfLib::getOne($data->e, \selling\Pdf::ORDER_FORM);
+		$data->e['orderFormPaymentCondition'] ??= $data->eFarm->getConf('orderFormPaymentCondition');
+		$data->e['orderFormHeader'] ??= $data->eFarm->getConf('orderFormHeader');
+		$data->e['orderFormFooter'] ??= $data->eFarm->getConf('orderFormFooter');
 
-		if($data->e['orderFormPaymentCondition'] === NULL) {
-			$data->e['orderFormPaymentCondition'] = $data->eFarm->getConf('orderFormPaymentCondition');
-		}
+		throw new ViewAction($data);
+
+	})
+	->read('generateDeliveryNote', function($data) {
+
+		$data->e->validate('canManage');
+		$data->e->acceptDocumentTarget($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
+		$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
+
+		$data->eFarm = $data->e['farm'];
+		$data->eFarm->validateLegal();
+
+		$data->e['deliveryNoteDate'] ??= $data->e['deliveredAt'];
+		$data->e['deliveryNoteHeader'] ??= $data->eFarm->getConf('deliveryNoteHeader');
+		$data->e['deliveryNoteFooter'] ??= $data->eFarm->getConf('deliveryNoteFooter');
 
 		throw new ViewAction($data);
 
@@ -355,18 +369,30 @@ new \selling\SalePage()
 
 				$data->e->acceptGenerateDeliveryNote() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
 
+				$properties = ['deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter'];
+
+				$data->e->build($properties, $_POST);
+
+				$fw->validate();
+
+				\selling\Sale::model()
+					->select($properties)
+					->update($data->e);
+
 				break;
 
 			case \selling\Pdf::ORDER_FORM :
 
 				$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateOrderForm');
 
-				$data->e->build(['orderFormValidUntil', 'orderFormPaymentCondition'], $_POST);
+				$properties = ['orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'];
+
+				$data->e->build($properties, $_POST);
 
 				$fw->validate();
 
 				\selling\Sale::model()
-					->select(['orderFormValidUntil', 'orderFormPaymentCondition'])
+					->select($properties)
 					->update($data->e);
 
 				break;

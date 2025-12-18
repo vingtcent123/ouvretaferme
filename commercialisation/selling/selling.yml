@@ -301,7 +301,12 @@ Sale:
   marketSales: ?int(0, null)
   marketParent: ?selling\Sale
   orderFormValidUntil: ?date
-  orderFormPaymentCondition: ?editor16(1, 400)
+  orderFormPaymentCondition: ?editor16(1, 500)
+  orderFormHeader: ?editor16(1, 500)
+  orderFormFooter: ?editor16(1, 500)
+  deliveryNoteDate: ?date
+  deliveryNoteHeader: ?editor16(1, 500)
+  deliveryNoteFooter: ?editor16(1, 500)
   invoice: ?selling\Invoice
   shop: ?shop\Shop
   shopDate: ?shop\Date

@@ -55,23 +55,25 @@ class ConfigurationModel extends \ModuleModel {
 			'defaultVatShipping' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'organicCertifier' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'paymentMode' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'paymentMode' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'documentCopy' => ['bool', 'cast' => 'bool'],
 			'documentTarget' => ['enum', [\farm\Configuration::ALL, \farm\Configuration::PRIVATE, \farm\Configuration::PRO, \farm\Configuration::DISABLED], 'cast' => 'enum'],
 			'orderFormPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'orderFormDelivery' => ['bool', 'cast' => 'bool'],
-			'orderFormPaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
-			'orderFormHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
-			'orderFormFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'orderFormPaymentCondition' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'orderFormHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'orderFormFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryNotePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
+			'deliveryNoteHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'deliveryNoteFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'creditPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'invoiceDue' => ['bool', 'cast' => 'bool'],
 			'invoiceDueDays' => ['int16', 'min' => 0, 'max' => 360, 'null' => TRUE, 'cast' => 'int'],
 			'invoiceDueMonth' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'invoicePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
-			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
-			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
-			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
+			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'marketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'marketSaleDefaultDecimal' => ['enum', [\farm\Configuration::NUMBER, \farm\Configuration::PRICE], 'cast' => 'enum'],
 			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
@@ -79,7 +81,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -270,6 +272,14 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereDeliveryNotePrefix(...$data): ConfigurationModel {
 		return $this->where('deliveryNotePrefix', ...$data);
+	}
+
+	public function whereDeliveryNoteHeader(...$data): ConfigurationModel {
+		return $this->where('deliveryNoteHeader', ...$data);
+	}
+
+	public function whereDeliveryNoteFooter(...$data): ConfigurationModel {
+		return $this->where('deliveryNoteFooter', ...$data);
 	}
 
 	public function whereCreditPrefix(...$data): ConfigurationModel {

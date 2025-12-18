@@ -589,7 +589,7 @@ class InvoiceUi {
 
 
 					$h .= $form->group(
-						content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer les factures")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
+						content: '<div class="flex-justify-space-between">'.$form->submit(s("Générer les factures")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
 					);
 				$h .= '</div>';
 
@@ -773,7 +773,7 @@ class InvoiceUi {
 
 
 				$h .= $form->group(
-					content: '<div style="display: flex; justify-content: space-between">'.$form->submit(s("Générer la facture")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
+					content: '<div class="flex-justify-space-between">'.$form->submit(s("Générer la facture")).'<a onclick="Invoice.customize(this)" class="btn btn-outline-primary">'.s("Personnaliser avant de générer").'</a></div>'
 				);
 
 			$h .= '</div>';
