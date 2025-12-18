@@ -25,9 +25,14 @@ class Suggestion extends SuggestionElement {
 
 	}
 
-	public function acceptAction(): bool {
+	public function acceptIgnore(): bool {
 
 		return $this['status'] === \preaccounting\Suggestion::WAITING;
+
+	}
+	public function acceptReconciliate(): bool {
+
+		return $this['status'] === \preaccounting\Suggestion::WAITING and $this['paymentMethod']->notEmpty();
 
 	}
 
@@ -41,7 +46,24 @@ class Suggestion extends SuggestionElement {
 
 			foreach($cSuggestion as $eInvoice) {
 
-				$eInvoice->validate('acceptAction');
+				$eInvoice->validate('acceptIgnore');
+
+			}
+		}
+
+	}
+
+	public static function validateBatchReconciliate(\Collection $cSuggestion): void {
+
+		if($cSuggestion->empty()) {
+
+			throw new \FailAction('preaccounting\Suggestion::suggestions.check');
+
+		} else {
+
+			foreach($cSuggestion as $eInvoice) {
+
+				$eInvoice->validate('acceptReconciliate');
 
 			}
 		}

@@ -1760,22 +1760,24 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			if($nSuggestion > 0) {
-				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, 'sale', $nSuggestion);
-			}
+			$h .= '<div class="flex-align-center">';
 
-			switch($selectedView) {
+				if($nSuggestion > 0) {
+					$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, 'sale', $nSuggestion);
+				}
 
-				case Farmer::ALL :
-				case Farmer::PRIVATE :
-				case Farmer::PRO :
-					$h .= '<div>';
-						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-						$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
-					$h .= '</div>';
-					break;
+				switch($selectedView) {
 
-			}
+					case Farmer::ALL :
+					case Farmer::PRIVATE :
+					case Farmer::PRO :
+							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+							$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
+						break;
+
+				}
+
+			$h .= '</div>';
 
 		$h .= '</div>';
 
@@ -1817,21 +1819,21 @@ class FarmUi {
 				}
 			$h .= '</h1>';
 
-			if($nSuggestion > 0) {
-				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, 'operation', $nSuggestion);
-			}
+			$h .= '<div class="flex-align-center">';
 
+				if($nSuggestion > 0) {
+					$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, 'operation', $nSuggestion);
+				}
 
-		if($selectedView === 'bank') {
+				if($selectedView === 'bank') {
 
-				$h .= '<div class="flex-align-center">';
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#cashflow-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-					$h .= '<div>';
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
-					$h .= '</div>';
-				$h .= '</div>';
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#cashflow-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+						$h .= '<div>';
+							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+						$h .= '</div>';
 
-			}
+				}
+			$h .= '</div>';
 
 		$h .= '</div>';
 

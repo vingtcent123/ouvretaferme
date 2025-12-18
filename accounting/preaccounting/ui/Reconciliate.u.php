@@ -8,9 +8,10 @@ Class ReconciliateUi {
 		\Asset::js('preaccounting', 'reconciliate.js');
 	}
 
-	public function tableByCashflow(\farm\Farm $eFarm, \Collection $ccSuggestion): string {
+	public function tableByCashflow(\farm\Farm $eFarm, \Collection $ccSuggestion, \Collection $cMethod): string {
 
 		$h = '';
+		$form = new \util\FormUi();
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
@@ -31,12 +32,14 @@ Class ReconciliateUi {
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">'.\Asset::icon('123').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';
+						$h .= '<th>'.s("Moyen de paiement").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
 
 				foreach($ccSuggestion as $cSuggestion) {
+
 					$cSuggestion->sort(['weight' => SORT_DESC]);
 
 					$eSuggestion = $cSuggestion->first();
@@ -64,6 +67,14 @@ Class ReconciliateUi {
 						];
 					}
 
+					$batch = [];
+					if($eSuggestion->acceptIgnore() === FALSE) {
+						$batch[] = 'not-ignore';
+					}
+					if($eSuggestion->acceptReconciliate() === FALSE) {
+						$batch[] = 'not-reconciliate';
+					}
+
 					$onclick = 'onclick="Reconciliate.updateSelection(this)"';
 
 					$h .= '<tbody>';
@@ -79,12 +90,13 @@ Class ReconciliateUi {
 							$h .= '<td></td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
+							$h .= '<td></td>';
 						$h .= '</tr>';
 
 						$h .= '<tr>';
 
 							$h .= '<td class="td-checkbox">';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'"/>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</td>';
 
 							$h .= '<td '.$onclick.'>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
@@ -94,6 +106,16 @@ Class ReconciliateUi {
 							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
 							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
 							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
+							$h .= '<td>'.$form->dynamicField($eSuggestion, 'paymentMethod', function($d) use($form, $cMethod, $eSuggestion) {
+								$d->values = $cMethod;
+								$d->default = fn() => $eSuggestion['paymentMethod'];
+								$d->attributes['onchange'] = 'Reconciliate.updatePaymentMethod(this);';
+								$d->attributes['data-suggestion'] = $eSuggestion['id'];
+								if($eSuggestion['paymentMethod']->notEmpty()) {
+									$d->attributes['mandatory'] = TRUE;
+								}
+							});
+							$h .= '</td>';
 							$h .= '<td>';
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
@@ -104,8 +126,12 @@ Class ReconciliateUi {
 										'post-id' => $eSuggestion['id'],
 										'class' => 'dropdown-item',
 									];
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-up').' '.s("Rapprocher").'</a>';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-down').' '.s("Ignorer").'</a>';
+									if($eSuggestion->acceptReconciliate()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-up').' '.s("Rapprocher").'</a>';
+									}
+									if($eSuggestion->acceptIgnore()) {
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-down').' '.s("Ignorer").'</a>';
+									}
 								$h .= '</div>';
 
 							$h .= '</td>';
@@ -270,7 +296,7 @@ Class ReconciliateUi {
 		$menu .= '</a>';
 
 
-		$menu .= '<a data-ajax-submit="'.$urlReconciliate.'" class="batch-menu-import batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Rapprocher").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.$urlReconciliate.'" class="batch-menu-reconciliate batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Rapprocher").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.$urlIgnore.'" class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 

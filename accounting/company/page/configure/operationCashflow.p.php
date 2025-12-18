@@ -25,7 +25,6 @@ new Page()
 
 		$cOperation = \journal\Operation::model()
 			->select(['id', 'amount', 'cashflow' => new Sql('cashflow', 'bank\Cashflow')])
-			->highlight()
 			->where('cashflow IS NOT NULL')
 			->getCollection();
 

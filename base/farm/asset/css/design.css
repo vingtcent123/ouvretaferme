@@ -839,12 +839,23 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		grid-area: settings-accounting;
 	}
 
+	.farm-nav-preaccounting {
+		grid-area: preaccounting;
+	}
+
+	.farm-nav-invoicing {
+		grid-area: invoicing;
+	}
+
 @media (min-width: 992px) {
 
 		.farm-section-accounting {
 			display: grid;
 			align-items: start;
-			grid-template: "accounting bank settings-accounting" / auto auto auto;
+			grid-template:
+				"bank accounting settings-accounting" auto
+				"preaccounting accounting settings-accounting" auto
+				"invoicing accounting settings-accounting" auto / auto auto;
 		}
 
 
@@ -855,7 +866,11 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		.farm-section-accounting {
 			display: grid;
 			align-items: start;
-			grid-template: "accounting bank settings-accounting" / auto auto auto;
+			grid-template:
+				"accounting bank" auto
+				"accounting preaccounting" auto
+				"accounting invoicing" auto
+				"accounting settings-accounting" auto / auto auto auto;
 		}
 
 
@@ -868,7 +883,9 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 			align-items: start;
 			grid-template:
 				"accounting bank" auto
-				"accounting settings-accounting" 1fr / auto auto;
+				"accounting preaccounting" auto
+				"accounting invoicing" auto
+				"accounting settings-accounting" auto / auto auto auto;
 		}
 
 
@@ -881,7 +898,9 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 			align-items: start;
 			grid-template:
 				"accounting bank" auto
-				"accounting settings-accounting" 1fr / auto auto;
+				"accounting preaccounting" auto
+				"accounting invoicing" auto
+				"accounting settings-accounting" auto / auto auto auto;
 		}
 
 	}

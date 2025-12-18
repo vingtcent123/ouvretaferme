@@ -20,6 +20,7 @@ class CashflowLib extends CashflowCrud {
 		}
 
 		return Cashflow::model()
+			->whereId('=', $search->get('id'), if: $search->has('id'))
 			->whereImport('=', $search->get('import'), if: $search->has('import'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->whereDate('>=', $search->get('from').'%', if: $search->get('from'))
@@ -28,6 +29,7 @@ class CashflowLib extends CashflowCrud {
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
+			->whereIsReconciliated('=', $search->get('isReconciliated'), if: $search->get('isReconciliated'))
 			->whereStatus('!=', Cashflow::DELETED, if: $search->get('statusNotDeleted'))
 		;
 

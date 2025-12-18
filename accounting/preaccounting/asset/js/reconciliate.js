@@ -1,5 +1,19 @@
 class Reconciliate {
 
+	static updatePaymentMethod(target) {
+
+		const suggestionId = target.dataset.suggestion;
+		const paymentMethod = target.options[target.selectedIndex].value;
+
+		new Ajax.Query()
+			.url('/7/preaccounting/reconciliate:doUpdatePaymentMethod')
+			.method('post')
+			.body({
+					id: suggestionId, paymentMethod
+			})
+			.fetch();
+	}
+
 	static updateSelection(targetTbody) {
 		const checkbox = targetTbody.firstParent('tbody').qs('input[type="checkbox"]');
 
@@ -45,6 +59,26 @@ class Reconciliate {
 				node => {
 					node.innerHTML = money(amount, 2);
 				}
+			);
+
+			qs(
+				'.batch-menu-reconciliate',
+				selection.filter('[data-batch~="not-reconciliate"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+						actions++;
+					}
+			);
+
+			qs(
+				'.batch-menu-ignore',
+				selection.filter('[data-batch~="not-ignore"]').length > 0 ?
+					node => node.hide() :
+					node => {
+						node.removeHide();
+						actions++;
+					}
 			);
 
 			return actions;

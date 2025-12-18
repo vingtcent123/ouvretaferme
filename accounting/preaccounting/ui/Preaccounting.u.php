@@ -647,11 +647,16 @@ Class PreaccountingUi {
 		$icons = ['fire', 'piggy-bank-fill', 'leaf-fill', 'lightning-charge-fill', 'stars'];
 		$h = '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
 			$h .= \Asset::icon($icons[mt_rand(0, count($icons) - 1)]).' ';
-			$h .= match($type) {
-				'operation' => p("{value} opération bancaire à rapprocher", "{value} opérations bancaires à rapprocher", $nSuggestion),
-				'sale' => p("{value} vente à rapprocher", "{value} ventes à rapprocher", $nSuggestion),
-				'invoice' => p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion),
-			};
+			$h .= '<span class="hide-md-up">';
+				$h .= $nSuggestion;
+			$h .= '</span>';
+			$h .= '<span class="hide-sm-down">';
+				$h .= match($type) {
+					'operation' => p("{value} opération bancaire à rapprocher", "{value} opérations bancaires à rapprocher", $nSuggestion),
+					'sale' => p("{value} vente à rapprocher", "{value} ventes à rapprocher", $nSuggestion),
+					'invoice' => p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion),
+				};
+			$h .= '</span>';
 		$h .= '</a>';
 
 		return $h;

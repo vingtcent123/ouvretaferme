@@ -78,11 +78,12 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 		return \preaccounting\Suggestion::model()
 			->select([
-				'id',
+				'id', 'status',
 				'cashflow' => ['id', 'name', 'memo', 'type', 'date', 'amount'],
 				'invoice' => ['id', 'name', 'customer' => ['id', 'name'], 'priceIncludingVat', 'date'],
 				'sale' => ['id', 'customer' => ['id', 'name'], 'priceIncludingVat', 'deliveredAt', 'document'],
 				'weight', 'reason',
+				'paymentMethod' => ['id', 'fqn', 'name'],
 			])
 			->whereStatus(\preaccounting\Suggestion::WAITING)
 			->whereOperation(NULL)
@@ -120,6 +121,40 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 	}
 
+	public static function determinePaymentMethod(string $detail): ?string {
+
+		$words = [
+			\payment\MethodLib::TRANSFER => 'virement',
+			\payment\MethodLib::DIRECT_DEBIT => 'prelevement',
+			\payment\MethodLib::CHECK => 'cheque',
+		];
+
+		$winner = NULL;
+		foreach($words as $fqn => $word) {
+
+			if(mb_strpos(mb_strtolower($detail), $word) !== FALSE) {
+				$winner = $fqn;
+			}
+
+		}
+
+		return $winner;
+
+	}
+
+	public static function createSuggestion(Suggestion $eSuggestion): void {
+
+		if(
+			($eSuggestion['reason']->get() & Suggestion::THIRD_PARTY) === FALSE and
+			($eSuggestion['reason']->get() & Suggestion::REFERENCE) === FALSE
+		) {
+			return;
+		}
+
+		Suggestion::model()->option('add-replace')->insert($eSuggestion);
+
+	}
+
 	public static function calculateForCashflow(\farm\Farm $eFarm, \bank\Cashflow $eCashflow): void {
 
 		// OPÉRATIONS \\
@@ -129,9 +164,16 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 		$cThirdParty = \account\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow)->filter(fn($e) => $e['weight'] > 50);
 
+		$methodFqn = self::determinePaymentMethod($eCashflow['memo']);
+		if($methodFqn !== NULL) {
+			$eMethod = \payment\MethodLib::getByFqn($methodFqn);
+		} else {
+			$eMethod = new \payment\Method();
+		}
+
 		// Par le tiers
 		$cOperationThirdParty = \journal\Operation::model()
-			->select(['id', 'amount', 'thirdParty', 'date', 'description', 'type'])
+			->select(['id', 'amount', 'thirdParty', 'date', 'description', 'type', 'paymentMethod' => ['id', 'fqn']])
 			->whereThirdParty('IN', $cThirdParty)
 			->whereAccountLabel('LIKE', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%')
 			->where(new \Sql('letteringStatus IS NULL OR letteringStatus = '.\journal\Operation::model()->format(\journal\Operation::PARTIAL)))
@@ -145,14 +187,15 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
-				$eSuggestion = new \preaccounting\Suggestion([
-					'operation' => $eOperation,
-					'cashflow' => $eCashflow,
-					'reason' => $reason,
-					'weight' => $weight,
-				]);
-
-				\preaccounting\Suggestion::model()->option('add-replace')->insert($eSuggestion);
+				self::createSuggestion(
+					new \preaccounting\Suggestion([
+						'operation' => $eOperation,
+						'cashflow' => $eCashflow,
+						'reason' => $reason,
+						'weight' => $weight,
+						'paymentMethod' => $eMethod,
+					])
+				);
 
 			}
 
@@ -182,14 +225,15 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 			if(self::countReasons($reason) > self::REASON_MIN) {
 
-				$eSuggestion = new \preaccounting\Suggestion([
-					'operation' => $eOperation,
-					'cashflow' => $eCashflow,
-					'reason' => $reason,
-					'weight' => $weight,
-				]);
-
-				\preaccounting\Suggestion::model()->option('add-replace')->insert($eSuggestion);
+				self::createSuggestion(
+					new \preaccounting\Suggestion([
+						'operation' => $eOperation,
+						'cashflow' => $eCashflow,
+						'reason' => $reason,
+						'weight' => $weight,
+						'paymentMethod' => $eMethod,
+					])
+				);
 			}
 
 		}
@@ -200,7 +244,14 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 				'id', 'priceIncludingVat', 'customer' => ['id', 'name'], 'deliveredAt',
 				'thirdParty' => \account\ThirdParty::model()
 					->select('id', 'name', 'normalizedName')
-					->delegateCollection('customer')
+					->delegateCollection('customer'),
+			  'cPayment' => \selling\Payment::model()
+					->select(\selling\Payment::getSelection())
+					->or(
+						fn() => $this->whereOnlineStatus(NULL),
+						fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+					)
+					->delegateCollection('sale'),
 			])
 			->whereFarm($eFarm)
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
@@ -216,14 +267,16 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
-					$eSuggestion = new \preaccounting\Suggestion([
+				self::createSuggestion(
+					new \preaccounting\Suggestion([
 						'sale' => $eSale,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
 						'weight' => $weight,
-					]);
+						'paymentMethod' => $eMethod,
+					])
 
-					\preaccounting\Suggestion::model()->option('add-replace')->insert($eSuggestion);
+				);
 			}
 
 		}
@@ -234,7 +287,8 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 				'id', 'priceIncludingVat', 'name', 'customer' => ['id', 'name'], 'date',
 				'thirdParty' => \account\ThirdParty::model()
 					->select('id', 'name', 'normalizedName')
-					->delegateCollection('customer')
+					->delegateCollection('customer'),
+				'paymentMethod' => ['id', 'fqn'],
 			])
 			->whereFarm($eFarm)
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
@@ -248,14 +302,15 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
-					$eSuggestion = new \preaccounting\Suggestion([
+				self::createSuggestion(
+					new \preaccounting\Suggestion([
 						'invoice' => $eInvoice,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
 						'weight' => $weight,
-					]);
-
-					\preaccounting\Suggestion::model()->option('add-replace')->insert($eSuggestion);
+						'paymentMethod' => $eMethod,
+					])
+				);
 			}
 
 		}
@@ -275,14 +330,15 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
-				$eSuggestion = new \preaccounting\Suggestion([
-					'operation' => $eOperation,
-					'cashflow' => $eCashflow,
-					'reason' => $reason,
-					'weight' => $weight,
-				]);
-
-				\preaccounting\Suggestion::model()->option('add-replace')->insert($eSuggestion);
+				self::createSuggestion(
+					new \preaccounting\Suggestion([
+						'operation' => $eOperation,
+						'cashflow' => $eCashflow,
+						'reason' => $reason,
+						'weight' => $weight,
+						'paymentMethod' => $eOperation['paymentMethod'],
+					])
+				);
 
 			}
 
@@ -352,6 +408,19 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 				$weight += 80;
 				$reason->value(\preaccounting\Suggestion::DATE, TRUE);
 
+
+			}
+
+		}
+
+		if($eOperation['paymentMethod']->notEmpty()) {
+
+			$fqn = self::determinePaymentMethod($eCashflow);
+			if($fqn === $eOperation['paymentMethod']['fqn']) {
+
+					$weight += 80;
+					$reason->value(\preaccounting\Suggestion::PAYMENT_METHOD, TRUE);
+
 			}
 
 		}
@@ -415,6 +484,17 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 		}
 
+		if($eInvoice['paymentMethod']->notEmpty()) {
+
+			$fqn = self::determinePaymentMethod($eCashflow);
+			if($fqn === $eInvoice['paymentMethod']['fqn']) {
+
+					$weight += 80;
+					$reason->value(\preaccounting\Suggestion::PAYMENT_METHOD, TRUE);
+
+			}
+
+		}
 		return [$weight, $reason];
 	}
 
@@ -465,6 +545,18 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 			}
 
+		}
+
+		$fqn = self::determinePaymentMethod($eCashflow);
+
+		foreach($eSale['cPayment'] as $ePayment) {
+
+			if($fqn === $ePayment['method']['fqn']) {
+
+				$weight += 80;
+				$reason->value(\preaccounting\Suggestion::PAYMENT_METHOD, TRUE);
+
+			}
 		}
 
 		return [$weight, $reason];

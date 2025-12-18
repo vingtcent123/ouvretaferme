@@ -54,6 +54,9 @@ class CashflowModel extends \ModuleModel {
 			'account' => ['element32', 'bank\BankAccount', 'cast' => 'element'],
 			'import' => ['element32', 'bank\Import', 'cast' => 'element'],
 			'status' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::ALLOCATED, \bank\Cashflow::DELETED], 'cast' => 'enum'],
+			'isReconciliated' => ['bool', 'cast' => 'bool'],
+			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
+			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'document' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
@@ -61,12 +64,14 @@ class CashflowModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'date', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'document', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'date', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'isReconciliated', 'invoice', 'sale', 'document', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'account' => 'bank\BankAccount',
 			'import' => 'bank\Import',
+			'invoice' => 'selling\Invoice',
+			'sale' => 'selling\Sale',
 			'createdBy' => 'user\User',
 		];
 
@@ -82,6 +87,9 @@ class CashflowModel extends \ModuleModel {
 
 			case 'status' :
 				return Cashflow::WAITING;
+
+			case 'isReconciliated' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -162,6 +170,18 @@ class CashflowModel extends \ModuleModel {
 
 	public function whereStatus(...$data): CashflowModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereIsReconciliated(...$data): CashflowModel {
+		return $this->where('isReconciliated', ...$data);
+	}
+
+	public function whereInvoice(...$data): CashflowModel {
+		return $this->where('invoice', ...$data);
+	}
+
+	public function whereSale(...$data): CashflowModel {
+		return $this->where('sale', ...$data);
 	}
 
 	public function whereDocument(...$data): CashflowModel {

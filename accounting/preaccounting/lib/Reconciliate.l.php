@@ -5,9 +5,97 @@ Class ReconciliateLib {
 
 	public static function reconciliateSuggestionCollection(\farm\Farm $eFarm, \Collection $cSuggestion): void {
 
+		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
+
 		foreach($cSuggestion as $eSuggestion) {
-			self::reconciliateSuggestion($eFarm, $eSuggestion);
+			self::reconciliateSuggestion($eFarm, $eSuggestion, $cPaymentMethod);
 		}
+
+	}
+	public static function reconciliateSuggestion(\farm\Farm $eFarm, \preaccounting\Suggestion $eSuggestion): void {
+
+		\selling\Sale::model()->beginTransaction();
+
+		$eCashflow = $eSuggestion['cashflow'];
+		$eInvoice = $eSuggestion['invoice'];
+		$eSale = $eSuggestion['sale'];
+
+		\bank\Cashflow::model()->update($eCashflow, [
+			'isReconciliated' => TRUE,
+			'invoice' => $eInvoice,
+			'sale' => $eSale,
+			'updatedAt' => new \Sql('NOW()'),
+		]);
+
+		if($eSale->empty()) {
+			$cSale = \selling\SaleLib::getByInvoice($eInvoice);
+		} else {
+			$cSale = new \Collection([$eSale]);
+		}
+
+		if($eInvoice->notEmpty()) {
+
+			$updateInvoice = ['paymentStatus' => \selling\Invoice::PAID, 'paymentMethod' => $eSuggestion['paymentMethod']];
+
+			\selling\Invoice::model()
+        ->whereId($eInvoice['id'])
+        ->wherePaymentStatus(\selling\Invoice::NOT_PAID)
+        ->update($updateInvoice);
+
+		}
+
+		if($cSale->notEmpty()) {
+
+			$updateSale = ['paymentStatus' => \selling\Sale::PAID];
+
+			\selling\Sale::model()
+				->whereId('IN', $cSale->getIds())
+				->wherePaymentStatus(\selling\Sale::NOT_PAID)
+				->update($updateSale);
+
+			$cPayment = new \Collection();
+
+			foreach($cSale as $eSale) {
+
+				$cPayment->append(new \selling\Payment([
+					'method' => $eSuggestion['paymentMethod'],
+					'sale' => $eSale,
+					'farm' => $eFarm,
+					'amountIncludingVat' => $eInvoice['priceIncludingVat']
+				]));
+
+			}
+
+			\selling\Payment::model()->insert($cPayment);
+
+		}
+
+		self::invalidateSuggestions($eSuggestion);
+
+		\selling\Sale::model()->commit();
+
+	}
+
+	public static function invalidateSuggestions(Suggestion $eSuggestionValidated): void {
+
+		// Invalidation de toutes les suggestions de l'opération, de la facture, de la vente et du cashflow concernés (out)
+		$conditions = ['cashflow = '.$eSuggestionValidated['cashflow']['id']];
+		if($eSuggestionValidated['operation']->notEmpty()) {
+			$conditions[] = 'operation = '.$eSuggestionValidated['operation']['id'];
+		}
+		if($eSuggestionValidated['sale']->notEmpty()) {
+			$conditions[] = 'sale = '.$eSuggestionValidated['sale']['id'];
+		}
+		if($eSuggestionValidated['invoice']->notEmpty()) {
+			$conditions[] = 'sale = '.$eSuggestionValidated['invoice']['id'];
+		}
+		\preaccounting\Suggestion::model()
+			->where(new \Sql(join(' OR ', $conditions)))
+			->whereStatus(\preaccounting\Suggestion::WAITING)
+			->update(['status' => \preaccounting\Suggestion::OUT]);
+
+		// Invalidation de la suggestion validée
+		\preaccounting\Suggestion::model()->update($eSuggestionValidated, ['status' => \preaccounting\Suggestion::VALIDATED]);
 
 	}
 
@@ -21,7 +109,7 @@ Class ReconciliateLib {
 	 *    => marquer le cashflow comme traité
 	 *    => supprimer les suggestions pour le cashflow / l'opération / la facture / la vente
 	 */
-	public static function reconciliateSuggestion(\farm\Farm $eFarm, \preaccounting\Suggestion $eSuggestion): void {
+	public static function createSuggestionOperations(\farm\Farm $eFarm, \preaccounting\Suggestion $eSuggestion): void {
 
 		\journal\Operation::model()->beginTransaction();
 
@@ -140,24 +228,7 @@ Class ReconciliateLib {
 		// Cashflow passe en alloué
 		\bank\Cashflow::model()->update($eCashflow, ['status' => \bank\Cashflow::ALLOCATED, 'updatedAt' => new \Sql('NOW()')]);
 
-		// Invalidation de toutes les suggestions de l'opération, de la facture, de la vente et du cashflow concernés (out)
-		$conditions = ['cashflow = '.$eCashflow['id']];
-		if($eSuggestion['operation']->notEmpty()) {
-			$conditions[] = 'operation = '.$eSuggestion['operation']['id'];
-		}
-		if($eSuggestion['sale']->notEmpty()) {
-			$conditions[] = 'sale = '.$eSuggestion['sale']['id'];
-		}
-		if($eSuggestion['invoice']->notEmpty()) {
-			$conditions[] = 'sale = '.$eSuggestion['invoice']['id'];
-		}
-		\preaccounting\Suggestion::model()
-			->where(new \Sql(join(' OR ', $conditions)))
-			->whereStatus(\preaccounting\Suggestion::WAITING)
-			->update(['status' => \preaccounting\Suggestion::OUT]);
-
-		// Invalidation de la suggestion validée
-		\preaccounting\Suggestion::model()->update($eSuggestion, ['status' => \preaccounting\Suggestion::VALIDATED]);
+		self::invalidateSuggestions($eSuggestion);
 
 		// Marquer vente ou facture comme payée
 		if($hashLinked !== NULL) {

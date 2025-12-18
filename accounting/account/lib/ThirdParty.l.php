@@ -145,7 +145,7 @@ class ThirdPartyLib extends ThirdPartyCrud {
 
 	public static function recalculateMemos(\bank\Cashflow $eCashflow, ThirdParty $eThirdParty): ThirdParty {
 
-		$memos = explode(' ', $eCashflow['memo']);
+		$memos = explode(' ', $eCashflow['name']);
 		if($eThirdParty['memos'] === NULL) {
 			$eThirdParty['memos'] = [];
 		}

@@ -185,6 +185,8 @@ new Page(function($data) {
 
 		$data->ccSuggestion = preaccounting\SuggestionLib::getAllWaitingGroupByCashflow();
 
+		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE);
+
 		throw new ViewAction($data);
 
 	})

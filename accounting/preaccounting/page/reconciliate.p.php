@@ -6,9 +6,10 @@ new \preaccounting\SuggestionPage(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 })
+	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction())
 	->write('doIgnore', function($data) {
 
-		$data->e->validate('acceptAction');
+		$data->e->validate('acceptIgnore');
 
 		preaccounting\SuggestionLib::ignore($data->e);
 
@@ -17,16 +18,17 @@ new \preaccounting\SuggestionPage(function($data) {
 	})
 	->write('doReconciliate', function($data) {
 
-		$data->e->validate('acceptAction');
+		$data->e->validate('acceptReconciliate');
 
-		preaccounting\ReconciliateLib::reconciliateSuggestion($data->eFarm, $data->e);
+		$cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+		preaccounting\ReconciliateLib::reconciliateSuggestion($data->eFarm, $data->e, $cPaymentMethod);
 
 		throw new ReloadAction('preaccounting', 'Reconciliation::reconciliate');
 
 	})
 	->writeCollection('doReconciliateCollection', function($data) {
 
-		\preaccounting\Suggestion::validateBatch($data->c);
+		\preaccounting\Suggestion::validateBatchReconciliate($data->c);
 
 		preaccounting\ReconciliateLib::reconciliateSuggestionCollection($data->eFarm, $data->c);
 

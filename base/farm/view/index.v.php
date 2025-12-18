@@ -710,11 +710,10 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 	$h = '<div class="util-action">';
 		$h .= '<h1>'.s("Factures").'</h1>';
 
-		if($data->nSuggestion > 0) {
-			$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($data->eFarm, 'invoice', $data->nSuggestion);
-		}
-
-		$h .= '<div>';
+		$h .= '<div class="flex-align-center">';
+			if($data->nSuggestion > 0) {
+				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($data->eFarm, 'invoice', $data->nSuggestion);
+			}
 
 			if($data->hasInvoices) {
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#invoice-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';

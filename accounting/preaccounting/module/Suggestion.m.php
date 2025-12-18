@@ -16,6 +16,7 @@ abstract class SuggestionElement extends \Element {
 	const THIRD_PARTY = 2;
 	const REFERENCE = 4;
 	const DATE = 8;
+	const PAYMENT_METHOD = 16;
 
 	public static function getSelection(): array {
 		return Suggestion::model()->getProperties();
@@ -51,14 +52,16 @@ class SuggestionModel extends \ModuleModel {
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
+			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
+			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\preaccounting\Suggestion::WAITING, \preaccounting\Suggestion::REJECTED, \preaccounting\Suggestion::VALIDATED, \preaccounting\Suggestion::OUT], 'cast' => 'enum'],
-			'reason' => ['set', [\preaccounting\Suggestion::AMOUNT, \preaccounting\Suggestion::THIRD_PARTY, \preaccounting\Suggestion::REFERENCE, \preaccounting\Suggestion::DATE], 'cast' => 'set'],
+			'reason' => ['set', [\preaccounting\Suggestion::AMOUNT, \preaccounting\Suggestion::THIRD_PARTY, \preaccounting\Suggestion::REFERENCE, \preaccounting\Suggestion::DATE, \preaccounting\Suggestion::PAYMENT_METHOD], 'cast' => 'set'],
 			'weight' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'cashflow', 'sale', 'invoice', 'operation', 'status', 'reason', 'weight', 'createdAt'
+			'id', 'cashflow', 'sale', 'invoice', 'operation', 'thirdParty', 'paymentMethod', 'status', 'reason', 'weight', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -66,6 +69,8 @@ class SuggestionModel extends \ModuleModel {
 			'sale' => 'selling\Sale',
 			'invoice' => 'selling\Invoice',
 			'operation' => 'journal\Operation',
+			'thirdParty' => 'account\ThirdParty',
+			'paymentMethod' => 'payment\Method',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
@@ -133,6 +138,14 @@ class SuggestionModel extends \ModuleModel {
 
 	public function whereOperation(...$data): SuggestionModel {
 		return $this->where('operation', ...$data);
+	}
+
+	public function whereThirdParty(...$data): SuggestionModel {
+		return $this->where('thirdParty', ...$data);
+	}
+
+	public function wherePaymentMethod(...$data): SuggestionModel {
+		return $this->where('paymentMethod', ...$data);
 	}
 
 	public function whereStatus(...$data): SuggestionModel {

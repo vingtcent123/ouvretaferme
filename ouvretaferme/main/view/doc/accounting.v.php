@@ -42,17 +42,17 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo s("Vous pouvez également paramétrer des numéros de compte par catégorie de produit dans la page \"Vendre > Paramétrage > Les réglages de base > Comptabilité\". Ainsi, toutes les articles vendus seront immédiatement configurés correctement.");
 		echo '</p>';
 
-		echo '<h3>'.s("Les comptes des clients (411)").'</h3>';
+		if(FEATURE_ACCOUNTING_ACCRUAL) {
 
-		echo '<p>';
-			echo s("Vous pouvez personnaliser des comptes pour vos différents clients dans les <link>paramètres du module de comptabilité</link>. En reliant un client avec un tiers et un numéro de compte spécifique, toutes vos ventes sont rattachées au bon numéro de compte de tiers.", [
-				'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">'
-			]);
-		echo '</p>';
+			echo '<h3>'.s("Les comptes des clients (411)").'</h3>';
 
-		echo '<p class="doc-annotation">';
-			echo s("Note : cette fonctionnalité n'est pas accessible si votre exercice comptable en cours est une comptabilité à la trésorerie.");
-		echo '</p>';
+			echo '<p>';
+				echo s("Vous pouvez personnaliser des comptes pour vos différents clients dans les <link>paramètres du module de comptabilité</link>. En reliant un client avec un tiers et un numéro de compte spécifique, toutes vos ventes sont rattachées au bon numéro de compte de tiers.", [
+					'link' => $data->eFarm->empty() ? '<span>' : '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/account">'
+				]);
+			echo '</p>';
+
+		}
 
 		echo '<h3>'.s("Les journaux").'</h3>';
 
@@ -154,19 +154,37 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				s("Le nom au sens du Plan Comptable du compte"),
 				s("Vente de produits végétaux")
 			],
-			[
+		];
+		if(FEATURE_ACCOUNTING_ACCRUAL) {
+			$data = array_merge($data, [[
 				'CompAuxNum',
 				s("Numéro de compte auxiliaire"),
 				s("Numéro du compte du tiers concerné par cette vente."),
 				'41100001'
 			],
-			[
-				'CompAuxLib',
-				s("Libellé de compte auxiliaire"),
-				s("Le nom du compte auxiliaire"),
-				'Client XYZ'
+				[
+					'CompAuxLib',
+					s("Libellé de compte auxiliaire"),
+					s("Le nom du compte auxiliaire"),
+					'Client XYZ'
+				],
+			]);
+		} else {
+			$data = array_merge($data, [[
+				'CompAuxNum',
+				s("Numéro de compte auxiliaire"),
+				s("Ne sera jamais renseigné."),
+				''
 			],
-			[
+				[
+					'CompAuxLib',
+					s("Libellé de compte auxiliaire"),
+					s("Ne sera jamais renseigné."),
+					''
+				],
+			]);
+		}
+		$data = array_merge($data, [[
 				'PieceRef',
 				s("Référence de pièce justificative"),
 				s("Généralement le numéro de facture lié à la ligne de vente"),
@@ -244,7 +262,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				s("Le mode de règlement enregistré pour la vente"),
 				s('Espèces')
 			],
-		];
+		]);
 
 		echo '<table>';
 			echo '<thead>';
@@ -283,8 +301,8 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:import';
 
-	$t->title = s("Importer et rapprocher les ventes dans la comptabilité d'Ouvretaferme");
-	$t->subTitle = s("Créer les écritures comptables et rapprocher les paiements");
+	$t->title = s("Importer les ventes dans la comptabilité d'Ouvretaferme");
+	$t->subTitle = s("Créer les écritures comptables en un clic");
 
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vente</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';
 
@@ -300,7 +318,10 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 		echo '<ul>';
 			echo '<li>'.s("Classe {productAccount} pour tous vos comptes de produits (autant d'écritures que de comptes différents)", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
 			echo '<li>'.s("Classe {vatAccount} pour la TVA (autant d'écritures que de comptes et taux de TVA différents). <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
-			echo '<li>'.s("Classe {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
+
+			if(FEATURE_ACCOUNTING_ACCRUAL) {
+				echo '<li>'.s("Classe {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
+			}
 		echo '</ul>';
 
 	echo '</div>';
@@ -320,9 +341,9 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div id="bank-import" class="util-block">';
 
 		echo '<h2>'.s("Importer les opérations bancaires").'</h2>';
-		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>.ofx</i> (la plupart des banques proposent ce format).<br />Ensuite, rendez-vous sur la page Banque > Bouton \"Importer un relevé .ofx\" et sélectionnez votre fichier.").'</p>';
+		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>.ofx</i> (la plupart des banques proposent ce format).<br />Rendez-vous sur la page des opérations bancaires et cliquez sur le bouton \"Importer un relevé .ofx\" puis sélectionnez votre fichier sur votre ordinateur.").'</p>';
 		echo '<p>'.s("Et c'est tout !").'</p>';
-		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page de la banque.").'</p>';
+		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page des opérations bancaires.").'</p>';
 
 	echo '</div>';
 
@@ -335,7 +356,6 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 			echo '<li>'.s("Créer des écritures comptables correspondantes").'</li>';
 			echo '<li>'.s("Rattacher des écritures comptables déjà saisies").'</li>';
 		echo '</ul>';
-		echo '<div class="util-info">'.Asset::icon('info-circle').' '.s("Si vous souhaitez <b>rapprocher un paiement</b> avec une facture importée, passez directement par le menu de Précomptabilité > Rapprocher les factures").'<div class="doc-annotation">'.s("Note : cette dernière fonctionnalité n'est disponible que si votre exploitation est en comptabilité d'engagement (globalement ou juste pour les ventes).").'</div></div>';
 
 		echo '<h3>'.s("Créer ou Rattacher des écritures comptables").'</h3>';
 		echo '<p>'.s("Une écriture de contrepartie en compte {bankAccount} sera automatiquement créée et reliée aux écritures comptables concernées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
@@ -368,6 +388,32 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 
 
 	echo '<br /><br />';
+	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link>", ['link' => '<a href="/doc/accounting:bank#bank-import">']).'</h4>';
+
+	echo '<div class="util-block">';
+	Asset::css('selling', 'sale.css');
+
+		echo '<h2>'.s("Rapprocher les <u>ventes</u> avec les opérations bancaires").'</h2>';
+
+		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos ventes (ou factures) qui semblent correspondre. Vous verrez une petite alerte dès qu'un rapprochement sera possible.").'</p>';
+		echo '<p>'.s("Les critères de décision sont : ").'</p>';
+		echo '<ul class="doc-list-icons">';
+			echo '<li>'.Asset::icon('file-person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
+			echo '<li>'.Asset::icon('currency-euro').' '.s("Le montant de l'opération bancaire et de la vente ou la facture").'</li>';
+			echo '<li>'.Asset::icon('123').' '.s("La présence de la référence de facture dans la description de l'opération bancaire").'</li>';
+			echo '<li>'.Asset::icon('calendar-range').' '.s("L'adéquation entre la date d'opération bancaire et la date de la vente ou de la facture").'</li>';
+		echo '</ul>';
+		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous pouvez modifier le moyen de paiement détecté via le libellé de l'opération bancaire.").'</li>';
+		echo '<p>'.s("Puis ensuite vous avez le choix : ").'</li>';
+		echo '<ul class="doc-list-icons">';
+			echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("d'accepter le rapprochement suggéré").'</li>';
+			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de le refuser.<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
+		echo '</ul>';
+
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement renseigné, dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</p>';
+
+	echo '</div>';
+	echo '<br /><br />';
 
 });
 
@@ -381,29 +427,6 @@ new AdaptativeView('reconciliate', function($data, DocTemplate $t) {
 	$t->title = s("Rapprochement bancaire");
 	$t->subTitle = s("Gérer les flux bancaires, les ventes et les opérations avec Ouvretaferme");
 
-	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link>", ['link' => '<a href="/doc/accounting:bank#bank-import">']).'</h4>';
-
-	echo '<div class="util-block">';
-
-		echo '<h2>'.s("Rapprocher les <u>ventes</u> avec les opérations bancaires").'</h2>';
-
-		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos ventes (ou factures) qui semblent correspondre (menu \"Précomptabilité > Rapprocher les ventes\")").'</p>';
-		echo '<p>'.s("Les critères de décision sont : ").'</p>';
-		echo '<ul class="doc-list-icons">';
-			echo '<li>'.Asset::icon('file-person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
-			echo '<li>'.Asset::icon('currency-euro').' '.s("Le montant de l'opération bancaire et de la vente ou la facture").'</li>';
-			echo '<li>'.Asset::icon('123').' '.s("La présence de la référence de facture dans la description de l'opération bancaire").'</li>';
-			echo '<li>'.Asset::icon('calendar-range').' '.s("L'adéquation entre la date d'opération bancaire et la date de la vente ou de la facture").'</li>';
-		echo '</ul>';
-		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous avez ensuite le choix :").'</p>';
-		echo '<ul class="doc-list-icons">';
-			echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("de l'accepter").'</li>';
-			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de la refuser<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
-		echo '</ul>';
-
-		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</p>';
-
-	echo '</div>';
 
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link> et <linkImportSales>importé les ventes, factures, et/ou marchés</linkImportSales>", ['link' => '<a href="/doc/accounting:bank">', 'linkImportSales' => '<a href="/doc/accounting:import">']).'</h4>';
 
