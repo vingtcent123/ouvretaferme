@@ -2593,6 +2593,10 @@ body.dropdown-fullscreen-open[data-touch="no"] {
 	overflow: auto;
 }
 
+.dropdown-list.dropdown-list-open.dropdown-list-minimalist {
+	overflow: visible;
+}
+
 .dropdown-list.dropdown-list-2 {
 	grid-template-columns: 1fr 1fr;
 }

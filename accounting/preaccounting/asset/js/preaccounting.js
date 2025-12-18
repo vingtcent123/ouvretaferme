@@ -64,25 +64,6 @@ class Preaccounting {
 
 	}
 
-	static load(step, tab) {
-
-		if(!tab) {
-			return;
-		}
-
-		const target = qs('[data-step="' +  step + '"][data-tab="' + tab + '"]');
-		const url = target.dataset.url;
-
-		const currentUrl = window.location.origin + window.location.pathname + '?type=' + step + '&tab=' + tab;
-		Lime.History.replaceState(currentUrl);
-
-		new Ajax.Query()
-			.url(url)
-			.method('get')
-			.fetch();
-
-	}
-
 	static toggleGroupSelection(target) {
 
 		CheckboxField.all(target.firstParent('tbody, thead').nextSibling, target.checked, '[name^="batch[]"]');

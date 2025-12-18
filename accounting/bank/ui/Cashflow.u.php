@@ -149,11 +149,11 @@ class CashflowUi {
 							$label = s("Libellé");
 							$h .= ($search ? $search->linkSort('memo', $label) : $label);
 						$h .= '</th>';
-						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-md-up">'.s("Montant").'</th>';
-						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-md-up td-min-content">'.s("Montant").'</th>';
+						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-sm-down td-min-content">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end highlight-stick-left td-vertical-align-top hide-sm-down td-min-content">'.s("Crédit (C)").'</th>';
 						if($eFarm->usesAccounting()) {
-							$h .= '<th class="text-center">'.s("Écritures").'</th>';
+							$h .= '<th>'.s("Écritures comptables").'</th>';
 						}
 						$h .= '<th class="text-center td-vertical-align-middle"></th>';
 					$h .= '</tr>';
@@ -216,19 +216,20 @@ class CashflowUi {
 
 						if($eFarm->usesAccounting()) {
 
-							$h .= '<td class="td-min-content text-center">';
+							$h .= '<td>';
 
 								if($eCashflow['status'] === Cashflow::WAITING) {
 
-									$h .= '<a data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'</a>';
+									$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.s("Ajouter").'</a> ';
 
 									$h .= '<div class="dropdown-list">';
+										$h .= '<div class="dropdown-title">'.s("Ajouter des écritures comptables").'</div>';
 										$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
 											$h .= s("Créer de nouvelles écritures");
 										$h .= '</a>';
 
 										$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
-											$h .= s("Rattacher des écritures comptables");
+											$h .= s("Rattacher des écritures existantes");
 										$h .= '</a>';
 									$h .= '</div>';
 

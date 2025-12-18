@@ -190,6 +190,7 @@ Class ImportLib {
 		$cAccount = \account\AccountLib::getAll();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_SALE;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
+
 		\journal\Operation::model()->beginTransaction();
 
 		$eThirdParty = self::getOrCreateThirdParty($eSale['customer']);
@@ -534,6 +535,7 @@ Class ImportLib {
 				'financialYear' => $eFinancialYear,
 				'account' => $eAccount,
 				'accountLabel' => $data[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
+				'journalCode' => $eAccount['journalCode'],
 				'date' => $date,
 				'document' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT],
 				'documentDate' => $date,

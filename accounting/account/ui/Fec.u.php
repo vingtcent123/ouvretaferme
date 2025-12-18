@@ -40,7 +40,7 @@ class FecUi {
 
 		return new \Panel(
 			id: 'panel-fec-view',
-			title: s("Générer un Fichier des Écritures Comptables"),
+			title: s("Générer votre fichier des écritures comptables"),
 			body: $h,
 			close: 'passthrough',
 			url: \company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:view',

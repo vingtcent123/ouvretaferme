@@ -1834,7 +1834,7 @@ class FarmUi {
 	protected static function getAccountingBankCategories(): array {
 		return [
 			'bank' => ['url' => '/banque/operations', 'label' => s("Opérations bancaires")],
-			'import' => ['url' => '/banque/imports', 'label' => s("Imports")],
+			'import' => ['url' => '/banque/imports', 'label' => s("Imports bancaires")],
 		];
 	}
 

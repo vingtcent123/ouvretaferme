@@ -73,12 +73,12 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
-					echo '<div class="step-title">'.s("Export").'</div>';
+					echo '<div class="step-title">'.s("Export").' <span class="util-badge bg-primary">FEC</span></div>';
 					echo '<div class="step-value"></div>';
 				echo '</div>';
 			echo '</div>';
 			echo '<p class="step-desc">';
-				echo s("Téléchargez un Fichier des Écritures Comptables (FEC)");
+				echo s("Téléchargez votre fichier des écritures comptables");
 			echo '</p>';
 		echo '</a>';
 
@@ -157,6 +157,8 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 });
 
 new JsonView('/precomptabilite/{type}', function($data, AjaxTemplate $t) {
+
+	$t->js()->replaceHistory(LIME_REQUEST);
 
 	switch($data->type) {
 

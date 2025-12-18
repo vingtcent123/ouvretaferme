@@ -1358,7 +1358,7 @@ class ProductUi {
 				'<span data-field-label="privateAccount">'.s("Compte").'</span>',
 				$form->dynamicField($eProduct, 'privateAccount').
 				'<div class="form-info">'.$form->checkbox('accountDissociation', '1', [
-					'callbackLabel' => fn($input) => $input.' '.s("Dissocier le compte pour la vente aux professionnels"),
+					'callbackLabel' => fn($input) => $input.' '.s("Choisir un autre numéro de compte pour la vente aux professionnels"),
 					'onclick' => 'Product.accountDissociation()',
 					'data-field-account-generic-label' => $genericLabel,
 					'data-field-account-specific-label' => $specificLabel,

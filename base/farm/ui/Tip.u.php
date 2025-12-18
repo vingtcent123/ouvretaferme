@@ -339,7 +339,7 @@ class TipUi {
 				$h .= \Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("soit exporter un fichier FEC{star} de vos ventes pour l'intégrer dans votre outil comptable", ['star' => '<sup><small>'.\Asset::icon('asterisk').'</small></sup>']);
 				$h .= '<br />';
 				$h .= \Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("soit importer vos ventes dans le module de comptabilité d'Ouvretaferme");
-				$h .= '<p><small><sup>'.\Asset::icon('asterisk').'</sup> '.s("FEC : Fichier des Écritures Comptables").'</small></p>';
+				$h .= '<p><small><sup>'.\Asset::icon('asterisk').'</sup> '.s("FEC : Fichier des écritures comptables").'</small></p>';
 
 				return [
 					'icon' => \Asset::icon('file-spreadsheet'),

@@ -145,7 +145,7 @@ Class PreaccountingUi {
 			$h .= '<div class="tabs-item">';
 				foreach($nToCheck as $tab => $count) {
 
-					$h .= '<a onclick="Preaccounting.load(\''.$type.'\', \''.$tab.'\');" data-url="'.$url.'&tab='.$tab.'" class="tab-item '.(($search->get('tab') === $tab) ? 'selected' : '').'" data-step="'.$type.'" data-tab="'.$tab.'">';
+					$h .= '<a data-ajax="'.$url.'&tab='.$tab.'"  data-ajax-method="get" class="tab-item '.(($search->get('tab') === $tab) ? 'selected' : '').'" data-step="'.$type.'" data-tab="'.$tab.'">';
 						$h .= match($tab) {
 							\selling\Sale::SALE => s("Ventes"),
 							'invoice' => s("Factures"),
@@ -524,7 +524,7 @@ Class PreaccountingUi {
 				foreach($cCategory as $eCategory) {
 
 					if(($products[$eCategory['id']] ?? 0) > 0) {
-						$h .= '<a onclick="Preaccounting.load(\'product\', \''.$eCategory['id'].'\');" data-url="'.$url.'&tab='.$eCategory['id'].'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'" data-step="product" data-tab="'.$eCategory['id'].'">'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
+						$h .= '<a data-ajax="'.$url.'&tab='.$eCategory['id'].'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'" data-ajax-method="get" data-step="product" data-tab="'.$eCategory['id'].'">'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
 					}
 
 				}
@@ -533,13 +533,13 @@ Class PreaccountingUi {
 
 				if($uncategorized > 0) {
 
-					$h .= '<a onclick="Preaccounting.load(\'product\', 0);" data-url="'.$url.'&tab=0" class="'.$class.' '.(($eCategorySelected->empty() and $isItemSelected === FALSE) ? 'selected' : '').'" data-step="product" data-tab="0">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
+					$h .= '<a data-ajax="'.$url.'&tab=0" data-ajax-method="get" class="'.$class.' '.(($eCategorySelected->empty() and $isItemSelected === FALSE) ? 'selected' : '').'" data-step="product" data-tab="0">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
 
 				}
 
 				if($toVerifyItems > 0) {
 
-					$h .= '<a onclick="Preaccounting.load(\'product\', \'items\');" data-url="'.$url.'&tab=items" class="'.$class.' '.($isItemSelected ? 'selected' : '').'" data-step="product" data-tab="items">'.s("Articles").' <small class="'.$class.'-count">'.$toVerifyItems.'</small></a>';
+					$h .= '<a data-ajax="'.$url.'&tab=items" data-ajax-method="get" class="'.$class.' '.($isItemSelected ? 'selected' : '').'" data-step="product" data-tab="items">'.s("Articles").' <small class="'.$class.'-count">'.$toVerifyItems.'</small></a>';
 				}
 
 				return $h;
