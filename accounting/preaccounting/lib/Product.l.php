@@ -36,13 +36,13 @@ Class ProductLib {
 
 		$cCategories = \selling\CategoryLib::getByFarm($eFarm);
 
-		$products = self::filterForAccountingCheck($eFarm, $search)
+		$cProduct = self::filterForAccountingCheck($eFarm, $search)
 			->select(['category', 'count' => new \Sql('COUNT(DISTINCT(m1.id))')])
 			->group('category')
 			->getCollection(NULL, NULL, 'category');
 		$productsByCategory = [];
-		foreach($products as $product) {
-			$productsByCategory[$product['category']['id'] ?? 0] = $product['count'];
+		foreach($cProduct as $eProduct) {
+			$productsByCategory[$eProduct['category']['id'] ?? 0] = $eProduct['count'];
 		}
 
 		$nToCheck = self::countForAccountingCheck($eFarm, $search);
@@ -51,9 +51,29 @@ Class ProductLib {
 			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
 			->get()['count'] ?? 0);
 
-		if($search->get('tab') === 'items') {
-			return [$nToCheck, $nVerified, new \Collection(), $cCategories, $productsByCategory];
+		if(get_exists('tab')) {
+
+			\session\SessionLib::set('preAccountingProductTab', GET('tab'));
+			$tab = GET('tab');
+
+		} else {
+
+			try {
+				$tab = \session\SessionLib::get('preAccountingProductTab');
+			} catch(\Exception) {
+				$tab = \selling\CategoryLib::getById(first(array_keys($productsByCategory)));
+			}
+
 		}
+
+		if($tab === 'items') {
+			return [$nToCheck, $nVerified, new \Collection(), $cCategories, $productsByCategory];
+		} else if(is_string($tab) and in_array((int)$tab, array_keys($productsByCategory))) {
+				$tab = \selling\CategoryLib::getById($tab);
+		}
+
+		$search->set('tab', $tab);
+		\session\SessionLib::set('preAccountingProductTab', $tab);
 
 		$cProduct = self::filterForAccountingCheck($eFarm, $search)
 			->select([
@@ -62,7 +82,7 @@ Class ProductLib {
 				'category',
 				'vignette', 'unprocessedPlant' => ['fqn', 'vignette'], 'profile', 'farm', 'status', 'unprocessedVariety', 'mixedFrozen', 'quality', 'additional', 'origin',
 			])
-			->whereCategory($search->get('tab'), if: $search->get('tab') !== 'items')
+			->whereCategory($tab)
 			->sort(['m1.name' => SORT_ASC])
 			->getCollection();
 

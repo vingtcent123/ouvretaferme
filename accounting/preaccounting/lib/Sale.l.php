@@ -217,9 +217,23 @@ Class SaleLib {
 
 		$nToCheck = self::countForAccountingCheck($type, $eFarm, $search);
 
-		if(!$search->get('tab')) {
-			$search->set('tab', first(array_keys($nToCheck)));
+		if(get_exists('tab')) {
+
+			\session\SessionLib::set('preAccountingSaleTab', GET('tab'));
+			$tab = GET('tab');
+
+		} else {
+
+			try {
+				$tab = \session\SessionLib::get('preAccountingSaleTab');
+			} catch(\Exception) {
+				$tab = first(array_keys($nToCheck));
+			}
+
 		}
+
+		$search->set('tab', $tab);
+		\session\SessionLib::set('preAccountingSaleTab', $tab);
 
 		if($search->get('tab') === 'invoice') {
 

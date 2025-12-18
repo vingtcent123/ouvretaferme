@@ -85,7 +85,7 @@ new Page(function($data) {
 		$data->type = GET('type');
 
 		if(Route::getRequestedWith() !== 'ajax') {
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type='.GET('type').'&from='.GET('from').'&to='.GET('to'));
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type='.GET('type').'&from='.GET('from').'&to='.GET('to').'&tab='.GET('tab'));
 		}
 
 		if($data->isSearchValid and in_array($data->type, ['product', 'payment', 'closed'])) {
@@ -94,18 +94,9 @@ new Page(function($data) {
 
 				case 'product':
 
-					$data->search->set('tab', new \selling\Category());
-					if(GET('tab') === 'items') {
-						$data->search->set('tab', GET('tab'));
-					} else {;
-						$data->search->set('tab', \selling\CategoryLib::getById(GET('tab')));
-					}
 					[$data->nToCheck, $data->nVerified, $data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
 					[$data->nToCheckItem, $data->nVerifiedItem, $data->cItem] = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
 
-					if($data->search->get('tab') !== 'items' and empty($data->products) and $data->cItem->notEmpty()) {
-						$data->search->set('tab', 'items');
-					}
 					break;
 
 				case 'payment':

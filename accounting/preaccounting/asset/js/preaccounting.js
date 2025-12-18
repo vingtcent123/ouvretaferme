@@ -46,7 +46,7 @@ class Preaccounting {
 					qs('#form-search input[name="to"]').classList.remove('form-error-field');
 				}
 
-				const currentUrl = window.location.origin + window.location.pathname + '?type=' + step;
+				const currentUrl = window.location.origin + window.location.pathname + '/?type=' + step + '&from=' + from + '&to=' + to + '&tab=' + tab;
 				Lime.History.replaceState(currentUrl);
 
 				new Ajax.Query()
