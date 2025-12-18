@@ -52,7 +52,6 @@ class SuggestionModel extends \ModuleModel {
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
-			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\preaccounting\Suggestion::WAITING, \preaccounting\Suggestion::REJECTED, \preaccounting\Suggestion::VALIDATED, \preaccounting\Suggestion::OUT], 'cast' => 'enum'],
 			'reason' => ['set', [\preaccounting\Suggestion::AMOUNT, \preaccounting\Suggestion::THIRD_PARTY, \preaccounting\Suggestion::REFERENCE, \preaccounting\Suggestion::DATE, \preaccounting\Suggestion::PAYMENT_METHOD], 'cast' => 'set'],
@@ -61,7 +60,7 @@ class SuggestionModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'cashflow', 'sale', 'invoice', 'operation', 'thirdParty', 'paymentMethod', 'status', 'reason', 'weight', 'createdAt'
+			'id', 'cashflow', 'sale', 'invoice', 'operation', 'paymentMethod', 'status', 'reason', 'weight', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -69,7 +68,6 @@ class SuggestionModel extends \ModuleModel {
 			'sale' => 'selling\Sale',
 			'invoice' => 'selling\Invoice',
 			'operation' => 'journal\Operation',
-			'thirdParty' => 'account\ThirdParty',
 			'paymentMethod' => 'payment\Method',
 		];
 
@@ -138,10 +136,6 @@ class SuggestionModel extends \ModuleModel {
 
 	public function whereOperation(...$data): SuggestionModel {
 		return $this->where('operation', ...$data);
-	}
-
-	public function whereThirdParty(...$data): SuggestionModel {
-		return $this->where('thirdParty', ...$data);
 	}
 
 	public function wherePaymentMethod(...$data): SuggestionModel {
