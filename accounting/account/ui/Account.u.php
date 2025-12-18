@@ -281,7 +281,7 @@ class AccountUi {
 	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
 
 		$item = \Asset::icon('gear');
-		$item .= '<div>'.s("Gérer les classes de compte").'</div>';
+		$item .= '<div>'.s("Gérer les comptes").'</div>';
 
 		return [
 			'type' => 'link',

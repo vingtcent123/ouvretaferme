@@ -185,7 +185,7 @@ Class JournalCodeUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div class="util-info">'.s("En associant des journaux à des classes de compte, ces journaux seront automatiquement proposés lors de l'enregistrement d'écritures au journal.").'</div>';
+		$h = '<div class="util-info">'.s("En associant des journaux à des numéros de compte, ces journaux seront automatiquement proposés lors de l'enregistrement d'écritures au journal.").'</div>';
 
 		$h .= '<div class="util-block-help">'.s("Ces modifications n'impacteront pas les écritures déjà saisies en comptabilité.").'</div>';
 
@@ -220,11 +220,11 @@ Class JournalCodeUi {
 			}
 		$h .= '</table>';
 
-		$footer = '<div class="text-end">'.$form->button(s("Enregistrer les classes de compte")).'</div>';
+		$footer = '<div class="text-end">'.$form->button(s("Enregistrer les numéros de compte")).'</div>';
 
 		return new \Panel(
 			id         : 'panel-journal-code-account',
-			title      : s("Modifier les classes de compte du journal {value}", $this->getColoredName($eJournalCode)),
+			title      : s("Modifier les numéros de compte du journal {value}", $this->getColoredName($eJournalCode)),
 			dialogOpen : $dialogOpen,
 			dialogClose: $form->close(),
 			body       : $h,

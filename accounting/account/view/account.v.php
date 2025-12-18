@@ -41,8 +41,8 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		$results[] = [
 			'type' => 'title',
-			'itemHtml' => '<div>'.s("Classes de compte trouvées par le tiers").'</div>',
-			'itemText' => s("Classes de compte trouvées par le tiers"),
+			'itemHtml' => '<div>'.s("Numéros de compte trouvés par le tiers").'</div>',
+			'itemText' => s("Numéros de compte trouvés par le tiers"),
 		];
 
 		foreach($cAccountThirdParty as $eAccount) {
@@ -68,8 +68,8 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		$results[] = [
 			'type' => 'title',
-			'itemHtml' => '<div>'.s("Toutes les autres classes de compte").'</div>',
-			'itemText' => s("Toutes les autres classes de compte"),
+			'itemHtml' => '<div>'.s("Tous les autres numéros de compte").'</div>',
+			'itemText' => s("Tous les autres numéros de compte"),
 		];
 
 		foreach($cAccountOthers as $eAccount) {
