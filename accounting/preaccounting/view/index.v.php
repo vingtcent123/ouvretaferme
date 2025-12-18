@@ -8,7 +8,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$t->nav = 'preaccounting';
 
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'prepare', ['import' => array_sum($data->counts['import']), 'reconciliate-sales' => $data->counts['reconciliate']['sales'], 'reconciliate-operations' => $data->counts['reconciliate']['operations']]);
+	$t->mainTitle = '<h1>'.s("Préparer les données de vente").'</h1>';
 
 	$errors = $data->nProduct + $data->nSalePayment + $data->nSaleClosed;
 
@@ -250,12 +250,13 @@ new JsonView('/precomptabilite/{type}', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t) {
 
-	$t->nav = 'preaccounting';
+	$t->nav = 'accounting';
+	$t->subNav = 'operations';
 
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
 
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'import', ['import' => array_sum($data->counts['import']), 'reconciliate-sales' => $data->counts['reconciliate']['sales'], 'reconciliate-operations' => $data->counts['reconciliate']['operations']]);
+	$t->mainTitle = '<h1>'.s("Importer les ventes").(array_sum($data->counts) > 0 ? '<span class="util-counter ml-1">'.array_sum($data->counts).'</span>' : '').'</h1>';
 
 	echo '<div class="util-block-help">';
 	echo '<p>'.s("Cette page vous permet de vérifier et importer vos ventes depuis le module de commercialisation directement en comptabilité.").'</p>';
@@ -272,7 +273,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 			'invoice' => s("Factures"),
 			'sales' => s("Autres ventes"),
 		};
-		echo ' <small class="tab-item-count">'.$data->counts['import'][$tab].'</small>';
+		echo ' <small class="tab-item-count">'.$data->counts[$tab].'</small>';
 		echo '</a>';
 
 	}
@@ -294,7 +295,7 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes';
 
-	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").'</h1>';
+	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").($data->counts > 0 ? '<span class="util-counter ml-1">'.$data->counts.'</span>' : '').'</h1>';
 
 	echo '<div class="util-block-help">';
 	echo s("Cette page vous permet de rapprocher vos ventes et factures avec les opérations bancaires que vous avez importées.");
@@ -333,7 +334,7 @@ new AdaptativeView('/precomptabilite:rapprocher-ecritures', function($data, Farm
 	$t->title = s("Rapprocher les écritures comptables de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ecritures';
 
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'reconciliate-operations', ['import' => array_sum($data->counts['import']), 'reconciliate-sales' => $data->counts['reconciliate']['sales'], 'reconciliate-operations' => $data->counts['reconciliate']['operations']]);
+		$t->mainTitle = '<h1>'.s("Rapprocher les écritures").($data->counts > 0 ? '<span class="util-counter ml-1">'.$data->counts.'</span>' : '').'</h1>';
 
 	echo '<div class="util-block-help">';
 	echo s("Cette page vous permet de rapprocher vos écritures comptables avec les opérations bancaires que vous avez importées.");

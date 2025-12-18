@@ -75,8 +75,6 @@ new Page(function($data) {
 
 		}
 
-		$data->counts = \preaccounting\PreaccountingLib::counts($data->eFarm, $data->search->get('from'), $data->search->get('to'), $data->search);
-
 		throw new ViewAction($data);
 
 	})
@@ -166,7 +164,7 @@ new Page(function($data) {
 			'type' => GET('type'),
 		]);
 
-		$data->counts = \preaccounting\PreaccountingLib::counts($data->eFarm, $from, $to, $data->search);
+		$data->counts = \preaccounting\PreaccountingLib::countImports($data->eFarm, $from, $to, $data->search);
 
 		$data->c = match($data->selectedTab) {
 			'market' => \preaccounting\ImportLib::getMarketSales($data->eFarm, $from, $to),
@@ -179,7 +177,7 @@ new Page(function($data) {
 	})
 	->get('/precomptabilite:rapprocher-ventes', function($data) {
 
-		$data->counts = \preaccounting\PreaccountingLib::counts($data->eFarm, $data->search->get('from'), $data->search->get('to'), $data->search);
+		$data->counts = (\preaccounting\SuggestionLib::countWaitingByInvoice() + \preaccounting\SuggestionLib::countWaitingBySale());
 
 		$data->eImportLast = \bank\ImportLib::getLastImport();
 
@@ -192,7 +190,7 @@ new Page(function($data) {
 	})
 	->get('/precomptabilite:rapprocher-ecritures', function($data) {
 
-		$data->counts = \preaccounting\PreaccountingLib::counts($data->eFarm, $data->search->get('from'), $data->search->get('to'), $data->search);
+		$data->counts = \preaccounting\SuggestionLib::countWaitingByOperation();
 
 		$data->ccSuggestion = preaccounting\SuggestionLib::getAllWaitingGroupByOperation();
 

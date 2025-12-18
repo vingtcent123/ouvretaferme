@@ -1,23 +1,23 @@
 <?php
 namespace preaccounting;
 
-Class SuggestionLib extends \preaccounting\SuggestionCrud {
+Class SuggestionLib extends SuggestionCrud {
 
 	const AMOUNT_DIFFERENCE_MAX = 5;
 	const REASON_MIN = 2; // Au moins 2 critères donnent quelque chose
 
 	public static function countWaiting(): array {
 
-		$countForOperations = \preaccounting\Suggestion::model()
+		$countForOperations = Suggestion::model()
 			->select([new \Sql('DISTINCT(cashflow)')])
-			->whereStatus(\preaccounting\Suggestion::WAITING)
+			->whereStatus(Suggestion::WAITING)
 			->whereOperation('!=', NULL)
 			->getCollection()
 			->count();
 
-		$countForSales = \preaccounting\Suggestion::model()
+		$countForSales = Suggestion::model()
 			->select([new \Sql('DISTINCT(cashflow)')])
-			->whereStatus(\preaccounting\Suggestion::WAITING)
+			->whereStatus(Suggestion::WAITING)
 			->whereOperation(NULL)
 			->getCollection()
 			->count();
@@ -27,7 +27,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 	public static function getAllWaitingGroupByOperation(): \Collection {
 
-		return \preaccounting\Suggestion::model()
+		return Suggestion::model()
 			->select([
 				'id',
 				'cashflow' => ['id', 'name', 'memo', 'type', 'date', 'amount'],
@@ -42,7 +42,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 				],
 				'weight', 'reason',
 			])
-			->whereStatus(\preaccounting\Suggestion::WAITING)
+			->whereStatus(Suggestion::WAITING)
 			->whereOperation('!=', NULL)
 			->getCollection(NULL, NULL, ['operation', NULL]);
 
@@ -50,19 +50,28 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 	public static function countWaitingByInvoice(): int {
 
-		return Suggestion::model()
-			->select(['nInvoice' => new \Sql('DISTINCT(invoice)')])
+		return (Suggestion::model()
+			->select(['nInvoice' => new \Sql('COUNT(DISTINCT(invoice))')])
 			->whereInvoice('!=', NULL)
-			->count();
+			->get()['nInvoice'] ?? 0);
 
 	}
 
 	public static function countWaitingBySale(): int {
 
-		return Suggestion::model()
-			->select(['nSale' => new \Sql('DISTINCT(sale)')])
+		return (Suggestion::model()
+			->select(['nSale' => new \Sql('COUNT(DISTINCT(sale))')])
 			->whereSale('!=', NULL)
-			->count();
+			->get()['nSale'] ?? 0);
+
+	}
+
+	public static function countWaitingByOperation(): int {
+
+		return (Suggestion::model()
+			->select(['nOperation' => new \Sql('COUNT(DISTINCT(operation))')])
+			->whereOperation('!=', NULL)
+			->get()['nOperation'] ?? 0);
 
 	}
 
@@ -76,7 +85,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 	public static function getAllWaitingGroupByCashflow(): \Collection {
 
-		return \preaccounting\Suggestion::model()
+		return Suggestion::model()
 			->select([
 				'id', 'status',
 				'cashflow' => ['id', 'name', 'memo', 'type', 'date', 'amount'],
@@ -85,33 +94,33 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 				'weight', 'reason',
 				'paymentMethod' => ['id', 'fqn', 'name'],
 			])
-			->whereStatus(\preaccounting\Suggestion::WAITING)
+			->whereStatus(Suggestion::WAITING)
 			->whereOperation(NULL)
 			->getCollection(NULL, NULL, ['cashflow', NULL]);
 
 	}
 
-	public static function ignore(\preaccounting\Suggestion $eSuggestion): void {
+	public static function ignore(Suggestion $eSuggestion): void {
 
-		\preaccounting\Suggestion::model()
+		Suggestion::model()
 			->whereId($eSuggestion['id'])
-			->whereStatus(\preaccounting\Suggestion::WAITING)
-			->update(['status' => \preaccounting\Suggestion::REJECTED]);
+			->whereStatus(Suggestion::WAITING)
+			->update(['status' => Suggestion::REJECTED]);
 
 	}
 
 	public static function ignoreCollection(\Collection $cSuggestion): void {
 
-		\preaccounting\Suggestion::model()->beginTransaction();
+		Suggestion::model()->beginTransaction();
 
-		$updated = \preaccounting\Suggestion::model()
+		$updated = Suggestion::model()
 			->whereId('IN', $cSuggestion->getIds())
-			->whereStatus(\preaccounting\Suggestion::WAITING)
-			->update(['status' => \preaccounting\Suggestion::REJECTED]);
+			->whereStatus(Suggestion::WAITING)
+			->update(['status' => Suggestion::REJECTED]);
 
 		if($updated === count($cSuggestion)) {
 
-			\preaccounting\Suggestion::model()->commit();
+			Suggestion::model()->commit();
 
 		} else {
 
@@ -188,7 +197,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
 				self::createSuggestion(
-					new \preaccounting\Suggestion([
+					new Suggestion([
 						'operation' => $eOperation,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
@@ -214,19 +223,19 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 		foreach($cOperation as $eOperation) {
 
 			$reason = new \Set();
-			$reason->value(\preaccounting\Suggestion::AMOUNT, TRUE);
+			$reason->value(Suggestion::AMOUNT, TRUE);
 			$weight = 50;
 
 			$interval = abs((int)(\util\DateLib::interval($eOperation['date'], $eCashflow['date']) / 60 / 60 / 24));
 			if($interval < 30) {
 				$weight += 80;
-				$reason->value(\preaccounting\Suggestion::DATE, TRUE);
+				$reason->value(Suggestion::DATE, TRUE);
 			}
 
 			if(self::countReasons($reason) > self::REASON_MIN) {
 
 				self::createSuggestion(
-					new \preaccounting\Suggestion([
+					new Suggestion([
 						'operation' => $eOperation,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
@@ -268,7 +277,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
 				self::createSuggestion(
-					new \preaccounting\Suggestion([
+					new Suggestion([
 						'sale' => $eSale,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
@@ -303,7 +312,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
 				self::createSuggestion(
-					new \preaccounting\Suggestion([
+					new Suggestion([
 						'invoice' => $eInvoice,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
@@ -331,7 +340,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
 				self::createSuggestion(
-					new \preaccounting\Suggestion([
+					new Suggestion([
 						'operation' => $eOperation,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
@@ -374,7 +383,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			$weight += \account\ThirdPartyLib::extractWeightByCashflow($eOperation['thirdParty'], $eCashflow);
 
 			if($weight > 0) {
-				$reason->value(\preaccounting\Suggestion::THIRD_PARTY, TRUE);
+				$reason->value(Suggestion::THIRD_PARTY, TRUE);
 			}
 
 		}
@@ -383,19 +392,19 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 		if(abs(abs($eOperation['amount']) - abs($eCashflow['amount'])) < 0.1) {
 
 			$weight += 100;
-			$reason->value(\preaccounting\Suggestion::AMOUNT, TRUE);
+			$reason->value(Suggestion::AMOUNT, TRUE);
 
 		} else if(abs(abs($eOperation['amount']) - abs($eCashflow['amount'])) < 0.5) {
 
 			$weight += 50;
-			$reason->value(\preaccounting\Suggestion::AMOUNT, TRUE);
+			$reason->value(Suggestion::AMOUNT, TRUE);
 
 		}
 
 		if(mb_strpos(mb_strtolower($eCashflow['memo']), mb_strtolower($eOperation['description']))) {
 
 			$weight += 100;
-			$reason->value(\preaccounting\Suggestion::REFERENCE, TRUE);
+			$reason->value(Suggestion::REFERENCE, TRUE);
 
 		}
 
@@ -406,7 +415,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($interval < 30) {
 
 				$weight += 80;
-				$reason->value(\preaccounting\Suggestion::DATE, TRUE);
+				$reason->value(Suggestion::DATE, TRUE);
 
 
 			}
@@ -419,7 +428,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($fqn === $eOperation['paymentMethod']['fqn']) {
 
 					$weight += 80;
-					$reason->value(\preaccounting\Suggestion::PAYMENT_METHOD, TRUE);
+					$reason->value(Suggestion::PAYMENT_METHOD, TRUE);
 
 			}
 
@@ -449,25 +458,25 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 		$reason = new \Set();
 
 		if($weight > 0) {
-			$reason->value(\preaccounting\Suggestion::THIRD_PARTY, TRUE);
+			$reason->value(Suggestion::THIRD_PARTY, TRUE);
 		}
 
 		if(abs(abs($eInvoice['priceIncludingVat']) - abs($eCashflow['amount'])) < 0.1) {
 
 			$weight += 100;
-			$reason->value(\preaccounting\Suggestion::AMOUNT, TRUE);
+			$reason->value(Suggestion::AMOUNT, TRUE);
 
 		} else if(abs(abs($eInvoice['priceIncludingVat']) - abs($eCashflow['amount'])) < 0.5) {
 
 			$weight += 50;
-			$reason->value(\preaccounting\Suggestion::AMOUNT, TRUE);
+			$reason->value(Suggestion::AMOUNT, TRUE);
 
 		}
 
 		if(mb_strpos(mb_strtolower($eCashflow['memo']), mb_strtolower($eInvoice['name']))) {
 
 			$weight += 100;
-			$reason->value(\preaccounting\Suggestion::REFERENCE, TRUE);
+			$reason->value(Suggestion::REFERENCE, TRUE);
 
 		}
 
@@ -478,7 +487,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($interval < 30) {
 
 				$weight += 80;
-				$reason->value(\preaccounting\Suggestion::DATE, TRUE);
+				$reason->value(Suggestion::DATE, TRUE);
 
 			}
 
@@ -490,7 +499,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($fqn === $eInvoice['paymentMethod']['fqn']) {
 
 					$weight += 80;
-					$reason->value(\preaccounting\Suggestion::PAYMENT_METHOD, TRUE);
+					$reason->value(Suggestion::PAYMENT_METHOD, TRUE);
 
 			}
 
@@ -519,18 +528,18 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 		$reason = new \Set();
 
 		if($weight > 0) {
-			$reason->value(\preaccounting\Suggestion::THIRD_PARTY, TRUE);
+			$reason->value(Suggestion::THIRD_PARTY, TRUE);
 		}
 
 		if(abs(abs($eSale['priceIncludingVat']) - abs($eCashflow['amount'])) < 0.1) {
 
 			$weight += 100;
-			$reason->value(\preaccounting\Suggestion::AMOUNT, TRUE);
+			$reason->value(Suggestion::AMOUNT, TRUE);
 
 		} else if(abs(abs($eSale['priceIncludingVat']) - abs($eCashflow['amount'])) < 0.5) {
 
 			$weight += 50;
-			$reason->value(\preaccounting\Suggestion::AMOUNT, TRUE);
+			$reason->value(Suggestion::AMOUNT, TRUE);
 
 		}
 
@@ -541,7 +550,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($interval < 30) {
 
 				$weight += 80;
-				$reason->value(\preaccounting\Suggestion::DATE, TRUE);
+				$reason->value(Suggestion::DATE, TRUE);
 
 			}
 
@@ -554,7 +563,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			if($fqn === $ePayment['method']['fqn']) {
 
 				$weight += 80;
-				$reason->value(\preaccounting\Suggestion::PAYMENT_METHOD, TRUE);
+				$reason->value(Suggestion::PAYMENT_METHOD, TRUE);
 
 			}
 		}

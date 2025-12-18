@@ -20,6 +20,7 @@ class JournalUi {
 
 				$h .= '<div class="journal-title-buttons">';
 
+					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-primary">'.\Asset::icon('box-arrow-in-down').' '.s("Importer les ventes").'</a> ';
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#journal-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 
 					if(
@@ -46,8 +47,6 @@ class JournalUi {
 							$h .= '</div>';
 						}
 					}
-
-					//$h .= '<a href="'.PdfUi::urlJournal($eFarm).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').'&nbsp;'.s("Télécharger en PDF").'</a>';
 
 				$h .= '</div>';
 

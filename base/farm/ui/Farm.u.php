@@ -1909,9 +1909,8 @@ class FarmUi {
 		return [
 			'prepare' => ['url' => '/precomptabilite', 'label' => s("Préparer les données de vente")],
 			] +
-			($eFarm->usesAccounting() ? [
-				'reconciliate-operations' => ['url' => '/precomptabilite:rapprocher-ecritures', 'label' => s("Rapprocher les écritures")],
-				'import' => ['url' => '/precomptabilite:importer', 'label' => s("Importer les ventes")],] : []);
+			(($eFarm->usesAccounting() and FEATURE_RECONCILIATE_OPERATIONS) ? [
+				'reconciliate-operations' => ['url' => '/precomptabilite:rapprocher-ecritures', 'label' => s("Rapprocher les écritures")],] : []);
 	}
 
 	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, \account\FinancialYear $eFinancialYear): string {

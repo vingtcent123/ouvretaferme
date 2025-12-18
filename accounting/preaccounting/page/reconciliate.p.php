@@ -6,7 +6,7 @@ new \preaccounting\SuggestionPage(function($data) {
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 })
-	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new ReloadAction())
+	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn() => throw new VoidAction())
 	->write('doIgnore', function($data) {
 
 		$data->e->validate('acceptIgnore');
