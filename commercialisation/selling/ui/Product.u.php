@@ -355,7 +355,7 @@ class ProductUi {
 									$h .= $eProduct->quick('privateAccount', $value);
 								}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-left hide-md-down">';
+							$h .= '<td class="text-end highlight-stick-left hide-md-down td-min-content">';
 
 								if($eProduct['proAccount']->notEmpty()) {
 
@@ -1672,6 +1672,7 @@ class ProductUi {
 
 			case 'proAccount':
 			case 'privateAccount':
+				\Asset::css('preaccounting', 'preaccounting.css');
 				$d->autocompleteBody = function(\util\FormUi $form, Product $e) {
 					return [
 					];
