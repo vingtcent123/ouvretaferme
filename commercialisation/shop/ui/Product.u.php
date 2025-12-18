@@ -1125,6 +1125,7 @@ class ProductUi {
 			$eProduct['excludeCustomers'] or
 			$eProduct['excludeGroups'] or
 			$eProduct['limitMax'] or
+			$eProduct['limitMin'] or
 			$outCatalog
 		);
 
@@ -1355,6 +1356,7 @@ class ProductUi {
 			$eProduct['excludeCustomers'] or
 			$eProduct['excludeGroups'] or
 			$eProduct['limitMax'] or
+			$eProduct['limitMin'] or
 			$eProduct['limitStartAt'] or
 			$eProduct['limitEndAt']
 		);
