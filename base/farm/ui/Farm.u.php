@@ -1737,7 +1737,7 @@ class FarmUi {
 
 	}
 
-	public function getSellingSalesTitle(Farm $eFarm, string $selectedView): string {
+	public function getSellingSalesTitle(Farm $eFarm, string $selectedView, int $nSuggestion): string {
 
 		$categories = $this->getSellingSalesCategories();
 
@@ -1759,6 +1759,13 @@ class FarmUi {
 					}
 				$h .= '</div>';
 			$h .= '</h1>';
+
+			if($nSuggestion > 0) {
+				$h .= '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
+					$h .= \Asset::icon('piggy-bank-fill').' ';
+					$h .= p("{value} vente à rapprocher", "{value} ventes à rapprocher", $nSuggestion);
+				$h .= '</a>';
+			}
 
 			switch($selectedView) {
 
@@ -1789,7 +1796,7 @@ class FarmUi {
 		];
 	}
 
-	public function getAccountingBankTitle(Farm $eFarm, string $selectedView, ?int $number): string {
+	public function getAccountingBankTitle(Farm $eFarm, string $selectedView, int $nSuggestion, ?int $number): string {
 
 		$categories = $this->getAccountingBankCategories();
 
@@ -1812,6 +1819,13 @@ class FarmUi {
 					$h .= '<span class="util-counter ml-1">'.$number.'</span>';
 				}
 			$h .= '</h1>';
+
+			if($nSuggestion > 0) {
+				$h .= '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
+					$h .= \Asset::icon('piggy-bank-fill').' ';
+					$h .= p("{value} opération bancaire à rapprocher", "{value} opérations bancaires à rapprocher", $nSuggestion);
+				$h .= '</a>';
+			}
 
 
 		if($selectedView === 'bank') {
@@ -1899,7 +1913,6 @@ class FarmUi {
 		return [
 			'prepare' => ['url' => '/precomptabilite', 'label' => s("Préparer les données de vente")],
 			] +
-			(($eFarm->hasAccounting() or $eFinancialYear->isCashAccounting() === FALSE) ? ['reconciliate-sales' => ['url' => '/precomptabilite:rapprocher-ventes', 'label' => s("Rapprocher les ventes")]] : []) +
 			($eFarm->usesAccounting() ? [
 				'reconciliate-operations' => ['url' => '/precomptabilite:rapprocher-ecritures', 'label' => s("Rapprocher les écritures")],
 				'import' => ['url' => '/precomptabilite:importer', 'label' => s("Importer les ventes")],] : []);

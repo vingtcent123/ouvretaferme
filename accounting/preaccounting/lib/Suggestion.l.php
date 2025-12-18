@@ -48,6 +48,32 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 
 	}
 
+	public static function countWaitingByInvoice(): int {
+
+		return Suggestion::model()
+			->select(['nInvoice' => new \Sql('DISTINCT(invoice)')])
+			->whereInvoice('!=', NULL)
+			->count();
+
+	}
+
+	public static function countWaitingBySale(): int {
+
+		return Suggestion::model()
+			->select(['nSale' => new \Sql('DISTINCT(sale)')])
+			->whereSale('!=', NULL)
+			->count();
+
+	}
+
+	public static function countWaitingByCashflow(): int {
+
+		return Suggestion::model()
+			->select(['nCashflow' => new \Sql('DISTINCT(cashflow)')])
+			->count();
+
+	}
+
 	public static function getAllWaitingGroupByCashflow(): \Collection {
 
 		return \preaccounting\Suggestion::model()
@@ -178,12 +204,9 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			])
 			->whereFarm($eFarm)
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
-			->whereReadyForAccounting(TRUE)
-			->whereClosed(TRUE)
 			->wherePaymentStatus(\selling\Invoice::NOT_PAID)
 			->whereInvoice(NULL)
 			->whereProfile('IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
-			->whereAccountingHash(NULL)
 			->whereDeliveredAt('<=', $eCashflow['date'])
 			->getCollection();
 
@@ -215,10 +238,7 @@ Class SuggestionLib extends \preaccounting\SuggestionCrud {
 			])
 			->whereFarm($eFarm)
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
-			->whereReadyForAccounting(TRUE)
-			->whereClosed(TRUE)
 			->wherePaymentStatus(\selling\Invoice::NOT_PAID)
-			->whereAccountingHash(NULL)
 			->whereDate('<=', $eCashflow['date'])
 			->getCollection();
 

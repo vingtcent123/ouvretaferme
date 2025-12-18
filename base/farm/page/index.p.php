@@ -45,6 +45,13 @@ new Page(function($data) {
 
 		$data->eFarm->validate('canSelling');
 
+		if($data->eFarm->hasAccounting()) {
+			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingBySale();
+		} else {
+			$data->nSuggestion = 0;
+		}
+
 		switch($data->pageName) {
 
 			case '/ferme/{id}/ventes' :
@@ -330,6 +337,13 @@ new Page(function($data) {
 			'status' => \selling\Invoice::GET('status', 'status'),
 			'paymentStatus' => \selling\Invoice::GET('paymentStatus', 'paymentStatus')
 		], GET('sort'));
+
+		if($data->eFarm->hasAccounting()) {
+			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByInvoice();
+		} else {
+			$data->nSuggestion = 0;
+		}
 
 		[$data->cInvoice, $data->nInvoice] = \selling\InvoiceLib::getByFarm($data->eFarm, selectSales: TRUE, page: $data->page, search: $data->search);
 

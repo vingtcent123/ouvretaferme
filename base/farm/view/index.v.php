@@ -396,7 +396,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 	} else {
 
-		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
+		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'), $data->nSuggestion);
 
 		echo new \selling\SaleUi()->getSearch($data->search, $data->cPaymentMethod);
 
@@ -709,7 +709,16 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>'.s("Factures").'</h1>';
+
+		if($data->nSuggestion > 0) {
+			$h .= '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes">';
+				$h .= \Asset::icon('piggy-bank-fill').' ';
+				$h .= p("{value} facture à rapprocher", "{value} factures à rapprocher", $data->nSuggestion);
+			$h .= '</a>';
+		}
+
 		$h .= '<div>';
+
 			if($data->hasInvoices) {
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#invoice-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 			}

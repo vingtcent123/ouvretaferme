@@ -294,7 +294,7 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes';
 
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, $data->eFinancialYear, 'reconciliate-sales', ['import' => array_sum($data->counts['import']), 'reconciliate-sales' => $data->counts['reconciliate']['sales'], 'reconciliate-operations' => $data->counts['reconciliate']['operations']]);
+	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").'</h1>';
 
 	echo '<div class="util-block-help">';
 	echo s("Cette page vous permet de rapprocher vos ventes et factures avec les opérations bancaires que vous avez importées.");
@@ -302,18 +302,21 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 
 	if($data->ccSuggestion->empty()) {
 
-		$linkPreAccounting = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?';
-		if($data->eFinancialYear->notEmpty()) {
-			$linkPreAccounting .= 'from='.$data->eFinancialYear['startDate'].'&to='.$data->eFinancialYear['endDate'];
-		}
-
 		echo '<div class="util-info">';
 		echo '<p>'.s("Il n'y a aucune vente à rapprocher.").'</p>';
-		echo '<p>'.s("Souhaitez-vous <linkPreAccounting>préparer vos données de vente</linkPreAccounting> ou <linkCashflow>réaliser un import bancaire</linkCashflow> ?", [
-				'linkPreAccounting' => '<a href="'.$linkPreAccounting.'">',
-				'linkCashflow' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">',
-			]).'</p>';
 		echo '</div>';
+
+		if($data->eImportLast->empty()) {
+
+			echo '<p>'.s("Vous n'avez pas encore réalisé d'import bancaire.").'</p>';
+			echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Faire mon premier import bancaire !").'</a>';
+
+		} else {
+
+			echo '<p>'.s("Votre dernier import bancaire a couvert vos transactions jusqu'au {date}.", ['date' => \util\DateUi::numeric($data->eImportLast['endDate'], \util\DateUi::DATE)]).'</p>';
+			echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Importer mes données bancaires").'</a>';
+
+		}
 
 	} else {
 

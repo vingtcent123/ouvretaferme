@@ -113,6 +113,14 @@ class ImportLib extends ImportCrud {
 		return new Import();
 	}
 
+	public static function getLastImport(): Import {
+
+		return Import::model()
+			->select(Import::getSelection())
+			->sort(['endDate' => SORT_DESC])
+			->get();
+	}
+
 	public static function getAll(\account\FinancialYear $eFinancialYear): \Collection {
 
 		if($eFinancialYear->notEmpty()) {

@@ -10,6 +10,8 @@ new Page(function($data) {
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
 		$data->tipNavigation = 'close';
 
+		$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByCashflow();
+
 		if($data->eFarm->usesAccounting()) {
 			$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 			$data->cFinancialYear = \account\FinancialYearLib::getAll();

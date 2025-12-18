@@ -288,7 +288,7 @@ Class ReconciliateUi {
 			return '<span class="color-success">'.\Asset::icon('check-lg').'</span>';
 		}
 
-		return'';
+		return '<span class="color-muted">'.\Asset::icon('question-lg').'</span>';
 
 	}
 }

@@ -12,6 +12,9 @@ new Page(
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
+
+		$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByCashflow();
+
 		$data->imports = \bank\ImportLib::formatCurrentFinancialYearImports($data->eFinancialYear);
 		$data->cImport = \bank\ImportLib::getAll($data->eFinancialYear);
 

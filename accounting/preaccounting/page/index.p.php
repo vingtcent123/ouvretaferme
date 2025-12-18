@@ -181,7 +181,8 @@ new Page(function($data) {
 
 		$data->counts = \preaccounting\PreaccountingLib::counts($data->eFarm, $data->search->get('from'), $data->search->get('to'), $data->search);
 
-		//$data->ccSuggestion = preaccounting\SuggestionLib::getAllWaitingGroupByOperation();
+		$data->eImportLast = \bank\ImportLib::getLastImport();
+
 		$data->ccSuggestion = preaccounting\SuggestionLib::getAllWaitingGroupByCashflow();
 
 		throw new ViewAction($data);
