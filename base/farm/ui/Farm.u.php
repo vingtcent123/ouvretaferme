@@ -1761,10 +1761,7 @@ class FarmUi {
 			$h .= '</h1>';
 
 			if($nSuggestion > 0) {
-				$h .= '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
-					$h .= \Asset::icon('piggy-bank-fill').' ';
-					$h .= p("{value} vente à rapprocher", "{value} ventes à rapprocher", $nSuggestion);
-				$h .= '</a>';
+				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, 'sale', $nSuggestion);
 			}
 
 			switch($selectedView) {
@@ -1821,10 +1818,7 @@ class FarmUi {
 			$h .= '</h1>';
 
 			if($nSuggestion > 0) {
-				$h .= '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
-					$h .= \Asset::icon('piggy-bank-fill').' ';
-					$h .= p("{value} opération bancaire à rapprocher", "{value} opérations bancaires à rapprocher", $nSuggestion);
-				$h .= '</a>';
+				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, 'operation', $nSuggestion);
 			}
 
 

@@ -711,10 +711,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 		$h .= '<h1>'.s("Factures").'</h1>';
 
 		if($data->nSuggestion > 0) {
-			$h .= '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes">';
-				$h .= \Asset::icon('piggy-bank-fill').' ';
-				$h .= p("{value} facture à rapprocher", "{value} factures à rapprocher", $data->nSuggestion);
-			$h .= '</a>';
+			$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($data->eFarm, 'invoice', $data->nSuggestion);
 		}
 
 		$h .= '<div>';
@@ -787,7 +784,7 @@ new AdaptativeView('/ferme/{id}/etiquettes', function($data, FarmTemplate $t) {
 	$t->title = s("Étiquettes de colisage pour {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingSalesLabel($data->eFarm);
 
-	$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, \farm\Farmer::LABEL);
+	$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, \farm\Farmer::LABEL, 0);
 
 	echo new \selling\SaleUi()->getLabels($data->eFarm, $data->cSale);
 

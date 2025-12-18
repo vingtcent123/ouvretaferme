@@ -638,6 +638,25 @@ Class PreaccountingUi {
 
 	}
 
+	public function getLinkToReconciliate(\farm\Farm $eFarm, string $type, int $nSuggestion): string {
+
+		if($nSuggestion === 0) {
+			return '';
+		}
+
+		$icons = ['fire', 'piggy-bank-fill', 'leaf-fill', 'lightning-charge-fill', 'stars'];
+		$h = '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
+			$h .= \Asset::icon($icons[mt_rand(0, count($icons) - 1)]).' ';
+			$h .= match($type) {
+				'operation' => p("{value} opération bancaire à rapprocher", "{value} opérations bancaires à rapprocher", $nSuggestion),
+				'sale' => p("{value} vente à rapprocher", "{value} ventes à rapprocher", $nSuggestion),
+				'invoice' => p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion),
+			};
+		$h .= '</a>';
+
+		return $h;
+	}
+
 }
 ?>
 
