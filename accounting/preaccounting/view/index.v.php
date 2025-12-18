@@ -31,6 +31,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		[
 			'position' => 1,
 			'number' => $data->nProduct,
+			'numberVerified' => $data->nProductVerified,
 			'type' => 'product',
 			'title' => s("Produits"),
 			'description' => s("Associez un compte à vos produits"),
@@ -38,6 +39,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		[
 			'position' => 2,
 			'number' => $data->nSalePayment,
+			'numberVerified' => $data->nSalePaymentVerified,
 			'type' => 'payment',
 			'title' => s("Moyens de paiement"),
 			'description' => s("Renseignez le moyen de paiement des ventes"),
@@ -45,6 +47,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		[
 			'position' => 3,
 			'number' => $data->nSaleClosed,
+			'numberVerified' => $data->nSaleClosedVerified,
 			'type' => 'closed',
 			'title' => s("Clôture"),
 			'description' => s("Clôturez vos ventes"),
@@ -55,16 +58,32 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		foreach($steps as $step) {
 
 	    echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').'" data-url="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/'.$step['type'].'" data-step="'.$step['type'].'" onclick="Preaccounting.toggle(\''.$step['type'].'\'); return true;"">';
+
 	      echo '<div class="step-header">';
+
 					echo '<span class="step-number">'.($step['position']).'</span>';
+
 					echo '<div class="step-main">';
+
 		        echo '<div class="step-title">'.$step['title'].'</div>';
-		        echo '<div class="step-value">'.($step['number'] > 0 ? '<span class="bg-warning tab-item-count ml-0">'.$step['number'].'</span>' : '').'</div>';
+
+						echo '<div class="step-value">';
+
+							if($step['number'] > 0) {
+								echo $step['number'] > 0 ? '<span class="bg-warning tab-item-count ml-0" title="'.s("À contrôler").'">'.Asset::icon('exclamation-triangle').' '.$step['number'].'</span> ' : '';
+								echo $step['numberVerified'] > 0 ? '<span class="bg-success tab-item-count ml-0" title="'.s("Vérifiés").'">'.Asset::icon('check').' '.$step['numberVerified'].'</span>' : '';
+							}
+
+	          echo '</div>';
+
 	        echo '</div>';
+
 	      echo '</div>';
-		    echo '<p class="step-desc">';
+
+		    echo '<p class="step-desc hide-sm-down">';
 		      echo $step['description'];
 		    echo '</p>';
+
 		  echo '</a>';
 
 		}

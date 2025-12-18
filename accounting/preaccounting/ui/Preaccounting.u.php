@@ -51,9 +51,7 @@ Class PreaccountingUi {
 
 		\Asset::css('selling', 'sale.css');
 
-		$h = $this->getSummary($nToCheck, $nVerified);
-
-		$h .= '<table class="tr-even" data-batch="#batch-accounting-sale-'.$type.'">';
+		$h = '<table class="tr-even" data-batch="#batch-accounting-sale-'.$type.'">';
 
 			$h .= '<thead>';
 
@@ -136,7 +134,7 @@ Class PreaccountingUi {
 
 		\Asset::css('selling', 'sale.css');
 
-		$h = $this->getSummary(array_sum($nToCheck), $nVerified);
+		$h = '';
 
 		$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/'.$type.'?from='.$search->get('from').'&to='.$search->get('to');
 
@@ -382,29 +380,6 @@ Class PreaccountingUi {
 
 	}
 
-	public function getSummary(int $nToCheck, int $nVerified): string {
-
-		$h = '<ul class="util-summarize util-summarize-overflow">';
-
-			$h .= '<li>';
-				$h .= '<a class="no-hover" href="javascript: void(0);">';
-					$h .= '<h5>'.\Asset::icon('exclamation-triangle', $nToCheck > 0 ? ['class' => 'color-danger'] : []).' '.s("À contrôler").'</h5>';
-					$h .= '<div>'.$nToCheck.'</div>';
-				$h .= '</a>';
-			$h .= '</li>';
-
-			$h .= '<li>';
-				$h .= '<a class="no-hover" href="javascript: void(0);">';
-					$h .= '<h5>'.\Asset::icon('check-circle', $nVerified > 0 ? ['class' => 'color-success'] : []).' '.s("Vérifiés").'</h5>';
-					$h .= '<div>'.$nVerified.'</div>';
-				$h .= '</a>';
-			$h .= '</li>';
-
-		$h .= '</ul>';
-
-		return $h;
-
-	}
 	public function items(\Collection $ccItem): string {
 
 		$h = '<table class="tr-even" data-batch="#batch-accounting-item">';
@@ -577,16 +552,14 @@ Class PreaccountingUi {
 
 	public function products(\farm\Farm $eFarm, \Collection $cProduct, int $nToCheck, int $nVerified, \Collection $cCategory, array $products, \Search $search, array $itemData): string {
 
-		$h = $this->getSummary($nToCheck + ($itemData['nToCheck'] ?? 0), $nVerified + ($itemData['nVerified'] ?? 0));
 
 		if(empty($products) and empty($itemData['cItem'])) {
 
-			return $h.
-				'<div class="util-success">'.s("Tous vos produits ont un compte associé !").'</div>';
+			return '<div class="util-success">'.s("Tous vos produits ont un compte associé !").'</div>';
 
 		}
 
-		$h .= $this->getCategories($eFarm, $cCategory, $products, $itemData['nToCheck'], $search);
+		$h = $this->getCategories($eFarm, $cCategory, $products, $itemData['nToCheck'], $search);
 
 		if($search->get('tab') === 'items') {
 

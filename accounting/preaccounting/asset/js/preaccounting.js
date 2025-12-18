@@ -52,8 +52,7 @@ class Preaccounting {
 				new Ajax.Query()
 					.url(url + '?from=' + from + '&to=' + to)
 					.method('get')
-					.fetch()
-					.then(() => Preaccounting.load(step, tab));
+					.fetch();
 
 			}
 
