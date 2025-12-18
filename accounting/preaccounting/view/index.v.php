@@ -53,7 +53,14 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			'description' => s("Clôturez vos ventes"),
 		],
 	];
-	echo '<div class="step-process" onrender="'.(in_array(GET('type'), ['product', 'payment', 'closed']) ? 'Preaccounting.toggle(\''.GET('type').'\', \''.GET('tab').'\');' : '') .'">';
+
+	$onrender = '';
+	if($errors === 0 and $data->isSearchValid) {
+		$onrender = "Preaccounting.toggle('export', '');";
+	} else if($errors > 0 and in_array(GET('type'), ['product', 'payment', 'closed'])) {
+		$onrender = "Preaccounting.toggle('".GET('type')."', '".GET('tab')."');";
+	}
+	echo '<div class="step-process" onrender="'.$onrender.'">';
 
 		foreach($steps as $step) {
 
@@ -88,7 +95,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<a class="step last '.($step['number'] > 0 ? 'active' : 'success').'" data-step="export" onclick="Preaccounting.toggle(\'export\'); return true;">';
+		echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').'" data-step="export" onclick="Preaccounting.toggle(\'export\'); return true;">';
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
@@ -97,7 +104,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 				echo '</div>';
 			echo '</div>';
 			echo '<p class="step-desc">';
-				echo s("Téléchargez votre fichier des écritures comptables");
+				echo s("Intégrez vos ventes en comptabilité");
 			echo '</p>';
 		echo '</a>';
 
@@ -108,22 +115,9 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	}
 
 	$form = new \util\FormUi();
-	if($data->isSearchValid) {
-
-		$attributes = [
-			'href' => \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:fec?from='.$data->search->get('from').'&to='.$data->search->get('to'),
-			'data-ajax-navigation' => 'never',
-		];
-		$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
-
-	} else {
-		$attributes = [
-			'href' => 'javascript: void(0);',
-		];
-		$class = 'btn-secondary disabled';
-	}
 
 	echo '<div data-step="export" class="hide">';
+
 		if($errors > 0) {
 			if($data->nProduct > 0) {
 				if($data->nSalePayment > 0) {
@@ -165,12 +159,56 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 						'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
 					]);
 			}
-			echo '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).<br />Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import.<br />Si vous souhaitez importer les données de vente dans votre comptabilité sur {siteName}, vous ne pourrez pas importer les ventes dont des données manquent.", ['check' => $check]).'</div>';
-		} else {
+			echo '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).", ['check' => $check]).'</div>';
 
-			echo '<div class="util-info">'.s("Tout est OK ! Votre export sera le plus complet possible.").'</div>';
 		}
-		echo '<a '.attrs($attributes).' style="height: 100%;">'.$form->button(s("Exporter"), ['class' => 'btn '.$class]).'</a>';
+
+		echo '<div class="step-bloc-export">';
+			echo '<div class="util-block-optional">';
+
+				if($data->isSearchValid) {
+
+					$attributes = [
+						'href' => \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:fec?from='.$data->search->get('from').'&to='.$data->search->get('to'),
+						'data-ajax-navigation' => 'never',
+					];
+					$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
+
+				} else {
+					$attributes = [
+						'href' => 'javascript: void(0);',
+					];
+					$class = 'btn-secondary disabled';
+				}
+				echo '<h3>'.s("Exportez votre fichier des écritures comptables").'</h3>';
+
+				if($errors > 0) {
+					echo '<p class="util-info">'.s("Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
+				}
+
+				echo '<a '.attrs($attributes).'>'.$form->button(s("Télécharger le fichier"), ['class' => 'btn '.$class]).'</a>';
+
+			echo '</div>';
+
+			echo '<div class="util-block-optional">';
+
+				echo '<h3>'.s("Intégrez vos ventes dans votre comptabilité").'</h3>';
+
+				if($errors > 0) {
+					echo '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
+				}
+				$class = 'btn btn-primary';
+				if($errors > 0) {
+					$class .= ' disabled';
+					$url = 'javascript: void(0);';
+				} else {
+					$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
+				}
+				echo '<a href="'.$url.'" class="'.$class.'">'.s("Importer en comptabilité").'</a>';
+
+			echo '</div>';
+		echo '</div>';
+
 	echo '</div>';
 
 });

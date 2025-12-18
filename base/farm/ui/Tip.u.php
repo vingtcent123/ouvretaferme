@@ -333,12 +333,11 @@ class TipUi {
 					]).'</li>';
 					$h .= '<li>'.\Asset::icon('2-circle').' '.s("Renseigner le moyen de paiement des ventes").'</li>';
 					$h .= '<li>'.\Asset::icon('3-circle').' '.s("Clôturer les ventes").'</li>';
+					$h .= '<li>'.\Asset::icon('4-circle').' '.s("Intégrer en comptabilité :").'</li>';
 				$h .= '</ul>';
-				$h .= '<p>'.s("Vous pourrez ainsi :").'</p>';
-
-				$h .= \Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("soit exporter un fichier FEC{star} de vos ventes pour l'intégrer dans votre outil comptable", ['star' => '<sup><small>'.\Asset::icon('asterisk').'</small></sup>']);
+				$h .= \Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 4rem; margin-right: 0.5rem;']).' '.s("en exportant un fichier FEC{star} de vos ventes pour l'intégrer dans votre outil comptable", ['star' => '<sup><small>'.\Asset::icon('asterisk').'</small></sup>']);
 				$h .= '<br />';
-				$h .= \Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("soit importer vos ventes dans le module de comptabilité d'Ouvretaferme");
+				$h .= \Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 4rem; margin-right: 0.5rem;']).' '.s("en important vos ventes dans le module de comptabilité d'Ouvretaferme");
 				$h .= '<p><small><sup>'.\Asset::icon('asterisk').'</sup> '.s("FEC : Fichier des écritures comptables").'</small></p>';
 
 				return [
