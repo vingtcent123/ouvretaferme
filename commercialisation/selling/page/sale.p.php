@@ -333,7 +333,7 @@ new \selling\SalePage()
 
 		$data->e->validate('canManage');
 		$data->e->acceptDocumentTarget($data->e['type']) ?: throw new FailAction('farm\Farm::disabled');
-		$data->e->acceptGenerateOrderForm() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
+		$data->e->acceptGenerateDeliveryNote() ?: throw new FailAction('selling\Sale::generateDeliveryNote');
 
 		$data->eFarm = $data->e['farm'];
 		$data->eFarm->validateLegal();
