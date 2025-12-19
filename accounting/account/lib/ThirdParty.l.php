@@ -154,7 +154,7 @@ class ThirdPartyLib extends ThirdPartyCrud {
 			$loweredMemo = mb_strtolower($memo);
 			if(
 				mb_strlen($loweredMemo) <= 3
-				or in_array($loweredMemo, ['paiement', 'carte', 'votre', 'inst', 'faveur', 'virement', 'emis', 'vers', 'facture', 'remise', 'cheque', 'especes', 'versement', 'prelevement'])
+				or in_array($loweredMemo, ['paiement', 'carte', 'votre', 'inst', 'faveur', 'virement', 'emis', 'vers', 'facture', 'remise', 'cheque', 'especes', 'versement', 'prelevement', 'sepa', 'interne'])
 			) {
 				continue;
 			}

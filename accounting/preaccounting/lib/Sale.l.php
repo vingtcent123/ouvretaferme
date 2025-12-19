@@ -129,6 +129,7 @@ Class SaleLib {
 					->join(\selling\Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
 					->where('m2.id IS NULL', if: $searchProblems === TRUE)
 					->where('m2.id IS NOT NULL', if: $searchProblems === FALSE)
+					->whereProfile(\selling\Sale::SALE)
 					->group('profile')
 					->getCollection();
 				break;
