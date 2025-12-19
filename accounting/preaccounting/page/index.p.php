@@ -166,6 +166,12 @@ new Page(function($data) {
 
 		$data->counts = \preaccounting\PreaccountingLib::countImports($data->eFarm, $from, $to, $data->search);
 
+		$isTabFilled = count(array_filter($data->counts, fn($val, $key) => ($key === $data->selectedTab and $val > 0), ARRAY_FILTER_USE_BOTH)) > 1;
+
+		if($isTabFilled === FALSE) {
+			$data->selectedTab = first(array_keys(array_filter($data->counts, fn($val) => $val > 0)));
+		}
+
 		$data->c = match($data->selectedTab) {
 			'market' => \preaccounting\ImportLib::getMarketSales($data->eFarm, $from, $to),
 			'invoice' => \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search),

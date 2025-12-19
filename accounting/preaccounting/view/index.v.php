@@ -184,6 +184,8 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 				if($errors > 0) {
 					echo '<p class="util-info">'.s("Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
+				} else {
+					echo '<p>'.s("Vous pouvez importer ce fichier dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
 				}
 
 				echo '<a '.attrs($attributes).'>'.$form->button(s("Télécharger le fichier"), ['class' => 'btn '.$class]).'</a>';
@@ -196,6 +198,8 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 				if($errors > 0) {
 					echo '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
+				} else {
+					echo '<p>'.s("Rendez-vous dans votre journal pour y importer vos ventes !").'</p>';
 				}
 				$class = 'btn btn-primary';
 				if($errors > 0) {
@@ -204,7 +208,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 				} else {
 					$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
 				}
-				echo '<a href="'.$url.'" class="'.$class.'">'.s("Importer en comptabilité").'</a>';
+				echo '<a href="'.$url.'" class="'.$class.'">'.s("Importer dans ma comptabilité").'</a>';
 
 			echo '</div>';
 		echo '</div>';
@@ -258,34 +262,88 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 
 	$t->mainTitle = '<h1>'.s("Importer les ventes").(array_sum($data->counts) > 0 ? '<span class="util-counter ml-1">'.array_sum($data->counts).'</span>' : '').'</h1>';
 
-	echo '<div class="util-block-help">';
-	echo '<p>'.s("Cette page vous permet de vérifier et importer vos ventes depuis le module de commercialisation directement en comptabilité.").'</p>';
-	echo '<p>'.s("Si des ventes n'apparaissent pas, vérifiez si les données de vos ventes sont bien préparées pour la comptabilité sur <link>cette page</link>.", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite&from='.$data->eFinancialYear['startDate'].'&to='.$data->eFinancialYear['endDate'].'">']).'</p>';
-	echo '</div>';
-
-	echo '<div class="tabs-item">';
-
-	foreach(['market', 'invoice', 'sales'] as $tab) {
-
-		echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer?tab='.$tab.'">';
-		echo match($tab) {
-			'market' => s("Marchés"),
-			'invoice' => s("Factures"),
-			'sales' => s("Autres ventes"),
-		};
-		echo ' <small class="tab-item-count">'.$data->counts[$tab].'</small>';
-		echo '</a>';
-
+	if($data->counts['sales'] > 0) {
+		if($data->counts['market'] > 0) {
+			if($data->counts['invoice'] > 0) {
+				$check = s("Vous pouvez importer {sales}, {market} et {invoices}.", [
+					'sales' => '<b>'.p("{value} vente", "{value} ventes", $data->counts['sales']).'</b>',
+					'market' => '<b>'.p("{value} marché", "{value} marchés", $data->counts['market']).'</b>',
+					'invoices' => '<b>'.p("{value} facture", "{value} factures", $data->counts['invoice']).'</b>',
+				]);
+			} else {
+				$check = s("Vous pouvez importer {sales} et {market}.", [
+					'sales' => '<b>'.p("{value} vente", "{value} ventes", $data->counts['sales']).'</b>',
+					'market' => '<b>'.p("{value} marché", "{value} marchés", $data->counts['market']).'</b>',
+				]);
+			}
+		} else if($data->counts['invoice'] > 0) {
+			$check = s("Vous pouvez importer {sales} et {invoices}.", [
+				'sales' => '<b>'.p("{value} vente", "{value} ventes", $data->counts['sales']).'</b>',
+				'invoices' => '<b>'.p("{value} facture", "{value} factures", $data->counts['invoice']).'</b>',
+			]);
+		} else {
+			$check = s("Vous pouvez importer {sales}.", [
+				'sales' => '<b>'.p("{value} vente", "{value} ventes", $data->counts['sales']).'</b>',
+			]);
+		}
+	} else if($data->counts['market'] > 0) {
+		if($data->counts['invoice'] > 0) {
+			$check = s("Vous pouvez importer {market} et {invoices}.", [
+				'market' => '<b>'.p("{value} marché", "{value} marchés", $data->counts['market']).'</b>',
+				'invoices' => '<b>'.p("{value} facture", "{value} factures", $data->counts['invoice']).'</b>',
+			]);
+		} else {
+			$check = s("Vous pouvez importer {market}.", [
+				'market' => '<b>'.p("{value} marché", "{value} marchés", $data->counts['market']).'</b>',
+			]);
+		}
+	} else if($data->counts['invoice'] > 0) {
+		$check = s("Vous pouvez importer {invoices}.", [
+			'invoices' => '<b>'.p("{value} facture", "{value} factures", $data->counts['invoice']),
+		]);
+	} else {
+		$check = NULL;
 	}
 
-	echo '</div>';
+	if($check === NULL) {
 
-	echo match($data->selectedTab) {
-		'market' => new \preaccounting\ImportUi()->displayMarket($data->eFarm, $data->eFinancialYear, $data->c),
-		'invoice' => new \preaccounting\ImportUi()->displayInvoice($data->eFarm, $data->eFinancialYear, $data->c, $data->search),
-		'sales' => new \preaccounting\ImportUi()->displaySales($data->eFarm, $data->eFinancialYear, $data->c, $data->search),
-	};
+		echo '<div class="util-info">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer vos données de ventes</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite">']).'</div>';
 
+	} else {
+
+		echo '<div class="util-block-help">';
+			echo $check;
+		echo '</div>';
+		$showTabs = count(array_filter($data->counts, fn($val) => $val > 0)) > 1;
+
+
+		if($showTabs) {
+
+			echo '<div class="tabs-item">';
+
+			foreach(['market', 'invoice', 'sales'] as $tab) {
+
+				echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer?tab='.$tab.'">';
+				echo match($tab) {
+					'market' => s("Marchés"),
+					'invoice' => s("Factures"),
+					'sales' => s("Autres ventes"),
+				};
+				echo ' <small class="tab-item-count">'.$data->counts[$tab].'</small>';
+				echo '</a>';
+
+			}
+
+			echo '</div>';
+
+		}
+		echo match($data->selectedTab) {
+			'market' => new \preaccounting\ImportUi()->displayMarket($data->eFarm, $data->eFinancialYear, $data->c),
+			'invoice' => new \preaccounting\ImportUi()->displayInvoice($data->eFarm, $data->eFinancialYear, $data->c, $data->search),
+			'sales' => new \preaccounting\ImportUi()->displaySales($data->eFarm, $data->eFinancialYear, $data->c, $data->search),
+		};
+
+	}
 });
 
 new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTemplate $t) {
@@ -302,8 +360,8 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 	echo '<div class="util-block-help">';
 		if($data->countsByInvoice and $data->countsBySale > 0) {
 			echo s("{nSales} et {nInvoices} semblent être rapprochables avec des opérations bancaires.", [
-				'nSales' => '<b>'.p("{value} vente", "{value} ventes", $data->countsBySale).'</b>',
-				'nInvoices' => '<b>'.p("{value} facture", "{value} factures", $data->countsByInvoice).'</b>',
+				'nSales' => '<b>'.'<b>'.p("{value} vente", "{value} ventes", $data->countsBySale).'</b>',
+				'nInvoices' => '<b>'.'<b>'.p("{value} facture", "{value} factures", $data->countsByInvoice).'</b>',
 			]);
 		} else if($data->countsByInvoice > 0) {
 			echo p("<b>{value} facture</b> semble être rapprochable.", "<b>{value} factures</b> semblent être rapprochables.", $data->countsByInvoice);
