@@ -8,7 +8,7 @@ Class ReconciliateUi {
 		\Asset::js('preaccounting', 'reconciliate.js');
 	}
 
-	public function tableByCashflow(\farm\Farm $eFarm, \Collection $ccSuggestion, \Collection $cMethod): string {
+	public function tableByCashflow(\farm\Farm $eFarm, \Collection $ccSuggestion, \Collection $cMethod, string $selectedTab): string {
 
 		$h = '';
 		$form = new \util\FormUi();
@@ -37,7 +37,6 @@ Class ReconciliateUi {
 					$h .= '</tr>';
 				$h .= '</thead>';
 
-
 				foreach($ccSuggestion as $cSuggestion) {
 
 					$cSuggestion->sort(['weight' => SORT_DESC]);
@@ -45,6 +44,9 @@ Class ReconciliateUi {
 					$eSuggestion = $cSuggestion->first();
 					$eCashflow = $eSuggestion['cashflow'];
 					if($eSuggestion['invoice']->notEmpty()) {
+						if($selectedTab !== 'invoice') {
+							continue;
+						}
 						$element = [
 							'date'=> $eSuggestion['invoice']['date'],
 							'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
@@ -52,6 +54,9 @@ Class ReconciliateUi {
 							'reference'=> $eSuggestion['invoice']['name'],
 						];
 					} else if($eSuggestion['sale']->notEmpty()) {
+						if($selectedTab !== 'sale') {
+							continue;
+						}
 						$element = [
 							'date'=> $eSuggestion['sale']['deliveredAt'],
 							'amount'=> $eSuggestion['sale']['priceIncludingVat'],
@@ -59,6 +64,9 @@ Class ReconciliateUi {
 							'reference'=> $eSuggestion['sale']['document'],
 						];
 					} else if($eSuggestion['operation']->notEmpty()) {
+						if($selectedTab !== 'operation') {
+							continue;
+						}
 						$element = [
 							'date'=> $eSuggestion['operation']['date'],
 							'amount'=> $eSuggestion['operation']['amount'],
