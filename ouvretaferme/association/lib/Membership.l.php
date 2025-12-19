@@ -438,6 +438,9 @@ class MembershipLib {
 			'preparationStatus' => \selling\Sale::DELIVERED,
 			'onlinePaymentStatus' => \selling\Sale::SUCCESS,
 			'deliveredAt' => new \Sql('NOW()'),
+			'closed' => TRUE,
+			'closedBy' => NULL,
+			'closedAt' => new \Sql('NOW()'),
 		]);
 		\selling\SaleLib::create($eSale);
 
