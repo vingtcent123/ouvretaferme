@@ -29,6 +29,10 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 		$selectedJournalCode = NULL;
 	}
 
+	if(GET('financialYear') === '0') {
+		echo '<div class="util-block-help">'.s("Vous visualisez actuellement les écritures comptables <b>tous exercices confondus</b>. Certaines actions ne sont donc <b>pas</b> disponibles.").'</div>';
+	}
+
 	echo '<div class="tabs-h" id="journals"';
 		if($data->eOperationRequested->notEmpty()) {
 			echo ' onrender="Operation.open('.$data->eOperationRequested['id'].');"';

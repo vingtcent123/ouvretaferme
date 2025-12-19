@@ -152,7 +152,7 @@ class ThirdPartyUi {
 								}
 
 							$h .= '<td class="text-end">';
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?thirdParty='.$eThirdParty['id'].'"  title="'.s("Filtrer les opérations sur ce tiers").'">'.$eThirdParty['operations'].'</a>';
+								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear=0&thirdParty='.$eThirdParty['id'].'"  title="'.s("Filtrer les opérations sur ce tiers").'">'.$eThirdParty['operations'].'</a>';
 							$h .= '</td>';
 
 							$h .= '<td class="td-min-content">';

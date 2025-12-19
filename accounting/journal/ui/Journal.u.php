@@ -29,9 +29,10 @@ class JournalUi {
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#journal-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 
 					if(
-						get_exists('cashflow') === FALSE
-						and $eFinancialYear['status'] === \account\FinancialYearElement::OPEN
-						and $eFarm->canManage()
+						GET('financialYear') !== '0' and // Cas où on regarde tous les exercices
+						get_exists('cashflow') === FALSE and
+						$eFinancialYear['status'] === \account\FinancialYearElement::OPEN and
+						$eFarm->canManage()
 					) {
 						if($eFinancialYear->isCashAccounting() or $eFinancialYear->isCashAccrualAccounting()) {
 							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?financialYear='.$eFinancialYear['id'].'&journalCode='.GET('journalCode').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
@@ -75,6 +76,16 @@ class JournalUi {
 		$h = '<div id="journal-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
+
+			if(get_exists('financialYear')) {
+				$eFinancialYearSelected = new \account\FinancialYear(['id' => GET('financialYear')]);
+				$minDate = NULL;
+				$maxDate = NULL;
+			} else {
+				$minDate = $eFinancialYearSelected['startDate'];
+				$maxDate = $eFinancialYearSelected['endDate'];
+			}
+
 			$url = $this->getBaseUrl($eFarm, $eFinancialYearSelected);
 
 			$statuses = OperationUi::p('type')->values;
@@ -83,9 +94,9 @@ class JournalUi {
 
 				$h .= '<div>';
 					$h .= $form->inputGroup($form->addon(s("entre")).
-						$form->month('periodStart', $search->get('periodStart'), ['min' => $eFinancialYearSelected['startDate'], 'max' => $eFinancialYearSelected['endDate'], 'placeholder' => s("Début")]).
+						$form->month('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
 						$form->addon("et").
-						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $eFinancialYearSelected['startDate'], 'max' => $eFinancialYearSelected['endDate'], 'placeholder' => s("Fin")]),
+						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")]),
 						['class' => 'company-period-input-group']
 					);
 					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
