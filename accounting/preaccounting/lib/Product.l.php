@@ -54,7 +54,7 @@ Class ProductLib {
 		if(get_exists('tab')) {
 
 			\session\SessionLib::set('preAccountingProductTab', GET('tab'));
-			$tab = GET('tab');
+			$tab = GET('tab', 'string', '');
 
 		} else {
 
@@ -67,9 +67,28 @@ Class ProductLib {
 		}
 
 		if($tab === 'items') {
+
 			return [$nToCheck, $nVerified, new \Collection(), $cCategories, $productsByCategory];
-		} else if(is_string($tab) and in_array((int)$tab, array_keys($productsByCategory))) {
+
+		} else if(is_string($tab)) {
+
+			if(in_array((int)$tab, array_keys($productsByCategory)) === FALSE) {
+
+				$tab = first(array_keys($productsByCategory));
+			}
+
+			$tab = \selling\CategoryLib::getById($tab);
+
+		} else {
+
+			if(
+				($tab->empty() and isset($productsByCategory[0]) === FALSE) or
+				($tab->notEmpty() and in_array($tab['id'], array_keys($productsByCategory)) === FALSE)
+			) {
+				$tab = first(array_keys($productsByCategory));
 				$tab = \selling\CategoryLib::getById($tab);
+			}
+
 		}
 
 		$search->set('tab', $tab);

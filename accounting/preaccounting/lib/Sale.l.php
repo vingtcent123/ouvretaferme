@@ -226,6 +226,11 @@ Class SaleLib {
 
 			try {
 				$tab = \session\SessionLib::get('preAccountingSaleTab');
+
+				if(isset($nToCheck[$tab]) === FALSE) {
+					$tab = first(array_keys($nToCheck));
+				}
+
 			} catch(\Exception) {
 				$tab = first(array_keys($nToCheck));
 			}
