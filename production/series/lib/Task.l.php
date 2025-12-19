@@ -1276,16 +1276,24 @@ class TaskLib extends TaskCrud {
 		$eTask = new Task($e->extracts(RepeatLib::getTaskProperties()));
 		$eTask['repeat'] = $e;
 
+		$day = match($e['precision']) {
+			Repeat::DAY => (int)date('N', strtotime($e['start'])),
+			Repeat::WEEK => 3,
+		};
+
 		switch($eTask['status']) {
 
 			case Task::TODO :
 				$eTask['plannedWeek'] = $week;
+				if($e['precision'] === Repeat::DAY) {
+					$eTask['plannedDate'] = week_date_day($week, $day);
+				}
 				break;
 
 			case Task::DONE :
 				$eTask['plannedWeek'] = $week;
 				$eTask['doneWeek'] = $week;
-				$eTask['doneDate'] = week_date_day($week, 3);
+				$eTask['doneDate'] = week_date_day($week, $day);
 				break;
 
 		}
