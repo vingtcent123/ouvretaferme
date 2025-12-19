@@ -119,6 +119,7 @@ Repeat:
   fertilizer: ?json
   status: enum(TODO, DONE)
   frequency: enum(W1, W2, W3, W4, M1)
+  precision: enum(DAY, WEEK) = WEEK
   start: date
   current: ?date
   discrete: json = PHP([])

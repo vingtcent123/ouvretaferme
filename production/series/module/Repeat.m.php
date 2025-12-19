@@ -16,6 +16,9 @@ abstract class RepeatElement extends \Element {
 	const W4 = 'w4';
 	const M1 = 'm1';
 
+	const DAY = 'day';
+	const WEEK = 'week';
+
 	public static function getSelection(): array {
 		return Repeat::model()->getProperties();
 	}
@@ -61,6 +64,7 @@ class RepeatModel extends \ModuleModel {
 			'fertilizer' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'status' => ['enum', [\series\Repeat::TODO, \series\Repeat::DONE], 'cast' => 'enum'],
 			'frequency' => ['enum', [\series\Repeat::W1, \series\Repeat::W2, \series\Repeat::W3, \series\Repeat::W4, \series\Repeat::M1], 'cast' => 'enum'],
+			'precision' => ['enum', [\series\Repeat::DAY, \series\Repeat::WEEK], 'cast' => 'enum'],
 			'start' => ['date', 'cast' => 'string'],
 			'current' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'discrete' => ['json', 'cast' => 'array'],
@@ -71,7 +75,7 @@ class RepeatModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'tools', 'category', 'description', 'timeExpected', 'fertilizer', 'status', 'frequency', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
+			'id', 'farm', 'season', 'cultivation', 'series', 'plant', 'variety', 'action', 'methods', 'tools', 'category', 'description', 'timeExpected', 'fertilizer', 'status', 'frequency', 'precision', 'start', 'current', 'discrete', 'stop', 'completed', 'createdBy', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -100,6 +104,9 @@ class RepeatModel extends \ModuleModel {
 
 			case 'tools' :
 				return [];
+
+			case 'precision' :
+				return Repeat::WEEK;
 
 			case 'discrete' :
 				return [];
@@ -137,6 +144,9 @@ class RepeatModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'frequency' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'precision' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'discrete' :
@@ -242,6 +252,10 @@ class RepeatModel extends \ModuleModel {
 
 	public function whereFrequency(...$data): RepeatModel {
 		return $this->where('frequency', ...$data);
+	}
+
+	public function wherePrecision(...$data): RepeatModel {
+		return $this->where('precision', ...$data);
 	}
 
 	public function whereStart(...$data): RepeatModel {

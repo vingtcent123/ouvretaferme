@@ -236,10 +236,16 @@ class RepeatLib extends RepeatCrud {
 			Task::DONE => $eTask['doneDate'] ?? week_date_day($eTask['doneWeek'], 3),
 		};
 
+		$precision = match($eTask['status']) {
+			Task::TODO => $eTask['plannedDate'] ? Repeat::DAY : Repeat::WEEK,
+			Task::DONE => $eTask['doneDate'] ? Repeat::DAY : Repeat::WEEK,
+		};
+
 		$eRepeat = $eTask['repeatMaster']
 			->merge([
 				'frequency' => $eTask['repeatMaster']['frequency'],
 				'start' => $start,
+				'precision' => $precision,
 				'current' => $start,
 				'stop' => $eTask['repeatMaster']['stop']
 			])
