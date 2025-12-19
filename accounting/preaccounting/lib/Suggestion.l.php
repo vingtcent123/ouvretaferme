@@ -86,6 +86,7 @@ Class SuggestionLib extends SuggestionCrud {
 				fn() => $this->whereInvoice('!=', NULL),
 				fn() => $this->whereSale('!=', NULL),
 			)
+			->whereStatus(Suggestion::WAITING)
 			->count();
 
 	}
