@@ -43,11 +43,12 @@ class CashflowUi {
 					.$form->addon(s('€'))
 			);
 			if($cBankAccount->count() > 1) {
+
 				$values = [];
 				foreach($cBankAccount as $eBankAccount) {
 					$values[$eBankAccount['id']] = $eBankAccount['label'];
 				}
-			$h .= $form->select('bankAccount', $values, $search->get('bankAccount'), ['placeholder' => s("N° de compte")]);
+				$h .= $form->select('bankAccount', $values, $search->get('bankAccount'), ['placeholder' => s("N° de compte")]);
 
 			}
 		$h .= '</div>';

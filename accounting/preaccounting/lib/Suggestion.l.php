@@ -272,7 +272,6 @@ Class SuggestionLib extends SuggestionCrud {
 			->whereFarm($eFarm)
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
 			->wherePaymentStatus(\selling\Invoice::NOT_PAID)
-			->highlight()
 			->whereInvoice(NULL)
 			->whereProfile('IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
 			->whereDeliveredAt('<=', $eCashflow['date'])

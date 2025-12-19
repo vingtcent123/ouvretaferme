@@ -38,7 +38,6 @@ class BankAccountLib extends BankAccountCrud {
 
 		$eBankAccount = new BankAccount();
 
-		$accountId = 'titi';
 		BankAccount::model()
 			->select(BankAccount::getSelection())
 			->whereBankId($bankId)
