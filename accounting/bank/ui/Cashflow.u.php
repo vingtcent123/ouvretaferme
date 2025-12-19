@@ -254,7 +254,7 @@ class CashflowUi {
 
 						if($eFarm->usesAccounting()) {
 
-							$h .= '<td class="td-vertical-align-top">';
+							$h .= '<td>';
 
 								if($eCashflow['status'] === Cashflow::WAITING) {
 

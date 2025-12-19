@@ -168,15 +168,20 @@ new Page(function($data) {
 
 		$isTabFilled = count(array_filter($data->counts, fn($val, $key) => ($key === $data->selectedTab and $val > 0), ARRAY_FILTER_USE_BOTH)) > 1;
 
-		if($isTabFilled === FALSE) {
+		if($isTabFilled === FALSE and array_sum($data->counts) > 0) {
 			$data->selectedTab = first(array_keys(array_filter($data->counts, fn($val) => $val > 0)));
 		}
 
-		$data->c = match($data->selectedTab) {
-			'market' => \preaccounting\ImportLib::getMarketSales($data->eFarm, $from, $to),
-			'invoice' => \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search),
-			'sales' => \preaccounting\ImportLib::getSales($data->eFarm, $data->search),
-		};
+		if($data->selectedTab) {
+
+			$data->c = match($data->selectedTab) {
+				'market' => \preaccounting\ImportLib::getMarketSales($data->eFarm, $from, $to),
+				'invoice' => \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search),
+				'sales' => \preaccounting\ImportLib::getSales($data->eFarm, $data->search),
+			};
+		} else {
+			$data->c = new Collection();
+		}
 
 		throw new ViewAction($data);
 

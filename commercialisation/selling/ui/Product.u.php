@@ -1327,7 +1327,7 @@ class ProductUi {
 				$h .= $form->hidden('ids[]', $eProduct['id']);
 			}
 
-			$h .= $form->submit(s("Enregistrer"), ['onclick' => 'this.classList.add("disabled");']);
+			$h .= $form->submit(s("Enregistrer"), ['data-waiter' => s("Enregistrement en cours...")]);
 
 		$h .= $form->close();
 
