@@ -134,9 +134,6 @@ class Operation extends OperationElement {
 					throw new \NotExpectedAction('Operation already attached');
 				}
 
-				if($eOperation['date'] > $eCashflow['date']) {
-					throw new \NotExpectedAction('Cashflow date is before operation date');
-				}
 			}
 		}
 	}

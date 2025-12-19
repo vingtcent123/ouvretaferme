@@ -38,21 +38,28 @@ class BankAccountLib extends BankAccountCrud {
 
 		$eBankAccount = new BankAccount();
 
+		$accountId = 'titi';
 		BankAccount::model()
 			->select(BankAccount::getSelection())
 			->whereBankId($bankId)
 			->whereAccountId($accountId)
 			->get($eBankAccount);
 
+		$eLastBankAccount = BankAccount::model()
+			->select(['label' => new \Sql('MAX(label)')])
+			->get();
+
 		if($eBankAccount->empty()) {
 
 			// Check if there is already an account. Set current account to default if there is none.
 			$cBankAccountDefault = BankAccount::model()->whereIsDefault(TRUE)->count();
+			$accountLabel = $eLastBankAccount->exists() ? (int)trim($eLastBankAccount, '0') + 1 : \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL;
 
 			$eBankAccount = new BankAccount([
 				'bankId' => $bankId,
 				'accountId' => $accountId,
 				'isDefault' => $cBankAccountDefault === 0,
+				'label' => $accountLabel,
 			]);
 
 			BankAccount::model()->insert($eBankAccount);

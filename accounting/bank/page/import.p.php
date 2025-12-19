@@ -38,10 +38,10 @@ new Page(
 
 		$fw = new FailWatch();
 
-		$result = \bank\ImportLib::importBankStatement();
+		$result = \bank\ImportLib::importBankStatement($data->eFarm);
 
 		if($fw->ok()) {
-			throw new ReloadAction('bank', 'Import::'.$result);
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Import::'.$result);
 		} else {
 			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?error='.$fw->getLast());
 		}

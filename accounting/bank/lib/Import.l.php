@@ -135,7 +135,7 @@ class ImportLib extends ImportCrud {
 			->getCollection();
 	}
 
-	public static function importBankStatement(): ?string {
+	public static function importBankStatement(\farm\Farm $eFarm): ?string {
 
 		if(isset($_FILES['ofx']) === FALSE) {
 			return null;
@@ -149,6 +149,8 @@ class ImportLib extends ImportCrud {
 			\Fail::log('Import::ofxSize');
 			return null;
 		}
+
+		Cashflow::model()->beginTransaction();
 
 		try {
 
@@ -170,7 +172,7 @@ class ImportLib extends ImportCrud {
 			Import::model()->insert($eImport);
 
 			$cashflows = \bank\OfxParserLib::extractOperations($xmlFile, $eBankAccount, $eImport);
-			$result = \bank\CashflowLib::insertMultiple($cashflows);
+			$result = \bank\CashflowLib::insertMultiple($eFarm, $cashflows);
 
 			if(count($result['imported']) === 0) {
 				\Fail::log('Import::nothingImported');
@@ -194,6 +196,8 @@ class ImportLib extends ImportCrud {
 		$eImport['processedAt'] = new \Sql('NOW()');
 
 		self::update($eImport, ['result', 'status', 'processedAt']);
+
+		Cashflow::model()->commit();
 
 		return $status;
 

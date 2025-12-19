@@ -1349,7 +1349,7 @@ class OperationUi {
 
 	}
 
-	public static function getAutocomplete(Operation $eOperation): array {
+	public static function getAutocomplete(\bank\Cashflow $eCashflow, Operation $eOperation): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -1359,7 +1359,7 @@ class OperationUi {
 			$document = '';
 		}
 
-		$tableRow = \bank\CashflowUi::getOperationLineForAttachment($eOperation);
+		$tableRow = \bank\CashflowUi::getOperationLineForAttachment($eCashflow, $eOperation);
 
 		$amountIncludingVat = $eOperation['type'] === \journal\Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
 		foreach($eOperation['cOperationLinked'] as $eOperationLinked) {
@@ -1401,7 +1401,7 @@ class OperationUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE) {
+	public function query(\PropertyDescriber $d, int $farm, \bank\Cashflow $eCashflow, bool $multiple = FALSE) {
 
 		$d->prepend = \Asset::icon('journal-bookmark');
 		$d->field = 'autocomplete';
@@ -1410,8 +1410,8 @@ class OperationUi {
 		$d->multiple = $multiple;
 
 		$d->autocompleteUrl = \company\CompanyUi::urlFarm(new \farm\Farm(['id' => $farm])).'/journal/operation:query';
-		$d->autocompleteResults = function(Operation $eOperation) {
-			return self::getAutocomplete($eOperation);
+		$d->autocompleteResults = function(Operation $eOperation) use($eCashflow) {
+			return self::getAutocomplete($eCashflow, $eOperation);
 		};
 
 	}

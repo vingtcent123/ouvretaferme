@@ -43,6 +43,7 @@ new Page(function($data) {
 			'periodStart' => GET('periodStart'),
 			'periodEnd' => GET('periodEnd'),
 			'isReconciliated' => GET('isReconciliated', 'bool'),
+			'bankAccount' => \bank\BankAccountLib::getById(GET('bankAccount')),
 			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
 		], GET('sort'));
 
@@ -70,6 +71,8 @@ new Page(function($data) {
 		$data->nCashflow = \bank\CashflowLib::countByStatus($search);
 		$data->nCashflow->offsetSet('all', new \bank\Cashflow(['count' => array_sum($data->nCashflow->getColumn('count'))]));
 		$data->cCashflow = \bank\CashflowLib::getAll($search, $hasSort);
+
+		$data->cBankAccount = \bank\BankAccountLib::getAll();
 
 		throw new ViewAction($data);
 

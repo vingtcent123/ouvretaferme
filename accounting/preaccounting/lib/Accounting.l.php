@@ -65,7 +65,7 @@ Class AccountingLib {
 				->where('m2.type = '.\selling\Customer::model()->format($search->get('type')));
 		}
 
-		return \preaccounting\SaleLib::filterForAccounting($eFarm,$search, TRUE)
+		return \preaccounting\SaleLib::filterForAccounting($eFarm, $search, TRUE)
 			->whereInvoice(NULL)
 			->whereAccountingHash(NULL)
 			->whereProfile('NOT IN', [\selling\Sale::SALE_MARKET, \selling\Sale::MARKET])

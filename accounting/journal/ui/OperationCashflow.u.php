@@ -17,7 +17,7 @@ Class OperationCashflowUi {
 					return [
 					];
 				};
-				new OperationUi()->query($d, GET('farm', '?int'));
+				new OperationUi()->query($d, GET('farm', '?int'), new \bank\Cashflow());
 				break;
 
 

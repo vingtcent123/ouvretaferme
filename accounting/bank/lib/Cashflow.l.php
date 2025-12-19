@@ -28,9 +28,11 @@ class CashflowLib extends CashflowCrud {
 			->whereFitid('LIKE', '%'.$search->get('fitid').'%', if: $search->get('fitid'))
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
-			->whereStatus('=', $search->get('status'), if: $search->get('status'))
 			->whereIsReconciliated('=', $search->get('isReconciliated'), if: $search->get('isReconciliated'))
 			->whereStatus('!=', Cashflow::DELETED, if: $search->get('statusNotDeleted'))
+			->whereStatus('=', $search->get('status'), if: $search->get('status'))
+			->whereAccount('=', $search->get('bankAccount'), if: $search->get('bankAccount') and $search->get('bankAccount')->notEmpty())
+
 		;
 
 	}
@@ -90,13 +92,13 @@ class CashflowLib extends CashflowCrud {
 
 		$searchWithoutStatus = new \Search($search->getFiltered(['status']));
 
-			return self::applySearch($searchWithoutStatus)
-				->select(['count' => new \Sql('COUNT(*)', 'int'), 'status'])
-				->group(['status'])
-				->getCollection(NULL, NULL, 'status');
+		return self::applySearch($searchWithoutStatus)
+			->select(['count' => new \Sql('COUNT(*)', 'int'), 'status'])
+			->group(['status'])
+			->getCollection(NULL, NULL, 'status');
 	}
 
-	public static function insertMultiple(array $cashflows): array {
+	public static function insertMultiple(\farm\Farm $eFarm, array $cashflows): array {
 
 		$alreadyImported = [];
 		$imported = [];
@@ -134,6 +136,7 @@ class CashflowLib extends CashflowCrud {
 			);
 
 			Cashflow::model()->insert($eCashflow);
+			\preaccounting\SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
 			$imported[] = $cashflow['fitid'];
 
 		}

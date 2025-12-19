@@ -9,7 +9,7 @@ class CashflowUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getSearch(\Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate): string {
+	public function getSearch(\Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate, \Collection $cBankAccount): string {
 
 		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
 
@@ -42,6 +42,14 @@ class CashflowUi {
 					.$form->number('margin', $search->get('margin', 1))
 					.$form->addon(s('€'))
 			);
+			if($cBankAccount->count() > 1) {
+				$values = [];
+				foreach($cBankAccount as $eBankAccount) {
+					$values[$eBankAccount['id']] = $eBankAccount['label'];
+				}
+			$h .= $form->select('bankAccount', $values, $search->get('bankAccount'), ['placeholder' => s("N° de compte")]);
+
+			}
 		$h .= '</div>';
 		$h .= '<div>';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -116,6 +124,7 @@ class CashflowUi {
 		$highlightedCashflowId = GET('id', 'int');
 		$showMonthHighlight = $search->getSort() === 'date';
 		$showReconciliate = $cCashflow->find(fn($e) => $e['isReconciliated'])->count() > 0;
+		$showAccount = count(array_unique($cCashflow->getColumnCollection('import')->getColumnCollection('account')->getColumn('label'))) > 1;
 
 		$h = '';
 
@@ -142,6 +151,11 @@ class CashflowUi {
 							$label = s("#");
 							$h .= ($search ? $search->linkSort('id', $label) : $label);
 						$h .= '</th>';
+
+						if($showAccount) {
+							$h .= '<th class="td-vertical-align-middle td-min-content">'.s("N° Compte").'</th>';
+						}
+
 						$h .= '<th class="td-vertical-align-middle">';
 							$label = s("Date");
 							$h .= ($search ? $search->linkSort('date', $label) : $label);
@@ -192,6 +206,12 @@ class CashflowUi {
 						$h .= '<td class="text-left td-vertical-align-top">';
 							$h .= encode($eCashflow['id']);
 						$h .= '</td>';
+
+						if($showAccount) {
+							$h .= '<td class="text-left td-vertical-align-top">';
+								$h .= encode($eCashflow['import']['account']['label']);
+							$h .= '</td>';
+						}
 
 						$h .= '<td class="td-vertical-align-top">';
 							$h .= \util\DateUi::numeric($eCashflow['date']);
@@ -616,7 +636,7 @@ class CashflowUi {
 		$h .= '</div>';
 
 		$h .= '<h3>'.\Asset::icon('2-circle').' '.s("Sélectionnez les écritures liées à cette opération bancaire").'</h3>';
-			$h .= $form->dynamicField(new \journal\OperationCashflow(), 'operation', function($d) use($form) {
+			$h .= $form->dynamicField(new \journal\OperationCashflow(), 'operation', function($d) use($form, $eCashflow) {
 				$d->autocompleteDispatch = '[data-operation="'.$form->getId().'"]';
 				$d->attributes['data-operation'] = $form->getId();
 				$d->default = fn($e, $property) => get('operation');
@@ -627,7 +647,7 @@ class CashflowUi {
 					];
 				};
 				$d->group += ['wrapper' => 'operation'];
-				new \journal\OperationUi()->query($d, GET('farm', '?int'));
+				new \journal\OperationUi()->query($d, GET('farm', '?int'), $eCashflow);
 			});
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
@@ -655,7 +675,7 @@ class CashflowUi {
 				$h .= '<tbody>';
 
 					foreach($cOperation as $eOperation) {
-						$h .= CashflowUi::getOperationLineForAttachment($eOperation);
+						$h .= CashflowUi::getOperationLineForAttachment($eCashflow, $eOperation);
 					}
 
 				$h .= '</tbody>';
@@ -682,17 +702,17 @@ class CashflowUi {
 
 	}
 
-	public static function getOperationLineForAttachment(\journal\Operation $eOperation): string {
+	public static function getOperationLineForAttachment(Cashflow $eCashflow, \journal\Operation $eOperation): string {
 
 		$form = new \util\FormUi();
 
-		$amount = $eOperation['type'] === \journal\Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
+		$amount = $eOperation['type'] === \journal\Operation::DEBIT ? -1 * $eOperation['amount'] :$eOperation['amount'];
 		foreach($eOperation['cOperationLinked'] as $eOperationLinked) {
-			$amount += $eOperationLinked['type'] === \journal\Operation::DEBIT ? $eOperationLinked['amount'] : -1 * $eOperationLinked['amount'];
+			$amount += $eOperationLinked['type'] === \journal\Operation::DEBIT ?  -1 * $eOperationLinked['amount'] : $eOperationLinked['amount'];
 		}
 
 		$h = '<tr data-operation="'.$eOperation['id'].'">';
-			$h .= '<td>';
+			$h .= '<td '.($eCashflow['date'] < $eOperation['date'] ? 'class="color-warning" title="'.s("Attention, l'opération bancaire est antérieure à l'écriture comptable").'"' : '').'>';
 					$h .= \util\DateUi::numeric($eOperation['date']);
 			$h .= '</td>';
 			$h .= '<td class="text-center">';

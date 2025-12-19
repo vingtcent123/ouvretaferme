@@ -239,7 +239,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		}
 
-		$results[] = \journal\OperationUi::getAutocomplete($eOperation);
+		$results[] = \journal\OperationUi::getAutocomplete($data->eCashflow, $eOperation);
 
 	}
 

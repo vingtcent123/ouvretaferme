@@ -1095,7 +1095,8 @@ class OperationLib extends OperationCrud {
 			$selection['isThirdParty'] = new \Sql('IF(thirdParty = '.$eThirdParty['id'].', 1, 0)', 'bool');
 			$sort = ['m1_isThirdParty' => SORT_DESC];
 		} else {
-			$sort = [];
+			$selection['isThirdParty'] = new \Sql('0');
+			$sort = ['m1_isThirdParty' => SORT_DESC];
 		}
 
 		if($query !== '') {
@@ -1122,7 +1123,6 @@ class OperationLib extends OperationCrud {
 		$cOperation = Operation::model()
 			->select($selection)
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
-			->whereDate('<=', $eCashflow['date'])
 			->sort($sort + ['m1_date' => SORT_DESC])
 			->where(new \Sql('m2.id IS NULL'))
 			->getCollection();
@@ -1191,6 +1191,7 @@ class OperationLib extends OperationCrud {
 			'financialYear' => $eOperation['financialYear'],
 			'hash' => $eOperation['hash'],
 			'journalCode' => $eOperation['journalCode'],
+			'accountLabel' => \account\AccountLabelLib::pad($eCashflow['account']['label'] ?? \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL),
 		]));
 
 	}

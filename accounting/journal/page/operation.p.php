@@ -359,11 +359,11 @@ new Page(function($data) {
 })
 	->post('query', function($data) {
 
-		$eCashflow = \bank\CashflowLib::getById(POST('cashflow'));
+		$data->eCashflow = \bank\CashflowLib::getById(POST('cashflow'));
 		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
 		$excludedOperationIds = explode(',', POST('excludedOperations'));
 
-		$data->cOperation = \journal\OperationLib::getForAttachQuery($eCashflow, POST('query'), $eThirdParty, $excludedOperationIds);
+		$data->cOperation = \journal\OperationLib::getForAttachQuery($data->eCashflow, POST('query'), $eThirdParty, $excludedOperationIds);
 
 		throw new \ViewAction($data);
 
