@@ -219,6 +219,7 @@ class Date extends DateElement {
 				$this->expects(['farm', 'type']);
 
 				if(empty($catalogs)) {
+					$catalogs = NULL;
 					return TRUE;
 				}
 
