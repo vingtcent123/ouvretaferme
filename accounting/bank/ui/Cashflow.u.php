@@ -11,7 +11,7 @@ class CashflowUi {
 
 	public function getSearch(\Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate): string {
 
-		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids', 'status']) ? 'hide' : '').'">';
+		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;
@@ -35,13 +35,13 @@ class CashflowUi {
 			);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut")]);
+			$h .= $form->select('isReconciliated', [TRUE => s("oui"), FALSE => s("non")], $search->get('isReconciliated'), ['placeholder' => s("Rapprochée")]);
 			$h .= $form->inputGroup($form->addon(s('Montant'))
 					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01])
 					.$form->addon(s('+/-'))
 					.$form->number('margin', $search->get('margin', 1))
 					.$form->addon(s('€'))
 			);
-			$h .= $form->checkbox('statusWithDeleted', 1, ['checked' => $search->get('statusWithDeleted'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher également les opérations supprimées")]);
 		$h .= '</div>';
 		$h .= '<div>';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -115,6 +115,7 @@ class CashflowUi {
 
 		$highlightedCashflowId = GET('id', 'int');
 		$showMonthHighlight = $search->getSort() === 'date';
+		$showReconciliate = $cCashflow->find(fn($e) => $e['isReconciliated'])->count() > 0;
 
 		$h = '';
 
@@ -149,6 +150,9 @@ class CashflowUi {
 							$label = s("Libellé");
 							$h .= ($search ? $search->linkSort('memo', $label) : $label);
 						$h .= '</th>';
+						if($showReconciliate) {
+							$h .= '<th class="text-center td-min-content">'.s("Rapproché ?").'</th>';
+						}
 						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-md-up td-min-content">'.s("Montant").'</th>';
 						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-sm-down td-min-content">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left td-vertical-align-top hide-sm-down td-min-content">'.s("Crédit (C)").'</th>';
@@ -193,9 +197,21 @@ class CashflowUi {
 							$h .= \util\DateUi::numeric($eCashflow['date']);
 						$h .= '</td>';
 
-						$h .= '<td class="td-description color-primary">';
+						$h .= '<td class="td-description td-vertical-align-top color-primary">';
 							$h .= encode($eCashflow['memo']);
 						$h .= '</td>';
+
+						if($showReconciliate) {
+							$h .= '<td class="text-center td-vertical-align-top">';
+								if($eCashflow['isReconciliated']) {
+									if($eCashflow['sale']->notEmpty()) {
+										$h .= '<a href="/vente/'.$eCashflow['sale']['id'].'">'.encode($eCashflow['sale']['document']).'</a>';
+									} else if($eCashflow['invoice']->notEmpty()) {
+										$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eCashflow['invoice']['name']).'&customer='.encode($eCashflow['invoice']['customer']['name']).'">'.encode($eCashflow['invoice']['name']).'</a>';
+									}
+								}
+							$h .= '</td>';
+						}
 
 						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
 							$h .= \util\TextUi::money($eCashflow['amount']);
@@ -216,7 +232,7 @@ class CashflowUi {
 
 						if($eFarm->usesAccounting()) {
 
-							$h .= '<td>';
+							$h .= '<td class="td-vertical-align-top">';
 
 								if($eCashflow['status'] === Cashflow::WAITING) {
 
@@ -233,7 +249,7 @@ class CashflowUi {
 										$h .= '</a>';
 									$h .= '</div>';
 
-								} else {
+								} else if($eCashflow['status'] !== Cashflow::DELETED) {
 
 									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'">'.p("{value} écriture", "{value} écritures", $eCashflow['cOperationCashflow']->count()).'</a>';
 

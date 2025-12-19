@@ -350,7 +350,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Traiter les opérations bancaires").'</h2>';
-		echo '<p>'.s("Si certaines opérations bancaires ne concernent pas votre exploitation et que vous ne souhaitez pas les voir dans la liste, vous pouvez simplement les <i>Supprimer</i>.<br />Pas de panqiue, si vous voulez les réafficher, utilisez la case à cocher dans le formulaire de recherche (Option \"Afficher également les opérations supprimées\"), ce qui vous permettra de les réintégrer si besoin.").'</p>';
+		echo '<p>'.s("Si certaines opérations bancaires ne concernent pas votre exploitation et que vous ne souhaitez pas les voir dans la liste, vous pouvez simplement les <i>Supprimer</i>.<br />Pas de panqiue, si vous voulez les réafficher, utilisez le formulaire de recherche et choisissez d'afficher les opérations supprimées, ce qui vous permettra de les réintégrer si besoin.").'</p>';
 		echo '<p>'.s("Pour chaque opération bancaire, il est possible de :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Créer des écritures comptables correspondantes").'</li>';

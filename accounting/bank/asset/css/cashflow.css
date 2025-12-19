@@ -120,3 +120,7 @@
 	align-items: center;
 	min-height: 65px;
 }
+
+#cashflow-list table tbody tr td:not(:has(a.btn)) {
+	padding-top: 0.75rem;
+}

@@ -15,7 +15,6 @@ new Page()
 			\preaccounting\SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
 		}
 
-
 		$cOperation = \journal\Operation::model()
 			->select([
 				'id', 'amount', 'type', 'description', 'date', 'thirdParty' => ['id', 'name', 'normalizedName'],

@@ -42,6 +42,7 @@ new Page(function($data) {
 			'to' => $periodEnd,
 			'periodStart' => GET('periodStart'),
 			'periodEnd' => GET('periodEnd'),
+			'isReconciliated' => GET('isReconciliated', 'bool'),
 			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
 		], GET('sort'));
 
@@ -55,13 +56,9 @@ new Page(function($data) {
 				$search->set('amountMax', GET('amount', 'int') + 1);
 			}
 		}
-		$search->set('statusWithDeleted', GET('statusWithDeleted', 'bool', FALSE));
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 
-		if($search->get('statusWithDeleted') === FALSE) {
-			$search->set('statusNotDeleted', TRUE);
-		}
 		if(get_exists('import') === TRUE) {
 			$search->set('import', GET('import'));
 			$data->eImport = \bank\ImportLib::getById(GET('import', 'int'));

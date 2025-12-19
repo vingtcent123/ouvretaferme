@@ -295,11 +295,23 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes';
 
-	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").($data->counts > 0 ? '<span class="util-counter ml-1">'.$data->counts.'</span>' : '').'</h1>';
+	$total = $data->countsByInvoice + $data->countsBySale;
+
+	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").($total > 0 ? '<span class="util-counter ml-1">'.$total.'</span>' : '').'</h1>';
 
 	echo '<div class="util-block-help">';
-	echo s("Cette page vous permet de rapprocher vos ventes et factures avec les opérations bancaires que vous avez importées.");
+		if($data->countsByInvoice and $data->countsBySale > 0) {
+			echo s("{nSales} et {nInvoices} semblent être rapprochables avec des opérations bancaires.", [
+				'nSales' => '<b>'.p("{value} vente", "{value} ventes", $data->countsBySale).'</b>',
+				'nInvoices' => '<b>'.p("{value} facture", "{value} factures", $data->countsByInvoice).'</b>',
+			]);
+		} else if($data->countsByInvoice > 0) {
+			echo p("<b>{value} facture</b> semble être rapprochable.", "<b>{value} factures</b> semblent être rapprochables.", $data->countsByInvoice);
+		} else if($data->countsBySale > 0) {
+			echo p("<b>{value} vente</b> semble être rapprochable.", "<b>{value} ventes</b> semblent être rapprochables.", $data->countsBySale);
+		}
 	echo '</div>';
+
 
 	if($data->ccSuggestion->empty()) {
 

@@ -53,6 +53,7 @@ Class SuggestionLib extends SuggestionCrud {
 		return (Suggestion::model()
 			->select(['nInvoice' => new \Sql('COUNT(DISTINCT(invoice))')])
 			->whereInvoice('!=', NULL)
+			->whereStatus(Suggestion::WAITING)
 			->get()['nInvoice'] ?? 0);
 
 	}
@@ -62,6 +63,7 @@ Class SuggestionLib extends SuggestionCrud {
 		return (Suggestion::model()
 			->select(['nSale' => new \Sql('COUNT(DISTINCT(sale))')])
 			->whereSale('!=', NULL)
+			->whereStatus(Suggestion::WAITING)
 			->get()['nSale'] ?? 0);
 
 	}
@@ -71,6 +73,7 @@ Class SuggestionLib extends SuggestionCrud {
 		return (Suggestion::model()
 			->select(['nOperation' => new \Sql('COUNT(DISTINCT(operation))')])
 			->whereOperation('!=', NULL)
+			->whereStatus(Suggestion::WAITING)
 			->get()['nOperation'] ?? 0);
 
 	}
@@ -79,6 +82,10 @@ Class SuggestionLib extends SuggestionCrud {
 
 		return Suggestion::model()
 			->select(['nCashflow' => new \Sql('DISTINCT(cashflow)')])
+			->or(
+				fn() => $this->whereInvoice('!=', NULL),
+				fn() => $this->whereSale('!=', NULL),
+			)
 			->count();
 
 	}
@@ -274,8 +281,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 			list($weight, $reason) = self::weightCashflowSale($eCashflow, $eSale);
 
-			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
-
+			if($weight > 50) {
 				self::createSuggestion(
 					new Suggestion([
 						'sale' => $eSale,
@@ -568,7 +574,24 @@ Class SuggestionLib extends SuggestionCrud {
 			}
 		}
 
-		return [$weight, $reason];
+		// Il n'y a pas le montant et on en a au moins 2 ou alors le montant est exact (à 5ct près et on en a au moins 2)
+		if(($reason->get() & Suggestion::AMOUNT === FALSE) and self::countReasons($reason) > self::REASON_MIN) {
+			return [$weight, $reason];
+		}
+
+		// Ou alors s'il y a le montant pas exact il en faut au moins 3 dont le tiers et la référence
+		if(
+			($reason->get() & Suggestion::AMOUNT) and
+			(($reason->get() & Suggestion::THIRD_PARTY) or ($reason->get() & Suggestion::REFERENCE)) and
+			(
+				self::countReasons($reason) > (self::REASON_MIN + 1) or
+				(self::countReasons($reason) > self::REASON_MIN and abs(abs($eCashflow['amount']) - abs($eSale['priceIncludingVat']) < 0.05))
+			)
+		) {
+			return [$weight, $reason];
+		}
+
+		return [0, new \Set()];
 	}
 
 	private static function countReasons(\Set $reasons): int {

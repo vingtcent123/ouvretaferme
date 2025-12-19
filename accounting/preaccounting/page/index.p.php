@@ -177,7 +177,8 @@ new Page(function($data) {
 	})
 	->get('/precomptabilite:rapprocher-ventes', function($data) {
 
-		$data->counts = (\preaccounting\SuggestionLib::countWaitingByInvoice() + \preaccounting\SuggestionLib::countWaitingBySale());
+		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaitingByInvoice();
+		$data->countsBySale = \preaccounting\SuggestionLib::countWaitingBySale();
 
 		$data->eImportLast = \bank\ImportLib::getLastImport();
 
