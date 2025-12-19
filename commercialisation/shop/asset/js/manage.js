@@ -107,12 +107,12 @@ class DateManage {
 
 		switch(source) {
 
-			case 'catalog' :
+			case 'date-catalog' :
 				ref('date-direct', node => node.classList.add('hide'));
 				ref('date-catalog', node => node.classList.remove('hide'));
 				break;
 
-			case 'direct' :
+			case 'date-direct' :
 				ref('date-direct', node => node.classList.remove('hide'));
 				ref('date-catalog', node => node.classList.add('hide'));
 				break;

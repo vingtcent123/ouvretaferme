@@ -451,7 +451,11 @@ class SaleLib extends SaleCrud {
 			->whereShopDate($eDate)
 			->where('m1.farm', $eFarm, if: $eFarm->notEmpty())
 			->wherePreparationStatus('IN', $preparationStatus, if: $preparationStatus !== NULL)
-			->sort(new \Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName, m1.id'))
+			->sort(
+				$eDate['deliveryDate'] === NULL ?
+					['m1.id' => SORT_DESC] :
+					new \Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName, m1.id')
+			)
 			->getCollection(NULL, NULL, 'id');
 
 	}

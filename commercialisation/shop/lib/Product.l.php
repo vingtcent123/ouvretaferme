@@ -562,7 +562,11 @@ class ProductLib extends ProductCrud {
 
 	}
 
-	public static function applySold(Date $eDate, \Collection $cProduct, \Collection $cGrid, \Collection $cSaleExclude = new \Collection()): \Collection {
+	public static function applySold(Date $eDate, \Collection $cProduct, \Collection $cGrid, \Collection $cSaleExclude = new \Collection()): void {
+
+		if($eDate['deliveryDate'] === NULL) {
+			return;
+		}
 
 		$cItem = SaleLib::getProductsByDate($eDate, $cSaleExclude);
 
@@ -586,8 +590,6 @@ class ProductLib extends ProductCrud {
 			$eProduct['sold'] = $sold;
 
 		}
-
-		return $cProduct;
 
 	}
 

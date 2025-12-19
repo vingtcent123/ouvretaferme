@@ -14,9 +14,6 @@ abstract class DateElement extends \Element {
 	const INACTIVE = 'inactive';
 	const CLOSED = 'closed';
 
-	const DIRECT = 'direct';
-	const CATALOG = 'catalog';
-
 	public static function getSelection(): array {
 		return Date::model()->getProperties();
 	}
@@ -52,7 +49,6 @@ class DateModel extends \ModuleModel {
 			'type' => ['enum', [\shop\Date::PRIVATE, \shop\Date::PRO], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'status' => ['enum', [\shop\Date::ACTIVE, \shop\Date::INACTIVE, \shop\Date::CLOSED], 'cast' => 'enum'],
-			'source' => ['enum', [\shop\Date::DIRECT, \shop\Date::CATALOG], 'cast' => 'enum'],
 			'orderStartAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'orderEndAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'orderEndEmailedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -63,7 +59,7 @@ class DateModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'source', 'orderStartAt', 'orderEndAt', 'orderEndEmailedAt', 'description', 'points', 'catalogs', 'deliveryDate'
+			'id', 'createdAt', 'shop', 'type', 'farm', 'status', 'orderStartAt', 'orderEndAt', 'orderEndEmailedAt', 'description', 'points', 'catalogs', 'deliveryDate'
 		]);
 
 		$this->propertiesToModule += [
@@ -108,9 +104,6 @@ class DateModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'source' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'points' :
@@ -173,10 +166,6 @@ class DateModel extends \ModuleModel {
 
 	public function whereStatus(...$data): DateModel {
 		return $this->where('status', ...$data);
-	}
-
-	public function whereSource(...$data): DateModel {
-		return $this->where('source', ...$data);
 	}
 
 	public function whereOrderStartAt(...$data): DateModel {

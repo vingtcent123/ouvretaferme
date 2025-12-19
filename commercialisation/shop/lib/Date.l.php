@@ -59,6 +59,8 @@ class DateLib extends DateCrud {
 
 			}
 
+			$properties[] = 'catalogs';
+
 			if(
 				$eDate['shop']['hasPoint'] and
 				$eDate->isExpired() === FALSE
@@ -137,7 +139,7 @@ class DateLib extends DateCrud {
 
 		switch($e['source']) {
 
-			case Date::DIRECT :
+			case 'date-direct' :
 
 				$e->expects(['cProduct']);
 
@@ -151,7 +153,7 @@ class DateLib extends DateCrud {
 
 			Date::model()->insert($e);
 
-			if($e['source'] === Date::DIRECT) {
+			if($e['source'] === 'date-direct') {
 
 				foreach($e['cProduct'] as $eProduct) {
 					$eProduct['date'] = $e;

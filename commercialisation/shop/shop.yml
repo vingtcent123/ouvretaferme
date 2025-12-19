@@ -28,7 +28,6 @@ Date:
   type: enum(PRIVATE, PRO)
   farm: farm\Farm
   status: enum(ACTIVE, INACTIVE, CLOSED) = ACTIVE
-  source: enum(DIRECT, CATALOG)
   orderStartAt: ?datetime
   orderEndAt: ?datetime
   orderEndEmailedAt: ?date

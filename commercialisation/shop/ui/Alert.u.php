@@ -9,6 +9,7 @@ class AlertUi {
 
 			'Date::points.check' => s("Merci de conserver au moins un mode de livraison."),
 			'Date::orderEndAt.consistency' => s("La fin de la prise des commandes doit avoir lieu après le début de prise des commandes."),
+			'Date::deliveryDate.check' => s("La date de livraison ne peut pas avoir lieu dans le passé"),
 			'Date::deliveryDate.consistency' => s("La fin des retraits doit avoir lieu après le début des retraits."),
 			'Date::canNotOrder' => s("Votre commande a été annulée car vous êtes hors de la période de commande. Vous pourrez passer commander la prochaine fois !"),
 

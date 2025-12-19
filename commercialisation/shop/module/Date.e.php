@@ -106,11 +106,11 @@ class Date extends DateElement {
 	}
 
 	public function isCatalog(): bool {
-		return $this['source'] === Date::CATALOG;
+		return ($this['catalogs'] !== NULL);
 	}
 
 	public function isDirect(): bool {
-		return $this['source'] === Date::DIRECT;
+		return ($this['catalogs'] === NULL);
 	}
 
 	public function acceptCustomerCancel(): bool {
@@ -122,13 +122,18 @@ class Date extends DateElement {
 		$fw = new \FailWatch();
 
 		$p
-			->setCallback('source.prepare', function(?string &$source): bool {
+			->setCallback('source.check', function(?string &$source): bool {
 
 				if($this['shop']['shared']) {
-					$source = \shop\Date::CATALOG;
+					$source = 'date-catalog';
 				}
 
-				return TRUE;
+				if(in_array($source, ['date-catalog', 'date-direct'])) {
+					$this['source'] = $source;
+					return TRUE;
+				} else {
+					return FALSE;
+				}
 
 			})
 			->setCallback('status.prepare', function(mixed &$status): bool {
@@ -146,17 +151,17 @@ class Date extends DateElement {
 				return TRUE;
 
 			})
-			->setCallback('orderStartAt.prepare', function(mixed &$value) use ($p) {
+			->setCallback('orderStartAt.prepare', function(mixed $value) use ($p) {
 				return match($p->for) {
 					'create' => ($value !== NULL),
-					'update' => TRUE
+					'update' => ($this['deliveryDate'] === NULL) ? TRUE : ($value !== NULL)
 				};
 			})
 			// End of order must be after start of order.
-			->setCallback('orderEndAt.prepare', function(mixed &$value) use ($p) {
+			->setCallback('orderEndAt.prepare', function(mixed $value) use ($p) {
 				return match($p->for) {
 					'create' => ($value !== NULL),
-					'update' => TRUE
+					'update' => ($this['deliveryDate'] === NULL) ? TRUE : ($value !== NULL)
 				};
 			})
 			->setCallback('orderEndAt.consistency', function(mixed $orderEndAt) use($p): bool {
@@ -172,6 +177,14 @@ class Date extends DateElement {
 			// Delivery must be after order.
 			->setCallback('deliveryDate.prepare', function(mixed &$value) use ($p) {
 				return ($value !== NULL);
+			})
+			->setCallback('deliveryDate.check', function(mixed $value) use($p, $fw): bool {
+
+				return (
+					$value === NULL or
+					$value >= currentDate()
+				);
+
 			})
 			->setCallback('deliveryDate.consistency', function($deliveryDate) use($p, $fw): bool {
 
@@ -189,19 +202,24 @@ class Date extends DateElement {
 			})
 			->setCallback('catalogs.check', function(?array &$catalogs) use($input, $p) {
 
-				$p->expectsBuilt('source');
+				if($p->for === 'create') {
+
+					$p->expectsBuilt('source');
+
+					if($this['source'] !== 'date-catalog') {
+						return TRUE;
+					}
+
+					if(empty($catalogs)) {
+						return FALSE;
+					}
+
+				}
 
 				$this->expects(['farm', 'type']);
 
-				if($this['source'] !== Date::CATALOG) {
+				if(empty($catalogs)) {
 					return TRUE;
-				}
-
-				if(
-					$catalogs === NULL or
-					count($catalogs) === 0
-				) {
-					return FALSE;
 				}
 
 				$cCatalog = \shop\CatalogLib::getForShop($this['shop'], $this['type'], onlyIds: $catalogs);
@@ -218,7 +236,7 @@ class Date extends DateElement {
 
 				$p->expectsBuilt('source');
 
-				if($this['source'] !== Date::DIRECT) {
+				if($this['source'] !== 'date-direct') {
 					return TRUE;
 				}
 

@@ -262,7 +262,7 @@ class DateUi {
 		]);
 
 		if($e['cCatalog']->empty()) {
-			$e['source'] = Date::DIRECT;
+			$e['source'] = 'date-direct';
 		} else {
 			$e['source'] = NULL;
 		}
@@ -291,7 +291,7 @@ class DateUi {
 			}
 
 			$e['points'] = $eDateBase['points'];
-			$e['source'] ??= $eDateBase['source'];
+			$e['source'] ??= $eDateBase->isCatalog() ? 'date-catalog' : 'date-direct';
 
 		} else {
 			$e['points'] = [];
@@ -334,14 +334,14 @@ class DateUi {
 
 				if($e['cCatalog']->notEmpty()) {
 					$h .= $form->dynamicGroup($e, 'source*');
-					$h .= '<div data-ref="date-catalog" class="'.($e['source'] === Date::CATALOG ? '' : 'hide').'">';
+					$h .= '<div data-ref="date-catalog" class="'.($e['source'] === 'date-catalog' ? '' : 'hide').'">';
 						$h .= $form->dynamicGroup($e, 'catalogs*');
 					$h .= '</div>';
 				} else {
-					$h .= $form->hidden('source', Date::DIRECT);
+					$h .= $form->hidden('source', 'date-direct');
 				}
 
-				$h .= '<div data-ref="date-direct" class="'.($e['source'] === Date::DIRECT ? '' : 'hide').'">';
+				$h .= '<div data-ref="date-direct" class="'.($e['source'] === 'date-direct' ? '' : 'hide').'">';
 
 					$h .= '<h3 class="mt-2">'.self::p('productsList')->label.'</h3>';
 
@@ -446,6 +446,7 @@ class DateUi {
 
 		}
 
+		$h .= $form->dynamicGroup($eDate, 'catalogs');
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
@@ -988,7 +989,7 @@ class DateUi {
 						dynamicHide: ['paymentMethod' => ''],
 						show: ['point'],
 						hasSubtitles: FALSE,
-						segment: ($eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL,
+						segment: ($eDate['deliveryDate'] !== NULL and $eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL,
 						cPaymentMethod: $cPaymentMethod,
 					);
 
@@ -1224,13 +1225,25 @@ class DateUi {
 						}
 					}
 
-					$h .= '<h2>'.p("Catalogue {value}", "Catalogues {value}", count($catalogs), ['value' => implode(' ', $catalogs)]).'</h2>';
+					$h .= '<h2>';
+						$h .= p("Catalogue {value}", "Catalogues {value}", count($catalogs), ['value' => implode(' ', $catalogs)]);
+					$h .= '</h2>';
 
 				} else {
 					$h .= '<div></div>';
 				}
 
 				$h .= '<div>';
+
+					if($eDate['deliveryDate'] === NULL) {
+						$h .= '<a href="/shop/date:update?id='.$eDate['id'].'"class="btn btn-primary">';
+						if($eDate['catalogs']) {
+							$h .= \Asset::icon('gear-fill').' '.s("Changer de catalogue");
+						} else {
+							$h .= \Asset::icon('plus-circle').' '.s("Ajouter de catalogue");
+						}
+						$h .= '</a>  ';
+					}
 
 					$h .= ' <a href="/shop/product:createCollection?date='.$eDate['id'].'" class="btn btn-primary">';
 						$h .= \Asset::icon('plus-circle').' ';
@@ -1353,11 +1366,13 @@ class DateUi {
 				break;
 
 			case 'source' :
+				$d->field = 'radio';
 				$d->values = [
-					Date::CATALOG => s("Passer par les catalogues"),
-					Date::DIRECT => s("Choisir mes produits"),
+					'date-catalog' => s("Passer par les catalogues"),
+					'date-direct' => s("Choisir mes produits"),
 				];
 				$d->attributes = [
+					'mandatory' => TRUE,
 					'callbackRadioAttributes' => function() {
 						return [
 							'onchange' => 'DateManage.changeSource(this)',

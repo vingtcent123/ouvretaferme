@@ -32,11 +32,11 @@ new \farm\FarmPage()
 new \shop\DatePage()
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-		$data->eShop = \shop\ShopLib::getById(INPUT('shop'))->validateProperty('farm', $data->eFarm);
+		$data->eShop = \shop\ShopLib::getById(INPUT('shop'))->validate('canWrite');
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
 
 		return new \shop\Date([
-			'farm' => $data->eFarm,
+			'farm' => $data->eShop['farm'],
 			'shop' => $data->eShop,
 			'type' => $data->eShop['type'],
 		]);
@@ -60,8 +60,8 @@ new \shop\DatePage()
 
 
 		$data->e['cCatalog'] = \shop\CatalogLib::getForShop($data->eShop, $data->e['type'], $data->eDateBase);
-		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
-		$data->e['ccPoint'] = \shop\PointLib::getByFarm($data->eFarm);
+		$data->e['cCategory'] = \selling\CategoryLib::getByFarm($data->e['farm'], index: 'id');
+		$data->e['ccPoint'] = \shop\PointLib::getByFarm($data->e['farm']);
 
 		throw new \ViewAction($data);
 
@@ -148,6 +148,18 @@ new \shop\DatePage()
 	->update(function($data) {
 
 		$data->e['ccPoint'] = \shop\PointLib::getByFarm($data->e['farm']);
+
+		$data->e['cCatalog'] = \shop\CatalogLib::getByFarm($data->e['farm'], $data->e['type']);
+
+		foreach($data->e['cCatalog'] as $eCatalog) {
+
+			$eCatalog['selected'] = (
+				$data->e['catalogs'] !== NULL and
+				in_array($eCatalog['id'], $data->e['catalogs'])
+			);
+
+		}
+
 
 		throw new \ViewAction($data);
 

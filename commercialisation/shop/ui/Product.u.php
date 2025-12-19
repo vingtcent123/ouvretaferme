@@ -1001,7 +1001,10 @@ class ProductUi {
 	public function getListByDate(\farm\Farm $eFarm, Date $eDate, \Collection $cProduct, bool $isExpired, bool $showFarm): string {
 
 		$taxes = $eFarm->getConf('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eDate['type']).'</span>' : '';
-		$hasSold = $cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL);
+		$hasSold = (
+			$eDate['deliveryDate'] !== NULL and
+			$cProduct->contains(fn($eProduct) => $eProduct['sold'] !== NULL)
+		);
 		$columns = 2;
 
 		$hasCatalog = $cProduct->contains(fn($eProduct) => $eProduct['catalog']->notEmpty());
@@ -1750,9 +1753,6 @@ class ProductUi {
 				$h .= '<br/>';
 				$h .= '<h3>'.\Asset::icon('lock-fill').'  '.s("Limitations de commande").'</h3>';
 				$h .= '<div class="util-block bg-background-light">';
-
-					$h .= $form->group(
-					);
 
 					if($e['catalog']->notEmpty()) {
 						$h .= $this->getLimitAtField($form, $e);
