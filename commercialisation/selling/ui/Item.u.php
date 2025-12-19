@@ -1171,6 +1171,7 @@ class ItemUi {
 		$eSale->expects(['farm']);
 
 		$eProduct = $eItem['product'];
+		$buttonPersonnalize = '';
 
 		$form = new \util\FormUi();
 
@@ -1252,7 +1253,10 @@ class ItemUi {
 					}
 
 					if($eSale['farm']->hasAccounting()) {
-						$h .= $form->dynamicGroup($eItem, 'account[0]');
+						$h .= $form->dynamicGroup($eItem, 'account[0]',  function($d) use($form) {
+							$d->group['class'] = 'hide';
+						});
+						$buttonPersonnalize = '<a onclick="Item.showAccountingField();" class="btn btn-primary bg-accounting">'.s("Personnaliser pour la comptabilité").'</a>';
 					}
 
 				$h .= '</div>';
@@ -1260,7 +1264,7 @@ class ItemUi {
 			}
 
 			$h .= $form->group(
-				content: $form->submit(s("Ajouter"))
+				content: '<div class="flex-justify-space-between">'.$form->submit(s("Ajouter")).$buttonPersonnalize.'</div>'
 			);
 
 		$h .= $form->close();

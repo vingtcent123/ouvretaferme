@@ -151,4 +151,10 @@ class Item {
 
 	}
 
+	static showAccountingField() {
+
+		qs('[data-wrapper^="account"]').toggle();
+
+	}
+
 }
