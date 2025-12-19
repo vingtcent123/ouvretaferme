@@ -644,7 +644,7 @@ Class PreaccountingUi {
 			return '';
 		}
 
-		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
+		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes?tab='.$type.'">';
 			$h .= \Asset::icon('stars').' ';
 			$h .= '<span class="hide-md-up">';
 				$h .= $nSuggestion;
