@@ -18,6 +18,10 @@ abstract class VatDeclarationElement extends \Element {
 		return VatDeclaration::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): VatDeclarationModel {
 		if(self::$model === NULL) {
 			self::$model = new VatDeclarationModel();

@@ -14,6 +14,10 @@ abstract class DepreciationElement extends \Element {
 		return Depreciation::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): DepreciationModel {
 		if(self::$model === NULL) {
 			self::$model = new DepreciationModel();

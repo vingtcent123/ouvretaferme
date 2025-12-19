@@ -19,6 +19,10 @@ abstract class CashflowElement extends \Element {
 		return Cashflow::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CashflowModel {
 		if(self::$model === NULL) {
 			self::$model = new CashflowModel();

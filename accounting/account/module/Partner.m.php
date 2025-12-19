@@ -11,6 +11,10 @@ abstract class PartnerElement extends \Element {
 		return Partner::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): PartnerModel {
 		if(self::$model === NULL) {
 			self::$model = new PartnerModel();

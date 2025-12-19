@@ -11,6 +11,10 @@ abstract class AccountElement extends \Element {
 		return Account::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): AccountModel {
 		if(self::$model === NULL) {
 			self::$model = new AccountModel();

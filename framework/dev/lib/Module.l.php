@@ -153,6 +153,11 @@ class ModuleLib {
 			$content[] = '	}';
 			$content[] = '';
 
+			$content[] = '	public static function resetModel(): void {';
+			$content[] = '		self::$model = NULL;';
+			$content[] = '	}';
+			$content[] = '';
+
 			$content[] = '	public static function model(): '.$element['name'].'Model {';
 			$content[] = '		if(self::$model === NULL) {';
 			$content[] = '			self::$model = new '.$element['name'].'Model();';

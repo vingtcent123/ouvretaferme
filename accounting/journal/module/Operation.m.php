@@ -17,6 +17,10 @@ abstract class OperationElement extends \Element {
 		return Operation::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): OperationModel {
 		if(self::$model === NULL) {
 			self::$model = new OperationModel();

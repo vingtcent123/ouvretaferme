@@ -11,6 +11,10 @@ abstract class LetteringElement extends \Element {
 		return Lettering::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): LetteringModel {
 		if(self::$model === NULL) {
 			self::$model = new LetteringModel();

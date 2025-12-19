@@ -11,6 +11,10 @@ abstract class OperationCashflowElement extends \Element {
 		return OperationCashflow::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): OperationCashflowModel {
 		if(self::$model === NULL) {
 			self::$model = new OperationCashflowModel();

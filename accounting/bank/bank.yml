@@ -39,6 +39,7 @@ Import:
   result: json = PHP([])
   status: enum(PROCESSING, FULL, PARTIAL, NONE, ERROR)
   account: bank\BankAccount
+  reconciliation: enum(WAITING, PROCESSING, DONE) = WAITING
   createdAt: datetime = SPECIAL(now)
   processedAt: ?datetime
   createdBy: user\User = SPECIAL(user)

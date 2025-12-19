@@ -4,6 +4,7 @@
 
 * * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme website/cron/certbot:ping
 * * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme website/cron/certbot:rewrite
+* * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme preaccounting/cron/reconciliate
 */5 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme session/cron/sessionClean
 0 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme mail/cron/send
 0 * * * * php /var/www/otf/framework/lime.php -e dev -a ouvretaferme selling/cron/invoice

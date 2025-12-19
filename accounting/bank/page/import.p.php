@@ -38,7 +38,7 @@ new Page(
 
 		$fw = new FailWatch();
 
-		$result = \bank\ImportLib::importBankStatement($data->eFarm);
+		$result = \bank\ImportLib::importBankStatement();
 
 		if($fw->ok()) {
 			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Import::'.$result);

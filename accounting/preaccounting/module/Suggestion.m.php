@@ -22,6 +22,10 @@ abstract class SuggestionElement extends \Element {
 		return Suggestion::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SuggestionModel {
 		if(self::$model === NULL) {
 			self::$model = new SuggestionModel();

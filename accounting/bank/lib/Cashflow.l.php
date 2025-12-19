@@ -98,7 +98,7 @@ class CashflowLib extends CashflowCrud {
 			->getCollection(NULL, NULL, 'status');
 	}
 
-	public static function insertMultiple(\farm\Farm $eFarm, array $cashflows): array {
+	public static function insertMultiple(array $cashflows): array {
 
 		$alreadyImported = [];
 		$imported = [];
@@ -136,7 +136,6 @@ class CashflowLib extends CashflowCrud {
 			);
 
 			Cashflow::model()->insert($eCashflow);
-			\preaccounting\SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
 			$imported[] = $cashflow['fitid'];
 
 		}

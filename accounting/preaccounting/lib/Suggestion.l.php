@@ -172,6 +172,45 @@ Class SuggestionLib extends SuggestionCrud {
 
 	}
 
+	public static function calculateSuggestionsByFarm(\farm\Farm $eFarm): void {
+
+		Suggestion::model()->beginTransaction();
+
+		$cImport = \bank\Import::model()
+			->select('id')
+			->whereReconciliation(\bank\Import::WAITING)
+			->getCollection();
+
+		d($eFarm['id'].' : '.$cImport->count());
+		foreach($cImport as $eImport) {
+
+			$updated = \bank\Import::model()->update($eImport, ['reconciliation' => \bank\Import::PROCESSING]);
+
+			if($updated === 0) {
+				continue;
+			}
+
+			$cCashflow = \bank\Cashflow::model()
+				->select(\bank\Cashflow::getSelection() + [
+					'cOperationCashflow' =>
+						\journal\OperationCashflow::model()->select(['operation'])->delegateCollection('cashflow'),
+					'invoice' => ['id', 'name', 'document', 'customer' => ['id', 'name']],
+					'sale' => ['id', 'document', 'customer' => ['id', 'name']],
+				])
+				->whereImport($eImport)
+				->getCollection();
+
+			foreach($cCashflow as $eCashflow) {
+				self::calculateForCashflow($eFarm, $eCashflow);
+			}
+
+			\bank\Import::model()->update($eImport, ['reconciliation' => \bank\Import::DONE]);
+		}
+
+		Suggestion::model()->commit();
+
+	}
+
 	public static function calculateForCashflow(\farm\Farm $eFarm, \bank\Cashflow $eCashflow): void {
 
 		// OPÉRATIONS \\

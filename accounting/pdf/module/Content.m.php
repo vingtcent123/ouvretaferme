@@ -11,6 +11,10 @@ abstract class ContentElement extends \Element {
 		return Content::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ContentModel {
 		if(self::$model === NULL) {
 			self::$model = new ContentModel();

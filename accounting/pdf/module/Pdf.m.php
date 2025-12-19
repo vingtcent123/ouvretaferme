@@ -17,6 +17,10 @@ abstract class PdfElement extends \Element {
 		return Pdf::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): PdfModel {
 		if(self::$model === NULL) {
 			self::$model = new PdfModel();

@@ -7,6 +7,21 @@ class CompanyLib {
 
 	public static function connectSpecificDatabaseAndServer(\farm\Farm $eFarm): void {
 
+		// Create packages tables
+		$libModule = new \dev\ModuleLib();
+		$libModule->load();
+
+		$classes = $libModule->getClasses();
+
+		foreach($classes as $class) {
+
+			list($package) = explode('\\', $class);
+			if(in_array($package, self::$specificPackages)) {
+					$class::resetModel();
+			}
+
+		}
+
 		$base = self::getDatabaseName($eFarm);
 
 		foreach(self::$specificPackages as $package) {

@@ -13,8 +13,15 @@ abstract class ImportElement extends \Element {
 	const NONE = 'none';
 	const ERROR = 'error';
 
+	const WAITING = 'waiting';
+	const DONE = 'done';
+
 	public static function getSelection(): array {
 		return Import::model()->getProperties();
+	}
+
+	public static function resetModel(): void {
+		self::$model = NULL;
 	}
 
 	public static function model(): ImportModel {
@@ -49,13 +56,14 @@ class ImportModel extends \ModuleModel {
 			'result' => ['json', 'cast' => 'array'],
 			'status' => ['enum', [\bank\Import::PROCESSING, \bank\Import::FULL, \bank\Import::PARTIAL, \bank\Import::NONE, \bank\Import::ERROR], 'cast' => 'enum'],
 			'account' => ['element32', 'bank\BankAccount', 'cast' => 'element'],
+			'reconciliation' => ['enum', [\bank\Import::WAITING, \bank\Import::PROCESSING, \bank\Import::DONE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'processedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'filename', 'startDate', 'endDate', 'result', 'status', 'account', 'createdAt', 'processedAt', 'createdBy'
+			'id', 'filename', 'startDate', 'endDate', 'result', 'status', 'account', 'reconciliation', 'createdAt', 'processedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -71,6 +79,9 @@ class ImportModel extends \ModuleModel {
 
 			case 'result' :
 				return [];
+
+			case 'reconciliation' :
+				return Import::WAITING;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -93,6 +104,9 @@ class ImportModel extends \ModuleModel {
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'reconciliation' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -150,6 +164,10 @@ class ImportModel extends \ModuleModel {
 
 	public function whereAccount(...$data): ImportModel {
 		return $this->where('account', ...$data);
+	}
+
+	public function whereReconciliation(...$data): ImportModel {
+		return $this->where('reconciliation', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): ImportModel {
