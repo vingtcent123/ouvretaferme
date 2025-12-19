@@ -8,7 +8,7 @@ class JournalUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public function getJournalTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
+	public function getJournalTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $counts): string {
 
 		$h = '<div class="util-action">';
 
@@ -20,7 +20,12 @@ class JournalUi {
 
 				$h .= '<div class="journal-title-buttons">';
 
-					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-primary">'.\Asset::icon('box-arrow-in-down').' '.s("Importer les ventes").'</a> ';
+					if(array_sum($counts) > 0) {
+
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-primary">'.\Asset::icon('box-arrow-in-down').' '.s("Importer les ventes").'</a> ';
+
+					}
+
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#journal-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 
 					if(

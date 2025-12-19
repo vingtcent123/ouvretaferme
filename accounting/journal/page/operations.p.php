@@ -126,6 +126,8 @@ new Page(function($data) {
 		$data->cJournalCode = \journal\JournalCodeLib::getAll();
 		$data->cAccount = \account\AccountLib::getAll();
 
+		$data->counts = \preaccounting\PreaccountingLib::countImports($data->eFarm, $data->eFinancialYear['startDate'], $data->eFinancialYear['endDate'], $data->search);
+
 		throw new ViewAction($data);
 
 	})

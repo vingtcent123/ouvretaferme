@@ -207,7 +207,7 @@ class CashflowUi {
 									if($eCashflow['sale']->notEmpty()) {
 										$h .= '<a href="/vente/'.$eCashflow['sale']['id'].'">'.encode($eCashflow['sale']['document']).'</a>';
 									} else if($eCashflow['invoice']->notEmpty()) {
-										$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eCashflow['invoice']['name']).'&customer='.encode($eCashflow['invoice']['customer']['name']).'">'.encode($eCashflow['invoice']['name']).'</a>';
+										$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eCashflow['invoice']['document']).'&customer='.encode($eCashflow['invoice']['customer']['name']).'">'.encode($eCashflow['invoice']['name']).'</a>';
 									}
 								}
 							$h .= '</td>';

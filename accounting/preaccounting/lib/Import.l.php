@@ -40,7 +40,7 @@ Class ImportLib {
 
 		$cInvoice = \selling\Invoice::model()
 			->select([
-				'id', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
+				'id', 'document', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
 				'date', 'accountingHash',
 				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat',
 				'readyForAccounting',
@@ -187,6 +187,9 @@ Class ImportLib {
 
 		$fw->validate();
 
+		// On regarde s'il y a eu un rapprochement => pour créer la contrepartie en banque
+		$eCashflow = \bank\CashflowLib::getBySale($eSale);
+
 		$cAccount = \account\AccountLib::getAll();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_SALE;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
@@ -199,16 +202,46 @@ Class ImportLib {
 		$cSale->append($eSale);
 		$fecData = \preaccounting\AccountingLib::generateSalesFec($cSale, new \Collection([$eFinancialYear]), $cAccount);
 
-		$eOperation = new \journal\Operation([
+		$eOperationBase = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
 			'hash' => $hash,
 			'description' => new ImportUi()->getSaleDescription($eSale),
 		]);
-		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperation);
+		$cOperation = self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase);
+		$eJournalCode = $cOperation->first()['journalCode'];
 
-		if($eFinancialYear->isCashAccrualAccounting()) {
+		$date = $eSale['deliveredAt'];
 
-			$date = $eSale['deliveredAt'];
+		$eOperation = new \journal\Operation($eOperationBase->getArrayCopy() + [
+			'id' => NULL,
+			'document' => $eSale['document'],
+			'documentDate' => $date,
+			'date' => $date,
+			'financialYear' => $eFinancialYear,
+			'thirdParty' => $eThirdParty,
+			'hash' => $hash,
+			'description' => new ImportUi()->getPaymentSaleDescription($eSale),
+			'paymentDate' => $eCashflow['date'] ?? $date,
+			'paymentMethod' => $eSale['cPayment']->first(),
+			'amount' => abs($eSale['priceIncludingVat']),
+			'vatRate' => 0,
+			'vatAccount' => new \account\Account(),
+			'operation' => new \journal\Operation(),
+			'journalCode' => $eJournalCode,
+		]);
+
+		if($eCashflow->notEmpty()) { // Contrepartie en 512 directe si un rapprochement a déjà été réalisé
+
+			$eAccount = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+			$eOperationBank = new \journal\Operation($eOperation->getArrayCopy() + [
+				'account' => $eAccount,
+				'accountLabel' => $eCashflow['account']['label'],
+				'type' => $eSale['priceIncludingVat'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
+			]);
+			\journal\OperationLib::createBankOperationFromCashflow($eCashflow, $eOperationBank);
+
+		} else if(($eFinancialYear->isCashAccrualAccounting() or $eFinancialYear->isAccrualAccounting())) { // Contrepartie en 411
+
 			$eAccount = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS)->first();
 
 			if($eSale['cPayment']->count() === 1) {
@@ -303,6 +336,9 @@ Class ImportLib {
 
 		$fw->validate();
 
+		// On regarde s'il y a eu un rapprochement => pour créer la contrepartie en banque
+		$eCashflow = \bank\CashflowLib::getByInvoice($eInvoice);
+
 		$cAccount = \account\AccountLib::getAll();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
@@ -315,33 +351,53 @@ Class ImportLib {
 		$cInvoice->append($eInvoice);
 		$fecData = \preaccounting\AccountingLib::generateInvoiceFec($cInvoice, new \Collection([$eFinancialYear]), $cAccount);
 
-		$eOperation = new \journal\Operation([
+		$date = $eInvoice['date'];
+		$eOperationBase = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
 			'hash' => $hash,
 			'description' => $eInvoice['name'],
 		]);
-		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperation);
 
-		if($eFinancialYear->isCashAccrualAccounting()) {
+		$cOperation = self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase);
+		$eJournalCode = $cOperation->first()['journalCode'];
 
-			$date = $eInvoice['date'];
+		$eOperation = new \journal\Operation($eOperationBase->getArrayCopy() + [
+			'id' => NULL,
+			'document' => $eInvoice['name'],
+			'documentDate' => $date,
+			'date' => $date,
+			'financialYear' => $eFinancialYear,
+			'thirdParty' => $eThirdParty,
+			'hash' => $hash,
+			'description' => $eInvoice['name'],
+			'paymentDate' => $eCashflow['date'] ?? $date,
+			'paymentMethod' => $eInvoice['paymentMethod'],
+			'amount' => abs($eInvoice['priceIncludingVat']),
+			'vatRate' => 0,
+			'vatAccount' => new \account\Account(),
+			'operation' => new \journal\Operation(),
+			'journalCode' => $eJournalCode,
+		]);
+
+		if($eCashflow->notEmpty()) { // Contrepartie en 512 directe si un rapprochement a déjà été réalisé
+
+			$eAccount = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+			$eOperationBank = new \journal\Operation($eOperation->getArrayCopy() + [
+				'account' => $eAccount,
+				'accountLabel' => $eCashflow['account']['label'],
+				'type' => $eInvoice['priceIncludingVat'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
+			]);
+			\journal\OperationLib::createBankOperationFromCashflow($eCashflow, $eOperationBank);
+
+		} else if(($eFinancialYear->isCashAccrualAccounting() or $eFinancialYear->isAccrualAccounting())) { // Contrepartie en 411
+
 			$eAccount = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS)->first();
 
 			$eOperationThirdParty = new \journal\Operation($eOperation->getArrayCopy() + [
 				'id' => NULL,
-				'financialYear' => $eFinancialYear,
 				'account' => $eAccount,
 				'accountLabel' => $eThirdParty['clientAccountLabel'],
-				'date' => $date,
-				'document' => $eInvoice['name'],
-				'documentDate' => $date,
-				'amount' => abs($eInvoice['priceIncludingVat']),
 				'type' => $eInvoice['priceIncludingVat'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
-				'vatRate' => 0,
-				'vatAccount' => new \account\Account(),
-				'operation' => new \journal\Operation(),
-				'paymentDate' => $date,
-				'paymentMethod' => $eInvoice['paymentMethod'],
 			]);
 
 			\journal\Operation::model()->insert($eOperationThirdParty);
@@ -523,10 +579,14 @@ Class ImportLib {
 	private static function createOperations(\account\FinancialYear $eFinancialYear, array $fecData, \Collection $cAccount, \Collection $cPaymentMethod, \journal\Operation $eOperationBase): \Collection {
 
 		$cOperation = new \Collection();
+		$eJournalCode = new \journal\JournalCode();
 
 		foreach($fecData as $data) {
 
 			$eAccount = $cAccount->find(fn($e) => $e['class'] === trim($data[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], '0'))->first();
+			if($eAccount['journalCode']->notEmpty()) {
+				$eJournalCode = $eAccount['journalCode'];
+			}
 			$date = mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], -2);
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
 
@@ -535,7 +595,7 @@ Class ImportLib {
 				'financialYear' => $eFinancialYear,
 				'account' => $eAccount,
 				'accountLabel' => $data[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
-				'journalCode' => $eAccount['journalCode'],
+				'journalCode' => $eJournalCode,
 				'date' => $date,
 				'document' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT],
 				'documentDate' => $date,

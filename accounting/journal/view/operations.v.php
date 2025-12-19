@@ -7,7 +7,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 	$t->title = s("Le livre journal de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/livre-journal';
 
-	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, $data->eFinancialYear);
+	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, $data->eFinancialYear, $data->counts);
 
 	if($data->eFinancialYear->notEmpty()) {
 		echo new \journal\JournalUi()->getSearch(

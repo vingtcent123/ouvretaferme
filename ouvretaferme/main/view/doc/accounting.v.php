@@ -317,11 +317,12 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 		echo '<p>'.s("En les intégrant dans votre comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Classe {productAccount} pour tous vos comptes de produits (autant d'écritures que de comptes différents)", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
-			echo '<li>'.s("Classe {vatAccount} pour la TVA (autant d'écritures que de comptes et taux de TVA différents). <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
+			echo '<li>'.s("Classe {vatAccount} pour la TVA (autant d'écritures que de numéros de comptes et taux de TVA différents). <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
 
 			if(FEATURE_ACCOUNTING_ACCRUAL) {
 				echo '<li>'.s("Classe {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
 			}
+			echo '<li>'.Asset::icon('magic').' '.s("Bonus ! Classe {bankAccount} pour le montant total TTC si vous avez <link>préalablement rapproché l'opération bancaire avec la vente ou la facture</link>.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>', 'link' => '<a href="/doc/accounting:bank#reconciliate-sales">']).'</li>';
 		echo '</ul>';
 
 	echo '</div>';
@@ -393,7 +394,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 	Asset::css('selling', 'sale.css');
 
-		echo '<h2>'.s("Rapprocher les <u>ventes</u> avec les opérations bancaires").'</h2>';
+		echo '<h2 id="reconciliate-sales">'.s("Rapprocher les <u>ventes</u> avec les opérations bancaires").'</h2>';
 
 		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos ventes (ou factures) qui semblent correspondre. Vous verrez une petite alerte dès qu'un rapprochement sera possible.").'</p>';
 		echo '<p>'.s("Les critères de décision sont : ").'</p>';

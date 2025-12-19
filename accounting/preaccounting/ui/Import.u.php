@@ -191,6 +191,7 @@ Class ImportUi {
 						$h .= '</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Date").'</th>';
 						$h .= '<th rowspan="2">'.s("Client").'</th>';
+						$h .= '<th rowspan="2">'.s("Référence").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Montant").'</th>';
 						$h .= '<th colspan="3" class="text-center">'.s("Écritures").'</th>';
 						$h .= '<th rowspan="2"></th>';
@@ -230,6 +231,7 @@ Class ImportUi {
 									$h .= '</div>';
 								}
 							$h .= '</td>';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class=" td-vertical-align-top"><a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eInvoice['document']).'&customer='.encode($eInvoice['customer']['name']).'">'.encode($eInvoice['name']).'</a></td>';
 							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eInvoice).'</td>';
 							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
 							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
@@ -467,6 +469,12 @@ Class ImportUi {
 	public function getSaleDescription(\selling\Sale $eSale): string {
 
 		return s("Vente {number} du {date}", ['number' => $eSale['document'], 'date' => \util\DateUi::numeric($eSale['deliveredAt'])]);
+
+	}
+
+	public function getPaymentSaleDescription(\selling\Sale $eSale): string {
+
+		return s("Paiement vente {number} du {date}", ['number' => $eSale['document'], 'date' => \util\DateUi::numeric($eSale['deliveredAt'])]);
 
 	}
 }
