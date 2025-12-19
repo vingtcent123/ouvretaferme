@@ -1256,7 +1256,7 @@ class ItemUi {
 						$h .= $form->dynamicGroup($eItem, 'account[0]',  function($d) use($form) {
 							$d->group['class'] = 'hide';
 						});
-						$buttonPersonnalize = '<a onclick="Item.showAccountingField();" class="btn btn-primary bg-accounting">'.s("Personnaliser pour la comptabilité").'</a>';
+						$buttonPersonnalize = '<a onclick="Item.showAccountingField(this);" class="btn btn-primary bg-accounting">'.s("Personnaliser pour la comptabilité").'</a>';
 					}
 
 				$h .= '</div>';

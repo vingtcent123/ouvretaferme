@@ -151,9 +151,10 @@ class Item {
 
 	}
 
-	static showAccountingField() {
+	static showAccountingField(target) {
 
 		qs('[data-wrapper^="account"]').toggle();
+		target.hide();
 
 	}
 
