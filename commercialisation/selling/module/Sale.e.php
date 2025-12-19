@@ -412,7 +412,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this['preparationStatus'] !== Sale::DELIVERED and
-			$this['shop']->empty() and
+			$this->acceptUpdatePreparationStatus() and
 			$this->isMarketSale() === FALSE
 		);
 
@@ -1074,9 +1074,7 @@ class Sale extends SaleElement {
 						($p->for === 'create') or
 						($p->for === 'update' and $this->acceptUpdateDeliveredAt())
 					) {
-
 						return \Filter::check('date', $date);
-
 					} else {
 						return FALSE;
 					}
