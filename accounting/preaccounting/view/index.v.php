@@ -374,6 +374,29 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 
 	}
 
+	if($data->countsByInvoice > 0 and $data->countsBySale > 0) {
+
+		echo '<div class="tabs-item">';
+
+		foreach(['invoice', 'sale'] as $tab) {
+
+			echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-vente?tab='.$tab.'">';
+				echo match($tab) {
+					'invoice' => s("Factures"),
+					'sale' => s("Ventes"),
+				};
+				echo ' <small class="tab-item-count">'.match($tab) {
+					'invoice' => $data->countsByInvoice,
+					'sale' => $data->countsBySale,
+				}.'</small>';
+			echo '</a>';
+
+		}
+
+		echo '</div>';
+
+	}
+
 
 	if($data->ccSuggestion->empty()) {
 

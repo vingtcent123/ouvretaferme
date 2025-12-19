@@ -191,6 +191,14 @@ new Page(function($data) {
 		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaitingByInvoice();
 		$data->countsBySale = \preaccounting\SuggestionLib::countWaitingBySale();
 
+		$data->selectedTab = GET('tab', 'string', 'invoice');
+		if(in_array($data->selectedTab, ['invoice', 'sale']) === FALSE) {
+			$data->selectedTab = 'invoice';
+		}
+		if($data->countsByInvoice === 0 and $data->selectedTab === 'invoice' and $data->countsBySale > 0) {
+			$data->selectedTab = 'sale';
+		}
+
 		$data->eImportLast = \bank\ImportLib::getLastImport();
 
 		$data->ccSuggestion = preaccounting\SuggestionLib::getAllWaitingGroupByCashflow();

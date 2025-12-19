@@ -160,6 +160,9 @@
 .bg-accounting {
 	background-color: var(--accounting) !important;
 }
+.border-accounting {
+	border-color: var(--accounting) !important;
+}
 
 .bg-pro {
 	background-color: var(--pro);

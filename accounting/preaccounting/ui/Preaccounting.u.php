@@ -644,9 +644,8 @@ Class PreaccountingUi {
 			return '';
 		}
 
-		$icons = ['fire', 'piggy-bank-fill', 'leaf-fill', 'lightning-charge-fill', 'stars'];
-		$h = '<a class="btn btn-success" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
-			$h .= \Asset::icon($icons[mt_rand(0, count($icons) - 1)]).' ';
+		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes">';
+			$h .= \Asset::icon('stars').' ';
 			$h .= '<span class="hide-md-up">';
 				$h .= $nSuggestion;
 			$h .= '</span>';
