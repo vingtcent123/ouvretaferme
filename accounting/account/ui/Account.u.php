@@ -86,7 +86,7 @@ class AccountUi {
 						$h .= '<th rowspan="2">';
 							$h .= s("Journal");
 						$h .= '</th>';
-						$h .= '<th rowspan="2">';
+						$h .= '<th rowspan="2" class="text-center td-min-content">';
 							$h .= s("Personnalisé ?");
 						$h .= '</th>';
 						$h .= '<th colspan="2" class="text-center">';
@@ -108,10 +108,10 @@ class AccountUi {
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th class="text-center">';
+						$h .= '<th>';
 							$h .= s("Compte de TVA");
 						$h .= '</th>';
-						$h .= '<th class="text-center">';
+						$h .= '<th>';
 							$h .= s("Taux de TVA");
 						$h .= '</th>';
 						if($displayProductsCount) {
