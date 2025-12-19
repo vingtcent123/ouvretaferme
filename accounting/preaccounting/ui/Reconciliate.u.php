@@ -135,9 +135,11 @@ Class ReconciliateUi {
 										'class' => 'dropdown-item',
 									];
 									if($eSuggestion->acceptReconciliate()) {
+										$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ? Cette action n'est pas réversible.");
 										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-up').' '.s("Rapprocher").'</a>';
 									}
 									if($eSuggestion->acceptIgnore()) {
+										$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
 										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-down').' '.s("Ignorer").'</a>';
 									}
 								$h .= '</div>';
@@ -304,9 +306,9 @@ Class ReconciliateUi {
 		$menu .= '</a>';
 
 
-		$menu .= '<a data-ajax-submit="'.$urlReconciliate.'" class="batch-menu-reconciliate batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Rapprocher").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.$urlReconciliate.'" data-confirm="'.s("Confirmer le rapprochement ? Cette action est irréversible.").'" class="batch-menu-reconciliate batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Rapprocher").'</span></a>';
 
-		$menu .= '<a data-ajax-submit="'.$urlIgnore.'" class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.$urlIgnore.'" data-confirm="'.s("Confirmez-vous ignorer ces suggestions ? Elles ne vous seront plus jamais proposées.").'"  class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 
 		return \util\BatchUi::group('batch-reconciliate', $menu, title: $title);
 

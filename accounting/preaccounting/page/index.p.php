@@ -197,6 +197,8 @@ new Page(function($data) {
 		}
 		if($data->countsByInvoice === 0 and $data->selectedTab === 'invoice' and $data->countsBySale > 0) {
 			$data->selectedTab = 'sale';
+		} else if($data->countsBySale === 0 and $data->selectedTab === 'sale' and $data->countsByInvoice > 0) {
+			$data->selectedTab = 'invoice';
 		}
 
 		$data->eImportLast = \bank\ImportLib::getLastImport();

@@ -380,7 +380,7 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 
 		foreach(['invoice', 'sale'] as $tab) {
 
-			echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-vente?tab='.$tab.'">';
+			echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes?tab='.$tab.'">';
 				echo match($tab) {
 					'invoice' => s("Factures"),
 					'sale' => s("Ventes"),
