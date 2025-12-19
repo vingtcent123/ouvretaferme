@@ -1236,7 +1236,7 @@ class OperationLib extends OperationCrud {
 			'operation', 'paymentDate', 'paymentMethod', 'hash', 'journalCode',
 		], $values, new \Properties('create'));
 
-		if($document !== NULL and $eOperationBank['documentDate'] === NULL) {
+		if($document !== NULL and isset($eOperationBank['documentDate']) === FALSE) {
 			$eOperationBank['documentDate'] = new \Sql('NOW()');
 		}
 
