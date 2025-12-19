@@ -14,6 +14,10 @@ abstract class ReportElement extends \Element {
 		return Report::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ReportModel {
 		if(self::$model === NULL) {
 			self::$model = new ReportModel();

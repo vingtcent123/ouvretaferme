@@ -11,6 +11,10 @@ abstract class CommentElement extends \Element {
 		return Comment::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CommentModel {
 		if(self::$model === NULL) {
 			self::$model = new CommentModel();

@@ -21,6 +21,10 @@ abstract class CustomizeElement extends \Element {
 		return Customize::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CustomizeModel {
 		if(self::$model === NULL) {
 			self::$model = new CustomizeModel();

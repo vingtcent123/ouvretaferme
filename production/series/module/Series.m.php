@@ -28,6 +28,10 @@ abstract class SeriesElement extends \Element {
 		return Series::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SeriesModel {
 		if(self::$model === NULL) {
 			self::$model = new SeriesModel();

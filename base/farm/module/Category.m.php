@@ -11,6 +11,10 @@ abstract class CategoryElement extends \Element {
 		return Category::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CategoryModel {
 		if(self::$model === NULL) {
 			self::$model = new CategoryModel();

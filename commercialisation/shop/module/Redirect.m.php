@@ -11,6 +11,10 @@ abstract class RedirectElement extends \Element {
 		return Redirect::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): RedirectModel {
 		if(self::$model === NULL) {
 			self::$model = new RedirectModel();

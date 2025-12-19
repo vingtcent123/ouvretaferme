@@ -17,6 +17,10 @@ abstract class PlantElement extends \Element {
 		return Plant::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): PlantModel {
 		if(self::$model === NULL) {
 			self::$model = new PlantModel();

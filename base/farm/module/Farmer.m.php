@@ -86,6 +86,10 @@ abstract class FarmerElement extends \Element {
 		return Farmer::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): FarmerModel {
 		if(self::$model === NULL) {
 			self::$model = new FarmerModel();

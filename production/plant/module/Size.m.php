@@ -11,6 +11,10 @@ abstract class SizeElement extends \Element {
 		return Size::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SizeModel {
 		if(self::$model === NULL) {
 			self::$model = new SizeModel();

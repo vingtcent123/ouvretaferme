@@ -11,6 +11,10 @@ abstract class StripeFarmElement extends \Element {
 		return StripeFarm::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): StripeFarmModel {
 		if(self::$model === NULL) {
 			self::$model = new StripeFarmModel();

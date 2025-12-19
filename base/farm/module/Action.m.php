@@ -18,6 +18,10 @@ abstract class ActionElement extends \Element {
 		return Action::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ActionModel {
 		if(self::$model === NULL) {
 			self::$model = new ActionModel();

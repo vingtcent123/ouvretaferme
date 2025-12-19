@@ -14,6 +14,10 @@ abstract class GenericAccountElement extends \Element {
 		return GenericAccount::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): GenericAccountModel {
 		if(self::$model === NULL) {
 			self::$model = new GenericAccountModel();

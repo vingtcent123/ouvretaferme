@@ -16,6 +16,10 @@ abstract class PaymentElement extends \Element {
 		return Payment::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): PaymentModel {
 		if(self::$model === NULL) {
 			self::$model = new PaymentModel();

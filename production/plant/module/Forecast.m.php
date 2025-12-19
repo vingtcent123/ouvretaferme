@@ -15,6 +15,10 @@ abstract class ForecastElement extends \Element {
 		return Forecast::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ForecastModel {
 		if(self::$model === NULL) {
 			self::$model = new ForecastModel();

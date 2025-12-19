@@ -11,6 +11,10 @@ abstract class MethodElement extends \Element {
 		return Method::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): MethodModel {
 		if(self::$model === NULL) {
 			self::$model = new MethodModel();

@@ -11,6 +11,10 @@ abstract class DesignElement extends \Element {
 		return Design::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): DesignModel {
 		if(self::$model === NULL) {
 			self::$model = new DesignModel();

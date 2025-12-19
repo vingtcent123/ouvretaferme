@@ -11,6 +11,10 @@ abstract class FamilyElement extends \Element {
 		return Family::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): FamilyModel {
 		if(self::$model === NULL) {
 			self::$model = new FamilyModel();

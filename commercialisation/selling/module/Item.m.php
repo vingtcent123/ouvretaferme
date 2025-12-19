@@ -27,6 +27,10 @@ abstract class ItemElement extends \Element {
 		return Item::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ItemModel {
 		if(self::$model === NULL) {
 			self::$model = new ItemModel();

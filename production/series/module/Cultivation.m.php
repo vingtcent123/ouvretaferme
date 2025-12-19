@@ -33,6 +33,10 @@ abstract class CultivationElement extends \Element {
 		return Cultivation::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CultivationModel {
 		if(self::$model === NULL) {
 			self::$model = new CultivationModel();

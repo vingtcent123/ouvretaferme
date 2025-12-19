@@ -15,6 +15,10 @@ abstract class ToolElement extends \Element {
 		return Tool::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ToolModel {
 		if(self::$model === NULL) {
 			self::$model = new ToolModel();

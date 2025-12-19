@@ -16,6 +16,10 @@ abstract class AbsenceElement extends \Element {
 		return Absence::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): AbsenceModel {
 		if(self::$model === NULL) {
 			self::$model = new AbsenceModel();

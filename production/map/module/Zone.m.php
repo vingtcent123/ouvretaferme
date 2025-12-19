@@ -11,6 +11,10 @@ abstract class ZoneElement extends \Element {
 		return Zone::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ZoneModel {
 		if(self::$model === NULL) {
 			self::$model = new ZoneModel();

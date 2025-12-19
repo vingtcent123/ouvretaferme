@@ -18,6 +18,10 @@ abstract class DateElement extends \Element {
 		return Date::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): DateModel {
 		if(self::$model === NULL) {
 			self::$model = new DateModel();

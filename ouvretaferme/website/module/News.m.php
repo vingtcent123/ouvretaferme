@@ -14,6 +14,10 @@ abstract class NewsElement extends \Element {
 		return News::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): NewsModel {
 		if(self::$model === NULL) {
 			self::$model = new NewsModel();

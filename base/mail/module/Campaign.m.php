@@ -19,6 +19,10 @@ abstract class CampaignElement extends \Element {
 		return Campaign::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CampaignModel {
 		if(self::$model === NULL) {
 			self::$model = new CampaignModel();

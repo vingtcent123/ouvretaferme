@@ -11,6 +11,10 @@ abstract class SupplierElement extends \Element {
 		return Supplier::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SupplierModel {
 		if(self::$model === NULL) {
 			self::$model = new SupplierModel();

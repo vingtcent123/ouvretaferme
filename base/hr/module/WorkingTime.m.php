@@ -11,6 +11,10 @@ abstract class WorkingTimeElement extends \Element {
 		return WorkingTime::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): WorkingTimeModel {
 		if(self::$model === NULL) {
 			self::$model = new WorkingTimeModel();

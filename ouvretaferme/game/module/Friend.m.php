@@ -11,6 +11,10 @@ abstract class FriendElement extends \Element {
 		return Friend::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): FriendModel {
 		if(self::$model === NULL) {
 			self::$model = new FriendModel();

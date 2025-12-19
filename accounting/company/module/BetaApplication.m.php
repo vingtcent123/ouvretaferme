@@ -31,6 +31,10 @@ abstract class BetaApplicationElement extends \Element {
 		return BetaApplication::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): BetaApplicationModel {
 		if(self::$model === NULL) {
 			self::$model = new BetaApplicationModel();

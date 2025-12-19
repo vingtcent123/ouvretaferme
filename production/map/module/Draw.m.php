@@ -11,6 +11,10 @@ abstract class DrawElement extends \Element {
 		return Draw::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): DrawModel {
 		if(self::$model === NULL) {
 			self::$model = new DrawModel();

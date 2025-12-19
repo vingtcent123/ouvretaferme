@@ -27,6 +27,10 @@ abstract class SequenceElement extends \Element {
 		return Sequence::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SequenceModel {
 		if(self::$model === NULL) {
 			self::$model = new SequenceModel();

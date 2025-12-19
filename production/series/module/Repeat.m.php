@@ -23,6 +23,10 @@ abstract class RepeatElement extends \Element {
 		return Repeat::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): RepeatModel {
 		if(self::$model === NULL) {
 			self::$model = new RepeatModel();

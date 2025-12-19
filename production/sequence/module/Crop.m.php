@@ -23,6 +23,10 @@ abstract class CropElement extends \Element {
 		return Crop::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CropModel {
 		if(self::$model === NULL) {
 			self::$model = new CropModel();

@@ -38,6 +38,10 @@ abstract class SaleElement extends \Element {
 		return Sale::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SaleModel {
 		if(self::$model === NULL) {
 			self::$model = new SaleModel();

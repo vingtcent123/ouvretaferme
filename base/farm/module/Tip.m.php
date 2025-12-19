@@ -11,6 +11,10 @@ abstract class TipElement extends \Element {
 		return Tip::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): TipModel {
 		if(self::$model === NULL) {
 			self::$model = new TipModel();

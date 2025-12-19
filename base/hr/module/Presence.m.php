@@ -11,6 +11,10 @@ abstract class PresenceElement extends \Element {
 		return Presence::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): PresenceModel {
 		if(self::$model === NULL) {
 			self::$model = new PresenceModel();

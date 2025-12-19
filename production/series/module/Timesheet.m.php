@@ -11,6 +11,10 @@ abstract class TimesheetElement extends \Element {
 		return Timesheet::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): TimesheetModel {
 		if(self::$model === NULL) {
 			self::$model = new TimesheetModel();

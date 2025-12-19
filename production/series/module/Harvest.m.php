@@ -15,6 +15,10 @@ abstract class HarvestElement extends \Element {
 		return Harvest::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): HarvestModel {
 		if(self::$model === NULL) {
 			self::$model = new HarvestModel();

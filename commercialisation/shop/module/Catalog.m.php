@@ -17,6 +17,10 @@ abstract class CatalogElement extends \Element {
 		return Catalog::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CatalogModel {
 		if(self::$model === NULL) {
 			self::$model = new CatalogModel();

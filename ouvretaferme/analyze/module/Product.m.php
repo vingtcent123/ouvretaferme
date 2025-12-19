@@ -15,6 +15,10 @@ abstract class ProductElement extends \Element {
 		return Product::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ProductModel {
 		if(self::$model === NULL) {
 			self::$model = new ProductModel();

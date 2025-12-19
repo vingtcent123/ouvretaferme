@@ -14,6 +14,10 @@ abstract class BedElement extends \Element {
 		return Bed::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): BedModel {
 		if(self::$model === NULL) {
 			self::$model = new BedModel();

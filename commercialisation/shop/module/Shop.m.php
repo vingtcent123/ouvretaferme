@@ -32,6 +32,10 @@ abstract class ShopElement extends \Element {
 		return Shop::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ShopModel {
 		if(self::$model === NULL) {
 			self::$model = new ShopModel();

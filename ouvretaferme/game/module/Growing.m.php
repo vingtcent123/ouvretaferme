@@ -11,6 +11,10 @@ abstract class GrowingElement extends \Element {
 		return Growing::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): GrowingModel {
 		if(self::$model === NULL) {
 			self::$model = new GrowingModel();

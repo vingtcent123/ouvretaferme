@@ -15,6 +15,10 @@ abstract class MediaElement extends \Element {
 		return Media::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): MediaModel {
 		if(self::$model === NULL) {
 			self::$model = new MediaModel();

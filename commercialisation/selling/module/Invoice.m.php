@@ -29,6 +29,10 @@ abstract class InvoiceElement extends \Element {
 		return Invoice::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): InvoiceModel {
 		if(self::$model === NULL) {
 			self::$model = new InvoiceModel();

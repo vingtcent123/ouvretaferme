@@ -11,6 +11,10 @@ abstract class TemplateElement extends \Element {
 		return Template::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): TemplateModel {
 		if(self::$model === NULL) {
 			self::$model = new TemplateModel();

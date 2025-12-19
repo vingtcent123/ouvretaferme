@@ -11,6 +11,10 @@ abstract class ContactElement extends \Element {
 		return Contact::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ContactModel {
 		if(self::$model === NULL) {
 			self::$model = new ContactModel();

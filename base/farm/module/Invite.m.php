@@ -17,6 +17,10 @@ abstract class InviteElement extends \Element {
 		return Invite::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): InviteModel {
 		if(self::$model === NULL) {
 			self::$model = new InviteModel();

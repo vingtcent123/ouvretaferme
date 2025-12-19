@@ -18,6 +18,10 @@ abstract class TaskElement extends \Element {
 		return Task::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): TaskModel {
 		if(self::$model === NULL) {
 			self::$model = new TaskModel();

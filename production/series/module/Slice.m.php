@@ -11,6 +11,10 @@ abstract class SliceElement extends \Element {
 		return Slice::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SliceModel {
 		if(self::$model === NULL) {
 			self::$model = new SliceModel();

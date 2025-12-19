@@ -14,6 +14,10 @@ abstract class UnitElement extends \Element {
 		return Unit::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): UnitModel {
 		if(self::$model === NULL) {
 			self::$model = new UnitModel();

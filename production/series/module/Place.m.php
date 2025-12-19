@@ -11,6 +11,10 @@ abstract class PlaceElement extends \Element {
 		return Place::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): PlaceModel {
 		if(self::$model === NULL) {
 			self::$model = new PlaceModel();

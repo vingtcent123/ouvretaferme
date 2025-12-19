@@ -11,6 +11,10 @@ abstract class EventElement extends \Element {
 		return Event::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): EventModel {
 		if(self::$model === NULL) {
 			self::$model = new EventModel();

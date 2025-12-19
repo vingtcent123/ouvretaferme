@@ -11,6 +11,10 @@ abstract class PhotoElement extends \Element {
 		return Photo::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): PhotoModel {
 		if(self::$model === NULL) {
 			self::$model = new PhotoModel();

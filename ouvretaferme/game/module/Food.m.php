@@ -11,6 +11,10 @@ abstract class FoodElement extends \Element {
 		return Food::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): FoodModel {
 		if(self::$model === NULL) {
 			self::$model = new FoodModel();

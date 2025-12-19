@@ -11,6 +11,10 @@ abstract class GreenhouseElement extends \Element {
 		return Greenhouse::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): GreenhouseModel {
 		if(self::$model === NULL) {
 			self::$model = new GreenhouseModel();

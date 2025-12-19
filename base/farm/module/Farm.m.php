@@ -18,6 +18,10 @@ abstract class FarmElement extends \Element {
 		return Farm::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): FarmModel {
 		if(self::$model === NULL) {
 			self::$model = new FarmModel();

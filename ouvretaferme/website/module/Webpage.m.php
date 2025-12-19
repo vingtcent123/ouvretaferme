@@ -14,6 +14,10 @@ abstract class WebpageElement extends \Element {
 		return Webpage::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): WebpageModel {
 		if(self::$model === NULL) {
 			self::$model = new WebpageModel();

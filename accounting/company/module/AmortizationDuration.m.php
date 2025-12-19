@@ -11,6 +11,10 @@ abstract class AmortizationDurationElement extends \Element {
 		return AmortizationDuration::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): AmortizationDurationModel {
 		if(self::$model === NULL) {
 			self::$model = new AmortizationDurationModel();
