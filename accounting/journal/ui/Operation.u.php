@@ -1386,8 +1386,12 @@ class OperationUi {
 					]);
 
 				}
-				$itemHtml .= '<br />';
-				$itemHtml .= \Asset::icon('person-rolodex').' '.encode($eOperation['thirdParty']['name']);
+
+				if($eOperation['thirdParty']->notEmpty()) {
+					$itemHtml .= '<br />';
+					$itemHtml .= \Asset::icon('person-rolodex').' '.encode($eOperation['thirdParty']['name']);
+				}
+
 				$itemHtml .= $document;
 			$itemHtml .= '</div>';
 		$itemHtml .= '</div>';

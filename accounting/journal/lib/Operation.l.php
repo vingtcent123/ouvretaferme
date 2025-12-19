@@ -775,7 +775,6 @@ class OperationLib extends OperationCrud {
 				$document = NULL;
 			}
 
-			$hash = self::generateHash().($eCashflow->empty() ? 'w' : 'c');
 			$eOperationDefault['hash'] = $hash;
 
 			// Crée automatiquement l'operationCashflow correspondante
@@ -1088,7 +1087,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getForAttachQuery(\bank\Cashflow $eCashflow, string $query, \account\ThirdParty $eThirdParty, array $excludedOperationIds): \Collection {
+	public static function getForAttachQuery(string $query, \account\ThirdParty $eThirdParty, array $excludedOperationIds): \Collection {
 
 		$selection = Operation::getSelection();
 		if($eThirdParty->notEmpty()) {
@@ -1122,9 +1121,10 @@ class OperationLib extends OperationCrud {
 
 		$cOperation = Operation::model()
 			->select($selection)
+			//->highlight()
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
 			->sort($sort + ['m1_date' => SORT_DESC])
-			->where(new \Sql('m2.id IS NULL'))
+			//->where(new \Sql('m2.id IS NULL'))
 			->getCollection();
 
 		return self::setLinkedOperations($cOperation);

@@ -11,6 +11,10 @@ abstract class CacheElement extends \Element {
 		return Cache::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): CacheModel {
 		if(self::$model === NULL) {
 			self::$model = new CacheModel();

@@ -23,6 +23,10 @@ abstract class HistoryElement extends \Element {
 		return History::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): HistoryModel {
 		if(self::$model === NULL) {
 			self::$model = new HistoryModel();

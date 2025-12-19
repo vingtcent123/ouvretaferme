@@ -11,6 +11,10 @@ abstract class SessionElement extends \Element {
 		return Session::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): SessionModel {
 		if(self::$model === NULL) {
 			self::$model = new SessionModel();

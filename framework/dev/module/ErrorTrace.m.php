@@ -11,6 +11,10 @@ abstract class ErrorTraceElement extends \Element {
 		return ErrorTrace::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ErrorTraceModel {
 		if(self::$model === NULL) {
 			self::$model = new ErrorTraceModel();

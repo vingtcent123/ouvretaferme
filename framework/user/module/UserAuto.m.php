@@ -14,6 +14,10 @@ abstract class UserAutoElement extends \Element {
 		return UserAuto::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): UserAutoModel {
 		if(self::$model === NULL) {
 			self::$model = new UserAutoModel();

@@ -21,6 +21,10 @@ abstract class ErrorElement extends \Element {
 		return Error::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): ErrorModel {
 		if(self::$model === NULL) {
 			self::$model = new ErrorModel();

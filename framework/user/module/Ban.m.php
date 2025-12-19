@@ -11,6 +11,10 @@ abstract class BanElement extends \Element {
 		return Ban::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): BanModel {
 		if(self::$model === NULL) {
 			self::$model = new BanModel();

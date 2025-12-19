@@ -11,6 +11,10 @@ abstract class BufferElement extends \Element {
 		return Buffer::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): BufferModel {
 		if(self::$model === NULL) {
 			self::$model = new BufferModel();

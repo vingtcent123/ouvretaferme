@@ -130,10 +130,6 @@ class Operation extends OperationElement {
 					throw new \NotExpectedAction('Operation to attach empty');
 				}
 
-				if(OperationCashflow::model()->whereOperation($eOperation)->count() > 0) {
-					throw new \NotExpectedAction('Operation already attached');
-				}
-
 			}
 		}
 	}

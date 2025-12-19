@@ -18,6 +18,10 @@ abstract class UserElement extends \Element {
 		return User::model()->getProperties();
 	}
 
+	public static function resetModel(): void {
+		self::$model = NULL;
+	}
+
 	public static function model(): UserModel {
 		if(self::$model === NULL) {
 			self::$model = new UserModel();
