@@ -104,6 +104,7 @@ class CashflowUi {
 		\account\FinancialYear $eFinancialYear,
 		Import $eImport,
 		\Search $search,
+		\Collection $cFinancialYear
 	): string {
 
 		\Asset::css('bank', 'cashflow.css');
@@ -261,13 +262,27 @@ class CashflowUi {
 
 									$h .= '<div class="dropdown-list">';
 										$h .= '<div class="dropdown-title">'.s("Ajouter des écritures comptables").'</div>';
-										$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
-											$h .= s("Créer de nouvelles écritures");
-										$h .= '</a>';
 
-										$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
-											$h .= s("Rattacher des écritures existantes");
-										$h .= '</a>';
+											$financialYearOptions = [];
+											foreach($cFinancialYear as $eFinancialYearCurrent) {
+
+												if($eFinancialYearCurrent->acceptUpdate() === FALSE) {
+													continue;
+												}
+
+												$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearCurrent)).'</div>';
+												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYearCurrent['id'].'" class="dropdown-item">';
+													$financialYearOption .= s("Créer de nouvelles écritures");
+												$financialYearOption .= '</a>';
+
+												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
+													$financialYearOption .= s("Rattacher des écritures existantes");
+												$financialYearOption .= '</a>';
+
+												$financialYearOptions[] = $financialYearOption;
+											}
+
+										$h .= join('<div class="dropdown-divider"></div>', $financialYearOptions);
 									$h .= '</div>';
 
 								} else if($eCashflow['status'] !== Cashflow::DELETED) {
