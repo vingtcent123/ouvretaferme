@@ -98,6 +98,7 @@ new Page(function($data) {
 					break;
 
 				case 'payment':
+					$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
 					[$data->nToCheck, $data->nVerified, $data->cSale] = \preaccounting\SaleLib::getForPaymentAccountingCheck($data->eFarm, $data->search);
 					$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 					break;

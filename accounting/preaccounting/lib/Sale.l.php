@@ -93,6 +93,7 @@ Class SaleLib {
 			->where('priceExcludingVat != 0.0')
 			->whereProfile('NOT IN', [\selling\Sale::MARKET])
 			->whereInvoice(NULL)
+			->where(fn() => new \Sql('m1.customer = '.$search->get('customer')['id']), if: $search->get('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
 			->where('deliveredAt BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')))
 			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));

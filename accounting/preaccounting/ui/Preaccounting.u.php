@@ -6,6 +6,7 @@ Class PreaccountingUi {
 	public function __construct() {
 
 		\Asset::css('preaccounting', 'preaccounting.css');
+		\Asset::js('preaccounting', 'preaccounting.js');
 
 	}
 
@@ -37,11 +38,22 @@ Class PreaccountingUi {
 
 	}
 
-	public function salesPayment(string $type, \Collection $cSale, \Collection $cPaymentMethod, int $nToCheck, int $nVerified): string {
+	public function salesPayment(\farm\Farm $eFarm, string $type, \Collection $cSale, \Collection $cPaymentMethod, \Search $search): string {
 
 		\Asset::css('selling', 'sale.css');
 
-		$h = '<table class="tr-even" data-batch="#batch-accounting-sale-'.$type.'">';
+
+		$form = new \util\FormUi();
+
+		$h = '<div class="mb-2">'.$form->openUrl(LIME_REQUEST_PATH.'?type=payment&from='.GET('from').'&to='.GET('to'), ['id' => 'preaccounting-payment-customer']);
+			$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer', function($d) {
+			}).'</div>';
+
+		if($cSale->empty()) {
+			return $h.'<div class="util-info">'.s("Il n'y a rien à afficher ici !").'</div>';
+		}
+
+		$h .= '<table class="tr-even" data-batch="#batch-accounting-sale-'.$type.'">';
 
 			$h .= '<thead>';
 

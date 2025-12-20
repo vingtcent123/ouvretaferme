@@ -238,7 +238,7 @@ new JsonView('/precomptabilite/{type}', function($data, AjaxTemplate $t) {
 
 		case 'payment':
 			$t->qs('div[data-step="'.$data->type.'"]')->innerHtml(
-				new \preaccounting\PreaccountingUi()->salesPayment($data->type, $data->cSale, $data->cPaymentMethod, $data->nToCheck, $data->nVerified)
+				new \preaccounting\PreaccountingUi()->salesPayment($data->eFarm, $data->type, $data->cSale, $data->cPaymentMethod, $data->search)
 			);
 			break;
 
