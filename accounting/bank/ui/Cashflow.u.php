@@ -278,7 +278,7 @@ class CashflowUi {
 
 								} else if($eCashflow['status'] !== Cashflow::DELETED) {
 
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'">'.p("{value} écriture", "{value} écritures", $eCashflow['cOperationCashflow']->count()).'</a>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?cashflow='.$eCashflow['id'].'&financialYear=0">'.p("{value} écriture", "{value} écritures", $eCashflow['cOperationCashflow']->count()).'</a>';
 
 								}
 							$h .= '</td>';
