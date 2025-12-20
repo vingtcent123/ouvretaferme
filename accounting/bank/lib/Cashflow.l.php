@@ -160,11 +160,12 @@ class CashflowLib extends CashflowCrud {
 		$properties = ['status', 'updatedAt'];
 		$eCashflow['status'] = Cashflow::ALLOCATED;
 		$eCashflow['updatedAt'] = Cashflow::model()->now();
+		$eCashflow['hash'] = $cOperation->first()['hash'];
 
 		Cashflow::model()
 			->select($properties)
 			->whereId($eCashflow['id'])
-			->update($eCashflow->extracts(['status', 'updatedAt']));
+			->update($eCashflow->extracts(['status', 'updatedAt', 'hash']));
 
 		Cashflow::model()->commit();
 
