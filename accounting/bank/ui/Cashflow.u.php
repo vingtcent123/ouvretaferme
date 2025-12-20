@@ -149,11 +149,6 @@ class CashflowUi {
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						$h .= '<th class="td-vertical-align-middle">';
-							$label = s("#");
-							$h .= ($search ? $search->linkSort('id', $label) : $label);
-						$h .= '</th>';
-
 						if($showAccount) {
 							$h .= '<th class="td-vertical-align-middle td-min-content">'.s("N° Compte").'</th>';
 						}
@@ -189,7 +184,7 @@ class CashflowUi {
 
 							$h .= '<tr class="row-emphasis row-bold">';
 
-								$h .= '<td class="td-min-content" colspan="8">';
+								$h .= '<td class="td-min-content" colspan="7">';
 									$h .= mb_ucfirst(\util\DateUi::textual($eCashflow['date'], \util\DateUi::MONTH_YEAR));
 								$h .= '</td>';
 
@@ -204,10 +199,6 @@ class CashflowUi {
 						$class[] = 'cashflow-strikethrough';
 					}
 					$h .= '<tr name="cashflow-'.$eCashflow['id'].'" class="'.join(' ', $class).'">';
-
-						$h .= '<td class="text-left td-vertical-align-top">';
-							$h .= encode($eCashflow['id']);
-						$h .= '</td>';
 
 						if($showAccount) {
 							$h .= '<td class="text-left td-vertical-align-top">';
@@ -339,8 +330,6 @@ class CashflowUi {
 
 
 		$h = '<div class="dropdown-list">';
-
-			$h .= '<div class="dropdown-title">'.s("Opération bancaire #{value}", $eCashflow['id']).'</div>';
 
 			$actions = FALSE;
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
