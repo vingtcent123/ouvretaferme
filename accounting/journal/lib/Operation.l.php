@@ -7,7 +7,7 @@ class OperationLib extends OperationCrud {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'thirdParty', 'comment'];
+		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'thirdParty', 'comment', 'journalCode'];
 	}
 
 	public static function countByOldDatesButNotNewDate(\account\FinancialYear $eFinancialYear, string $newStartDate, string $newEndDate): int {
@@ -673,11 +673,9 @@ class OperationLib extends OperationCrud {
 				$totalAmount += $eOperation['type'] === Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
 
 			} else {
-
 				Operation::model()
 					->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy())))
 					->update($eOperation);
-
 			}
 
 			$cOperation->append($eOperation);
