@@ -362,8 +362,9 @@ new Page(function($data) {
 		$data->eCashflow = \bank\CashflowLib::getById(POST('cashflow'));
 		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
 		$excludedOperationIds = explode(',', POST('excludedOperations'));
+		$excludedPrefix = explode(',', POST('excludedPrefix'));
 
-		$data->cOperation = \journal\OperationLib::getForAttachQuery(POST('query'), $eThirdParty, $excludedOperationIds);
+		$data->cOperation = \journal\OperationLib::getForAttachQuery(POST('query'), $eThirdParty, $excludedOperationIds, $excludedPrefix);
 
 		throw new \ViewAction($data);
 

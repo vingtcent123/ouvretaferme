@@ -5,7 +5,7 @@ use account\ThirdPartyLib;
 
 class Operation extends OperationElement {
 
-	public static function getSelection(): array {
+	public static function getSelection(bool $withLinks = TRUE): array {
 
 		return parent::getSelection() + [
 			'account' => \account\Account::getSelection(),
@@ -15,11 +15,11 @@ class Operation extends OperationElement {
 			'paymentMethod' => \payment\Method::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
 			'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
-			'cOperationLinked' => new OperationModel()
+			'createdBy' => ['id', 'firstName', 'lastName']
+		] + ($withLinks ? ['cOperationLinked' => new OperationModel()
 				->select('id', 'operation')
 				->delegateCollection('operation'),
-			'createdBy' => ['id', 'firstName', 'lastName']
-		];
+			] : []);
 
 	}
 

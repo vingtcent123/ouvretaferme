@@ -1361,22 +1361,35 @@ class OperationUi {
 
 		$tableRow = \bank\CashflowUi::getOperationLineForAttachment($eCashflow, $eOperation);
 
-		$amountIncludingVat = $eOperation['type'] === \journal\Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
-		foreach($eOperation['cOperationLinked'] as $eOperationLinked) {
+		$amountExcludingVat = 0;
+		$amountIncludingVat = 0;
+
+		foreach($eOperation['cOperationHash'] as $eOperationLinked) {
+
+			if(\account\AccountLabelLib::isFromClass($eOperationLinked['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
+				continue;
+			}
+
 			$amountIncludingVat += $eOperationLinked['type'] === \journal\Operation::DEBIT ? $eOperationLinked['amount'] : -1 * $eOperationLinked['amount'];
+
+			if(\account\AccountLabelLib::isFromClass($eOperationLinked['accountLabel'], \account\AccountSetting::VAT_CLASS) === FALSE) {
+				if($eOperationLinked['type'] === \journal\Operation::DEBIT) {
+					$amountExcludingVat += $eOperationLinked['amount'];
+				} else {
+					$amountExcludingVat += (-1 * $eOperationLinked['amount']);
+				}
+			}
+
 		}
 
 		$itemHtml = '<div style="display: flex; gap: 0.5rem;">';
 			$itemHtml .= '<div class="text-end">';
 				$itemHtml .= \util\DateUi::numeric($eOperation['date']);
-				$itemHtml .= '<br />';
-				$itemHtml .= encode($eOperation['accountLabel']);
 			$itemHtml .= '</div>';
 			$itemHtml .= '<div>';
-				if($eOperation['cOperationLinked']->notEmpty()) {
-					$itemHtml .= encode($eOperation['description']).' - '.s("{type} de {amount} <small>HT</small> ({amountIncludingVat} <small>TTC</small>)", [
-						'type' => self::p('type')->values[$eOperation['type']],
-						'amount' => \util\TextUi::money($eOperation['amount']),
+				if($eOperation['cOperationHash']->notEmpty()) {
+					$itemHtml .= encode($eOperation['description']).' - '.s("Opération de {amount} <small>HT</small> ({amountIncludingVat} <small>TTC</small>)", [
+						'amount' => \util\TextUi::money($amountExcludingVat),
 						'amountIncludingVat' => \util\TextUi::money($amountIncludingVat),
 					]);
 				} else {

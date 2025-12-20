@@ -253,6 +253,8 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-operation="cash
     qsa('form [name="operations[]"]', node => excludedOperations.push(node.value));
     e.detail.body.append('excludedOperations', excludedOperations);
 
+    e.detail.body.append('excludedPrefix', '512');
+
 });
 
 document.delegateEventListener('autocompleteSelect', '[data-third-party="cashflow-doAttach"]', function(e) {
@@ -272,9 +274,7 @@ document.delegateEventListener('autocompleteSelect', '[data-operation="cashflow-
 
     }
 
-    CashflowAttach.recalculate();
-    CashflowAttach.replaceState();
-    CashflowAttach.emptyOperationAutocomplete();
+    CashflowAttach.reloadFooter();
 
 });
 class CashflowAttach {
@@ -288,6 +288,9 @@ class CashflowAttach {
     }
     static replaceState() {
 
+        if(!qs('form [name="thirdParty"]')) {
+            return;
+        }
         const url = new URL(document.location.href);
         const thirdParty = qs('form [name="thirdParty"]').getAttribute('value');
         url.searchParams.set('thirdParty', thirdParty);
@@ -296,49 +299,38 @@ class CashflowAttach {
 
         Lime.History.replaceState(url.toString());
 
-        CashflowAttach.recalculate();
+    }
 
+    static reloadFooter() {
+
+        if(!qs('form [name="thirdParty"]')) {
+            return;
+        }
+
+        CashflowAttach.replaceState();
+        CashflowAttach.emptyOperationAutocomplete();
+
+        const url = new URL(document.location.href);
+        url.pathname = url.pathname.replace('attach', 'calculateAttach')
+
+        const thirdParty = qs('form [name="thirdParty"]').getAttribute('value');
+        url.searchParams.set('thirdParty', thirdParty);
+        url.searchParams.delete('operations[]');
+        qsa('form [name="operations[]"]', node => url.searchParams.append('operations[]', node.value));
+
+        new Ajax.Query()
+          .url(url)
+          .method('get')
+          .fetch();
     }
 
     static removeOperation(operationId) {
 
         qs('[data-operation="'+ operationId +'"]').remove();
 
-        CashflowAttach.recalculate();
-
-        CashflowAttach.replaceState();
+        CashflowAttach.reloadFooter();
 
     }
 
-    static recalculate() {
-
-        let total = 0;
-        qsa('[name="amounts[]"]', node => total += parseFloat(node.value));
-        total = Math.round(total * 100) / 100;
-
-        qs('span[data-field="totalAmount"]').innerHTML = money(total);
-
-        const cashflowAmount = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
-
-        const difference = total > cashflowAmount ? total - cashflowAmount : cashflowAmount - total;
-
-        if(qsa('[name="amounts[]"]').length > 0 && Math.abs(cashflowAmount) !== Math.abs(total)) {
-            qs('#cashflow-attach-difference-warning').classList.remove('hide');
-            qs('#cashflow-attach-missing-value').innerHTML = money(difference);
-        } else {
-            qs('#cashflow-attach-difference-warning').classList.add('hide');
-        }
-
-
-        if(qsa('#cashflow-operations tbody tr')?.length === 0) {
-
-            qs('#cashflow-operations').hide();
-
-        } else {
-
-            qs('#cashflow-operations').removeHide();
-
-        }
-    }
 
 }

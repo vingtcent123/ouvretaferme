@@ -151,7 +151,24 @@ new \bank\CashflowPage(
 
 		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
 		$data->cOperation = \journal\OperationLib::getByIds(GET('operations', 'array'));
-		\journal\OperationLib::setLinkedOperations($data->cOperation);
+		\journal\OperationLib::setHashOperations($data->cOperation);
+
+		throw new ViewAction($data);
+
+	})
+	->get('calculateAttach', function($data) {
+
+		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
+
+		$data->cOperationSelected = \journal\OperationLib::getByIds(GET('operations', 'array'));
+		\journal\OperationLib::setHashOperations($data->cOperationSelected);
+
+		$hashes = array_unique($data->cOperationSelected->getColumn('hash'));
+		$cOperationAll = new Collection();
+		foreach($hashes as $hash) {
+			$cOperationAll->mergeCollection(\journal\OperationLib::getByHash($hash));
+		}
+		$data->cOperation = $cOperationAll;
 
 		throw new ViewAction($data);
 

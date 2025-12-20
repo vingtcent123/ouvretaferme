@@ -637,7 +637,7 @@ class CashflowUi {
 		$h .= $form->hidden('cashflow-amount', $eCashflow['amount']);
 
 		$h .= '<div class="util-outline-block-important mt-2 mb-3">';
-			$h .= '<p>'.s("Vous pouvez rattacher à cette opération bancaire des écritures comptables déjà saisies. La contrepartie en compte de banque {bankAccount} sera alors la seule écriture créée.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</p>';
+			$h .= '<p>'.s("Vous pouvez rattacher à cette opération bancaire des écritures comptables déjà saisies mais non équilibrées par une contrepartie en compte {bankAccount}. La contrepartie en compte de banque {bankAccount} du montant de l'opération bancaire sera la seule écriture créée.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</p>';
 			$h .= '<p>'.s("Les écritures proposées sont classées avec le tiers sélectionné à l'étape {icon} en premier, mais il est possible de sélectionner des écritures liées à d'autres tiers.<br /><i>exemple de cas d'usage: si votre opération bancaire correspond à un virement {iconStripe} Stripe et que vous y rattachez toutes les écritures de ventes de vos clients</i>.", ['iconStripe' => \Asset::icon('stripe'), 'icon' => \Asset::icon('1-circle')]).'</p>';
 			$h .= '<a href="/doc/accounting:bank#cashflow-manage" class="btn btn-secondary">'.\Asset::icon('person-raised-hand').' '.s("Lire l'aide sur le rattachement des opérations bancaires").'</a>';
 		$h .= '</div>';
@@ -668,46 +668,15 @@ class CashflowUi {
 				new \journal\OperationUi()->query($d, GET('farm', '?int'), $eCashflow);
 			});
 
-		$h .= '<div class="stick-sm util-overflow-sm">';
-			$h .= '<table id="cashflow-operations" class="tr-even mt-2 tr-hover '.($cOperation->empty() ? 'hide' : '').'">';
-
-				$h .= '<thead>';
-					$h .= '<tr class="row-header">';
-						$h .= '<th>';
-							$h .= s("Date");
-						$h .= '</th>';
-						$h .= '<th class="text-center">';
-							$h .= s("Numéro de compte");
-						$h .= '</th>';
-						$h .= '<th>';
-							$h .= s("Description");
-						$h .= '</th>';
-						$h .= '<th>'.s("Tiers").'</th>';
-						$h .= '<th>'.s("Moyen de paiement").'</th>';
-						$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
-						$h .= '<th class="text-center"></th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
-
-				$h .= '<tbody>';
-
-					foreach($cOperation as $eOperation) {
-						$h .= CashflowUi::getOperationLineForAttachment($eCashflow, $eOperation);
-					}
-
-				$h .= '</tbody>';
-
-			$h .= '</table>';
+		$h .= '<div class="stick-sm util-overflow-sm" data-operations>';
+			$h .= $this->getSelectedOperationsTableForAttachement($eCashflow, $cOperation);
 		$h .= '</div>';
 
-		$footer = '<div class="cashflow-attach-panel-footer" onrender="CashflowAttach.recalculate();">'.
-			'<div><div id="cashflow-attach-difference-warning" class="util-warning-outline hide" style="margin: 0;">'.
-				s("⚠️ Le montant de l'opération bancaire ne correspond pas au total des écritures sélectionnées ({span} de différence). Vous pouvez quand même valider.", ['span' => '<span id="cashflow-attach-missing-value"></span>']).
-			'</div></div>'.
-			'<div>'.s("Total sélectionné : {value}", '<span data-field="totalAmount" class="mr-2">'.\util\TextUi::money(0).'</span>').'</div>'.
-			$form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']).
-			'</div>';
+		$footer = '<div class="cashflow-attach-panel-footer" onrender="CashflowAttach.reloadFooter();">';
+			$footer .= '<div><div id="cashflow-attach-information" style="margin: 0;">'.'</div></div>';
+			$footer .= '<div>'.s("Total sélectionné : {value}", '<span data-field="totalAmount" class="mr-2">'.\util\TextUi::money(0).'</span>').'</div>';
+				$footer .= $form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']);
+			$footer .= '</div>';
 
 		return new \Panel(
 			id: 'panel-cashflow-attach',
@@ -720,18 +689,61 @@ class CashflowUi {
 
 	}
 
+	public function getSelectedOperationsTableForAttachement(Cashflow $eCashflow, \Collection $cOperation): string {
+
+		$h = '<table id="cashflow-operations" class="tr-even mt-2 tr-hover '.($cOperation->empty() ? 'hide' : '').'">';
+
+			$h .= '<thead>';
+				$h .= '<tr class="row-header">';
+					$h .= '<th>';
+						$h .= s("Date");
+					$h .= '</th>';
+					$h .= '<th class="text-center">';
+						$h .= s("Numéro de compte");
+					$h .= '</th>';
+					$h .= '<th>';
+						$h .= s("Description");
+					$h .= '</th>';
+					$h .= '<th>'.s("Tiers").'</th>';
+					$h .= '<th>'.s("Moyen de paiement").'</th>';
+					$h .= '<th class="text-end">'.s("Débit (D)").'</th>';
+					$h .= '<th class="text-end">'.s("Crédit (C)").'</th>';
+					$h .= '<th class="text-center"></th>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+
+				foreach($cOperation as $eOperation) {
+					$h .= CashflowUi::getOperationLineForAttachment($eCashflow, $eOperation);
+				}
+
+			$h .= '</tbody>';
+
+		$h .= '</table>';
+
+		return $h;
+
+	}
+
 	public static function getOperationLineForAttachment(Cashflow $eCashflow, \journal\Operation $eOperation): string {
 
 		$form = new \util\FormUi();
 
-		$amount = $eOperation['type'] === \journal\Operation::DEBIT ? -1 * $eOperation['amount'] :$eOperation['amount'];
-		foreach($eOperation['cOperationLinked'] as $eOperationLinked) {
-			$amount += $eOperationLinked['type'] === \journal\Operation::DEBIT ?  -1 * $eOperationLinked['amount'] : $eOperationLinked['amount'];
+		$amount = 0;
+		foreach($eOperation['cOperationHash'] as $eOperationHash) {
+			if(\account\AccountLabelLib::isFromClass($eOperationHash['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
+				continue;
+			}
+			$amount += $eOperationHash['type'] === \journal\Operation::DEBIT ?  -1 * $eOperationHash['amount'] : $eOperationHash['amount'];
 		}
 
 		$h = '<tr data-operation="'.$eOperation['id'].'">';
 			$h .= '<td '.($eCashflow['date'] < $eOperation['date'] ? 'class="color-warning" title="'.s("Attention, l'opération bancaire est antérieure à l'écriture comptable").'"' : '').'>';
 					$h .= \util\DateUi::numeric($eOperation['date']);
+					if($eCashflow['date'] < $eOperation['date']) {
+						$h .= ' '.\Asset::icon('exclamation-triangle');
+					}
 			$h .= '</td>';
 			$h .= '<td class="text-center">';
 				$h .= encode($eOperation['accountLabel']);

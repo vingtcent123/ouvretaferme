@@ -1087,9 +1087,9 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getForAttachQuery(string $query, \account\ThirdParty $eThirdParty, array $excludedOperationIds): \Collection {
+	public static function getForAttachQuery(string $query, \account\ThirdParty $eThirdParty, array $excludedOperationIds, array $excludedPrefix): \Collection {
 
-		$selection = Operation::getSelection();
+		$selection = Operation::getSelection(FALSE);
 		if($eThirdParty->notEmpty()) {
 			$selection['isThirdParty'] = new \Sql('IF(thirdParty = '.$eThirdParty['id'].', 1, 0)', 'bool');
 			$sort = ['m1_isThirdParty' => SORT_DESC];
@@ -1114,32 +1114,73 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		$excludedOperationIds = array_filter($excludedOperationIds, fn($val) => $val);
 		if(count($excludedOperationIds) > 0) {
-			Operation::model()->where(new \Sql('m1.id NOT IN ('.implode(', ', $excludedOperationIds).')'));
+
+			$hashToExclude = Operation::model()
+				->select('hash')
+				->whereId('IN', $excludedOperationIds)
+				->getCollection()
+				->getColumn('hash');
+
+		} else {
+
+			$hashToExclude = [];
+
+		}
+
+		$excludedPrefix = array_filter($excludedPrefix, fn($val) => $val);
+		if(count($excludedPrefix) > 0) {
+			foreach($excludedPrefix as $prefix) {
+				Operation::model()->where(new \Sql('m1.accountLabel NOT LIKE "'.$prefix.'%"'));
+			}
 		}
 
 		$cOperation = Operation::model()
-			->select($selection)
-			//->highlight()
+			->select(['hash' => new \Sql('DISTINCT(hash)')])
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
-			->sort($sort + ['m1_date' => SORT_DESC])
-			//->where(new \Sql('m2.id IS NULL'))
+			->where('m1.hash NOT IN ("'.join('", "', $hashToExclude).'")', if: count($hashToExclude) > 0)
 			->getCollection();
 
-		return self::setLinkedOperations($cOperation);
+		// On va déterminer toutes les opérations déjà équilibrées pour les exclure
+		$hashes = array_unique($cOperation->getColumn('hash'));
+
+		$cOperationNotBalanced = Operation::model()
+			->select([
+				'hash',
+				'totalBank' => new \Sql('SUM(IF(accountLabel LIKE "512%", IF(type = "credit", -amount, amount), 0))'),
+				'totalOther' => new \Sql('SUM(IF(accountLabel NOT LIKE "512%", IF(type = "credit", -amount, amount), 0))'),
+			])
+			->whereHash('IN', $hashes)
+			->group('hash')
+			->having('totalBank != - totalOther')
+			->getCollection();
+
+		$cOperation = Operation::model()
+			->select($selection)
+			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+			->whereHash('IN', $cOperationNotBalanced->getColumn('hash'))
+			->sort($sort + ['m1_date' => SORT_DESC])
+			->getCollection(NULL, NULL, 'hash'); // Pour ne conserver que 1 opération par hash
+
+		return self::setHashOperations($cOperation);
 
 	}
 
-	public static function setLinkedOperations(\Collection $cOperation): \Collection {
+	public static function setHashOperations(\Collection $cOperation): \Collection {
 
 		$cOperationLinked = Operation::model()
-			->select('id', 'amount', 'type', 'operation')
-			->whereOperation('IN', $cOperation->getIds())
-			->getCollection(NULL, NULL, ['operation', 'id']);
+			->select('id', 'hash', 'amount', 'type', 'operation', 'accountLabel')
+			->whereHash('IN', $cOperation->getColumn('hash'))
+			->getCollection();
 
 		foreach($cOperation as &$eOperation) {
-			$eOperation['cOperationLinked'] = $cOperationLinked->offsetExists($eOperation['id']) ? $cOperationLinked->offsetGet($eOperation['id']) : new \Collection();
+
+			if(isset($eOperation['cOperationHash']) === FALSE) {
+				$eOperation['cOperationHash'] = new \Collection();
+			}
+
+			$eOperation['cOperationHash']->mergeCollection($cOperationLinked->find(fn($e) => $e['hash'] === $eOperation['hash']));
+
 		}
 
 		return $cOperation;
@@ -1590,5 +1631,6 @@ class OperationLib extends OperationCrud {
 			->update(new Operation(['paymentMethod' => $ePaymentMethod]));
 
 	}
+
 }
 ?>
