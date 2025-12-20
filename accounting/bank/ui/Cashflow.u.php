@@ -9,7 +9,7 @@ class CashflowUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getSearch(\Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate, \Collection $cBankAccount): string {
+	public function getSearch(\Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate, \Collection $cBankAccount, array $nCashflow): string {
 
 		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
 
@@ -52,6 +52,12 @@ class CashflowUi {
 
 			}
 		$h .= '</div>';
+		$h .= '<div class="mb-2 mt-1">';
+		$h .= $form->checkbox('status', Cashflow::WAITING, [
+			'checked' => $search->get('status') === Cashflow::WAITING,
+			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
+		]);
+		$h .= '</div>';
 		$h .= '<div>';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
@@ -77,16 +83,16 @@ class CashflowUi {
 
 		$h = '<div class="flex-justify-space-between td-vertical-align-top mb-1">';
 			$h .= '<div class="">';
-				$form = new \util\FormUi();
+				/*$form = new \util\FormUi();
 
-				$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/operations', ['method' => 'get']);
+				$h .= $form->openUrl(LIME_REQUEST_PATH.LIME_REQUEST_ARGS, ['method' => 'get']);
 				$h .= $form->checkbox('status', Cashflow::WAITING, [
 					'checked' => $search->get('status') === Cashflow::WAITING,
 					'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
 					'onchange' => 'this.form.submit()',
 				]);
 				$h .= $form->close();
-
+*/
 			$h .= '</div>';
 
 			$h .= '<div>';
