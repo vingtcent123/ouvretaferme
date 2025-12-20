@@ -32,3 +32,22 @@
 	padding-top: 0;
 	padding-bottom: 0;
 }
+.reconciliate-table tbody tr:first-child td {
+	padding-bottom: 0;
+}
+.reconciliate-table tbody tr:nth-child(2) td {
+	position: relative;
+}
+.reconciliate-table tbody tr:nth-child(2) td span.reconciliate-confidence {
+	position: absolute;
+	margin: 0 auto;
+	top: 0;
+	left: calc(50% - (1em + 1px) / 2);
+}
+.reconciliate-table tbody tr:nth-child(2) td span:not(.reconciliate-confidence) {
+	position: absolute;
+	top: 1rem;
+}
+.reconciliate-table tbody tr:last-child td {
+	padding-top: 0;
+}

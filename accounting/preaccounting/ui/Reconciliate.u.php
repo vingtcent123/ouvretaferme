@@ -28,12 +28,11 @@ Class ReconciliateUi {
 						$h .= '<th>'.\Asset::icon('file-person').' '.s("Client").'</th>';
 						$h .= '<th>'.\Asset::icon('123').' '.s("Libellé").'</th>';
 						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
+						$h .= '<th class="text-center">'.s("Indice de confiance").'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('file-person').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">'.\Asset::icon('123').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';
-						$h .= '<th>'.s("Moyen de paiement").'</th>';
-						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -98,7 +97,6 @@ Class ReconciliateUi {
 							$h .= '<td></td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
-							$h .= '<td></td>';
 						$h .= '</tr>';
 
 						$h .= '<tr>';
@@ -110,10 +108,21 @@ Class ReconciliateUi {
 							$h .= '<td '.$onclick.'>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
 							$h .= '<td colspan="2" '.$onclick.'>'.encode($eCashflow['memo']).'</td>';
 							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'>'.\util\TextUi::money($eCashflow['amount']).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element,\preaccounting\Suggestion::THIRD_PARTY).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
+							$h .= '<td class="text-center td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->confidence($eSuggestion).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element,\preaccounting\Suggestion::THIRD_PARTY).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
+						$h .= '</tr>';
+
+						$attributes = [
+							'post-id' => $eSuggestion['id'],
+						];
+
+						$h .= '<tr>';
+
+							$h .= '<td class="td-checkbox" '.$onclick.'></td>';
+							$h .= '<td '.$onclick.'></td>';
 							$h .= '<td>'.$form->dynamicField($eSuggestion, 'paymentMethod', function($d) use($form, $cMethod, $eSuggestion) {
 								$d->values = $cMethod;
 								$d->default = fn() => $eSuggestion['paymentMethod'];
@@ -124,27 +133,25 @@ Class ReconciliateUi {
 								}
 							});
 							$h .= '</td>';
-							$h .= '<td>';
 
-								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<td '.$onclick.'>';
+								$h .= '<div class="flex-justify-space-between">';
 
-								$h .= '<div class="dropdown-list">';
+									$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ? Cette action n'est pas réversible.");
+									$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
+										$h .= \Asset::icon('hand-thumbs-up');
+										$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
+									$h .= '</a>';
 
-									$attributes = [
-										'post-id' => $eSuggestion['id'],
-										'class' => 'dropdown-item',
-									];
-									if($eSuggestion->acceptReconciliate()) {
-										$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ? Cette action n'est pas réversible.");
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-up').' '.s("Rapprocher").'</a>';
-									}
-									if($eSuggestion->acceptIgnore()) {
-										$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-down').' '.s("Ignorer").'</a>';
-									}
+									$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
+									$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.attrs($attributes).'>';
+										$h .= \Asset::icon('hand-thumbs-down');
+										$h .= '<span class="hide-sm-down"> '.s("Ignorer").'</span>';
+									$h .= '</a>';
+
 								$h .= '</div>';
-
 							$h .= '</td>';
+							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'></td>';
 
 						$h .= '</tr>';
 
@@ -161,6 +168,51 @@ Class ReconciliateUi {
 		return $h;
 
 	}
+
+	public function confidence(Suggestion $eSuggestion) {
+
+		$count = 0;
+		$class = 'success';
+		foreach([Suggestion::THIRD_PARTY, Suggestion::REFERENCE] as $reason) {
+			if($eSuggestion['reason']->get() & $reason) {
+				$count++;
+			}
+		}
+
+		if($eSuggestion['reason']->get() & Suggestion::AMOUNT) {
+			if(
+				$eSuggestion['cashflow']['amount'] === ($eSuggestion['invoice']['priceIncludingVat'] ?? 0) or
+				$eSuggestion['cashflow']['amount'] === ($eSuggestion['sale']['priceIncludingVat'] ?? 0)
+			) {
+				$count++;
+			}
+		}
+
+		if($count === 0) { // Ni tiers, ni reference, ni montant exact
+			$class = 'warning';
+		}
+
+		// Montant exact
+		if($eSuggestion['reason']->get() & Suggestion::AMOUNT) {
+			if (
+				$eSuggestion['cashflow']['amount'] !== ($eSuggestion['invoice']['priceIncludingVat'] ?? 0) and
+				$eSuggestion['cashflow']['amount'] !== ($eSuggestion['sale']['priceIncludingVat'] ?? 0)
+			) {
+				$count++;
+			}
+		}
+
+		if($eSuggestion['reason']->get() & Suggestion::PAYMENT_METHOD) {
+			$count++;
+		}
+		if($eSuggestion['reason']->get() & Suggestion::DATE) {
+			$count++;
+		}
+
+		return '<span class="reconciliate-confidence fs-2 color-'.$class.'">'.\Asset::icon($count.'-circle-fill').'</span>';
+
+	}
+
 	public function tableByOperations(\farm\Farm $eFarm, \Collection $ccSuggestion): string {
 
 		$h = '';
@@ -239,7 +291,6 @@ Class ReconciliateUi {
 								\journal\Operation::DEBIT => s("D"),
 							}.'</td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($eOperation['amount']).'</td>';
-							$h .= '<td></td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
