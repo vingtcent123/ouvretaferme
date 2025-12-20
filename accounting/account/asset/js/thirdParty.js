@@ -2,10 +2,6 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-third-party="jo
     ThirdParty.createNewThirdParty(e.detail.input);
 });
 
-document.delegateEventListener('autocompleteSelect', 'form[data-ajax-form="/@module/account/ThirdParty/doQuick"] input[data-autocomplete-field="customer"]', function() {
-    qs('form[data-ajax-form="/@module/account/ThirdParty/doQuick"] button[type="submit"]').click();
-});
-
 class ThirdParty {
 
     static focusInput() {
