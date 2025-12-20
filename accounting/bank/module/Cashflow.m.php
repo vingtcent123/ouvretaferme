@@ -50,6 +50,7 @@ class CashflowModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'date' => ['date', 'min' => toDate('NOW - 2 YEARS'), 'max' => toDate('NOW + 1 YEARS'), 'null' => TRUE, 'cast' => 'string'],
+			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\bank\Cashflow::DEBIT, \bank\Cashflow::CREDIT, \bank\Cashflow::OTHER], 'cast' => 'enum'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'fitid' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
@@ -68,7 +69,7 @@ class CashflowModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'date', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'isReconciliated', 'invoice', 'sale', 'document', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'isReconciliated', 'invoice', 'sale', 'document', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -142,6 +143,10 @@ class CashflowModel extends \ModuleModel {
 
 	public function whereDate(...$data): CashflowModel {
 		return $this->where('date', ...$data);
+	}
+
+	public function whereHash(...$data): CashflowModel {
+		return $this->where('hash', ...$data);
 	}
 
 	public function whereType(...$data): CashflowModel {

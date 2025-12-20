@@ -71,6 +71,7 @@ class OperationLib extends OperationCrud {
 
 		return $model
 			->whereId('=', $search->get('id'), if: $search->get('id'))
+			->whereHash('=', $search->get('hash'), if: $search->get('hash'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->whereDate('>=', $search->get('minDate'), if: $search->get('minDate'))
 			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))
@@ -684,6 +685,7 @@ class OperationLib extends OperationCrud {
 				$cOperationCashflow->append(new OperationCashflow([
 					'operation' => $eOperation,
 					'cashflow' => $eCashflow,
+					'hash' => $hash,
 					'amount' => min($eOperation['amount'], abs($eCashflow['amount']))
 				]));
 			}

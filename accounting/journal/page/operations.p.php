@@ -45,6 +45,7 @@ new Page(function($data) {
 			'minDate' => $periodStart,
 			'maxDate' => $periodEnd,
 			'periodStart' => GET('periodStart'),
+			'hash' => GET('hash'),
 			'periodEnd' => GET('periodEnd'),
 		], GET('sort'));
 

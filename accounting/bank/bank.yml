@@ -12,6 +12,7 @@ BankAccount:
 Cashflow:
   id: serial32
   date: ?date(PHP(toDate('NOW - 2 YEARS')), PHP(toDate('NOW + 1 YEARS')))
+  hash: ?textFixed(20, 20) @charset(ascii)
   type: enum(DEBIT, CREDIT, OTHER)
   amount: decimal(8, 2)
   fitid: ?text8(1, null)
