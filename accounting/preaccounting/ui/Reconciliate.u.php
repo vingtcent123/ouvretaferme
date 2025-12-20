@@ -28,7 +28,7 @@ Class ReconciliateUi {
 						$h .= '<th>'.\Asset::icon('file-person').' '.s("Client").'</th>';
 						$h .= '<th>'.\Asset::icon('123').' '.s("Libellé").'</th>';
 						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
-						$h .= '<th class="text-center">'.s("Indice de confiance").'</th>';
+						$h .= '<th class="text-center">'.s("Indice<br/>de confiance").'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('file-person').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">'.\Asset::icon('123').'</th>';
@@ -135,21 +135,19 @@ Class ReconciliateUi {
 							$h .= '</td>';
 
 							$h .= '<td '.$onclick.'>';
-								$h .= '<div class="flex-justify-space-between">';
 
-									$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ? Cette action n'est pas réversible.");
-									$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
-										$h .= \Asset::icon('hand-thumbs-up');
-										$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
-									$h .= '</a>';
+								$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ?");
+								$h .= '<a class="btn btn-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
+									$h .= \Asset::icon('hand-thumbs-up');
+									$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
+								$h .= '</a>';
+								$h .= '  ';
+								$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
+								$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.attrs($attributes).'>';
+									$h .= \Asset::icon('hand-thumbs-down');
+									$h .= '<span class="hide-sm-down"> '.s("Ignorer").'</span>';
+								$h .= '</a>';
 
-									$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
-									$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.attrs($attributes).'>';
-										$h .= \Asset::icon('hand-thumbs-down');
-										$h .= '<span class="hide-sm-down"> '.s("Ignorer").'</span>';
-									$h .= '</a>';
-
-								$h .= '</div>';
 							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'></td>';
 
