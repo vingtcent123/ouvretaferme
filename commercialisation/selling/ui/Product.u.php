@@ -89,13 +89,17 @@ class ProductUi {
 
 		$h = '<div class="dropdown-list">';
 
-			foreach(\selling\ProductUi::p('profile')->values as $profile => $value) {
+			foreach(self::p('profile')->values as $profile => $value) {
 
 				if($profile === Product::COMPOSITION and $eProduct->exists()) {
 					continue;
 				}
 
-				$examples = \selling\ProductUi::p('profile')->examples[$profile];
+				$examples = self::p('profile')->examples[$profile];
+
+				if($profile === Product::SERVICE) {
+					$h .= '<div class="dropdown-divider"></div>';
+				}
 
 				$h .= '<a '.$destination($profile).' class="dropdown-item dropdown-item-icon" data-profile="'.$profile.'">';
 					$h .= self::getProfileIcon($profile);
@@ -604,7 +608,6 @@ class ProductUi {
 		}
 
 		if($public === FALSE and $withComplement) {
-
 			$content .= self::getVignetteComplement($eProduct);
 		}
 
@@ -1158,7 +1161,7 @@ class ProductUi {
 
 		$h = '';
 
-		$h .= '<div class="product-write-profile-details">';
+		$h .= '<div class="product-write-profile-details" data-profile="'.implode(' ', Product::getProfiles('characteristics')).'">';
 
 			$h .= '<h3>'.s("Caractéristiques").'</h3>';
 
@@ -1470,6 +1473,7 @@ class ProductUi {
 					Product::PROCESSED_PRODUCT => s("Produit non alimentaire"),
 					Product::COMPOSITION => s("Produit composé"),
 					Product::OTHER => s("Autre produit"),
+					Product::SERVICE => s("Prestation de service"),
 				];
 
 				$d->examples = [
@@ -1479,6 +1483,7 @@ class ProductUi {
 					Product::PROCESSED_PRODUCT => s("Savon, lessive..."),
 					Product::COMPOSITION => s("Panier de légumes, bouquet de fleurs..."),
 					Product::OTHER => NULL,
+					Product::SERVICE => NULL,
 				];
 
 				$d->icons = [
@@ -1488,6 +1493,7 @@ class ProductUi {
 					Product::PROCESSED_PRODUCT => \Asset::icon('box'),
 					Product::COMPOSITION => \Asset::icon('puzzle-fill'),
 					Product::OTHER => \Asset::icon('three-dots'),
+					Product::SERVICE => \Asset::icon('hand-thumbs-up-fill'),
 				];
 				break;
 

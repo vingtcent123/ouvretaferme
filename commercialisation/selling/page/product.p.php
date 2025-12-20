@@ -52,6 +52,11 @@ new \selling\ProductPage()
 					$data->e['pro'] = FALSE;
 					break;
 
+				case \selling\Product::SERVICE :
+					$data->e['vat'] = \selling\SellingSetting::getStandardVat($data->eFarm);
+					$data->e['quality'] = NULL;
+					break;
+
 			}
 
 		}

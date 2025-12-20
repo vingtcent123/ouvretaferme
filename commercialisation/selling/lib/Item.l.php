@@ -306,6 +306,7 @@ class ItemLib extends ItemCrud {
 				'product' => $eItem['product'],
 				'name' => $eItem['name'],
 				'quality' => $eItem['quality'],
+				'nature' => $eItem['nature'],
 				'unit' => $eItem['unit'],
 				'unitPriceInitial' => $eItem['unitPriceInitial'],
 				'vatRate' => $eItem['vatRate'],
@@ -465,6 +466,7 @@ class ItemLib extends ItemCrud {
 			  'product' => $eItemCopy['product'],
 			  'composition' => new Sale(),
 			  'ingredientOf' => $eItemComposition,
+			  'nature' => $eItemCopy['nature'],
 			  'quality' => $eItemCopy['quality'],
 			  'parent' => new Item(),
 			  'packaging' => $eItemCopy['packaging'],
@@ -627,6 +629,10 @@ class ItemLib extends ItemCrud {
 
 		if($e['product']->notEmpty()) {
 
+			$e['nature'] = match($e['product']['profile']) {
+				Product::SERVICE => Item::SERVICE,
+				default => Item::GOOD
+			};
 			$e['additional'] = $e['product']['additional'];
 			$e['origin'] = $e['product']['origin'];
 
@@ -644,6 +650,8 @@ class ItemLib extends ItemCrud {
 
 			}
 
+		} else {
+			$e->expects(['nature']);
 		}
 
 		if($eSale['hasVat'] === FALSE) {
@@ -796,7 +804,7 @@ class ItemLib extends ItemCrud {
 				'discount' => $eSale['discount']
 			]);
 
-			$eItem->buildIndex(['product', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'unitPriceDiscount', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
+			$eItem->buildIndex(['product', 'nature', 'quality', 'name', 'packaging', 'locked', 'unit', 'unitPrice', 'unitPriceDiscount', 'number', 'price', 'vatRate'], $input, $position, new \Properties('create'));
 
 			$cItem[] = $eItem;
 

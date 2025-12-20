@@ -15,6 +15,10 @@ abstract class SaleElement extends \Element {
 	const INCLUDING = 'including';
 	const EXCLUDING = 'excluding';
 
+	const GOOD = 'good';
+	const SERVICE = 'service';
+	const MIXED = 'mixed';
+
 	const PRIVATE = 'private';
 	const PRO = 'pro';
 
@@ -75,6 +79,7 @@ class SaleModel extends \ModuleModel {
 			'taxes' => ['enum', [\selling\Sale::INCLUDING, \selling\Sale::EXCLUDING], 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
 			'conversion' => ['bool', 'cast' => 'bool'],
+			'nature' => ['enum', [\selling\Sale::GOOD, \selling\Sale::SERVICE, \selling\Sale::MIXED], 'null' => TRUE, 'cast' => 'enum'],
 			'type' => ['enum', [\selling\Sale::PRIVATE, \selling\Sale::PRO], 'cast' => 'enum'],
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
 			'items' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -131,7 +136,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
 		]);
 
 		$this->propertiesToModule += [
@@ -228,6 +233,9 @@ class SaleModel extends \ModuleModel {
 			case 'taxes' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'nature' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -302,6 +310,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereConversion(...$data): SaleModel {
 		return $this->where('conversion', ...$data);
+	}
+
+	public function whereNature(...$data): SaleModel {
+		return $this->where('nature', ...$data);
 	}
 
 	public function whereType(...$data): SaleModel {

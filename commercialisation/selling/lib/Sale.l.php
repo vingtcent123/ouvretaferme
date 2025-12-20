@@ -1337,6 +1337,16 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function getItemsForDocument(Sale $e, string $type): \Collection {
+
+		if($type === Pdf::DELIVERY_NOTE) {
+			Item::model()->whereNature(Item::GOOD);
+		}
+
+		return self::getItemsBySales(new \Collection([$e]));
+
+	}
+
 	public static function getItems(Sale $e, bool $withIngredients = FALSE, bool $public = FALSE, ?string $index = NULL): \Collection {
 		return self::getItemsBySales(new \Collection([$e]), $withIngredients, $public, $index);
 	}
@@ -1454,6 +1464,7 @@ class SaleLib extends SaleCrud {
 
 			$newValues = [
 				'items' => 0,
+				'nature' => NULL,
 				'vat' => NULL,
 				'vatByRate' => NULL,
 				'organic' => FALSE,
@@ -1476,6 +1487,7 @@ class SaleLib extends SaleCrud {
 
 		$newValues = [
 			'items' => $cItem->count(),
+			'nature' => NULL,
 			'vat' => 0.0,
 			'vatByRate' => [],
 			'organic' => FALSE,
@@ -1506,6 +1518,16 @@ class SaleLib extends SaleCrud {
 				$newValues['organic'] = TRUE;
 			} else if($eItem['quality'] === \farm\Farm::CONVERSION) {
 				$newValues['conversion'] = TRUE;
+			}
+
+			if($eItem['nature'] !== Sale::MIXED) {
+
+				if($eItem['nature'] === Item::GOOD) {
+					$newValues['nature'] = ($newValues['nature'] === Sale::SERVICE) ? Sale::MIXED : Sale::GOOD;
+				} else{
+					$newValues['nature'] = ($newValues['nature'] === Sale::GOOD) ? Sale::MIXED : Sale::SERVICE;
+				}
+
 			}
 
 		}

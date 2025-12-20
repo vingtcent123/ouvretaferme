@@ -25,7 +25,7 @@ new Page()
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 		$data->eFarm->validateLegal();
 
-		$data->cItem = \selling\SaleLib::getItems($data->e);
+		$data->cItem = \selling\SaleLib::getItemsForDocument($data->e, $data->type);
 
 		throw new ViewAction($data);
 

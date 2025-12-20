@@ -41,6 +41,7 @@
 	--processed-food: #b17e2f;
 	--processed-product: var(--prepared);
 	--composition: var(--order);
+	--service: #5a720e;
 	--other: black;
 
 	--ach: var(--todo);

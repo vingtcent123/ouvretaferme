@@ -15,6 +15,9 @@ abstract class ItemElement extends \Element {
 	const MARKET = 'market';
 	const COMPOSITION = 'composition';
 
+	const GOOD = 'good';
+	const SERVICE = 'service';
+
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
@@ -71,6 +74,7 @@ class ItemModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'composition' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'ingredientOf' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
+			'nature' => ['enum', [\selling\Item::GOOD, \selling\Item::SERVICE], 'cast' => 'enum'],
 			'quality' => ['enum', [\selling\Item::ORGANIC, \selling\Item::NATURE_PROGRES, \selling\Item::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
@@ -92,7 +96,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -128,6 +132,9 @@ class ItemModel extends \ModuleModel {
 			case 'profile' :
 				return Item::SALE;
 
+			case 'nature' :
+				return Item::GOOD;
+
 			case 'discount' :
 				return 0;
 
@@ -158,6 +165,9 @@ class ItemModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'profile' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'nature' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'quality' :
@@ -242,6 +252,10 @@ class ItemModel extends \ModuleModel {
 
 	public function whereIngredientOf(...$data): ItemModel {
 		return $this->where('ingredientOf', ...$data);
+	}
+
+	public function whereNature(...$data): ItemModel {
+		return $this->where('nature', ...$data);
 	}
 
 	public function whereQuality(...$data): ItemModel {

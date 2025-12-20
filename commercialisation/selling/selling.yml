@@ -156,6 +156,7 @@ Item:
   product: ?selling\Product
   composition: ?selling\Sale
   ingredientOf: ?selling\Item
+  nature: enum(GOOD, SERVICE) = GOOD
   quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
   parent: ?selling\Item
   packaging: ?decimal(6, 2, 0.01, null)
@@ -230,7 +231,7 @@ Product:
   additional: ?text8(1, null) @collate(general)
   description: ?editor24
   vignette: ?textFixed(30, 30) @charset(ascii)
-  profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER)
+  profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER, SERVICE)
   category: ?selling\Category
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null) @collate(general)
@@ -277,6 +278,7 @@ Sale:
   taxes: enum(INCLUDING, EXCLUDING)
   organic: bool = FALSE
   conversion: bool = FALSE
+  nature: ?enum(GOOD, SERVICE, MIXED)
   type: enum(PRIVATE, PRO)
   discount: int8(0, 100) = 0
   items: int16(0, null) = 0

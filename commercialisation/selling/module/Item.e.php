@@ -132,6 +132,19 @@ class Item extends ItemElement {
 				return ($eProduct['profile'] !== Product::COMPOSITION);
 
 			})
+			->setCallback('nature.check', function(?string $nature) use ($p): bool {
+
+				if($p->isInvalid('product')) {
+					return TRUE;
+				}
+
+				if($this['product']->notEmpty()) {
+					return TRUE;
+				} else {
+					return in_array($nature, [Item::GOOD, Item::SERVICE]);
+				}
+
+			})
 			->setCallback('vatRate.check', function(?float &$vatRate): bool {
 
 				if($this['sale']['hasVat'] === FALSE) {

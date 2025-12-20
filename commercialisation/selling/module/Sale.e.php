@@ -572,7 +572,7 @@ class Sale extends SaleElement {
 	public function acceptOrderForm(): bool {
 
 		return
-			$this->acceptDeliveryNote() and
+			$this->acceptCommonDocument() and
 			$this['shop']->empty();
 
 	}
@@ -600,6 +600,15 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptDeliveryNote(): bool {
+
+		return (
+			in_array($this['nature'], [Sale::MIXED, Sale::GOOD]) and
+			$this->acceptCommonDocument()
+		);
+
+	}
+
+	public function acceptCommonDocument(): bool {
 
 		return (
 			$this['customer']->notEmpty() and

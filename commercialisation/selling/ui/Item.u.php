@@ -78,7 +78,7 @@ class ItemUi {
 				});
 
 				if($eSale->isComposition() === FALSE) {
-					$new .= '<div class="item-add-scratch">'.\Asset::icon('chevron-right').' <a href="/selling/item:create?sale='.$eSale['id'].'">'.s("Ajouter un article sans référence de produit").'</a></div>';
+					$new .= $this->getCreateArticle($eSale);
 				}
 
 			$new .= '</div>';
@@ -279,6 +279,21 @@ class ItemUi {
 
 	}
 
+	protected function getCreateArticle(Sale $eSale): string {
+
+		$h = '<div class="item-add-scratch">';
+			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle">'.s("Ajouter un article sans référence de produit").'</a>';
+			$h .= '<div class="dropdown-list">';
+				$h .= '<div class="dropdown-title">'.s("Nouvel article").'</div>';
+				$h .= '<a href="/selling/item:create?sale='.$eSale['id'].'&nature='.Item::GOOD.'" class="dropdown-item">'.s("Livraison de bien").'</a>';
+				$h .= '<a href="/selling/item:create?sale='.$eSale['id'].'&nature='.Item::SERVICE.'" class="dropdown-item">'.s("Prestation de service").'</a>';
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	protected function getItemsBody(Sale $eSale, \Collection $cItem, bool $isPreparing, int $columns, bool $withPackaging, bool $withVat): string {
 
 		$h = '';
@@ -338,6 +353,10 @@ class ItemUi {
 			}
 
 			$details = self::getDetails($eItem);
+
+			if($eItem['nature'] === Item::SERVICE) {
+				$details[] = s("Prestation de service");
+			}
 
 			if($details) {
 				$product .= '<div class="item-item-product-description">';
@@ -1153,7 +1172,7 @@ class ItemUi {
 				['class' => 'form-group-highlight']
 			);
 
-			$h .= '<div class="item-add-scratch">'.\Asset::icon('chevron-right').' <a href="/selling/item:create?sale='.$eSale['id'].'">'.s("Ajouter un article sans référence de produit").'</a></div>';
+			$h .= $this->getCreateArticle($eSale);
 
 		$h .= $form->close();
 
@@ -1232,6 +1251,7 @@ class ItemUi {
 
 					$h .= $form->hidden('product[0]', '');
 					$h .= $form->hidden('locked[0]', Item::PRICE);
+					$h .= $form->dynamicGroup($eItem, 'nature[0]*');
 					$h .= $form->dynamicGroup($eItem, 'name[0]*');
 
 					if($eItem['sale']['type'] === Customer::PRO) {
@@ -1423,6 +1443,7 @@ class ItemUi {
 		$d = Item::model()->describer($property, [
 			'name' => s("Désignation"),
 			'additional' => s("Complément d'information"),
+			'nature' => s("Nature de la prestation"),
 			'origin' => s("Origine"),
 			'product' => s("Produit"),
 			'quality' => s("Signe de qualité"),
@@ -1451,6 +1472,13 @@ class ItemUi {
 					];
 				};
 				new ProductUi()->query($d);
+				break;
+
+			case 'nature' :
+				$d->values = [
+					Item::GOOD => s("Livraison de bien"),
+					Item::SERVICE => s("Prestation de service"),
+				];
 				break;
 
 			case 'origin' :
@@ -1523,6 +1551,8 @@ class ItemUi {
 					'onfocus' => 'this.select()',
 					'oninput' => 'Item.recalculateLock(this)'
 				];
+
+				$d->group = fn() => ['wrapper' => $d->name.' '.str_replace('unitPrice', 'unitPriceDiscount', $d->name)];
 
 				$d->after = function(\util\FormUi $form, Item $e) use ($d) {
 

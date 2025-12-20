@@ -34,6 +34,16 @@ new Page(function($data) {
 			\selling\UnitLib::getByFarm($data->eSale['farm']) :
 			new Collection();
 
+		if($data->eProduct->empty()) {
+
+			$data->eItem['nature'] = \selling\Item::GET('nature', 'nature');
+
+			if($data->eItem['nature'] === \selling\Item::SERVICE) {
+				$data->eItem['vatRate'] = \selling\SellingSetting::getStandardVatRate($data->eSale['farm']);
+			}
+
+		}
+
 		throw new ViewAction($data);
 
 	})

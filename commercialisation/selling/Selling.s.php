@@ -8,17 +8,23 @@ class SellingSetting extends \Settings {
 	const EXAMPLE_SALE_PRO = 1736;
 	const EXAMPLE_SALE_PRIVATE = 3133;
 
-	public static function getStandardVatRate(\farm\Farm $eFarm): float {
+	public static function getStandardVat(\farm\Farm $eFarm): float {
 
 		$eCountry = $eFarm->getConf('taxCountry');
 
 		if($eCountry['id'] === \user\UserSetting::FR) {
-			return self::getVatRate($eFarm, 4);
+			return 4;
 		} else if($eCountry['id'] === \user\UserSetting::BE) {
-			return self::getVatRate($eFarm, 103);
+			return 103;
 		} else {
-			return self::getVatRate($eFarm, 9999);
+			return 999;
 		}
+
+	}
+
+	public static function getStandardVatRate(\farm\Farm $eFarm): float {
+
+		return self::getVatRate($eFarm, self::getStandardVat($eFarm));
 
 	}
 

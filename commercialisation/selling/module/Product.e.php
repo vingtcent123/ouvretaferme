@@ -147,6 +147,7 @@ class Product extends ProductElement {
 
 	public static function getProfiles(string $property): array {
 		return match($property) {
+			'characteristics' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
 			'compositionVisibility' => [Product::COMPOSITION],
 			'unprocessedPlant' => [Product::UNPROCESSED_PLANT],
 			'unprocessedVariety' => [Product::UNPROCESSED_PLANT],
