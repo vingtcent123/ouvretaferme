@@ -34,7 +34,7 @@ class CashflowUi {
 				['class' => 'company-period-input-group']
 			);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
-			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut")]);
+			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut"), 'onchange' => 'Cashflow.changeStatusSelector(this);']);
 			$h .= $form->select('isReconciliated', [TRUE => s("oui"), FALSE => s("non")], $search->get('isReconciliated'), ['placeholder' => s("Rapprochée")]);
 			$h .= $form->inputGroup($form->addon(s('Montant'))
 					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01])
@@ -54,6 +54,7 @@ class CashflowUi {
 		$h .= '</div>';
 		$h .= '<div class="mb-2 mt-1">';
 		$h .= $form->checkbox('status', Cashflow::WAITING, [
+			'name' => 'status-shortcut',
 			'checked' => $search->get('status') === Cashflow::WAITING,
 			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
 		]);

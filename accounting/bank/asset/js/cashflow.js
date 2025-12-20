@@ -5,6 +5,14 @@ document.delegateEventListener('panelAfterPaint', '#panel-bank-cashflow-allocate
 
 class Cashflow {
 
+    static changeStatusSelector(target) {
+
+        if(target.value !== 'waiting') {
+            qs('[name="status-shortcut"]').checked = false;
+        }
+
+    }
+
     static recalculateAmounts(excludeIndex) {
 
         const operationNumber = qs('[data-columns]').dataset.columns;
