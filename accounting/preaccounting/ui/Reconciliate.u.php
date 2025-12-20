@@ -28,7 +28,7 @@ Class ReconciliateUi {
 						$h .= '<th>'.\Asset::icon('file-person').' '.s("Client").'</th>';
 						$h .= '<th>'.\Asset::icon('123').' '.s("Libellé").'</th>';
 						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
-						$h .= '<th class="text-center">'.s("Indice<br/>de confiance").'</th>';
+						$h .= '<th class="text-center">'.s("Indice<br/>de confiance").'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('file-person').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">'.\Asset::icon('123').'</th>';
