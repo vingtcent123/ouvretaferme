@@ -113,6 +113,7 @@ class OperationLib extends OperationCrud {
 		return Operation::model()
 			->select(Operation::getSelection() + [
 				'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
+				'asset' => \asset\Asset::getSelection(),
 			])
 			->whereHash($hash)
 			->sort(['id' => SORT_ASC])
