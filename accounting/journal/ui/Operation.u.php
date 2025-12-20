@@ -970,6 +970,7 @@ class OperationUi {
 				$h .=  $form->dynamicField($eOperation, 'document'.$suffix, function($d) use($index) {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-field'] = 'document';
+					$d->attributes['onfocus'] = 'this.select()';
 				});
 			$h .='</div>';
 
@@ -1049,7 +1050,10 @@ class OperationUi {
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="description'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'description'.$suffix, fn($d) => $d->default = $defaultValues['description'] ?? '');
+				$h .= $form->dynamicField($eOperation, 'description'.$suffix, function ($d) {
+					$d->default = $defaultValues['description'] ?? '';
+					$d->attributes['onfocus'] = 'this.select()';
+				});
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="comment'.$suffix.'">';
