@@ -13,6 +13,57 @@ Class ReconciliateUi {
 		$h = '';
 		$form = new \util\FormUi();
 
+		$elements = [];
+		foreach($ccSuggestion as $cSuggestion) {
+
+			$cSuggestion->sort(['weight' => SORT_DESC]);
+
+			$eSuggestion = $cSuggestion->first();
+			$eCashflow = $eSuggestion['cashflow'];
+			if($eSuggestion['invoice']->notEmpty()) {
+				if($selectedTab !== 'invoice') {
+					continue;
+				}
+				$element = [
+					'suggestion' => $eSuggestion,
+					'date'=> $eSuggestion['invoice']['date'],
+					'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
+					'customer'=> $eSuggestion['invoice']['customer']->getName(),
+					'reference'=> $eSuggestion['invoice']['name'],
+					'confidence' => $this->confidenceValue($eSuggestion)[0],
+				];
+			} else if($eSuggestion['sale']->notEmpty()) {
+				if($selectedTab !== 'sale') {
+					continue;
+				}
+				$element = [
+					'suggestion' => $eSuggestion,
+					'date'=> $eSuggestion['sale']['deliveredAt'],
+					'amount'=> $eSuggestion['sale']['priceIncludingVat'],
+					'customer'=> $eSuggestion['sale']['customer']->getName(),
+					'reference'=> $eSuggestion['sale']['document'],
+					'confidence' => $this->confidenceValue($eSuggestion)[0],
+				];
+			} else if($eSuggestion['operation']->notEmpty()) {
+				if($selectedTab !== 'operation') {
+					continue;
+				}
+				$element = [
+					'suggestion' => $eSuggestion,
+					'date'=> $eSuggestion['operation']['date'],
+					'amount'=> $eSuggestion['operation']['amount'],
+					'customer'=> $eSuggestion['operation']['thirdParty']['name'],
+					'reference'=> $eSuggestion['operation']['description'],
+					'confidence' => $this->confidenceValue($eSuggestion)[0],
+				];
+			}
+
+			$elements[] = $element;
+		}
+
+		usort($elements, fn($element1, $element2) => $element1['confidence'] <=> $element2['confidence']);
+		$elements = array_reverse($elements);
+
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
 			$h .= '<table class="reconciliate-table" data-batch="#batch-reconciliate">';
@@ -20,60 +71,48 @@ Class ReconciliateUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 						$h .= '<th class="td-checkbox">';
-							$h .= '<label>';
-								$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="reconciliate" onclick="Reconciliate.toggleGroupSelection(this)"/>';
-							$h .= '</label>';
 						$h .= '</th>';
 						$h .= '<th>'.\Asset::icon('calendar-range').' '.s("Date").'</th>';
 						$h .= '<th>'.\Asset::icon('file-person').' '.s("Client").'</th>';
-						$h .= '<th>'.\Asset::icon('123').' '.s("Libellé").'</th>';
+						$h .= '<th># '.s("Référence").'</th>';
 						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
 						$h .= '<th class="text-center">'.s("Indice<br/>de confiance").'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('file-person').'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">'.\Asset::icon('123').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';
+						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('file-person').'</th>';
+						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">#</th>';
+						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
+						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le moyen de paiement ?").'">'.\Asset::icon('wallet2').'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
-				foreach($ccSuggestion as $cSuggestion) {
+				$currentConfidence = NULL;
+				foreach($elements as $element) {
 
-					$cSuggestion->sort(['weight' => SORT_DESC]);
+					if($currentConfidence !== $element['confidence']) {
 
-					$eSuggestion = $cSuggestion->first();
-					$eCashflow = $eSuggestion['cashflow'];
-					if($eSuggestion['invoice']->notEmpty()) {
-						if($selectedTab !== 'invoice') {
-							continue;
-						}
-						$element = [
-							'date'=> $eSuggestion['invoice']['date'],
-							'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
-							'customer'=> $eSuggestion['invoice']['customer']->getName(),
-							'reference'=> $eSuggestion['invoice']['name'],
-						];
-					} else if($eSuggestion['sale']->notEmpty()) {
-						if($selectedTab !== 'sale') {
-							continue;
-						}
-						$element = [
-							'date'=> $eSuggestion['sale']['deliveredAt'],
-							'amount'=> $eSuggestion['sale']['priceIncludingVat'],
-							'customer'=> $eSuggestion['sale']['customer']->getName(),
-							'reference'=> $eSuggestion['sale']['document'],
-						];
-					} else if($eSuggestion['operation']->notEmpty()) {
-						if($selectedTab !== 'operation') {
-							continue;
-						}
-						$element = [
-							'date'=> $eSuggestion['operation']['date'],
-							'amount'=> $eSuggestion['operation']['amount'],
-							'customer'=> $eSuggestion['operation']['thirdParty']['name'],
-							'reference'=> $eSuggestion['operation']['description'],
-						];
+						$currentConfidence = $element['confidence'];
+						$h .= '<tbody data-confidence="'.$currentConfidence.'">';
+
+							$h .= '<tr class="tr-title row-header">';
+								$h .= '<td class="td-checkbox">';
+									$h .= '<label>';
+										$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="reconciliate" data-confidence="'.$currentConfidence.'" onclick="Reconciliate.toggleGroupSelection(this)"/>';
+									$h .= '</label>';
+								$h .= '</td>';
+								$h .= '<td colspan="3">'.s("Indice de confiance {value}", '<span style="font-size: 1.5rem;">'.\Asset::icon($currentConfidence.'-circle').'</span>').'</td>';
+								$h .= '<td class="text-end highlight-stick-right"></td>';
+								$h .= '<td></td>';
+								$h .= '<td></td>';
+								$h .= '<td></td>';
+								$h .= '<td></td>';
+								$h .= '<td></td>';
+								$h .= '<td></td>';
+							$h .= '</tr>';
+
 					}
 
+					$eSuggestion = $element['suggestion'];
+					$eCashflow = $element['suggestion']['cashflow'];
 					$batch = [];
 					if($eSuggestion->acceptIgnore() === FALSE) {
 						$batch[] = 'not-ignore';
@@ -97,22 +136,24 @@ Class ReconciliateUi {
 							$h .= '<td></td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
+							$h .= '<td></td>';
 						$h .= '</tr>';
 
 						$h .= '<tr>';
 
 							$h .= '<td class="td-checkbox">';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'" data-confidence="'.$currentConfidence.'"/>';
 							$h .= '</td>';
 
 							$h .= '<td '.$onclick.'>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
 							$h .= '<td colspan="2" '.$onclick.'>'.encode($eCashflow['memo']).'</td>';
 							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'>'.\util\TextUi::money($eCashflow['amount']).'</td>';
 							$h .= '<td class="text-center td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->confidence($eSuggestion).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element,\preaccounting\Suggestion::THIRD_PARTY).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
 							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element,\preaccounting\Suggestion::THIRD_PARTY).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::PAYMENT_METHOD).'</td>';
 						$h .= '</tr>';
 
 						$attributes = [
@@ -167,7 +208,7 @@ Class ReconciliateUi {
 
 	}
 
-	public function confidence(Suggestion $eSuggestion) {
+	public function confidenceValue(Suggestion $eSuggestion): array {
 
 		$count = 0;
 		$class = 'success';
@@ -185,6 +226,13 @@ Class ReconciliateUi {
 			) {
 				$count++;
 			}
+		}
+
+		if(
+			($eSuggestion['reason']->get() & Suggestion::PAYMENT_METHOD) === FALSE or
+			($eSuggestion['reason']->get() & Suggestion::DATE) === FALSE
+		) {
+			$class = 'warning';
 		}
 
 		if($count === 0) { // Ni tiers, ni reference, ni montant exact
@@ -205,6 +253,14 @@ Class ReconciliateUi {
 		) {
 			$count--;
 		}
+
+		return [$count, $class];
+
+	}
+
+	public function confidence(Suggestion $eSuggestion) {
+
+		list($count, $class) = $this->confidenceValue($eSuggestion);
 
 		return '<span class="reconciliate-confidence fs-2 color-'.$class.'">'.\Asset::icon($count.'-circle-fill').'</span>';
 

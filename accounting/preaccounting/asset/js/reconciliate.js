@@ -21,7 +21,9 @@ class Reconciliate {
 	}
 	static toggleGroupSelection(target) {
 
-		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
+		const currentConfidence = target.dataset.confidence;
+
+		CheckboxField.all(target.firstParent('table'), target.checked, 'input[type="checkbox"][data-confidence="' + currentConfidence + '"][name^="batch[]"]');
 
 		this.changeSelection(target);
 

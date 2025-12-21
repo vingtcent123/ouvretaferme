@@ -326,7 +326,7 @@ Class SuggestionLib extends SuggestionCrud {
 				'paymentMethod' => ['id', 'fqn'],
 			])
 			->whereFarm($eFarm)
-			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
+			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1))
 			->whereDate('<=', $eCashflow['date'])
 			->getCollection();
 
@@ -369,7 +369,7 @@ Class SuggestionLib extends SuggestionCrud {
 						->delegateCollection('sale'),
 				])
 				->whereFarm($eFarm)
-				->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
+				->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1))
 				->whereInvoice(NULL)
 				->whereProfile('IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
 				->whereDeliveredAt('<=', $eCashflow['date'])
