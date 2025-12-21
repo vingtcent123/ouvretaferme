@@ -122,27 +122,27 @@ class Series {
 		return Batch.changeSelection('#batch-series', null, function(selection) {
 
 			if(selection.filter('[data-batch~="not-open"]').length > 0) {
-				qsa('.batch-menu-open', button => button.hide());
+				qsa('.batch-open', button => button.hide());
 			} else {
-				qsa('.batch-menu-open', button => button.removeHide());
+				qsa('.batch-open', button => button.removeHide());
 			}
 
 			if(selection.filter('[data-batch~="not-close"]').length > 0) {
-				qsa('.batch-menu-close', button => button.hide());
+				qsa('.batch-close', button => button.hide());
 			} else {
-				qsa('.batch-menu-close', button => button.removeHide());
+				qsa('.batch-close', button => button.removeHide());
 			}
 
 			if(selection.filter('[data-batch~="not-duplicate"]').length > 0) {
-				qsa('.batch-menu-duplicate', button => button.hide());
+				qsa('.batch-duplicate', button => button.hide());
 			} else {
-				qsa('.batch-menu-duplicate', button => button.removeHide());
+				qsa('.batch-duplicate', button => button.removeHide());
 			}
 
 			if(selection.filter('[data-batch~="not-season"]').length > 0) {
-				qsa('.batch-menu-season', button => button.hide());
+				qsa('.batch-season', button => button.hide());
 			} else {
-				qsa('.batch-menu-season', button => button.removeHide());
+				qsa('.batch-season', button => button.removeHide());
 			}
 
 		});

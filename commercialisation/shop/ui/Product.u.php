@@ -1463,24 +1463,24 @@ class ProductUi {
 
 		if($eCatalog->notEmpty()) {
 
-			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
+			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-active batch-item">';
 				$menu .= \Asset::icon('toggle-on');
 				$menu .= '<span>'.s("Activer").'</span>';
 			$menu .= '</a>';
 
-			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-menu-inactive batch-menu-item">';
+			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-inactive batch-item">';
 				$menu .= \Asset::icon('toggle-off');
 				$menu .= '<span>'.s("Désactiver").'</span>';
 			$menu .= '</a>';
 
-			$menu .= '<a data-url="/shop/relation:create?farm='.$eFarm['id'].($eDate->notEmpty() ? '&date='.$eDate['id'] : '').($eCatalog->notEmpty() ? '&catalog='.$eCatalog['id'] : '').'" class="batch-menu-relation batch-menu-item">';
+			$menu .= '<a data-url="/shop/relation:create?farm='.$eFarm['id'].($eDate->notEmpty() ? '&date='.$eDate['id'] : '').($eCatalog->notEmpty() ? '&catalog='.$eCatalog['id'] : '').'" class="batch-relation batch-item">';
 				$menu .= \Asset::icon('plus-circle');
 				$menu .= '<span>'.s("Créer un groupe").'</span>';
 			$menu .= '</a>';
 
 		}
 
-		$danger = '<a data-ajax-submit="/shop/product:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces produits du catalogue ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
+		$danger = '<a data-ajax-submit="/shop/product:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces produits du catalogue ?").'" class="batch-delete batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';

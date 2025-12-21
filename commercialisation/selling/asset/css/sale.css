@@ -85,9 +85,21 @@ div.selling-label-example > * {
 	color: var(--delivered);
 }
 
-.sale-preparation-status-batch {
-	text-decoration: none;
-	margin-bottom: 0.25rem;
+.batch-preparation-status-list {
+	width: 2.5rem;
+	height: 2.5rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	grid-gap: 0.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.batch-preparation-status-list > * {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	border: 1px solid #fffa;
 }
 
 @media (max-width: 767px) {

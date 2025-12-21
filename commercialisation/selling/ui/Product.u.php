@@ -482,7 +482,7 @@ class ProductUi {
 
 		if($cCategory->count() > 0) {
 
-			$menu .= '<a data-dropdown="top-start" class="batch-menu-category batch-menu-item">';
+			$menu .= '<a data-dropdown="top-start" class="batch-category batch-item">';
 				$menu .= \Asset::icon('tag');
 				$menu .= '<span>'.s("Catégorie").'</span>';
 			$menu .= '</a>';
@@ -498,15 +498,15 @@ class ProductUi {
 		}
 
 		if($eFarm->hasAccounting()) {
-			$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Numéro de compte").'</span></a>';
+			$menu .= '<a data-ajax-submit="/selling/product:updateAccount" data-ajax-method="get" class="batch-item">'.\Asset::icon('journal-text').'<span>'.s("Numéro de compte").'</span></a>';
 		}
 
-		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-menu-active batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-active batch-item">';
 			$menu .= \Asset::icon('toggle-on');
 			$menu .= '<span>'.s("Activer").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-menu-inactive batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/selling/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-inactive batch-item">';
 			$menu .= \Asset::icon('toggle-off');
 			$menu .= '<span>'.s("Désactiver").'</span>';
 		$menu .= '</a>';

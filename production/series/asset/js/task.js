@@ -796,7 +796,7 @@ class Task {
 		return Batch.changeSelection('#batch-task', '#batch-task-one',function(selection) {
 
 			if(selection.filter(':not([data-batch~="harvest"])').length > 0) {
-				qsa(".batch-menu-harvest", button => button.hide());
+				qsa(".batch-harvest", button => button.hide());
 			} else {
 
 				// Récolte = même plante, même variété
@@ -805,7 +805,7 @@ class Task {
 
 				selection.forEach((field) => {
 
-					const task = field.firstParent('.batch-item');
+					const task = field.firstParent('.batch-checkbox');
 
 					if(harvestString === null) {
 						harvestString = task.dataset.filterHarvest;
@@ -817,9 +817,9 @@ class Task {
 				});
 
 				if(harvestHide) {
-					qsa(".batch-menu-harvest", button => button.hide());
+					qsa(".batch-harvest", button => button.hide());
 				} else {
-					qsa(".batch-menu-harvest", button => button.removeHide());
+					qsa(".batch-harvest", button => button.removeHide());
 				}
 
 			}
@@ -830,7 +830,7 @@ class Task {
 
 			selection.forEach((field) => {
 
-				const task = field.firstParent('.batch-item');
+				const task = field.firstParent('.batch-checkbox');
 				const taskAction = task.dataset.filterAction;
 
 				if(action === null) {
@@ -843,35 +843,35 @@ class Task {
 			});
 
 			if(sameAction === false) {
-				qsa('.batch-menu-timesheet', button => button.hide());
+				qsa('.batch-timesheet', button => button.hide());
 			} else {
-				qsa('.batch-menu-timesheet', button => button.removeHide());
+				qsa('.batch-timesheet', button => button.removeHide());
 			}
 
 			if(selection.length > 1) {
-				qs('.batch-menu-update', button => button.hide());
+				qs('.batch-update', button => button.hide());
 			} else {
-				qs('.batch-menu-update', button => {
+				qs('.batch-update', button => {
 						 button.setAttribute('href', '/series/task:update?id='+ selection[0].value);
 						 button.removeHide();
 				});
 			}
 
 			if(selection.filter('[data-batch~="done"]').length > 0) {
-				qsa('.batch-menu-planned', button => button.hide());
-				qsa('.batch-menu-users', button => button.hide());
+				qsa('.batch-planned', button => button.hide());
+				qsa('.batch-users', button => button.hide());
 			} else {
-				qsa('.batch-menu-planned', button => button.removeHide());
+				qsa('.batch-planned', button => button.removeHide());
 
 				if(selection.filter('[data-batch~="not-postpone"]').length > 0) {
-					qsa('.batch-menu-planned .batch-menu-postpone', link => link.hide());
+					qsa('.batch-planned .batch-postpone', link => link.hide());
 				} else {
-					qsa('.batch-menu-planned .batch-menu-postpone', link => link.removeHide());
+					qsa('.batch-planned .batch-postpone', link => link.removeHide());
 				}
 
-				qsa('.batch-menu-users', button => button.removeHide());
+				qsa('.batch-users', button => button.removeHide());
 
-				qsa('.batch-menu-users .batch-planned-user', node => {
+				qsa('.batch-users .batch-planned-user', node => {
 
 					if(selection.filter('[data-batch~="user-'+ node.getAttribute('post-user') +'"]').length !== selection.length) {
 						node.setAttribute('post-action', 'add');
@@ -886,15 +886,15 @@ class Task {
 			}
 
 			if(selection.filter('[data-batch~="todo"]').length > 0) {
-				qsa('.batch-menu-todo', button => button.hide());
+				qsa('.batch-todo', button => button.hide());
 			} else {
-				qsa('.batch-menu-todo', button => button.removeHide());
+				qsa('.batch-todo', button => button.removeHide());
 			}
 
 			if(sameAction === false || selection.filter('[data-batch~="done"]').length > 0) {
-				qsa('.batch-menu-done', button => button.hide());
+				qsa('.batch-done', button => button.hide());
 			} else {
-				qsa('.batch-menu-done', button => button.removeHide());
+				qsa('.batch-done', button => button.removeHide());
 			}
 
 		});

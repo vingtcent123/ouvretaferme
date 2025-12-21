@@ -10,7 +10,7 @@ class BatchUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div id="'.$id.'" class="batch-one hide">';
+		$h = '<div id="'.$id.'" class="batch-one-wrapper hide">';
 
 			$h .= $form->open($id.'-form');
 
@@ -37,23 +37,23 @@ class BatchUi {
 		$hide ??= 'Batch.hideSelection("#'.$id.'")';
 		$title ??= s("Pour la sélection");
 
-		$h = '<div id="'.$id.'" class="batch-group hide">';
+		$h = '<div id="'.$id.'" class="batch-group-wrapper hide">';
 
 			$h .= $form->open($id.'-form');
 
 			$h .= '<div class="batch-ids hide"></div>';
 
 			$h .= '<div class="batch-title">';
-				$h .= '<h4>'.$title.' (<span class="batch-group-count"></span>)</h4>';
+				$h .= '<h4>'.$title.' <span class="batch-group-count util-badge bg-primary"></span></h4>';
 				$h .= '<a '.attr('onclick', $hide).' class="btn btn-transparent">'.s("Annuler").'</a>';
 			$h .= '</div>';
 
 			$h .= '<div class="batch-menu">';
-				$h .= '<div class="batch-menu-main">';
+				$h .= '<div class="batch-main">';
 					$h .= $menu;
 				$h .= '</div>';
 				if($danger !== NULL) {
-					$h .= '<div class="batch-menu-danger">';
+					$h .= '<div class="batch-danger">';
 						$h .= $danger;
 					$h .= '</div>';
 				}

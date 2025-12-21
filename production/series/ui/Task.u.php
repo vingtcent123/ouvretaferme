@@ -390,14 +390,14 @@ class TaskUi {
 		$menu = '';
 
 		if($eFarm->canTask()) {
-			$menu .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-one-item batch-menu-harvest" title="'.s("Compléter la récolte").'">'.\Asset::icon('basket2').'<span>'.s("Récolte").'</span></a>';
+			$menu .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-one-item batch-harvest" title="'.s("Compléter la récolte").'">'.\Asset::icon('basket2').'<span>'.s("Récolte").'</span></a>';
 		}
 		if($eFarm->canTask()) {
-			$menu .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" class="batch-one-item batch-menu-todo" data-confirm="'.s("Annuler la réalisation de cette intervention ?").'">'.\Asset::icon('arrow-up-left').'<span>'.s("À faire").'</span></a>';
+			$menu .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" class="batch-one-item batch-todo" data-confirm="'.s("Annuler la réalisation de cette intervention ?").'">'.\Asset::icon('arrow-up-left').'<span>'.s("À faire").'</span></a>';
 		}
 		if($eFarm->canTask()) {
 
-			$menu .= '<div class="batch-menu-planned">';
+			$menu .= '<div class="batch-planned">';
 				$menu .= '<a data-dropdown="top-start" class="batch-one-item">';
 					$menu .= \Asset::icon('watch');
 					$menu .= '<span>'.s("Planifier").'</span>';
@@ -406,7 +406,7 @@ class TaskUi {
 			$menu .= '</div>';
 
 			if($cUser->count() > 1) {
-				$menu .= '<div class="batch-menu-users">';
+				$menu .= '<div class="batch-users">';
 					$menu .= '<a data-dropdown="top-start" class="batch-one-item">';
 						$menu .= \Asset::icon('people-fill');
 						$menu .= '<span>'.s("Affecter").'</span>';
@@ -421,7 +421,7 @@ class TaskUi {
 			$menu .= '<a data-ajax-submit="/series/comment:createCollection" data-ajax-method="get" class="batch-one-item">'.\Asset::icon('chat-dots-fill').'<span>'.s("Commenter").'</span></a>';
 		}
 		if($eFarm->canTask()) {
-			$menu .= '<a class="batch-one-item batch-menu-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
+			$menu .= '<a class="batch-one-item batch-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
 		}
 		if($eFarm->canTask()) {
 			$menu .= '<a data-ajax-submit="/series/task:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
@@ -436,7 +436,7 @@ class TaskUi {
 			$eFarm->canWork()
 		) {
 
-			$menu .= '<a data-ajax-submit="/series/timesheet" data-ajax-method="get" class="batch-menu-item batch-menu-timesheet">';
+			$menu .= '<a data-ajax-submit="/series/timesheet" data-ajax-method="get" class="batch-item batch-timesheet">';
 				$menu .= \Asset::icon('clock');
 				$menu .= '<span>'.s("Temps de travail").'</span>';
 			$menu .= '</a>';
@@ -445,7 +445,7 @@ class TaskUi {
 
 		if($eFarm->canTask()) {
 
-			$menu .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-menu-item batch-menu-harvest">';
+			$menu .= '<a data-ajax-submit="/series/task:updateHarvestCollection" data-ajax-method="get" class="batch-item batch-harvest">';
 				$menu .= \Asset::icon('basket2');
 				$menu .= '<span>'.s("Récolte").'</span>';
 			$menu .= '</a>';
@@ -454,12 +454,12 @@ class TaskUi {
 
 		if($eFarm->canTask()) {
 
-			$menu .= '<a data-ajax-submit="/series/task:doUpdateDoneCollection" post-done-week="'.$week.'" class="batch-menu-item batch-menu-done">';
+			$menu .= '<a data-ajax-submit="/series/task:doUpdateDoneCollection" post-done-week="'.$week.'" class="batch-item batch-done">';
 				$menu .= \Asset::icon('check-lg');
 				$menu .= '<span>'.s("Fait !").'</span>';
 			$menu .= '</a>';
 
-			$menu .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" data-confirm="'.s("Annuler la réalisation des interventions ?").'" class="batch-menu-item batch-menu-todo">';
+			$menu .= '<a data-ajax-submit="/series/task:doUpdateTodoCollection" data-confirm="'.s("Annuler la réalisation des interventions ?").'" class="batch-item batch-todo">';
 				$menu .= \Asset::icon('arrow-up-left');
 				$menu .= '<span>'.s("À faire").'</span>';
 			$menu .= '</a>';
@@ -468,8 +468,8 @@ class TaskUi {
 
 		if($eFarm->canTask()) {
 
-			$menu .= '<div class="batch-menu-planned">';
-				$menu .= '<a data-dropdown="top-start" class="batch-menu-item">';
+			$menu .= '<div class="batch-planned">';
+				$menu .= '<a data-dropdown="top-start" class="batch-item">';
 					$menu .= \Asset::icon('watch');
 					$menu .= '<span>'.s("Planifier").'</span>';
 				$menu .= '</a>';
@@ -477,8 +477,8 @@ class TaskUi {
 			$menu .= '</div>';
 
 			if($cUser->count() > 1) {
-				$menu .= '<div class="batch-menu-users">';
-					$menu .= '<a data-dropdown="top-start" class="batch-menu-item">';
+				$menu .= '<div class="batch-users">';
+					$menu .= '<a data-dropdown="top-start" class="batch-item">';
 						$menu .= \Asset::icon('people-fill');
 						$menu .= '<span>'.s("Affecter").'</span>';
 					$menu .= '</a>';
@@ -490,7 +490,7 @@ class TaskUi {
 
 		if($eFarm->canWork()) {
 
-			$menu .= '<a data-ajax-submit="/series/comment:createCollection" data-ajax-method="get" class="batch-menu-item">';
+			$menu .= '<a data-ajax-submit="/series/comment:createCollection" data-ajax-method="get" class="batch-item">';
 				$menu .= \Asset::icon('chat-dots-fill');
 				$menu .= '<span>'.s("Commenter").'</span>';
 			$menu .= '</a>';
@@ -499,7 +499,7 @@ class TaskUi {
 
 		if($eFarm->canTask()) {
 
-			$danger = '<a data-ajax-submit="/series/task:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-menu-item batch-menu-item-danger">';
+			$danger = '<a data-ajax-submit="/series/task:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-item batch-item-danger">';
 				$danger .= \Asset::icon('trash');
 				$danger .= '<span>'.s("Supprimer").'</span>';
 			$danger .= '</a>';
@@ -549,17 +549,17 @@ class TaskUi {
 				$h .= '<div class="dropdown-title">'.s("Planifier").'</div>';
 			}
 			$h .= '<div class="batch-planned-weeks">';
-				$h .= '<a data-ajax-submit="/series/task:doUpdatePlannedCollection" data-ajax-target="#'.$formId.'" post-planned-week="'.currentWeek().'" class="dropdown-item batch-menu-planned-other">';
+				$h .= '<a data-ajax-submit="/series/task:doUpdatePlannedCollection" data-ajax-target="#'.$formId.'" post-planned-week="'.currentWeek().'" class="dropdown-item batch-planned-other">';
 					$h .= '<div>'.s("Cette semaine").'</div>';
 					$h .= '<div class="batch-planned-days-date">'.s("Semaine {week}, {year}", ['week' => week_number(currentWeek()), 'year' => week_year(currentWeek())]).'</div>';
 				$h .= '</a>';
-				$h .= '<a data-ajax-submit="/series/task:updatePlannedCollection" data-ajax-method="get" data-ajax-target="#'.$formId.'" class="dropdown-item batch-menu-planned-other">';
+				$h .= '<a data-ajax-submit="/series/task:updatePlannedCollection" data-ajax-method="get" data-ajax-target="#'.$formId.'" class="dropdown-item batch-planned-other">';
 					$h .= '<div>'.s("Une autre semaine").'</div>';
 				$h .= '</a>';
 			$h .= '</div>';
-			$h .= '<a data-ajax-submit="/series/task:doIncrementPlannedCollection" data-ajax-target="#'.$formId.'" class="dropdown-item batch-menu-postpone" post-increment="-1">'.s("Décaler une semaine plus tôt").'</a>';
-			$h .= '<a data-ajax-submit="/series/task:doIncrementPlannedCollection" data-ajax-target="#'.$formId.'" class="dropdown-item batch-menu-postpone" post-increment="1">'.s("Décaler une semaine plus tard").'</a>';
-			$h .= '<a data-ajax-submit="/series/task:incrementPlannedCollection" data-ajax-method="get" data-ajax-target="#'.$formId.'" class="dropdown-item batch-menu-postpone">'.s("Décaler davantage").'</a>';
+			$h .= '<a data-ajax-submit="/series/task:doIncrementPlannedCollection" data-ajax-target="#'.$formId.'" class="dropdown-item batch-postpone" post-increment="-1">'.s("Décaler une semaine plus tôt").'</a>';
+			$h .= '<a data-ajax-submit="/series/task:doIncrementPlannedCollection" data-ajax-target="#'.$formId.'" class="dropdown-item batch-postpone" post-increment="1">'.s("Décaler une semaine plus tard").'</a>';
+			$h .= '<a data-ajax-submit="/series/task:incrementPlannedCollection" data-ajax-method="get" data-ajax-target="#'.$formId.'" class="dropdown-item batch-postpone">'.s("Décaler davantage").'</a>';
 		$h .= '</div>';
 
 		return $h;
@@ -1213,7 +1213,7 @@ class TaskUi {
 			$series === ''
 		);
 
-		$h = '<div class="tasks-planning-item '.($series ? 'tasks-planning-item-with-series' : '').' '.($withContent ? 'tasks-planning-item-with-content' : '').' '.($eTask->isDone() ? 'tasks-planning-item-done' : 'tasks-planning-item-todo').' batch-item" id="task-item-'.$eTask['id'].'" '.attrs($filters).'>';
+		$h = '<div class="tasks-planning-item '.($series ? 'tasks-planning-item-with-series' : '').' '.($withContent ? 'tasks-planning-item-with-content' : '').' '.($eTask->isDone() ? 'tasks-planning-item-done' : 'tasks-planning-item-todo').' batch-checkbox" id="task-item-'.$eTask['id'].'" '.attrs($filters).'>';
 
 			$h .= '<label class="tasks-planning-select">';
 				$h .= $this->getBatchCheckbox($form, $eTask);
@@ -1626,7 +1626,7 @@ class TaskUi {
 							'data-filter-harvest' => $this->getBatchHarvestString($eTask)
 						];
 
-						$h = '<label class="flow-timeline-select batch-item" '.attrs($filters).'>';
+						$h = '<label class="flow-timeline-select batch-checkbox" '.attrs($filters).'>';
 							$h .= $this->getBatchCheckbox($form, $eTask);
 						$h .= '</label>';
 

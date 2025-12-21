@@ -692,27 +692,27 @@ class CultivationUi {
 
 	public function getBatch(int $season): string {
 
-		$menu = '<a data-ajax-submit="/series/series:doUpdateStatusCollection" post-status="'.Series::OPEN.'" class="batch-menu-open batch-menu-item">';
+		$menu = '<a data-ajax-submit="/series/series:doUpdateStatusCollection" post-status="'.Series::OPEN.'" class="batch-open batch-item">';
 			$menu .= \Asset::icon('unlock');
 			$menu .= '<span>'.s("Réouvrir").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/series/series:doUpdateStatusCollection" post-status="'.Series::CLOSED.'" class="batch-menu-close batch-menu-item" data-confirm="'.s("Des séries clôturées sont des séries pour lesquelles vous avez terminé toutes les interventions culturales. Confirmer ?").'">';
+		$menu .= '<a data-ajax-submit="/series/series:doUpdateStatusCollection" post-status="'.Series::CLOSED.'" class="batch-close batch-item" data-confirm="'.s("Des séries clôturées sont des séries pour lesquelles vous avez terminé toutes les interventions culturales. Confirmer ?").'">';
 			$menu .= \Asset::icon('lock');
 			$menu .= '<span>'.s("Clôturer").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/series/series:duplicate" data-ajax-method="get" class="batch-menu-duplicate batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/series/series:duplicate" data-ajax-method="get" class="batch-duplicate batch-item">';
 			$menu .= \Asset::icon('copy');
 			$menu .= '<span>'.s("Dupliquer").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/series/series:updateSeasonCollection" data-ajax-method="get" class="batch-menu-season batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/series/series:updateSeasonCollection" data-ajax-method="get" class="batch-season batch-item">';
 			$menu .= \Asset::icon('calendar');
 			$menu .= '<span>'.s("Changer de saison").'</span>';
 		$menu .= '</a>';
 
-		$danger = '<a data-ajax-submit="/series/series:doDeleteCollection" data-confirm="'.s("Vous vous apprêtez à supprimer définitivement des séries de la saison {value}. Voulez-vous continuer ?", $season).'" class="batch-menu-item batch-menu-item-danger">';
+		$danger = '<a data-ajax-submit="/series/series:doDeleteCollection" data-confirm="'.s("Vous vous apprêtez à supprimer définitivement des séries de la saison {value}. Voulez-vous continuer ?", $season).'" class="batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';

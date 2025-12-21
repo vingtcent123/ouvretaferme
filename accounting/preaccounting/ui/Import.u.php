@@ -449,18 +449,18 @@ Class ImportUi {
 			'sales' => s("Pour les ventes sélectionnées"),
 		};
 
-		$menu = '<a href="javascript: void(0);" class="batch-menu-amount batch-menu-item">';
+		$menu = '<a href="javascript: void(0);" class="batch-amount batch-item">';
 			$menu .= '<span>';
-				$menu .= '<span class="batch-menu-item-number"></span>';
-				$menu .= ' <span class="batch-menu-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
+				$menu .= '<span class="batch-item-number"></span>';
+				$menu .= ' <span class="batch-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
 			$menu .= '</span>';
 			$menu .= '<span>'.s("Synthèse").'</span>';
 		$menu .= '</a>';
 
 
-		$menu .= '<a data-ajax-submit="'.$url.'" class="batch-menu-import batch-menu-item" post-financial-year="'.$eFinancialYear['id'].'">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.$url.'" class="batch-import batch-item" post-financial-year="'.$eFinancialYear['id'].'">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
 
-		$menu .= '<a data-ajax-submit="'.$urlIgnore.'" post-type="'.$type.'" class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.$urlIgnore.'" post-type="'.$type.'" class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 
 		return \util\BatchUi::group('batch-'.$type, $menu, title: $title);
 

@@ -61,6 +61,12 @@ class Sale {
 
 	static changeSelection() {
 
+		const updateStatus = function(action, number) {
+
+			qs('.batch-preparation-status .batch-'+ action);
+
+		};
+
 		return Batch.changeSelection('#batch-sale', null, function(selection) {
 
 			let actions = 0;
@@ -94,62 +100,22 @@ class Sale {
 			const amount = (taxes === 'excluding') ? amountExcluding : amountIncluding;
 
 			qs(
-				'.batch-menu-item-number',
+				'.batch-item-number',
 				node => {
 					node.innerHTML = money(amount, 2);
 
-					const link = node.firstParent('.batch-menu-amount');
+					const link = node.firstParent('.batch-amount');
 					link.setAttribute('href', link.dataset.url + ids);
 				}
 			);
 
 			qs(
-				'.batch-menu-item-taxes',
+				'.batch-item-taxes',
 				node => node.innerHTML = (taxes === null) ? '' : ((taxes === 'excluding') ? node.dataset.excluding : node.dataset.including)
 			);
 
 			qs(
-				'.batch-menu-cancel',
-				selection.filter('[data-batch~="not-canceled"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			qs(
-				'.batch-menu-confirmed',
-				selection.filter('[data-batch~="not-confirmed"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			qs(
-				'.batch-menu-prepared',
-				selection.filter('[data-batch~="not-prepared"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			qs(
-				'.batch-menu-delivered',
-				selection.filter('[data-batch~="not-delivered"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			qs(
-				'.batch-menu-delete',
+				'.batch-delete',
 				selection.filter('[data-batch~="not-delete"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -159,7 +125,7 @@ class Sale {
 			);
 
 			qs(
-				'.batch-menu-payment-method',
+				'.batch-payment-method',
 				selection.filter('[data-batch~="not-update-payment"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -169,7 +135,7 @@ class Sale {
 			);
 
 			qs(
-				'.batch-menu-prepare',
+				'.batch-prepare',
 				selection.filter('[data-batch~="not-prepare"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -179,8 +145,6 @@ class Sale {
 						actions++;
 					}
 			);
-
-			return actions;
 
 		});
 

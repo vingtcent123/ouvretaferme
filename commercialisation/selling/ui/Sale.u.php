@@ -355,37 +355,38 @@ class SaleUi {
 
 					if(
 						$eSale->canWrite() === FALSE or
-						$eSale->acceptStatusPrepared() === FALSE
-					) {
-						$batch[] = 'not-prepared';
-					}
-
-					if(
-						$eSale->canWrite() === FALSE or
 						$eSale['preparationStatus'] !== Sale::CONFIRMED
 					) {
 						$batch[] = 'not-prepare';
 					}
 
-					if(
-						$eSale->canWrite() === FALSE or
-						$eSale->acceptStatusConfirmed() === FALSE
-					) {
-						$batch[] = 'not-confirmed';
-					}
+					if($eSale->canWrite()) {
 
-					if(
-						$eSale->canWrite() === FALSE or
-						$eSale->acceptStatusCanceled() === FALSE
-					) {
-						$batch[] = 'not-canceled';
-					}
+						if($eSale->acceptStatusConfirmed()) {
+							$batch[] = 'accept-confirmed';
+						}
 
-					if(
-						$eSale->canWrite() === FALSE or
-						$eSale->acceptStatusDelivered() === FALSE
-					) {
-						$batch[] = 'not-delivered';
+						if($eSale->acceptStatusCanceled()) {
+							$batch[] = 'accept-canceled';
+						}
+
+						if($eSale->acceptStatusDelivered()) {
+							$batch[] = 'accept-delivered';
+						}
+
+						if($eSale->acceptStatusPrepared()) {
+							$batch[] = 'accept-prepared';
+						}
+
+						if(
+							$eSale->acceptStatusConfirmed() or
+							$eSale->acceptStatusCanceled() or
+							$eSale->acceptStatusDelivered() or
+							$eSale->acceptStatusPrepared()
+						) {
+							$batch[] = 'accept-status';
+						}
+
 					}
 
 					if(
@@ -608,42 +609,53 @@ class SaleUi {
 
 	public function getBatch(\farm\Farm $eFarm, \Collection $cPaymentMethod): string {
 
-		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
+		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-amount batch-item">';
 			$menu .= '<span>';
-				$menu .= '<span class="batch-menu-item-number"></span>';
-				$menu .= ' <span class="batch-menu-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
+				$menu .= '<span class="batch-item-number"></span>';
+				$menu .= ' <span class="batch-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
 			$menu .= '</span>';
 			$menu .= '<span>'.s("Synthèse").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateConfirmedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-confirmed batch-menu-item">';
-			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-confirmed-button">'.self::p('preparationStatus')->shortValues[Sale::CONFIRMED].'</span>';
-			$menu .= '<span>'.s("Confirmé").'</span>';
+		$actions = [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CANCELED];
+
+		$menu .= '<a data-dropdown="top-start" class="batch-preparation-status batch-item" data-batch-behavior="hide" data-batch-active="accept-status">';
+			$menu .= '<div class="batch-preparation-status-list">';
+				foreach($actions as $action) {
+					$menu .= '<span class="batch-'.$action.' sale-preparation-status-'.$action.'-button" data-batch-behavior="mute" data-batch-active="accept-'.$action.'"></span>';
+				}
+			$menu .= '</div>';
+			$menu .= '<span>'.s("État").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePreparedCollection" data-confirm="'.s("Marquer ces ventes comme confirmées ?").'" class="batch-menu-prepared batch-menu-item">';
-			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-prepared-button">'.self::p('preparationStatus')->shortValues[Sale::PREPARED].'</span>';
-			$menu .= '<span>'.s("Préparé").'</span>';
-		$menu .= '</a>';
+		$menu .= '<div class="dropdown-list bg-secondary">';
+			$menu .= '<div class="dropdown-title">'.s("Changer d'état").'</div>';
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateDeliveredCollection" data-confirm="'.s("Marquer ces ventes comme livrées ?").'" class="batch-menu-delivered batch-menu-item">';
-			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-delivered-button">'.self::p('preparationStatus')->shortValues[Sale::DELIVERED].'</span>';
-			$menu .= '<span>'.s("Livré").'</span>';
-		$menu .= '</a>';
+			foreach($actions as $action) {
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces ventes ?").'" class="batch-menu-cancel batch-menu-item">';
-			$menu .= '<span class="btn btn-xs sale-preparation-status-batch sale-preparation-status-draft-button">'.self::p('preparationStatus')->shortValues[Sale::CANCELED].'</span>';
-			$menu .= '<span>'.s("Annuler").'</span>';
-		$menu .= '</a>';
+				if($action === Sale::CANCELED) {
+					$menu .= '<div class="dropdown-divider"></div>';
+				}
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-menu-item">';
-			$menu .= \Asset::icon('filetype-pdf');
-			$menu .= '<span>'.s("Exporter").'</span>';
-		$menu .= '</a>';
+				$confirm = match($action) {
+					Sale::CONFIRMED => s("Marquer ces ventes comme confirmées ?"),
+					Sale::PREPARED => s("Marquer ces ventes comme préparées ?"),
+					Sale::DELIVERED => s("Marquer ces ventes comme livrées ?"),
+					Sale::CANCELED => s("Marquer ces ventes comme annulées ?"),
+				};
 
-		$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
+				$menu .= '<a data-ajax="/selling/sale:doUpdate'.ucfirst($action).'Collection" data-batch-behavior="post mute" data-batch-active="accept-'.$action.'" data-confirm="'.$confirm.'" class="dropdown-item batch-'.$action.'">';
+					$menu .= '<span class="btn btn-xs sale-preparation-status-'.$action.'-button">'.self::p('preparationStatus')->values[$action].'</span>';
+					$menu .= '  <span class="util-badge bg-primary" data-batch-behavior="count" data-batch-active="accept-'.$action.'">0</span></span>';
+				$menu .= '</a>';
+
+			}
+
+		$menu .= '</div>';
+
+		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
 			$menu .= \Asset::icon('cash-coin');
-			$menu .= '<span style="letter-spacing: -0.2px">'.s("Changer de moyen<br/>de paiement").'</span>';
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen<br/>de paiement").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<div class="dropdown-list bg-secondary">';
@@ -656,12 +668,17 @@ class SaleUi {
 			$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-sale-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
 		$menu .= '</div>';
 
-		$menu .= '<a data-url="/vente/" data-confirm="'.s("Vous allez entrer dans le mode de préparation de commandes. Voulez-vous continuer ?").'" class="batch-menu-prepare batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-item">';
+			$menu .= \Asset::icon('file-pdf');
+			$menu .= '<span>'.s("Exporter").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-url="/vente/" data-confirm="'.s("Vous allez entrer dans le mode de préparation de commandes. Voulez-vous continuer ?").'" class="batch-prepare batch-item">';
 			$menu .= \Asset::icon('person-workspace');
 			$menu .= '<span style="letter-spacing: -0.2px">'.s("Préparer<br/>les commandes").'</span>';
 		$menu .= '</a>';
 
-		$danger = '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
+		$danger = '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-delete batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';
@@ -983,10 +1000,18 @@ class SaleUi {
 
 		$link = function(string $to) use ($eSale, $btn) {
 
-			$h = '<a data-dropdown="bottom-start" data-dropdown-id="sale-dropdown-'.$eSale['id'].'" data-dropdown-hover="true" class="btn '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button dropdown-toggle">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</a>';
-			$h .= '<div data-dropdown-id="sale-dropdown-'.$eSale['id'].'-list" class="dropdown-list bg-primary">';
-				$h .= $to;
-			$h .= '</div>';
+			if($to) {
+
+				$h = '<a data-dropdown="bottom-start" data-dropdown-id="sale-dropdown-'.$eSale['id'].'" data-dropdown-hover="true" class="btn '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button dropdown-toggle">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</a>';
+				$h .= '<div data-dropdown-id="sale-dropdown-'.$eSale['id'].'-list" class="dropdown-list bg-primary">';
+					$h .= $to;
+				$h .= '</div>';
+
+			} else {
+
+				$h = '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'</a>';
+
+			}
 
 			return $h;
 
@@ -1977,7 +2002,7 @@ class SaleUi {
 
 		$values = [];
 
-		foreach([Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED] as $status) {
+		foreach([Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED] as $status) {
 			$values[] = [
 				'value' => $status,
 				'label' => '⬤  '.self::p('preparationStatus')->values[$status],

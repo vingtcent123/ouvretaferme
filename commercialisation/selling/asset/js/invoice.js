@@ -68,7 +68,7 @@ class Invoice {
 		return Batch.changeSelection('#batch-invoice', null, function(selection) {
 
 			qsa(
-				'.batch-menu-send',
+				'.batch-send',
 				selection.filter('[data-batch~="not-send"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -77,7 +77,7 @@ class Invoice {
 			);
 
 			qsa(
-				'.batch-menu-cancel',
+				'.batch-cancel',
 				selection.filter('[data-batch~="not-canceled"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -86,7 +86,7 @@ class Invoice {
 			);
 
 			qsa(
-				'.batch-menu-confirm',
+				'.batch-confirm',
 				selection.filter('[data-batch~="not-confirmed"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -95,7 +95,7 @@ class Invoice {
 			);
 
 			qsa(
-				'.batch-menu-delete',
+				'.batch-delete',
 				selection.filter('[data-batch~="not-delete"]').length > 0 ?
 					node => node.hide() :
 					node => {

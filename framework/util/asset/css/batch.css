@@ -1,6 +1,6 @@
 
 /* Batch */
-.batch-group {
+.batch-group-wrapper {
 	position: fixed;
 	bottom: 0;
 	left: 0;
@@ -23,7 +23,7 @@
 	margin-bottom: 0;
 }
 
-.batch-item {
+.batch-checkbox {
 	position: relative;
 }
 
@@ -34,7 +34,7 @@
 	justify-content: space-between;
 }
 
-.batch-menu-main {
+.batch-main {
 	display: flex;
 	justify-content: start;
 	align-items: stretch;
@@ -43,14 +43,14 @@
 
 @media (max-width: 575px) {
 
-	.batch-menu-main {
+	.batch-main {
 		justify-content: center;
 	}
 
 }
 
 
-a.batch-menu-item {
+a.batch-item {
 	display: flex;
 	align-items: center;
 	justify-content: end;
@@ -62,57 +62,57 @@ a.batch-menu-item {
 	min-width: 5rem;
 }
 
-a.batch-menu-item.disabled {
+a.batch-item.disabled {
 	pointer-events: none;
 	opacity: 0.5;
 }
 
-.batch-menu-item-number {
+.batch-item-number {
 	font-size: 1.2rem;
 	line-height: 1;
 	font-weight: lighter;
 	margin-bottom: 0.5rem;
 }
 
-a.batch-menu-item-danger {
+a.batch-item-danger {
 	background-color: var(--danger);
 }
 
 @media (min-width: 576px) {
 
-	a.batch-menu-item-danger {
+	a.batch-item-danger {
 		border-radius: var(--radius);
 		margin: 0.5rem 0;
 	}
 
 }
 
-a.batch-menu-item:hover {
+a.batch-item:hover {
 	text-decoration: none;
 }
 
-.batch-menu-main a.batch-menu-item:not(.batch-menu-item-last) {
+.batch-main a.batch-item:not(.batch-item-last) {
 	border-right: 1px solid var(--background);
 }
 
-a.batch-menu-item svg {
+a.batch-item > svg {
 	margin-bottom: 0.5rem;
 	font-size: 1.2rem;
 }
 
-a.batch-menu-item span {
+a.batch-item span {
 	line-height: 1.2;
 	text-align: center;
 	margin-top: 0.125rem;
 }
 
-a.batch-menu-item:hover span:last-child {
+a.batch-item:hover span:last-child {
 	text-decoration: underline;
 }
 
 @media (max-width: 575px) {
 
-	a.batch-menu-item span:last-child {
+	a.batch-item span:last-child {
 		font-size: 0.9rem;
 	}
 
@@ -120,14 +120,14 @@ a.batch-menu-item:hover span:last-child {
 
 @media (max-width: 449px) {
 
-	a.batch-menu-item span:last-child {
+	a.batch-item span:last-child {
 		font-size: 0.8rem;
 	}
 
 }
 
 
-.batch-one {
+.batch-one-wrapper {
 	position: absolute;
 	top: calc(50% - 2rem);
 	border-radius: var(--radius);
@@ -170,4 +170,13 @@ a.batch-one-item {
 	font-size: 0.8rem;
 	display: block;
 	margin-top: 0.25rem;
+}
+
+.batch-inactive[data-batch-behavior~="hide"] {
+	display: none;
+}
+
+.batch-inactive[data-batch-behavior~="mute"] {
+	opacity: 0.25;
+	pointer-events: none;
 }

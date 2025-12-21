@@ -334,7 +334,7 @@ Class PreaccountingUi {
 
 		if($type === 'payment') {
 
-			$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
+			$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
 				$menu .= \Asset::icon('cash-coin');
 				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de<br />paiement").'</span>';
 			$menu .= '</a>';
@@ -364,7 +364,7 @@ Class PreaccountingUi {
 
 		if($type === 'payment') {
 
-			$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
+			$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
 				$menu .= \Asset::icon('cash-coin');
 				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de<br />paiement").'</span>';
 			$menu .= '</a>';
@@ -651,7 +651,7 @@ Class PreaccountingUi {
 			'item' => s("Pour les articles sélectionnés"),
 		};
 
-		$menu = '<a data-ajax-submit="'.$url.'" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('journal-text').'<span>'.s("Numéro de compte").'</span></a>';
+		$menu = '<a data-ajax-submit="'.$url.'" data-ajax-method="get" class="batch-item">'.\Asset::icon('journal-text').'<span>'.s("Numéro de compte").'</span></a>';
 
 		return \util\BatchUi::group('batch-accounting-'.$type, $menu, title: $title);
 

@@ -137,9 +137,9 @@ class Flow {
 		return Batch.changeSelection('#batch-flow', '#batch-flow-one',function(selection) {
 
 		if(selection.length > 1) {
-			qsa('.batch-menu-update', node => node.hide());
+			qsa('.batch-update', node => node.hide());
 		} else {
-			qsa('.batch-menu-update', (node) => {
+			qsa('.batch-update', (node) => {
 				node.setAttribute('href', '/sequence/flow:update?id='+ selection[0].value);
 				node.removeHide();
 			});

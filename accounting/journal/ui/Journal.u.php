@@ -697,20 +697,20 @@ class JournalUi {
 
 	public function getBatch(\farm\Farm $eFarm, \Collection $cPaymentMethod, \Collection $cJournalCode): string {
 
-		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
+		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-amount batch-item">';
 			$menu .= '<span>';
-				$menu .= '<span class="batch-menu-item-number-debit"></span>';
+				$menu .= '<span class="batch-item-number-debit"></span>';
 			$menu .= '</span>';
 			$menu .= '<span>'.s("Débit").'</span>';
 		$menu .= '</a>';
-		$menu .= '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-menu-amount batch-menu-item">';
+		$menu .= '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-amount batch-item">';
 			$menu .= '<span>';
-				$menu .= '<span class="batch-menu-item-number-credit"></span>';
+				$menu .= '<span class="batch-item-number-credit"></span>';
 			$menu .= '</span>';
 			$menu .= '<span>'.s("Crédit").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-dropdown="top-start" class="batch-menu-journal-code batch-menu-item">';
+		$menu .= '<a data-dropdown="top-start" class="batch-journal-code batch-item">';
 			$menu .= \Asset::icon('journal-bookmark');
 			$menu .= '<span style="letter-spacing: -0.2px">'.s("Journal").'</span>';
 		$menu .= '</a>';
@@ -724,7 +724,7 @@ class JournalUi {
 			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" data-ajax-target="#batch-journal-form" post-journal-code="" class="dropdown-item"><i>'.s("Pas de journal").'</i></a>';
 		$menu .= '</div>';
 
-		$menu .= '<a data-dropdown="top-start" class="batch-menu-payment-method batch-menu-item">';
+		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
 			$menu .= \Asset::icon('cash-coin');
 			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de paiement").'</span>';
 		$menu .= '</a>';
@@ -740,9 +740,9 @@ class JournalUi {
 			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-journal-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
 		$menu .= '</div>';
 
-		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createCommentCollection" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('chat-text-fill').'<span>'.s("Commenter").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createCommentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('chat-text-fill').'<span>'.s("Commenter").'</span></a>';
 
-		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createDocumentCollection" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('paperclip').'<span>'.s("Pièce comptable").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createDocumentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('paperclip').'<span>'.s("Pièce comptable").'</span></a>';
 
 		$menu .= '<span class="hide" data-batch-title-more-singular>'.s(", dont 1 opération liée").'</span>';
 		$menu .= '<span class="hide" data-batch-title-more-plural>'.s(", dont <span data-batch-title-more-value></span> opérations liées").'</span>';

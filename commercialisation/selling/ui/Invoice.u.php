@@ -397,22 +397,22 @@ class InvoiceUi {
 
 	public function getBatch(): string {
 
-		$menu = '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-menu-send batch-menu-item">';
+		$menu = '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-send batch-item">';
 			$menu .= \Asset::icon('envelope');
 			$menu .= '<span>'.s("Envoyer par e-mail").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateConfirmedCollection" data-confirm="'.s("Confirmer ces factures ?").'" class="batch-menu-confirm batch-menu-item">';
-			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-confirmed-button">'.self::p('status')->shortValues[Sale::CONFIRMED].'</span>';
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateConfirmedCollection" data-confirm="'.s("Confirmer ces factures ?").'" class="batch-confirm batch-item">';
+			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-confirmed-button">'.\Asset::icon('check-lg').'</span>';
 			$menu .= '<span>'.s("Confirmer").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces factures ?").'" class="batch-menu-cancel batch-menu-item">';
-			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-canceled-button">'.self::p('status')->shortValues[Sale::CANCELED].'</span>';
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces factures ?").'" class="batch-cancel batch-item">';
+			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-canceled-button">'.\Asset::icon('x').'</span>';
 			$menu .= '<span>'.s("Annuler").'</span>';
 		$menu .= '</a>';
 
-		$danger = '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-menu-delete batch-menu-item batch-menu-item-danger">';
+		$danger = '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-delete batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';

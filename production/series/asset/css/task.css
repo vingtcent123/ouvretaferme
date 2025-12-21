@@ -1409,21 +1409,21 @@ a.tabs-category {
 
 }
 
-.batch-menu-planned,
-.batch-menu-users {
+.batch-planned,
+.batch-users {
 	display: flex;
 	align-items: end;
 }
 
-body[data-template~="farm-planning-daily"] .batch-one,
-body[data-template~="farm-planning-weekly"] .batch-one {
+body[data-template~="farm-planning-daily"] .batch-one-wrapper,
+body[data-template~="farm-planning-weekly"] .batch-one-wrapper {
 	left: 2.5rem;
 }
 
 @media (max-width: 575px) {
 
-	body[data-template~="farm-planning-daily"] .batch-one,
-	body[data-template~="farm-planning-weekly"] .batch-one {
+	body[data-template~="farm-planning-daily"] .batch-one-wrapper,
+	body[data-template~="farm-planning-weekly"] .batch-one-wrapper {
 		left: 2.75rem;
 	}
 
@@ -1431,7 +1431,7 @@ body[data-template~="farm-planning-weekly"] .batch-one {
 
 @media (min-width: 768px) and (max-width: 991px) {
 
-	body[data-template~="farm-planning-weekly"] .batch-one {
+	body[data-template~="farm-planning-weekly"] .batch-one-wrapper {
 		top: calc(50% - 1.25rem);
 	}
 

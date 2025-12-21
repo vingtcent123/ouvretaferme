@@ -57,14 +57,14 @@ class Reconciliate {
 			});
 
 			qs(
-				'.batch-menu-item-number',
+				'.batch-item-number',
 				node => {
 					node.innerHTML = money(amount, 2);
 				}
 			);
 
 			qs(
-				'.batch-menu-reconciliate',
+				'.batch-reconciliate',
 				selection.filter('[data-batch~="not-reconciliate"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -74,7 +74,7 @@ class Reconciliate {
 			);
 
 			qs(
-				'.batch-menu-ignore',
+				'.batch-ignore',
 				selection.filter('[data-batch~="not-ignore"]').length > 0 ?
 					node => node.hide() :
 					node => {

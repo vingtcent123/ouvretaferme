@@ -53,26 +53,26 @@ class Journal {
 			});
 
 			qs(
-				'.batch-menu-item-number-debit',
+				'.batch-item-number-debit',
 				node => {
 					node.innerHTML = money(amountDebit , 2);
 
-					const link = node.firstParent('.batch-menu-amount');
+					const link = node.firstParent('.batch-amount');
 					link.setAttribute('href', link.dataset.url + ids);
 				}
 			);
 			qs(
-				'.batch-menu-item-number-credit',
+				'.batch-item-number-credit',
 				node => {
 					node.innerHTML = money(amountCredit , 2);
 
-					const link = node.firstParent('.batch-menu-amount');
+					const link = node.firstParent('.batch-amount');
 					link.setAttribute('href', link.dataset.url + ids);
 				}
 			);
 
 			qs(
-				'.batch-menu-payment-method',
+				'.batch-payment-method',
 				selection.filter('[data-batch~="not-update-payment"]').length > 0 ?
 					node => node.hide() :
 					node => {

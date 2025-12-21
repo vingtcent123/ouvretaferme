@@ -19,7 +19,7 @@ class ShopProduct {
 			});
 
 			qsa(
-				'.batch-menu-relation',
+				'.batch-relation',
 				selection.filter('[data-batch~="not-relation"]').length > 0 ?
 					node => node.hide() :
 					node => {

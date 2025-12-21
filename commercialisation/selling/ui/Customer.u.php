@@ -345,7 +345,7 @@ class CustomerUi {
 
 		if($cCustomerGroup->count() > 0) {
 
-			$menu .= '<a data-dropdown="top-start" class="batch-menu-group batch-menu-item">';
+			$menu .= '<a data-dropdown="top-start" class="batch-group batch-item">';
 				$menu .= \Asset::icon('tag');
 				$menu .= '<span>'.s("Groupe").'</span>';
 			$menu .= '</a>';
@@ -353,10 +353,10 @@ class CustomerUi {
 			$menu .= '<div class="dropdown-list bg-secondary">';
 				$menu .= '<div class="dropdown-title">'.s("Modifier les groupes").'</div>';
 				foreach($cCustomerGroup as $eCustomerGroup) {
-					$menu .= '<div class="dropdown-subtitle batch-menu-type batch-menu-'.$eCustomerGroup['type'].'">';
+					$menu .= '<div class="dropdown-subtitle batch-type batch-'.$eCustomerGroup['type'].'">';
 						$menu .= '<span class="util-badge" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</span>';
 					$menu .= '</div>';
-					$menu .= '<div class="dropdown-items-2 batch-menu-type batch-menu-'.$eCustomerGroup['type'].'">';
+					$menu .= '<div class="dropdown-items-2 batch-type batch-'.$eCustomerGroup['type'].'">';
 						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupAssociateCollection" data-ajax-target="#batch-customer-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('plus').' '.s(text: "Ajouter").'</a>';
 						$menu .= '<a data-ajax-submit="/selling/customer:doUpdateGroupDissociateCollection" data-ajax-target="#batch-customer-form" post-group="'.$eCustomerGroup['id'].'" class="dropdown-item">'.\Asset::icon('x').' '.s("Retirer").'</a>';
 					$menu .= '</div>';
@@ -365,17 +365,17 @@ class CustomerUi {
 
 		}
 
-		$menu .= '<a data-url-collection="/selling/sale:createCollection?farm='.$eFarm['id'].'" data-url="/selling/sale:create?farm='.$eFarm['id'].'&customer=" class="batch-menu-sale batch-menu-item">';
+		$menu .= '<a data-url-collection="/selling/sale:createCollection?farm='.$eFarm['id'].'" data-url="/selling/sale:create?farm='.$eFarm['id'].'&customer=" class="batch-sale batch-item">';
 			$menu .= \Asset::icon('plus-circle');
 			$menu .= '<span>'.s("Créer une vente").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::ACTIVE.'" data-confirm="'.s("Activer ces clients ?").'" class="batch-menu-active batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::ACTIVE.'" data-confirm="'.s("Activer ces clients ?").'" class="batch-active batch-item">';
 			$menu .= \Asset::icon('toggle-on');
 			$menu .= '<span>'.s("Activer").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::INACTIVE.'" data-confirm="'.s("Désactiver ces clients ?").'" class="batch-menu-inactive batch-menu-item">';
+		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::INACTIVE.'" data-confirm="'.s("Désactiver ces clients ?").'" class="batch-inactive batch-item">';
 			$menu .= \Asset::icon('toggle-off');
 			$menu .= '<span>'.s("Désactiver").'</span>';
 		$menu .= '</a>';

@@ -190,7 +190,7 @@ class FlowUi {
 
 										if($write) {
 											if($field !== 'stop') {
-												$h .= '<label class="flow-timeline-select batch-item">';
+												$h .= '<label class="flow-timeline-select batch-checkbox">';
 													$h .= $this->getBatchCheckbox($form, $eFlow, $week);
 												$h .= '</label>';
 											} else {
@@ -363,7 +363,7 @@ class FlowUi {
 
 	public function getBatch(): string {
 
-		$menu = '<div class="batch-menu-planned">';
+		$menu = '<div class="batch-planned">';
 			$menu .= '<a data-dropdown="top-start" class="batch-one-item">';
 				$menu .= \Asset::icon('watch');
 				$menu .= '<span>'.s("Planifier").'</span>';
@@ -371,19 +371,19 @@ class FlowUi {
 			$menu .= $this->getBatchPlanned('batch-flow-one-form');
 		$menu .= '</div>';
 
-		$menu .= '<a class="batch-one-item batch-menu-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
+		$menu .= '<a class="batch-one-item batch-update">'.\Asset::icon('gear-fill').'<span>'.s("Modifier").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="/sequence/flow:doDeleteCollection" class="batch-one-item" data-confirm="'.s("Confirmer la suppression de cette intervention ?").'">'.\Asset::icon('trash').'<span>'.s("Supprimer").'</span></a>';
 
 		$h = \util\BatchUi::one('batch-flow-one', $menu);
 
-		$menu = '<a data-dropdown="top-start" class="batch-menu-item">';
+		$menu = '<a data-dropdown="top-start" class="batch-item">';
 			$menu .= \Asset::icon('watch');
 			$menu .= '<span>'.s("Planifier").'</span>';
 		$menu .= '</a>';
 		$menu .= $this->getBatchPlanned('batch-flow-form');
 
-		$danger = '<a data-ajax-submit="/sequence/flow:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-menu-item batch-menu-item-danger">';
+		$danger = '<a data-ajax-submit="/sequence/flow:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces interventions ?").'" class="batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';

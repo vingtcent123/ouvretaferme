@@ -59,14 +59,14 @@ class Invoicing {
 			const amount = (taxes === 'excluding') ? amountExcluding : amountIncluding;
 
 			qs(
-				'.batch-menu-item-number',
+				'.batch-item-number',
 				node => {
 					node.innerHTML = money(amount, 2);
 				}
 			);
 
 			qs(
-				'.batch-menu-import',
+				'.batch-import',
 				selection.filter('[data-batch~="not-import"]').length > 0 ?
 					node => node.hide() :
 					node => {
@@ -76,7 +76,7 @@ class Invoicing {
 			);
 
 			qs(
-				'.batch-menu-ignore',
+				'.batch-ignore',
 				selection.filter('[data-batch~="not-ignore"]').length > 0 ?
 					node => node.hide() :
 					node => {
