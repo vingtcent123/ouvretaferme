@@ -57,6 +57,11 @@ new Page(function($data) {
 				$search->set('amountMax', GET('amount', 'int') + 1);
 			}
 		}
+
+		if(GET('direction') and in_array(GET('direction'), ['debit', 'credit'])) {
+			$search->set('direction', GET('direction'));
+		}
+
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 

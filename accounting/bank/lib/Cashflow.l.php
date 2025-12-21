@@ -29,6 +29,8 @@ class CashflowLib extends CashflowCrud {
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
 			->whereIsReconciliated('=', $search->get('isReconciliated'), if: $search->get('isReconciliated'))
+			->where('amount < 0', if: $search->get('direction') and $search->get('direction') === 'debit')
+			->where('amount >= 0', if: $search->get('direction') and $search->get('direction') === 'credit')
 			->whereStatus('!=', Cashflow::DELETED, if: $search->get('statusNotDeleted'))
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
 			->whereAccount('=', $search->get('bankAccount'), if: $search->get('bankAccount') and $search->get('bankAccount')->notEmpty())
