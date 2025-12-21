@@ -62,6 +62,10 @@ new Page(function($data) {
 			$search->set('direction', GET('direction'));
 		}
 
+		if(GET('status-shortcut')) {
+			$search->set('status', \bank\Cashflow::WAITING);
+		}
+
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 

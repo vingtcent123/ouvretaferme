@@ -13,6 +13,17 @@ class Cashflow {
 
     }
 
+    static changeStatusShortcutSelection(target) {
+
+        if(target.checked) {
+            qs('[name="status"]').value = 'waiting';
+        } else {
+            qs('[name="status"]').value = '';
+
+        }
+
+    }
+
     static recalculateAmounts(excludeIndex) {
 
         const operationNumber = qs('[data-columns]').dataset.columns;

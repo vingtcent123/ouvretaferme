@@ -57,7 +57,8 @@ class CashflowUi {
 		$h .= $form->checkbox('status', Cashflow::WAITING, [
 			'name' => 'status-shortcut',
 			'checked' => $search->get('status') === Cashflow::WAITING,
-			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
+			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.($nCashflow[Cashflow::WAITING]['count'] ?? 0).'</span>'),
+			'onclick' => 'Cashflow.changeStatusShortcutSelection(this)',
 		]);
 		$h .= '</div>';
 		$h .= '<div>';
