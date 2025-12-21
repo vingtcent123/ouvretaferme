@@ -5,6 +5,7 @@
 
 :root {
 	--info: #c9e8fd;
+	--careful: #d4aa00;
 	--warning: #cb6503;
 	--danger: #dc3545;
 	--text: #212529;
@@ -1783,6 +1784,13 @@ td.util-manage-vignette {
 }
 .color-danger a {
 	color: var(--danger) !important;
+	text-decoration: underline;
+}
+.color-careful {
+	color: var(--careful) !important;
+}
+.color-careful a {
+	color: var(--careful) !important;
 	text-decoration: underline;
 }
 .color-warning {

@@ -30,7 +30,7 @@ Class ReconciliateUi {
 					'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
 					'customer'=> $eSuggestion['invoice']['customer']->getName(),
 					'reference'=> $eSuggestion['invoice']['name'],
-					'confidence' => $this->confidenceValue($eSuggestion)[0],
+					'confidence' => $this->confidenceValue($eSuggestion),
 				];
 			} else if($eSuggestion['sale']->notEmpty()) {
 				if($selectedTab !== 'sale') {
@@ -42,7 +42,7 @@ Class ReconciliateUi {
 					'amount'=> $eSuggestion['sale']['priceIncludingVat'],
 					'customer'=> $eSuggestion['sale']['customer']->getName(),
 					'reference'=> $eSuggestion['sale']['document'],
-					'confidence' => $this->confidenceValue($eSuggestion)[0],
+					'confidence' => $this->confidenceValue($eSuggestion),
 				];
 			} else if($eSuggestion['operation']->notEmpty()) {
 				if($selectedTab !== 'operation') {
@@ -54,7 +54,7 @@ Class ReconciliateUi {
 					'amount'=> $eSuggestion['operation']['amount'],
 					'customer'=> $eSuggestion['operation']['thirdParty']['name'],
 					'reference'=> $eSuggestion['operation']['description'],
-					'confidence' => $this->confidenceValue($eSuggestion)[0],
+					'confidence' => $this->confidenceValue($eSuggestion),
 				];
 			}
 
@@ -88,18 +88,18 @@ Class ReconciliateUi {
 				$currentConfidence = NULL;
 				foreach($elements as $element) {
 
-					if($currentConfidence !== $element['confidence']) {
+					if($currentConfidence === NULL or $currentConfidence[0] !== $element['confidence'][0]) {
 
 						$currentConfidence = $element['confidence'];
-						$h .= '<tbody data-confidence="'.$currentConfidence.'">';
+						$h .= '<tbody data-confidence="'.$currentConfidence[0].'">';
 
 							$h .= '<tr class="tr-title row-header">';
 								$h .= '<td class="td-checkbox">';
 									$h .= '<label>';
-										$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="reconciliate" data-confidence="'.$currentConfidence.'" onclick="Reconciliate.toggleGroupSelection(this)"/>';
+										$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="reconciliate" data-confidence="'.$currentConfidence[0].'" onclick="Reconciliate.toggleGroupSelection(this)"/>';
 									$h .= '</label>';
 								$h .= '</td>';
-								$h .= '<td colspan="3">'.s("Indice de confiance {value}", '<span style="font-size: 1.5rem;">'.\Asset::icon($currentConfidence.'-circle').'</span>').'</td>';
+								$h .= '<td colspan="3">'.s("Indice de confiance {value}", '<span class="color-'.$currentConfidence[1].'" style="font-size: 1.5rem;">'.\Asset::icon($currentConfidence[0].'-circle-fill').'</span>').'</td>';
 								$h .= '<td class="text-end highlight-stick-right"></td>';
 								$h .= '<td></td>';
 								$h .= '<td></td>';
@@ -142,7 +142,7 @@ Class ReconciliateUi {
 						$h .= '<tr>';
 
 							$h .= '<td class="td-checkbox">';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'" data-confidence="'.$currentConfidence.'"/>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'" data-confidence="'.$currentConfidence[0].'"/>';
 							$h .= '</td>';
 
 							$h .= '<td '.$onclick.'>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
@@ -228,17 +228,6 @@ Class ReconciliateUi {
 			}
 		}
 
-		if(
-			($eSuggestion['reason']->get() & Suggestion::PAYMENT_METHOD) === FALSE or
-			($eSuggestion['reason']->get() & Suggestion::DATE) === FALSE
-		) {
-			$class = 'warning';
-		}
-
-		if($count === 0) { // Ni tiers, ni reference, ni montant exact
-			$class = 'warning';
-		}
-
 		if($eSuggestion['reason']->get() & Suggestion::PAYMENT_METHOD) {
 			$count++;
 		}
@@ -253,6 +242,15 @@ Class ReconciliateUi {
 		) {
 			$count--;
 		}
+
+		$class = match($count) {
+			5 => 'success',
+			4 => 'success',
+			3 => 'careful',
+			2 => 'warning',
+			1 => 'danger',
+			0 => 'danger',
+		};
 
 		return [$count, $class];
 
