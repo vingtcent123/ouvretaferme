@@ -446,7 +446,7 @@ Class ReconciliateUi {
 
 		$h = $form->openAjax($urlReconciliate, ['id' => 'suggestion-reconciliate']);
 
-		$h .= '<div class="util-block-help">';
+		$h .= '<div class="util-block-important">';
 			$h .= '<p>';
 				$h .= p("Vous vous apprêtez à rapprocher {value} vente", "Vous vous apprêtez à rapprocher {value} ventes", $cSuggestion->count());
 			$h .= '</p>';
