@@ -326,7 +326,9 @@ Class SuggestionLib extends SuggestionCrud {
 			])
 			->whereFarm($eFarm)
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1))
-			->whereDate('<=', $eCashflow['date'])
+			->where(new \Sql('m1.date <= '.\selling\Invoice::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH')))))
+			->join(\bank\Cashflow::model(), 'm1.id = m2.invoice', 'LEFT')
+			->where(new \Sql('m2.id IS NULL'))
 			->getCollection();
 
 		foreach($cInvoice as $eInvoice) {
@@ -369,9 +371,12 @@ Class SuggestionLib extends SuggestionCrud {
 				])
 				->whereFarm($eFarm)
 				->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1))
-				->whereInvoice(NULL)
+				->where(new \Sql('m1.invoice IS NULL'))
 				->whereProfile('IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
 				->whereDeliveredAt('<=', $eCashflow['date'])
+				->where(new \Sql('m1.deliveredAt <= '.\selling\Sale::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH')))))
+				->join(\bank\Cashflow::model(), 'm1.id = m2.sale', 'LEFT')
+				->where(new \Sql('m2.id IS NULL'))
 				->getCollection();
 
 			foreach($cSale as $eSale) {
