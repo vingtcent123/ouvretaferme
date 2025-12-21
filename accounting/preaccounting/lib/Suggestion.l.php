@@ -534,7 +534,7 @@ Class SuggestionLib extends SuggestionCrud {
 		}
 
 		$score = InvoiceLib::scoreInvoiceReference($eInvoice['name'], $eCashflow['memo']);
-		if($score > 250) {
+		if($score > 250 or mb_strpos(mb_strtolower($eInvoice['name']), mb_strtolower($eCashflow['memo'])) !== FALSE) {
 			$weight += 100;
 			$reason->value(Suggestion::REFERENCE, TRUE);
 		}
