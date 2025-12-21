@@ -346,6 +346,24 @@ class TipUi {
 					'image' => FALSE,
 					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("En savoir plus avec l'Aide")],
 				];
+
+			case 'accounting-custom-account' :
+
+				$h = '<p>'.s("Les numéros de comptes peuvent être personnalisés pour refléter au mieux vos habitudes.").'</p>';
+				$h .= '<p>'.s("Vous pouvez :").'</p>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("<b>Créer des numéros</b> de compte personnalisés, par exemple pour créer un compte-courant par associé").'</li>';
+					$h .= '<li>'.s("<b>Personnaliser le journal</b> par défaut à utiliser pour chaque numéro de compte").'</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Ces paramétrages vous permettront d'être plus efficaces lors de la saisie de vos écritures comptables, mais aussi, si vous êtes plusieurs à saisir la comptabilité de votre exploitation, de mettre en place des règles que tout le monde pourra respecter facilement !").'</p>';
+
+				return [
+					'icon' => \Asset::icon('list-columns-reverse'),
+					'title' => s("La personnalisation des numéros de compte"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => NULL,
+				];
 			default:
 				throw new \Exception('Invalid tip \''.$fqn.'\'');
 

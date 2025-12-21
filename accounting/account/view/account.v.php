@@ -8,6 +8,9 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \account\AccountUi()->getManageTitle($data->eFarm);
 
+	$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-custom-account');
+	$data->tipNavigation = 'inline';
+
 	echo new \account\AccountUi()->getSearch($data->search);
 	echo new \account\AccountUi()->getManage($data->eFarm, $data->cAccount);
 
