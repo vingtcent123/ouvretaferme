@@ -319,7 +319,7 @@ Class SuggestionLib extends SuggestionCrud {
 		$foundInvoice = FALSE;
 		$cInvoice = \selling\Invoice::model()
 			->select([
-				'id', 'priceIncludingVat', 'name', 'customer' => ['id', 'name'], 'date',
+				'id', 'priceIncludingVat', 'name', 'customer' => ['id', 'name', 'legalName'], 'date',
 				'thirdParty' => \account\ThirdParty::model()
 					->select('id', 'name', 'normalizedName')
 					->delegateCollection('customer'),
@@ -356,7 +356,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 			$cSale = \selling\Sale::model()
 				->select([
-					'id', 'priceIncludingVat', 'customer' => ['id', 'name'], 'deliveredAt',
+					'id', 'priceIncludingVat', 'customer' => ['id', 'name', 'legalName'], 'deliveredAt',
 					'thirdParty' => \account\ThirdParty::model()
 						->select('id', 'name', 'normalizedName')
 						->delegateCollection('customer'),
