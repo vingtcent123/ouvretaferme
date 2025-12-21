@@ -361,7 +361,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 		echo '<h3>'.s("Créer ou Rattacher des écritures comptables").'</h3>';
 		echo '<p>'.s("Une écriture de contrepartie en compte {bankAccount} sera automatiquement créée et reliée aux écritures comptables concernées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Attention, il faut veiller à ce que l'équilibre de l'ensemble de vos écritures comptables soit bien respecté. Ouvretaferme vous indiquera un message si ce n'est pas le cas.").'</p>';
-		echo '<p>'.s("Ouvretaferme ne créera pas d'écriture de contrepartie avec le tiers concerné (compte client {clientAccount} ou compte fournisseur {supplierAccount}), même si le tiers est indiqué, et même si vous êtes à la comptabilité à l'engagement.", ['clientAccount' => \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, 'supplierAccount' => \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]).'</p>';
+		echo '<p>'.s("Ouvretaferme ne créera jamais d'écriture de contrepartie avec le tiers concerné (compte client {clientAccount} ou compte fournisseur {supplierAccount}), même si le tiers est indiqué.", ['clientAccount' => \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, 'supplierAccount' => \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]).'</p>';
 	echo '</div>';
 
 		echo '<h2>'.s("Exemples d'usage").'</h2>';
