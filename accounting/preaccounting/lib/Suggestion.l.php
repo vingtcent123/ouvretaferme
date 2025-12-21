@@ -176,13 +176,12 @@ Class SuggestionLib extends SuggestionCrud {
 		} catch (\DuplicateException) {
 
 			Suggestion::model()
-				->select('reason', 'weight') // On met à jour raison et poids mais pas le statut et uniquement pour les suggestions en attente de traitement.
 				->whereStatus(Suggestion::WAITING)
 				->whereCashflow($eSuggestion['cashflow'])
 				->whereInvoice($eSuggestion['invoice'] ?? new \selling\Invoice())
 				->whereSale($eSuggestion['sale'] ?? new \selling\Sale())
 				->whereOperation($eSuggestion['operation'] ?? new \journal\Operation())
-				->update($eSuggestion);
+				->update($eSuggestion->extracts(['reason', 'weight']));
 
 		}
 
