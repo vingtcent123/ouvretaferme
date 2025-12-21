@@ -219,7 +219,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 new JsonView('/precomptabilite/{type}', function($data, AjaxTemplate $t) {
 
-	$t->js()->replaceHistory(LIME_REQUEST);
+	$t->js()->replaceHistory(LIME_REQUEST.'&type='.GET('type'));
 
 	switch($data->type) {
 
