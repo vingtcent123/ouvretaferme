@@ -551,7 +551,10 @@ class OperationLib extends OperationCrud {
 
 		if($for === 'create') {
 
-			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
+			$properties = array_merge($properties, ['date']);
+			if($isFromCashflow === FALSE) {
+				$properties = array_merge($properties, ['paymentDate', 'paymentMethod']);
+			}
 
 		} else {
 
