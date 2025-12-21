@@ -250,6 +250,20 @@ Class ReconciliateUi {
 			$count--;
 		}
 
+		// Correspondance exacte tiers + référence + montant
+		if(
+			$count < 4 and
+			($eSuggestion['reason']->get() & Suggestion::THIRD_PARTY) and
+			($eSuggestion['reason']->get() & Suggestion::REFERENCE) and
+			($eSuggestion['reason']->get() & Suggestion::AMOUNT) and
+			(
+				round($eSuggestion['cashflow']['amount'], 2) === round($eSuggestion['invoice']['priceIncludingVat'], 2) or
+				round($eSuggestion['cashflow']['amount'], 2) === round($eSuggestion['invoice']['priceIncludingVat'], 2)
+			)
+		) {
+			$count = 4;
+		}
+
 		$class = match($count) {
 			5 => 'success',
 			4 => 'success',
