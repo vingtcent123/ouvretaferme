@@ -57,6 +57,10 @@ Class ReconciliateLib {
 
 			foreach($cSale as $eSale) {
 
+				if($eSale['cPayment']->notEmpty()) {
+					\selling\PaymentLib::deleteBySale($eSale);
+				}
+
 				$cPayment->append(new \selling\Payment([
 					'method' => $eSuggestion['paymentMethod'],
 					'sale' => $eSale,
