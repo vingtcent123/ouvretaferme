@@ -1013,7 +1013,7 @@ class OperationUi {
 				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($eOperation, $index) {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-field'] = 'journalCode';
-					$d->default = fn() => $eOperation->empty() ? GET('journalCode') : $eOperation['journalCode'];
+					$d->default = fn() => $eOperation->exists() === FALSE ? GET('journalCode') : $eOperation['journalCode'];
 				});
 				$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
 					$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true">';
@@ -1051,8 +1051,10 @@ class OperationUi {
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="description'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'description'.$suffix, function($d) use($form, $index, $suffix) {
-					$d->default = $defaultValues['description'] ?? '';
+				if($eOperation->exists() === FALSE) {
+					$eOperation['description'] = $defaultValues['description'] ?? '';
+				}
+				$h .= $form->dynamicField($eOperation, 'description'.$suffix, function($d) use($defaultValues, $form, $index, $suffix) {
 					$d->attributes['onfocus'] = 'this.select()';
 					$d->attributes['data-description'] = $form->getId();
 				});
