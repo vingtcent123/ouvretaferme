@@ -677,9 +677,12 @@ class OperationLib extends OperationCrud {
 				$totalAmount += $eOperation['type'] === Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
 
 			} else {
+
+				$fields = array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy()));
 				Operation::model()
-					->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy())))
+					->select($fields)
 					->update($eOperation);
+
 			}
 
 			$cOperation->append($eOperation);
@@ -697,8 +700,22 @@ class OperationLib extends OperationCrud {
 			if($hasVatAccount === TRUE) {
 
 				if($for === 'update') {
+
 					$defaultValues = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index]))->first()->getArrayCopy();
+
+					// Certains champs doivent être automatiquement recopiés de l'originale à l'écriture de TVA
+					if(isset($defaultValues['operation']['id'])) {
+
+						$eOperationExcludingVat = $cOperation->find(fn($e) => $e['id'] === $defaultValues['operation']['id'])->first();
+
+						foreach(['description'] as $fieldCopy) {
+							$defaultValues[$fieldCopy] = $eOperationExcludingVat[$fieldCopy];
+						}
+
+					};
+
 				} else {
+
 					$defaultValues = $isFromCashflow === TRUE
 						? [
 							'date' => $eCashflow['date'],
@@ -708,6 +725,7 @@ class OperationLib extends OperationCrud {
 							'hash' => $hash,
 						]
 						: $eOperation->getArrayCopy();
+
 				}
 
 				$eOperationVat = \journal\OperationLib::createVatOperation(
