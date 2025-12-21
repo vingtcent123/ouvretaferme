@@ -348,7 +348,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 
 new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTemplate $t) {
 
-	$t->nav = 'preaccounting';
+	$t->nav = 'bank';
 
 	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes';
