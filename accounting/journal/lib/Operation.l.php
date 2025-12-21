@@ -1437,7 +1437,7 @@ class OperationLib extends OperationCrud {
 			->select(['accountLabel' => new \Sql('DISTINCT(accountLabel)')])
 			->whereThirdParty($eThirdParty, if: $eThirdParty->notEmpty())
 			->whereAccount($eAccount, if: $eAccount->notEmpty())
-			->where('accountLabel LIKE "%'.$query.'%"', if: $query !== '')
+			->where('accountLabel LIKE "'.$query.'%"', if: $query !== '')
 			->sort(['accountLabel' => SORT_ASC])
 			->getCollection()
 			->getColumn('accountLabel');
