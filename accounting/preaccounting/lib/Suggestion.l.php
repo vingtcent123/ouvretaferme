@@ -274,7 +274,7 @@ Class SuggestionLib extends SuggestionCrud {
 			}
 
 		}
-
+/* Pas de rapprochement par les écritures pour l'instant
 		// Par le montant exact
 		$cOperation = \journal\Operation::model()
 			->select(['id', 'amount', 'thirdParty', 'date'])
@@ -312,7 +312,7 @@ Class SuggestionLib extends SuggestionCrud {
 			}
 
 		}
-
+*/
 		// FACTURES \\
 		$foundInvoice = FALSE;
 		$cInvoice = \selling\Invoice::model()

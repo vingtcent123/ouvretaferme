@@ -198,6 +198,14 @@ Class ReconciliateUi {
 			$count++;
 		}
 
+		// Perte d'un point de confiance
+		if(
+			($eSuggestion['reason']->get() & Suggestion::THIRD_PARTY) === FALSE and
+			($eSuggestion['reason']->get() & Suggestion::REFERENCE) === FALSE
+		) {
+			$count--;
+		}
+
 		return '<span class="reconciliate-confidence fs-2 color-'.$class.'">'.\Asset::icon($count.'-circle-fill').'</span>';
 
 	}
