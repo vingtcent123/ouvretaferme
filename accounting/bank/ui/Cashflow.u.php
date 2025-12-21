@@ -84,27 +84,10 @@ class CashflowUi {
 			return '';
 		}
 
-		$h = '<div class="flex-justify-space-between td-vertical-align-top mb-1">';
-			$h .= '<div class="">';
-				/*$form = new \util\FormUi();
-
-				$h .= $form->openUrl(LIME_REQUEST_PATH.LIME_REQUEST_ARGS, ['method' => 'get']);
-				$h .= $form->checkbox('status', Cashflow::WAITING, [
-					'checked' => $search->get('status') === Cashflow::WAITING,
-					'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.$nCashflow[Cashflow::WAITING]['count'].'</span>'),
-					'onchange' => 'this.form.submit()',
-				]);
-				$h .= $form->close();
-*/
-			$h .= '</div>';
-
-			$h .= '<div>';
-			$h .= '<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a> ';
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
+		return '<div class="mb-1 flex-justify-space-between">'.
+			'<span></span>'.
+			'<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a> '
+			.'</div>';
 	}
 
 	public function getCashflow(

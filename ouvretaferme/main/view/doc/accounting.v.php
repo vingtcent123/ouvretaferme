@@ -394,7 +394,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 	Asset::css('selling', 'sale.css');
 
-		echo '<h2 id="reconciliate-sales">'.s("Rapprocher les <u>ventes</u> avec les opérations bancaires").'</h2>';
+		echo '<h2 id="reconciliate-sales">'.s("Rapprocher les <u>ventes et factures</u> avec les opérations bancaires").'</h2>';
 
 		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos ventes (ou factures) qui semblent correspondre. Vous verrez une petite alerte dès qu'un rapprochement sera possible.").'</p>';
 		echo '<p>'.s("Les critères de décision sont : ").'</p>';
