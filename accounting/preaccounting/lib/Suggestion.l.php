@@ -244,6 +244,7 @@ Class SuggestionLib extends SuggestionCrud {
 			$eMethod = new \payment\Method();
 		}
 
+/* Pas de rapprochement par les écritures pour l'instant
 		// Par le tiers
 		$cOperationThirdParty = \journal\Operation::model()
 			->select(['id', 'amount', 'thirdParty', 'date', 'description', 'type', 'paymentMethod' => ['id', 'fqn']])
@@ -274,6 +275,7 @@ Class SuggestionLib extends SuggestionCrud {
 			}
 
 		}
+*/
 /* Pas de rapprochement par les écritures pour l'instant
 		// Par le montant exact
 		$cOperation = \journal\Operation::model()
