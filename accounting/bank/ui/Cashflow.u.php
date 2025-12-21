@@ -328,16 +328,18 @@ class CashflowUi {
 
 				$actions = TRUE;
 
-				$h .= '<div class="dropdown-title">'.s("Actions sur les écritures comptables liées").'</div>';
+				$nOperation = $eCashflow['cOperationHash']->count();
 
-				$confirm = s("Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?");
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="dissociate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$h .= s("Dissocier <div>(Ne supprimera <b><u>pas</u></b> les écritures)</div>", ['div' => '<div class="operations-delete-more">']);
-				$h .= '</a>';
+				$h .= '<div class="dropdown-title">'.s("Actions sur les {value} écritures comptables liées", $nOperation).'</div>';
 
 				$confirm = s("Cette action supprimera toutes les écritures liées à l'opération bancaire. Confirmez-vous ?");
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="delete" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$h .= s("Supprimer <div>(<b><u>Supprimera</u></b> les écritures)</div>", ['div' => '<div class="operations-delete-more">']);
+					$h .= s("Supprimer <div>(<b><u>Supprimera</u></b> les {number} écritures)</div>", ['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
+				$h .= '</a>';
+
+				$confirm = s("Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?");
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="dissociate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+					$h .= s("Dissocier <div>(Ne supprimera <b><u>pas</u></b> les {number} écritures)</div>", ['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
 				$h .= '</a>';
 
 				$h .= '<div class="dropdown-divider"></div>';
