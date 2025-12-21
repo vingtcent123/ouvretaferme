@@ -29,7 +29,8 @@ Class ReconciliateUi {
 					'date'=> $eSuggestion['invoice']['date'],
 					'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
 					'customer'=> $eSuggestion['invoice']['customer']->getName(),
-					'reference'=> $eSuggestion['invoice']['name'],
+					'customerType'=> $eSuggestion['invoice']['customer']['type'],
+					'reference'=> s("Facture {value}", encode($eSuggestion['invoice']['name'])),
 					'confidence' => $this->confidenceValue($eSuggestion),
 				];
 			} else if($eSuggestion['sale']->notEmpty()) {
@@ -41,7 +42,8 @@ Class ReconciliateUi {
 					'date'=> $eSuggestion['sale']['deliveredAt'],
 					'amount'=> $eSuggestion['sale']['priceIncludingVat'],
 					'customer'=> $eSuggestion['sale']['customer']->getName(),
-					'reference'=> $eSuggestion['sale']['document'],
+					'customerType'=> $eSuggestion['sale']['customer']['type'],
+					'reference'=> s("Vente {value}", encode($eSuggestion['invoice']['name'])),
 					'confidence' => $this->confidenceValue($eSuggestion),
 				];
 			} else if($eSuggestion['operation']->notEmpty()) {
@@ -53,7 +55,8 @@ Class ReconciliateUi {
 					'date'=> $eSuggestion['operation']['date'],
 					'amount'=> $eSuggestion['operation']['amount'],
 					'customer'=> $eSuggestion['operation']['thirdParty']['name'],
-					'reference'=> $eSuggestion['operation']['description'],
+					'customerType'=> '',
+					'reference'=> s("Écriture : {value}", encode($eSuggestion['invoice']['name'])),
 					'confidence' => $this->confidenceValue($eSuggestion),
 				];
 			}
@@ -73,12 +76,12 @@ Class ReconciliateUi {
 						$h .= '<th class="td-checkbox">';
 						$h .= '</th>';
 						$h .= '<th>'.\Asset::icon('calendar-range').' '.s("Date").'</th>';
-						$h .= '<th>'.\Asset::icon('file-person').' '.s("Client").'</th>';
+						$h .= '<th>'.s("Rapprochement").'</th>';
 						$h .= '<th># '.s("Référence").'</th>';
 						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
 						$h .= '<th class="text-center">'.s("Indice<br/>de confiance").'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('file-person').'</th>';
+						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('person').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">#</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le moyen de paiement ?").'">'.\Asset::icon('wallet2').'</th>';
@@ -125,10 +128,12 @@ Class ReconciliateUi {
 
 					$h .= '<tbody>';
 
-						$h .= '<tr class="tr-title" '.$onclick.'>';
+						$h .= '<tr class="row-bold" '.$onclick.'>';
 							$h .= '<td class="td-checkbox"></td>';
 							$h .= '<td>'.\util\DateUi::numeric($element['date']).'</td>';
-							$h .= '<td>'.encode($element['customer']).'</td>';
+							$h .= '<td>';
+								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-'.($element['customerType'] ?? '').'">'.\Asset::icon('person').'</div> <div>'.encode($element['customer']).'</div></div>';
+							$h .= '</td>';
 							$h .= '<td>'.encode($element['reference']).'</td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($element['amount']).'</td>';
 							$h .= '<td></td>';
@@ -146,7 +151,9 @@ Class ReconciliateUi {
 							$h .= '</td>';
 
 							$h .= '<td '.$onclick.'>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
-							$h .= '<td colspan="2" '.$onclick.'>'.encode($eCashflow['memo']).'</td>';
+							$h .= '<td colspan="2" '.$onclick.'>';
+								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</div> <div>'.encode($eCashflow['memo']).'</div></div>';
+							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'>'.\util\TextUi::money($eCashflow['amount']).'</td>';
 							$h .= '<td class="text-center td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->confidence($eSuggestion).'</td>';
 							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
@@ -281,11 +288,11 @@ Class ReconciliateUi {
 						$h .= '</th>';
 						$h .= '<th>'.\Asset::icon('calendar-range').' '.s("Date").'</th>';
 						$h .= '<th>'.s("Numéro de compte").'</th>';
-						$h .= '<th>'.\Asset::icon('file-person').' '.s("Client").'</th>';
+						$h .= '<th>'.\Asset::icon('person').' '.s("Client").'</th>';
 						$h .= '<th>'.\Asset::icon('123').' '.s("Libellé").'</th>';
 						$h .= '<th class="td-min-content text-center" title="'.s("Débit / Crédit").'">'.s("D/C").'</th>';
 						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('file-person').'</th>';
+						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('person').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">'.\Asset::icon('123').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';

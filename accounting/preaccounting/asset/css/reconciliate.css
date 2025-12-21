@@ -48,3 +48,13 @@
 .reconciliate-table tbody tr:last-child td {
 	padding-top: 0;
 }
+
+.reconciliate-badge-container {
+	display: flex;
+	gap: 0.5rem;
+}
+.reconciliate-badge {
+  line-height: 1;
+  align-self: start;
+  margin-top: 0.1rem;
+}

@@ -97,8 +97,8 @@ Class SuggestionLib extends SuggestionCrud {
 			->select([
 				'id', 'status',
 				'cashflow' => ['id', 'name', 'memo', 'type', 'date', 'amount'],
-				'invoice' => ['id', 'name', 'customer' => ['id', 'name'], 'priceIncludingVat', 'date'],
-				'sale' => ['id', 'customer' => ['id', 'name'], 'priceIncludingVat', 'deliveredAt', 'document'],
+				'invoice' => ['id', 'name', 'customer' => ['id', 'name', 'type', 'legalName'], 'priceIncludingVat', 'date'],
+				'sale' => ['id', 'customer' => ['id', 'name', 'type', 'legalName'], 'priceIncludingVat', 'deliveredAt', 'document'],
 				'weight', 'reason',
 				'paymentMethod' => ['id', 'fqn', 'name'],
 			])
@@ -533,11 +533,10 @@ Class SuggestionLib extends SuggestionCrud {
 			$reason->value(Suggestion::THIRD_PARTY, TRUE);
 		}
 
-		if(mb_strpos(mb_strtolower($eCashflow['memo']), mb_strtolower($eInvoice['name']))) {
-
+		$score = InvoiceLib::scoreInvoiceReference($eInvoice['name'], $eCashflow['memo']);
+		if($score > 250) {
 			$weight += 100;
 			$reason->value(Suggestion::REFERENCE, TRUE);
-
 		}
 
 		if(abs(abs($eInvoice['priceIncludingVat']) - abs($eCashflow['amount'])) < 0.05) { // 5 cts d'écart
