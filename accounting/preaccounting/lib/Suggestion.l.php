@@ -511,7 +511,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 	public static function weightCashflowInvoice(\bank\Cashflow $eCashflow, \selling\Invoice $eInvoice): array {
 
-		$weight = \account\ThirdPartyLib::scoreNameMatch($eInvoice['customer']['name'], $eCashflow['name']);
+		$weight = \account\ThirdPartyLib::scoreNameMatch($eInvoice['customer']['legalName'] ?? $eInvoice['customer']['name'], $eCashflow['name']);
 
 		if(
 			abs(abs($eInvoice['priceIncludingVat']) - abs($eCashflow['amount'])) > self::AMOUNT_DIFFERENCE_MAX or
