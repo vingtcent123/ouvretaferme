@@ -159,11 +159,12 @@ Class SuggestionLib extends SuggestionCrud {
 
 	}
 
-	public static function createSuggestion(Suggestion $eSuggestion): void {
+	public static function createSuggestion(Suggestion $eSuggestion, bool $exactAmount): void {
 
 		if(
 			($eSuggestion['reason']->get() & Suggestion::THIRD_PARTY) === FALSE and
-			($eSuggestion['reason']->get() & Suggestion::REFERENCE) === FALSE
+			($eSuggestion['reason']->get() & Suggestion::REFERENCE) === FALSE and
+			$exactAmount === FALSE
 		) {
 			return;
 		}
@@ -247,8 +248,8 @@ Class SuggestionLib extends SuggestionCrud {
 		$cOperationThirdParty = \journal\Operation::model()
 			->select(['id', 'amount', 'thirdParty', 'date', 'description', 'type', 'paymentMethod' => ['id', 'fqn']])
 			->whereThirdParty('IN', $cThirdParty)
-			->whereAccountLabel('LIKE', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%')
-			->where(new \Sql('letteringStatus IS NULL OR letteringStatus = '.\journal\Operation::model()->format(\journal\Operation::PARTIAL)))
+			//->whereAccountLabel('LIKE', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%')
+			//->where(new \Sql('letteringStatus IS NULL OR letteringStatus = '.\journal\Operation::model()->format(\journal\Operation::PARTIAL)))
 			->whereDate('<=', $eCashflow['date'])
 			->getCollection();
 
@@ -266,7 +267,8 @@ Class SuggestionLib extends SuggestionCrud {
 						'reason' => $reason,
 						'weight' => $weight,
 						'paymentMethod' => $eMethod,
-					])
+					]),
+					FALSE
 				);
 
 			}
@@ -276,8 +278,8 @@ Class SuggestionLib extends SuggestionCrud {
 		// Par le montant exact
 		$cOperation = \journal\Operation::model()
 			->select(['id', 'amount', 'thirdParty', 'date'])
-			->whereAccountLabel('LIKE', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%')
-			->where(new \Sql('letteringStatus IS NULL OR letteringStatus = '.\journal\Operation::model()->format(\journal\Operation::PARTIAL)))
+			//->whereAccountLabel('LIKE', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%')
+			//->where(new \Sql('letteringStatus IS NULL OR letteringStatus = '.\journal\Operation::model()->format(\journal\Operation::PARTIAL)))
 			->where(new \Sql('ROUND(amount, 2) = ROUND('.abs($eCashflow['amount']).', 2) '))
 			->whereType($eCashflow['amount'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT)
 			->whereDate('<=', $eCashflow['date'])
@@ -304,7 +306,8 @@ Class SuggestionLib extends SuggestionCrud {
 						'reason' => $reason,
 						'weight' => $weight,
 						'paymentMethod' => $eMethod,
-					])
+					]),
+					TRUE,
 				);
 			}
 
@@ -321,7 +324,6 @@ Class SuggestionLib extends SuggestionCrud {
 				'paymentMethod' => ['id', 'fqn'],
 			])
 			->whereFarm($eFarm)
-			->highlight()
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 10).' AND '.($eCashflow['amount'] + 10))
 			->wherePaymentStatus(\selling\Invoice::NOT_PAID)
 			->whereDate('<=', $eCashflow['date'])
@@ -341,7 +343,8 @@ Class SuggestionLib extends SuggestionCrud {
 						'reason' => $reason,
 						'weight' => $weight,
 						'paymentMethod' => $eMethod,
-					])
+					]),
+					$eCashflow['amount'] === $eInvoice['priceIncludingVat']
 				);
 			}
 
@@ -377,7 +380,6 @@ Class SuggestionLib extends SuggestionCrud {
 				list($weight, $reason) = self::weightCashflowSale($eCashflow, $eSale);
 
 				if($weight > 50) {
-					$foundSale = TRUE;
 					self::createSuggestion(
 						new Suggestion([
 							'sale' => $eSale,
@@ -385,8 +387,8 @@ Class SuggestionLib extends SuggestionCrud {
 							'reason' => $reason,
 							'weight' => $weight,
 							'paymentMethod' => $eMethod,
-						])
-
+						]),
+						$eCashflow['amount'] === $eSale['priceIncludingVat'],
 					);
 				}
 
@@ -415,7 +417,8 @@ Class SuggestionLib extends SuggestionCrud {
 						'reason' => $reason,
 						'weight' => $weight,
 						'paymentMethod' => $eOperation['paymentMethod'],
-					])
+					]),
+					$eCashflow['amount'] === $eOperation['amount'], // TODO : il faut sommer tout le TTC (cOperationHash)
 				);
 
 			}

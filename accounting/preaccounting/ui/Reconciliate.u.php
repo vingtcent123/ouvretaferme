@@ -177,6 +177,7 @@ Class ReconciliateUi {
 			}
 		}
 
+		// Montant exact
 		if($eSuggestion['reason']->get() & Suggestion::AMOUNT) {
 			if(
 				$eSuggestion['cashflow']['amount'] === ($eSuggestion['invoice']['priceIncludingVat'] ?? 0) or
@@ -188,16 +189,6 @@ Class ReconciliateUi {
 
 		if($count === 0) { // Ni tiers, ni reference, ni montant exact
 			$class = 'warning';
-		}
-
-		// Montant exact
-		if($eSuggestion['reason']->get() & Suggestion::AMOUNT) {
-			if (
-				$eSuggestion['cashflow']['amount'] !== ($eSuggestion['invoice']['priceIncludingVat'] ?? 0) and
-				$eSuggestion['cashflow']['amount'] !== ($eSuggestion['sale']['priceIncludingVat'] ?? 0)
-			) {
-				$count++;
-			}
 		}
 
 		if($eSuggestion['reason']->get() & Suggestion::PAYMENT_METHOD) {
