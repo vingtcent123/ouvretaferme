@@ -408,7 +408,7 @@ Class ReconciliateUi {
 		$menu .= '</a>';
 
 
-		$menu .= '<a data-ajax-submit="'.$urlReconciliate.'" data-confirm="'.s("Confirmer le rapprochement ? Cette action est irréversible.").'" class="batch-menu-reconciliate batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Rapprocher").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:reconciliate" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Rapprocher").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.$urlIgnore.'" data-confirm="'.s("Confirmez-vous ignorer ces suggestions ? Elles ne vous seront plus jamais proposées.").'"  class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 
@@ -429,4 +429,43 @@ Class ReconciliateUi {
 		return '<span class="color-muted">'.\Asset::icon('question-lg').'</span>';
 
 	}
+
+
+	public function reconciliate(\farm\Farm $eFarm, \Collection $cSuggestion): \Panel {
+
+		$urlReconciliate = \company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliateCollection';
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax($urlReconciliate, ['id' => 'suggestion-reconciliate']);
+
+		$h .= '<div class="util-block-help">';
+			$h .= '<p>';
+				$h .= p("Vous vous apprêtez à rapprocher {value} vente", "Vous vous apprêtez à rapprocher {value} ventes", $cSuggestion->count());
+			$h .= '</p>';
+
+			$h .= '<p>';
+				\Asset::css('selling', 'sale.css');
+				$h .= s("Chaque vente deviendra <span>payée</span> avec le moyen de paiement indiqué, et l'opération bancaire sera rattachée à la vente.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']);
+			$h .= '</p>';
+		$h .= '</div>';
+
+
+
+			foreach($cSuggestion as $eSuggestion) {
+				$h .= $form->hidden('ids[]', $eSuggestion['id']);
+			}
+
+			$h .= $form->submit(\Asset::icon('hand-thumbs-up').' '.s("Rapprocher"), ['data-waiter' => s("Rapprochement en cours...")]);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-suggestion-reconciliate',
+			title: s("Valider les suggestions de rapprochement"),
+			body: $h
+		);
+
+	}
+	
 }

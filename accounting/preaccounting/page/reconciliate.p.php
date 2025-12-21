@@ -1,4 +1,18 @@
 <?php
+new \Page(function($data) {
+	\user\ConnectionLib::checkLogged();
+
+	$data->eFarm->validate('canManage');
+	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
+
+})
+	->get('reconciliate', function($data) {
+
+		$data->cSuggestion = \preaccounting\SuggestionLib::getByIds(GET('ids', 'array'));
+
+		throw new ViewAction($data);
+
+	});
 new \preaccounting\SuggestionPage(function($data) {
 	\user\ConnectionLib::checkLogged();
 
