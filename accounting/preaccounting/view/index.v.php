@@ -357,23 +357,6 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 
 	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").($total > 0 ? '<span class="util-counter ml-1">'.$total.'</span>' : '').'</h1>';
 
-	if($total > 0) {
-
-		echo '<div class="util-block-help">';
-			if($data->countsByInvoice and $data->countsBySale > 0) {
-				echo s("{nSales} et {nInvoices} semblent être rapprochables avec des opérations bancaires.", [
-					'nSales' => '<b>'.p("{value} vente", "{value} ventes", $data->countsBySale).'</b>',
-					'nInvoices' => '<b>'.p("{value} facture", "{value} factures", $data->countsByInvoice).'</b>',
-				]);
-			} else if($data->countsByInvoice > 0) {
-				echo p("<b>{value} facture</b> semble être rapprochable.", "<b>{value} factures</b> semblent être rapprochables.", $data->countsByInvoice);
-			} else if($data->countsBySale > 0) {
-				echo p("<b>{value} vente</b> semble être rapprochable.", "<b>{value} ventes</b> semblent être rapprochables.", $data->countsBySale);
-			}
-		echo '</div>';
-
-	}
-
 	if($data->countsByInvoice > 0 and $data->countsBySale > 0) {
 
 		echo '<div class="tabs-item">';
