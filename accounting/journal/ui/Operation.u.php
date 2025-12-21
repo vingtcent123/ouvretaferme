@@ -1012,10 +1012,10 @@ class OperationUi {
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="journalCode'.$suffix.'" class="company_form_group-with-tip">';
-				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($index) {
+				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($eOperation, $index) {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-field'] = 'journalCode';
-					$d->default = fn() => GET('journalCode');
+					$d->default = fn() => $eOperation->empty() ? GET('journalCode') : $eOperation['journalCode'];
 				});
 				$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
 					$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true">';
