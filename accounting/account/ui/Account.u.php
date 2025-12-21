@@ -345,6 +345,7 @@ class AccountUi {
 			return self::getAutocompleteLabel($query, $farm, $label);
 		};
 
+		$d->autocompleteTextual = TRUE;
 	}
 
 	public function create(\farm\Farm $eFarm, Account $eAccount): \Panel {

@@ -261,4 +261,16 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 });
 
 
+new JsonView('queryDescription', function($data, AjaxTemplate $t) {
+
+	$results = [];
+	foreach($data->descriptions as $description) {
+		$results[] = \journal\OperationUi::getAutocompleteDescriptions($description);
+	}
+
+	$t->push('results', $results);
+
+});
+
+
 ?>

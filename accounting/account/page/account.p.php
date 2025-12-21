@@ -110,12 +110,6 @@ new Page(function($data) {
 		}
 	}
 
-	if(mb_strlen($query) > 0) {
-		$accountClass = str_pad(post('query'), 8, '0');
-		if(in_array($accountClass, $labels) === FALSE) {
-			array_unshift($labels, $accountClass);
-		}
-	}
 	$data->labels = $labels;
 	throw new \ViewAction($data);
 

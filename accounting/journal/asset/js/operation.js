@@ -33,6 +33,23 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-third-party="ba
     e.detail.body.append('cashflowId', cashflowId);
 });
 
+
+document.delegateEventListener('autocompleteBeforeQuery', '[data-description="journal-operation-create"], [data-description="journal-operation-update"], [data-description="bank-cashflow-allocate"]', function(e) {
+
+    if(e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') === null) {
+        return;
+    }
+
+    if(e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]') === null) {
+        return;
+    }
+
+    const thirdParty = e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]').getAttribute('value');
+    const accountLabel = e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]').value;
+    e.detail.body.append('thirdParty', thirdParty);
+    e.detail.body.append('accountLabel', accountLabel);
+});
+
 document.delegateEventListener('autocompleteBeforeQuery', '[data-account="journal-operation-create"], [data-account="bank-cashflow-allocate"]', function(e) {
     if(e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') !== null) {
         const thirdParty = e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]').getAttribute('value');
@@ -286,7 +303,7 @@ class Operation {
     }
 
     static resetJournalCode(index) {
-        qs('[data-field="journalCode"][data-index="0"]').value = '';
+        qs('[data-field="journalCode"][data-index="' + index + '"]').value = '';
     }
 
     static resetAccountLabel(index) {

@@ -1050,9 +1050,10 @@ class OperationUi {
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="description'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'description'.$suffix, function ($d) {
+				$h .= $form->dynamicField($eOperation, 'description'.$suffix, function($d) use($form, $index, $suffix) {
 					$d->default = $defaultValues['description'] ?? '';
 					$d->attributes['onfocus'] = 'this.select()';
+					$d->attributes['data-description'] = $form->getId();
 				});
 			$h .='</div>';
 
@@ -1353,6 +1354,18 @@ class OperationUi {
 
 	}
 
+	public static function getAutocompleteDescriptions(string $description): array {
+
+		\Asset::css('media', 'media.css');
+
+		return [
+			'value' => $description,
+			'itemText' => encode($description),
+			'itemHtml' => $description,
+		];
+
+	}
+
 	public static function getAutocomplete(\bank\Cashflow $eCashflow, Operation $eOperation): array {
 
 		\Asset::css('media', 'media.css');
@@ -1437,6 +1450,23 @@ class OperationUi {
 
 	}
 
+	public function queryDescription(\PropertyDescriber $d, int $farm, bool $multiple = FALSE) {
+
+		$d->prepend = \Asset::icon('pencil-fill');
+		$d->field = 'autocomplete';
+
+		$d->placeholder ??= s("Libellé...");
+		$d->multiple = $multiple;
+
+		$d->autocompleteUrl = \company\CompanyUi::urlFarm(new \farm\Farm(['id' => $farm])).'/journal/operation:queryDescription';
+		$d->autocompleteResults = function(string $description) {
+			return self::getAutocompleteDescriptions($description);
+		};
+
+		$d->autocompleteTextual = TRUE;
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Operation::model()->describer($property, [
@@ -1485,6 +1515,15 @@ class OperationUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				new \account\AccountUi()->query($d, GET('farm', '?int'));
+				break;
+
+			case 'description':
+				$d->autocompleteBody = function(\util\FormUi $form, Operation $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				new OperationUi()->queryDescription($d, GET('farm', '?int'));
 				break;
 
 			case 'accountLabel':

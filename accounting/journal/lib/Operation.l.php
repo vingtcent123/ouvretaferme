@@ -577,6 +577,8 @@ class OperationLib extends OperationCrud {
 			$eOperation['financialYear'] = $eFinancialYear;
 
 			$input['invoiceFile'] = [$index => $invoiceFile];
+			$input['accountLabel'][$index] = \account\AccountLabelLib::pad($input['accountLabel'][$index]);
+
 			$eOperation->buildIndex($properties, $input, $index);
 
 			if($isFromCashflow and $for === 'create') {
@@ -1409,6 +1411,23 @@ class OperationLib extends OperationCrud {
 			->select(['count' => new \Sql('COUNT(*)', 'int'), 'thirdParty'])
 			->group('thirdParty')
 			->getCollection(NULL, NULL, 'thirdParty');
+
+	}
+
+	public static function getDescriptions(string $accountLabel, \account\ThirdParty $eThirdParty): array {
+
+		return Operation::model()
+			->select(['description', 'count' => new \Sql('COUNT(*)')])
+			->whereThirdParty($eThirdParty)
+			->whereAccountLabel($accountLabel)
+			// Exclusion banque et TVA qui sont générés automatiquement
+			->where('accountLabel NOT LIKE "'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'%"')
+			->where('accountLabel NOT LIKE "'.\account\AccountSetting::VAT_CLASS.'%"')
+			->group('description')
+			->sort(['count' => SORT_DESC])
+			->having('count > 2')
+			->getCollection()
+			->getColumn('description');
 
 	}
 

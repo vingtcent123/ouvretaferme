@@ -368,5 +368,19 @@ new Page(function($data) {
 
 		throw new \ViewAction($data);
 
+	})
+	->post('queryDescription', function($data) {
+
+		$accountLabel = POST('accountLabel');
+		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
+
+		if($accountLabel and $eThirdParty->notEmpty()) {
+			$data->descriptions = \journal\OperationLib::getDescriptions($accountLabel, $eThirdParty);
+		} else {
+			$data->descriptions = [];
+		}
+
+		throw new \ViewAction($data);
+
 	});
 ?>
