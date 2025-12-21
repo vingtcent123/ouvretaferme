@@ -324,8 +324,15 @@ class SaleLib extends SaleCrud {
 			Sale::model()->join(Payment::model(), 'm1.id = m'.($joins).'.sale AND method = '.$search->get('paymentMethod'));
 		}
 
+		$select = Sale::getSelection();
+		if($eFarm->hasAccounting()) {
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+			$select['cashflow'] = \bank\Cashflow::model()
+				->select('id')
+				->delegateElement('sale');
+		}
 		$cSale = Sale::model()
-			->select(Sale::getSelection())
+			->select($select)
 			->select([
 				'cPdf' => Pdf::model()
 					->select(Pdf::getSelection())

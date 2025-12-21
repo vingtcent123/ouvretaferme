@@ -567,12 +567,13 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
 
-							$h .= self::getPaymentMethodName($eSale);
+								$h .= self::getPaymentMethodName($eSale);
 
-							$paymentStatus = self::getPaymentStatus($eSale);
-							if($paymentStatus) {
-								$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-							}
+								$paymentStatus = self::getPaymentStatus($eSale);
+								if($paymentStatus) {
+									$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+								}
+								$h .= ($eSale['cashflow']['id'] ?? NULL) ? '<span class="util-badge bg-accounting" style="margin-top: 0.25rem">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</span>' :  '';
 
 							$h .= '</td>';
 

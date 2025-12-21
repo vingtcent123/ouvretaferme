@@ -55,8 +55,15 @@ class InvoiceLib extends InvoiceCrud {
 			]);
 		}
 
+		$select = Invoice::getSelection();
+		if($eFarm->hasAccounting()) {
+			\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+			$select['cashflow'] = \bank\Cashflow::model()
+				->select('id')
+				->delegateElement('invoice');
+		}
 		$cInvoice = Invoice::model()
-			->select(Invoice::getSelection())
+			->select($select)
 			->option('count')
 			->whereId('=', $search->get('invoice'), if: $search->get('invoice'))
 			->whereFarm($eFarm)

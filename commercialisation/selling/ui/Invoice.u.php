@@ -238,7 +238,7 @@ class InvoiceUi {
 									$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
 
 									if($eInvoice->isCreditNote() === FALSE) {
-										$h .= '<div>';
+										$h .= '<div class="flex-align-center" style="gap: 0.5rem;">';
 											$h .= \util\TextUi::switch([
 												'id' => 'invoice-switch-'.$eInvoice['id'],
 												'class' => 'field-switch-sm',
@@ -247,6 +247,7 @@ class InvoiceUi {
 												'post-id' => $eInvoice['id'],
 												'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
 											], $eInvoice['paymentStatus'] === Invoice::PAID, textOn: self::p('paymentStatus')->values[Sale::PAID],textOff: self::p('paymentStatus')->values[Sale::NOT_PAID]);
+											$h .= ($eInvoice['cashflow']['id'] ?? NULL) ? '<span class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</span>' :  '';
 										$h .= '</div>';
 									}
 								}
