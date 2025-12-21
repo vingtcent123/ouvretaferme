@@ -68,6 +68,10 @@ class AccountModel extends \ModuleModel {
 			['class']
 		]);
 
+		$this->searchConstraints = array_merge($this->searchConstraints, [
+			['description']
+		]);
+
 	}
 
 	public function getDefaultValue(string $property) {

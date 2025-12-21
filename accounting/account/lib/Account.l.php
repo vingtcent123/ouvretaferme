@@ -105,6 +105,17 @@ class AccountLib extends AccountCrud {
 
 				Account::model()->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '');
 
+				$keywords = [];
+
+				$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
+
+				foreach(preg_split('/\s+/', $query) as $word) {
+					$keywords[] = '*'.$word.'*';
+				}
+
+				$match = 'MATCH(description) AGAINST ('.Account::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+				Account::model()->where($match.' > 0');
 			}
 		}
 		return Account::model()
@@ -140,6 +151,7 @@ class AccountLib extends AccountCrud {
 		// - triés par nombre d'usages décroissants
 		// - en mettant classes 4 (comptes de tiers : TVA) et classe 5 (comptes financiers) et classes déjà utilisées
 		// Ensuite, comptes utilisés dans l'ordre décroissant d'usage (groupés par classe principale)
+		$cAccountClassMatch = new \Collection();
 		$cAccountClassThird = new \Collection();
 		$cAccountClassUsed = new \Collection();
 		$cAccountClassAfter = new \Collection();
@@ -193,20 +205,24 @@ class AccountLib extends AccountCrud {
 			$cAccountClassUsedGrouped[$class] = new \Collection();
 		}
 
-		foreach($cOperationByUsage as $eOperation) {
+		if($thirdParty !== NULL) {
 
-			if(
-				$cAccount->findById($eOperation['account'])->empty() or
-				$cAccountByThirdParty->findById($eOperation['account'])->notEmpty()
-			) {
-				continue;
+			foreach($cOperationByUsage as $eOperation) {
+
+				if(
+					$cAccount->findById($eOperation['account'])->empty() or
+					$cAccountByThirdParty->findById($eOperation['account'])->notEmpty()
+				) {
+					continue;
+				}
+
+				$eAccount = $cAccount->offsetGet($eOperation['account']['id']);
+				$eAccount['thirdParty'] = FALSE;
+				$eAccount['used'] = TRUE;
+				$class = (int)mb_substr($eAccount['class'], 0, 1);
+				$cAccountClassUsedGrouped[$class]->append($eAccount);
+
 			}
-
-			$eAccount = $cAccount->offsetGet($eOperation['account']['id']);
-			$eAccount['thirdParty'] = FALSE;
-			$eAccount['used'] = TRUE;
-			$class = (int)mb_substr($eAccount['class'], 0, 1);
-			$cAccountClassUsedGrouped[$class]->append($eAccount);
 
 		}
 
@@ -226,11 +242,16 @@ class AccountLib extends AccountCrud {
 
 			$eAccount['thirdParty'] = FALSE;
 			$eAccount['used'] = FALSE;
-			$cAccountOthers->append($eAccount);
+
+			if(POST('query') and ThirdPartyLib::scoreNameMatch($eAccount['description'], POST('query')) > 100) {
+				$cAccountClassMatch->append($eAccount);
+			} else {
+				$cAccountOthers->append($eAccount);
+			}
 
 		}
 
-		return $cAccountByThirdParty->mergeCollection($cAccountClassUsed)->mergeCollection($cAccountOthers);
+		return $cAccountByThirdParty->mergeCollection($cAccountClassMatch)->mergeCollection($cAccountClassUsed)->mergeCollection($cAccountOthers);
 
 	}
 

@@ -66,10 +66,16 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	if($cAccountOthers->notEmpty()) {
 
+		if($cAccountThirdParty->empty() and $cAccountUsed->empty()) {
+			$text = s("Tous les numéros de compte");
+		} else {
+			$text = s("Tous les autres numéros de compte");
+		}
+
 		$results[] = [
 			'type' => 'title',
-			'itemHtml' => '<div>'.s("Tous les autres numéros de compte").'</div>',
-			'itemText' => s("Tous les autres numéros de compte"),
+			'itemHtml' => '<div>'.$text.'</div>',
+			'itemText' => $text,
 		];
 
 		foreach($cAccountOthers as $eAccount) {

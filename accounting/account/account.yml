@@ -16,6 +16,9 @@ Account:
       ["id"],
       ["class"]
   ]
+  SEARCH: [
+    ["description"]
+  ]
 
 # Exercices comptables
 FinancialYear:
