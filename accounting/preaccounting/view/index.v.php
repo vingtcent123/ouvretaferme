@@ -257,7 +257,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$t->nav = 'accounting';
 	$t->subNav = 'operations';
 
-	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
+	$t->title = s("Importer les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
 
 	$t->mainTitle = '<h1>'.s("Importer les ventes").(array_sum($data->counts) > 0 ? '<span class="util-counter ml-1">'.array_sum($data->counts).'</span>' : '').'</h1>';
@@ -350,7 +350,7 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 
 	$t->nav = 'bank';
 
-	$t->title = s("Les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
+	$t->title = s("Rapprocher les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes';
 
 	$total = $data->countsByInvoice + $data->countsBySale;
