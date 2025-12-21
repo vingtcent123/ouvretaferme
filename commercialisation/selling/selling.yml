@@ -130,7 +130,7 @@ Invoice:
   closedAt: ?datetime
   closedBy: ?user\User
   accountingHash: ?textFixed(20, 20) @charset(ascii)
-  readyForAccounting: bool = FALSE
+  readyForAccounting: ?bool = FALSE
   emailedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
   INDEX: [
@@ -331,7 +331,7 @@ Sale:
   statusAt: ?datetime
   statusBy: ?user\User
   accountingHash: ?textFixed(20, 20) @charset(ascii)
-  readyForAccounting: bool = FALSE
+  readyForAccounting: ?bool = FALSE
   INDEX: [
     ["customer"],
     ["shopDate"],

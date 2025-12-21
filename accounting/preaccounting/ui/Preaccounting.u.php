@@ -45,9 +45,11 @@ Class PreaccountingUi {
 
 		$form = new \util\FormUi();
 
-		$h = '<div class="mb-2">'.$form->openUrl(LIME_REQUEST_PATH.'?type=payment&from='.GET('from').'&to='.GET('to'), ['id' => 'preaccounting-payment-customer']);
-			$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer', function($d) {
-			}).'</div>';
+		$h = '<div class="mb-2">';
+			$h .= $form->openUrl(LIME_REQUEST_PATH.'?type=payment&from='.GET('from').'&to='.GET('to'), ['id' => 'preaccounting-payment-customer']);
+				$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
+			$h .= $form->close();
+		$h .= '</div>';
 
 		if($cSale->empty()) {
 			return $h.'<div class="util-info">'.s("Il n'y a rien à afficher ici !").'</div>';
@@ -184,7 +186,7 @@ Class PreaccountingUi {
 						$h .= '<tr>';
 
 							$h .= '<td class="td-checkbox">';
-								$h .= '<input type="checkbox" name="batch[]" batch-type="invoie-'.$type.'" value="'.$eInvoice['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
+								$h .= '<input type="checkbox" name="batch[]" batch-type="invoice-'.$type.'" value="'.$eInvoice['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
 							$h .= '</td>';
 
 							$h .= '<td>';
@@ -342,13 +344,15 @@ Class PreaccountingUi {
 				$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
 				foreach($cPaymentMethod as $ePaymentMethod) {
 					if($ePaymentMethod['online'] === FALSE) {
-						$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-sale-'.$type.'-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+						$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-sale-'.$type.'-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 					}
 				}
 
 			$menu .= '</div>';
 
 		}
+
+		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces ventes ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 
 		return \util\BatchUi::group('batch-accounting-sale-'.$type, $menu, title: s("Pour les ventes sélectionnées"));
 
@@ -378,7 +382,10 @@ Class PreaccountingUi {
 
 		}
 
-		return \util\BatchUi::group('batch-accounting-sale-'.$type, $menu, title: s("Pour les ventes sélectionnées"));
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces factures ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+
+
+		return \util\BatchUi::group('batch-accounting-invoice-'.$type, $menu, title: s("Pour les factures sélectionnées"));
 
 	}
 

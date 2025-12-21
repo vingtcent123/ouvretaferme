@@ -680,6 +680,16 @@ new Page(function($data) {
 
 		throw new ReloadAction('selling', 'Sale::paymentMethodUpdated');
 
+	})
+	->post('doUpdateRefuseReadyForAccountingCollection', function($data) {
+
+		$data->c->validate('canWrite');
+		$data->eFarm->validate('hasAccounting');
+
+		\selling\SaleLib::updateReadyForAccountingCollection($data->c, NULL);
+
+		throw new ReloadAction('selling', 'Sale::readyForAccountingRefused');
+
 	});
 
 new \selling\PdfPage()

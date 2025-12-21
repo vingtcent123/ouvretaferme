@@ -88,7 +88,7 @@ class InvoiceModel extends \ModuleModel {
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'readyForAccounting' => ['bool', 'cast' => 'bool'],
+			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);

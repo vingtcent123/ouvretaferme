@@ -165,6 +165,7 @@ class AlertUi {
 			][$options['type']].$options['actions'],
 			'Sale::customerUpdated' => s("Le client a bien été mis à jour."),
 			'Sale::paymentMethodUpdated' => s("Le moyen de paiement a bien été modifié."),
+			'Sale::readyForAccountingRefused' => s("Les ventes sont maintenant ignorées des exports comptables."),
 			'Sale::userCanceled' => s("La commande a bien été annulée."),
 			'Stock::updated' => s("Le stock a bien été mis à jour pour ce produit."),
 

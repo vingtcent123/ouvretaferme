@@ -132,7 +132,7 @@ class SaleModel extends \ModuleModel {
 			'statusAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'statusBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'readyForAccounting' => ['bool', 'cast' => 'bool'],
+			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
