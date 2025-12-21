@@ -158,15 +158,7 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
     const isAsset = accountClass?.startsWith('2');
 
     if(isAsset || isGrant) {
-        const url = new URL('https://example.com' + qs('[data-account="asset-create"][data-index="' + index + '"] a').getAttribute('href'));
-
-        const params = new URLSearchParams(url.search);
-        params.set('account', e.detail.value);
-
-        qs('[data-account="asset-create"][data-index="' + index + '"] a').setAttribute('href', url.pathname + '?' + params.toString());
-
         qs('[data-account="asset-create"][data-index="' + index + '"]').removeHide();
-
     }
 
     Operation.checkAutocompleteStatus(e);

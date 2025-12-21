@@ -21,6 +21,8 @@ new \asset\AssetPage(function($data) {
 			$eAccount = new \account\Account();
 		}
 
+		$data->eOperation = \journal\OperationLib::getById(GET('operation'));
+
 		$data->e['account'] = $eAccount;
 
 		// Références de durées
@@ -121,4 +123,17 @@ new \asset\AssetPage(function($data) {
 
 	});
 
+new Page(function($data) {
+
+	\user\ConnectionLib::checkLogged();
+
+	$data->eFarm->validate('canManage');
+})
+	->post('getRecommendedDuration', function($data) {
+
+		$data->cAmortizationDuration = \company\AmortizationDurationLib::getAll();
+
+		throw new \ViewAction($data);
+
+	});
 ?>

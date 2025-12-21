@@ -57,7 +57,7 @@ Class AssetUi {
 
 	}
 
-	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset = new Asset()): \Panel {
+	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \journal\Operation $eOperation): \Panel {
 
 		$script = '<script type="text/javascript">';
 			$script .= 'Asset.initFiscalDurations('.json_encode($eAsset['cAmortizationDuration']).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
@@ -78,12 +78,23 @@ Class AssetUi {
 		$h .= $form->asteriskInfo();
 
 		if($eAsset->exists()) {
+
 			$h .= $form->hidden('id', $eAsset['id']);
+
+		} else if($eOperation->exists()) {
+
+			$h .= $form->hidden('operation', $eOperation['id']);
+			$eAsset['account'] = $eOperation['account'];
+			$eAsset['accountLabel'] = $eOperation['accountLabel'];
+			$eAsset['value'] = $eOperation['amount'];
+			$eAsset['description'] = $eOperation['description'];
+			$eAsset['acquisitionDate'] = $eOperation['date'];
+			$eAsset['startDate'] = $eOperation['date'];
 		}
 
 		$h .= $form->dynamicGroups($eAsset, ['description*']);
 
-		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset) {
+		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset, $eOperation) {
 			$d->autocompleteDispatch = '[data-account="'.$form->getId().'"]';
 			$d->attributes['data-wrapper'] = 'account';
 			$d->attributes['data-account'] = $form->getId();
@@ -111,6 +122,11 @@ Class AssetUi {
 					])
 				).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
 			);
+		$h .= '</div>';
+		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
+			if($eAsset->notEmpty()) {
+				$h .= $this->getDurationRecommandation($eAsset['accountLabel'], $eAsset['cAmortizationDuration']);
+			}
 		$h .= '</div>';
 
 		$h .= '<h3>'.s("Amortissement économique").'</h3>';
@@ -165,6 +181,46 @@ Class AssetUi {
 			close: 'passthrough',
 		);
 
+	}
+
+	public function getDurationRecommandation(string $accountLabel, \Collection $cAmortizationDuration): string {
+
+		foreach($cAmortizationDuration as $eAmortizationDuration) {
+
+			if(\account\AccountLabelLib::isFromClass($accountLabel, $eAmortizationDuration['class'])) {
+
+				$minYear = $eAmortizationDuration['durationMin'];
+				$maxYear = $eAmortizationDuration['durationMax'];
+				$minMonth = $minYear * 12 * (1 - AssetSetting::AMORTIZATION_DURATION_TOLERANCE);
+				$maxMonth = $maxYear * 12 * (1 + AssetSetting::AMORTIZATION_DURATION_TOLERANCE);
+
+				if($minYear === $maxYear) {
+
+					return s(
+						"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{year} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
+						'year' => $minYear,
+						'minMonth' => $minMonth,
+						'maxMonth' => $maxMonth,
+						'account' => '<b>'.$accountLabel.'</b>',
+						'tolerance' => AssetSetting::AMORTIZATION_DURATION_TOLERANCE * 100,
+					]);
+
+				}
+
+				return s(
+					"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{minYear} à {maxYear} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
+					'minYear' => $minYear,
+					'maxYear' => $maxYear,
+					'minMonth' => $minMonth,
+					'maxMonth' => $maxMonth,
+					'account' => '<b>'.$accountLabel.'</b>',
+					'tolerance' => AssetSetting::AMORTIZATION_DURATION_TOLERANCE * 100,
+				]);
+			}
+
+		}
+
+		return '';
 	}
 
 	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE, array $query = []): void {

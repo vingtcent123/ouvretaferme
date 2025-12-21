@@ -47,6 +47,14 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->beginTransaction();
 
+		$eOperation = \journal\OperationLib::getById(POST('operation'));
+
+		if($eOperation->notEmpty() and $eOperation['asset']->notEmpty()) {
+			throw new \FailAction('asset\Asset::Operation.alreadyLinked');
+		}
+
+		$e['accountLabel'] = \account\AccountLabelLib::pad($e['accountLabel']);
+
 		// Calculate endDate
 		$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
 		$e['isGrant'] = \asset\AssetLib::isGrant($e['accountLabel']);
@@ -78,10 +86,24 @@ class AssetLib extends \asset\AssetCrud {
 
 		$e['isExcess'] = $isExcess;
 
+		if($eOperation->notEmpty()) {
+			if($e['accountLabel'] !== $eOperation['accountLabel']) {
+				throw new \FailAction('Asset::accountLabel.check');
+			}
+			if($e['account']['id'] !== $eOperation['account']['id']) {
+				throw new \FailAction('Asset::account.check');
+			}
+
+		}
+
 		parent::create($e);
 
 		// Reprend les cumuls antérieurs à l'entrée dans l'exercice comptable
 		AmortizationLib::resume($e);
+
+		if($eOperation->notEmpty()) {
+			\journal\Operation::model()->update($eOperation, ['asset' => $e]);
+		}
 
 		Asset::model()->commit();
 

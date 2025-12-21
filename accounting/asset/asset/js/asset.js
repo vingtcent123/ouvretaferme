@@ -84,6 +84,15 @@ document.delegateEventListener('autocompleteSelect', '[data-account-label="asset
 
 });
 
+document.delegateEventListener('focusout', '[data-account-label="asset-asset-create"]', function(e) {
+
+    const value = qs('[data-account-label="asset-asset-create"]').value;
+
+    Asset.setRecommendations(value);
+    Asset.checkEconomicDuration();
+
+});
+
 
 class Asset {
 
@@ -137,6 +146,13 @@ class Asset {
         if(parseInt(fiscalDuration.durationMin) === parseInt(fiscalDuration.durationMax)) {
             qs('[name="fiscalDuration"]').value = parseInt(fiscalDuration.durationMax * 12);
         }
+
+        const url = qs('#amortization-duration-recommandation').dataset.url;
+        new Ajax.Query()
+          .url(url)
+          .body({ accountLabel })
+          .fetch();
+
 
     }
 

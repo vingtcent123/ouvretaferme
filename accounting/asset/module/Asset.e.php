@@ -235,8 +235,6 @@ class Asset extends AssetElement {
 			})
 			->setCallback('startDate.missing', function(?string $startDate) use($p): bool {
 
-				$p->expectsBuilt('economicMode');
-
 				if($p->isBuilt('economicMode') === FALSE or $this['economicMode'] !== Asset::LINEAR) {
 					return TRUE;
 				}

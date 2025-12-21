@@ -501,6 +501,16 @@ class JournalUi {
 
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
 
+										if(
+											\asset\AssetLib::isAsset($eOperation['accountLabel']) and
+											$eOperation['asset']->empty()
+										) {
+
+											$h .= '<div class="dropdown-divider"></div>';
+											$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?operation='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
+
+										}
+
 										// ACTION "SUPPRIMER"
 										if($eOperation['cOperationCashflow']->empty()) { // Cette opération est liée à une autre : on ne peut pas la supprimer.
 

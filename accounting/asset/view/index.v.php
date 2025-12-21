@@ -2,7 +2,7 @@
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->cFinancialYear, $data->e);
+	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->cFinancialYear, $data->e, $data->eOperation);
 
 });
 
@@ -16,15 +16,13 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	}
 
-	//$results[] = \account\AccountUi::getAutocompleteCreate($data->eFarm);
-
 	$t->push('results', $results);
 
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->cFinancialYear, $data->e);
+	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->cFinancialYear, $data->e, new \journal\Operation());
 
 });
 
@@ -37,6 +35,19 @@ new AdaptativeView('/immobilisation/{id}/', function($data, PanelTemplate $t) {
 new AdaptativeView('dispose', function($data, PanelTemplate $t) {
 
 	return new \asset\AssetUi()::dispose($data->eFarm, $data->eAsset);
+
+});
+
+new JsonView('getRecommendedDuration', function($data, AjaxTemplate $t) {
+
+	$recommendation = new \asset\AssetUi()->getDurationRecommandation(POST('accountLabel'), $data->cAmortizationDuration);
+
+	if($recommendation) {
+		$t->qs('#amortization-duration-recommandation')->innerHtml($recommendation);
+		$t->qs('#amortization-duration-recommandation')->removeHide();
+	} else {
+		$t->qs('#amortization-duration-recommandation')->hide();
+	}
 
 });
 

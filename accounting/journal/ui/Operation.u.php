@@ -264,6 +264,14 @@ class OperationUi {
 			$h .= '<h3>'.s("Informations générales").'</h3>';
 		$h .= '</div>';
 
+		if(\asset\AssetLib::isAsset($eOperation['accountLabel'])/* and $eOperation['asset']->empty()*/) {
+			$h .= '<div class="mt-1 mb-1">';
+				$h .= '<span class="color-warning">'.\Asset::icon('exclamation-triangle').' '.s("Attention, l'immobilisation correspondante n'a pas encore été créée.").'</span>';
+				$h .= '<br />';
+				$h .= '<a class="btn btn-outline-warning" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?operation='.$eOperation['id'].'">'.s("Créer l'immobilisation").'</a>';
+			$h .= '</div>';
+		}
+
 		$h .= '<div class="operation-view-label">';
 			$h .= s("Montant");
 		$h .= '</div>';
@@ -999,16 +1007,6 @@ class OperationUi {
 					$d->attributes['data-account'] = $form->getId();
 					$d->label .=  ' '.\util\FormUi::asterisk();
 				});
-				$h .= '<div data-account="asset-create" class="hide" data-index="'.$index.'">';
-					$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true" href="'.\company\CompanyUi::urlAsset($eFarm).'/:create">';
-						$h .= \Asset::icon('house-add');
-					$h .= '</a>';
-					$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-						$h .= '<span class="dropdown-item">';
-							$h .= s("Créer une nouvelle immobilisation");
-						$h .= '</span>';
-					$h .= '</div>';
-				$h .='</div>';
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="journalCode'.$suffix.'" class="company_form_group-with-tip">';
@@ -1046,6 +1044,9 @@ class OperationUi {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-asset'] = $form->getId();
 					$d->label .=  ' '.\util\FormUi::asterisk();
+					$d->after = '<div data-account="asset-create" class="hide form-info" data-index="'.$index.'">'.
+						s("Si l'immobilisation n'existe pas encore, vous pourrez la créer juste après avoir enregistré cette écriture.").
+						'</div>';
 				});
 			$h .='</div>';
 
