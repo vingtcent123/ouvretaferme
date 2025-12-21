@@ -4,10 +4,10 @@ namespace journal;
 class OperationLib extends OperationCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
+		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['account', 'accountLabel', 'date', 'description', 'document', 'amount', 'type', 'thirdParty', 'comment', 'journalCode'];
+		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'thirdParty', 'comment', 'journalCode'];
 	}
 
 	public static function countByOldDatesButNotNewDate(\account\FinancialYear $eFinancialYear, string $newStartDate, string $newEndDate): int {
@@ -527,7 +527,7 @@ class OperationLib extends OperationCrud {
 		$properties = [
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
-			'asset',
+			'asset', 'date',
 			'journalCode',
 		];
 		if($eFinancialYear['hasVat']) {
@@ -548,7 +548,7 @@ class OperationLib extends OperationCrud {
 
 		} else if($for === 'create') {
 
-			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
+			$properties = array_merge($properties, ['paymentDate', 'paymentMethod']);
 
 		} else {
 
@@ -970,6 +970,7 @@ class OperationLib extends OperationCrud {
 			'account' => $eAccount['vatAccount']['id'] ?? NULL,
 			'accountLabel' => \account\AccountLabelLib::pad($eAccount['vatAccount']['class']),
 			'document' => $eOperationLinked['document'],
+			'documentDate' => $eOperationLinked['documentDate'],
 			'thirdParty' => $eOperationLinked['thirdParty']['id'] ?? NULL,
 			'type' => $eOperationLinked['type'],
 			'amount' => abs($vatValue),
@@ -991,7 +992,7 @@ class OperationLib extends OperationCrud {
 		$eOperationVat->build(
 			array_merge([
 				'financialYear',
-				'account', 'accountLabel', 'description', 'document',
+				'account', 'accountLabel', 'description', 'document', 'documentDate',
 				'thirdParty', 'type', 'amount', 'operation',
 				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
 			], ($for === 'create' ? ['date', 'paymentDate', 'paymentMethod'] : [])),
@@ -1000,9 +1001,6 @@ class OperationLib extends OperationCrud {
 		);
 
 		$eOperationVat['operation'] = $eOperationLinked;
-		if($eOperationLinked['document'] !== NULL) {
-			$eOperationVat['documentDate'] = new \Sql('NOW()');
-		}
 
 		$fw->validate();
 
@@ -1276,6 +1274,7 @@ class OperationLib extends OperationCrud {
 			'accountLabel' => $label,
 			'description' => $eCashflow['memo'],
 			'document' => $document,
+			'documentDate' => $eOperation['documentDate'] ,
 			'thirdParty' => $eThirdParty['id'] ?? NULL,
 			'type' => match($eCashflow['type']) {
 				\bank\Cashflow::CREDIT => Operation::DEBIT,
@@ -1294,13 +1293,9 @@ class OperationLib extends OperationCrud {
 		$fw = new \FailWatch();
 
 		$eOperationBank->build([
-			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'thirdParty', 'type', 'amount',
+			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'documentDate', 'thirdParty', 'type', 'amount',
 			'operation', 'paymentDate', 'paymentMethod', 'hash', 'journalCode',
 		], $values, new \Properties('create'));
-
-		if($document !== NULL and isset($eOperationBank['documentDate']) === FALSE) {
-			$eOperationBank['documentDate'] = new \Sql('NOW()');
-		}
 
 		$fw->validate();
 
