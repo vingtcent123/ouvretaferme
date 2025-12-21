@@ -123,8 +123,8 @@ Class AssetUi {
 				).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
 			);
 		$h .= '</div>';
-		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
-			if($eAsset->notEmpty()) {
+		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 hide" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
+			if($eAsset->exists()) {
 				$h .= $this->getDurationRecommandation($eAsset['accountLabel'], $eAsset['cAmortizationDuration']);
 			}
 		$h .= '</div>';

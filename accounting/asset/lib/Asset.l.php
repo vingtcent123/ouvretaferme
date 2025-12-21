@@ -175,6 +175,13 @@ class AssetLib extends \asset\AssetCrud {
 			->whereId('IN', $ids)
 			->delete();
 
+		Amortization::model()
+			->whereAsset('IN', $ids)
+			->delete();
+
+		Depreciation::model()
+			->whereAsset('IN', $ids)
+			->delete();
 	}
 
 	/**

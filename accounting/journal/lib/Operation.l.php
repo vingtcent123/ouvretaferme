@@ -108,6 +108,18 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getByHashes(array $hashes): \Collection {
+
+		return Operation::model()
+			->select(Operation::getSelection() + [
+				'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
+				'asset' => \asset\Asset::getSelection(),
+			])
+			->whereHash('IN', $hashes)
+			->sort(['id' => SORT_ASC])
+			->getCollection(NULL, NULL, 'id');
+	}
+
 	public static function getByHash(string $hash): \Collection {
 
 		return Operation::model()
@@ -527,7 +539,7 @@ class OperationLib extends OperationCrud {
 		$properties = [
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
-			'asset', 'date',
+			'asset',
 			'journalCode',
 		];
 		if($eFinancialYear['hasVat']) {
@@ -537,18 +549,9 @@ class OperationLib extends OperationCrud {
 		$eOperationDefault['thirdParty'] = NULL;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
 
-		if($isFromCashflow) {
+		if($for === 'create') {
 
-			if($invoiceId !== NULL) {
-
-				$input['invoice'] = $invoiceId;
-				$properties[] = 'invoice';
-
-			}
-
-		} else if($for === 'create') {
-
-			$properties = array_merge($properties, ['paymentDate', 'paymentMethod']);
+			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
 
 		} else {
 
@@ -1049,16 +1052,23 @@ class OperationLib extends OperationCrud {
 			\asset\AssetLib::deleteByIds([$e['asset']['id']]);
 		}
 
+		// Opérations liées à celle-ci
 		Operation::model()
 			->whereOperation($e)
 			->delete();
 
 		parent::delete($e);
 
-		// Si l'opération est issue d'un import en compta => supprimer les copines + le lien
-		if($e->isFromImport()) {
+		// Suppression de toutes les opérations liées par le hash
+		$cOperation = Operation::model()
+			->select('id')
+			->whereHash($e['hash'])
+			->getCollection();
 
-			Operation::model()->whereHash($e['hash'])->delete();
+		Operation::model()->whereHash($e['hash'])->delete();
+
+		// Si l'opération est issue d'un import en compta => supprimer le lien
+		if($e->isFromImport()) {
 
 			switch($e->importType()) {
 
@@ -1077,7 +1087,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		OperationCashflow::model()
-			->whereOperation($e)
+			->whereOperation('IN', $cOperation->getIds())
 			->delete();
 
 		\journal\Operation::model()->commit();
@@ -1366,13 +1376,17 @@ class OperationLib extends OperationCrud {
 		Operation::model()->beginTransaction();
 
 		$cOperationCashflow = OperationCashflow::model()
-			->select(['operation' => ['asset']])
+			->select(['operation' => ['hash', 'asset']])
 			->whereCashflow($eCashflow)
 			->getCollection();
 
+		$hashes = array_unique($cOperationCashflow->getColumnCollection('operation')->getColumn('hash'));
+
+		$cOperation = OperationLib::getByHashes($hashes);
+
 		// Suppression de l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
 		\journal\Operation::model()
-			->whereId('IN', $cOperationCashflow->getColumnCollection('operation')->getIds())
+			->whereId('IN', $cOperation->getColumnCollection('operation')->getIds())
 			->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
       ->delete();
 
@@ -1381,17 +1395,20 @@ class OperationLib extends OperationCrud {
 			->whereCashflow($eCashflow)
 			->delete();
 
+		// Dissociation cashflow <-> operation
+		if($cOperation->notEmpty()) {
+			OperationCashflow::model()
+				->whereOperation('IN', $cOperation->getIds())
+				->delete();
+		}
+
 		if($action === 'delete') {
 
 			// Suppression des immos
-			$cAsset = $cOperationCashflow->getColumnCollection('operation')->getColumnCollection('asset');
+			$cAsset = $cOperation->getColumnCollection('asset');
 			if($cAsset->empty() === FALSE) {
 				\asset\AssetLib::deleteByIds($cAsset->getIds());
 			}
-			// Suppression des écritures
-			$cOperation = \journal\Operation::model()
-	      ->whereId('IN', $cOperationCashflow->getColumnCollection('operation')->getIds())
-	      ->getCollection();
 
 			// On ne peut pas supprimer d'écritures qui ont été lettrées
 			$hasBeenLettered = (Lettering::model()
@@ -1406,6 +1423,7 @@ class OperationLib extends OperationCrud {
 				return;
 			}
 
+			// Suppression des écritures
 			Operation::model()
 				->whereId('IN', $cOperation->getIds())
 				->delete();

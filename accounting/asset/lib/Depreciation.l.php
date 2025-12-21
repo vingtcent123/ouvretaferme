@@ -11,6 +11,18 @@ class DepreciationLib extends \asset\DepreciationCrud {
 			->getCollection();
 
 	}
+
+	public static function deleteByAsset(Asset $eAsset): void {
+
+		if($eAsset->exists() === FALSE) {
+			return;
+		}
+
+		Depreciation::model()
+			->whereAsset($eAsset)
+			->delete();
+
+	}
 }
 
 ?>

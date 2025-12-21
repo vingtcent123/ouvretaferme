@@ -33,6 +33,18 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
+	public static function deleteByAsset(Asset $eAsset): void {
+
+		if($eAsset->exists() === FALSE) {
+			return;
+		}
+
+		Amortization::model()
+			->whereAsset($eAsset)
+			->delete();
+
+	}
+
 	/**
 	 * Calcul du ratio de prorata
 	 * - si linéaire => date de mise en service
