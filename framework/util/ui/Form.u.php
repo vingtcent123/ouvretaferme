@@ -544,11 +544,12 @@ class FormUi {
 					}
 
 					$reorder = $d->autocompleteReorder ?? FALSE;
+					$textual = $d->autocompleteTextual ?? FALSE;
 
 					[
 						'query' => $query,
 						'results' => $results
-					] = $this->autocomplete($name, $url, $autocompleteBody, $dispatch, $default, $reorder, $attributes);
+					] = $this->autocomplete($name, $url, $autocompleteBody, $dispatch, $default, $reorder, $textual, $attributes);
 
 					$d->last = $results;
 
@@ -2172,11 +2173,15 @@ class FormUi {
 	/**
 	 * Create an autocomplete field
 	 */
-	public function autocomplete(string $name, string $url, array $body, ?string $dispatch, array $values, bool $reorder, array $attributes): array {
+	public function autocomplete(string $name, string $url, array $body, ?string $dispatch, array $values, bool $reorder, bool $textual, array $attributes): array {
 
 		$id = $attributes['id'] ?? uniqid('autocomplete-');
 
 		$multiple = (strpos($name, '[]') !== FALSE);
+
+		if($multiple and $textual) {
+			throw new \Exception('Not compatible');
+		}
 
 		foreach($body as $key => $value) {
 			if(is_bool($value)) {
@@ -2193,10 +2198,24 @@ class FormUi {
 			'data-autocomplete-items' => $id,
 			'data-autocomplete-field' => $name,
 			'data-autocomplete-reorder' => $reorder,
-			'data-autocomplete-empty' => s("Aucun résultat !"),
 			'data-autocomplete-select' => 'event',
 			'onrender' => 'AutocompleteField.start(this);'
 		];
+
+		if($textual) {
+
+			$inputLabel = $name;
+
+			$attributes['data-autocomplete-textual'] = TRUE;
+			$attributes['data-autocomplete-empty'] = s("Sélectionner {value}", '&laquo; {value} &raquo;');
+
+		} else {
+
+			$inputLabel = $id.'-label';
+
+			$attributes['data-autocomplete-empty'] = s("Aucun résultat !");
+
+		}
 
 		if($dispatch) {
 			$attributes['data-autocomplete-dispatch'] = $dispatch;
@@ -2222,10 +2241,16 @@ class FormUi {
 		} else {
 			$value = first($values);
 			$defaultQuery = $value['itemText'];
-			$defaultResults = $this->hidden($name, $value['value']);
+
+			if($textual === FALSE) {
+				$defaultResults = $this->hidden($name, $value['value']);
+			} else {
+				$defaultResults = '';
+			}
+
 		}
 
-		$query = $this->text($id.'-label', $defaultQuery, $attributes);
+		$query = $this->text($inputLabel, $defaultQuery, $attributes);
 		$query .= '<a class="autocomplete-empty" onclick="AutocompleteField.empty(this)">'.\Asset::icon('x').'</a>';
 
 		return [

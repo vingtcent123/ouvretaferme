@@ -667,7 +667,16 @@ class AutocompleteField {
 		const dropdownId = input.id +'-autocomplete';
 
 		if(this.hasDropdown(input) === false) {
-			input.insertAdjacentHTML('afterend', '<div id="'+ dropdownId +'" class="autocomplete-dropdown"></div>');
+
+			const dropdown = document.createElement('div');
+			dropdown.id = dropdownId;
+			dropdown.classList.add('autocomplete-dropdown');
+
+			if(input.dataset.autocompleteTextual) {
+				dropdown.classList.add('autocomplete-dropdown-textual');
+			}
+
+			input.insertAdjacentElement('afterend', dropdown);
 		}
 
 		return qs('#'+ dropdownId);
@@ -738,10 +747,12 @@ class AutocompleteField {
 		input.lastValue = null;
 
 		input.addEventListener('input', () => {
+
 			if(input.value !== input.lastValue) {
 				input.lastValue = input.value;
 				this.change(input);
 			}
+
 		});
 
 		input.addEventListener('keydown', e => {
@@ -781,14 +792,14 @@ class AutocompleteField {
 		this.onUpdate(input);
 
 		if(this.queryTimeout !== null) {
-			this.queryTimeout = null;
 			clearTimeout(this.queryTimeout);
+			this.queryTimeout = null;
 		}
 
 		this.queryTimeout = setTimeout(() => {
 			this.queryTimeout = null;
 			this.query(input);
-		}, 250);
+		}, 200);
 
 	};
 
@@ -934,7 +945,17 @@ class AutocompleteField {
 		let html = '<ul class="autocomplete-list">';
 
 		if(values.length === 0) {
-			html += '<li class="autocomplete-not-selectable autocomplete-list-empty">'+ input.dataset.autocompleteEmpty +'</li>';
+
+			const labelEmpty = input.dataset.autocompleteEmpty.replace('{value}', input.value);
+
+			if(input.dataset.autocompleteTextual) {
+				html += '<li class="autocomplete-list-empty">';
+					html += '<a>'+ labelEmpty + '</a>';
+				html += '</li>';
+			} else {
+				html += '<li class="autocomplete-not-selectable autocomplete-list-empty">' + labelEmpty + '</li>';
+			}
+
 		} else {
 
 			values.forEach((value, key) => {
@@ -978,19 +999,36 @@ class AutocompleteField {
 
 		});
 
-		dropdown.qsa('li', node => node.addEventListener('click', e => AutocompleteField.onClick(input, values, node)));
-		dropdown.qsa('li', node => node.addEventListener('autocompleteEnter', e => AutocompleteField.onClick(input, values, node)));
+		dropdown.qsa('li', node => node.addEventListener('click', e => AutocompleteField.onClick(node, input, values, node)));
+		dropdown.qsa('li', node => node.addEventListener('autocompleteEnter', e => AutocompleteField.onClick(node, input, values, node)));
 
 	};
 
-	static onClick(input, values, selected) {
+	static onClick(node, input, values, selected) {
 
-		if(selected.dataset.n === undefined) {
-			return;
+		let value;
+
+		if(
+			input.dataset.autocompleteTextual &&
+			node.classList.contains('autocomplete-list-empty')
+		) {
+
+			value = {
+				value: input.value,
+				itemText: input.value,
+				itemHtml: input.value
+			};
+
+		} else {
+
+			if(selected.dataset.n === undefined) {
+				return;
+			}
+
+			const position = parseInt(selected.dataset.n);
+			value = values[position];
+
 		}
-
-		const position = parseInt(selected.dataset.n);
-		const value = values[position];
 
 		// On applique et appelle les callbacks
 		this.apply(input, value);
@@ -1024,19 +1062,28 @@ class AutocompleteField {
 
 				if(multiple === false) {
 
-					const newInput = document.createElement('input');
-					newInput.setAttribute('type', 'hidden');
-					newInput.setAttribute('name', field);
-					newInput.setAttribute('value', value.value);
+					if(input.dataset.autocompleteTextual) {
 
-					qs(itemSelector, item => {
-						if(item.length > 0) {
-							item.firstChild.remove();
-						}
-						item.appendChild(newInput);
-					});
+						input.value = value.itemText;
 
-					input.value = value.itemText;
+					} else {
+
+						const newInput = document.createElement('input');
+						newInput.setAttribute('type', 'hidden');
+						newInput.setAttribute('name', field);
+						newInput.setAttribute('value', value.value);
+
+						qs(itemSelector, item => {
+							if(item.length > 0) {
+								item.firstChild.remove();
+							}
+							item.appendChild(newInput);
+						});
+
+						input.value = value.itemText;
+
+					}
+
 					this.onSelect(input, value);
 
 				} else {

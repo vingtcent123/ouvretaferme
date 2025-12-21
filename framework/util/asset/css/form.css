@@ -897,6 +897,10 @@ body[data-touch="no"] .autocomplete-dropdown {
 	position: absolute;
 }
 
+body[data-touch="no"] .autocomplete-dropdown.autocomplete-dropdown-textual:has(.autocomplete-list-empty) {
+	display: none;
+}
+
 body[data-touch="no"] .autocomplete-dropdown:empty {
 	display: none;
 }
