@@ -353,7 +353,7 @@ new AdaptativeView('/precomptabilite:rapprocher-factures', function($data, FarmT
 	$t->title = s("Rapprocher les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-factures';
 
-	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
+	$t->mainTitle = '<h1>'.s("Rapprocher les factures").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
 
 	if($data->ccSuggestion->empty()) {
 
