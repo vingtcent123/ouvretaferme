@@ -28,7 +28,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 	$h = '<div class="util-action">';
 
 		$h .= '<h1>';
-			$h .= s("Bienvenue dans le module de comptabilité d'{siteName} !");
+			$h .= s("Bienvenue dans le module de comptabilité de {siteName} !");
 		$h .= '</h1>';
 
 	$h .= '</div>';
