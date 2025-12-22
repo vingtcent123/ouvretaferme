@@ -34,8 +34,7 @@ new \preaccounting\SuggestionPage(function($data) {
 
 		$data->e->validate('acceptReconciliate');
 
-		$cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
-		preaccounting\ReconciliateLib::reconciliateSuggestion($data->eFarm, $data->e, $cPaymentMethod);
+		preaccounting\ReconciliateLib::reconciliateSuggestion($data->eFarm, $data->e);
 
 		throw new ReloadAction('preaccounting', 'Reconciliation::reconciliate');
 

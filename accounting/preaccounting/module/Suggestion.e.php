@@ -15,12 +15,6 @@ class Suggestion extends SuggestionElement {
 						->delegateCollection('sale')
 					])
 					->delegateCollection('invoice'),],
-				'sale' => \selling\Sale::getSelection(),
-				'operation' => [
-					'id', 'hash', 'date', 'description', 'accountLabel', 'amount', 'type',
-					'account' => ['id', 'class', 'description'],
-					'thirdParty' => ['id', 'name', 'clientAccountLabel'],
-				],
 			];
 
 	}
