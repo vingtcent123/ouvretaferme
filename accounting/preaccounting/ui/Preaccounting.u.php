@@ -346,7 +346,7 @@ Class PreaccountingUi {
 
 			$h .= '</table>';
 
-			$h .= $this->getBatchInvoices($type, $cPaymentMethod);
+			$h .= $this->getBatchInvoices($cPaymentMethod);
 
 		} else {
 
