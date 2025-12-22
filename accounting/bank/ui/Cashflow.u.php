@@ -9,7 +9,7 @@ class CashflowUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getSearch(\farm\Farm $eFarm, \Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate, \Collection $cBankAccount): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, string $minDate, string $maxDate, \Collection $cBankAccount): string {
 
 		$h = '<div id="cashflow-search" class="util-block-search '.(($search->empty(['ids']) && $search->get('isReconciliated') === NULL) ? 'hide' : '').'">';
 
