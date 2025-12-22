@@ -66,7 +66,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		} else {
 
-			if($e['economicDuration'] >= $e['fiscalDuration']) {
+			if($e['economicDuration'] > $e['fiscalDuration']) {
 				$isExcess = TRUE;
 			} else {
 				$isExcess = FALSE;
