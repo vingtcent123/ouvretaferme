@@ -9,7 +9,7 @@ new Page()
 
 		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
 
-		$cCashflow = \bank\CashflowLib::getAll(new Search(['isReconciliated' => FALSE]), NULL,FALSE);
+		[$cCashflow, ] = \bank\CashflowLib::getAll(new Search(['isReconciliated' => FALSE]), NULL,FALSE);
 
 		foreach($cCashflow as $eCashflow) {
 			\preaccounting\SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
