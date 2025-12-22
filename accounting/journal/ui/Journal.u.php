@@ -109,7 +109,7 @@ class JournalUi {
 
 					$h .= '<dt>'.s("Numéro de compte").'</dt>';
 					$h .= '<dd>';
-						$h .= $form->text('memo', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
+						$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
 					$h .= '</dd>';
 
 					$h .= '<dt>'.s("Description").'</dt>';
