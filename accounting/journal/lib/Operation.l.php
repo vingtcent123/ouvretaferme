@@ -725,18 +725,10 @@ class OperationLib extends OperationCrud {
 
 					// L'écriture n'existe pas !
 					if($eOperationVatOrigin === NULL or $eOperationVatOrigin->empty()) {
-						// Recopié de $for === 'create'
-						$defaultValues = $isFromCashflow === TRUE
-							? [
-								'date' => $eCashflow['date'],
-								'description' => $eOperation['description'] ?? $eCashflow['memo'],
-								'cashflow' => $eCashflow,
-								'paymentMethod' => $eOperation['paymentMethod'],
-								'hash' => $hash,
-							]
-							: $eOperation->getArrayCopy();
 
+						$defaultValues = $eOperation->getArrayCopy();
 						$forVat = 'create';
+
 					} else {
 
 						$defaultValues = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index]))->first()->getArrayCopy();
@@ -752,7 +744,7 @@ class OperationLib extends OperationCrud {
 							$defaultValues[$fieldCopy] = $eOperationExcludingVat[$fieldCopy];
 						}
 
-					};
+					}
 
 				} else {
 
