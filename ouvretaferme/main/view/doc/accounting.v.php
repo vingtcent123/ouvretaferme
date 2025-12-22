@@ -77,6 +77,15 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			echo s("Si des données venaient à manquer, la valeur sera vide.");
 		echo '</p>';
 
+		echo '<h3>'.s("Et si ces ventes n'ont pas pour objectif d'entrer en comptabilité par un import ?").'</h3>';
+		echo '<p>';
+			echo s("Pour des raisons diverses, il se pourrait que certaines ventes n'aient pas besoin d'entrée via un import dans la comptabilité (ventilation sur des clients différents ou autre).");
+		echo '</p>';
+		echo '<p>';
+			echo s("Dans ce cas, il est possible dans l'étape de définition des moyens de paiement, d'ignorer simplement ces ventes. Elles ne seront plus proposées, ni pour la préparation, ni pour l'export, ni pour l'import en comptablité.");
+		echo '</p>';
+
+		echo '<h3>'.s("Pour finir").'</h3>';
 		echo '<p>';
 			echo s("Si vous préparez vos données pour l'import dans le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'import puisse être réalisé : ");
 			echo '<ul>';
@@ -399,11 +408,13 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos ventes (ou factures) qui semblent correspondre. Vous verrez une petite alerte dès qu'un rapprochement sera possible.").'</p>';
 		echo '<p>'.s("Les critères de décision sont : ").'</p>';
 		echo '<ul class="doc-list-icons">';
-			echo '<li>'.Asset::icon('file-person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
+			echo '<li>'.Asset::icon('person').' '.s("La corrélation entre le tiers détecté dans l'opération bancaire, et le client lié à la vente ou la facture").'</li>';
 			echo '<li>'.Asset::icon('currency-euro').' '.s("Le montant de l'opération bancaire et de la vente ou la facture").'</li>';
-			echo '<li>'.Asset::icon('123').' '.s("La présence de la référence de facture dans la description de l'opération bancaire").'</li>';
+			echo '<li># '.s("La présence de la référence de facture dans la description de l'opération bancaire").'</li>';
 			echo '<li>'.Asset::icon('calendar-range').' '.s("L'adéquation entre la date d'opération bancaire et la date de la vente ou de la facture").'</li>';
+			echo '<li>'.Asset::icon('wallet2').' '.s("La correspondance entre le moyen de paiement détecté dans l'opération bancaire et le moyen de paiement indiqué dans la vente ou la facture").'</li>';
 		echo '</ul>';
+		echo '<p>'.s("Un score avec un code couleur vous indique le niveau de confiance de {siteName} dans le rapprochement, et les points de vigilance s'il y en a.").'</p>';
 		echo '<p>'.s("Pour chaque suggestion de rapprochement, vous pouvez modifier le moyen de paiement détecté via le libellé de l'opération bancaire.").'</li>';
 		echo '<p>'.s("Puis ensuite vous avez le choix : ").'</li>';
 		echo '<ul class="doc-list-icons">';
@@ -411,7 +422,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de le refuser.<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 
-		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement renseigné, dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']).'</p>';
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement renseigné et <span2>{icon} rapprochée</span2>, dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">', 'span2' => '<span class="util-badge bg-accounting">', 'icon' => Asset::icon('piggy-bank')]).'</p>';
 
 	echo '</div>';
 	echo '<br /><br />';
