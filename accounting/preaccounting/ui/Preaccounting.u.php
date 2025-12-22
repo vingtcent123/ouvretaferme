@@ -596,7 +596,12 @@ Class PreaccountingUi {
 			$h .= '</div>';
 
 			if($cProduct->empty()) {
-				return $h.'<div class="util-info">'.s("Il n'y a plus de produit à afficher !").'</div>';
+				if($search->get('profile') or $search->get('name') or $search->get('plant')) {
+					$h .= '<div class="util-info">'.s("Il n'y a pas de produit sans numéro de compte à afficher avec vos critères de recherche.").'</div>';
+				} else {
+					$h .= '<div class="util-info">'.s("Il n'y a plus de produit sans numéro de compte à afficher.").'</div>';
+				}
+				return $h;
 			}
 
 
