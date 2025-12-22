@@ -42,11 +42,10 @@ new Page(function($data) {
 			'to' => $periodEnd,
 			'periodStart' => GET('periodStart'),
 			'periodEnd' => GET('periodEnd'),
-			'isReconciliated' => GET('isReconciliated', 'bool'),
+			'isReconciliated' => get_exists('isReconciliated') ? GET('isReconciliated', 'bool') : NULL,
 			'bankAccount' => \bank\BankAccountLib::getById(GET('bankAccount')),
 			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
 		], GET('sort', 'string', 'date-'));
-
 		if(GET('amount')) {
 
 			$search->set('amountMin', GET('amount','float') - GET('margin', 'float', 0));
@@ -76,10 +75,12 @@ new Page(function($data) {
 			$data->eImport = new \bank\Import();
 		}
 
+		$data->page = GET('page', 'int');
+
 		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
 		$data->nCashflow = \bank\CashflowLib::countByStatus($search);
 		$data->nCashflow->offsetSet('all', new \bank\Cashflow(['count' => array_sum($data->nCashflow->getColumn('count'))]));
-		$data->cCashflow = \bank\CashflowLib::getAll($search, $hasSort);
+		[$data->cCashflow, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll();
 

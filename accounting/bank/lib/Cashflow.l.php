@@ -28,7 +28,7 @@ class CashflowLib extends CashflowCrud {
 			->whereFitid('LIKE', '%'.$search->get('fitid').'%', if: $search->get('fitid'))
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
-			->whereIsReconciliated('=', $search->get('isReconciliated'), if: $search->get('isReconciliated'))
+			->whereIsReconciliated('=', $search->get('isReconciliated'), if: $search->get('isReconciliated') !== NULL)
 			->where('amount < 0', if: $search->get('direction') and $search->get('direction') === 'debit')
 			->where('amount >= 0', if: $search->get('direction') and $search->get('direction') === 'credit')
 			->whereStatus('!=', Cashflow::DELETED, if: $search->get('statusNotDeleted'))
@@ -60,9 +60,10 @@ class CashflowLib extends CashflowCrud {
 			->get();
 
 	}
-	public static function getAll(\Search $search, bool $hasSort): \Collection {
+	public static function getAll(\Search $search, int $page, bool $hasSort): array {
 
-		return self::applySearch($search)
+		$maxByPage = 500;
+		$cCashflow = self::applySearch($search)
 			->select(Cashflow::getSelection() + [
 				'cOperationHash' => \journal\Operation::model()
 					->select('id')
@@ -70,9 +71,17 @@ class CashflowLib extends CashflowCrud {
 				'invoice' => ['id', 'name', 'document', 'customer' => ['id', 'name']],
 				'sale' => ['id', 'document', 'customer' => ['id', 'name']],
 			])
+			->option('count')
 			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_DESC, 'fitid' => SORT_DESC])
-			->getCollection();
+			->getCollection($page * $maxByPage, $maxByPage);
 
+		$nCashflow = Cashflow::model()->found();
+		$nPage = ceil($nCashflow / $maxByPage);
+
+		return [
+			$cCashflow,
+			$nPage,
+		];
 	}
 
 	public static function getMinMaxDate(): array {

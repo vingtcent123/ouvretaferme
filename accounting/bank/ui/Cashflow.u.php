@@ -11,7 +11,7 @@ class CashflowUi {
 
 	public function getSearch(\Search $search, \Collection $cFinancialYear, string $minDate, string $maxDate, \Collection $cBankAccount, array $nCashflow): string {
 
-		$h = '<div id="cashflow-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
+		$h = '<div id="cashflow-search" class="util-block-search '.(($search->empty(['ids']) && $search->get('isReconciliated') === NULL) ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;
@@ -35,7 +35,7 @@ class CashflowUi {
 			);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut"), 'onchange' => 'Cashflow.changeStatusSelector(this);']);
-			$h .= $form->select('isReconciliated', [TRUE => s("Opérations rapprochées"), FALSE => s("Opérations non rapprochées")], $search->get('isReconciliated'), ['placeholder' => s("Rapprochement")]);
+			$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], (int)$search->get('isReconciliated'), ['placeholder' => s("Rapprochement")]);
 			$h .= $form->select('direction', ['debit-credit' => s("Débit / Crédit"), 'debit' => s("Débit"), 'credit' => s("Crédit")], $search->get('direction') ?? 'debit-credit', ['placeholder' => s("Sens du mouvement")]);
 			$h .= $form->inputGroup($form->addon(s('Montant'))
 					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01])
