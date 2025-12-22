@@ -39,7 +39,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 
 	echo '<div class="util-block">';
 		echo '<p>'.s("{siteName} vous propose de tenir votre comptabilité facilement.").'</p>';
-		echo '<p>'.s("Pour le moment, le module de comptabilité est fonctionnel pour les exploitations au <b>micro-BA</b>, en <b>comptabilité de trésorerie</b> ou <b>comptabilité de trésorie avec suivi d'encours pour les ventes</b> enregistrées sur Ouvretaferme.").'</p>';
+		echo '<p>'.s("Pour le moment, le module de comptabilité est fonctionnel pour les exploitations au <b>micro-BA</b> et en <b>comptabilité de trésorerie</b> avec suivi d'encours pour les ventes</b> enregistrées sur Ouvretaferme.").'</p>';
 		echo '<p>'.s("Vous avez deux options pour votre comptabilité :").'</p>';
 		echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Préparer les données de vos ventes puis exporter un FEC pour l'intégrer dans votre logiciel de comptabilité actuel.");
 		echo '<br />';
@@ -73,8 +73,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 		echo '<ul>';
 			echo '<li>'.s("au micro-BA");
 			echo '<li>'.s("à la comptabilité de trésorerie");
-			echo '<li>'.s("ou à la comptabilité de trésorerie + d'engagement pour la partie ventes (pour le suivi client)");
-			echo '<li>'.s("accompagnées ou non par un cabinet, un organisme extérieurs");
+			echo '<li>'.s("accompagnées ou non par un cabinet, un organisme extérieur");
 			echo '<li>'.s("redevables et non redevables de la TVA");
 		echo '</ul>';
 	echo '</div>';
@@ -84,7 +83,6 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 			echo s("Je souhaite juste préparer mes données sans utiliser le module de comptabilité");
 		echo '</a>';
 
-		//href="/comptabilite/parametrer?farm='.$data->eFarm['id'].'"
 		echo '<a class="company-accounting-choose-option" data-option="yes" onclick="CompanyConfiguration.toggleBetaForm();">';
 			echo s("Oui, je veux utiliser la comptabilité avec {siteName} et commencer maintenant");
 		echo '</a>';
