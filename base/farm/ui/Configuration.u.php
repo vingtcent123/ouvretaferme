@@ -35,7 +35,7 @@ class ConfigurationUi {
 				$h .= '<a class="tab-item" data-tab="orderForm" onclick="Lime.Tab.select(this)">'.s("Devis").'</a>';
 				$h .= '<a class="tab-item" data-tab="deliveryNote" onclick="Lime.Tab.select(this)">'.s("Bons de livraisons").'</a>';
 				$h .= '<a class="tab-item" data-tab="invoice" onclick="Lime.Tab.select(this)">'.s("Factures").'</a>';
-				if(FEATURE_PRE_ACCOUNTING) {
+				if($eFarm->hasAccounting()) {
 					$h .= '<a class="tab-item tab-item-accounting" data-tab="accounting" onclick="Lime.Tab.select(this)">'.s("Comptabilité").'</a>';
 				}
 			$h .= '</div>';
