@@ -39,7 +39,7 @@ class DocTemplate extends MainTemplate {
 					$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
 					$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le module").'</a>';
 					$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
-					$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer les ventes").'</a>';
+					$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer les factures").'</a>';
 				}
 				if(FEATURE_RECONCILIATE_OPERATIONS) {
 					$h .= '<a href="/doc/accounting:reconciliate" '.$this->menuSelected('accounting:reconciliate').'>'.s("Rapprochement bancaire").'</a>';

@@ -10,14 +10,12 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = '<h1>'.s("Préparer les données de vente").'</h1>';
 
-	$errors = $data->nProduct + $data->nSalePayment + $data->nSaleClosed;
-
 	echo '<div class="util-block">';
 		echo '<h3>'.s("Choix de la période").'</h3>';
 		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search);
 	echo '</div>';
 
-	if($errors === 0 and $data->nProductVerified === 0 and $data->nSalePaymentVerified === 0 and $data->nSaleClosedVerified === 0) {
+	if($data->nProduct === 0 and $data->nPaymentToCheck === 0 and $data->nProductVerified === 0 and $data->nPaymentVerified === 0) {
 
 		echo '<div class="util-block-important">';
 			echo s("Il n'a aucune vente à afficher. Avez-vous choisi la bonne période ?");
@@ -38,20 +36,20 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		],
 		[
 			'position' => 2,
-			'number' => $data->nSalePayment,
-			'numberVerified' => $data->nSalePaymentVerified,
+			'number' => $data->nPaymentToCheck,
+			'numberVerified' => $data->nPaymentVerified,
 			'type' => 'payment',
 			'title' => s("Moyens de paiement"),
-			'description' => s("Renseignez le moyen de paiement des ventes"),
+			'description' => s("Renseignez le moyen de paiement des factures"),
 		],
-		[
+		/*[
 			'position' => 3,
 			'number' => $data->nSaleClosed,
 			'numberVerified' => $data->nSaleClosedVerified,
 			'type' => 'closed',
 			'title' => s("Clôture"),
-			'description' => s("Clôturez vos ventes"),
-		],
+			'description' => s("Clôturez vos factures"),
+		],*/
 	];
 
 	echo '<div class="step-process">';
@@ -121,15 +119,11 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 				break;
 
 			case 'payment':
-				echo new \preaccounting\PreaccountingUi()->salesPayment($data->eFarm, $data->type, $data->cSale, $data->cPaymentMethod, $data->search);
-				break;
-
-			case 'closed':
-				echo new \preaccounting\PreaccountingUi()->sales($data->eFarm, $data->type, $data->cSale, $data->cInvoice, $data->cPaymentMethod, $data->nToCheck, $data->nVerified, $data->search);
+				echo new \preaccounting\PreaccountingUi()->invoices($data->eFarm, $data->cInvoice, $data->cPaymentMethod, $data->search);
 				break;
 
 			case 'export':
-				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $errors, $data->nProduct,  $data->nSalePayment,  $data->nSaleClosed,  $data->isSearchValid, $data->search);
+				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProduct,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
 				break;
 		}
 
@@ -143,10 +137,10 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$t->nav = 'accounting';
 	$t->subNav = 'operations';
 
-	$t->title = s("Importer les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
+	$t->title = s("Importer les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
 
-	$t->mainTitle = '<h1>'.s("Importer les ventes").(array_sum($data->counts) > 0 ? '<span class="util-counter ml-1">'.array_sum($data->counts).'</span>' : '').'</h1>';
+	$t->mainTitle = '<h1>'.s("Importer les factures").(array_sum($data->counts) > 0 ? '<span class="util-counter ml-1">'.array_sum($data->counts).'</span>' : '').'</h1>';
 
 	if($data->counts['sales'] > 0) {
 		if($data->counts['market'] > 0) {
@@ -193,7 +187,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 
 	if($check === NULL) {
 
-		echo '<div class="util-info">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer vos données de ventes</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite">']).'</div>';
+		echo '<div class="util-info">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite">']).'</div>';
 
 	} else {
 

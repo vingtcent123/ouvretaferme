@@ -69,6 +69,7 @@ Class PreaccountingUi {
 					$h .= '<th>'.s("Date").'</th>';
 					$h .= '<th>'.s("Client").'</th>';
 					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
+					$h .= '<th>'.s("Moyen de paiement").'</th>';
 					$h .= '<th class="text-center">'.s("Statut").'</th>';
 				$h .= '</tr>';
 
@@ -111,6 +112,10 @@ Class PreaccountingUi {
 							$h .= \selling\SaleUi::getTotal($eSale);
 						$h .= '</td>';
 
+						$h .= '<td>';
+							$h .= \selling\SaleUi::getTotal($eSale);
+						$h .= '</td>';
+
 						$h .= '<td class="sale-item-status text-center">';
 						if($eSale['closed']) {
 							$h .= '<span class="color-success">'.\Asset::icon('check-lg').' '.s("Clôturée").'</span>';
@@ -130,6 +135,109 @@ Class PreaccountingUi {
 		$h .= '</table>';
 
 		$h .= $this->getBatchSales($type, $cPaymentMethod);
+
+		return $h;
+
+	}
+
+	public function invoices(\farm\Farm $eFarm, \Collection $cInvoice, \Collection $cPaymentMethod, \Search $search): string {
+
+		\Asset::css('selling', 'sale.css');
+
+
+		$form = new \util\FormUi();
+		parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
+
+		$h = '<div class="mb-2">';
+			$h .= $form->openUrl(LIME_REQUEST_PATH.'?'.http_build_query($args), ['id' => 'preaccounting-payment-customer']);
+				$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
+			$h .= $form->close();
+		$h .= '</div>';
+
+		if($cInvoice->empty()) {
+			return $h.'<div class="util-info">'.s("Toutes les factures ont un moyen de paiement renseigné.").'</div>';
+		}
+
+		$h .= '<table class="tr-even" data-batch="#batch-accounting-invoice">';
+
+			$h .= '<thead>';
+
+				$h .= '<tr>';
+
+					$h .= '<th class="text-center">';
+						$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="invoice" onclick="Preaccounting.toggleGroupSelection(this)"/>';
+					$h .= '</th>';
+					$h .= '<th class="td-min-content">#</th>';
+					$h .= '<th>'.s("Date").'</th>';
+					$h .= '<th>'.s("Client").'</th>';
+					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
+					$h .= '<th>'.s("Moyen de paiement").'</th>';
+					$h .= '<th>'.s("État").'</th>';
+				$h .= '</tr>';
+
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+
+				foreach($cInvoice as $eInvoice) {
+
+					$h .= '<tr>';
+
+						$h .= '<td class="td-checkbox">';
+							$h .= '<input type="checkbox" name="batch[]" batch-type="invoice" value="'.$eInvoice['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content">';
+							$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eInvoice['document']).'&customer='.encode($eInvoice['customer']['name']).'">'.encode($eInvoice['name']).'</a></td>';
+						$h .= '</td>';
+
+						$h .= '<td>';
+							$h .= \util\DateUi::numeric($eInvoice['date'], \util\DateUi::DATE);
+						$h .= '</td>';
+
+						$h .= '<td class="sale-item-name">';
+							$h .= encode($eInvoice['customer']->getName());
+							if($eInvoice['customer']->notEmpty()) {
+								$h .= '<div class="util-annotation">';
+									$h .= \selling\CustomerUi::getCategory($eInvoice['customer']);
+								$h .= '</div>';
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="highlight-stick-right sale-item-price text-end">';
+							$h .= \selling\SaleUi::getTotal($eInvoice);
+						$h .= '</td>';
+
+						$h .= '<td>';
+							$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
+							if($eInvoice['paymentMethod']->empty()) {
+								$h .= $form->dynamicField($eInvoice, 'paymentMethod', function($d) use($form, $cPaymentMethod, $eInvoice) {
+									$d->values = $cPaymentMethod;
+									$d->default = fn() => $eInvoice['paymentMethod'];
+									$d->attributes['onchange'] = 'Preaccounting.updatePaymentMethod(this);';
+									$d->attributes['onrender'] = '';
+									$d->attributes['data-invoice'] = $eInvoice['id'];
+									$d->attributes['data-payment-status'] = $eInvoice['paymentStatus'];
+									if($eInvoice['paymentMethod']->notEmpty()) {
+										$d->attributes['mandatory'] = TRUE;
+									}
+								});
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="sale-item-status">';
+						$h .= new \selling\InvoiceUi()->getStatusForUpdate($eInvoice, 'btn-xs');
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
+			$h .= '</tbody>';
+
+		$h .= '</table>';
+
+		$h .= $this->getBatchInvoices($cPaymentMethod);
 
 		return $h;
 
@@ -359,34 +467,30 @@ Class PreaccountingUi {
 
 	}
 
-	public function getBatchInvoices(string $type, \Collection $cPaymentMethod): string {
+	public function getBatchInvoices(\Collection $cPaymentMethod): string {
 
 		$menu = '';
 
-		if($type === 'payment') {
+		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
+			$menu .= \Asset::icon('cash-coin');
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Choisir un moyen de paiement").'</span>';
+		$menu .= '</a>';
 
-			$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
-				$menu .= \Asset::icon('cash-coin');
-				$menu .= '<span style="letter-spacing: -0.2px">'.s("Choisir un moyen de paiement").'</span>';
-			$menu .= '</a>';
+		$menu .= '<div class="dropdown-list bg-secondary">';
 
-			$menu .= '<div class="dropdown-list bg-secondary">';
-
-				$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
-				foreach($cPaymentMethod as $ePaymentMethod) {
-					if($ePaymentMethod['online'] === FALSE) {
-						$menu .= '<a data-ajax-submit="/selling/invoice:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-invoice-'.$type.'-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
-					}
+			$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
+			foreach($cPaymentMethod as $ePaymentMethod) {
+				if($ePaymentMethod['online'] === FALSE) {
+					$menu .= '<a data-ajax-submit="/selling/invoice:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-invoice-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 				}
+			}
 
-			$menu .= '</div>';
-
-		}
+		$menu .= '</div>';
 
 		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("En ignorant ces factures, elles ne seront jamais incluses dans les exports comptables. Continuer ?").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer les factures").'</span></a>';
 
 
-		return \util\BatchUi::group('batch-accounting-invoice-'.$type, $menu, title: s("Pour les factures sélectionnées"));
+		return \util\BatchUi::group('batch-accounting-invoice', $menu, title: s("Pour les factures sélectionnées"));
 
 	}
 
@@ -704,56 +808,32 @@ Class PreaccountingUi {
 		return $h;
 	}
 
-	public function export(\farm\Farm $eFarm, int $errors, int $nProduct, int $nSalePayment, int $nSaleClosed, bool $isSearchValid, \Search $search): string {
+	public function export(\farm\Farm $eFarm, int $nProduct, int $nPaymentToCheck, bool $isSearchValid, \Search $search): string {
 		
 		$form = new \util\FormUi();
 		
 		$urlProduct = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=product';
 		$urlPayment = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=payment';
-		$urlClosed = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=closed';
 
 		$h = '';
 
+		$errors = $nProduct + $nPaymentToCheck;
 		if($errors > 0) {
 			if($nProduct > 0) {
-				if($nSalePayment > 0) {
-					if($nSaleClosed > 0) {
-						$check = s("Vérifiez <link>{icon} vos produits</link>, <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
-							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
-							'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
-							'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
-						]);
-					} else {
-						$check = s("Vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>.", [
-							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
-							'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
-						]);
-					}
-				} else if($nSaleClosed > 0) {
-					$check = s("Vérifiez <link>{icon} vos produits</link> et <link3>{icon3} la clôture de vos ventes</link3>.", [
+				if($nPaymentToCheck > 0) {
+					$check = s("Vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>.", [
 						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
-						'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
+						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
 					]);
 				} else {
 					$check = s("Vérifiez <link>{icon} vos produits</link>.", [
 						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
 					]);
 				}
-			} else if($nSalePayment > 0) {
-				if($nSaleClosed > 0) {
-					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
-						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
-						'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
-					]);
-				} else {
-					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2>.", [
-						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
-					]);
-				}
-			} else {
-					$check = s("Vérifiez <link3>{icon3} la clôture de vos ventes</link3>.", [
-						'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
-					]);
+			} else if($nPaymentToCheck > 0) {
+				$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2>.", [
+					'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
+				]);
 			}
 			$h .= '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).", ['check' => $check]).'</div>';
 

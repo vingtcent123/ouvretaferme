@@ -22,7 +22,7 @@ class JournalUi {
 
 					if(array_sum($counts) > 0) {
 
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-primary">'.\Asset::icon('box-arrow-in-down').' '.s("Importer les ventes").'</a> ';
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-primary">'.\Asset::icon('box-arrow-in-down').' '.s("Importer les factures").'</a> ';
 
 					}
 

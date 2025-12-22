@@ -26,6 +26,21 @@ document.delegateEventListener('autocompleteUpdate', '#preaccounting-payment-cus
 
 class Preaccounting {
 
+	static updatePaymentMethod(target) {
+
+		const invoice = target.dataset.invoice;
+		const paymentMethod = target.options[target.selectedIndex].value;
+		const paymentStatus = target.dataset.paymentStatus;
+
+		new Ajax.Query()
+			.url('/selling/invoice:doUpdatePayment')
+			.method('post')
+			.body({
+					id: invoice, paymentMethod, paymentStatus
+			})
+			.fetch();
+	}
+
 	static export() {
 
 		if(qs('[data-accounting-action="export"]').classList.contains('btn-warning')) {

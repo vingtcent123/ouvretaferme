@@ -58,25 +58,21 @@ new Page(function($data) {
 			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search, FALSE) +
 				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
 
-			$data->nSalePayment = array_sum(\preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search));
-			$data->nSalePaymentVerified = array_sum(\preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search, FALSE));
-
-			$data->nSaleClosed = array_sum(\preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search));
-			$data->nSaleClosedVerified = array_sum(\preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search, FALSE));
+			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
+			$data->nPaymentVerified = \preaccounting\InvoiceLib::countForAccountingCheckVerified($data->eFarm, $data->search);
 
 		} else {
 
 			$data->nProduct = 0;
-			$data->nSalePayment = 0;
-			$data->nSaleClosed = 0;
 			$data->nProductVerified = 0;
-			$data->nSalePaymentVerified = 0;
-			$data->nSaleClosedVerified = 0;
+
+			$data->nPaymentToCheck = 0;
+			$data->nPaymentVerified = 0;
 
 		}
 
 		$data->type = GET('type');
-		if(in_array($data->type, ['product', 'payment', 'closed', 'export']) === FALSE) {
+		if(in_array($data->type, ['product', 'payment', 'export']) === FALSE) {
 			$data->type = 'product';
 		}
 
@@ -96,13 +92,7 @@ new Page(function($data) {
 
 				case 'payment':
 					$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
-					[$data->nToCheck, $data->nVerified, $data->cSale] = \preaccounting\SaleLib::getForPaymentAccountingCheck($data->eFarm, $data->search);
-					$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
-					break;
-
-				case 'closed':
-					$data->search->set('tab', GET('tab'));
-					[$data->nToCheck, $data->nVerified, $data->cSale, $data->cInvoice] = \preaccounting\SaleLib::getForAccountingCheck($data->type, $data->eFarm, $data->search);
+					$data->cInvoice = \preaccounting\InvoiceLib::getForAccountingCheck($data->eFarm, $data->search);
 					$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 					break;
 

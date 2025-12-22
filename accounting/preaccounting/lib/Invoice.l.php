@@ -3,6 +3,46 @@ namespace preaccounting;
 
 Class InvoiceLib {
 
+
+	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
+
+		return \selling\Invoice::model()
+			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->where('priceExcludingVat != 0.0')
+			->where('m1.farm = '.$eFarm['id'])
+			->whereReadyForAccounting(FALSE)
+			->where('date BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')))
+			->where(new \Sql('DATE(date) < CURDATE()'));
+
+	}
+
+	public static function countForAccountingPaymentCheck(\farm\Farm $eFarm, \Search $search): int {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->wherePaymentMethod('=', NULL)
+			->count();
+
+	}
+
+	public static function countForAccountingCheckVerified(\farm\Farm $eFarm, \Search $search): int {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->whereClosed(TRUE)
+			->wherePaymentMethod('=', NULL)
+			->count();
+
+	}
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->select(\selling\Invoice::getSelection())
+			->whereClosed(FALSE)
+			->wherePaymentMethod(NULL)
+			->sort(['date' => SORT_DESC])
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
 	public static function extractInvoiceSignature(string $ref): array {
     $ref = mb_strtolower($ref, 'UTF-8');
 

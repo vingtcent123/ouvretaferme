@@ -11,16 +11,16 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 	echo '<h5 style="text-transform: uppercase">'.s("Introduction à la comptabilité sur Ouvretaferme").'</h5>';
 	echo '<h2>'.s("Utiliser Ouvretaferme pour préparer (puis tenir) sa comptabilité").'</h2>';
-	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer vos données de vente à votre comptabilité sans être obligé·e·s d'utiliser le module de comptabilité. Cela signifie que : ").'</p>';
+	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer les données de vos factures sans être obligé·e·s d'utiliser le module de comptabilité. Cela signifie que : ").'</p>';
 	echo '<ul>';
 		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, comptes de clients, comptes de produits de vos ventes)").'</li>';
 		echo '<li>'.s("Vous indiquez pour chaque produit à quel compte le rattacher").'</li>';
-		echo '<li>'.s("Vous indiquez le moyen de paiement et clôturez vos ventes").'</li>';
+		echo '<li>'.s("Vous indiquez le moyen de paiement").'</li>';
 	echo '</ul>';
 	echo '<p>'.s("Au final, ").'</p>';
 	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format FEC puis l'importez dans votre logiciel de comptabilité habituel");
 	echo '<br />';
-	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos ventes dans le module de comptabilité d'Ouvretaferme");
+	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos factures dans le module de comptabilité d'Ouvretaferme");
 	echo '<p class="mt-1">'.s("... C'est <b>vous qui choisissez</b> le niveau d'utilisation de la comptabilité proposé par Ouvretaferme !").'</p>';
 
 	echo '</div>';
@@ -70,28 +70,28 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<p>';
 			echo s("Si vous n'utilisez pas le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'export puisse être réalisé : ");
 			echo '<ul>';
-				echo '<li>'.s("Marchés, ventes et factures sont clôturés.").'</li>';
+				echo '<li>'.s("Les factures ont été générées et ont bien un numéro de facture.").'</li>';
 			echo '</ul>';
 		echo '</p>';
 		echo '<p>';
 			echo s("Si des données venaient à manquer, la valeur sera vide.");
 		echo '</p>';
 
-		echo '<h3>'.s("Et si ces ventes n'ont pas pour objectif d'entrer en comptabilité par un import ?").'</h3>';
+		echo '<h3>'.s("Et si ces factures n'ont pas pour objectif d'entrer en comptabilité par un import ?").'</h3>';
 		echo '<p>';
-			echo s("Pour des raisons diverses, il se pourrait que certaines ventes n'aient pas besoin d'entrée via un import dans la comptabilité (ventilation sur des clients différents ou autre).");
+			echo s("Pour des raisons diverses, il se pourrait que certaines factures n'aient pas besoin d'entrée via un import dans la comptabilité.");
 		echo '</p>';
 		echo '<p>';
-			echo s("Dans ce cas, il est possible dans l'étape de définition des moyens de paiement, d'ignorer simplement ces ventes. Elles ne seront plus proposées, ni pour la préparation, ni pour l'export, ni pour l'import en comptablité.");
+			echo s("Dans ce cas, il est possible dans l'étape d'indication des moyens de paiement, d'ignorer simplement ces factures. Elles ne seront plus proposées, ni pour la préparation, ni pour l'export, ni pour l'import en comptablité.");
 		echo '</p>';
 
 		echo '<h3>'.s("Pour finir").'</h3>';
 		echo '<p>';
-			echo s("Si vous préparez vos données pour l'import dans le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'import puisse être réalisé : ");
+			echo s("Si vous préparez vos factures pour l'import dans le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'import puisse être réalisé : ");
 			echo '<ul>';
-				echo '<li>'.s("Tous les articles vendus ont bien un compte associé (via leur produit, via la catégorie du produit ou directement sur l'article)").'</li>';
+				echo '<li>'.s("Tous les articles vendus ont bien un numéro de compte associé (via leur produit, via la catégorie du produit ou directement sur l'article)").'</li>';
 				echo '<li>'.s("Un moyen de paiement est renseigné").'</li>';
-				echo '<li>'.s("Et enfin : marchés, ventes et factures sont clôturés.").'</li>';
+				echo '<li>'.s("Et enfin : les factures ont un numéro de facture.").'</li>';
 			echo '</ul>';
 		echo '</p>';
 
@@ -103,9 +103,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<p>';
 			echo s("Vous retrouverez dans cet export :");
 			echo '<ul>';
-				echo '<li>'.s("Tous vos marchés clôturés (1 ligne par compte et moyen de paiement pour chaque marché)").'</li>';
-				echo '<li>'.s("Toutes vos factures clôturées (1 ligne par compte pour chaque facture)").'</li>';
-				echo '<li>'.s("Toutes vos ventes clôturées non issues d'un marché et non incluses dans des factures (1 ligne par compte pour chaque vente)").'</li>';
+				echo '<li>'.s("Toutes vos factures avec leur numéro (1 ligne par compte et moyen de paiement pour chaque facture)").'</li>';
 			echo '</ul>';
 		echo '</p>';
 		echo '<div class="util-info-outline">';
@@ -310,18 +308,18 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:import';
 
-	$t->title = s("Importer les ventes dans la comptabilité d'Ouvretaferme");
+	$t->title = s("Importer les factures dans la comptabilité d'Ouvretaferme");
 	$t->subTitle = s("Créer les écritures comptables en un clic");
 
-	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vente</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';
+	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vos factures</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Importer les ventes").'</h2>';
-		echo '<p>'.s("Tous les marchés, les factures et les ventes dont les données sont préparées sont affichés dans la page d'import (dans le menu Précomptabilité). Vous pouvez :").'</p>';
+		echo '<h2>'.s("Importer les factures").'</h2>';
+		echo '<p>'.s("Toutes les factures dont les données sont préparées sont affichés dans la page d'import (dans le menu Précomptabilité). Vous pouvez :").'</p>';
 		echo '<ul class="doc-list-icons">';
 		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les intégrer en comptabilité").'</li>';
-		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, ils ne vous seront alors plus proposés à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
+		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, elles ne vous seront alors plus proposés à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 		echo '<p>'.s("En les intégrant dans votre comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
 		echo '<ul>';
@@ -331,7 +329,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 			if(FEATURE_ACCOUNTING_ACCRUAL) {
 				echo '<li>'.s("Classe {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
 			}
-			echo '<li>'.Asset::icon('magic').' '.s("Bonus ! Classe {bankAccount} pour le montant total TTC si vous avez <link>préalablement rapproché l'opération bancaire avec la vente ou la facture</link>.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>', 'link' => '<a href="/doc/accounting:bank#reconciliate-sales">']).'</li>';
+			echo '<li>'.Asset::icon('magic').' '.s("Bonus ! Classe {bankAccount} pour le montant total TTC si vous avez <link>préalablement rapproché l'opération bancaire avec la facture</link>.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>', 'link' => '<a href="/doc/accounting:bank#reconciliate-sales">']).'</li>';
 		echo '</ul>';
 
 	echo '</div>';
