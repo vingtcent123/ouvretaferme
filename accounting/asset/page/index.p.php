@@ -26,7 +26,7 @@ new \asset\AssetPage(function($data) {
 		$data->e['account'] = $eAccount;
 
 		// Références de durées
-		$data->e['cAmortizationDuration'] = \company\AmortizationDurationLib::getAll();
+		$data->cAmortizationDuration = \company\AmortizationDurationLib::getAll();
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);
@@ -44,7 +44,7 @@ new \asset\AssetPage(function($data) {
 	->update(function($data) {
 
 		// Références de durées
-		$data->e['cAmortizationDuration'] = \company\AmortizationDurationLib::getAll();
+		$data->cAmortizationDuration = \company\AmortizationDurationLib::getAll();
 		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);

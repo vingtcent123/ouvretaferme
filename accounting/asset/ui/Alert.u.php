@@ -20,6 +20,7 @@ Class AlertUi {
 			'Asset::Operation.alreadyLinked' => s("Cette écriture comptable est déjà rattachée à une immobilisation, n'avez-vous pas fait une erreur ?"),
 			'Asset::accountLabel.check' => s("Indiquez le même numéro de compte que l'opération à laquelle cette immobilisation est rattachée."),
 			'Asset::account.check' => s("Indiquez le même compte que l'opération à laquelle cette immobilisation est rattachée."),
+			'Asset::fiscalDuration.range' => s("La durée d'amortissement fiscale doit respecter la fourchette de durées recommandées."),
 
 			default => null,
 		};

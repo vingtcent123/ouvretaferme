@@ -57,10 +57,10 @@ Class AssetUi {
 
 	}
 
-	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \journal\Operation $eOperation): \Panel {
+	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \journal\Operation $eOperation, \Collection $cAmortizationDuration): \Panel {
 
 		$script = '<script type="text/javascript">';
-			$script .= 'Asset.initFiscalDurations('.json_encode($eAsset['cAmortizationDuration']).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
+			$script .= 'Asset.initFiscalDurations('.json_encode($cAmortizationDuration).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
 		$script .= '</script>';
 
 		$form = new \util\FormUi();
@@ -123,9 +123,11 @@ Class AssetUi {
 				).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
 			);
 		$h .= '</div>';
-		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 hide" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
+		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.(($eAsset->exists() or $eOperation->exists()) ? '' : 'hide').'" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
 			if($eAsset->exists()) {
-				$h .= $this->getDurationRecommandation($eAsset['accountLabel'], $eAsset['cAmortizationDuration']);
+				$h .= $this->getDurationRecommandation($eAsset['accountLabel'], $cAmortizationDuration);
+			} else if($eOperation->exists()) {
+				$h .= $this->getDurationRecommandation($eOperation['accountLabel'], $cAmortizationDuration);
 			}
 		$h .= '</div>';
 
@@ -197,7 +199,7 @@ Class AssetUi {
 				if($minYear === $maxYear) {
 
 					return s(
-						"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{year} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
+						"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{year} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée d'amortissement économique hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
 						'year' => $minYear,
 						'minMonth' => $minMonth,
 						'maxMonth' => $maxMonth,
@@ -208,7 +210,7 @@ Class AssetUi {
 				}
 
 				return s(
-					"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{minYear} à {maxYear} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
+					"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{minYear} à {maxYear} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée d'amortissement économique hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
 					'minYear' => $minYear,
 					'maxYear' => $maxYear,
 					'minMonth' => $minMonth,
