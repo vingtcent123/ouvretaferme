@@ -868,7 +868,7 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('journalCode')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('asset')->label.'</div>';
+			$h .= '<div class="operation-create-header" data-wrapper="asset-label">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('comment')->label.'</div>';
 			$h .= '<div class="operation-create-header amount-header"></div>';
@@ -1024,17 +1024,21 @@ class OperationUi {
 				});
 			$h .='</div>';
 
-			$h .= '<div data-wrapper="asset'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'asset'.$suffix, function($d) use($form, $index, $suffix) {
-					$d->autocompleteDispatch = '[data-asset="'.$form->getId().'"][data-index="'.$index.'"]';
-					$d->attributes['data-wrapper'] = 'asset'.$suffix;
-					$d->attributes['data-index'] = $index;
-					$d->attributes['data-asset'] = $form->getId();
-					$d->label .=  ' '.\util\FormUi::asterisk();
-					$d->after = '<div data-account="asset-create" class="hide form-info" data-index="'.$index.'">'.
-						s("Si l'immobilisation n'existe pas encore, vous pourrez la créer juste après avoir enregistré cette écriture.").
-						'</div>';
-				});
+			$h .= '<div data-wrapper="asset'.$suffix.'" >';
+				$h .= '<div data-asset-container '.(\asset\AssetLib::isAsset($eOperation['accountLabel'] ?? '') ? '' : ' class="hide"').'>';
+					$h .= $form->dynamicField($eOperation, 'asset'.$suffix, function($d) use($eOperation, $form, $index, $suffix) {
+						$d->autocompleteDispatch = '[data-asset="'.$form->getId().'"][data-index="'.$index.'"]';
+						$d->attributes['data-wrapper'] = 'asset'.$suffix;
+						$d->attributes['data-index'] = $index;
+						$d->attributes['data-asset'] = $form->getId();
+						$d->label .=  ' '.\util\FormUi::asterisk();
+						if($eOperation->exists() === FALSE) {
+							$d->after = '<div data-account="asset-create" class="form-info" data-index="'.$index.'">'.
+							s("Si l'immobilisation n'existe pas encore, vous pourrez la créer juste après avoir enregistré cette écriture.").
+							'</div>';
+						}
+					});
+				$h .='</div>';
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="description'.$suffix.'">';
@@ -1226,7 +1230,7 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
+			$h .= '<div class="cashflow-create-operation-validate" data-wrapper="asset-label"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate cashflow-warning">';
@@ -1294,7 +1298,9 @@ class OperationUi {
 
 		$index = 0;
 
-		$h = '<div id="operation-update-list" class="operation-create-several-container" data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
+		$hasAsset = $cOperation->find(fn($e) => \asset\AssetLib::isAsset($e['accountLabel']))->count() > 0;
+
+		$h = '<div id="operation-update-list" class="operation-create-several-container" '.($hasAsset ? 'data-asset'  : '').' data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 
 			if($eCashflow->notEmpty()) {
 				$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';

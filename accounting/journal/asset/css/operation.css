@@ -3,10 +3,19 @@
 }
 @supports (grid-template-columns: subgrid) {
 
-	.operation-create-several-container {
+	.operation-create-several-container[data-asset] {
 		grid-template-rows: repeat(var(--operation-create-rows), auto);
 	}
 
+	.operation-create-several-container:not([data-asset]) {
+		grid-template-rows: repeat(var(calc(--operation-create-rows - 1)), auto);
+	}
+
+}
+
+.operation-create-several-container:not([data-asset]) [data-wrapper^="asset["],
+.operation-create-several-container:not([data-asset]) [data-wrapper^="asset-label"] {
+	display: none !important;
 }
 
 .operation-create-several-container[data-cashflow="1"] {

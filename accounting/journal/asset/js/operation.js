@@ -151,14 +151,23 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
     }
 
     // Vérifie si on doit créer une immobilisation
-    qs('[data-account="asset-create"][data-index="' + index + '"]').hide();
 
     const accountClass = e.detail.class;
     const isGrant = accountClass?.startsWith('13');
     const isAsset = accountClass?.startsWith('2');
 
     if(isAsset || isGrant) {
-        qs('[data-account="asset-create"][data-index="' + index + '"]').removeHide();
+
+        qs('.operation-create-several-container').setAttribute('data-asset', '');
+        qs('[data-wrapper="asset[' + index + ']"] [data-asset-container]').removeHide();
+
+    } else {
+
+        qs('[data-wrapper="asset[' + index + ']"] [data-asset-container]').hide();
+        if(qsa('[data-wrapper^="asset"] [data-asset-container]:not(.hide)').length === 0) {
+            qs('.operation-create-several-container').removeAttribute('data-asset');
+        }
+
     }
 
     Operation.checkAutocompleteStatus(e);
