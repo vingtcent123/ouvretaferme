@@ -199,7 +199,7 @@ Class AssetUi {
 				if($minYear === $maxYear) {
 
 					return s(
-						"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{year} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée d'amortissement économique hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
+						"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{year} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).", [
 						'year' => $minYear,
 						'minMonth' => $minMonth,
 						'maxMonth' => $maxMonth,
@@ -210,7 +210,7 @@ Class AssetUi {
 				}
 
 				return s(
-					"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{minYear} à {maxYear} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).<br />Si vous indiquez une durée d'amortissement économique hors de cette fourchette, un <b>amortissement dérogatoire</b> sera automatiquement créé.", [
+					"La durée recommandée d'amortissement pour les immobilisations avec le numéro de compte {account} est de <b>{minYear} à {maxYear} ans</b> (soit {minMonth} mois à {maxMonth} mois avec un écart de {tolerance}%).", [
 					'minYear' => $minYear,
 					'maxYear' => $maxYear,
 					'minMonth' => $minMonth,
