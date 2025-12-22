@@ -98,35 +98,7 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		if($e['farm']->hasAccounting() and empty(array_intersect(['proAccount', 'privateAccount'], $properties)) === FALSE) {
-
-			self::updateItemsAccount($e);
-
-		}
-
 		Product::model()->commit();
-
-	}
-
-	private static function updateItemsAccount(Product $eProduct): void {
-
-		if($eProduct['privateAccount']->empty()) {
-			return;
-		}
-
-		$proAccount = $eProduct['proAccount']->empty() ? $eProduct['privateAccount'] : $eProduct['proAccount'];
-
-		$eItem = new Item([
-			'account' => new \Sql('IF(type = "'.Item::PRO.'", '.$proAccount['id'].', '.$eProduct['privateAccount']['id'].')')
-		]);
-
-		Item::model()
-			->select('account')
-			->whereProfile('!=', Item::SALE_MARKET)
-			->whereProduct($eProduct)
-	    ->update($eItem);
-
-		\preaccounting\SaleLib::setReadyForAccountingByProducts(new \Collection($eProduct));
 
 	}
 

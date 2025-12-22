@@ -1336,8 +1336,9 @@ class ItemUi {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
 			}
 
-			if($eItem['farm']->hasAccounting() and $eItem['product']->empty()) {
-				$h .= $form->dynamicGroup($eItem, 'account');
+			if($eItem['farm']->hasAccounting()) {
+				$h .= '<br /><h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>';
+					$h .= '<div class="util-block bg-background-light">'.$form->dynamicGroup($eItem, 'account').'</div>';
 			}
 
 			$h .= $form->group(
