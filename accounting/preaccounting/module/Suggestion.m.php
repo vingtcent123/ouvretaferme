@@ -53,7 +53,7 @@ class SuggestionModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
-			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
+			'invoice' => ['element32', 'selling\Invoice', 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\preaccounting\Suggestion::WAITING, \preaccounting\Suggestion::REJECTED, \preaccounting\Suggestion::VALIDATED, \preaccounting\Suggestion::OUT], 'cast' => 'enum'],
 			'reason' => ['set', [\preaccounting\Suggestion::AMOUNT, \preaccounting\Suggestion::THIRD_PARTY, \preaccounting\Suggestion::REFERENCE, \preaccounting\Suggestion::DATE, \preaccounting\Suggestion::PAYMENT_METHOD], 'cast' => 'set'],
