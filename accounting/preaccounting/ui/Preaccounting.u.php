@@ -65,7 +65,7 @@ Class PreaccountingUi {
 					$h .= '<th class="text-center">';
 						$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="sale-'.$type.'" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 					$h .= '</th>';
-					$h .= '<th>#</th>';
+					$h .= '<th class="td-min-content">#</th>';
 					$h .= '<th>'.s("Date").'</th>';
 					$h .= '<th>'.s("Client").'</th>';
 					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
@@ -84,7 +84,7 @@ Class PreaccountingUi {
 							$h .= '<input type="checkbox" name="batch[]" batch-type="sale-'.$type.'" value="'.$eSale['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
 						$h .= '</td>';
 
-						$h .= '<td>';
+						$h .= '<td class="td-min-content">';
 							$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
 						$h .= '</td>';
 
@@ -114,10 +114,10 @@ Class PreaccountingUi {
 						$h .= '<td class="sale-item-status text-center">';
 						if($eSale['closed']) {
 							$h .= '<span class="color-success">'.\Asset::icon('check-lg').' '.s("Clôturée").'</span>';
-						} else if($eSale['preparationStatus'] === \selling\Sale::DELIVERED) {
-							$h .= '<span class="color-success">'.\Asset::icon('check-lg').' '.\selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
 						} else {
-							$h .= '<span class="btn btn-md sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.\selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+							$h .= '<span class="btn btn-md sale-preparation-status-'.$eSale['preparationStatus'].'-button">';
+								$h .= \selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']];
+							$h .= '</span>';
 						}
 						$h .= '</td>';
 
@@ -562,10 +562,9 @@ Class PreaccountingUi {
 
 	public function products(\farm\Farm $eFarm, \Collection $cProduct, \Collection $cCategory, array $products, \Search $search, array $itemData): string {
 
+		if(empty($products) and $itemData['nToCheck'] === 0) {
 
-		if(empty($products) and empty($itemData['cItem'])) {
-
-			return '<div class="util-success">'.s("Tous vos produits ont un compte associé !").'</div>';
+			return '<div class="util-success">'.s("Tous vos produits ont un numéro de compte associé !").'</div>';
 
 		}
 

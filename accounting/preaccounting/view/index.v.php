@@ -34,7 +34,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			'numberVerified' => $data->nProductVerified,
 			'type' => 'product',
 			'title' => s("Produits"),
-			'description' => s("Associez un compte à vos produits"),
+			'description' => s("Associez un numéro de compte à vos produits"),
 		],
 		[
 			'position' => 2,

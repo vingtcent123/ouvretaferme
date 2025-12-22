@@ -17,7 +17,8 @@ a.step:hover {
 .step.success,
 .step.success:hover {
 	cursor: default;
-	background-color: rgba(25, 135, 84, 0.25)
+	background-color: rgba(25, 135, 84, 0.25);
+	pointer-events: none;
 }
 .step.success[data-step="export"],
 .step.success[data-step="export"]:hover {
