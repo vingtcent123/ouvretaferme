@@ -105,7 +105,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	echo '</div>';
 
 
-	echo '<div data-step="'.$data->type.'">';
+	echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
 
 		switch($data->type) {
 
