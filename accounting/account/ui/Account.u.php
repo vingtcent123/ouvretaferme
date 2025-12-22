@@ -16,7 +16,7 @@ class AccountUi {
 
 			$h .= '<h1>';
 				$h .= '<a href="'.\company\CompanyUi::urlSettings($eFarm).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-				$h .= s("Les comptes");
+				$h .= s("Les numéros de compte");
 			$h .= '</h1>';
 
 			$h .= '<div>';

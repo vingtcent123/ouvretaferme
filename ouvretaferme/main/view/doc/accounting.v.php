@@ -31,7 +31,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Préparer mes données").'</h2>';
-		echo '<h3>'.s("Les comptes").'</h3>';
+		echo '<h3>'.s("Les numéros de compte").'</h3>';
 
 		echo '<p>';
 			echo s("Vous pouvez personnaliser des comptes dans les <link>paramètres du module de Comptabilité</link>.", [
