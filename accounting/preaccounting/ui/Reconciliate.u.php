@@ -152,12 +152,14 @@ Class ReconciliateUi {
 
 							$h .= '<td '.$onclick.'>';
 
-								$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ?");
-								$h .= '<a class="btn btn-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
-									$h .= \Asset::icon('hand-thumbs-up');
-									$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
-								$h .= '</a>';
-								$h .= '  ';
+								if($eSuggestion->acceptReconciliate()) {
+									$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ?");
+									$h .= '<a class="btn btn-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
+										$h .= \Asset::icon('hand-thumbs-up');
+										$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
+									$h .= '</a>';
+									$h .= '  ';
+								}
 								$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
 								$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.attrs($attributes).'>';
 									$h .= \Asset::icon('hand-thumbs-down');
