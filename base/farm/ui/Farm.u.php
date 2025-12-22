@@ -1815,20 +1815,18 @@ class FarmUi {
 				}
 			$h .= '</h1>';
 
-			$h .= '<div class="flex-align-center">';
+			$h .= '<div>';
 
 				if($nSuggestion > 0) {
 					$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
 				}
 
-				$importLink = '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+				$importLink = ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
 
 				if($selectedView === 'bank') {
 
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#cashflow-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-					$h .= '<div>';
-						$h .= $importLink;
-					$h .= '</div>';
+					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#cashflow-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+					$h .= $importLink;
 
 				} else if($selectedView === 'import') {
 

@@ -21,7 +21,7 @@ class ImportUi {
 			) {
 
 				$h .= '<div>';
-					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
 				$h .= '</div>';
 
 			}
@@ -58,7 +58,7 @@ class ImportUi {
 
 			$h = '<div class="util-block-help">'.("Importez ici vos opérations bancaires. Cela vous permettra de les relier à des écritures comptables et à suivre votre trésorerie.").'</div>';
 
-			$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé .ofx").'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
 
 			return $h;
 		}

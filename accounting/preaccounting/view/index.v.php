@@ -350,28 +350,37 @@ new AdaptativeView('/precomptabilite:rapprocher-factures', function($data, FarmT
 
 	$t->nav = 'bank';
 
-	$t->title = s("Rapprocher les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
+	$t->title = s("Rapprocher factures et opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-factures';
 
-	$t->mainTitle = '<h1>'.s("Rapprocher les factures").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
+	$t->mainTitle = '<h1>'.s("Rapprocher factures et opérations bancaires").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
 
 	if($data->ccSuggestion->empty()) {
 
-		echo '<div class="util-info">';
-		echo '<p>'.s("Il n'y a aucune facture à rapprocher.").'</p>';
+		echo '<div class="util-empty">';
+
+			echo '<p>';
+				echo s("Il n'y a aucune facture à rapprocher pour le moment !").'<br/>';
+
+			if($data->eImportLast->empty()) {
+
+				echo s("Vous n'avez pas encore réalisé d'import bancaire.");
+
+			} else {
+
+				echo s("Votre dernier import bancaire a permis de rapprocher vos factures jusqu'au {date}.", ['date' => \util\DateUi::numeric($data->eImportLast['endDate'], \util\DateUi::DATE)]);
+
+			}
+
+			echo '</p>';
+
+			if($data->eImportLast->empty()) {
+				echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Faire mon premier import bancaire !").'</a>';
+			} else {
+				echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Importer mes données bancaires").'</a>';
+			}
+
 		echo '</div>';
-
-		if($data->eImportLast->empty()) {
-
-			echo '<p>'.s("Vous n'avez pas encore réalisé d'import bancaire.").'</p>';
-			echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Faire mon premier import bancaire !").'</a>';
-
-		} else {
-
-			echo '<p>'.s("Votre dernier import bancaire a couvert vos transactions jusqu'au {date}.", ['date' => \util\DateUi::numeric($data->eImportLast['endDate'], \util\DateUi::DATE)]).'</p>';
-			echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Importer mes données bancaires").'</a>';
-
-		}
 
 	} else {
 

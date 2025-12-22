@@ -351,7 +351,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div id="bank-import" class="util-block">';
 
 		echo '<h2>'.s("Importer les opérations bancaires").'</h2>';
-		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>.ofx</i> (la plupart des banques proposent ce format).<br />Rendez-vous sur la page des opérations bancaires et cliquez sur le bouton \"Importer un relevé .ofx\" puis sélectionnez votre fichier sur votre ordinateur.").'</p>';
+		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>OFX</i> (la plupart des banques proposent ce format).<br />Rendez-vous sur la page des opérations bancaires et cliquez sur le bouton \"Importer un relevé OFX\" puis sélectionnez votre fichier sur votre ordinateur.").'</p>';
 		echo '<p>'.s("Et c'est tout !").'</p>';
 		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page des opérations bancaires.").'</p>';
 

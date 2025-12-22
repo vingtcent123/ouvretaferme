@@ -18,7 +18,7 @@ if('scrollRestoration' in history) { // what an amazing feature!
 	history.scrollRestoration = 'manual';
 }
 
-function calculateScreenWidth() {
+function calculateScreenWidth() {d((document.documentElement.clientWidth - 1));
   document.documentElement.style.setProperty('--screen-width', (document.documentElement.clientWidth - 1) + 'px');
 }
 

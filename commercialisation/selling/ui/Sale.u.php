@@ -2552,16 +2552,6 @@ class SaleUi {
 					Sale::DELIVERED => s("Livré"),
 					Sale::CANCELED => s("Annulé"),
 				];
-				$d->shortValues = [
-					Sale::DRAFT => s("B"),
-					Sale::BASKET => s("P"),
-					Sale::EXPIRED => s("E"),
-					Sale::CONFIRMED => s("C"),
-					Sale::SELLING => s("V"),
-					Sale::PREPARED => s("P"),
-					Sale::DELIVERED => s("L"),
-					Sale::CANCELED => s("A"),
-				];
 				break;
 
 			case 'paymentStatus' :

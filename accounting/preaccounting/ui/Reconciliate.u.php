@@ -35,7 +35,7 @@ Class ReconciliateUi {
 		usort($elements, fn($element1, $element2) => $element1['confidence'] <=> $element2['confidence']);
 		$elements = array_reverse($elements);
 
-		$h .= '<div class="stick-sm util-overflow-sm">';
+		$h .= '<div class="stick-md util-overflow-md">';
 
 			$h .= '<table class="reconciliate-table" data-batch="#batch-reconciliate">';
 
@@ -47,7 +47,7 @@ Class ReconciliateUi {
 						$h .= '<th>'.s("Rapprochement").'</th>';
 						$h .= '<th># '.s("Référence").'</th>';
 						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
-						$h .= '<th class="text-center">'.s("Indice<br/>de confiance").'</th>';
+						$h .= '<th class="text-center">'.s("Confiance").'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('person').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">#</th>';

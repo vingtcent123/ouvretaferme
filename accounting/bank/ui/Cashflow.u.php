@@ -35,7 +35,7 @@ class CashflowUi {
 			);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut"), 'onchange' => 'Cashflow.changeStatusSelector(this);']);
-			$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], (int)$search->get('isReconciliated'), ['placeholder' => s("Rapprochement")]);
+			$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'), ['placeholder' => s("Rapprochement")]);
 			$h .= $form->select('direction', ['debit-credit' => s("Débit / Crédit"), 'debit' => s("Débit"), 'credit' => s("Crédit")], $search->get('direction') ?? 'debit-credit', ['placeholder' => s("Sens du mouvement")]);
 			$h .= $form->inputGroup($form->addon(s('Montant'))
 					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01])
@@ -52,14 +52,6 @@ class CashflowUi {
 				$h .= $form->select('bankAccount', $values, $search->get('bankAccount'), ['placeholder' => s("N° de compte")]);
 
 			}
-		$h .= '</div>';
-		$h .= '<div class="mb-2 mt-1">';
-		$h .= $form->checkbox('status', Cashflow::WAITING, [
-			'name' => 'status-shortcut',
-			'checked' => $search->get('status') === Cashflow::WAITING,
-			'callbackLabel' => fn($input) => $input.' '.s("N'afficher que les opérations non traitées {value}", '<span class="util-counter">'.($nCashflow[Cashflow::WAITING]['count'] ?? 0).'</span>'),
-			'onclick' => 'Cashflow.changeStatusShortcutSelection(this)',
-		]);
 		$h .= '</div>';
 		$h .= '<div>';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
@@ -84,10 +76,17 @@ class CashflowUi {
 			return '';
 		}
 
-		return '<div class="mb-1 flex-justify-space-between">'.
-			'<span></span>'.
-			'<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a> '
-			.'</div>';
+		$h = '<div class="mb-1 flex-justify-space-between flex-align-center">';
+			$h .= '<div>';
+				if($search->get('status') === NULL) {
+					$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'status', $search->get('status') === Cashflow::WAITING ? NULL : Cashflow::WAITING).'">'.s("N'afficher que les opérations sans écritures comptable").'</a> <span class="util-counter">'.($nCashflow[Cashflow::WAITING]['count'] ?? 0).'</span>';
+				}
+			$h .= '</div>';
+			$h .= '<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a>';
+		$h .= '</div>';
+
+		return $h;
+
 	}
 
 	public function getCashflow(
@@ -135,7 +134,7 @@ class CashflowUi {
 			$h .= '</div>';
 		}
 
-		$h .= '<div id="cashflow-list" class="stick-sm util-overflow-sm" '.($highlightedCashflowId !== NULL ? ' onrender="CashflowList.scrollTo('.$highlightedCashflowId.');"' : '').' data-render-timeout="1">';
+		$h .= '<div id="cashflow-list" class="stick-md util-overflow-md" '.($highlightedCashflowId !== NULL ? ' onrender="CashflowList.scrollTo('.$highlightedCashflowId.');"' : '').' data-render-timeout="1">';
 
 			$h .= '<table class="tr-even tr-hover td-padding-sm">';
 
@@ -207,7 +206,7 @@ class CashflowUi {
 						$h .= '</td>';
 
 						if($showReconciliate) {
-							$h .= '<td class="text-center td-vertical-align-top">';
+							$h .= '<td class="text-center td-vertical-align-top td-min-content">';
 								if($eCashflow['isReconciliated']) {
 									if($eCashflow['sale']->notEmpty()) {
 										$h .= '<a href="/vente/'.$eCashflow['sale']['id'].'">'.encode($eCashflow['sale']['document']).'</a>';
@@ -585,12 +584,12 @@ class CashflowUi {
 		$h = '';
 
 		$h .= '<div class="util-block-help">';
-			$h .= '<p>'.s("Seul l'export au format <b>.ofx</b> est actuellement supporté. Ce format est disponible sur la plupart des sites bancaires.").'</p>';
-			$h .= '<p>'.s("Si certains flux bancaires ont déjà été précédemment importés, ils seront ignorés.").'</p>';
+			$h .= '<p>'.s("Seul l'export au format <b>OFX</b> est actuellement supporté et ce format est disponible sur la plupart des sites bancaires.").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Si certains flux bancaires ont déjà été précédemment importés, ils seront ignorés.").'</li>';
+				$h .= '<li>'.s("Si le compte bancaire est inconnu, il sera automatiquement créé et vous pourrez paramétrer son libellé dans le <link>paramétrage des comptes bancaires</link>.", ['link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/account">']).'</li>';
+			$h .= '</ul>';
 		$h .= '</div>';
-
-		$h .= '<div class="util-info">'.s("Si le compte bancaire est inconnu, il sera automatiquement créé et vous pourrez paramétrer son libellé dans le <link>paramétrage des comptes bancaires</link>.", ['link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/account">']).'</div>';
-
 
 		$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/imports:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
 			$h .= $form->hidden('farm', $eFarm['id']);
@@ -806,19 +805,9 @@ class CashflowUi {
 
 			case 'status' :
 				$d->values = [
-					CashflowElement::ALLOCATED => s("Traitée"),
+					CashflowElement::WAITING => s("Sans écriture comptable"),
+					CashflowElement::ALLOCATED => s("Avec écriture comptable"),
 					CashflowElement::DELETED => s("Supprimée"),
-					CashflowElement::WAITING => s("À traiter"),
-				];
-				$d->translation = [
-					CashflowElement::ALLOCATED => ['singular' => s("Traitée"), 'plural' => s("Traitées")],
-					CashflowElement::DELETED => ['singular' => s("Supprimée"), 'plural' => s("Supprimées")],
-					CashflowElement::WAITING => ['singular' => s("À traiter"), 'plural' => s("À traiter")],
-				];
-				$d->shortValues = [
-					CashflowElement::ALLOCATED => s("T"),
-					CashflowElement::DELETED => s("S"),
-					CashflowElement::WAITING => s("A"),
 				];
 				break;
 		}

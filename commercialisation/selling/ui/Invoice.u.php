@@ -966,13 +966,6 @@ class InvoiceUi {
 					Invoice::CANCELED => s("Annulé"),
 					Invoice::DELIVERED => s("Envoyé"),
 				];
-				$d->shortValues = [
-					Invoice::DRAFT => s("B"),
-					Invoice::CONFIRMED => s("C"),
-					Invoice::GENERATED => s("G"),
-					Invoice::CANCELED => s("A"),
-					Invoice::DELIVERED => s("E"),
-				];
 				break;
 
 			case 'date' :
