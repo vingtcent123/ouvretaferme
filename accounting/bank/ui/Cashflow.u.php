@@ -35,7 +35,7 @@ class CashflowUi {
 			);
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut"), 'onchange' => 'Cashflow.changeStatusSelector(this);']);
-			$h .= $form->select('isReconciliated', [TRUE => s("oui"), FALSE => s("non")], $search->get('isReconciliated'), ['placeholder' => s("Rapprochement")]);
+			$h .= $form->select('isReconciliated', [TRUE => s("Opérations rapprochées"), FALSE => s("Opérations non rapprochées")], $search->get('isReconciliated'), ['placeholder' => s("Rapprochement")]);
 			$h .= $form->select('direction', ['debit-credit' => s("Débit / Crédit"), 'debit' => s("Débit"), 'credit' => s("Crédit")], $search->get('direction') ?? 'debit-credit', ['placeholder' => s("Sens du mouvement")]);
 			$h .= $form->inputGroup($form->addon(s('Montant'))
 					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01])
