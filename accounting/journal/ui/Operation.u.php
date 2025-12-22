@@ -908,22 +908,9 @@ class OperationUi {
 
 	private static function getAmountButtonIcons(string $type, int $index): string {
 
-		if($index > 0) {
-
-			$activeIcon = 'erase';
-
-		} else {
-
-			$activeIcon = match($type) {
-				'amount' => 'lock',
-				default => 'erase',
-			};
-
-		}
-
 		$h = '<div class="merchant-write hide">'.\Asset::icon('pencil').'</div>';
-		$h .= '<div class="merchant-lock '.($activeIcon === 'lock' ? '' : 'hide').'">'.\Asset::icon('lock-fill').'</div>';
-		$h .= '<div class="merchant-erase '.($activeIcon === 'erase' ? '' : 'hide').'">';
+		$h .= '<div class="merchant-lock hide">'.\Asset::icon('lock-fill').'</div>';
+		$h .= '<div class="merchant-erase ">';
 			$h .= '<a '.attr('onclick', "Operation.resetAmount('".$type."', ".$index.")").' title="'.s("Revenir à zéro").'">'.\Asset::icon('eraser-fill', ['style' => 'transform: scaleX(-1);']).'</a>';
 		$h .= '</div>';
 
@@ -1097,9 +1084,6 @@ class OperationUi {
 					$d->attributes['step'] = 0.01;
 					$d->attributes['data-field'] = 'amount';
 					$d->attributes['data-index'] = $index;
-					if((int)$index === 0) {
-						$d->attributes['disabled'] = TRUE;
-					}
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
 				});
 			$h .='</div>';
