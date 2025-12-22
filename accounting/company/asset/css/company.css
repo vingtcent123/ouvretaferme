@@ -18,9 +18,6 @@ span.undefined {
 	opacity: 0.5;
 }
 
-tr.row-emphasis {
-	background-color: var(--account-group) !important;
-}
 
 tr.row-highlight {
 	background-color: var(--background-dark) !important;
@@ -209,20 +206,4 @@ tr.account_not-visible {
 	background-color: white;
 	transition: 0.25s all;
 	text-decoration: none;
-}
-
-div.company-period-input-group [name="periodStart"],
-div.company-period-input-group div.input-group [name="periodStartYear"],
-div.company-period-input-group div.input-group [name="periodStartMonth"],
-div.company-period-input-group div.input-group [name="periodEndMonth"] {
-	border-radius: 0 !important;
-}
-div.company-period-input-group [name="periodEnd"] {
-	border-bottom-left-radius: 0 !important;
-	border-top-left-radius: 0 !important;
-}
-div.company-period-input-group div.field-month-wrapper:has([type="hidden"][name="periodEndYear"]) div.input-group [name="periodEndMonth"] {
-	border-bottom-right-radius: var(--radius) !important;
-	border-top-right-radius: var(--radius) !important;
-
 }

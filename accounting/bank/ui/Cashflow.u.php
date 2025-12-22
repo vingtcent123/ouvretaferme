@@ -18,41 +18,61 @@ class CashflowUi {
 
 		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
-		$h .= '<div>';
-			$h .= $form->inputGroup($form->addon(s("entre")).
-				$form->month('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
-				$form->addon("et").
-				$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")]),
-				['class' => 'company-period-input-group']
-			);
-			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
+		$h .= '<dl class="util-presentation util-presentation-2">';
+			$h .= '<dt>'.s("Période").'</dt>';
+			$h .= '<dd>';
+				$h .= $form->inputGroup(
+					$form->month('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
+					$form->addon(s("à")).
+					$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
+				);
+			$h .= '</dd>';
+			$h .= '<dt>'.s("Statut").'</dt>';
+			$h .= '<dd>';
 
-			$statuses = CashflowUi::p('status')->values;
-			if($eFarm->usesAccounting() === FALSE) {
-				unset($statuses[Cashflow::ALLOCATED]);
-				$statuses[Cashflow::WAITING] = s("Valide");
-			}
-
-			$h .= $form->select('status', $statuses, $search->get('status'), ['placeholder' => s("Statut"), 'onchange' => 'Cashflow.changeStatusSelector(this);']);
-			$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'), ['placeholder' => s("Rapprochement")]);
-			$h .= $form->select('direction', ['debit-credit' => s("Débit / Crédit"), 'debit' => s("Débit"), 'credit' => s("Crédit")], $search->get('direction') ?? 'debit-credit', ['placeholder' => s("Sens du mouvement")]);
-			$h .= $form->inputGroup($form->addon(s('Montant'))
-					.$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01])
-					.$form->addon(s('+/-'))
-					.$form->number('margin', $search->get('margin', 1))
-					.$form->addon(s('€'))
-			);
-			if($cBankAccount->count() > 1) {
-
-				$values = [];
-				foreach($cBankAccount as $eBankAccount) {
-					$values[$eBankAccount['id']] = $eBankAccount['label'];
+				$statuses = CashflowUi::p('status')->values;
+				if($eFarm->usesAccounting() === FALSE) {
+					unset($statuses[Cashflow::ALLOCATED]);
+					$statuses[Cashflow::WAITING] = s("Valide");
 				}
-				$h .= $form->select('bankAccount', $values, $search->get('bankAccount'), ['placeholder' => s("N° de compte")]);
+				$h .= $form->select('status', $statuses, $search->get('status'), ['onchange' => 'Cashflow.changeStatusSelector(this);']);
+			$h .= '</dd>';
+			$h .= '<dt>'.s("Libellé").'</dt>';
+			$h .= '<dd>';
+				$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
+			$h .= '</dd>';
+			$h .= '<dt>'.s("Mouvement").'</dt>';
+			$h .= '<dd>';
+				$h .= $form->select('direction', ['debit-credit' => s("Débit / Crédit"), 'debit' => s("Débit"), 'credit' => s("Crédit")], $search->get('direction') ?? 'debit-credit', ['mandatory' => TRUE]);
+			$h .= '</dd>';
+			$h .= '<dt>'.s("Montant").'</dt>';
+			$h .= '<dd>';
+				$h .= $form->inputGroup(
+			$form->addon(s('Montant')).
+					$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01]).
+					$form->addon(s('+/-')).
+					$form->number('margin', $search->get('margin', 1)).
+					$form->addon(s('€'))
+				);
+			$h .= '</dd>';
+			$h .= '<dt>'.s("Rapprochement").'</dt>';
+			$h .= '<dd>';
+				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'));
+			$h .= '</dd>';
+			if($cBankAccount->count() > 1) {
+				$h .= '<dt>'.s("Compte bancaire").'</dt>';
+				$h .= '<dd>';
+					$values = [];
+					foreach($cBankAccount as $eBankAccount) {
+						$values[$eBankAccount['id']] = $eBankAccount['label'];
+					}
+					$h .= $form->select('bankAccount', $values, $search->get('bankAccount'));
+				$h .= '</dd>';
+
 
 			}
-		$h .= '</div>';
-		$h .= '<div>';
+		$h .= '</dl>';
+		$h .= '<div class="mt-1">';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 		$h .= '</div>';
@@ -114,7 +134,7 @@ class CashflowUi {
 		}
 
 		$highlightedCashflowId = GET('id', 'int');
-		$showMonthHighlight = $search->getSort() === 'date';
+		$showMonthHighlight = str_starts_with($search->getSort(), 'date');
 		$showReconciliate = $cCashflow->find(fn($e) => $e['isReconciliated'])->count() > 0;
 		$showAccount = count(array_unique($cCashflow->getColumnCollection('import')->getColumnCollection('account')->getColumn('label'))) > 1;
 
@@ -166,13 +186,17 @@ class CashflowUi {
 
 				$h .= '<tbody>';
 
-				$lastMonth = '';
+				$lastMonth = NULL;
 				foreach($cCashflow as $eCashflow) {
 
-					if($showMonthHighlight and ($lastMonth === '' or $lastMonth !== substr($eCashflow['date'], 0, 7))) {
+					if(
+						$showMonthHighlight and
+						($lastMonth === NULL or $lastMonth !== substr($eCashflow['date'], 0, 7))
+					) {
+
 						$lastMonth = substr($eCashflow['date'], 0, 7);
 
-							$h .= '<tr class="row-emphasis row-bold">';
+							$h .= '<tr class="tr-title">';
 
 								$h .= '<td class="td-min-content" colspan="7">';
 									$h .= mb_ucfirst(\util\DateUi::textual($eCashflow['date'], \util\DateUi::MONTH_YEAR));

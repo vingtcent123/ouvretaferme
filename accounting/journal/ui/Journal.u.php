@@ -96,8 +96,7 @@ class JournalUi {
 					$h .= $form->inputGroup($form->addon(s("entre")).
 						$form->month('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
 						$form->addon("et").
-						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")]),
-						['class' => 'company-period-input-group']
+						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
 					);
 					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);

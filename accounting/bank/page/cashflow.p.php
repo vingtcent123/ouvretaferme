@@ -45,15 +45,19 @@ new Page(function($data) {
 			'isReconciliated' => GET('isReconciliated', '?bool'),
 			'bankAccount' => \bank\BankAccountLib::getById(GET('bankAccount')),
 			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
-		], GET('sort', 'string', 'date-'));
+		], GET('sort', default: 'date-'));
+
 		if(GET('amount')) {
 
-			$search->set('amountMin', GET('amount','float') - GET('margin', 'float', 0));
+			$amount = GET('amount','float');
+			$margin = GET('margin', 'float', 0);
 
-			if(GET('margin', 'float', 0)) {
-				$search->set('amountMax', GET('amount', 'float') + GET('margin', 'float', 0));
+			$search->set('amountMin', $amount - $margin);
+
+			if($margin) {
+				$search->set('amountMax', $amount + $margin);
 			} else {
-				$search->set('amountMax', GET('amount', 'int') + 1);
+				$search->set('amountMax', (int)$amount + 1);
 			}
 		}
 
