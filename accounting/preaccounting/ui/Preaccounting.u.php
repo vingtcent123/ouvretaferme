@@ -44,9 +44,10 @@ Class PreaccountingUi {
 
 
 		$form = new \util\FormUi();
+		parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
 
 		$h = '<div class="mb-2">';
-			$h .= $form->openUrl(LIME_REQUEST_PATH.'?type=payment&from='.GET('from').'&to='.GET('to'), ['id' => 'preaccounting-payment-customer']);
+			$h .= $form->openUrl(LIME_REQUEST_PATH.'?'.http_build_query($args), ['id' => 'preaccounting-payment-customer']);
 				$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
 			$h .= $form->close();
 		$h .= '</div>';
