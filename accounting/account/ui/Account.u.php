@@ -60,6 +60,8 @@ class AccountUi {
 
 	public function getManage(\farm\Farm $eFarm, \Collection $cAccount, \Collection $cJournalCode): string {
 
+		\Asset::css('company' , 'company.css');
+
 		if($cAccount->empty() === TRUE) {
 			return '<div class="util-info">'.s("Aucun compte n'a encore été enregistré").'</div>';
 		}
@@ -174,7 +176,9 @@ class AccountUi {
 							if($eAccount->canQuickUpdate('journalCode')) {
 								$eAccount->setQuickAttribute('farm', $eFarm['id']);
 								$eAccount->setQuickAttribute('property', 'journalCode');
-								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? new \journal\JournalCodeUi()->getColoredName($eAccount['journalCode']) : '<i>'.s("Non défini").'</i>');
+								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? new \journal\JournalCodeUi()->getColoredName($eAccount['journalCode']) : '<span class="btn btn-sm btn-outline-secondary">'.s("Définir").'</span>');
+							} else {
+
 							}
 						$h .= '</td>';
 
@@ -188,12 +192,22 @@ class AccountUi {
 							$h .= ($eAccount['vatAccount']->exists() === TRUE ? '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>' : '');
 						$h .= '</td>';
 
-						$h .= '<td>';
+						$h .= '<td class="text-center">';
 							if($eAccount['vatAccount']->exists() === TRUE and $eAccount['vatAccount']['vatRate'] !== NULL) {
-								$h .= encode($eAccount['vatAccount']['vatRate']).'%';
+								$vatRate = encode($eAccount['vatAccount']['vatRate']).'%';
+							} else if($eAccount['vatRate'] !== NULL) {
+								$vatRate = $eAccount['vatRate'].'%';
 							} else {
-								$h .= $eAccount['vatRate'] !== NULL ? $eAccount['vatRate'].'%' : '';
+								$vatRate = '<span class="btn btn-outline-secondary btn-sm">'.s("Préciser").'</span>';
 							}
+							if($eAccount->canQuickUpdate('vatRate')) {
+								$eAccount->setQuickAttribute('farm', $eFarm['id']);
+								$eAccount->setQuickAttribute('property', 'vatRate');
+								$h .= $eAccount->quick('vatRate', $vatRate);
+							} else {
+								$h .= $vatRate;
+							}
+
 						$h .= '</td>';
 
 						if($displayOperationsCount) {
@@ -774,10 +788,22 @@ class AccountUi {
 
 			case 'journalCode':
 				$d->values = fn(Account $e) => $e['cJournalCode'] ?? $e->expects(['cJournalCode']);
+				break;
+
+			case 'vatRate':
+				$d->field = 'select';
+				$d->values = fn(Account $e) => array_map(fn($val) => s("{value} %", $val), array_values(\selling\SellingSetting::getVatRates($e['eFarm'])));
+				$d->default = fn(Account $e) => array_find_key((\selling\SellingSetting::getVatRates($e['eFarm'])), function($vat) use($e) {
+					return $vat === ($e['vatRate'] ?? $e['vatAccount']['vatRate'] ?? NULL);
+				});
+				$d->before = fn(\util\FormUi $form, Account $e) => '<p>'.s("{class} - {description}", ['class' => $e['class'], 'description' => $e['description']]).'</p>';
+				$d->after = \util\FormUi::info((s("Taux de TVA en vigueur dans le pays configuré pour votre ferme"))).'<p>'.\Asset::icon('info-circle').' '.s("Attention, la modification du taux de TVA pour ce numéro de compte n'est pas rétroactive et n'aura aucune incidence sur les écritures comptables précédemment créées.").'</p>';
+				break;
 
 			case 'class':
 				$d->attributes['minlength'] = 4;
 				$d->attributes['maxlength'] = 8 ;
+				break;
 		}
 		return $d;
 

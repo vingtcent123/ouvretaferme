@@ -124,8 +124,9 @@ new \account\AccountPage(function($data) {
 })
 	->applyElement(function($data, \account\Account $e) {
 		$e['cJournalCode'] = \journal\JournalCodeLib::getAll();
+		$e['eFarm'] = $data->eFarm;
 	})
-	->quick(['description', 'journalCode'], validate: ['canQuickUpdate'])
+	->quick(['description', 'journalCode', 'vatRate'], validate: ['canQuickUpdate'])
 	->create(function($data) {
 
 		throw new ViewAction($data);

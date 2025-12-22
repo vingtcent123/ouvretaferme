@@ -207,3 +207,10 @@ tr.account_not-visible {
 	transition: 0.25s all;
 	text-decoration: none;
 }
+
+.dropdown-list-minimalist:has([data-ajax-form^="/@module/"]) {
+	min-width: 50%;
+}
+.dropdown-list-minimalist:has([data-ajax-form="/@module/"]) div.util-quick-form > div {
+	margin: 1rem 0;
+}

@@ -286,5 +286,16 @@ class AccountLib extends AccountCrud {
 
 	}
 
+	public static function update(Account $e, array $properties): void {
+
+		if(in_array('vatRate', $properties)) {
+
+			$e['vatRate'] = \selling\SellingSetting::getVatRates($e['eFarm'])[$e['vatRate']] ?? NULL;
+
+		}
+
+		parent::update($e, $properties);
+
+	}
 }
 ?>

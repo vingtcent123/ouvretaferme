@@ -32,7 +32,7 @@ class Account extends AccountElement {
 			return (mb_strlen($this['class']) > 2);
 		}
 
-		return FALSE;
+		return ($property === 'vatRate');
 
 	}
 
