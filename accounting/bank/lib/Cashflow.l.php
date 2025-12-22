@@ -60,10 +60,10 @@ class CashflowLib extends CashflowCrud {
 			->get();
 
 	}
-	public static function getAll(\Search $search, int $page, bool $hasSort): array {
+	public static function getAll(\Search $search, ?int $page, bool $hasSort): array {
 
 		$maxByPage = 500;
-		$cCashflow = self::applySearch($search)
+		self::applySearch($search)
 			->select(Cashflow::getSelection() + [
 				'cOperationHash' => \journal\Operation::model()
 					->select('id')
@@ -72,8 +72,13 @@ class CashflowLib extends CashflowCrud {
 				'sale' => ['id', 'document', 'customer' => ['id', 'name']],
 			])
 			->option('count')
-			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_DESC, 'fitid' => SORT_DESC])
-			->getCollection($page * $maxByPage, $maxByPage);
+			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_DESC, 'fitid' => SORT_DESC]);
+
+		if($page === NULL) {
+			$cCashflow = Cashflow::model()->getCollection();
+		} else {
+			$cCashflow = Cashflow::model()->getCollection($page * $maxByPage, $maxByPage);
+		}
 
 		$nCashflow = Cashflow::model()->found();
 		$nPage = ceil($nCashflow / $maxByPage);
