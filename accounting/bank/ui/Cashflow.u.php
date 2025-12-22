@@ -78,7 +78,7 @@ class CashflowUi {
 		$h = '<div class="mb-1 flex-justify-space-between flex-align-center">';
 			$h .= '<div>';
 				if($search->get('status') === NULL and $eFarm->usesAccounting()) {
-					$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'status', $search->get('status') === Cashflow::WAITING ? NULL : Cashflow::WAITING).'">'.s("N'afficher que les opérations sans écritures comptable").'</a> <span class="util-counter">'.($nCashflow[Cashflow::WAITING]['count'] ?? 0).'</span>';
+					$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'status', $search->get('status') === Cashflow::WAITING ? NULL : Cashflow::WAITING).'">'.s("N'afficher que les opérations sans écriture comptable").'</a> <span class="util-counter">'.($nCashflow[Cashflow::WAITING]['count'] ?? 0).'</span>';
 				}
 			$h .= '</div>';
 			$h .= '<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a>';
