@@ -7,7 +7,7 @@ class OperationLib extends OperationCrud {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'thirdParty', 'comment', 'journalCode'];
+		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'thirdParty', 'comment', 'journalCode', 'vatRate'];
 	}
 
 	public static function countByOldDatesButNotNewDate(\account\FinancialYear $eFinancialYear, string $newStartDate, string $newEndDate): int {
@@ -556,11 +556,9 @@ class OperationLib extends OperationCrud {
 				$properties = array_merge($properties, ['paymentDate', 'paymentMethod']);
 			}
 
-		} else {
-
-			$properties = array_merge($properties, ['id']);
-
 		}
+
+		$cOperationOriginByIds = self::getByIds($input['id']);
 
 		if($for === 'update' and ($input['hash'] ?? NULL) !== NULL) {
 
@@ -578,7 +576,20 @@ class OperationLib extends OperationCrud {
 
 		foreach($accounts as $index => $account) {
 
-			$eOperation = clone $eOperationDefault;
+			// Si on a déjà l'opération de départ, on part de celle-ci et on la modifie.
+			if(isset($input['id'][$index]) and $cOperationOriginByIds->find(fn($e) => $e['id'] === (int)$input['id'][$index])->notEmpty()) {
+
+				$eOperation = $cOperationOriginByIds->find(fn($e) => $e['id'] === (int)$input['id'][$index])->first();
+				foreach(array_keys($eOperationDefault->getArrayCopy()) as $field) {
+					$eOperation[$field] = $eOperationDefault[$field];
+				}
+
+			} else {
+
+				$eOperation = clone $eOperationDefault;
+
+			}
+
 			$eOperation['index'] = $index;
 			$eOperation['financialYear'] = $eFinancialYear;
 
@@ -685,6 +696,7 @@ class OperationLib extends OperationCrud {
 			} else {
 
 				$fields = array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy()));
+
 				Operation::model()
 					->select($fields)
 					->update($eOperation);
@@ -705,9 +717,31 @@ class OperationLib extends OperationCrud {
 			// Ajout de l'entrée de compte de TVA correspondante
 			if($hasVatAccount === TRUE) {
 
+				$forVat = $for;
+
 				if($for === 'update') {
 
-					$defaultValues = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index]))->first()->getArrayCopy();
+					$eOperationVatOrigin = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index] ?? -1))->first();
+
+					// L'écriture n'existe pas !
+					if($eOperationVatOrigin === NULL or $eOperationVatOrigin->empty()) {
+						// Recopié de $for === 'create'
+						$defaultValues = $isFromCashflow === TRUE
+							? [
+								'date' => $eCashflow['date'],
+								'description' => $eOperation['description'] ?? $eCashflow['memo'],
+								'cashflow' => $eCashflow,
+								'paymentMethod' => $eOperation['paymentMethod'],
+								'hash' => $hash,
+							]
+							: $eOperation->getArrayCopy();
+
+						$forVat = 'create';
+					} else {
+
+						$defaultValues = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index]))->first()->getArrayCopy();
+
+					}
 
 					// Certains champs doivent être automatiquement recopiés de l'originale à l'écriture de TVA
 					if(isset($defaultValues['operation']['id'])) {
@@ -740,7 +774,7 @@ class OperationLib extends OperationCrud {
 					$input['vatValue'][$index],
 					defaultValues: $defaultValues,
 					eCashflow: $eCashflow,
-					for: $for,
+					for: $forVat,
 				);
 
 				$cOperation->append($eOperationVat);

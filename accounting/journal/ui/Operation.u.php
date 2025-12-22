@@ -1107,11 +1107,21 @@ class OperationUi {
 				} else {
 
 					$vatRateDefault = 0;
-					if($eOperation['account']->exists() === TRUE) {
+
+					if($eOperation->exists() === TRUE) { // Cas d'un update
+
+						$vatRateDefault = $eOperation['vatRate'];
+
+					} else if($eOperation['account']->exists() === TRUE) { // Tous les autres cas
+
 						if($eOperation['account']['vatRate'] !== NULL) {
+
 							$vatRateDefault = $eOperation['account']['vatRate'];
+
 						} else if($eOperation['account']['vatAccount']->exists() === TRUE) {
+
 							$vatRateDefault = $eOperation['account']['vatAccount']['vatRate'];
+
 						}
 					}
 					$vatAmountDefault = $vatRateDefault !== 0 ? round(($defaultValues['amount'] ?? 0) * $vatRateDefault / 100,2) : 0;
