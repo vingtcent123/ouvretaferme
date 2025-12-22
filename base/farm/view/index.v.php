@@ -712,7 +712,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 		$h .= '<div class="flex-align-center">';
 			if($data->nSuggestion > 0) {
-				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($data->eFarm, 'invoice', $data->nSuggestion);
+				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($data->eFarm, $data->nSuggestion);
 			}
 
 			if($data->hasInvoices) {

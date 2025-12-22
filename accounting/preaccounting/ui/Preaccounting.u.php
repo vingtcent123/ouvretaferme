@@ -657,23 +657,19 @@ Class PreaccountingUi {
 
 	}
 
-	public function getLinkToReconciliate(\farm\Farm $eFarm, string $type, int $nSuggestion): string {
+	public function getLinkToReconciliate(\farm\Farm $eFarm, int $nSuggestion): string {
 
 		if($nSuggestion === 0) {
 			return '';
 		}
 
-		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-factures?tab='.$type.'">';
+		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-factures">';
 			$h .= \Asset::icon('fire').' ';
 			$h .= '<span class="hide-md-up">';
 				$h .= $nSuggestion;
 			$h .= '</span>';
 			$h .= '<span class="hide-sm-down">';
-				$h .= match($type) {
-					'operation' => p("{value} opération bancaire à rapprocher", "{value} opérations bancaires à rapprocher", $nSuggestion),
-					'sale' => p("{value} vente à rapprocher", "{value} ventes à rapprocher", $nSuggestion),
-					'invoice' => p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion),
-				};
+				$h .= p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion);
 			$h .= '</span>';
 		$h .= '</a>';
 
