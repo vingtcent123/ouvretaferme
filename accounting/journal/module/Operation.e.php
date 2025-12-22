@@ -265,19 +265,6 @@ class Operation extends OperationElement {
 				return $eInvoice['farm']->is($eFarm);
 
 			})
-			->setCallback('asset.check', function(?\asset\Asset $eAsset) use($input, $p): bool {
-
-				if($p->isBuilt('accountLabel') === FALSE) {
-					return TRUE;
-				}
-
-				if(\asset\AssetLib::isAsset($this['accountLabel']) === FALSE) {
-					return TRUE;
-				}
-
-				return $eAsset->notEmpty();
-
-			})
 		;
 
 		parent::build($properties, $input, $p);
