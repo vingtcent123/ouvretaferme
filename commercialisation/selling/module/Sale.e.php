@@ -645,7 +645,7 @@ class Sale extends SaleElement {
 	public function acceptDuplicate(): bool {
 
 		return (
-			// Il n'est pas possible de dupliquer une vente d'une boutique pour éviter de créer des incohérence au seins des boutiques et des disponibilités
+			// Il n'est pas possible de dupliquer une vente d'une boutique pour éviter de créer des incohérences au sein des boutiques et des disponibilités
 			$this['shop']->empty() and
 			$this->isComposition() === FALSE and
 			$this->isMarketSale() === FALSE

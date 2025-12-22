@@ -446,7 +446,9 @@ class DateUi {
 
 		}
 
-		$h .= $form->dynamicGroup($eDate, 'catalogs');
+		if($eDate['shop']->isPersonal()) {
+			$h .= $form->dynamicGroup($eDate, 'catalogs');
+		}
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))

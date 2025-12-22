@@ -59,7 +59,9 @@ class DateLib extends DateCrud {
 
 			}
 
-			$properties[] = 'catalogs';
+			if($eDate['shop']->isPersonal()) {
+				$properties[] = 'catalogs';
+			}
 
 			if(
 				$eDate['shop']['hasPoint'] and
