@@ -627,7 +627,7 @@ class SaleUi {
 
 			foreach($actions as $action) {
 
-				$menu .= '<div data-batch-test="accept-'.$action.'" data-batch-contains="post" data-batch-not-contains="hide">';
+				$menu .= '<div data-batch-test="accept-'.$action.'" data-batch-not-contains="hide">';
 
 					if($action === Sale::CANCELED) {
 						$menu .= '<div class="dropdown-divider"></div>';
@@ -640,7 +640,7 @@ class SaleUi {
 						Sale::CANCELED => s("Marquer ces ventes comme annulées ?"),
 					};
 
-					$menu .= '<a data-ajax="/selling/sale:doUpdate'.ucfirst($action).'Collection" data-confirm="'.$confirm.'" class="dropdown-item batch-'.$action.'">';
+					$menu .= '<a data-ajax="/selling/sale:doUpdate'.ucfirst($action).'Collection" data-batch-test="accept-'.$action.'" data-batch-contains="post" data-confirm="'.$confirm.'" class="dropdown-item batch-'.$action.'">';
 						$menu .= '<span class="btn btn-xs sale-preparation-status-'.$action.'-button">'.self::p('preparationStatus')->values[$action].'</span>';
 						$menu .= '  <span class="util-badge bg-primary" data-batch-test="accept-'.$action.'" data-batch-contains="count" data-batch-not-contains="hide" data-batch-only="hide"></span></span>';
 					$menu .= '</a>';
