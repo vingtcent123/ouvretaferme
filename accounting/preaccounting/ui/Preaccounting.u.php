@@ -560,7 +560,7 @@ Class PreaccountingUi {
 
 	}
 
-	public function products(\farm\Farm $eFarm, \Collection $cProduct, int $nToCheck, int $nVerified, \Collection $cCategory, array $products, \Search $search, array $itemData): string {
+	public function products(\farm\Farm $eFarm, \Collection $cProduct, \Collection $cCategory, array $products, \Search $search, array $itemData): string {
 
 
 		if(empty($products) and empty($itemData['cItem'])) {
@@ -576,6 +576,29 @@ Class PreaccountingUi {
 			$h .= $this->items($itemData['cItem']);
 
 		} else {
+
+			$form = new \util\FormUi();
+			parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
+			unset($args['profile']);
+			unset($args['name']);
+			unset($args['plant']);
+
+			$h .= '<div class="mb-2">';
+				$h .= $form->openUrl(LIME_REQUEST_PATH.'?'.http_build_query($args), ['id' => 'preaccounting-payment-product', 'method' => 'get']);
+					$h .= '<div style="display: flex; column-gap: 0.5rem;">';
+						$h .= $form->select('profile', \selling\ProductUi::p('profile')->values, $search->get('profile'), ['placeholder' => s("Type")]);
+						$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
+						$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
+						$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+						$h .= '<a href="'.LIME_REQUEST_PATH.'?'.http_build_query($args).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '</div>';
+				$h .= $form->close();
+			$h .= '</div>';
+
+			if($cProduct->empty()) {
+				return $h.'<div class="util-info">'.s("Il n'y a plus de produit à afficher !").'</div>';
+			}
+
 
 			$h .= '<table class="tr-even" data-batch="#batch-accounting-product">';
 				$h .= '<thead>';

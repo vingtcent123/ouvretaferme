@@ -113,8 +113,6 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 				echo new \preaccounting\PreaccountingUi()->products(
 					$data->eFarm,
 					$data->cProduct,
-					$data->nToCheck,
-					$data->nVerified,
 					$data->cCategories,
 					$data->products,
 					$data->search,

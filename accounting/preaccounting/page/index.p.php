@@ -86,6 +86,9 @@ new Page(function($data) {
 
 				case 'product':
 
+					$data->search->set('profile', GET('profile'));
+					$data->search->set('name', GET('name'));
+					$data->search->set('plant', GET('plant'));
 					[$data->nToCheck, $data->nVerified, $data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
 					[$data->nToCheckItem, $data->nVerifiedItem, $data->cItem] = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
 

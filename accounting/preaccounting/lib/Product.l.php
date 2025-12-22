@@ -10,6 +10,20 @@ Class ProductLib {
 		} else {
 			\selling\Product::model()->where('privateAccount IS NOT NULL');
 		}
+
+		if($search->get('name')) {
+			\selling\Product::model()->whereName('LIKE', '%'.$search->get('name').'%');
+		}
+
+		if($search->get('profile')) {
+			\selling\Product::model()->where('m1.profile = '.\selling\Product::model()->format($search->get('profile')));
+		}
+
+		if($search->get('plant')) {
+			$cPlant = \plant\PlantLib::getFromQuery($search->get('plant'), $eFarm);
+			\selling\Product::model()->whereUnprocessedPlant('IN', $cPlant);
+		}
+
 		return \selling\Product::model()
 			->join(\selling\Item::model(), 'm1.id = m2.product', 'LEFT')
 			->where('m1.farm = '.$eFarm['id'])

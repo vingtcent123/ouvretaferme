@@ -1,7 +1,4 @@
 
-document.delegateEventListener('autocompleteSubmit', '#preaccounting-payment-customer input[data-autocomplete-field="customer"]', function(e) {
-	d(e);
-});
 document.delegateEventListener('autocompleteSelect', '#preaccounting-payment-customer input[data-autocomplete-field="customer"]', function(e) {
 
 	const url = qs('form#preaccounting-payment-customer').getAttribute('action') + '&customer=' + e?.detail?.value;
@@ -14,7 +11,7 @@ document.delegateEventListener('autocompleteSelect', '#preaccounting-payment-cus
 
 });
 document.delegateEventListener('autocompleteUpdate', '#preaccounting-payment-customer input[data-autocomplete-field="customer"]', function(e) {
-d('update', e.detail.value);
+
 	if(e.detail.value) {
 
 		const url = qs('form#preaccounting-payment-customer').getAttribute('action') + '&customer=' + e.detail.value;
