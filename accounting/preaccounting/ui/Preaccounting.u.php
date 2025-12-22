@@ -337,7 +337,7 @@ Class PreaccountingUi {
 
 			$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
 				$menu .= \Asset::icon('cash-coin');
-				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de<br />paiement").'</span>';
+				$menu .= '<span style="letter-spacing: -0.2px">'.s("Choisir un moyen de paiement").'</span>';
 			$menu .= '</a>';
 
 			$menu .= '<div class="dropdown-list bg-secondary">';
@@ -353,7 +353,7 @@ Class PreaccountingUi {
 
 		}
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces ventes ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("En ignorant ces ventes, elles ne seront jamais incluses dans les exports comptables. Continuer ?").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer les ventes").'</span></a>';
 
 		return \util\BatchUi::group('batch-accounting-sale-'.$type, $menu, title: s("Pour les ventes sélectionnées"));
 
@@ -367,7 +367,7 @@ Class PreaccountingUi {
 
 			$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
 				$menu .= \Asset::icon('cash-coin');
-				$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de<br />paiement").'</span>';
+				$menu .= '<span style="letter-spacing: -0.2px">'.s("Choisir un moyen de paiement").'</span>';
 			$menu .= '</a>';
 
 			$menu .= '<div class="dropdown-list bg-secondary">';
@@ -383,7 +383,7 @@ Class PreaccountingUi {
 
 		}
 
-		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces factures ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("En ignorant ces factures, elles ne seront jamais incluses dans les exports comptables. Continuer ?").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer les factures").'</span></a>';
 
 
 		return \util\BatchUi::group('batch-accounting-invoice-'.$type, $menu, title: s("Pour les factures sélectionnées"));
