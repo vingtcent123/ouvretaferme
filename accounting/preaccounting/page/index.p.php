@@ -75,18 +75,12 @@ new Page(function($data) {
 
 		}
 
-		throw new ViewAction($data);
-
-	})
-	->get('/precomptabilite/{type}', function($data) {
-
 		$data->type = GET('type');
-
-		if(Route::getRequestedWith() !== 'ajax') {
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type='.GET('type').'&from='.GET('from').'&to='.GET('to').'&tab='.GET('tab'));
+		if(in_array($data->type, ['product', 'payment', 'closed', 'export']) === FALSE) {
+			$data->type = 'product';
 		}
 
-		if($data->isSearchValid and in_array($data->type, ['product', 'payment', 'closed'])) {
+		if($data->isSearchValid) {
 
 			switch($data->type) {
 
@@ -111,26 +105,7 @@ new Page(function($data) {
 
 			}
 
-		} else {
-
-			throw new VoidAction();
-
 		}
-
-		throw new ViewAction($data);
-
-	})
-	->get('/precomptabilite/sale/', function($data) {
-
-		$data->type = GET('type');
-
-		if(in_array($data->type, ['missingPayment', 'notClosed', 'noDeliveryDate', 'preparationStatus']) === FALSE) {
-			throw new VoidAction();
-		}
-
-		$data->cSale = \preaccounting\SaleLib::getForAccountingCheck($data->eFarm, $data->search, $data->type);
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
-
 		throw new ViewAction($data);
 
 	})

@@ -140,14 +140,14 @@ Class PreaccountingUi {
 
 		$h = '';
 
-		$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/'.$type.'?from='.$search->get('from').'&to='.$search->get('to');
+		$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type='.$type.'&from='.$search->get('from').'&to='.$search->get('to');
 
 		if(count($nToCheck) > 1) {
 
 			$h .= '<div class="tabs-item">';
 				foreach($nToCheck as $tab => $count) {
 
-					$h .= '<a data-ajax="'.$url.'&tab='.$tab.'"  data-ajax-method="get" class="tab-item '.(($search->get('tab') === $tab) ? 'selected' : '').'" data-step="'.$type.'" data-tab="'.$tab.'">';
+					$h .= '<a href="'.$url.'&tab='.$tab.'"  class="tab-item '.(($search->get('tab') === $tab) ? 'selected' : '').'">';
 						$h .= match($tab) {
 							\selling\Sale::SALE => s("Ventes"),
 							'invoice' => s("Factures"),
@@ -499,7 +499,7 @@ Class PreaccountingUi {
 				$eCategorySelected = $search->get('tab');
 			}
 
-			$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/product?from='.$search->get('from').'&to='.$search->get('to');
+			$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=product&from='.$search->get('from').'&to='.$search->get('to');
 
 			$list = function(string $class) use ($eFarm, $cCategory, $eCategorySelected, $isItemSelected, $products, $toVerifyItems, $url) {
 
@@ -508,7 +508,7 @@ Class PreaccountingUi {
 				foreach($cCategory as $eCategory) {
 
 					if(($products[$eCategory['id']] ?? 0) > 0) {
-						$h .= '<a data-ajax="'.$url.'&tab='.$eCategory['id'].'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'" data-ajax-method="get" data-step="product" data-tab="'.$eCategory['id'].'">'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
+						$h .= '<a href="'.$url.'&tab='.$eCategory['id'].'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'" >'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
 					}
 
 				}
@@ -676,6 +676,113 @@ Class PreaccountingUi {
 		return $h;
 	}
 
+	public function export(\farm\Farm $eFarm, int $errors, int $nProduct, int $nSalePayment, int $nSaleClosed, bool $isSearchValid, \Search $search): string {
+		
+		$form = new \util\FormUi();
+		
+		$urlProduct = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=product';
+		$urlPayment = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=payment';
+		$urlClosed = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=closed';
+
+		$h = '';
+
+		if($errors > 0) {
+			if($nProduct > 0) {
+				if($nSalePayment > 0) {
+					if($nSaleClosed > 0) {
+						$check = s("Vérifiez <link>{icon} vos produits</link>, <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
+							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
+							'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
+							'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
+						]);
+					} else {
+						$check = s("Vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>.", [
+							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
+							'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
+						]);
+					}
+				} else if($nSaleClosed > 0) {
+					$check = s("Vérifiez <link>{icon} vos produits</link> et <link3>{icon3} la clôture de vos ventes</link3>.", [
+						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
+						'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
+					]);
+				} else {
+					$check = s("Vérifiez <link>{icon} vos produits</link>.", [
+						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
+					]);
+				}
+			} else if($nSalePayment > 0) {
+				if($nSaleClosed > 0) {
+					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
+						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
+						'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
+					]);
+				} else {
+					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2>.", [
+						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
+					]);
+				}
+			} else {
+					$check = s("Vérifiez <link3>{icon3} la clôture de vos ventes</link3>.", [
+						'icon3' => \Asset::icon('3-circle'), 'link3' => '<a href="'.$urlClosed.'">',
+					]);
+			}
+			$h .= '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).", ['check' => $check]).'</div>';
+
+		}
+
+		$h .= '<div class="step-bloc-export">';
+			$h .= '<div class="util-block-optional">';
+
+				if($isSearchValid) {
+
+					$attributes = [
+						'href' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:fec?from='.$search->get('from').'&to='.$search->get('to'),
+						'data-ajax-navigation' => 'never',
+					];
+					$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
+
+				} else {
+					$attributes = [
+						'href' => 'javascript: void(0);',
+					];
+					$class = 'btn-secondary disabled';
+				}
+				$h .= '<h3>'.s("Exportez votre fichier des écritures comptables").'</h3>';
+
+				if($errors > 0) {
+					$h .= '<p class="util-info">'.s("Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
+				} else {
+					$h .= '<p>'.s("Vous pouvez importer ce fichier dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
+				}
+
+				$h .= '<a '.attrs($attributes).'>'.$form->button(s("Télécharger le fichier"), ['class' => 'btn '.$class]).'</a>';
+
+			$h .= '</div>';
+
+			$h .= '<div class="util-block-optional">';
+
+				$h .= '<h3>'.s("Intégrez vos ventes dans votre comptabilité").'</h3>';
+
+				if($errors > 0) {
+					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
+				} else {
+					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer vos ventes !").'</p>';
+				}
+				$class = 'btn btn-primary';
+				if($errors > 0) {
+					$class .= ' disabled';
+					$url = 'javascript: void(0);';
+				} else {
+					$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer';
+				}
+				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer dans ma comptabilité").'</a>';
+
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+	}
 }
 ?>
 

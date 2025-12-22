@@ -54,17 +54,11 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		],
 	];
 
-	$onrender = '';
-	if($errors === 0 and $data->isSearchValid) {
-		$onrender = "Preaccounting.toggle('export', '');";
-	} else if($errors > 0 and in_array(GET('type'), ['product', 'payment', 'closed'])) {
-		$onrender = "Preaccounting.toggle('".GET('type')."', '".GET('tab')."');";
-	}
-	echo '<div class="step-process" onrender="'.$onrender.'">';
+	echo '<div class="step-process">';
 
 		foreach($steps as $step) {
 
-	    echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').'" data-url="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/'.$step['type'].'" data-step="'.$step['type'].'" onclick="Preaccounting.toggle(\''.$step['type'].'\'); return true;"">';
+	    echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type='.$step['type'].'">';
 
 	      echo '<div class="step-header">';
 
@@ -95,7 +89,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').'" data-step="export" onclick="Preaccounting.toggle(\'export\'); return true;">';
+		echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type=export">';
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
@@ -110,147 +104,41 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
-	foreach($steps as $step) {
-		echo '<div data-step="'.$step['type'].'" class="hide"></div>';
-	}
 
-	$form = new \util\FormUi();
+	echo '<div data-step="'.$data->type.'">';
 
-	echo '<div data-step="export" class="hide">';
+		switch($data->type) {
 
-		if($errors > 0) {
-			if($data->nProduct > 0) {
-				if($data->nSalePayment > 0) {
-					if($data->nSaleClosed > 0) {
-						$check = s("Vérifiez <link>{icon} vos produits</link>, <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
-							'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
-							'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
-							'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
-						]);
-					} else {
-						$check = s("Vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>.", [
-							'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
-							'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
-						]);
-					}
-				} else if($data->nSaleClosed > 0) {
-					$check = s("Vérifiez <link>{icon} vos produits</link> et <link3>{icon3} la clôture de vos ventes</link3>.", [
-						'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
-						'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
-					]);
-				} else {
-					$check = s("Vérifiez <link>{icon} vos produits</link>.", [
-						'icon' => Asset::icon('1-circle'), 'link' => '<a onclick="Preaccounting.toggle(\'product\');">',
-					]);
-				}
-			} else if($data->nSalePayment > 0) {
-				if($data->nSaleClosed > 0) {
-					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2> et <link3>{icon3} la clôture de vos ventes</link3>.", [
-						'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
-						'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
-					]);
-				} else {
-					$check = s("Vérifiez <link2>{icon2} les moyens de paiement</link2>.", [
-						'icon2' => Asset::icon('2-circle'), 'link2' => '<a onclick="Preaccounting.toggle(\'payment\');">',
-					]);
-				}
-			} else {
-					$check = s("Vérifiez <link3>{icon3} la clôture de vos ventes</link3>.", [
-						'icon3' => Asset::icon('3-circle'), 'link3' => '<a onclick="Preaccounting.toggle(\'closed\');">',
-					]);
-			}
-			echo '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).", ['check' => $check]).'</div>';
+			case 'product':
+				echo new \preaccounting\PreaccountingUi()->products(
+					$data->eFarm,
+					$data->cProduct,
+					$data->nToCheck,
+					$data->nVerified,
+					$data->cCategories,
+					$data->products,
+					$data->search,
+					itemData: ['nToCheck' => $data->nToCheckItem, 'nVerified' => $data->nVerifiedItem, 'cItem' => $data->cItem],
+				);
+				break;
 
+			case 'payment':
+				echo new \preaccounting\PreaccountingUi()->salesPayment($data->eFarm, $data->type, $data->cSale, $data->cPaymentMethod, $data->search);
+				break;
+
+			case 'closed':
+				echo new \preaccounting\PreaccountingUi()->sales($data->eFarm, $data->type, $data->cSale, $data->cInvoice, $data->cPaymentMethod, $data->nToCheck, $data->nVerified, $data->search);
+				break;
+
+			case 'export':
+				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $errors, $data->nProduct,  $data->nSalePayment,  $data->nSaleClosed,  $data->isSearchValid, $data->search);
+				break;
 		}
-
-		echo '<div class="step-bloc-export">';
-			echo '<div class="util-block-optional">';
-
-				if($data->isSearchValid) {
-
-					$attributes = [
-						'href' => \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:fec?from='.$data->search->get('from').'&to='.$data->search->get('to'),
-						'data-ajax-navigation' => 'never',
-					];
-					$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
-
-				} else {
-					$attributes = [
-						'href' => 'javascript: void(0);',
-					];
-					$class = 'btn-secondary disabled';
-				}
-				echo '<h3>'.s("Exportez votre fichier des écritures comptables").'</h3>';
-
-				if($errors > 0) {
-					echo '<p class="util-info">'.s("Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
-				} else {
-					echo '<p>'.s("Vous pouvez importer ce fichier dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
-				}
-
-				echo '<a '.attrs($attributes).'>'.$form->button(s("Télécharger le fichier"), ['class' => 'btn '.$class]).'</a>';
-
-			echo '</div>';
-
-			echo '<div class="util-block-optional">';
-
-				echo '<h3>'.s("Intégrez vos ventes dans votre comptabilité").'</h3>';
-
-				if($errors > 0) {
-					echo '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
-				} else {
-					echo '<p>'.s("Rendez-vous dans votre journal pour y importer vos ventes !").'</p>';
-				}
-				$class = 'btn btn-primary';
-				if($errors > 0) {
-					$class .= ' disabled';
-					$url = 'javascript: void(0);';
-				} else {
-					$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
-				}
-				echo '<a href="'.$url.'" class="'.$class.'">'.s("Importer dans ma comptabilité").'</a>';
-
-			echo '</div>';
-		echo '</div>';
 
 	echo '</div>';
 
-});
-
-new JsonView('/precomptabilite/{type}', function($data, AjaxTemplate $t) {
-
-	$t->js()->replaceHistory(LIME_REQUEST.'&type='.GET('type'));
-
-	switch($data->type) {
-
-		case 'product':
-			$t->qs('div[data-step="product"]')->innerHtml(new \preaccounting\PreaccountingUi()->products(
-				$data->eFarm,
-				$data->cProduct,
-				$data->nToCheck,
-				$data->nVerified,
-				$data->cCategories,
-				$data->products,
-				$data->search,
-				itemData: ['nToCheck' => $data->nToCheckItem, 'nVerified' => $data->nVerifiedItem, 'cItem' => $data->cItem],
-			));
-			break;
-
-		case 'payment':
-			$t->qs('div[data-step="'.$data->type.'"]')->innerHtml(
-				new \preaccounting\PreaccountingUi()->salesPayment($data->eFarm, $data->type, $data->cSale, $data->cPaymentMethod, $data->search)
-			);
-			break;
-
-		case 'closed':
-			$t->qs('div[data-step="'.$data->type.'"]')->innerHtml(
-				new \preaccounting\PreaccountingUi()->sales($data->eFarm, $data->type, $data->cSale, $data->cInvoice, $data->cPaymentMethod, $data->nToCheck, $data->nVerified, $data->search)
-			);
-			break;
-	}
 
 });
-
 
 new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t) {
 

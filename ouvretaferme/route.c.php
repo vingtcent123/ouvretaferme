@@ -423,16 +423,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['precomptabilite'],
 		],
-		'/precomptabilite/sale/' => [
-			'request' => 'preaccounting/index',
-			'priority' => 5,
-			'route' => ['precomptabilite', 'sale'],
-		],
-		'/precomptabilite/{type}' => [
-			'request' => 'preaccounting/index',
-			'priority' => 5,
-			'route' => ['precomptabilite', '{type}'],
-		],
 		'/precomptabilite:fec' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,

@@ -42,55 +42,6 @@ class Preaccounting {
 			.method('get')
 			.fetch();
 	}
-	static toggle(step, tab) {
-
-		const isSuccess = qs('a[data-step="' + step + '"]').classList.contains('success');
-		if(isSuccess && step !== 'export') {
-			return;
-		}
-
-		const isCollapsed = qs('div[data-step="' + step + '"]').classList.contains('hide');
-
-		qsa('div[data-step]', node => node.hide());
-		qsa('a.step', node => node.classList.remove('selected'));
-
-		if(isCollapsed) {
-
-			const url = qs('a[data-url][data-step="' + step + '"]')?.dataset?.url ?? null;
-
-			if(url) {
-
-				const from = qs('#form-search input[name="from"]').value;
-				const to = qs('#form-search input[name="to"]').value;
-
-				if(!from) {
-					qs('#form-search input[name="from"]').classList.add('form-error-field');
-				} else {
-					qs('#form-search input[name="from"]').classList.remove('form-error-field');
-				}
-
-				if(!to) {
-					qs('#form-search input[name="to"]').classList.add('form-error-field');
-				} else {
-					qs('#form-search input[name="to"]').classList.remove('form-error-field');
-				}
-
-				const currentUrl = window.location.origin + window.location.pathname + '/?type=' + step + '&from=' + from + '&to=' + to + '&tab=' + tab;
-				Lime.History.replaceState(currentUrl);
-
-				new Ajax.Query()
-					.url(url + '?from=' + from + '&to=' + to)
-					.method('get')
-					.fetch();
-
-			}
-
-			qs('div[data-step="' + step + '"]').removeHide();
-			qs('a.step[data-step="' + step + '"]').classList.add('selected');
-
-		}
-
-	}
 
 	static toggleGroupSelection(target) {
 
