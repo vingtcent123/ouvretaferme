@@ -219,20 +219,6 @@ class Asset extends AssetElement {
 				return ($fiscalDuration >= 36);
 
 			})
-			->setCallback('fiscalDuration.range', function(?int $fiscalDuration) use($p): bool {
-
-				if(
-					$p->isBuilt('accountLabel') === FALSE or
-					$p->isBuilt('fiscalMode') === FALSE or
-					$this['fiscalMode'] === Asset::WITHOUT
-				) {
-					return TRUE;
-				}
-
-				$this['fiscalDuration'] = $fiscalDuration;
-				return AssetLib::isOutOfDurationRange($this, 'fiscal') === FALSE;
-
-			})
 			->setCallback('startDate.missing', function(?string $startDate) use($p): bool {
 
 				if($p->isBuilt('economicMode') === FALSE or $this['economicMode'] !== Asset::LINEAR) {
