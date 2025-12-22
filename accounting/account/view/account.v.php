@@ -12,7 +12,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$data->tipNavigation = 'inline';
 
 	echo new \account\AccountUi()->getSearch($data->search);
-	echo new \account\AccountUi()->getManage($data->eFarm, $data->cAccount);
+	echo new \account\AccountUi()->getManage($data->eFarm, $data->cAccount, $data->cJournalCode);
 
 });
 

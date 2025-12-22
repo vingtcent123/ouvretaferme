@@ -7,7 +7,7 @@ new AdaptativeView('/comptabilite/inactive', function($data, FarmTemplate $t) {
 	$h = '<div class="util-action">';
 
 		$h .= '<h1>';
-			$h .= s("Cheh !");
+			$h .= s("Oups cette pas n'existe pas !");
 		$h .= '</h1>';
 
 	$h .= '</div>';
@@ -15,10 +15,8 @@ new AdaptativeView('/comptabilite/inactive', function($data, FarmTemplate $t) {
 	$t->mainTitle = $h;
 
 	echo '<div class="util-block-help">';
-		echo '<h4>'.s("Y'a pas d'chemin !").'</h4>';
-		echo '<p>';
-			echo s("Faut passer à la caisse.");
-		echo '</p>';
+		echo '<h4>'.s("Vous vous êtes perdu ?").'</h4>';
+		echo '<p>'.s("Utilisez le menu pour revenir sur vos pas... à bientôt !").'</p>';
 	echo '</div>';
 
 });

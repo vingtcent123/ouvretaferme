@@ -58,7 +58,7 @@ class AccountUi {
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cAccount): string {
+	public function getManage(\farm\Farm $eFarm, \Collection $cAccount, \Collection $cJournalCode): string {
 
 		if($cAccount->empty() === TRUE) {
 			return '<div class="util-info">'.s("Aucun compte n'a encore été enregistré").'</div>';
@@ -67,16 +67,22 @@ class AccountUi {
 		$displayProductsCount = $cAccount->match(fn($eAccount) => ($eAccount['nProductPro'] ?? 0) > 0 or ($eAccount['nProductPrivate'] ?? 0) > 0);
 		$displayOperationsCount = $cAccount->match(fn($eAccount) => ($eAccount['nOperation'] ?? 0) > 0);
 
+		\Asset::css('util', 'batch.css');
+		\Asset::js('util', 'batch.js');
+
 		$h = '<div class="util-block-help">';
 			$h .= s("Il est possible de créer des numéros de compte personnalisés, par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos flux.");
 		$h .= '</div>';
 
 		$h .= '<div class="util-overflow-sm">';
 
-			$h .= '<table id="account-list" class="tr-even tr-hover">';
+			$h .= '<table id="account-list" class="tr-even tr-hover" data-batch="#batch-journal">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
+						$h .= '<th class="td-checkbox" rowspan="2">';
+							$h .= '<input type="checkbox" name="batch[]" batch-type="item" value="" oninput="AccountSettings.toggleSelection(this)"/>';
+						$h .= '</th>';
 						$h .= '<th rowspan="2">';
 							$h .= s("Numéro de compte");
 						$h .= '</th>';
@@ -136,6 +142,11 @@ class AccountUi {
 
 					$h .= '<tr name="account-'.$eAccount['id'].'" class="'.($eAccount['visible'] ? '' : 'account_not-visible').'">';
 
+						$h .= '<td class="td-checkbox">';
+							$h .= '<label>';
+								$h .= '<input type="checkbox" name="batch[]" value="'.$eAccount['id'].'"oninput="AccountSettings.changeSelection(this)"/>';
+							$h .= '</label>';
+						$h .= '</td>';
 
 						$h .= '<td>';
 							$h .= '<span class="ml-'.$classNumber.'">';
@@ -163,7 +174,7 @@ class AccountUi {
 							if($eAccount->canQuickUpdate('journalCode')) {
 								$eAccount->setQuickAttribute('farm', $eFarm['id']);
 								$eAccount->setQuickAttribute('property', 'journalCode');
-								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? encode($eAccount['journalCode']['name']) : '<i>'.s("Non défini").'</i>');
+								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? new \journal\JournalCodeUi()->getColoredName($eAccount['journalCode']) : '<i>'.s("Non défini").'</i>');
 							}
 						$h .= '</td>';
 
@@ -208,10 +219,31 @@ class AccountUi {
 
 		$h .= '</div>';
 
+		$h .= $this->getBatch($eFarm, $cJournalCode);
+
 		return $h;
 
 	}
 
+	public function getBatch(\farm\Farm $eFarm, \Collection $cJournalCode): string {
+
+		$menu = '<a data-dropdown="top-start" class="batch-journal-code batch-item">';
+			$menu .= \Asset::icon('journal-bookmark');
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Journal").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<div class="dropdown-list bg-secondary">';
+
+			$menu .= '<div class="dropdown-title">'.s("Changer de journal").'</div>';
+			foreach($cJournalCode as $eJournalCode) {
+				$menu .= '<a style="margin: 0.25rem;" data-ajax-submit="'.\company\CompanyUi::urlAccount($eFarm).'/account:doUpdateJournalCollection" data-ajax-target="#batch-journal-form" post-journal-code="'.$eJournalCode['id'].'" class="dropdown-item">'.new \journal\JournalCodeUi()->getColoredName($eJournalCode).'</a>';
+			}
+			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" data-ajax-target="#batch-journal-form" post-journal-code="" class="dropdown-item"><i>'.s("Pas de journal").'</i></a>';
+		$menu .= '</div>';
+
+		return \util\BatchUi::group('batch-journal', $menu, '', title: s("Pour les numéros de compte sélectionnés"));
+
+	}
 	public function getDropdownTitle(Account $eAccount): string {
 
 		$h = '<div class="dropdown-list bg-primary">';

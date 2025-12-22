@@ -51,6 +51,7 @@ new Page(function($data) {
 
 	}
 
+	$data->cJournalCode = \journal\JournalCodeLib::getAll();
 	throw new ViewAction($data);
 
 })
@@ -152,6 +153,8 @@ new \account\AccountPage(function($data) {
 
 		throw new ReloadAction('account', 'Account::deleted');
 
-	});
+	})
+	->doUpdateCollectionProperties('doUpdateJournalCollection', ['journalCode'], fn($data) => throw new ReloadAction())
+;
 
 ?>

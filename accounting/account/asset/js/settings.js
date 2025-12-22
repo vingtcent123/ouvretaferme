@@ -10,4 +10,34 @@ class AccountSettings {
 		qs('tr[name="account-'+ accountId +'"]').classList.add('row-highlight');
 
 	}
+
+	static toggleSelection(target) {
+
+		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
+
+		this.changeSelection(target);
+
+	}
+
+	static changeSelection(target) {
+
+		return Batch.changeSelection('#batch-journal', null, function(selection) {
+
+			let ids = '';
+			let idsList = [];
+
+			selection.forEach(node => {
+
+
+				ids += '&ids[]='+ node.value;
+				idsList[idsList.length] = node.value;
+
+			});
+
+			return 1;
+
+		});
+
+	}
+
 }
