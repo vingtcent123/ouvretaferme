@@ -395,7 +395,7 @@ class ShopManageUi {
 
 	public function getSales(\farm\Farm $eFarm, Shop $eShop): string {
 
-		$h = new \shop\DateUi()->getContent($eFarm, $eShop, $eShop['eDate'], $eShop['eDate']['cSale'], $eFarm['cPaymentMethod']);
+		$h = new \shop\DateUi()->getContent($eFarm, $eShop, $eShop['eDate'], $eFarm['cPaymentMethod']);
 
 		return $h;
 

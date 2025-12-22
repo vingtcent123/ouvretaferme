@@ -440,23 +440,36 @@ class SaleLib extends SaleCrud {
 
 	public static function getByDate(
 		\shop\Date $eDate,
-		?array $preparationStatus = NULL,
-		\farm\Farm $eFarm = new \farm\Farm(),
-		?array $select = NULL
+		\farm\Farm $eFarm,
+		int $page,
+		int $number
 	): \Collection {
 
 		return Sale::model()
 			->join(Customer::model(), 'm1.customer = m2.id')
-			->select($select ?? Sale::getSelection())
+			->select(\selling\Sale::getSelection() + [
+				'shopPoint' => \shop\PointElement::getSelection()
+			])
 			->whereShopDate($eDate)
 			->where('m1.farm', $eFarm, if: $eFarm->notEmpty())
-			->wherePreparationStatus('IN', $preparationStatus, if: $preparationStatus !== NULL)
 			->sort(
 				$eDate['deliveryDate'] === NULL ?
 					['m1.id' => SORT_DESC] :
 					new \Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName, m1.id')
 			)
-			->getCollection(NULL, NULL, 'id');
+			->getCollection($page * $number, $number, 'id');
+
+	}
+
+	public static function countByDate(
+		\shop\Date $eDate,
+		\farm\Farm $eFarm
+	): int {
+
+		return Sale::model()
+			->whereShopDate($eDate)
+			->whereFarm($eFarm, if: $eFarm->notEmpty())
+			->count();
 
 	}
 

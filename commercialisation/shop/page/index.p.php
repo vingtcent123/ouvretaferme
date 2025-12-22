@@ -34,7 +34,7 @@ new \farm\FarmPage()
 				$data->eShop['hasDate'] = $data->eShop['eDate']->notEmpty();
 
 				if($data->eShop['eDate']->notEmpty()) {
-					\shop\DateLib::applyManagement($data->e, $data->eShop, $data->eShop['eDate']);
+					\shop\DateLib::applyManagement($data->e, $data->eShop, $data->eShop['eDate'], GET('page', 'int'));
 				}
 
 				break;

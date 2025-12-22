@@ -859,7 +859,15 @@ class DateUi {
 
 	}
 	
-	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cSale, \Collection $cPaymentMethod): string {
+	public function getContent(\farm\Farm $eFarm, Shop $eShop, Date $eDate, \Collection $cPaymentMethod): string {
+
+		$eDate->expects([
+			'page', 'number',
+			'cSale', 'nSale'
+		]);
+
+		$cSale = $eDate['cSale'];
+		$nSale = $eDate['nSale'];
 
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "sales"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'sales').'"' : '').')').'">';
 
@@ -987,13 +995,17 @@ class DateUi {
 					$h .= new \selling\SaleUi()->getList(
 						$eFarm,
 						$cSale,
-						hide: ['deliveredAt', 'documents', 'items'],
+						hide: ($eDate['deliveryDate'] === NULL) ? ['documents', 'items'] : ['deliveredAt', 'documents', 'items'],
 						dynamicHide: ['paymentMethod' => ''],
 						show: ['point'],
 						hasSubtitles: FALSE,
 						segment: ($eDate['deliveryDate'] !== NULL and $eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL,
 						cPaymentMethod: $cPaymentMethod,
 					);
+
+					if($nSale !== NULL and $eDate['page'] !== NULL) {
+						$h .= \util\TextUi::pagination($eDate['page'], $nSale / $eDate['number']);
+					}
 
 				}
 			$h .= '</div>';

@@ -67,7 +67,7 @@ new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 
 	echo new \shop\DateUi()->getDetails($data->eShop, $data->eDate);
 
-	echo new \shop\DateUi()->getContent($data->e, $data->eShop, $data->eDate, $data->eDate['cSale'], $data->cPaymentMethod);
+	echo new \shop\DateUi()->getContent($data->e, $data->eShop, $data->eDate, $data->cPaymentMethod);
 
 });
 

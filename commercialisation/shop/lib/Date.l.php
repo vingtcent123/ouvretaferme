@@ -263,7 +263,7 @@ class DateLib extends DateCrud {
 
 	}
 
-	public static function applyManagement(\farm\Farm $eFarm, Shop $eShop, Date $eDate): void {
+	public static function applyManagement(\farm\Farm $eFarm, Shop $eShop, Date $eDate, int $page): void {
 
 		if($eShop['shared']) {
 
@@ -288,9 +288,16 @@ class DateLib extends DateCrud {
 
 		\shop\DateLib::applySales($eDate);
 
-		$eDate['cSale'] = \selling\SaleLib::getByDate($eDate, eFarm: $eDate['eFarmSelected'], select: \selling\Sale::getSelection() + [
-			'shopPoint' => \shop\PointElement::getSelection()
-		]);
+		$eDate['page'] = $page;
+		$eDate['number'] = 200;
+
+		$eDate['cSale'] = \selling\SaleLib::getByDate($eDate, $eDate['eFarmSelected'], $eDate['page'], $eDate['number']);
+
+		if($eDate['cSale']->count() < $eDate['number']) {
+			$eDate['nSale'] = $eDate['cSale']->count() + $eDate['page'] * $eDate['number'];
+		} else {
+			$eDate['nSale'] = \selling\SaleLib::countByDate($eDate, $eDate['eFarmSelected']);
+		}
 
 		$eDate['farm'] = $eShop['farm'];
 		$eDate['shop'] = $eShop;
