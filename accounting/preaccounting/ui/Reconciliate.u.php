@@ -274,7 +274,7 @@ Class ReconciliateUi {
 
 		$menu .= '<a data-ajax="'.$urlIgnore.'" data-batch-test="accept-ignore" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Confirmez-vous ignorer ces suggestions ? Elles ne vous seront plus jamais proposées.").'"  class="batch-ignore batch-item">';
 			$menu .= \Asset::icon('hand-thumbs-down');
-			$menu .= '<span>'.s("Ignore").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-ignore" data-batch-contains="count" data-batch-only="hide"></span></span>';
+			$menu .= '<span>'.s("Ignorer").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-ignore" data-batch-contains="count" data-batch-only="hide"></span></span>';
 		$menu .= '</a>';
 
 		return \util\BatchUi::group('batch-reconciliate', $menu, title: $title);
