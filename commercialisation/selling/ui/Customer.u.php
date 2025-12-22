@@ -370,12 +370,12 @@ class CustomerUi {
 			$menu .= '<span>'.s("Créer une vente").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::ACTIVE.'" data-confirm="'.s("Activer ces clients ?").'" class="batch-active batch-item">';
+		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::ACTIVE.'" data-confirm="'.s("Activer ces clients ?").'" class="batch-item">';
 			$menu .= \Asset::icon('toggle-on');
 			$menu .= '<span>'.s("Activer").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::INACTIVE.'" data-confirm="'.s("Désactiver ces clients ?").'" class="batch-inactive batch-item">';
+		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::INACTIVE.'" data-confirm="'.s("Désactiver ces clients ?").'" class="batch-item">';
 			$menu .= \Asset::icon('toggle-off');
 			$menu .= '<span>'.s("Désactiver").'</span>';
 		$menu .= '</a>';

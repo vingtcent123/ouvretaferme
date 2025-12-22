@@ -41,19 +41,10 @@ class Reconciliate {
 
 		return Batch.changeSelection('#batch-reconciliate', null, function(selection) {
 
-			let ids = '';
-			let idsList = [];
-			let actions = 0;
-
 			let amount = 0.0;
 
 			selection.forEach(node => {
-
 				amount += parseFloat(node.dataset.batchAmount);
-
-				ids += '&ids[]='+ node.value;
-				idsList[idsList.length] = node.value;
-
 			});
 
 			qs(
@@ -62,28 +53,6 @@ class Reconciliate {
 					node.innerHTML = money(amount, 2);
 				}
 			);
-
-			qs(
-				'.batch-reconciliate',
-				selection.filter('[data-batch~="not-reconciliate"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			qs(
-				'.batch-ignore',
-				selection.filter('[data-batch~="not-ignore"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			return actions;
 
 		});
 

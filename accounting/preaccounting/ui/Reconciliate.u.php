@@ -117,11 +117,11 @@ Class ReconciliateUi {
 					$eSuggestion = $element['suggestion'];
 					$eCashflow = $element['suggestion']['cashflow'];
 					$batch = [];
-					if($eSuggestion->acceptIgnore() === FALSE) {
-						$batch[] = 'not-ignore';
+					if($eSuggestion->acceptIgnore()) {
+						$batch[] = 'accept-ignore';
 					}
-					if($eSuggestion->acceptReconciliate() === FALSE) {
-						$batch[] = 'not-reconciliate';
+					if($eSuggestion->acceptReconciliate()) {
+						$batch[] = 'accept-reconciliate';
 					}
 
 					$onclick = 'onclick="Reconciliate.updateSelection(this)"';
@@ -416,22 +416,27 @@ Class ReconciliateUi {
 
 	public function getBatch(\farm\Farm $eFarm): string {
 
-		$urlReconciliate = \company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliateCollection';
 		$urlIgnore = \company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnoreCollection';
 		$title = s("Pour les suggestions sélectionnées");
 
-		$menu = '<a href="javascript: void(0);" class="batch-menu-amount batch-menu-item">';
+		$menu = '<div class="batch-amount batch-item">';
 			$menu .= '<span>';
-				$menu .= '<span class="batch-menu-item-number"></span>';
-				$menu .= ' <span class="batch-menu-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
+				$menu .= '<span class="batch-item-number"></span>';
+				$menu .= ' <span class="batch-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
 			$menu .= '</span>';
 			$menu .= '<span>'.s("Synthèse").'</span>';
+		$menu .= '</div>';
+
+
+		$menu .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:reconciliate" data-ajax-method="get" data-batch-test="accept-reconciliate" data-batch-contains="get" data-batch-not-contains="hide" class="batch-item">';
+			$menu .= \Asset::icon('hand-thumbs-up');
+			$menu .= '<span>'.s("Rapprocher").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-reconciliate" data-batch-contains="count" data-batch-only="hide"></span></span>';
 		$menu .= '</a>';
 
-
-		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:reconciliate" data-ajax-method="get" class="batch-menu-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Rapprocher").'</span></a>';
-
-		$menu .= '<a data-ajax-submit="'.$urlIgnore.'" data-confirm="'.s("Confirmez-vous ignorer ces suggestions ? Elles ne vous seront plus jamais proposées.").'"  class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+		$menu .= '<a data-ajax="'.$urlIgnore.'" data-batch-test="accept-ignore" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Confirmez-vous ignorer ces suggestions ? Elles ne vous seront plus jamais proposées.").'"  class="batch-ignore batch-item">';
+			$menu .= \Asset::icon('hand-thumbs-down');
+			$menu .= '<span>'.s("Ignore").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-ignore" data-batch-contains="count" data-batch-only="hide"></span></span>';
+		$menu .= '</a>';
 
 		return \util\BatchUi::group('batch-reconciliate', $menu, title: $title);
 

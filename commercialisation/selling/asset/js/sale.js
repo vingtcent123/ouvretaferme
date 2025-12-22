@@ -115,26 +115,6 @@ class Sale {
 			);
 
 			qs(
-				'.batch-delete',
-				selection.filter('[data-batch~="not-delete"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			qs(
-				'.batch-payment-method',
-				selection.filter('[data-batch~="not-update-payment"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
-			qs(
 				'.batch-prepare',
 				selection.filter('[data-batch~="not-prepare"]').length > 0 ?
 					node => node.hide() :

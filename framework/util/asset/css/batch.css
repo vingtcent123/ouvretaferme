@@ -50,7 +50,7 @@
 }
 
 
-a.batch-item {
+.batch-item {
 	display: flex;
 	align-items: center;
 	justify-content: end;
@@ -60,9 +60,10 @@ a.batch-item {
 	color: white;
 	padding: 0.75rem;
 	min-width: 5rem;
+	position: relative;
 }
 
-a.batch-item.disabled {
+.batch-item.disabled {
 	pointer-events: none;
 	opacity: 0.5;
 }
@@ -72,6 +73,12 @@ a.batch-item.disabled {
 	line-height: 1;
 	font-weight: lighter;
 	margin-bottom: 0.5rem;
+}
+
+.batch-item-count {
+	top: 0.25rem;
+	margin: auto;
+	width: max-content;
 }
 
 a.batch-item-danger {
@@ -87,32 +94,29 @@ a.batch-item-danger {
 
 }
 
-a.batch-item:hover {
+.batch-item:hover {
 	text-decoration: none;
+	background-color: #fff1;
 }
 
-.batch-main a.batch-item:not(.batch-item-last) {
+.batch-main .batch-item:not(.batch-item-last) {
 	border-right: 1px solid var(--background);
 }
 
-a.batch-item > svg {
+.batch-item > svg {
 	margin-bottom: 0.5rem;
 	font-size: 1.2rem;
 }
 
-a.batch-item span {
+.batch-item span {
 	line-height: 1.2;
 	text-align: center;
 	margin-top: 0.125rem;
 }
 
-a.batch-item:hover span:last-child {
-	text-decoration: underline;
-}
-
 @media (max-width: 575px) {
 
-	a.batch-item span:last-child {
+	.batch-item span:last-child {
 		font-size: 0.9rem;
 	}
 
@@ -120,7 +124,7 @@ a.batch-item:hover span:last-child {
 
 @media (max-width: 449px) {
 
-	a.batch-item span:last-child {
+	.batch-item span:last-child {
 		font-size: 0.8rem;
 	}
 
@@ -172,11 +176,7 @@ a.batch-one-item {
 	margin-top: 0.25rem;
 }
 
-.batch-inactive[data-batch-behavior~="hide"] {
-	display: none;
-}
-
-.batch-inactive[data-batch-behavior~="mute"] {
+.batch-mute {
 	opacity: 0.25;
 	pointer-events: none;
 }

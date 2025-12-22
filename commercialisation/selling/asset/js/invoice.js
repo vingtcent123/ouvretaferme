@@ -65,47 +65,7 @@ class Invoice {
 
 	static changeSelection() {
 
-		return Batch.changeSelection('#batch-invoice', null, function(selection) {
-
-			qsa(
-				'.batch-send',
-				selection.filter('[data-batch~="not-send"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-					}
-			);
-
-			qsa(
-				'.batch-cancel',
-				selection.filter('[data-batch~="not-canceled"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-					}
-			);
-
-			qsa(
-				'.batch-confirm',
-				selection.filter('[data-batch~="not-confirmed"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-					}
-			);
-
-			qsa(
-				'.batch-delete',
-				selection.filter('[data-batch~="not-delete"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-					}
-			);
-
-			return 1;
-
-		});
+		return Batch.changeSelection('#batch-invoice');
 
 	}
 

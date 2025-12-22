@@ -55,7 +55,7 @@ class Batch {
 	}
 
 	/**
-	 * data-batch-behavior
+	 * data-batch-contains
 	 * - muted : opacité à 0.25 si non disponible
 	 * - hide : caché si non disponible
 	 * - count : insérer un compteur de disponibilités
@@ -67,16 +67,30 @@ class Batch {
 
 			qs(id +' .batch-group-count').innerHTML = selection.length;
 
-			qsa('[data-batch-active]', node => {
+			qsa('[data-batch-test]', node => {
 
-				const filter = selection.filter('[data-batch~="'+ node.dataset.batchActive +'"]');
-				const count = filter.length;
+				const count = selection.length;
 
-				if(node.dataset.batchBehavior.includes('count')) {
-					node.innerHTML = count;
+				const selectionFiltered = selection.filter('[data-batch~="'+ node.dataset.batchTest +'"]');
+				const countFitered = selectionFiltered.length;
+
+				const contains = selectionFiltered.length > 0;
+				const notContains = selectionFiltered.length === 0;
+				const only = selectionFiltered.length === selection.length;
+				const notOnly = selectionFiltered.length !== selection.length;
+
+				const testContains = (value) => (contains && node.dataset.batchContains?.includes(value));
+				const testNotContains = (value) => (notContains && node.dataset.batchNotContains?.includes(value));
+				const testOnly = (value) => (only && node.dataset.batchOnly?.includes(value));
+				const testNotOnly = (value) => (notOnly && node.dataset.batchNotOnly?.includes(value));
+
+				const test = (value) => (testContains(value) || testNotContains(value) || testOnly(value) || testNotOnly(value));
+
+				if(test('count')) {
+					node.innerHTML = countFitered +' / '+ count;
 				}
 
-				if(count > 0) {
+				if(countFitered > 0) {
 					node.classList.add('batch-active');
 					node.classList.remove('batch-inactive');
 				} else {
@@ -84,16 +98,40 @@ class Batch {
 					node.classList.add('batch-inactive');
 				}
 
-				if(node.dataset.batchBehavior.includes('post')) {
+				if(test('post') || test('get')) {
 
 					let ids = [];
 
-					filter.forEach(node => {
+					selectionFiltered.forEach(node => {
 						ids[ids.length] = ['ids[]', node.value];
 					});
 
-					node.setAttribute('data-ajax-body', JSON.stringify(ids));
+					if(test('post')) {
+						node.setAttribute('data-ajax-body', JSON.stringify(ids));
+					}
 
+					if(test('get')) {
+						node.setAttribute('data-ajax-query-string', JSON.stringify(ids));
+					}
+
+				}
+
+				if(test('hide')) {
+					node.classList.add('hide');
+				} else {
+					node.classList.remove('hide');
+				}
+
+				if(test('not-visible')) {
+					node.classList.add('not-visible');
+				} else {
+					node.classList.remove('not-visible');
+				}
+
+				if(test('mute')) {
+					node.classList.add('batch-mute');
+				} else {
+					node.classList.remove('batch-mute');
 				}
 
 			});

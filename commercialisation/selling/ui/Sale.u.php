@@ -387,20 +387,14 @@ class SaleUi {
 							$batch[] = 'accept-status';
 						}
 
-					}
+						if($eSale->acceptDelete()) {
+							$batch[] = 'accept-delete';
+						}
 
-					if(
-						$eSale->canWrite() === FALSE or
-						$eSale->acceptDelete() === FALSE
-					) {
-						$batch[] = 'not-delete';
-					}
+						if($eSale->acceptUpdatePayment()) {
+							$batch[] = 'accept-update-payment';
+						}
 
-					if(
-						$eSale->canWrite() === FALSE or
-						$eSale->acceptUpdatePayment() === FALSE
-					) {
-						$batch[] = 'not-update-payment';
 					}
 
 					$h .= '<tr';
@@ -619,10 +613,10 @@ class SaleUi {
 
 		$actions = [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CANCELED];
 
-		$menu .= '<a data-dropdown="top-start" class="batch-preparation-status batch-item" data-batch-behavior="hide" data-batch-active="accept-status">';
+		$menu .= '<a data-dropdown="top-start" class="batch-preparation-status batch-item" data-batch-test="accept-status" data-batch-not-contains="hide">';
 			$menu .= '<div class="batch-preparation-status-list">';
 				foreach($actions as $action) {
-					$menu .= '<span class="batch-'.$action.' sale-preparation-status-'.$action.'-button" data-batch-behavior="mute" data-batch-active="accept-'.$action.'"></span>';
+					$menu .= '<span class="batch-'.$action.' sale-preparation-status-'.$action.'-button" data-batch-test="accept-'.$action.'" data-batch-not-contains="not-visible"></span>';
 				}
 			$menu .= '</div>';
 			$menu .= '<span>'.s("État").'</span>';
@@ -633,27 +627,31 @@ class SaleUi {
 
 			foreach($actions as $action) {
 
-				if($action === Sale::CANCELED) {
-					$menu .= '<div class="dropdown-divider"></div>';
-				}
+				$menu .= '<div data-batch-test="accept-'.$action.'" data-batch-contains="post" data-batch-not-contains="hide">';
 
-				$confirm = match($action) {
-					Sale::CONFIRMED => s("Marquer ces ventes comme confirmées ?"),
-					Sale::PREPARED => s("Marquer ces ventes comme préparées ?"),
-					Sale::DELIVERED => s("Marquer ces ventes comme livrées ?"),
-					Sale::CANCELED => s("Marquer ces ventes comme annulées ?"),
-				};
+					if($action === Sale::CANCELED) {
+						$menu .= '<div class="dropdown-divider"></div>';
+					}
 
-				$menu .= '<a data-ajax="/selling/sale:doUpdate'.ucfirst($action).'Collection" data-batch-behavior="post mute" data-batch-active="accept-'.$action.'" data-confirm="'.$confirm.'" class="dropdown-item batch-'.$action.'">';
-					$menu .= '<span class="btn btn-xs sale-preparation-status-'.$action.'-button">'.self::p('preparationStatus')->values[$action].'</span>';
-					$menu .= '  <span class="util-badge bg-primary" data-batch-behavior="count" data-batch-active="accept-'.$action.'">0</span></span>';
-				$menu .= '</a>';
+					$confirm = match($action) {
+						Sale::CONFIRMED => s("Marquer ces ventes comme confirmées ?"),
+						Sale::PREPARED => s("Marquer ces ventes comme préparées ?"),
+						Sale::DELIVERED => s("Marquer ces ventes comme livrées ?"),
+						Sale::CANCELED => s("Marquer ces ventes comme annulées ?"),
+					};
+
+					$menu .= '<a data-ajax="/selling/sale:doUpdate'.ucfirst($action).'Collection" data-confirm="'.$confirm.'" class="dropdown-item batch-'.$action.'">';
+						$menu .= '<span class="btn btn-xs sale-preparation-status-'.$action.'-button">'.self::p('preparationStatus')->values[$action].'</span>';
+						$menu .= '  <span class="util-badge bg-primary" data-batch-test="accept-'.$action.'" data-batch-contains="count" data-batch-not-contains="hide" data-batch-only="hide"></span></span>';
+					$menu .= '</a>';
+
+				$menu .= '</div>';
 
 			}
 
 		$menu .= '</div>';
 
-		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
+		$menu .= '<a data-dropdown="top-start" data-batch-test="accept-update-payment" data-batch-not-only="hide" class="batch-item">';
 			$menu .= \Asset::icon('cash-coin');
 			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen<br/>de paiement").'</span>';
 		$menu .= '</a>';
@@ -678,7 +676,7 @@ class SaleUi {
 			$menu .= '<span style="letter-spacing: -0.2px">'.s("Préparer<br/>les commandes").'</span>';
 		$menu .= '</a>';
 
-		$danger = '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" class="batch-delete batch-item batch-item-danger">';
+		$danger = '<a data-ajax-submit="/selling/sale:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces ventes ?").'" data-batch-test="accept-delete" data-batch-not-only="hide" class="batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';

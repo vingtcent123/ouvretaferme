@@ -141,16 +141,20 @@ class InvoiceUi {
 
 					$batch = [];
 
-					if($eInvoice->acceptSend() === FALSE) {
-						$batch[] = 'not-send';
+					if($eInvoice->acceptSend()) {
+						$batch[] = 'accept-send';
 					}
 
-					if($eInvoice->acceptDelete() === FALSE) {
-						$batch[] = 'not-delete';
+					if($eInvoice->acceptDelete()) {
+						$batch[] = 'accept-delete';
 					}
 
-					if($eInvoice->acceptStatusCanceled() === FALSE) {
-						$batch[] = 'not-canceled';
+					if($eInvoice->acceptStatusCanceled()) {
+						$batch[] = 'accept-canceled';
+					}
+
+					if($eInvoice->acceptStatusConfirmed()) {
+						$batch[] = 'accept-confirmed';
 					}
 
 					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'"';
@@ -397,22 +401,22 @@ class InvoiceUi {
 
 	public function getBatch(): string {
 
-		$menu = '<a data-ajax-submit="/selling/invoice:doSendCollection" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-send batch-item">';
+		$menu = '<a data-ajax="/selling/invoice:doSendCollection" data-batch-test="accept-send" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-item">';
 			$menu .= \Asset::icon('envelope');
-			$menu .= '<span>'.s("Envoyer par e-mail").'</span>';
+			$menu .= '<span>'.s("Envoyer par e-mail").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-send" data-batch-contains="count" data-batch-only="hide"></span></span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateConfirmedCollection" data-confirm="'.s("Confirmer ces factures ?").'" class="batch-confirm batch-item">';
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateConfirmedCollection" data-batch-test="accept-confirmed" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Confirmer ces factures ?").'" class="batch-item">';
 			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-confirmed-button">'.\Asset::icon('check-lg').'</span>';
-			$menu .= '<span>'.s("Confirmer").'</span>';
+			$menu .= '<span>'.s("Confirmer").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-confirmed" data-batch-contains="count" data-batch-only="hide"></span></span>';
 		$menu .= '</a>';
 
-		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateCanceledCollection" data-confirm="'.s("Annuler ces factures ?").'" class="batch-cancel batch-item">';
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateCanceledCollection" data-batch-test="accept-canceled" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Annuler ces factures ?").'" class="batch-cancel batch-item">';
 			$menu .= '<span class="btn btn-xs invoice-status-batch sale-preparation-status-canceled-button">'.\Asset::icon('x').'</span>';
-			$menu .= '<span>'.s("Annuler").'</span>';
+			$menu .= '<span>'.s("Annuler").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-canceled" data-batch-contains="count" data-batch-only="hide"></span></span>';
 		$menu .= '</a>';
 
-		$danger = '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-delete batch-item batch-item-danger">';
+		$danger = '<a data-ajax-submit="/selling/invoice:doDeleteCollection" data-batch-test="accept-delete" data-batch-only="post" data-batch-not-only="hide" data-confirm="'.s("Confirmer la suppression définitive de ces factures ?").'" class="batch-delete batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';

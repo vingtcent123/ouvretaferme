@@ -1441,13 +1441,22 @@ document.delegateEventListener('click', '[data-ajax]', function(e) {
 		eval(this.dataset.ajaxClass) :
 		Ajax.Query;
 
-	const object = new className(this)
-		.url(this.getAttribute('data-ajax'));
+	let url = this.getAttribute('data-ajax');
+
+	if(this.dataset.ajaxQueryString) {
+		url += '?'+ new URLSearchParams(JSON.parse(this.dataset.ajaxQueryString)).toString();
+	}
+
+	const object = new className(this);
 
 	switch(this.dataset.ajaxMethod) {
 
 		case 'get' :
-			object.method('get');
+
+			object
+				.url(url)
+				.method('get');
+
 			break;
 
 		case 'post' :
@@ -1458,6 +1467,7 @@ document.delegateEventListener('click', '[data-ajax]', function(e) {
 				this.post();
 
 			object
+				.url(url)
 				.method('post')
 				.body(body);
 

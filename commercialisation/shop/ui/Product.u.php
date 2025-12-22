@@ -1463,12 +1463,12 @@ class ProductUi {
 
 		if($eCatalog->notEmpty()) {
 
-			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-active batch-item">';
+			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::ACTIVE.'" data-confirm="'.s("Activer ces produits ?").'" class="batch-item">';
 				$menu .= \Asset::icon('toggle-on');
 				$menu .= '<span>'.s("Activer").'</span>';
 			$menu .= '</a>';
 
-			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-inactive batch-item">';
+			$menu .= '<a data-ajax-submit="/shop/product:doUpdateStatusCollection" post-status="'.Product::INACTIVE.'" data-confirm="'.s("Désactiver ces produits ?").'" class="batch-item">';
 				$menu .= \Asset::icon('toggle-off');
 				$menu .= '<span>'.s("Désactiver").'</span>';
 			$menu .= '</a>';
@@ -1480,7 +1480,7 @@ class ProductUi {
 
 		}
 
-		$danger = '<a data-ajax-submit="/shop/product:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces produits du catalogue ?").'" class="batch-delete batch-item batch-item-danger">';
+		$danger = '<a data-ajax-submit="/shop/product:doDeleteCollection" data-confirm="'.s("Confirmer la suppression de ces produits du catalogue ?").'" class="batch-item batch-item-danger">';
 			$danger .= \Asset::icon('trash');
 			$danger .= '<span>'.s("Supprimer").'</span>';
 		$danger .= '</a>';

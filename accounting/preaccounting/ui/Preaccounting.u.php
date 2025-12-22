@@ -352,7 +352,7 @@ Class PreaccountingUi {
 
 		}
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces ventes ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces ventes ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 
 		return \util\BatchUi::group('batch-accounting-sale-'.$type, $menu, title: s("Pour les ventes sélectionnées"));
 
@@ -382,7 +382,7 @@ Class PreaccountingUi {
 
 		}
 
-		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces factures ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-menu-ignore batch-menu-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
+		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("Confirmez-vous ignorer ces factures ? Elles ne seront jamais incluses dans les exports comptables.").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
 
 
 		return \util\BatchUi::group('batch-accounting-invoice-'.$type, $menu, title: s("Pour les factures sélectionnées"));
