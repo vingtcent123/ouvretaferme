@@ -17,7 +17,6 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 			eCashflow: $data->eCashflow,
 			eThirdParty: $data->eThirdParty,
 			cPaymentMethod: $data->cPaymentMethod,
-			cJournalCode: $data->cJournalCode,
 		);
 	}
 

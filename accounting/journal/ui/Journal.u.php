@@ -69,7 +69,7 @@ class JournalUi {
 		return \company\CompanyUi::urlJournal($eFarm).'/livre-journal'.'?financialYear='.($eFinancialYear['id'] ?? '');
 
 	}
-	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod, \Collection $cJournalCode): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): string {
 
 		\Asset::js('journal', 'operation.js');
 
@@ -112,12 +112,6 @@ class JournalUi {
 						0 => s("Toutes les écritures"),
 						1 => s("Écritures non rattachées à une opération bancaire"),
 					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
-					$selectedJournalCode = [];
-					foreach($cJournalCode as $eJournalCode) {
-						$selectedJournalCode[$eJournalCode['id']] = $eJournalCode['name'];
-					}
-					$selectedJournalCode[-1] = s("Sans journal");
-					$h .= $form->select('journalCode', $selectedJournalCode, $search->get('journalCode'), ['placeholder' => s("Journal")]);
 					$h .= $form->select('hasDocument', [
 						0 => s("Avec ou sans pièce comptable"),
 						1 => s("Sans pièce comptable"),
