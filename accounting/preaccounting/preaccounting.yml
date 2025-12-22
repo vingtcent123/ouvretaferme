@@ -8,7 +8,5 @@ Suggestion:
   weight: int16(0, NULL)
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
-    ["cashflow", "operation"],
-    ["cashflow", "sale"],
     ["cashflow", "invoice"],
   ]

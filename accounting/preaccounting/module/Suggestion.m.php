@@ -72,8 +72,6 @@ class SuggestionModel extends \ModuleModel {
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['cashflow', 'operation'],
-			['cashflow', 'sale'],
 			['cashflow', 'invoice']
 		]);
 
