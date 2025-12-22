@@ -92,32 +92,68 @@ class JournalUi {
 
 			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
 
-				$h .= '<div>';
-					$h .= $form->inputGroup($form->addon(s("entre")).
+				$h .= '<dl class="util-presentation util-presentation-2">';
+					$h .= '<dt>'.s("Période").'</dt>';
+					$h .= '<dd>';
+					$h .= $form->inputGroup(
 						$form->month('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
-						$form->addon("et").
+						$form->addon(s("à")).
 						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
 					);
-					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
-					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
-					$h .= $form->select('type', $statuses, $search->get('type'), ['placeholder' => s("Type")]);
-					$h .= $form->select('paymentMethod', $cPaymentMethod, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);
-					$h .= $form->dynamicField(new Operation(['thirdParty' => $eThirdParty]), 'thirdParty', function($d) use($form) {
-						$d->autocompleteDispatch = '[data-third-party="form-search"]';
-						$d->attributes['data-index'] = 0;
-						$d->attributes['data-third-party'] = 'form-search';
-					});
-					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Pièce comptable")]);
-					$h .= $form->select('cashflowFilter', [
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Type").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->select('type', $statuses, $search->get('type'), ['placeholder' => s("Type")]);
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Numéro de compte").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->text('memo', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Description").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->select('paymentMethod', $cPaymentMethod, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Tiers").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->dynamicField(new Operation(['thirdParty' => $eThirdParty]), 'thirdParty', function($d) use($form) {
+							$d->autocompleteDispatch = '[data-third-party="form-search"]';
+							$d->attributes['data-index'] = 0;
+							$d->attributes['data-third-party'] = 'form-search';
+						});
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Pièce comptable").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Pièce comptable")]);
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Avec / sans opération bancaire").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->select('cashflowFilter', [
 						0 => s("Toutes les écritures"),
 						1 => s("Écritures non rattachées à une opération bancaire"),
 					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
-					$h .= $form->select('hasDocument', [
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Avec / sans pièce comptable").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->select('hasDocument', [
 						0 => s("Avec ou sans pièce comptable"),
 						1 => s("Sans pièce comptable"),
 					], $search->get('hasDocument', 'int', 0), ['mandatory' => TRUE]);
+					$h .= '</dd>';
 
-			$h .= '</div>';
+				$h .= '</dl>';
+
 				$h .= '<div>';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
