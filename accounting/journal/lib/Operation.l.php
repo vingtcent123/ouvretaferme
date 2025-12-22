@@ -662,15 +662,16 @@ class OperationLib extends OperationCrud {
 			$eAccount = $cAccounts[$account] ?? new \account\Account();
 			$vatValue = var_filter($vatValues[$index] ?? NULL, 'float', 0.0);
 			$hasVatAccount = (
-				$eFinancialYear['hasVat']
-				and $eAccount->exists()
-				and $eAccount['vatAccount']->exists()
-				and (
-					$vatValue !== 0.0
+				$eFinancialYear['hasVat'] and
+				$eAccount->exists() and
+				$eAccount['vatAccount']->exists() and
+				(
+					$vatValue !== 0.0 or
 					// Cas où on enregistre quand même une entrée de TVA à 0% : Si c'est explicitement indiqué dans eAccount.
-					or $eAccount['vatRate'] === 0.0
+					$eAccount['vatRate'] === 0.0
 				)
 			);
+
 			if($hasVatAccount === TRUE) {
 				$eOperation['vatAccount'] = $eAccount['vatAccount'];
 			}
@@ -772,6 +773,14 @@ class OperationLib extends OperationCrud {
 				$cOperation->append($eOperationVat);
 
 				$totalAmount += $eOperationVat['type'] === Operation::DEBIT ? $eOperationVat['amount'] : -1 * $eOperationVat['amount'];
+
+			} elseif($eOperation->exists()) {
+
+				// S'il y avait une opération de TVA => il faut la supprimer
+				Operation::model()
+					->whereAccountLabel('LIKE', \account\AccountSetting::VAT_CLASS.'%')
+					->whereOperation($eOperation)
+					->delete();
 
 			}
 
