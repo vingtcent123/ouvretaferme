@@ -28,7 +28,7 @@ class CashflowUi {
 			$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
 
 			$statuses = CashflowUi::p('status')->values;
-			if($eFarm->usesAccounting() === FALSE or true) {
+			if($eFarm->usesAccounting() === FALSE) {
 				unset($statuses[Cashflow::ALLOCATED]);
 				$statuses[Cashflow::WAITING] = s("Valide");
 			}
