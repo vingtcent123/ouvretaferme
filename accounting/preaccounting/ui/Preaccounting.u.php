@@ -663,7 +663,7 @@ Class PreaccountingUi {
 			return '';
 		}
 
-		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-ventes?tab='.$type.'">';
+		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-factures?tab='.$type.'">';
 			$h .= \Asset::icon('fire').' ';
 			$h .= '<span class="hide-md-up">';
 				$h .= $nSuggestion;

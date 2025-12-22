@@ -53,9 +53,7 @@ class SuggestionModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
-			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
-			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\preaccounting\Suggestion::WAITING, \preaccounting\Suggestion::REJECTED, \preaccounting\Suggestion::VALIDATED, \preaccounting\Suggestion::OUT], 'cast' => 'enum'],
 			'reason' => ['set', [\preaccounting\Suggestion::AMOUNT, \preaccounting\Suggestion::THIRD_PARTY, \preaccounting\Suggestion::REFERENCE, \preaccounting\Suggestion::DATE, \preaccounting\Suggestion::PAYMENT_METHOD], 'cast' => 'set'],
@@ -64,14 +62,12 @@ class SuggestionModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'cashflow', 'sale', 'invoice', 'operation', 'paymentMethod', 'status', 'reason', 'weight', 'createdAt'
+			'id', 'cashflow', 'invoice', 'paymentMethod', 'status', 'reason', 'weight', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'cashflow' => 'bank\Cashflow',
-			'sale' => 'selling\Sale',
 			'invoice' => 'selling\Invoice',
-			'operation' => 'journal\Operation',
 			'paymentMethod' => 'payment\Method',
 		];
 
@@ -130,16 +126,8 @@ class SuggestionModel extends \ModuleModel {
 		return $this->where('cashflow', ...$data);
 	}
 
-	public function whereSale(...$data): SuggestionModel {
-		return $this->where('sale', ...$data);
-	}
-
 	public function whereInvoice(...$data): SuggestionModel {
 		return $this->where('invoice', ...$data);
-	}
-
-	public function whereOperation(...$data): SuggestionModel {
-		return $this->where('operation', ...$data);
 	}
 
 	public function wherePaymentMethod(...$data): SuggestionModel {

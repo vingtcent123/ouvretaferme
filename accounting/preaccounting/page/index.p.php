@@ -187,35 +187,15 @@ new Page(function($data) {
 		throw new ViewAction($data);
 
 	})
-	->get('/precomptabilite:rapprocher-ventes', function($data) {
+	->get('/precomptabilite:rapprocher-factures', function($data) {
 
 		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaitingByInvoice();
-		$data->countsBySale = \preaccounting\SuggestionLib::countWaitingBySale();
-
-		$data->selectedTab = GET('tab', 'string', 'invoice');
-		if(in_array($data->selectedTab, ['invoice', 'sale']) === FALSE) {
-			$data->selectedTab = 'invoice';
-		}
-		if($data->countsByInvoice === 0 and $data->selectedTab === 'invoice' and $data->countsBySale > 0) {
-			$data->selectedTab = 'sale';
-		} else if($data->countsBySale === 0 and $data->selectedTab === 'sale' and $data->countsByInvoice > 0) {
-			$data->selectedTab = 'invoice';
-		}
 
 		$data->eImportLast = \bank\ImportLib::getLastImport();
 
 		$data->ccSuggestion = preaccounting\SuggestionLib::getAllWaitingGroupByCashflow();
 
 		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE);
-
-		throw new ViewAction($data);
-
-	})
-	->get('/precomptabilite:rapprocher-ecritures', function($data) {
-
-		$data->counts = \preaccounting\SuggestionLib::countWaitingByOperation();
-
-		$data->ccSuggestion = preaccounting\SuggestionLib::getAllWaitingGroupByOperation();
 
 		throw new ViewAction($data);
 

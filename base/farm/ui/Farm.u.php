@@ -1737,7 +1737,7 @@ class FarmUi {
 
 	}
 
-	public function getSellingSalesTitle(Farm $eFarm, string $selectedView, int $nSuggestion): string {
+	public function getSellingSalesTitle(Farm $eFarm, string $selectedView): string {
 
 		$categories = $this->getSellingSalesCategories();
 
@@ -1761,10 +1761,6 @@ class FarmUi {
 			$h .= '</h1>';
 
 			$h .= '<div class="flex-align-center">';
-
-				if($nSuggestion > 0) {
-					$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, 'sale', $nSuggestion);
-				}
 
 				switch($selectedView) {
 

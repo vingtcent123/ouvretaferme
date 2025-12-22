@@ -443,15 +443,10 @@ Route::register([
 			'priority' => 5,
 			'route' => ['precomptabilite:importer'],
 		],
-		'/precomptabilite:rapprocher-ecritures' => [
+		'/precomptabilite:rapprocher-factures' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,
-			'route' => ['precomptabilite:rapprocher-ecritures'],
-		],
-		'/precomptabilite:rapprocher-ventes' => [
-			'request' => 'preaccounting/index',
-			'priority' => 5,
-			'route' => ['precomptabilite:rapprocher-ventes'],
+			'route' => ['precomptabilite:rapprocher-factures'],
 		],
 		'/presentation/faq' => [
 			'request' => 'main/index',

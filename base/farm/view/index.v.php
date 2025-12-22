@@ -396,7 +396,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 	} else {
 
-		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'), $data->nSuggestion);
+		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
 
 		echo new \selling\SaleUi()->getSearch($data->search, $data->cPaymentMethod);
 

@@ -346,45 +346,19 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	}
 });
 
-new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTemplate $t) {
+new AdaptativeView('/precomptabilite:rapprocher-factures', function($data, FarmTemplate $t) {
 
 	$t->nav = 'bank';
 
-	$t->title = s("Rapprocher les ventes de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes';
+	$t->title = s("Rapprocher les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-factures';
 
-	$total = $data->countsByInvoice + $data->countsBySale;
-
-	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").($total > 0 ? '<span class="util-counter ml-1">'.$total.'</span>' : '').'</h1>';
-
-	if($data->countsByInvoice > 0 and $data->countsBySale > 0) {
-
-		echo '<div class="tabs-item">';
-
-		foreach(['invoice', 'sale'] as $tab) {
-
-			echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ventes?tab='.$tab.'">';
-				echo match($tab) {
-					'invoice' => s("Factures"),
-					'sale' => s("Ventes"),
-				};
-				echo ' <small class="tab-item-count">'.match($tab) {
-					'invoice' => $data->countsByInvoice,
-					'sale' => $data->countsBySale,
-				}.'</small>';
-			echo '</a>';
-
-		}
-
-		echo '</div>';
-
-	}
-
+	$t->mainTitle = '<h1>'.s("Rapprocher les ventes").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
 
 	if($data->ccSuggestion->empty()) {
 
 		echo '<div class="util-info">';
-		echo '<p>'.s("Il n'y a aucune vente à rapprocher.").'</p>';
+		echo '<p>'.s("Il n'y a aucune facture à rapprocher.").'</p>';
 		echo '</div>';
 
 		if($data->eImportLast->empty()) {
@@ -401,38 +375,7 @@ new AdaptativeView('/precomptabilite:rapprocher-ventes', function($data, FarmTem
 
 	} else {
 
-		echo new \preaccounting\ReconciliateUi()->tableByCashflow($data->eFarm, $data->ccSuggestion, $data->cMethod, $data->selectedTab);
-
-	}
-
-});
-
-new AdaptativeView('/precomptabilite:rapprocher-ecritures', function($data, FarmTemplate $t) {
-
-	$t->nav = 'preaccounting';
-
-	$t->title = s("Rapprocher les écritures comptables de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher-ecritures';
-
-		$t->mainTitle = '<h1>'.s("Rapprocher les écritures").($data->counts > 0 ? '<span class="util-counter ml-1">'.$data->counts.'</span>' : '').'</h1>';
-
-	echo '<div class="util-block-help">';
-	echo s("Cette page vous permet de rapprocher vos écritures comptables avec les opérations bancaires que vous avez importées.");
-	echo '</div>';
-
-	if($data->ccSuggestion->empty()) {
-
-		echo '<div class="util-info">';
-		echo '<p>'.s("Il n'y a aucune écriture à rapprocher.").'</p>';
-		echo '<p>'.s("Souhaitez-vous <linkOperation>ajouter une écriture dans le journal</linkOperation> ou <linkCashflow>réaliser un import bancaire</linkCashflow> ?", [
-				'linkOperation' => '<a href="'.\company\CompanyUi::urlJournal($data->eFarm).'">',
-				'linkCashflow' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">',
-			]).'</p>';
-		echo '</div>';
-
-	} else {
-
-		echo new \preaccounting\ReconciliateUi()->tableByOperations($data->eFarm, $data->ccSuggestion);
+		echo new \preaccounting\ReconciliateUi()->tableByCashflow($data->eFarm, $data->ccSuggestion, $data->cMethod);
 
 	}
 

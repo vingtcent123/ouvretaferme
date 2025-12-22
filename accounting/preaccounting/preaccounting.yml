@@ -1,9 +1,7 @@
 Suggestion:
   id: serial32
   cashflow: bank\Cashflow
-  sale: ?selling\Sale
   invoice: ?selling\Invoice
-  operation: ?journal\Operation
   paymentMethod: ?payment\Method
   status: enum(WAITING, REJECTED, VALIDATED, OUT) = WAITING
   reason: set(AMOUNT, THIRD_PARTY, REFERENCE, DATE, PAYMENT_METHOD)

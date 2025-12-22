@@ -45,13 +45,6 @@ new Page(function($data) {
 
 		$data->eFarm->validate('canSelling');
 
-		if($data->eFarm->hasAccounting()) {
-			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
-			$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingBySale();
-		} else {
-			$data->nSuggestion = 0;
-		}
-
 		switch($data->pageName) {
 
 			case '/ferme/{id}/ventes' :

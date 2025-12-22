@@ -568,7 +568,6 @@ class SaleUi {
 								if($paymentStatus) {
 									$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
 								}
-								$h .= ($eSale['cashflow']['id'] ?? NULL) ? '<span class="util-badge bg-accounting" style="margin-top: 0.25rem">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</span>' :  '';
 
 							$h .= '</td>';
 

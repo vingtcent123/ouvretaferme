@@ -268,8 +268,6 @@ Class ImportLib {
 
 			\journal\Operation::model()->insert($eOperationThirdParty);
 
-			\preaccounting\SuggestionLib::calculateForOperation($eOperationThirdParty);
-
 		}
 
 		\selling\Sale::model()->update($eSale, ['accountingHash' => $hash]);
@@ -402,7 +400,6 @@ Class ImportLib {
 
 			\journal\Operation::model()->insert($eOperationThirdParty);
 
-			\preaccounting\SuggestionLib::calculateForOperation($eOperationThirdParty);
 		}
 
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);

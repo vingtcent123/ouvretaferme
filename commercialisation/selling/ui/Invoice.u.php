@@ -242,7 +242,7 @@ class InvoiceUi {
 									$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
 
 									if($eInvoice->isCreditNote() === FALSE) {
-										$h .= '<div class="flex-align-center" style="gap: 0.5rem;">';
+										$h .= '<div class="invoice-payment-block">';
 											$h .= \util\TextUi::switch([
 												'id' => 'invoice-switch-'.$eInvoice['id'],
 												'class' => 'field-switch-sm',

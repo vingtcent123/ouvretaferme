@@ -8,7 +8,7 @@ Class ReconciliateUi {
 		\Asset::js('preaccounting', 'reconciliate.js');
 	}
 
-	public function tableByCashflow(\farm\Farm $eFarm, \Collection $ccSuggestion, \Collection $cMethod, string $selectedTab): string {
+	public function tableByCashflow(\farm\Farm $eFarm, \Collection $ccSuggestion, \Collection $cMethod): string {
 
 		$h = '';
 		$form = new \util\FormUi();
@@ -19,47 +19,15 @@ Class ReconciliateUi {
 			$cSuggestion->sort(['weight' => SORT_DESC]);
 
 			$eSuggestion = $cSuggestion->first();
-			$eCashflow = $eSuggestion['cashflow'];
-			if($eSuggestion['invoice']->notEmpty()) {
-				if($selectedTab !== 'invoice') {
-					continue;
-				}
-				$element = [
-					'suggestion' => $eSuggestion,
-					'date'=> $eSuggestion['invoice']['date'],
-					'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
-					'customer'=> $eSuggestion['invoice']['customer']->getName(),
-					'customerType'=> $eSuggestion['invoice']['customer']['type'],
-					'reference'=> s("Facture {value}", encode($eSuggestion['invoice']['name'])),
-					'confidence' => $this->confidenceValue($eSuggestion),
-				];
-			} else if($eSuggestion['sale']->notEmpty()) {
-				if($selectedTab !== 'sale') {
-					continue;
-				}
-				$element = [
-					'suggestion' => $eSuggestion,
-					'date'=> $eSuggestion['sale']['deliveredAt'],
-					'amount'=> $eSuggestion['sale']['priceIncludingVat'],
-					'customer'=> $eSuggestion['sale']['customer']->getName(),
-					'customerType'=> $eSuggestion['sale']['customer']['type'],
-					'reference'=> s("Vente {value}", encode($eSuggestion['invoice']['name'])),
-					'confidence' => $this->confidenceValue($eSuggestion),
-				];
-			} else if($eSuggestion['operation']->notEmpty()) {
-				if($selectedTab !== 'operation') {
-					continue;
-				}
-				$element = [
-					'suggestion' => $eSuggestion,
-					'date'=> $eSuggestion['operation']['date'],
-					'amount'=> $eSuggestion['operation']['amount'],
-					'customer'=> $eSuggestion['operation']['thirdParty']['name'],
-					'customerType'=> '',
-					'reference'=> s("Écriture : {value}", encode($eSuggestion['invoice']['name'])),
-					'confidence' => $this->confidenceValue($eSuggestion),
-				];
-			}
+			$element = [
+				'suggestion' => $eSuggestion,
+				'date'=> $eSuggestion['invoice']['date'],
+				'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
+				'customer'=> $eSuggestion['invoice']['customer']->getName(),
+				'customerType'=> $eSuggestion['invoice']['customer']['type'],
+				'reference'=> s("Facture {value}", encode($eSuggestion['invoice']['name'])),
+				'confidence' => $this->confidenceValue($eSuggestion),
+			];
 
 			$elements[] = $element;
 		}
@@ -285,135 +253,6 @@ Class ReconciliateUi {
 
 	}
 
-	public function tableByOperations(\farm\Farm $eFarm, \Collection $ccSuggestion): string {
-
-		$h = '';
-
-		$h .= '<div class="stick-sm util-overflow-sm">';
-
-			$h .= '<table class="reconciliate-table" data-batch="#batch-reconciliate">';
-
-				$h .= '<thead class="thead-sticky">';
-					$h .= '<tr>';
-						$h .= '<th class="td-checkbox">';
-							$h .= '<label>';
-								$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="reconciliate" onclick="Reconciliate.toggleGroupSelection(this)"/>';
-							$h .= '</label>';
-						$h .= '</th>';
-						$h .= '<th>'.\Asset::icon('calendar-range').' '.s("Date").'</th>';
-						$h .= '<th>'.s("Numéro de compte").'</th>';
-						$h .= '<th>'.\Asset::icon('person').' '.s("Client").'</th>';
-						$h .= '<th>'.\Asset::icon('123').' '.s("Libellé").'</th>';
-						$h .= '<th class="td-min-content text-center" title="'.s("Débit / Crédit").'">'.s("D/C").'</th>';
-						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('person').'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le montant ?").'">'.\Asset::icon('currency-euro').'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance avec la référence ?").'">'.\Asset::icon('123').'</th>';
-						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';
-						$h .= '<th></th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
-
-
-				foreach($ccSuggestion as $cSuggestion) {
-					$cSuggestion->sort(['weight' => SORT_DESC]);
-
-					$eSuggestion = $cSuggestion->first();
-					$eCashflow = $eSuggestion['cashflow'];
-					$eOperation = $eSuggestion['operation'];
-
-					if($eOperation['cOperationLinked']->notEmpty()) {
-						$amount = ($eOperation['type'] === \journal\Operation::CREDIT ? -1 * $eOperation['amount'] : $eOperation['amount']);
-						foreach($eOperation['cOperationLinked'] as $eOperationLinked) {
-							$amount += ($eOperationLinked['type'] === \journal\Operation::CREDIT ? -1 * $eOperationLinked['amount'] : $eOperationLinked['amount']);
-						}
-						$amount = round($amount, 2);
-						$eOperation['amount'] = abs($amount);
-					}
-
-					$element = [
-						'date'=> $eSuggestion['operation']['date'],
-						'amount'=> $eSuggestion['operation']['amount'],
-						'customer'=> $eSuggestion['operation']['thirdParty']['name'],
-						'reference'=> $eSuggestion['operation']['description'],
-					];
-
-					$onclick = 'onclick="Reconciliate.updateSelection(this)"';
-
-					$h .= '<tbody>';
-
-						$h .= '<tr class="tr-title" '.$onclick.'>';
-							$h .= '<td class="td-checkbox"></td>';
-							$h .= '<td>'.\util\DateUi::numeric($eOperation['date']).'</td>';
-							$h .= '<td>';
-							$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-								if($eOperation['accountLabel'] !== NULL) {
-									$text = encode($eOperation['accountLabel']);
-								} else {
-									$text = encode(str_pad($eOperation['account']['class'], 8, 0));
-								}
-								$h .= $text;
-							$h .= '</div>';
-							$h .= new \account\AccountUi()->getDropdownTitle($eOperation['account']);
-							$h .= '</td>';
-							$h .= '<td>'.encode($eOperation['thirdParty']['name']).'</td>';
-							$h .= '<td>'.encode($eOperation['description']).'</td>';
-							$h .= '<td class="text-center">'.match($eOperation['type']) {
-								\journal\Operation::CREDIT => s("C"),
-								\journal\Operation::DEBIT => s("D"),
-							}.'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($eOperation['amount']).'</td>';
-							$h .= '<td></td>';
-							$h .= '<td></td>';
-							$h .= '<td></td>';
-							$h .= '<td></td>';
-						$h .= '</tr>';
-
-						$h .= '<tr>';
-
-							$h .= '<td class="td-checkbox">';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'"/>';
-							$h .= '</td>';
-
-							$h .= '<td '.$onclick.'>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
-							$h .= '<td colspan=4" '.$onclick.'>'.encode($eCashflow['memo']).'</td>';
-							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'>'.\util\TextUi::money($eCashflow['amount']).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::THIRD_PARTY).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
-							$h .= '<td class="td-min-content" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
-							$h .= '<td>';
-
-								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
-
-								$h .= '<div class="dropdown-list">';
-
-									$attributes = [
-										'post-id' => $eSuggestion['id'],
-										'class' => 'dropdown-item',
-									];
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-up').' '.s("Rapprocher").'</a>';
-									$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.\attrs($attributes).'>'.\Asset::icon('hand-thumbs-down').' '.s("Ignorer").'</a>';
-								$h .= '</div>';
-
-							$h .= '</td>';
-
-						$h .= '</tr>';
-
-					$h .= '</tbody>';
-				}
-
-			$h .= '</table>';
-
-		$h .= '</div>';
-
-		$h .= $this->getBatch($eFarm);
-
-
-		return $h;
-
-	}
-
 	public function getBatch(\farm\Farm $eFarm): string {
 
 		$urlIgnore = \company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnoreCollection';
@@ -465,18 +304,16 @@ Class ReconciliateUi {
 
 		$h = $form->openAjax($urlReconciliate, ['id' => 'suggestion-reconciliate']);
 
-		$h .= '<div class="util-block-important">';
-			$h .= '<p>';
-				$h .= p("Vous vous apprêtez à rapprocher {value} vente", "Vous vous apprêtez à rapprocher {value} ventes", $cSuggestion->count());
-			$h .= '</p>';
+			$h .= '<div class="util-block-important">';
+				$h .= '<p>';
+					$h .= p("Vous vous apprêtez à rapprocher {value} facture", "Vous vous apprêtez à rapprocher {value} facture", $cSuggestion->count());
+				$h .= '</p>';
 
-			$h .= '<p>';
-				\Asset::css('selling', 'sale.css');
-				$h .= s("Chaque vente deviendra <span>payée</span> avec le moyen de paiement indiqué, et l'opération bancaire sera rattachée à la vente.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']);
-			$h .= '</p>';
-		$h .= '</div>';
-
-
+				$h .= '<p>';
+					\Asset::css('selling', 'sale.css');
+					$h .= s("Chaque facture deviendra <span>payée</span> avec le moyen de paiement indiqué, et l'opération bancaire sera rattachée à la facture.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']);
+				$h .= '</p>';
+			$h .= '</div>';
 
 			foreach($cSuggestion as $eSuggestion) {
 				$h .= $form->hidden('ids[]', $eSuggestion['id']);
