@@ -53,21 +53,24 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
-			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search) +
-				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
-			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search, FALSE) +
-				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
+			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
+			$data->nItemVerified = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
 
 			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
 			$data->nPaymentVerified = \preaccounting\InvoiceLib::countForAccountingCheckVerified($data->eFarm, $data->search);
 
+			// Compteurs pour l'onglet des ventes
 			$data->nPaymentSaleToCheck = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search);
 			$data->nClosedSaleToCheck = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search);
 
 		} else {
 
-			$data->nProduct = 0;
+			$data->nProductToCheck = 0;
+			$data->nItemToCheck = 0;
 			$data->nProductVerified = 0;
+			$data->nItemVerified = 0;
 
 			$data->nPaymentToCheck = 0;
 			$data->nPaymentVerified = 0;
@@ -78,8 +81,14 @@ new Page(function($data) {
 		}
 
 		$data->type = GET('type');
-		if(in_array($data->type, ['product', 'payment', 'export']) === FALSE) {
-			$data->type = 'product';
+		if($data->nProductToCheck === 0 and $data->nItemToCheck === 0 and $data->nPaymentToCheck === 0) {
+			$data->type = 'export';
+		} else if(in_array($data->type, ['product', 'payment', 'export']) === FALSE) {
+			if($data->nProductToCheck + $data->nItemToCheck > 0) {
+				$data->type = 'product';
+			} else {
+				$data->type = 'payment';
+			}
 		}
 
 		if($data->isSearchValid) {
@@ -91,8 +100,8 @@ new Page(function($data) {
 					$data->search->set('profile', GET('profile'));
 					$data->search->set('name', GET('name'));
 					$data->search->set('plant', GET('plant'));
-					[$data->nToCheck, $data->nVerified, $data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
-					[$data->nToCheckItem, $data->nVerifiedItem, $data->cItem] = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
+					[$data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
+					$data->cItem = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
 
 					break;
 
@@ -112,15 +121,16 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
-			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search) +
-				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
-			$data->nPaymentInvoiceToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
-
 			$data->nPaymentToCheck = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search);
 			$data->nPaymentVerified = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search, FALSE);
 
 			$data->nClosedToCheck = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search);
 			$data->nClosedVerified = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search, FALSE);
+
+			// Compteur des factures pour l'autre onglet
+			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search) +
+				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nPaymentInvoiceToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
 
 		} else {
 
@@ -136,8 +146,14 @@ new Page(function($data) {
 		}
 
 		$data->type = GET('type');
-		if(in_array($data->type, ['payment', 'closed', 'export']) === FALSE) {
-			$data->type = 'payment';
+		if($data->nPaymentToCheck === 0 and $data->nClosedToCheck === 0) {
+			$data->type = 'export';
+		} else if(in_array($data->type, ['payment', 'closed', 'export']) === FALSE) {
+			if($data->nPaymentToCheck > 0) {
+				$data->type = 'payment';
+			} else {
+				$data->type = 'closed';
+			}
 		}
 
 		if($data->isSearchValid) {

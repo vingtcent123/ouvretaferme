@@ -9,14 +9,14 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	$t->nav = 'preaccounting';
 
 	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, 'prepare', [
-		'prepare' => $data->nProduct + $data->nPaymentToCheck, 'prepare-sales' => $data->nPaymentSaleToCheck + $data->nClosedSaleToCheck]);
+		'prepare' => $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck, 'prepare-sales' => $data->nPaymentSaleToCheck + $data->nClosedSaleToCheck]);
 
 	echo '<div class="util-block">';
 		echo '<h3>'.s("Choix de la période").'</h3>';
 		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search);
 	echo '</div>';
 
-	if($data->nProduct === 0 and $data->nPaymentToCheck === 0 and $data->nProductVerified === 0 and $data->nPaymentVerified === 0) {
+	if(($data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck + $data->nProductVerified + $data->nItemVerified + $data->nPaymentVerified) === 0) {
 
 		echo '<div class="util-block-important">';
 			echo s("Il n'a aucune facture à afficher. Avez-vous choisi la bonne période ?");
@@ -29,8 +29,8 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	$steps = [
 		[
 			'position' => 1,
-			'number' => $data->nProduct,
-			'numberVerified' => $data->nProductVerified,
+			'number' => $data->nProductToCheck + $data->nItemToCheck,
+			'numberVerified' => $data->nProductVerified + $data->nItemVerified,
 			'type' => 'product',
 			'title' => s("Produits"),
 			'description' => s("Associez un numéro de compte à vos produits"),
@@ -80,7 +80,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === 'export' ? 'selected' : '').'" href="'.$t->canonical.'?type=export">';
+		echo '<a class="step '.($data->type === 'export' ? 'selected' : '').'" href="'.$t->canonical.'?type=export">';
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
@@ -95,7 +95,6 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
-
 	echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
 
 		switch($data->type) {
@@ -107,7 +106,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 					$data->cCategories,
 					$data->products,
 					$data->search,
-					itemData: ['nToCheck' => $data->nToCheckItem, 'nVerified' => $data->nVerifiedItem, 'cItem' => $data->cItem],
+					itemData: ['nToCheck' => $data->nItemToCheck, 'nVerified' => $data->nItemVerified, 'cItem' => $data->cItem],
 				);
 				break;
 
@@ -116,7 +115,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 				break;
 
 			case 'export':
-				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProduct,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
+				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProductToCheck + $data->nItemToCheck,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
 				break;
 		}
 

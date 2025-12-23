@@ -59,12 +59,6 @@ Class ProductLib {
 			$productsByCategory[$eProduct['category']['id'] ?? 0] = $eProduct['count'];
 		}
 
-		$nToCheck = self::countForAccountingCheck($eFarm, $search);
-
-		$nVerified = (self::filterForAccountingCheck($eFarm, $search, FALSE)
-			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
-			->get()['count'] ?? 0);
-
 		if(get_exists('tab')) {
 
 			\session\SessionLib::set('preAccountingProductTab', GET('tab'));
@@ -82,7 +76,7 @@ Class ProductLib {
 
 		if($tab === 'items') {
 
-			return [$nToCheck, $nVerified, new \Collection(), $cCategories, $productsByCategory];
+			return [new \Collection(), $cCategories, $productsByCategory];
 
 		} else if(is_string($tab)) {
 
@@ -119,7 +113,7 @@ Class ProductLib {
 			->sort(['m1.name' => SORT_ASC])
 			->getCollection();
 
-		return [$nToCheck, $nVerified, $cProduct, $cCategories, $productsByCategory];
+		return [$cProduct, $cCategories, $productsByCategory];
 
 	}
 	
