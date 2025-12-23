@@ -95,7 +95,7 @@ class HelpUi {
 			$h .= '</div>';
 			$h .= '<h3>'.s("Comment gagner ?").'</h3>';
 			$h .= '<div class="util-block mb-2">';
-				$h .= '<p>'.s("Le 24 décembre à 20:00, les rennes du Père Noël viendront manger les légumes que vous aurez récoltés pour eux. Votre objectif est de voir passer un maximum de rennes sur votre partie, et pour cela vous devez :").'</p>';
+				$h .= '<p>'.s("Le {date} à {time}, les rennes du Père Noël viendront manger les légumes que vous aurez récoltés pour eux. Votre objectif est de voir passer un maximum de rennes sur votre partie, et pour cela vous devez :", ['date' => \util\DateUi::textual(GameSetting::END, \util\DateUi::DAY_MONTH), 'time' => GameSetting::END_TIME]).'</p>';
 				$h .= '<ul>';
 					$h .= '<li>'.s("<b>PRODUIRE</b> le plus de légumes possibles <i>(1 légume attirera 1 renne)</i>").'</li>';
 					$h .= '<li>'.s("<b>CUISINER</b> des soupes de légumes <i>(1 soupe attirera 10 rennes)</i>").'</li>';

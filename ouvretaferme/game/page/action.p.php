@@ -1,6 +1,10 @@
 <?php
 new Page(function($data) {
 
+		if(\game\GameSetting::isPlaying() === FALSE) {
+			throw new NotAllowedAction();
+		}
+
 		$data->ePlayer = \game\PlayerLib::getOnline();
 
 		if($data->ePlayer->empty()) {
@@ -58,6 +62,10 @@ new Page(function($data) {
 
 
 new \game\TilePage(function($data) {
+
+		if(\game\GameSetting::isPlaying() === FALSE) {
+			throw new NotAllowedAction();
+		}
 
 		$data->ePlayer = \game\PlayerLib::getOnline();
 

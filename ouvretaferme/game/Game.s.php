@@ -4,6 +4,23 @@ namespace game;
 class GameSetting extends \Settings {
 
 	const END = '2025-12-24';
+	const END_TIME = '20:00';
+
+	public static function isFinished() {
+
+		return (
+			currentDate() > self::END or
+			(currentDate() === self::END and currentTime() >= self::END_TIME.':00')
+		);
+	}
+
+	public static function isPlaying() {
+
+		return (
+			self::isFinished() === FALSE
+		);
+	}
+
 	const PROMOTION_LIMIT = '2025-12-04';
 
 	const BOARDS = 4;

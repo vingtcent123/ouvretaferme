@@ -103,7 +103,16 @@ class DeskUi {
 
 		$cGrowingFood = $cGrowing->find(fn($eGrowing) => $eGrowing['harvest'] !== NULL);
 
-		$h = '<div class="game-dashboard">';
+		$h = '';
+
+		if(currentDate() === GameSetting::END) {
+			$h .= '<div class="text-center">';
+				$h .= '<h3>'.s("Dernier jour !").'</h3>';
+				$h .= '<p>'.s("Vous pouvez jouer jusqu'à {value}.", GameSetting::END_TIME).'<br/>'.s("Ensuite, ce sont les rennes qui travaillent 🦌").'</p>';
+			$h .= '</div>';
+		}
+
+		$h .= '<div class="game-dashboard">';
 
 			$h .= '<h3 style="grid-area: title">'.encode($ePlayer['name']).'</h3>';
 
