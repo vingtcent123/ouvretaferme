@@ -140,150 +140,6 @@ Class PreaccountingUi {
 
 	}
 
-	public function sales(string $type, \farm\Farm $eFarm, \Collection $cSale, \Collection $cPaymentMethod, \Search $search): string {
-
-		\Asset::css('selling', 'sale.css');
-
-		$form = new \util\FormUi();
-
-		parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
-
-		$h = '<div class="mb-2">';
-			$h .= $form->openUrl(LIME_REQUEST_PATH.'?'.http_build_query($args), ['id' => 'preaccounting-payment-customer']);
-				$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
-			$h .= $form->close();
-		$h .= '</div>';
-
-		if($cSale->empty()) {
-			return $h.'<div class="util-info">'.match($type) {
-				'payment' => s("Toutes les ventes ont un moyen de paiement renseigné."),
-				'closed' => s("Toutes les ventes sont clôturées."),
-			}.'</div>';
-		}
-
-		$h .= '<table class="tr-even" data-batch="#batch-accounting-sale">';
-
-			$h .= '<thead>';
-
-				$h .= '<tr>';
-
-					$h .= '<th class="text-center">';
-						$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="sale" onclick="Preaccounting.toggleGroupSelection(this)"/>';
-					$h .= '</th>';
-					$h .= '<th class="td-min-content">#</th>';
-					$h .= '<th>'.s("Date").'</th>';
-					$h .= '<th>'.s("Client").'</th>';
-					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
-					$h .= '<th>'.s("Moyen de paiement").'</th>';
-					$h .= '<th>'.s("État").'</th>';
-				$h .= '</tr>';
-
-			$h .= '</thead>';
-
-			$h .= '<tbody>';
-
-				foreach($cSale as $eSale) {
-if($eSale['id'] === 11715) {
-	dd($eSale);
-}
-					$h .= '<tr>';
-
-						$h .= '<td class="td-checkbox">';
-							$h .= '<input type="checkbox" name="batch[]" batch-type="sale" value="'.$eSale['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
-						$h .= '</td>';
-
-						$h .= '<td class="td-min-content">';
-							$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-name">';
-							$h .= encode($eSale['customer']->getName());
-							if($eSale['customer']->notEmpty()) {
-								$h .= '<div class="util-annotation">';
-									$h .= \selling\CustomerUi::getCategory($eSale['customer']);
-								$h .= '</div>';
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="highlight-stick-right sale-item-price text-end">';
-							$h .= \selling\SaleUi::getTotal($eSale);
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-payment-type">';
-							if($eSale->isMarket()) {
-								$h .= '';
-							} else	if($eSale['cPayment']->notEmpty()) {
-
-								$h .= \selling\SaleUi::getPaymentMethodName($eSale);
-
-								$paymentStatus = \selling\SaleUi::getPaymentStatus($eSale);
-								if($paymentStatus) {
-									$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-								}
-
-							} else {
-
-								$h .= $form->select('paymentMethod', $cPaymentMethod, NULL, [
-									'onchange' => 'Preaccounting.updatePaymentMethodForSale(this);',
-									'data-sale' => $eSale['id'],
-									'data-payment-status' => \selling\Sale::NOT_PAID,
-								]);
-							}
-
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-status">';
-							$h .= new \selling\SaleUi()->getPreparationStatusForUpdate($eSale, 'btn-xs');
-						$h .= '</td>';
-
-					$h .= '</tr>';
-
-				}
-
-			$h .= '</tbody>';
-
-		$h .= '</table>';
-
-		$h .= $this->getBatchSales($type, $cPaymentMethod);
-
-		return $h;
-
-	}
-
-	public function getBatchSales(string $type, \Collection $cPaymentMethod): string {
-
-		$menu = '';
-
-		if($type === 'payment') {
-
-			$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
-				$menu .= \Asset::icon('cash-coin');
-				$menu .= '<span style="letter-spacing: -0.2px">'.s("Choisir un moyen de paiement").'</span>';
-			$menu .= '</a>';
-
-			$menu .= '<div class="dropdown-list bg-secondary">';
-
-				$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
-				foreach($cPaymentMethod as $ePaymentMethod) {
-					if($ePaymentMethod['online'] === FALSE) {
-						$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-accounting-sale-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
-					}
-				}
-
-			$menu .= '</div>';
-
-		}
-
-		$menu .= '<a data-ajax-submit="/selling/sale:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("En ignorant ces ventes, elles ne seront jamais incluses dans les exports comptables. Continuer ?").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer les ventes").'</span></a>';
-
-		return \util\BatchUi::group('batch-accounting-sale', $menu, title: s("Pour les ventes sélectionnées"));
-
-	}
-
 	public function getBatchInvoices(\Collection $cPaymentMethod): string {
 
 		$menu = '';
@@ -311,98 +167,42 @@ if($eSale['id'] === 11715) {
 
 	}
 
-	public function items(\Collection $ccItem): string {
+	public function items(\Collection $cItem): string {
 
-		$h = '<table class="tr-even" data-batch="#batch-accounting-item">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th></th>';
-					$h .= '<th>#</th>';
-					$h .= '<th>'.s("Client").'</th>';
-					$h .= '<th class="text-center">'.s("État").'</th>';
-					$h .= '<th class="text-center">'.s("Vente").'</th>';
-					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
-
-			foreach($ccItem as $cItem) {
-
-				$eSale = $cItem->first()['sale'];
-				$eCustomer = $cItem->first()['customer'];
-
-				$h .= '<tbody>';
-
-					$h .= '<tr class="tr-title">';
-
-						$h .= '<td class="td-checkbox">';
-							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="item" onclick="Preaccounting.toggleGroupSelection(this)"/>';
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-name">';
-							$h .= encode($eCustomer->getName());
-							if($eCustomer->notEmpty()) {
-								$h .= '<div class="util-annotation">';
-									$h .= \selling\CustomerUi::getCategory($eCustomer);
-								$h .= '</div>';
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-status text-center">';
-							$h .= '<span class="btn btn-xs sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.\selling\SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-created-at text-center">';
-							$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
-						$h .= '</td>';
-
-						$h .= '<td class="highlight-stick-right  sale-item-price text-end">';
-							$h .= \selling\SaleUi::getTotal($eSale);
-						$h .= '</td>';
-
-					$h .= '</tr>';
-
-				$h .= '</tbody>';
-
-				$h .= '<tbody>';
-
-				foreach($cItem as $eItem) {
-
+			$h = '<table class="tr-even" data-batch="#batch-accounting-item">';
+				$h .= '<thead>';
 					$h .= '<tr>';
-
-						$h .= '<td class="td-checkbox">';
-						$h .= '<input type="checkbox" name="batch[]" batch-type="item" value="'.$eItem['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
-						$h .= '</td>';
-
-						$h .= '<td></td>';
-
-						$h .= '<td class="sale-item-name">';
-							$h .= encode($eItem['name']);
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-status">';
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-created-at">';
-						$h .= '</td>';
-
-						$h .= '<td class="sale-item-price text-end">';
-						$h .= '</td>';
-
+						$h .= '<th class="td-checkbox">';
+							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="product" onclick="Preaccounting.toggleGroupSelection(this)"/>';
+						$h .= '</th>';
+						$h .= '<th>'.s("Nom").'</th>';
 					$h .= '</tr>';
+				$h .= '</thead>';
 
-				}
+				$h .= '<tbody>';
+
+					foreach($cItem as $eItem) {
+
+						$h .= '<tr>';
+							$h .= '<td class="td-checkbox">';
+								$h .= '<label>';
+									$h .= '<input type="checkbox" name="batch[]" value="'.$eItem['name'].'" batch-type="item" oninput="Preaccounting.changeSelection(this)"/>';
+								$h .= '</label>';
+							$h .= '</td>';
+
+							$h .= '<td class="product-item-name">';
+								$h .= encode($eItem['name']);
+							$h .= '</td>';
+
+						$h .= '</tr>';
+					}
 
 				$h .= '</tbody>';
 
-			}
+			$h .= '</table>';
 
-		$h .= '</table>';
+			$h .= $this->getBatch('item');
 
-		$h .= $this->getBatch('item');
 
 		return $h;
 
@@ -410,11 +210,12 @@ if($eSale['id'] === 11715) {
 
 	public function getCategories(\farm\Farm $eFarm, \Collection $cCategory, array $products, int $toVerifyItems, \Search $search): string {
 
+		$tab = \session\SessionLib::get('preAccountingProductTab');
 		$h = '';
 
 		if($cCategory->notEmpty()) {
 
-			$isItemSelected = ($search->get('tab') === 'items');
+			$isItemSelected = ($tab === 'items');
 			if($isItemSelected) {
 				$eCategorySelected = new \selling\Category();
 			} else {
@@ -439,13 +240,13 @@ if($eSale['id'] === 11715) {
 
 				if($uncategorized > 0) {
 
-					$h .= '<a data-ajax="'.$url.'&tab=0" data-ajax-method="get" class="'.$class.' '.(($eCategorySelected->empty() and $isItemSelected === FALSE) ? 'selected' : '').'" data-step="product" data-tab="0">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
+					$h .= '<a href="'.$url.'&tab=0" data-ajax-method="get" class="'.$class.' '.(($eCategorySelected === NULL or $eCategorySelected->empty() and $isItemSelected === FALSE) ? 'selected' : '').'" data-step="product" data-tab="0">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
 
 				}
 
 				if($toVerifyItems > 0) {
 
-					$h .= '<a data-ajax="'.$url.'&tab=items" data-ajax-method="get" class="'.$class.' '.($isItemSelected ? 'selected' : '').'" data-step="product" data-tab="items">'.s("Articles").' <small class="'.$class.'-count">'.$toVerifyItems.'</small></a>';
+					$h .= '<a href="'.$url.'&tab=items" data-ajax-method="get" class="'.$class.' '.($isItemSelected ? 'selected' : '').'" data-step="product" data-tab="items">'.s("Articles").' <small class="'.$class.'-count">'.$toVerifyItems.'</small></a>';
 				}
 
 				return $h;
@@ -491,7 +292,9 @@ if($eSale['id'] === 11715) {
 
 		$h = $this->getCategories($eFarm, $cCategory, $products, $itemData['nToCheck'], $search);
 
-		if($search->get('tab') === 'items') {
+		$tab = \session\SessionLib::get('preAccountingProductTab');
+
+		if($tab === 'items') {
 
 			$h .= $this->items($itemData['cItem']);
 
@@ -523,7 +326,6 @@ if($eSale['id'] === 11715) {
 				}
 				return $h;
 			}
-
 
 			$h .= '<table class="tr-even" data-batch="#batch-accounting-product">';
 				$h .= '<thead>';
@@ -612,7 +414,7 @@ if($eSale['id'] === 11715) {
 			return '';
 		}
 
-		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher-factures">';
+		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
 			$h .= \Asset::icon('fire').' ';
 			$h .= '<span class="hide-md-up">';
 				$h .= $nSuggestion;
@@ -709,89 +511,6 @@ if($eSale['id'] === 11715) {
 		return $h;
 	}
 
-	public function exportSales(\farm\Farm $eFarm, int $nPaymentToCheck, int $nClosedToCheck, bool $isSearchValid, \Search $search): string {
-
-		$form = new \util\FormUi();
-
-		$urlPayment = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:preparer-ventes?type=payment';
-		$urlClosed = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:preparer-ventes?type=closed';
-
-		$h = '';
-
-		$errors = $nPaymentToCheck + $nClosedToCheck;
-		if($errors > 0) {
-			if($nPaymentToCheck > 0) {
-				if($nClosedToCheck > 0) {
-					$check = s("vérifiez <link>{icon} les moyens de paiement</link> et les <link2>{icon2} la clôture des ventes</link2>", [
-						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlPayment.'">',
-						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlClosed.'">',
-					]);
-				} else {
-					$check = s("vérifiez <link>{icon} les moyens de paiement</link>", [
-						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlPayment.'">',
-					]);
-				}
-			} else if($nClosedToCheck > 0) {
-				$check = s("vérifiez <link2>{icon2} la clôture des ventes</link2>", [
-					'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlClosed.'">',
-				]);
-			}
-			$h .= '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).", ['check' => $check]).'</div>';
-
-		}
-
-		$h .= '<div class="step-bloc-export">';
-			$h .= '<div class="util-block-optional">';
-
-				if($isSearchValid) {
-
-					$attributes = [
-						'href' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:fec?from='.$search->get('from').'&to='.$search->get('to'),
-						'data-ajax-navigation' => 'never',
-					];
-					$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
-
-				} else {
-					$attributes = [
-						'href' => 'javascript: void(0);',
-					];
-					$class = 'btn-secondary disabled';
-				}
-				$h .= '<h3>'.s("Exportez votre fichier des écritures comptables").'</h3>';
-
-				if($errors > 0) {
-					$h .= '<p class="util-info">'.s("Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
-				} else {
-					$h .= '<p>'.s("Vous pouvez importer ce fichier dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
-				}
-
-				$h .= '<a '.attrs($attributes).'>'.$form->button(s("Télécharger le fichier"), ['class' => 'btn '.$class]).'</a>';
-
-			$h .= '</div>';
-
-			$h .= '<div class="util-block-optional">';
-
-				$h .= '<h3>'.s("Intégrez vos ventes dans votre comptabilité").'</h3>';
-
-				if($errors > 0) {
-					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
-				} else {
-					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer vos ventes !").'</p>';
-				}
-				$class = 'btn btn-primary';
-				if($errors > 0) {
-					$class .= ' disabled';
-					$url = 'javascript: void(0);';
-				} else {
-					$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer';
-				}
-				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer dans ma comptabilité").'</a>';
-
-			$h .= '</div>';
-		$h .= '</div>';
-
-		return $h;
-	}
 }
 ?>
 

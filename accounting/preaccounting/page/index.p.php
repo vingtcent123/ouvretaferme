@@ -55,28 +55,19 @@ new Page(function($data) {
 
 			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
 			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
-			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
-			$data->nItemVerified = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
+			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
 
 			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
 			$data->nPaymentVerified = \preaccounting\InvoiceLib::countForAccountingCheckVerified($data->eFarm, $data->search);
-
-			// Compteurs pour l'onglet des ventes
-			$data->nPaymentSaleToCheck = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search);
-			$data->nClosedSaleToCheck = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search);
 
 		} else {
 
 			$data->nProductToCheck = 0;
 			$data->nItemToCheck = 0;
 			$data->nProductVerified = 0;
-			$data->nItemVerified = 0;
 
 			$data->nPaymentToCheck = 0;
 			$data->nPaymentVerified = 0;
-
-			$data->nPaymentSaleToCheck = 0;
-			$data->nClosedSaleToCheck = 0;
 
 		}
 
@@ -102,7 +93,6 @@ new Page(function($data) {
 					$data->search->set('plant', GET('plant'));
 					[$data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
 					$data->cItem = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
-
 					break;
 
 				case 'payment':
@@ -114,56 +104,6 @@ new Page(function($data) {
 			}
 
 		}
-		throw new ViewAction($data);
-
-	})
-	->get('/precomptabilite:preparer-ventes', function($data) {
-
-		if($data->isSearchValid) {
-
-			$data->nPaymentToCheck = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search);
-			$data->nPaymentVerified = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search, FALSE);
-
-			$data->nClosedToCheck = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search);
-			$data->nClosedVerified = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search, FALSE);
-
-			// Compteur des factures pour l'autre onglet
-			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search) +
-				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
-			$data->nPaymentInvoiceToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
-
-		} else {
-
-			$data->nProduct = 0;
-			$data->nPaymentInvoiceToCheck = 0;
-
-			$data->nPaymentToCheck = 0;
-			$data->nPaymentVerified = 0;
-
-			$data->nClosedToCheck = 0;
-			$data->nClosedVerified = 0;
-
-		}
-
-		$data->type = GET('type');
-		if($data->nPaymentToCheck === 0 and $data->nClosedToCheck === 0) {
-			$data->type = 'export';
-		} else if(in_array($data->type, ['payment', 'closed', 'export']) === FALSE) {
-			if($data->nPaymentToCheck > 0) {
-				$data->type = 'payment';
-			} else {
-				$data->type = 'closed';
-			}
-		}
-
-		if($data->isSearchValid) {
-
-			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
-			$data->cSale = \preaccounting\SaleLib::getForAccountingCheck($data->type, $data->eFarm, $data->search);
-			$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
-
-		}
-
 		throw new ViewAction($data);
 
 	})
@@ -189,38 +129,22 @@ new Page(function($data) {
 
 		$data->selectedTab = in_array(GET('tab'), ['market', 'invoice', 'sales']) ? GET('tab') : 'market';
 
-		$from = $data->eFinancialYear['startDate'];
-		$to = $data->eFinancialYear['endDate'];
-
 		$data->search = new Search([
 			'from' => $data->eFinancialYear['startDate'],
 			'to' => $data->eFinancialYear['endDate'],
 			'type' => GET('type'),
 		]);
 
-		$data->counts = \preaccounting\PreaccountingLib::countImports($data->eFarm, $from, $to, $data->search);
+		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
 
-		$isTabFilled = count(array_filter($data->counts, fn($val, $key) => ($key === $data->selectedTab and $val > 0), ARRAY_FILTER_USE_BOTH)) > 1;
+		$data->nInvoice = \preaccounting\AccountingLib::countInvoices($data->eFarm, $data->search);
 
-		if($isTabFilled === FALSE and array_sum($data->counts) > 0) {
-			$data->selectedTab = first(array_keys(array_filter($data->counts, fn($val) => $val > 0)));
-		}
-
-		if($data->selectedTab) {
-
-			$data->c = match($data->selectedTab) {
-				'market' => \preaccounting\ImportLib::getMarketSales($data->eFarm, $from, $to),
-				'invoice' => \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search),
-				'sales' => \preaccounting\ImportLib::getSales($data->eFarm, $data->search),
-			};
-		} else {
-			$data->c = new Collection();
-		}
+		$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
 
 		throw new ViewAction($data);
 
 	})
-	->get('/precomptabilite:rapprocher-factures', function($data) {
+	->get('/precomptabilite:rapprocher', function($data) {
 
 		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaitingByInvoice();
 

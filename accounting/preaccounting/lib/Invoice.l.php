@@ -3,6 +3,17 @@ namespace preaccounting;
 
 Class InvoiceLib {
 
+	public static function setReadyForAccounting(\farm\Farm $eFarm): void {
+
+		\selling\Invoice::model()
+			->whereFarm($eFarm)
+			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->whereAccountingHash(NULL)
+			->wherePaymentMethod('!=', NULL)
+			->whereReadyForAccounting(FALSE)
+			->update(['readyForAccounting' => TRUE]);
+
+	}
 
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
 

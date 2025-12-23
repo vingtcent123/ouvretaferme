@@ -433,15 +433,10 @@ Route::register([
 			'priority' => 5,
 			'route' => ['precomptabilite:importer'],
 		],
-		'/precomptabilite:preparer-ventes' => [
+		'/precomptabilite:rapprocher' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,
-			'route' => ['precomptabilite:preparer-ventes'],
-		],
-		'/precomptabilite:rapprocher-factures' => [
-			'request' => 'preaccounting/index',
-			'priority' => 5,
-			'route' => ['precomptabilite:rapprocher-factures'],
+			'route' => ['precomptabilite:rapprocher'],
 		],
 		'/presentation/faq' => [
 			'request' => 'main/index',

@@ -182,9 +182,16 @@ new Page()
 new Page()
 	->get('updateAccount', function($data) {
 
-		$ids = GET('ids', 'array');
+		$names = GET('ids', 'array');
 
-		$data->cItem = \selling\ItemLib::getByIds($ids);
+		$data->cItem = \selling\Item::model()
+			->select('id', 'name', 'account', 'farm')
+			->whereName('IN', $names)
+			->getCollection();
+
+		if($data->cItem->empty()) {
+			throw new NotExpectedAction('Unknown items to update');
+		}
 
 		$data->eFarm = $data->cItem->first()['farm']->validate('canManage');
 

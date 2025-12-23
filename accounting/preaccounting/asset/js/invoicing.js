@@ -24,9 +24,7 @@ class Invoicing {
 
 	static changeSelection(target) {
 
-		const type = target.getAttribute('batch-type');
-
-		return Batch.changeSelection('#batch-' + type, null, function(selection) {
+		return Batch.changeSelection('#batch-invoice', null, function(selection) {
 
 			let ids = '';
 			let idsList = [];

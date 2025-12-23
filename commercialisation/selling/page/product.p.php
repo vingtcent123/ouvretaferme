@@ -238,7 +238,7 @@ new \selling\ProductPage()
 	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], function($data) {
 
 			throw new ReloadAction('selling', 'Product::updatedSeveral');
-	})
+	}, validate: ['acceptUpdateAccount'])
 ;
 
 ?>

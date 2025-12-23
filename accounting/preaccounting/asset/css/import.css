@@ -1,0 +1,60 @@
+
+.import-table {
+	background-color: white;
+}
+.import-table tbody {
+	border-bottom: 1px dotted var(--secondary);
+}
+
+.import-table tbody:hover td {
+	background-color: rgba(0, 0, 0, 0.03) !important;
+}
+.import-table tbody:hover tr:has(td.import-td-operation:hover) td.import-td-operation {
+	background-color: rgba(0, 0, 0, 0.06) !important;
+}
+.import-table tbody:has(input[type="checkbox"]:checked) {
+	background-color: rgba(201, 236, 253, 0.25) !important
+}
+
+.import-table tbody td.import-td-operation {
+	white-space: nowrap;
+}
+.import-table tbody tr:first-child td.import-td-operation {
+	padding-bottom: 0;
+}
+.import-table tbody tr:last-child td.import-td-operation {
+	padding-top: 0;
+}
+.import-table tbody tr:not(:first-child):not(:last-child) td.import-td-operation {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.import-table tbody tr:first-child td {
+	padding-bottom: 0;
+}
+.import-table tbody tr:nth-child(2) td {
+	position: relative;
+}
+.import-table tbody tr:nth-child(2) td span.import-confidence {
+	position: absolute;
+	margin: 0 auto;
+	top: 0;
+	left: calc(50% - (1em + 1px) / 2);
+}
+.import-table tbody tr:nth-child(2) td span:not(.import-confidence) {
+	position: absolute;
+	top: 1rem;
+}
+.import-table tbody tr:last-child td {
+	padding-top: 0;
+}
+
+.import-badge-container {
+	display: flex;
+	gap: 0.5rem;
+}
+.import-badge {
+  line-height: 1;
+  align-self: start;
+  margin-top: 0.1rem;
+}

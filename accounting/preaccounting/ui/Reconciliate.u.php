@@ -8,7 +8,7 @@ Class ReconciliateUi {
 		\Asset::js('preaccounting', 'reconciliate.js');
 	}
 
-	public function tableByCashflow(\farm\Farm $eFarm, \Collection $ccSuggestion, \Collection $cMethod): string {
+	public function list(\farm\Farm $eFarm, \Collection $ccSuggestion, \Collection $cMethod): string {
 
 		$h = '';
 		$form = new \util\FormUi();

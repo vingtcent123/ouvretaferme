@@ -27,7 +27,7 @@ Class ProductLib {
 		return \selling\Product::model()
 			->join(\selling\Item::model(), 'm1.id = m2.product', 'LEFT')
 			->where('m1.farm = '.$eFarm['id'])
-			->where('m2.product IS NOT NULL')
+			->where('m2.product IS NOT NULL AND m2.account IS NULL')
 			->where('m1.status != '.\selling\Product::model()->format(\selling\Product::DELETED))
 			->where('m2.deliveredAt BETWEEN '.\selling\Item::model()->format($search->get('from')).' AND '.\selling\Item::model()->format($search->get('to')));
 
@@ -70,6 +70,7 @@ Class ProductLib {
 				$tab = \session\SessionLib::get('preAccountingProductTab');
 			} catch(\Exception) {
 				$tab = \selling\CategoryLib::getById(first(array_keys($productsByCategory)));
+				\session\SessionLib::set('preAccountingProductTab', $tab);
 			}
 
 		}

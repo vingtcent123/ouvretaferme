@@ -17,16 +17,7 @@ Class AccountingLib {
 		$search = new \Search(['from' => $from, 'to' => $to]);
 		$cAccount = \account\AccountLib::getAll();
 
-		// Par caisse
-		$saleMarketFec = self::extractMarket($eFarm, $from, $to, $cFinancialYear, $cAccount, forImport: $forImport);
-
-		// Par factures
-		$invoiceFec = self::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: $forImport);
-
-		// Tout le reste des ventes (ni caisse, ni factures)
-		$salesFec = self::extractSales($eFarm, $search, $cFinancialYear, $cAccount, forImport: $forImport);
-
-		$contentFec = array_merge($saleMarketFec, $invoiceFec, $salesFec);
+		$contentFec = self::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: $forImport);
 
 		// Tri par date puis numéro de document
 		usort($contentFec, function($entry1, $entry2) {
