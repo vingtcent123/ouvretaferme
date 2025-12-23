@@ -8,15 +8,33 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$t->nav = 'preaccounting';
 
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, 'prepare', [
-		'prepare' => $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck, 'prepare-sales' => $data->nPaymentSaleToCheck + $data->nClosedSaleToCheck]);
+	$toCheck = $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck;
+
+	$title = '<div class="util-action">';
+
+		$title .= '<h1>';
+
+			$title .= s("Préparer les données des factures");
+			if($toCheck > 0) {
+				$title .= ' <small>('.$toCheck.')</small>';
+			}
+
+		$title .= '</h1>';
+
+		$title .= '<div>';
+			$title .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
+		$title .= '</div>';
+
+	$title .= '</div>';
+
+	$t->mainTitle = $title;
 
 	echo '<div class="util-block">';
 		echo '<h3>'.s("Choix de la période").'</h3>';
 		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search);
 	echo '</div>';
 
-	if(($data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck + $data->nProductVerified + $data->nItemVerified + $data->nPaymentVerified) === 0) {
+	if(($toCheck + $data->nProductVerified + $data->nItemVerified + $data->nPaymentVerified) === 0) {
 
 		echo '<div class="util-block-important">';
 			echo s("Il n'a aucune facture à afficher. Avez-vous choisi la bonne période ?");
@@ -133,9 +151,16 @@ new AdaptativeView('/precomptabilite:preparer-ventes', function($data, FarmTempl
 
 	$t->nav = 'preaccounting';
 
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, 'prepare-sales', [
-		'prepare' => $data->nPaymentInvoiceToCheck + $data->nProduct, 'prepare-sales' => $data->nPaymentToCheck + $data->nClosedToCheck
-	]);
+	$title = '<div class="util-action">';
+		$title .= '<h1>';
+			$title .= s("Préparer les données des factures");
+			if($data->nPaymentInvoiceToCheck + $data->nProduct > 0) {
+				$title .= ' <small>('.$data->nPaymentInvoiceToCheck + $data->nProduct.')</small>';
+			}
+		$title .= '</h1>';
+	$title .= '</div>';
+
+	$t->mainTitle = $title;
 
 	echo '<div class="util-block">';
 		echo '<h3>'.s("Choix de la période").'</h3>';
