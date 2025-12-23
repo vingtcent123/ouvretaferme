@@ -237,8 +237,6 @@ new \selling\ProductPage()
 	})
 	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], function($data) {
 
-			\preaccounting\SaleLib::setReadyForAccountingByProducts($data->c);
-
 			throw new ReloadAction('selling', 'Product::updatedSeveral');
 	})
 ;

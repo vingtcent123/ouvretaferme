@@ -1869,9 +1869,9 @@ class FarmUi {
 
 	}
 
-	public function getPreAccountingInvoiceTitle(Farm $eFarm, \account\FinancialYear $eFinancialYear, string $selectedView, array $numbers): string {
+	public function getPreAccountingInvoiceTitle(Farm $eFarm, string $selectedView, array $numbers): string {
 
-		$categories = $this->getPreAccountingInvoicesCategories($eFarm, $eFinancialYear);
+		$categories = $this->getPreAccountingInvoicesCategories($eFarm);
 		$number = ($numbers[$selectedView] ?? NULL);
 
 		$title = $categories[$selectedView]['label'];
@@ -1904,11 +1904,12 @@ class FarmUi {
 		return $h;
 
 	}
-	protected static function getPreAccountingInvoicesCategories(Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
+	protected static function getPreAccountingInvoicesCategories(Farm $eFarm): array {
 
 		return [
-			'prepare' => ['url' => '/precomptabilite', 'label' => s("Préparer les données de vente")],
-			] +
+			'prepare' => ['url' => '/precomptabilite', 'label' => s("Préparer les données de factures")],
+			'prepare-sales' => ['url' => '/precomptabilite:preparer-ventes', 'label' => s("Préparer les données de vente")],
+		] +
 			(($eFarm->usesAccounting() and FEATURE_RECONCILIATE_OPERATIONS) ? [
 				'reconciliate-operations' => ['url' => '/precomptabilite:rapprocher-ecritures', 'label' => s("Rapprocher les écritures")],] : []);
 	}

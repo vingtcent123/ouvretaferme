@@ -61,6 +61,9 @@ new Page(function($data) {
 			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
 			$data->nPaymentVerified = \preaccounting\InvoiceLib::countForAccountingCheckVerified($data->eFarm, $data->search);
 
+			$data->nPaymentSaleToCheck = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search);
+			$data->nClosedSaleToCheck = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search);
+
 		} else {
 
 			$data->nProduct = 0;
@@ -68,6 +71,9 @@ new Page(function($data) {
 
 			$data->nPaymentToCheck = 0;
 			$data->nPaymentVerified = 0;
+
+			$data->nPaymentSaleToCheck = 0;
+			$data->nClosedSaleToCheck = 0;
 
 		}
 
@@ -99,6 +105,49 @@ new Page(function($data) {
 			}
 
 		}
+		throw new ViewAction($data);
+
+	})
+	->get('/precomptabilite:preparer-ventes', function($data) {
+
+		if($data->isSearchValid) {
+
+			$data->nProduct = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search) +
+				\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nPaymentInvoiceToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
+
+			$data->nPaymentToCheck = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search);
+			$data->nPaymentVerified = \preaccounting\SaleLib::countForAccountingCheck('payment', $data->eFarm, $data->search, FALSE);
+
+			$data->nClosedToCheck = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search);
+			$data->nClosedVerified = \preaccounting\SaleLib::countForAccountingCheck('closed', $data->eFarm, $data->search, FALSE);
+
+		} else {
+
+			$data->nProduct = 0;
+			$data->nPaymentInvoiceToCheck = 0;
+
+			$data->nPaymentToCheck = 0;
+			$data->nPaymentVerified = 0;
+
+			$data->nClosedToCheck = 0;
+			$data->nClosedVerified = 0;
+
+		}
+
+		$data->type = GET('type');
+		if(in_array($data->type, ['payment', 'closed', 'export']) === FALSE) {
+			$data->type = 'payment';
+		}
+
+		if($data->isSearchValid) {
+
+			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
+			$data->cSale = \preaccounting\SaleLib::getForAccountingCheck($data->type, $data->eFarm, $data->search);
+			$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+
+		}
+
 		throw new ViewAction($data);
 
 	})

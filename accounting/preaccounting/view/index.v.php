@@ -3,12 +3,13 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	Asset::js('preaccounting', 'preaccounting.js');
 
-	$t->title = s("Précomptabilité de {value}", $data->eFarm['name']);
+	$t->title = s("Précomptabilité des factures de {value}", $data->eFarm['name']);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite';
 
 	$t->nav = 'preaccounting';
 
-	$t->mainTitle = '<h1>'.s("Préparer les données de vente").'</h1>';
+	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, 'prepare', [
+		'prepare' => $data->nProduct + $data->nPaymentToCheck, 'prepare-sales' => $data->nPaymentSaleToCheck + $data->nClosedSaleToCheck]);
 
 	echo '<div class="util-block">';
 		echo '<h3>'.s("Choix de la période").'</h3>';
@@ -18,7 +19,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	if($data->nProduct === 0 and $data->nPaymentToCheck === 0 and $data->nProductVerified === 0 and $data->nPaymentVerified === 0) {
 
 		echo '<div class="util-block-important">';
-			echo s("Il n'a aucune vente à afficher. Avez-vous choisi la bonne période ?");
+			echo s("Il n'a aucune facture à afficher. Avez-vous choisi la bonne période ?");
 		echo '</div>';
 		return;
 	}
@@ -42,21 +43,13 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			'title' => s("Moyens de paiement"),
 			'description' => s("Renseignez le moyen de paiement des factures"),
 		],
-		/*[
-			'position' => 3,
-			'number' => $data->nSaleClosed,
-			'numberVerified' => $data->nSaleClosedVerified,
-			'type' => 'closed',
-			'title' => s("Clôture"),
-			'description' => s("Clôturez vos factures"),
-		],*/
 	];
 
 	echo '<div class="step-process">';
 
 		foreach($steps as $step) {
 
-	    echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type='.$step['type'].'">';
+	    echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.$t->canonical.'?type='.$step['type'].'">';
 
 	      echo '<div class="step-header">';
 
@@ -87,7 +80,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite?type=export">';
+		echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === 'export' ? 'selected' : '').'" href="'.$t->canonical.'?type=export">';
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
@@ -124,6 +117,123 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 			case 'export':
 				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProduct,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
+				break;
+		}
+
+	echo '</div>';
+
+
+});
+
+new AdaptativeView('/precomptabilite:preparer-ventes', function($data, FarmTemplate $t) {
+
+	Asset::js('preaccounting', 'preaccounting.js');
+
+	$t->title = s("Précomptabilité des ventes de {value}", $data->eFarm['name']);
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:preparer-ventes';
+
+	$t->nav = 'preaccounting';
+
+	$t->mainTitle = new \farm\FarmUi()->getPreAccountingInvoiceTitle($data->eFarm, 'prepare-sales', [
+		'prepare' => $data->nPaymentInvoiceToCheck + $data->nProduct, 'prepare-sales' => $data->nPaymentToCheck + $data->nClosedToCheck
+	]);
+
+	echo '<div class="util-block">';
+		echo '<h3>'.s("Choix de la période").'</h3>';
+		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search);
+	echo '</div>';
+
+	if($data->nPaymentToCheck === 0 and $data->nPaymentVerified === 0 and $data->nPaymentToCheck === 0 and $data->nClosedToCheck === 0) {
+
+		echo '<div class="util-block-important">';
+			echo s("Il n'a aucune vente à afficher. Avez-vous choisi la bonne période ?");
+		echo '</div>';
+		return;
+	}
+
+	Asset::css('preaccounting', 'step.css');
+
+	$steps = [
+		[
+			'position' => 1,
+			'number' => $data->nPaymentToCheck,
+			'numberVerified' => $data->nPaymentVerified,
+			'type' => 'payment',
+			'title' => s("Moyens de paiement"),
+			'description' => s("Renseignez le moyen de paiement des ventes"),
+		],
+		[
+			'position' => 2,
+			'number' => $data->nClosedToCheck,
+			'numberVerified' => $data->nClosedVerified,
+			'type' => 'closed',
+			'title' => s("Clôture"),
+			'description' => s("Clôturez vos ventes"),
+		],
+	];
+
+	echo '<div class="step-process">';
+
+		foreach($steps as $step) {
+
+	    echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.$t->canonical.'?type='.$step['type'].'">';
+
+	      echo '<div class="step-header">';
+
+					echo '<span class="step-number">'.($step['position']).'</span>';
+
+					echo '<div class="step-main">';
+
+		        echo '<div class="step-title">'.$step['title'].'</div>';
+
+						echo '<div class="step-value">';
+
+							if($step['number'] > 0) {
+								echo $step['number'] > 0 ? '<span class="bg-warning tab-item-count ml-0" title="'.s("À contrôler").'">'.Asset::icon('exclamation-triangle').' '.$step['number'].'</span> ' : '';
+								echo $step['numberVerified'] > 0 ? '<span class="bg-success tab-item-count ml-0" title="'.s("Vérifiés").'">'.Asset::icon('check').' '.$step['numberVerified'].'</span>' : '';
+							}
+
+	          echo '</div>';
+
+	        echo '</div>';
+
+	      echo '</div>';
+
+		    echo '<p class="step-desc hide-sm-down">';
+		      echo $step['description'];
+		    echo '</p>';
+
+		  echo '</a>';
+
+		}
+
+		echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === 'export' ? 'selected' : '').'" href="'.$t->canonical.'?type=export">';
+			echo '<div class="step-header">';
+				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
+				echo '<div class="step-main">';
+					echo '<div class="step-title">'.s("Export").' <span class="util-badge bg-primary">FEC</span></div>';
+					echo '<div class="step-value"></div>';
+				echo '</div>';
+			echo '</div>';
+			echo '<p class="step-desc">';
+				echo s("Intégrez vos ventes en comptabilité");
+			echo '</p>';
+		echo '</a>';
+
+	echo '</div>';
+
+
+	echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
+
+		switch($data->type) {
+
+			case 'payment':
+			case 'closed':
+				echo new \preaccounting\PreaccountingUi()->sales($data->type, $data->eFarm, $data->cSale, $data->cPaymentMethod, $data->search);
+				break;
+
+			case 'export':
+				echo new \preaccounting\PreaccountingUi()->exportSales($data->eFarm, $data->nProduct,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
 				break;
 		}
 
