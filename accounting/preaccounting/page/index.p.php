@@ -34,7 +34,7 @@ new Page(function($data) {
 	}
 
 	$data->isSearchValid = (
-		$data->search->get('from') and $data->search->get('to') and
+		mb_strlen($data->search->get('from')) === 10 and mb_strlen($data->search->get('to')) === 10 and
 		\util\DateLib::isValid($data->search->get('from')) and
 		\util\DateLib::isValid($data->search->get('to'))
 	);
