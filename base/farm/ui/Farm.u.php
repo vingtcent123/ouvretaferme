@@ -904,10 +904,10 @@ class FarmUi {
 				'icon' => \Asset::icon('file-spreadsheet'),
 				'label' => s("Précomptabilité")
 			],
-			'invoicing' => [
-				'icon' => \Asset::icon('currency-euro'),
-				'label' => s("Facturation")
-			],
+			/*'invoicing' => [
+				'icon' => \Asset::icon('receipt'),
+				'label' => s("Facturation électronique")
+			],*/
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
 				'label' => s("Exercice")
@@ -1248,13 +1248,13 @@ class FarmUi {
 				$h .= $this->getNav('preaccounting', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/precomptabilite');
 
 			$h .= '</div>';
-
+/*
 			$h .= '<div class="farm-tab-wrapper farm-nav-invoicing">';
 
 				$h .= $this->getNav('invoicing', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/facturation-electronique');
 
 			$h .= '</div>';
-
+*/
 			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting">';
 
 				$h .= '<div class="farm-nav-accounting-selector">';

@@ -177,13 +177,6 @@ tr.account_not-visible {
 	gap: 0.5rem;
 }
 
-.company-accounting-choose-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-gap: 2rem;
-	align-items: end;
-	margin: 1rem 0 2rem;
-}
 
 .company-accounting-choose-option.selected,
 .company-accounting-choose-option:hover {

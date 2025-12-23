@@ -67,8 +67,8 @@ class PageLib {
 		$data->logInExternal = \user\ConnectionLib::checkLoginExternal();
 
 		if(
-			REQUEST('app') === 'accounting'
-			and mb_substr(SERVER('REQUEST_URI'), 0, strlen('/comptabilite/')) !== '/comptabilite/'
+			REQUEST('app') === 'accounting' and
+			str_starts_with(SERVER('REQUEST_URI'), '/comptabilite/') === FALSE
 		) {
 
 			$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
@@ -80,19 +80,13 @@ class PageLib {
 			$canAccounting = ($data->eFarm->notEmpty() and in_array($data->eFarm['id'], \company\CompanySetting::$accountingBetaTestFarms));
 			$hasAccounting = ($canAccounting and	$data->eFarm->hasAccounting());
 
-			if(
-				$data->pageType !== 'remote' and $canAccounting === FALSE
-			) {
-				// Pas adhérent
-				throw new \RedirectAction('/comptabilite/inactive?farm='.$data->eFarm['id']);
-			}
 
 			if($hasAccounting) {
 
 				\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
 
 			// Pas paramétré
-			} else if(mb_strpos(SERVER('REQUEST_URI'), '/comptabilite/decouvrir') === FALSE) {
+			} else if(str_starts_with(SERVER('REQUEST_URI'), '/comptabilite/decouvrir') === FALSE) {
 
 				throw new \RedirectAction('/comptabilite/decouvrir?farm='.$data->eFarm['id']);
 

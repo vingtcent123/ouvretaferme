@@ -35,20 +35,4 @@ class CompanyConfiguration {
 
 	}
 
-	static toggleBetaForm() {
-
-		if(qs('#beta-form-container').classList.contains('hide')) {
-
-			qs('#beta-form-container').removeHide();
-			qs('.company-accounting-choose-option[data-option="yes"]').classList.add('selected');
-
-		} else {
-
-			qs('.company-accounting-choose-option[data-option="yes"]').classList.remove('selected');
-			qs('#beta-form-container').hide()
-
-		}
-
-	}
-
 }

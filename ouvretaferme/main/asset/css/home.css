@@ -197,6 +197,19 @@ body[data-template^="home-"] header h4 {
 	margin-bottom: 0rem;
 }
 
+.home-point-fill {
+	grid-column: span 4;
+}
+
+@media (max-width: 767px) {
+
+	.home-point-fill {
+		grid-column: span 2;
+	}
+
+
+}
+
 div.home-user-types {
 	display: flex;
 	justify-content: center;

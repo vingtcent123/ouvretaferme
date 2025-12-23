@@ -9,9 +9,6 @@ new Page(function($data) {
 	}
 
 })
-	->get('/comptabilite/inactive', function($data) {
-		throw new ViewAction($data);
-	})
 	->get('/comptabilite/decouvrir', function ($data) {
 
 		$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
