@@ -13,7 +13,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<h2>'.s("Utiliser Ouvretaferme pour préparer (puis tenir) sa comptabilité").'</h2>';
 	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer les données de vos factures sans être obligé·e·s d'utiliser le module de comptabilité. Cela signifie que : ").'</p>';
 	echo '<ul>';
-		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, comptes de clients, comptes de produits de vos ventes)").'</li>';
+		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, comptes de clients, numéros de comptes des produits de vos ventes)").'</li>';
 		echo '<li>'.s("Vous indiquez pour chaque produit à quel compte le rattacher").'</li>';
 		echo '<li>'.s("Vous indiquez le moyen de paiement").'</li>';
 	echo '</ul>';
@@ -323,7 +323,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 		echo '</ul>';
 		echo '<p>'.s("En les intégrant dans votre comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("Classe {productAccount} pour tous vos comptes de produits (autant d'écritures que de comptes différents)", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
+			echo '<li>'.s("Classe {productAccount} pour tous vos numéros de comptes de produits (autant d'écritures que de comptes différents)", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
 			echo '<li>'.s("Classe {vatAccount} pour la TVA (autant d'écritures que de numéros de comptes et taux de TVA différents). <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
 
 			if(FEATURE_ACCOUNTING_ACCRUAL) {

@@ -1899,6 +1899,10 @@ class FarmUi {
 				}
 			$h .= '</h1>';
 
+			$h .= '<div>';
+				$h .= '<a href="/doc/accounting" class="btn btn-md btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
+			$h .= '</div>';
+
 		$h .= '</div>';
 
 		return $h;
