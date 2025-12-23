@@ -85,6 +85,7 @@ class CashflowLib extends CashflowCrud {
 
 		return [
 			$cCashflow,
+			$nCashflow,
 			$nPage,
 		];
 	}
