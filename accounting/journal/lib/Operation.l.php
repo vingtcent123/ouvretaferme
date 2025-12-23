@@ -558,7 +558,17 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		$cOperationOriginByIds = self::getByIds($input['id']);
+		if($for === 'update') {
+			if(isset($input['id']) === FALSE) {
+				throw new \NotExpectedAction('no ids for the update');
+			}
+			$cOperationOriginByIds = self::getByIds($input['id']);
+			if ($cOperationOriginByIds->empty()) {
+				throw new \NotExpectedAction('no ids for the update');
+			}
+		} else {
+			$cOperationOriginByIds = new \Collection();
+		}
 
 		if($for === 'update' and ($input['hash'] ?? NULL) !== NULL) {
 
