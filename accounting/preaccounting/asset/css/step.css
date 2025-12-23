@@ -9,10 +9,10 @@ a.step {
 }
 a.step:hover {
 	text-decoration: none;
-	background-color: rgba(0, 0, 0, 0.1);
+	background-color: rgba(0, 0, 0, 0.15);
 }
 .step.selected {
-	background-color: rgba(0, 0, 0, 0.1);
+	background-color: rgba(0, 0, 0, 0.15);
 }
 .step.success,
 .step.success:hover {
