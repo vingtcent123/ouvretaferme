@@ -44,6 +44,7 @@ new Page(function($data) {
 			'periodEnd' => GET('periodEnd'),
 			'isReconciliated' => GET('isReconciliated', '?bool'),
 			'bankAccount' => \bank\BankAccountLib::getById(GET('bankAccount')),
+			'id' => GET('id'),
 			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
 		], GET('sort', default: 'date-'));
 

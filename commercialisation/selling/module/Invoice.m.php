@@ -87,6 +87,7 @@ class InvoiceModel extends \ModuleModel {
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
@@ -94,7 +95,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -103,6 +104,7 @@ class InvoiceModel extends \ModuleModel {
 			'farm' => 'farm\Farm',
 			'paymentMethod' => 'payment\Method',
 			'closedBy' => 'user\User',
+			'cashflow' => 'bank\Cashflow',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -306,6 +308,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereClosedBy(...$data): InvoiceModel {
 		return $this->where('closedBy', ...$data);
+	}
+
+	public function whereCashflow(...$data): InvoiceModel {
+		return $this->where('cashflow', ...$data);
 	}
 
 	public function whereAccountingHash(...$data): InvoiceModel {

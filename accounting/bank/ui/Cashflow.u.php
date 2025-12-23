@@ -108,7 +108,7 @@ class CashflowUi {
 
 	}
 
-	public function getCashflow(
+	public function list(
 		\farm\Farm $eFarm,
 		\Collection $cCashflow,
 		\account\FinancialYear $eFinancialYear,
@@ -133,7 +133,6 @@ class CashflowUi {
 			'</div>';
 		}
 
-		$highlightedCashflowId = GET('id', 'int');
 		$showMonthHighlight = str_starts_with($search->getSort(), 'date');
 		$showReconciliate = $cCashflow->find(fn($e) => $e['isReconciliated'])->count() > 0;
 		$showAccount = count(array_unique($cCashflow->getColumnCollection('import')->getColumnCollection('account')->getColumn('label'))) > 1;
@@ -153,7 +152,7 @@ class CashflowUi {
 			$h .= '</div>';
 		}
 
-		$h .= '<div id="cashflow-list" class="stick-md util-overflow-md" '.($highlightedCashflowId !== NULL ? ' onrender="CashflowList.scrollTo('.$highlightedCashflowId.');"' : '').' data-render-timeout="1">';
+		$h .= '<div id="cashflow-list" class="stick-md util-overflow-md">';
 
 			$h .= '<table class="tr-even tr-hover td-padding-sm">';
 
@@ -206,9 +205,6 @@ class CashflowUi {
 					}
 
 					$class = [];
-					if($highlightedCashflowId === $eCashflow['id']) {
-						$class[] = 'row-highlight';
-					}
 					if($eCashflow['status'] === CashflowElement::DELETED) {
 						$class[] = 'cashflow-strikethrough';
 					}

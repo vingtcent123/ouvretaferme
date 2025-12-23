@@ -129,6 +129,7 @@ Invoice:
   closed: bool = FALSE
   closedAt: ?datetime
   closedBy: ?user\User
+  cashflow: ?bank\Cashflow
   accountingHash: ?textFixed(20, 20) @charset(ascii)
   readyForAccounting: ?bool = FALSE
   emailedAt: ?datetime
