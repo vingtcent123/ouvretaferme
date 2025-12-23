@@ -3,6 +3,7 @@ namespace game;
 
 class GameSetting extends \Settings {
 
+	const END = '2025-12-24';
 	const PROMOTION_LIMIT = '2025-12-04';
 
 	const BOARDS = 4;

@@ -113,7 +113,11 @@ class DeskUi {
 					$h .= '<div class="game-dashboard-value">';
 						$h .= '<div class="game-dashboard-item">'.\Asset::icon('clock').'  '.\game\PlayerUi::getTime($ePlayer->getRemainingTime()).'</div>';
 						if($ePlayer['time'] !== 0.0) {
-							$h .= '<div class="game-dashboard-more">'.s("retour à {time} à minuit", ['time' => \game\PlayerUi::getTime($ePlayer->getDailyTime())]).'</div>';
+							if(currentDate() === GameSetting::END) {
+								$h .= '<div class="game-dashboard-more">'.s("dernier jour !").'</div>';
+							} else {
+								$h .= '<div class="game-dashboard-more">'.s("retour à {time} à minuit", ['time' => \game\PlayerUi::getTime($ePlayer->getDailyTime())]).'</div>';
+							}
 						}
 					$h .= '</div>';
 					if(
