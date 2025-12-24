@@ -20,17 +20,6 @@ new Page(function($data) {
 			$data->cFinancialYear = new Collection();
 		}
 
-		if(GET('periodStart')) {
-			$periodStart = GET('periodStart').'-01';
-		} else {
-			$periodStart = '';
-		}
-
-		if(GET('periodEnd') and \util\DateLib::isValid(GET('periodEnd').'-01')) {
-			$periodEnd = date('Y-m-d', strtotime(GET('periodEnd').'-01 + 1 month - 1 day'));
-		} else {
-			$periodEnd = '';
-		}
 		$search = new Search([
 			'date' => GET('date'),
 			'fitid' => GET('fitid'),
@@ -38,8 +27,8 @@ new Page(function($data) {
 			'status' => \bank\Cashflow::GET('status', 'status'),
 			'amount' => GET('amount'),
 			'margin' => GET('margin'),
-			'from' => $periodStart,
-			'to' => $periodEnd,
+			'from' => GET('periodStart'),
+			'to' => GET('periodEnd'),
 			'periodStart' => GET('periodStart'),
 			'periodEnd' => GET('periodEnd'),
 			'isReconciliated' => GET('isReconciliated', '?bool'),
