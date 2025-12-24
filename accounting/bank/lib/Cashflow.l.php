@@ -20,7 +20,8 @@ class CashflowLib extends CashflowCrud {
 		}
 
 		return Cashflow::model()
-			->whereId('=', $search->get('id'), if: $search->has('id'))
+			->whereId('=', $search->get('id'), if: $search->get('id'))
+			->highlight()
 			->whereImport('=', $search->get('import'), if: $search->has('import'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->whereDate('>=', $search->get('from').'%', if: $search->get('from'))
