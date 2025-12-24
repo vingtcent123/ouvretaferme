@@ -305,7 +305,7 @@ class FarmTemplate extends MainTemplate {
 						in_array($this->data->eFarm['id'], \farm\Survey::getFarms()) and
 						\farm\SurveyLib::existsByFarm($this->data->eFarm) === FALSE
 					) {
-
+/*
 						$farm .= '<div class="nav-title-member">';
 
 							$farm .= '<a href="/farm/farm:survey?farm='.$this->data->eFarm['id'].'" class="nav-title-member-link">';
@@ -313,7 +313,7 @@ class FarmTemplate extends MainTemplate {
 							$farm .= '</a>';
 
 						$farm .= '</div>';
-
+*/
 					}
 
 				$farm .= '</div>';
