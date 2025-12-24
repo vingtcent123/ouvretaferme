@@ -185,6 +185,31 @@ Supplier:
   farm: farm\Farm
   createdAt: date = SPECIAL(now)
 
+Survey:
+  id: serial32
+  farm: farm\Farm
+  createdAt: date = SPECIAL(now)
+  number: int(1, NULL)
+  why: ?text16
+  feedback: ?text16
+  productionFeature: ?text16
+  productionResearch: ?bool
+  sellingFeature: ?text16
+  accounting: enum(CERFRANCE, AFOCG, AUTONOME, OTHER, NONE)
+  accountingType: enum(REEL, MICROBA, OTHER)
+  accountingAutonomy: bool
+  accountingOtf: bool
+  accountingInfo: ?text16
+  coopTroc: ?bool
+  coopMercuriale: ?bool
+  coopItk: ?bool
+  coopOther: ?text16
+  coopCommandes: ?bool
+  other: ?text16
+  UNIQUE: [
+    ["farm"]
+  ]
+
 Tip:
   id: serial32
   user: user\User

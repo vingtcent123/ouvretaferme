@@ -179,4 +179,30 @@ new AdaptativeView('export', function($data, PanelTemplate $t) {
 	return new \farm\FarmUi()->export($data->e, $data->year);
 
 });
+
+new AdaptativeView('survey', function($data, FarmTemplate $t) {
+
+	$t->title = s("Enquête auprès des fermes adhérentes");
+
+	$t->nav = 'selling';
+	$t->subNav = '';
+
+	$t->mainTitle = '<h1>'.$t->title.'</h1>';
+
+	if($data->hasSurvey) {
+		echo '<div class="util-block">';
+			echo '<h3>'.s("Merci pour votre participation !").'</h3>';
+			echo '<p>'.s("Nous analyserons les réponses dans les semaines à venir.").'</p>';
+		echo '</div>';
+	} else {
+		echo '<div class="util-block mb-2">';
+			echo '<h3>'.s("Nous menons une enquête auprès de toutes les fermes qui ont adhéré à l'association Ouvretaferme avant le 24 décembre 2025.").'</h3>';
+			echo '<p>'.s("Vous faites partie des 105 fermes qui ont adhéré à l'association pour soutenir notre travail.<br/>Nous vous sollicitons afin de nous aider à mieux choisir nos priorités de travail pour 2026.").'</p>';
+			echo '<p>'.s("Si vous souhaitez répondre à cette enquête, vous pouvez remplir le formulaire ci-dessous. La plupart des questions sont facultatives.").'</p>';
+		echo '</div>';
+		echo new \farm\SurveyUi()->create($data->e);
+	}
+
+
+});
 ?>

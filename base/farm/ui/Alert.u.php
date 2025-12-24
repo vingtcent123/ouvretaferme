@@ -55,6 +55,8 @@ class AlertUi {
 
 			'Accounting::invalidDatesForFec' => s("Vérifiez la période sélectionnée"),
 
+			'Survey::farm.duplicate' => s("Vous avez déjà répondu pour cette ferme"),
+
 			default => null
 
 		};

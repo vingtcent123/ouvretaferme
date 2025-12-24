@@ -120,4 +120,32 @@ new \farm\FarmPage()
 		throw new \ViewAction($data);
 
 	}, validate: ['canPersonalData']);
+
+new \farm\SurveyPage()
+	->getCreateElement(function($data) {
+
+		$eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
+
+		if(in_array($eFarm['id'], \farm\Survey::getFarms()) === FALSE) {
+			throw new NotExpectedAction();
+		}
+
+		return new \farm\Survey([
+			'farm' => $eFarm,
+		]);
+
+	})
+	->create(function($data) {
+
+		$data->eFarm = $data->e['farm'];
+		$data->hasSurvey = \farm\SurveyLib::existsByFarm($data->eFarm);
+
+		throw new \ViewAction($data);
+
+	}, page: 'survey')
+	->doCreate(function($data) {
+
+		throw new RedirectAction('/farm/farm:survey?farm='.$data->e['farm']['id']);
+
+	}, page: 'doSurvey');
 ?>

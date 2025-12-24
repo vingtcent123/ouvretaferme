@@ -158,6 +158,9 @@
 .bg-production {
 	background-color: var(--production) !important;
 }
+.bg-commercialisation {
+	background-color: var(--commercialisation) !important;
+}
 .bg-accounting {
 	background-color: var(--accounting) !important;
 }

@@ -301,6 +301,19 @@ class FarmTemplate extends MainTemplate {
 
 						$farm .= '</div>';
 
+					} else if(
+						in_array($this->data->eFarm['id'], \farm\Survey::getFarms()) and
+						\farm\SurveyLib::existsByFarm($this->data->eFarm) === FALSE
+					) {
+
+						$farm .= '<div class="nav-title-member">';
+
+							$farm .= '<a href="/farm/farm:survey?farm='.$this->data->eFarm['id'].'" class="nav-title-member-link">';
+								$farm .= s("Participer à l'enquête {value}", Asset::image('main', 'favicon.png', ['class' => 'hide-lateral-up']).'<span class="hide-lateral-down nav-title-member-name">'.Lime::getName().'</span>');
+							$farm .= '</a>';
+
+						$farm .= '</div>';
+
 					}
 
 				$farm .= '</div>';
