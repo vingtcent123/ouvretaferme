@@ -76,6 +76,25 @@ class HelpUi {
 
 	}
 
+	public function getEnd(int $points): string {
+
+		$h = '<div class="game-intro">';
+			$h .= '<h3>'.s("Vous avez collectivement préparé de quoi nourrir {value} rennes.", $points).'</h3>';
+			$h .= '<div class="util-block">';
+				$h .= '<p>'.s(" Avec 247 millions de cadeaux 🎁 à distribuer, cela fait donc {value} cadeaux à tirer par chaque renne. Tout devrait bien se passer cette fois ci, il n'y a plus qu'à espérer que le traineau du père Noël soit suffisamment grand !", round(247000000 / $points)).'</p>';
+				$h .= '<p class="text-center">'.s("<b>L'année prochaine et pour éviter de vous solliciter à nouveau, le Père Noël s'est engagé à utiliser ses crédits Vivea pour se former à la logistique et mieux gérer son pic d'activité saisonnier.</b>").'</p>';
+			$h .= '</div>';
+			$h .= '<div class="game-intro-disclaimer">';
+				$h .= '<h4>'.s("Mince ! ").'</h4>';
+				$h .= '<p>'.s("La formation <u>Apprendre à gérer la logistique de son entreprise dans le cadre d'une activité de distribution de 🎁 en circuits courts</u> est prévue le 31 septembre 2026. On nous informe déjà que Vivea aura épuisé tous ses fonds à cette date...").'</p>';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getRules(Player $ePlayer, bool $new = FALSE): string {
 
 		$h = '<div class="game-intro">';

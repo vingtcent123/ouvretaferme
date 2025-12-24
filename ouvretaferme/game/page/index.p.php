@@ -16,47 +16,61 @@ new Page(function($data) {
 	})
 	->get('/jouer', function($data) {
 
-		if($data->ePlayer->empty()) {
-			throw new ViewAction($data, ':start');
-		}
+		if(\game\GameSetting::isPlaying()) {
 
-		if(get_exists('board')) {
-
-			$data->board = GET('board', 'int');
-
-			if($data->board < 1 or $data->board > $data->ePlayer->getBoards()) {
-				$data->board = 1;
+			if($data->ePlayer->empty()) {
+				throw new ViewAction($data, ':start');
 			}
 
-			\session\SessionLib::set('gameBoard', $data->board);
+			if(get_exists('board')) {
 
-		} else {
-			try {
-				$data->board = \session\SessionLib::get('gameBoard');
-			} catch(Exception) {
-				$data->board = 1;
+				$data->board = GET('board', 'int');
+
+				if($data->board < 1 or $data->board > $data->ePlayer->getBoards()) {
+					$data->board = 1;
+				}
+
+				\session\SessionLib::set('gameBoard', $data->board);
+
+			} else {
+				try {
+					$data->board = \session\SessionLib::get('gameBoard');
+				} catch(Exception) {
+					$data->board = 1;
+				}
 			}
+
+			$data->cTile = \game\TileLib::getByBoard($data->ePlayer, $data->board);
+			$data->cGrowing = \game\GrowingLib::getAll();
+
+			if($data->ePlayer->isOnline()) {
+
+				$data->cFood = \game\FoodLib::getByPlayer($data->ePlayer);
+				$data->cHistory = \game\HistoryLib::getByPlayer($data->ePlayer);
+				$data->cPlayerFriend = \game\FriendLib::getByPlayer($data->ePlayer);
+
+				\game\FoodLib::fillRankings($data->cFood);
+
+			}
+
 		}
 
-		$data->cTile = \game\TileLib::getByBoard($data->ePlayer, $data->board);
-		$data->cGrowing = \game\GrowingLib::getAll();
-
-		if($data->ePlayer->isOnline()) {
-
-			$data->cFood = \game\FoodLib::getByPlayer($data->ePlayer);
-			$data->cHistory = \game\HistoryLib::getByPlayer($data->ePlayer);
-			$data->cPlayerRanking = \game\PlayerLib::getPointsRanking($data->ePlayer);
-			$data->cPlayerFriend = \game\FriendLib::getByPlayer($data->ePlayer);
-
-			\game\FoodLib::fillRankings($data->cFood);
-
+		if(\game\GameSetting::isFinished()) {
+			$data->points = \game\PlayerLib::getTotalPoints();
 		}
+
+		$data->cPlayerRanking = \game\PlayerLib::getPointsRanking(\game\PlayerLib::getOnline());
+
 
 		throw new ViewAction($data);
 
 	});
 
 new \game\PlayerPage(function($data) {
+
+		if(\game\GameSetting::isPlaying() === FALSE) {
+			throw new NotAllowedAction();
+		}
 
 		\user\ConnectionLib::checkLogged();
 

@@ -20,6 +20,7 @@ class DeskUi {
 		$h = '';
 
 		$h .= '<div class="game-boards">';
+
 			for($position = 1; $position <= GameSetting::BOARDS; $position++) {
 
 				if($ePlayer->getBoards() >= $position) {
@@ -86,7 +87,8 @@ class DeskUi {
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="game-rankings">';
-				$h .= new \game\PlayerUi()->getRankings($cPlayerRanking, $ePlayer, $cFood);
+				$h .= new \game\PlayerUi()->getPointsRanking($cPlayerRanking, $ePlayer);
+				$h .= new \game\PlayerUi()->getFoodRankings($cFood);
 			$h .= '</div>';
 
 			$h .= '<div class="tab-panel" data-tab="game-history">';

@@ -23,7 +23,14 @@ new AdaptativeView('/jouer', function($data, GameTemplate $t) {
 		echo '<span class="hide-md-down"> 🦌</span>';
 	echo '</h1>';
 
-	if($data->ePlayer->isOnline() === FALSE) {
+	if(\game\GameSetting::isFinished()) {
+
+		echo '<div class="game-intro">';
+			echo new \game\HelpUi()->getEnd($data->points);
+			echo new \game\PlayerUi()->getPointsRanking($data->cPlayerRanking, $data->ePlayer);
+		echo '</div>';
+
+	} else if($data->ePlayer->isOnline() === FALSE) {
 
 		echo '<h2 class="text-center">'.encode($data->ePlayer['name']).'</h2>';
 

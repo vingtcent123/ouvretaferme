@@ -31,7 +31,7 @@ class PlayerUi {
 
 	}
 
-	public function getRankings(\Collection $cPlayer, Player $ePlayerOnline, \Collection $cFood): string {
+	public function getPointsRanking(\Collection $cPlayer, Player $ePlayerOnline): string {
 
 		if($cPlayer->empty()) {
 			return '<div class="util-empty">'.s("Le classement est encore vide et c'est normal le jeu vient de commencer !").'</div>';
@@ -76,9 +76,13 @@ class PlayerUi {
 			$h .= '</tbody>';
 		$h .= '</table>';
 
-		$h .= '<br/>';
+		return $h;
 
-		$h .= '<h3>'.S("Votre production").'</h3>';
+	}
+
+	public function getFoodRankings(\Collection $cFood): string {
+
+		$h = '<h3>'.S("Votre production").'</h3>';
 
 		if($cFood->contains(fn($eFood) => $eFood['total'] > 0)) {
 

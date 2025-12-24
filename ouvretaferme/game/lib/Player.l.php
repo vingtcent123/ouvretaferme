@@ -114,6 +114,12 @@ class PlayerLib extends PlayerCrud {
 
 	}
 
+	public static function getTotalPoints(): int {
+
+		return Player::model()->getValue(new \Sql('SUM(points)', 'int'));
+
+	}
+
 	public static function getPointsRanking(Player $ePlayerOnline): \Collection {
 
 		$position = 1;
@@ -134,12 +140,12 @@ class PlayerLib extends PlayerCrud {
 			->wherePoints('>', 0)
 			->sort([
 				'points' => SORT_DESC,
-				new \Sql('id = '.$ePlayerOnline['id'].' DESC'),
-				'id' => SORT_ASC
+				$ePlayerOnline->empty() ? new \Sql('id ASC'): new \Sql('id = '.$ePlayerOnline['id'].' DESC, id ASC')
 			])
 			->getCollection(0, 20);
 
 		if(
+			$ePlayerOnline->notEmpty() and
 			$cPlayer->contains(fn($ePlayer) => $ePlayerOnline->is($ePlayer)) === FALSE and
 			$ePlayerOnline['points'] > 0
 		) {
