@@ -96,9 +96,9 @@ class JournalUi {
 					$h .= '<dt>'.s("Période").'</dt>';
 					$h .= '<dd>';
 					$h .= $form->inputGroup(
-						$form->month('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
+						$form->date('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
 						$form->addon(s("à")).
-						$form->month('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
+						$form->date('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
 					);
 					$h .= '</dd>';
 
