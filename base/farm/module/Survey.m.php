@@ -10,8 +10,8 @@ abstract class SurveyElement extends \Element {
 	const CERFRANCE = 'cerfrance';
 	const AFOCG = 'afocg';
 	const AUTONOME = 'autonome';
-	const NONE = 'none';
 	const OTHER = 'other';
+	const NONE = 'none';
 
 	const REEL = 'reel';
 	const MICROBA = 'microba';
@@ -55,10 +55,11 @@ class SurveyModel extends \ModuleModel {
 			'number' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
 			'why' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'feedback' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'formation' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'productionFeature' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'productionResearch' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'sellingFeature' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'accounting' => ['enum', [\farm\Survey::CERFRANCE, \farm\Survey::AFOCG, \farm\Survey::AUTONOME, \farm\Survey::NONE, \farm\Survey::OTHER], 'cast' => 'enum'],
+			'accounting' => ['enum', [\farm\Survey::CERFRANCE, \farm\Survey::AFOCG, \farm\Survey::AUTONOME, \farm\Survey::OTHER, \farm\Survey::NONE], 'cast' => 'enum'],
 			'accountingType' => ['enum', [\farm\Survey::REEL, \farm\Survey::MICROBA, \farm\Survey::OTHER], 'cast' => 'enum'],
 			'accountingAutonomy' => ['bool', 'cast' => 'bool'],
 			'accountingOtf' => ['bool', 'cast' => 'bool'],
@@ -72,7 +73,7 @@ class SurveyModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'createdAt', 'number', 'why', 'feedback', 'productionFeature', 'productionResearch', 'sellingFeature', 'accounting', 'accountingType', 'accountingAutonomy', 'accountingOtf', 'accountingInfo', 'coopTroc', 'coopMercuriale', 'coopItk', 'coopOther', 'coopCommandes', 'other'
+			'id', 'farm', 'createdAt', 'number', 'why', 'feedback', 'formation', 'productionFeature', 'productionResearch', 'sellingFeature', 'accounting', 'accountingType', 'accountingAutonomy', 'accountingOtf', 'accountingInfo', 'coopTroc', 'coopMercuriale', 'coopItk', 'coopOther', 'coopCommandes', 'other'
 		]);
 
 		$this->propertiesToModule += [
@@ -146,6 +147,10 @@ class SurveyModel extends \ModuleModel {
 
 	public function whereFeedback(...$data): SurveyModel {
 		return $this->where('feedback', ...$data);
+	}
+
+	public function whereFormation(...$data): SurveyModel {
+		return $this->where('formation', ...$data);
 	}
 
 	public function whereProductionFeature(...$data): SurveyModel {

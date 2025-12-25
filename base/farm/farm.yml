@@ -192,6 +192,7 @@ Survey:
   number: int(1, NULL)
   why: ?text16
   feedback: ?text16
+  formation: ?text16
   productionFeature: ?text16
   productionResearch: ?bool
   sellingFeature: ?text16

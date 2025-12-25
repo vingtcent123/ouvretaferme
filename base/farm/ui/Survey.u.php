@@ -44,8 +44,8 @@ class SurveyUi {
 			$h .= $form->group(content: '<p>'.s("Nous envisageons de développer des fonctionnalités pour faciliter la coopération entre les fermes.").'</p><h3>'.s("Êtes-vous intéressé par ?").'</h3>');
 			$h .= $form->dynamicGroups($eSurvey, ['coopItk', 'coopCommandes', 'coopTroc', 'coopMercuriale', 'coopOther']);
 
-			$h .= $form->group(content: '<div class="util-block bg-primary color-white"><h3>'.s("Avez-vous quelque chose à ajouter ?").'</h3></div>');
-			$h .= $form->dynamicGroups($eSurvey, ['other']);
+			$h .= $form->group(content: '<div class="util-block bg-primary color-white"><h3>'.s("Pour terminer").'</h3></div>');
+			$h .= $form->dynamicGroups($eSurvey, ['formation', 'other']);
 
 			$h .= '<br/><br/>';
 
@@ -65,6 +65,7 @@ class SurveyUi {
 			'number' => s("À combien travaillez-vous sur votre ferme ?"),
 			'why' => s("Pouvez-vous dire ce qui vous a conduit à utiliser Ouvretaferme ?"),
 			'feedback' => s("Avez-vous un retour d'expérience à nous faire sur votre utilisation du logiciel ? A t-il répondu à vos attentes initiales ?"),
+			'formation' => s("Aimeriez-vous suivre des formations sur certaines fonctionnalités du logiciel. Si oui, lesquelles ?"),
 			'productionFeature' => s("Y a t-il des fonctionnalités qui vous manquent sur le module de production ?"),
 			'productionResearch' => s("Êtes-vous intéressé·e pour être recontacté·e et partager les données de votre ferme dans le cadre de projets de recherche ?"),
 			'sellingFeature' => s("Y a t-il des fonctionnalités qui vous manquent sur le module de vente ?"),
