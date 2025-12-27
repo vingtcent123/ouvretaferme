@@ -132,7 +132,11 @@ class BookUi {
 				$h .= '</td>';
 
 				$h .= '<td class="td-vertical-align-top hide-sm-down">';
-					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?document='.encode($eOperation['document']).'&financialYear='.$eFinancialYear['id'].'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperation['document']).'</a>';
+					$query = [
+						'document' => $eOperation['document'],
+						'financialYear' => $eFinancialYear['id'],
+					];
+					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?'.http_build_query($query).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperation['document']).'</a>';
 				$h .= '</td>';
 
 				$h .= '<td>';
