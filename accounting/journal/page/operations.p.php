@@ -87,14 +87,15 @@ new Page(function($data) {
 		}
 		$data->cOperation = new Collection();
 		$data->operationsVat = [];
+		$data->page = GET('page', 'int');
 
 		if($code === \journal\JournalSetting::JOURNAL_CODE_BANK) {
 
-			$data->cOperation = \journal\OperationLib::getAllForBankJournal($search, $hasSort);
+			[$data->cOperation, $data->nOperationSearch, $data->nPage] = \journal\OperationLib::getAllForBankJournal(search: $search, page: $data->page, hasSort: $hasSort);
 
 		} else if(in_array($journalCode, $data->cJournalCode->getIds()) or $code === NULL or $journalCode === -1) {
 
-			$data->cOperation = \journal\OperationLib::getAllForJournal($search, $hasSort);
+			[$data->cOperation, $data->nOperationSearch, $data->nPage] = \journal\OperationLib::getAllForJournal(search: $search, page: $data->page, hasSort: $hasSort);
 
 		} else if(mb_substr($code, 0, 3) === 'vat') {
 

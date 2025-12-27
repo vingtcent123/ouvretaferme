@@ -3,6 +3,8 @@ namespace journal;
 
 class OperationLib extends OperationCrud {
 
+	const MAX_BY_PAGE = 500;
+
 	public static function getPropertiesCreate(): array {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}
@@ -187,7 +189,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getAllForJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
+	public static function getAllForJournal(?int $page, \Search $search = new \Search(), bool $hasSort = FALSE): array {
 
 		$eFinancialYear = $search->get('financialYear');
 		$defaultOrder = ($eFinancialYear !== NULL and $eFinancialYear->isCashAccounting()) ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
@@ -218,17 +220,28 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
-		return self::applySearch($search)
+		self::applySearch($search)
 			->select($selection)
-			->sort($hasSort === TRUE ? $search->buildSort() : $defaultOrder)
-			->getCollection();
+			->option('count')
+			->sort($hasSort === TRUE ? $search->buildSort() : $defaultOrder);
+
+		if($page === NULL) {
+			$cOperation = Operation::model()->getCollection();
+		} else {
+			$cOperation = Operation::model()->getCollection($page * self::MAX_BY_PAGE, self::MAX_BY_PAGE);
+		}
+
+		$nOperation = Operation::model()->found();
+		$nPage = ceil($nOperation / self::MAX_BY_PAGE);
+
+		return [$cOperation, $nOperation, $nPage];
 
 	}
 
 	/**
 	 * Le journal de banque doit ressortir toutes les contreparties au compte AccountSetting\BANK_ACCOUNT_CLASS
 	 */
-	public static function getAllForBankJournal(\Search $search = new \Search(), bool $hasSort = FALSE): \Collection {
+	public static function getAllForBankJournal(?int $page, \Search $search = new \Search(), bool $hasSort = FALSE): array {
 
 		$eFinancialYear = $search->get('financialYear');
 		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
@@ -243,16 +256,27 @@ class OperationLib extends OperationCrud {
 			->getCollection()
 			->getColumn('hash');
 
-		return self::applySearch($searchFiltered)
+		self::applySearch($searchFiltered)
 			->select(
 			 Operation::getSelection()
 			 + ['account' => ['class', 'description']]
 			 + ['thirdParty' => ['id', 'name']]
 			)
 			->sort($hasSort === TRUE ? $search->buildSort() : $defaultOrder)
+			->option('count')
 			->whereHash('IN', $hashes)
-			->whereAccountLabel('NOT LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%')
-			->getCollection();
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%');
+
+		if($page === NULL) {
+			$cOperation = Operation::model()->getCollection();
+		} else {
+			$cOperation = Operation::model()->getCollection($page * self::MAX_BY_PAGE, self::MAX_BY_PAGE);
+		}
+
+		$nOperation = Operation::model()->found();
+		$nPage = ceil($nOperation / self::MAX_BY_PAGE);
+
+		return [$cOperation, $nOperation, $nPage];
 
 	}
 

@@ -11,7 +11,7 @@ new Page()
 
 		$search = new Search(['financialYear' => $data->eFinancialYear]);
 
-		$data->cOperation = \journal\OperationLib::getAllForJournal($search);
+		$data->cOperation = \journal\OperationLib::getAllForJournal(search: $search, page: NULL);
 
 		throw new ViewAction($data);
 

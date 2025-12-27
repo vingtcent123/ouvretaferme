@@ -109,7 +109,7 @@ class FecLib  {
 		$filename .= 'FEC';
 
 		if($eFinancialYear->isClosed()) {
-			$filename .= date('Ymd', $filename['closeDate']);
+			$filename .= date('Ymd', $eFinancialYear['closeDate']);
 		} else {
 			$filename .= date('YmdHis');
 		}
@@ -164,7 +164,7 @@ class FecLib  {
 		];
 
 		$search = new \Search(['financialYear' => $eFinancialYear, 'startDate' => $startDate, 'endDate' => $endDate]);
-		$cOperation = \journal\OperationLib::getAllForJournal($search);
+		$cOperation = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
 
 		$number = 1;
 
