@@ -1869,55 +1869,6 @@ class FarmUi {
 
 	}
 
-	public function getPreAccountingInvoiceTitle(Farm $eFarm, string $selectedView, array $numbers): string {
-
-		$categories = $this->getPreAccountingInvoicesCategories($eFarm);
-		$number = ($numbers[$selectedView] ?? NULL);
-
-		$title = $categories[$selectedView]['label'];
-
-		$h = '<div class="util-action">';
-			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= self::getNavigation();
-					$h .= '<span class="h-menu-label">';
-						$h .= $title;
-					$h .= '</span>';
-				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
-					foreach($categories as $key => $value) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
-							$h .= $value['label'];
-							if(($numbers[$key] ?? 0) > 0) {
-								$h .= ' <small>('.$numbers[$key].')</small>';
-							}
-						$h .= '</a>';
-					}
-				$h .= '</div>';
-				if($number !== NULL) {
-					$h .= '<span class="util-counter ml-1">'.$number.'</span>';
-				}
-			$h .= '</h1>';
-
-			$h .= '<div>';
-				$h .= '<a href="/doc/accounting" class="btn btn-md btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-	protected static function getPreAccountingInvoicesCategories(Farm $eFarm): array {
-
-		return [
-			'prepare' => ['url' => '/precomptabilite', 'label' => s("Préparer les données de factures")],
-			'prepare-sales' => ['url' => '/precomptabilite:preparer-ventes', 'label' => s("Préparer les données de vente")],
-		] +
-			(($eFarm->usesAccounting() and FEATURE_RECONCILIATE_OPERATIONS) ? [
-				'reconciliate-operations' => ['url' => '/precomptabilite:rapprocher-ecritures', 'label' => s("Rapprocher les écritures")],] : []);
-	}
-
 	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, \account\FinancialYear $eFinancialYear): string {
 
 		$categories = $this->getAccountingAssetsCategories();
