@@ -75,6 +75,11 @@ Class ProductLib {
 
 		}
 
+		if($tab !== 'items' and empty($productsByCategory)) {
+			$tab = 'items';
+			\session\SessionLib::set('preAccountingProductTab', 'items');
+		}
+
 		if($tab === 'items') {
 
 			return [new \Collection(), $cCategories, $productsByCategory];
