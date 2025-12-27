@@ -183,7 +183,7 @@ class JournalUi {
 
 	}
 
-	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search, ?string $selectedJournalCode, \Collection $cJournalCode, array $journalCounts): string {
+	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search, ?string $selectedJournalCode, \Collection $cJournalCode): string {
 
 		$args = $search->toQuery(exclude: ['code']);
 
@@ -208,15 +208,12 @@ class JournalUi {
 			$h .= '<a class="tab-item '.($selectedJournalCode === NULL ? ' selected' : '').'" data-tab="journal" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?'.$args.'">';
 				$h .= '<div class="text-center">';
 					$h .= s("Général");
-					$h .= '<br /><span class="util-badge bg-primary">'.($journalCounts[0] ?? 0).'</span>';
 				$h .= '</div>';
 			$h .= '</a>';
 
 			$h .= '<a class="tab-item'.($selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
 				$h .= '<div class="text-center">';
 					$h .= s("Banque");
-					$h .= '<br />';
-					$h .= ' <span class="util-badge bg-primary">'.($journalCounts[\account\AccountSetting::BANK_ACCOUNT_CLASS]['count'] ?? 0).'</span>';
 					$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
 				$h .= '</div>';
 			$h .= '</a>';
@@ -244,8 +241,6 @@ class JournalUi {
 					$h .= '<a '.attrs($attributes).'>';
 						$h .= '<div class="text-center">';
 							$h .= encode($eJournalCode['name']);
-							$h .= '<br />';
-							$h .= ' <span class="util-badge bg-primary">'.($journalCounts[$eJournalCode['id']]['count'] ?? 0).'</span>';
 							$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.encode($eJournalCode['code']).')</span></small>';
 						$h .= '</div>';
 					$h .= '</a>';
@@ -259,8 +254,6 @@ class JournalUi {
 				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
-						$h .= '<br />';
-						$h .= ' <span class="util-badge bg-primary">'.($journalCounts[\account\AccountSetting::VAT_BUY_CLASS_PREFIX]['count'] ?? 0).'</span>';
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Achats").')</span></small>';
 					$h .= '</div>';
 				$h .= '</a>';
@@ -269,8 +262,6 @@ class JournalUi {
 				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';
 					$h .= '<div class="text-center">';
 						$h .= s("TVA");
-						$h .= '<br />';
-						$h .= ' <span class="util-badge bg-primary">'.($journalCounts[\account\AccountSetting::VAT_SELL_CLASS_PREFIX]['count'] ?? 0).'</span>';
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("Ventes").')</span></small>';
 					$h .= '</div>';
 				$h .= '</a>';

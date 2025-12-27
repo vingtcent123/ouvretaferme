@@ -21,39 +21,6 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function countAllByJournal(\account\FinancialYear $eFinancialYear, \Search $search): array {
-
-		$nOperation = self::applySearch($search)
-			->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($eFinancialYear['startDate']).' AND '.\account\FinancialYear::model()->format($eFinancialYear['endDate'])))
-			->count();
-
-		$cOperationByJournalCode = self::applySearch($search)
-			->select([
-				'count' => new \Sql('COUNT(*)'),
-				'journalCode'
-			])
-			->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($eFinancialYear['startDate']).' AND '.\account\FinancialYear::model()->format($eFinancialYear['endDate'])))
-			->group('journalCode')
-			->getCollection(NULL, NULL, 'journalCode');
-
-		$cOperationByAccountLabel = self::applySearch($search)
-			->select([
-				'label' => new \Sql('IF(accountLabel LIKE "'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'%", "'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'", IF(accountLabel LIKE "'.\account\AccountSetting::VAT_BUY_CLASS_PREFIX.'%", '.\account\AccountSetting::VAT_BUY_CLASS_PREFIX.', '.\account\AccountSetting::VAT_SELL_CLASS_PREFIX.'))'),
-				'count' => new \Sql('COUNT(*)'),
-			])
-			->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($eFinancialYear['startDate']).' AND '.\account\FinancialYear::model()->format($eFinancialYear['endDate'])))
-			->or(
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%'),
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_BUY_CLASS_PREFIX.'%'),
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_SELL_CLASS_PREFIX.'%'),
-			)
-			->group('label')
-			->getCollection(NULL, NULL, 'label');
-
-		return [0 => $nOperation] + $cOperationByJournalCode->getArrayCopy() + $cOperationByAccountLabel->getArrayCopy();
-
-	}
-
 	public static function applySearch(\Search $search = new \Search()): OperationModel {
 
 		if($search->has('financialYear')) {
