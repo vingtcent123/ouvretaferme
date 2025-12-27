@@ -33,7 +33,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 	if($data->isMember) {
 
 		echo '<div class="util-block">';
-			echo '<h4>'.s("Démadrer avec la comptabilité sur Ouvretaferme").'</h4>';
+			echo '<h4>'.s("Démarrer avec la comptabilité sur Ouvretaferme").'</h4>';
 			echo '<p>Youpi vous êtes adhérent</p>';
 			echo '<div>';
 				echo '<a class="company-accounting-choose-option" data-option="no" data-ajax="/company/public:doInitialize" post-farm="'.$data->eFarm['id'].'">';
