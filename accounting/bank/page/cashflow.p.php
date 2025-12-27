@@ -8,7 +8,7 @@ new Page(function($data) {
 	->get('/banque/operations', function($data) {
 
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
-		$data->tipNavigation = 'close';
+		$data->tipNavigation = 'inline';
 
 		$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByCashflow();
 

@@ -302,24 +302,31 @@ class TipUi {
 
 			case 'accounting-invoice-cashflow' :
 
-				$link = \company\CompanyUi::urlAccount($eFarm).'/thirdParty';
+				$link = \company\CompanyUi::urlFarm($eFarm).'/banque/imports:import';
 
-				$h = '<p>'.s("Il vous est possible de marquer vos factures <b>payées</b> avec son moyen de paiement, en même temps que vous créez une écriture comptable à partir d'une opération bancaire.").'</p>';
+				$h = '<p>'.s("Il vous est possible de marquer vos factures <b>payées</b> avec leur moyen de paiement, en les rapprochant avec une opération bancaire.").'</p>';
 				$h .= '<p>'.s("Pour que cela fonctionne, il faut :").'</p>';
 				$h .= '<ul>';
-					$h .= '<li>'.s("Avoir créé le tiers,").'</li>';
-					$h .= '<li>'.s("Avoir indiqué le lien entre le tiers et le client de votre ferme,").'</li>';
-					$h .= '<li>'.s("Que le montant de l'opération bancaire soit identique à la facture, à 1€ près,").'</li>';
-					$h .= '<li>'.s("Que la facture soit encore au statut \"non réglée\".").'</li>';
+					$h .= '<li>'.s("Avoir réalisé un import bancaire,").'</li>';
+					$h .= '<li>'.s("Avoir une facture du montant correspondant,").'</li>';
 				$h .= '</ul>';
-				$h .= '<p>'.s("Cette petite icône {icon} apparaîtra sur la ligne de l'opération bancaire pour vous signaler qu'une facture correspondante a été trouvée.", ['icon' => \Asset::icon('magic')]).'</p>';
+				$h .= '<p>'.s("{siteName} calculera un <b>indice de confiance</b> en se basant sur les critères suivants :").'</p>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("La correspondance entre le nom du client sur la facture avec le nom du tiers sur l'opération bancaire,").'</li>';
+					$h .= '<li>'.s("Le numéro de facture est indiqué dans l'intitulé de l'opération bancaire").'</li>';
+					$h .= '<li>'.s("Le moyen de paiement indiqué sur la facture correspond à ce qui est indiqué sur l'opération bancaire.").'</li>';
+					$h .= '<li>'.s("Le montant de la facture correspond à celui de l'opération bancaire.").'</li>';
+					$h .= '<li>'.s("La date du paiement de la facture arrive dans le mois qui suit la date de la facture.").'</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Une petite icone {icon} sera ensuite affichée sur la page des factures ou la page des opérations bancaires et vous indiquera que des rapprochement peuvent être faits. Cliquez dessus pour allez les vérifier et les valider.", ['icon' => \Asset::icon('fire')]).'</p>';
+				$h .= '<p>'.s("Une fois les rapprochements validés, vos factures seront marquées payées et le moyen de paiement renseigné. Tout simplement !").'</p>';
 
 				return [
 					'icon' => \Asset::icon('list-check'),
 					'title' => s("Rapprochez factures et opérations bancaires"),
 					'content' => $h,
 					'image' => FALSE,
-					'button' => [$link, s("Configurer mes tiers")],
+					'button' => [$link, s("Importer mes opérations bancaires")],
 				];
 
 			case 'accounting-pre-accounting' :
