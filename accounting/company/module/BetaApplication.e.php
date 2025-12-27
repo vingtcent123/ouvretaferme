@@ -7,13 +7,16 @@ class BetaApplication extends BetaApplicationElement {
 
 		$p
 			->setCallback('accountingHelped.check', function(): bool {
-				return post_exists('accountingHelp');
+				return post_exists('accountingHelped');
 			})
 			->setCallback('hasSoftware.check', function(): bool {
 				return post_exists('hasSoftware');
 			})
 			->setCallback('hasVat.check', function(): bool {
 				return post_exists('hasVat');
+			})
+			->setCallback('hasStocks.check', function(): bool {
+				return post_exists('hasStocks');
 			})
 		;
 

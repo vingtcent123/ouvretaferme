@@ -24,7 +24,7 @@ Class BetaApplicationUi {
 			'accountingLevel*', 'accountingHelped*', 'helpComment',
 			'hasSoftware*', 'software',
 			'accountingType*', 'taxSystem*', 'hasVat*', 'vatFrequency',
-			'hasStocks',
+			'hasStocks*',
 			'discord', 'comment'], [
 			'accountingHelped*' => function($d) use($form) {
 				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'CompanyConfiguration.changeHelpComment()'];
