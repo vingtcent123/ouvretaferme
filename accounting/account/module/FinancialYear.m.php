@@ -60,6 +60,7 @@ class FinancialYearModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
+			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\account\FinancialYear::OPEN, \account\FinancialYear::CLOSE], 'cast' => 'enum'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'vatFrequency' => ['enum', [\account\FinancialYear::MONTHLY, \account\FinancialYear::QUARTERLY, \account\FinancialYear::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
@@ -74,7 +75,7 @@ class FinancialYearModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'closeDate', 'openDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'color', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'closeDate', 'openDate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -147,6 +148,10 @@ class FinancialYearModel extends \ModuleModel {
 
 	public function whereEndDate(...$data): FinancialYearModel {
 		return $this->where('endDate', ...$data);
+	}
+
+	public function whereColor(...$data): FinancialYearModel {
+		return $this->where('color', ...$data);
 	}
 
 	public function whereStatus(...$data): FinancialYearModel {

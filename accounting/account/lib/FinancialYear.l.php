@@ -246,6 +246,12 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->beginTransaction();
 
+		$count = FinancialYear::model()->count();
+		$color = FinancialYearSetting::COLORS[$count];
+
+		$e['color'] = $color;
+
+
 		FinancialYear::model()->insert($e);
 
 		self::updateAccountingYears($eFarm);

@@ -25,6 +25,7 @@ FinancialYear:
   id: serial32
   startDate: date
   endDate: date
+  color: ?color
   status: enum(OPEN, CLOSE) = OPEN
   hasVat: bool # Est-ce que cet exercice est soumis à la TVA ?
   vatFrequency: ?enum(MONTHLY, QUARTERLY, ANNUALLY)
