@@ -73,7 +73,7 @@ class JournalUi {
 
 		\Asset::js('journal', 'operation.js');
 
-		$h = '<div id="journal-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+		$h = '<div id="journal-search" class="util-block-search '.(($search->empty(['ids']) and $search->get('hasDocument') === NULL) === TRUE ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 
@@ -147,9 +147,10 @@ class JournalUi {
 					$h .= '<dt>'.s("Avec / sans pièce comptable").'</dt>';
 					$h .= '<dd>';
 						$h .= $form->select('hasDocument', [
-						0 => s("Avec ou sans pièce comptable"),
-						1 => s("Sans pièce comptable"),
-					], $search->get('hasDocument', 'int', 0), ['mandatory' => TRUE]);
+						NULL => s("Avec ou sans pièce comptable"),
+						0 => s("Sans pièce comptable"),
+						1 => s("Avec pièce comptable"),
+					], $search->get('hasDocument'), ['mandatory' => TRUE]);
 					$h .= '</dd>';
 
 				$h .= '</dl>';

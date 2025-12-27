@@ -30,7 +30,7 @@ new Page(function($data) {
 			'thirdParty' => GET('thirdParty'),
 			'asset' => GET('asset'),
 			'paymentMethod' => GET('paymentMethod'),
-			'hasDocument' => GET('hasDocument'),
+			'hasDocument' => GET('hasDocument', '?int'),
 			'minDate' => GET('periodStart'),
 			'maxDate' => GET('periodEnd'),
 			'hash' => GET('hash'),

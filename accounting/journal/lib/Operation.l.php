@@ -104,6 +104,13 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
+		if($search->get('hasDocument') !== NULL) {
+			if($search->get('hasDocument') === 1) {
+				$model->whereDocument('!=', NULL);
+			} else {
+				$model->whereDocument(NULL);
+			}
+		}
 		return $model
 			->whereId('=', $search->get('id'), if: $search->get('id'))
 			->whereHash('=', $search->get('hash'), if: $search->get('hash'))
@@ -118,8 +125,7 @@ class OperationLib extends OperationCrud {
 			->whereDocument($search->get('document'), if: $search->get('document'))
 			->whereType($search->get('type'), if: $search->get('type'))
 			->whereAsset($search->get('asset'), if: $search->get('asset'))
-			->whereThirdParty('=', $search->get('thirdParty'), if: $search->get('thirdParty'))
-			->whereDocument(NULL, if: $search->has('hasDocument') and $search->get('hasDocument') === '1');
+			->whereThirdParty('=', $search->get('thirdParty'), if: $search->get('thirdParty'));
 
 	}
 
