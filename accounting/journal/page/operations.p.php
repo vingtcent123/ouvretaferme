@@ -81,6 +81,8 @@ new Page(function($data) {
 
 		}
 
+		$data->journalCounts = \journal\OperationLib::countAllByJournal($data->eFinancialYear, $search);
+
 		$search->set('journalCode', $journalCode);
 		if($journalCode === '-1') {
 			$data->search->set('journalCode', $journalCode);

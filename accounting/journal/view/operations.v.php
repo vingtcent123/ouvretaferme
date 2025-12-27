@@ -38,7 +38,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 		}
 	echo ' data-batch="#batch-journal">';
 
-		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode, $data->cJournalCode);
+		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode, $data->cJournalCode, $data->journalCounts);
 
 		switch($selectedJournalCode) {
 

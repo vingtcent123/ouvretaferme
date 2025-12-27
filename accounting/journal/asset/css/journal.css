@@ -67,3 +67,10 @@ tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 	align-items: center;
 	gap: 0.25rem;
 }
+
+#journals .tab-item {
+	align-items: start;
+}
+#journals .tab-item .util-badge {
+	margin-top: 0.25rem;
+}
