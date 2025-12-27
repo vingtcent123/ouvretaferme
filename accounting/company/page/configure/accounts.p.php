@@ -4,7 +4,7 @@ new Page()
 
 		$eFarm = \farm\FarmLib::getById(\association\AssociationSetting::FARM);
 
-		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+		\company\CompanyLib::connectDatabase($eFarm);
 
 		// Copy Account content from package main to package accounting
 		$cAccount = \company\GenericAccount::model()

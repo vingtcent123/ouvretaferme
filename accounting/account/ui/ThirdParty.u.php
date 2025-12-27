@@ -119,7 +119,6 @@ class ThirdPartyUi {
 					foreach($cThirdParty as $eThirdParty) {
 
 						$eThirdParty->setQuickAttribute('farm', $eFarm['id']);
-						$eThirdParty->setQuickAttribute('app', 'accounting');
 
 						$h .= '<tr>';
 

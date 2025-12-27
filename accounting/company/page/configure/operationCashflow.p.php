@@ -21,7 +21,7 @@ new Page()
 
 		$count = 0;
 
-		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+		\company\CompanyLib::connectDatabase($eFarm);
 
 		$cOperation = \journal\Operation::model()
 			->select(['id', 'amount', 'cashflow' => new Sql('cashflow', 'bank\Cashflow')])

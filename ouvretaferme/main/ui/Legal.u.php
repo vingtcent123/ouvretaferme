@@ -5,13 +5,14 @@ class LegalUi {
 
 	public function tos() : string {
 
-		$h = '<h2>'.s("Principe de gratuité").'</h2>';
-		$h .= '<p>'.s("L'accès à toutes les fonctionnalités de {siteName} est libre et gratuit pour :").'</p>';
+		$h = '<h2>'.s("Fonctionnalités").'</h2>';
+		$h .= '<p>'.s("L'accès aux modules de <sale>VENTE</sale> et de <production>PRODUCTION</production> est libre et gratuit pour :", ['sale' => '<b class="color-commercialisation">', 'production' => '<b class="color-production">']).'</p>';
 		$h .= '<ul>';
 			$h .= '<li>'.s("les agriculteurs dont la ferme est convertie intégralement à l'Agriculture biologique, en cours de conversion vers l'Agriculture biologique ou sous mention Nature & Progrès,").'</li>';
-			$h .= '<li>'.s("les particuliers (jardiners, étudiants, porteurs de projet...) qui ne sont pas installés comme agriculteurs et ne font pas commerce de leur production").'</li>';
+			$h .= '<li>'.s("les particuliers (jardiniers, étudiants, porteurs de projet...) qui ne sont pas installés comme agriculteurs et ne font pas commerce de leur production").'</li>';
 			$h .= '<li>'.s("les établissements scolaires.").'</li>';
 		$h .= '</ul>';
+		$h .= '<p>'.s("L'accès au module de <accounting>COMPTABILITÉ</accounting> est possible après adhésion à l'association Ouvretaferme.", ['accounting' => '<b class="color-accounting">']).'</p>';
 		$h .= '<p>'.s("<b>Dans tous les autres cas, l'utilisation du site n'est pas autorisée.</b>").'</p>';
 
 		$h .= '<br/>';
@@ -21,10 +22,6 @@ class LegalUi {
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Garanties").'</h2>';
 		$h .= '<p>'.s("Le site {siteName} est un projet développé bénévolement au service des producteurs en agriculture biologique en circuits courts. La conséquence immédiate est qu'il n'y a aucune garantie sur le bon fonctionnement du service ou sur la pérennité de vos données et vous utilisez le service à vos risques et périls. Si vous perdez des données, quelqu'en soit la cause, y compris à cause d'une erreur de notre part ou d'un arrêt du service, vous ne pourrez prétendre à aucun dédommagement, compensation ou droit particulier.").'</p>';
-
-		$h .= '<br/>';
-		$h .= '<h2>'.s("Fonctionnalités").'</h2>';
-		$h .= '<p>'.s("Le site {siteName} est en perpétuelle amélioration. De nouvelles fonctionnalités sont développées très régulièrement, notamment pour répondre au mieux aux besoins des producteurs. Ces nouveautés peuvent parfois modifier les habitudes des utilisateurs. Tenez-en compte dans votre utilisation du site. L'intégrité de vos données est préservée lors des mises à jour du site, dans la limite des garanties exprimées plus haut.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Licence d'utilisation du code source").'</h2>';

@@ -71,7 +71,6 @@ Class JournalCodeUi {
 				foreach($cJournalCode as $eJournalCode) {
 
 					$eJournalCode->setQuickAttribute('farm', $eFarm['id']);
-					$eJournalCode->setQuickAttribute('app', 'accounting');
 
 					$h .= '<tr name="journal-code-'.$eJournalCode['id'].'">';
 

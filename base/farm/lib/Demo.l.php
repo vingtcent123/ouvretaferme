@@ -62,7 +62,7 @@ class DemoLib {
 
 	public static function rebuild() {
 
-		\company\CompanyLib::connectSpecificDatabaseAndServer(new Farm(['id' => self::COPY_FARM]));
+		\company\CompanyLib::connectDatabase(new Farm(['id' => self::COPY_FARM]));
 		// prod instance
 		self::$ms = self::getModules();
 

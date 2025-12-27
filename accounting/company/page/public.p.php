@@ -1,8 +1,5 @@
 <?php
 new Page(function($data) {
-	\user\ConnectionLib::checkLogged();
-	$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
-	$data->eFarm->validate('canManage');
 
 	if($data->eFarm->usesAccounting()) {
 		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal');
@@ -11,23 +8,27 @@ new Page(function($data) {
 })
 	->get('/comptabilite/decouvrir', function ($data) {
 
-		$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
-
-		$data->isMember = \association\HistoryLib::getByFarm($data->eFarm)->find(fn($e) => $e['type'] === \association\History::MEMBERSHIP and $e['membership'] === (int)date('Y'))->count() > 0;
-
 		throw new ViewAction($data);
 
 	})
 	->get('/comptabilite/parametrer', function ($data) {
+
+		if(\company\CompanySetting::BETA) {
+
+			$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
+
+			throw new ViewAction($data, ':beta');
+
+		}
 
 		throw new ViewAction($data);
 
 	})
 	->post('doInitialize', function($data) {
 
-		\company\CompanyLib::initialize($data->eFarm);
+		\company\CompanyLib::enableAccounting($data->eFarm);
 
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/company/configuration?success=company:Company::initialized');
+		throw new RedirectAction('/comptabilite/demarrer?farm='.$data->eFarm['id']);
 
 	})
 	->post('doCreate', function($data) {
@@ -42,4 +43,7 @@ new Page(function($data) {
 
 	});
 
-
+new Page()
+	->get('/comptabilite/demarrer', function ($data) {
+		throw new ViewAction($data);
+	});

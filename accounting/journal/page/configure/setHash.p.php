@@ -15,7 +15,7 @@ new Page()
 
 		foreach($cFarm as $eFarm) {
 
-			\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+			\company\CompanyLib::connectDatabase($eFarm);
 
 			$ccOperation = \journal\Operation::model()
 				->select(['id', 'hash', 'createdAt'])

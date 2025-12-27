@@ -96,7 +96,7 @@ new \selling\ItemPage()
 
 		if($eItem['farm']->hasAccounting()) {
 
-			\company\CompanyLib::connectSpecificDatabaseAndServer($eItem['farm']);
+			\company\CompanyLib::connectDatabase($eItem['farm']);
 
 			if($eItem['account']->notEmpty()) {
 				$eItem['account'] = \account\AccountLib::getById($eItem['account']['id']);
@@ -204,7 +204,7 @@ new \selling\ItemPage()
 
 		$eFarm = $c->first()['farm']->validate('hasAccounting');
 		$c->validateProperty('farm', $eFarm);
-		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+		\company\CompanyLib::connectDatabase($eFarm);
 	})
 	->doUpdateCollectionProperties('doUpdateAccountCollection', ['account'], fn($data) => throw new ReloadAction('selling', 'Item::updatedSeveral'), validate: ['canWriteAccounting']);
 ?>

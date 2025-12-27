@@ -258,7 +258,6 @@ class OperationUi {
 
 		if($eOperation->canUpdate()) {
 			$eOperation->setQuickAttribute('farm', $eFarm['id']);
-			$eOperation->setQuickAttribute('app', 'accounting');
 		}
 		$h = '<div class="util-title">';
 			$h .= '<h3>'.s("Informations générales").'</h3>';

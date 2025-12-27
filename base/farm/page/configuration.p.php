@@ -9,7 +9,7 @@ new \farm\FarmPage()
 		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm);
 
 		if(FEATURE_PRE_ACCOUNTING and $data->eFarm->hasAccounting()) {
-			\company\CompanyLib::connectSpecificDatabaseAndServer($data->e);
+			\company\CompanyLib::connectDatabase($data->e);
 			$data->cAccount = \account\AccountLib::getAll();
 		} else {
 			$data->cAccount = new Collection();

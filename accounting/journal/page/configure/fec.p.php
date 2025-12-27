@@ -13,7 +13,7 @@ new Page()
 		->whereId(7)
 		->get();
 
-		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+		\company\CompanyLib::connectDatabase($eFarm);
 
 		$eFinancialYear = \account\FinancialYear::model()->select(\account\FinancialYear::getSelection())->whereStartDate('2024-01-01')->get();
 

@@ -910,7 +910,7 @@ class FarmUi {
 			],*/
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
-				'label' => s("Exercice")
+				'label' => s("Logiciel comptable").' <span class="util-badge bg-primary">'.s("BETA").'</span>'
 			],
 			'settings-accounting' => [
 				'icon' => \Asset::icon('gear-fill'),

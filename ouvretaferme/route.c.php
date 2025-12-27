@@ -48,6 +48,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['comptabilite', 'decouvrir'],
 		],
+		'/comptabilite/demarrer' => [
+			'request' => 'company/public',
+			'priority' => 5,
+			'route' => ['comptabilite', 'demarrer'],
+		],
 		'/comptabilite/parametrer' => [
 			'request' => 'company/public',
 			'priority' => 5,

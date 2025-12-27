@@ -45,7 +45,7 @@ new Page(function($data) {
 
 		$data->eFarm->validate('canSelling');
 
-		switch($data->pageName) {
+		switch($data->__page['name']) {
 
 			case '/ferme/{id}/ventes' :
 				$data->type = NULL;
@@ -139,7 +139,7 @@ new Page(function($data) {
 
 		if($data->eFarm->hasAccounting()) {
 
-			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			\company\CompanyLib::connectDatabase($data->eFarm);
 
 			if(get_exists('account')) {
 
@@ -167,7 +167,7 @@ new Page(function($data) {
 
 		} else if($data->eFarm->hasAccounting()) {
 
-			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			\company\CompanyLib::connectDatabase($data->eFarm);
 			$cAccount = \account\AccountLib::getAll();
 
 			foreach($data->cProduct as &$eProduct) {
@@ -332,7 +332,7 @@ new Page(function($data) {
 		], GET('sort'));
 
 		if($data->eFarm->hasAccounting()) {
-			\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+			\company\CompanyLib::connectDatabase($data->eFarm);
 			$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByInvoice();
 		} else {
 			$data->nSuggestion = 0;

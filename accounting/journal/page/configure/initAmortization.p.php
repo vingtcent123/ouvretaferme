@@ -13,7 +13,7 @@ new Page()
      ->whereId(7)
      ->get();
 
-		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+		\company\CompanyLib::connectDatabase($eFarm);
 
 		$cAsset = \asset\AssetLib::getAll(new Search());
 

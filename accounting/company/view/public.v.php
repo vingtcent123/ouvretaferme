@@ -7,9 +7,6 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 	$h = '<h1>';
 		$h .= s("La comptabilité avec {image}", ['image' => Asset::image('main', 'favicon.png', ['style' => 'height: 4rem'])]);
 	$h .= '</h1>';
-	$h .= '<h3 style="text-transform: uppercase">';
-		$h .= s("Pour les adhérents de l'association Ouvretaferme");
-	$h .= '</h3>';
 
 	$t->mainTitle = $h;
 
@@ -22,103 +19,86 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 	Asset::css('main', 'font-ptserif.css');
 	Asset::css('main', 'home.css');
 
-	$join = '<div class="mb-2">';
-		$join .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="btn btn-secondary btn-xl">'.s("Adhérer à l'association pour seulement 100 €").'</a>';
-	$join .= '</div>';
+	if($data->eFarm->isMembership()) {
 
-	if($data->isMember === FALSE) {
-		echo $join;
-	}
-
-	if($data->isMember) {
-
-		echo '<div class="util-block">';
-			echo '<h4>'.s("Démarrer avec la comptabilité sur Ouvretaferme").'</h4>';
-			echo '<p>Youpi vous êtes adhérent</p>';
+		echo '<div class="util-association">';
+			echo '<h4>'.s("Vous êtes adhérent à l'association et donc éligible à l'utilisation du module de comptabilité.").'</h4>';
 			echo '<div>';
-				echo '<a class="company-accounting-choose-option" data-option="no" data-ajax="/company/public:doInitialize" post-farm="'.$data->eFarm['id'].'">';
-					echo s("Je souhaite juste préparer mes données sans utiliser le module de comptabilité");
+				echo '<a class="btn btn-primary btn-xl" data-option="no" data-waiter="'.s("Activation en cours").'" data-ajax="/company/public:doInitialize" post-farm="'.$data->eFarm['id'].'">';
+					echo s("Activer le module de comptabilité");
 				echo '</a>';
 
 			echo '</div>';
 		echo '</div>';
 
+	} else {
 
+		echo '<div class="util-association">';
+			echo '<h4>'.s("Le module de comptabilité est accessible pour les fermes qui ont choisi de soutenir le projet Ouvretaferme en ayant adhéré à notre association.").'</h4>';
+			echo '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="btn btn-primary btn-xl">'.s("Adhérer à l'association pour seulement {value} €", \association\AssociationSetting::MEMBERSHIP_FEE).'</a> ';
+			echo '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-outline-primary btn-xl">'.s("Découvrir l'association").'</a>';
+		echo '</div>';
 	}
 
-	echo '<div class="home-points">';
-		echo '<div class="home-point" style="grid-column: span 2">';
-			echo Asset::icon('piggy-bank');
-			echo '<h2>'.s("Banque").'</h2>';
-			echo '<h4>'.s("Importez vos relevés bancaires au format OFX et faites un rapprochement automatique avec vos factures pour vérifier en trois clics qui a payé.").'</h4>';
-			echo '<h5 class="mt-1 util-badge bg-accounting">'.s("Déjà disponible !").'</h5>';
-		echo '</div>';
-		echo '<div class="home-point" style="grid-column: span 2">';
-			echo Asset::icon('file-spreadsheet');
-			echo '<h2>'.s("Précomptabilité").'</h2>';
-			echo '<h4>'.s("Exportez les données de vos ventes et exportez vos factures au format FEC pour les importer sur votre logiciel de comptabilité.").'</h4>';
-			echo '<h5 class="mt-1">'.s("Disponible le 1<sup>er</sup> janvier 2026").'</h5>';
-		echo '</div>';
-		echo '<div class="home-point" style="grid-column: span 2">';
-			echo Asset::icon('receipt');
-			echo '<h2>'.s("Facturation électronique").'</h2>';
-			echo '<h4>'.s("Ouvretaferme sera prêt pour le lancement de la réforme de la facturation électronique le 1<up>er</up> septembre 2026 avec le <i>e-invoicing</i> et le <i>e-reporting</i>. L'accès à la plateforme agréée sera incluse dans le montant de l'adhésion à Ouvretaferme.").'</h4>';
-			echo '<h5 class="mt-1">'.s("Disponible au printemps 2026").'</h5>';
-		echo '</div>';
-		echo '<div class="home-point" style="grid-column: span 2">';
-			echo Asset::icon('database');
-			echo '<h2>'.s("Cahier de caisse").'</h2>';
-			echo '<h4>'.s("Ouvretaferme vous permettra de tenir votre cahier de caisse en ligne pour gérer les espèces liées votre activité et faciliter vos futures obligations de <i>e-reporting</i>.").'</h4>';
-			echo '<h5 class="mt-1">'.s("Disponible au printemps 2026").'</h5>';
-		echo '</div>';
-		echo '<div class="home-point home-point-fill">';
-			echo Asset::icon('journal-bookmark');
-			echo '<h2>'.s("Logiciel de comptabilité pour le micro-BA").'</h2>';
-			echo '<h4>'.s("Vous savez tenir la comptabilité de votre ferme et connaissez vos écritures comptable et classes de compte ?<br/>Utilisez Ouvretaferme comme logiciel de comptabilité, c'est toujours inclus dans le montant de l'adhésion à l'association.").'</h4>';
-			echo '<h5 class="mt-1 util-badge bg-accounting">'.s("Déjà disponible en version beta").'</h5>';
-		echo '</div>';
-	echo '</div>';
+	echo new \main\HomeUi()->getAccounting();
 
-	if($data->isMember === FALSE) {
-		echo $join;
-	}
+});
 
+new AdaptativeView('beta', function($data, FarmTemplate $t) {
+
+	$t->title = s("Découvrir la comptabilité sur {siteName}");
+	$t->nav = 'settings-accounting';
+
+	$h = '<h1>';
+		$h .= s("Rejoindre la version <span>BETA</span> du logiciel comptable pour le micro-BA", ['span' => '<span class="util-badge bg-primary">']);
+	$h .= '</h1>';
+
+	$t->mainTitle = $h;
+
+	Asset::css('company', 'company.css');
+
+	Asset::css('main', 'home.css');
+
+	echo '<h2>'.s("Quel est l'objectif de cette version de test ?").'</h2>';
 	echo '<div class="util-block">';
-		echo '<h2>'.s("Rejoindre la version beta du logiciel de comptabilité pour le micro-BA").'</h2>';
-
-		if($data->isMember === FALSE) {
-			echo "reviens quand tu as adhéré :p";
-		}
-
-		echo '<p>'.s("Vous pouvez dès cette année.").'</p>';
-		echo '<p>'.s("Un logiciel passe en phase de bêta-test à partir du moment où ses fonctionnalités peuvent être testées par ses futur·e·s utilisateur·ices. Cette phase de test présente plusieurs avantages pour chaque partie :").'</p>';
+		echo '<h3>'.s("Pour Ouvretaferme").'</h3>';
 		echo '<ul>';
 			echo '<li>'.s("Trouver et corriger les éventuels bugs restants").'</li>';
-			echo '<li>'.s("Vérifier que le logiciel correspond réellement au besoin").'</li>';
-			echo '<li>'.s("Ajuster certaines fonctionnalités").'</li>';
+			echo '<li>'.s("Vérifier que le logiciel correspond réellement au besoin des fermes").'</li>';
+			echo '<li>'.s("Améliorer l'ergonomie du logiciel").'</li>';
+			echo '<li>'.s("Identifier les fonctionnalités qui pourraient manquer").'</li>';
 		echo '</ul>';
-		echo '<h4>'.s("Qui peut tester ?").'</h4>';
-		echo '<p>'.s("Cette étape est très importante pour que le logiciel finalisé soit bien utilisable (ergonomique, fonctionnel etc.).").'</p>';
-		echo '<p>'.s("Nous recherchons des personnes qui :").'</p>';
+		echo '<h3>'.s("Pour vous").'</h3>';
 		echo '<ul>';
-			echo '<li>'.s("ont du temps pour : ");
+			echo '<li>'.s("Avoir une comptabilité fiable de votre exercice 2025 et les suivants !").'</li>';
+			echo '<li>'.s("Avoir contribué à améliorer {siteName}").'</li>';
+		echo '</ul>';
+	echo '</div>';
+	echo '<h2>'.s("Qui peut tester ?").'</h2>';
+	echo '<div class="util-info">';
+		echo '<p>'.s("Nous recherchons des personnes qui :").'</p>';
+		echo '<ul class="mb-0">';
+			echo '<li>'.s("ont le temps et la patience pour : ");
 				echo '<ul>';
-					echo '<li>'.s("utiliser en conditions réelles le logiciel (tout en tenant la comptabilité \"officielle\" sur l'outil habituel)").'</li>';
+					echo '<li>'.s("utiliser en conditions réelles le logiciel (idéalement en continuant à tenir la comptabilité sur l'outil habituel pour comparer les données)").'</li>';
 					echo '<li>'.s("remonter tous les bugs rencontrés, les problèmes d'usage ou de conception et faire un suivi de ces remontées (échanger pour clarifier le problème par exemple)").'</li>';
 					echo '<li>'.s("retester la même fonctionnalité plusieurs fois selon les ajustements réalisés").'</li>';
 				echo '</ul>';
-			echo '<li>'.s("souhaitent améliorer {siteName} et participer activement sur Discord").'</li>';
+			echo '<li>'.s("participer activement sur Discord").'</li>';
 			echo '<li>'.s("évidemment, qui croient au projet et ont déjà manifesté leur soutien via une adhésion !").'</li>';
 		echo '</ul>';
-		echo '<h4>'.s("Quels sont les profils de fermes recherchés ?").'</h4>';
-		echo '<p>'.s("Pour que le test soit optimal, nous recherchons des fermes avec ces caractéristiques :").'</p>';
-		echo '<ul>';
-			echo '<li>'.s("au micro-BA");
-			echo '<li>'.s("à la comptabilité de trésorerie");
-			echo '<li>'.s("accompagnées ou non par un cabinet, un organisme extérieur");
-			echo '<li>'.s("redevables et non redevables de la TVA");
+	echo '</div>';
+	echo '<h2>'.s("Quels sont les profils de fermes recherchés ?").'</h2>';
+	echo '<div class="util-info">';
+		echo '<p>'.s("Nous recherchons des fermes :").'</p>';
+		echo '<ul class="mb-0">';
+			echo '<li>'.s("au micro-BA,").'</li>';
+			echo '<li>'.s("à la comptabilité de trésorerie,").'</li>';
 		echo '</ul>';
-		echo '<h3 class="mt-2" style="text-transform: uppercase">'.s("Rejoindre la beta").'</h3>';
+	echo '</div>';
+
+	echo '<h2 class="mt-2">'.s("Rejoindre la beta").'</h2>';
+	echo '<div class="util-block">';
 		echo new \company\BetaApplicationUi()->create($data->eFarm);
 	echo '</div>';
 
@@ -172,6 +152,97 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 		echo new \company\CompanyUi()->create($data->eFarm);
 
 	}
+
+});
+
+new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
+
+	$t->title = s("Démarrer avec la comptabilité sur {siteName}");
+	$t->template = 'home-start';
+
+	Asset::css('main', 'home.css');
+
+	$t->header = '<h1>'.encode($data->eFarm['name']).'</h1>';
+	$t->header .= '<h2>'.Asset::icon('check-lg').' '.s("La comptabilité a bien été activée pour votre ferme !").'</h2>';
+
+	echo '<div class="home-features home-features-3">';
+
+		echo '<h3 class="home-feature-fill text-center">';
+			echo s("La comptabilité sur Ouvretaferme regroupe une large palette de fonctionnalités.<br/>Que voulez-vous découvrir en premier ?");
+		echo '</h3>';
+
+		echo '<div class="home-feature bg-background">';
+
+			echo '<h2 class="color-accounting">';
+				echo '<div class="home-feature-icon">'.Asset::icon('bank').'</div>';
+				echo s("Banque");
+			echo '</h2>';
+			echo '<div>';
+				echo '<ul>';
+					echo '<li>'.s("J'importe mes relevés bancaires au format OFX").'</li>';
+					echo '<li>'.s("Je fais le rapprochement bancaire avec mes factures").'</li>';
+					echo '<li>'.s("Je crée mes écritures comptables dans le logiciel comptable de Ouvretaferme").'</li>';
+				echo '</ul>';
+			echo '</div>';
+			echo '<div class="home-feature-buttons">';
+				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-accounting"><p>'.Asset::icon('file-plus').'</p>'.s("Importer un relevé OFX").'</a>';
+			echo '</div>';
+
+		echo '</div>';
+		echo '<div class="home-feature bg-background">';
+
+			echo '<h2 class="color-accounting">';
+				echo '<div class="home-feature-icon">'.Asset::icon('file-spreadsheet').'</div>';
+				echo s("Pré-comptabilité");
+			echo '</h2>';
+			echo '<ul>';
+				echo '<li>'.s("J'attribue des numéros de compte à mes produits").'</li>';
+				echo '<li>'.s("J'exporte mes factures au format FEC ou dans le logiciel comptable de Ouvretaferme").'</li>';
+				echo '<li>'.s("Je visualise des données synthétiques de mes ventes non facturées pour une intégration comptable").'</li>';
+			echo '</ul>';
+			echo '<div class="home-feature-buttons">';
+				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/preaccounting" class="btn btn-accounting"><p>'.Asset::icon('file-spreadsheet').'</p>'.s("Commencer la précomptabilité").'</a>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="home-feature bg-background">';
+
+			echo '<h2 class="color-accounting">';
+				echo '<div class="home-feature-icon">'.Asset::icon('journal-bookmark').'</div>';
+				echo s("Logiciel comptable pour le micro-BA");
+			echo '</h2>';
+			echo '<ul>';
+				echo '<li>'.s("Je fais la comptabilité de ma ferme avec Ouvretaferme").'</li>';
+				echo '<li>'.s("En version {value} pour le moment", '<span class="util-badge bg-primary">BETA</span>').'</li>';
+			echo '</ul>';
+			echo '<div class="home-feature-buttons">';
+				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal" class="btn btn-accounting"><p>'.Asset::icon('journal-bookmark').'</p>'.s("Démarrer la comptabilité").'</a>';
+			echo '</div>';
+
+		echo '</div>';
+		echo '<div class="home-feature bg-background">';
+
+			echo '<h2 class="color-commercialisation">';
+				echo '<div class="home-feature-icon">'.Asset::icon('receipt').'</div>';
+				echo s("Facturation électronique");
+			echo '</h2>';
+			echo '<div class="home-feature-buttons">';
+				echo s("Printemps 2026");
+			echo '</div>';
+
+		echo '</div>';
+		echo '<div class="home-feature bg-background">';
+
+			echo '<h2 class="color-primary">';
+				echo '<div class="home-feature-icon">'.Asset::icon('database').'</div>';
+				echo s("Cahier de caisse");
+			echo '</h2>';
+			echo '<div class="home-feature-buttons">';
+				echo s("Printemps 2026");
+			echo '</div>';
+
+		echo '</div>';
+
+	echo '</div>';
 
 });
 

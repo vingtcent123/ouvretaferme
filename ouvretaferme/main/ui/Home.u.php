@@ -149,9 +149,58 @@ class HomeUi {
 
 	}
 
+	public function getAccounting(): string {
+		
+		$h = '<div class="home-features home-features-2">';
+			$h .= '<div class="home-feature">';
+				$h .= '<h2>';
+					$h .= '<div class="home-feature-icon">'.\Asset::icon('piggy-bank').'</div>';
+					$h .= s("Banque");
+				$h .= '</h2>';
+				$h .= '<h4>'.s("Importez vos relevés bancaires au format OFX et faites un rapprochement automatique avec vos factures pour vérifier en trois clics qui a payé.").'</h4>';
+				$h .= '<h5>'.s("Déjà disponible !").'</h5>';
+			$h .= '</div>';
+			$h .= '<div class="home-feature">';
+				$h .= '<h2>';
+					$h .= '<div class="home-feature-icon">'.\Asset::icon('file-spreadsheet').'</div>';
+					$h .= s("Précomptabilité");
+				$h .= '</h2>';
+				$h .= '<h4>'.s("Exportez les données de vos ventes et exportez vos factures au format FEC pour les importer sur votre logiciel de comptabilité.").'</h4>';
+				$h .= '<h5>'.s("Déjà disponible !").'</h5>';
+			$h .= '</div>';
+			$h .= '<div class="home-feature">';
+				$h .= '<h2>';
+					$h .= '<div class="home-feature-icon">'.\Asset::icon('receipt').'</div>';
+					$h .= s("Facturation électronique");
+				$h .= '</h2>';
+				$h .= '<h4>'.s("Ouvretaferme sera prêt pour le lancement de la réforme de la facturation électronique le 1<up>er</up> septembre 2026 avec le <i>e-invoicing</i> et le <i>e-reporting</i>. L'accès à la plateforme agréée sera inclus dans le montant de l'adhésion à Ouvretaferme.").'</h4>';
+				$h .= '<h5 class="mt-1">'.s("Disponible au printemps 2026").'</h5>';
+			$h .= '</div>';
+			$h .= '<div class="home-feature">';
+				$h .= '<h2>';
+					$h .= '<div class="home-feature-icon">'.\Asset::icon('database').'</div>';
+					$h .= s("Cahier de caisse");
+				$h .= '</h2>';
+				$h .= '<h4>'.s("Ouvretaferme vous permettra de tenir votre cahier de caisse en ligne pour gérer les espèces liées votre activité et faciliter vos futures obligations de <i>e-reporting</i>.").'</h4>';
+				$h .= '<h5 class="mt-1">'.s("Disponible au printemps 2026").'</h5>';
+			$h .= '</div>';
+			$h .= '<div class="home-feature home-feature-fill">';
+				$h .= '<h2>';
+					$h .= '<div class="home-feature-icon">'.\Asset::icon('journal-bookmark').'</div>';
+					$h .= s("Logiciel de comptabilité pour le micro-BA");
+				$h .= '</h2>';
+				$h .= '<h4 style="padding-right: 5rem">'.s("Vous savez tenir la comptabilité de votre ferme et connaissez vos écritures comptables et classes de compte ?<br/>Utilisez Ouvretaferme comme logiciel de comptabilité, c'est toujours inclus dans le montant de l'adhésion à l'association.").'</h4>';
+				$h .= '<h5>'.s("Déjà disponible en version beta").'</h5>';
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+		
+	}
+
 	public function getPoints(): string {
 
-		$h = '<h3>'.s("Principes de conception").'</h3>';
+		$h = '<h2>'.s("Principes de conception").'</h2>';
 
 		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point" style="grid-column: span 2">';
@@ -162,9 +211,6 @@ class HomeUi {
 				$h .= \Asset::icon('columns-gap');
 				$h .= '<h4>'.s("Les interfaces sont simples et intuitives,<br/>elles s'adaptent à vos pratiques").'</h4>';
 			$h .= '</div>';
-		$h .= '</div>';
-
-		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('lock');
 				$h .= '<h4>'.s("Vos données vous appartiennent<br/>et ne sont ni vendues, ni partagées").'</h4>';

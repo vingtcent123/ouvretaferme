@@ -13,7 +13,7 @@ new Page()
 
 		foreach($cFarm as $eFarm) {
 
-			\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+			\company\CompanyLib::connectDatabase($eFarm);
 
 			$cCashflow = \bank\Cashflow::model()
 				->select('id', 'invoice')

@@ -5,7 +5,32 @@ class CompanyLib {
 
 	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing', 'pdf'];
 
-	public static function connectSpecificDatabaseAndServer(\farm\Farm $eFarm): void {
+	public static function load(\stdClass $data): void {
+
+		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
+
+		if($data->__page['type'] === 'remote') {
+			$data->eFarm->validate();
+		} else {
+			$data->eFarm->validate('canAccounting');
+		}
+
+		if(
+			str_starts_with(LIME_REQUEST, '/comptabilite/decouvrir') or
+			str_starts_with(LIME_REQUEST, '/company/public:doInitialize')
+		) {
+			return;
+		}
+
+		if($data->eFarm->hasAccounting()) {
+			\company\CompanyLib::connectDatabase($data->eFarm);
+		} else {
+			throw new \RedirectAction('/comptabilite/decouvrir?farm='.$data->eFarm['id']);
+		}
+
+	}
+
+	public static function connectDatabase(\farm\Farm $eFarm): void {
 
 		// Create packages tables
 		$libModule = new \dev\ModuleLib();
@@ -45,17 +70,19 @@ class CompanyLib {
 		return 'dev_farm_'.$eFarm['id'];
 	}
 
-	public static function initialize(\farm\Farm $eFarm): void {
+	public static function enableAccounting(\farm\Farm $eFarm): void {
 
 		if($eFarm->hasAccounting() === TRUE) {
 			return;
 		}
 
 		if(OTF_DEMO === FALSE) {
-			self::createSpecificDatabaseAndTables($eFarm);
+			self::createDatabase($eFarm);
 		}
 
-		\farm\Farm::model()->update($eFarm, ['hasAccounting' => TRUE]);
+		\farm\Farm::model()->update($eFarm, [
+			'hasAccounting' => TRUE
+		]);
 
 	}
 
@@ -71,7 +98,7 @@ class CompanyLib {
 		$fw->validate();
 
 		if(OTF_DEMO === FALSE) {
-			self::createSpecificDatabaseAndTables($eFarm);
+			self::createDatabase($eFarm);
 		}
 
 		// Réinstanciation nécessaire car il a été précédemment instancié avec une mauvaise connexion.
@@ -81,13 +108,13 @@ class CompanyLib {
 
 	}
 
-	public static function createSpecificDatabaseAndTables(\farm\Farm $eFarm): void {
+	public static function createDatabase(\farm\Farm $eFarm): void {
 
 		// Create database
 		new \ModuleAdministration('company\GenericAccount')->createDatabase(CompanyLib::getDatabaseNameFromCompany($eFarm));
 
 		// Connect database
-		self::connectSpecificDatabaseAndServer($eFarm);
+		self::connectDatabase($eFarm);
 
 		// Create packages tables
 		$libModule = new \dev\ModuleLib();
@@ -137,7 +164,7 @@ class CompanyLib {
 
 		d($eFarm['id']);
 
-		\company\CompanyLib::connectSpecificDatabaseAndServer($eFarm);
+		\company\CompanyLib::connectDatabase($eFarm);
 
 		$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eFarm);
 		\Database::addBase($databaseName, 'ouvretaferme');

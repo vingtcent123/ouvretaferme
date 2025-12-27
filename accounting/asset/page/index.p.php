@@ -78,7 +78,7 @@ new \asset\AssetPage(function($data) {
 	\user\ConnectionLib::checkLogged();
 
 	$data->eFarm->validate('canManage');
-	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+	\company\CompanyLib::connectDatabase($data->eFarm);
 
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	$data->cFinancialYear = \account\FinancialYearLib::getAll();

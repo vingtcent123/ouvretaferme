@@ -204,6 +204,9 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 	margin-top: .5rem;
 }
 
+body[data-template~="farm"] .container {
+	width: calc(var(--screen-width) - var(--nav-width))
+}
 @media (min-width: 1100px) and (min-height: 650px) {
 
 	:root {
@@ -356,6 +359,7 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 		top: 0;
 		left: 0;
 		right: 0;
+		z-index: 1;
 	}
 
 	body[data-template~="farm"] > nav .nav-actions .nav-item {

@@ -133,22 +133,15 @@ class FarmTemplate extends MainTemplate {
 
 		if($this->main) {
 
-			$h = '';
-
-			$h .= $this->getMainTitle();
+			$h = $this->getMainTitle();
 			$h .= $this->main;
 
 			return $h;
 
 		} else {
 
-			$h = '';
-			if(GET('app') === 'accounting') {
-				Asset::css('company', 'company.css');
-				$h .= '<div class="accounting-info text-center">'.s("Ce module de comptabilité est en version <b>alpha</b> : il n'est pas encore ouvert au public et le développement est en cours.").'</div>';
-			}
+			$h = $this->getMainTitle();
 
-			$h .= $this->getMainTitle();
 			if($this->data->tip) {
 				$h .= new \farm\TipUi()->get($this->data->eFarm, $this->data->tip, $this->data->tipNavigation);
 			}
@@ -295,7 +288,7 @@ class FarmTemplate extends MainTemplate {
 								$farm .= '<a href="'.\association\AssociationSetting::URL.'" target="_blank" class="dropdown-item">'.s("Découvrir l'association").'</a>';
 								$farm .= '<a href="'.\association\AssociationSetting::URL.'/nous-soutenir" target="_blank" class="dropdown-item">'.s("Pourquoi soutenir l'association ?").'</a>';
 								$farm .= '<div class="dropdown-divider"></div>';
-								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill').'  '.s("Adhérer pour seulement 50 €").'</a>';
+								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill').'  '.s("Adhérer pour seulement {value} €", \association\AssociationSetting::MEMBERSHIP_FEE).'</a>';
 
 							$farm .= '</div>';
 

@@ -50,6 +50,13 @@ class Page {
 	private static $currentName = NULL;
 
 	/**
+	 * Current selected page
+	 *
+	 * @var string
+	 */
+	private static ?array $currentPage = NULL;
+
+	/**
 	 * Current page package
 	 *
 	 * @var string
@@ -120,6 +127,10 @@ class Page {
 
 	public static function setNotFound(string $page): void {
 		self::$notFound = $page;
+	}
+
+	public static function getCurrent(): ?array {
+		return self::$currentPage;
 	}
 
 	/**
@@ -375,9 +386,9 @@ class Page {
 	 */
 	public static function execute(array $uris, stdClass $data) {
 
-		$page = self::find($uris);
+		self::$currentPage = self::find($uris);
 
-		switch($page['type']) {
+		switch(self::$currentPage['type']) {
 
 			case 'http' :
 			case 'remote' :
@@ -386,13 +397,13 @@ class Page {
 			case 'put' :
 			case 'delete' :
 			case 'head' :
-				return self::executeHttp($page, $data);
+				return self::executeHttp(self::$currentPage, $data);
 
 			case 'cli' :
-				return self::executeCli($page, $data);
+				return self::executeCli(self::$currentPage, $data);
 
 			case 'cron' :
-				return self::executeCron($page, $data);
+				return self::executeCron(self::$currentPage, $data);
 
 		}
 
@@ -471,8 +482,7 @@ class Page {
 
 	private static function doRun(array $page, stdClass $data) {
 
-		$data->pageName = $page['name'];
-		$data->pageType = $page['type'];
+		$data->__page = $page;
 
 		$action = NULL;
 
@@ -591,6 +601,7 @@ class Page {
 		};
 
 		foreach(self::$pages[$pagePath] ?? [] as $page) {
+
 			if(
 				$page['name'] === $pageName and
 				(

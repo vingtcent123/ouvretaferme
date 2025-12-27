@@ -5,33 +5,29 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	$t->metaDescription = s("Logiciel gratuit pour les producteurs pour vendre en ligne, éditer des factures, concevoir votre plan de culture et gérer votre planning. C'est adapté à toutes les productions.");
 	$t->template = 'home-main';
 
-	Asset::css('main', 'font-ptserif.css');
 	Asset::css('main', 'home.css');
 
 	$t->header .= '<div>';
-		$t->header .= '<h1>'.s("<a>O</a>rganisez le <b>T</b>ravail à la <a>F</a>erme<br/>de la production à la vente", ['a' => '<span style="border-bottom: 3px solid var(--border); font-weight: bold" ">', 'b' => '<span style="border-top: 3px solid var(--border); font-weight: bold" ">']).'</h1>';
+		$t->header .= '<h1>'.s("Toute votre ferme sur un seul logiciel").'</h1>';
+		$t->header .= '<h4 class="home-feature-title">'.s("intuitif et facile à utiliser au bureau comme sur le terrain").'</h4>';
 	$t->header .= '</div>';
 
-	echo '<div class="home-features home-features-3">';
+	echo '<div class="home-features home-features-overlay home-features-3">';
 
-		echo '<h3 class="home-feature-title">'.s("Ouvretaferme est un logiciel gratuit qui contribue à l'autonomie de plus de 2500 producteurs").'</h3>';
 
 		echo '<div class="home-feature">';
 
 			echo '<h2 class="color-secondary">';
 				echo '<div class="home-feature-icon">'.Asset::icon('basket').'</div>';
-				echo s("Vendez en ligne");
+				echo s("Vente en ligne");
 			echo '</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Créez des boutiques en ligne sans commission").'</li>';
 				echo '<li>'.s("Mutualisez vos boutiques entre producteurs").'</li>';
 				echo '<li>'.s("Produits et catalogues de vente illimités").'</li>';
 			echo '</ul>';
-			echo '<div class="home-feature-buttons">';
-				echo '<div class="home-feature-for">';
-					echo s("Adapté à toutes les productions");
-				echo '</div>';
-				echo '<a href="/presentation/producteur" class="btn btn-secondary">'.s("En savoir plus").'</a>';
+			echo '<div class="home-feature-for">';
+				echo s("Adapté à toutes les productions");
 			echo '</div>';
 
 		echo '</div>';
@@ -39,49 +35,86 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 			echo '<h2 class="color-production">';
 				echo '<div class="home-feature-icon">'.Asset::icon('leaf').'</div>';
-				echo s("Planifiez votre production");
+				echo s("Production");
 			echo '</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Concevez vos plan de culture et plan d'assolement").'</li>';
 				echo '<li>'.s("Suivez votre planning semaine par semaine").'</li>';
-				echo '<li>'.s("Notez votre temps de travail").'</li>';
+				echo '<li>'.s("Notez et analysez votre temps de travail").'</li>';
 			echo '</ul>';
-			echo '<div class="home-feature-buttons">';
-				echo '<div class="home-feature-for">';
-					echo s("Maraichage  ·  Arboriculture  ·  Floriculture");
-				echo '</div>';
-				echo '<a href="/presentation/producteur" class="btn btn-production">'.s("En savoir plus").'</a>';
-				echo '  <a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-outline-production" target="_blank">'.s("Explorer la démo").'</a>';
+			echo '<div class="home-feature-for">';
+				echo s("Maraichage  ·  Arboriculture  ·  Floriculture");
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="home-feature">';
+
+			echo '<h2 class="color-accounting">';
+				echo '<div class="home-feature-icon">'.Asset::icon('bank').'</div>';
+				echo s("Comptabilité");
+			echo '</h2>';
+			echo '<ul>';
+				echo '<li>'.s("Rapprochement bancaire avec vos factures").'</li>';
+				echo '<li>'.s("Logiciel de comptabilité inclus pour le micro-BA").'</li>';
+				echo '<li>'.s("Export de vos ventes au format FEC").'</li>';
+			echo '</ul>';
+			echo '<div class="home-feature-for">';
+				echo s("Nouveauté 2026 !");
+			echo '</div>';
+
+		echo '</div>';
+
+
+		echo '<div class="home-feature">';
+
+			echo '<h2 class="color-secondary">';
+				echo '<div class="home-feature-icon">'.Asset::icon('receipt').'</div>';
+				echo s("Facturation");
+			echo '</h2>';
+			echo '<ul>';
+				echo '<li>'.s("Utilisez un logiciel de caisse pour vos marchés").'</li>';
+				echo '<li>'.s("Éditez des devis, bons de livraison et factures").'</li>';
+				echo '<li><a href="/facturation-electronique-les-mains-dans-les-poches">'.s("Compatible facturation électronique").'</a> 👍</li>';
+			echo '</ul>';
+			echo '<div class="home-feature-for">';
+				echo s("Logiciel conforme").' '.Asset::icon('check-circle-fill');
+			echo '</div>';
+
+		echo '</div>';
+		echo '<div class="home-feature">';
+
+			echo '<h2 class="color-production">';
+				echo '<div class="home-feature-icon">'.Asset::icon('megaphone', ['class' => 'asset-icon-flip-h']).'</div>';
+				echo s("Communication");
+			echo '</h2>';
+			echo '<ul>';
+				echo '<li>'.s("Travaillez en équipe sur le logiciel").'</li>';
+				echo '<li>'.s("Campagnes d'e-mails pour vos clients").'</li>';
+				echo '<li>'.s("Créez le site internet de votre ferme").'</li>';
+			echo '</ul>';
+			echo '<div class="home-feature-for">';
+				echo s("Aucune connaissance technique requise");
 			echo '</div>';
 		echo '</div>';
 		echo '<div class="home-feature home-feature-other">';
-
-			echo '<h2 class="color-primary">';
-				echo '<div class="home-feature-icon">'.Asset::icon('boxes').'</div>';
-				echo s("Et aussi");
-			echo '</h2>';
-			echo '<ul>';
-				echo '<li>'.s("Éditez des devis, bons de livraison et factures").'</li>';
-				echo '<li><a href="/facturation-electronique-les-mains-dans-les-poches">'.s("Compatible facturation électronique").'</a> 👍</li>';
-				echo '<li>'.s("Utilisez un logiciel de caisse pour vos marchés").'</li>';
-				echo '<li>'.s("Créez le site internet de votre ferme").'</li>';
-			echo '</ul>';
-			echo '<div class="home-feature-buttons">';
-				echo '<div class="home-feature-for">';
-					echo s("Envie d'essayer Ouvretaferme ?");
-				echo '</div>';
-				echo '<a href="/user/signUp" class="btn btn-primary">'.Asset::icon('person-fill').' '.s("Créer un compte").'</a>';
+			echo '<div class="home-feature-subtitle">'.s("Ouvretaferme est un logiciel gratuit qui contribue à l'autonomie de plus de 2500 producteurs").'</div>';
+			echo '<div>';
+				echo '<a href="/user/signUp" class="btn btn-xl btn-outline-primary" style="font-weight: bold;">'.s("Créer un compte").'</a>';
 			echo '</div>';
 
 		echo '</div>';
 
 	echo '</div>';
+	echo '<div class="text-center" style="margin-bottom: 4rem">';
+		echo '<a href="/presentation/producteur" class="btn btn-xl btn-primary">'.s("Liste des fonctionnalités").'</a>';
+		echo '  <a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-xl btn-outline-primary" target="_blank">'.s("Explorer la démo").'</a>';
+	echo '</div>';
+
 
 	if(FEATURE_GAME) {
 		echo new \game\HelpUi()->getHome($data->ePlayer);
 	}
 
-	echo '<h2>'.s("Qui utilise Ouvretaferme et pourquoi ?").'</h2>';
+	echo '<h2>'.s("Témoignages de fermes").'</h2>';
 
 	echo '<div class="home-profiles">';
 
@@ -115,7 +148,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '</div>';
 			echo '<p>'.s("Axel est un éleveur qui vend sa production en ligne avec Ouvretaferme et a bidouillé les fonctionnalités de planification destinées aux fruits, légumes et aux fleurs pour les adapter à sa production de volailles de chair et de poules pondeuses. Il bénéficiera peut-être bientôt de fonctionnalités spécifiques sur Ouvretaferme !").'</p>';
 		echo '</div>';
-		echo '<div class="home-profile home-profile-dark bg-shop">';
+		echo '<div class="home-profile home-profile-dark bg-secondary">';
 			echo '<div class="home-profile-header home-profile-header-text">';
 				echo '<h3>'.s("Vos clients").'</h3>';
 			echo '</div>';
@@ -169,8 +202,6 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 	echo new \main\HomeUi()->getTraining();
 
 	echo '<h2 class="mb-2">'.s("En savoir plus sur Ouvretaferme").'</h2>';
-
-	echo '<h3>'.s("Philosophie du projet").'</h3>';
 
 	echo '<div class="home-story-wrapper">';
 		echo '<div class="home-story">';
@@ -232,8 +263,6 @@ new AdaptativeView('signUp', function($data, MainTemplate $t) {
 	$t->metaDescription = s("Inscrivez-vous comme producteur sur {siteName} pour profiter de fonctionnalités de vente en ligne et de production du logiciel !");
 	$t->template = 'home-legal';
 
-	Asset::css('main', 'font-ptserif.css');
-
 	Asset::css('main', 'home.css');
 
 
@@ -274,8 +303,6 @@ new AdaptativeView('/presentation/invitation', function($data, MainTemplate $t) 
 	$t->title = s("Cette invitation a expiré, veuillez vous rapprocher de votre interlocuteur habituelle pour en obtenir une nouvelle !");
 	$t->template = 'home-legal';
 
-	Asset::css('main', 'font-ptserif.css');
-
 	Asset::css('main', 'home.css');
 
 });
@@ -287,45 +314,35 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 	$t->metaDescription = s("Présentation des fonctionnalités de {siteName} pour les producteurs. Découvrez tous les outils de planification, de vente en ligne, de communication et de gestion d'équipe !");
 	$t->template = 'home-farmer';
 
-	Asset::css('main', 'font-ptserif.css');
-
 	Asset::css('main', 'home.css');
 
-	$t->header = '<h4 class="home-domain">'.Lime::getDomain().'</h4>';
-	$t->header .= '<h1>'.s("De la production à la vente").'</h1>';
-	$t->header .= '<h4 class="home-domain">'.s("Découvrez les principales fonctionnalités du logiciel !").'</h4>';
+	$t->header = '<h4 class="home-domain">'.Lime::getName().'</h4>';
+	$t->header .= '<h1>'.s("Les fonctionnalités").'</h1>';
 
 
 	echo '<div class="home-presentation">';
 
 		echo '<div>';
 			echo '<h2 class="color-secondary">'.Asset::icon('basket').'<br/>'.s("Un logiciel pour vendre").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Gérez vos ventes pour les professionnels et les particuliers.</b><br/><small>Créez des ventes à partir de vos produits, gérez votre clientèle, choisissez vos prix. Imprimez des étiquettes de colisage si vous livrez aux professionnels. Exporter les ventes du jour au format PDF pour préparer vos livraisons.</small>").'</li>';
-					echo '<li>'.s("<b>Utilisez le logiciel de caisse intégré.</b><br/><small>Utilisez le logiciel de caisse avec une tablette ou un téléphone pour préparer vos marchés et saisir vos ventes directement pendant le marché. Pour chaque vente, visualisez ce que le client a acheté et le montant qu'il doit vous régler. Simple et efficace.</small>").'</li>';
-					echo '<li>'.s("<b>Créez des boutiques en ligne.</b><br/><small>Permettez à vos clients de passer commande en ligne et de récupérer leur colis à la date et l'endroit convenus, ou bien livrez-les à domicile selon vos préférences. Activez si vous le souhaitez le paiement par carte bancaire sans commission sur les ventes.</small>").'</li>';
-					echo '<li>'.s("<b>Partagez vos boutiques en ligne avec d'autres producteurs.</b><br/><small>Vendez à plusieurs sur la même boutique pour partager vos créneaux de vente et simplifier l'expérience pour vos clients.</small>").'</li>';
-					echo '<li>'.s("<b>Éditez des mercuriales pour vos clients professionnels.</b><br/><small>Créez des boutiques en ligne exclusivement réservées à vos clients professionnels. Personnalisez les prix et les disponibilités par client.</small>").'</li>';
-					echo '<li>'.s("<b>Pilotez vos stocks.</b><br/><small>Choisissez les produits pour lesquels vous souhaitez avoir un suivi des stocks. Les récoltes et les ventes que vous saisissez impactent automatiquement le stock et vous savez toujours ce qui vous reste à vendre.</small>").'</li>';
-					echo '<li>'.s("<b>Gérez vos devis, bons de livraison et factures.</b><br/><small>Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients. Obtenez-les au format PDF.</small>").'</li>';
-					echo '<li>'.s("<b>Compatible avec la facturation électronique.</b><br/><small>Les factures intègrent le format Factur-X.</small>").'</li>';
-				echo '</ul>';
-			echo '</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Gérez vos ventes pour les professionnels et les particuliers</b><br/><small>Créez des ventes à partir de vos produits, gérez votre clientèle, choisissez vos prix. Imprimez des étiquettes de colisage si vous livrez aux professionnels. Exporter les ventes du jour au format PDF pour préparer vos livraisons.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Utilisez le logiciel de caisse intégré</b><br/><small>Utilisez le logiciel de caisse avec une tablette ou un téléphone pour préparer vos marchés et saisir vos ventes directement pendant le marché. Pour chaque vente, visualisez ce que le client a acheté et le montant qu'il doit vous régler. Simple et efficace.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Créez des boutiques en ligne</b><br/><small>Permettez à vos clients de passer commande en ligne et de récupérer leur colis à la date et l'endroit convenus, ou bien livrez-les à domicile selon vos préférences. Activez si vous le souhaitez le paiement par carte bancaire sans commission sur les ventes.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Partagez vos boutiques en ligne avec d'autres producteurs</b><br/><small>Vendez à plusieurs sur la même boutique pour partager vos créneaux de vente et simplifier l'expérience pour vos clients.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Éditez des mercuriales pour vos clients professionnels</b><br/><small>Créez des boutiques en ligne exclusivement réservées à vos clients professionnels. Personnalisez les prix et les disponibilités par client.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Pilotez vos stocks</b><br/><small>Choisissez les produits pour lesquels vous souhaitez avoir un suivi des stocks. Les récoltes et les ventes que vous saisissez impactent automatiquement le stock et vous savez toujours ce qui vous reste à vendre.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Gérez vos devis, bons de livraison et factures</b><br/><small>Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients. Obtenez-les au format PDF.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Compatible avec la facturation électronique</b><br/><small>Les factures intègrent le format Factur-X.</small>").'</div>';
+
 		echo '</div>';
 
 		echo '<div>';
 			echo '<h2 class="color-production">'.Asset::icon('leaf').'<br/>'.s("Un logiciel pour produire").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Planifiez votre saison de culture en concevant vos plan de culture et plan d'assolement.</b><br/><small>Gérez les variétés, la longueur des planches, les surfaces, les densités, les objectifs de récolte et les associations de cultures. Enregistrez et retrouvez facilement toutes les informations liées à vos séries de cultures. De plus, un prévisionnel financier vous aide à estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</li>';
-					echo '<li>'.s("<b>Maîtrisez votre temps de travail.</b><br/><small>Que ce soit à la ferme avec votre téléphone ou le soir sur l'ordinateur, un planning hebdomadaire ou quotidien vous permet de faire le suivi des interventions planifiées et réalisées sur la semaine. Renseignez facilement votre temps de travail pour comprendre là où passe votre temps.</small>").'</li>';
-					echo '<li>'.s("<b>Suivez précisément vos rotations sur votre parcellaire.</b><br/><small>Choisissez vos critères pour les rotations et vérifiez en un coup d'oeil les planches qui correspondent à ces critères. Pratique pour éviter de mettre vos cultures aux mêmes emplacements trop souvent !</small>").'</li>';
-					echo '<li>'.s("<b>Collaborez avec votre équipe.</b><br/><small>Invitez votre équipe sur l'espace de votre ferme et gérez les droits de chaque personne.</small>").'</li>';
-					echo '<li>'.s("<b>C'est adapté à toutes les productions.</b><br/><small>{siteName} vous accompagne en maraichage, floriculture, arboriculture ou même en production de semences.</small>").'</li>';
-					echo '<li>'.s("<b>Et aussi...</b><br/><small>Consultez les quantités de semences et plants à produire ou commander. Créez des itinéraires techniques réutilisables saison après saison. Ajoutez des photos pour vous souvenir de vos cultures. Enregistrez le matériel disponible à la ferme pour l'utiliser dans vos interventions...</small>").'</li>';
-				echo '</ul>';
-			echo '</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Planifiez votre saison de culture en concevant vos plan de culture et plan d'assolement</b><br/><small>Gérez les variétés, la longueur des planches, les surfaces, les densités, les objectifs de récolte et les associations de cultures. Enregistrez et retrouvez facilement toutes les informations liées à vos séries de cultures. De plus, un prévisionnel financier vous aide à estimer vos ventes en fonction de votre plan de culture et de vos prévisions !</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Maîtrisez votre temps de travail</b><br/><small>Que ce soit à la ferme avec votre téléphone ou le soir sur l'ordinateur, un planning hebdomadaire ou quotidien vous permet de faire le suivi des interventions planifiées et réalisées sur la semaine. Renseignez facilement votre temps de travail pour comprendre là où passe votre temps.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Suivez précisément vos rotations sur votre parcellaire</b><br/><small>Choisissez vos critères pour les rotations et vérifiez en un coup d'oeil les planches qui correspondent à ces critères. Pratique pour éviter de mettre vos cultures aux mêmes emplacements trop souvent !</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Collaborez avec votre équipe</b><br/><small>Invitez votre équipe sur l'espace de votre ferme et gérez les droits de chaque personne.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>C'est adapté à toutes les productions</b><br/><small>{siteName} vous accompagne en maraichage, floriculture, arboriculture ou même en production de semences.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Et aussi...</b><br/><small>Consultez les quantités de semences et plants à produire ou commander. Créez des itinéraires techniques réutilisables saison après saison. Ajoutez des photos pour vous souvenir de vos cultures. Enregistrez le matériel disponible à la ferme pour l'utiliser dans vos interventions...</small>").'</div>';
 		echo '</div>';
 
 	echo '</div>';
@@ -334,43 +351,38 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 
 		echo '<div>';
 			echo '<h2>'.Asset::icon('megaphone').'<br/>'.s("Un logiciel pour communiquer").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Programmez des campagnes d'e-mailing.</b><br/><small>Vous pouvez envoyer des e-mails à vos clients pour les prévenir de l'ouverture de vos ventes ou tout simplement leur envoyer une newsletter.</small>").'</li>';
-					echo '<li>'.s("<b>Créez le site internet de votre ferme.</b><br/><small>Créez autant de pages que vous voulez sur votre nouveau site et personnalisez le thème graphique. Vous pouvez même avoir un nom de domaine si vous le souhaitez.</small>").'</li>';
-					echo '<li>'.s("<b>Aucune connaissance technique n'est nécessaire.</b><br/><small>Toutes les étapes de création de votre site internet se font depuis votre téléphone ou votre ordinateur.</small>").'</li>';
-					echo '<li>'.s("<b>Pas de publicité.</b>").'</li>';
-				echo '</ul>';
-			echo '</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Programmez des campagnes d'e-mailing</b><br/><small>Vous pouvez envoyer des e-mails à vos clients pour les prévenir de l'ouverture de vos ventes ou tout simplement leur envoyer une newsletter</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Créez le site internet de votre ferme</b><br/><small>Créez autant de pages que vous voulez sur votre nouveau site et personnalisez le thème graphique. Vous pouvez même avoir un nom de domaine si vous le souhaitez.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Aucune connaissance technique n'est nécessaire</b><br/><small>Toutes les étapes de création de votre site internet se font depuis votre téléphone ou votre ordinateur.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Pas de publicité</b>").'</div>';
 		echo '</div>';
 
 		echo '<div>';
 			echo '<h2>'.Asset::icon('send').'<br/>'.s("Un logiciel pour améliorer vos pratiques").'</h2>';
-			echo '<div class="home-presentation-description">';
-				echo '<ul>';
-					echo '<li>'.s("<b>Accédez à de nombreux graphiques et statistiques.</b><br/><small>Visualisez les résultats de votre plan de culture, votre temps de travail et vos ventes. Retournez dans le passé pour mesurer vos progrès. Comprenez ce qui vous prend du temps pour améliorer vos pratiques.</small>").'</li>';
-					echo '<li>'.s("<b>Connaissez votre prix de revient pour chaque culture.</b><br/><small>Avec le temps de travail et les ventes que vous avez saisis, calculez vos prix de revient pour mieux définir vos prix de vente.</small>").'</li>';
-					echo '<li>'.s("<b>Exportez vos données au format CSV.</b><br/><small>Manipulez vos chiffres de vente ou de temps de travail dans un tableur pour tirer partie de vos données !</small>").'</li>';
-				echo '</ul>';
-			echo '</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Accédez à de nombreux graphiques et statistiques</b><br/><small>Visualisez les résultats de votre plan de culture, votre temps de travail et vos ventes. Retournez dans le passé pour mesurer vos progrès. Comprenez ce qui vous prend du temps pour améliorer vos pratiques.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Connaissez votre prix de revient pour chaque culture</b><br/><small>Avec le temps de travail et les ventes que vous avez saisis, calculez vos prix de revient pour mieux définir vos prix de vente.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Exportez vos données au format CSV</b><br/><small>Manipulez vos chiffres de vente ou de temps de travail dans un tableur pour tirer partie de vos données !</small>").'</div>';
 		echo '</div>';
 
 	echo '</div>';
 
+	echo '<h2 class="mt-3">'.s("Un logiciel pour faire votre comptabilité").'</h2>';
+	echo new \main\HomeUi()->getAccounting();
+
 	echo '<br/>';
 
 	echo '<div class="text-center">';
-		echo '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-secondary btn-lg">'.s("Explorez la ferme démo pour découvrir le service").'</a>';
+		echo '<a href="'.OTF_DEMO_URL.'/ferme/'.\farm\Farm::DEMO.'/series?view=area" class="btn btn-secondary btn-xl">'.s("Explorez la ferme démo pour découvrir le service").'</a>';
 	echo '</div>';
 	echo '<br/>';
 	echo '<br/>';
 
 	echo new \main\HomeUi()->getPoints();
 
-	echo '<h3 class="mt-2">'.s("Principe de gratuité").'</h3>';
+	echo '<h2 class="mt-3">'.s("Principe de gratuité").'</h2>';
 
 	echo '<div class="home-story">';
-		echo s("L'accès à toutes les fonctionnalités de {siteName} est ouvert et gratuit pour les producteurs sous signe de qualité <i>Agriculture biologique</i> ou <i>Nature & Progrès</i>. Pour les autres, reportez-vous aux <link>conditions d'utilisation du service</link>.", ['link' => '<a href="/presentation/service">']);
+		echo s("L'accès aux fonctionnalités de vente et de production de {siteName} est ouvert et gratuit pour les producteurs sous signe de qualité <i>Agriculture biologique</i> ou <i>Nature & Progrès</i>. L'accès à la comptabilité est soumis à l'adhésion à l'association Ouvretaferme.");
 	echo '</div>';
 
 });
@@ -381,7 +393,6 @@ new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', functi
 	$t->metaDescription = s("{siteName} sera pleinement compatible avec la facturation électronique.");
 	$t->template = 'home-invoicing';
 
-	Asset::css('main', 'font-ptserif.css');
 	Asset::css('main', 'home.css');
 
 	$t->header .= '<h1>'.s("À propos de la facturation électronique").'</h1>';
@@ -442,8 +453,6 @@ new AdaptativeView('/presentation/formations', function($data, MainTemplate $t) 
 	$t->metaDescription = s("Formez-vous à l'utilisation de {siteName} !");
 	$t->template = 'home-farmer';
 
-	Asset::css('main', 'font-ptserif.css');
-
 	Asset::css('main', 'home.css');
 
 	$t->header = '<h4 class="home-domain">'.Lime::getDomain().'</h4>';
@@ -490,8 +499,6 @@ new AdaptativeView('/presentation/service', function($data, MainTemplate $t) {
 	$t->metaNoindex = TRUE;
 	$t->template = 'home-legal';
 
-	Asset::css('main', 'font-ptserif.css');
-
 	Asset::css('main', 'home.css');
 
 	$t->header = '<h1>'.s("Conditions d'utilisation du service").'</h1>';
@@ -505,8 +512,6 @@ new AdaptativeView('/presentation/faq', function($data, MainTemplate $t) {
 	$t->title = s("Foire aux questions");
 	$t->metaNoindex = TRUE;
 	$t->template = 'home-legal';
-
-	Asset::css('main', 'font-ptserif.css');
 
 	Asset::css('main', 'home.css');
 

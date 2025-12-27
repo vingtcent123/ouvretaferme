@@ -5,7 +5,7 @@ new Page(function($data) {
 
 	$data->eFarm->validate('canManage');
 
-	\company\CompanyLib::connectSpecificDatabaseAndServer($data->eFarm);
+	\company\CompanyLib::connectDatabase($data->eFarm);
 
 	if($data->eFarm->usesAccounting()) {
 

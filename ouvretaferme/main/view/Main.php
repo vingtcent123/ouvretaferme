@@ -40,6 +40,9 @@ class MainTemplate extends BaseTemplate {
 
 		\Asset::css('main', 'design.css');
 
+		Asset::css('main', 'font-ptserif.css');
+		Asset::css('main', 'font-chelsea-market.css');
+
 		$this->base = \Lime::getProtocol().'://'.SERVER('HTTP_HOST');
 
 	}

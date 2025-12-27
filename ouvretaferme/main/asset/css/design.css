@@ -30,6 +30,7 @@
 	--accounting: #205160;
 	--game: #7a1b1b;
 	--account-group: #FDE9D9;
+	--system: linear-gradient(to right, var(--commercialisation) 0, var(--production) 50%, var(--accounting) 100%);
 
 	--draft: var(--todo);
 	--confirmed: var(--order);
@@ -585,6 +586,13 @@ thead.thead-sticky {
 
 .util-unit {
 	white-space: nowrap;
+}
+
+.util-association {
+	border: 2px dashed var(--primary);
+	padding: 1.5rem;
+	border-radius: var(--radius);
+	margin-bottom: 2rem;
 }
 
 .plant-start {

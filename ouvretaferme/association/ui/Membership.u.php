@@ -42,12 +42,17 @@ class MembershipUi {
 
 	public function getBenefits(): string {
 
-		$h = '<h4>'.s("Ce que l'adhésion apporte :").'</h4>';
-		$h .= '<ul>';
-			$h .= '<li>'.s("Un immense soutien pour nous aider à développer Ouvretaferme").'</li>';
-			$h .= '<li>'.s("Envoyer jusqu'à {value} e-mails par semaine avec les campagnes d'e-mailing", \farm\Farm::getCampaignMemberLimit()).'</li>';
-		$h .= '</ul>';
-		$h .= '<p>'.s("Rassurez-vous, adhérer à l'association Ouvretaferme ne vous engage en rien à consacrer du temps pour participer à la vie de l'association ou au développement du logiciel (à moins que vous ne le souhaitiez !). Il s'agit simplement de nous aider et nous motiver à continuer à développement !").'</p>';
+		\Asset::css('main', 'home.css');
+
+		$h = '<div>';
+			$h .= '<h3>'.s("Ce que l'adhésion apporte").'</h3>';
+			$h .= '<div class="home-points">';
+				$h .= '<div class="home-point">'.\Asset::icon('hand-thumbs-up').'<h4>'.s("Un immense soutien pour nous aider à développer Ouvretaferme").'</h4></div>';
+				$h .= '<div class="home-point">'.\Asset::icon('bank').'<h4>'.s("L'accès au module de comptabilité").'</h4></div>';
+				$h .= '<div class="home-point">'.\Asset::icon('envelope').'<h4>'.s("Envoyer {value} e-mails par semaine avec les campagnes e-mailing", \farm\Farm::getCampaignMemberLimit()).'</h4></div>';
+			$h .= '</div>';
+			$h .= '<p class="mt-1">'.s("Adhérer à l'association Ouvretaferme ne vous engage en rien à consacrer du temps pour participer à la vie de l'association ou au développement du logiciel (à moins que vous ne le souhaitiez !). Il s'agit simplement de nous aider à poursuivre son développement !").'</p>';
+		$h .= '</div>';
 
 		return $h;
 
@@ -55,7 +60,7 @@ class MembershipUi {
 
 	public function getMembership(\farm\Farm $eFarm, bool $hasJoinedForNextYear): string {
 
-		$h = '<div class="util-block-secondary">';
+		$h = '<div class="">';
 
 			if($eFarm['membership']) {
 
@@ -73,7 +78,6 @@ class MembershipUi {
 
 			} else {
 
-				$h .= '<p>'.s("Votre ferme <b>{farmName}</b> n'a pas encore adhéré à l'association Ouvretaferme pour l'année <b>{year}</b>.", ['farmName' => encode($eFarm['name']), 'year' => date('Y')]).'</p>';
 				$h .= $this->getBenefits();
 			}
 
@@ -151,43 +155,50 @@ class MembershipUi {
 
 			$h .= '</p>';
 
+			$h .= '<p>';
+				$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b> jusqu'au 31 décembre 2025 pour accompagner le démarrage de l'association. À partir du 1<sup>er</sup> janvier 2026, le montant minimal pour l'adhésion sera fixé à 100 €. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money(AssociationSetting::MEMBERSHIP_FEE, precision: 0)]);
+			$h .= '</p>';
+
 			$h .= '<br/>';
 
-			$h .= $this->getMemberInformation($eFarm, $eUser);
+			if($eFarm->isLegal()) {
 
-			$h .= '<h3>'.s("Montant de l'adhésion").'</h3>';
+				$h .= $this->getMemberInformation($eFarm, $eUser);
 
-			$form = new \util\FormUi();
+				$h .= '<h3>'.s("Montant de l'adhésion").'</h3>';
 
-			$fee = AssociationSetting::MEMBERSHIP_FEE;
+				$form = new \util\FormUi();
 
-			$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join']);
+				$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join']);
 
-				$h .= $form->hidden('farm', $eFarm['id']);
+					$h .= $form->hidden('farm', $eFarm['id']);
 
-				$h .= '<p>';
-					$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b> jusqu'au 31 décembre 2025 pour accompagner le démarrage de l'association. À partir du 1<sup>er</sup> janvier 2026, le montant minimal pour l'adhésion sera fixé à 100 €. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);
-				$h .= '</p>';
+					$h .= '<p>';
+						$h .= s("Si vous le souhaitez, plutôt qu'utiliser le paiement par carte bancaire, vous pouvez également faire un virement sur le compte bancaire de l'association en indiquant dans le motif du virement <b>Adhésion ferme {farm}</b> (<link>télécharger l'IBAN</link>).", ['farm' => $eFarm['id'], 'link' => '<a href="'.\Asset::getPath('association', 'document/iban.pdf').'" data-ajax-navigation="never">']);
+					$h .= '</p>';
 
-				$h .= '<p>';
-					$h .= s("Si vous le souhaitez, plutôt qu'utiliser le paiement par carte bancaire, vous pouvez également faire un virement sur le compte bancaire de l'association en indiquant dans le motif du virement <b>Adhésion ferme {farm}</b> (<link>télécharger l'IBAN</link>).", ['farm' => $eFarm['id'], 'link' => '<a href="'.\Asset::getPath('association', 'document/iban.pdf').'" data-ajax-navigation="never">']);
-				$h .= '</p>';
+					$h .= $this->getAmountBlocks($form, [AssociationSetting::MEMBERSHIP_FEE, AssociationSetting::MEMBERSHIP_FEE + 20, AssociationSetting::MEMBERSHIP_FEE + 40], AssociationSetting::MEMBERSHIP_FEE);
 
-				$h .= $this->getAmountBlocks($form, [$fee, $fee + 20, $fee + 40], $fee);
+					$h .= $form->checkbox('terms', 'yes', [
+						'mandatory' => TRUE,
+						'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
+					]);
 
-				$h .= $form->checkbox('terms', 'yes', [
-					'mandatory' => TRUE,
-					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
-				]);
+					// Promo adhésion 2025-2026
+					if(currentYear() === 2025) {
+						$h .= $form->inputGroup($form->submit(s("J'adhère pour 2025 et 2026"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+					} else {
+						$h .= $form->inputGroup($form->submit(s("J'adhère pour {value}", $for), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+					}
 
-				// Promo adhésion 2025-2026
-				if(currentYear() === 2025) {
-					$h .= $form->inputGroup($form->submit(s("J'adhère pour 2025 et 2026"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
-				} else {
-					$h .= $form->inputGroup($form->submit(s("J'adhère pour {value}", $for), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
-				}
+				$h .= $form->close();
 
-			$h .= $form->close();
+			} else {
+				$h .= '<h3>'.s("Adhérent").'</h3>';
+				$h .= '<div class="util-block">';
+					$h .= new \farm\FarmUi()->getLegalForm($eFarm);
+				$h .= '</div>';
+			}
 
 		$h .= '</div>';
 

@@ -8,26 +8,18 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 new AdaptativeView('start', function($data, MainTemplate $t) {
 
 	$t->title = s("Bienvenue sur {value}", $data->e['name']);
-	$t->canonical = '/';
 	$t->template = 'home-start';
 
-	Asset::css('main', 'font-ptserif.css');
 	Asset::css('main', 'home.css');
 
 	$t->header = '<h1>'.encode($data->e['name']).'</h1>';
-
-	if($data->e['cultivationPlace']) {
-		$t->header .= '<h4>'.\Asset::icon('geo-fill').' '.encode($data->e['cultivationPlace']).'</h4>';
-	}
-
 	$t->header .= '<h2>'.Asset::icon('check-lg').' '.s("Votre ferme a bien été créée sur {siteName} !").'</h2>';
-
 
 	echo '<div class="home-features home-features-3">';
 
-		echo '<h3 class="home-feature-title">';
-			echo s("{siteName} propose une large gamme de fonctionnalités.<br/>Choisissez par quoi vous voulez démarrer !");
-			echo '<div class="mt-1"><a href="'.\farm\FarmUi::urlSellingSales($data->e).'" class="btn btn-outline-primary">'.Asset::icon('chevron-double-right').' '.s("Passer cette étape").'</a></div>';
+		echo '<h3 class="home-feature-fill text-center">';
+			echo s("{siteName} propose une large palette de fonctionnalités.<br/>Choisissez par quoi vous voulez démarrer !");
+			echo '<div class="mt-1"><a href="'.\farm\FarmUi::urlSellingSales($data->e).'" class="btn btn-outline-primary">'.s("Passer cette étape").'</a></div>';
 		echo '</h3>';
 
 		echo '<div class="home-feature bg-background">';
@@ -100,7 +92,7 @@ new AdaptativeView('start', function($data, MainTemplate $t) {
 		echo '<div class="home-feature bg-background">';
 
 			echo '<h2 class="color-primary">';
-				echo '<div class="home-feature-icon">'.Asset::icon('question-circle').'</div>';
+				echo '<div class="home-feature-icon">'.Asset::icon('megaphone').'</div>';
 				echo s("Site internet");
 			echo '</h2>';
 			echo '<ul>';

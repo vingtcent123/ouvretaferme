@@ -753,7 +753,7 @@ div.input-group > .input-group-addon.input-group-addon-for-input {
 }
 
 .container {
-	width: calc(var(--screen-width) - var(--nav-width));
+	width: var(--screen-width);
 	max-width: 1600px;
 	margin-left: auto;
 	margin-right: auto;
@@ -1271,6 +1271,24 @@ a.util-badge {
 .util-empty {
 	color: var(--muted);
 	margin-bottom: 1rem;
+}
+
+.util-circle {
+	width: 2rem;
+	height: 2rem;
+	font-size: 1.1rem;
+	border-radius: 50%;
+	color: white;
+	background-color: var(--primary);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.util-circle.util-circle-lg {
+	width: 2.5rem;
+	height: 2.5rem;
+	font-size: 1.25rem;
 }
 
 .util-block,

@@ -126,8 +126,8 @@ class CashflowUi {
 					'</div>';
 
 			}
-			return '<div class="util-info">'.
-				s("Aucun import bancaire n'a été réalisé (<link>importer</link>)", [
+			return '<div class="util-empty">'.
+				s("Vous n'avez réalisé aucun import bancaire.", [
 					'link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports">',
 				]).
 			'</div>';
@@ -142,13 +142,13 @@ class CashflowUi {
 		if($eImport->exists() === TRUE) {
 
 			$h .= '<div class="util-info">';
-			$h .= s(
-				"Vous visualisez actuellement les opérations bancaires correspondant à l'import #{id} du {date}.",
-				[
-					'id' => GET('import'),
-					'date' => \util\DateUi::numeric($eImport['createdAt'], \util\DateUi::DATE),
-				]
-			);
+				$h .= s(
+					"Vous visualisez actuellement les opérations bancaires correspondant à l'import #{id} du {date}.",
+					[
+						'id' => GET('import'),
+						'date' => \util\DateUi::numeric($eImport['createdAt'], \util\DateUi::DATE),
+					]
+				);
 			$h .= '</div>';
 		}
 

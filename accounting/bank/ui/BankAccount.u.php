@@ -66,7 +66,6 @@ class BankAccountUi {
 						$h .= '<td>';
 							if($canUpdate === TRUE) {
 								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
-								$eBankAccount->setQuickAttribute('app', 'accounting');
 								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'&nbsp;'.s("(Par défaut)").'</i>');
 							} else {
 								$h .= encode($eBankAccount['label']);
@@ -75,7 +74,6 @@ class BankAccountUi {
 						$h .= '<td>';
 							if($canUpdate === TRUE) {
 								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
-								$eBankAccount->setQuickAttribute('app', 'accounting');
 								$h .= $eBankAccount->quick('description', $eBankAccount['description'] ? encode($eBankAccount['description']) : '<i>'.s("Non défini").'</i>');
 							} else {
 								$h .= encode($eBankAccount['label']);
