@@ -13,7 +13,7 @@ new Page(function($data) {
 
 		$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
 
-		$data->isMember = \association\HistoryLib::getByFarm($data->eFarm)->find(fn($e) => $e['type'] === \association\History::MEMBERSHIP and $e['membership'] === (int)date('Y'));
+		$data->isMember = \association\HistoryLib::getByFarm($data->eFarm)->find(fn($e) => $e['type'] === \association\History::MEMBERSHIP and $e['membership'] === (int)date('Y'))->count() > 0;
 
 		throw new ViewAction($data);
 
