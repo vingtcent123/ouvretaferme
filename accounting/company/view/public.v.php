@@ -26,12 +26,14 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 		$join .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="btn btn-secondary btn-xl">'.s("Adhérer à l'association pour seulement 100 €").'</a>';
 	$join .= '</div>';
 
-	echo $join;
+	if($data->isMember === FALSE) {
+		echo $join;
+	}
 
-	if(false) {
+	if($data->isMember) {
 
 		echo '<div class="util-block">';
-			echo '<h4>'.s("Démarer avec la comptabilité sur Ouvretaferme").'</h4>';
+			echo '<h4>'.s("Démadrer avec la comptabilité sur Ouvretaferme").'</h4>';
 			echo '<p>Youpi vous êtes adhérent</p>';
 			echo '<div>';
 				echo '<a class="company-accounting-choose-option" data-option="no" data-ajax="/company/public:doInitialize" post-farm="'.$data->eFarm['id'].'">';
@@ -77,12 +79,14 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 		echo '</div>';
 	echo '</div>';
 
-	echo $join;
+	if($data->isMember === FALSE) {
+		echo $join;
+	}
 
 	echo '<div class="util-block">';
 		echo '<h2>'.s("Rejoindre la version beta du logiciel de comptabilité pour le micro-BA").'</h2>';
 
-		if(true) {
+		if($data->isMember === FALSE) {
 			echo "reviens quand tu as adhéré :p";
 		}
 

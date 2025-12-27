@@ -108,6 +108,7 @@ Class BetaApplicationUi {
 			case 'hasStocks' :
 			case 'hasSoftware' :
 				$d->field = 'yesNo';
+				$d->attributes['mandatory'] = TRUE;
 				break;
 
 			case 'comment':
