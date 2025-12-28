@@ -13,7 +13,7 @@ new \farm\FarmPage()
 
 		$data->search = new Search([
 			'cFamily' => \plant\FamilyLib::getList(),
-			'id' => GET('plantId', '?int'),
+			'id' => get_exists('plantId') ? \plant\PlantLib::getById(GET('plantId')) : NULL,
 			'family' => GET('family', 'plant\Family'),
 			'status' => GET('status', default: \plant\Plant::ACTIVE),
 		]);
