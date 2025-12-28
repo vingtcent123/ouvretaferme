@@ -248,7 +248,9 @@ class FinancialYearLib extends FinancialYearCrud {
 
 			FinancialYear::model()->insert($e);
 
-			self::updateAccountingYears($eFarm);
+			\farm\Farm::model()->update($eFarm, [
+				'hasFinancialYears' => TRUE
+			]);
 
 		FinancialYear::model()->commit();
 
@@ -260,22 +262,13 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->beginTransaction();
 
-		parent::update($e, $properties);
+			parent::update($e, $properties);
 
-		if($eFarm->getView('viewAccountingYear') === $e['id']) {
-			self::setDefaultView($eFarm, $e);
-		}
-
-		self::updateAccountingYears($eFarm);
+			if($eFarm->getView('viewAccountingYear') === $e['id']) {
+				self::setDefaultView($eFarm, $e);
+			}
 
 		FinancialYear::model()->commit();
-
-	}
-
-	public static function updateAccountingYears(\farm\Farm $eFarm): void {
-
-		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => $e->getLabel()]);
-		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
 
 	}
 

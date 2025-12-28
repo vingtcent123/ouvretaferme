@@ -86,7 +86,7 @@ class FarmModel extends \ModuleModel {
 			'hasSales' => ['bool', 'cast' => 'bool'],
 			'hasCultivations' => ['bool', 'cast' => 'bool'],
 			'hasAccounting' => ['bool', 'cast' => 'bool'],
-			'accountingYears' => ['json', 'null' => TRUE, 'cast' => 'array'],
+			'hasFinancialYears' => ['bool', 'cast' => 'bool'],
 			'membership' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'null' => TRUE, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -94,7 +94,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'accountingYears', 'membership', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'hasFinancialYears', 'membership', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -144,6 +144,9 @@ class FarmModel extends \ModuleModel {
 			case 'hasAccounting' :
 				return FALSE;
 
+			case 'hasFinancialYears' :
+				return FALSE;
+
 			case 'membership' :
 				return FALSE;
 
@@ -173,9 +176,6 @@ class FarmModel extends \ModuleModel {
 			case 'quality' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'accountingYears' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
-
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -194,9 +194,6 @@ class FarmModel extends \ModuleModel {
 				return $value === NULL ? NULL : $this->pdo()->api->decodePoint($value);
 
 			case 'rotationExclude' :
-				return $value === NULL ? NULL : json_decode($value, TRUE);
-
-			case 'accountingYears' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			default :
@@ -370,8 +367,8 @@ class FarmModel extends \ModuleModel {
 		return $this->where('hasAccounting', ...$data);
 	}
 
-	public function whereAccountingYears(...$data): FarmModel {
-		return $this->where('accountingYears', ...$data);
+	public function whereHasFinancialYears(...$data): FarmModel {
+		return $this->where('hasFinancialYears', ...$data);
 	}
 
 	public function whereMembership(...$data): FarmModel {

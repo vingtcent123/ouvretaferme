@@ -128,11 +128,11 @@ class Farm extends FarmElement {
 	// Est-ce que la ferme utilise la comptabilité d'OTF ?
 	public function usesAccounting(): bool {
 
-		if($this->empty() or $this->hasAccounting() === FALSE) {
-			return FALSE;
-		}
-
-		return ($this['accountingYears'] !== NULL);
+		return (
+			$this->empty() === FALSE and
+			$this->hasAccounting() and
+			$this['hasFinancialYears']
+		);
 
 	}
 

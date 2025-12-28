@@ -1285,14 +1285,18 @@ class FarmUi {
 
 	public function getAccountingYears(Farm $eFarm): string {
 
-		if($eFarm['accountingYears'] === NULL or count($eFarm['accountingYears']) <= 1) {
+		if($eFarm['hasFinancialYears'] === FALSE) {
+			return '';
+		}
+
+		$cFinancialYear = $eFarm['cFinancialYear'];
+
+		if($cFinancialYear->count() <= 1) {
 			$h = '<div style="margin-bottom: 0.5rem">';
 				$h .= '<div class="btn btn-readonly btn-lg btn-outline-primary">'.s("Exercice {value}", $eFarm['cFinancialYear']->first()->getLabel()).'</div>';
 			$h .= '</div>';
 			return $h;
 		}
-
-		$cFinancialYear = $eFarm['cFinancialYear'];
 
 		$selectedFinancialYear = $eFarm->getView('viewAccountingYear');
 
