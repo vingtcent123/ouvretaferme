@@ -177,7 +177,12 @@ class PlantLib extends PlantCrud {
 
 		Plant::model()->beginTransaction();
 
-		parent::update($e, $properties);
+		try {
+			parent::update($e, $properties);
+		}
+		catch(\DuplicateException) {
+			Plant::fail('name.duplicate');
+		}
 
 		if($e['farm']->empty()) {
 
