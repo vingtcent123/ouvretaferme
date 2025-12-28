@@ -645,7 +645,7 @@ class CsvLib {
 			if(count($cultivation) < count($head)) {
 				$cultivation = array_merge($cultivation, array_fill(0, count($head) - count($cultivation), ''));
 			} else if(count($head) < count($cultivation)) {
-				$cultivation = array_slice(0, count($head));
+				$cultivation = array_slice($cultivation, 0, count($head));
 			}
 
 			$line = array_combine($head, $cultivation) + [
