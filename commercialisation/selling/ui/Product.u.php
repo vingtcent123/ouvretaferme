@@ -138,16 +138,16 @@ class ProductUi {
 						if($search->get('noAccount') === TRUE) {
 							$eAccount = new \account\Account(['id' => 0]);
 						}
-						$h .= $form->dynamicField(new Product(['farm' => $eFarm, 'privateAccount' => $eAccount]), 'privateAccount', function($d) use($form, $eAccount) {
+						$h .= $form->dynamicField(new Product(['farm' => $eFarm, 'privateAccount' => $eAccount]), 'privateAccount', function($d) use($form, $eFarm, $eAccount) {
 							$d->name = 'account';
 
 							$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::PRODUCT_OTHER_ACCOUNT_CLASS];
 							$query['canHaveNoAccountOption'] = TRUE;
-							$d->autocompleteUrl = function(\util\FormUi $form, $e) use (&$farm, $query) {
-								if($farm === NULL) {
-									$farm = $e['farm']['id'];
+							$d->autocompleteUrl = function(\util\FormUi $form, $e) use ($eFarm, $query) {
+								if($eFarm->empty()) {
+									$eFarm = $e['farm'];
 								}
-								return \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
+								return \company\CompanyUi::urlAccount($eFarm).'/account:query?'.http_build_query($query);
 							};
 						});
 
