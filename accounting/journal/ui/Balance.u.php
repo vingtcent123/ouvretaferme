@@ -6,9 +6,10 @@ Class BalanceUi {
 	public function __construct() {
 	}
 
-	public function getTitle(): string {
+	public function getTitle(\farm\Farm $eFarm): string {
 
-		$h = '<div class="util-action">';
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h .= '<div class="util-action">';
 
 			$h .= '<h1>';
 				$h .= s("La balance");

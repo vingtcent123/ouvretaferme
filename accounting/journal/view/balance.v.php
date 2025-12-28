@@ -9,7 +9,7 @@ new AdaptativeView(
 	$t->title = s("La balance de {farm}", ['farm' => $data->eFarm['name']]);
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/balance';
 
-	$t->mainTitle = new \journal\BalanceUi()->getTitle();
+	$t->mainTitle = new \journal\BalanceUi()->getTitle($data->eFarm);
 
 	echo '<div class="tabs-h" id="balances">';
 

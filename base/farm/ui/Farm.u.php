@@ -1874,7 +1874,8 @@ class FarmUi {
 
 		$title = $categories[$selectedView]['label'];
 
-		$h = '<div class="util-action">';
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h .= '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= self::getNavigation();
@@ -1912,7 +1913,8 @@ class FarmUi {
 
 		$title = $categories[$selectedView]['label'];
 
-		$h = '<div class="util-action">';
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h .= '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= self::getNavigation();

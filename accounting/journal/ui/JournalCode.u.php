@@ -31,9 +31,6 @@ Class JournalCodeUi {
 
 	public function getManage(\farm\Farm $eFarm, \Collection $cJournalCode): string {
 
-		$yes = '<span title="'.s("oui").'">'.\Asset::icon('check-lg').'</span>';
-		$no = '<span title="'.s("non").'">'.\Asset::icon('x-lg').'</span>';
-
 		$h = '<div class="util-overflow-sm">';
 
 			$h .= '<table id="journal-code-list" class="tr-even tr-hover">';

@@ -1,12 +1,6 @@
 <?php
 new Page(function($data) {
 
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-
-	\company\CompanyLib::connectDatabase($data->eFarm);
-
 	if($data->eFarm->usesAccounting()) {
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
@@ -111,12 +105,7 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
-			if($data->eFarm->hasAccounting()) {
-				$cFinancialYear = \account\FinancialYearLib::getAll();
-			} else {
-				$cFinancialYear = new Collection();
-			}
-			$export = \preaccounting\AccountingLib::generateFec($data->eFarm, $data->search->get('from'), $data->search->get('to'), $cFinancialYear, forImport: FALSE);
+			$export = \preaccounting\AccountingLib::generateFec($data->eFarm, $data->search->get('from'), $data->search->get('to'), $data->eFarm['cFinancialYear'], forImport: FALSE);
 
 			throw new CsvAction($export, 'pre-comptabilite.csv');
 

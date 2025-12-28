@@ -34,8 +34,7 @@ class ModuleAdministration {
 
 		$this->mElement = $reflection->newInstance();
 
-		// Create a DB connection
-		$this->db = new Database($this->mElement->getPackage());
+		$this->db = $this->mElement->pdo();
 
 	}
 
@@ -47,6 +46,8 @@ class ModuleAdministration {
 	public function init() {
 
 		$this->createTable();
+
+		return $this;
 
 	}
 
@@ -167,6 +168,8 @@ class ModuleAdministration {
 		if($error !== NULL) {
 			throw new Exception($error);
 		}
+
+		return $this;
 
 	}
 
@@ -772,6 +775,8 @@ class ModuleAdministration {
 	public function finalize() {
 
 		$this->dropTable();
+
+		return $this;
 
 	}
 

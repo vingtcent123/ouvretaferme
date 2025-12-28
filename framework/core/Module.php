@@ -249,11 +249,6 @@ abstract class ModuleModel {
 	protected ?string $connection = NULL;
 
 	/**
-	 * Database name
-	 */
-	protected ?string $base = NULL;
-
-	/**
 	 * Database keyName (host:port)
 	 */
 	protected $server;
@@ -317,7 +312,6 @@ abstract class ModuleModel {
 	public function __construct() {
 
 		$this->suffix($this->getPersistentSuffix());
-		$this->base = Database::getBase($this->package);
 
 	}
 
@@ -1774,7 +1768,7 @@ abstract class ModuleModel {
 	 * Get dataBase name.
 	 */
 	public function getDb(): string {
-		return $this->base;
+		return Database::getBase($this->package);
 	}
 
 	/**

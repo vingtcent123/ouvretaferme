@@ -34,21 +34,6 @@ class CompanyLib {
 
 	public static function connectDatabase(\farm\Farm $eFarm): void {
 
-		// Create packages tables
-		$libModule = new \dev\ModuleLib();
-		$libModule->load();
-
-		$classes = $libModule->getClasses();
-
-		foreach($classes as $class) {
-
-			list($package) = explode('\\', $class);
-			if(in_array($package, self::$specificPackages)) {
-					$class::resetModel();
-			}
-
-		}
-
 		$base = self::getDatabaseName($eFarm);
 
 		foreach(self::$specificPackages as $package) {
@@ -168,16 +153,6 @@ class CompanyLib {
 
 		\company\CompanyLib::connectDatabase($eFarm);
 
-		$databaseName = \company\CompanyLib::getDatabaseNameFromCompany($eFarm);
-		\Database::addBase($databaseName, 'ouvretaferme');
-
-		$packagesToAdd = [];
-		foreach(\company\CompanyLib::$specificPackages as $package) {
-			$packagesToAdd[$package] = $databaseName;
-		}
-		$packages = \Database::getPackages();
-		\Database::setPackages(array_merge($packages, $packagesToAdd));
-
 		// Recrée les modules puis crée ou recrée toutes les tables
 		$libModule = new \dev\ModuleLib();
 		$libModule->load();
@@ -208,8 +183,6 @@ class CompanyLib {
 			$database = new \account\AccountModel()->getDb();
 			$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
 		}
-
-		\ModuleModel::dbClean();
 
 	}
 

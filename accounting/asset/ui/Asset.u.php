@@ -15,32 +15,6 @@ Class AssetUi {
 
 	}
 
-	public static function getAcquisitionTitle(): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= s("Tableau des acquisitions");
-			$h .= '</h1>';
-
-		$h .= '</div>';
-
-		return $h;
-	}
-
-	public static function getTitle(): string {
-
-		$h = '<div class="util-action">';
-
-			$h .= '<h1>';
-				$h .= s("Synthèse générale par compte");
-			$h .= '</h1>';
-
-		$h .= '</div>';
-
-		return $h;
-	}
-
 	public function number(mixed $number, ?string $valueIfEmpty, ?int $decimals = NULL): string {
 
 		if(is_null($number) === true or $number === 0 or $number === 0.0) {
