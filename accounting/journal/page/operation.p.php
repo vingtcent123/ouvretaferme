@@ -10,7 +10,6 @@ new \journal\OperationPage(
 		}
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 	})
 ->read('/journal/operation/{id}', function($data) {

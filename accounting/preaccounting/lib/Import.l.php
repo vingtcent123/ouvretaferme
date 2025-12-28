@@ -5,9 +5,10 @@ Class ImportLib {
 
 	public static function getInvoiceSales(\farm\Farm $eFarm, \Search $search): \Collection {
 
-		$cFinancialYear = \account\FinancialYearLib::getAll();
+		$eFarm->expects(['cFinancialYear']);
+
 		$cAccount = \account\AccountLib::getAll();
-		$extraction = \preaccounting\AccountingLib::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: TRUE);
+		$extraction = \preaccounting\AccountingLib::extractInvoice($eFarm, $search, $eFarm['cFinancialYear'], $cAccount, forImport: TRUE);
 
 		$cInvoice = \selling\Invoice::model()
 			->select([

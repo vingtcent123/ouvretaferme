@@ -8,14 +8,12 @@ new Page(function($data) {
 	}
 
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 })
 	->get('/immobilisations', function($data) {
 
 		$data->eFarm->validate('canManage');
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		$selectedTab = GET('tab', 'string', 'asset');
 		if(in_array($selectedTab, ['asset', 'grant']) === FALSE) {

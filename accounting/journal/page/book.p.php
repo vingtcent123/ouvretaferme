@@ -8,7 +8,6 @@ new Page(function($data) {
 	}
 
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 	$search = new Search([
 		'accountLabel' => GET('accountLabel'),

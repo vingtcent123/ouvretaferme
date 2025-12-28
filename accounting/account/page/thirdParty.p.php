@@ -4,7 +4,6 @@ new \account\ThirdPartyPage(
 		\user\ConnectionLib::checkLogged();
 
 		$data->eFarm->validate('canManage');
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 	})

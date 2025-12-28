@@ -6,7 +6,6 @@ new \bank\BankAccountPage(
 		$data->eFarm->validate('canManage');
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
 	->get('index', function($data) {
@@ -22,7 +21,6 @@ new \bank\BankAccountPage(
 		$data->eFarm->validate('canManage');
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
 	->quick(['label', 'description']);

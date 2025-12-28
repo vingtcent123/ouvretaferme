@@ -27,7 +27,6 @@ new \asset\AssetPage(function($data) {
 
 		// Références de durées
 		$data->cAmortizationDuration = \company\AmortizationDurationLib::getAll();
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);
 
@@ -45,7 +44,6 @@ new \asset\AssetPage(function($data) {
 
 		// Références de durées
 		$data->cAmortizationDuration = \company\AmortizationDurationLib::getAll();
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);
 
@@ -81,7 +79,6 @@ new \asset\AssetPage(function($data) {
 	\company\CompanyLib::connectDatabase($data->eFarm);
 
 	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-	$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 })
 	->read('/immobilisation/{id}/', function($data) {
@@ -110,7 +107,6 @@ new \asset\AssetPage(function($data) {
 	->get('dispose', function($data) {
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 		throw new ViewAction($data);
 

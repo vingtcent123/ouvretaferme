@@ -8,7 +8,6 @@ new Page()
 			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 		}
 
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
 		throw new ViewAction($data);

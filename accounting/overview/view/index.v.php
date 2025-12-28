@@ -56,7 +56,7 @@ new AdaptativeView(\farm\Farmer::SIG, function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
-	echo new \overview\SigUi()->getSearch(search: $data->search, cFinancialYear: $data->cFinancialYear, eFinancialYear: $data->eFinancialYear);
+	echo new \overview\SigUi()->getSearch(search: $data->search, cFinancialYear: $data->eFarm['cFinancialYear'], eFinancialYear: $data->eFinancialYear);
 	echo new \overview\SigUi()->display(
 		eFarm: $data->eFarm,
 		values: $data->values,
@@ -80,7 +80,7 @@ new AdaptativeView(\farm\Farmer::BALANCE_SHEET, function($data, FarmTemplate $t)
 
 	echo new \overview\BalanceSheetUi()->getSearch(
 		search        : $data->search,
-		cFinancialYear: $data->cFinancialYear,
+		cFinancialYear: $data->eFarm['cFinancialYear'],
 		eFinancialYear: $data->eFinancialYear,
 	);
 
@@ -107,7 +107,7 @@ new AdaptativeView(\farm\Farmer::INCOME_STATEMENT, function($data, FarmTemplate 
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
-	echo new \overview\IncomeStatementUi()->getSearch(search: $data->search, cFinancialYear: $data->cFinancialYear, eFinancialYear: $data->eFinancialYear);
+	echo new \overview\IncomeStatementUi()->getSearch(search: $data->search, cFinancialYear: $data->eFarm['cFinancialYear'], eFinancialYear: $data->eFinancialYear);
 	echo new \overview\IncomeStatementUi()->getTable(
 		eFarm: $data->eFarm,
 		eFinancialYearComparison: $data->eFinancialYearComparison,

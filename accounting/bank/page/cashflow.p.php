@@ -14,10 +14,8 @@ new Page(function($data) {
 
 		if($data->eFarm->usesAccounting()) {
 			$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-			$data->cFinancialYear = \account\FinancialYearLib::getAll();
 		} else {
 			$data->eFinancialYear = new \account\FinancialYear();
-			$data->cFinancialYear = new Collection();
 		}
 
 		$search = new Search([
@@ -90,7 +88,6 @@ new \bank\CashflowPage(
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'))->validate('canAllocate');
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 	}
 )
 	->get('allocate', function($data) {
@@ -217,7 +214,6 @@ new \bank\CashflowPage(
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'));
 
 		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		$data->cFinancialYear = \account\FinancialYearLib::getAll();
 
 	}
 )
