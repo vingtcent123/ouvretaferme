@@ -1,10 +1,6 @@
 <?php
 new \asset\AssetPage(function($data) {
 
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
@@ -72,15 +68,7 @@ new \asset\AssetPage(function($data) {
 	})
 ;
 
-new \asset\AssetPage(function($data) {
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-	\company\CompanyLib::connectDatabase($data->eFarm);
-
-	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
-})
+new \asset\AssetPage()
 	->read('/immobilisation/{id}/', function($data) {
 
 		$data->e->validate('canView');
@@ -99,14 +87,10 @@ new \asset\AssetPage(function($data) {
 		throw new NotExpectedAction('Asset Id is required.');
 	}
 
-	$data->eFarm->validate('canManage');
-
 	$data->eAsset = \asset\AssetLib::getWithDepreciationsById(REQUEST('id'))->validate('canView');
 
 })
 	->get('dispose', function($data) {
-
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 		throw new ViewAction($data);
 
@@ -119,12 +103,7 @@ new \asset\AssetPage(function($data) {
 
 	});
 
-new Page(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-})
+new Page()
 	->post('getRecommendedDuration', function($data) {
 
 		$data->cAmortizationDuration = \company\AmortizationDurationLib::getAll();

@@ -7,13 +7,13 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 	$t->title = s("Le livre journal de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/livre-journal';
 
-	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, $data->eFinancialYear, $data->counts);
+	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, $data->eFarm['eFinancialYear'], $data->counts);
 
-	if($data->eFinancialYear->notEmpty()) {
+	if($data->eFarm['eFinancialYear']->notEmpty()) {
 		echo new \journal\JournalUi()->getSearch(
 			eFarm: $data->eFarm,
 			search: $data->search,
-			eFinancialYearSelected: $data->eFinancialYear,
+			eFinancialYearSelected: $data->eFarm['eFinancialYear'],
 			eCashflow: $data->eCashflow,
 			eThirdParty: $data->eThirdParty,
 			cPaymentMethod: $data->cPaymentMethod,
@@ -38,13 +38,13 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 		}
 	echo ' data-batch="#batch-journal">';
 
-		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFinancialYear, $data->search, $selectedJournalCode, $data->cJournalCode);
+		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFarm['eFinancialYear'], $data->search, $selectedJournalCode, $data->cJournalCode);
 
 		switch($selectedJournalCode) {
 
 			case NULL:
 				echo '<div class="tab-panel selected" data-tab="journal">';
-				echo new \journal\JournalUi()->getTableContainer($data->eFarm, NULL, $data->cOperation, $data->eFinancialYear, $data->search);
+				echo new \journal\JournalUi()->getTableContainer($data->eFarm, NULL, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
 				echo '</div>';
 				break;
 
@@ -62,7 +62,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 			default:
 				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-				echo new \journal\JournalUi()->getTableContainer($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFinancialYear, $data->search);
+				echo new \journal\JournalUi()->getTableContainer($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
 				echo '</div>';
 				break;
 

@@ -7,7 +7,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/immobilisations';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->eFinancialYear);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view);
 
 	if(empty($data->amortizations)) {
 
@@ -17,7 +17,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 
 	} else {
 
-		if($data->eFinancialYear['status'] !== \account\FinancialYearElement::CLOSE) {
+		if($data->eFarm['eFinancialYear']['status'] !== \account\FinancialYearElement::CLOSE) {
 
 			echo '<div class="util-warning">';
 				echo s("Vous visualisez actuellement les immobilisations d'un exercice comptable encore ouvert : il s'agit donc d'une projection à la fin de l'exercice dans le cas où les immobilisations ne changent pas dans le courant de l'exercice.");
@@ -62,7 +62,7 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 	$t->title = s("Les acquisitions de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/acquisition';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->eFinancialYear);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view);
 
 	echo '<div class="tabs-h" id="asset-acquisition" onrender="'.encode('Lime.Tab.restore(this, "acquisition-asset")').'">';
 

@@ -1,16 +1,8 @@
 <?php
-new \account\FinancialYearPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-	}
-)
+new \account\FinancialYearPage()
 	->get('view', function($data) {
 
-		$data->fecInfo = \account\FecLib::checkDataForFec($data->eFarm, $data->eFinancialYear);
+		$data->fecInfo = \account\FecLib::checkDataForFec($data->eFarm, $data->eFarm['eFinancialYear']);
 		$data->fecInfo['cJournalCode'] = \journal\JournalCodeLib::getAll();
 
 

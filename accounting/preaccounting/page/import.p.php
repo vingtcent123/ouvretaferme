@@ -1,12 +1,5 @@
 <?php
-new Page(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-		$data->eFinancialYear = \account\FinancialYearLib::getById(POST('financialYear'));
-
-	})
+new Page()
 ->post('doImportInvoice', function($data) {
 
 	$eInvoice = \preaccounting\ImportLib::getInvoiceById(POST('id', 'int'));
@@ -15,7 +8,7 @@ new Page(
 
 	$fw = new FailWatch();
 
-	\preaccounting\ImportLib::importInvoice($data->eFarm, $eInvoice, $data->eFinancialYear);
+	\preaccounting\ImportLib::importInvoice($data->eFarm, $eInvoice);
 
 	$fw->validate();
 
@@ -39,7 +32,7 @@ new Page(
 	$cInvoice = \preaccounting\ImportLib::getInvoicesByIds(POST('ids', 'array'));
 	\selling\Invoice::validateBatch($cInvoice);
 
-	\preaccounting\ImportLib::importInvoices($data->eFarm, $cInvoice, $data->eFinancialYear);
+	\preaccounting\ImportLib::importInvoices($data->eFarm, $cInvoice);
 
 	\account\LogLib::save('importSeveral', 'Invoice', ['ids' => $cInvoice->getIds()]);
 

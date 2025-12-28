@@ -1,8 +1,6 @@
 <?php
 new \journal\OperationPage(function($data) {
-	\user\ConnectionLib::checkLogged();
 
-	$data->eFarm->validate('canManage');
 
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
@@ -31,9 +29,6 @@ new \journal\OperationPage(function($data) {
 ;
 
 new \journal\DeferralPage(function($data) {
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
 
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);

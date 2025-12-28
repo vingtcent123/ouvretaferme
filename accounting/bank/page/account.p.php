@@ -1,11 +1,6 @@
 <?php
 new \bank\BankAccountPage(
 	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	}
 )
 	->get('index', function($data) {
@@ -15,13 +10,6 @@ new \bank\BankAccountPage(
 
 	});
 
-new \bank\BankAccountPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
-
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-	}
-)
+new \bank\BankAccountPage()
 	->quick(['label', 'description']);
 ?>

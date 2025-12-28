@@ -7,8 +7,6 @@ new Page(function($data) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
-	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
 	$search = new Search([
 		'startDate' => GET('startDate'),
 		'endDate' => GET('endDate'),
@@ -22,18 +20,18 @@ new Page(function($data) {
 })
 	->get('index', function($data) {
 
-		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->eFinancialYear);
+		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
 		$hasPrevious = $data->eFinancialYearPrevious->notEmpty();
 
 		$tab = GET('tab');
 
-		if($data->eFinancialYear->isCashAccounting() or in_array($tab, ['customer', 'supplier']) === FALSE) {
+		if($data->eFarm['eFinancialYear']->isCashAccounting() or in_array($tab, ['customer', 'supplier']) === FALSE) {
 			$tab = NULL;
 		}
 
 		if($tab !== NULL) {
 
-			$data->cOperation = \journal\OperationLib::getByThirdParty($data->eFinancialYear, $tab);
+			$data->cOperation = \journal\OperationLib::getByThirdParty($data->eFarm['eFinancialYear'], $tab);
 
 		} else { // balance générale
 
@@ -45,7 +43,7 @@ new Page(function($data) {
 
 				$startDate = $data->search->get('startDate');
 
-				if($startDate >= $data->eFinancialYear['startDate'] and $startDate <= $data->eFinancialYear['endDate']) {
+				if($startDate >= $data->eFarm['eFinancialYear']['startDate'] and $startDate <= $data->eFarm['eFinancialYear']['endDate']) {
 
 					$searchPrevious->set('startDate', date('Y-m-d', strtotime($startDate.' - 1 YEAR')));
 
@@ -66,7 +64,7 @@ new Page(function($data) {
 
 				$endDate = $data->search->get('endDate');
 
-				if($endDate >= $data->eFinancialYear['startDate'] and $endDate <= $data->eFinancialYear['endDate']) {
+				if($endDate >= $data->eFarm['eFinancialYear']['startDate'] and $endDate <= $data->eFarm['eFinancialYear']['endDate']) {
 
 					$searchPrevious->set('endDate', date('Y-m-d', strtotime($endDate.' - 1 YEAR')));
 
@@ -83,7 +81,7 @@ new Page(function($data) {
 				}
 			}
 
-			$data->trialBalanceData = \journal\TrialBalanceLib::extractByAccounts($searchCurrent, $data->eFinancialYear);
+			$data->trialBalanceData = \journal\TrialBalanceLib::extractByAccounts($searchCurrent, $data->eFarm['eFinancialYear']);
 
 			$data->searches = ['current' => $searchCurrent];
 

@@ -57,13 +57,13 @@ Class BalanceUi {
 
 	}
 
-	public function getTabs(\farm\Farm $eFarm, ?string $selectedTab, \account\FinancialYear $eFinancialYear): string {
+	public function getTabs(\farm\Farm $eFarm, ?string $selectedTab): string {
 
 		$tabs = [
 			NULL => s("Balance générale"),
 			'customer' => s("Balance clients"),
 		];
-		if($eFinancialYear->isAccrualAccounting()) {
+		if($eFarm['eFinancialYear']->isAccrualAccounting()) {
 			$tabs['supplier'] = s("Balance fournisseurs");
 		}
 

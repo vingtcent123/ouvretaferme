@@ -1,21 +1,11 @@
 <?php
 new Page(function($data) {
 
-	if($data->eFarm->usesAccounting()) {
-
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
-	} else {
-
-		$data->eFinancialYear = new \account\FinancialYear();
-
-	}
-
 	if(get_exists('from') === FALSE and get_exists('to') === FALSE and $data->eFarm->usesAccounting()) {
 
 		$data->search = new Search([
-			'from' => $data->eFinancialYear['startDate'],
-			'to' => $data->eFinancialYear['endDate'],
+			'from' => $data->eFarm['eFinancialYear']['startDate'],
+			'to' => $data->eFarm['eFinancialYear']['endDate'],
 		]);
 
 	} else {
@@ -119,8 +109,8 @@ new Page(function($data) {
 		$data->selectedTab = in_array(GET('tab'), ['market', 'invoice', 'sales']) ? GET('tab') : 'market';
 
 		$data->search = new Search([
-			'from' => $data->eFinancialYear['startDate'],
-			'to' => $data->eFinancialYear['endDate'],
+			'from' => $data->eFarm['eFinancialYear']['startDate'],
+			'to' => $data->eFarm['eFinancialYear']['endDate'],
 			'type' => GET('type'),
 		]);
 

@@ -7,7 +7,7 @@ new AdaptativeView('/journal/operation/{id}', function($data, PanelTemplate $t) 
 });
 new AdaptativeView('/journal/operation/{id}/update', function($data, PanelTemplate $t) {
 
-	return new \journal\OperationUi()->getUpdate($data->eFarm, $data->eFinancialYear, $data->cOperation, $data->cPaymentMethod, $data->eCashflow, $data->e);
+	return new \journal\OperationUi()->getUpdate($data->eFarm, $data->eFarm['eFinancialYear'], $data->cOperation, $data->cPaymentMethod, $data->eCashflow, $data->e);
 
 });
 
@@ -16,7 +16,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 		return new \journal\OperationUi()->create(
 			$data->eFarm,
 			$data->e,
-			$data->eFinancialYear,
+			$data->eFarm['eFinancialYear'],
 			$data->cPaymentMethod,
 		);
 
@@ -24,7 +24,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 new AdaptativeView('createPayment', function($data, PanelTemplate $t) {
 
-		return new \journal\OperationUi()->createPayment($data->eFarm, $data->eFinancialYear, $data->e, $data->cBankAccount);
+		return new \journal\OperationUi()->createPayment($data->eFarm, $data->eFarm['eFinancialYear'], $data->e, $data->cBankAccount);
 
 });
 
@@ -91,7 +91,7 @@ new JsonView('readInvoice', function($data, AjaxTemplate $t) {
 				$data->eFarm,
 				$form,
 				$eOperation,
-				$data->eFinancialYear,
+				$data->eFarm['eFinancialYear'],
 				'['.$index.']',
 				$defaultValues,
 				[],
@@ -191,7 +191,7 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 			$data->eFarm,
 			$form,
 			$data->eOperation,
-			$data->eFinancialYear,
+			$data->eFarm['eFinancialYear'],
 			'['.$data->index.']',
 			$defaultValues,
 			[],

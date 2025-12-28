@@ -10,7 +10,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 
 	echo new \bank\CashflowUi()->getSearch($data->eFarm, $data->search, $data->minDate, $data->maxDate, $data->cBankAccount);
 	echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nCashflow, $data->search);
-	echo new \bank\CashflowUi()->list($data->eFarm, $data->cCashflow, $data->eFinancialYear, $data->eImport, $data->search, $data->eFarm['cFinancialYear']);
+	echo new \bank\CashflowUi()->list($data->eFarm, $data->cCashflow, $data->eFarm['eFinancialYear'], $data->eImport, $data->search, $data->eFarm['cFinancialYear']);
 	echo \util\TextUi::pagination($data->page, $data->nPage);
 
 
@@ -20,7 +20,7 @@ new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 
 	return new \bank\CashflowUi()->getAllocate(
 		$data->eFarm,
-		$data->eFinancialYear,
+		$data->eFarm['eFinancialYear'],
 		$data->eCashflow,
 		$data->cPaymentMethod,
 		$data->cJournalCode,
@@ -32,7 +32,7 @@ new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
 	$t->qs('#operation-create-list')->setAttribute('data-columns', $data->index + 1);
 	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml('afterend', new \bank\CashflowUi()->addAllocate(
-		$data->eFarm, $data->eOperation, $data->eFinancialYear, $data->eCashflow, $data->index, cPaymentMethod: $data->cPaymentMethod));
+		$data->eFarm, $data->eOperation, $data->eFarm['eFinancialYear'], $data->eCashflow, $data->index, cPaymentMethod: $data->cPaymentMethod));
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
 	if($data->index >= 4) {
 		$t->qs('#add-operation')->addClass('not-visible');

@@ -228,10 +228,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 			return $eFinancialYear;
 
-		} else if($eFarm->getView('viewAccountingYear') !== NULL) {
-
-			return self::getById($eFarm->getView('viewAccountingYear'));
-
 		} else {
 
 			return self::selectDefaultFinancialYear();
@@ -264,7 +260,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 			parent::update($e, $properties);
 
-			if($eFarm->getView('viewAccountingYear') === $e['id']) {
+			if($eFarm->getView('viewAccountingYear')->is($e)) {
 				self::setDefaultView($eFarm, $e);
 			}
 
@@ -284,9 +280,9 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	private static function setDefaultView(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
+	public static function setDefaultView(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
 
-		\farm\FarmerLib::setView('viewAccountingYear', $eFarm, $eFinancialYear['id']);
+		\farm\FarmerLib::setView('viewAccountingYear', $eFarm, $eFinancialYear);
 		\farm\FarmerLib::setView('viewAccountingType', $eFarm, $eFinancialYear['accountingType']);
 		\farm\FarmerLib::setView('viewAccountingHasVat', $eFarm, $eFinancialYear['hasVat']);
 

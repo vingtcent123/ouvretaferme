@@ -1,15 +1,10 @@
 <?php
 
 new Page(function($data) {
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
 
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
-
-	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 	$views = array_column(\farm\FarmUi::getAccountingFinancialsCategories(), 'fqn');
 
@@ -40,13 +35,13 @@ new Page(function($data) {
 		switch($data->view) {
 
 			case \farm\Farmer::BANK:
-				$data->ccOperationBank = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'bank');
-				$data->ccOperationCash = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFinancialYear, 'cash');
+				$data->ccOperationBank = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFarm['eFinancialYear'], 'bank');
+				$data->ccOperationCash = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFarm['eFinancialYear'], 'cash');
 				break;
 
 			case \farm\Farmer::CHARGES:
-				[$data->cOperation, $data->cAccount] = \overview\AnalyzeLib::getChargeOperationsByMonth($data->eFinancialYear);
-				$data->cOperationResult = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFinancialYear);
+				[$data->cOperation, $data->cAccount] = \overview\AnalyzeLib::getChargeOperationsByMonth($data->eFarm['eFinancialYear']);
+				$data->cOperationResult = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFarm['eFinancialYear']);
 				break;
 
 			case \farm\Farmer::SIG:
@@ -55,12 +50,12 @@ new Page(function($data) {
 					'financialYearComparison' => GET('financialYearComparison'),
 				], GET('sort'));
 
-				$values = \overview\SigLib::compute($data->eFinancialYear);
+				$values = \overview\SigLib::compute($data->eFarm['eFinancialYear']);
 				$data->values = [
-					$data->eFinancialYear['id'] => $values
+					$data->eFarm['eFinancialYear']['id'] => $values
 				];
 
-				if($data->search->get('financialYearComparison') and (int)$data->search->get('financialYearComparison') !== $data->eFinancialYear['id']) {
+				if($data->search->get('financialYearComparison') and (int)$data->search->get('financialYearComparison') !== $data->eFarm['eFinancialYear']['id']) {
 					$data->eFinancialYearComparison = \account\FinancialYearLib::getById($data->search->get('financialYearComparison'));
 					if($data->eFinancialYearComparison->notEmpty()) {
 						$data->values[$data->eFinancialYearComparison['id']] = \overview\SigLib::compute($data->eFinancialYearComparison);
@@ -75,7 +70,7 @@ new Page(function($data) {
 				$data->search->set('type', GET('type', 'string', \overview\BalanceSheetLib::VIEW_BASIC));
 
 				[$data->balanceSheetData, $data->totals] = \overview\BalanceSheetLib::getData(
-					eFinancialYear: $data->eFinancialYear,
+					eFinancialYear: $data->eFarm['eFinancialYear'],
 					eFinancialYearComparison: $data->eFinancialYearComparison,
 					isDetailed: $data->search->get('type') === \overview\BalanceSheetLib::VIEW_DETAILED
 				);
@@ -100,7 +95,7 @@ new Page(function($data) {
 				$data->search->set('type', GET('type', 'string', \overview\IncomeStatementLib::VIEW_BASIC));
 
 				$data->resultData = \overview\IncomeStatementLib::getResultOperationsByFinancialYear(
-					eFinancialYear: $data->eFinancialYear,
+					eFinancialYear: $data->eFarm['eFinancialYear'],
 					isDetailed: $data->search->get('type') === \overview\IncomeStatementLib::VIEW_DETAILED,
 					eFinancialYearComparison: $data->eFinancialYearComparison
 				);
@@ -122,7 +117,7 @@ new Page(function($data) {
 
 			case \farm\Farmer::VAT:
 
-				if($data->eFinancialYear['hasVat'] === FALSE) {
+				if($data->eFarm['eFinancialYear']['hasVat'] === FALSE) {
 					throw new ViewAction($data, ':noVat');
 				}
 
@@ -133,10 +128,10 @@ new Page(function($data) {
 				$data->tab = $tab;
 
 				$search = new Search();
-				$search->set('financialYear', $data->eFinancialYear);
+				$search->set('financialYear', $data->eFarm['eFinancialYear']);
 
-				$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFinancialYear);
-				$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFinancialYear);
+				$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFarm['eFinancialYear']);
+				$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
 
 				$search->set('minDate', $data->vatParameters['from']);
 				$search->set('maxDate', $data->vatParameters['to']);
@@ -170,12 +165,12 @@ new Page(function($data) {
 							$data->cerfa = $eVatDeclaration->getArrayCopy()['data'] + ['eVatDeclaration' => $eVatDeclaration];
 						} else {
 							// On génère
-							$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFinancialYear, $search, precision: $data->precision);
+							$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFarm['eFinancialYear'], $search, precision: $data->precision);
 						}
 						break;
 
 					case 'history':
-						$data->cVatDeclaration = \overview\VatDeclarationLib::getHistory($data->eFinancialYear);
+						$data->cVatDeclaration = \overview\VatDeclarationLib::getHistory($data->eFarm['eFinancialYear']);
 						break;
 			}
 		}

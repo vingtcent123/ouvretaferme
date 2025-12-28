@@ -4,14 +4,11 @@ new Page()
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'));
 
-		$data->eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'));
-		if($data->eFinancialYear->exists() === FALSE) {
-			throw new NotExpectedAction('Cannot generate PDF of book with no financial year');
-		}
+		$data->eFinancialYearSelected = \account\FinancialYearLib::getById(GET('financialYear'))->validate();
 
-		$search = new Search(['financialYear' => $data->eFinancialYear]);
+		$search = new Search(['financialYear' => $data->eFinancialYearSelected]);
 
-		$data->cOperation = \journal\OperationLib::getAllForJournal(search: $search, page: NULL);
+		$data->cOperation = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
 
 		throw new ViewAction($data);
 

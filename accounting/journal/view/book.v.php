@@ -9,8 +9,8 @@ new AdaptativeView('/journal/grand-livre', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \journal\BookUi()->getBookTitle($data->eFarm);
 
-	echo new \journal\BookUi()->getSearch($data->search, $data->eFinancialYear);
-	echo new \journal\BookUi()->getBook($data->eFarm, $data->cOperation, $data->eFinancialYear, $data->search);
+	echo new \journal\BookUi()->getSearch($data->search, $data->eFarm['eFinancialYear']);
+	echo new \journal\BookUi()->getBook($data->eFarm, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
 
 
 });

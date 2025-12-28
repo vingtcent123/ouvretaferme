@@ -147,7 +147,7 @@ class FarmerModel extends \ModuleModel {
 			'viewAnalyzeChart' => ['enum', [\farm\Farmer::TURNOVER, \farm\Farmer::QUANTITY], 'cast' => 'enum'],
 			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'viewAccountingYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'viewAccountingYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
 			'viewAccountingType' => ['enum', [\farm\Farmer::ACCRUAL, \farm\Farmer::CASH, \farm\Farmer::CASH_ACCRUAL], 'cast' => 'enum'],
 			'viewAccountingHasVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'viewAccountingFinancials' => ['enum', [\farm\Farmer::BANK, \farm\Farmer::CHARGES, \farm\Farmer::SIG, \farm\Farmer::VAT, \farm\Farmer::BALANCE_SHEET, \farm\Farmer::INCOME_STATEMENT], 'cast' => 'enum'],
@@ -166,6 +166,7 @@ class FarmerModel extends \ModuleModel {
 			'viewPlanningUser' => 'user\User',
 			'viewSellingCategoryCurrent' => 'selling\Category',
 			'viewShopCatalogCurrent' => 'shop\Catalog',
+			'viewAccountingYear' => 'account\FinancialYear',
 			'viewShopCurrent' => 'shop\Shop',
 		];
 

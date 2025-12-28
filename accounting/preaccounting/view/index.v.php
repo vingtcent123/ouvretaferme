@@ -159,7 +159,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 
 	} else {
 
-		echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFinancialYear, $data->cInvoice, $data->search);
+		echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->search);
 
 	}
 });

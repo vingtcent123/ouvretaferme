@@ -1,10 +1,5 @@
 <?php
-new Page(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage', 'hasAccounting');
-})
+new Page()
 	->get('index', function($data) {
 
 		$data->cJournalCode = \journal\JournalCodeLib::getAll();
@@ -15,12 +10,7 @@ new Page(function($data) {
 
 	});
 
-new \journal\JournalCodePage(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-})
+new \journal\JournalCodePage()
 	->quick(['code', 'name', 'color', 'isReversable', 'isDisplayed'])
 	->create(function($data) {
 

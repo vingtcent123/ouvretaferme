@@ -14,12 +14,7 @@ new Page()
 
 	});
 
-new \account\FinancialYearPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
-	}
-)
+new \account\FinancialYearPage()
 	->create(function($data) {
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
@@ -39,8 +34,6 @@ new \account\FinancialYearPage(
 ;
 new \account\FinancialYearPage(
 	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 		if($data->cFinancialYearOpen->count() >= 2) {
 			throw new NotExpectedAction('Cannot create a new financial year as there are already '.$data->cFinancialYearOpen->count().' financial years open');
@@ -53,11 +46,7 @@ new \account\FinancialYearPage(
 
 	});
 
-new \account\FinancialYearPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
-	})
+new \account\FinancialYearPage()
 	->applyElement(function($data, \account\FinancialYear $e) {
 
 		$e->validate('canUpdate');
@@ -100,11 +89,7 @@ new \account\FinancialYearPage(
 
 	});
 
-new \account\FinancialYearPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
-	})
+new \account\FinancialYearPage()
 	->applyElement(function($data, \account\FinancialYear $e) {
 
 		$e->validate('acceptClose');
@@ -143,11 +128,7 @@ new \account\FinancialYearPage(
 	})
 	;
 
-new \account\FinancialYearPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
-	})
+new \account\FinancialYearPage()
 	->write('doReopen', function($data) {
 
 		$data->e->validate('isClosed');

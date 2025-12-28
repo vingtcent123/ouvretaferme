@@ -77,7 +77,8 @@ Operation:
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
   INDEX: [
-    ["document"]
+    ["document"],
+    ["hash"]
   ]
   SEARCH: [
     ["accountLabel", "description", "document"]

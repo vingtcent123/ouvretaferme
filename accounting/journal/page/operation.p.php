@@ -9,8 +9,6 @@ new \journal\OperationPage(
 			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 		}
 
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
 	})
 ->read('/journal/operation/{id}', function($data) {
 
@@ -60,9 +58,6 @@ new \journal\OperationPage(
 
 new \journal\OperationPage(
 	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
 
 		if($data->eFarm->usesAccounting() === FALSE) {
 			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
@@ -124,8 +119,6 @@ new \journal\OperationPage(
 			'journalCode' => $eJournalCode,
 		]);
 
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
 		throw new ViewAction($data);
 
 	})
@@ -153,7 +146,6 @@ new \journal\OperationPage(
 	->post('addOperation', function($data) {
 
 		$data->index = POST('index');
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
 		$cJournalCode = \journal\JournalCodeLib::getAll();
@@ -197,7 +189,6 @@ new \journal\OperationPage(
 
 		// Third party
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 		$data->e->merge([
 			'farm' => $data->eFarm,
@@ -209,7 +200,7 @@ new \journal\OperationPage(
 			'amount' => GET('amount', 'float'),
 			'cPaymentMethod' => $data->cPaymentMethod,
 			'cJournalCode' => \journal\JournalCodeLib::getAll(),
-			'financialYear' => $data->eFinancialYear,
+			'financialYear' => $data->eFarm['eFinancialYear'],
 		]);
 
 
@@ -239,9 +230,6 @@ new \journal\OperationPage(
 
 new Page(
 	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
 
 		if($data->eFarm->usesAccounting() === FALSE) {
 			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
@@ -258,8 +246,6 @@ new Page(
 
 new \journal\OperationPage(
 	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
 
 		if($data->eFarm->usesAccounting() === FALSE) {
 			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
@@ -350,12 +336,7 @@ new \journal\OperationPage(function($data) {
 		throw new ReloadAction('journal', 'Operations::updated');
 	});
 
-new Page(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-})
+new Page()
 	->post('query', function($data) {
 
 		$data->eCashflow = \bank\CashflowLib::getById(POST('cashflow'));

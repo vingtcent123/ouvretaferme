@@ -1,12 +1,5 @@
 <?php
-new \account\ThirdPartyPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
-	})
+new \account\ThirdPartyPage()
 	->get('index', function($data) {
 
 		$data->search = new Search([
@@ -37,12 +30,7 @@ new \account\ThirdPartyPage(
 	->quick(['name', 'customer', 'clientAccountLabel', 'supplierAccountLabel'])
 	->doDelete(fn($data) => throw new ReloadAction('account', 'ThirdParty::deleted'));
 
-new Page(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-})
+new Page()
 ->post('query', function($data) {
 
 	$data->search = new Search([

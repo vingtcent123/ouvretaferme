@@ -1,21 +1,16 @@
 <?php
 new Page(function($data) {
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
 
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
-
-	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 })
 	->post('/vat/saveCerfa', function($data) {
 
 		$from = POST('from');
 		$to = POST('to');
-		$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFinancialYear);
+		$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFarm['eFinancialYear']);
 
 		if($data->vatParameters['from'] !== $from and $data->vatParameters['to'] !== $to) {
 			throw new NotExpectedAction('Unable to update for this VAT declaration dates');
@@ -26,7 +21,7 @@ new Page(function($data) {
 		unset($input['to']);
 		unset($input['financialYear']);
 
-		\overview\VatDeclarationLib::saveCerfa($data->eFinancialYear, $from, $to, $input, $data->vatParameters['limit']);
+		\overview\VatDeclarationLib::saveCerfa($data->eFarm['eFinancialYear'], $from, $to, $input, $data->vatParameters['limit']);
 
 		throw new ReloadAction('overview', 'VatDeclaration::saved');
 
@@ -57,7 +52,7 @@ new Page(function($data) {
 			throw new NotExistsAction('Unknown declaration');
 		}
 
-		$dataFromDeclaration = \overview\VatLib::generateOperationsFromDeclaration($data->eVatDeclaration, $data->eFinancialYear);
+		$dataFromDeclaration = \overview\VatLib::generateOperationsFromDeclaration($data->eVatDeclaration, $data->eFarm['eFinancialYear']);
 		$data->cerfaCalculated = $dataFromDeclaration['cerfaCalculated'];
 		$data->cerfaDeclared = $dataFromDeclaration['cerfaDeclared'];
 		$data->cOperation = $dataFromDeclaration['cOperation'];
@@ -73,7 +68,7 @@ new Page(function($data) {
 			throw new NotExpectedAction('Unable to create operations from non-declared vat declaration');
 		}
 
-		\overview\VatLib::createOperations($data->eFarm, $eVatDeclaration, $data->eFinancialYear);
+		\overview\VatLib::createOperations($data->eFarm, $eVatDeclaration, $data->eFarm['eFinancialYear']);
 
 		throw new ReloadAction('overview', 'VatDeclaration::operationsCreated');
 

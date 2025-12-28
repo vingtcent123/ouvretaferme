@@ -13,8 +13,8 @@ new AdaptativeView(
 
 	echo '<div class="tabs-h" id="balances">';
 
-	if($data->eFinancialYear->isAccrualAccounting() or $data->eFinancialYear->isCashAccrualAccounting()) {
-		echo new \journal\BalanceUi()->getTabs($data->eFarm, $data->tab, $data->eFinancialYear);
+	if($data->eFarm['eFinancialYear']->isAccrualAccounting() or $data->eFarm['eFinancialYear']->isCashAccrualAccounting()) {
+		echo new \journal\BalanceUi()->getTabs($data->eFarm, $data->tab);
 	}
 
 	switch($data->tab) {
@@ -28,8 +28,8 @@ new AdaptativeView(
 
 		default:
 			echo '<div class="tab-panel selected" data-tab="">';
-				echo new \journal\BalanceUi()->getSearch($data->search, $data->eFinancialYear);
-				echo new \journal\BalanceUi()->display($data->eFinancialYear, $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search, $data->searches);
+				echo new \journal\BalanceUi()->getSearch($data->search, $data->eFarm['eFinancialYear']);
+				echo new \journal\BalanceUi()->display($data->eFarm['eFinancialYear'], $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search, $data->searches);
 			echo '</div>';
 
 	}

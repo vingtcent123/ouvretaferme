@@ -49,10 +49,14 @@ class ImportUi {
 	public function getImport(
 		\farm\Farm $eFarm,
 		\Collection $cImport,
-		array $imports,
-		\account\FinancialYear $eFinancialYearSelected,
+		array $imports
 	): string {
+
+		$eFarm->expects(['eFinancialYear']);
+
 		\Asset::css('bank', 'import.css');
+
+		$eFinancialYearSelected = $eFarm['eFinancialYear'];
 
 		if($cImport->empty() === TRUE) {
 

@@ -1,10 +1,5 @@
 <?php
-new Page(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-})
+new Page()
 ->get('index', function($data) {
 
 	$data->page = REQUEST('page', 'int', 0);

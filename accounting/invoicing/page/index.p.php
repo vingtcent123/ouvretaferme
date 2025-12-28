@@ -1,11 +1,5 @@
 <?php
-new Page(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-
-})
+new Page()
 ->get('/facturation-electronique', function($data) {
 
 	throw new ViewAction($data);

@@ -7,8 +7,6 @@ new Page(function($data) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
-	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
 	$data->cJournalCode = \journal\JournalCodeLib::getAll();
 
 })
@@ -43,16 +41,19 @@ new Page(function($data) {
 		$data->eOperationRequested = new \journal\Operation();
 
 		if(GET('operation')) {
+
 			$data->eOperationRequested = \journal\OperationLib::getById(GET('operation'));
+
 			if($data->eOperationRequested->notEmpty()) {
-				$data->eFinancialYear = $data->eOperationRequested['financialYear'];
+				$data->eFarm['eFinancialYear'] = $data->eOperationRequested['financialYear'];
 			}
+
 		}
 
 		if(get_exists('financialYear') and GET('financialYear', 'int') === 0) { // On demande explicitement : pas de filtre sur l'exercice
 		} else {
 			// Ne pas ouvrir le bloc de recherche
-			$search->set('financialYear', $data->eFinancialYear);
+			$search->set('financialYear', $data->eFarm['eFinancialYear']);
 		}
 
 		$data->eCashflow = \bank\CashflowLib::getById(GET('cashflow'));
@@ -99,7 +100,7 @@ new Page(function($data) {
 		} else if(mb_substr($code, 0, 3) === 'vat') {
 
 			// Journaux de TVA
-			if($data->eFinancialYear['hasVat']) {
+			if($data->eFarm['eFinancialYear']['hasVat']) {
 
 				$data->operationsVat = [
 					'buy' => \journal\OperationLib::getAllForVatJournal('buy', $search, $hasSort),
@@ -114,14 +115,14 @@ new Page(function($data) {
 		$data->cJournalCode = \journal\JournalCodeLib::getAll();
 		$data->cAccount = \account\AccountLib::getAll();
 
-		$data->counts = \preaccounting\PreaccountingLib::countImports($data->eFarm, $data->eFinancialYear['startDate'], $data->eFinancialYear['endDate'], $data->search);
+		$data->counts = \preaccounting\PreaccountingLib::countImports($data->eFarm, $data->eFarm['eFinancialYear']['startDate'], $data->eFarm['eFinancialYear']['endDate'], $data->search);
 
 		throw new ViewAction($data);
 
 	})
 	->get('pdf', function($data) {
 
-		$content = pdf\PdfLib::generate($data->eFarm, $data->eFinancialYear, \pdf\PdfElement::JOURNAL_INDEX);
+		$content = pdf\PdfLib::generate($data->eFarm, $data->eFarm['eFinancialYear'], \pdf\PdfElement::JOURNAL_INDEX);
 
 		if($content === NULL) {
 			throw new NotExistsAction();

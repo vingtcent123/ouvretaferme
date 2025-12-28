@@ -8,7 +8,7 @@ new AdaptativeView('/banque/imports', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingBankTitle($data->eFarm, 'import', $data->nSuggestion, NULL);
 
-	echo new \bank\ImportUi()->getImport($data->eFarm, $data->cImport, $data->imports, $data->eFinancialYear);
+	echo new \bank\ImportUi()->getImport($data->eFarm, $data->cImport, $data->imports);
 
 
 });

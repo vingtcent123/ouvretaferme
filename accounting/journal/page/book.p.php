@@ -7,11 +7,9 @@ new Page(function($data) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
-	$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
 	$search = new Search([
 		'accountLabel' => GET('accountLabel'),
-		'financialYear' => $data->eFinancialYear,
+		'financialYear' => $data->eFarm['eFinancialYear'],
 	], GET('sort'));
 
 	$data->search = clone $search;
@@ -27,7 +25,7 @@ new Page(function($data) {
 	})
 	->get('pdf', function($data) {
 
-		$content = pdf\PdfLib::generate($data->eFarm, $data->eFinancialYear, \pdf\PdfElement::JOURNAL_BOOK);
+		$content = pdf\PdfLib::generate($data->eFarm, $data->eFarm['eFinancialYear'], \pdf\PdfElement::JOURNAL_BOOK);
 
 		if($content === NULL) {
 			throw new NotExistsAction();

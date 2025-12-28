@@ -28,7 +28,33 @@ class CompanyLib {
 			throw new \RedirectAction('/comptabilite/decouvrir?farm='.$data->eFarm['id']);
 		}
 
-		$data->eFarm['cFinancialYear'] = \account\FinancialYearLib::getAll();
+		if($data->eFarm->usesAccounting()) {
+
+			$cFinancialYear = \account\FinancialYearLib::getAll();
+
+			if(get_exists('financialYear')) {
+
+				$eFinancialYear = $cFinancialYear[GET('financialYear', 'int')] ?? throw new \NotExpectedAction('Invalid financial year');
+
+				\account\FinancialYearLib::setDefaultView($data->eFarm, $eFinancialYear);
+
+			} else if($data->eFarm->getView('viewAccountingYear')->notEmpty()) {
+
+				$eFinancialYear = $cFinancialYear[$data->eFarm->getView('viewAccountingYear')['id']];
+
+			} else {
+
+				$eFinancialYear = $cFinancialYear->first();
+
+			}
+
+		} else {
+			$cFinancialYear = new \Collection();
+			$eFinancialYear = new \account\FinancialYear();
+		}
+
+		$data->eFarm['cFinancialYear'] = $cFinancialYear;
+		$data->eFarm['eFinancialYear'] = $eFinancialYear;
 
 	}
 

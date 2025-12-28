@@ -1,32 +1,18 @@
 <?php
 new Page(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-
-	}
 )
 	->get('/banque/imports', function($data) {
 
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-
 		$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByCashflow();
 
-		$data->imports = \bank\ImportLib::formatCurrentFinancialYearImports($data->eFinancialYear);
-		$data->cImport = \bank\ImportLib::getAll($data->eFinancialYear);
+		$data->imports = \bank\ImportLib::formatCurrentFinancialYearImports($data->eFarm['eFinancialYear']);
+		$data->cImport = \bank\ImportLib::getAll($data->eFarm['eFinancialYear']);
 
 		throw new ViewAction($data);
 
 	});
 
-new Page(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
-		$data->eFarm->validate('canManage');
-
-	}
-)
+new Page()
 	->get('/banque/imports:import', function($data) {
 
 		throw new ViewAction($data);

@@ -125,7 +125,7 @@ class Farm extends FarmElement {
 	public function hasAccounting(): bool {
 		return (!OTF_DEMO and $this['hasAccounting']);
 	}
-	// Est-ce que la ferme utilise la comptabilité d'OTF ?
+	// Est-ce que la ferme utilise le logiciel comptable d'OTF ?
 	public function usesAccounting(): bool {
 
 		return (

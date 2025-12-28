@@ -1,10 +1,5 @@
 <?php
-new Page(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-})
+new Page()
 ->get('index', function($data) {
 
 	$data->search = new Search([
@@ -116,12 +111,7 @@ new Page(function($data) {
 
 });
 
-new \account\AccountPage(function($data) {
-
-	\user\ConnectionLib::checkLogged();
-
-	$data->eFarm->validate('canManage');
-})
+new \account\AccountPage()
 	->applyElement(function($data, \account\Account $e) {
 		$e['cJournalCode'] = \journal\JournalCodeLib::getAll();
 		$e['eFarm'] = $data->eFarm;

@@ -1298,9 +1298,7 @@ class FarmUi {
 			return $h;
 		}
 
-		$selectedFinancialYear = $eFarm->getView('viewAccountingYear');
-
-		$eFinancialYearSelected = $eFarm['cFinancialYear'][$selectedFinancialYear] ?? $eFarm['cFinancialYear']->first();
+		$eFinancialYearSelected = $eFarm['eFinancialYear'];
 
 		$h = '<div style="margin-bottom: 0.5rem">';
 			$h .= '<a class="btn btn-lg btn-outline-primary" data-dropdown="bottom-left" data-dropdown-hover="true">';
@@ -1332,7 +1330,7 @@ class FarmUi {
 					$h .= '<div class="dropdown-subtitle">'.p("Exercice clôturé", "Exercices clôturés", $nClose).'</div>';
 				}
 
-				$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear['id'] === (int)$selectedFinancialYear ? 'selected' : '').'">';
+				$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear->is($eFinancialYearSelected) ? 'selected' : '').'">';
 
 					if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
 						$h .= \Asset::icon('lock-fill').'  ';
@@ -1872,7 +1870,9 @@ class FarmUi {
 
 	}
 
-	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, \account\FinancialYear $eFinancialYear): string {
+	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView): string {
+
+		$eFarm->expects(['eFinancialYear']);
 
 		$categories = $this->getAccountingAssetsCategories();
 
@@ -1894,7 +1894,7 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			if($eFinancialYear->acceptUpdate()) {
+			if($eFarm['eFinancialYear']->acceptUpdate()) {
 				$h .= '<div>';
 					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une immobilisation").'</a> ';
 				$h .= '</div>';

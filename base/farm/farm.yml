@@ -142,7 +142,7 @@ Farmer:
   viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
-  viewAccountingYear: ?int16(0, null)
+  viewAccountingYear: ?account\FinancialYear
   viewAccountingType: enum(ACCRUAL, CASH, CASH_ACCRUAL) = CASH
   viewAccountingHasVat: ?bool
   viewAccountingFinancials: enum(BANK, CHARGES, SIG, VAT, BALANCE_SHEET, INCOME_STATEMENT) = BANK

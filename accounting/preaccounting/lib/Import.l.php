@@ -82,20 +82,24 @@ Class ImportLib {
 
 	}
 
-	public static function importInvoices(\farm\Farm $eFarm, \Collection $cInvoice, \account\FinancialYear $eFinancialYear): void {
+	public static function importInvoices(\farm\Farm $eFarm, \Collection $cInvoice): void {
 
 		\journal\Operation::model()->beginTransaction();
 
 		foreach($cInvoice as $eInvoice) {
 
-			self::importInvoice($eFarm, $eInvoice, $eFinancialYear);
+			self::importInvoice($eFarm, $eInvoice);
 
 		}
 
 		\journal\Operation::model()->commit();
 
 	}
-	public static function importInvoice(\farm\Farm $eFarm, \selling\Invoice $eInvoice, \account\FinancialYear $eFinancialYear): void {
+	public static function importInvoice(\farm\Farm $eFarm, \selling\Invoice $eInvoice): void {
+
+		$eFarm->expects(['eFinancialYear']);
+
+		$eFinancialYear = $eFarm['eFinancialYear'];
 
 		$fw = new \FailWatch();
 

@@ -1,22 +1,11 @@
 <?php
-new Page(function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
-
-})
+new Page()
 	->get('/banque/operations', function($data) {
 
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
 		$data->tipNavigation = 'inline';
 
 		$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByCashflow();
-
-		if($data->eFarm->usesAccounting()) {
-			$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
-		} else {
-			$data->eFinancialYear = new \account\FinancialYear();
-		}
 
 		$search = new Search([
 			'date' => GET('date'),
@@ -82,12 +71,7 @@ new Page(function($data) {
 
 new \bank\CashflowPage(
 	function($data) {
-		\user\ConnectionLib::checkLogged();
-
-		$data->eFarm->validate('canManage');
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'))->validate('canAllocate');
-
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 	}
 )
 	->get('allocate', function($data) {
@@ -208,12 +192,8 @@ new \bank\CashflowPage(
 
 new \bank\CashflowPage(
 	function($data) {
-		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm->validate('canManage');
 		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'));
-
-		$data->eFinancialYear = \account\FinancialYearLib::getDynamicFinancialYear($data->eFarm, GET('financialYear', 'int'));
 
 	}
 )
