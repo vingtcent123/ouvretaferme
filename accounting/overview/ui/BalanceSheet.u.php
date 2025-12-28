@@ -131,45 +131,45 @@ class BalanceSheetUi {
 
 						$h .= '<th colspan="3">'.s("Total actif immobilisé").'</th>';
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['currentBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['currentBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($totals['fixedAssets']['currentDepreciation'], 1) !== 0.0) {
-								$h .= \util\TextUi::money($totals['fixedAssets']['currentDepreciation']);
+								$h .= \util\TextUi::money($totals['fixedAssets']['currentDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['currentNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['currentNet'], precision: 0).'</td>';
 						if($hasComparison) {
 							if($netOnly === FALSE) {
-								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['comparisonBrut']).'</td>';
+								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['comparisonBrut'], precision: 0).'</td>';
 								$h .= '<td class="text-end balance-td-amortization">';
 								if(round($totals['fixedAssets']['comparisonDepreciation'], 1) !== 0.0) {
-									$h .= \util\TextUi::money($totals['fixedAssets']['comparisonDepreciation']);
+									$h .= \util\TextUi::money($totals['fixedAssets']['comparisonDepreciation'], precision: 0);
 								}
 								$h .= '</td>';
 							}
-							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['comparisonNet']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['comparisonNet'], precision: 0).'</td>';
 						}
 						$h .= '<th colspan="3">'.s("Total capitaux propres").'</th>';
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['currentBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['currentBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($totals['equity']['currentDepreciation'], 1) !== 0.0) {
-								$h .= \util\TextUi::money($totals['equity']['currentDepreciation']);
+								$h .= \util\TextUi::money($totals['equity']['currentDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['currentNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['currentNet'], precision: 0).'</td>';
 						if($hasComparison) {
 							if($netOnly === FALSE) {
-								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['comparisonBrut']).'</td>';
+								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['comparisonBrut'], precision: 0).'</td>';
 								$h .= '<td class="text-end balance-td-amortization">';
 								if(round($totals['equity']['comparisonDepreciation'], 1) !== 0.0) {
-									$h .= \util\TextUi::money($totals['equity']['comparisonDepreciation']);
+									$h .= \util\TextUi::money($totals['equity']['comparisonDepreciation'], precision: 0);
 								}
 								$h .= '</td>';
 							}
-							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['comparisonNet']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['comparisonNet'], precision: 0).'</td>';
 						}
 
 					$h .= '</tr>';
@@ -180,45 +180,45 @@ class BalanceSheetUi {
 
 						$h .= '<th colspan="3">'.s("Total actif circulant").'</th>';
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['currentAssets']['currentBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['currentAssets']['currentBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($totals['currentAssets']['currentDepreciation'], 1) !== 0.0) {
-								$h .= \util\TextUi::money($totals['currentAssets']['currentDepreciation']);
+								$h .= \util\TextUi::money($totals['currentAssets']['currentDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['currentAssets']['currentNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['currentAssets']['currentNet'], precision: 0).'</td>';
 						if($hasComparison) {
 							if($netOnly === FALSE) {
-								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['currentAssets']['comparisonBrut']).'</td>';
+								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['currentAssets']['comparisonBrut'], precision: 0).'</td>';
 								$h .= '<td class="text-end balance-td-amortization">';
 								if(round($totals['currentAssets']['comparisonDepreciation'], 1) !== 0.0) {
-									$h .= \util\TextUi::money($totals['currentAssets']['comparisonDepreciation']);
+									$h .= \util\TextUi::money($totals['currentAssets']['comparisonDepreciation'], precision: 0);
 								}
 								$h .= '</td>';
 							}
-							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['currentAssets']['comparisonNet']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['currentAssets']['comparisonNet'], precision: 0).'</td>';
 						}
 						$h .= '<th colspan="3">'.s("Total dettes").'</th>';
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['debts']['currentBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['debts']['currentBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($totals['debts']['currentDepreciation'], 1) !== 0.0) {
-								$h .= \util\TextUi::money($totals['debts']['currentDepreciation']);
+								$h .= \util\TextUi::money($totals['debts']['currentDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['debts']['currentNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['debts']['currentNet'], precision: 0).'</td>';
 						if($hasComparison) {
 							if($netOnly === FALSE) {
-								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['debts']['comparisonBrut']).'</td>';
+								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['debts']['comparisonBrut'], precision: 0).'</td>';
 								$h .= '<td class="text-end balance-td-amortization">';
 								if(round($totals['debts']['comparisonDepreciation'], 1) !== 0.0) {
-									$h .= \util\TextUi::money($totals['debts']['comparisonDepreciation']);
+									$h .= \util\TextUi::money($totals['debts']['comparisonDepreciation'], precision: 0);
 								}
 								$h .= '</td>';
 							}
-							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['debts']['comparisonNet']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['debts']['comparisonNet'], precision: 0).'</td>';
 						}
 
 					$h .= '</tr>';
@@ -227,45 +227,45 @@ class BalanceSheetUi {
 
 						$h .= '<th colspan="3">'.s("Total Actif").'</th>';
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['currentBrut'] + $totals['currentAssets']['currentBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['currentBrut'] + $totals['currentAssets']['currentBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($totals['fixedAssets']['currentDepreciation'] + $totals['currentAssets']['currentDepreciation'], 1) !== 0.0) {
-								$h .= \util\TextUi::money($totals['fixedAssets']['currentDepreciation'] + $totals['currentAssets']['currentDepreciation']);
+								$h .= \util\TextUi::money($totals['fixedAssets']['currentDepreciation'] + $totals['currentAssets']['currentDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['currentNet'] + $totals['currentAssets']['currentNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['currentNet'] + $totals['currentAssets']['currentNet'], precision: 0).'</td>';
 						if($hasComparison) {
 							if($netOnly === FALSE) {
-								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['comparisonBrut'] + $totals['currentAssets']['comparisonBrut']).'</td>';
+								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['comparisonBrut'] + $totals['currentAssets']['comparisonBrut'], precision: 0).'</td>';
 								$h .= '<td class="text-end balance-td-amortization">';
 								if(round($totals['fixedAssets']['comparisonDepreciation'] + $totals['currentAssets']['comparisonDepreciation'], 1) !== 0.0) {
-									$h .= \util\TextUi::money($totals['fixedAssets']['comparisonDepreciation'] + $totals['currentAssets']['comparisonDepreciation']);
+									$h .= \util\TextUi::money($totals['fixedAssets']['comparisonDepreciation'] + $totals['currentAssets']['comparisonDepreciation'], precision: 0);
 								}
 								$h .= '</td>';
 							}
-							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['comparisonNet'] + $totals['currentAssets']['comparisonNet']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['comparisonNet'] + $totals['currentAssets']['comparisonNet'], precision: 0).'</td>';
 						}
 						$h .= '<th colspan="3">'.s("Total passif").'</th>';
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['currentBrut'] + $totals['debts']['currentBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['currentBrut'] + $totals['debts']['currentBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($totals['equity']['currentDepreciation'] + $totals['debts']['currentDepreciation'], 1) !== 0.0) {
-								$h .= \util\TextUi::money($totals['equity']['currentDepreciation'] + $totals['debts']['currentDepreciation']);
+								$h .= \util\TextUi::money($totals['equity']['currentDepreciation'] + $totals['debts']['currentDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['currentNet'] + $totals['debts']['currentNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['currentNet'] + $totals['debts']['currentNet'], precision: 0).'</td>';
 						if($hasComparison) {
 							if($netOnly === FALSE) {
-								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['comparisonBrut'] + $totals['debts']['comparisonBrut']).'</td>';
+								$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['equity']['comparisonBrut'] + $totals['debts']['comparisonBrut'], precision: 0).'</td>';
 								$h .= '<td class="text-end balance-td-amortization">';
 								if(round($totals['equity']['comparisonDepreciation'] + $totals['debts']['comparisonDepreciation'], 1) !== 0.0) {
-									$h .= \util\TextUi::money($totals['equity']['comparisonDepreciation'] + $totals['debts']['comparisonDepreciation']);
+									$h .= \util\TextUi::money($totals['equity']['comparisonDepreciation'] + $totals['debts']['comparisonDepreciation'], precision: 0);
 								}
 								$h .= '</td>';
 							}
-							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['comparisonNet'] + $totals['debts']['comparisonNet']).'</td>';
+							$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['comparisonNet'] + $totals['debts']['comparisonNet'], precision: 0).'</td>';
 						}
 
 					$h .= '</tr>';
@@ -309,24 +309,24 @@ class BalanceSheetUi {
 					$h .= '</i></td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $asset['class']).'</td>';
 					if($netOnly === FALSE) {
-						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($asset['currentBrut']).'</td>';
+						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($asset['currentBrut'], precision: 0).'</td>';
 						$h .= '<td class="text-end balance-td-amortization">';
 						if(round($asset['currentDepreciation']) !== 0.0) {
-							$h .= \util\TextUi::money($asset['currentDepreciation']);
+							$h .= \util\TextUi::money($asset['currentDepreciation'], precision: 0);
 						}
 						$h .= '</td>';
 					}
-					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($asset['currentNet']).'</td>';
+					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($asset['currentNet'], precision: 0).'</td>';
 					if($hasComparison) {
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($asset['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($asset['comparisonBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($asset['comparisonDepreciation']) !== 0.0) {
-								$h .= \util\TextUi::money($asset['comparisonDepreciation']);
+								$h .= \util\TextUi::money($asset['comparisonDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($asset['comparisonNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($asset['comparisonNet'], precision: 0).'</td>';
 					}
 
 				} else {
@@ -342,25 +342,25 @@ class BalanceSheetUi {
 					$h .= '</td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $asset['class']).'</td>';
 					if($netOnly === FALSE) {
-						$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($asset['currentBrut']).'</td>';
+						$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($asset['currentBrut'], precision: 0).'</td>';
 						$h .= '<td class="text-end'.$class.' balance-td-amortization">';
 						if(round($asset['currentDepreciation']) !== 0.0) {
-							$h .= \util\TextUi::money($asset['currentDepreciation']);
+							$h .= \util\TextUi::money($asset['currentDepreciation'], precision: 0);
 						}
 						$h .= '</td>';
 					}
-					$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($asset['currentNet']).'</td>';
+					$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($asset['currentNet'], precision: 0).'</td>';
 					if($hasComparison) {
 
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($asset['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($asset['comparisonBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end'.$class.' balance-td-amortization">';
 							if(round($asset['comparisonDepreciation']) !== 0.0) {
-								$h .= \util\TextUi::money($asset['comparisonDepreciation']);
+								$h .= \util\TextUi::money($asset['comparisonDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($asset['comparisonNet']).'</td>';
+						$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($asset['comparisonNet'], precision: 0).'</td>';
 					}
 
 				}
@@ -398,24 +398,24 @@ class BalanceSheetUi {
 					$h .= '</i></td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $liability['class']).'</td>';
 					if($netOnly === FALSE) {
-						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($liability['currentBrut']).'</td>';
+						$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($liability['currentBrut'], precision: 0).'</td>';
 						$h .= '<td class="text-end balance-td-amortization">';
 						if(round($liability['currentDepreciation']) !== 0.0) {
-							$h .= \util\TextUi::money($liability['currentDepreciation']);
+							$h .= \util\TextUi::money($liability['currentDepreciation'], precision: 0);
 						}
 						$h .= '</td>';
 					}
-					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($liability['currentNet']).'</td>';
+					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($liability['currentNet'], precision: 0).'</td>';
 					if($hasComparison) {
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($liability['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($liability['comparisonBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end balance-td-amortization">';
 							if(round($liability['comparisonDepreciation']) !== 0.0) {
-								$h .= \util\TextUi::money($liability['comparisonDepreciation']);
+								$h .= \util\TextUi::money($liability['comparisonDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($liability['comparisonNet']).'</td>';
+						$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($liability['comparisonNet'], precision: 0).'</td>';
 					}
 
 				} else {
@@ -433,24 +433,24 @@ class BalanceSheetUi {
 					$h .= '</td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $liability['class']).'</td>';
 					if($netOnly === FALSE) {
-						$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($liability['currentBrut']).'</td>';
+						$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($liability['currentBrut'], precision: 0).'</td>';
 						$h .= '<td class="text-end'.$class.' balance-td-amortization">';
 						if(round($liability['currentDepreciation']) !== 0.0) {
-							$h .= \util\TextUi::money($liability['currentDepreciation']);
+							$h .= \util\TextUi::money($liability['currentDepreciation'], precision: 0);
 						}
 						$h .= '</td>';
 					}
-					$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($liability['currentNet']).'</td>';
+					$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($liability['currentNet'], precision: 0).'</td>';
 					if($hasComparison) {
 						if($netOnly === FALSE) {
-							$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($liability['comparisonBrut']).'</td>';
+							$h .= '<td class="text-end'.$class.' balance-td-brut">'.\util\TextUi::money($liability['comparisonBrut'], precision: 0).'</td>';
 							$h .= '<td class="text-end'.$class.' balance-td-amortization">';
 							if(round($liability['comparisonDepreciation']) !== 0.0) {
-								$h .= \util\TextUi::money($liability['comparisonDepreciation']);
+								$h .= \util\TextUi::money($liability['comparisonDepreciation'], precision: 0);
 							}
 							$h .= '</td>';
 						}
-						$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($liability['comparisonNet']).'</td>';
+						$h .= '<td class="text-end'.$class.' balance-td-net">'.\util\TextUi::money($liability['comparisonNet'], precision: 0).'</td>';
 					}
 
 				}

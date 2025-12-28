@@ -32,7 +32,7 @@ class IncomeStatementUi {
 					if($eFinancialYearCurrent->is($eFinancialYear)) {
 						continue;
 					}
-					$values[] = [$eFinancialYearCurrent['id'], 'label' => s("Exercice {value}", $eFinancialYearCurrent->getLabel())];
+					$values[$eFinancialYearCurrent['id']] = s("Exercice {value}", $eFinancialYearCurrent->getLabel());
 				}
 				$h .= $form->select('financialYearComparison', $values, $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
 			}
@@ -149,7 +149,7 @@ class IncomeStatementUi {
 						} else {
 
 							$h .= '<th colspan="3">'.s("Résultat d'exploitation (bénéfice)").'</th>';
-							$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent) : '').'</td>';
+							$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent, precision: 0) : '').'</td>';
 							if($hasComparison) {
 								$h .= '<td class="text-end">'.($differencePrevious > 0 ? \util\TextUi::money($differencePrevious) : '').'</td>';
 							}
@@ -159,9 +159,9 @@ class IncomeStatementUi {
 							$h .= '<td></td>';
 						} else {
 							$h .= '<th colspan="3">'.s("Résultat d'exploitation (perte)").'</th>';
-							$h .= '<td class="text-end">'.($differenceCurrent < 0 ? \util\TextUi::money(abs($differenceCurrent)) : '').'</td>';
+							$h .= '<td class="text-end">'.($differenceCurrent < 0 ? \util\TextUi::money(abs($differenceCurrent), precision: 0) : '').'</td>';
 							if($hasComparison) {
-								$h .= '<td class="text-end">'.($differencePrevious < 0 ? \util\TextUi::money(abs($differencePrevious)) : '').'</td>';
+								$h .= '<td class="text-end">'.($differencePrevious < 0 ? \util\TextUi::money(abs($differencePrevious), precision: 0) : '').'</td>';
 							}
 						}
 
@@ -170,14 +170,14 @@ class IncomeStatementUi {
 					$h .= '<tr class="overview_group-total row-bold">';
 
 						$h .= '<th colspan="3">'.s("Total général").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0)).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0), precision: 0).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesPrevious + ($differencePrevious > 0 ? $differencePrevious : 0)).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesPrevious + ($differencePrevious > 0 ? $differencePrevious : 0), precision: 0).'</td>';
 						}
 						$h .= '<th colspan="3">'.s("Total général").'</th>';
-						$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesCurrent + ($differenceCurrent < 0 ? abs($differenceCurrent) : 0)).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesCurrent + ($differenceCurrent < 0 ? abs($differenceCurrent) : 0), precision: 0).'</td>';
 						if($hasComparison) {
-							$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesPrevious + ($differencePrevious < 0 ? abs($differencePrevious) : 0)).'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesPrevious + ($differencePrevious < 0 ? abs($differencePrevious) : 0), precision: 0).'</td>';
 						}
 
 					$h .= '</tr>';
@@ -213,14 +213,14 @@ class IncomeStatementUi {
 		$h = '<tr class="overview_group-total row-bold">';
 
 			$h .= '<th colspan="3">'.$expensesTitle.'</th>';
-			$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Expense']['current']).'</td>';
+			$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Expense']['current'], precision: 0).'</td>';
 			if($hasComparison) {
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Expense']['comparison']).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Expense']['comparison'], precision: 0).'</td>';
 			}
 			$h .= '<th colspan="3">'.$incomesTitle.'</th>';
-			$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Income']['current']).'</td>';
+			$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Income']['current'], precision: 0).'</td>';
 			if($hasComparison) {
-				$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Income']['comparison']).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Income']['comparison'], precision: 0).'</td>';
 			}
 
 		$h .= '</tr>';
@@ -254,9 +254,9 @@ class IncomeStatementUi {
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">'.new CommonUi()->getDropdownClass($eFarm, $expense['class']).'</td>';
-					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['current']).'</td>';
+					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['current'], precision: 0).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['comparison']).'</td>';
+						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['comparison'], precision: 0).'</td>';
 					}
 
 				} else {
@@ -283,9 +283,9 @@ class IncomeStatementUi {
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">'.new CommonUi()->getDropdownClass($eFarm, $income['class']).'</td>';
-					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['current']).'</td>';
+					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['current'], precision: 0).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['comparison']).'</td>';
+						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['comparison'], precision: 0).'</td>';
 					}
 
 				} else {

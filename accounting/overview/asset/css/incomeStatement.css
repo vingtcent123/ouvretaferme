@@ -23,11 +23,11 @@ table.income-statement-table .overview_group-title th {
 	vertical-align: middle;
 }
 
-table.income-statement-table .overview_line {
+table.income-statement-table.overview_has_previous .overview_line {
 	td:nth-child(1),
 	td:nth-child(4),
 	td:nth-child(5),
-	/*td:nth-child(6),*/
+	td:nth-child(6),
 	td:nth-child(9),
 	td:nth-child(10) {
 		border-left: 1px solid var(--muted);

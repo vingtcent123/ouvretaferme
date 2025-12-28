@@ -21,13 +21,8 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function countOperationMissingAsset(\account\FinancialYear $eFinancialYear): int {
 
-		return \journal\Operation::model()
+		return \journal\OperationLib::applyAssetCondition()
 			->whereFinancialYear($eFinancialYear)
-			->or(
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%'),
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::EQUIPMENT_GRANT_CLASS.'%'),
-			)
-			->whereAccountLabel('NOT LIKE', \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%')
 			->whereAsset(NULL)
 			->count();
 
@@ -117,7 +112,7 @@ class AssetLib extends \asset\AssetCrud {
 		if($cOperation->notEmpty()) {
 			\journal\OperationLib::applyAssetCondition()
 				->whereId('IN', $cOperation->getIds())
-        ->update(['asset' => $e]);
+				->update(['asset' => $e]);
 		}
 
 		Asset::model()->commit();
