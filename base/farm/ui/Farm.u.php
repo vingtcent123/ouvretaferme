@@ -1326,6 +1326,8 @@ class FarmUi {
 					$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
 				}
 
+				$url = \util\HttpUi::setArgument($url, 'subNavYear', $eFinancialYear['id']);
+
 				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
 					$h .= '<div class="dropdown-subtitle">'.p("Exercice clôturé", "Exercices clôturés", $nClose).'</div>';
 				}

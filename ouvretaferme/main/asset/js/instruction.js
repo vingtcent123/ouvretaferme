@@ -21,7 +21,7 @@ new Lime.Instruction('main')
 			qs('header').renderInner(sectionHtml + navHtml);
 		}
 
-		const financialYear = new URL(window.location.href).searchParams.get("financialYear");
+		const financialYear = new URL(window.location.href).searchParams.get("subNavYear");
 
 		if(financialYear !== null) {
 
