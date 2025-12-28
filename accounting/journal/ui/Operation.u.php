@@ -1437,7 +1437,7 @@ class OperationUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, int $farm, \bank\Cashflow $eCashflow, bool $multiple = FALSE) {
+	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, \bank\Cashflow $eCashflow, bool $multiple = FALSE) {
 
 		$d->prepend = \Asset::icon('journal-bookmark');
 		$d->field = 'autocomplete';
@@ -1445,14 +1445,14 @@ class OperationUi {
 		$d->placeholder ??= s("Opération...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlFarm(new \farm\Farm(['id' => $farm])).'/journal/operation:query';
+		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:query';
 		$d->autocompleteResults = function(Operation $eOperation) use($eCashflow) {
 			return self::getAutocomplete($eCashflow, $eOperation);
 		};
 
 	}
 
-	public function queryDescription(\PropertyDescriber $d, int $farm, bool $multiple = FALSE) {
+	public function queryDescription(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE) {
 
 		$d->prepend = \Asset::icon('pencil-fill');
 		$d->field = 'autocomplete';
@@ -1460,7 +1460,7 @@ class OperationUi {
 		$d->placeholder ??= s("Libellé...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlFarm(new \farm\Farm(['id' => $farm])).'/journal/operation:queryDescription';
+		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:queryDescription';
 		$d->autocompleteResults = function(string $description) {
 			return self::getAutocompleteDescriptions($description);
 		};
@@ -1516,7 +1516,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'));
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'));
 				break;
 
 			case 'description':
@@ -1525,7 +1525,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new OperationUi()->queryDescription($d, GET('farm', '?int'));
+				new OperationUi()->queryDescription($d, GET('farm', 'farm\Farm'));
 				break;
 
 			case 'accountLabel':
@@ -1534,7 +1534,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'accountLabel'];
-				new \account\AccountUi()->queryLabel($d, GET('farm', '?int'), query: GET('query'));
+				new \account\AccountUi()->queryLabel($d, GET('farm', 'farm\Farm'), query: GET('query'));
 				break;
 
 			case 'asset':
@@ -1543,7 +1543,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \asset\AssetUi()->query($d, GET('farm', '?int'));
+				new \asset\AssetUi()->query($d, GET('farm', 'farm\Farm'));
 				break;
 
 			case 'vatValue' :
@@ -1571,7 +1571,7 @@ class OperationUi {
 					return $form->hidden('thirdPartyVatNumber['.($attributes['data-index'] ?? 0).']')
 						.$form->hidden('thirdPartyName['.($attributes['data-index'] ?? 0).']');
 				};
-				new \account\ThirdPartyUi()->query($d, GET('farm', '?int'));
+				new \account\ThirdPartyUi()->query($d, GET('farm', 'farm\Farm'));
 				break;
 
 			case 'document':

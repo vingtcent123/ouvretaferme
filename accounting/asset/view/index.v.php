@@ -12,7 +12,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	foreach($data->cAsset as $eAsset) {
 
-		$results[] = \asset\AssetUi::getAutocomplete($data->eFarm['id'], $eAsset);
+		$results[] = \asset\AssetUi::getAutocomplete($data->eFarm, $eAsset);
 
 	}
 

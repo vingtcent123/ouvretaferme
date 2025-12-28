@@ -19,23 +19,24 @@ class CompanyUi {
 		return self::url($eFarm).'/configuration';
 	}
 
-	public static function urlJournal(int|\farm\Farm $farm): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/journal';
-	}
-	public static function urlFarm(int|\farm\Farm $farm): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']);
+	public static function urlJournal(\farm\Farm $eFarm): string {
+		return self::urlFarm($eFarm).'/journal';
 	}
 
-	public static function urlAsset(int|\farm\Farm $farm): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/asset';
+	public static function urlAsset(\farm\Farm $eFarm): string {
+		return self::urlFarm($eFarm).'/asset';
 	}
 
-	public static function urlBank(int|\farm\Farm $farm): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/bank';
+	public static function urlBank(\farm\Farm $eFarm): string {
+		return self::urlFarm($eFarm).'/bank';
 	}
 
-	public static function urlAccount(int|\farm\Farm $farm): string {
-		return '/'.(is_int($farm) ? $farm : $farm['id']).'/account';
+	public static function urlAccount(\farm\Farm $eFarm): string {
+		return self::urlFarm($eFarm).'/account';
+	}
+
+	public static function urlFarm(\farm\Farm $eFarm): string {
+		return '/'.$eFarm['id'];
 	}
 
 	public function create(\farm\Farm $eFarm): string {

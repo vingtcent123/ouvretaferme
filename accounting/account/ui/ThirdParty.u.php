@@ -81,8 +81,8 @@ class ThirdPartyUi {
 
 		}
 
-		$isAccrual = (FEATURE_ACCOUNTING_ACCRUAL and ($eFarm->getView('viewAccountingType') === FinancialYear::ACCRUAL));
-		$isCashAccrual = (FEATURE_ACCOUNTING_CASH_ACCRUAL and (($eFarm->getView('viewAccountingType') === FinancialYear::CASH_ACCRUAL) or $eFarm->usesAccounting() === FALSE));
+		$isAccrual = (FEATURE_ACCOUNTING_ACCRUAL and ($eFarm['eFinancialYear']['accountingType'] === FinancialYear::ACCRUAL));
+		$isCashAccrual = (FEATURE_ACCOUNTING_CASH_ACCRUAL and (($eFarm['eFinancialYear']['accountingType'] === FinancialYear::CASH_ACCRUAL) or $eFarm->usesAccounting() === FALSE));
 
 		$h = '';
 
@@ -109,7 +109,7 @@ class ThirdPartyUi {
 					if($isAccrual) {
 						$h .= '<th>'.s("Compte Fournisseur").'</th>';
 					}
-					
+
 					$h .= '<th class="text-end">'.s("Écritures comptables").'</th>';
 					$h .= '<th></th>';
 				$h .= '</thead>';
@@ -198,7 +198,7 @@ class ThirdPartyUi {
 		return $h;
 
 	}
-	public static function getAutocomplete(int $farm, ThirdParty $eThirdParty): array {
+	public static function getAutocomplete(\farm\Farm $eFarm, ThirdParty $eThirdParty): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -206,14 +206,14 @@ class ThirdPartyUi {
 			'value' => $eThirdParty['id'],
 			'clientAccountLabel' => $eThirdParty['clientAccountLabel'],
 			'supplierAccountLabel' => $eThirdParty['supplierAccountLabel'],
-			'farm' => $farm,
+			'farm' => $eFarm['id'],
 			'itemHtml' => $eThirdParty['name'],
 			'itemText' => $eThirdParty['name']
 		];
 
 	}
 
-	public function query(\PropertyDescriber $d, int $company, bool $multiple = FALSE) {
+	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE) {
 
 		$d->prepend = \Asset::icon('person-rolodex');
 		$d->field = 'autocomplete';
@@ -222,9 +222,9 @@ class ThirdPartyUi {
 		$d->multiple = $multiple;
 		$d->group += ['wrapper' => 'thirdParty'];
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccount($company).'/thirdParty:query';
-		$d->autocompleteResults = function(ThirdParty $e) use ($company) {
-			return self::getAutocomplete($company, $e);
+		$d->autocompleteUrl = \company\CompanyUi::urlAccount($eFarm).'/thirdParty:query';
+		$d->autocompleteResults = function(ThirdParty $e) use ($eFarm) {
+			return self::getAutocomplete($eFarm, $e);
 		};
 
 	}

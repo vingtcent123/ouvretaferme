@@ -267,7 +267,7 @@ class AccountUi {
 
 	}
 
-	public static function getAutocomplete(int $farm, Account|\company\GenericAccount $eAccount, \Search $search = new \Search()): array {
+	public static function getAutocomplete(\farm\Farm $eFarm, Account|\company\GenericAccount $eAccount, \Search $search = new \Search()): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -297,7 +297,7 @@ class AccountUi {
 			'description' => $eAccount['description'],
 			'vatRate' => $vatRate,
 			'vatClass' => $vatClass,
-			'farm' => $farm,
+			'farm' => $eFarm['id'],
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAccount['class'].' '.$eAccount['description'],
 			'journalCode' => ($eAccount['journalCode']['id'] ?? NULL),
@@ -305,7 +305,7 @@ class AccountUi {
 
 	}
 
-	public static function getAutocompleteWithout(int $farm): array {
+	public static function getAutocompleteWithout(\farm\Farm $eFarm): array {
 
 		$text = s("Sans numéro de compte");
 
@@ -315,7 +315,7 @@ class AccountUi {
 			'description' => $text,
 			'vatRate' => 0,
 			'vatClass' => '',
-			'farm' => $farm,
+			'farm' => $eFarm['id'],
 			'itemHtml' => $text,
 			'itemText' => $text,
 			'journalCode' => NULL,
@@ -337,7 +337,7 @@ class AccountUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, ?int $farm, bool $multiple = FALSE, array $query = []): void {
+	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE, array $query = []): void {
 
 		$d->prepend = \Asset::icon('journal-text');
 		$d->field = 'autocomplete';
@@ -345,39 +345,39 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir le numéro de compte...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = function(\util\FormUi $form, $e) use (&$farm, $query) {
-			if($farm === NULL) {
-				$farm = $e['farm']['id'];
+		$d->autocompleteUrl = function(\util\FormUi $form, $e) use ($eFarm, $query) {
+			if($eFarm->empty()) {
+				$eFarm = $e['farm'];
 			}
-			return \company\CompanyUi::urlAccount($farm).'/account:query?'.http_build_query($query);
+			return \company\CompanyUi::urlAccount($eFarm).'/account:query?'.http_build_query($query);
 		};
 
-		$d->autocompleteResults = function(Account|\company\GenericAccount $eAccount, $e = NULL) use ($farm) {
-			if($farm === NULL and $e !== NULL) {
-				$farm = $e['farm']['id'];
+		$d->autocompleteResults = function(Account|\company\GenericAccount $eAccount, $e = NULL) use ($eFarm) {
+			if($eFarm->empty() and $e !== NULL) {
+				$eFarm = $e['farm'];
 			}
 			if($eAccount['id'] === 0) {
-				return self::getAutocompleteWithout($farm);
+				return self::getAutocompleteWithout($eFarm);
 			}
-			return self::getAutocomplete($farm, $eAccount);
+			return self::getAutocomplete($eFarm, $eAccount);
 		};
 
 	}
 
-	public static function getAutocompleteLabel(string $query, int $farm, string $label): array {
+	public static function getAutocompleteLabel(string $query, \farm\Farm $eFarm, string $label): array {
 
 		\Asset::css('media', 'media.css');
 
 		return [
 			'value' => $label,
-			'farm' => $farm,
+			'farm' => $eFarm['id'],
 			'itemHtml' => str_replace($query, '<b>'.$query.'</b>', $label),
 			'itemText' => encode($label),
 		];
 
 	}
 
-	public function queryLabel(\PropertyDescriber $d, int $farm, ?string $query, bool $multiple = FALSE): void {
+	public function queryLabel(\PropertyDescriber $d, \farm\Farm $eFarm, ?string $query, bool $multiple = FALSE): void {
 
 		$d->prepend = \Asset::icon('123');
 		$d->field = 'autocomplete';
@@ -385,9 +385,9 @@ class AccountUi {
 		$d->placeholder ??= s("Commencez à saisir le numéro de compte...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAccount($farm).'/account:queryLabel';
-		$d->autocompleteResults = function(string $label) use ($farm, $query) {
-			return self::getAutocompleteLabel($query, $farm, $label);
+		$d->autocompleteUrl = \company\CompanyUi::urlAccount($eFarm).'/account:queryLabel';
+		$d->autocompleteResults = function(string $label) use ($eFarm, $query) {
+			return self::getAutocompleteLabel($query, $eFarm, $label);
 		};
 
 		$d->autocompleteTextual = TRUE;
@@ -782,7 +782,7 @@ class AccountUi {
 					];
 				};
 				$d->group += ['wrapper' => 'vatAccount'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => AccountSetting::VAT_CLASS]);
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['classPrefix' => AccountSetting::VAT_CLASS]);
 				break;
 
 			case 'journalCode':

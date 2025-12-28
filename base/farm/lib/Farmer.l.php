@@ -388,8 +388,21 @@ class FarmerLib extends FarmerCrud {
 			return $newView;
 		}
 
-		if($newView === $eFarmer[$field]) {
-			return $eFarmer[$field];
+		if(
+			$eFarmer[$field] instanceof \Element and
+			$newView instanceof \Element
+		) {
+
+			if($newView->is($eFarmer[$field])) {
+				return $eFarmer[$field];
+			}
+
+		} else {
+
+			if($newView === $eFarmer[$field]) {
+				return $eFarmer[$field];
+			}
+
 		}
 
 		if(Farmer::model()->check($field, $newView)) {

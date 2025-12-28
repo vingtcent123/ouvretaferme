@@ -66,7 +66,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 		}
 
-		$results[] = \account\ThirdPartyUi::getAutocomplete($data->eFarm['id'], $eThirdParty);
+		$results[] = \account\ThirdPartyUi::getAutocomplete($data->eFarm, $eThirdParty);
 
 	}
 

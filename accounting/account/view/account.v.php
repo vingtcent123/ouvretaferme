@@ -22,7 +22,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	if(GET('canHaveNoAccountOption', 'bool') === TRUE) {
 
-		$results[] = \account\AccountUi::getAutocompleteWithout($data->eFarm['id']);
+		$results[] = \account\AccountUi::getAutocompleteWithout($data->eFarm);
 
 	}
 
@@ -49,7 +49,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 		];
 
 		foreach($cAccountThirdParty as $eAccount) {
-			$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount);
 		}
 
 	}
@@ -63,7 +63,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 		];
 
 		foreach($cAccountUsed as $eAccount) {
-			$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount);
 		}
 	}
 
@@ -82,7 +82,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 		];
 
 		foreach($cAccountOthers as $eAccount) {
-			$results[] = \account\AccountUi::getAutocomplete($data->eFarm['id'], $eAccount);
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount);
 		}
 
 	}
@@ -95,7 +95,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 new JsonView('queryLabel', function($data, AjaxTemplate $t) {
 
-	$results = array_map(function($label) use ($data) { return \account\AccountUi::getAutocompleteLabel(POST('query'), $data->eFarm['id'], $label); }, $data->labels);
+	$results = array_map(function($label) use ($data) { return \account\AccountUi::getAutocompleteLabel(POST('query'), $data->eFarm, $label); }, $data->labels);
 
 	$t->push('results', $results);
 

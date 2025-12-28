@@ -1599,7 +1599,7 @@ class ItemUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Item $e) => $e['account'] ?? NULL;
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]);
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]);
 				break;
 
 		}

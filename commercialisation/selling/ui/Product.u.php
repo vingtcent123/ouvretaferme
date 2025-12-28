@@ -1689,7 +1689,7 @@ class ProductUi {
 				if(get_exists('account') and GET('account') === '0') {
 					$query['noAccount'] = TRUE;
 				}
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: $query);
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: $query);
 
 				break;
 

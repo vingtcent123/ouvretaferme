@@ -21,6 +21,18 @@ new Lime.Instruction('main')
 			qs('header').renderInner(sectionHtml + navHtml);
 		}
 
+		const financialYear = new URL(window.location.href).searchParams.get("financialYear");
+
+		if(financialYear !== null) {
+
+			farmNav.qsa('.farm-nav-accounting a.farm-subnav-item', node => {
+
+				const newHref = node.getAttribute('href').setArgument('financialYear', financialYear);
+				node.setAttribute('href', newHref);
+
+			});
+
+		}
 
 	})
 	.register('updateNavPlanning', function(url, period) {

@@ -653,7 +653,7 @@ class CashflowUi {
 					];
 				};
 				$d->group += ['wrapper' => 'operation'];
-				new \journal\OperationUi()->query($d, GET('farm', '?int'), $eCashflow);
+				new \journal\OperationUi()->query($d, GET('farm', 'farm\Farm'), $eCashflow);
 			});
 
 		$h .= '<div class="stick-sm util-overflow-sm" data-operations>';

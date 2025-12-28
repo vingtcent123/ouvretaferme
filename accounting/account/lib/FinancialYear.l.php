@@ -36,14 +36,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function checkHasAtLeastOne(\Collection $cFinancialYear, \farm\Farm $eFarm): void {
-
-		if($cFinancialYear->empty() === TRUE) {
-			throw new \RedirectAction(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:create?message=FinancialYear::toCreate');
-		}
-
-	}
-
 	/**
 	 * @param FinancialYear $eFinancialYear Exercice sur lequel écrire le bilan d'ouverture
 	 */
@@ -219,23 +211,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function getDynamicFinancialYear(\farm\Farm $eFarm, int $financialYearId): FinancialYear {
-
-		if($financialYearId) {
-
-			$eFinancialYear = self::getById($financialYearId);
-			self::setDefaultView($eFarm, $eFinancialYear);
-
-			return $eFinancialYear;
-
-		} else {
-
-			return self::selectDefaultFinancialYear();
-
-		}
-
-	}
-
 	public static function create(FinancialYear $e): void {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
@@ -252,21 +227,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 
 	}
-	public static function update(FinancialYear $e, array $properties): void {
-
-		$eFarm = \farm\FarmLib::getById(POST('farm'));
-
-		FinancialYear::model()->beginTransaction();
-
-			parent::update($e, $properties);
-
-			if($eFarm->getView('viewAccountingYear')->is($e)) {
-				self::setDefaultView($eFarm, $e);
-			}
-
-		FinancialYear::model()->commit();
-
-	}
 
 	public static function cbUpdate(FinancialYear $e, FinancialYear $eOld): void {
 
@@ -277,14 +237,6 @@ class FinancialYearLib extends FinancialYearCrud {
 			}
 		}
 		LogLib::save('update', 'FinancialYear', ['id' => $e['id'], 'changes' => $changes]);
-
-	}
-
-	public static function setDefaultView(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
-
-		\farm\FarmerLib::setView('viewAccountingYear', $eFarm, $eFinancialYear);
-		\farm\FarmerLib::setView('viewAccountingType', $eFarm, $eFinancialYear['accountingType']);
-		\farm\FarmerLib::setView('viewAccountingHasVat', $eFarm, $eFinancialYear['hasVat']);
 
 	}
 

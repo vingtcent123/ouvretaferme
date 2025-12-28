@@ -2,9 +2,7 @@
 new Page()
 	->get('manage', function($data) {
 
-		$farm = GET('farm', '?int');
-
-		$data->eFarm = \farm\FarmLib::getById($farm)->validate('canManage');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
 		$data->cFarmer = \farm\FarmerLib::getByFarm($data->eFarm);
 		$data->cFarmerInvite = \farm\FarmerLib::getByFarm($data->eFarm, onlyInvite: TRUE);

@@ -36,9 +36,7 @@ new \payment\MethodPage(function($data) {
 
 new Page(function($data) {
 
-	$farm = GET('farm', '?int');
-
-	$data->eFarm = \farm\FarmLib::getById($farm)->validate('canManage');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
 })
 	->get('manage', function($data) {

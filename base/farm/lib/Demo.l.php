@@ -276,8 +276,7 @@ class DemoLib {
 		Farmer::model()
 			->whereId(Farm::DEMO)
 			->update([
-				'viewAccountingYear' => NULL,
-				'viewAccountingHasVat' => NULL,
+				'viewAccountingYear' => NULL
 			]);
 
 		Farm::model()

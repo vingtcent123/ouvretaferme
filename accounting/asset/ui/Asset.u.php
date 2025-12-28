@@ -9,12 +9,6 @@ Class AssetUi {
 		\Asset::js('asset', 'asset.js');
 	}
 
-	public function getAssetShortTranslation(): string {
-
-		return s("I");
-
-	}
-
 	public function number(mixed $number, ?string $valueIfEmpty, ?int $decimals = NULL): string {
 
 		if(is_null($number) === true or $number === 0 or $number === 0.0) {
@@ -199,7 +193,7 @@ Class AssetUi {
 		return '';
 	}
 
-	public function query(\PropertyDescriber $d, int $farm, bool $multiple = FALSE, array $query = []): void {
+	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE, array $query = []): void {
 
 		$d->prepend = \Asset::icon('house');
 		$d->field = 'autocomplete';
@@ -207,14 +201,14 @@ Class AssetUi {
 		$d->placeholder ??= s("Commencez à saisir l'immobilisation...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlAsset($farm).'/:query?'.http_build_query($query);
-		$d->autocompleteResults = function(Asset $e) use ($farm) {
-			return self::getAutocomplete($farm, $e);
+		$d->autocompleteUrl = \company\CompanyUi::urlAsset($eFarm).'/:query?'.http_build_query($query);
+		$d->autocompleteResults = function(Asset $e) use ($eFarm) {
+			return self::getAutocomplete($eFarm, $e);
 		};
 
 	}
 
-	public static function getAutocomplete(int $farm, Asset $eAsset, \Search $search = new \Search()): array {
+	public static function getAutocomplete(\farm\Farm $eFarm, Asset $eAsset, \Search $search = new \Search()): array {
 
 		\Asset::css('media', 'media.css');
 
@@ -231,7 +225,7 @@ Class AssetUi {
 		return [
 			'value' => $eAsset['id'],
 			'description' => $eAsset['description'],
-			'farm' => $farm,
+			'farm' => $eFarm['id'],
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAsset['accountLabel'].' '.$eAsset['description']
 		];
@@ -993,7 +987,7 @@ Class AssetUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', '?int'), query: ['classPrefixes' => [\account\AccountSetting::INTANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_LIVING_ASSETS_CLASS, \account\AccountSetting::GRANT_ASSET_CLASS]]);
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['classPrefixes' => [\account\AccountSetting::INTANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_ASSETS_CLASS, \account\AccountSetting::TANGIBLE_LIVING_ASSETS_CLASS, \account\AccountSetting::GRANT_ASSET_CLASS]]);
 				break;
 
 			case 'accountLabel':
@@ -1002,7 +996,7 @@ Class AssetUi {
 					];
 				};
 				$d->group += ['wrapper' => 'accountLabel'];
-				new \account\AccountUi()->queryLabel($d, GET('farm', '?int'), query: GET('query'));
+				new \account\AccountUi()->queryLabel($d, GET('farm', 'farm\Farm'), query: GET('query'));
 				break;
 
 			case 'acquisitionDate' :

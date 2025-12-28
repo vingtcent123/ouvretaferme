@@ -5,9 +5,7 @@
 		throw new \FailAction('payment\Stripe::demo.write');
 	}
 
-	$farm = GET('farm', '?int');
-
-	$data->eFarm = \farm\FarmLib::getById($farm)->validate('canManage');
+	$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 
 
 	}))

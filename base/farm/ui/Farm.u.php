@@ -949,17 +949,25 @@ class FarmUi {
 			'bank' => \company\CompanyUi::urlFarm($eFarm).'/banque/operations',
 			'preaccounting' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite',
 			'accounting' => match($name) {
-				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
-				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
-				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
-				'assets' => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
-				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers',
-				'financials' => \company\CompanyUi::urlFarm($eFarm).'/gestion',
-				'summary' => \company\CompanyUi::urlFarm($eFarm).'/synthese',
+				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal'.$this->addFinancialYear($eFarm),
+				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre'.$this->addFinancialYear($eFarm),
+				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name.$this->addFinancialYear($eFarm),
+				'assets' => \company\CompanyUi::urlFarm($eFarm).'/immobilisations'.$this->addFinancialYear($eFarm),
+				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers'.$this->addFinancialYear($eFarm),
+				'financials' => \company\CompanyUi::urlFarm($eFarm).'/gestion'.$this->addFinancialYear($eFarm),
+				'summary' => \company\CompanyUi::urlFarm($eFarm).'/synthese'.$this->addFinancialYear($eFarm),
 			},
 
 		};
 
+	}
+
+	protected function addFinancialYear(Farm $eFarm): string {
+		if($eFarm->offsetExists('eFinancialYear') and $eFarm['eFinancialYear']->notEmpty()) {
+			return '?financialYear='.$eFarm['eFinancialYear']['id'];
+		} else {
+			return '';
+		}
 	}
 
 	protected function getCategoryName(Farm $eFarm, string $section, string $name): string {
