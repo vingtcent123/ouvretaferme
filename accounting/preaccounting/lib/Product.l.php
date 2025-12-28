@@ -48,7 +48,7 @@ Class ProductLib {
 	 */
 	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
 
-		$cCategories = \selling\CategoryLib::getByFarm($eFarm);
+		$cCategories = \selling\CategoryLib::getByFarm($eFarm, index: 'id');
 
 		$cProduct = self::filterForAccountingCheck($eFarm, $search)
 			->select(['category', 'count' => new \Sql('COUNT(DISTINCT(m1.id))')])
