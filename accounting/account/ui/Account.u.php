@@ -67,7 +67,7 @@ class AccountUi {
 		}
 
 		$displayProductsCount = $cAccount->match(fn($eAccount) => ($eAccount['nProductPro'] ?? 0) > 0 or ($eAccount['nProductPrivate'] ?? 0) > 0);
-		$displayOperationsCount = $cAccount->match(fn($eAccount) => ($eAccount['nOperation'] ?? 0) > 0);
+		$displayOperationsCount = $cAccount->match(fn($eAccount) => (array_sum($eAccount['nOperation']) ?? 0) > 0);
 
 		\Asset::css('util', 'batch.css');
 		\Asset::js('util', 'batch.js');
@@ -101,7 +101,7 @@ class AccountUi {
 						$h .= '</th>';
 
 						if($displayOperationsCount) {
-							$h .= '<th rowspan="2" class="text-center">';
+							$h .= '<th colspan="2" class="text-center">';
 								$h .= s("Opérations");
 							$h .= '</th>';
 						}
@@ -122,6 +122,18 @@ class AccountUi {
 						$h .= '<th>';
 							$h .= s("Taux de TVA");
 						$h .= '</th>';
+						$financialYears = [];
+						if($displayOperationsCount) {
+							$count = 0;
+							foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
+								if($count >= 2) {
+									break;
+								}
+								$count++;
+								$financialYears[] = $eFinancialYear['id'];
+								$h .= '<th class="text-end '.($count === 1 ? 'highlight-stick-right' : 'highlight-stick-left').'">'.$eFinancialYear->getLabel().'</th>';
+							}
+						}
 						if($displayProductsCount) {
 							$h .= '<th class="text-center">';
 								$h .= s("Particuliers");
@@ -210,7 +222,21 @@ class AccountUi {
 						$h .= '</td>';
 
 						if($displayOperationsCount) {
-							$h .= '<td class="text-center"><a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?accountLabel='.$eAccount['class'].'">'.(($eAccount['nOperation'] ?? 0) > 0 ? $eAccount['nOperation'] : '').'</a></td>';
+
+							foreach($financialYears as $financialYear) {
+
+								$eFinancialYear = $eFarm['cFinancialYear']->offsetGet($financialYear);
+
+								$h .= '<td class="text-end '.($financialYear === first($financialYears) ? 'highlight-stick-right ' : 'highlight-stick-left').'">';
+
+									if(($eAccount['nOperation'][$financialYear] ?? 0) > 0) {
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal?accountLabel='.$eAccount['class'].'"  title="'.s("Filtrer les opérations sur ce numéro de compte").'">'.($eAccount['nOperation'][$financialYear] ?? 0).'</a>';
+									}
+
+								$h .= '</td>';
+
+							}
+
 						}
 
 						if($displayProductsCount) {

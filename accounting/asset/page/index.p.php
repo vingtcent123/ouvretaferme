@@ -80,6 +80,8 @@ new \asset\AssetPage()
 
 		$data->e['table'] = \asset\AmortizationLib::computeTable($data->e);
 
+		$data->e['cOperation'] = \journal\OperationLib::getByAsset($data->e);
+
 		throw new ViewAction($data);
 
 	});

@@ -63,7 +63,7 @@ class ThirdPartyUi {
 
 	}
 
-	public static function manage(\farm\Farm $eFarm, \Collection $cThirdParty, \Search $search): string {
+	public static function list(\farm\Farm $eFarm, \Collection $cThirdParty, \Search $search): string {
 
 		if($cThirdParty->empty() === TRUE) {
 
@@ -92,26 +92,39 @@ class ThirdPartyUi {
 
 				$h .= '<thead>';
 					$h .= '<tr>';
-					$h .= '<th>';
-						$label = s("#");
-						$h .= ($search ? $search->linkSort('id', $label) : $label);
-					$h .= '</th>';
-					$h .= '<th>';
-						$label = s("Nom");
-						$h .= ($search ? $search->linkSort('name', $label) : $label);
-					$h .= '</th>';
-					$h .= '<th>'.s("Client").'</th>';
+						$h .= '<th rowspan="2">';
+							$label = s("#");
+							$h .= ($search ? $search->linkSort('id', $label) : $label);
+						$h .= '</th>';
+						$h .= '<th rowspan="2">';
+							$label = s("Nom");
+							$h .= ($search ? $search->linkSort('name', $label) : $label);
+						$h .= '</th>';
+						$h .= '<th rowspan="2">'.s("Client").'</th>';
 
-					if($isAccrual or $isCashAccrual) {
-						$h .= '<th>'.s("Compte Client").'</th>';
-					}
+						if($isAccrual or $isCashAccrual) {
+							$h .= '<th rowspan="2">'.s("Compte Client").'</th>';
+						}
 
-					if($isAccrual) {
-						$h .= '<th>'.s("Compte Fournisseur").'</th>';
-					}
+						if($isAccrual) {
+							$h .= '<th rowspan="2">'.s("Compte Fournisseur").'</th>';
+						}
 
-					$h .= '<th class="text-end">'.s("Écritures comptables").'</th>';
-					$h .= '<th></th>';
+						$h .= '<th class="text-center" colspan="2">'.s("Écritures comptables").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+					$h .= '<tr>';
+						$count = 0;
+						$financialYears = [];
+						foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
+							if($count >= 2) {
+								break;
+							}
+							$count++;
+							$financialYears[] = $eFinancialYear['id'];
+							$h .= '<th class="text-end '.($count === 1 ? 'highlight-stick-right' : 'highlight-stick-left').'">'.$eFinancialYear->getLabel().'</th>';
+						}
+					$h .= '</tr>';
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
@@ -150,9 +163,19 @@ class ThirdPartyUi {
 
 								}
 
-							$h .= '<td class="text-end">';
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?thirdParty='.$eThirdParty['id'].'"  title="'.s("Filtrer les opérations sur ce tiers").'">'.$eThirdParty['operations'].'</a>';
-							$h .= '</td>';
+							foreach($financialYears as $financialYear) {
+
+								$eFinancialYear = $eFarm['cFinancialYear']->offsetGet($financialYear);
+
+								$h .= '<td class="text-end '.($financialYear === first($financialYears) ? 'highlight-stick-right ' : 'highlight-stick-left').'">';
+
+									if(($eThirdParty['operations'][$financialYear] ?? 0) > 0) {
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal?thirdParty='.$eThirdParty['id'].'"  title="'.s("Filtrer les opérations sur ce tiers").'">'.($eThirdParty['operations'][$financialYear] ?? 0).'</a>';
+									}
+
+								$h .= '</td>';
+
+							}
 
 							$h .= '<td class="td-min-content">';
 								if($eThirdParty['operations'] === 0) {

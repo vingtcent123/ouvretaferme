@@ -613,10 +613,6 @@ Class AssetUi {
 
 		$h = self::getHeader($eAsset);
 
-		$h .= '<div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?asset='.$eAsset['id'].'" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
-		$h .= '</div>';
-
 		if($eAsset['status'] === AssetElement::ONGOING) {
 
 			$h .= '<div class="mt-1 mb-1">';
@@ -633,114 +629,125 @@ Class AssetUi {
 
 		}
 
-		$h .= '<h2 class="mt-2">'.s("Plan d'amortissement").'</h2>';
+		$h .= '<h3 class="mt-2">'.s("Plan d'amortissement").'</h3>';
 
-			$h .= '<div class="stick-sm util-overflow-sm">';
+		$h .= '<div class="stick-sm util-overflow-sm">';
 
-				$h .= '<table class="tr-even td-vertical-top tr-hover">';
+			$h .= '<table class="tr-even td-vertical-top tr-hover">';
 
-					$h .= '<thead>';
-						$h .= '<tr>';
-							$h .= '<th class="text-center">'.s("Exercice").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.self::p('amortizableBase')->label.'</th>';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th class="text-center">'.s("Exercice").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.self::p('amortizableBase')->label.'</th>';
 
-								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
+							if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
-									$h .= '<th class="text-center">'.s("Taux linéaire").'</th>';
-									$h .= '<th class="text-center">'.s("Taux dégressif").'</th>';
-									$h .= '<th class="text-center">'.s("Taux retenu").'</th>';
+								$h .= '<th class="text-center">'.s("Taux linéaire").'</th>';
+								$h .= '<th class="text-center">'.s("Taux dégressif").'</th>';
+								$h .= '<th class="text-center">'.s("Taux retenu").'</th>';
 
-								} else {
+							} else {
 
-									$h .= '<th class="text-center">'.s("Taux").'</th>';
-								}
+								$h .= '<th class="text-center">'.s("Taux").'</th>';
+							}
 
-							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement éco").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement éco").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement éco").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement éco").'</th>';
+
+						if($eAsset['isExcess']) {
+
+							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement fiscal").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement fiscal").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement dérogatoire").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Reprise dérogatoire").'</th>';
+
+						}
+
+						$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+					foreach($eAsset['table'] as $period) {
+
+						$h .= '<tr class="'.(($period['amortization'] ?? new Amortization())->empty() ? 'asset-line-future' : '').'">';
+
+							$h .= '<td class="text-center">';
+								$h .= $period['financialYear']->getLabel();
+							$h .= '</td>';
+							$h .= '<td class="text-end highlight-stick-right">';
+								$h .= \util\TextUi::money($period['base']);
+							$h .= '</td>';
+
+							if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
+
+								$h .= '<td class="text-center td-min-content">';
+									$h .= s("{value} %", $period['linearRate']);
+								$h .= '</td>';
+
+
+								$h .= '<td class="text-center td-min-content">';
+									$h .= s("{value} %", $period['degressiveRate']);
+								$h .= '</td>';
+
+
+								$h .= '<td class="text-center td-min-content">';
+									$h .= s("{value} %", $period['rate']);
+								$h .= '</td>';
+
+							} else {
+
+								$h .= '<td class="text-center td-min-content">';
+									$h .= s("{value} %", $period['rate']);
+								$h .= '</td>';
+
+							}
+							$h .= '<td class="text-end highlight-stick-right">';
+								$h .= \util\TextUi::money($period['amortizationValue']);
+							$h .= '</td>';
+							$h .= '<td class="text-end highlight-stick-right">';
+								$h .= \util\TextUi::money($period['amortizationValueCumulated']);
+							$h .= '</td>';
 
 							if($eAsset['isExcess']) {
 
-								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement fiscal").'</th>';
-								$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement fiscal").'</th>';
-								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement dérogatoire").'</th>';
-								$h .= '<th class="text-end highlight-stick-right">'.s("Reprise dérogatoire").'</th>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
+								$h .= '</td>';
+									$h .= '<td class="text-end highlight-stick-right">';
+										$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
+									$h .= '</td>';
+									$h .= '<td class="text-end highlight-stick-right">';
+										$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
+									$h .= '</td>';
 
 							}
 
-							$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+							$h .= '<td class="text-end highlight-stick-right">';
+								$h .= \util\TextUi::money($period['endValue']);
+							$h .= '</td>';
 						$h .= '</tr>';
-					$h .= '</thead>';
+					}
+				$h .= '</tbody>';
 
-					$h .= '<tbody>';
+			$h .= '</table>';
 
-						foreach($eAsset['table'] as $period) {
+		$h .= '</div>';
 
-							$h .= '<tr class="'.(($period['amortization'] ?? new Amortization())->empty() ? 'asset-line-future' : '').'">';
+		if($eAsset['cOperation']->notEmpty()) {
 
-								$h .= '<td class="text-center">';
-									$h .= $period['financialYear']->getLabel();
-								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['base']);
-								$h .= '</td>';
+			$h .= '<h3 class="mt-2">'.s("Écritures comptables liées à cette immobilisation").'</h3>';
 
-								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
-
-									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['linearRate']);
-									$h .= '</td>';
-
-
-									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['degressiveRate']);
-									$h .= '</td>';
-
-
-									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['rate']);
-									$h .= '</td>';
-
-								} else {
-
-									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['rate']);
-									$h .= '</td>';
-
-								}
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['amortizationValue']);
-								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['amortizationValueCumulated']);
-								$h .= '</td>';
-
-								if($eAsset['isExcess']) {
-
-									$h .= '<td class="text-end highlight-stick-right">';
-										$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
-									$h .= '</td>';
-									$h .= '<td class="text-end highlight-stick-right">';
-										$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
-									$h .= '</td>';
-										$h .= '<td class="text-end highlight-stick-right">';
-											$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
-										$h .= '</td>';
-										$h .= '<td class="text-end highlight-stick-right">';
-											$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
-										$h .= '</td>';
-
-								}
-
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['endValue']);
-								$h .= '</td>';
-							$h .= '</tr>';
-						}
-					$h .= '</tbody>';
-
-				$h .= '</table>';
-
+			$h .= '<div class="bg-background">';
+				$h .= new \journal\JournalUi()->getTableContainer($eFarm, NULL, $eAsset['cOperation'], $eFarm['eFinancialYear'], readonly: TRUE);
 			$h .= '</div>';
+
+		}
+
 
 		return new \Panel(
 			id: 'panel-asset-view',

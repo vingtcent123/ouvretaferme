@@ -7,9 +7,17 @@ new \account\ThirdPartyPage()
 		], GET('sort', 'string', 'name'));
 
 		$data->cThirdParty = account\ThirdPartyLib::getAll($data->search);
-		$cOperation = \journal\OperationLib::countGroupByThirdParty();
+		$financialYearIds = $data->eFarm['cFinancialYear']->getKeys();
+
+		$cOperation = \journal\OperationLib::countGroupByThirdParty(array_slice($financialYearIds, 0, 2));
+
 		foreach($data->cThirdParty as &$eThirdParty) {
-			$eThirdParty['operations'] = $cOperation[$eThirdParty['id']]['count'] ?? 0;
+
+			$eThirdParty['operations'] = [];
+
+			foreach($financialYearIds as $financialYearId) {
+				$eThirdParty['operations'][$financialYearId] = $cOperation[$eThirdParty['id']][$financialYearId]['count'] ?? 0;
+			}
 		}
 
 		throw new ViewAction($data);

@@ -313,10 +313,11 @@ class JournalUi {
 		?string $selectedJournalCode,
 		\Collection $cOperation,
 		\account\FinancialYear $eFinancialYearSelected,
-		\Search $search = new \Search()
+		\Search $search = new \Search(),
+		bool $readonly = FALSE,
 	): string {
 
-		if($cOperation->empty() === TRUE) {
+		if($readonly === FALSE and $cOperation->empty() === TRUE) {
 
 			$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL) === TRUE;
 
@@ -335,7 +336,7 @@ class JournalUi {
 
 		\Asset::js('journal', 'journal.js');
 
-		$canUpdateFinancialYear = ($eFinancialYearSelected->canUpdate() and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
+		$canUpdateFinancialYear = ($readonly === FALSE and $eFinancialYearSelected->canUpdate() and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
 
 		// On affiche les données de lettrage si on a filtré sur un tiers + sa classe
 		$showLettering = (($eFinancialYearSelected->isAccrualAccounting() or $eFinancialYearSelected->isCashAccrualAccounting()) and $search->get('thirdParty') and $search->get('accountLabel'));
@@ -367,7 +368,7 @@ class JournalUi {
 
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 
-						if($selectedJournalCode === NULL) {
+						if($selectedJournalCode === NULL and $readonly === FALSE) {
 							$h .= '<th class="hide-sm-down"></th>';
 						}
 
@@ -383,7 +384,10 @@ class JournalUi {
 
 						$h .= '<th class="text-end highlight-stick-right hide-sm-down">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end highlight-stick-left hide-sm-down">'.s("Crédit (C)").'</th>';
-						$h .= '<th></th>';
+
+						if($readonly === FALSE) {
+							$h .= '<th></th>';
+						}
 
 					$h .= '</tr>';
 
@@ -404,7 +408,10 @@ class JournalUi {
 
 						if($currentDate === NULL or $currentDate !== $referenceDate) {
 							$h .= '<tr class="tr-title">';
-								$h .= '<td></td>';
+
+								if($readonly === FALSE) {
+									$h .= '<td></td>';
+								}
 								$h .= '<td colspan="'.$columns.'">';
 									$h .= \util\DateUi::numeric($referenceDate);
 								$h .= '</td>';
@@ -445,10 +452,14 @@ class JournalUi {
 										$text = encode(str_pad($eOperation['account']['class'], 8, 0));
 										$url = $this->getFilterUrl($eOperation, $search, 'account', $eFarm, $eFinancialYearSelected);
 									}
-									$h .= '<a href="'.$url.'" title="'.s("Filtrer sur ce compte").'">'.$text.'</a>';
+									if($readonly) {
+										$h .= $text;
+									} else {
+										$h .= '<a href="'.$url.'" title="'.s("Filtrer sur ce compte").'">'.$text.'</a>';
+									}
 								$h .= '</div>';
 								$h .= new \account\AccountUi()->getDropdownTitle($eOperation['account']);
-								if($selectedJournalCode === NULL) {
+								if($selectedJournalCode === NULL and $readonly === FALSE) {
 									$h .= '<div class="hide-md-up">';
 										$h .= $eOperation['journalCode']->empty()
 											? ''
@@ -457,7 +468,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							if($selectedJournalCode === NULL) {
+							if($selectedJournalCode === NULL and $readonly === FALSE) {
 
 								$h .= '<td class="hide-sm-down td-vertical-align-top">';
 									$h .= $eOperation['journalCode']->empty()
@@ -491,7 +502,11 @@ class JournalUi {
 							$h .= '<td class="td-vertical-align-top">';
 								if($eOperation['thirdParty']->exists() === TRUE) {
 									$url = $this->getFilterUrl($eOperation, $search, 'thirdParty', $eFarm, $eFinancialYearSelected);
-									$h .= '<a href="'.$url.'" title="'.s("Filtrer sur ce tiers").'">'.encode($eOperation['thirdParty']['name']).'</a>';
+									if($readonly) {
+										$h .= encode($eOperation['thirdParty']['name']);
+									} else {
+										$h .= '<a href="'.$url.'" title="'.s("Filtrer sur ce tiers").'">'.encode($eOperation['thirdParty']['name']).'</a>';
+									}
 								}
 							$h .= '</td>';
 
@@ -543,141 +558,144 @@ class JournalUi {
 							foreach(['id', 'operation', 'origin', 'farm', 'app'] as $filteredField) {
 								unset($args[$filteredField]);
 							}
-							$h .= '<td class="td-min-content">';
-								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
-								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'?'.http_build_query($args).'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
+							if($readonly === FALSE) {
+								$h .= '<td class="td-min-content">';
+									$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
+									$h .= '<div class="dropdown-list">';
+										$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'?'.http_build_query($args).'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
 
-									if($eOperation->canUpdate() and $eOperation->acceptUpdate()) {
+										if($eOperation->canUpdate() and $eOperation->acceptUpdate()) {
 
-										$more = null;
+											$more = null;
 
-										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
+											$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
 
-										if(
-											\asset\AssetLib::isAsset($eOperation['accountLabel']) and
-											$eOperation['asset']->empty()
-										) {
+											if(
+												\asset\AssetLib::isAsset($eOperation['accountLabel']) and
+												$eOperation['asset']->empty()
+											) {
 
-											$h .= '<div class="dropdown-divider"></div>';
-											$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
+												$h .= '<div class="dropdown-divider"></div>';
+												$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
 
-										}
+											}
 
-										// ACTION "SUPPRIMER"
-										if($eOperation['cOperationCashflow']->empty()) { // Cette opération est liée à une autre : on ne peut pas la supprimer.
+											// ACTION "SUPPRIMER"
+											if($eOperation['cOperationCashflow']->empty()) { // Cette opération est liée à une autre : on ne peut pas la supprimer.
 
-											if($eOperation['operation']->notEmpty()) {
+												if($eOperation['operation']->notEmpty()) {
 
-												$attributes = [
-													'class' => 'dropdown-item inactive',
-													'onclick' => 'void(0);',
-													'data-highlight' => 'operation-'.$eOperation['operation']['id'],
-												];
-
-												$more = s("Cette écriture est liée à une autre écriture. Supprimer l'autre écriture supprimera celle-ci.");
-
-												$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-
-												$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
-
-											} else if($eOperation['hash'] !== NULL and $eOperation->isFromImport()) {
-
-												$confirmText = match($eOperation->importType()) {
-													JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture. Confirmez-vous la suppression de ces écritures et du lien avec la facture ?"),
-													JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente. Confirmez-vous la suppression de ces écritures et du lien avec la vente ?"),
-													JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché. Confirmez-vous la suppression de ces écritures et du lien avec le marché ?"),
-												};
-												$attributes = [
-													'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
-													'post-id' => $eOperation['id'],
-													'data-confirm' => $confirmText,
-													'class' => 'dropdown-item',
-												];
-
-												$more = match($eOperation->importType()) {
-													JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture"),
-													JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente"),
-													JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché"),
-												};
-												$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-
-												$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
-
-											} else {
-
-												$attributes = [
-													'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
-													'post-id' => $eOperation['id'],
-													'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
-													'class' => 'dropdown-item',
-												];
-
-												if($eOperation['vatAccount']->notEmpty()) {
-
-													$attributes += [
-														'data-highlight' => $eOperation['vatAccount']->exists()
-															? 'operation-linked-'.$eOperation['id']
-															: 'operation-'.$eOperation['operation']['id'],
-														'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+													$attributes = [
+														'class' => 'dropdown-item inactive',
+														'onclick' => 'void(0);',
+														'data-highlight' => 'operation-'.$eOperation['operation']['id'],
 													];
 
-												}
-
-												if($eOperation['asset']->exists() === TRUE) {
-
-													if($eOperation['vatAccount']->exists() === TRUE) {
-
-														$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
-
-														$more = s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
-
-													} else {
-
-														$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
-
-														$more = s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
-
-													}
-
-												} elseif($eOperation['vatAccount']->exists() === TRUE) {
-
-													$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
-
-													$more = s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
-
-												}
-
-												if(isset($more)) {
+													$more = s("Cette écriture est liée à une autre écriture. Supprimer l'autre écriture supprimera celle-ci.");
 
 													$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
 
+													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+
+												} else if($eOperation['hash'] !== NULL and $eOperation->isFromImport()) {
+
+													$confirmText = match($eOperation->importType()) {
+														JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture. Confirmez-vous la suppression de ces écritures et du lien avec la facture ?"),
+														JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente. Confirmez-vous la suppression de ces écritures et du lien avec la vente ?"),
+														JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché. Confirmez-vous la suppression de ces écritures et du lien avec le marché ?"),
+													};
+													$attributes = [
+														'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
+														'post-id' => $eOperation['id'],
+														'data-confirm' => $confirmText,
+														'class' => 'dropdown-item',
+													];
+
+													$more = match($eOperation->importType()) {
+														JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture"),
+														JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente"),
+														JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché"),
+													};
+													$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+
+													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+
 												} else {
 
-													$deleteText = s("Supprimer");
+													$attributes = [
+														'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
+														'post-id' => $eOperation['id'],
+														'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+														'class' => 'dropdown-item',
+													];
 
+													if($eOperation['vatAccount']->notEmpty()) {
+
+														$attributes += [
+															'data-highlight' => $eOperation['vatAccount']->exists()
+																? 'operation-linked-'.$eOperation['id']
+																: 'operation-'.$eOperation['operation']['id'],
+															'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
+														];
+
+													}
+
+													if($eOperation['asset']->exists() === TRUE) {
+
+														if($eOperation['vatAccount']->exists() === TRUE) {
+
+															$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
+
+															$more = s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
+
+														} else {
+
+															$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
+
+															$more = s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
+
+														}
+
+													} elseif($eOperation['vatAccount']->exists() === TRUE) {
+
+														$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
+
+														$more = s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
+
+													}
+
+													if(isset($more)) {
+
+														$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+
+													} else {
+
+														$deleteText = s("Supprimer");
+
+													}
+
+													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
 												}
 
-												$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+												$h .= '<div class="dropdown-divider"></div>';
+												$h .= $buttonDelete;
+
+											} else {
+
+												$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
+
+												$h .= '<div class="dropdown-divider"></div>';
+												$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
+
 											}
-
-											$h .= '<div class="dropdown-divider"></div>';
-											$h .= $buttonDelete;
-
-										} else {
-
-											$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
-
-											$h .= '<div class="dropdown-divider"></div>';
-											$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 
 										}
 
-									}
+									$h .= '</div>';
+								$h .= '</td>';
 
-								$h .= '</div>';
-							$h .= '</td>';
+							}
 
 							if($eOperation['type'] === Operation::DEBIT) {
 								$totalDebit += $eOperation['amount'];

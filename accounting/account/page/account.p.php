@@ -10,10 +10,18 @@ new Page()
 	]);
 	$data->cAccount = \account\AccountLib::getAll(search: $data->search);
 
-	$cOperation = \journal\OperationLib::countByAccounts($data->cAccount);
-	foreach($data->cAccount as &$eAccount) {
-		$eAccount['nOperation'] = $cOperation->offsetExists($eAccount['id']) === TRUE ? $cOperation[$eAccount['id']]['count'] : 0;
-	}
+		$financialYearIds = array_slice($data->eFarm['cFinancialYear']->getKeys(), 0, 2);
+
+		$cOperation = \journal\OperationLib::countByAccounts($data->cAccount, $financialYearIds);
+
+		foreach($data->cAccount as &$eAccount) {
+
+			$eAccount['nOperation'] = [];
+
+			foreach($financialYearIds as $financialYearId) {
+				$eAccount['nOperation'][$financialYearId] = $cOperation[$eAccount['id']][$financialYearId]['count'] ?? 0;
+			}
+		}
 
 	$cProductPro = \selling\Product::model()
 		->select(['proAccount', 'count' => new Sql('COUNT(*)')])

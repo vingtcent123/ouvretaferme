@@ -23,6 +23,16 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getByAsset(\asset\Asset $eAsset): \Collection {
+
+		return Operation::model()
+			->select(Operation::getSelection())
+			->sort(['date' => SORT_DESC])
+			->whereAsset($eAsset)
+			->getCollection();
+
+	}
+
 	public static function getByIdsForAsset(array $ids): \Collection {
 
 		return self::applyAssetCondition()
@@ -1547,12 +1557,13 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function countGroupByThirdParty(): \Collection {
+	public static function countGroupByThirdParty(array $financialYearIds): \Collection {
 
 		return Operation::model()
-			->select(['count' => new \Sql('COUNT(*)', 'int'), 'thirdParty'])
-			->group('thirdParty')
-			->getCollection(NULL, NULL, 'thirdParty');
+			->select(['financialYear', 'count' => new \Sql('COUNT(*)', 'int'), 'thirdParty'])
+			->whereFinancialYear('IN', $financialYearIds)
+			->group(['thirdParty', 'financialYear'])
+			->getCollection(NULL, NULL, ['thirdParty', 'financialYear']);
 
 	}
 
@@ -1588,16 +1599,17 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function countByAccounts(\Collection $cAccount): \Collection {
+	public static function countByAccounts(\Collection $cAccount, array $financialYearIds): \Collection {
 
 		return Operation::model()
 			->select([
 				'count' => new \Sql('COUNT(*)', 'int'),
-				'account'
+				'account', 'financialYear'
 			])
+			->whereFinancialYear('IN', $financialYearIds)
 			->whereAccount('IN', $cAccount->getIds())
-			->group('account')
-			->getCollection(NULL, NULL, 'account');
+			->group(['account', 'financialYear'])
+			->getCollection(NULL, NULL, ['account', 'financialYear']);
 
 	}
 
