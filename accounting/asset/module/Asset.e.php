@@ -17,6 +17,12 @@ class Asset extends AssetElement {
 
 	}
 
+	public function acceptDelete(): bool {
+
+		return $this->acceptUdpate();
+
+	}
+
 	public function canView(): bool {
 
 		if($this->empty()) {

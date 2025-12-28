@@ -7,7 +7,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/immobilisations';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->nOperationMissingAsset);
 
 	if(empty($data->amortizations)) {
 
@@ -62,7 +62,7 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 	$t->title = s("Les acquisitions de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/acquisition';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->eFinancialYear);
 
 	echo '<div class="tabs-h" id="asset-acquisition" onrender="'.encode('Lime.Tab.restore(this, "acquisition-asset")').'">';
 

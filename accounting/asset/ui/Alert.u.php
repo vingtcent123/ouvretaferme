@@ -17,9 +17,11 @@ Class AlertUi {
 			'Asset::economicMode.incompatible' => s("Le numéro de compte sélectionné ne permet pas d'amortissement"),
 			'Asset::fiscalMode.incompatible' => s("Le numéro de compte sélectionné ne permet pas d'amortissement"),
 			'Asset::economicAmortization.inconsistent' => s("Le montant déjà amorti ne peut pas excéder le montant à amortir (Valeur acquisition - Valeur résiduelle)"),
-			'Asset::Operation.alreadyLinked' => s("Cette écriture comptable est déjà rattachée à une immobilisation, n'avez-vous pas fait une erreur ?"),
-			'Asset::accountLabel.check' => s("Indiquez le même numéro de compte que l'opération à laquelle cette immobilisation est rattachée."),
+			'Asset::Operation.alreadyLinked' => s("L'immobilisation doit être rattaché uniquement à des écritures comptables qui n'ont pas encore de fiche d'immobilisation. N'avez-vous pas fait une erreur ?"),
+			'Asset::accountLabel.check' => s("Indiquez le même numéro de compte que l'écriture à laquelle cette immobilisation est rattachée."),
+			'Asset::accountLabels.check' => s("Indiquez le même numéro de compte que les écritures auxquelles cette immobilisation est rattachée."),
 			'Asset::account.check' => s("Indiquez le même compte que l'opération à laquelle cette immobilisation est rattachée."),
+			'Asset::accounts.check' => s("Indiquez le même compte que les opérations auxquelles cette immobilisation est rattachée."),
 			'Asset::fiscalDuration.range' => s("La durée d'amortissement fiscale doit respecter la fourchette de durées recommandées."),
 
 			default => null,
@@ -31,6 +33,7 @@ Class AlertUi {
 
 		return match($fqn) {
 
+			'Asset::asset.deleted' => s("L'immobilisation a bien été supprimée."),
 			'Asset::asset.created' => s("L'immobilisation a bien été enregistrée"),
 			'Asset::grant.created' => s("La subvention a bien été enregistrée"),
 			'Asset::asset.updated' => s("L'immobilisation a bien été modifiée"),

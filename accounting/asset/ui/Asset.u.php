@@ -25,7 +25,7 @@ Class AssetUi {
 
 	}
 
-	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \journal\Operation $eOperation, \Collection $cAmortizationDuration): \Panel {
+	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \Collection $cOperation, \Collection $cAmortizationDuration): \Panel {
 
 		$script = '<script type="text/javascript">';
 			$script .= 'Asset.initFiscalDurations('.json_encode($cAmortizationDuration).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
@@ -49,15 +49,17 @@ Class AssetUi {
 
 			$h .= $form->hidden('id', $eAsset['id']);
 
-		} else if($eOperation->exists()) {
+		} else if($cOperation->notEmpty()) {
 
-			$h .= $form->hidden('operation', $eOperation['id']);
-			$eAsset['account'] = $eOperation['account'];
-			$eAsset['accountLabel'] = $eOperation['accountLabel'];
-			$eAsset['value'] = $eOperation['amount'];
-			$eAsset['description'] = $eOperation['description'];
-			$eAsset['acquisitionDate'] = $eOperation['date'];
-			$eAsset['startDate'] = $eOperation['date'];
+			foreach($cOperation as $eOperation) {
+				$h .= $form->hidden('operations[]', $eOperation['id']);
+				$eAsset['account'] = $eOperation['account'];
+				$eAsset['accountLabel'] = $eOperation['accountLabel'];
+				$eAsset['description'] = $eOperation['description'];
+				$eAsset['acquisitionDate'] = $eOperation['date'];
+				$eAsset['startDate'] = $eOperation['date'];
+			}
+			$eAsset['value'] = $cOperation->sum('amount');
 		}
 
 		$h .= $form->dynamicGroups($eAsset, ['description*']);
@@ -621,6 +623,9 @@ Class AssetUi {
 
 				if($eAsset->acceptUdpate()) {
 					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:update?id='.$eAsset['id'].'" class="btn btn-primary mr-1">'.s("Modifier l'immobilisation").'</a>';
+					$h .= '<a data-ajax="'.\company\CompanyUi::urlAsset($eFarm).'/:doDelete" post-id='.$eAsset['id'].'" class="btn btn-danger mr-1" data-confirm="'.s("Confirmez-vous la suppression ? La ou les écritures comptables liées n'auront plus de fiche d'immobilisation.").'">';
+						$h .= \Asset::icon('trash').' '.s("Supprimer l'immobilisation");
+					$h .= '</a>';
 				}
 
 				$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:dispose?id='.$eAsset['id'].'" class="btn btn-primary">'.\Asset::icon('box-arrow-right').' '.s("Céder l'immobilisation").'</a>';
@@ -739,7 +744,7 @@ Class AssetUi {
 
 		return new \Panel(
 			id: 'panel-asset-view',
-			title: s("Immobilisation #{id}", ['id' => $eAsset['id']]),
+			title: s("Fiche de l'immobilisation #{id}", ['id' => $eAsset['id']]),
 			body: $h
 		);
 

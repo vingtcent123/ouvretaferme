@@ -2,7 +2,7 @@
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->eFarm['cFinancialYear'], $data->e, $data->eOperation, $data->cAmortizationDuration);
+	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->eFarm['cFinancialYear'], $data->e, $data->cOperation, $data->cAmortizationDuration);
 
 });
 
@@ -22,7 +22,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
-	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->eFarm['cFinancialYear'], $data->e, new \journal\Operation(), $data->cAmortizationDuration);
+	return new \asset\AssetUi()->createOrUpdate($data->eFarm, $data->eFarm['cFinancialYear'], $data->e, new Collection(), $data->cAmortizationDuration);
 
 });
 

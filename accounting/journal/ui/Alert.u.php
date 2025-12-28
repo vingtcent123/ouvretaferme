@@ -59,7 +59,9 @@ class AlertUi {
 			'Operation::payment.createdLettered' => s("Le paiement a bien été enregistré et lettré."),
 
 			'Operation::created' => s("L'écriture a bien été enregistrée."),
+			'Operation::createdCreateAsset' => s("L'écriture a bien été enregistrée. Souhaitez-vous à présent créer la fiche d'immobilisation ?"),
 			'Operation::createdSeveral' => s("Les écritures ont bien été enregistrées."),
+			'Operation::createdSeveralCreateAsset' => s("Les écritures ont bien été enregistrées. Souhaitez-vous à présent créer la fiche d'immobilisation ?"),
 			'Operation::update' => s("L'écriture a bien été modifiée."),
 			'Operation::updated' => s("L'écriture a bien été modifiée."),
 			'Operation::updatedSeveral' => s("Les écritures ont bien été modifiées."),

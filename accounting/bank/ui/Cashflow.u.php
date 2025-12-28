@@ -11,7 +11,7 @@ class CashflowUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search, string $minDate, string $maxDate, \Collection $cBankAccount): string {
 
-		$h = '<div id="cashflow-search" class="util-block-search '.(($search->empty(['ids']) && $search->get('isReconciliated') === NULL) ? 'hide' : '').'">';
+		$h = '<div id="cashflow-search" class="util-block-search '.(($search->empty(['ids']) and $search->get('isReconciliated') === NULL) ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;

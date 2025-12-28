@@ -1878,7 +1878,7 @@ class FarmUi {
 
 	}
 
-	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView): string {
+	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, int $nOperationMissingAsset): string {
 
 		$eFarm->expects(['eFinancialYear']);
 
@@ -1902,11 +1902,17 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			if($eFarm['eFinancialYear']->acceptUpdate()) {
-				$h .= '<div>';
+			$h .= '<div>';
+				if($nOperationMissingAsset > 0) {
+					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/journal/livre-journal?needsAsset=1" class="btn btn-primary">';
+						$h .= \Asset::icon('exclamation-triangle').' ';
+						$h .= p("{value} écriture comptable a besoin d'une fiche d'immobilisation", "{value} écritures comptables ont besoin d'une fiche d'immobilisation", $nOperationMissingAsset);
+					$h .= '</a> ';
+				}
+				if($eFarm['eFinancialYear']->acceptUpdate()) {
 					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une immobilisation").'</a> ';
-				$h .= '</div>';
-			}
+				}
+			$h .= '</div>';
 		$h .= '</div>';
 
 		return $h;
@@ -1914,10 +1920,12 @@ class FarmUi {
 	}
 
 	protected static function getAccountingAssetsCategories(): array {
+
 		return [
-			'assets' => ['url' => '/immobilisations', 'label' => s("Immobilisations")],
+			'assets' => ['url' => '/immobilisations', 'label' => s("Fiches d'immobilisations")],
 			'acquisitions' => ['url' => '/immobilisations/acquisitions', 'label' => s("Acquisitions")],
 		];
+
 	}
 	public function getAccountingFinancialsTitle(Farm $eFarm, string $selectedView): string {
 

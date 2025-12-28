@@ -17,7 +17,7 @@ new \asset\AssetPage(function($data) {
 			$eAccount = new \account\Account();
 		}
 
-		$data->eOperation = \journal\OperationLib::getById(GET('operation'));
+		$data->cOperation = \journal\OperationLib::getByIdsForAsset(GET('ids', 'array'));
 
 		$data->e['account'] = $eAccount;
 
@@ -64,6 +64,11 @@ new \asset\AssetPage(function($data) {
 		$data->cAsset = \asset\AssetLib::getAll($search);
 
 		throw new \ViewAction($data);
+
+	})
+	->doDelete(function($data) {
+
+		throw new ReloadAction('asset', 'Asset::asset.deleted');
 
 	})
 ;

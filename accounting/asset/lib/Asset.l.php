@@ -19,6 +19,20 @@ class AssetLib extends \asset\AssetCrud {
 		return self::getPropertiesCreate();
 	}
 
+	public static function countOperationMissingAsset(\account\FinancialYear $eFinancialYear): int {
+
+		return \journal\Operation::model()
+			->whereFinancialYear($eFinancialYear)
+			->or(
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::EQUIPMENT_GRANT_CLASS.'%'),
+			)
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%')
+			->whereAsset(NULL)
+			->count();
+
+	}
+
 	public static function isOutOfDurationRange(Asset $eAsset, string $type): bool {
 
 		$cAmortizationDuration = \company\AmortizationDurationLib::getAll();
@@ -47,9 +61,9 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->beginTransaction();
 
-		$eOperation = \journal\OperationLib::getById(POST('operation'));
+		$cOperation = \journal\OperationLib::getByIds(POST('operations', 'array'));
 
-		if($eOperation->notEmpty() and $eOperation['asset']->notEmpty()) {
+		if($cOperation->notEmpty() and $cOperation->find(fn($e) => $e['asset']->notEmpty())->count() > 0) {
 			throw new \FailAction('asset\Asset::Operation.alreadyLinked');
 		}
 
@@ -76,12 +90,21 @@ class AssetLib extends \asset\AssetCrud {
 
 		$e['isExcess'] = $isExcess;
 
-		if($eOperation->notEmpty()) {
-			if($e['accountLabel'] !== $eOperation['accountLabel']) {
-				throw new \FailAction('Asset::accountLabel.check');
-			}
-			if($e['account']['id'] !== $eOperation['account']['id']) {
-				throw new \FailAction('Asset::account.check');
+		if($cOperation->notEmpty()) {
+			if($cOperation->count() === 1) {
+				if($e['accountLabel'] !== $cOperation->first()['accountLabel']) {
+					throw new \FailAction('Asset::accountLabel.check');
+				}
+				if($e['account']['id'] !== $cOperation->first()['account']['id']) {
+					throw new \FailAction('Asset::account.check');
+				}
+			} else if($cOperation->count() > 1) {
+				if($cOperation->find(fn($eOperation) => $eOperation['accountLabel'] !== $e['accountLabel'])->count() > 0) {
+					throw new \FailAction('Asset::accountLabels.check');
+				}
+				if($cOperation->find(fn($eOperation) => $eOperation['account']['id'] !== $e['account']['id'])->count() > 0) {
+					throw new \FailAction('Asset::accounts.check');
+				}
 			}
 
 		}
@@ -91,8 +114,10 @@ class AssetLib extends \asset\AssetCrud {
 		// Reprend les cumuls antérieurs à l'entrée dans l'exercice comptable
 		AmortizationLib::resume($e);
 
-		if($eOperation->notEmpty()) {
-			\journal\Operation::model()->update($eOperation, ['asset' => $e]);
+		if($cOperation->notEmpty()) {
+			\journal\OperationLib::applyAssetCondition()
+				->whereId('IN', $cOperation->getIds())
+        ->update(['asset' => $e]);
 		}
 
 		Asset::model()->commit();
@@ -159,7 +184,23 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	public static function delete(Asset $e): void {
+
+		Asset::model()->beginTransaction();
+
+		\journal\Operation::model()
+			->whereAsset($e)
+			->update(['asset' => NULL]);
+
+		parent::delete($e);
+
+		Asset::model()->commit();
+
+	}
+
 	public static function deleteByIds(array $ids): void {
+
+		Asset::model()->beginTransaction();
 
 		Asset::model()
 			->whereId('IN', $ids)
@@ -172,6 +213,9 @@ class AssetLib extends \asset\AssetCrud {
 		Depreciation::model()
 			->whereAsset('IN', $ids)
 			->delete();
+
+		Asset::model()->commit();
+
 	}
 
 	/**
@@ -244,7 +288,7 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function isAsset(string $class): bool {
 
-		return mb_substr($class, 0, mb_strlen(\account\AccountSetting::ASSET_GENERAL_CLASS)) === (string) \account\AccountSetting::ASSET_GENERAL_CLASS;
+		return str_starts_with($class, \account\AccountSetting::ASSET_GENERAL_CLASS) and str_starts_with($class, \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS) === FALSE;
 
 	}
 

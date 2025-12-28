@@ -12,6 +12,26 @@ class OperationLib extends OperationCrud {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'thirdParty', 'comment', 'journalCode', 'vatRate'];
 	}
 
+	public static function applyAssetCondition(): OperationModel {
+
+		return Operation::model()
+			->or(
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%'),
+			)
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%');
+
+	}
+
+	public static function getByIdsForAsset(array $ids): \Collection {
+
+		return self::applyAssetCondition()
+			->select(Operation::getSelection())
+			->whereId('IN', $ids)
+			->getCollection();
+
+	}
+
 	public static function countByOldDatesButNotNewDate(\account\FinancialYear $eFinancialYear, string $newStartDate, string $newEndDate): int {
 
 		return Operation::model()
@@ -76,6 +96,19 @@ class OperationLib extends OperationCrud {
 				$model->whereDocument('!=', NULL);
 			} else {
 				$model->whereDocument(NULL);
+			}
+		}
+
+		if($search->get('needsAsset') !== NULL) {
+			self::applyAssetCondition()->or(
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::EQUIPMENT_GRANT_CLASS.'%'),
+			)
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS);
+			if($search->get('needsAsset') === 0) {
+				$model->whereAsset('!=', NULL);
+			} else {
+				$model->whereAsset(NULL);
 			}
 		}
 		return $model

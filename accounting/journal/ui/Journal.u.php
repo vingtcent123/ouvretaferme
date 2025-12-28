@@ -74,7 +74,9 @@ class JournalUi {
 
 		\Asset::js('journal', 'operation.js');
 
-		$h = '<div id="journal-search" class="util-block-search '.(($search->empty(['ids']) and $search->get('hasDocument') === NULL) === TRUE ? 'hide' : '').'">';
+		$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL) === TRUE;
+
+		$h = '<div id="journal-search" class="util-block-search '.($hideSearch ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 
@@ -152,6 +154,15 @@ class JournalUi {
 						0 => s("Sans pièce comptable"),
 						1 => s("Avec pièce comptable"),
 					], $search->get('hasDocument'), ['mandatory' => TRUE]);
+					$h .= '</dd>';
+
+					$h .= '<dt>'.s("Immobilisation").'</dt>';
+					$h .= '<dd>';
+						$h .= $form->select('needsAsset', [
+						NULL => s("Toutes les écritures"),
+						0 => s("Écritures d'immobilisation avec fiche"),
+						1 => s("Écritures d'immobilisation sans fiche"),
+					],  $search->get('needsAsset'), ['mandatory' => TRUE]);
 					$h .= '</dd>';
 
 				$h .= '</dl>';
@@ -307,7 +318,9 @@ class JournalUi {
 
 		if($cOperation->empty() === TRUE) {
 
-			if($search->empty(['ids']) === TRUE) {
+			$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL) === TRUE;
+
+			if($hideSearch === TRUE) {
 				return '<div class="util-info">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
 			}
 			return '<div class="util-info">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';
@@ -382,6 +395,11 @@ class JournalUi {
 
 					foreach($cOperation as $eOperation) {
 
+					$batch = [];
+
+					if($eOperation->acceptNewAsset() or ($eOperation['operation']->notEmpty() and $eOperation['operation']->acceptNewAsset())) {
+						$batch[] = 'accept-asset';
+					}
 						$referenceDate = $eFinancialYearSelected->isCashAccounting() ? $eOperation['paymentDate'] : $eOperation['date'];
 
 						if($currentDate === NULL or $currentDate !== $referenceDate) {
@@ -404,6 +422,7 @@ class JournalUi {
 											'data-batch-type' => $eOperation['type'],
 											'data-batch-amount' => $eOperation['amount'],
 											'data-journal-code' => (string)$selectedJournalCode,
+											'data-batch' => implode(' ', $batch),
 										];
 										if($eOperation['operation']->notEmpty()) {
 											$attributesCheckbox['class'] = 'hide';
@@ -542,7 +561,7 @@ class JournalUi {
 										) {
 
 											$h .= '<div class="dropdown-divider"></div>';
-											$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?operation='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
+											$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
 
 										}
 
@@ -778,6 +797,8 @@ class JournalUi {
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createCommentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('chat-text-fill').'<span>'.s("Commenter").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createDocumentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('paperclip').'<span>'.s("Pièce comptable").'</span></a>';
+
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlAsset($eFarm).'/:create" data-ajax-method="get" class="batch-item batch-asset" data-batch-not-only="hide" data-batch-test="accept-asset">'.\Asset::icon('house-door').'<span>'.s("Créer la fiche d'immo").'</span></a>';
 
 		$menu .= '<span class="hide" data-batch-title-more-singular>'.s(", dont 1 opération liée").'</span>';
 		$menu .= '<span class="hide" data-batch-title-more-plural>'.s(", dont <span data-batch-title-more-value></span> opérations liées").'</span>';

@@ -32,6 +32,13 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-help">'.s("Vous visualisez actuellement les écritures comptables <b>tous exercices confondus</b>. Certaines actions ne sont donc <b>pas</b> disponibles.").'</div>';
 	}
 
+	if($data->search->get('needsAsset') === 1 and $data->cOperation->notEmpty()) {
+		echo '<div class="util-block-help">';
+			echo p("Une écriture d'immobilisation n'a pas encore de fiche d'immobilisation. Créez-la dès à présent !", "Les écritures d'immobilisations qui n'ont pas encore de fiche d'immobilisation sont listées ci-après. Créez leurs fiches d'immobilisation dès à présent !", $data->cOperation->count());
+		echo '</div>';
+
+	}
+
 	echo '<div class="tabs-h" id="journals"';
 		if($data->eOperationRequested->notEmpty()) {
 			echo ' onrender="Operation.open('.$data->eOperationRequested['id'].');"';

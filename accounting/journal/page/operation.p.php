@@ -182,7 +182,14 @@ new \journal\OperationPage(
 
 		\journal\Operation::model()->commit();
 
-		throw new ReloadAction('journal', $cOperation->count() > 1 ? 'Operation::createdSeveral' : 'Operation::created');
+		$success = $cOperation->count() > 1 ? 'Operation::createdSeveral' : 'Operation::created';
+
+		$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
+		if($hasMissingAsset) {
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?needsAsset=1&success=journal.'.$success.'CreateAsset');
+		}
+
+		throw new ReloadAction('journal', $success);
 
 	})
 	->create(function($data) {

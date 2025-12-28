@@ -8,6 +8,7 @@ class Operation extends OperationElement {
 	public static function getSelection(bool $withLinks = TRUE): array {
 
 		return parent::getSelection() + [
+			'operation' => ['id', 'asset', 'accountLabel'],
 			'account' => \account\Account::getSelection(),
 			'journalCode' => JournalCode::getSelection(),
 			'vatAccount' => ['class', 'vatRate', 'description'],
@@ -20,6 +21,19 @@ class Operation extends OperationElement {
 				->select('id', 'operation')
 				->delegateCollection('operation'),
 			] : []);
+
+	}
+
+	public function acceptDelete(): bool {
+
+		return $this['asset']->empty() or
+			$this['asset']->acceptDelete();
+
+	}
+
+	public function acceptNewAsset(): bool {
+
+		return $this['asset']->empty() and (\asset\AssetLib::isAsset($this['accountLabel']) or \asset\AssetLib::isGrant($this['accountLabel']));
 
 	}
 
