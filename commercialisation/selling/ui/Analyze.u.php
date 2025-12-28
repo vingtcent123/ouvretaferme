@@ -2125,12 +2125,19 @@ class AnalyzeUi {
 			'label',
 			'product_id',
 			'product_type',
+		];
+
+		if($eFarm->hasAccounting()) {
+			$header[] = 'product_account';
+		}
+
+		$header = array_merge($header, [
 			'customer_name',
 			'type',
 			'delivery',
 			'quantity',
 			'unit'
-		];
+		]);
 
 		if($eFarm->getConf('hasVat')) {
 			$header[] = 'amount_excluding_vat';

@@ -927,6 +927,13 @@ class AnalyzeLib {
 
 		self::filterItemStats();
 
+		if($eFarm->usesAccounting()) {
+			\company\CompanyLib::connectDatabase($eFarm);
+			$cAccountAll = \account\AccountLib::getAll();
+		} else {
+			$cAccountAll = new \Collection();
+		}
+
 		// Ajout des articles
 		$data = Item::model()
 			->select([
@@ -940,14 +947,15 @@ class AnalyzeLib {
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'type', 'price', 'priceStats', 'vatRate',
 				'unit' => \selling\Unit::getSelection(),
-				'deliveredAt'
+				'deliveredAt',
+				'account'
 			])
 			->whereFarm($eFarm)
 			->where('number != 0')
 			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
 			->sort('id')
 			->getCollection()
-			->toArray(function($eItem) use($eFarm) {
+			->toArray(function($eItem) use($eFarm, $cAccountAll) {
 
 				$data = [
 					$eItem['sale']['document'],
@@ -955,13 +963,23 @@ class AnalyzeLib {
 					$eItem['name'],
 					$eItem['product']->empty() ? '' : $eItem['product']['id'],
 					$eItem['ingredientOf']->notEmpty() ? 'ingredient' : ($eItem['composition']->notEmpty() ? 'composed' : 'simple'),
-					$eItem['customer']->notEmpty() ? $eItem['customer']->getName() : '',
+				];
+
+				if($eFarm->hasAccounting()) {
+					if($eItem['account']->notEmpty() and $cAccountAll->offsetExists($eItem['account']['id'])) {
+						$data[] = \account\AccountLabelLib::pad($cAccountAll->offsetGet($eItem['account']['id'])['class']);
+					} else {
+						$data[] = '';
+					}
+				}
+
+				$data = array_merge($data, [$eItem['customer']->notEmpty() ? $eItem['customer']->getName() : '',
 					CustomerUi::getType($eItem['sale']),
 					\util\DateUi::numeric($eItem['deliveredAt']),
 					\util\TextUi::csvNumber($eItem['quantity']),
 					\selling\UnitUi::getSingular($eItem['unit'], noWrap: FALSE),
 					\util\TextUi::csvNumber($eItem['priceStats']),
-				];
+				]);
 
 				if($eFarm->getConf('hasVat')) {
 					$data[] = \util\TextUi::csvNumber($eItem['vatRate']);
