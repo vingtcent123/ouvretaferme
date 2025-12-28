@@ -251,7 +251,7 @@ class InvoiceUi {
 												'post-id' => $eInvoice['id'],
 												'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
 											], $eInvoice['paymentStatus'] === Invoice::PAID, textOn: self::p('paymentStatus')->values[Sale::PAID],textOff: self::p('paymentStatus')->values[Sale::NOT_PAID]);
-											$h .= ($eInvoice['cashflow']['id'] ?? NULL) ? '<a href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'&financialYear=0" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</a>' :  '';
+											$h .= ($eInvoice['cashflow']['id'] ?? NULL) ? '<a href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</a>' :  '';
 										$h .= '</div>';
 									}
 								}

@@ -272,11 +272,11 @@ class CashflowUi {
 												}
 
 												$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", $eFinancialYearCurrent->getLabel()).'</div>';
-												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYearCurrent['id'].'" class="dropdown-item">';
+												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
 													$financialYearOption .= s("Créer de nouvelles écritures");
 												$financialYearOption .= '</a>';
 
-												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
+												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
 													$financialYearOption .= s("Rattacher des écritures existantes");
 												$financialYearOption .= '</a>';
 
@@ -288,7 +288,7 @@ class CashflowUi {
 
 								} else if($eCashflow['status'] !== Cashflow::DELETED) {
 
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hash='.$eCashflow['cOperationHash']->first()['hash'].'&financialYear=0">'.p("{value} écriture", "{value} écritures", $eCashflow['cOperationHash']->count()).'</a>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hash='.$eCashflow['cOperationHash']->first()['hash'].'">'.p("{value} écriture", "{value} écritures", $eCashflow['cOperationHash']->count()).'</a>';
 
 								}
 							$h .= '</td>';

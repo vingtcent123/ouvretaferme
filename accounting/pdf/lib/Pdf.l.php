@@ -42,26 +42,26 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	private static function generateContent(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type, ?string $more): string {
+	private static function generateContent(\farm\Farm $eFarm, string $type, ?string $more): string {
 
 		switch($type) {
 			case PdfElement::JOURNAL_INDEX:
-				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/?financialYear='.$eFinancialYear['id'];
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/';
 				$title = \journal\PdfUi::getJournalTitle();
 				break;
 
 			case PdfElement::JOURNAL_BOOK:
-				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/book?financialYear='.$eFinancialYear['id'];
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/book';
 				$title = \journal\PdfUi::getBookTitle();
 				break;
 
 			case PdfElement::JOURNAL_TVA_BUY:
-				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/vat?financialYear='.$eFinancialYear['id'].'&type=buy';
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/vat?type=buy';
 				$title = \journal\PdfUi::getVatTitle(PdfElement::JOURNAL_TVA_BUY);
 				break;
 
 			case PdfElement::JOURNAL_TVA_SELL:
-				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/vat?financialYear='.$eFinancialYear['id'].'&type=sell';
+				$url = \company\CompanyUi::urlJournal($eFarm).'/pdf/vat?type=sell';
 				$title = \journal\PdfUi::getVatTitle(PdfElement::JOURNAL_TVA_SELL);
 				break;
 
@@ -74,7 +74,7 @@ class PdfLib extends \pdf\PdfCrud {
 				throw new \NotExpectedAction('Unknown pdf type');
 		}
 		$footer = PdfUi::getFooter();
-		$header = PdfUi::getHeader($title, $eFinancialYear);
+		$header = PdfUi::getHeader($title, $eFarm['eFinancialYear']);
 
 		if(strpos($url, '?') === FALSE) {
 			$url .= '?';
@@ -87,7 +87,11 @@ class PdfLib extends \pdf\PdfCrud {
 
 	}
 
-	public static function generate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type, ?string $more = NULL): ?string {
+	public static function generate(\farm\Farm $eFarm, string $type, ?string $more = NULL): ?string {
+
+		$eFarm->expects(['eFinancialYear']);
+
+		$eFinancialYear = $eFarm['eFinancialYear'];
 
 		if($eFinancialYear['status'] === \account\FinancialYearElement::CLOSE) {
 
@@ -115,7 +119,7 @@ class PdfLib extends \pdf\PdfCrud {
 
 		try {
 
-			$content = self::generateContent($eFarm, $eFinancialYear, $type, $more);
+			$content = self::generateContent($eFarm, $type, $more);
 
 		} catch(\Exception) {
 

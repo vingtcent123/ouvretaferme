@@ -27,7 +27,7 @@ new Lime.Instruction('main')
 
 			farmNav.qsa('.farm-nav-accounting a.farm-subnav-item', node => {
 
-				const newHref = node.getAttribute('href').setArgument('financialYear', financialYear);
+				newHref = node.getAttribute('href').replace(/\/exercice\/([0-9]+)\//, '/exercice/'+ financialYear +'/');
 				node.setAttribute('href', newHref);
 
 			});

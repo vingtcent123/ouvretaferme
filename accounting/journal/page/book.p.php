@@ -25,7 +25,7 @@ new Page(function($data) {
 	})
 	->get('pdf', function($data) {
 
-		$content = pdf\PdfLib::generate($data->eFarm, $data->eFarm['eFinancialYear'], \pdf\PdfElement::JOURNAL_BOOK);
+		$content = pdf\PdfLib::generate($data->eFarm, \pdf\PdfElement::JOURNAL_BOOK);
 
 		if($content === NULL) {
 			throw new NotExistsAction();

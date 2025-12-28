@@ -125,7 +125,7 @@ new Page(function($data) {
 	})
 	->get('pdf', function($data) {
 
-		$content = pdf\PdfLib::generate($data->eFarm, $data->eFarm['eFinancialYear'], \pdf\PdfElement::JOURNAL_INDEX);
+		$content = pdf\PdfLib::generate($data->eFarm, \pdf\PdfElement::JOURNAL_INDEX);
 
 		if($content === NULL) {
 			throw new NotExistsAction();

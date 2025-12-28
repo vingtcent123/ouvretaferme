@@ -8,7 +8,9 @@ class JournalUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public function getJournalTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $counts): string {
+	public function getJournalTitle(\farm\Farm $eFarm, array $counts): string {
+
+		$eFinancialYear = $eFarm['eFinancialYear'];
 
 		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
 		$h .= '<div class="util-action">';
@@ -36,18 +38,18 @@ class JournalUi {
 						$eFarm->canManage()
 					) {
 						if($eFinancialYear->isCashAccounting() or $eFinancialYear->isCashAccrualAccounting()) {
-							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?financialYear='.$eFinancialYear['id'].'&journalCode='.GET('journalCode').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
+							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?journalCode='.GET('journalCode').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
 						}
 						if($eFinancialYear->isAccrualAccounting()) {
 
 							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter...").'</a>';
 							$h .= '<div class="dropdown-list">';
 
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
+								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="dropdown-item">';
 								$h .= s("une écriture");
 								$h .= '</a>';
 
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createPayment?financialYear='.$eFinancialYear['id'].'" class="dropdown-item">';
+								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createPayment" class="dropdown-item">';
 								$h .= s("un paiement");
 								$h .= '</a>';
 
@@ -65,10 +67,8 @@ class JournalUi {
 
 	}
 
-	public function getBaseUrl(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear = new \account\FinancialYear()): string {
-
-		return \company\CompanyUi::urlJournal($eFarm).'/livre-journal'.'?financialYear='.($eFinancialYear['id'] ?? '');
-
+	public function getBaseUrl(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
+		return \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
 	}
 	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): string {
 

@@ -949,25 +949,17 @@ class FarmUi {
 			'bank' => \company\CompanyUi::urlFarm($eFarm).'/banque/operations',
 			'preaccounting' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite',
 			'accounting' => match($name) {
-				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal'.$this->addFinancialYear($eFarm),
-				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre'.$this->addFinancialYear($eFarm),
-				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name.$this->addFinancialYear($eFarm),
-				'assets' => \company\CompanyUi::urlFarm($eFarm).'/immobilisations'.$this->addFinancialYear($eFarm),
-				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers'.$this->addFinancialYear($eFarm),
-				'financials' => \company\CompanyUi::urlFarm($eFarm).'/gestion'.$this->addFinancialYear($eFarm),
-				'summary' => \company\CompanyUi::urlFarm($eFarm).'/synthese'.$this->addFinancialYear($eFarm),
+				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
+				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
+				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
+				'assets' => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
+				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers',
+				'financials' => \company\CompanyUi::urlFarm($eFarm).'/gestion',
+				'summary' => \company\CompanyUi::urlFarm($eFarm).'/synthese',
 			},
 
 		};
 
-	}
-
-	protected function addFinancialYear(Farm $eFarm): string {
-		if($eFarm->offsetExists('eFinancialYear') and $eFarm['eFinancialYear']->notEmpty()) {
-			return '?financialYear='.$eFarm['eFinancialYear']['id'];
-		} else {
-			return '';
-		}
 	}
 
 	protected function getCategoryName(Farm $eFarm, string $section, string $name): string {
@@ -1329,9 +1321,9 @@ class FarmUi {
 			foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
 
 				if($isAccountingUrl) {
-					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'financialYear', $eFinancialYear['id']);
+					$url = preg_replace('/\/exercice\/[0-9]+\//si', '/exercice/'.$eFinancialYear['id'].'/', LIME_REQUEST);
 				} else {
-					$url = $eFarm->getAccountingUrl().'?financialYear='.$eFinancialYear['id'];
+					$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
 				}
 
 				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {

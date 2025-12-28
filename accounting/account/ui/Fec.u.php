@@ -3,9 +3,11 @@ namespace account;
 
 class FecUi {
 
-	public function getView(\farm\Farm $eFarm, FinancialYear $eFinancialYear, array $data): \Panel {
+	public function getView(\farm\Farm $eFarm, array $data): \Panel {
 
 		$h = '';
+
+		$eFinancialYear = $eFarm['eFinancialYear'];
 
 		if($eFinancialYear->isOpen()) {
 
@@ -16,12 +18,12 @@ class FecUi {
 
 		}
 
-		$h .= $this->nonComplianceCheck($eFarm, $eFinancialYear, $data);
+		$h .= $this->nonComplianceCheck($eFarm, $data);
 
 
 		if($eFinancialYear->isOpen()) {
 
-			$h .= '<a class="btn btn-primary" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download?financialYear='.$eFinancialYear['id'].'">';
+			$h .= '<a class="btn btn-primary" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download">';
 				$h .= s("Télécharger un FEC provisoire de l'exercice {value}", $eFinancialYear->getLabel());
 			$h .= '</a>';
 
@@ -30,7 +32,7 @@ class FecUi {
 
 			$h .= '<div class="util-grid-icon mb-1">'.\Asset::icon('info-circle').' '.s("Pensez à joindre une notice explicative à votre FEC.").'</div>';
 
-			$h .= '<a class="btn btn-primary" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download?financialYear='.$eFinancialYear['id'].'">';
+			$h .= '<a class="btn btn-primary" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download">';
 				$h .= s("Télécharger le FEC de l'exercice {value}", $eFinancialYear->getLabel());
 			$h .= '</a>';
 
@@ -73,7 +75,9 @@ class FecUi {
 
 	}
 
-	private function nonComplianceCheck(\farm\Farm $eFarm, FinancialYear $eFinancialYear, array $data): string {
+	private function nonComplianceCheck(\farm\Farm $eFarm, array $data): string {
+
+		$eFinancialYear = $eFarm['eFinancialYear'];
 
 		$nonCompliances = $this->hasNonCompliance($data);
 		$h = '';
@@ -131,7 +135,7 @@ class FecUi {
 					$h .= '</td>';
 					$h .= '<td>';
 					 $h .= p("{value} écriture n'a pas de journal", "{value} écritures n'ont pas de journal", $data['noJournal']);
-						$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&journalCode=-1">']).'</div>';
+						$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode=-1">']).'</div>';
 					$h .= '</td>';
 				$h .= '</tr>';
 
@@ -147,7 +151,7 @@ class FecUi {
 					$h .= '<td>';
 						if($data['noDocument'] > 0) {
 							$h .= p("{value} écriture n'a pas de document comptable", "{value} écritures n'ont pas de document comptable", $data['noDocument']);
-							$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&hasDocument=1">']).'</div>';
+							$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hasDocument=1">']).'</div>';
 						}
 					$h .= '</td>';
 				$h .= '</tr>';
@@ -192,11 +196,11 @@ class FecUi {
 
 								if($eJournalCode->empty()) {
 
-									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures sans journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&journalCode=-1">']).'</div>';
+									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures sans journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode=-1">']).'</div>';
 
 								} else {
 
-									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures du journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?financialYear='.$eFinancialYear['id'].'&journalCode='.$eJournalCode['id'].'">']).'</div>';
+									$h .= '<div class="util-annotation">'.s("<link>Voir les écritures du journal</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eJournalCode['id'].'">']).'</div>';
 
 								}
 							} else {

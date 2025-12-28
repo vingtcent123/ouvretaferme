@@ -7,36 +7,36 @@ class CompanyUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public static function link(\farm\Farm $eFarm, bool $newTab = FALSE): string {
-		return '<a href="'.self::url($eFarm).'" '.($newTab ? 'target="_blank"' : '').'>'.encode($eFarm['name']).'</a>';
+	public static function urlSettings(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
+		return self::urlFarm($eFarm, $eFinancialYear).'/company/configuration';
 	}
 
-	public static function url(\farm\Farm $eFarm): string {
-		return '/'.$eFarm['id'].'/company';
+	public static function urlJournal(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
+		return self::urlFarm($eFarm, $eFinancialYear).'/journal';
 	}
 
-	public static function urlSettings(\farm\Farm $eFarm): string {
-		return self::url($eFarm).'/configuration';
+	public static function urlAsset(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
+		return self::urlFarm($eFarm, $eFinancialYear).'/asset';
 	}
 
-	public static function urlJournal(\farm\Farm $eFarm): string {
-		return self::urlFarm($eFarm).'/journal';
+	public static function urlBank(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
+		return self::urlFarm($eFarm, $eFinancialYear).'/bank';
 	}
 
-	public static function urlAsset(\farm\Farm $eFarm): string {
-		return self::urlFarm($eFarm).'/asset';
+	public static function urlAccount(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
+		return self::urlFarm($eFarm, $eFinancialYear).'/account';
 	}
 
-	public static function urlBank(\farm\Farm $eFarm): string {
-		return self::urlFarm($eFarm).'/bank';
-	}
+	public static function urlFarm(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
 
-	public static function urlAccount(\farm\Farm $eFarm): string {
-		return self::urlFarm($eFarm).'/account';
-	}
+		$eFinancialYear ??= $eFarm['eFinancialYear'] ?? $eFarm->getView('viewAccountingYear');
 
-	public static function urlFarm(\farm\Farm $eFarm): string {
-		return '/'.$eFarm['id'];
+		if($eFinancialYear->notEmpty()) {
+			return '/'.$eFarm['id'].'/exercice/'.$eFinancialYear['id'];
+		} else {
+			return '/'.$eFarm['id'];
+		}
+
 	}
 
 	public function create(\farm\Farm $eFarm): string {

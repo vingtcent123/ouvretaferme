@@ -614,7 +614,7 @@ Class AssetUi {
 		$h = self::getHeader($eAsset);
 
 		$h .= '<div>';
-			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?asset='.$eAsset['id'].'&financialYear=0" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
+			$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?asset='.$eAsset['id'].'" target="_blank">'.s("Voir toutes les écritures comptables de cette immobilisation").'&nbsp;'.\Asset::icon('box-arrow-up-right').'</a>';
 		$h .= '</div>';
 
 		if($eAsset['status'] === AssetElement::ONGOING) {

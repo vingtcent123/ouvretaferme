@@ -25,11 +25,7 @@ Class VatUi {
 		}
 
 		$h = '<div class="stick-sm util-overflow-sm">';
-
-			//$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/vat:pdf?type='.$type.'&financialYear='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').'&nbsp;'.s("Télécharger en PDF").'</a>';
-
 			$h .= $this->getTables($eFarm, $cccOperation, $search);
-
 		$h .= '</div>';
 
 		return $h;
