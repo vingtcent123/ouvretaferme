@@ -76,6 +76,4 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 		echo \util\TextUi::pagination($data->page, $data->nPage);
 	}
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
-
 });

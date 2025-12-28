@@ -16,7 +16,7 @@ class VatUi {
 	public function getVatBalanceTranslation(string $accountLabel, FinancialYear $eFinancialYear): string {
 		return s("Transfert solde TVA (4456/4457) vers {accountLabel} – exercice {financialYear}", [
 			'accountLabel' => $accountLabel,
-			'financialYear' => FinancialYearUi::getYear($eFinancialYear)
+			'financialYear' => $eFinancialYear->getLabel()
 		]);
 	}
 

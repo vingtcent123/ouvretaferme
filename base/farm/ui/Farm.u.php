@@ -1257,13 +1257,7 @@ class FarmUi {
 */
 			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting">';
 
-				$h .= '<div class="farm-nav-accounting-selector">';
-
-					$h .= $this->getNav('accounting', $nav, link: \company\CompanyUi::urlJournal($eFarm).'/livre-journal');
-
-					$h .= $this->getAccountingYears($eFarm);
-
-				$h .= '</div>';
+				$h .= $this->getNav('accounting', $nav);
 
 				$h .= $this->getAccountingMenu($eFarm, subNav: $subNav);
 
@@ -1292,57 +1286,62 @@ class FarmUi {
 	public function getAccountingYears(Farm $eFarm): string {
 
 		if($eFarm['accountingYears'] === NULL or count($eFarm['accountingYears']) <= 1) {
-			return '';
+			$h = '<div style="margin-bottom: 0.5rem">';
+				$h .= '<div class="btn btn-readonly btn-lg btn-outline-primary">'.s("Exercice {value}", $eFarm['cFinancialYear']->first()->getLabel()).'</div>';
+			$h .= '</div>';
+			return $h;
 		}
+
+		$cFinancialYear = $eFarm['cFinancialYear'];
 
 		$selectedFinancialYear = $eFarm->getView('viewAccountingYear');
 
-		if(isset($eFarm['accountingYears'][$selectedFinancialYear])) {
+		$eFinancialYearSelected = $eFarm['cFinancialYear'][$selectedFinancialYear] ?? $eFarm['cFinancialYear']->first();
 
-			$label = $eFarm['accountingYears'][$selectedFinancialYear]['label'];
-
-		} else {
-
-			$label = first($eFarm['accountingYears'])['label'];
-
-		}
-
-		$h = '<div id="farm-tab-financial-year-container">';
-			$h .= '<a class="farm-tab-complement" data-dropdown="bottom-left" data-dropdown-id="farm-tab-financial-year" data-dropdown-hover="true">';
-				$h .= '<span id="farm-tab-financial-year-period">';
-					$h .= $label;
-				$h .= '</span> '.\Asset::icon('chevron-down');
+		$h = '<div style="margin-bottom: 0.5rem">';
+			$h .= '<a class="btn btn-lg btn-outline-primary" data-dropdown="bottom-left" data-dropdown-hover="true">';
+				if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
+					$h .= \Asset::icon('lock-fill').'  ';
+				}
+				$h .= s("Exercice {value}", $eFinancialYearSelected->getLabel());
+				if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
+					$h .= '<small> / '.s("CLÔTURÉ").'</small>';
+				}
+				$h .= '  '.\Asset::icon('chevron-down');
 			$h .= '</a>';
 
-			$h .= '<div data-dropdown-id="farm-tab-financial-year-list" class="dropdown-list bg-accounting">';
+			$h .= '<div class="dropdown-list">';
 
-			$currentUrl = LIME_REQUEST_PATH;
-			$args = $_GET;
 			$isAccountingUrl = str_starts_with(LIME_REQUEST_PATH, '/'.$eFarm['id'].'/');
 
-			foreach($eFarm['accountingYears'] as $financialYear) {
+			$nClose = $cFinancialYear->find(fn($eFinancialYear) => $eFinancialYear['status'] ===  \account\FinancialYear::CLOSE)->count();
 
-				$id = $financialYear['id'];
+			foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
 
 				if($isAccountingUrl) {
-
-					unset($args['origin']);
-					unset($args['app']);
-					unset($args['farm']);
-					$args['financialYear'] = $id;
-					$url = \Lime::getUrl().$currentUrl.'?'.http_build_query($args);
-
+					$url = \util\HttpUi::setArgument(LIME_REQUEST, 'financialYear', $eFinancialYear['id']);
 				} else {
-
-					$url = $eFarm->getAccountingUrl().'?financialYear='.$id;
-
+					$url = $eFarm->getAccountingUrl().'?financialYear='.$eFinancialYear['id'];
 				}
 
-				$h .= '<a href="'.$url.'" id="farm-tab-financial-year-'.$id.'" class="dropdown-item '.($id === (int)$selectedFinancialYear ? 'selected' : '').'">'.$financialYear['label'].'</a>';
+				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
+					$h .= '<div class="dropdown-subtitle">'.p("Exercice clôturé", "Exercices clôturés", $nClose).'</div>';
+				}
+
+				$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear['id'] === (int)$selectedFinancialYear ? 'selected' : '').'">';
+
+					if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
+						$h .= \Asset::icon('lock-fill').'  ';
+					}
+
+					$h .= s("Exercice {value}", $eFinancialYear->getLabel());
+
+				$h .= '</a>';
 
 			}
 
 			$h .= '</div>';
+
 		$h .= '</div>';
 
 		return $h;
@@ -1760,7 +1759,7 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			$h .= '<div class="flex-align-center">';
+			$h .= '<div>';
 
 				switch($selectedView) {
 

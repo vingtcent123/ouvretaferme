@@ -32,7 +32,7 @@ class IncomeStatementUi {
 					if($eFinancialYearCurrent->is($eFinancialYear)) {
 						continue;
 					}
-					$values[] = [$eFinancialYearCurrent['id'], 'label' => s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearCurrent))];
+					$values[] = [$eFinancialYearCurrent['id'], 'label' => s("Exercice {value}", $eFinancialYearCurrent->getLabel())];
 				}
 				$h .= $form->select('financialYearComparison', $values, $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
 			}
@@ -99,19 +99,19 @@ class IncomeStatementUi {
 					$h .= '</tr>';
 
 					$h .= '<tr class="overview_row-title">';
-						$h .= '<th class="text-center" colspan="'.($hasComparison ? 10 : 8).'">'.s("{farm} - exercice {year}<br />Compte de résultat au {date}", ['farm' => $eFarm['legalName'], 'year' => \account\FinancialYearUi::getYear($eFinancialYear), 'date' => \util\DateUi::numeric($date)]).'</th>';
+						$h .= '<th class="text-center" colspan="'.($hasComparison ? 10 : 8).'">'.s("{farm} - exercice {year}<br />Compte de résultat au {date}", ['farm' => $eFarm['legalName'], 'year' => $eFinancialYear->getLabel(), 'date' => \util\DateUi::numeric($date)]).'</th>';
 					$h .= '</tr>';
 
 					$h .= '<tr class="overview_group-title">';
 						$h .= '<th colspan="3">'.s("Charges").'</th>';
-						$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+						$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
 						if($hasComparison) {
-							$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+							$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
 						}
 						$h .= '<th colspan="3">'.s("Produits").'</th>';
-						$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+						$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
 						if($hasComparison) {
-							$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+							$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
 						}
 					$h .= '</tr>';
 

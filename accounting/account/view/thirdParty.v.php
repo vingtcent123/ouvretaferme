@@ -27,7 +27,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	echo new \account\ThirdPartyUi()->manage($data->eFarm, $data->cThirdParty, $data->search);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 

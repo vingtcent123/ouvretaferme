@@ -10,7 +10,7 @@ class FecUi {
 		if($eFinancialYear->isOpen()) {
 
 			$h .= '<div class="util-info">';
-				$h .= s("L'exercice {value} n'étant pas encore clôturé, le FEC généré sera <b>provisoire</b> et ne peut être transmis à l'administration fiscale tel quel.", FinancialYearUi::getYear($eFinancialYear));
+				$h .= s("L'exercice {value} n'étant pas encore clôturé, le FEC généré sera <b>provisoire</b> et ne peut être transmis à l'administration fiscale tel quel.", $eFinancialYear->getLabel());
 			$h .= '</div>';
 
 
@@ -22,7 +22,7 @@ class FecUi {
 		if($eFinancialYear->isOpen()) {
 
 			$h .= '<a class="btn btn-primary" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download?financialYear='.$eFinancialYear['id'].'">';
-				$h .= s("Télécharger un FEC provisoire de l'exercice {value}", FinancialYearUi::getYear($eFinancialYear));
+				$h .= s("Télécharger un FEC provisoire de l'exercice {value}", $eFinancialYear->getLabel());
 			$h .= '</a>';
 
 
@@ -31,7 +31,7 @@ class FecUi {
 			$h .= '<div class="util-grid-icon mb-1">'.\Asset::icon('info-circle').' '.s("Pensez à joindre une notice explicative à votre FEC.").'</div>';
 
 			$h .= '<a class="btn btn-primary" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download?financialYear='.$eFinancialYear['id'].'">';
-				$h .= s("Télécharger le FEC de l'exercice {value}", FinancialYearUi::getYear($eFinancialYear));
+				$h .= s("Télécharger le FEC de l'exercice {value}", $eFinancialYear->getLabel());
 			$h .= '</a>';
 
 		}

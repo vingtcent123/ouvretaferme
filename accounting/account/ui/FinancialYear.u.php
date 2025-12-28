@@ -710,10 +710,10 @@ class FinancialYearUi {
 	}
 
 	public function getOpeningDescription(FinancialYear $eFinancialYear): string {
-		return s("À nouveau exercice {value}", FinancialYearUi::getYear($eFinancialYear));
+		return s("À nouveau exercice {value}", $eFinancialYear->getLabel());
 	}
 	public function getOpeningResult(FinancialYear $eFinancialYear): string {
-		return s("Résultat exercice {value}", FinancialYearUi::getYear($eFinancialYear));
+		return s("Résultat exercice {value}", $eFinancialYear->getLabel());
 	}
 
 	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationToDefer, \Collection $cAssetGrant, \Collection $cAsset): string {

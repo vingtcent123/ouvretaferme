@@ -118,7 +118,7 @@ Class AssetUi {
 				$form->select(
 					'resumeDate',
 					$cFinancialYear->toArray(fn($e) => [
-						'value' => $e['startDate'], 'label' => s("Exercice {value}", \account\FinancialYearUi::getYear($e))
+						'value' => $e['startDate'], 'label' => s("Exercice {value}", $e->getLabel())
 					])
 				).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
 			);
@@ -705,7 +705,7 @@ Class AssetUi {
 							$h .= '<tr class="'.(($period['amortization'] ?? new Amortization())->empty() ? 'asset-line-future' : '').'">';
 
 								$h .= '<td class="text-center">';
-									$h .= \account\FinancialYearUi::getYear($period['financialYear']);
+									$h .= $period['financialYear']->getLabel();
 								$h .= '</td>';
 								$h .= '<td class="text-end highlight-stick-right">';
 									$h .= \util\TextUi::money($period['base']);

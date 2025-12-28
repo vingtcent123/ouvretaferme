@@ -13,7 +13,6 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 	echo new \bank\CashflowUi()->list($data->eFarm, $data->cCashflow, $data->eFinancialYear, $data->eImport, $data->search, $data->cFinancialYear);
 	echo \util\TextUi::pagination($data->page, $data->nPage);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 

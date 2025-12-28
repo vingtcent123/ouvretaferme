@@ -36,6 +36,5 @@ new AdaptativeView(
 
 	echo '</div>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });

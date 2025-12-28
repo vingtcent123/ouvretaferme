@@ -37,7 +37,7 @@ class ImportUi {
 		if($period > date('Y-m-d')) {
 			$period = date('Y-m-d');
 		}
-		$year = \account\FinancialYearUi::getYear($eFinancialYear);
+		$year = $eFinancialYear->getLabel();
 
 		if(mb_strlen($year) === 4) {
 			return \util\DateUi::numeric($period,\util\DateUi::DAY_MONTH);

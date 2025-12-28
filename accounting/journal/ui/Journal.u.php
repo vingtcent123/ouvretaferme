@@ -10,7 +10,8 @@ class JournalUi {
 
 	public function getJournalTitle(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $counts): string {
 
-		$h = '<div class="util-action">';
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h .= '<div class="util-action">';
 
 			$h .= '<h1>';
 				$h .= s("Le livre journal");

@@ -26,7 +26,6 @@ new AdaptativeView(\farm\Farmer::CHARGES, function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 	$t->js()->replaceHistory($t->canonical);
 
 });
@@ -43,7 +42,6 @@ new AdaptativeView(\farm\Farmer::BANK, function($data, FarmTemplate $t) {
 
 	echo new overview\BankUi()->get($data->ccOperationBank, $data->ccOperationCash);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 	$t->js()->replaceHistory($t->canonical);
 
 });
@@ -66,7 +64,6 @@ new AdaptativeView(\farm\Farmer::SIG, function($data, FarmTemplate $t) {
 		eFinancialYearComparison: $data->eFinancialYearComparison,
 	);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 	$t->js()->replaceHistory($t->canonical);
 
 });
@@ -97,7 +94,6 @@ new AdaptativeView(\farm\Farmer::BALANCE_SHEET, function($data, FarmTemplate $t)
 		hasDetail               : $data->search->get('view') === \overview\BalanceSheetLib::VIEW_DETAILED,
 	);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 
@@ -121,7 +117,6 @@ new AdaptativeView(\farm\Farmer::INCOME_STATEMENT, function($data, FarmTemplate 
 		displaySummary: (bool)$data->search->get('view') === \overview\IncomeStatementLib::VIEW_DETAILED,
 	);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 
@@ -144,7 +139,6 @@ new AdaptativeView('noVat', function($data, FarmTemplate $t) {
 	}
 	echo '</div>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 
@@ -188,7 +182,6 @@ new AdaptativeView(\farm\Farmer::VAT, function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 

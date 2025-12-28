@@ -30,7 +30,7 @@ class SurveyUi {
 
 			$h .= '<br/><br/>';
 
-			$h .= $form->group(content: '<div class="util-block bg-commercialisation color-white"><h3>'.\Asset::icon('basket3').'  '.s("Vente").'</h3><p>'.\Asset::icon('arrow-right').' '.s("Si vous n'utilisez pas le module de production, vous pouvez passer directement à la section suivante.").'</p></div>');
+			$h .= $form->group(content: '<div class="util-block bg-commercialisation color-white"><h3>'.\Asset::icon('basket3').'  '.s("Vente").'</h3><p>'.\Asset::icon('arrow-right').' '.s("Si vous n'utilisez pas le module de vente, vous pouvez passer directement à la section suivante.").'</p></div>');
 			$h .= $form->dynamicGroups($eSurvey, ['sellingFeature']);
 
 			$h .= '<br/><br/>';

@@ -32,7 +32,7 @@ class BalanceSheetUi {
 							->filter(fn($e) => !$e->is($eFinancialYear))
 							->makeArray(function($e, &$key) {
 								$key = $e['id'];
-								return s("Exercice {value}", \account\FinancialYearUi::getYear($e));
+								return s("Exercice {value}", $e->getLabel());
 							}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
 					}
 				$h .= '</div>';
@@ -84,19 +84,19 @@ class BalanceSheetUi {
 					$h .= '</tr>';
 
 					$h .= '<tr class="overview_row-title">';
-						$h .= '<th class="text-center" colspan="'.($hasComparison ? 18 - ($netOnly ? 4 : 0) : 12 - ($netOnly ? 2 : 0)).'">'.s("{farm} - exercice {year}<br />Bilan au {date}", ['farm' => $eFarm['legalName'], 'year' => \account\FinancialYearUi::getYear($eFinancialYear), 'date' => \util\DateUi::numeric($date)]).'</th>';
+						$h .= '<th class="text-center" colspan="'.($hasComparison ? 18 - ($netOnly ? 4 : 0) : 12 - ($netOnly ? 2 : 0)).'">'.s("{farm} - exercice {year}<br />Bilan au {date}", ['farm' => $eFarm['legalName'], 'year' => $eFinancialYear->getLabel(), 'date' => \util\DateUi::numeric($date)]).'</th>';
 					$h .= '</tr>';
 
 					$h .= '<tr class="overview_group-title">';
 						$h .= '<th colspan="3" rowspan="2">'.s("Actif").'</th>';
-						$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+						$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
 						if($hasComparison) {
-							$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+							$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
 						}
 						$h .= '<th colspan="3" rowspan="2">'.s("Passif").'</th>';
-						$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+						$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
 						if($hasComparison) {
-							$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+							$h .= '<th class="td-min-content text-center" '.($netOnly ? '' : 'colspan="3"').'>'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
 						}
 					$h .= '</tr>';
 

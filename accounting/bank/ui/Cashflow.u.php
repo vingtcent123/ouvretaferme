@@ -271,7 +271,7 @@ class CashflowUi {
 													continue;
 												}
 
-												$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearCurrent)).'</div>';
+												$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", $eFinancialYearCurrent->getLabel()).'</div>';
 												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&financialYear='.$eFinancialYearCurrent['id'].'" class="dropdown-item">';
 													$financialYearOption .= s("Créer de nouvelles écritures");
 												$financialYearOption .= '</a>';

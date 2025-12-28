@@ -218,7 +218,7 @@ class OperationUi {
 
 			$h .= '<tr>';
 				$h .= '<th>'.s("Date d'écriture").'</th>';
-				$h .= '<td>'.\util\DateUi::numeric($eOperation['date']).' - '.s("Exercice {value}", \account\FinancialYearUi::getYear($eOperation['financialYear'])).'</td>';
+				$h .= '<td>'.\util\DateUi::numeric($eOperation['date']).' - '.s("Exercice {value}", $eOperation['financialYear']->getLabel()).'</td>';
 			$h .= '</tr>';
 
 			$h .= '<tr>';

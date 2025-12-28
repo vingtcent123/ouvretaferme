@@ -10,7 +10,6 @@ new AdaptativeView('/banque/imports', function($data, FarmTemplate $t) {
 
 	echo new \bank\ImportUi()->getImport($data->eFarm, $data->cImport, $data->imports, $data->eFinancialYear);
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 

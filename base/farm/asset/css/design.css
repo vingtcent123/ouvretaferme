@@ -100,7 +100,7 @@ a.farm-tab:not(.farm-tab-subnav):hover {
 	font-weight: normal;
 	font-size: 0.9rem;
 	border: 1px solid white;
-	padding: 0.5rem;
+	padding: 0.625rem;
 	color: white;
 }
 
@@ -113,12 +113,6 @@ a.farm-tab-complement:hover {
 }
 
 div.farm-nav-planning {
-	display: flex;
-	align-items: center;
-	column-gap: 0.25rem;
-}
-
-div.farm-nav-accounting-selector {
 	display: flex;
 	align-items: center;
 	column-gap: 0.25rem;
@@ -1090,7 +1084,6 @@ body[data-template~="farm"] .container {
 		padding-left: max(1rem, var(--container-padding));
 		z-index: 2;
 		pointer-events: none;
-		opacity: 0.4;
 		width: 4rem;
 	}
 

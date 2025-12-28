@@ -115,10 +115,10 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	public static function getAll(): \Collection {
 
-		return FinancialYear::model()
+		return self::getCache('list', fn() => FinancialYear::model()
 			->select(FinancialYear::getSelection())
 			->sort(['startDate' => SORT_DESC])
-			->getCollection(NULL, NULL, 'id');
+			->getCollection(NULL, NULL, 'id'));
 
 	}
 
@@ -246,15 +246,9 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->beginTransaction();
 
-		$count = FinancialYear::model()->count();
-		$color = FinancialYearSetting::COLORS[$count];
+			FinancialYear::model()->insert($e);
 
-		$e['color'] = $color;
-
-
-		FinancialYear::model()->insert($e);
-
-		self::updateAccountingYears($eFarm);
+			self::updateAccountingYears($eFarm);
 
 		FinancialYear::model()->commit();
 
@@ -280,7 +274,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	public static function updateAccountingYears(\farm\Farm $eFarm): void {
 
-		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => \account\FinancialYearUi::getYear($e)]);
+		$financialYears = self::getAll()->makeArray(fn($e) => ['id' => $e['id'], 'label' => $e->getLabel()]);
 		\farm\Farm::model()->update($eFarm, ['accountingYears' => $financialYears]);
 
 	}

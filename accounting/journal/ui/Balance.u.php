@@ -182,14 +182,14 @@ Class BalanceUi {
 					$h .= '<th rowspan="2" class="td-vertical-align-middle hide-sm-down">'.s("Libellé").'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Totaux").'</th>';
 					$h .= '<th colspan="2" class="text-center">';
-						$h .= s("Soldes exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear));
+						$h .= s("Soldes exercice {value}", $eFinancialYear->getLabel());
 						if($searches['current']->get('startDate') !== '' and $searches['current']->get('endDate') !== '' ) {
 							$h .= '<br /><small>'.s("(du {startDate} au {endDate})", ['startDate' => \util\DateUi::numeric($searches['current']->get('startDate')), 'endDate' => \util\DateUi::numeric($searches['current']->get('endDate'))]).'</small>';
 						}
 					$h .= '</th>';
 					if($hasPrevious) {
 						$h .= '<th colspan="2" class="text-center">';
-						$h .= s("Soldes exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearPrevious));
+						$h .= s("Soldes exercice {value}", $eFinancialYearPrevious->getLabel());
 						if(array_key_exists('previous', $searches) and $searches['previous']->get('startDate') !== '' and $searches['previous']->get('endDate') !== '' ) {
 							$h .= '<br /><small>'.s("(du {startDate} au {endDate})", ['startDate' => \util\DateUi::numeric($searches['previous']->get('startDate')), 'endDate' => \util\DateUi::numeric($searches['previous']->get('endDate'))]).'</small>';
 						}

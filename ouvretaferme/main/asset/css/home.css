@@ -271,7 +271,7 @@ div.home-features-overlay {
 .home-feature-title {
 	font-style: italic;
 	font-weight: lighter;
-	font-size: 2rem;
+	font-size: 1.75rem;
 	text-align: center;
 	font-family: 'PT Serif', serif;
 }
@@ -304,6 +304,10 @@ div.home-feature.home-feature-other {
 
 div.home-feature h2 {
 	font-size: 2.25rem;
+}
+
+div.home-feature ul {
+	padding-left: 1.5rem;
 }
 
 div.home-feature-icon {

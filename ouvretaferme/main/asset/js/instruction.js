@@ -34,18 +34,6 @@ new Lime.Instruction('main')
 		}
 
 	})
-	.register('updateNavAccountingYears', function(financialYears) {
-
-		var div = document.createElement('div');
-		div.innerHTML = financialYears.trim();
-
-		if(qs('#farm-tab-financial-year-container')) {
-			qs('#farm-tab-financial-year-container').replaceWith(div.firstChild);
-		} else if(qs('[data-nav="accounting"]')) {
-			qs('[data-nav="accounting"]').prepend(financialYears);
-		}
-
-	})
 	.register('keepScroll', function() {
 
 		if(

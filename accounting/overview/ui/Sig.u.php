@@ -31,7 +31,7 @@ Class SigUi {
 					->filter(fn($e) => !$e->is($eFinancialYear))
 					->makeArray(function($e, &$key) {
 						$key = $e['id'];
-						return s("Exercice {value}", \account\FinancialYearUi::getYear($e));
+						return s("Exercice {value}", $e->getLabel());
 					}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
 			}
 
@@ -98,9 +98,9 @@ Class SigUi {
 						$h .= '</tr>';
 						$h .= '<tr class="tr-title">';
 							$h .= '<th rowspan="2"></th>';
-							$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYear)).'</th>';
+							$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
 							if($hasComparison) {
-								$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", \account\FinancialYearUi::getYear($eFinancialYearComparison)).'</th>';
+								$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
 								$h .= '<th colspan="2" class="text-center">'.s("Comparaison").'</th>';
 							}
 						$h .= '</tr>';

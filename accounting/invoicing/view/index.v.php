@@ -12,7 +12,6 @@ new AdaptativeView('/facturation-electronique', function($data, FarmTemplate $t)
 
 	echo '<h2>En cours...</h2>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 

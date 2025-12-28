@@ -50,7 +50,6 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 
 	}
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });
 
@@ -82,6 +81,5 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 
 	echo '</div>';
 
-	$t->package('main')->updateNavAccountingYears(new \farm\FarmUi()->getAccountingYears($data->eFarm));
 
 });

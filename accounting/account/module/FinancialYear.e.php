@@ -3,6 +3,20 @@ namespace account;
 
 class FinancialYear extends FinancialYearElement {
 
+	public function getLabel(): string {
+
+		if($this->empty()) {
+			return '';
+		}
+
+		if(substr($this['startDate'], 0, 4) === substr($this['endDate'], 0, 4)) {
+			return substr($this['startDate'], 0, 4);
+		}
+
+		return substr($this['startDate'], 0, 4).' - '.substr($this['endDate'], 0, 4);
+
+	}
+
 	// Comptabilité à l'engagement
 	public function isAccrualAccounting() {
 		return FEATURE_ACCOUNTING_ACCRUAL and $this['accountingType'] === FinancialYear::ACCRUAL;

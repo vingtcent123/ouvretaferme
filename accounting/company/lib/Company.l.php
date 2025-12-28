@@ -28,6 +28,8 @@ class CompanyLib {
 			throw new \RedirectAction('/comptabilite/decouvrir?farm='.$data->eFarm['id']);
 		}
 
+		$data->eFarm['cFinancialYear'] = \account\FinancialYearLib::getAll();
+
 	}
 
 	public static function connectDatabase(\farm\Farm $eFarm): void {
