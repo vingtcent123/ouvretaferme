@@ -364,19 +364,20 @@ class OperationLib extends OperationCrud {
 
 		return self::applySearch($search)
 			->select(
-				Operation::getSelection()
-				+ ['operation' => [
-					'id', 'account', 'accountLabel', 'document', 'type',
-					'thirdParty' => ['id', 'name'],
-					'description', 'vatRate', 'date',
-					'financialYear',
-					'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
-					'amount' => $amount,
-				]]
-				+ ['account' => ['class', 'description']]
-				+ ['thirdParty' => ['id', 'name']]
-				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
-				+ ['amount' => $amount],
+				array_merge(Operation::getSelection(),
+					['operation' => [
+						'id', 'account', 'accountLabel', 'document', 'type',
+						'thirdParty' => ['id', 'name'],
+						'description', 'vatRate', 'date',
+						'financialYear',
+						'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
+						'amount' => $amount,
+					]],
+					['account' => ['class', 'description']],
+					['thirdParty' => ['id', 'name']],
+					['month' => new \Sql('SUBSTRING(date, 1, 7)')],
+					['amount' => $amount]
+				),
 			)
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
