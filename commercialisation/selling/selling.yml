@@ -211,6 +211,7 @@ Pdf:
   used: int16(0, null) = 1
   farm: farm\Farm
   content: ?selling\PdfContent
+  crc32: ?int32(0, null)
   type: enum(DELIVERY_NOTE, ORDER_FORM, INVOICE)
   emailedAt: ?datetime
   createdAt: datetime = SPECIAL(now)
@@ -325,6 +326,7 @@ Sale:
   deliveryCountry: ?user\Country
   comment: ?text24
   stats: bool = TRUE
+  crc32: ?int32(0, null)
   createdAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)
   deliveredAt: date

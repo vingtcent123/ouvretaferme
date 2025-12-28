@@ -1488,6 +1488,7 @@ class SaleLib extends SaleCrud {
 
 			$newValues = [
 				'items' => 0,
+				'itemsCrc' => NULL,
 				'nature' => NULL,
 				'vat' => NULL,
 				'vatByRate' => NULL,
@@ -1509,6 +1510,8 @@ class SaleLib extends SaleCrud {
 
 		$vatList = [];
 
+		$hash = '';
+
 		$newValues = [
 			'items' => $cItem->count(),
 			'nature' => NULL,
@@ -1529,6 +1532,8 @@ class SaleLib extends SaleCrud {
 
 		// Add items
 		foreach($cItem as $eItem) {
+
+			$hash .= json_encode($eItem->extracts(['name', 'additional', 'origin', 'nature', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'vatRate'], fn($value) => ($value instanceof \Element) ? ($value['id'] ?? NULL) : $value));
 
 			$vatList[(string)$eItem['vatRate']] ??= 0;
 			$vatList[(string)$eItem['vatRate']] += $eItem['price'];
@@ -1645,6 +1650,10 @@ class SaleLib extends SaleCrud {
 			$newValues['vat'] += $vat;
 
 		}
+
+		$hash .= json_encode($newValues);
+
+		$newValues['crc32'] = crc32($hash);
 
 		// Vérification pour la comptabilité
 		if(self::isReadyForAccounting($e)) {

@@ -49,13 +49,14 @@ class PdfModel extends \ModuleModel {
 			'used' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'content' => ['element32', 'selling\PdfContent', 'null' => TRUE, 'cast' => 'element'],
+			'crc32' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'type' => ['enum', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM, \selling\Pdf::INVOICE], 'cast' => 'enum'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'used', 'farm', 'content', 'type', 'emailedAt', 'createdAt'
+			'id', 'sale', 'used', 'farm', 'content', 'crc32', 'type', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -131,6 +132,10 @@ class PdfModel extends \ModuleModel {
 
 	public function whereContent(...$data): PdfModel {
 		return $this->where('content', ...$data);
+	}
+
+	public function whereCrc32(...$data): PdfModel {
+		return $this->where('crc32', ...$data);
 	}
 
 	public function whereType(...$data): PdfModel {

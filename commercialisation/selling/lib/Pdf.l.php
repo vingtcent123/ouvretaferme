@@ -267,6 +267,7 @@ class PdfLib extends PdfCrud {
 			$ePdf = new Pdf([
 				'type' => $type,
 				'sale' => $eSale,
+				'crc32' => $eSale['crc32'],
 				'farm' => $eSale['farm'],
 				'content' => $ePdfContent,
 				'createdAt' => Pdf::model()->now() // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée

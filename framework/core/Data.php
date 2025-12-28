@@ -1633,13 +1633,14 @@ class Element extends ArrayObject {
 
 	}
 
-	public function extracts($keys): array {
+	public function extracts($keys, ?Closure $callback = NULL): array {
 
 		$output = [];
 
 		foreach($keys as $key) {
 			if($this->offsetExists($key)) {
-				$output[$key] = $this->offsetGet($key);
+				$value = $this->offsetGet($key);
+				$output[$key] = ($callback !== NULL) ? $callback($value) : $value;
 			}
 		}
 

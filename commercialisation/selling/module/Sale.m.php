@@ -125,6 +125,7 @@ class SaleModel extends \ModuleModel {
 			'deliveryCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'comment' => ['text24', 'null' => TRUE, 'cast' => 'string'],
 			'stats' => ['bool', 'cast' => 'bool'],
+			'crc32' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'deliveredAt' => ['date', 'cast' => 'string'],
@@ -136,7 +137,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
 		]);
 
 		$this->propertiesToModule += [
@@ -494,6 +495,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereStats(...$data): SaleModel {
 		return $this->where('stats', ...$data);
+	}
+
+	public function whereCrc32(...$data): SaleModel {
+		return $this->where('crc32', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): SaleModel {
