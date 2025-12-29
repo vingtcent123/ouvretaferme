@@ -296,13 +296,17 @@ class ConfigurationUi {
 
 		$profiles = \selling\ProductUi::p('profile')->values;
 
-		$h = '<div class="util-info">'.s("En configurant directement vos types de produits, tous les produits de ce type que vous créerez auront le bon numéro de compte, ce qui facilitera votre comptabilité.").'</div>';
 
 		$form = new \util\FormUi();
 
-		$h .= $form->openAjax('/farm/configuration:doUpdateProfileAccount', ['id' => 'farm-update-profile', 'autocomplete' => 'off']);
+		$h = $form->openAjax('/farm/configuration:doUpdateProfileAccount', ['id' => 'farm-update-profile', 'autocomplete' => 'off']);
 
 		$h .= $form->hidden('id', $eConfiguration['id']);
+
+		$h .= $form->group(
+			content: '<h3>'.s("Numéros de compte par défaut").'</h3>'.
+			'<div class="util-info">'.s("Ces numéros de compte seront automatiquement attribués aux futures produits que vous créerez.").'</div>'
+		);
 
 		foreach($profiles as $key => $profile) {
 

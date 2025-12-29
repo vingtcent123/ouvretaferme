@@ -1488,7 +1488,7 @@ class SaleLib extends SaleCrud {
 
 			$newValues = [
 				'items' => 0,
-				'itemsCrc' => NULL,
+				'crc32' => NULL,
 				'nature' => NULL,
 				'vat' => NULL,
 				'vatByRate' => NULL,
