@@ -217,7 +217,7 @@ class CsvUi {
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Largeur des planches").'</h4>';
 						$h .= '<p>'.s("Veuillez renseigner la largeur des planches par défaut sur votre ferme pour que {siteName} puisse importer vos données.").'</p>';
-						$h .= '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'" class="btn btn-danger">'.s("Configurer les planches").'</a>';
+						$h .= '<a href="/farm/farm:updateProduction?id='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Configurer les planches").'</a>';
 					$h .= '</div>';
 					break;
 
@@ -234,7 +234,7 @@ class CsvUi {
 						$h .= '<h4 class="color-danger">'.s("Espèces manquantes").'</h4>';
 						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou sont désactivées sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des espèces").'</a>';
+						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des espèces").'</a>';
 					$h .= '</div>';
 					break;
 
@@ -243,7 +243,7 @@ class CsvUi {
 						$h .= '<h4 class="color-danger">'.s("Plateaux de semis manquants").'</h4>';
 						$h .= '<p>'.s("Les plateaux de semis suivants sont utilisés dans le fichier CSV et n'existent pas sur votre ferme :").'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="'.\farm\ToolUi::urlManage($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des plateaux de semis").'</a>';
+						$h .= '<a href="'.\farm\ToolUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des plateaux de semis").'</a>';
 					$h .= '</div>';
 					break;
 
@@ -253,7 +253,7 @@ class CsvUi {
 						$h .= '<p>'.s("Vous utilisez dans le fichier CSV des saisons de culture qui n'ont pas été définies à l'échelle de la ferme :").'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<p>'.s("Les saisons s'ajoutent depuis la page de planification par l'intermédiaire du menu déroulant qui permet de modifier l'affichage de la saison en cours.").'</p>';
-						$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm).'" target="_blank" class="btn btn-danger">'.s("Ajouter des saisons").'</a>';
+						$h .= '<a href="'.\farm\FarmUi::urlCultivationSeries($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des saisons").'</a>';
 					$h .= '</div>';
 					break;
 
