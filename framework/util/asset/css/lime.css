@@ -1346,10 +1346,16 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 .util-block-help,
 .util-block-important,
 .util-outline-block-important {
-	padding: 1.25rem 1rem  1rem;
+	padding: 1rem;
 	line-height: 1.5;
 	position: relative;
 	min-height: 4rem;
+}
+
+.util-block-help:has(h3),
+.util-block-important:has(h3),
+.util-outline-block-important:has(h3) {
+	padding-top: 1.5rem;
 }
 
 .util-block-help {
@@ -1401,12 +1407,13 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 
 .util-block-help:before,
 .util-block-important:before,
+.util-block-icon,
 .util-outline-block-important:before {
 	position: absolute;
 	font-style: italic;
 	float: left;
 	color: white;
-	top: .75rem;
+	top: 1.25rem;
 	left: 1rem;
 	width: 2.5rem;
 	height: 2.5rem;
@@ -1419,17 +1426,18 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	font-family: Serif;
 }
 
-.util-block-help:before {
+.util-block-help:not(:has(.util-block-icon)):before {
 	background-color: var(--secondary);
 	content: 'i';
 }
 
-.util-block-important:before {
+.util-block-important:not(:has(.util-block-icon)):before {
 	background-color: white;
 	color: var(--secondary);
 	content: '!';
 }
-.util-outline-block-important:before {
+
+.util-outline-block-important:not(:has(.util-block-icon)):before {
 	background-color: var(--secondary);
 	color: white;
 	content: '!';

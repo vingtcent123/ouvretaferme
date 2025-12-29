@@ -308,7 +308,7 @@ Class ReconciliateUi {
 
 			$h .= '<div class="util-block-important">';
 				$h .= '<p>';
-					$h .= p("Vous vous apprêtez à rapprocher {value} facture", "Vous vous apprêtez à rapprocher {value} facture", $cSuggestion->count());
+					$h .= p("Vous vous apprêtez à rapprocher {value} facture.", "Vous vous apprêtez à rapprocher {value} factures.", $cSuggestion->count());
 				$h .= '</p>';
 
 				$h .= '<p>';
