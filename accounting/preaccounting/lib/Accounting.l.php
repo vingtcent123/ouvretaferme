@@ -215,6 +215,13 @@ Class AccountingLib {
 
 		$cInvoice = self::getInvoices($eFarm, $search, $forImport);
 
+		$cCashflow = \bank\CashflowLib::getByIds($cInvoice->getColumnCollection('cashflow')->getIds(), index: 'id');
+		foreach($cInvoice as &$eInvoice) {
+			if($eInvoice['cashflow']->notEmpty() and $cCashflow->offsetExists($eInvoice['cashflow']['id'])) {
+				$eInvoice['cashflow'] = $cCashflow->offsetGet($eInvoice['cashflow']['id']);
+			}
+		}
+
 		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount);
 
 	}
@@ -233,6 +240,17 @@ Class AccountingLib {
 			\selling\Invoice::model()->whereFarm($eFarm);
 
 		}
+
+		if($search->get('reconciliated') === 0) {
+
+			\selling\Invoice::model()->whereCashflow('=', NULL);
+
+		} else if($search->get('reconciliated') === 1) {
+
+			\selling\Invoice::model()->whereCashflow('!=', NULL);
+
+		}
+
 		return \selling\Invoice::model()
 			->whereAccountingHash(NULL)
 			->whereReadyForAccounting(TRUE)
@@ -267,6 +285,7 @@ Class AccountingLib {
 						->delegateElement('customer')
 
 				],
+				'cashflow',
 				'paymentMethod' => ['name'],
 				'cSale' => \selling\Sale::model()
 					->select([
@@ -287,6 +306,7 @@ Class AccountingLib {
 	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount) {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$eAccountBank = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
 		$fecData = [];
 		foreach($cInvoice as $eInvoice) {
@@ -366,6 +386,7 @@ Class AccountingLib {
 						document    : $document,
 						documentDate: $documentDate,
 						amount      : $amountExcludingVat,
+						type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
 						payment     : $payment,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
@@ -388,6 +409,7 @@ Class AccountingLib {
 							document    : $document,
 							documentDate: $documentDate,
 							amount      : $amountVat,
+							type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
 							payment     : $payment,
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
@@ -398,6 +420,26 @@ Class AccountingLib {
 					}
 
 				}
+			}
+
+			if($eInvoice['cashflow']->notEmpty()) { // Contrepartie en 512 directe si un rapprochement a déjà été réalisé
+
+				$eAccountBank['class'] = $eInvoice['cashflow']['account']['label'];
+				$fecDataBank = self::getFecLine(
+					eAccount    : $eAccountBank,
+					date        : $eInvoice['date'],
+					eCode       : $eAccountBank['journalCode'],
+					document    : $document,
+					documentDate: $documentDate,
+					amount      : $eInvoice['cashflow']['amount'],
+					type        : $eInvoice['cashflow']['amount'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
+					payment     : $payment,
+					compAuxNum  : $compAuxNum,
+					compAuxLib  : $compAuxLib,
+				);
+
+				self::mergeFecLineIntoItemData($items, $fecDataBank);
+
 			}
 
 			$fecData = array_merge($fecData, $items);
@@ -593,7 +635,7 @@ Class AccountingLib {
 
 	private static function getFecLine(
 		\account\Account $eAccount, string $date, \journal\JournalCode $eCode,
-		string $document, string $documentDate, float $amount, string $payment, string $compAuxNum, string $compAuxLib
+		string $document, string $documentDate, float $amount, string $type, string $payment, string $compAuxNum, string $compAuxLib
 	): array {
 
 		return [
@@ -608,8 +650,8 @@ Class AccountingLib {
 			$document,
 			date('Ymd', strtotime($documentDate)),
 			'',
-			$amount < 0 ? abs($amount) : 0,
-			$amount > 0 ? $amount : 0,
+			$type === \journal\Operation::DEBIT ? abs($amount) : 0,
+			$type === \journal\Operation::CREDIT ? abs($amount) : 0,
 			'',
 			'',
 			'',

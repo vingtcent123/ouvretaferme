@@ -8,7 +8,7 @@ class Cashflow extends CashflowElement {
 		return Cashflow::model()->getProperties() + [
 			'import' => ['account' => ['label']],
 			'createdBy' => ['id', 'firstName', 'lastName'],
-
+			'account' => BankAccount::getSelection()
 		];
 
 	}

@@ -11,7 +11,6 @@ Class ImportUi {
 
 	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice, \Search $search): string {
 
-
 		if($cInvoice->empty()) {
 			return '<div class="util-info">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
 		}
@@ -29,6 +28,12 @@ Class ImportUi {
 					\selling\Customer::PRO => s("Professionnels"),
 					\selling\Customer::PRIVATE => s("Particuliers"),
 				], $search->get('type', 'int', 0), ['mandatory' => TRUE]);
+
+				$h .= $form->select('reconciliated', [
+					NULL => s("Rattachées ou non à une opération bancaire"),
+					1 => s("Écritures rattachées uniquement"),
+					0 => s("Écritures non rattachées"),
+				], $search->get('reconciliated', 'int', 0), ['mandatory' => TRUE]);
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 			$h .= '</div>';
@@ -52,12 +57,13 @@ Class ImportUi {
 						$h .= '<th rowspan="2">'.s("Client").'</th>';
 						$h .= '<th rowspan="2">'.s("Référence").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Montant").'</th>';
-						$h .= '<th colspan="3" class="text-center">'.s("Écritures").'</th>';
+						$h .= '<th colspan="4" class="text-center">'.s("Écritures").'</th>';
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Montant").'</th>';
+						$h .= '<th class="text-center">'.s("D/C").'</th>';
 						$h .= '<th>'.s("Paiement").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -104,6 +110,13 @@ Class ImportUi {
 							}
 							$h .= '</td>';
 							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
+							$h .= '<td class="text-center invoicing-import-td-operation">';
+								if($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] !== 0.0) {
+									$h .= s("D");
+								} else {
+									$h .= s("C");
+								}
+							$h .= '</td>';
 							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
 							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 								$h .= $this->emptyData();
@@ -112,7 +125,7 @@ Class ImportUi {
 							}
 							$h .= '</td>';
 
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top">';
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top td-min-content">';
 
 									if($eInvoice->acceptAccountingImport()) {
 										$attributes = [
@@ -121,8 +134,8 @@ Class ImportUi {
 											'post-id' => $eInvoice['id'],
 											'post-financial-year' => $eFinancialYear['id'],
 										];
-										$h .= '<a '.attrs($attributes).' class="btn btn-secondary mr-1">';
-											$h .= \Asset::icon('hand-thumbs-up').' '.s("Importer");
+										$h .= '<a '.attrs($attributes).' class="btn btn-sm btn-secondary mr-1">';
+											$h .= \Asset::icon('hand-thumbs-up').' <span class="hide-sm-down">'.s("Importer").'</span>';
 										$h .= '</a>';
 									}
 									if($eInvoice->acceptAccountingIgnore()) {
@@ -132,8 +145,8 @@ Class ImportUi {
 											'post-id' => $eInvoice['id'],
 											'post-financial-year' => $eFinancialYear['id'],
 										];
-										$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreInvoice" post-id="'.$eInvoice['id'].'" class="btn btn-outline-secondary">';
-											$h .= \Asset::icon('hand-thumbs-down').' '.s("Ignorer");
+										$h .= '<a '.attrs($attributes).' class="btn btn-sm btn-outline-secondary">';
+											$h .= \Asset::icon('hand-thumbs-down').' <span class="hide-sm-down">'.s("Ignorer").'</span>';
 										$h .= '</a>';
 									}
 
@@ -175,6 +188,13 @@ Class ImportUi {
 				$h .= '</td>';
 				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">';
 					$h .= \util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
+				$h .= '</td>';
+				$h .= '<td class="text-center invoicing-import-td-operation">';
+					if($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] !== 0.0) {
+						$h .= s("D");
+					} else {
+						$h .= s("C");
+					}
 				$h .= '</td>';
 				$h .= '<td class="invoicing-import-td-operation">';
 					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {

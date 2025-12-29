@@ -150,7 +150,8 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$t->title = s("Importer les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
 
-	$t->mainTitle = '<h1>'.s("Importer les factures").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
+	$navigation = '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+	$t->mainTitle = '<h1>'.$navigation.s("Importer les factures").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
 
 
 	if($data->nInvoice === 0) {
