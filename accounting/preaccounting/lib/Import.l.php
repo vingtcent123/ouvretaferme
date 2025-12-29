@@ -121,8 +121,9 @@ Class ImportLib {
 		$fw->validate();
 
 		// On regarde s'il y a eu un rapprochement => pour créer la contrepartie en banque
-		$eCashflow = \bank\CashflowLib::getByInvoice($eInvoice);
-		$eInvoice['cashflow'] = $eCashflow;
+		if($eInvoice['cashflow']->notEmpty()) {
+			$eInvoice['cashflow'] = \bank\CashflowLib::getById($eInvoice['cashflow']['id']);
+		}
 
 		$cAccount = \account\AccountLib::getAll();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
