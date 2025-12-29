@@ -38,8 +38,7 @@ Class InvoiceLib {
 	public static function countForAccountingCheckVerified(\farm\Farm $eFarm, \Search $search): int {
 
 		return self::filterForAccountingCheck($eFarm, $search)
-			->whereClosed(TRUE)
-			->wherePaymentMethod('=', NULL)
+			->wherePaymentMethod('!=', NULL)
 			->count();
 
 	}
