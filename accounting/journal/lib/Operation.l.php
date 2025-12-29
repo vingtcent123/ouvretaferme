@@ -37,7 +37,8 @@ class OperationLib extends OperationCrud {
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%'),
 			)
-			->whereAccountLabel('NOT LIKE', \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%');
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS.'%')
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS.'%');
 
 	}
 

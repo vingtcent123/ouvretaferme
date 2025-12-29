@@ -63,7 +63,7 @@ class Operation extends OperationElement {
 
 		$this->expects(['hash']);
 
-		return mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED;
+		return $this['hash'] and mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED;
 
 	}
 	public function canUpdate(): bool {

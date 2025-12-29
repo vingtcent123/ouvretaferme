@@ -351,7 +351,7 @@ Class ImportLib extends ImportCrud {
 				'financialYear' => $eImport['financialYear'],
 				'journalCode' => $eJournalCode,
 				'account' => $eAccount,
-				'accountLabel' => $compteLib,
+				'accountLabel' => $compteNum,
 				'date' => $ecritureDate,
 				'description' => $ecritureLib,
 				'document' => $pieceRef,
