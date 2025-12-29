@@ -334,7 +334,7 @@ class TipUi {
 				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos factures avant l'intégration dans votre comptabilité.").'</p>';
 				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes, si elles ne sont pas déjà réalisées au fur et à mesure :").'</p>';
 				$h .= '<ul style="list-style-type: none;">';
-					$h .= '<li>'.\Asset::icon('1-circle').' '.s("Associer un compte à <link>chaque produit</link> ou <linkType>chaque type de produit</linkType> et aux articles sans référence produit", [
+					$h .= '<li>'.\Asset::icon('1-circle').' '.s("Associer un numéro de compte à <link>chaque produit</link> ou <linkType>chaque type de produit</linkType> et aux articles sans référence produit", [
 						'link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">',
 						'linkType' => '<a href="/farm/configuration:update?id='.$eFarm['id'].'">',
 					]).'</li>';

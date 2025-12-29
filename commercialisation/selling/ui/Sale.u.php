@@ -807,7 +807,7 @@ class SaleUi {
 						$text = '<span class="sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
 					}
 
-					$document .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eSale['invoice']['id'].'" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ?").'" class="dropdown-item">'.$text.'</a>';
+					$document .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eSale['invoice']['id'].'" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ? Une facture envoyée par e-mail n'est plus annulable.").'" class="dropdown-item">'.$text.'</a>';
 
 				}
 

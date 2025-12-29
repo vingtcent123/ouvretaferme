@@ -266,12 +266,45 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function updateStatusDelivered(Invoice $e, \Collection $cSale): bool {
+
+		Invoice::model()->beginTransaction();
+
+			if(
+				Invoice::model()
+					->whereStatus(Invoice::GENERATED)
+					->update($e, [
+						'status' => Invoice::DELIVERED,
+						'emailedAt' => new \Sql('NOW()')
+					]) === 0
+			) {
+
+				Invoice::model()->commit();
+				return FALSE;
+
+			}
+
+			foreach($cSale as $eSale) {
+
+				$eSale['closed'] = TRUE;
+
+				SaleLib::update($eSale, ['closed']);
+
+			}
+
+		Invoice::model()->commit();
+
+		return TRUE;
+
+	}
+
 	public static function updateStatus(Invoice $e, string $newStatus): void {
 
 		if($e['status'] === $newStatus) {
 			return;
 		}
 
+		$e['oldStatus'] = $e['status'];
 		$e['status'] = $newStatus;
 
 		self::update($e, ['status']);
@@ -296,19 +329,27 @@ class InvoiceLib extends InvoiceCrud {
 
 			if(in_array('status', $properties)) {
 
-				if($e['status'] === Invoice::CONFIRMED) {
-					$e['generation'] = Invoice::WAITING;
-					$properties[] = 'generation';
+				$e->expects(['oldStatus']);
+
+				if($e['status'] !== $e['oldStatus']) {
+
+					if($e['status'] === Invoice::CONFIRMED) {
+						$e['generation'] = Invoice::WAITING;
+						$properties[] = 'generation';
+					}
+
+				} else {
+					array_delete($properties, 'status');
 				}
 
 			}
 
 			parent::update($e, $properties);
 
-			$updateValues = [];
+			$updateSale = [];
 
 			if(in_array('paymentStatus', $properties)) {
-				$updateValues['paymentStatus'] = $e['paymentStatus'];
+				$updateSale['paymentStatus'] = $e['paymentStatus'];
 			}
 
 			if(in_array('status', $properties)) {
@@ -330,14 +371,16 @@ class InvoiceLib extends InvoiceCrud {
 
 			}
 
-			if($updateValues) {
+			if($updateSale) {
 
-				$updateProperties = array_keys($updateValues);
+				$updateSaleProperties = array_keys($updateSale);
 
 				$cSale = SaleLib::getByIds($e['sales']);
 
 				foreach($cSale as $eSale) {
-					SaleLib::update($eSale->merge($updateValues), $updateProperties);
+
+					SaleLib::update($eSale->merge($updateSale), $updateSaleProperties);
+
 					if(in_array('paymentMethod', $properties)) {
 						PaymentLib::putBySale($eSale, $e['paymentMethod']);
 					}

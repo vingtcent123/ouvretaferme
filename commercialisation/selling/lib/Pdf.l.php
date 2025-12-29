@@ -210,19 +210,12 @@ class PdfLib extends PdfCrud {
 			return;
 		}
 
-		if(
-			Invoice::model()
-				->whereStatus(Invoice::GENERATED)
-				->update($eInvoice, [
-					'status' => Invoice::DELIVERED,
-					'emailedAt' => new \Sql('NOW()')
-				]) === 0
-		) {
+		$cSale = SaleLib::getByInvoice($eInvoice);
+
+		if(InvoiceLib::updateStatusDelivered($eInvoice, $cSale) === FALSE) {
 			Invoice::fail('fileAlreadySent');
 			return;
 		}
-
-		$cSale = SaleLib::getByInvoice($eInvoice);
 
 		$template = NULL;
 

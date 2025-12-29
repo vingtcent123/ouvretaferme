@@ -372,7 +372,7 @@ class InvoiceUi {
 		}
 
 		if($eInvoice->acceptSend()) {
-			$to .= ' <a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ?").'">';
+			$to .= ' <a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ? Une facture envoyée par e-mail n'est plus annulable.").'">';
 				$to .= \Asset::icon('send').'  <span class="btn btn-sm invoice-status-'.Invoice::DELIVERED.'-button">'.s("Envoi au client par e-mail").'</span>';
 			$to .= '</a>';
 		}
