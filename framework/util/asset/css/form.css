@@ -924,6 +924,7 @@ body[data-touch="yes"] ul.autocomplete-list {
 }
 
 ul.autocomplete-list li {
+	font-weight: normal;
 	padding: 0.375rem 0.75rem;
 	text-decoration: none;
 	cursor: pointer;
