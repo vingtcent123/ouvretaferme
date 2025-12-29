@@ -29,7 +29,11 @@ Class ReconciliateLib {
 
 		if($eInvoice->notEmpty()) {
 
-			$updateInvoice = ['paymentStatus' => \selling\Invoice::PAID, 'paymentMethod' => $eSuggestion['paymentMethod']];
+			$updateInvoice = [
+				'paymentStatus' => \selling\Invoice::PAID,
+				'paymentMethod' => $eSuggestion['paymentMethod'],
+				'cashflow' => $eCashflow,
+			];
 
 			\selling\Invoice::model()
         ->whereId($eInvoice['id'])
