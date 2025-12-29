@@ -170,15 +170,16 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 
 	$t->title = s("Rapprocher factures et opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher';
-
-	$t->mainTitle = '<h1>'.s("Rapprocher factures et opérations bancaires").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
+	$navigation = '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+	$t->mainTitle = '<h1>'.$navigation.s("Rapprocher factures et opérations bancaires").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
 
 	if($data->ccSuggestion->empty()) {
+
+		echo '<div class="util-info">'.s("Il n'y a aucune facture à rapprocher pour le moment !").'</div>';
 
 		echo '<div class="util-empty">';
 
 			echo '<p>';
-				echo s("Il n'y a aucune facture à rapprocher pour le moment !").'<br/>';
 
 			if($data->eImportLast->empty()) {
 
