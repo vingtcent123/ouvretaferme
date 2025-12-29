@@ -164,7 +164,7 @@ class FecLib  {
 		];
 
 		$search = new \Search(['financialYear' => $eFinancialYear, 'startDate' => $startDate, 'endDate' => $endDate]);
-		$cOperation = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
+		list($cOperation, , ) = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
 
 		$number = 1;
 

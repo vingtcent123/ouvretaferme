@@ -1,10 +1,53 @@
 <?php
+new \account\ImportPage()
+	->get('import', function($data) {
+
+		$data->cImport = \account\ImportLib::getImports();
+		$data->eImport = \account\ImportLib::currentOpenImport();
+
+		$nOperationByFinancialYear = \journal\OperationLib::countByFinancialYears($data->eFarm['cFinancialYear']);
+		foreach($data->eFarm['cFinancialYear'] as $key => $eFinancialYear) {
+			$data->eFarm['cFinancialYear'][$key]['nOperation'] = $nOperationByFinancialYear[$eFinancialYear['id']]['count'] ?? 0;
+		}
+
+		$data->cJournalCode = \journal\JournalCodeLib::getAll();
+		$data->cAccount = \account\AccountLib::getAll();
+		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE, TRUE);
+
+		throw new ViewAction($data);
+
+	})
+	->doCreate(function($data) {
+
+		throw new ReloadAction('account', 'Import::created');
+
+	})
+	->doUpdateProperties('doCancel', ['status'], fn() => throw new ReloadAction('account', 'Import::cancelled'), validate: ['acceptCancel'])
+	->write('doValidateRules', function($data) {
+
+		$isActionRequired = \account\ImportLib::validateRules($data->e);
+
+		if($isActionRequired) {
+			throw new FailAction('account\Import::updated.feedbackNeeded');
+		}
+		throw new ReloadAction('account', 'Import::updated');
+
+	}, validate: ['acceptUdpate'])
+	->write('doUpdateRuleValue', function($data) {
+
+		\account\ImportLib::updateRuleValue($data->eFarm, $data->e, $_POST);
+
+		throw new VoidAction();
+
+	}, validate: ['acceptUdpate']);
+
 new \account\FinancialYearPage()
 	->get('view', function($data) {
 
 		$data->fecInfo = \account\FecLib::checkDataForFec($data->eFarm, $data->eFarm['eFinancialYear']);
 		$data->fecInfo['cJournalCode'] = \journal\JournalCodeLib::getAll();
 
+		$data->nOperationByFinancialYear = \journal\OperationLib::countByFinancialYears($data->eFarm['cFinancialYear']);
 
 		throw new ViewAction($data);
 

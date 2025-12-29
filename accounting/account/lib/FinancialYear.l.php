@@ -211,6 +211,12 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function isDateInFinancialYear(string $date, FinancialYear $eFinancialYear): bool {
+
+		return($date >= $eFinancialYear['startDate'] and $date <= $eFinancialYear['endDate']);
+
+	}
+
 	public static function create(FinancialYear $e): void {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');

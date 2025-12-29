@@ -10,6 +10,11 @@ new Page()
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
+		$data->nOperationByFinancialYear = \journal\OperationLib::countByFinancialYears($data->eFarm['cFinancialYear']);
+		foreach($data->eFarm['cFinancialYear'] as $key => $eFinancialYear) {
+			$data->eFarm['cFinancialYear'][$key]['nOperation'] = $data->nOperationByFinancialYear[$eFinancialYear['id']]['count'] ?? 0;
+		}
+
 		throw new ViewAction($data);
 
 	});

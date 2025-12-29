@@ -12,6 +12,24 @@ class OperationLib extends OperationCrud {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'thirdParty', 'comment', 'journalCode', 'vatRate'];
 	}
 
+	public static function countByFinancialYear(\account\FinancialYear $eFinancialYear): int {
+
+		return Operation::model()
+			->whereFinancialYear($eFinancialYear)
+			->count();
+
+	}
+
+	public static function countByFinancialYears(\Collection $cFinancialYear): array {
+
+		return Operation::model()
+			->select(['financialYear', 'count' => new \Sql('COUNT(*)', 'int')])
+			->whereFinancialYear('IN', $cFinancialYear->getIds())
+			->group('financialYear')
+			->getCollection(NULL, NULL, 'financialYear')
+			->getArrayCopy();
+
+	}
 	public static function applyAssetCondition(): OperationModel {
 
 		return Operation::model()
@@ -243,9 +261,10 @@ class OperationLib extends OperationCrud {
 		$eFinancialYear = $search->get('financialYear');
 		$defaultOrder = ($eFinancialYear !== NULL and $eFinancialYear->isCashAccounting()) ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
 
-		$selection = Operation::getSelection()
-			+ ['account' => ['class', 'description']]
-			+ ['thirdParty' => ['id', 'name']];
+		$selection = array_merge(Operation::getSelection(),
+			['account' => ['class', 'description']],
+			['thirdParty' => ['id', 'name']]
+		);
 
 		// On requête un compte auxiliaire
 		if($search->get('thirdParty') and $search->get('accountLabel')) {
@@ -262,10 +281,10 @@ class OperationLib extends OperationCrud {
 					mb_substr($eThirdParty['supplierAccountLabel'], 0, mb_strlen($search->get('accountLabel'))) === $search->get('accountLabel')
 				)
 			) {
-				$selection += [
+				$selection = array_merge($selection, [
 					'cLetteringCredit' => LetteringLib::delegate('credit'),
 					'cLetteringDebit' => LetteringLib::delegate('debit'),
-				];
+				]);
 			}
 		}
 

@@ -44,6 +44,13 @@ class FinancialYear extends FinancialYearElement {
 		return $this['status'] === FinancialYearElement::CLOSE;
 	}
 
+	public function acceptImportFec(): bool {
+
+		$this->expects(['nOperation']);
+		return $this['nOperation'] === 0;
+
+	}
+
 	public function acceptOpen(): bool {
 
 		return $this['openDate'] === NULL and $this['closeDate'] === NULL and $this['status'] === FinancialYear::OPEN;

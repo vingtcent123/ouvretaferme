@@ -70,39 +70,52 @@ class FinancialYearUi {
 
 			$h .= '<div class="dropdown-title">'.s("Exercice {year}", ['year' => self::getYear($eFinancialYear)]).'</div>';
 
+			$hasAction = FALSE;
 			if($eFinancialYear->acceptUpdate()) {
 
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:update" class="dropdown-item">';
 					$h .= s("Modifier");
 				$h .= '</a>';
+				$hasAction = TRUE;
 
 			} else if($eFinancialYear->acceptReOpen()) {
 
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doReopen" post-id='.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item color-danger">';
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item color-danger">';
 					$h .= \Asset::icon('exclamation-triangle').' ';
 					$h .= s("Rouvrir");
 				$h .= '</a>';
+				$hasAction = TRUE;
 
+			}
+
+			if($eFinancialYear->acceptImportFec()) {
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="dropdown-item">'.s("Importer un fichier FEC").'</a>';
+				$hasAction = TRUE;
 			}
 
 			if($eFinancialYear->acceptOpen()) {
 
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Ouvrir").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:open" class="dropdown-item">'.s("Ouvrir").'</a>';
+				$hasAction = TRUE;
 
 			} else if($eFinancialYear->isOpen() and $eFinancialYear->acceptClose()) {
 
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:close" class="dropdown-item">'.s("Clôturer").'</a>';
+				$hasAction = TRUE;
 
 			} else if($eFinancialYear->acceptReClose()) {
 
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doReclose" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Refermer").'</a>';;
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReclose" class="dropdown-item">'.s("Refermer").'</a>';
+				$hasAction = TRUE;
 			}
 
-			$h .= '<div class="dropdown-divider"></div>';
+			if($hasAction) {
+				$h .= '<div class="dropdown-divider"></div>';
+			}
 
 			$h .= '<div class="dropdown-title"><b>'.s("Documents").'</b></div>';
 
-			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:view?id='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="dropdown-item">';
+			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:view" data-ajax-navigation="never" class="dropdown-item">';
 				$h .= s("Générer le FEC");
 			$h .= '</a>';
 

@@ -37,6 +37,19 @@ FinancialYear:
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
 
+Import:
+  id: serial32
+  financialYear: account\FinancialYear
+  filename: text8
+  status: enum(CREATED, WAITING, IN_PROGRESS, FEEDBACK_REQUESTED, FEEDBACK_TO_TREAT, DONE, CANCELLED) = CREATED
+  errors: ?set(DATES)
+  delimiter: ?textFixed(1,1)
+  content: text32
+  rules: json = PHP([])
+  createdAt: datetime = SPECIAL(now)
+  updatedAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+
 Log:
   action: text8
   element: text8

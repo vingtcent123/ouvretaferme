@@ -8,7 +8,7 @@ new Page()
 
 		$search = new Search(['financialYear' => $data->eFinancialYearSelected]);
 
-		$data->cOperation = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
+		list($data->cOperation, , ) = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
 
 		throw new ViewAction($data);
 
