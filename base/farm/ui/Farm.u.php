@@ -1820,9 +1820,7 @@ class FarmUi {
 
 			$h .= '<div>';
 
-				if($nSuggestion > 0) {
-					$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
-				}
+				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
 
 				$importLink = ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
 

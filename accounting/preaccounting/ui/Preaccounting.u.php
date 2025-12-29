@@ -410,18 +410,16 @@ Class PreaccountingUi {
 
 	public function getLinkToReconciliate(\farm\Farm $eFarm, int $nSuggestion): string {
 
-		if($nSuggestion === 0) {
-			return '';
-		}
-
-		$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
+		$h = '<a class="'.($nSuggestion === 0 ? 'disabled' : '').' btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
 			$h .= \Asset::icon('fire').' ';
-			$h .= '<span class="hide-md-up">';
+			$h .= '<span class="'.($nSuggestion > 0 ? 'hide-md-up' : 'disabled').'">';
 				$h .= $nSuggestion;
 			$h .= '</span>';
-			$h .= '<span class="hide-sm-down">';
-				$h .= p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion);
-			$h .= '</span>';
+			if($nSuggestion > 0) {
+				$h .= '<span class="hide-sm-down">';
+					$h .= p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion);
+				$h .= '</span>';
+			}
 		$h .= '</a>';
 
 		return $h;
