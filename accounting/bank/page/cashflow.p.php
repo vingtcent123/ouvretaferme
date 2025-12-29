@@ -65,6 +65,9 @@ new Page()
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll();
 
+		$data->eImportCurrent = \bank\ImportLib::getLastImport();
+		$data->eImportCurrent['nCashflowWaiting'] = \bank\CashflowLib::countSuggestionWaitingByImport($data->eImportCurrent);
+
 		throw new ViewAction($data);
 
 	});

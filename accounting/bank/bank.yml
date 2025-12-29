@@ -22,6 +22,7 @@ Cashflow:
   import: bank\Import
   status: enum(WAITING, ALLOCATED, DELETED) = WAITING
   isReconciliated: bool = FALSE
+  isSuggestionCalculated: bool = FALSE
   invoice: ?selling\Invoice
   sale: ?selling\Sale
   document: ?text8(1, null) @collate(general)

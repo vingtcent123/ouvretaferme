@@ -15,5 +15,5 @@ new Page()
 
 		}
 
-	}, interval: '* * * * *');
+	}, interval: 'permanent@2');
 ?>

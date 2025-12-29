@@ -768,12 +768,41 @@ class CashflowUi {
 		return $h;
 
 	}
+	public function getReconciliateInfo(Import $eImport): string {
+
+		if($eImport->empty() or $eImport['reconciliation'] === Import::DONE or $eImport['nCashflowWaiting'] === 0) {
+			return '';
+		}
+
+		$h = '<div class="util-block-important">';
+			$h .= \Asset::icon('fire', ['class' => 'util-block-icon']);
+			$h .= '<h3>'.s("Rapprochement bancaire").'</h3>';
+			$h .= '<p>';
+				if($eImport['reconciliation'] === Import::PROCESSING) {
+					$h .= s("Le rapprochement bancaire de votre dernier import est en cours de calcul.");
+					$h .= '<br/>'.p("Il reste {value} opération à vérifier.", "Il reste {value} opérations à vérifier.", $eImport['nCashflowWaiting']);
+				} else {
+					$h .= s("Le rapprochement bancaire de votre dernier import est en attente de calcul.");
+					$h .= '<br/>'.p("Il y a {value} opération à vérifier.", "Il y a {value} opérations à vérifier.", $eImport['nCashflowWaiting']);
+				}
+			$h .= '</p>';
+			$h .= '<p>';
+				if($eImport['reconciliation'] === Import::WAITING) {
+					$h .= '<a href="" class="btn btn-transparent">'.s("Actualiser").'</a>';
+				}
+			$h .= '</p>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
 
 	public static function getName(Cashflow $eCashflow): string {
 
 		return s("Transaction #{id}", ['id' => $eCashflow['id']]);
 
 	}
+
 
 	public static function p(string $property): \PropertyDescriber {
 

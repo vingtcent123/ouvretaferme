@@ -3,6 +3,14 @@ namespace bank;
 
 class CashflowLib extends CashflowCrud {
 
+	public static function countSuggestionWaitingByImport(Import $eImport): int {
+
+		return Cashflow::model()
+			->whereIsSuggestionCalculated(FALSE)
+			->whereImport($eImport)
+			->count();
+
+	}
 	public static function applySearch(\Search $search): CashflowModel {
 
 		if(($search->has('amountMin') and $search->has('amountMax'))) {

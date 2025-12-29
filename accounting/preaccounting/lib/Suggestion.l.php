@@ -186,7 +186,6 @@ Class SuggestionLib extends SuggestionCrud {
 
 			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
 
-				$foundInvoice = TRUE;
 				self::createSuggestion(
 					new Suggestion([
 						'invoice' => $eInvoice,
@@ -200,6 +199,8 @@ Class SuggestionLib extends SuggestionCrud {
 			}
 
 		}
+
+		\bank\Cashflow::model()->update($eCashflow, ['isSuggestionCalculated' => TRUE]);
 
 	}
 
