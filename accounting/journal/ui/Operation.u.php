@@ -1059,10 +1059,12 @@ class OperationUi {
 			$h .= '<div data-wrapper="amounts" class="operation-create-title">';
 				if($isFromCashflow === TRUE) {
 					$h .= '<h4 style="margin: auto 0;">'.s("Montants").'</h4>';
-					$h .= '<div data-index="'.$index.'">';
-						$h .= '<a onclick="Cashflow.recalculate('.$index.')" class="btn btn-outline-primary" title="'.s("Réinitialiser par rapport aux autres écritures").'">'.\Asset::icon('magic').'</a>';
+					$more = s("Seule la cohérence de l'ensemble des écritures (HT + TVA) est vérifiée par rapport à l'opération bancaire.");
+					$h .= '<div data-index="'.$index.'" class="flex-align-center">';
+						$h .= '<a class="btn btn-sm btn-outline-primary hide" data-index="'.$index.'" data-check-amount="0" onclick="Operation.toggleCheck('.$index.')" title="'.s("Les montants ne sont pas vérifiés. {value}", $more).'">'.\Asset::icon('calculator').\Asset::icon('x-lg').'<span class="operation-amount-check-legend"> '.s("Montants non vérifiés").'</span></a>';
+						$h .= '<a class="btn btn-sm btn-outline-primary" data-index="'.$index.'" data-check-amount="1" onclick="Operation.toggleCheck('.$index.')" title="'.s("La cohérence des montants est vérifiée et ajustée dès que possible").'">'.\Asset::icon('calculator').\Asset::icon('check-lg').'<span class="operation-amount-check-legend"> '.s("Montants vérifiés").'</span></a>';
+							$h .= '<a onclick="Cashflow.recalculate('.$index.')" class="btn btn-sm btn-outline-primary" title="'.s("Réinitialiser par rapport aux autres écritures").'">'.\Asset::icon('magic').'</a>';
 					$h .= '</div>';
-
 				}
 			$h .='</div>';
 

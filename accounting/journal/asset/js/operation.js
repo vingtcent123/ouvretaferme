@@ -204,31 +204,72 @@ document.delegateEventListener('change', '[data-date="journal-operation-create"]
 
 document.delegateEventListener('change', '[data-field="amountIncludingVAT"], [data-field="amount"]', function() {
 
-    const index = this.dataset.index;
+	const index = this.dataset.index;
+	const field = this.dataset.field;
 
-    Operation.lockAmount(this.dataset.field === 'amountIncludingVAT' ? 'amount' : 'amountIncludingVAT', index);
-    Operation.updateAmountValue(index, this.dataset.field);
+	if(Operation.checkAmount(index)) {
 
-    Operation.updateVatValue(index);
-    Operation.checkVatConsistency(index);
+		Operation.lockAmount(field === 'amountIncludingVAT' ? 'amount' : 'amountIncludingVAT', index);
+		Operation.updateAmountValue(index, this.dataset.field);
+
+		Operation.updateVatValue(index);
+
+	} else {
+
+		if(field === 'amount') {
+			Operation.updateAmountIncludingVat(index);
+		}
+
+	}
+
+	Operation.checkVatConsistency(index);
+
+	if(!Operation.checkAmount(index)) {
+		Cashflow.checkValidationValues();
+	}
+
 });
 
 document.delegateEventListener('change', '[data-field="vatRate"]', function() {
 
-    const index = this.dataset.index;
-    Operation.setIsWrittenAmount(this.dataset.field, index);
-    Operation.updateAmountValue(index, this.dataset.field);
-    Operation.updateVatValue(index);
-    Operation.checkVatConsistency(index);
+	const index = this.dataset.index;
+
+	if(Operation.checkAmount(index)) {
+
+		Operation.setIsWrittenAmount(this.dataset.field, index);
+		Operation.updateAmountValue(index, this.dataset.field);
+		Operation.updateVatValue(index);
+
+	}
+
+	Operation.checkVatConsistency(index);
+
+	if(!Operation.checkAmount(index)) {
+		Cashflow.checkValidationValues();
+	}
 
 });
 
 document.delegateEventListener('change', '[data-field="vatValue"]', function() {
 
-    const index = this.dataset.index;
+	const index = this.dataset.index;
+
+	if(Operation.checkAmount(index)) {
+
     Operation.setIsWrittenAmount(this.dataset.field, index);
     Operation.updateAmountValue(index, this.dataset.field);
-    Operation.checkVatConsistency(index);
+
+	} else {
+
+		Operation.updateAmountIncludingVat(index);
+
+	}
+
+	Operation.checkVatConsistency(index);
+
+	if(!Operation.checkAmount(index)) {
+		Cashflow.checkValidationValues();
+	}
 
 });
 
@@ -250,6 +291,36 @@ document.delegateEventListener('change', '[data-field="document"]', function(e) 
 
 
 class Operation {
+
+		static checkAmount(index) {
+
+			if(qs('[data-check-amount="0"][data-index="' + index + '"]')) {
+				return qs('[data-check-amount="0"][data-index="' + index + '"]').isHidden();
+			}
+
+			return true;
+
+		}
+
+		static toggleCheck(index) {
+
+			const isChecked = qs('[data-check-amount="0"][data-index="' + index + '"]').isHidden();
+
+			if(isChecked) {
+
+				qs('[data-check-amount="0"][data-index="' + index + '"]').removeHide();
+				qs('[data-check-amount="1"][data-index="' + index + '"]').hide();
+
+				Operation.unlockAll(index);
+
+			} else {
+
+				qs('[data-check-amount="0"][data-index="' + index + '"]').hide();
+				qs('[data-check-amount="1"][data-index="' + index + '"]').removeHide();
+
+			}
+
+		}
 
     static open(id) {
         qs('a[data-view-operation="' + id + '"]').click();
@@ -481,6 +552,20 @@ class Operation {
 
     }
 
+    static updateAmountIncludingVat(index) {
+
+        const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
+
+        const targetAmount = qs('[name="amount[' + index + ']"');
+        const amount = (CalculationField.getValue(targetAmount) || 0);
+
+        const targetVatValue = qs('[name="vatValue[' + index + ']"');
+        const vatValue = (CalculationField.getValue(targetVatValue) || 0);
+
+				CalculationField.setValue(targetAmountIncludingVAT, Math.round(amount + vatValue, 2));
+
+    }
+
     static updateVatValue(index) {
 
         Operation.recalculateVAT(index);
@@ -632,6 +717,12 @@ class Operation {
                 break;
 
         }
+    }
+
+    static unlockAll(index) {
+
+			['amount', 'amountIncludingVAT'].forEach((type) => Operation.unlockAmount(type, index, false));
+
     }
 
     static lockAmount(type, index) {

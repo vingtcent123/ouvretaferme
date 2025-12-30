@@ -124,10 +124,10 @@
 	justify-content: space-between;
 	align-content: center;
 }
-.operation-create-header {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
+[data-columns="3"] .operation-create-title div span.operation-amount-check-legend,
+[data-columns="4"] .operation-create-title div span.operation-amount-check-legend,
+[data-columns="5"] .operation-create-title div span.operation-amount-check-legend {
+	display: none;
 }
 
 [data-wrapper^="vatValue"] {
