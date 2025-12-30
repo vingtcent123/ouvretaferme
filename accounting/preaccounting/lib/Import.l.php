@@ -148,6 +148,10 @@ Class ImportLib {
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);
 		\selling\Sale::model()->whereInvoice($eInvoice)->update(['accountingHash' => $hash]);
 
+		if($eInvoice['cashflow']->notEmpty()) {
+			\bank\Cashflow::model()->update($eInvoice['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
+		}
+
 		\journal\Operation::model()->commit();
 
 	}
@@ -208,7 +212,9 @@ Class ImportLib {
 
 	}
 
-	private static function createOperations(\account\FinancialYear $eFinancialYear, array $fecData, \Collection $cAccount, \Collection $cPaymentMethod, \journal\Operation $eOperationBase): void {
+	private static function createOperations(
+		\account\FinancialYear $eFinancialYear, array $fecData, \Collection $cAccount, \Collection $cPaymentMethod, \journal\Operation $eOperationBase
+	): void {
 
 		$cOperation = new \Collection();
 		$eJournalCode = new \journal\JournalCode();
