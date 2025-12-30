@@ -1410,8 +1410,8 @@ class OperationUi {
 			$itemHtml .= '<div>';
 				if($eOperation['cOperationHash']->notEmpty()) {
 					$itemHtml .= encode($eOperation['description']).' - '.s("Opération de {amount} <small>HT</small> ({amountIncludingVat} <small>TTC</small>)", [
-						'amount' => \util\TextUi::money($amountExcludingVat),
-						'amountIncludingVat' => \util\TextUi::money($amountIncludingVat),
+						'amount' => \util\TextUi::money(abs($amountExcludingVat)),
+						'amountIncludingVat' => \util\TextUi::money(abs($amountIncludingVat)),
 					]);
 				} else {
 					$itemHtml .= encode($eOperation['description']).' - '.s("{type} de {amount}", [

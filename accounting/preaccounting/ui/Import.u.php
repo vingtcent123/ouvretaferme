@@ -288,7 +288,7 @@ Class ImportUi {
 
 		$attributesImport = [
 			'data-ajax-submit' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoiceCollection',
-			'data-confirm' => s("Confirmez-vous importer cette facture dans votre comptabilité ?"),
+			'data-confirm' => s("Confirmez-vous importer ces factures dans votre comptabilité ?"),
 			'post-financial-year' => $eFinancialYear['id'],
 		];
 		$menu .= '<a '.attrs($attributesImport).' class="batch-import batch-item" >'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
