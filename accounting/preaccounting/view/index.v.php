@@ -151,7 +151,9 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
 
 	$navigation = '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-	$t->mainTitle = '<h1>'.$navigation.s("Importer les factures").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
+	$maintitle = new \farm\FarmUi()->getAccountingYears($data->eFarm);
+	$maintitle .= '<h1>'.$navigation.s("Importer les factures").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
+	$t->mainTitle = $maintitle;
 
 		echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->search);
 

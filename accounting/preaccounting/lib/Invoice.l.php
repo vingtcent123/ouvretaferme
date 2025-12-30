@@ -48,14 +48,25 @@ Class InvoiceLib {
 
 			$eCashflow = $cCashflow->offsetGet($eInvoice['cashflow']['id']);
 
+			$updateFields = [];
+
 			if($eInvoice['priceIncludingVat'] === $eCashflow['amount']) {
 
-				\selling\Invoice::model()->update($eInvoice, ['readyForAccounting' => TRUE]);
+				$updateFields['readyForAccounting'] = TRUE;
 
 			} else if($eInvoice['accountingDifference'] === NULL) {
 
-				\selling\Invoice::model()->update($eInvoice, ['readyForAccounting' => TRUE, 'accountingDifference' => \selling\Invoice::AUTOMATIC]);
+				$updateFields['readyForAccounting'] = TRUE;
+				$updateFields['accountingDifference'] = \selling\Invoice::AUTOMATIC;
 
+			}
+
+			if($eCashflow['hash'] !== NULL) {
+				$updateFields['accountingHash'] = $eCashflow['hash'];
+			}
+
+			if(count($updateFields) > 0) {
+				\selling\Invoice::model()->update($eInvoice, $updateFields);
 			}
 		}
 

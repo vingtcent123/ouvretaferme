@@ -108,6 +108,19 @@ new Page(function($data) {
 
 		$data->selectedTab = in_array(GET('tab'), ['market', 'invoice', 'sales']) ? GET('tab') : 'market';
 
+		$search = new Search([
+			'from' => $data->eFarm['eFinancialYear']['startDate'],
+			'to' => $data->eFarm['eFinancialYear']['endDate'],
+		]);
+
+		$errors = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $search) +
+			\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $search) +
+			\preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $search);
+
+		if($errors > 0) {
+			throw new NotExpectedAction('Access to preaccounting import page not permitted (errors found)');
+		}
+
 		$data->search = new Search([
 			'from' => $data->eFarm['eFinancialYear']['startDate'],
 			'to' => $data->eFarm['eFinancialYear']['endDate'],
