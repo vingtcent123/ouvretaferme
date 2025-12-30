@@ -362,12 +362,23 @@ class PaymentLib extends PaymentCrud {
 
 	public static function cleanBySale(Sale $eSale): void {
 
-		$eSale->expects(['id', 'farm']);
+		$eSale->expects(['id', 'farm', 'cPayment']);
+
+		// On garde au moins 1 moyen de paiement
+		$methodIds = [];
+		if(
+			$eSale['cPayment']->count() === 1 and
+			$eSale['cPayment']->getColumnCollection('method')->notEmpty() and
+			count($eSale['cPayment']->getColumnCollection('method')->getIds()) > 0
+		) {
+			$methodIds = 	$eSale['cPayment']->getColumnCollection('method')->getIds();
+		}
 
 		Payment::model()
 			->whereSale($eSale)
 			->whereFarm($eSale['farm'])
 			->where('amountIncludingVat IS NULL OR amountIncludingVat = 0')
+			->whereMethod('NOT IN', $methodIds, if: count($methodIds) > 0)
 			->delete();
 
 	}
