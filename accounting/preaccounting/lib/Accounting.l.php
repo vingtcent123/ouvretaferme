@@ -30,6 +30,12 @@ Class AccountingLib {
 			return $entry1[self::FEC_COLUMN_DOCUMENT] < $entry2[self::FEC_COLUMN_DOCUMENT] ? -1 : 1;
 		});
 
+		foreach($contentFec as &$lineFec) {
+			foreach([self::FEC_COLUMN_DEBIT, self::FEC_COLUMN_CREDIT, self::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
+				$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
+			}
+		}
+
 		return array_merge([\account\FecLib::getHeader()], $contentFec);
 
 	}
@@ -298,10 +304,7 @@ Class AccountingLib {
 					->delegateCollection('invoice'),
 			])
 			->whereAccountingHash(NULL, if: $forImport === TRUE)
-			->or(
-				fn() => $this->whereReadyForAccounting(TRUE, if: $forImport === TRUE),
-				fn() => $this->whereAccountingDifference('!=', NULL, if: $forImport === TRUE)
-			)
+			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
 			->getCollection();
