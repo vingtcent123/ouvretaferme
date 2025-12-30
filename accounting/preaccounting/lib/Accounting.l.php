@@ -254,6 +254,7 @@ Class AccountingLib {
 		return \selling\Invoice::model()
 			->whereAccountingHash(NULL)
 			->whereReadyForAccounting(TRUE)
+			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
 			->count();
 
@@ -277,7 +278,7 @@ Class AccountingLib {
 		return \selling\Invoice::model()
 			->select([
 				'id', 'date', 'name',
-				'priceExcludingVat', 'vat',
+				'priceExcludingVat', 'priceIncludingVat', 'vat',
 				'customer' => [
 					'id', 'name',
 					'thirdParty' => \account\ThirdParty::model()
@@ -285,7 +286,7 @@ Class AccountingLib {
 						->delegateElement('customer')
 
 				],
-				'cashflow',
+				'cashflow', 'accountingDifference',
 				'paymentMethod' => ['name'],
 				'cSale' => \selling\Sale::model()
 					->select([
@@ -297,7 +298,11 @@ Class AccountingLib {
 					->delegateCollection('invoice'),
 			])
 			->whereAccountingHash(NULL, if: $forImport === TRUE)
-			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
+			->or(
+				fn() => $this->whereReadyForAccounting(TRUE, if: $forImport === TRUE),
+				fn() => $this->whereAccountingDifference('!=', NULL, if: $forImport === TRUE)
+			)
+			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
 			->getCollection();
 
@@ -439,6 +444,41 @@ Class AccountingLib {
 				);
 
 				self::mergeFecLineIntoItemData($items, $fecDataBank);
+
+				// S'il y a une différence de montant et qu'il faut la régulariser automatiquement
+				$difference = round($eInvoice['priceIncludingVat'] - $eInvoice['cashflow']['amount'], 2);
+
+				if($difference !== 0.0 and $eInvoice['accountingDifference'] === \selling\Invoice::AUTOMATIC) {
+
+					if($difference > 0) { // Arrondi défavorable
+
+						$accountLabel = \account\AccountSetting::CHARGES_OTHER_CLASS;
+						$type = \journal\Operation::DEBIT;
+
+					} else if($difference < 0) { // Arrondi favorable
+
+						$accountLabel = \account\AccountSetting::PRODUCT_OTHER_CLASS;
+						$type = \journal\Operation::CREDIT;
+
+					}
+
+					$eAccountRegul = $cAccount->find(fn($e) => $e['class'] === $accountLabel)->first();
+					$fecDataRegul = self::getFecLine(
+						eAccount    : $eAccountRegul,
+						date        : $eInvoice['date'],
+						eCode       : $eAccountBank['journalCode'],
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : abs($difference),
+						type        : $type,
+						payment     : $payment,
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+					);
+
+					self::mergeFecLineIntoItemData($items, $fecDataRegul);
+
+				}
 
 			}
 
@@ -650,8 +690,8 @@ Class AccountingLib {
 			$document,
 			date('Ymd', strtotime($documentDate)),
 			'',
-			$type === \journal\Operation::DEBIT ? abs($amount) : 0,
-			$type === \journal\Operation::CREDIT ? abs($amount) : 0,
+			$type === \journal\Operation::DEBIT ? abs($amount) : 0.0,
+			$type === \journal\Operation::CREDIT ? abs($amount) : 0.0,
 			'',
 			'',
 			'',

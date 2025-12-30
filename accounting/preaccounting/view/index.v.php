@@ -153,16 +153,8 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$navigation = '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 	$t->mainTitle = '<h1>'.$navigation.s("Importer les factures").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
 
+		echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->search);
 
-	if($data->nInvoice === 0) {
-
-		echo '<div class="util-info">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite">']).'</div>';
-
-	} else {
-
-		echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->search);
-
-	}
 });
 
 new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $t) {

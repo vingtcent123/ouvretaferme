@@ -25,6 +25,9 @@ abstract class InvoiceElement extends \Element {
 	const FAIL = 'fail';
 	const SUCCESS = 'success';
 
+	const AUTOMATIC = 'automatic';
+	const NOTHING = 'nothing';
+
 	public static function getSelection(): array {
 		return Invoice::model()->getProperties();
 	}
@@ -89,13 +92,14 @@ class InvoiceModel extends \ModuleModel {
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'accountingDifference' => ['enum', [\selling\Invoice::AUTOMATIC, \selling\Invoice::NOTHING], 'null' => TRUE, 'cast' => 'enum'],
 			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'readyForAccounting', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -160,6 +164,9 @@ class InvoiceModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'generation' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'accountingDifference' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -316,6 +323,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereAccountingHash(...$data): InvoiceModel {
 		return $this->where('accountingHash', ...$data);
+	}
+
+	public function whereAccountingDifference(...$data): InvoiceModel {
+		return $this->where('accountingDifference', ...$data);
 	}
 
 	public function whereReadyForAccounting(...$data): InvoiceModel {

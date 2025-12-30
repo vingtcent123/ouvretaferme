@@ -131,6 +131,7 @@ Invoice:
   closedBy: ?user\User
   cashflow: ?bank\Cashflow
   accountingHash: ?textFixed(20, 20) @charset(ascii)
+  accountingDifference: ?enum(AUTOMATIC, NOTHING)
   readyForAccounting: ?bool = FALSE
   emailedAt: ?datetime
   createdAt: datetime = SPECIAL(now)

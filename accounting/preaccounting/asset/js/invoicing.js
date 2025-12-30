@@ -1,5 +1,11 @@
 class Invoicing {
 
+	static submit(target) {
+
+		target.form.dispatchEvent(new CustomEvent("submit"));
+
+	}
+
 	static updateSelection(targetTbody) {
 		const checkbox = targetTbody.firstParent('tbody').qs('input[type="checkbox"]');
 

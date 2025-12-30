@@ -112,7 +112,8 @@ new Page(function($data) {
 			'from' => $data->eFarm['eFinancialYear']['startDate'],
 			'to' => $data->eFarm['eFinancialYear']['endDate'],
 			'type' => GET('type'),
-			'reconciliated' => GET('reconciliated', '?int')
+			'reconciliated' => GET('reconciliated', '?int'),
+			'accountingDifference' => GET('accountingDifference', 'bool'),
 		]);
 
 		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);

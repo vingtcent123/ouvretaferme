@@ -9,9 +9,9 @@ Class ImportUi {
 		\Asset::js('preaccounting', 'invoicing.js');
 	}
 
-	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice, \Search $search): string {
+	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice, int $nInvoice, \Search $search): string {
 
-		if($cInvoice->empty()) {
+		if($cInvoice->empty() and $search->empty(['id'])) {
 			return '<div class="util-info">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
 		}
 
@@ -34,6 +34,10 @@ Class ImportUi {
 					1 => s("Écritures rattachées uniquement"),
 					0 => s("Écritures non rattachées"),
 				], $search->get('reconciliated', 'int', 0), ['mandatory' => TRUE]);
+				$h .= $form->select('accountingDifference', [
+					0 => s("Toutes les factures"),
+					1 => s("Factures avec un écart de paiement"),
+				], $search->get('accountingDifference', 'int'), ['mandatory' => TRUE]);
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
 			$h .= '</div>';
@@ -42,9 +46,25 @@ Class ImportUi {
 
 		$h .= '</div>';
 
+		if($nInvoice === 0) {
+
+			if($search->empty()) {
+
+				$h .= '<div class="util-info">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite">']).'</div>';
+
+			} else {
+
+				$h .= '<div class="util-info">'.s("Aucune facture ne correspond à vos critères de recherche.").'</div>';
+
+			}
+
+			return $h;
+
+		}
+
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= '<table class="import-table" data-batch="#batch-invoice">';
+			$h .= '<table class="invoicing-import-table" data-batch="#batch-invoice">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
@@ -58,12 +78,11 @@ Class ImportUi {
 						$h .= '<th rowspan="2">'.s("Référence").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Montant").'</th>';
 						$h .= '<th colspan="4" class="text-center">'.s("Écritures").'</th>';
-						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Montant").'</th>';
-						$h .= '<th class="text-center">'.s("D/C").'</th>';
+						$h .= '<th class="text-center td-min-content">'.s("D/C").'</th>';
 						$h .= '<th>'.s("Paiement").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -84,7 +103,7 @@ Class ImportUi {
 
 					$h .= '<tbody>';
 						$h .= '<tr>';
-							$h .= '<td rowspan="'.$rowspan.'" class="td-checkbox td-vertical-align-top">';
+							$h .= '<td rowspan="'.($rowspan + 1).'" class="td-checkbox td-vertical-align-top">';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" batch-type="invoice" oninput="Invoicing.changeSelection(this)" data-batch-amount-excluding="'.($eInvoice['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eInvoice['priceIncludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</td>';
 							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eInvoice['date']).'</td>';
@@ -96,37 +115,67 @@ Class ImportUi {
 									$h .= '</div>';
 								}
 							$h .= '</td>';
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class=" td-vertical-align-top"><a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eInvoice['document']).'&customer='.encode($eInvoice['customer']['name']).'">'.encode($eInvoice['name']).'</a></td>';
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top">'.\selling\SaleUi::getTotal($eInvoice).'</td>';
-							$h .= '<td '.$onclick.' class="text-center invoicing-import-td-operation">';
-							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
-								$h .= $this->emptyData();
-							} else {
-								$eAccount = new \account\Account(['class' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
-								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-									$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
-								$h .= '</div>';
-								$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
-							}
+
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class=" td-vertical-align-top">';
+								$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eInvoice['document']).'&customer='.encode($eInvoice['customer']['name']).'">';
+									$h .= encode($eInvoice['name']);
+								$h .= '</a>';
 							$h .= '</td>';
-							$h .= '<td '.$onclick.' class="text-end highlight-stick-right invoicing-import-td-operation">'.\util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]).'</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation">';
-								if($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] !== 0.0) {
-									$h .= s("D");
-								} else {
-									$h .= s("C");
+							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top invoicing-import-td-amount">';
+
+								$h .= \selling\SaleUi::getTotal($eInvoice);
+
+								if($eInvoice['cashflow']->notEmpty()) {
+
+									$h .= '<br />';
+
+									if($eInvoice['cashflow']['amount'] !== $eInvoice['priceIncludingVat']) {
+
+										$class = 'color-danger';
+
+										if($eInvoice['taxes'] === \selling\Invoice::EXCLUDING) {
+
+											$eInvoice['taxes'] = \selling\Invoice::INCLUDING;
+											$h .= \selling\SaleUi::getTotal($eInvoice);
+											$h .= '<br />';
+
+										}
+
+									} else {
+										$class = '';
+									}
+
+									$h .= '<span class="'.$class.'">'.\util\TextUi::money($eInvoice['cashflow']['amount']).'</span>';
+									$h .= '<a title="'.s("Rapprochée").'" href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</a>';
+
 								}
-							$h .= '</td>';
-							$h .= '<td '.$onclick.' class="invoicing-import-td-operation">';
-							if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
-								$h .= $this->emptyData();
-							} else {
-								$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
-							}
+
 							$h .= '</td>';
 
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top td-min-content">';
+							$h .= $this->operations([$operation], $onclick, withTr: FALSE);
 
+						$h .= '</tr>';
+
+						$h .= $this->operations($operations, $onclick, TRUE);
+
+						$h .= '<tr>';
+							$h .= '<td colspan="3" class="text-end">';
+								if($eInvoice->hasAccountingDifference()) {
+									$h .= '<div class="mb-1">';
+										$difference = abs($eInvoice['priceIncludingVat'] - $eInvoice['cashflow']['amount']);
+										$form = new \util\FormUi();
+										$h .= $form->openAjax(\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:updateInvoiceAccountingDifference', ['id' => 'difference-'.$eInvoice['id'], 'name' => 'difference-'.$eInvoice['id']]);
+											$h .= $form->hidden('id', $eInvoice['id']);
+											$h .= '<fieldset>';
+												$h .= '<legend>';
+													$h .= s("Traitement comptable de l'écart de {value}", \util\TextUi::money($difference));
+												$h .= '</legend>';
+												$h .= $form->select('accountingDifference', \selling\InvoiceUi::p('accountingDifference')->values, $eInvoice['accountingDifference'], attributes: ['onchange' => 'Invoicing.submit(this);', 'mandatory' => TRUE]);
+											$h .= '</fieldset>';
+										$h .= $form->close();
+									$h .= '</div>';
+								}
+								$h .= '<div class="invoicing-import-td-action">';
 									if($eInvoice->acceptAccountingImport()) {
 										$attributes = [
 											'data-confirm' => s("Confirmez-vous importer cette facture dans votre comptabilité ?"),
@@ -134,7 +183,7 @@ Class ImportUi {
 											'post-id' => $eInvoice['id'],
 											'post-financial-year' => $eFinancialYear['id'],
 										];
-										$h .= '<a '.attrs($attributes).' class="btn btn-sm btn-secondary mr-1">';
+										$h .= '<a '.attrs($attributes).' class="btn btn-sm btn-secondary">';
 											$h .= \Asset::icon('hand-thumbs-up').' <span class="hide-sm-down">'.s("Importer").'</span>';
 										$h .= '</a>';
 									}
@@ -149,12 +198,17 @@ Class ImportUi {
 											$h .= \Asset::icon('hand-thumbs-down').' <span class="hide-sm-down">'.s("Ignorer").'</span>';
 										$h .= '</a>';
 									}
+								$h .= '</div>';
 
 							$h .= '</td>';
 
-						$h .= '</tr>';
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top"></td>';
+							$h .= '<td></td>';
+							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation font-sm"></td>';
+							$h .= '<td></td>';
+							$h .= '<td></td>';
 
-						$h .= $this->operations($operations, $onclick);
+						$h .= '</tr>';
 
 					$h .= '</tbody>';
 				}
@@ -167,15 +221,17 @@ Class ImportUi {
 
 	}
 
-	public function operations(array $operations, string $onclick): string {
+	public function operations(array $operations, string $onclick, bool $withTr): string {
 
 		$h = '';
 
 		foreach($operations as $operation) {
 
-			$h .= '<tr '.$onclick.'>';
+			if($withTr) {
+				$h .= '<tr '.$onclick.'>';
+			}
 
-				$h .= '<td class="text-center invoicing-import-td-operation">';
+				$h .= '<td class="text-center invoicing-import-td-operation font-sm" '.($withTr ? $onclick : '').'>';
 					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 						$h .= $this->emptyData();
 					} else {
@@ -186,17 +242,17 @@ Class ImportUi {
 						$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 					}
 				$h .= '</td>';
-				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation">';
+				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation font-sm" '.($withTr ? $onclick : '').'>';
 					$h .= \util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
 				$h .= '</td>';
-				$h .= '<td class="text-center invoicing-import-td-operation">';
+				$h .= '<td class="text-center invoicing-import-td-operation" '.($withTr ? $onclick : '').'>';
 					if($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] !== 0.0) {
 						$h .= s("D");
 					} else {
 						$h .= s("C");
 					}
 				$h .= '</td>';
-				$h .= '<td class="invoicing-import-td-operation">';
+				$h .= '<td class="invoicing-import-td-operation font-sm" '.($withTr ? $onclick : '').'>';
 					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 						$h .= $this->emptyData();
 					} else {
@@ -204,7 +260,9 @@ Class ImportUi {
 					}
 				$h .= '</td>';
 
-			$h .= '</tr>';
+			if($withTr) {
+				$h .= '</tr>';
+			}
 
 		}
 

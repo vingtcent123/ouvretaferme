@@ -943,6 +943,7 @@ class InvoiceUi {
 			'paymentMethod' => s("Moyen de paiement"),
 			'paymentStatus' => s("État du paiement"),
 			'comment' => s("Commentaire interne"),
+			'accountingDifference' => s("Comment souhaitez-vous gérer la différence entre le montant du paiement et celui de la facture ?"),
 		]);
 
 		switch($property) {
@@ -966,6 +967,14 @@ class InvoiceUi {
 					Invoice::CANCELED => s("Annulé"),
 					Invoice::DELIVERED => s("Envoyé"),
 				];
+				break;
+
+			case 'accountingDifference' :
+				$d->values = [
+					Invoice::AUTOMATIC => s("Écriture de régularisation créée automatiquement"),
+					Invoice::NOTHING => s("Ne créer aucune écriture"),
+				];
+				$d->attributes['mandatory'] = TRUE;
 				break;
 
 			case 'date' :

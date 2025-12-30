@@ -1,8 +1,28 @@
 <?php
+new \selling\InvoicePage()
+	->write('updateInvoiceAccountingDifference', function($data) {
+
+		if($data->e['cashflow']->empty()) {
+			throw new NotExpectedAction('Invoice does not accept accountingDifference update.');
+		}
+
+		$data->e['cashflow'] = \bank\CashflowLib::getById($data->e['cashflow']['id']);
+		$data->e->validate('acceptUpdateAccountingDifference');
+
+		\preaccounting\InvoiceLib::updateAccountingDifference($data->e, POST('accountingDifference'));
+
+		throw new ReloadAction();
+
+	});
+
 new Page()
 ->post('doImportInvoice', function($data) {
 
 	$eInvoice = \preaccounting\ImportLib::getInvoiceById(POST('id', 'int'));
+
+	if($eInvoice['cashflow']->notEmpty()) {
+		$eInvoice['cashflow'] = \bank\CashflowLib::getById($eInvoice['cashflow']['id']);
+	}
 
 	$eInvoice->validate('acceptAccountingImport');
 

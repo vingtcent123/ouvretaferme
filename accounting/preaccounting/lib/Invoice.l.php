@@ -3,15 +3,61 @@ namespace preaccounting;
 
 Class InvoiceLib {
 
+	public static function updateAccountingDifference(\selling\Invoice $eInvoice, string $accountingDifference): void {
+
+		$update = ['accountingDifference' => $accountingDifference];
+
+		$fw = new \FailWatch();
+
+		$eInvoice->build(['accountingDifference'], $update);
+
+		$fw->validate();
+
+		if($eInvoice->isReadyForAccounting()) {
+			$update['readyForAccounting'] = TRUE;
+		}
+
+		\selling\Invoice::model()->update($eInvoice, $update);
+
+	}
+
 	public static function setReadyForAccounting(\farm\Farm $eFarm): void {
 
 		\selling\Invoice::model()
 			->whereFarm($eFarm)
 			->whereStatus('!=', \selling\Invoice::DRAFT)
 			->whereAccountingHash(NULL)
+			->whereCashflow('=', NULL)
 			->wherePaymentMethod('!=', NULL)
 			->whereReadyForAccounting(FALSE)
 			->update(['readyForAccounting' => TRUE]);
+
+		$cInvoice = \selling\Invoice::model()
+			->select('id', 'cashflow', 'priceIncludingVat', 'accountingDifference')
+			->whereFarm($eFarm)
+			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->whereAccountingHash(NULL)
+			->whereCashflow('!=', NULL)
+			->wherePaymentMethod('!=', NULL)
+			->whereReadyForAccounting(FALSE)
+			->getCollection();
+
+		$cCashflow = \bank\CashflowLib::getByIds($cInvoice->getColumnCollection('cashflow')->getIds(), index: 'id');
+
+		foreach($cInvoice as $eInvoice) {
+
+			$eCashflow = $cCashflow->offsetGet($eInvoice['cashflow']['id']);
+
+			if($eInvoice['priceIncludingVat'] === $eCashflow['amount']) {
+
+				\selling\Invoice::model()->update($eInvoice, ['readyForAccounting' => TRUE]);
+
+			} else if($eInvoice['accountingDifference'] === NULL) {
+
+				\selling\Invoice::model()->update($eInvoice, ['readyForAccounting' => TRUE, 'accountingDifference' => \selling\Invoice::AUTOMATIC]);
+
+			}
+		}
 
 	}
 

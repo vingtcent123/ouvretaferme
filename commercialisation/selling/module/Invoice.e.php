@@ -169,8 +169,59 @@ class Invoice extends InvoiceElement {
 		return $this['accountingHash'] === NULL;
 	}
 
+	public function hasAccountingDifference(): bool {
+
+		$this->expects(['priceIncludingVat', 'cashflow']);
+
+		if($this['cashflow']->notEmpty()) {
+			$this['cashflow']->expects(['amount']);
+		}
+
+		return ($this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['priceIncludingVat']);
+
+	}
+
+
+	public function isReadyForAccounting(): bool {
+
+		$this->expects(['status', 'accountingHash', 'paymentMethod', 'accountingDifference', 'priceIncludingVat']);
+
+		if($this['cashflow']->notEmpty()) {
+			$this['cashflow']->expects(['amount']);
+		}
+
+		return ($this['status'] !== Invoice::DRAFT and
+			$this['accountingHash'] === NULL and
+			$this['paymentMethod']->notEmpty() and
+			(
+				$this['cashflow']->empty() or
+				$this['cashflow']['amount'] === $this['priceIncludingVat'] or
+				$this['accountingDifference'] !== NULL
+			)
+		);
+
+	}
+
+	public function acceptUpdateAccountingDifference(): bool {
+
+		$this->expects(['accountingHash', 'cashflow', 'priceIncludingVat']);
+
+		return ($this['accountingHash'] === NULL and $this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['priceIncludingVat']);
+
+	}
+
 	public function acceptAccountingImport(): bool {
-		return $this['readyForAccounting'] === TRUE;
+
+		$this->expects(['readyForAccounting', 'priceIncludingVat', 'cashflow']);
+
+		if($this['cashflow']->notEmpty()) {
+			$this['cashflow']->expects(['amount']);
+		}
+
+		return (
+			$this['readyForAccounting'] === TRUE and
+			($this['cashflow']->empty() or ($this['cashflow']['amount'] === $this['priceIncludingVat']) or $this['accountingDifference'] !== NULL)
+		);
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {

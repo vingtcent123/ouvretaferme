@@ -29,8 +29,11 @@
 	padding-top: 0;
 	padding-bottom: 0;
 }
-.import-table tbody tr:first-child td {
+.import-table tbody tr td {
 	padding-bottom: 0;
+}
+.import-table tbody tr:last-child td {
+	padding-bottom: 0.5rem;
 }
 .import-table tbody tr:nth-child(2) td {
 	position: relative;

@@ -31,6 +31,15 @@
 .invoicing-import-table tbody td.invoicing-import-td-operation {
 	white-space: nowrap;
 }
+.invoicing-import-table tbody td div.invoicing-import-td-action {
+	display: flex;
+	justify-content: end;
+	gap: 0.5rem;
+	align-items: center;
+}
+.invoicing-import-table tbody td.invoicing-import-td-amount a.util-badge {
+	margin-left: 0.15rem !important;
+}
 .invoicing-import-table tbody tr:first-child td.invoicing-import-td-operation {
 	padding-bottom: 0;
 }
