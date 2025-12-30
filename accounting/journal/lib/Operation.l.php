@@ -1220,10 +1220,24 @@ class OperationLib extends OperationCrud {
 					break;
 
 				case JournalSetting::HASH_LETTER_IMPORT_INVOICE:
-					\selling\Sale::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
-					\selling\Invoice::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
-					break;
 
+					\selling\Sale::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
+
+					$eInvoice = \selling\Invoice::model()->select(\selling\Invoice::getSelection())->whereAccountingHash($e['hash'])->get();
+
+					if($eInvoice->notEmpty()) {
+
+						$eInvoice['cashflow'] = new \bank\Cashflow();
+						$eInvoice['accountingHash'] = NULL;
+						$eInvoice['readyForAccounting'] = FALSE;
+						$eInvoice['accountingDifference'] = NULL;
+
+						\selling\Invoice::model()->whereAccountingHash($e['hash'])->update($eInvoice->extracts(['cashflow', 'accountingHash', 'readyForAccounting']));
+
+						\preaccounting\InvoiceLib::recalculateReadyForAccounting($eInvoice, new \bank\Cashflow());
+					}
+
+					break;
 			}
 
 		}
@@ -1517,6 +1531,17 @@ class OperationLib extends OperationCrud {
 
 		Operation::model()->beginTransaction();
 
+		// Mise à jour du cashflow
+		$eCashflow['hash'] = NULL;
+		$eCashflow['status'] = \bank\Cashflow::WAITING;
+		\bank\Cashflow::model()
+			->update($eCashflow, $eCashflow->extracts(['hash', 'status']));
+
+		if($eCashflow['invoice']->notEmpty()) {
+			$eInvoice = \selling\InvoiceLib::getById($eCashflow['invoice']['id']);
+			\preaccounting\InvoiceLib::recalculateReadyForAccounting($eInvoice, $eCashflow);
+		}
+
 		$cOperationCashflow = OperationCashflow::model()
 			->select(['operation' => ['hash', 'asset']])
 			->whereCashflow($eCashflow)
@@ -1552,6 +1577,11 @@ class OperationLib extends OperationCrud {
 				\asset\AssetLib::deleteByIds($cAsset->getIds());
 			}
 
+			// Suppression des liens vers les factures
+			\selling\Invoice::model()
+				->whereAccountingHash($eCashflow['hash'])
+				->update(['accountingHash' => NULL]);
+
 			// On ne peut pas supprimer d'écritures qui ont été lettrées
 			$hasBeenLettered = (Lettering::model()
 				->or(
@@ -1561,14 +1591,16 @@ class OperationLib extends OperationCrud {
 				->count() > 0);
 
 			if($hasBeenLettered) {
-				\Fail::log('Operation::cashflow.letteredUndeletable');
-				return;
-			}
 
-			// Suppression des écritures
-			Operation::model()
-				->whereId('IN', $cOperation->getIds())
-				->delete();
+				\Fail::log('Operation::cashflow.letteredUndeletable');
+
+			} else {
+
+				// Suppression des écritures
+				Operation::model()
+					->whereId('IN', $cOperation->getIds())
+					->delete();
+			}
 
 		}
 

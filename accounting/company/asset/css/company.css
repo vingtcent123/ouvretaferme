@@ -10,7 +10,8 @@ a.inactive:hover,
 a.inactive,
 .btn.inactive {
 	cursor: not-allowed;
-	opacity: 0.4;
+	opacity: 1;
+  	color: var(--background-body) !important;
 }
 
 span.undefined {

@@ -598,6 +598,19 @@ class JournalUi {
 
 													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
 
+												} else if($eOperation['cashflow']->notEmpty()) {
+
+													$attributes = [
+														'class' => 'dropdown-item inactive',
+														'onclick' => 'void(0);',
+													];
+
+													$more = s("Cette écriture est rattachée à une opération bancaire. Passez par l'opération bancaire.");
+
+													$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
+
+													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
+
 												} else if($eOperation['hash'] !== NULL and $eOperation->isFromImport()) {
 
 													$confirmText = match($eOperation->importType()) {

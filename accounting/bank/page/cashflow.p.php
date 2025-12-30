@@ -217,9 +217,6 @@ new \bank\CashflowPage(
 
 	\journal\OperationLib::unlinkCashflow($data->eCashflow, $action);
 
-	$data->eCashflow['status'] = \bank\CashflowElement::WAITING;
-	\bank\CashflowLib::update($data->eCashflow, ['status']);
-
 	throw new ReloadAction('bank', 'Cashflow::deallocated');
 
 })

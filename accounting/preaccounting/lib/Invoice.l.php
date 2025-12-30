@@ -21,6 +21,51 @@ Class InvoiceLib {
 
 	}
 
+	public static function recalculateReadyForAccounting(\selling\Invoice $eInvoice, \bank\Cashflow $eCashflow): void {
+
+		if($eCashflow->empty()) {
+
+			\selling\Invoice::model()
+				->whereFarm($eInvoice['farm'])
+				->whereStatus('!=', \selling\Invoice::DRAFT)
+				->whereAccountingHash(NULL)
+				->whereCashflow('=', NULL)
+				->wherePaymentMethod('!=', NULL)
+				->whereReadyForAccounting(FALSE)
+				->whereId($eInvoice['id'])
+				->update(['readyForAccounting' => TRUE]);
+
+		} else {
+
+			$updateFields = self::getReadyForAccountingFields($eInvoice, $eCashflow, force: TRUE);
+
+			if(count($updateFields) > 0) {
+				\selling\Invoice::model()->update($eInvoice, $updateFields);
+			}
+		}
+
+	}
+
+	private static function getReadyForAccountingFields(\selling\Invoice $eInvoice, \bank\Cashflow $eCashflow, bool $force = FALSE): array {
+
+		$updateFields = [];
+
+		if($eInvoice['priceIncludingVat'] === $eCashflow['amount']) {
+
+			$updateFields['readyForAccounting'] = TRUE;
+
+		} else if($eInvoice['accountingDifference'] === NULL or $force === TRUE) {
+
+			$updateFields['readyForAccounting'] = TRUE;
+			$updateFields['accountingDifference'] = \selling\Invoice::AUTOMATIC;
+
+		}
+
+		$updateFields['accountingHash'] = $eCashflow['hash'];
+
+		return $updateFields;
+	}
+
 	public static function setReadyForAccounting(\farm\Farm $eFarm): void {
 
 		\selling\Invoice::model()
@@ -48,22 +93,7 @@ Class InvoiceLib {
 
 			$eCashflow = $cCashflow->offsetGet($eInvoice['cashflow']['id']);
 
-			$updateFields = [];
-
-			if($eInvoice['priceIncludingVat'] === $eCashflow['amount']) {
-
-				$updateFields['readyForAccounting'] = TRUE;
-
-			} else if($eInvoice['accountingDifference'] === NULL) {
-
-				$updateFields['readyForAccounting'] = TRUE;
-				$updateFields['accountingDifference'] = \selling\Invoice::AUTOMATIC;
-
-			}
-
-			if($eCashflow['hash'] !== NULL) {
-				$updateFields['accountingHash'] = $eCashflow['hash'];
-			}
+			$updateFields = self::getReadyForAccountingFields($eInvoice, $eCashflow);
 
 			if(count($updateFields) > 0) {
 				\selling\Invoice::model()->update($eInvoice, $updateFields);

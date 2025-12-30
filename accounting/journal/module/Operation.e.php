@@ -16,7 +16,10 @@ class Operation extends OperationElement {
 			'paymentMethod' => \payment\Method::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
 			'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
-			'createdBy' => ['id', 'firstName', 'lastName']
+			'createdBy' => ['id', 'firstName', 'lastName'],
+			'cashflow' => \bank\Cashflow::model()
+				->select(\bank\Cashflow::getSelection())
+				->delegateElement('hash', propertyParent: 'hash')
 		] + ($withLinks ? ['cOperationLinked' => new OperationModel()
 				->select('id', 'operation')
 				->delegateCollection('operation'),
