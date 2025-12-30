@@ -1387,16 +1387,17 @@ class OperationLib extends OperationCrud {
 
 	public static function attachOperationsToCashflow(\bank\Cashflow $eCashflow, \Collection $cOperation, \account\ThirdParty $eThirdParty): void {
 
-		$properties = ['updatedAt', 'paymentDate'];
-		$eOperation = new Operation([
+		$hash = $cOperation->first()['hash'];
+		$update = [
 			'updatedAt' => Operation::model()->now(),
 			'paymentDate' => $eCashflow['date'],
-		]);
+			'hash' => $hash
+		];
 
 		self::addOpenFinancialYearCondition()
-			->select($properties)
+			->select(array_keys($update))
 			->whereId('IN', $cOperation->getIds())
-			->update($eOperation);
+			->update($update);
 
 		// Create OperationCashflow entries
 		$cOperationCashflow = new \Collection();
@@ -1415,7 +1416,7 @@ class OperationLib extends OperationCrud {
 			'thirdParty' => $eThirdParty,
 			'paymentMethod' => $eOperation['paymentMethod'],
 			'financialYear' => $eOperation['financialYear'],
-			'hash' => $eOperation['hash'],
+			'hash' => $hash,
 			'journalCode' => $eOperation['journalCode'],
 			'accountLabel' => \account\AccountLabelLib::pad($eCashflow['account']['label'] ?? \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL),
 		]));
@@ -1440,7 +1441,7 @@ class OperationLib extends OperationCrud {
 			'accountLabel' => $label,
 			'description' => $eCashflow['memo'],
 			'document' => $document,
-			'documentDate' => $eOperation['documentDate'] ,
+			'documentDate' => $eOperation['documentDate'] ?? $eCashflow['date'],
 			'thirdParty' => $eThirdParty['id'] ?? NULL,
 			'type' => match($eCashflow['type']) {
 				\bank\Cashflow::CREDIT => Operation::DEBIT,
@@ -1563,11 +1564,9 @@ class OperationLib extends OperationCrud {
 			->delete();
 
 		// Dissociation cashflow <-> operation
-		if($cOperation->notEmpty()) {
-			OperationCashflow::model()
-				->whereOperation('IN', $cOperation->getIds())
-				->delete();
-		}
+		OperationCashflow::model()
+			->whereOperation('IN', $cOperation->getIds(), if: count($cOperation->getIds()) > 0)
+			->delete();
 
 		if($action === 'delete') {
 
@@ -1600,6 +1599,24 @@ class OperationLib extends OperationCrud {
 				Operation::model()
 					->whereId('IN', $cOperation->getIds())
 					->delete();
+			}
+
+		} else {
+
+			// Réinitialiser les hash des opérations
+			foreach($cOperation as $eOperation) {
+
+				if($eOperation['operation']->notEmpty()) {
+					continue; // Sera traitée avec le parent
+				}
+
+				$hash = self::generateHash().JournalSetting::HASH_LETTER_WRITE;
+
+				// On affecte un nouveau hash aux opérations et leurs copines.
+				Operation::model()
+					->where('id = '.$eOperation['id'].' OR operation = '.$eOperation['id'])
+					->update(['hash' => $hash]);
+
 			}
 
 		}

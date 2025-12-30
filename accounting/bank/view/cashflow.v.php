@@ -93,7 +93,9 @@ new JsonView('calculateAttach', function($data, AjaxTemplate $t) {
 		foreach($data->cOperationSelected as $eOperation) {
 			$amount += $eOperation['type'] === \journal\Operation::DEBIT ? -1 * $eOperation['amount'] : $eOperation['amount'];
 			foreach($eOperation['cOperationHash'] as $eOperationHash) {
-				$amount += $eOperationHash['type'] === \journal\Operation::DEBIT ?  -1 * $eOperationHash['amount'] : $eOperationHash['amount'];
+				if($eOperationHash->is($eOperation) === FALSE) {
+					$amount += $eOperationHash['type'] === \journal\Operation::DEBIT ?  -1 * $eOperationHash['amount'] : $eOperationHash['amount'];
+				}
 			}
 		}
 		$amount = round($amount, 2);

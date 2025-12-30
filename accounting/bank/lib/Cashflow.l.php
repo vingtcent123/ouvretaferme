@@ -174,11 +174,11 @@ class CashflowLib extends CashflowCrud {
 
 	public static function attach(Cashflow $eCashflow, \Collection $cOperation, \account\ThirdParty $eThirdParty): void {
 
-		Cashflow::model()->beginTransaction();
-
 		if($eCashflow['status'] !== Cashflow::WAITING or \journal\OperationLib::countByCashflow($eCashflow) > 0) {
 			throw new \NotExpectedAction('Cashflow #'.$eCashflow['id'].' already attached');
 		}
+
+		Cashflow::model()->beginTransaction();
 
 		\journal\OperationLib::attachOperationsToCashflow($eCashflow, $cOperation, $eThirdParty);
 

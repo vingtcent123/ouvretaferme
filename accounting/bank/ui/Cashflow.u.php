@@ -335,16 +335,26 @@ class CashflowUi {
 
 				$nOperation = $eCashflow['cOperationHash']->count();
 
-				$h .= '<div class="dropdown-title">'.s("Actions sur les {value} écritures comptables liées", $nOperation).'</div>';
+				$h .= '<div class="dropdown-title">';
+					$h .= p("Actions sur l'écriture comptable liée", "Actions sur les {value} écritures comptables liées", $nOperation);
+				$h .= '</div>';
 
 				$confirm = s("Cette action supprimera toutes les écritures liées à l'opération bancaire. Confirmez-vous ?");
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="delete" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$h .= s("Supprimer <div>(<b><u>Supprimera</u></b> les {number} écritures)</div>", ['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
+					$h .= p(
+						"Supprimer <div>(<b><u>Supprimera</u></b> l'écriture)</div>",
+						"Supprimer <div>(<b><u>Supprimera</u></b> les {number} écritures)</div>",
+						$nOperation,
+						['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
 				$h .= '</a>';
 
-				$confirm = s("Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?");
+				$confirm = p(
+					"Cette action dissociera l'écriture de l'opération bancaire sans la supprimer. Confirmez-vous ?",
+					"Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?",
+					$nOperation
+				);
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="dissociate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$h .= s("Dissocier <div>(Ne supprimera <b><u>pas</u></b> les {number} écritures)</div>", ['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
+					$h .= p("Dissocier <div>(Ne supprimera <b><u>pas</u></b> l'écriture)</div>", "Dissocier <div>(Ne supprimera <b><u>pas</u></b> les {number} écritures)</div>", $nOperation, ['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
 				$h .= '</a>';
 
 				$h .= '<div class="dropdown-divider"></div>';
