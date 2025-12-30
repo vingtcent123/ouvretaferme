@@ -126,10 +126,18 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
         if(Operation.hasVat()) {
 
             if(e.detail.vatClass) {
+
                 qs('[data-index="' + index + '"][data-vat="account-info"]').removeHide();
                 qs('[data-index="' + index + '"][data-vat="account-value"]').innerHTML = e.detail.vatClass;
+                qs('[data-index="' + index + '"][data-field="vatRate"]').removeAttribute('disabled');
+                qs('[data-index="' + index + '"][data-field="vatValue"]').removeAttribute('disabled');
+
             } else {
+
                 qs('[data-index="' + index + '"][data-vat="account-info"]').hide();
+                qs('[data-index="' + index + '"][data-field="vatRate"]').setAttribute('disabled', 'disabled');
+                qs('[data-index="' + index + '"][data-field="vatValue"]').setAttribute('disabled', 'disabled');
+
             }
 
             Operation.refreshVAT(e.detail);
