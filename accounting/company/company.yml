@@ -39,13 +39,10 @@ BetaApplication:
     ["farm"]
   ]
 
-Company:
+CompanyCron:
   farm: farm\Farm
-  reconciliation: ?enum(WAITING, PROCESSING, DONE)
-  fecImport: ?enum(WAITING, PROCESSING, DONE)
-  UNIQUE: [
-    ["farm"]
-  ]
+  action: text8
+  status: ?enum(WAITING, PROCESSING, DONE)
 
 JournalCode:
   id: serial32

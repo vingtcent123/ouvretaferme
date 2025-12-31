@@ -2,21 +2,22 @@
 new Page()
 	->cron('index', function($data) {
 
-		$cCompany = \company\Company::model()
-			->select(\company\Company::getSelection())
-			->whereFecImport(\company\Company::WAITING)
+		$cCompanyCron = \company\CompanyCron::model()
+			->select(\company\CompanyCron::getSelection())
+			->whereAction(\company\CompanyCronLib::FEC_IMPORT)
+			->whereStatus(\company\CompanyCron::WAITING)
 			->getCollection();
 
-		foreach($cCompany as $eCompany) {
+		foreach($cCompanyCron as $eCompanyCron) {
 
-			$updated = \company\Company::model()->update($eCompany, ['fecImport' => \company\Company::PROCESSING]);
+			$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\Company::PROCESSING]);
 
 			if($updated === 1) {
 
-				\company\CompanyLib::connectDatabase($eCompany['farm']);
-				\account\ImportLib::manageImports($eCompany['farm']);
+				\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
+				\account\ImportLib::manageImports($eCompanyCron['farm']);
 
-				\company\Company::model()->update($eCompany, ['fecImport' => \company\Company::DONE]);
+				\company\CompanyCron::delete($eCompanyCron);
 
 			}
 

@@ -3,21 +3,22 @@
 new Page()
 	->cron('index', function($data) {
 
-		$cCompany = \company\Company::model()
-			->select(\company\Company::getSelection())
-			->whereReconciliation(\company\Company::WAITING)
+		$cCompanyCron = \company\CompanyCron::model()
+			->select(\company\CompanyCron::getSelection())
+			->whereAction(\company\CompanyCronLib::RECONCILIATE)
+			->whereStatus(\company\CompanyCron::WAITING)
 			->getCollection();
 
-		foreach($cCompany as $eCompany) {
+		foreach($cCompanyCron as $eCompanyCron) {
 
-			$updated = \company\Company::model()->update($eCompany, ['reconciliation' => \company\Company::PROCESSING]);
+			$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\Company::PROCESSING]);
 
 			if($updated === 1) {
 
-				\company\CompanyLib::connectDatabase($eCompany['farm']);
-				\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eCompany['farm']);
+				\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
+				\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eCompanyCron['farm']);
 
-				\company\Company::model()->update($eCompany, ['reconciliation' => \company\Company::DONE]);
+				\company\CompanyCron::delete($eCompanyCron);
 
 			}
 

@@ -26,7 +26,7 @@ new Page()
 
 		if($fw->ok()) {
 
-			\company\CompanyLib::setConfiguration($data->eFarm, 'reconciliation', \company\Company::WAITING);
+			\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::RECONCILIATE, \company\CompanyCron::WAITING);
 
 			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Import::'.$result);
 		} else {
