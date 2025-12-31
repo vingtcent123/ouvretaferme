@@ -63,7 +63,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 		echo '<h4>'.Asset::icon('4-circle').' '.s("Démarrer la vente").'</h4>';
 
 		echo '<p>'.s("Vous avez complété votre gamme ? Votre étal est prêt ?").'</p>';
-		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling">'.Asset::icon('cart4').' ']).'</p>';
+		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling btn-xs">'.Asset::icon('cart4').' ']).'</p>';
 		echo Asset::image('main', 'doc/market-welcome.png');
 
 
@@ -75,7 +75,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 			echo Asset::image('main', 'doc/market-item.png');
 		echo '</p>';
 
-		echo '<p>'.s("Pour terminer une vente avec un client avec le bouton <i>Vente payée</i>, vous devez préalablement indiquer au moins un moyen de paiement, ce qui est une obligation légale.").'</p>';
+		echo '<p>'.s("Pour terminer une vente avec un client avec le bouton <u>Vente payée</u>, vous devez préalablement indiquer au moins un moyen de paiement, ce qui est une obligation légale.").'</p>';
 
 		echo '<h3>'.s("Clôturer la caisse").'</h3>';
 
@@ -98,7 +98,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 		echo '<p class="util-info">'.s("Vous pouvez être plusieurs à utiliser le logiciel de caisse simultanément sur un même marché. Dans ce cas, nous vous suggérons de vous connecter avec des comptes différents pour que chacun puisse retrouver facilement les ventes qu'il gère avec son avatar.").'</p>';
 
 		echo '<h3>'.s("Ajouter un produit au dernier moment dans le logiciel de caisse").'</h3>';
-		echo '<p class="util-info">'.s("Si vous avez oublié d'ajouter un produit à votre caisse, utilisez l'onglet <i>Articles</i> pour ajouter le produit manquant. Cet onglet vous permet également de modifier les prix de vente.").'</p>';
+		echo '<p class="util-info">'.s("Si vous avez oublié d'ajouter un produit à votre caisse, utilisez l'onglet <u>Articles</u> pour ajouter le produit manquant. Cet onglet vous permet également de modifier les prix de vente.").'</p>';
 
 		echo '<h3>'.s("Vous permettez à certains clients de payer plus tard ?").'</h3>';
 		echo '<p class="util-info">';
@@ -108,7 +108,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 		echo '<h3>'.s("Mettre le curseur sur la quantité par défaut").'</h3>';
 		echo '<p class="util-info">';
-			echo s("Par défaut, c'est le champ de <i>Prix</i> qui est sélectionné pour les produits vendus au poids. Si cela nous vous convient pas, vous pouvez sélectionner le champ <i>Quantité</i> par défaut dans les réglages de base du module <i>Vendre</i>.");
+			echo s("Par défaut, c'est le champ de <u>Prix</u> qui est sélectionné pour les produits vendus au poids. Si cela nous vous convient pas, vous pouvez sélectionner le champ <u>Quantité</u> par défaut dans les réglages de base du module <u>Vendre</u>.");
 		echo '</p>';
 		echo Asset::image('main', 'doc/market-settings.png');
 

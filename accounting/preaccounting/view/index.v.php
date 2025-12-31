@@ -244,9 +244,9 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 			echo '</p>';
 
 			if($data->eImportLast->empty()) {
-				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Faire mon premier import bancaire !").'</a>';
+				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import">'.s("Importer un premier relevé bancaire").'</a>';
 			} else {
-				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Importer mes données bancaires").'</a>';
+				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import">'.s("Importer un relevé bancaire").'</a>';
 			}
 
 		echo '</div>';

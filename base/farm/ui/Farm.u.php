@@ -1823,7 +1823,7 @@ class FarmUi {
 
 				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
 
-				$importLink = ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
+				$importLink = ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé bancaire").'</a>';
 
 				if($selectedView === 'bank') {
 

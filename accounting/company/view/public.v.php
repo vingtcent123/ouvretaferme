@@ -185,7 +185,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 				echo '</ul>';
 			echo '</div>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-accounting"><p>'.Asset::icon('file-plus').'</p>'.s("Importer un relevé OFX").'</a>';
+				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-accounting"><p>'.Asset::icon('file-plus').'</p>'.s("Importer un relevé bancaire").'</a>';
 			echo '</div>';
 
 		echo '</div>';

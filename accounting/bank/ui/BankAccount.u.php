@@ -38,7 +38,7 @@ class BankAccountUi {
 
 			$h .= '<div class="util-info">'.s("Les comptes bancaires se créent automatiquement lors de l'import d'un relevé. Vous pouvez modifier le libellé du compte").'</div>';
 
-			$h .= '<div class="util-warning-outline">'.s("Attention, en <b>modifiant le libellé d'un compte bancaire</b>, toutes les écritures comptables de l'exercice comptable en cours qui sont liées à ce numéro de compte bancaire verront leur libellé de compte être mis à jour.").'</div>';
+			$h .= '<div class="util-block-important">'.s("Attention, en <b>modifiant le libellé d'un compte bancaire</b>, toutes les écritures comptables de l'exercice comptable en cours qui sont liées à ce numéro de compte bancaire verront leur libellé de compte être mis à jour.").'</div>';
 
 		}
 

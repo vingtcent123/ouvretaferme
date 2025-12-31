@@ -600,7 +600,7 @@ class CashflowUi {
 		$h = '';
 
 		$h .= '<div class="util-block-help">';
-			$h .= '<p>'.s("Seul l'export au format <b>OFX</b> est actuellement supporté et ce format est disponible sur la plupart des sites bancaires.").'</p>';
+			$h .= '<p>'.s("Seul l'import bancaire au format <b>OFX</b> est actuellement supporté et ce format est disponible sur la plupart des sites bancaires.").'</p>';
 			$h .= '<ul>';
 				$h .= '<li>'.s("Si certains flux bancaires ont déjà été précédemment importés, ils seront ignorés.").'</li>';
 				$h .= '<li>'.s("Si le compte bancaire est inconnu, il sera automatiquement créé et vous pourrez paramétrer son libellé dans le <link>paramétrage des comptes bancaires</link>.", ['link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/account">']).'</li>';
