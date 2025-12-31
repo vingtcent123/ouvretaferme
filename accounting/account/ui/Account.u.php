@@ -218,7 +218,7 @@ class AccountUi {
 								}
 
 								if($vatRate === NULL) {
-									$h .= '<span class="color-muted">'.s("Non applicable").'</span>';
+									$h .= '<span class="color-muted">'.s("N/A").'</span>';
 								} else if($eAccount->canQuickUpdate('vatRate')) {
 									$eAccount->setQuickAttribute('farm', $eFarm['id']);
 									$eAccount->setQuickAttribute('property', 'vatRate');
