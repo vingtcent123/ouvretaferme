@@ -88,7 +88,7 @@ class AccountLib extends AccountCrud {
 		}
 
 		if($search->has('stock')) {
-			Account::model()->where('class LIKE "%'.$search->has('stock').'%"');
+			Account::model()->where('class LIKE "%'.$search->get('stock').'%"', if: $search->get('stock')->notEmpty());
 		}
 
 		if($query !== '') {

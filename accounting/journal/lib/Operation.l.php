@@ -72,23 +72,23 @@ class OperationLib extends OperationCrud {
 
 	public static function applySearch(\Search $search = new \Search()): OperationModel {
 
-		if($search->has('financialYear')) {
+		if($search->get('financialYear')->notEmpty()) {
 
 			if($search->get('financialYear')['accountingType'] === \account\FinancialYear::ACCRUAL) {
 
 				$model = Operation::model()
-					->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
-					->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
+					->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->get('financialYear')->notEmpty())
+					->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->get('financialYear')->notEmpty());
 
 			} else {
 
 				$model = Operation::model()
 					->or(
 						fn() => $this
-							->wherePaymentDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
+							->wherePaymentDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->get('financialYear')->notEmpty()),
 						fn() => $this
 							->wherePaymentDate(NULL)
-							->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->has('financialYear')),
+							->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->get('financialYear')->notEmpty()),
 					);
 
 			}
@@ -115,8 +115,7 @@ class OperationLib extends OperationCrud {
 			if($search->get('journalCode') === '-1') {
 				$model->whereJournalCode(NULL);
 			} else {
-				$model
-					->whereJournalCode('=', $search->get('journalCode'), if: $search->has('journalCode') and $search->get('journalCode')!== NULL);
+				$model->whereJournalCode('=', $search->get('journalCode'));
 			}
 		}
 
@@ -214,23 +213,6 @@ class OperationLib extends OperationCrud {
 			)
 			->join(\account\Account::model(), 'm1.account = m2.id')
 			->sort(['m1_accountLabel' => SORT_ASC, 'date' => SORT_ASC])
-			->getCollection();
-
-	}
-
-	public static function getAllForVatDeclaration(\Search $search = new \Search()): \Collection {
-
-		$search->set('accountLabel', \account\AccountSetting::VAT_CLASS);
-
-		return self::applySearch($search)
-       ->select(
-         Operation::getSelection()
-         + ['account' => ['class', 'description']]
-         + ['thirdParty' => ['id', 'name']]
-	       + ['operation' => Operation::getSelection()]
-       )
-			->whereVatDeclaration(NULL, if: $search->has('vatDeclaration') === FALSE)
-			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection();
 
 	}

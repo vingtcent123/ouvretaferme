@@ -23,8 +23,8 @@ class CashflowLib extends CashflowCrud {
 
 		if($search->get('financialYear') !== NULL and $search->get('financialYear')->notEmpty()) {
 			Cashflow::model()
-				->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->has('financialYear'))
-				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->has('financialYear'));
+				->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->get('financialYear')->notEmpty())
+				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->get('financialYear')->notEmpty());
 		}
 
 		return Cashflow::model()
