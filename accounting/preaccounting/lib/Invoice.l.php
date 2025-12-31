@@ -108,7 +108,6 @@ Class InvoiceLib {
 			->whereStatus('!=', \selling\Invoice::DRAFT)
 			->where('priceExcludingVat != 0.0')
 			->where('m1.farm = '.$eFarm['id'])
-			->whereReadyForAccounting(FALSE)
 			->where('date BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')))
 			->where(new \Sql('DATE(date) < CURDATE()'));
 
