@@ -544,7 +544,7 @@ class ConfigurationUi {
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
 			'documentCopy' => s("Recevoir une copie sur l'adresse e-mail de la ferme des devis, bons de livraisons et factures que vous envoyez aux clients"),
-			'saleClosing' => s("Clôture des ventes livrées aux particuliers"),
+			'saleClosing' => s("Clôture des ventes du logiciel de caisse"),
 			'pdfNaturalOrder' => s("Trier les commandes et les étiquettes exportées en PDF pour faciliter la découpe"),
 			'marketSaleDefaultDecimal' => s("Quel valeur voulez-vous saisir par défaut dans le logiciel de caisse pour les produits vendus au poids ?"),
 		]);
@@ -603,7 +603,7 @@ class ConfigurationUi {
 					90 => s("Clôture automatique 90 jours après la vente"),
 					365 => s("Clôture automatique 1 an après la vente"),
 				];
-				$d->after = \util\FormUi::info(s("Vous avez l'obligation légale de clôturer les ventes réalisées auprès de vos clients particuliers. {siteName} le fait automatiquement avec un délai après la vente que vous choisissez."));
+				$d->after = \util\FormUi::info(s("Vous avez l'obligation légale de clôturer les ventes réalisées avec le logiciel de caisse. {siteName} le fait automatiquement avec un délai après la vente que vous choisissez."));
 				break;
 
 			case 'organicCertifier' :
