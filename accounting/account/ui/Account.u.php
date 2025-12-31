@@ -204,19 +204,28 @@ class AccountUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-center">';
-							if($eAccount['vatAccount']->exists() === TRUE and $eAccount['vatAccount']['vatRate'] !== NULL) {
-								$vatRate = encode($eAccount['vatAccount']['vatRate']).'%';
-							} else if($eAccount['vatRate'] !== NULL) {
-								$vatRate = $eAccount['vatRate'].'%';
-							} else {
-								$vatRate = '<span class="btn btn-outline-secondary btn-sm">'.s("Préciser").'</span>';
-							}
-							if($eAccount->canQuickUpdate('vatRate')) {
-								$eAccount->setQuickAttribute('farm', $eFarm['id']);
-								$eAccount->setQuickAttribute('property', 'vatRate');
-								$h .= $eAccount->quick('vatRate', $vatRate);
-							} else {
-								$h .= $vatRate;
+
+							if(strlen($eAccount['class']) >= 3) {
+
+								if($eAccount['vatRate'] !== NULL) {
+									$vatRate = $eAccount['vatRate'].'%';
+								} else if($eAccount['vatAccount']->exists() === TRUE and $eAccount['vatAccount']['vatRate'] !== NULL) {
+									$vatRate = '<span class="color-muted" title="'.s("Taux de TVA par défaut").'">'.\Asset::icon('magic').' ';
+										$vatRate .= encode($eAccount['vatAccount']['vatRate']).'%';
+									$vatRate .= '</span>';
+								} else  {
+									$vatRate = NULL;
+								}
+
+								if($vatRate === NULL) {
+									$h .= '<span class="color-muted">'.s("Non applicable").'</span>';
+								} else if($eAccount->canQuickUpdate('vatRate')) {
+									$eAccount->setQuickAttribute('farm', $eFarm['id']);
+									$eAccount->setQuickAttribute('property', 'vatRate');
+									$h .= $eAccount->quick('vatRate', $vatRate);
+								} else {
+									$h .= $vatRate;
+								}
 							}
 
 						$h .= '</td>';
