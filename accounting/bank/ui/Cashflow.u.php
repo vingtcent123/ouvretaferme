@@ -635,7 +635,7 @@ class CashflowUi {
 		$h .= $form->hidden('id', $eCashflow['id']);
 		$h .= $form->hidden('cashflow-amount', $eCashflow['amount']);
 
-		$h .= '<div class="util-outline-block-important mt-2 mb-3">';
+		$h .= '<div class="util-block-important mt-2 mb-3">';
 			$h .= '<p>'.s("Vous pouvez rattacher à cette opération bancaire des écritures comptables déjà saisies mais non équilibrées par une contrepartie en compte {bankAccount}. La contrepartie en compte de banque {bankAccount} du montant de l'opération bancaire sera la seule écriture créée.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</p>';
 			$h .= '<p>'.s("Les écritures proposées sont classées avec le tiers sélectionné à l'étape {icon} en premier, mais il est possible de sélectionner des écritures liées à d'autres tiers.<br /><i>exemple de cas d'usage: si votre opération bancaire correspond à un virement {iconStripe} Stripe et que vous y rattachez toutes les écritures de ventes de vos clients</i>.", ['iconStripe' => \Asset::icon('stripe'), 'icon' => \Asset::icon('1-circle')]).'</p>';
 			$h .= '<a href="/doc/accounting:bank#cashflow-manage" class="btn btn-secondary">'.\Asset::icon('person-raised-hand').' '.s("Lire l'aide sur le rattachement des opérations bancaires").'</a>';

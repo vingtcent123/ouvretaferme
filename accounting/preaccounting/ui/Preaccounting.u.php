@@ -451,28 +451,34 @@ Class PreaccountingUi {
 
 		$errors = $nProduct + $nPaymentToCheck;
 		if($errors > 0) {
-			if($nProduct > 0) {
-				if($nPaymentToCheck > 0) {
-					$check = s("vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>", [
-						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
+
+			$h .= '<div class="util-block-important">';
+				$h .= '<h3>'.s("Certaines données sont manquantes").'</h3>';
+
+				if($nProduct > 0) {
+
+					if($nPaymentToCheck > 0) {
+						$h .= s("Vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>", [
+							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
+							'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
+						]);
+					} else {
+						$h .= s("Vérifiez <link>{icon} vos produits</link>", [
+							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
+						]);
+					}
+
+				} else if($nPaymentToCheck > 0) {
+					$h .= s("Vérifiez <link2>{icon2} les moyens de paiement</link2>", [
 						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
 					]);
-				} else {
-					$check = s("vérifiez <link>{icon} vos produits</link>", [
-						'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
-					]);
 				}
-			} else if($nPaymentToCheck > 0) {
-				$check = s("vérifiez <link2>{icon2} les moyens de paiement</link2>", [
-					'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
-				]);
-			}
-			$h .= '<div class="util-outline-block-important">'.s("Certaines données sont manquantes ({check}).", ['check' => $check]).'</div>';
+			$h .= '</div>';
 
 		}
 
 		$h .= '<div class="step-bloc-export">';
-			$h .= '<div class="util-block-optional">';
+			$h .= '<div class="util-block">';
 
 				if($isSearchValid) {
 
@@ -500,7 +506,7 @@ Class PreaccountingUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="util-block-optional">';
+			$h .= '<div class="util-block">';
 
 				$h .= '<h3>'.s("Intégrez vos factures dans votre comptabilité").'</h3>';
 
