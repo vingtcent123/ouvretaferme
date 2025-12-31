@@ -375,7 +375,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 		echo '<h4>'.s("Cas n°1 : Un achat apparaît sur mon relevé bancaire et rien n'est indiqué dans mon journal à ce sujet.").'</h4>';
-		echo '<p>'.s("En sélectionnant <b>\"Créer des écritures\"</b>, vous pourrez saisir votre achat (en classe {chargeAccount}), éventuellement son montant de TVA, et valider.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
+		echo '<p>'.s("En sélectionnant <b>Créer des écritures</b>, vous pourrez saisir votre achat (en classe {chargeAccount}), éventuellement son montant de TVA, et valider.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Ouvretaferme créera les écritures suivantes :").'</p>';
 		echo '<ul class="doc-list-icons">';
 			echo '<li>'.Asset::icon('1-circle').' '.s("Compte {bankAccount} (banque) pour l'opération bancaire", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
@@ -388,7 +388,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 		echo '<h4>'.s("Cas n°2 : Mon associé·e a enregistré l'achat d'un petit matériel et l'opération bancaire vient d'apparaître sur le relevé.").'</h4>';
 		echo '<p>'.s("Pré-requis : l'achat doit avoir été saisi dans le journal (écritures en classe {chargeAccount} et éventuellement compte {vatAccount}).", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS, 'vatAccount' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT]).'</p>';
-		echo '<p>'.s("En sélectionnant <b>\"Rattacher des écritures\"</b>, vous pourrez choisir directement l'écriture comptable.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
+		echo '<p>'.s("En sélectionnant <b>Rattacher des écritures</b>, vous pourrez choisir directement l'écriture comptable.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Ouvretaferme créera uniquement l'écriture comptable du compte banque {bankAccount}. Les 3 écritures seront liées et équilibrées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
 		echo '<p><i>'.s("Ce cas peut se présenter si une personne s'occupe de la comptabilité depuis le compte bancaire tandis que toutes les autres saisissent leurs dépenses au fur et à mesure, par exemple.").'</i></p>';
 
