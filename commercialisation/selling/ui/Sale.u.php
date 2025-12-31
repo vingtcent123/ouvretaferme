@@ -66,8 +66,8 @@ class SaleUi {
 		}
 
 		return match($eSale['taxes']) {
-			Sale::EXCLUDING => \util\TextUi::money($eSale['priceExcludingVat']).$taxes,
-			Sale::INCLUDING => \util\TextUi::money($eSale['priceIncludingVat']).$taxes
+			Sale::EXCLUDING => $eSale['priceExcludingVat'] === NULL ? '' : \util\TextUi::money($eSale['priceExcludingVat']).$taxes,
+			Sale::INCLUDING => $eSale['priceIncludingVat'] === NULL ? '' : \util\TextUi::money($eSale['priceIncludingVat']).$taxes
 		};
 
 	}
