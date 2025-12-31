@@ -251,7 +251,7 @@ abstract class ModuleModel {
 	/**
 	 * Database name
 	 */
-	protected ?string $base = NULL;
+	private static array $bases = [];
 
 	/**
 	 * Database keyName (host:port)
@@ -317,7 +317,6 @@ abstract class ModuleModel {
 	public function __construct() {
 
 		$this->suffix($this->getPersistentSuffix());
-		$this->base = Database::getBase($this->package);
 
 	}
 
@@ -1773,8 +1772,18 @@ abstract class ModuleModel {
 	/**
 	 * Get dataBase name.
 	 */
-	public function getDb(): string {
-		return $this->base;
+	public function getDatabase(): string {
+
+		self::$bases[$this->package] ??= Database::getBase($this->package);
+		return self::$bases[$this->package];
+
+	}
+
+	/**
+	 * Get dataBase name.
+	 */
+	public static function resetDatabases(): void {
+		self::$bases = [];
 	}
 
 	/**
@@ -3133,7 +3142,7 @@ abstract class ModuleModel {
 
 					foreach($idsStore as $splitSuffix => $ids) {
 
-						$sqlParts[] = $this->getSeveralSelect($list, $this->field($this->getDb()).'.'.$this->field($this->getTable().'_'.$splitSuffix), $ids, $condition);
+						$sqlParts[] = $this->getSeveralSelect($list, $this->field($this->getDatabase()).'.'.$this->field($this->getTable().'_'.$splitSuffix), $ids, $condition);
 
 						if($this->cacheOption === 'none') {
 							$this->cacheOption = 'storage';
@@ -3142,7 +3151,7 @@ abstract class ModuleModel {
 					}
 
 				} else {
-					$sqlParts[] = $this->getSeveralSelect($list, $this->field($this->getDb()).'.'.$this->field($this->getTable($suffix)), $ids, $condition);
+					$sqlParts[] = $this->getSeveralSelect($list, $this->field($this->getDatabase()).'.'.$this->field($this->getTable($suffix)), $ids, $condition);
 				}
 
 				$sql = implode(' UNION ', $sqlParts);
@@ -3714,7 +3723,7 @@ abstract class ModuleModel {
 			$this->hasProperty('id') and
 			$affected > 0
 		) {
-			$id = self::$db[$this->server]->lastInsertId($this->getDb().'.'.$this->getTable());
+			$id = self::$db[$this->server]->lastInsertId($this->getDatabase().'.'.$this->getTable());
 			$this->cast('id', $id);
 
 			// Set element identifier
@@ -4244,7 +4253,7 @@ abstract class ModuleModel {
 	private function actionTable(string $action) {
 
 		try {
-			$sql = $action." TABLE ".$this->field($this->getDb()).'.'.$this->field($this->getTable())."";
+			$sql = $action." TABLE ".$this->field($this->getDatabase()).'.'.$this->field($this->getTable())."";
 			self::$db[$this->server]->exec($sql, TRUE);
 		}
 		catch(QueryDatabaseException $e) {
@@ -4292,7 +4301,7 @@ abstract class ModuleModel {
 
 		$join = $this->buildJoin();
 
-		$table = $this->field($this->getDb()).'.'.$this->field($this->getTable($suffix))." AS ".$this->field('m1');
+		$table = $this->field($this->getDatabase()).'.'.$this->field($this->getTable($suffix))." AS ".$this->field('m1');
 		$table .= $this->index($options, $suffix);
 		$table .= $join;
 
@@ -4389,7 +4398,7 @@ abstract class ModuleModel {
 		$options = $this->resetOptions();
 		$suffix = $this->resetSuffix();
 
-		$table = $this->field($this->getDb()).'.'.$this->field($this->getTable($suffix));
+		$table = $this->field($this->getDatabase()).'.'.$this->field($this->getTable($suffix));
 		if($join) {
 			$table .= " AS ".$this->field('m1');
 		}
@@ -4415,7 +4424,7 @@ abstract class ModuleModel {
 				];
 			}
 
-			$sql = "USE ".$this->field($this->getDb())."; ";
+			$sql = "USE ".$this->field($this->getDatabase())."; ";
 			$sql .= "DELETE ".implode(',', $fields)." FROM ".$table."";
 			$sql .= $join;
 
@@ -4465,7 +4474,7 @@ abstract class ModuleModel {
 		$options = $this->resetOptions();
 		$suffix = $this->resetSuffix();
 
-		$table = $this->field($this->getDb()).'.'.$this->field($this->getTable($suffix));
+		$table = $this->field($this->getDatabase()).'.'.$this->field($this->getTable($suffix));
 
 		if(isset($options['add-replace'])) {
 			$sql = "REPLACE";
@@ -4525,7 +4534,7 @@ abstract class ModuleModel {
 		$options = $this->resetOptions();
 		$suffix = $this->resetSuffix();
 
-		$table = $this->field($this->getDb()).'.'.$this->field($this->getTable($suffix));
+		$table = $this->field($this->getDatabase()).'.'.$this->field($this->getTable($suffix));
 		if($join) {
 			$table .= " AS ".$this->field('m1');
 		}
@@ -4589,7 +4598,7 @@ abstract class ModuleModel {
 
 			$suffix = $mElement->resetSuffix();
 
-			$field = $this->field($mElement->getDb()).'.'.$this->field($mElement->getTable($suffix)).' AS '.$this->field('m'.($position + 1));
+			$field = $this->field($mElement->getDatabase()).'.'.$this->field($mElement->getTable($suffix)).' AS '.$this->field('m'.($position + 1));
 
 			$sql .= ' '.$type.' JOIN '.$field.' ON '.$condition;
 
@@ -4954,7 +4963,7 @@ abstract class ModuleModel {
 	protected function handleException(Exception $eCatch) {
 
 		$data = [
-			'db' => $this->getDb(),
+			'database' => $this->getDatabase(),
 			'table' => $this->getTable()
 		];
 

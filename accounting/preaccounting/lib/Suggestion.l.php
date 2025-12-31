@@ -126,7 +126,6 @@ Class SuggestionLib extends SuggestionCrud {
 			->whereReconciliation(\bank\Import::WAITING)
 			->getCollection();
 
-		d($eFarm['id'].' : '.$cImport->count());
 		foreach($cImport as $eImport) {
 
 			$updated = \bank\Import::model()->update($eImport, ['reconciliation' => \bank\Import::PROCESSING]);

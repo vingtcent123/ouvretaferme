@@ -61,7 +61,7 @@ class ModuleAdministration {
 	 */
 	public function rebuild(array $default) {
 
-		$base = $this->mElement->getDb();
+		$base = $this->mElement->getDatabase();
 		$database = $this->mElement->pdo();
 		$suffixes = $this->mElement->getSuffixes();
 
@@ -612,7 +612,7 @@ class ModuleAdministration {
 	protected function doCreateTable(array $fields, array $indexes, string $charset, string $storage, array $autoIncrements = []) {
 
 		$table = $this->mElement->getTable();
-		$base = $this->mElement->getDb();
+		$base = $this->mElement->getDatabase();
 
 		try {
 
@@ -783,7 +783,7 @@ class ModuleAdministration {
 	public function dropTable() {
 
 		$table = $this->mElement->getTable();
-		$base = $this->mElement->getDb();
+		$base = $this->mElement->getDatabase();
 
 		try {
 

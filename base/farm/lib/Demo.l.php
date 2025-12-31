@@ -199,7 +199,7 @@ class DemoLib {
 
 			});
 
-			$sql = 'INSERT INTO '.$pdo->api->field(self::DATABASE).'.'.$pdo->api->field($table).'('.implode(', ', $demoProperties).') SELECT '.implode(', ', $properties).' FROM '.$pdo->api->field($m->getDb()).'.'.$pdo->api->field($table);
+			$sql = 'INSERT INTO '.$pdo->api->field(self::DATABASE).'.'.$pdo->api->field($table).'('.implode(', ', $demoProperties).') SELECT '.implode(', ', $properties).' FROM '.$pdo->api->field($m->getDatabase()).'.'.$pdo->api->field($table);
 
 			$sql .= ' WHERE '.self::getCopyCondition($m);
 

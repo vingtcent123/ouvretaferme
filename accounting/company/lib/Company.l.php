@@ -68,6 +68,8 @@ class CompanyLib {
 
 		\Database::addBase($base, 'ouvretaferme');
 
+		\ModuleModel::resetDatabases();
+
 	}
 
 	public static function getDatabaseName(\farm\Farm $eFarm): string {
@@ -154,7 +156,7 @@ class CompanyLib {
 		}
 		// Set next auto-increment to 100000 (for the custom accounts)
 		$pdo = new \account\AccountModel()->pdo();
-		$database = new \account\AccountModel()->getDb();
+		$database = new \account\AccountModel()->getDatabase();
 		$pdo->exec('ALTER TABLE '.$pdo->api->field($database).'.'.$pdo->api->field('account').' AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
 
 		// Copy journalCodes
@@ -206,7 +208,7 @@ class CompanyLib {
 			->getValue('id');
 		if($maxId < \account\AccountSetting::FIRST_CUSTOM_ID) {
 			$db = new \Database(new \account\AccountModel()->getPackage());
-			$database = new \account\AccountModel()->getDb();
+			$database = new \account\AccountModel()->getDatabase();
 			$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
 		}
 

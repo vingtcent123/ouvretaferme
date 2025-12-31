@@ -778,7 +778,7 @@ class CashflowUi {
 		return $h;
 
 	}
-	public function getReconciliateInfo(Import $eImport): string {
+	public function getReconciliateInfo(\farm\Farm $eFarm, Import $eImport): string {
 
 		if($eImport->empty() or $eImport['reconciliation'] === Import::DONE or $eImport['nCashflowWaiting'] === 0) {
 			return '';
@@ -798,7 +798,7 @@ class CashflowUi {
 			$h .= '</p>';
 			$h .= '<p>';
 				if($eImport['reconciliation'] === Import::WAITING) {
-					$h .= '<a href="" class="btn btn-transparent">'.s("Actualiser").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations" class="btn btn-transparent">'.s("Actualiser").'</a>';
 				}
 			$h .= '</p>';
 		$h .= '</div>';
