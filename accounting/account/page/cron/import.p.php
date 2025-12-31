@@ -2,15 +2,23 @@
 new Page()
 	->cron('index', function($data) {
 
-		$cFarm = \farm\Farm::model()
-			->select('id')
-			->whereHasFinancialYears(TRUE)
+		$cCompany = \company\Company::model()
+			->select(\company\Company::getSelection())
+			->whereFecImport(\company\Company::WAITING)
 			->getCollection();
 
-		foreach($cFarm as $eFarm) {
+		foreach($cCompany as $eCompany) {
 
-			\company\CompanyLib::connectDatabase($eFarm);
-			\account\ImportLib::manageImports($eFarm);
+			$updated = \company\Company::model()->update($eCompany, ['fecImport' => \company\Company::PROCESSING]);
+
+			if($updated === 1) {
+
+				\company\CompanyLib::connectDatabase($eCompany['farm']);
+				\account\ImportLib::manageImports($eCompany['farm']);
+
+				\company\Company::model()->update($eCompany, ['fecImport' => \company\Company::DONE]);
+
+			}
 
 		}
 

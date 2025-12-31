@@ -1,7 +1,7 @@
 <?php
 namespace company;
 
-class CompanyLib {
+class CompanyLib extends CompanyCrud {
 
 	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing', 'pdf'];
 
@@ -215,4 +215,23 @@ class CompanyLib {
 	// TODO DELETE FARM
   //new \ModuleAdministration('main\GenericAccount')->dropDatabase(CompanyLib::getDatabaseNameFromCompany($e));
 
+	public static function setConfiguration(\farm\Farm $eFarm, string $field, string $status): int {
+
+		$eCompany = new Company(['farm' => $eFarm, $field => $status]);
+
+		try {
+
+			$inserted = Company::model()->insert($eCompany);
+
+			return $inserted;
+
+		} catch(\DuplicateException) {
+
+			return Company::model()
+				->whereFarm($eFarm)
+				->update([$field => $status]);
+
+		}
+
+	}
 }

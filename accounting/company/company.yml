@@ -39,6 +39,14 @@ BetaApplication:
     ["farm"]
   ]
 
+Company:
+  farm: farm\Farm
+  reconciliation: ?enum(WAITING, PROCESSING, DONE)
+  fecImport: ?enum(WAITING, PROCESSING, DONE)
+  UNIQUE: [
+    ["farm"]
+  ]
+
 JournalCode:
   id: serial32
   name: text8(1, null) @collate(general)

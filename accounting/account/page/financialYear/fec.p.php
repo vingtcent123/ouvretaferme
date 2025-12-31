@@ -19,6 +19,8 @@ new \account\ImportPage()
 	})
 	->doCreate(function($data) {
 
+		\company\CompanyLib::setConfiguration($data->eFarm, 'fecImport', \company\Company::WAITING);
+
 		throw new ReloadAction('account', 'Import::created');
 
 	})

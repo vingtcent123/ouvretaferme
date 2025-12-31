@@ -25,6 +25,9 @@ new Page()
 		$result = \bank\ImportLib::importBankStatement();
 
 		if($fw->ok()) {
+
+			\company\CompanyLib::setConfiguration($data->eFarm, 'reconciliation', \company\Company::WAITING);
+
 			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Import::'.$result);
 		} else {
 			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?error='.$fw->getLast());
