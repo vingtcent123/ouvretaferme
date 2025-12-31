@@ -20,6 +20,15 @@
 	overflow-y: auto;
 }
 
+a.dev-error-exit {
+	display: inline-block;
+	font-size: 4rem;
+	line-height: 1;
+	color: var(--text);
+	text-decoration: none;
+	font-weight: lighter;
+}
+
 .dev-error-php {
 	display: inline-block;
 	padding: 1rem;

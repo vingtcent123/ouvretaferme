@@ -182,7 +182,7 @@ class FarmTemplate extends MainTemplate {
 
 			if(OTF_DEMO) {
 				$farm .= '<a href="'.\farm\FarmUi::urlPlanning($this->data->eFarm).'">'.encode($this->data->eFarm['name']).'</a>';
-				$farm .= '&nbsp;&nbsp;<a href="'.Lime::getUrl().'" class="btn btn-info">'.Asset::icon('escape').' '.s("Quitter la démo").'</a>';
+				$farm .= '&nbsp;&nbsp;<a href="'.Lime::getUrl().'" class="btn btn-primary">'.Asset::icon('escape').' '.s("Quitter la démo").'</a>';
 			} else {
 
 				$canUpdate = (

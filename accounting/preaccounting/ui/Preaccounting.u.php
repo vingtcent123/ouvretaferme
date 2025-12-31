@@ -416,17 +416,26 @@ Class PreaccountingUi {
 
 	public function getLinkToReconciliate(\farm\Farm $eFarm, int $nSuggestion): string {
 
-		$h = '<a class="'.($nSuggestion === 0 ? 'disabled' : '').' btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
-			$h .= \Asset::icon('fire').' ';
-			$h .= '<span class="'.($nSuggestion > 0 ? 'hide-md-up' : 'disabled').'">';
+		if($nSuggestion === 0) {
+
+			$h = '<a class="btn readonly color-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
+				$h .= \Asset::icon('fire').' ';
 				$h .= $nSuggestion;
-			$h .= '</span>';
-			if($nSuggestion > 0) {
+			$h .= '</a>';
+			
+		} else {
+
+			$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
+				$h .= \Asset::icon('fire').' ';
+				$h .= '<span class="hide-md-up">';
+					$h .= $nSuggestion;
+				$h .= '</span>';
 				$h .= '<span class="hide-sm-down">';
 					$h .= p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion);
 				$h .= '</span>';
-			}
-		$h .= '</a>';
+			$h .= '</a>';
+
+		}
 
 		return $h;
 	}

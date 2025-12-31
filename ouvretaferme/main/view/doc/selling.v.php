@@ -47,7 +47,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 		echo '<h4>'.Asset::icon('1-circle').' '.s("Créez un client").'</h4>';
 
-		echo '<p>'.s("Vous devez créer un client de type <i>Point de vente pour les particuliers</i> en indiquant le nom de votre marché comme nom de client.").'</p>';
+		echo '<p>'.s("Vous devez créer un client de type <b>Point de vente pour les particuliers</b> en indiquant le nom de votre marché comme nom de client.").'</p>';
 		echo Asset::image('main', 'doc/market-customer.png');
 
 		echo '<h4>'.Asset::icon('2-circle').' '.s("Créez une vente pour ce client").'</h4>';

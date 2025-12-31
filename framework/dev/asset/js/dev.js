@@ -2,7 +2,7 @@ class Dev {
 
 	static init() {
 
-		document.body.insertAdjacentHTML('beforeend', '<div id="dev-error"><a class="btn btn-exit" onclick="Dev.hideError()">&times;</a><div id="dev-error-content"></div></div>');
+		document.body.insertAdjacentHTML('beforeend', '<div id="dev-error"><a class="dev-error-exit" onclick="Dev.hideError()">&times;</a><div id="dev-error-content"></div></div>');
 
 		let sqlQueries = '';
 

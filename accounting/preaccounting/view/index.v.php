@@ -224,9 +224,10 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 
 	if($data->ccSuggestion->empty()) {
 
-		echo '<div class="util-info">'.s("Il n'y a aucune facture à rapprocher pour le moment !").'</div>';
+		echo '<div class="util-empty">'.s("Il n'y a aucune facture à rapprocher pour le moment !").'</div>';
 
-		echo '<div class="util-empty">';
+		echo '<div class="util-block-important">';
+			echo \Asset::icon('fire', ['class' => 'util-block-icon']);
 
 			echo '<p>';
 
@@ -243,9 +244,9 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 			echo '</p>';
 
 			if($data->eImportLast->empty()) {
-				echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Faire mon premier import bancaire !").'</a>';
+				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Faire mon premier import bancaire !").'</a>';
 			} else {
-				echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Importer mes données bancaires").'</a>';
+				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">'.s("Importer mes données bancaires").'</a>';
 			}
 
 		echo '</div>';

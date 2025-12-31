@@ -410,7 +410,7 @@ class MarketUi {
 
 											$h .= $ePayment->quick('amountIncludingVat', $amount);
 
-											$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-border payment-method-complete" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
+											$h .= '<a data-ajax="/selling/sale:doFillPaymentMethod" post-id="'.$eSale['id'].'" post-payment-method="'.$ePayment['method']['id'].'" class="'.($magicIsNeeded ? '' : 'not-visible').' btn btn-sm btn-outline-primary payment-method-complete" title="'.s("Compléter automatiquement").'">'.\Asset::icon('magic').'</a>';
 
 											} else {
 

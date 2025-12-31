@@ -2014,28 +2014,19 @@ label.btn input:checked + * {
 	font-weight: bold;
 }
 
-.btn-form {
+.btn.btn-form {
 	color: var(--text);
 	background-color: white;
 	border: 1px solid var(--border);
 }
 
-.btn-exit {
-	font-size: 3rem;
-	font-weight: lighter;
-	line-height: 1;
-	opacity: 1;
-}
-
 .btn-primary,
 .btn-outline-primary:not(.btn-readonly):hover {
-	color: white;
 	background-color: var(--primary);
 	border-color: var(--primary);
 }
 
 .btn-primary:not(.btn-readonly):hover {
-	color: white;
 	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
 }
 
@@ -2051,18 +2042,22 @@ label.btn input:checked + * {
 
 .btn-color-primary:not(.btn-readonly):hover {
 	background: var(--primary);
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-color-primary:hover,
+.btn-outline-primary:hover {
 	color: white;
 }
 
 .btn-secondary,
 .btn-outline-secondary:not(.btn-readonly):hover {
-	color: white;
 	background-color: var(--secondary);
 	border-color: var(--secondary);
 }
 
 .btn-secondary:not(.btn-readonly):hover {
-	color: white;
 	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
 }
 
@@ -2071,56 +2066,35 @@ label.btn input:checked + * {
 	border-color: var(--secondary);
 }
 
-.btn-info,
-.btn-outline-info:not(.btn-readonly):hover {
-	background-color: var(--info);
-	border-color: var(--info);
-}
-
-.btn-info:not(.btn-readonly):hover {
-	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
-}
-
-.btn-outline-info {
-	color: var(--info);
-	border-color: var(--info);
-}
-
-.btn-outline-border:not(.btn-readonly):hover {
-	background-color: var(--background);
-}
-
-.btn-outline-border {
-	color: var(--text);
-	border-color: var(--border);
+.btn-secondary,
+.btn-secondary:hover,
+.btn-outline-secondary:hover {
+	color: white;
 }
 
 .btn-order,
 .btn-outline-order:not(.btn-readonly):hover {
-	color: white;
 	background-color: var(--order);
 	border-color: var(--order);
 }
 
 .btn-order:not(.btn-readonly):hover {
-	color: white;
 	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
 }
 
-.btn-outline-order {
-	color: var(--order);
-	border-color: var(--order);
+.btn-order,
+.btn-order:hover,
+.btn-outline-order:hover {
+	color: white;
 }
 
 .btn-success,
 .btn-outline-success:not(.btn-readonly):hover {
-	color: white;
 	background-color: var(--success);
 	border-color: var(--success);
 }
 
 .btn-success:not(.btn-readonly):hover {
-	color: white;
 	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
 }
 
@@ -2129,15 +2103,19 @@ label.btn input:checked + * {
 	border-color: var(--success);
 }
 
+.btn-success,
+.btn-success:hover,
+.btn-outline-success:hover {
+	color: white;
+}
+
 .btn-danger,
 .btn-outline-danger:not(.btn-readonly):hover {
-	color: white;
 	background-color: var(--danger);
 	border-color: var(--danger);
 }
 
 .btn-danger:not(.btn-readonly):hover {
-	color: white;
 	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
 }
 
@@ -2146,15 +2124,20 @@ label.btn input:checked + * {
 	border-color: var(--danger);
 }
 
+.btn-danger,
+.btn-danger:hover,
+.btn-outline-danger:hover {
+	color: white;
+}
+
+
 .btn-warning,
 .btn-outline-warning:not(.btn-readonly):hover {
-	color: white;
 	background-color: var(--warning);
 	border-color: var(--warning);
 }
 
 .btn-warning:not(.btn-readonly):hover {
-	color: white;
 	box-shadow: inset 0px 0px 0 100px rgba(0, 0, 0, .1);
 }
 
@@ -2163,49 +2146,34 @@ label.btn input:checked + * {
 	border-color: var(--warning);
 }
 
+.btn-warning,
+.btn-warning:hover,
+.btn-outline-warning:hover {
+	color: white;
+}
+
 .btn-transparent {
 	background: #0003;
-	color: white;
 }
 
 .btn-transparent:not(.btn-readonly):hover {
 	background: #0005;
-	color: white;
 }
 
 .btn-outline-transparent {
 	border: 1px solid white;
 	background: #0003;
-	color: white;
 }
 
 .btn-outline-transparent:not(.btn-outline-readonly):hover {
 	background: #0005;
+}
+
+.btn-transparent,
+.btn-transparent:hover,
+.btn-outline-transparent,
+.btn-outline-transparent:hover {
 	color: white;
-}
-
-.btn-outline-muted {
-	color: var(--muted);
-	border-color: var(--muted);
-}
-
-.btn-muted,
-.btn-outline-muted:hover {
-	background: var(--muted);
-	color: white;
-}
-
-.btn-muted:not(.btn-readonly):hover {
-	color: white;
-}
-
-.btn-border {
-	border-color: var(--border);
-	color: var(--text);
-}
-
-.btn-border:not(.btn-readonly):hover {
-	box-shadow: inset 0px 0px 0 100px var(--background);
 }
 
 /* Waiter */

@@ -839,39 +839,39 @@ class CultivationUi {
 								$h .= \plant\ForecastUi::p('unit')->values[$eForecast['unit']];
 							$h .= '</div>';
 
-
-							$colorPrivate = ($eForecast['privatePart'] === 0) ? 'muted' : 'private';
-							$colorPro = ($eForecast['proPart'] === 0) ? 'muted' : 'pro';
-
-							$h .= '<div class="series-item-forecast-price color-'.$colorPrivate.'">';
+							$h .= '<div class="series-item-forecast-price color-private">';
 								$h .= '<div>';
 									if($eForecast['privatePrice'] === NULL) {
-											$h .= $eForecast->quick('privatePrice', \Asset::icon('plus-circle').' '.s("Prix"), class: 'btn btn-sm btn-outline-'.$colorPrivate);
+											$h .= $eForecast->quick('privatePrice', \Asset::icon('plus-circle').' '.s("Prix"), class: 'btn btn-sm btn-outline-private');
 									} else {
 										$h .= $eForecast->quick('privatePrice', \util\TextUi::money($eForecast['privatePrice']));
 									}
 								$h .= '</div>';
 								$h .= '<div>';
-									$h .= $eForecast->quick('privatePart', s("{value} %", $eForecast['privatePart']));
+									if($eForecast['privatePrice'] !== NULL) {
+										$h .= $eForecast->quick('privatePart', s("{value} %", $eForecast['privatePart']));
+									}
 								$h .= '</div>';
 							$h .= '</div>';
 
-							$h .= '<div class="series-item-forecast-price color-'.$colorPro.'">';
+							$h .= '<div class="series-item-forecast-price color-pro">';
 								$h .= '<div>';
 									if($eForecast['proPrice'] === NULL) {
-											$h .= $eForecast->quick('proPrice', \Asset::icon('plus-circle').' '.s("Prix"), class: 'btn btn-sm btn-outline-'.$colorPro);
+											$h .= $eForecast->quick('proPrice', \Asset::icon('plus-circle').' '.s("Prix"), class: 'btn btn-sm btn-outline-pro');
 									} else {
 										$h .= $eForecast->quick('proPrice', \util\TextUi::money($eForecast['proPrice']));
 									}
 								$h .= '</div>';
 								$h .= '<div>';
-									$h .= $eForecast->quick('proPart', s("{value} %", $eForecast['proPart']));
+									if($eForecast['proPrice'] !== NULL) {
+										$h .= $eForecast->quick('proPart', s("{value} %", $eForecast['proPart']));
+									}
 								$h .= '</div>';
 							$h .= '</div>';
 
 							if($eForecast['harvestObjective'] === NULL) {
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-first series-item-forecast-objective-last" style="grid-column: span 3; justify-content: center">';
-									$h .= $eForecast->quick('harvestObjective', \Asset::icon('plus-circle').' '.s("Volume"), class: 'btn btn-sm btn-outline-muted');
+									$h .= $eForecast->quick('harvestObjective', \Asset::icon('plus-circle').' '.s("Volume"), class: 'btn btn-sm btn-outline-primary');
 								$h .= '</div>';
 							} else {
 								$h .= '<div class="series-item-forecast-objective series-item-forecast-objective-first" style="padding-right: 0">';
