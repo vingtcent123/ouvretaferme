@@ -1422,8 +1422,13 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	justify-content: center;
 	font-size: 2rem;
 	line-height: 1;
-	border-radius: 50%;
 	font-family: Serif;
+}
+
+.util-block-help:before,
+.util-block-important:before,
+.util-outline-block-important:before {
+	border-radius: 50%;
 }
 
 .util-block-help:not(:has(.util-block-icon)):before {
