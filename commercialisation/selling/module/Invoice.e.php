@@ -354,7 +354,7 @@ class Invoice extends InvoiceElement {
 				$this->expects(['paymentMethod']);
 
 				if($this['paymentMethod']->empty()) {
-					$status = Invoice::NOT_PAID;
+					$status = NULL;
 					return TRUE;
 				} else {
 					return in_array($status, [Invoice::PAID, Invoice::NOT_PAID]);

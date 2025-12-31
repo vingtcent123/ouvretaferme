@@ -119,7 +119,7 @@ Invoice:
   date: date
   dueDate: ?date
   paymentMethod: ?payment\Method
-  paymentStatus: enum(PAID, NOT_PAID) = NOT_PAID
+  paymentStatus: ?enum(PAID, NOT_PAID)
   paymentCondition: ?editor16(1, 400)
   header: ?editor16(1, 400)
   footer: ?editor16(1, 400)

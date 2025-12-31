@@ -2021,9 +2021,7 @@ class SaleUi {
 
 		$h = $form->group(
 			s("État"),
-			$form->select('preparationStatus', $values, attributes: ['class' => 'sale-field-preparation-status', 'mandatory' => TRUE]).
-			\util\FormUi::info(\Asset::icon('exclamation-circle').' '.s("Le cadre réglementaire ne permet pas de supprimer des ventes créées à l'état {confirmed} ou {prepared}. Utilisez l'état {draft} si cette vente n'est pas confirmée.", ['confirmed' => '<span class="util-badge sale-preparation-status-'.Sale::CONFIRMED.'-button">'.self::p('preparationStatus')->values[Sale::CONFIRMED].'</span>', 'prepared' => '<span class="util-badge sale-preparation-status-'.Sale::PREPARED.'-button">'.self::p('preparationStatus')->values[Sale::PREPARED].'</span>', 'draft' => '<span class="util-badge sale-preparation-status-'.Sale::DRAFT.'-button">'.self::p('preparationStatus')->values[Sale::DRAFT].'</span>']), 'sale-update-status-alert'),
-			attributes: ['class' => 'sale-update-status']
+			$form->select('preparationStatus', $values, attributes: ['class' => 'sale-field-preparation-status', 'mandatory' => TRUE])
 		);
 
 		return $h;
