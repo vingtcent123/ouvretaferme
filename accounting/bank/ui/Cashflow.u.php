@@ -306,7 +306,7 @@ class CashflowUi {
 
 							$eFinancialYearForCashflow = \account\FinancialYearLib::getFinancialYearForDate($eCashflow['date'], $cFinancialYear);
 
-							if($eFinancialYearForCashflow->acceptUpdate()) {
+							if($eFinancialYearForCashflow->notEmpty() and $eFinancialYearForCashflow->acceptUpdate()) {
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 								$h .= $this->getAction($eFarm, $eFinancialYear, $eCashflow);
