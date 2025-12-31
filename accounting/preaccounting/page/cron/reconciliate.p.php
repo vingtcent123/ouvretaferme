@@ -11,7 +11,7 @@ new Page()
 
 		foreach($cCompanyCron as $eCompanyCron) {
 
-			$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\Company::PROCESSING]);
+			$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\CompanyCron::PROCESSING]);
 
 			if($updated === 1) {
 
