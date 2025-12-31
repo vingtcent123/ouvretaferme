@@ -40,6 +40,7 @@ BetaApplication:
   ]
 
 CompanyCron:
+  id: serial32
   farm: farm\Farm
   action: text8
   status: ?enum(WAITING, PROCESSING, DONE)

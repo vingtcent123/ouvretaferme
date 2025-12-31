@@ -17,7 +17,7 @@ new Page()
 				\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
 				\account\ImportLib::manageImports($eCompanyCron['farm']);
 
-				\company\CompanyCron::delete($eCompanyCron);
+				\company\CompanyCron::model()->delete($eCompanyCron);
 
 			}
 

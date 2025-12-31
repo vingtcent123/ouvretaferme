@@ -44,13 +44,14 @@ class CompanyCronModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
+			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'action' => ['text8', 'cast' => 'string'],
 			'status' => ['enum', [\company\CompanyCron::WAITING, \company\CompanyCron::PROCESSING, \company\CompanyCron::DONE], 'null' => TRUE, 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'farm', 'action', 'status'
+			'id', 'farm', 'action', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -79,6 +80,10 @@ class CompanyCronModel extends \ModuleModel {
 
 	public function where(...$data): CompanyCronModel {
 		return parent::where(...$data);
+	}
+
+	public function whereId(...$data): CompanyCronModel {
+		return $this->where('id', ...$data);
 	}
 
 	public function whereFarm(...$data): CompanyCronModel {
