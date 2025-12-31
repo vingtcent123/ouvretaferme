@@ -1795,7 +1795,7 @@ class FarmUi {
 		];
 	}
 
-	public function getAccountingBankTitle(Farm $eFarm, string $selectedView, int $nSuggestion, ?int $number): string {
+	public function getAccountingBankTitle(Farm $eFarm, string $selectedView, ?int $number): string {
 
 		$categories = $this->getAccountingBankCategories();
 
@@ -1821,9 +1821,7 @@ class FarmUi {
 
 			$h .= '<div>';
 
-				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
-
-				$importLink = ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé bancaire").'</a>';
+				$importLink = ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé").'</a>';
 
 				if($selectedView === 'bank') {
 

@@ -56,9 +56,7 @@ new Page()
 		$data->page = GET('page', 'int');
 
 		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
-		$data->nCashflow = \bank\CashflowLib::countByStatus($search);
-		$data->nCashflow->offsetSet('all', new \bank\Cashflow(['count' => array_sum($data->nCashflow->getColumn('count'))]));
-		[$data->cCashflow, $data->nCashflowSearch, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
+		[$data->cCashflow, $data->nCashflow, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll();
 

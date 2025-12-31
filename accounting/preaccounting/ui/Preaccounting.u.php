@@ -418,9 +418,9 @@ Class PreaccountingUi {
 
 		if($nSuggestion === 0) {
 
-			$h = '<a class="btn readonly color-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
-				$h .= \Asset::icon('fire').' ';
-				$h .= $nSuggestion;
+			$h = \Asset::icon('fire', ['class' => 'color-accounting']).' ';
+			$h .= '<a class="color-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
+				$h .= s("Aucune facture à rapprocher pour le moment");
 			$h .= '</a>';
 			
 		} else {

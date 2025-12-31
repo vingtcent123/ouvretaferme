@@ -115,15 +115,6 @@ class CashflowLib extends CashflowCrud {
 		return array_values($eCashflow->getArrayCopy());
 
 	}
-	public static function countByStatus(\Search $search): \Collection {
-
-		$searchWithoutStatus = new \Search($search->getFiltered(['status']));
-
-		return self::applySearch($searchWithoutStatus)
-			->select(['count' => new \Sql('COUNT(*)', 'int'), 'status'])
-			->group(['status'])
-			->getCollection(NULL, NULL, 'status');
-	}
 
 	public static function insertMultiple(array $cashflows): array {
 

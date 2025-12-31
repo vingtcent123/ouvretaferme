@@ -27,7 +27,7 @@ class CashflowUi {
 					$form->date('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
 				);
 			$h .= '</dd>';
-			$h .= '<dt>'.s("Statut").'</dt>';
+			$h .= '<dt>'.s("Écritures comptables").'</dt>';
 			$h .= '<dd>';
 
 				$statuses = CashflowUi::p('status')->values;
@@ -87,19 +87,13 @@ class CashflowUi {
 
 	public function getSummarize(
 		\farm\Farm $eFarm,
-		\Collection $nCashflow,
-		\Search $search
+		int $nSuggestion
 	): string {
 
-		if(($nCashflow[Cashflow::WAITING]['count'] ?? 0) === 0) {
-			return '';
-		}
-
 		$h = '<div class="mb-1 flex-justify-space-between flex-align-center">';
+
 			$h .= '<div>';
-				if($search->get('status') === NULL and $eFarm->usesAccounting()) {
-					$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'status', $search->get('status') === Cashflow::WAITING ? NULL : Cashflow::WAITING).'">'.s("N'afficher que les opérations sans écriture comptable").'</a> <span class="util-counter">'.($nCashflow[Cashflow::WAITING]['count'] ?? 0).'</span>';
-				}
+				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
 			$h .= '</div>';
 			$h .= '<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a>';
 		$h .= '</div>';
@@ -856,6 +850,7 @@ class CashflowUi {
 				break;
 
 			case 'status' :
+				$d->attributes['placeholder'] = s("Peu importe");
 				$d->values = [
 					CashflowElement::WAITING => s("Sans écriture comptable"),
 					CashflowElement::ALLOCATED => s("Avec écriture comptable"),

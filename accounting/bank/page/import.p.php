@@ -3,8 +3,6 @@ new Page(
 )
 	->get('/banque/imports', function($data) {
 
-		$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByCashflow();
-
 		$data->imports = \bank\ImportLib::formatCurrentFinancialYearImports($data->eFarm['eFinancialYear']);
 		$data->cImport = \bank\ImportLib::getAll($data->eFarm['eFinancialYear']);
 
