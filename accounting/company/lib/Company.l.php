@@ -42,9 +42,14 @@ class CompanyLib {
 
 				$eFinancialYear = $cFinancialYear[$data->eFarm->getView('viewAccountingYear')['id']];
 
-			} else {
+			} else if($cFinancialYear->count() > 0) {
 
 				$eFinancialYear = $cFinancialYear->first();
+
+			} else {
+
+				$cFinancialYear = new \Collection();
+				$eFinancialYear = new \account\FinancialYear();
 
 			}
 

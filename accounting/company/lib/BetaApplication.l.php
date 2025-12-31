@@ -4,7 +4,7 @@ namespace company;
 class BetaApplicationLib extends BetaApplicationCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['farm', 'accountingType', 'taxSystem', 'hasVat', 'vatFrequency', 'discord', 'accountingHelped', 'helpComment', 'accountingLevel', 'comment', 'hasSoftware'];
+		return ['farm', 'accountingType', 'taxSystem', 'hasVat', 'vatFrequency', 'discord', 'accountingHelped', 'helpComment', 'accountingLevel', 'comment', 'hasSoftware', 'hasStocks'];
 	}
 
 	public static function getApplicationByFarm(\farm\Farm $eFarm): BetaApplication {

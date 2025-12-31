@@ -304,7 +304,7 @@ class FinancialYearUi {
 
 			$h .= $form->group(
 				self::p('accountingType')->label.\util\FormUi::asterisk(),
-				$form->radios('accountingType', self::p('accountingType')->values, $eFinancialYear['accountingType'], attributes: ['mandatory' => TRUE, 'callbackRadioAttributes' => function($option, $key) {
+				$form->radios('accountingType', self::p('accountingType')->values, $eFinancialYear['accountingType'] ?? NULL, attributes: ['mandatory' => TRUE, 'callbackRadioAttributes' => function($option, $key) {
 					if(FEATURE_ACCOUNTING_ACCRUAL === FALSE and $key === FinancialYear::ACCRUAL) {
 						return ['disabled' => 'disabled'];
 					}
@@ -317,14 +317,14 @@ class FinancialYearUi {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},
 				'vatFrequency' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
 				},
 				'legalCategory*' => function($d) use($form, $eFinancialYear) {
 					$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
-					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
 				},
 				'associates*' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = $eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC ? '' : 'hide';
+					$d->group['class'] = (($eFinancialYear['legalCategory'] ?? NULL) === \company\CompanySetting::CATEGORIE_GAEC) ? '' : 'hide';
 				},
 			]);
 

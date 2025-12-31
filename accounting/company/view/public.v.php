@@ -201,7 +201,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 				echo '<li>'.s("Je visualise des données synthétiques de mes ventes non facturées pour une intégration comptable").'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/preaccounting" class="btn btn-accounting"><p>'.Asset::icon('file-spreadsheet').'</p>'.s("Commencer la précomptabilité").'</a>';
+				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite" class="btn btn-accounting"><p>'.Asset::icon('file-spreadsheet').'</p>'.s("Commencer la précomptabilité").'</a>';
 			echo '</div>';
 		echo '</div>';
 		echo '<div class="home-feature bg-background">';
