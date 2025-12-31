@@ -3,14 +3,18 @@ namespace preaccounting;
 
 Class AccountingLib {
 
+	const FEC_COLUMN_JOURNAL_CODE = 0;
+	const FEC_COLUMN_JOURNAL_TEXT = 1;
 	const FEC_COLUMN_DATE = 3;
 	const FEC_COLUMN_ACCOUNT_LABEL = 4;
 	const FEC_COLUMN_ACCOUNT_DESCRIPTION = 5;
-	const FEC_COLUMN_PAYMENT_METHOD = 19;
 	const FEC_COLUMN_DOCUMENT = 8;
+	const FEC_COLUMN_DOCUMENT_DATE = 9;
 	const FEC_COLUMN_DEBIT = 11;
 	const FEC_COLUMN_CREDIT = 12;
 	const FEC_COLUMN_DEVISE_AMOUNT = 16;
+	const FEC_COLUMN_PAYMENT_DATE = 18;
+	const FEC_COLUMN_PAYMENT_METHOD = 19;
 
 	public static function generateFec(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, bool $forImport): array {
 
@@ -169,6 +173,7 @@ Class AccountingLib {
 						document    : $document,
 						documentDate: $documentDate,
 						amount      : $amountExcludingVat,
+						type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
 						payment     : $payment['label'] ?? '',
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
@@ -191,6 +196,7 @@ Class AccountingLib {
 							document    : $document,
 							documentDate: $documentDate,
 							amount      : $amountVat,
+							type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
 							payment     : $payment['label'],
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,

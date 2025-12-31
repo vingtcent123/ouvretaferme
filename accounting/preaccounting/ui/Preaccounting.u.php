@@ -10,9 +10,9 @@ Class PreaccountingUi {
 
 	}
 
-	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, string $type, bool $hasOperations = FALSE): string {
 
-		$h = '<div id="sale-search" class="util-block-search flex-justify-space-between">';
+		$h = '<div id="sale-search" class="util-block-search">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
@@ -27,11 +27,17 @@ Class PreaccountingUi {
 						$form->date('to', $search->get('to'))
 					);
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
+					if($hasOperations) {
+						$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes:telecharger?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger l'export").'</a>';
+					}
 
 				$h .= '</div>';
 
 			$h .= $form->close();
 
+			if($type === 'invoices') {
+				$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'">'.s("Explorer les données comptables des ventes sans facture").'</a>';
+			}
 		$h .= '</div>';
 
 		return $h;

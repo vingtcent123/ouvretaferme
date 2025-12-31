@@ -31,7 +31,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	echo '<div class="util-block">';
 		echo '<h3>'.s("Choix de la période").'</h3>';
-		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search);
+		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
 	echo '</div>';
 
 	if(($toCheck + $data->nProductVerified + $data->nPaymentVerified) === 0) {
@@ -139,6 +139,60 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
+
+});
+new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
+
+	Asset::js('preaccounting', 'preaccounting.js');
+
+	$t->title = s("Précomptabilité des ventes de {value}", $data->eFarm['name']);
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes';
+
+	$t->nav = 'preaccounting';
+
+	$title = '<div class="util-action">';
+
+		$title .= '<h1>';
+
+			$title .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$title .= s("Explorer les données comptables des ventes");
+
+		$title .= '</h1>';
+
+		$title .= '<div>';
+			$title .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
+		$title .= '</div>';
+
+	$title .= '</div>';
+
+	$t->mainTitle = $title;
+
+	echo '<div class="util-block">';
+		echo '<h3>'.s("Choix de la période").'</h3>';
+		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales', count($data->operations) > 0);
+	echo '</div>';
+
+	if(count($data->operations) > 0) {
+
+		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->nSale);
+
+	} else {
+
+		if($data->search->empty(['id'])) {
+
+			echo '<div class="util-info">';
+				echo s("Il n'y a aucune donnée comptable à afficher.");
+			echo '</div>';
+
+		} else {
+
+			echo '<div class="util-info">';
+				echo s("Aucune vente ne correspond à vos critères de recherche.");
+			echo '</div>';
+
+		}
+
+	}
 
 });
 

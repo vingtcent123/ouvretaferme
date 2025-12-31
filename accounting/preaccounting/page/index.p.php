@@ -38,7 +38,7 @@ new Page(function($data) {
 		if($data->isSearchValid) {
 
 			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
-			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, 'invoice');
 			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
 
 			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
@@ -76,7 +76,7 @@ new Page(function($data) {
 					$data->search->set('name', GET('name'));
 					$data->search->set('plant', GET('plant'));
 					[$data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
-					$data->cItem = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search);
+					$data->cItem = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search, 'invoice');
 					break;
 
 				case 'payment':
@@ -89,6 +89,38 @@ new Page(function($data) {
 
 		}
 		throw new ViewAction($data);
+
+	})
+	->get('/precomptabilite/ventes', function($data) {
+
+		if($data->isSearchValid) {
+
+			list($data->cSale, $data->nSale) = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
+
+			$cAccount = \account\AccountLib::getAll();
+			$data->operations = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount);
+
+		}
+		throw new ViewAction($data);
+
+	})
+	->get('/precomptabilite/ventes:telecharger', function($data) {
+
+		if($data->isSearchValid) {
+
+			list($cSale) = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
+
+			$cAccount = \account\AccountLib::getAll();
+			$operations = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount);
+
+			$filename = 'fec-sales-'.$data->search->get('from').'-'.$data->search->get('to').'.txt';
+			$flattenData = join("\n", array_map(fn($operation) => join('|', $operation), $operations));
+
+			throw new DataAction($flattenData, 'text/txt', $filename);
+
+		}
+
+		throw new VoidAction();
 
 	})
 	->get('/precomptabilite:fec', function($data) {
@@ -114,7 +146,7 @@ new Page(function($data) {
 		]);
 
 		$errors = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $search) +
-			\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $search) +
+			\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $search, 'invoice') +
 			\preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $search);
 
 		if($errors > 0) {

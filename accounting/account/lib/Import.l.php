@@ -219,16 +219,6 @@ Class ImportLib extends ImportCrud {
 		];
 	}
 
-	public static function toDate(string $fecDate): string {
-
-		if(mb_strlen($fecDate) !== 8) {
-			throw new \Exception("Unknown date format.");
-		}
-
-		return mb_substr($fecDate, 0, 4).'-'.mb_substr($fecDate, 4, 2).'-'.mb_substr($fecDate, 6, 2);
-
-	}
-
 	public static function manageImports(\farm\Farm $eFarm): void {
 
 		$eImport = ImportLib::currentOpenImport();
@@ -301,7 +291,7 @@ Class ImportLib extends ImportCrud {
 				$dateRglt, $modeRglt, $natOp
 			] = explode($eImport['delimiter'], $line);
 
-			$ecritureDate = self::toDate($ecritureDate);
+			$ecritureDate = new \preaccounting\SaleUi()->toDate($ecritureDate);
 
 			if(FinancialYearLib::isDateInFinancialYear($ecritureDate, $eImport['financialYear']) === FALSE) {
 				$update['errors'] = Import::DATES;
@@ -355,10 +345,10 @@ Class ImportLib extends ImportCrud {
 				'date' => $ecritureDate,
 				'description' => $ecritureLib,
 				'document' => $pieceRef,
-				'documentDate' => self::toDate($pieceDate),
+				'documentDate' => new \preaccounting\SaleUi()->toDate($pieceDate),
 				'amount' => $debit > 0 ? $debit : $credit,
 				'type' => $debit > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
-				'paymentDate' => $dateRglt ? self::toDate($dateRglt) : NULL,
+				'paymentDate' => $dateRglt ? new \preaccounting\SaleUi()->toDate($dateRglt) : NULL,
 				'paymentMethod' => $eMethod,
 			]);
 			$cOperation->append($eOperation);

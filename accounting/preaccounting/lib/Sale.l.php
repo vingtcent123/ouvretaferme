@@ -130,7 +130,7 @@ Class SaleLib {
 
 	}
 
-	public static function getForAccountingCheck(string $type, \farm\Farm $eFarm, \Search $search): \Collection {
+	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): array {
 
 		$selectSale = [
 			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus', 'priceIncludingVat',
@@ -139,20 +139,28 @@ Class SaleLib {
 			'marketParent' => ['customer' => ['name', 'type', 'destination']],
 			'shopDate' => ['id', 'deliveryDate', 'status', 'orderStartAt', 'orderEndAt'], 'createdBy',
 			'cPayment' => \selling\Payment::model()
-			->select(\selling\Payment::getSelection())
-			->or(
-				fn() => $this->whereOnlineStatus(NULL),
-				fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
-			)
-			->delegateCollection('sale', 'id')
+				->select(\selling\Payment::getSelection())
+				->or(
+					fn() => $this->whereOnlineStatus(NULL),
+					fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+				)
+				->delegateCollection('sale', 'id'),
+				'cItem' => \selling\Item::model()
+					->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+					->delegateCollection('sale')
 		];
 
 		self::filterForAccountingCheck($eFarm, $search);
-		self::applyConditions($type, TRUE);
 
-		return \selling\Sale::model()
-				->select($selectSale)
-				->sort(['deliveredAt' => SORT_DESC])
-				->getCollection(NULL, NULL, 'id');
+		$cSale = \selling\Sale::model()
+			->select($selectSale)
+			->sort(['deliveredAt' => SORT_DESC])
+			->option('count')
+			->getCollection(NULL, NULL, 'id');
+
+		$nSale = \selling\Sale::model()->found();
+
+		return [$cSale, $nSale];
+
 	}
 }

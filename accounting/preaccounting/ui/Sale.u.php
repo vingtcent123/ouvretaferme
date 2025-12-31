@@ -1,0 +1,99 @@
+<?php
+namespace preaccounting;
+
+Class SaleUi {
+
+	public function toDate(string $fecDate): string {
+
+		if(mb_strlen($fecDate) !== 8) {
+			throw new \Exception("Unknown date format.");
+		}
+
+		return mb_substr($fecDate, 0, 4).'-'.mb_substr($fecDate, 4, 2).'-'.mb_substr($fecDate, 6, 2);
+	}
+
+	public function list(\farm\Farm $eFarm, array $operations, int $nSale): string {
+
+		$h = '<div class="util-info">';
+			if(count($operations) === 1 and $nSale === 1) {
+				$h .= s("Il y a 1 écriture comptable issue de 1 vente.");
+			} else if($nSale === 1) {
+				$h .= s("Il y a {operations} écritures comptables issues de 1 vente.", ['operations' => '<b>'.count($operations).'</b>']);
+			} else {
+				$h .= s("Il y a {operations} écritures comptables issues de {sales} ventes.", ['operations' => '<b>'.count($operations).'</b>', 'sales' => '<b>'.$nSale.'</b>']);
+			}
+		$h .= '</div>';
+
+		$h .= '<table class="tr-hover tr-even">';
+
+			$h .= '<thead>';
+				$h .= '<tr>';
+					$h .= '<th rowspan="2">'.s("Date").'</th>';
+					$h .= '<th colspan="2" class="text-center">'.s("Journal").'</th>';
+					$h .= '<th rowspan="2">'.s("Numéro de <br />compte").'</th>';
+					$h .= '<th rowspan="2">'.s("Libellé du <br />compte").'</th>';
+					$h .= '<th colspan="2" class="text-center">'.s("Pièce justificative").'</th>';
+					$h .= '<th rowspan="2" class="highlight-stick-right text-end">'.s("Débit").'</th>';
+					$h .= '<th rowspan="2" class="highlight-stick-left text-end">'.s("Crédit").'</th>';
+					$h .= '<th rowspan="2">'.s("Date de <br />paiement").'</th>';
+					$h .= '<th rowspan="2">'.s("Moyen de <br />paiement").'</th>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<th>'.s("Code").'</th>';
+					$h .= '<th>'.s("Libellé").'</th>';
+					$h .= '<th>'.s("# vente").'</th>';
+					$h .= '<th>'.s("Date").'</th>';
+				$h .= '</tr>';
+
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+
+				foreach($operations as $operation) {
+
+					$h .= '<tr>';
+						$h .= '<td>';
+						if($operation[AccountingLib::FEC_COLUMN_DATE]) {
+							$h .= \util\DateUi::numeric($this->toDate($operation[AccountingLib::FEC_COLUMN_DATE]));
+						}
+						$h .= '</td>';
+						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_JOURNAL_CODE]).'</td>';
+						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_JOURNAL_TEXT]).'</td>';
+						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]).'</td>';
+						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]).'</td>';
+						$h .= '<td>';
+							$h .= '<a href="'.\farm\FarmUi::urlSellingSalesAll($eFarm).'?document='.$operation[AccountingLib::FEC_COLUMN_DOCUMENT].'">';
+								$h .= encode($operation[AccountingLib::FEC_COLUMN_DOCUMENT]);
+							$h .= '</a>';
+						$h .= '</td>';
+						$h .= '<td>';
+						if($operation[AccountingLib::FEC_COLUMN_DOCUMENT_DATE]) {
+							$h .= \util\DateUi::numeric($this->toDate($operation[AccountingLib::FEC_COLUMN_DOCUMENT_DATE]));
+						}
+						$h .= '</td>';
+						$h .= '<td class="highlight-stick-right text-end">';
+						if($operation[AccountingLib::FEC_COLUMN_DEBIT]) {
+							$h .= \util\TextUi::money($operation[AccountingLib::FEC_COLUMN_DEBIT]);
+						}
+						$h .= '</td>';
+						$h .= '<td class="highlight-stick-left text-end">';
+						if($operation[AccountingLib::FEC_COLUMN_CREDIT]) {
+							$h .= \util\TextUi::money($operation[AccountingLib::FEC_COLUMN_CREDIT]);
+						}
+						$h .= '</td>';
+						$h .= '<td>';
+						if($operation[AccountingLib::FEC_COLUMN_PAYMENT_DATE]) {
+							$h .= \util\DateUi::numeric($this->toDate(($operation[AccountingLib::FEC_COLUMN_PAYMENT_DATE])));
+						}
+						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_PAYMENT_METHOD]).'</td>';
+					$h .= '</tr>';
+				}
+			$h .= '</tbody>';
+
+		$h .= '</table>';
+
+		return $h;
+
+	}
+
+}
