@@ -113,10 +113,15 @@ new Page(function($data) {
 			$cAccount = \account\AccountLib::getAll();
 			$operations = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount);
 
-			$filename = 'fec-sales-'.$data->search->get('from').'-'.$data->search->get('to').'.txt';
-			$flattenData = join("\n", array_map(fn($operation) => join('|', $operation), $operations));
+			foreach($operations as &$lineFec) {
+				foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
+					$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
+				}
+			}
 
-			throw new DataAction($flattenData, 'text/txt', $filename);
+			$fecData = array_merge([\account\FecLib::getHeader()], $operations);
+
+			throw new CsvAction($fecData, 'pre-comptabilite-ventes-'.$data->search->get('from').'-'.$data->search->get('to').'.csv');
 
 		}
 
