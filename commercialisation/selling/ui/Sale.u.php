@@ -982,7 +982,16 @@ class SaleUi {
 		}
 
 		if($eSale->acceptUpdatePreparationStatus() === FALSE) {
-			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.s("Il sera possible de modifier le statut lorsque la période de prise des commandes sera close.").'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
+
+			if($eSale['invoice']->notEmpty()) {
+				$label = s("Il n'est pas possible de modifier une vente facturée.");
+			} else if($eSale->isReadonly()) {
+				$label = s("Il n'est pas possible de modifier une vente livrée il y a plus d'un an.");
+			} else {
+				$label = s("Il sera possible de modifier le statut lorsque la période de prise des commandes sera close.");
+			}
+
+			return '<span class="btn btn-readonly '.$btn.' sale-preparation-status-'.$eSale['preparationStatus'].'-button" title="'.$label.'">'.self::p('preparationStatus')->values[$eSale['preparationStatus']].'  '.\Asset::icon('lock-fill').'</span>';
 		}
 
 		$button = function(string $preparationStatus, ?string $confirm = NULL) use ($eSale) {
@@ -1020,6 +1029,12 @@ class SaleUi {
 
 			switch($eSale['preparationStatus']) {
 
+				case Sale::CANCELED :
+					$h = $link(
+						$button(Sale::CONFIRMED)
+					);
+					break;
+
 				case Sale::DRAFT :
 					$h = $link(
 						$button(Sale::CONFIRMED)
@@ -1027,9 +1042,12 @@ class SaleUi {
 					break;
 
 				case Sale::CONFIRMED :
-					$h = $link(
-						$button(Sale::SELLING, s("Vous allez commencer votre vente avec le logiciel de caisse ! Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"))
-					);
+					$to = $button(Sale::SELLING, s("Vous allez commencer votre vente avec le logiciel de caisse ! Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"));
+					if($eSale->acceptStatusCanceled()) {
+						$to .= '<div class="dropdown-divider"></div>';
+						$to .= $button(Sale::CANCELED);
+					}
+					$h = $link($to);
 					break;
 
 				case Sale::SELLING :
@@ -1062,6 +1080,11 @@ class SaleUi {
 			if($eSale->acceptStatusCanceled()) {
 				$to .= '<div class="dropdown-divider"></div>';
 				$to .= $button(Sale::CANCELED);
+			}
+
+			if($eSale->acceptDelete()) {
+				$to .= '<div class="dropdown-divider"></div>';
+				$to .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression de la vente ?").'">'.s("Supprimer la vente").'</a>';
 			}
 
 			$h .= $link($to);
@@ -1132,7 +1155,7 @@ class SaleUi {
 		$h = '<h3>'.s("Générer les étiquettes des ventes aux professionnels en cours").'</h3>';
 
 		if($cSale->empty()) {
-			$h .= '<div class="util-empty">'.s("Il n'y a aucune vente en cours de préparation ou déjà préparée.").'</div>';
+			$h .= '<div class="util-empty">'.s("Il n'y a aucune vente confirmée ou préparée.").'</div>';
 		} else {
 
 			$form = new \util\FormUi();
@@ -1559,17 +1582,6 @@ class SaleUi {
 
 			$h .= $primaryList;
 
-			if(
-				$eSale->isMarket() and
-				$eSale['preparationStatus'] === Sale::SELLING
-			) {
-
-				$h .= '<div class="dropdown-divider"></div>';
-				$h .= '<a data-ajax="/selling/sale:doUpdateConfirmedCollection" post-ids="'.$eSale['id'].'" class="dropdown-item">';
-					$h .= s("Remettre à préparer");
-				$h .= '</a>';
-			}
-
 			if($secondaryList) {
 
 				$h .= '<div class="dropdown-divider"></div>';
@@ -1877,7 +1889,7 @@ class SaleUi {
 
 			$h .= '<div class="util-block-important mt-2">';
 				$h .= '<h3>'.s("Si vous souhaitez créer des ventes pour tester {siteName}").'</h3>';
-				$h .= '<p>'.s("Nous vous suggérons d'utiliser la ferme de démonstration ou de créer une ferme de test si vous souhaitez tester les fonctionnalités de commercialisation de Ouvretaferme. En raison de contraintes réglementaires, vous ne pouvez pas supprimer des ventes clôturées sur le logiciel.").'</p>';
+				$h .= '<p>'.s("Nous vous suggérons d'utiliser la ferme de démonstration ou de créer une ferme de test si vous souhaitez tester les fonctionnalités de commercialisation de Ouvretaferme. En raison de contraintes réglementaires, vous ne pouvez pas supprimer des ventes qui ne sont pas à l'état de brouillon sur le logiciel.").'</p>';
 				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/1/ventes" target="_blank" class="btn btn-transparent">'.s("Utiliser la démo").'</a>';
 			$h .= '</div>';
 
@@ -2009,7 +2021,9 @@ class SaleUi {
 
 		$h = $form->group(
 			s("État"),
-			$form->select('preparationStatus', $values, attributes: ['class' => 'sale-field-preparation-status', 'mandatory' => TRUE]),
+			$form->select('preparationStatus', $values, attributes: ['class' => 'sale-field-preparation-status', 'mandatory' => TRUE]).
+			\util\FormUi::info(\Asset::icon('exclamation-circle').' '.s("Le cadre réglementaire ne permet pas de supprimer des ventes créées à l'état {confirmed} ou {prepared}. Utilisez l'état {draft} si cette vente n'est pas confirmée.", ['confirmed' => '<span class="util-badge sale-preparation-status-'.Sale::CONFIRMED.'-button">'.self::p('preparationStatus')->values[Sale::CONFIRMED].'</span>', 'prepared' => '<span class="util-badge sale-preparation-status-'.Sale::PREPARED.'-button">'.self::p('preparationStatus')->values[Sale::PREPARED].'</span>', 'draft' => '<span class="util-badge sale-preparation-status-'.Sale::DRAFT.'-button">'.self::p('preparationStatus')->values[Sale::DRAFT].'</span>']), 'sale-update-status-alert'),
+			attributes: ['class' => 'sale-update-status']
 		);
 
 		return $h;

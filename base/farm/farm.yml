@@ -37,6 +37,7 @@ Configuration:
   vatNumber: ?text8
   organicCertifier: ?text8
   paymentMode: ?editor16(1, 500)
+  saleClosing: int(7, 365) = 30
   documentCopy: bool = FALSE
   documentTarget: enum(ALL, PRIVATE, PRO, DISABLED) = PRO
   orderFormPrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultOrderFormPrefix())

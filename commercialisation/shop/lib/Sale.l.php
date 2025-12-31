@@ -169,6 +169,7 @@ class SaleLib {
 			$eSale = (clone $eSaleReference)->merge([
 				'farm' => $eFarm,
 				'customer' => $eCustomer,
+				'secured' => ($eCustomer['type'] === Date::PRIVATE and $eFarm->getFarmer()->empty()),
 				'discount' => $discounts[$farm] ?? 0,
 				'hasVat' => \farm\ConfigurationLib::getByFarm($eFarm)['hasVat'],
 				'cItem' => $cItem
@@ -409,6 +410,7 @@ class SaleLib {
 							'id' => NULL,
 							'farm' => $eFarm,
 							'customer' => $eCustomer,
+							'secured' => ($eCustomer['type'] === Date::PRIVATE and $eFarm->getFarmer()->empty()),
 							'discount' => $discounts[$eFarm['id']] ?? 0,
 							'hasVat' => \farm\ConfigurationLib::getByFarm($eFarm)['hasVat'],
 							'cItem' => $cItem

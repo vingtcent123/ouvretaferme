@@ -353,11 +353,14 @@ body[data-template~="farm"] .container {
 		top: 0;
 		left: 0;
 		right: 0;
-		z-index: 1;
 	}
 
 	body[data-template~="farm"] > nav .nav-actions .nav-item {
 		padding: 1rem var(--nav-padding);
+	}
+
+	body[data-template~="farm"] > nav .nav-actions .nav-user {
+		z-index: 1;
 	}
 
 	body[data-template~="farm"] > nav .nav-actions .nav-user .media-vignette-image {

@@ -135,7 +135,7 @@ class ConfigurationUi {
 				$h .= $form->group(content: '<h3>'.s("Certification").'</h3>');
 				$h .= $form->dynamicGroups($eConfiguration, ['organicCertifier']);
 				$h .= $form->group(content: '<h3>'.s("Autres").'</h3>');
-				$h .= $form->dynamicGroups($eConfiguration, ['documentCopy', 'paymentMode', 'pdfNaturalOrder', 'marketSaleDefaultDecimal']);
+				$h .= $form->dynamicGroups($eConfiguration, ['saleClosing', 'documentCopy', 'paymentMode', 'pdfNaturalOrder', 'marketSaleDefaultDecimal']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -544,6 +544,7 @@ class ConfigurationUi {
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
 			'documentCopy' => s("Recevoir une copie sur l'adresse e-mail de la ferme des devis, bons de livraisons et factures que vous envoyez aux clients"),
+			'saleClosing' => s("Clôture des ventes livrées aux particuliers"),
 			'pdfNaturalOrder' => s("Trier les commandes et les étiquettes exportées en PDF pour faciliter la découpe"),
 			'marketSaleDefaultDecimal' => s("Quel valeur voulez-vous saisir par défaut dans le logiciel de caisse pour les produits vendus au poids ?"),
 		]);
@@ -590,6 +591,19 @@ class ConfigurationUi {
 				$d->attributes = [
 					'placeholder' => s("Calculé automatiquement en fonction du taux de TVA des articles vendus")
 				];
+				break;
+
+			case 'saleClosing' :
+				$d->field = 'select';
+				$d->attributes['mandatory'] = TRUE;
+				$d->values = [
+					7 => s("Clôture automatique 7 jours après la vente"),
+					30 => s("Clôture automatique 30 jours après la vente"),
+					60 => s("Clôture automatique 60 jours après la vente"),
+					90 => s("Clôture automatique 90 jours après la vente"),
+					365 => s("Clôture automatique 1 an après la vente"),
+				];
+				$d->after = \util\FormUi::info(s("Vous avez l'obligation légale de clôturer les ventes réalisées auprès de vos clients particuliers. {siteName} le fait automatiquement avec un délai après la vente que vous choisissez."));
 				break;
 
 			case 'organicCertifier' :

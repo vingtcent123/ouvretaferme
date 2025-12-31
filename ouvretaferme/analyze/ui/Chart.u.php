@@ -101,14 +101,6 @@ class ChartUi {
 			}
 
 		}
-/*
-		if($c->count() > 6) {
-			$values[] = $missing;
-			$labels[] = s("Autres");
-			if($color !== NULL) {
-				$colors[] = '#AAA';
-			}
-		}*/
 
 		$labels = [];
 

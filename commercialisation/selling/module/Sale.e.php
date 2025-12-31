@@ -421,6 +421,9 @@ class Sale extends SaleElement {
 	public function acceptUpdatePreparationStatus(): bool {
 
 		return (
+			$this['closed'] === FALSE and
+			$this['invoice']->empty() and
+			$this->isReadonly() === FALSE and
 			$this->isComposition() === FALSE and
 			(
 				$this['shopDate']->empty() or
@@ -515,6 +518,17 @@ class Sale extends SaleElement {
 		}
 
 		return new Payment();
+	}
+
+	public function isReadonly(): bool {
+
+		return (
+			(int)max(
+				substr($this['statusAt'] ?? '0000-00-00', 0, 4),
+				substr($this['deliveredAt'], 0, 4)
+			) < (int)date('Y') - 1
+		);
+
 	}
 
 	public function acceptCancelDelivered(): bool {
@@ -680,19 +694,11 @@ class Sale extends SaleElement {
 	public function acceptDelete(): bool {
 
 		return (
+			$this['secured'] === FALSE and
 			$this->acceptDeleteStatus() and
 			$this->acceptDeletePaymentStatus() and
-			$this->acceptDeleteMarket() and
 			$this->acceptUpdateComposition()
 		);
-
-	}
-
-	public function acceptDeleteMarket(): bool {
-
-		$this->expects(['marketSales']);
-
-		return ($this->isMarket() === FALSE or $this['marketSales'] === 0);
 
 	}
 
@@ -723,7 +729,7 @@ class Sale extends SaleElement {
 	}
 
 	public function getDeleteStatuses(): array {
-		return [Sale::COMPOSITION, Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::CANCELED];
+		return [Sale::COMPOSITION, Sale::CONFIRMED, Sale::PREPARED, Sale::DRAFT, Sale::BASKET];
 	}
 
 	public function acceptDeletePaymentStatus() {
@@ -803,7 +809,7 @@ class Sale extends SaleElement {
 
 		if(
 			$this['closed'] or
-			in_array($this['preparationStatus'], $this->isMarketSale() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING, Sale::CANCELED, Sale::EXPIRED]) === FALSE
+			in_array($this['preparationStatus'], $this->isMarketSale() ? [] : [Sale::BASKET, Sale::DRAFT, Sale::PREPARED, Sale::DELIVERED, Sale::CANCELED, Sale::EXPIRED]) === FALSE
 		) {
 			return FALSE;
 		}
@@ -827,7 +833,7 @@ class Sale extends SaleElement {
 
 		if(
 			$this['closed'] or
-			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::DRAFT, Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE
+			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::DRAFT, Sale::DELIVERED] : [Sale::BASKET, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::SELLING]) === FALSE
 		) {
 			return FALSE;
 		}
@@ -899,7 +905,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePreparationStatus() and
-			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING])
+			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED])
 		);
 
 	}

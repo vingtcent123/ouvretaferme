@@ -219,24 +219,27 @@ class MarketLib {
 
 			$eSale['oldPreparationStatus'] = Sale::SELLING;
 			$eSale['preparationStatus'] = Sale::DELIVERED;
-			$eSale['closed'] = TRUE;
 
-			SaleLib::update($eSale, ['preparationStatus', 'closed']);
+			SaleLib::update($eSale, ['preparationStatus']);
+
+			SaleLib::close($eSale);
+
+			$cSaleMarketDraft = Sale::model()
+				->select(SaleElement::getSelection())
+				->whereFarm($eSale['farm'])
+				->whereMarketParent($eSale)
+				->wherePreparationStatus(Sale::DRAFT)
+				->getCollection();
+
+			\selling\SaleLib::updatePreparationStatusCollection($cSaleMarketDraft, \selling\Sale::CANCELED);
 
 			$cSaleMarket = Sale::model()
 				->select(SaleElement::getSelection())
 				->whereFarm($eSale['farm'])
 				->whereMarketParent($eSale)
-				->wherePreparationStatus(Sale::DELIVERED)
 				->getCollection();
 
-			foreach($cSaleMarket as $eSaleMarket) {
-
-				$eSaleMarket['closed'] = TRUE;
-
-				SaleLib::update($eSaleMarket, ['closed']);
-
-			}
+			SaleLib::closeCollection($cSaleMarket);
 
 		Sale::model()->commit();
 
@@ -342,9 +345,7 @@ class MarketLib {
 			->setContent(...\shop\MailUi::getSaleMarketTicket($eSale))
 			->send();
 
-		$eSale['closed'] = TRUE;
-
-		SaleLib::update($eSale, ['closed']);
+		SaleLib::close($eSale);
 
 	}
 }

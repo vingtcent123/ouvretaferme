@@ -18,6 +18,7 @@ class AlertUi {
 			'Configuration::invoiceDueMonth.consistency' => s("Vous devez préciser la date d'échéance par rapport à la date de facturation"),
 			'Configuration::orderFormPrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
 			'Configuration::deliveryNotePrefix.fqn' => s("Ne doit pas finir par un chiffre, et contenir uniquement des caractères alphanumériques ou un tiret"),
+			'Configuration::saleClosing.check' => s("La clôture automatique peut être configurée entre 7 et 90 jours"),
 			'Configuration::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),
 			'Configuration::vatNumber.country' => s("Vous ne pouvez pas saisir de numéro de TVA intracommunautaire si votre ferme n'est ni en France, ni en Belgique."),
 

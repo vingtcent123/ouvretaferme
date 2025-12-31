@@ -93,6 +93,7 @@ class SaleModel extends \ModuleModel {
 			'shippingVatFixed' => ['bool', 'cast' => 'bool'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'secured' => ['bool', 'cast' => 'bool'],
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -129,15 +130,16 @@ class SaleModel extends \ModuleModel {
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'deliveredAt' => ['date', 'cast' => 'string'],
+			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'expiresAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
-			'statusAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'statusAt' => ['datetime', 'cast' => 'string'],
 			'statusBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'secured', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
 		]);
 
 		$this->propertiesToModule += [
@@ -190,6 +192,9 @@ class SaleModel extends \ModuleModel {
 			case 'shippingVatFixed' :
 				return FALSE;
 
+			case 'secured' :
+				return FALSE;
+
 			case 'closed' :
 				return FALSE;
 
@@ -212,6 +217,12 @@ class SaleModel extends \ModuleModel {
 				return new \Sql('NOW()');
 
 			case 'createdBy' :
+				return \user\ConnectionLib::getOnline();
+
+			case 'statusAt' :
+				return new \Sql('NOW()');
+
+			case 'statusBy' :
 				return \user\ConnectionLib::getOnline();
 
 			case 'readyForAccounting' :
@@ -369,6 +380,10 @@ class SaleModel extends \ModuleModel {
 		return $this->where('shippingExcludingVat', ...$data);
 	}
 
+	public function whereSecured(...$data): SaleModel {
+		return $this->where('secured', ...$data);
+	}
+
 	public function whereClosed(...$data): SaleModel {
 		return $this->where('closed', ...$data);
 	}
@@ -511,6 +526,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereDeliveredAt(...$data): SaleModel {
 		return $this->where('deliveredAt', ...$data);
+	}
+
+	public function wherePaidAt(...$data): SaleModel {
+		return $this->where('paidAt', ...$data);
 	}
 
 	public function whereExpiresAt(...$data): SaleModel {

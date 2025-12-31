@@ -388,3 +388,7 @@ a.sale-preaccounting-title {
 a.sale-preaccounting-title:hover {
 	text-decoration: none;
 }
+
+.sale-update-status:has(select[name="preparationStatus"] option[value="draft"]:checked) .sale-update-status-alert {
+	display: none;
+}

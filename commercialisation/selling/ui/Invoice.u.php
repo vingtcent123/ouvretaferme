@@ -226,7 +226,7 @@ class InvoiceUi {
 							$h .= '<div class="util-annotation">';
 								$cSale = $eInvoice['cSale'];
 
-								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm']).'?ids='.implode(',', $cSale->getIds()).'">'.p("{value} vente", "{value} ventes", $cSale->count()).'</a>';
+								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm'], \farm\Farmer::ALL).'?ids='.implode(',', $cSale->getIds()).'">'.p("{value} vente", "{value} ventes", $cSale->count()).'</a>';
 							$h .= '</div>';
 						$h .= '</td>';
 
@@ -386,8 +386,8 @@ class InvoiceUi {
 
 		if($to) {
 
-			$h = '<a data-dropdown="bottom-start" data-dropdown-id="sale-dropdown-'.$eInvoice['id'].'" data-dropdown-hover="true" class="btn '.$btn.' invoice-status-'.$eInvoice['status'].'-button dropdown-toggle">'.self::p('status')->values[$eInvoice['status']].'</a>';
-			$h .= '<div data-dropdown-id="sale-dropdown-'.$eInvoice['id'].'-list" class="dropdown-list bg-primary">';
+			$h = '<a data-dropdown="bottom-start" data-dropdown-id="invoice-dropdown-'.$eInvoice['id'].'" data-dropdown-hover="true" class="btn '.$btn.' invoice-status-'.$eInvoice['status'].'-button dropdown-toggle">'.self::p('status')->values[$eInvoice['status']].'</a>';
+			$h .= '<div data-dropdown-id="invoice-dropdown-'.$eInvoice['id'].'-list" class="dropdown-list bg-primary">';
 				$h .= $to;
 			$h .= '</div>';
 

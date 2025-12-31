@@ -3,6 +3,8 @@ namespace selling;
 
 class SaleLib extends SaleCrud {
 
+	private static $close;
+
 	public static function getPropertiesCreate(): \Closure {
 
 		return function(Sale $e) {
@@ -837,6 +839,7 @@ class SaleLib extends SaleCrud {
 			Sale::model()->getProperties(),
 			[
 				'id', 'createdAt', 'createdBy',
+				'closed', 'closedBy', 'closedAt',
 				'invoice', 'orderFormValidUntil', 'orderFormPaymentCondition'
 			]
 		);
@@ -851,9 +854,6 @@ class SaleLib extends SaleCrud {
 
 		// Ajouter une nouvelle vente
 		$eSaleNew = new Sale($eSale->extracts($properties));
-		$eSaleNew['closed'] = FALSE;
-		$eSaleNew['closedBy'] = new \user\User();
-		$eSaleNew['closedAt'] = NULL;
 		$eSaleNew['paymentStatus'] = NULL;
 
 		if($eSaleNew->isMarket()) {
@@ -946,28 +946,28 @@ class SaleLib extends SaleCrud {
 			($e['oldPreparationStatus'] !== $e['preparationStatus'])
 		);
 
-		$emptyPaymentMethod = (
-			in_array('paymentMethod', $properties) and
-			$e['cPayment']->empty()
-		);
+		$updatePayments = array_delete($properties, 'paymentMethod');
 
-		if(in_array('paymentMethod', $properties)) {
+		if($updatePayments) {
 
-			unset($properties[array_search('paymentMethod', $properties)]);
-			$updatePayments = TRUE;
+			if($e['cPayment']->empty()) {
 
-		} else {
+				$e['paymentStatus'] = NULL;
+				$e['onlinePaymentStatus'] = NULL;
 
-			$updatePayments = FALSE;
+				$properties[] = 'paymentStatus';
+				$properties[] = 'onlinePaymentStatus';
 
-		}
+			} else {
 
-		if($emptyPaymentMethod) {
+				$e['paidAt'] = match($e['paymentStatus']) {
+					Sale::PAID => new \Sql('NOW()'),
+					Sale::NOT_PAID => NULL
+				};
 
-			$e['paymentStatus'] = NULL;
-			$e['onlinePaymentStatus'] = NULL;
-			$properties[] = 'paymentStatus';
-			$properties[] = 'onlinePaymentStatus';
+				$properties[] = 'paidAt';
+
+			}
 
 		}
 
@@ -979,17 +979,7 @@ class SaleLib extends SaleCrud {
 		}
 
 		if(in_array('closed', $properties)) {
-
-			if($e['closed'] === FALSE) {
-				throw new \Exception("Impossible de rouvrir une vente");
-			}
-
-			$e['closedAt'] = new \Sql('NOW()');
-			$e['closedBy'] = \user\ConnectionLib::getOnline();
-
-			$properties[] = 'closedAt';
-			$properties[] = 'closedBy';
-
+			throw new \Exception("Clôture par des fonctions dédiées");
 		}
 
 		if(in_array('shopPointPermissive', $properties)) {
@@ -1051,6 +1041,12 @@ class SaleLib extends SaleCrud {
 
 			}
 
+			if($e['preparationStatus'] === Sale::DELIVERED) {
+
+				$properties[] = 'secured';
+				$e['secured'] = TRUE;
+
+			}
 
 			if(
 				$e['oldPreparationStatus'] === Sale::DELIVERED and
@@ -1734,6 +1730,51 @@ class SaleLib extends SaleCrud {
 		}
 
 		return TRUE;
+	}
+
+	public static function closeCollection(\Collection $cSale): void {
+
+		Sale::model()
+			->whereId('IN', $cSale)
+			->whereClosed(FALSE)
+			->update([
+				'secured' => TRUE,
+				'closed' => TRUE,
+				'closedAt' => new \Sql('NOW()'),
+				'closedBy' => \user\ConnectionLib::getOnline()
+			]);
+
+	}
+
+	public static function close(Sale $eSale): void {
+
+		$eSale['secured'] = TRUE;
+		$eSale['closed'] = TRUE;
+		$eSale['closedAt'] = new \Sql('NOW()');
+		$eSale['closedBy'] = \user\ConnectionLib::getOnline();
+
+		Sale::model()
+			->select('secured', 'closed', 'closedAt', 'closedBy')
+			->whereClosed(FALSE)
+			->update($eSale);
+
+	}
+
+	public static function autoClosing(): void {
+
+		// Clôture des caisses
+		$cSale = Sale::model()
+			->select(Sale::getSelection())
+			->join(\farm\Configuration::model(), 'm1.farm = m2.farm')
+			->whereProfile(Sale::MARKET)
+			->wherePreparationStatus(Sale::SELLING)
+			->where(new \Sql('GREATEST(COALESCE(DATE(statusAt), "0000-00-00"), COALESCE(deliveredAt, "0000-00-00")) < NOW() - INTERVAL m2.saleClosing DAY'))
+			->getCollection();
+
+		foreach($cSale as $eSale) {
+			MarketLib::close($eSale);
+		}
+
 	}
 
 }

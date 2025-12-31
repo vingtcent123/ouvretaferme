@@ -250,6 +250,7 @@ class InvoiceLib extends InvoiceCrud {
 			Sale::model()
 				->whereId('IN', $e['cSale'])
 				->update([
+					'secured' => TRUE,
 					'invoice' => $e
 				]);
 
@@ -281,14 +282,6 @@ class InvoiceLib extends InvoiceCrud {
 
 				Invoice::model()->commit();
 				return FALSE;
-
-			}
-
-			foreach($cSale as $eSale) {
-
-				$eSale['closed'] = TRUE;
-
-				SaleLib::update($eSale, ['closed']);
 
 			}
 

@@ -553,8 +553,6 @@ new \selling\SalePage()
 			$data->e->acceptDeletePaymentStatus() === FALSE
 		) {
 			\selling\Sale::fail('deletedNotDraft');
-		} else if($data->e->acceptDeleteMarket() === FALSE) {
-			\selling\Sale::fail('deletedMarket');
 		} else if($data->e->acceptDeleteMarketSale() === FALSE) {
 			\selling\Sale::fail('deletedMarketSale');
 		}

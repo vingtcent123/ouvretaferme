@@ -260,6 +260,7 @@ class FarmUi {
 	public static function urlSellingSalesLabel(Farm $eFarm): string {
 		return self::url($eFarm).'/etiquettes';
 	}
+
 	public static function urlSellingSalesAccounting(Farm $eFarm): string {
 		return self::url($eFarm).'/precomptabilite';
 	}

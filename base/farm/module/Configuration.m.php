@@ -60,6 +60,7 @@ class ConfigurationModel extends \ModuleModel {
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'organicCertifier' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMode' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'saleClosing' => ['int16', 'min' => 7, 'max' => 365, 'cast' => 'int'],
 			'documentCopy' => ['bool', 'cast' => 'bool'],
 			'documentTarget' => ['enum', [\farm\Configuration::ALL, \farm\Configuration::PRIVATE, \farm\Configuration::PRO, \farm\Configuration::DISABLED], 'cast' => 'enum'],
 			'orderFormPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
@@ -85,7 +86,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -115,6 +116,9 @@ class ConfigurationModel extends \ModuleModel {
 
 			case 'hasVat' :
 				return TRUE;
+
+			case 'saleClosing' :
+				return 30;
 
 			case 'documentCopy' :
 				return FALSE;
@@ -244,6 +248,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function wherePaymentMode(...$data): ConfigurationModel {
 		return $this->where('paymentMode', ...$data);
+	}
+
+	public function whereSaleClosing(...$data): ConfigurationModel {
+		return $this->where('saleClosing', ...$data);
 	}
 
 	public function whereDocumentCopy(...$data): ConfigurationModel {
