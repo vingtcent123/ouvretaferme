@@ -156,7 +156,7 @@ class MembershipUi {
 			$h .= '</p>';
 
 			$h .= '<p>';
-				$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b> jusqu'au 31 décembre 2025 pour accompagner le démarrage de l'association. À partir du 1<sup>er</sup> janvier 2026, le montant minimal pour l'adhésion sera fixé à 100 €. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money(AssociationSetting::MEMBERSHIP_FEE, precision: 0)]);
+				$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b>. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money(AssociationSetting::MEMBERSHIP_FEE, precision: 0)]);
 			$h .= '</p>';
 
 			$h .= '<br/>';
@@ -177,7 +177,7 @@ class MembershipUi {
 						$h .= s("Si vous le souhaitez, plutôt qu'utiliser le paiement par carte bancaire, vous pouvez également faire un virement sur le compte bancaire de l'association en indiquant dans le motif du virement <b>Adhésion ferme {farm}</b> (<link>télécharger l'IBAN</link>).", ['farm' => $eFarm['id'], 'link' => '<a href="'.\Asset::getPath('association', 'document/iban.pdf').'" data-ajax-navigation="never">']);
 					$h .= '</p>';
 
-					$h .= $this->getAmountBlocks($form, [AssociationSetting::MEMBERSHIP_FEE, AssociationSetting::MEMBERSHIP_FEE + 20, AssociationSetting::MEMBERSHIP_FEE + 40], AssociationSetting::MEMBERSHIP_FEE);
+					$h .= $this->getAmountBlocks($form, [AssociationSetting::MEMBERSHIP_FEE, AssociationSetting::MEMBERSHIP_FEE + 50, AssociationSetting::MEMBERSHIP_FEE + 100], AssociationSetting::MEMBERSHIP_FEE);
 
 					$h .= $form->checkbox('terms', 'yes', [
 						'mandatory' => TRUE,
