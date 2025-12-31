@@ -173,6 +173,7 @@ Class SuggestionLib extends SuggestionCrud {
 				'paymentMethod' => ['id', 'fqn'],
 			])
 			->whereFarm($eFarm)
+			->whereStatus('!', \selling\Invoice::DRAFT)
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1))
 			->where(new \Sql('m1.date <= '.\selling\Invoice::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH')))))
 			->join(\bank\Cashflow::model(), 'm1.id = m2.invoice', 'LEFT')

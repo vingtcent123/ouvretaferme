@@ -326,7 +326,7 @@ class TipUi {
 					'title' => s("Rapprochez factures et opérations bancaires"),
 					'content' => $h,
 					'image' => FALSE,
-					'button' => [$link, s("Importer mes opérations bancaires")],
+					'button' => NULL,
 				];
 
 			case 'accounting-pre-accounting' :

@@ -177,6 +177,9 @@ new Page(function($data) {
 	})
 	->get('/precomptabilite:rapprocher', function($data) {
 
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
+		$data->tipNavigation = 'inline';
+
 		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaitingByInvoice();
 
 		$data->eImportLast = \bank\ImportLib::getLastImport();
