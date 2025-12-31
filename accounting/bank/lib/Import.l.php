@@ -135,7 +135,7 @@ class ImportLib extends ImportCrud {
 			->getCollection();
 	}
 
-	public static function importBankStatement(): ?string {
+	public static function importBankStatement(): ?Import {
 
 		if(isset($_FILES['ofx']) === FALSE) {
 			return null;
@@ -199,7 +199,7 @@ class ImportLib extends ImportCrud {
 
 		Cashflow::model()->commit();
 
-		return $status;
+		return $eImport;
 
 	}
 

@@ -22,13 +22,22 @@ new Page()
 
 		$fw = new FailWatch();
 
-		$result = \bank\ImportLib::importBankStatement();
+		$eImport = \bank\ImportLib::importBankStatement();
+
+		if(count(($eImport['result']['imported']) ?? []) < 100) {
+			$imported = TRUE;
+			\preaccounting\SuggestionLib::calculateSuggestionsByFarm($data->eFarm);
+		} else {
+			$imported = FALSE;
+		}
 
 		if($fw->ok()) {
 
-			\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::RECONCILIATE, \company\CompanyCron::WAITING);
+			if($imported === FALSE) {
+				\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::RECONCILIATE, \company\CompanyCron::WAITING);
+			}
 
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Import::'.$result);
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Import::'.$eImport['status']);
 		} else {
 			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?error='.$fw->getLast());
 		}
