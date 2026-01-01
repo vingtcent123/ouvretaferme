@@ -60,7 +60,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 			case NULL:
 				echo '<div class="tab-panel selected" data-tab="journal">';
-				echo new \journal\JournalUi()->getTableContainer($data->eFarm, NULL, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
+				echo new \journal\JournalUi()->list($data->eFarm, NULL, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
 				echo '</div>';
 				break;
 
@@ -78,7 +78,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 			default:
 				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-				echo new \journal\JournalUi()->getTableContainer($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
+				echo new \journal\JournalUi()->list($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
 				echo '</div>';
 				break;
 
@@ -91,5 +91,11 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 	if(isset($data->nPage)) {
 		echo \util\TextUi::pagination($data->page, $data->nPage);
 	}
+
+});
+
+new AdaptativeView('attach', function($data, PanelTemplate $t) {
+
+	return new \journal\OperationUi()->getAttach($data->eFarm, $data->cOperation, $data->tip);
 
 });

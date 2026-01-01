@@ -16,7 +16,6 @@ new Page()
 			'periodStart' => GET('periodStart'),
 			'periodEnd' => GET('periodEnd'),
 			'isReconciliated' => GET('isReconciliated', '?bool'),
-			'bankAccount' => \bank\BankAccountLib::getById(GET('bankAccount')),
 			'id' => GET('id'),
 			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
 		], GET('sort', default: 'date-'));
@@ -45,6 +44,11 @@ new Page()
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll();
 
+		if(get_exists('bankAccount') === FALSE and \session\SessionLib::exists('bankAccount')) {
+			$search->set('bankAccount', \bank\BankAccountLib::getById(\session\SessionLib::get('bankAccount')));
+		} else {
+			$search->set('bankAccount', \bank\BankAccountLib::getById(GET('bankAccount')));
+		}
 		$eBankAccountSelected = $search->get('bankAccount');
 		if($eBankAccountSelected->empty() or $data->cBankAccount->offsetExists($eBankAccountSelected['id']) === FALSE) {
 			$eBankAccountSelected = $data->cBankAccount->first();
@@ -52,6 +56,7 @@ new Page()
 			$eBankAccountSelected = $data->cBankAccount->offsetGet($eBankAccountSelected['id']);
 		}
 		$search->set('bankAccount', $eBankAccountSelected);
+		\session\SessionLib::set('bankAccount', $eBankAccountSelected['id']);
 
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
@@ -143,8 +148,8 @@ new \bank\CashflowPage(
 	->get('attach', function($data) {
 
 		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
-		$data->cOperation = \journal\OperationLib::getByIds(GET('operations', 'array'));
-		\journal\OperationLib::setHashOperations($data->cOperation);
+
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-cashflow-attach');
 
 		throw new ViewAction($data);
 
@@ -183,16 +188,19 @@ new \bank\CashflowPage(
 		}
 
 		if(post_exists('operations') === FALSE) {
-			\bank\Cashflow::fail('noSelectedOperation');
+			\bank\Cashflow::fail('operationsRequiredForAttach', wrapper: 'operation');
 		}
 
 		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
-		$cOperation = \journal\OperationLib::getOperationsForAttach(POST('operations', 'array'));
-		\journal\Operation::validateBatchAttach($data->eCashflow, $cOperation);
+		if($eThirdParty->empty()) {
+			\bank\Cashflow::fail('thirdPartyRequiredForAttach', wrapper: 'third-party');
+		}
 
-		\bank\CashflowLib::attach($data->eCashflow, $cOperation, $eThirdParty);
+		$cOperation = \journal\OperationLib::getOperationsForAttach(POST('operations', 'array'));
 
 		$fw->validate();
+
+		\bank\CashflowLib::attach($data->eCashflow, $cOperation, $eThirdParty);
 
 		throw new ReloadAction('bank', 'Cashflow::attached');
 
@@ -246,5 +254,19 @@ new \bank\CashflowPage(
 
 	throw new ReloadAction('bank', 'Cashflow::undeleted');
 
-});
+})
+;
+
+
+new Page()
+	->post('query', function($data) {
+
+		$data->cOperation = \journal\OperationLib::getByIds(GET('operations', 'array'));
+
+		$data->cCashflow = \bank\CashflowLib::getForAttachQuery(POST('query'), $data->cOperation);
+
+		throw new \ViewAction($data);
+
+	})
+;
 ?>

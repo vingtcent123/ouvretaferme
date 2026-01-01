@@ -64,7 +64,7 @@ Class AssetUi {
 
 		$h .= $form->dynamicGroups($eAsset, ['description*']);
 
-		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset, $eOperation) {
+		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset) {
 			$d->autocompleteDispatch = '[data-account="'.$form->getId().'"]';
 			$d->attributes['data-wrapper'] = 'account';
 			$d->attributes['data-account'] = $form->getId();
@@ -93,11 +93,11 @@ Class AssetUi {
 				).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
 			);
 		$h .= '</div>';
-		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.(($eAsset->exists() or $eOperation->exists()) ? '' : 'hide').'" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
+		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.(($eAsset->exists() or $cOperation->notEmpty()) ? '' : 'hide').'" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
 			if($eAsset->exists()) {
 				$h .= $this->getDurationRecommandation($eAsset['accountLabel'], $cAmortizationDuration);
-			} else if($eOperation->exists()) {
-				$h .= $this->getDurationRecommandation($eOperation['accountLabel'], $cAmortizationDuration);
+			} else if($cOperation->notEmpty()) {
+				$h .= $this->getDurationRecommandation($cOperation->first()['accountLabel'], $cAmortizationDuration);
 			}
 		$h .= '</div>';
 
@@ -743,7 +743,7 @@ Class AssetUi {
 			$h .= '<h3 class="mt-2">'.s("Écritures comptables liées à cette immobilisation").'</h3>';
 
 			$h .= '<div class="bg-background">';
-				$h .= new \journal\JournalUi()->getTableContainer($eFarm, NULL, $eAsset['cOperation'], $eFarm['eFinancialYear'], readonly: TRUE);
+				$h .= new \journal\JournalUi()->list($eFarm, NULL, $eAsset['cOperation'], $eFarm['eFinancialYear'], readonly: TRUE);
 			$h .= '</div>';
 
 		}

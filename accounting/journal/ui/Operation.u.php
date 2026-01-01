@@ -422,7 +422,7 @@ class OperationUi {
 				$h .= '<table class="tr-even">';
 					$h .= '<tr>';
 						$h .= '<th colspan="2" class="text-center">';
-							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?id='.$eCashflow['id'].'" target="_blank">';
+							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?id='.$eCashflow['id'].'&bankAccount='.$eCashflow['account']['id'].'" target="_blank">';
 								$h .= s("Opération #{id} du {date}", [
 									'id' => encode($eCashflow['id']),
 									'icon' => \Asset::icon('box-arrow-up-right').'</a>',
@@ -1331,6 +1331,86 @@ class OperationUi {
 
 	}
 
+	public function getAttach(\farm\Farm $eFarm, \Collection $cOperation, ?string $tip): \Panel {
+
+		$h = '';
+
+		if($tip) {
+			$h .= new \farm\TipUi()->get($eFarm, $tip, 'inline');
+		}
+
+		$h .= '<h3>';
+			$h .= p("Écriture à rattacher", "Groupe d'écritures à rattacher", $cOperation->count());
+		$h .= '</h3>';
+
+		$h .= '<div class="bg-background">';
+			$h .= new JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE);
+		$h .= '</div>';
+
+		$h .= '<h3>';
+			$h .= s("Rattachement");
+		$h .= '</h3>';
+
+		$form = new \util\FormUi();
+		$dialogOpen = $form->openAjax(\company\CompanyUi::urlJournal($eFarm).'/operations:doAttach', ['method' => 'post', 'id' => 'cashflow-doAttach', 'class' => 'panel-dialog']);
+
+		$amount = 0;
+		foreach($cOperation as $eOperation) {
+
+			$h .= $form->hidden('operations[]', $eOperation['id']);
+
+			if($eOperation['type'] === Operation::CREDIT) {
+
+				$amount += $eOperation['amount'];
+
+			} else {
+
+				$amount -= $eOperation['amount'];
+
+			}
+		}
+
+		$h .= $form->hidden('operation-amount', $amount);
+
+		$eThidParty = $cOperation->first()['thirdParty'];
+		$h .= $form->group(
+			s("Tiers").\util\FormUi::asterisk(),
+			$form->dynamicField(new \journal\Operation(['thirdParty' => $eThidParty]), 'thirdParty', function($d) use($form, $eThidParty) {
+				$d->autocompleteDispatch = '[data-third-party="'.$form->getId().'"]';
+				$d->attributes['data-third-party'] = $form->getId();
+				$d->default = fn($e, $property) => GET('thirdParty');
+				$d->label = '';
+			}),
+			['wrapper' => 'third-party']
+		);
+
+		$h .= $form->group(
+			s("Opération bancaire").\util\FormUi::asterisk(),
+			$form->dynamicField(new \journal\OperationCashflow(), 'cashflow', function($d) use($form, $cOperation) {
+			$d->autocompleteDispatch = '[data-cashflow="'.$form->getId().'"]';
+			$d->attributes['data-cashflow'] = $form->getId();
+			$d->default = fn($e, $property) => get('cashflow');
+			$d->label = '';
+			$d->autocompleteBody = function() {
+				return [
+				];
+			};
+				new \bank\CashflowUi()->query($d, GET('farm', 'farm\Farm'), $cOperation);
+			}),
+			['wrapper' => 'cashflow']
+		);
+
+		$h .= $form->group($form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']));
+
+		return new \Panel(
+			id: 'panel-operation-attach',
+			title: p("Rattacher l'écriture à une opération bancaire", "Rattacher les écritures à une opération bancaire", $cOperation->count()),
+			body: $h,
+			dialogOpen : $dialogOpen,
+			dialogClose: $form->close(),
+		);
+
+	}
 	public static function url(\farm\Farm $eFarm, Operation $eOperation): string {
 
 		return \company\CompanyUi::urlJournal($eFarm).'/livre-journal?id='.$eOperation['id'];
@@ -1445,7 +1525,7 @@ class OperationUi {
 		$d->prepend = \Asset::icon('journal-bookmark');
 		$d->field = 'autocomplete';
 
-		$d->placeholder ??= s("Opération...");
+		$d->placeholder ??= s("Écriture...");
 		$d->multiple = $multiple;
 
 		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:query';

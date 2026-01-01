@@ -134,23 +134,6 @@ class Operation extends OperationElement {
 
 	}
 
-	public static function validateBatchAttach(\bank\Cashflow $eCashflow, \Collection $cOperation) {
-
-		if($cOperation->empty()) {
-
-			throw new \FailAction('journal\Operation::attach.check');
-
-		} else {
-
-			foreach($cOperation as $eOperation) {
-				if($eOperation->empty()) {
-					throw new \NotExpectedAction('Operation to attach empty');
-				}
-
-			}
-		}
-	}
-
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

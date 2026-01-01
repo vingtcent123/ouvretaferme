@@ -313,7 +313,7 @@ class JournalUi {
 
 	}
 
-	public function getTableContainer(
+	public function list(
 		\farm\Farm $eFarm,
 		?string $selectedJournalCode,
 		\Collection $cOperation,
@@ -404,11 +404,18 @@ class JournalUi {
 
 					foreach($cOperation as $eOperation) {
 
-					$batch = [];
+						$batch = [];
 
-					if($eOperation->acceptNewAsset() or ($eOperation['operation']->notEmpty() and $eOperation['operation']->acceptNewAsset())) {
-						$batch[] = 'accept-asset';
-					}
+						if($eOperation->acceptNewAsset() or ($eOperation['operation']->notEmpty() and $eOperation['operation']->acceptNewAsset())) {
+							$batch[] = 'accept-asset';
+						}
+
+						$hash = $eOperation['hash'];
+						$hasBankForHash = $cOperation->find(fn($e) => ($e['hash'] === $hash and $e['cashflow']->notEmpty()))->notEmpty();
+						if($hasBankForHash === FALSE) {
+							$batch[] = 'accept-attach';
+						}
+
 						$referenceDate = $eFinancialYearSelected->isCashAccounting() ? $eOperation['paymentDate'] : $eOperation['date'];
 
 						if($currentDate === NULL or $currentDate !== $referenceDate) {
@@ -501,6 +508,11 @@ class JournalUi {
 									}
 
 								$h .= encode($eOperation['description']);
+								if($eOperation['cashflow']->notEmpty() and \account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
+									$h .= ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?id='.$eOperation['cashflow']['id'].'&bankAccount='.$eOperation['cashflow']['account']['id'].'" class="btn btn-xs btn-secondary" title="'.("Voir l'opération bancaire liée").'">';
+										$h .= \Asset::icon('piggy-bank');
+									$h .= '</a>';
+								}
 
 							$h .= '</td>';
 
@@ -583,6 +595,15 @@ class JournalUi {
 
 												$h .= '<div class="dropdown-divider"></div>';
 												$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
+
+											}
+
+											$hash = $eOperation['hash'];
+											$hasBankForHash = $cOperation->find(fn($e) => ($e['hash'] === $hash and \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)))->notEmpty();
+											if($hasBankForHash === FALSE) {
+
+												$h .= '<div class="dropdown-divider"></div>';
+												$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations:attach?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Rattacher à une opération bancaire").'</a>';
 
 											}
 
@@ -835,6 +856,8 @@ class JournalUi {
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createDocumentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('paperclip').'<span>'.s("Pièce comptable").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlAsset($eFarm).'/:create" data-ajax-method="get" class="batch-item batch-asset" data-batch-not-only="hide" data-batch-test="accept-asset">'.\Asset::icon('house-door').'<span>'.s("Créer la fiche d'immo").'</span></a>';
+
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operations:attach" data-ajax-method="get" class="batch-item" data-batch-test="accept-attach" data-batch-not-only="hide">'.\Asset::icon('piggy-bank').'<span>'.s("Rattacher").'</span></a>';
 
 		$menu .= '<span class="hide" data-batch-title-more-singular>'.s(", dont 1 opération liée").'</span>';
 		$menu .= '<span class="hide" data-batch-title-more-plural>'.s(", dont <span data-batch-title-more-value></span> opérations liées").'</span>';

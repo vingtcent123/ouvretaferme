@@ -22,6 +22,10 @@ class AlertUi {
 
 			'Operation::description.check' => s("Veuillez saisir un libellé"),
 
+			'Operation::cashflowRequiredForAttach' => s("Veuillez choisir une opération bancaire"),
+			'Operation::operationsRequiredForAttach' => s("Veuillez choisir une écriture comptable"),
+			'Operation::thirdPartyRequiredForAttach' => s("Veuillez choisir un tiers"),
+
 			'Operation::lettering.duplicate' => s("Ce code de lettrage est déjà utilisé."),
 
 			'thirdParty.empty' => s("Choisissez un tiers pour ce paiement."),
@@ -66,6 +70,8 @@ class AlertUi {
 			'Operation::updated' => s("L'écriture a bien été modifiée."),
 			'Operation::updatedSeveral' => s("Les écritures ont bien été modifiées."),
 			'Operation::deleted' => s("L'écriture a bien été supprimée."),
+			'Operations::attached' => s("Les écritures ont bien été rattachées."),
+			'Operation::attached' => s("L'écriture a bien été rattachée."),
 
 			'Operations::updated' => s("Les opérations ont été modifiées."),
 

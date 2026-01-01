@@ -370,6 +370,33 @@ class TipUi {
 					'image' => FALSE,
 					'button' => NULL,
 				];
+
+			case 'accounting-cashflow-attach' :
+
+				$h = '<p>'.s("Vous pouvez rattacher à une opération bancaire des écritures comptables déjà saisies mais non équilibrées par une contrepartie en compte {bankAccount}. La contrepartie en compte de banque {bankAccount} du montant de l'opération bancaire sera la seule écriture créée.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</p>';
+				$h .= '<p>'.s("Les écritures proposées sont classées avec le tiers sélectionné à l'étape {icon} en premier, mais il est possible de sélectionner des écritures liées à d'autres tiers.<br /><i>exemple de cas d'usage: si votre opération bancaire correspond à un virement {iconStripe} Stripe et que vous y rattachez toutes les écritures de ventes de vos clients</i>.", ['iconStripe' => \Asset::icon('stripe'), 'icon' => \Asset::icon('1-circle')]).'</p>';
+
+				return [
+					'icon' => \Asset::icon('piggy-bank'),
+					'title' => s("Rattacher une opération bancaire à une ou plusieurs écritures comptables"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting:bank#cashflow-manage', \Asset::icon('person-raised-hand').' '.s("Lire l'aide sur le rattachement des opérations bancaires")],
+				];
+
+			case 'accounting-operation-attach' :
+
+				$h = '<p>'.s("Vous pouvez rattacher des écritures comptables à une opération bancaire. La contrepartie en compte de banque {bankAccount} du montant de l'opération bancaire sera la seule écriture créée.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</p>';
+				$h .= '<p>'.s("Les opérations bancaires proposées sont filtrées selon le montant ± 1€, et elles ne doivent pas déjà être rattachées à une écriture comptable.", ).'</p>';
+
+				return [
+					'icon' => \Asset::icon('piggy-bank'),
+					'title' => s("Rattacher une ou plusieurs écritures comptables à une opération bancaire"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting:bank#cashflow-manage', \Asset::icon('person-raised-hand').' '.s("Lire l'aide sur le rattachement des opérations bancaires")],
+				];
+
 			default:
 				throw new \Exception('Invalid tip \''.$fqn.'\'');
 

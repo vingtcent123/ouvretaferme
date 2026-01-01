@@ -1399,16 +1399,20 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	/* Récupère la liste des opérations à rattacher à une opération bancaire.
+	 * - toutes les opérations (via le hash)
+	 * Il n'y a pas de filtre sur le fait que les opérations soient déjà rattachées à une opération bancaire
+	 * (exemple d'une écriture réglée en plusieurs paiements différents)
+	 */
 	public static function getOperationsForAttach(array $operationIds): \Collection {
 
-		// Get the operations AND linked Operations
-		return Operation::model()
-			->select(Operation::getSelection())
-			->or(
-				fn() => $this->whereId('IN', $operationIds),
-				fn() => $this->whereOperation('IN', $operationIds),
-			)
-			->getCollection();
+		$hashes = Operation::model()
+			->select('hash')
+			->whereId('IN', $operationIds)
+			->getCollection()
+			->getColumn('hash');
+
+		return self::getByHashes($hashes);
 
 	}
 
@@ -1470,10 +1474,7 @@ class OperationLib extends OperationCrud {
 			'document' => $document,
 			'documentDate' => $eOperation['documentDate'] ?? $eCashflow['date'],
 			'thirdParty' => $eThirdParty['id'] ?? NULL,
-			'type' => match($eCashflow['type']) {
-				\bank\Cashflow::CREDIT => Operation::DEBIT,
-				\bank\Cashflow::DEBIT => Operation::CREDIT,
-			},
+			'type' => ($eCashflow['amount'] > 0 ? Operation::DEBIT : Operation::CREDIT),
 			'amount' => abs($eCashflow['amount']),
 			'paymentDate' => $eCashflow['date'],
 			'paymentMethod'=> $eOperation['paymentMethod']['id'] ?? NULL,

@@ -208,5 +208,41 @@ class CashflowLib extends CashflowCrud {
 			->update(['status' => Cashflow::WAITING]);
 	}
 
+	public static function getForAttachQuery(string $query, \Collection $cOperation): \Collection {
+
+		$totalAmount = array_reduce($cOperation->getArrayCopy(), function ($sum, $element) {
+			// Il faut inverser car on va chercher dans le relevé bancaire.
+			if($element['type'] === \journal\Operation::CREDIT) {
+				$sum += $element['amount'];
+			} else {
+				$sum -= $element['amount'];
+			}
+				return $sum;
+			});
+
+		if($query !== '') {
+
+			$keywords = [];
+
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
+
+			foreach(preg_split('/\s+/', $query) as $word) {
+				$keywords[] = '*'.$word.'*';
+			}
+
+			$match = 'MATCH(memo, name) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+			Cashflow::model()->where($match.' > 0');
+
+		}
+
+		return Cashflow::model()
+			->select(Cashflow::getSelection())
+			->whereAmount('>=', ($totalAmount - 1))
+			->whereAmount('<=', ($totalAmount + 1))
+			->whereHash('=', NULL)
+			->getCollection();
+
+	}
 }
 ?>

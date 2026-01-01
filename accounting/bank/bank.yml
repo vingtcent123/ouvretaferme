@@ -16,7 +16,7 @@ Cashflow:
   type: enum(DEBIT, CREDIT, OTHER)
   amount: decimal(8, 2)
   fitid: ?text8(1, null)
-  name: ?text24(1, null)
+  name: ?text24(1, null) @collate(general)
   memo: ?text8(1, null) @collate(general)
   account: bank\BankAccount
   import: bank\Import
@@ -31,6 +31,9 @@ Cashflow:
   createdBy: user\User = SPECIAL(user)
   UNIQUE: [
     ["fitid"]
+  ]
+  SEARCH: [
+    ["memo", "name", "document"]
   ]
 
 Import:

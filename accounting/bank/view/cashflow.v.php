@@ -52,7 +52,24 @@ new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('attach', function($data, PanelTemplate $t) {
 
-		return new \bank\CashflowUi()->getAttach($data->eFarm, $data->eCashflow, $data->eThirdParty, $data->cOperation);
+	return new \bank\CashflowUi()->getAttach($data->eFarm, $data->eCashflow, $data->eThirdParty, $data->tip);
+
+});
+
+
+new JsonView('query', function($data, AjaxTemplate $t) {
+
+	$results = [];
+
+	foreach($data->cCashflow as $eCashflow) {
+
+		$results[] = \bank\CashflowUi::getAutocomplete($eCashflow);
+
+	}
+
+	$results[] = \bank\CashflowUi::getAutocompleteCreate($data->eFarm);
+
+	$t->push('results', $results);
 
 });
 

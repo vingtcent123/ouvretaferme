@@ -146,5 +146,50 @@ new Page(function($data) {
 		$filename = journal\PdfUi::filenameJournal($data->eFarm).'.pdf';
 
 		throw new PdfAction($content, $filename);
-	});
+	})
+	->get('attach', function($data) {
+
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-operation-attach');
+
+		$data->cOperation = \journal\OperationLib::getOperationsForAttach(GET('ids', 'array'));
+
+		throw new ViewAction($data);
+
+	})
+	->post('doAttach', function($data) {
+
+		$data->eCashflow = \bank\CashflowLib::getById(POST('cashflow'),
+			\bank\Cashflow::getSelection() +
+			[
+				'import' => \bank\Import::getSelection() +
+					['account' => \bank\BankAccount::getSelection()]
+			]
+		);
+
+		$fw = new FailWatch();
+
+		if($data->eCashflow->exists() === FALSE) {
+			\journal\Operation::fail('cashflowRequiredForAttach', wrapper: 'cashflow');
+		}
+
+		if(post_exists('operations') === FALSE) {
+			\journal\Operation::fail('operationsRequiredForAttach');
+		}
+
+		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
+
+		if($eThirdParty->empty()) {
+			\journal\Operation::fail('thirdPartyRequiredForAttach', wrapper: 'third-party');
+		}
+
+		$cOperation = \journal\OperationLib::getOperationsForAttach(POST('operations', 'array'));
+
+		$fw->validate();
+
+		\bank\CashflowLib::attach($data->eCashflow, $cOperation, $eThirdParty);
+
+		throw new ReloadAction('journal', $cOperation->count() > 1 ? 'Operations::attached': 'Operation::attached');
+
+	})
+;
 ?>

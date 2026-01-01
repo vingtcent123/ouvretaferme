@@ -13,6 +13,15 @@
 	margin: 1rem auto;
 }
 
+.panel.open #tip-wrapper.tip-wrapper-inline {
+	margin-bottom: 1rem;
+}
+
+.panel.open #tip-wrapper.tip-wrapper-inline .tip-block {
+	width: 100%;
+	margin: 0;
+}
+
 @media (max-width: 575px) {
 
 	.tip-block {

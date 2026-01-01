@@ -626,11 +626,18 @@ class CashflowUi {
 		);
 	}
 
-	public function getAttach(\farm\Farm $eFarm, Cashflow $eCashflow, \account\ThirdParty $eThidParty, \Collection $cOperation): \Panel {
+	public function getAttach(\farm\Farm $eFarm, Cashflow $eCashflow, \account\ThirdParty $eThidParty, ?string $tip): \Panel {
 
 		\Asset::js('bank', 'cashflow.js');
 		\Asset::css('bank', 'cashflow.css');
-		$h = CashflowUi::getCashflowHeader($eCashflow);
+
+		$h = '';
+
+		if($tip) {
+			$h .= new \farm\TipUi()->get($eFarm, $tip, 'inline');
+		}
+
+		$h .= CashflowUi::getCashflowHeader($eCashflow);
 
 		$form = new \util\FormUi();
 		$dialogOpen = $form->openAjax(\company\CompanyUi::urlBank($eFarm).'/cashflow:doAttach', ['method' => 'post', 'id' => 'cashflow-doAttach', 'class' => 'panel-dialog']);
@@ -638,25 +645,23 @@ class CashflowUi {
 		$h .= $form->hidden('id', $eCashflow['id']);
 		$h .= $form->hidden('cashflow-amount', $eCashflow['amount']);
 
-		$h .= '<div class="util-block-important mt-2 mb-3">';
-			$h .= '<p>'.s("Vous pouvez rattacher à cette opération bancaire des écritures comptables déjà saisies mais non équilibrées par une contrepartie en compte {bankAccount}. La contrepartie en compte de banque {bankAccount} du montant de l'opération bancaire sera la seule écriture créée.", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>']).'</p>';
-			$h .= '<p>'.s("Les écritures proposées sont classées avec le tiers sélectionné à l'étape {icon} en premier, mais il est possible de sélectionner des écritures liées à d'autres tiers.<br /><i>exemple de cas d'usage: si votre opération bancaire correspond à un virement {iconStripe} Stripe et que vous y rattachez toutes les écritures de ventes de vos clients</i>.", ['iconStripe' => \Asset::icon('stripe'), 'icon' => \Asset::icon('1-circle')]).'</p>';
-			$h .= '<a href="/doc/accounting:bank#cashflow-manage" class="btn btn-secondary">'.\Asset::icon('person-raised-hand').' '.s("Lire l'aide sur le rattachement des opérations bancaires").'</a>';
+		$h .= '<div class="mt-1 mb-3">';
+
+			$h .= $form->group(
+				s("Tiers").\util\FormUi::asterisk(),
+				$form->dynamicField(new \journal\Operation(['thirdParty' => $eThidParty]), 'thirdParty', function($d) use($form, $eThidParty) {
+					$d->autocompleteDispatch = '[data-third-party="'.$form->getId().'"]';
+					$d->attributes['data-third-party'] = $form->getId();
+					$d->default = fn($e, $property) => GET('thirdParty');
+					$d->label = '';
+				}),
+				['wrapper' => 'third-party']
+			);
 		$h .= '</div>';
 
-		$h .= '<div class="mb-3">';
-			$h .= '<h3>'.\Asset::icon('1-circle').' '.s("Indiquez le tiers lié à cette opération bancaire").'</h3>';
-			$h .= $form->dynamicField(new \journal\Operation(['thirdParty' => $eThidParty]), 'thirdParty', function($d) use($form, $eThidParty) {
-				$d->autocompleteDispatch = '[data-third-party="'.$form->getId().'"]';
-				$d->attributes['data-third-party'] = $form->getId();
-				$d->default = fn($e, $property) => GET('thirdParty');
-				$d->label = '';
-				$d->wrapper = 'third-party';
-			});
-		$h .= '</div>';
-
-		$h .= '<h3>'.\Asset::icon('2-circle').' '.s("Sélectionnez les écritures liées à cette opération bancaire").'</h3>';
-			$h .= $form->dynamicField(new \journal\OperationCashflow(), 'operation', function($d) use($form, $eCashflow) {
+		$h .= $form->group(
+			s("Écritures").\util\FormUi::asterisk(),
+			$form->dynamicField(new \journal\OperationCashflow(), 'operation', function($d) use($form, $eCashflow) {
 				$d->autocompleteDispatch = '[data-operation="'.$form->getId().'"]';
 				$d->attributes['data-operation'] = $form->getId();
 				$d->default = fn($e, $property) => get('operation');
@@ -666,19 +671,20 @@ class CashflowUi {
 					return [
 					];
 				};
-				$d->group += ['wrapper' => 'operation'];
 				new \journal\OperationUi()->query($d, GET('farm', 'farm\Farm'), $eCashflow);
-			});
+			}),
+			['wrapper' => 'operation']
+		);
 
 		$h .= '<div class="stick-sm util-overflow-sm" data-operations>';
-			$h .= $this->getSelectedOperationsTableForAttachement($eCashflow, $cOperation);
+			$h .= $this->getSelectedOperationsTableForAttachement($eCashflow);
 		$h .= '</div>';
 
-		$footer = '<div class="cashflow-attach-panel-footer" onrender="CashflowAttach.reloadFooter();">';
-			$footer .= '<div><div id="cashflow-attach-information" style="margin: 0;">'.'</div></div>';
-			$footer .= '<div>'.s("Total sélectionné : {value}", '<span data-field="totalAmount" class="mr-2">'.\util\TextUi::money(0).'</span>').'</div>';
-				$footer .= $form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']);
-			$footer .= '</div>';
+		$h .= '<div id="cashflow-attach-information"></div>';
+		$h .= '<div class="cashflow-attach-panel-validate" onrender="CashflowAttach.reloadFooter();">';
+				$h .= $form->submit(s("Rattacher"), ['class' => 'btn btn-secondary']);
+			$h .= '<div>'.s("Total sélectionné : {value}", '<span data-field="totalAmount" class="mr-2">'.\util\TextUi::money(0).'</span>').'</div>';
+			$h .= '</div>';
 
 		return new \Panel(
 			id: 'panel-cashflow-attach',
@@ -686,12 +692,12 @@ class CashflowUi {
 			body: $h,
 			dialogOpen : $dialogOpen,
 			dialogClose: $form->close(),
-			footer: $footer,
+		//	footer: $footer,
 		);
 
 	}
 
-	public function getSelectedOperationsTableForAttachement(Cashflow $eCashflow, \Collection $cOperation): string {
+	public function getSelectedOperationsTableForAttachement(Cashflow $eCashflow, \Collection $cOperation = new \Collection()): string {
 
 		$h = '<table id="cashflow-operations" class="tr-even mt-2 tr-hover '.($cOperation->empty() ? 'hide' : '').'">';
 
@@ -817,6 +823,60 @@ class CashflowUi {
 
 	}
 
+	public static function getAutocomplete(\bank\Cashflow $eCashflow): array {
+
+		\Asset::css('media', 'media.css');
+
+		$itemHtml = '<div style="display: flex; gap: 0.5rem;">';
+			$itemHtml .= '<div class="text-end">';
+				$itemHtml .= \util\DateUi::numeric($eCashflow['date']);
+			$itemHtml .= '</div>';
+			$itemHtml .= '<div>';
+				$itemHtml .= s("{direction} de {amount}", [
+					'direction' => $eCashflow['amount'] > 0 ? s("Crédit") : s("Débit"),
+					'amount' => \util\TextUi::money(abs($eCashflow['amount'])),
+				]);
+				$itemHtml .= '<br />';
+				$itemHtml .= encode($eCashflow['memo']);
+			$itemHtml .= '</div>';
+		$itemHtml .= '</div>';
+
+		return [
+			'value' => $eCashflow['id'],
+			'itemText' => encode($eCashflow['memo']).s(" ({amount} au {type})", ['amount' => \util\TextUi::money(abs($eCashflow['amount'])), 'type' => $eCashflow['amount'] > 0 ? s("crédit") : s("débit")]),
+			'itemHtml' => $itemHtml,
+		];
+
+	}
+
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
+
+		$item = \Asset::icon('piggy-bank');
+		$item .= '<div>'.s("Aucune opération bancaire trouvée (cliquer pour voir toutes les opérations bancaires non rattachées)").'</div>';
+
+		return [
+			'type' => 'link',
+			'link' => \company\CompanyUi::urlFarm($eFarm).'/banque/operations?isReconciliated=0',
+			'itemHtml' => $item,
+		];
+
+	}
+	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, \Collection $cOperation, bool $multiple = FALSE) {
+
+		$d->prepend = \Asset::icon('journal-bookmark');
+		$d->field = 'autocomplete';
+
+		$d->placeholder ??= s("Opération bancaire...");
+		$d->multiple = $multiple;
+
+		$operations = join('&operations[]=', $cOperation->getIds());
+		$d->autocompleteUrl = \company\CompanyUi::urlBank($eFarm).'/cashflow:query?operations[]='.$operations;
+
+		$d->autocompleteResults = function(Cashflow $eCashflow) {
+			return self::getAutocomplete($eCashflow);
+		};
+
+	}
 
 	public static function p(string $property): \PropertyDescriber {
 

@@ -54,7 +54,7 @@ class CashflowModel extends \ModuleModel {
 			'type' => ['enum', [\bank\Cashflow::DEBIT, \bank\Cashflow::CREDIT, \bank\Cashflow::OTHER], 'cast' => 'enum'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'fitid' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
-			'name' => ['text24', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'name' => ['text24', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'memo' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'account' => ['element32', 'bank\BankAccount', 'cast' => 'element'],
 			'import' => ['element32', 'bank\Import', 'cast' => 'element'],
@@ -83,6 +83,10 @@ class CashflowModel extends \ModuleModel {
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['fitid']
+		]);
+
+		$this->searchConstraints = array_merge($this->searchConstraints, [
+			['memo', 'name', 'document']
 		]);
 
 	}
