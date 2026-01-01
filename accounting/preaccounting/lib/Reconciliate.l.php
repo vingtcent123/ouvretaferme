@@ -35,10 +35,7 @@ Class ReconciliateLib {
 				'cashflow' => $eCashflow,
 			];
 
-			\selling\Invoice::model()
-        ->whereId($eInvoice['id'])
-        ->wherePaymentStatus(\selling\Invoice::NOT_PAID)
-        ->update($updateInvoice);
+			\selling\Invoice::model()->update($eInvoice, $updateInvoice);
 
 		}
 
@@ -89,6 +86,32 @@ Class ReconciliateLib {
 
 		// Invalidation de la suggestion validée
 		\preaccounting\Suggestion::model()->update($eSuggestionValidated, ['status' => \preaccounting\Suggestion::VALIDATED]);
+
+	}
+
+	public static function cancelReconciliation(\farm\Farm $eFarm, \bank\Cashflow $eCashflow): void {
+
+		\selling\Invoice::model()->beginTransaction();
+
+		$eInvoice = \selling\Invoice::model()
+			->select(\selling\Invoice::getSelection())
+			->whereCashflow($eCashflow)
+			->get();
+
+		\selling\Invoice::model()->update($eInvoice, ['cashflow' => NULL]);
+
+		\bank\Cashflow::model()->update($eCashflow, ['isReconciliated' => FALSE, 'isSuggestionCalculated' => FALSE]);
+
+		Suggestion::model()
+			->or(
+				fn() => $this->whereCashflow($eCashflow),
+				fn() => $this->whereInvoice($eInvoice),
+			)
+			->delete();
+
+		SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
+
+		\selling\Invoice::model()->commit();
 
 	}
 

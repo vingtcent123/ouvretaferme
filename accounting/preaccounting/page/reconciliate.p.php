@@ -6,7 +6,17 @@ new \Page()
 
 		throw new ViewAction($data);
 
-	});
+	})
+	->post('cancel', function($data) {
+
+		$eCashflow = \bank\CashflowLib::getById(POST('cashflow'))->validate('acceptCancelReconciliation');
+
+		\preaccounting\ReconciliateLib::cancelReconciliation($data->eFarm, $eCashflow);
+
+		throw new ReloadAction('preaccounting', 'Reconciliation::cancelled');
+
+	})
+;
 new \preaccounting\SuggestionPage()
 	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn($data) => throw new ViewAction($data))
 	->write('doIgnore', function($data) {

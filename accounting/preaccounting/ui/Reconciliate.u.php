@@ -92,11 +92,9 @@ Class ReconciliateUi {
 						$batch[] = 'accept-reconciliate';
 					}
 
-					$onclick = 'onclick="Reconciliate.updateSelection(this)"';
-
 					$h .= '<tbody>';
 
-						$h .= '<tr class="row-bold" '.$onclick.'>';
+						$h .= '<tr class="row-bold">';
 							$h .= '<td class="td-checkbox"></td>';
 							$h .= '<td>'.\util\DateUi::numeric($element['date']).'</td>';
 							$h .= '<td>';
@@ -118,17 +116,17 @@ Class ReconciliateUi {
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eSuggestion['id'].'" batch-type="reconciliate" oninput="Reconciliate.changeSelection(this)" data-batch-amount="'.($eCashflow['amount'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'" data-confidence="'.$currentConfidence[0].'"/>';
 							$h .= '</td>';
 
-							$h .= '<td '.$onclick.'>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
-							$h .= '<td colspan="2" '.$onclick.'>';
+							$h .= '<td>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
+							$h .= '<td colspan="2">';
 								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</div> <div>'.encode($eCashflow['memo']).'</div></div>';
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'>'.\util\TextUi::money($eCashflow['amount']).'</td>';
-							$h .= '<td class="text-center td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->confidence($eSuggestion).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element,\preaccounting\Suggestion::THIRD_PARTY).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
-							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2" '.$onclick.'>'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::PAYMENT_METHOD).'</td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($eCashflow['amount']).'</td>';
+							$h .= '<td class="text-center td-vertical-align-top" rowspan="2">'.$this->confidence($eSuggestion).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2">'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2">'.$this->reason($eSuggestion,  $element,\preaccounting\Suggestion::THIRD_PARTY).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2">'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::REFERENCE).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2">'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::AMOUNT).'</td>';
+							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2">'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::PAYMENT_METHOD).'</td>';
 						$h .= '</tr>';
 
 						$attributes = [
@@ -137,8 +135,8 @@ Class ReconciliateUi {
 
 						$h .= '<tr>';
 
-							$h .= '<td class="td-checkbox" '.$onclick.'></td>';
-							$h .= '<td '.$onclick.'></td>';
+							$h .= '<td class="td-checkbox"></td>';
+							$h .= '<td></td>';
 							$h .= '<td>'.$form->dynamicField($eSuggestion, 'paymentMethod', function($d) use($form, $cMethod, $eSuggestion) {
 								$d->values = $cMethod;
 								$d->default = fn() => $eSuggestion['paymentMethod'];
@@ -150,7 +148,7 @@ Class ReconciliateUi {
 							});
 							$h .= '</td>';
 
-							$h .= '<td '.$onclick.'>';
+							$h .= '<td>';
 
 								if($eSuggestion->acceptReconciliate()) {
 									$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ?");
@@ -167,7 +165,7 @@ Class ReconciliateUi {
 								$h .= '</a>';
 
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right" '.$onclick.'></td>';
+							$h .= '<td class="text-end highlight-stick-right"></td>';
 
 						$h .= '</tr>';
 

@@ -14,11 +14,6 @@ class Reconciliate {
 			.fetch();
 	}
 
-	static updateSelection(targetTbody) {
-		const checkbox = targetTbody.firstParent('tbody').qs('input[type="checkbox"]');
-
-		checkbox.click();
-	}
 	static toggleGroupSelection(target) {
 
 		const currentConfidence = target.dataset.confidence;

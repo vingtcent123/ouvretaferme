@@ -363,6 +363,26 @@ class CashflowUi {
 
 			}
 
+
+			if($eCashflow->acceptCancelReconciliation()) {
+
+				$nOperation = $eCashflow['cOperationHash']->count();
+				if($nOperation === 0) {
+					$confirm = s("Le lien entre la facture et l'opération bancaire sera supprimé. Confirmez-vous cette action ?");
+				} else {
+					$confirm = s("Cette action supprimera le rapprochement entre la facture et l'opération bancaire mais ne supprimera pas les écritures comptables créées. Vous pourrez les supprimer manuellement. Confirmez-vous cette action ?");
+				}
+				$reconciliate = '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:cancel"  post-cashflow="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+					$reconciliate .= s("Annuler le rapprochement");
+				$reconciliate .= '</a>';
+
+			} else {
+
+				$reconciliate = '';
+
+			}
+
+
 			if($eCashflow['status'] === Cashflow::DELETED) {
 
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
@@ -373,17 +393,16 @@ class CashflowUi {
 
 				$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
 
+				$h .= $reconciliate;
+
 				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les écritures liées)</div>", ['div' => '<div class="operations-delete-more">']);
 				$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 
 			} else {
 
-				if($actions) {
+				$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
 
-					$h .= '<div class="dropdown-divider"></div>';
-					$h .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
-
-				}
+				$h .= $reconciliate;
 
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
 					$h .= s("Supprimer l'opération bancaire");

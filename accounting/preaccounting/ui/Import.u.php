@@ -111,15 +111,13 @@ Class ImportUi {
 					$operations = $eInvoice['operations'];
 					$operation = array_shift($operations);
 
-					$onclick = 'onclick="Invoicing.updateSelection(this)"';
-
 					$h .= '<tbody>';
 						$h .= '<tr>';
 							$h .= '<td rowspan="'.($rowspan + 1).'" class="td-checkbox td-vertical-align-top">';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" batch-type="invoice" oninput="Invoicing.changeSelection(this)" data-batch-amount-excluding="'.($eInvoice['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eInvoice['priceIncludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</td>';
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eInvoice['date']).'</td>';
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="td-vertical-align-top">';
+							$h .= '<td rowspan="'.$rowspan.'" class="text-center td-vertical-align-top">'.\util\DateUi::numeric($eInvoice['date']).'</td>';
+							$h .= '<td rowspan="'.$rowspan.'" class="td-vertical-align-top">';
 								$h .= encode($eInvoice['customer']->getName());
 								if($eInvoice['customer']->notEmpty()) {
 									$h .= '<div class="util-annotation">';
@@ -128,12 +126,12 @@ Class ImportUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class=" td-vertical-align-top">';
+							$h .= '<td rowspan="'.$rowspan.'" class=" td-vertical-align-top">';
 								$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eInvoice['document']).'&customer='.encode($eInvoice['customer']['name']).'">';
 									$h .= encode($eInvoice['name']);
 								$h .= '</a>';
 							$h .= '</td>';
-							$h .= '<td '.$onclick.' rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top invoicing-import-td-amount">';
+							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top invoicing-import-td-amount">';
 
 								$h .= \selling\SaleUi::getTotal($eInvoice);
 
@@ -158,17 +156,17 @@ Class ImportUi {
 									}
 
 									$h .= '<span class="'.$class.'">'.\util\TextUi::money($eInvoice['cashflow']['amount']).'</span>';
-									$h .= '<a title="'.s("Rapprochée").'" href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</a>';
+									$h .= '<a title="'.s("Rapprochée").'" href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'&bankAccount='.$eInvoice['cashflow']['account']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</a>';
 
 								}
 
 							$h .= '</td>';
 
-							$h .= $this->operations([$operation], $onclick, withTr: FALSE);
+							$h .= $this->operations([$operation], withTr: FALSE);
 
 						$h .= '</tr>';
 
-						$h .= $this->operations($operations, $onclick, TRUE);
+						$h .= $this->operations($operations, TRUE);
 
 						$h .= '<tr>';
 							$h .= '<td colspan="3" class="text-end">';
@@ -233,17 +231,17 @@ Class ImportUi {
 
 	}
 
-	public function operations(array $operations, string $onclick, bool $withTr): string {
+	public function operations(array $operations, bool $withTr): string {
 
 		$h = '';
 
 		foreach($operations as $operation) {
 
 			if($withTr) {
-				$h .= '<tr '.$onclick.'>';
+				$h .= '<tr>';
 			}
 
-				$h .= '<td class="text-center invoicing-import-td-operation font-sm" '.($withTr ? $onclick : '').'>';
+				$h .= '<td class="text-center invoicing-import-td-operation font-sm">';
 					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
 						$h .= $this->emptyData();
 					} else {
@@ -254,17 +252,17 @@ Class ImportUi {
 						$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
 					}
 				$h .= '</td>';
-				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation font-sm" '.($withTr ? $onclick : '').'>';
+				$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation font-sm">';
 					$h .= \util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
 				$h .= '</td>';
-				$h .= '<td class="text-center invoicing-import-td-operation" '.($withTr ? $onclick : '').'>';
+				$h .= '<td class="text-center invoicing-import-td-operation">';
 					if($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] !== 0.0) {
 						$h .= s("D");
 					} else {
 						$h .= s("C");
 					}
 				$h .= '</td>';
-				$h .= '<td class="invoicing-import-td-operation font-sm" '.($withTr ? $onclick : '').'>';
+				$h .= '<td class="invoicing-import-td-operation font-sm">';
 					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
 						$h .= $this->emptyData();
 					} else {

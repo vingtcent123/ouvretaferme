@@ -39,6 +39,7 @@ class AlertUi {
 			'Reconciliation::reconciliateSeveral' => s("Les rapprochements sélectionnés ont bien été réalisés."),
 			'Reconciliation::ignored' => s("Le rapprochement sélectionné a bien été ignoré."),
 			'Reconciliation::ignoredSeveral' => s("Les rapprochements sélectionnés ont bien été ignorés."),
+			'Reconciliation::cancelled' => s("Le rapprochement sélectionné a bien été annulé."),
 
 			'Suggestion::paymentMethod.updated' => s("Le moyen de paiement a bien été enregistré."),
 

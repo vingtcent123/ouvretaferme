@@ -13,6 +13,11 @@ class Cashflow extends CashflowElement {
 
 	}
 
+	public function acceptCancelReconciliation(): bool {
+
+		return $this['isReconciliated'] === TRUE;
+
+	}
 
 	public function canAllocate(): bool {
 

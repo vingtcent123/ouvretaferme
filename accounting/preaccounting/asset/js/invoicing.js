@@ -6,12 +6,6 @@ class Invoicing {
 
 	}
 
-	static updateSelection(targetTbody) {
-		const checkbox = targetTbody.firstParent('tbody').qs('input[type="checkbox"]');
-
-		checkbox.click();
-	}
-
 	static toggleGroupSelection(target) {
 
 		CheckboxField.all(target.firstParent('table'), target.checked, '[name^="batch[]"]');
