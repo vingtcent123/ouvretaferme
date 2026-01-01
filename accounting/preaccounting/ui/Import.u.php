@@ -62,6 +62,10 @@ Class ImportUi {
 
 		}
 
+		$h .= '<div class="util-info">';
+			$h .= s("Seules les factures éligibles à l'import sont listées ci-dessous (produits et articles configurés, et moyen de paiement défini).");
+		$h .= '</div>';
+
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
 			$h .= '<table class="invoicing-import-table" data-batch="#batch-invoice">';
