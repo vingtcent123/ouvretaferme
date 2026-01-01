@@ -71,7 +71,7 @@ class DemoLib {
 		\company\CompanyLib::connectDatabase(new Farm(['id' => self::COPY_FARM]));
 
 		// prod instance
-		self::$ms = self::getModules('main');
+		self::$ms = self::getModules();
 
 		self::$packages = \Database::getPackages();
 
@@ -79,7 +79,7 @@ class DemoLib {
 		self::activate();
 
 		// demo instances
-		self::$demoMs = self::getModules('demo');
+		self::$demoMs = self::getModules();
 
 		// drop old demo table
 		self::dropTables();
@@ -403,7 +403,7 @@ class DemoLib {
 
 	}
 
-	public static function getModules(string $environment): array {
+	public static function getModules(): array {
 
 		$modules = [];
 
