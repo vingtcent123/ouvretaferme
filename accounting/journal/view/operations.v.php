@@ -39,6 +39,10 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 	}
 
+	if($data->unbalanced === TRUE) {
+		echo '<div class="util-block-important">'.s("Vous affichez actuellement tous les groupes d'écritures qui ne sont <b>pas équilibrés</b>.").'</div>';
+	}
+
 	echo '<div class="tabs-h" id="journals"';
 		if($data->eOperationRequested->notEmpty()) {
 			echo ' onrender="Operation.open('.$data->eOperationRequested['id'].');"';

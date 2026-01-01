@@ -289,6 +289,36 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getUnbalanced(\Search $search): array {
+
+		$eFinancialYear = $search->get('financialYear');
+		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
+
+		// Récupérer les hash des opérations déséquilibrées
+		$hashes = self::applySearch(new \Search(['financialYear' => $eFinancialYear]))
+			->select(['hash', 'balance' => new \Sql('SUM(IF(type = "'.Operation::CREDIT.'", amount, -amount))', 'float')])
+			->group('hash')
+			->having('balance != 0.0')
+			->getCollection()
+			->getColumn('hash');
+
+		$cOperation = Operation::model()
+			->select(
+			 Operation::getSelection()
+			 + ['account' => ['class', 'description']]
+			 + ['thirdParty' => ['id', 'name']]
+			)
+			->sort( $defaultOrder)
+			->option('count')
+			->whereHash('IN', $hashes)
+			->getCollection();
+
+		$nOperation = Operation::model()->found();
+
+		return [$cOperation, $nOperation];
+
+	}
+
 	/**
 	 * Le journal de banque doit ressortir toutes les contreparties au compte AccountSetting\BANK_ACCOUNT_CLASS
 	 */

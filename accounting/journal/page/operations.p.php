@@ -36,6 +36,8 @@ new Page(function($data) {
 			'hash' => GET('hash'),
 		], GET('sort'));
 
+		$data->unbalanced = GET('unbalanced', 'bool');
+
 		$search->set('cashflowFilter', GET('cashflowFilter', 'bool'));
 
 		$hasSort = get_exists('sort') === TRUE;
@@ -92,7 +94,12 @@ new Page(function($data) {
 		$data->operationsVat = [];
 		$data->page = GET('page', 'int');
 
-		if($code === \journal\JournalSetting::JOURNAL_CODE_BANK) {
+		if($data->unbalanced === TRUE) {
+
+			[$data->cOperation, $data->nOperationSearch] = \journal\OperationLib::getUnbalanced(search: $search);
+			$data->page = 0;
+
+		} else if($code === \journal\JournalSetting::JOURNAL_CODE_BANK) {
 
 			[$data->cOperation, $data->nOperationSearch, $data->nPage] = \journal\OperationLib::getAllForBankJournal(search: $search, page: $data->page, hasSort: $hasSort);
 

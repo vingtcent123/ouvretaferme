@@ -515,7 +515,8 @@ class OperationUi {
 				$h .= '<tr>';
 					$h .= '<td colspan="2" class="text-center">';
 						if(round($totalCredit, 2) !== round($totalDebit, 2)) {
-							$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Vos écritures ne sont pas équilibrées").'</span>';
+							$difference = round(abs($totalCredit - $totalDebit), 2);
+							$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Vos écritures ne sont pas équilibrées<br />(différence de {value})", \util\TextUi::money($difference)).'</span>';
 						} else {
 							$h .= '<span class="color-success">'.\Asset::icon('check').' '.s("Vos écritures sont équilibrées").'</span>';
 						}
