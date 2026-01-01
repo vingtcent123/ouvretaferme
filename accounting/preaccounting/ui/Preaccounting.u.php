@@ -510,13 +510,13 @@ Class PreaccountingUi {
 
 				$h .= '<h3>'.s("Intégrez vos factures dans votre comptabilité").'</h3>';
 
-				if($errors > 0) {
+				if($nProduct > 0) {
 					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
 				} else {
 					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer vos factures !").'</p>';
 				}
 				$class = 'btn btn-primary';
-				if($errors > 0) {
+				if($nProduct > 0) {
 					$class .= ' disabled';
 					$url = 'javascript: void(0);';
 				} else {

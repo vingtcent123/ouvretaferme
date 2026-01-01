@@ -71,7 +71,7 @@ class SigLib {
 		self::VENTE_MARCHANDISES => ['707', '7097'],
 	  self::COUT_ACHAT_MARCHANDISES => ['607', '6087', '609!', '6097', '6037'],
 	  self::PRODUCTION_VENDUE => ['701', '702', '703', '709!', '7091', '7092', '7093','704', '705', '706', '708', '7094', '7095', '7096', '7098'],
-	  self::PRODUCTION_STOCKEE => ['713'],
+	  self::PRODUCTION_STOCKEE => ['71'],
 	  self::PRODUCTION_IMMOBILISEE => ['72', '73'],
 	  self::ACHAT_ANIMAUX => ['60117'],
 	  self::MP_APPROVISIONNEMENTS_CONSOMMES => ['601', '602', '6081', '6082', '6091', '6092', '603!', '6030', '6031', '6032', '6033', '6035'],
