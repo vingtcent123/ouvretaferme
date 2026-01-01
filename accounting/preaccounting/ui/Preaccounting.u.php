@@ -315,7 +315,7 @@ Class PreaccountingUi {
 
 		if(empty($products) and $itemData['nToCheck'] === 0) {
 
-			return '<div class="util-success">'.s("Tous vos produits ont un numéro de compte associé !").'</div>';
+			return '<div class="util-empty">'.s("Tous vos produits ont un numéro de compte associé !").'</div>';
 
 		}
 
