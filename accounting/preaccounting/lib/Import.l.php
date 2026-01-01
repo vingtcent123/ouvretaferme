@@ -238,7 +238,7 @@ Class ImportLib {
 			if($eAccount->notEmpty() and $eAccount['journalCode']->notEmpty() and $cJournalCode->offsetExists($eAccount['journalCode']['id'])) {
 				$eJournalCode = $eAccount['journalCode'];
 			} else {
-				$eJournalCode = new \company\JournalCode();
+				$eJournalCode = new \journal\JournalCode();
 			}
 			$date = mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], -2);
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
