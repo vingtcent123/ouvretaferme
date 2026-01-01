@@ -95,6 +95,11 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
+			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
+			$data->search->set('group', GET('group', 'selling\CustomerGroup'));
+			$data->search->set('cGroup', \selling\CustomerGroupLib::getByFarm($data->eFarm));
+			$data->search->set('cMethod', \payment\MethodLib::getByFarm($data->eFarm, NULL));
+			$data->search->set('method', GET('method', 'payment\Method'));
 			list($data->cSale, $data->nSale) = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
 			$cAccount = \account\AccountLib::getAll();
@@ -107,6 +112,10 @@ new Page(function($data) {
 	->get('/precomptabilite/ventes:telecharger', function($data) {
 
 		if($data->isSearchValid) {
+
+			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
+			$data->search->set('group', GET('group', 'selling\CustomerGroup'));
+			$data->search->set('method', GET('method', 'payment\Method'));
 
 			list($cSale) = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 

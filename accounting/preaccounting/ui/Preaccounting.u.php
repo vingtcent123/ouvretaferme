@@ -28,10 +28,30 @@ Class PreaccountingUi {
 					);
 				$h .= '</fieldset>';
 
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Client").'</legend>';
+					$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
+				$h .= '</fieldset>';
+
+				if($search->get('cGroup')->notEmpty()) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Groupe").'</legend>';
+						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'));
+					$h .= '</fieldset>';
+				}
+
+				if($search->get('cMethod')->notEmpty()) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Moyen de paiement").'</legend>';
+						$h .= $form->select('method', $search->get('cMethod'), $search->get('method'));
+					$h .= '</fieldset>';
+				}
+
 				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 					if($hasOperations) {
-						$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes:telecharger?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger l'export").'</a>';
+						$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes:telecharger?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'&customer='.($search->get('customer')['id'] ?? '').'&group='.($search->get('group')['id'] ?? '').'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger l'export").'</a>';
 					}
 
 				$h .= '</div>';
