@@ -517,12 +517,12 @@ Class PreaccountingUi {
 					];
 					$class = 'btn-secondary disabled';
 				}
-				$h .= '<h3>'.s("Exportez votre fichier des écritures comptables").'</h3>';
+				$h .= '<h3>'.s("Exportez un fichier {value}", '<span class="util-badge bg-primary">FEC</span>').'</h3>';
 
 				if($errors > 0) {
-					$h .= '<p class="util-info">'.s("Vous pouvez faire un export du FEC mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
+					$h .= '<p class="util-info">'.s("Vous pouvez faire un export du fichier des écritures comptables mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
 				} else {
-					$h .= '<p>'.s("Vous pouvez importer ce fichier dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
+					$h .= '<p>'.s("Vous pouvez importer ce fichier des écritures comptables dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
 				}
 
 				$h .= '<a '.attrs($attributes).'>'.$form->button(s("Télécharger le fichier"), ['class' => 'btn '.$class]).'</a>';

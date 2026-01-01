@@ -24,12 +24,17 @@ Class ProductLib {
 			\selling\Product::model()->whereUnprocessedPlant('IN', $cPlant);
 		}
 
+		// Fonctionnel uniquement si la méthode est toujours appelée pour la même ferme dans la même instance
+		static $ids = \selling\Item::model()
+			->whereFarm($eFarm)
+			->option('index-force', ['farm', 'deliveredAt'])
+			->whereDeliveredAt('BETWEEN', new \Sql(\selling\Item::model()->format($search->get('from')).' AND '.\selling\Item::model()->format($search->get('to'))))
+			->whereProduct('!=', NULL)
+			->getColumn(new \Sql('DISTINCT product', 'int'));
+
 		return \selling\Product::model()
-			->join(\selling\Item::model(), 'm1.id = m2.product', 'LEFT')
-			->where('m1.farm = '.$eFarm['id'])
-			->where('m2.product IS NOT NULL AND m2.account IS NULL')
-			->where('m1.status != '.\selling\Product::model()->format(\selling\Product::DELETED))
-			->where('m2.deliveredAt BETWEEN '.\selling\Item::model()->format($search->get('from')).' AND '.\selling\Item::model()->format($search->get('to')));
+			->whereId('IN', $ids)
+			->whereStatus('!=', \selling\Product::DELETED);
 
 	}
 	/**

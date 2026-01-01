@@ -20,7 +20,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<p>'.s("Au final, ").'</p>';
 	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format FEC puis l'importez dans votre logiciel de comptabilité habituel");
 	echo '<br />';
-	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos factures dans le module de comptabilité d'Ouvretaferme");
+	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos factures dans le module de comptabilité de Ouvretaferme");
 	echo '<p class="mt-1">'.s("... C'est <b>vous qui choisissez</b> le niveau d'utilisation de la comptabilité proposé par Ouvretaferme !").'</p>';
 
 	echo '</div>';
@@ -68,7 +68,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<h3>'.s("Les données sont-elles obligatoires ?").'</h3>';
 
 		echo '<p>';
-			echo s("Si vous n'utilisez pas le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'export puisse être réalisé : ");
+			echo s("Si vous n'utilisez pas le logiciel comptable de Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'export puisse être réalisé : ");
 			echo '<ul>';
 				echo '<li>'.s("Les factures ont été générées et ont bien un numéro de facture.").'</li>';
 			echo '</ul>';
@@ -87,7 +87,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 		echo '<h3>'.s("Pour finir").'</h3>';
 		echo '<p>';
-			echo s("Si vous préparez vos factures pour l'import dans le module de comptabilité d'Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'import puisse être réalisé : ");
+			echo s("Si vous préparez vos factures pour l'import dans le logiciel comptable de Ouvretaferme, il faut avoir réalisé les actions suivantes pour que l'import puisse être réalisé : ");
 			echo '<ul>';
 				echo '<li>'.s("Tous les articles vendus ont bien un numéro de compte associé (via leur produit, via la catégorie du produit ou directement sur l'article)").'</li>';
 				echo '<li>'.s("Un moyen de paiement est renseigné").'</li>';
@@ -308,7 +308,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:import';
 
-	$t->title = s("Importer les factures dans la comptabilité d'Ouvretaferme");
+	$t->title = s("Importer les factures dans la comptabilité de Ouvretaferme");
 	$t->subTitle = s("Créer les écritures comptables en un clic");
 
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vos factures</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';

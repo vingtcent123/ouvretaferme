@@ -334,16 +334,16 @@ class TipUi {
 				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos factures avant l'intégration dans votre comptabilité.").'</p>';
 				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes, si elles ne sont pas déjà réalisées au fur et à mesure :").'</p>';
 				$h .= '<ul style="list-style-type: none;">';
-					$h .= '<li>'.\Asset::icon('1-circle').' '.s("Associer un numéro de compte à <link>chaque produit</link> ou <linkType>chaque type de produit</linkType> et aux articles sans référence produit", [
+					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("Associer un numéro de compte à <link>chaque produit</link> et aux articles sans référence produit", [
 						'link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">',
 						'linkType' => '<a href="/farm/configuration:update?id='.$eFarm['id'].'">',
 					]).'</li>';
-					$h .= '<li>'.\Asset::icon('2-circle').' '.s("Renseigner le moyen de paiement des factures").'</li>';
-					$h .= '<li>'.\Asset::icon('3-circle').' '.s("Intégrer en comptabilité :").'</li>';
+					$h .= '<li>'.\Asset::icon('2-circle-fill').' '.s("Renseigner le moyen de paiement des factures").'</li>';
+					$h .= '<li>'.\Asset::icon('3-circle-fill').' '.s("Intégrer en comptabilité :").'</li>';
 				$h .= '</ul>';
 				$h .= \Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 4rem; margin-right: 0.5rem;']).' '.s("en exportant un <span>FEC</span> (<i>fichier des écritures comptables</i>) de vos ventes pour l'intégrer dans votre outil comptable", ['span' => '<span class="util-badge bg-primary">']);
 				$h .= '<br />';
-				$h .= \Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 4rem; margin-right: 0.5rem;']).' '.s("en important vos ventes dans le module de comptabilité d'Ouvretaferme");
+				$h .= \Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 4rem; margin-right: 0.5rem;']).' '.s("en important vos factures dans le logiciel comptable de Ouvretaferme");
 
 				return [
 					'icon' => \Asset::icon('file-spreadsheet'),

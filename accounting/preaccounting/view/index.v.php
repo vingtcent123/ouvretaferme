@@ -75,7 +75,9 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 				echo '<div class="step-title">';
 					echo $step['title'];
 
-					echo '<span class="'.($step['number'] > 0 ? 'bg-warning' : 'bg-success').' tab-item-count ml-1" title="'.s("À contrôler").'">'.$step['numberVerified'].'  / '.($step['number'] + $step['numberVerified']).'</span>';
+					if($step['number'] > 0) {
+						echo '<span class="bg-warning tab-item-count ml-1" title="'.s("À contrôler").'">'.$step['numberVerified'].'  / '.($step['number'] + $step['numberVerified']).'</span>';
+					}
 
 				echo '</div>';
 
