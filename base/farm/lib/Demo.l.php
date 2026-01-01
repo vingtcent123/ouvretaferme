@@ -216,24 +216,18 @@ class DemoLib {
 			$conditions[] = '(farm = '.self::COPY_FARM.' OR farm IS NULL)';
 		}
 
-		if(
-			$m->getModule() === 'selling\\Customer' or
-			$m->getModule() === 'selling\\Sale' or
-			$m->getModule() === 'selling\\Item'
-		) {
+		if($m->getModule() === 'selling\\Customer') {
 			$conditions[] = 'type = "'.\selling\Customer::PRIVATE.'"';
 		}
 
-		if(
-			$m->getModule() === 'selling\\Sale'
-		) {
-			$conditions[] = 'preparationStatus != "'.\selling\Sale::BASKET.'"';
+		if($m->getModule() === 'selling\\Item') {
+			$conditions[] = 'type = "'.\selling\Customer::PRIVATE.'" OR (sale IN ('.\selling\SellingSetting::EXAMPLE_SALE_PRIVATE.', '.\selling\SellingSetting::EXAMPLE_SALE_PRO.'))';
+			$conditions[] = 'status != "'.\selling\Sale::BASKET.'"';
 		}
 
-		if(
-			$m->getModule() === 'selling\\Item'
-		) {
-			$conditions[] = 'status != "'.\selling\Sale::BASKET.'"';
+		if($m->getModule() === 'selling\\Sale') {
+			$conditions[] = 'preparationStatus != "'.\selling\Sale::BASKET.'"';
+			$conditions[] = 'type = "'.\selling\Customer::PRIVATE.'" OR (id IN ('.\selling\SellingSetting::EXAMPLE_SALE_PRIVATE.', '.\selling\SellingSetting::EXAMPLE_SALE_PRO.'))';
 		}
 
 		return $conditions ? implode(' AND ', $conditions) : 1;

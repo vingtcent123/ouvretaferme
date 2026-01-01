@@ -76,8 +76,21 @@ class SaleLib extends SaleCrud {
 				])
 			]);
 		}
-
 		$eSale = \selling\SaleLib::getById($id);
+
+		if(OTF_DEMO) {
+
+			$eSale['customer'] = new Customer([
+				'siret' => '00000000000000',
+				'vatNumber' => 'FR0000000000',
+				'invoiceStreet1' => '3 rue des pissenlits',
+				'invoiceStreet2' => '',
+				'invoiceCity' => 'Fleurville',
+				'invoiceCountry' => new \user\Country(['id' => \user\UserSetting::FR]),
+			]);
+
+		}
+
 		$eSale['document'] = '123';
 		$eSale['farm'] = $eFarm;
 		$eSale['hasVat'] = $eFarm->getConf('hasVat');
