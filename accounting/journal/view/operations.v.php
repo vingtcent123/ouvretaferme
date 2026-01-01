@@ -40,7 +40,11 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 	}
 
 	if($data->unbalanced === TRUE) {
-		echo '<div class="util-block-important">'.s("Vous affichez actuellement tous les groupes d'écritures qui ne sont <b>pas équilibrés</b>.").'</div>';
+
+		$nGroup = count(array_unique($data->cOperation->getColumn('hash')));
+		$number = p("Il y a <b>{value}</b> groupe d'écritures déséquilibré.", "Il y a actuellement <b>{value}</b> groupes d'écritures déséquilibrés.", $nGroup);
+
+		echo '<div class="util-block-important">'.s("Vous affichez actuellement tous les groupes d'écritures qui ne sont <b>pas équilibrés</b>.").'<br />'.$number.'</div>';
 	}
 
 	echo '<div class="tabs-h" id="journals"';

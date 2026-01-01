@@ -168,7 +168,7 @@ class JournalUi {
 				$h .= '</dl>';
 
 				$h .= '<div class="mt-1 mb-1">';
-					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.\Asset::icon('search').' '.s("Retrouver les groupes d'écritures déséquilibrés.").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.\Asset::icon('search').' '.s("Retrouver les groupes d'écritures déséquilibrés").'</a>';
 				$h .= '</div>';
 				$h .= '<div>';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
