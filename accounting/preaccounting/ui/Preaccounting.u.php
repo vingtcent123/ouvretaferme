@@ -39,7 +39,7 @@ Class PreaccountingUi {
 			$h .= $form->close();
 
 			if($type === 'invoices') {
-				$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'">'.s("Explorer les données comptables des ventes sans facture").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'">'.s("Explorer les données comptables des ventes non facturées").'</a>';
 			}
 		$h .= '</div>';
 

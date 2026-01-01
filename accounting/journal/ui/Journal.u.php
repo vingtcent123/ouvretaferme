@@ -8,7 +8,7 @@ class JournalUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public function getJournalTitle(\farm\Farm $eFarm, array $counts): string {
+	public function getJournalTitle(\farm\Farm $eFarm): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
 
@@ -22,12 +22,6 @@ class JournalUi {
 			if($eFinancialYear->notEmpty()) {
 
 				$h .= '<div class="journal-title-buttons">';
-
-					if(array_sum($counts) > 0) {
-
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-primary">'.\Asset::icon('box-arrow-in-down').' '.s("Importer les factures").'</a> ';
-
-					}
 
 					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#journal-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 

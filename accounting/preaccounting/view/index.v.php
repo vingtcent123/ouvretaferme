@@ -64,26 +64,26 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		foreach($steps as $step) {
 
-	    echo '<a class="step '.($step['number'] > 0 ? 'active' : 'success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.$t->canonical.'?type='.$step['type'].'">';
+	    echo '<a class="step '.($step['number'] > 0 ? '' : 'step-success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.$t->canonical.'?type='.$step['type'].'">';
 
-	      echo '<div class="step-header">';
+			echo '<div class="step-header">';
 
-					echo '<span class="step-number">'.($step['position']).'</span>';
+				echo '<span class="step-number">'.($step['position']).'</span>';
 
-					echo '<div class="step-main">';
+				echo '<div class="step-main">';
 
-		        echo '<div class="step-title">'.$step['title'].'</div>';
+				echo '<div class="step-title">';
+					echo $step['title'];
 
-						echo '<div class="step-value">';
+					echo '<span class="'.($step['number'] > 0 ? 'bg-warning' : 'bg-success').' tab-item-count ml-1" title="'.s("À contrôler").'">'.$step['numberVerified'].'  / '.($step['number'] + $step['numberVerified']).'</span>';
 
-							if($step['number'] > 0) {
-								echo $step['number'] > 0 ? '<span class="bg-warning tab-item-count ml-0" title="'.s("À contrôler").'">'.Asset::icon('exclamation-triangle').' '.$step['number'].'</span> ' : '';
-								echo $step['numberVerified'] > 0 ? '<span class="bg-success tab-item-count ml-0" title="'.s("Vérifiés").'">'.Asset::icon('check').' '.$step['numberVerified'].'</span>' : '';
-							}
+				echo '</div>';
 
-	          echo '</div>';
+				echo '<div class="step-value">';
 
-	        echo '</div>';
+				echo '</div>';
+
+			echo '</div>';
 
 	      echo '</div>';
 
@@ -99,12 +99,12 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
-					echo '<div class="step-title">'.s("Export").' <span class="util-badge bg-primary">FEC</span></div>';
+					echo '<div class="step-title">'.s("Intégration des factures en comptabilité").'</div>';
 					echo '<div class="step-value"></div>';
 				echo '</div>';
 			echo '</div>';
 			echo '<p class="step-desc">';
-				echo s("Intégrez vos ventes en comptabilité");
+				echo s("Exportez un fichier {value} ou créez les écritures comptables de vos factures sur le logiciel comptable de {siteName}", '<span class="util-badge bg-primary">FEC</span>');
 			echo '</p>';
 		echo '</a>';
 

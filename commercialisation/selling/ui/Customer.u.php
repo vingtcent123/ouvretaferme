@@ -826,57 +826,59 @@ class CustomerUi {
 
 		}
 
-		$h .= '<div class="util-block bg-background-light customer-form-type">';
+		$h .= '<div class="customer-form-type">';
 			$h .= '<div class="customer-form-category customer-form-pro">';
-				$h .= $form->group(content: '<h4>'.s("Client professionnel").'</h4>');
+				$h .= '<h3>'.s("Client professionnel").'</h3>';
 			$h .= '</div>';
-			$h .= '<div class="customer-form-category customer-form-private">';
-				$h .= $form->group(content: '<h4>'.s("Client particulier").'</h4>');
+			$h .= '<div class="customer-form-private customer-form-category">';
+				$h .= '<h3>'.s("Client particulier").'</h3>';
 			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-collective">';
-				$h .= $form->group(content: '<h4>'.s("Point de vente pour les particuliers").'</h4>');
+				$h .= '<h3>'.s("Point de vente pour les particuliers").'</h3>';
 			$h .= '</div>';
-			$h .= '<div class="customer-form-category customer-form-pro customer-form-collective">';
-				$h .= $form->dynamicGroup($eCustomer, match($action) {
-					'create' => 'name*',
-					'update' => 'name*'
-				});
-			$h .= '</div>';
-			$h .= '<div class="customer-form-category customer-form-private">';
-				$h .= $form->dynamicGroups($eCustomer, match($action) {
-					'create' => ['firstName', 'lastName*'],
-					'update' => ['firstName', 'lastName*']
-				});
-			$h .= '</div>';
-			$h .= '<div class="customer-form-category customer-form-pro">';
-				$h .= $form->dynamicGroups($eCustomer, ['legalName']);
-			$h .= '</div>';
-			$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-				$h .= $form->dynamicGroups($eCustomer, ['email', 'phone']);
-			$h .= '</div>';
-			$h .= '<div class="customer-form-category customer-form-pro">';
-				$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
-				$h .= $form->dynamicGroups($eCustomer, ['siret', 'vatNumber']);
-			$h .= '</div>';
-			if($action === 'update') {
-				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'discount');
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= '<div class="customer-form-category customer-form-pro customer-form-collective">';
+					$h .= $form->dynamicGroup($eCustomer, match($action) {
+						'create' => 'name*',
+						'update' => 'name*'
+					});
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-private">';
+					$h .= $form->dynamicGroups($eCustomer, match($action) {
+						'create' => ['firstName', 'lastName*'],
+						'update' => ['firstName', 'lastName*']
+					});
 				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-pro">';
-					$h .= $form->group(
-						s("Personnaliser les adresses e-mail pour l'envoi de certains documents"),
-						$form->dynamicField($eCustomer, 'orderFormEmail').
-						$form->dynamicField($eCustomer, 'deliveryNoteEmail').
-						$form->dynamicField($eCustomer, 'invoiceEmail')
-					);
+					$h .= $form->dynamicGroups($eCustomer, ['legalName']);
 				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
+					$h .= $form->dynamicGroups($eCustomer, ['email', 'phone']);
 				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'color');
+				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
+					$h .= $form->dynamicGroups($eCustomer, ['siret', 'vatNumber']);
 				$h .= '</div>';
-			}
+				if($action === 'update') {
+					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+						$h .= $form->dynamicGroup($eCustomer, 'discount');
+					$h .= '</div>';
+					$h .= '<div class="customer-form-category customer-form-pro">';
+						$h .= $form->group(
+							s("Personnaliser les adresses e-mail pour l'envoi de certains documents"),
+							$form->dynamicField($eCustomer, 'orderFormEmail').
+							$form->dynamicField($eCustomer, 'deliveryNoteEmail').
+							$form->dynamicField($eCustomer, 'invoiceEmail')
+						);
+					$h .= '</div>';
+					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+						$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
+					$h .= '</div>';
+					$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
+						$h .= $form->dynamicGroup($eCustomer, 'color');
+					$h .= '</div>';
+				}
+			$h .= '</div>';
 		$h .= '</div>';
 
 		return $h;

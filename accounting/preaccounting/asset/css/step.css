@@ -14,20 +14,20 @@ a.step:hover {
 .step.selected {
 	background-color: rgba(0, 0, 0, 0.15);
 }
-.step.success,
-.step.success:hover {
+.step.step-success,
+.step.step-success:hover {
 	cursor: default;
-	background-color: rgba(25, 135, 84, 0.25);
+	background-color: #6c62;
 	pointer-events: none;
 }
-.step.success[data-step="export"],
-.step.success[data-step="export"]:hover {
+.step.step-success[data-step="export"],
+.step.step-success[data-step="export"]:hover {
 	cursor: pointer;
 }
 .step {
 	position: relative;
 	flex: 1;
-	padding: 20px 32px 20px 40px;
+	padding: 1rem 2.5rem;
 	background-color: rgba(0, 0, 0, 0.05);
 
 	/* chevauchement */
@@ -35,23 +35,17 @@ a.step:hover {
 
 	clip-path: polygon(
 			0 0,
-			92% 0,
+			95% 0,
 			100% 50%,
-			92% 100%,
+			95% 100%,
 			0 100%,
-			8% 50%
+			5% 50%
 	);
 }
 .step:first-child {
-	padding-left: 20px;
+	padding-left: 2rem;
 }
 
-.step.active .step-number {
-	border: 1px solid var(--warning);
-}
-.step.success .step-number {
-	border: 1px solid var(--success);
-}
 /* ordre d’empilement */
 .step:nth-child(1) { z-index: 4; margin-left: 0; }
 .step:nth-child(2) { z-index: 3; }
@@ -64,9 +58,9 @@ a.step:hover {
 
 	clip-path: polygon(
 			0 0,
-			92% 0,
+			95% 0,
 			100% 50%,
-			92% 100%,
+			95% 100%,
 			0 100%
 	);
 }
@@ -78,20 +72,20 @@ a.step:hover {
 		100% 0,
 		100% 100%,
 		0 100%,
-		8% 50%
+		5% 50%
 	);
 }
 
 /* Header */
 .step-header {
 	display: flex;
-	gap: 12px;
+	gap: 1rem;
 	align-items: center;
 }
 
 .step-number {
-	width: 34px;
-	height: 34px;
+	width: 2.5rem;
+	height: 2.5rem;
 	border-radius: 50%;
 	background: rgba(255,255,255,0.25);
 	display: grid;
@@ -114,7 +108,7 @@ a.step:hover {
 }
 
 .step-desc {
-	margin: 10px 0 0;
+	margin: 0.75rem 0 0;
 	font-size: 0.9rem;
 	line-height: 1.4;
 }
@@ -122,7 +116,7 @@ a.step:hover {
 /* Responsive */
 @media (max-width: 1199px) and (min-width: 992px) {
 	.step {
-		padding: 16px 32px 16px 32px;
+		padding: 1.5rem 2.5rem;
 		margin-left: 0;
 
 		clip-path: polygon(
@@ -161,7 +155,7 @@ a.step:hover {
 @media (max-width: 991px) {
 	.step-process {
 		flex-direction: column;
-		gap: 12px;
+		gap: 1rem;
 	}
 
 	.step:first-child,
@@ -172,7 +166,7 @@ a.step:hover {
 		margin-left: 0;
 		clip-path: none;
 		border-radius: 14px;
-		padding: 16px;
+		padding: 1rem;
 	}
 
 	.step > *:last-child {
