@@ -62,7 +62,7 @@ class SellingSetting extends \Settings {
 	}
 
 	public static function getVatRate(\farm\Farm $eFarm, int $rate): float {
-		return SellingSetting::getVatRates($eFarm)[$rate] ?? throw new \Exception('Unknown rate');
+		return SellingSetting::getVatRates($eFarm)[$rate] ?? throw new \Exception('Unknown rate '.$rate.' for farm '.$eFarm['id']);
 	}
 
 	public static function getStartVat(\user\Country $eCountry): int {
