@@ -16,7 +16,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 			$title .= s("Préparer les données des factures");
 			if($toCheck > 0) {
-				$title .= ' <small>('.$toCheck.')</small>';
+				$title .= ' <span class="util-counter">'.$toCheck.'</span>';
 			}
 
 		$title .= '</h1>';
