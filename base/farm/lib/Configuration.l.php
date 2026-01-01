@@ -138,5 +138,37 @@ class ConfigurationLib extends ConfigurationCrud {
 
 	}
 
+	public static function newYear(): void {
+
+		$year = currentYear() - 2000;
+		$beforeYear = $year - 1;
+
+		Configuration::model()
+			->whereOrderFormPrefix('LIKE', '%'.$beforeYear.'%')
+			->update([
+				'orderFormPrefix' => new \Sql('REPLACE(orderFormPrefix, '.$beforeYear.', '.$year.')')
+			]);
+
+		Configuration::model()
+			->whereDeliveryNotePrefix('LIKE', '%'.$beforeYear.'%')
+			->update([
+				'deliveryNotePrefix' => new \Sql('REPLACE(deliveryNotePrefix, '.$beforeYear.', '.$year.')')
+			]);
+
+		Configuration::model()
+			->whereInvoicePrefix('LIKE', '%'.$beforeYear.'%')
+			->update([
+				'invoicePrefix' => new \Sql('REPLACE(invoicePrefix, '.$beforeYear.', '.$year.')'),
+				'documentInvoices' => 0
+			]);
+
+		Configuration::model()
+			->whereCreditPrefix('LIKE', '%'.$beforeYear.'%')
+			->update([
+				'creditPrefix' => new \Sql('REPLACE(creditPrefix, '.$beforeYear.', '.$year.')'),
+			]);
+
+	}
+
 }
 ?>

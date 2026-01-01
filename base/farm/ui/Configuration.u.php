@@ -242,6 +242,8 @@ class ConfigurationUi {
 				$h .= '<div class="util-block-important">';
 					$h .= '<h4>'.S("Personnaliser la nomenclature des factures").'</h4>';
 					$h .= '<p>'.s("La loi interdit de supprimer une facture et les documents comptables doivent être tenus sans altération d’aucune sorte. L’administration fiscale a besoin de vérifier la bonne continuité de votre numérotation de facturation. Un trou dans la numérotation constitue une infraction fiscale.").'</p>';
+					$h .= '<p>'.s("Si vous intégrez dans le préfixe de numérotation des factures l'année en cours, Ouvretaferme se chargera chaque 1<sup>er</sup>
+ janvier de mettre la nouvelle année et recommencer la numérotation à 1.").'</p>';
 					$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices']);
 				$h .= '</div>';
 
