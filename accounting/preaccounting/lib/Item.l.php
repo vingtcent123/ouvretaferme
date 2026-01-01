@@ -12,7 +12,7 @@ Class ItemLib {
 			->where('m2.invoice IS NOT NULL', if: $type === 'invoice')
 			->where('m2.invoice IS NULL', if: $type === 'sale')
 			->where('m2.deliveredAt BETWEEN '.\selling\Item::model()->format($search->get('from')).' AND '.\selling\Item::model()->format($search->get('to')))
-			->where('m3.id IS NULL OR m3.privateAccount IS NULL')
+			->where('m3.id IS NULL')
 			->where('m1.account IS NULL')
 		;
 
