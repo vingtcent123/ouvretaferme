@@ -10,6 +10,7 @@ Class AccountingLib {
 	const FEC_COLUMN_ACCOUNT_DESCRIPTION = 5;
 	const FEC_COLUMN_DOCUMENT = 8;
 	const FEC_COLUMN_DOCUMENT_DATE = 9;
+	const FEC_COLUMN_DESCRIPTION = 10;
 	const FEC_COLUMN_DEBIT = 11;
 	const FEC_COLUMN_CREDIT = 12;
 	const FEC_COLUMN_DEVISE_AMOUNT = 16;
@@ -170,6 +171,7 @@ Class AccountingLib {
 						eAccount    : $eAccount,
 						date        : $eSale['deliveredAt'],
 						eCode       : $eAccount['journalCode'],
+						ecritureLib : $document,
 						document    : $document,
 						documentDate: $documentDate,
 						amount      : $amountExcludingVat,
@@ -193,6 +195,7 @@ Class AccountingLib {
 							eAccount    : $eAccountVat,
 							date        : $eSale['deliveredAt'],
 							eCode       : $eAccount['journalCode'],
+							ecritureLib : $document,
 							document    : $document,
 							documentDate: $documentDate,
 							amount      : $amountVat,
@@ -397,6 +400,7 @@ Class AccountingLib {
 						eAccount    : $eAccount,
 						date        : $eInvoice['date'],
 						eCode       : $eAccount['journalCode'],
+						ecritureLib : $document,
 						document    : $document,
 						documentDate: $documentDate,
 						amount      : $amountExcludingVat,
@@ -420,6 +424,7 @@ Class AccountingLib {
 							eAccount    : $eAccountVat,
 							date        : $eInvoice['date'],
 							eCode       : $eAccount['journalCode'],
+							ecritureLib : $document,
 							document    : $document,
 							documentDate: $documentDate,
 							amount      : $amountVat,
@@ -442,7 +447,8 @@ Class AccountingLib {
 				$fecDataBank = self::getFecLine(
 					eAccount    : $eAccountBank,
 					date        : $eInvoice['date'],
-					eCode       : $eAccountBank['journalCode'],
+					eCode       : new \journal\JournalCode(),
+					ecritureLib : $eInvoice['cashflow']['memo'],
 					document    : $document,
 					documentDate: $documentDate,
 					amount      : $eInvoice['cashflow']['amount'],
@@ -476,6 +482,7 @@ Class AccountingLib {
 						eAccount    : $eAccountRegul,
 						date        : $eInvoice['date'],
 						eCode       : $eAccountBank['journalCode'],
+						ecritureLib : $document,
 						document    : $document,
 						documentDate: $documentDate,
 						amount      : abs($difference),
@@ -683,7 +690,7 @@ Class AccountingLib {
 	}
 
 	private static function getFecLine(
-		\account\Account $eAccount, string $date, \journal\JournalCode $eCode,
+		\account\Account $eAccount, string $date, \journal\JournalCode $eCode, string $ecritureLib,
 		string $document, string $documentDate, float $amount, string $type, string $payment, string $compAuxNum, string $compAuxLib
 	): array {
 
@@ -698,7 +705,7 @@ Class AccountingLib {
 			$compAuxLib,
 			$document,
 			date('Ymd', strtotime($documentDate)),
-			'',
+			$ecritureLib,
 			$type === \journal\Operation::DEBIT ? abs($amount) : 0.0,
 			$type === \journal\Operation::CREDIT ? abs($amount) : 0.0,
 			'',

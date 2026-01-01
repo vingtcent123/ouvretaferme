@@ -203,7 +203,7 @@ class AccountUi {
 							$h .= ($eAccount['vatAccount']->exists() === TRUE ? '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>' : '');
 						$h .= '</td>';
 
-						$h .= '<td class="text-center">';
+						$h .= '<td class="text-center td-min-content">';
 
 							if(strlen($eAccount['class']) >= 3) {
 

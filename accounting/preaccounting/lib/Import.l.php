@@ -146,7 +146,6 @@ Class ImportLib {
 		$eOperationBase = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
 			'hash' => $hash,
-			'description' => $eInvoice['name'],
 		]);
 
 		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase);
@@ -223,7 +222,7 @@ Class ImportLib {
 	): void {
 
 		$cOperation = new \Collection();
-		$eJournalCode = new \journal\JournalCode();
+		$cJournalCode = \journal\JournalCodeLib::getAll();
 
 		foreach($fecData as $data) {
 
@@ -236,8 +235,10 @@ Class ImportLib {
 			if($eAccount === NULL) {
 				$eAccount = new \account\Account();
 			}
-			if($eAccount->notEmpty() and $eAccount['journalCode']->notEmpty()) {
+			if($eAccount->notEmpty() and $eAccount['journalCode']->notEmpty() and $cJournalCode->offsetExists($eAccount['journalCode']['id'])) {
 				$eJournalCode = $eAccount['journalCode'];
+			} else {
+				$eJournalCode = new \company\JournalCode();
 			}
 			$date = mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], -2);
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
@@ -247,6 +248,7 @@ Class ImportLib {
 				'financialYear' => $eFinancialYear,
 				'account' => $eAccount,
 				'accountLabel' => $data[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
+				'description' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DESCRIPTION],
 				'journalCode' => $eJournalCode,
 				'date' => $date,
 				'document' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT],

@@ -1448,7 +1448,6 @@ class OperationLib extends OperationCrud {
 			'paymentMethod' => $eOperation['paymentMethod'],
 			'financialYear' => $eOperation['financialYear'],
 			'hash' => $hash,
-			'journalCode' => $eOperation['journalCode'],
 			'accountLabel' => \account\AccountLabelLib::pad($eCashflow['account']['label'] ?? \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL),
 		]));
 
@@ -1561,6 +1560,7 @@ class OperationLib extends OperationCrud {
 		Operation::model()->beginTransaction();
 
 		// Mise à jour du cashflow
+		$hash = $eCashflow['hash'];
 		$eCashflow['hash'] = NULL;
 		$eCashflow['status'] = \bank\Cashflow::WAITING;
 		\bank\Cashflow::model()
@@ -1571,18 +1571,11 @@ class OperationLib extends OperationCrud {
 			\preaccounting\InvoiceLib::recalculateReadyForAccounting($eInvoice, $eCashflow);
 		}
 
-		$cOperationCashflow = OperationCashflow::model()
-			->select(['operation' => ['hash', 'asset']])
-			->whereCashflow($eCashflow)
-			->getCollection();
-
-		$hashes = array_unique($cOperationCashflow->getColumnCollection('operation')->getColumn('hash'));
-
-		$cOperation = OperationLib::getByHashes($hashes);
+		$cOperation = OperationLib::getByHash($hash);
 
 		// Suppression de l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
 		\journal\Operation::model()
-			->whereId('IN', $cOperation->getColumnCollection('operation')->getIds())
+			->whereId('IN', $cOperation->getIds())
 			->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
       ->delete();
 

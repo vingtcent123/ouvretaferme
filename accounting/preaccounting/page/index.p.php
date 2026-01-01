@@ -150,14 +150,6 @@ new Page(function($data) {
 			'to' => $data->eFarm['eFinancialYear']['endDate'],
 		]);
 
-		$errors = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $search) +
-			\preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $search, 'invoice') +
-			\preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $search);
-
-		if($errors > 0) {
-			throw new NotExpectedAction('Access to preaccounting import page not permitted (errors found)');
-		}
-
 		$data->search = new Search([
 			'from' => $data->eFarm['eFinancialYear']['startDate'],
 			'to' => $data->eFarm['eFinancialYear']['endDate'],
