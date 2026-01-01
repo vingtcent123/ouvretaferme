@@ -365,15 +365,14 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 			echo '<li>'.s("Rattacher des écritures comptables déjà saisies").'</li>';
 		echo '</ul>';
 
-		echo '<h3>'.s("Créer ou Rattacher des écritures comptables").'</h3>';
+		echo '<h3>'.s("<u>Créer</u> ou <u>rattacher</u> des écritures comptables").'</h3>';
+		echo '<p>'.s("Il est possible de faire un lien entre une opération bancaire et une ou plusieurs écritures comptables soit depuis la page des opérations bancaires, soit depuis la page des écritures comptables. Dans les deux cas, les écritures comptables sont groupées avec les autres écritures créées en même temps. Ce groupe est non dissociable.").'</p>';
 		echo '<p>'.s("Une écriture de contrepartie en compte {bankAccount} sera automatiquement créée et reliée aux écritures comptables concernées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Attention, il faut veiller à ce que l'équilibre de l'ensemble de vos écritures comptables soit bien respecté. Ouvretaferme vous indiquera un message si ce n'est pas le cas.").'</p>';
 		echo '<p>'.s("Ouvretaferme ne créera jamais d'écriture de contrepartie avec le tiers concerné (compte client {clientAccount} ou compte fournisseur {supplierAccount}), même si le tiers est indiqué.", ['clientAccount' => \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, 'supplierAccount' => \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]).'</p>';
-	echo '</div>';
 
-		echo '<h2>'.s("Exemples d'usage").'</h2>';
+		echo '<h3>'.s("Exemples d'usage").'</h3>';
 
-	echo '<div class="util-block">';
 		echo '<h4>'.s("Cas n°1 : Un achat apparaît sur mon relevé bancaire et rien n'est indiqué dans mon journal à ce sujet.").'</h4>';
 		echo '<p>'.s("En sélectionnant <b>Créer des écritures</b>, vous pourrez saisir votre achat (en classe {chargeAccount}), éventuellement son montant de TVA, et valider.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Ouvretaferme créera les écritures suivantes :").'</p>';
@@ -383,19 +382,15 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 			echo '<li>'.Asset::icon('3-circle').' '.s("Compte {vatAccount} (TVA sur Biens et Services) pour la TVA de votre achat", ['vatAccount' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT]).'</li>';
 		echo '</ul>';
 		echo '<p>'.Asset::icon('arrow-right-short').' '.s("Le montant de l'écriture de banque {icon1} devra être égal au total des écritures {icon2} + {icon3}", ['icon1' => Asset::icon('1-circle'), 'icon2' => Asset::icon('2-circle'), 'icon3' => Asset::icon('3-circle')]).'</p>';
-	echo '</div>';
 
-	echo '<div class="util-block">';
 		echo '<h4>'.s("Cas n°2 : Mon associé·e a enregistré l'achat d'un petit matériel et l'opération bancaire vient d'apparaître sur le relevé.").'</h4>';
 		echo '<p>'.s("Pré-requis : l'achat doit avoir été saisi dans le journal (écritures en classe {chargeAccount} et éventuellement compte {vatAccount}).", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS, 'vatAccount' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT]).'</p>';
 		echo '<p>'.s("En sélectionnant <b>Rattacher des écritures</b>, vous pourrez choisir directement l'écriture comptable.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS]).'</p>';
 		echo '<p>'.s("Ouvretaferme créera uniquement l'écriture comptable du compte banque {bankAccount}. Les 3 écritures seront liées et équilibrées.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
 		echo '<p><i>'.s("Ce cas peut se présenter si une personne s'occupe de la comptabilité depuis le compte bancaire tandis que toutes les autres saisissent leurs dépenses au fur et à mesure, par exemple.").'</i></p>';
-
 	echo '</div>';
 
-
-	echo '<br /><br />';
+	echo '<br />';
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link>", ['link' => '<a href="/doc/accounting:bank#bank-import">']).'</h4>';
 
 	echo '<div class="util-block">';
