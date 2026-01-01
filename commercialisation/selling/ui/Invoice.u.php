@@ -43,7 +43,7 @@ class InvoiceUi {
 
 	public static function getPaymentStatus(Invoice $eInvoice): string {
 
-		if($eInvoice->isCreditNote()) {
+		if($eInvoice->isCreditNote() or $eInvoice['paymentStatus'] === NULL) {
 			return '';
 		}
 
