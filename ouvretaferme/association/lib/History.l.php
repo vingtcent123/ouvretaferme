@@ -12,6 +12,7 @@ class HistoryLib extends HistoryCrud {
 		return History::model()
 			->select(['count' => new \Sql('COUNT(*)'), 'membership'])
 			->whereMembership('IN', $years)
+			->whereType(History::MEMBERSHIP)
 			->group(['membership'])
 			->whereStatus(History::VALID)
 			->getCollection(NULL, NULL, 'membership');
