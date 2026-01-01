@@ -19,27 +19,33 @@ class IncomeStatementUi {
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;
 
-		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
-		$h .= '<div>';
-			$h .= $form->select('type', [
-				IncomeStatementLib::VIEW_BASIC => s("Vue synthétique"),
-				IncomeStatementLib::VIEW_DETAILED => s("Vue détaillée"),
-			], $search->get('type'), ['mandatory' => TRUE]);
+		$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Vue").'</legend>';
+				$h .= $form->select('type', [
+					IncomeStatementLib::VIEW_BASIC => s("Vue synthétique"),
+					IncomeStatementLib::VIEW_DETAILED => s("Vue détaillée"),
+				], $search->get('type'), ['mandatory' => TRUE]);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Comparer avec un autre exercice").'</legend>';
 
-			if($cFinancialYear->count() > 1) {
-				$values = [];
-				foreach($cFinancialYear as $eFinancialYearCurrent) {
-					if($eFinancialYearCurrent->is($eFinancialYear)) {
-						continue;
+				if($cFinancialYear->count() > 1) {
+					$values = [];
+					foreach($cFinancialYear as $eFinancialYearCurrent) {
+						if($eFinancialYearCurrent->is($eFinancialYear)) {
+							continue;
+						}
+						$values[$eFinancialYearCurrent['id']] = s("Exercice {value}", $eFinancialYearCurrent->getLabel());
 					}
-					$values[$eFinancialYearCurrent['id']] = s("Exercice {value}", $eFinancialYearCurrent->getLabel());
+					$h .= $form->select('financialYearComparison', $values, $search->get('financialYearComparison'));
 				}
-				$h .= $form->select('financialYearComparison', $values, $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
-			}
+			$h .= '</fieldset>';
 
-			$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
-			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
-		$h .= '</div>';
+			$h .= '<div class="util-search-submit">';
+				$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
+				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+			$h .= '</div>';
 
 		$h .= $form->close();
 

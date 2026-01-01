@@ -39,20 +39,34 @@ class AdminUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/farm/admin/', ['method' => 'get', 'id' => 'form-search']);
-			$h .= '<div>';
+		$h = $form->openAjax('/farm/admin/', ['method' => 'get', 'class' => 'util-search']);
 
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("ID").'</legend>';
 				$h .= $form->number('id', $search->get('id'), ['placeholder' => 'ID']);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Nom").'</legend>';
 				$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom")]);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Utilisateur").'</legend>';
 				$h .= $form->text('user', $search->get('user'), ['placeholder' => s("Utilisateur")]);
-			$h .= $form->checkbox('membership', 1, ['checked' => $search->get('membership'), 'callbackLabel' => fn($input) => $input.' '.s("Fermes adhérentes")]);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Adhésion").'</legend>';
+				$h .= $form->select('membership', [
+					0 => s("Toutes les fermes"),
+					1 => s("Fermes adhérentes"),
+				], $search->get('membership'), ['mandatory' => TRUE]);
+			$h .= '</fieldset>';
 
+			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				if($search->notEmpty()) {
-					$h .= '<a href="/farm/admin/" class="btn btn-sm btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="/farm/admin/" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				}
-
-				$h .= '<div class="form-search-end">';
+				$h .= '<div class="util-badge bg-primary">';
 					$h .= p("{value} ferme", "{value} fermes", $count);
 				$h .= '</div>';
 			$h .= '</div>';

@@ -23,22 +23,26 @@ Class SigUi {
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;
 
-		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
-		$h .= '<div>';
+		$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
 			if($cFinancialYear->count() > 1) {
-				$h .= $form->select('financialYearComparison', $cFinancialYear
-					->filter(fn($e) => !$e->is($eFinancialYear))
-					->makeArray(function($e, &$key) {
-						$key = $e['id'];
-						return s("Exercice {value}", $e->getLabel());
-					}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Comparer avec un autre exercice").'</legend>';
+					$h .= $form->select('financialYearComparison', $cFinancialYear
+						->filter(fn($e) => !$e->is($eFinancialYear))
+						->makeArray(function($e, &$key) {
+							$key = $e['id'];
+							return s("Exercice {value}", $e->getLabel());
+						}), $search->get('financialYearComparison'));
+				$h .= '</fieldset>';
+
 			}
 
-			$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
-			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
-
-		$h .= '</div>';
+			$h .= '<div class="util-search-submit">';
+				$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
+				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+			$h .= '</div>';
 
 		$h .= $form->close();
 

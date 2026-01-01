@@ -133,61 +133,60 @@ class PlaceUi {
 
 		$h = '<div id="place-search" class="util-block-search">';
 
-			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search']);
 				$h .= $form->hidden('search', 1);
 				$h .= $form->hidden('series', $eSeries['id']);
 
-				$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Mode de culture").'</legend>';
+					$h .= $form->select('mode', [
+						NULL => s("Plein champ et tunnel"),
+						\map\Plot::OPEN_FIELD => s("Plein champ"),
+						\map\Plot::GREENHOUSE => s("Tunnel"),
+					], $search->get('mode'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+				$h .= '</fieldset>';
 
-					$h .= $form->inputGroup(
-						$form->addon('Planches').
-						$form->select('mode', [
-							NULL => s("Plein champ et tunnel"),
-							\map\Plot::OPEN_FIELD => s("Plein champ"),
-							\map\Plot::GREENHOUSE => s("Tunnel"),
-						], $search->get('mode'), ['mandatory' => TRUE, 'onchange' => 'Place.search()'])
-					);
+				if($search->get('canWidth')) {
 
-					if($search->get('canWidth')) {
-
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Largeur de planche").'</legend>';
 						$h .= $form->select('width', [
-							0 => s("Toutes largeurs"),
+							0 => s("Toutes"),
 							1 => s("{value} cm", $eSeries['bedWidth']),
 						], (int)$search->get('width'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+					$h .= '</fieldset>';
 
-					}
+
+				}
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Planches libres").'</legend>';
 
 					if(
 						$eSeries['bedStartCalculated'] !== NULL and
 						$eSeries['bedStopCalculated'] !== NULL
 					) {
-						$input = $form->select('free', [
-								0 => s("Non"),
-								100 => s("Oui"),
-								1 => s("À ± 1 semaine"),
-								2 => s("À ± 2 semaines"),
-							], $search->get('available'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
-					} else {
-						$input = $form->addon(\Asset::icon('exclamation-circle-fill'), ['title' => s("Indiquez les dates de semis direct, de plantation ou les périodes de récolte attendues sur cette séries pour utiliser ce filtre.")]);
-					}
-
-					$h .= $form->inputGroup(
-						$form->addon('Seulement les planches libres').
-						$input
-					);
-
-					$h .= $form->inputGroup(
-						$form->addon('Délai de retour sur même famille').
-						$form->select('rotation', [
+						$h .= $form->select('free', [
 							0 => s("Peu importe"),
-							2 => s("2 ans"),
-							3 => s("3 ans"),
-							4 => s("4 ans"),
-							5 => s("5 ans")
-						], $search->get('rotation'), ['mandatory' => TRUE, 'onchange' => 'Place.search()'])
-					);
+							100 => s("Oui"),
+							1 => s("À ± 1 semaine"),
+							2 => s("À ± 2 semaines"),
+						], $search->get('available'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+					} else {
+						$h .= $form->addon(\Asset::icon('exclamation-circle-fill'), ['title' => s("Indiquez les dates de semis direct, de plantation ou les périodes de récolte attendues sur cette séries pour utiliser ce filtre.")]);
+					}
+				$h .= '</fieldset>';
 
-				$h .= '</div>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Délai de retour sur même famille").'</legend>';
+					$h .= $form->select('rotation', [
+						0 => s("Peu importe"),
+						2 => s("2 ans"),
+						3 => s("3 ans"),
+						4 => s("4 ans"),
+						5 => s("5 ans")
+					], $search->get('rotation'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+				$h .= '</fieldset>';
 
 			$h .= $form->close();
 

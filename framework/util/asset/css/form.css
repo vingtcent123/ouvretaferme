@@ -1,10 +1,18 @@
 fieldset {
 	border-radius: var(--radius);
-	border-color: var(--border);
+	background: var(--background);
+	border-width: 0;
+	padding-block: 0.25em 0.5em;
+	padding-inline: 0.5em;
 }
 
 fieldset legend {
-	padding: 0rem 0.75rem;
+	padding: 0rem 0.5rem;
+	border-radius: calc(var(--radius) / 2);
+	background: var(--background);
+	font-weight: bold;
+	font-size: 0.9rem;
+	text-transform: uppercase;
 }
 
 input[type="number"] {
@@ -829,44 +837,6 @@ a.field-week-selector-month:hover {
 }
 .field-color label:hover {
 	color: inherit;
-}
-
-/* Backend */
-#form-search {
-}
-
-#form-search > div:first-of-type {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.5rem 0.75rem;
-	margin-bottom: 0.5rem;
-}
-
-#form-search > div:first-of-type > select,
-#form-search > div:first-of-type > input	,
-#form-search > div:first-of-type > .input-group {
-	width: auto;
-}
-
-#form-search > div:first-of-type > span {
-	white-space: nowrap;
-}
-
-#form-search > div:last-of-type {
-	display: flex;
-	column-gap: 0.5rem;
-}
-
-#form-search > div:last-child > .form-search-end {
-	flex: 1;
-	display: flex;
-	justify-content: flex-end;
-	flex-wrap: nowrap;
-	text-align: right;
-	font-weight: lighter;
-	line-height: 1.2;
-	margin-right: 0;
 }
 
 /* Autocomplete features */

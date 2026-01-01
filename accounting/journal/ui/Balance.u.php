@@ -31,23 +31,34 @@ Class BalanceUi {
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;
 
-		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+		$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-		$h .= '<div>';
-			$h .= $form->text('accountLabel', $search->get('accountLabel') !== '' ? $search->get('accountLabel') : '', ['placeholder' => s("Numéro de compte")]);
-			$h .= $form->inputGroup($form->addon(s('Du'))
-				.$form->date('startDate', $search->get('startDate'), ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
-				.$form->addon(s('au'))
-				.$form->date('endDate', $search->get('endDate'), ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]));
-			$h .= $form->inputGroup($form->addon(s("Précision du numéro de compte en chiffres")).$form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 2, 'max' => 8]));
-		$h .= '</div>';
-		$h .= '<div class="mb-1">';
-			$h .= $form->checkbox('summary', 1, ['checked' => $search->get('summary'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher la synthèse par compte")]);
-		$h .= '</div>';
-		$h .= '<div>';
-			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
-		$h .= '</div>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Période").'</legend>';
+				$h .= $form->inputGroup($form->addon(s('Du'))
+					.$form->date('startDate', $search->get('startDate'), ['placeholder' => s("Début de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']])
+					.$form->addon(s('au'))
+					.$form->date('endDate', $search->get('endDate'), ['placeholder' => s("Fin de période"), 'min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]));
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Numéro de compte").'</legend>';
+				$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Précision du numéro de compte").'</legend>';
+				$h .= $form->inputGroup($form->number('precision', $search->get('precision') !== '' ? $search->get('precision') : 3, ['min' => 2, 'max' => 8]).$form->addon(s("chiffres")));
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Synthèse par compte").'</legend>';
+				$h .= $form->select('summary', [
+					0 => s("Cacher"),
+					1 => s("Afficher"),
+				], (int)$search->get('summary'), ['mandatory' => TRUE]);
+			$h .= '</fieldset>';
+			$h .= '<div class="util-search-submit">';
+				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+			$h .= '</div>';
 
 		$h .= $form->close();
 

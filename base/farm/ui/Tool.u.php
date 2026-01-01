@@ -326,16 +326,21 @@ class ToolUi {
 
 			$form = new \util\FormUi();
 
-			$h .= $form->openAjax('/farm/tool:manage', ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax('/farm/tool:manage', ['method' => 'get', 'class' => 'util-search']);
+				$h .= $form->hidden('farm', $eFarm['id']);
 
-				$h .= '<div>';
-
-					$h .= $form->hidden('farm', $eFarm['id']);
-					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom")]);
-					$h .= $form->select('action', $cActionUsed, $search->get('action'), ['placeholder' => s("Intervention")]);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Nom").'</legend>';
+					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du matériel")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Intervention").'</legend>';
+					$h .= $form->select('action', $cActionUsed, $search->get('action'));
+				$h .= '</fieldset>';
+				$h .= '<div class="util-search-submit">';
 
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 
 				$h .= '</div>';
 

@@ -2035,25 +2035,28 @@ class AnalyzeUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
+				if(get_exists('month')) {
+					$h .= $form->hidden('month', GET('month'));
+				}
 
-					if(get_exists('month')) {
-						$h .= $form->hidden('month', GET('month'));
-					}
+				if(get_exists('week')) {
+					$h .= $form->hidden('week', GET('week'));
+				}
 
-					if(get_exists('week')) {
-						$h .= $form->hidden('week', GET('week'));
-					}
-
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Type de clients").'</legend>';
 					$h .= $form->select('type', [
-							Customer::PRIVATE => s("Clients particuliers"),
-							Customer::PRO => s("Clients professionnels"),
-						], $search->get('type'), ['placeholder' => s("Clients particuliers et professionnels")]);
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+						Customer::PRIVATE => s("Clients particuliers"),
+						Customer::PRO => s("Clients professionnels"),
+					], $search->get('type'), ['placeholder' => s("Tous")]);
+				$h .= '</fieldset>';
 
+
+				$h .= '<div class="util-search-submit">';
+					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

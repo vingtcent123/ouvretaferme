@@ -12,20 +12,23 @@ Class PreaccountingUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search, string $type, bool $hasOperations = FALSE): string {
 
-		$h = '<div id="sale-search" class="util-block-search">';
+		$h = '<div class="util-block-search">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
-
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Période").'</legend>';
 					$h .= $form->inputGroup($form->addon(s("Du")).
 						$form->date('from', $search->get('from')).
 						$form->addon(s("au")).
 						$form->date('to', $search->get('to'))
 					);
+				$h .= '</fieldset>';
+
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
 					if($hasOperations) {
 						$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes:telecharger?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger l'export").'</a>';
@@ -319,7 +322,7 @@ Class PreaccountingUi {
 						$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 						$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
 						$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-						$h .= '<a href="'.LIME_REQUEST_PATH.'?'.http_build_query($args).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+						$h .= '<a href="'.LIME_REQUEST_PATH.'?'.http_build_query($args).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 					$h .= '</div>';
 				$h .= $form->close();
 			$h .= '</div>';

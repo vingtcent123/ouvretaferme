@@ -25,18 +25,30 @@ class ErrorMonitoringUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/dev/admin/', ['method' => 'get', 'id' => 'form-search']);
-			$h .= '<div>';
+		$h = $form->openAjax('/dev/admin/', ['method' => 'get', 'class' => 'util-search']);
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Message").'</legend>';
 				$h .= $form->text('message', $search->get('message'), ['placeholder' => s("Message")]);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Utilisateur").'</legend>';
 				$h .= $form->text('user', $search->get('user'), ['placeholder' => s("Utilisateur"), 'prepend' => '#']);
-				$h .= '<label>'.$form->inputCheckbox('unexpected', 1, ['checked' => $search->get('unexpected')]).' '.s("Unexpected").'</label>';
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Unexpected").'</legend>';
+				$h .= $form->select('unexpected', [
+					0 => s("Non"),
+					1 => s("Oui")
+				], (int)$search->get('unexpected'), ['mandatory' => TRUE]);
+			$h .= '</fieldset>';
+			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				if($search->notEmpty()) {
-					$h .= '<a href="/dev/admin/" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="/dev/admin/" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				}
-				$h .= '<div class="form-search-end">';
-					$h .= '<span>'.p("{value} erreur", "{value} erreurs", $nError).'</span>';
-				$h .= '</div>';
+				$h .= '<span class="util-badge bg-primary">';
+					$h .= p("{value} erreur", "{value} erreurs", $nError);
+				$h .= '</span>';
 			$h .= '</div>';
 		$h .= $form->close();
 

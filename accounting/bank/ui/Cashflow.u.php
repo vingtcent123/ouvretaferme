@@ -16,37 +16,35 @@ class CashflowUi {
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;
 
-		$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+		$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search util-search-3']);
 
-		$h .= '<dl class="util-presentation util-presentation-2">';
-			$h .= '<dt>'.s("Période").'</dt>';
-			$h .= '<dd>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Période").'</legend>';
 				$h .= $form->inputGroup(
 					$form->date('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
 					$form->addon(s("à")).
 					$form->date('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
 				);
-			$h .= '</dd>';
-			$h .= '<dt>'.s("Écritures comptables").'</dt>';
-			$h .= '<dd>';
-
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Écritures comptables").'</legend>';
 				$statuses = CashflowUi::p('status')->values;
 				if($eFarm->usesAccounting() === FALSE) {
 					unset($statuses[Cashflow::ALLOCATED]);
 					$statuses[Cashflow::WAITING] = s("Valide");
 				}
 				$h .= $form->select('status', $statuses, $search->get('status'), ['onchange' => 'Cashflow.changeStatusSelector(this);']);
-			$h .= '</dd>';
-			$h .= '<dt>'.s("Libellé").'</dt>';
-			$h .= '<dd>';
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Libellé").'</legend>';
 				$h .= $form->text('memo', $search->get('memo'), ['placeholder' => s("Libellé")]);
-			$h .= '</dd>';
-			$h .= '<dt>'.s("Mouvement").'</dt>';
-			$h .= '<dd>';
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Mouvement").'</legend>';
 				$h .= $form->select('direction', ['debit-credit' => s("Débit / Crédit"), 'debit' => s("Débit"), 'credit' => s("Crédit")], $search->get('direction') ?? 'debit-credit', ['mandatory' => TRUE]);
-			$h .= '</dd>';
-			$h .= '<dt>'.s("Montant").'</dt>';
-			$h .= '<dd>';
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Montant").'</legend>';
 				$h .= $form->inputGroup(
 			$form->addon(s('Montant')).
 					$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01]).
@@ -54,15 +52,15 @@ class CashflowUi {
 					$form->number('margin', $search->get('margin', 1)).
 					$form->addon(s('€'))
 				);
-			$h .= '</dd>';
-			$h .= '<dt>'.s("Rapprochement").'</dt>';
-			$h .= '<dd>';
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Rapprochement").'</legend>';
 				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'));
-			$h .= '</dd>';
-		$h .= '<div class="mt-1">';
-			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-			$h .= '<a href="'.$url.'" class="btn btn-secondary ml-1">'.\Asset::icon('x-lg').'</a>';
-		$h .= '</div>';
+			$h .= '</fieldset>';
+			$h .= '<div class="util-search-submit">';
+				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+			$h .= '</div>';
 
 		$h .= $form->close();
 

@@ -193,6 +193,8 @@ class PlotUi {
 
 			}
 
+			$h .= '</div>';
+
 		}
 
 		return $h;

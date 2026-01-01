@@ -1489,20 +1489,23 @@ class FarmUi {
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlCultivationSeedling($eFarm, season: $season);
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Implantation").'</legend>';
+					$h .= $form->select('seedling', \series\CultivationUi::p('seedling')->values, $search->get('seedling'));
+				$h .= '</fieldset>';
+				if($cSupplier->notEmpty()) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Fournisseur").'</legend>';
+						$h .= $form->select('supplier', $cSupplier, $search->get('supplier'));
+					$h .= '</fieldset>';
+				}
 
-					$h .= $form->select('seedling', \series\CultivationUi::p('seedling')->values, $search->get('seedling'), ['placeholder' => s("Implantation")]);
-
-					if($cSupplier->notEmpty()) {
-						$h .= $form->select('supplier', $cSupplier, $search->get('supplier'), ['placeholder' => s("Fournisseur")]);
-					}
-
-
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					if($search->notEmpty()) {
-						$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+						$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 					}
 				$h .= '</div>';
 
@@ -1521,18 +1524,25 @@ class FarmUi {
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlCultivationSeries($eFarm, season: $season);
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
 
-					if($view === Farmer::WORKING_TIME) {
-						$h .= $form->select('action', $cAction, $search->get('action'), ['placeholder' => s("Intervention")]);
-					}
+				if($view === Farmer::WORKING_TIME) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Intervention").'</legend>';
+						$h .= $form->select('action', $cAction, $search->get('action'));
+					$h .= '</fieldset>';
+				}
 
-					if($view === Farmer::AREA) {
+				if($view === Farmer::AREA) {
 
-						$h .= $form->inputGroup($form->addon(s('Largeur travaillée de planche')).$form->number('bedWidth', $search->get('bedWidth')).$form->addon(s('cm')));
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Largeur travaillée de planche").'</legend>';
+						$h .= $form->inputGroup($form->number('bedWidth', $search->get('bedWidth')).$form->addon(s('cm')));
+					$h .= '</fieldset>';
 
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Matériel").'</legend>';
 						$h .= $form->dynamicField(new Tool(['farm' => $eFarm]), 'id', function($d) use($search) {
 
 							$d->name = 'tool';
@@ -1546,11 +1556,14 @@ class FarmUi {
 								'style' => 'width: 20rem'
 							];
 						});
+					$h .= '</fieldset>';
 
-					}
 
+				}
+
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();
@@ -1700,19 +1713,30 @@ class FarmUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
-					$h .= $form->select('family', $search->get('cFamily'), $search->get('family'), ['placeholder' => s("Famille..."), 'onchange' => 'Farm.changeSearchFamily(this)']);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Famille").'</legend>';
+					$h .= $form->select('family', $search->get('cFamily'), $search->get('family'), ['onchange' => 'Farm.changeSearchFamily(this)']);
 					$h .= $form->inputGroup(
 						$form->addon(s("Cultivée")).
 						$form->select('seen', $seen, $search->get('seen', $lastSeason), ['mandatory' => TRUE]),
 						['class' => 'bed-rotation-search-seen '.($search->get('family')->notEmpty() ? NULL : 'hide')]
 					);
-					$h .= '<label><input type="checkbox" name="bed" value="1" '.($search->get('bed') ? 'checked="checked"' : '').'/> '.s("Uniquement les planches permanentes").'</label>';
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Uniquement les planches permanentes").'</legend>';
+					$h .= $form->select('bed', [
+						0 => s("Non"),
+						1 => s("Oui"),
+					], (int)$search->get('bed'), ['mandatory' => TRUE]);
+				$h .= '</fieldset>';
+
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
+
 			$h .= $form->close();
 
 		$h .= '</div>';

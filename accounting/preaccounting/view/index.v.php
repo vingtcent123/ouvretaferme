@@ -29,10 +29,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = $title;
 
-	echo '<div class="util-block">';
-		echo '<h3>'.s("Choix de la période").'</h3>';
-		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
-	echo '</div>';
+	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
 
 	if(($toCheck + $data->nProductVerified + $data->nPaymentVerified) === 0) {
 
@@ -167,10 +164,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = $title;
 
-	echo '<div class="util-block">';
-		echo '<h3>'.s("Choix de la période").'</h3>';
-		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales', count($data->operations) > 0);
-	echo '</div>';
+	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales', count($data->operations) > 0);
 
 	if(count($data->operations) > 0) {
 

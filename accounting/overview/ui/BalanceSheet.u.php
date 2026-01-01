@@ -19,29 +19,37 @@ class BalanceSheetUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Vue").'</legend>';
 					$h .= $form->select('type', [
 						BalanceSheetLib::VIEW_BASIC => s("Vue synthétique"),
 						BalanceSheetLib::VIEW_DETAILED => s("Vue détaillée"),
 					], $search->get('type'), ['mandatory' => TRUE]);
-
-					if($cFinancialYear->count() > 1) {
+				$h .= '</fieldset>';
+				if($cFinancialYear->count() > 1) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Comparer avec un autre exercice").'</legend>';
 						$h .= $form->select('financialYearComparison', $cFinancialYear
 							->filter(fn($e) => !$e->is($eFinancialYear))
 							->makeArray(function($e, &$key) {
 								$key = $e['id'];
 								return s("Exercice {value}", $e->getLabel());
 							}), $search->get('financialYearComparison'), ['placeholder' => s("Comparer avec un autre exercice")]);
-					}
-				$h .= '</div>';
-				$h .= '<div class="mb-1">';
-					$h .= $form->checkbox('netOnly', 1, ['checked' => GET('netOnly'), 'callbackLabel' => fn($input) => $input.' '.s("Afficher uniquement le net")]);
-				$h .= '</div>';
-				$h .= '<div class="mb-1">';
+					$h .= '</fieldset>';
+				}
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Afficher uniquement le net").'</legend>';
+					$h .= $form->select('netOnly', [
+						0 => s("Non"),
+						1 => s("Oui"),
+					], (int)$search->get('netOnly'), ['mandatory' => TRUE]);
+				$h .= '</fieldset>';
+
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

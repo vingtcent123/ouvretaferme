@@ -37,17 +37,33 @@ class AccountUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Numéro de compte").'</legend>';
 					$h .= $form->text('classPrefix', $search->get('classPrefix'), ['placeholder' => s("Numéro de compte")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Libellé").'</legend>';
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Libellé")]);
-					$h .= $form->checkbox('vatFilter', 1, ['checked' => $search->get('vatFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Avec compte de TVA uniquement")]);
-					$h .= $form->checkbox('customFilter', 1, ['checked' => $search->get('customFilter'), 'callbackLabel' => fn($input) => $input.' '.s("Personnalisés")]);
-				$h .= '</div>';
-				$h .= '<div>';
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Compte de TVA").'</legend>';
+					$h .= $form->select('vatFilter', [
+						0 => s("Peu importe"),
+						1 => s("Avec compte de TVA"),
+					], (int)$search->get('vatFilter'), ['mandatory' => TRUE]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Comptes personnalisés").'</legend>';
+					$h .= $form->select('customFilter', [
+						0 => s("Peu importe"),
+						1 => s("Uniquement ceux-là"),
+					], (int)$search->get('customFilter'), ['mandatory' => TRUE]);
+				$h .= '</fieldset>';
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

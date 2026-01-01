@@ -20,26 +20,34 @@ Class ImportUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH.'?tab=invoice';
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-			$h .= '<div>';
-				$h .= $form->select('type', [
-					NULL => s("Type de client"),
-					\selling\Customer::PRO => s("Professionnels"),
-					\selling\Customer::PRIVATE => s("Particuliers"),
-				], $search->get('type', 'int', 0), ['mandatory' => TRUE]);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Type de client").'</legend>';
+					$h .= $form->select('type', [
+						\selling\Customer::PRO => s("Professionnels"),
+						\selling\Customer::PRIVATE => s("Particuliers"),
+					], $search->get('type'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Rattachement à une opération bancaire").'</legend>';
+					$h .= $form->select('reconciliated', [
+						1 => s("Écritures rattachées uniquement"),
+						0 => s("Écritures non rattachées"),
+					], $search->get('reconciliated'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Écart de paiement").'</legend>';
+					$h .= $form->select('accountingDifference', [
+						0 => s("Toutes les factures"),
+						1 => s("Factures avec un écart de paiement"),
+					], (int)$search->get('accountingDifference'), ['mandatory' => TRUE]);
+				$h .= '</fieldset>';
 
-				$h .= $form->select('reconciliated', [
-					NULL => s("Rattachées ou non à une opération bancaire"),
-					1 => s("Écritures rattachées uniquement"),
-					0 => s("Écritures non rattachées"),
-				], $search->get('reconciliated', 'int', 0), ['mandatory' => TRUE]);
-				$h .= $form->select('accountingDifference', [
-					0 => s("Toutes les factures"),
-					1 => s("Factures avec un écart de paiement"),
-				], $search->get('accountingDifference', 'int'), ['mandatory' => TRUE]);
+
+			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-				$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 			$h .= '</div>';
 
 			$h .= $form->close();

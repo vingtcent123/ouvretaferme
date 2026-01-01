@@ -50,9 +50,14 @@ class SequenceUi {
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlCultivationSequences($eFarm);
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
-				$h .= '<div>';
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Nom").'</legend>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom de l'itinéraire")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Espèce").'</legend>';
 					$h .= $form->dynamicField(new \series\Cultivation(['farm' => $eFarm]), 'plant', function($d) use($search) {
 						$d->autocompleteDefault = $search->get('plant');
 						$d->attributes = [
@@ -60,8 +65,13 @@ class SequenceUi {
 							'style' => 'width: 20rem'
 						];
 					});
-					$h .= $form->select('use', SequenceUi::p('use')->values, $search->get('use'), ['placeholder' => s("Utilisation du sol")]);
-
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Utilisation du sol").'</legend>';
+					$h .= $form->select('use', SequenceUi::p('use')->values, $search->get('use'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Matériel").'</legend>';
 					$h .= $form->dynamicField(new \farm\Tool(['farm' => $eFarm]), 'id', function($d) use($search) {
 
 						$d->name = 'tool';
@@ -75,10 +85,11 @@ class SequenceUi {
 							'style' => 'width: 20rem'
 						];
 					});
-				$h .= '</div>';
-				$h .= '<div>';
+				$h .= '</fieldset>';
+
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

@@ -38,17 +38,26 @@ class AdminUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/user/admin/', ['method' => 'get', 'id' => 'form-search']);
-			$h .= '<div>';
+		$h = $form->openAjax('/user/admin/', ['method' => 'get', 'class' => 'util-search']);
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("ID").'</legend>';
 				$h .= $form->number('id', $search->get('id'), ['placeholder' => 'ID']);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Nom").'</legend>';
 				$h .= $form->text('lastName', $search->get('lastName'), ['placeholder' => 'Nom']);
+			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("E-mail").'</legend>';
 				$h .= $form->text('email', $search->get('email'), ['placeholder' => 'E-mail']);
+			$h .= '</fieldset>';
+			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				if($search->notEmpty()) {
-					$h .= '<a href="/user/admin/" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= ' <a href="/user/admin/" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				}
 
-				$h .= '<span class="form-search-end">'.p("{value} utilisateur", "{value} utilisateurs", $count).'</span>';
+				$h .= '<span class="util-badge bg-primary">'.p("{value} utilisateur", "{value} utilisateurs", $count).'</span>';
 			$h .= '</div>';
 
 		$h .= $form->close();

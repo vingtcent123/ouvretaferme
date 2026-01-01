@@ -946,35 +946,44 @@ class TaskUi {
 
 		$h = '<div id="planning-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
 
-			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'id' => 'form-search']);
-
-				$h .= '<div>';
+			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search']);
 
 					$h .= $form->hidden('search', 1);
 
 					if($cUserFarm->count() > 1) {
-						$h .= $form->select('farmer', $cUserFarm->toArray(fn($eUserFarm) => [$eUserFarm['id'], $eUserFarm['firstName'].' '.$eUserFarm['lastName']], keys: TRUE), $search->get('farmer'), ['placeholder' => s("Affecté à")]);
+						$h .= '<fieldset>';
+							$h .= '<legend>'.s("Affecté à").'</legend>';
+							$h .= $form->select('farmer', $cUserFarm->toArray(fn($eUserFarm) => [$eUserFarm['id'], $eUserFarm['firstName'].' '.$eUserFarm['lastName']], keys: TRUE), $search->get('farmer'));
+						$h .= '</fieldset>';
 					}
 
 					if($cAction->notEmpty()) {
-						$h .= $form->select('action', $cAction, $search->get('action'), ['placeholder' => s("Intervention")]);
+						$h .= '<fieldset>';
+							$h .= '<legend>'.s("Intervention").'</legend>';
+							$h .= $form->select('action', $cAction, $search->get('action'));
+						$h .= '</fieldset>';
 					}
-					$h .= $form->dynamicField(new \plant\Plant([
-						'farm' => $eFarm
-					]), 'id', function($d) use($search) {
-						$d->name = 'plant';
-						$d->autocompleteDefault = $search->get('plant');
-					});
+
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Espèce").'</legend>';
+						$h .= $form->dynamicField(new \plant\Plant([
+							'farm' => $eFarm
+						]), 'id', function($d) use($search) {
+							$d->name = 'plant';
+							$d->autocompleteDefault = $search->get('plant');
+						});
+					$h .= '</fieldset>';
+
 					if($cZone->notEmpty()) {
-						$h .= new \map\ZoneUi()->getZonePlotWidget($form, $cZone, $search->get('plot') ?? new \map\Plot(), s("Emplacement"));
+						$h .= '<fieldset>';
+							$h .= '<legend>'.s("Emplacement").'</legend>';
+							$h .= new \map\ZoneUi()->getZonePlotWidget($form, $cZone, $search->get('plot') ?? new \map\Plot());
+						$h .= '</fieldset>';
 					}
 
-				$h .= '</div>';
-				$h .= '<div>';
-
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.LIME_REQUEST_PATH.'?search" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
-
+					$h .= '<a href="'.LIME_REQUEST_PATH.'?search" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

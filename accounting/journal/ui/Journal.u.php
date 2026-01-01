@@ -93,88 +93,74 @@ class JournalUi {
 
 			$statuses = OperationUi::p('type')->values;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search util-search-3']);
 
-				$h .= '<dl class="util-presentation util-presentation-2">';
-					$h .= '<dt>'.s("Période").'</dt>';
-					$h .= '<dd>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Période").'</legend>';
 					$h .= $form->inputGroup(
 						$form->date('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
 						$form->addon(s("à")).
 						$form->date('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
 					);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Type").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->select('type', $statuses, $search->get('type'), ['placeholder' => s("Type")]);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Numéro de compte").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Description").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->select('paymentMethod', $cPaymentMethod, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Tiers").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->dynamicField(new Operation(['thirdParty' => $eThirdParty]), 'thirdParty', function($d) use($form) {
-							$d->autocompleteDispatch = '[data-third-party="form-search"]';
-							$d->attributes['data-index'] = 0;
-							$d->attributes['data-third-party'] = 'form-search';
-						});
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Pièce comptable").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Pièce comptable")]);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Avec / sans opération bancaire").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->select('cashflowFilter', [
-						0 => s("Toutes les écritures"),
-						1 => s("Écritures non rattachées à une opération bancaire"),
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Type").'</legend>';
+					$h .= $form->select('type', $statuses, $search->get('type'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Numéro de compte").'</legend>';
+					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Description").'</legend>';
+					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Moyen de paiement").'</legend>';
+					$h .= $form->select('paymentMethod', $cPaymentMethod, $search->get('paymentMethod'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Tiers").'</legend>';
+					$h .= $form->dynamicField(new Operation(['thirdParty' => $eThirdParty]), 'thirdParty', function($d) use($form) {
+						$d->autocompleteDispatch = '[data-third-party="search"]';
+						$d->attributes['data-index'] = 0;
+						$d->attributes['data-third-party'] = 'search';
+					});
+				$h .= '</fieldset>';
+				$h .= '<fieldset class="journal-search-document">';
+					$h .= '<legend>'.s("Pièce comptable").'</legend>';
+					$h .= $form->inputGroup(
+						$form->select('hasDocument', [
+							NULL => s("Avec ou sans"),
+							0 => s("Sans"),
+							1 => s("Avec"),
+						], $search->get('hasDocument'), ['mandatory' => TRUE]).
+						$form->text('document', $search->get('document'), ['placeholder' => s("Nom de la pièce comptable")])
+					);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Opération bancaire").'</legend>';
+					$h .= $form->select('cashflowFilter', [
+						0 => s("Avec ou sans"),
+						1 => s("Sans"),
 					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Avec / sans pièce comptable").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->select('hasDocument', [
-						NULL => s("Avec ou sans pièce comptable"),
-						0 => s("Sans pièce comptable"),
-						1 => s("Avec pièce comptable"),
-					], $search->get('hasDocument'), ['mandatory' => TRUE]);
-					$h .= '</dd>';
-
-					$h .= '<dt>'.s("Immobilisation").'</dt>';
-					$h .= '<dd>';
-						$h .= $form->select('needsAsset', [
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Immobilisation").'</legend>';
+					$h .= $form->select('needsAsset', [
 						NULL => s("Toutes les écritures"),
-						0 => s("Écritures d'immobilisation avec fiche"),
-						1 => s("Écritures d'immobilisation sans fiche"),
+						0 => s("Immobilisation avec fiche"),
+						1 => s("Immobilisation sans fiche"),
 					],  $search->get('needsAsset'), ['mandatory' => TRUE]);
-					$h .= '</dd>';
-
-				$h .= '</dl>';
-
+				$h .= '</fieldset>';
 				if($nUnbalanced > 0) {
-					$h .= '<div class="mt-1 mb-1">';
-						$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.\Asset::icon('search').' '.s("Retrouver les groupes d'écritures déséquilibrés ({value} groupes)", $nUnbalanced).'</a>';
+					$h .= '<div class="util-search-fill text-end">';
+						$h .= \Asset::icon('search').' '.'<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.p("Retrouver {value} groupe d'écritures déséquilibrés", "Retrouver les {value} groupes d'écritures déséquilibrés", $nUnbalanced, ['value' => '<span class="util-badge bg-primary">'.$nUnbalanced.'</span>']).'</a>';
 					$h .= '</div>';
 				}
-				$h .= '<div>';
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= ' <a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

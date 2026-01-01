@@ -58,15 +58,30 @@ class InvoiceUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
-				$h .= '<div>';
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search util-search-3']);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Numéro").'</legend>';
 					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Numéro")]);
-					$h .= $form->text('customer', $search->get('customer'), ['placeholder' => s("Client")]);
-					$h .= $form->select('status', InvoiceUi::p('status')->values, $search->get('status'), ['placeholder' => s("État")]);
-					$h .= $form->text('date', $search->get('date'), ['placeholder' => s("Date de facturation")]);
-					$h .= $form->select('paymentStatus', self::p('paymentStatus')->values, $search->get('paymentStatus'), ['placeholder' => s("Payée ?")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Client").'</legend>';
+					$h .= $form->text('customer', $search->get('customer'), ['placeholder' => s("Nom du client")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("État").'</legend>';
+					$h .= $form->select('status', InvoiceUi::p('status')->values, $search->get('status'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Date de facturation").'</legend>';
+					$h .= $form->text('date', $search->get('date'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Règlement").'</legend>';
+					$h .= $form->select('paymentStatus', self::p('paymentStatus')->values, $search->get('paymentStatus'));
+				$h .= '</fieldset>';
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 			$h .= $form->close();
 

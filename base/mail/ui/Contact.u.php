@@ -46,23 +46,34 @@ class ContactUi {
 
 		$h = '<div id="contact-search" class="util-block-search '.($search->empty(['source', 'cShop']) ? 'hide' : '').'">';
 
-			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsContact($eFarm), ['method' => 'get', 'id' => 'form-search']);
-				$h .= '<div>';
+			$h .= $form->openAjax(\farm\FarmUi::urlCommunicationsContact($eFarm), ['method' => 'get', 'class' => 'util-search']);
 
-					if($search->get('source') === NULL) {
+				if($search->get('source') === NULL) {
 
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Adresse e-mail").'</legend>';
 						$h .= $form->text('email', $search->get('email'), ['placeholder' => s("Adresse e-mail")]);
-						$h .= $form->inputGroup(
-							$form->checkbox('newsletter', 'yes', ['checked' => $search->get('newsletter') === 'yes', 'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("Uniquement inscrits à la newsletter")), 'callbackFieldAttributes' => ['class' => 'bg-white']])
-						);
+					$h .= '</fieldset>';
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Newsletter").'</legend>';
+						$h .= $form->select('newsletter', [
+							NULL => s("Pas de filtre"),
+							'yes' => s("Seulement ceux inscrits"),
+						], $search->get('newsletter'), ['mandatory' => TRUE]);
+					$h .= '</fieldset>';
 
-					}
+				}
 
-					$h .= $form->select('shop', $search->get('cShop'), $search->get('shop'), ['placeholder' => s("Clients d'une boutique")]);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Clients d'une boutique").'</legend>';
+					$h .= $form->select('shop', $search->get('cShop'), $search->get('shop'));
+				$h .= '</fieldset>';
 
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
+
 			$h .= $form->close();
 
 		$h .= '</div>';

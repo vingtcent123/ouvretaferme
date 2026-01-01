@@ -74,3 +74,7 @@ tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 #journals .tab-item .util-badge {
 	margin-top: 0.25rem;
 }
+
+.journal-search-document:has(select[name="hasDocument"] option[value="0"]:checked) input[name="document"] {
+	display: none;
+}

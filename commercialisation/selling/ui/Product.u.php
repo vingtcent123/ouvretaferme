@@ -125,15 +125,25 @@ class ProductUi {
 
 		$h = '<div id="product-search" class="util-block-search '.($search->empty(['category']) ? 'hide' : '').'">';
 
-			$h .= $form->openAjax(\farm\FarmUi::urlSellingProducts($eFarm), ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax(\farm\FarmUi::urlSellingProducts($eFarm), ['method' => 'get', 'class' => 'util-search']);
 				$h .= $form->hidden('category', $search->get('category'));
-				$h .= '<div>';
-					$h .= $form->select('profile', self::p('profile')->values, $search->get('profile'), ['placeholder' => s("Type")]);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Type").'</legend>';
+					$h .= $form->select('profile', self::p('profile')->values, $search->get('profile'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Nom").'</legend>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
-					$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Espèce").'</legend>';
+					$h .= $form->text('plant', $search->get('plant'));
+				$h .= '</fieldset>';
 
-					if($eFarm->hasAccounting()) {
+				if($eFarm->hasAccounting()) {
 
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Numéro de compte").'</legend>';
 						$eAccount = $search->get('account');
 						if($search->get('noAccount') === TRUE) {
 							$eAccount = new \account\Account(['id' => 0]);
@@ -150,11 +160,14 @@ class ProductUi {
 								return \company\CompanyUi::urlAccount($eFarm).'/account:query?'.http_build_query($query);
 							};
 						});
+					$h .= '</fieldset>';
 
-					}
 
+				}
+
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 			$h .= $form->close();
 

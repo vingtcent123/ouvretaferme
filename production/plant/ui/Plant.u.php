@@ -135,12 +135,12 @@ class PlantUi {
 
 			$form = new \util\FormUi();
 
-			$h .= $form->openAjax(self::urlManage($eFarm), ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax(self::urlManage($eFarm), ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
+				$h .= $form->hidden('farm', $eFarm['id']);
 
-					$h .= $form->hidden('farm', $eFarm['id']);
-
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Espèce").'</legend>';
 					$h .= $form->dynamicField(new Plant([
 						'farm' => $eFarm
 					]), 'id', function($d) use($search) {
@@ -150,11 +150,16 @@ class PlantUi {
 							'data-autocomplete-select' => 'submit'
 						];
 					});
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Famille").'</legend>';
+					$h .= $form->select('family', $search->get('cFamily'), $search->get('family'));
+				$h .= '</fieldset>';
 
-					$h .= $form->select('family', $search->get('cFamily'), $search->get('family'), ['placeholder' => s("Famille...")]);
+				$h .= '<div class="util-search-submit">';
 
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 
 				$h .= '</div>';
 

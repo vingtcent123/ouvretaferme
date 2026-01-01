@@ -206,12 +206,15 @@ class ThirdPartyUi {
 			$form = new \util\FormUi();
 			$url = \LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Nom").'</legend>';
 						$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom")]);
+				$h .= '</fieldset>';
+				$h .= '<div class="util-search-submit">';
 						$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-						$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+						$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

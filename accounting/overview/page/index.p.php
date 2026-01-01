@@ -24,6 +24,7 @@ new Page(function($data) {
 
 		$data->search = new Search([
 			'financialYearComparison' => GET('financialYearComparison'),
+			'netOnly' => GET('netOnly', 'bool', FALSE)
 		], GET('sort'));
 
 		if($data->search->get('financialYearComparison')) {

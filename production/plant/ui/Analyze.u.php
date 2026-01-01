@@ -551,18 +551,24 @@ class AnalyzeUi {
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
-				$h .= '<div>';
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Cycle").'</legend>';
 					$h .= $form->select('cycle', [
 							Plant::ANNUAL => s("Annuelles"),
 							Plant::PERENNIAL => s("Pérennes"),
-						], $search->get('cycle'), ['placeholder' => s("Annuelles et pérennes")]);
+						], $search->get('cycle'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Utilisation du sol").'</legend>';
 					$h .= $form->select('use', [
 							\series\Series::BED => s("Cultures sur planches"),
 							\series\Series::BLOCK => s("Cultures sur surfaces libres"),
-						], $search->get('use'), ['placeholder' => s("Cultures sur planches ou sur surface libres")]);
+						], $search->get('use'));
+				$h .= '</fieldset>';
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 			$h .= $form->close();
 

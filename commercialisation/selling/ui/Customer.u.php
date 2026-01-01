@@ -144,16 +144,28 @@ class CustomerUi {
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlSellingCustomers($eFarm);
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
-				$h .= '<div>';
-					if($search->get('cGroup')->notEmpty()) {
-						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'), ['placeholder' => s("Groupe")]);
-					}
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Nom").'</legend>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom de client")]);
+				$h .= '</fieldset>';
+				if($search->get('cGroup')->notEmpty()) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Groupe").'</legend>';
+						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'));
+					$h .= '</fieldset>';
+				}
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("E-mail").'</legend>';
 					$h .= $form->email('email', $search->get('email'), ['placeholder' => s("E-mail de client")]);
-					$h .= $form->select('category', self::getCategories(), $search->get('category'), ['placeholder' => s("Catégorie")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Catégorie").'</legend>';
+					$h .= $form->select('category', self::getCategories(), $search->get('category'));
+				$h .= '</fieldset>';
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 			$h .= $form->close();
 

@@ -117,18 +117,32 @@ class SaleUi {
 
 			$paymentMethods = $cPaymentMethod->toArray(fn($ePaymentMethod) => ['label' => $ePaymentMethod['name'], 'value' => $ePaymentMethod['id']]);
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'id' => 'form-search']);
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
-				$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Numéro").'</legend>';
 					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Numéro")]);
-					$h .= $form->select('preparationStatus', $statuses, $search->get('preparationStatus'), ['placeholder' => s("État")]);
-					$h .= $form->select('paymentMethod', $paymentMethods, $search->get('paymentMethod'), ['placeholder' => s("Moyen de paiement")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("État").'</legend>';
+					$h .= $form->select('preparationStatus', $statuses, $search->get('preparationStatus'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Moyen de paiement").'</legend>';
+					$h .= $form->select('paymentMethod', $paymentMethods, $search->get('paymentMethod'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Client").'</legend>';
 					$h .= $form->text('customerName', $search->get('customerName'), ['placeholder' => s("Client")]);
-					$h .= $form->month('deliveredAt', $search->get('deliveredAt'), ['placeholder' => s("Mois")]);
-				$h .= '</div>';
-				$h .= '<div>';
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Date").'</legend>';
+					$h .= $form->month('deliveredAt', $search->get('deliveredAt'));
+				$h .= '</fieldset>';
+
+				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();
