@@ -615,7 +615,7 @@ class CashflowUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= '<label class="btn btn-primary">';
 				$h .= $form->file('ofx', ['onchange' => 'this.form.submit()', 'accept' => '.ofx']);
-				$h .= s("Importer un fichier OFX depuis mon ordinateur");
+				$h .= s("Choisir un fichier OFX sur mon ordinateur");
 			$h .= '</label>';
 		$h .= $form->close();
 
