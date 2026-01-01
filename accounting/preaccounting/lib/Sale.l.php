@@ -89,10 +89,14 @@ Class SaleLib {
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\SaleModel {
 
 		return \selling\Sale::model()
+			->join(\selling\Customer::model(), 'm1.customer = m2.id')
+			->where(fn() => new \Sql('JSON_CONTAINS('.\selling\Customer::model()->field('groups').', \''.$search->get('group')['id'].'\')'), if: $search->get('group')->notEmpty())
+			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.onlineStatus IS NULL)', 'LEFT') // Moyen de paiement OK
+			->where(fn() => new \Sql('m3.method = '.$search->get('method')['id']), if: $search->get('method')->notEmpty())
 			->wherePreparationStatus('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT, \selling\Sale::BASKET])
 			->where('priceExcludingVat != 0.0')
 			->whereInvoice(NULL)
-			->whereType(\selling\Sale::PRIVATE)
+			->where('m1.type = "'.\selling\Sale::PRIVATE.'"')
 			->where(fn() => new \Sql('m1.customer = '.$search->get('customer')['id']), if: $search->get('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
 			->whereReadyForAccounting(FALSE)

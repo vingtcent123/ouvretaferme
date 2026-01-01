@@ -33,14 +33,14 @@ Class PreaccountingUi {
 					$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
 				$h .= '</fieldset>';
 
-				if($search->get('cGroup')->notEmpty()) {
+				if($search->get('cGroup') and $search->get('cGroup')->notEmpty()) {
 					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Groupe").'</legend>';
 						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'));
 					$h .= '</fieldset>';
 				}
 
-				if($search->get('cMethod')->notEmpty()) {
+				if($search->get('cMethod') and $search->get('cMethod')->notEmpty()) {
 					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Moyen de paiement").'</legend>';
 						$h .= $form->select('method', $search->get('cMethod'), $search->get('method'));
