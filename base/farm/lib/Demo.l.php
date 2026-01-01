@@ -64,18 +64,22 @@ class DemoLib {
 	private static array $demoMs = [];
 
 	private static ?array $names = NULL;
+	private static ?array $packages = NULL;
 
 	public static function rebuild() {
 
 		\company\CompanyLib::connectDatabase(new Farm(['id' => self::COPY_FARM]));
+
 		// prod instance
-		self::$ms = self::getModules();
+		self::$ms = self::getModules('main');
+
+		self::$packages = \Database::getPackages();
 
 		// demo mode
 		self::activate();
 
 		// demo instances
-		self::$demoMs = self::getModules();
+		self::$demoMs = self::getModules('demo');
 
 		// drop old demo table
 		self::dropTables();
@@ -91,18 +95,6 @@ class DemoLib {
 
 		// anonymize data
 		self::anonymize();
-
-	}
-
-	public static function init(): void {
-
-		// prod instance
-		self::$ms = self::getModules();
-
-		self::activate();
-
-		// demo instances
-		self::$demoMs = self::getModules();
 
 	}
 
@@ -204,7 +196,7 @@ class DemoLib {
 
 			});
 
-			$sql = 'INSERT INTO '.$pdo->api->field(self::DATABASE).'.'.$pdo->api->field($table).'('.implode(', ', $demoProperties).') SELECT '.implode(', ', $properties).' FROM '.$pdo->api->field($m->getDatabase()).'.'.$pdo->api->field($table);
+			$sql = 'INSERT INTO '.$pdo->api->field(self::DATABASE).'.'.$pdo->api->field($table).'('.implode(', ', $demoProperties).') SELECT '.implode(', ', $properties).' FROM '.$pdo->api->field(self::$packages[$m->getPackage()]).'.'.$pdo->api->field($table);
 
 			$sql .= ' WHERE '.self::getCopyCondition($m);
 
@@ -411,7 +403,7 @@ class DemoLib {
 
 	}
 
-	public static function getModules(): array {
+	public static function getModules(string $environment): array {
 
 		$modules = [];
 

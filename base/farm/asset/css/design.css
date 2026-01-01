@@ -1087,7 +1087,6 @@ body[data-template~="farm"] .container {
 		padding-left: max(1rem, var(--container-padding));
 		z-index: 2;
 		pointer-events: none;
-		width: 4rem;
 	}
 
 	.farm-breadcrumbs-categories {
