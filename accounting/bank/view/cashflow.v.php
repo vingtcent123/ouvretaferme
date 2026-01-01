@@ -8,11 +8,16 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingBankTitle($data->eFarm, 'bank', $data->nCashflow);
 
-	echo new \bank\CashflowUi()->getSearch($data->eFarm, $data->search, $data->minDate, $data->maxDate, $data->cBankAccount);
+	echo new \bank\CashflowUi()->getSearch($data->eFarm, $data->search, $data->minDate, $data->maxDate);
 
 	echo new \bank\CashflowUi()->getReconciliateInfo($data->eFarm, $data->eImportCurrent);
 
 	echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nSuggestion);
+
+	if($data->cBankAccount->count() > 1) {
+		echo new \bank\CashflowUi()->getTabs($data->eFarm, $data->cBankAccount, $data->search->get('bankAccount'));
+	}
+
 	echo new \bank\CashflowUi()->list($data->eFarm, $data->cCashflow, $data->eFarm['eFinancialYear'], $data->eImport, $data->search, $data->eFarm['cFinancialYear']);
 	echo \util\TextUi::pagination($data->page, $data->nPage);
 

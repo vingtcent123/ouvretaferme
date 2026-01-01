@@ -43,6 +43,16 @@ new Page()
 			$search->set('status', \bank\Cashflow::WAITING);
 		}
 
+		$data->cBankAccount = \bank\BankAccountLib::getAll();
+
+		$eBankAccountSelected = $search->get('bankAccount');
+		if($eBankAccountSelected->empty() or $data->cBankAccount->offsetExists($eBankAccountSelected['id']) === FALSE) {
+			$eBankAccountSelected = $data->cBankAccount->first();
+		} else {
+			$eBankAccountSelected = $data->cBankAccount->offsetGet($eBankAccountSelected['id']);
+		}
+		$search->set('bankAccount', $eBankAccountSelected);
+
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 
@@ -57,8 +67,6 @@ new Page()
 
 		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
 		[$data->cCashflow, $data->nCashflow, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
-
-		$data->cBankAccount = \bank\BankAccountLib::getAll();
 
 		$data->eImportCurrent = \bank\ImportLib::getLastImport();
 		if($data->eImportCurrent->notEmpty()) {

@@ -9,9 +9,9 @@ class CashflowUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getSearch(\farm\Farm $eFarm, \Search $search, string $minDate, string $maxDate, \Collection $cBankAccount): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, string $minDate, string $maxDate): string {
 
-		$h = '<div id="cashflow-search" class="util-block-search '.(($search->empty(['ids']) and $search->get('isReconciliated') === NULL) ? 'hide' : '').'">';
+		$h = '<div id="cashflow-search" class="util-block-search '.(($search->empty(['ids', 'bankAccount']) and $search->get('isReconciliated') === NULL) ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;
@@ -59,22 +59,9 @@ class CashflowUi {
 			$h .= '<dd>';
 				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'));
 			$h .= '</dd>';
-			if($cBankAccount->count() > 1) {
-				$h .= '<dt>'.s("Compte bancaire").'</dt>';
-				$h .= '<dd>';
-					$values = [];
-					foreach($cBankAccount as $eBankAccount) {
-						$values[$eBankAccount['id']] = $eBankAccount['label'];
-					}
-					$h .= $form->select('bankAccount', $values, $search->get('bankAccount'));
-				$h .= '</dd>';
-
-
-			}
-		$h .= '</dl>';
 		$h .= '<div class="mt-1">';
 			$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-			$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
+			$h .= '<a href="'.$url.'" class="btn btn-secondary ml-1">'.\Asset::icon('x-lg').'</a>';
 		$h .= '</div>';
 
 		$h .= $form->close();
@@ -101,6 +88,22 @@ class CashflowUi {
 		return $h;
 
 	}
+
+	public function getTabs(\farm\Farm $eFarm, \Collection $cBankAccount, BankAccount $eBankAccountSelected): string {
+
+		$h = '<div class="tabs-item">';
+
+			foreach($cBankAccount as $eBankAccount) {
+				$isSelected = ($eBankAccount['id'] === $eBankAccountSelected['id']);
+				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?bankAccount='.encode($eBankAccount['id']).'">'.s("Compte {value}", $eBankAccount['label']).'</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
 
 	public function list(
 		\farm\Farm $eFarm,
