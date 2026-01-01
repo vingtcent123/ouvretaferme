@@ -289,6 +289,21 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function countUnbalanced(\Search $search): int {
+
+		$eFinancialYear = $search->get('financialYear');
+
+		$hashes = self::applySearch(new \Search(['financialYear' => $eFinancialYear]))
+			->select(['hash', 'balance' => new \Sql('SUM(IF(type = "'.Operation::CREDIT.'", amount, -amount))', 'float')])
+			->group('hash')
+			->having('balance != 0.0')
+			->getCollection()
+			->getColumn('hash');
+
+		return count(array_unique($hashes));
+
+	}
+
 	public static function getUnbalanced(\Search $search): array {
 
 		$eFinancialYear = $search->get('financialYear');

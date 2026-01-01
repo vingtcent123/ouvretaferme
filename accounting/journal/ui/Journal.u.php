@@ -70,7 +70,7 @@ class JournalUi {
 	public function getBaseUrl(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 		return \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
 	}
-	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod, int $nUnbalanced): string {
 
 		\Asset::js('journal', 'operation.js');
 
@@ -167,9 +167,11 @@ class JournalUi {
 
 				$h .= '</dl>';
 
-				$h .= '<div class="mt-1 mb-1">';
-					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.\Asset::icon('search').' '.s("Retrouver les groupes d'écritures déséquilibrés").'</a>';
-				$h .= '</div>';
+				if($nUnbalanced > 0) {
+					$h .= '<div class="mt-1 mb-1">';
+						$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.\Asset::icon('search').' '.s("Retrouver les groupes d'écritures déséquilibrés ({value} groupes)", $nUnbalanced).'</a>';
+					$h .= '</div>';
+				}
 				$h .= '<div>';
 					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-secondary">'.\Asset::icon('x-lg').'</a>';
