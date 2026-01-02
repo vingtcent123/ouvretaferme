@@ -56,7 +56,7 @@ Class ResultUi {
 
 	protected function getTable(\account\FinancialYear $eFinancialYear, \Collection $cOperation): string {
 
-		$h = '<div class="util-overflow-sm">';
+		$h = '<div class="util-overflow-xs">';
 
 			$h .= '<table class="tr-even tr-hover">';
 

@@ -59,7 +59,7 @@ class ChargesUi {
 
 	protected function getTable(\Collection $cOperation, \Collection $cAccount): string {
 
-		$h = '<div class="util-overflow-sm">';
+		$h = '<div class="util-overflow-xs">';
 
 			$h .= '<table class="tr-even tr-hover">';
 

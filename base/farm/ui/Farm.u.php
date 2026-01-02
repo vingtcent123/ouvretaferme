@@ -1917,15 +1917,15 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			$h .= '<div>';
+			$h .= '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
 				if($nOperationMissingAsset > 0) {
 					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/journal/livre-journal?needsAsset=1" class="btn btn-primary">';
 						$h .= \Asset::icon('exclamation-triangle').' ';
-						$h .= p("{value} écriture comptable a besoin d'une fiche d'immobilisation", "{value} écritures comptables ont besoin d'une fiche d'immobilisation", $nOperationMissingAsset);
+						$h .= p("{value} fiche d'immobilisation à créer", "{value} fiches d'immobilisation à créer", $nOperationMissingAsset);
 					$h .= '</a> ';
 				}
 				if($eFarm['eFinancialYear']->acceptUpdate()) {
-					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une immobilisation").'</a> ';
+					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' <span class="">'.s("Créer une immobilisation").'</span></a> ';
 				}
 			$h .= '</div>';
 		$h .= '</div>';
