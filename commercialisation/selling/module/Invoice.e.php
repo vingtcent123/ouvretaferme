@@ -78,7 +78,9 @@ class Invoice extends InvoiceElement {
 	public static function validateBatch(\Collection $cInvoice): void {
 
 		if($cInvoice->empty()) {
+
 			throw new \FailAction('selling\Invoice::invoices.check');
+
 		} else {
 
 			$eFarm = $cInvoice->first()['farm'];
@@ -88,6 +90,8 @@ class Invoice extends InvoiceElement {
 				if($eInvoice['farm']['id'] !== $eFarm['id']) {
 					throw new \NotExpectedAction('Different farms');
 				}
+
+				$eInvoice->validate('acceptAccountingImport');
 
 			}
 		}
@@ -219,6 +223,7 @@ class Invoice extends InvoiceElement {
 		}
 
 		return (
+			$this['accountingHash'] === NULL and
 			$this['readyForAccounting'] === TRUE and
 			($this['cashflow']->empty() or ($this['cashflow']['amount'] === $this['priceIncludingVat']) or $this['accountingDifference'] !== NULL)
 		);
