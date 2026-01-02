@@ -29,7 +29,12 @@ class Product {
 			qs('[data-field="proAccount"]').hide();
 			qs('[data-field-label="privateAccount"]').innerHTML = qs('[data-field-account-generic-label]').getAttribute('data-field-account-generic-label');
 
+			const element = qs('[data-field="proAccount"] a[class="autocomplete-empty"]');
+			AutocompleteField.empty(element);
+
+
 		}
+
 	}
 
 	static changeProfile(target) {

@@ -1373,7 +1373,7 @@ class ProductUi {
 			$hasProAccount = $eProduct['proAccount']->notEmpty();
 
 			$h .= $form->group(
-				'<span data-field-label="privateAccount">'.$hasProAccount ? $specificLabel : $genericLabel.'</span>',
+				'<span data-field-label="privateAccount">'.($hasProAccount ? $specificLabel : $genericLabel).'</span>',
 				$form->dynamicField($eProduct, 'privateAccount').
 				'<div class="form-info">'.$form->checkbox('accountDissociation', '1', [
 					'callbackLabel' => fn($input) => $input.' '.s("Dissocier le numéro de compte pour la vente aux particuliers et aux professionnels"),
