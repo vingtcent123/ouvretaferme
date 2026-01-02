@@ -18,23 +18,22 @@ Class ImportUi {
 		$h = '<div id="invoice-search" class="util-block-search">';
 
 			$form = new \util\FormUi();
-			$url = LIME_REQUEST_PATH.'?tab=invoice';
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search']);
 
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Type de client").'</legend>';
 					$h .= $form->select('type', [
 						\selling\Customer::PRO => s("Professionnels"),
 						\selling\Customer::PRIVATE => s("Particuliers"),
-					], $search->get('type'));
+					], $search->get('type'), ['placeholder' => s("Tous types de clients")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
-					$h .= '<legend>'.s("Rattachement à une opération bancaire").'</legend>';
+					$h .= '<legend>'.s("Rapprochement").'</legend>';
 					$h .= $form->select('reconciliated', [
-						1 => s("Écritures rattachées uniquement"),
-						0 => s("Écritures non rattachées"),
-					], $search->get('reconciliated'));
+						1 => s("Factures rapprochées"),
+						0 => s("Factures non rapprochées"),
+					], $search->get('reconciliated'), ['placeholder' => s("Rapprochées ou non")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Écart de paiement").'</legend>';
@@ -51,7 +50,7 @@ Class ImportUi {
 
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '<a href="'.LIME_REQUEST_PATH.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 			$h .= '</div>';
 
 			$h .= $form->close();
@@ -137,7 +136,7 @@ Class ImportUi {
 							$h .= '</td>';
 							$h .= '<td rowspan="'.$rowspan.'" class="text-end highlight-stick-right td-vertical-align-top invoicing-import-td-amount">';
 
-								$h .= \selling\SaleUi::getTotal($eInvoice);
+								$h .= \selling\SaleUi::getIncludingTaxesTotal($eInvoice);
 
 								if($eInvoice['cashflow']->notEmpty()) {
 
