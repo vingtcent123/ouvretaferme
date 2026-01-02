@@ -764,13 +764,13 @@ Class AccountingLib {
 					if($item[self::FEC_COLUMN_DEBIT] > $item[self::FEC_COLUMN_CREDIT]) {
 
 						$item[self::FEC_COLUMN_DEBIT] -= $item[self::FEC_COLUMN_CREDIT];
-						$item[self::FEC_COLUMN_CREDIT] = 0;
+						$item[self::FEC_COLUMN_CREDIT] = 0.0;
 						$item[self::FEC_COLUMN_DEBIT] = round($item[self::FEC_COLUMN_DEBIT], 2);
 
 					} else {
 
 						$item[self::FEC_COLUMN_CREDIT] -= $item[self::FEC_COLUMN_DEBIT];
-						$item[self::FEC_COLUMN_DEBIT] = 0;
+						$item[self::FEC_COLUMN_DEBIT] = 0.0;
 						$item[self::FEC_COLUMN_CREDIT] = round($item[self::FEC_COLUMN_CREDIT], 2);
 
 					}

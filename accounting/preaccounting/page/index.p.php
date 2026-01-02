@@ -55,16 +55,38 @@ new Page(function($data) {
 
 		}
 
-		$data->type = GET('type');
+		if(get_exists('type') === FALSE) {
+
+			try {
+
+				$data->type = \session\SessionLib::get('preaccounting-type');
+
+			} catch(\Exception) {
+
+				$data->type = NULL;
+
+			}
+		} else {
+
+			$data->type = GET('type');
+
+		}
+
 		if($data->nProductToCheck === 0 and $data->nItemToCheck === 0 and $data->nPaymentToCheck === 0) {
+
 			$data->type = 'export';
+
 		} else if(in_array($data->type, ['product', 'payment', 'export']) === FALSE) {
+
 			if($data->nProductToCheck + $data->nItemToCheck > 0) {
 				$data->type = 'product';
 			} else {
 				$data->type = 'payment';
 			}
+
 		}
+
+		\session\SessionLib::set('preaccounting-type', $data->type);
 
 		if($data->isSearchValid) {
 
