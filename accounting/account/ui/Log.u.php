@@ -103,8 +103,8 @@ class LogUi {
 		return match(strtolower($action)) {
 			'import' => s("Import d'un marché"),
 			'ignore' => s("Marché ignoré pour l'import"),
-			'importSeveral' => s("Import de marchés"),
-			'ignoreSeveral' => s("Marchés ignorés pour l'import"),
+			'importseveral' => s("Import de marchés"),
+			'ignoreseveral' => s("Marchés ignorés pour l'import"),
 		};
 
 	}
@@ -114,8 +114,8 @@ class LogUi {
 		return match(strtolower($action)) {
 			'import' => s("Import de facture"),
 			'ignore' => s("Facture ignorée pour l'import"),
-			'importSeveral' => s("Import de factures"),
-			'ignoreSeveral' => s("Factures ignorées pour l'import"),
+			'importseveral' => s("Import de factures"),
+			'ignoreseveral' => s("Factures ignorées pour l'import"),
 		};
 
 	}
@@ -124,8 +124,8 @@ class LogUi {
 		return match(strtolower($action)) {
 			'import' => s("Import de vente"),
 			'ignore' => s("Vente ignorée pour l'import"),
-			'importSeveral' => s("Import de ventes"),
-			'ignoreSeveral' => s("Ventes ignorées pour l'import"),
+			'importseveral' => s("Import de ventes"),
+			'ignoreseveral' => s("Ventes ignorées pour l'import"),
 		};
 
 	}

@@ -70,7 +70,7 @@ Class ImportLib {
 						)
 						->delegateCollection('sale'),
 					'cItem' => \selling\Item::model()
-						->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+						->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 						->delegateCollection('sale')
 				])
 				->wherePreparationStatus(\selling\Sale::DELIVERED)

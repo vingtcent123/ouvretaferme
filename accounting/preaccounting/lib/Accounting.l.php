@@ -104,7 +104,7 @@ Class AccountingLib {
 					)
 					->delegateCollection('sale'),
 				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale')
 			])
 			->sort('deliveredAt')
@@ -299,7 +299,7 @@ Class AccountingLib {
 					->select([
 						'id',
 						'cItem' => \selling\Item::model()
-							->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 							->delegateCollection('sale')
 					])
 					->delegateCollection('invoice'),
@@ -362,10 +362,46 @@ Class AccountingLib {
 
 					$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
 
-					if($eItem['account']->empty() or $cAccount->offsetExists($eItem['account']['id']) === FALSE) {
-						$eAccount = $eAccountDefault;
-					} else {
+					// Account défini dans l'item
+					if($eItem['account']->notEmpty() and $cAccount->offsetExists($eItem['account']['id'])) {
+
 						$eAccount = $cAccount->offsetGet($eItem['account']['id']);
+
+					// Fallback sur le produit : cas du private
+					} else if(
+						$eItem['product']->notEmpty() and
+						$eItem['type'] === \selling\Item::PRIVATE and
+						$eItem['product']['privateAccount']->notEmpty() and
+						$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
+					) {
+
+						$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
+
+					// Fallback sur le produit : cas du pro
+					} else if(
+						$eItem['product']->notEmpty() and
+						$eItem['type'] === \selling\Item::PRO and
+						$eItem['product']['proAccount']->notEmpty() and
+						$cAccount->offsetExists($eItem['product']['proAccount']['id'])
+					) {
+
+						$eAccount = $cAccount->offsetGet($eItem['product']['proAccount']['id']);
+
+					// Fallback sur le produit : cas du pro sans account pro mais avec account private
+					} else if(
+						$eItem['product']->notEmpty() and
+						$eItem['type'] === \selling\Item::PRO and
+						$eItem['product']['privateAccount']->notEmpty() and
+						$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
+					) {
+
+						$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
+
+					// On sait pas.
+					} else {
+
+						$eAccount = $eAccountDefault;
+
 					}
 
 					$amountExcludingVat = $eItem['priceStats'];
@@ -550,7 +586,7 @@ Class AccountingLib {
 							)
 							->delegateCollection('sale'),
 						'cItem' => \selling\Item::model()
-							->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 							->delegateCollection('sale')
 					])
 					->wherePreparationStatus(\selling\Sale::DELIVERED)
