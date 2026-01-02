@@ -139,7 +139,35 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	if(count($data->operations) > 0) {
 
-		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->nSale);
+		$totalDebit = array_sum(array_column($data->operations, \preaccounting\AccountingLib::FEC_COLUMN_DEBIT));
+		$totalCredit = array_sum(array_column($data->operations, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT));
+		echo '<ul class="util-summarize">';
+
+				echo '<li>';
+					echo '<a>';
+						echo '<h5>'.p("Écriture", "Écritures", count($data->operations)).'</h5>';
+						echo '<div>'.count($data->operations).'</div>';
+					echo '</a>';
+				echo '</li>';
+
+				echo '<li>';
+					echo '<a>';
+						echo '<h5>'.p("Vente", "Ventes", $data->nSale).'</h5>';
+						echo '<div>'.$data->nSale.'</div>';
+					echo '</a>';
+				echo '</li>';
+
+				echo '<li>';
+					echo '<a>';
+						echo '<h5>'.s("Total").'</h5>';
+						echo '<div>'.\util\TextUi::money(round($totalCredit - $totalDebit, 2)).'</div>';
+					echo '</a>';
+				echo '</li>';
+
+		echo '</ul>';
+
+
+		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations);
 
 	} else {
 

@@ -30,6 +30,19 @@ Class PreaccountingUi {
 
 				if($type === 'sales') {
 					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Numéro de compte").'</legend>';
+						$h .= $form->dynamicField(new \journal\Operation(['account' => $search->get('account')]), 'account', function($d) use($form, $eFarm) {
+							$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::VAT_CLASS];
+							$d->autocompleteUrl = function(\util\FormUi $form, $e) use ($eFarm, $query) {
+								if($eFarm->empty()) {
+									$eFarm = $e['farm'];
+								}
+								return \company\CompanyUi::urlAccount($eFarm).'/account:query?'.http_build_query($query);
+							};
+						});
+					$h .= '</fieldset>';
+
+					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Client").'</legend>';
 						$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
 					$h .= '</fieldset>';
@@ -37,7 +50,7 @@ Class PreaccountingUi {
 
 				if($search->get('cGroup') and $search->get('cGroup')->notEmpty()) {
 					$h .= '<fieldset>';
-						$h .= '<legend>'.s("Groupe").'</legend>';
+						$h .= '<legend>'.s("Groupe de clients").'</legend>';
 						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'));
 					$h .= '</fieldset>';
 				}

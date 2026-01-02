@@ -46,11 +46,14 @@ Class AccountingLib {
 
 	}
 
-		public static function generateSalesFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount): array {
+		public static function generateSalesFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount, \Search $search): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
+		$eAccountFilter = $search->get('account');
+
 		$fecData = [];
+		$nSale = 0;
 		foreach($cSale as $eSale) {
 
 			$hasVat = TRUE;
@@ -70,17 +73,13 @@ Class AccountingLib {
 
 			$items = []; // groupement par accountlabel, moyen de paiement
 
-			$payments = self::explodePaymentsRatio($eSale['cPayment']);
+			$payments = self::explodePaymentsRatio($eSale);
 
 			foreach($eSale['cItem'] as $eItem) {
 
 				$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
 
-				if($eItem['account']->empty() or $cAccount->offsetExists($eItem['account']['id']) === FALSE) {
-					$eAccount = $eAccountDefault;
-				} else {
-					$eAccount = $cAccount->offsetGet($eItem['account']['id']);
-				}
+				$eAccount = self::extractAccountFromItem($eItem, $cAccount, $eAccountDefault);
 
 				foreach($payments as $payment) {
 
@@ -99,21 +98,25 @@ Class AccountingLib {
 					}
 
 					// Montant HT
-					$fecDataExcludingVat = self::getFecLine(
-						eAccount    : $eAccount,
-						date        : $eSale['deliveredAt'],
-						eCode       : $eAccount['journalCode'],
-						ecritureLib : $document,
-						document    : $document,
-						documentDate: $documentDate,
-						amount      : $amountExcludingVat,
-						type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-						payment     : $payment['label'] ?? '',
-						compAuxNum  : $compAuxNum,
-						compAuxLib  : $compAuxLib,
-					);
+					if($eAccountFilter->empty() or $eAccountFilter->is($eAccount)) {
 
-					self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
+						$fecDataExcludingVat = self::getFecLine(
+							eAccount    : $eAccount,
+							date        : $eSale['deliveredAt'],
+							eCode       : $eAccount['journalCode'],
+							ecritureLib : $document,
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $amountExcludingVat,
+							type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+							payment     : $payment['label'] ?? '',
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+						);
+
+						self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
+
+					}
 
 					// TVA
 					if($hasVat and $amountVat !== 0.0) {
@@ -123,33 +126,38 @@ Class AccountingLib {
 							$eAccountVat = $eAccountVatDefault;
 						}
 
-						$fecDataVat = self::getFecLine(
-							eAccount    : $eAccountVat,
-							date        : $eSale['deliveredAt'],
-							eCode       : $eAccount['journalCode'],
-							ecritureLib : $document,
-							document    : $document,
-							documentDate: $documentDate,
-							amount      : $amountVat,
-							type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-							payment     : $payment['label'],
-							compAuxNum  : $compAuxNum,
-							compAuxLib  : $compAuxLib,
-						);
+						if($eAccountFilter->empty() or $eAccountFilter->is($eAccountVat)) {
+							$fecDataVat = self::getFecLine(
+								eAccount    : $eAccountVat,
+								date        : $eSale['deliveredAt'],
+								eCode       : $eAccount['journalCode'],
+								ecritureLib : $document,
+								document    : $document,
+								documentDate: $documentDate,
+								amount      : $amountVat,
+								type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+								payment     : $payment['label'],
+								compAuxNum  : $compAuxNum,
+								compAuxLib  : $compAuxLib,
+							);
 
-						self::mergeFecLineIntoItemData($items, $fecDataVat);
+							self::mergeFecLineIntoItemData($items, $fecDataVat);
 
+						}
 					}
 
 				}
 
 			}
 
+			if(count($items) > 0) {
+				$nSale++;
+			}
 			$fecData = array_merge($fecData, $items);
 
 		}
 
-		return $fecData;
+		return [$fecData, $nSale];
 
 	}
 
@@ -244,6 +252,54 @@ Class AccountingLib {
 
 	}
 
+	private static function extractAccountFromItem(\selling\Item $eItem, \Collection $cAccount, \account\Account $eAccountDefault): \account\Account {
+
+		// Account défini dans l'item
+		if($eItem['account']->notEmpty() and $cAccount->offsetExists($eItem['account']['id'])) {
+
+			$eAccount = $cAccount->offsetGet($eItem['account']['id']);
+
+		// Fallback sur le produit : cas du private
+		} else if(
+			$eItem['product']->notEmpty() and
+			$eItem['type'] === \selling\Item::PRIVATE and
+			$eItem['product']['privateAccount']->notEmpty() and
+			$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
+		) {
+
+			$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
+
+		// Fallback sur le produit : cas du pro
+		} else if(
+			$eItem['product']->notEmpty() and
+			$eItem['type'] === \selling\Item::PRO and
+			$eItem['product']['proAccount']->notEmpty() and
+			$cAccount->offsetExists($eItem['product']['proAccount']['id'])
+		) {
+
+			$eAccount = $cAccount->offsetGet($eItem['product']['proAccount']['id']);
+
+		// Fallback sur le produit : cas du pro sans account pro mais avec account private
+		} else if(
+			$eItem['product']->notEmpty() and
+			$eItem['type'] === \selling\Item::PRO and
+			$eItem['product']['privateAccount']->notEmpty() and
+			$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
+		) {
+
+			$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
+
+		// On sait pas.
+		} else {
+
+			$eAccount = $eAccountDefault;
+
+		}
+
+		return $eAccount;
+
+	}
+
 	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport) {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
@@ -293,47 +349,7 @@ Class AccountingLib {
 
 					$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
 
-					// Account défini dans l'item
-					if($eItem['account']->notEmpty() and $cAccount->offsetExists($eItem['account']['id'])) {
-
-						$eAccount = $cAccount->offsetGet($eItem['account']['id']);
-
-					// Fallback sur le produit : cas du private
-					} else if(
-						$eItem['product']->notEmpty() and
-						$eItem['type'] === \selling\Item::PRIVATE and
-						$eItem['product']['privateAccount']->notEmpty() and
-						$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
-					) {
-
-						$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
-
-					// Fallback sur le produit : cas du pro
-					} else if(
-						$eItem['product']->notEmpty() and
-						$eItem['type'] === \selling\Item::PRO and
-						$eItem['product']['proAccount']->notEmpty() and
-						$cAccount->offsetExists($eItem['product']['proAccount']['id'])
-					) {
-
-						$eAccount = $cAccount->offsetGet($eItem['product']['proAccount']['id']);
-
-					// Fallback sur le produit : cas du pro sans account pro mais avec account private
-					} else if(
-						$eItem['product']->notEmpty() and
-						$eItem['type'] === \selling\Item::PRO and
-						$eItem['product']['privateAccount']->notEmpty() and
-						$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
-					) {
-
-						$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
-
-					// On sait pas.
-					} else {
-
-						$eAccount = $eAccountDefault;
-
-					}
+					$eAccount = self::extractAccountFromItem($eItem, $cAccount, $eAccountDefault);
 
 					$amountExcludingVat = $eItem['priceStats'];
 
@@ -532,9 +548,19 @@ Class AccountingLib {
 		];
 	}
 
-	private static function explodePaymentsRatio(\Collection $cPayment): array {
+	private static function explodePaymentsRatio(\selling\Sale $eSale): array {
+
+		if($eSale['profile'] === \selling\Sale::MARKET) {
+
+			return [[
+				'label' => \payment\MethodUi::getCashRegisterText(),
+				'rate' => 100,
+			]];
+
+		}
 
 		$payments = [];
+		$cPayment = $eSale['cPayment'];
 		$totalAmount = $cPayment->sum('amountIncludingVat');
 
 		if($totalAmount === 0) {

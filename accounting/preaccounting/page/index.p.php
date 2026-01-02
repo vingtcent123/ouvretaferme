@@ -117,15 +117,31 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
+			$cMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+			$cMethod->offsetSet(0, new \payment\Method(['id' => \preaccounting\SaleLib::MARKET_PAYMENT_METHOD_FAKE_ID, 'name' => \payment\MethodUi::getCashRegisterText()]));
+
+			$methodId = GET('method', '?int');
+			if(is_int($methodId)) {
+				if($methodId === \preaccounting\SaleLib::MARKET_PAYMENT_METHOD_FAKE_ID) {
+					$eMethod = $cMethod->offsetGet(\preaccounting\SaleLib::MARKET_PAYMENT_METHOD_FAKE_ID);
+				} else {
+					$eMethod = GET('method', 'payment\Method');
+				}
+			} else {
+				$eMethod = new \payment\Method();
+			}
+
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
 			$data->search->set('group', GET('group', 'selling\CustomerGroup'));
 			$data->search->set('cGroup', \selling\CustomerGroupLib::getByFarm($data->eFarm));
-			$data->search->set('cMethod', \payment\MethodLib::getByFarm($data->eFarm, NULL));
-			$data->search->set('method', GET('method', 'payment\Method'));
-			list($data->cSale, $data->nSale) = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
+			$data->search->set('cMethod', $cMethod);
+			$data->search->set('method', $eMethod);
+			$data->search->set('account', \account\AccountLib::getById(GET('account')));
+
+			$data->cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
 			$cAccount = \account\AccountLib::getAll();
-			$data->operations = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount);
+			[$data->operations, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
 
 			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
 			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, 'invoice');
@@ -143,10 +159,10 @@ new Page(function($data) {
 			$data->search->set('group', GET('group', 'selling\CustomerGroup'));
 			$data->search->set('method', GET('method', 'payment\Method'));
 
-			list($cSale) = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
+			$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
 			$cAccount = \account\AccountLib::getAll();
-			$operations = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount);
+			list($operations, ) = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
 
 			foreach($operations as &$lineFec) {
 				foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {

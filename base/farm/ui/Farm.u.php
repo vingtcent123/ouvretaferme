@@ -1915,7 +1915,7 @@ class FarmUi {
 	protected static function getPreAccountingCategories(): array {
 		return [
 			'invoices' => ['url' => '/precomptabilite', 'label' => s("Préparer les données des factures")],
-			'sales' => ['url' => '/precomptabilite/ventes', 'label' => s("Explorer les données comptables des ventes")],
+			'sales' => ['url' => '/precomptabilite/ventes', 'label' => s("Exporter les données comptables des ventes non facturées")],
 		];
 	}
 

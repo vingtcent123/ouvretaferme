@@ -153,6 +153,10 @@ class MethodUi {
 
 	}
 
+	public static function getCashRegisterText(): string {
+		return s("Logiciel de caisse");
+	}
+
 	public static function getOnlineCardText(): string {
 
 		return \Asset::icon('stripe', ['title' => 'Stripe']).' '.s("Stripe");

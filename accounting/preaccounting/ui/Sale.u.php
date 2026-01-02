@@ -12,19 +12,9 @@ Class SaleUi {
 		return mb_substr($fecDate, 0, 4).'-'.mb_substr($fecDate, 4, 2).'-'.mb_substr($fecDate, 6, 2);
 	}
 
-	public function list(\farm\Farm $eFarm, array $operations, int $nSale): string {
+	public function list(\farm\Farm $eFarm, array $operations): string {
 
-		$h = '<div class="util-info">';
-			if(count($operations) === 1 and $nSale === 1) {
-				$h .= s("Il y a 1 écriture comptable issue de 1 vente.");
-			} else if($nSale === 1) {
-				$h .= s("Il y a {operations} écritures comptables issues de 1 vente.", ['operations' => '<b>'.count($operations).'</b>']);
-			} else {
-				$h .= s("Il y a {operations} écritures comptables issues de {sales} ventes.", ['operations' => '<b>'.count($operations).'</b>', 'sales' => '<b>'.$nSale.'</b>']);
-			}
-		$h .= '</div>';
-
-		$h .= '<table class="tr-hover tr-even">';
+		$h = '<table class="tr-hover tr-even">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';

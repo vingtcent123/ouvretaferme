@@ -3,6 +3,8 @@ namespace preaccounting;
 
 Class SaleLib {
 
+	const MARKET_PAYMENT_METHOD_FAKE_ID = 0;
+
 	/**
 	 * Récupère toutes les ventes concernées
 	 *  - si elles ont un moyen de paiement
@@ -90,9 +92,10 @@ Class SaleLib {
 
 		return \selling\Sale::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
-			->where(fn() => new \Sql('JSON_CONTAINS('.\selling\Customer::model()->field('groups').', \''.$search->get('group')['id'].'\')'), if: $search->get('group')->notEmpty())
 			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.onlineStatus IS NULL)', 'LEFT') // Moyen de paiement OK
-			->where(fn() => new \Sql('m3.method = '.$search->get('method')['id']), if: $search->get('method')->notEmpty())
+
+			->where(fn() => new \Sql('JSON_CONTAINS('.\selling\Customer::model()->field('groups').', \''.$search->get('group')['id'].'\')'), if: $search->get('group')->notEmpty())
+			->where(fn() => new \Sql('m3.method = '.$search->get('method')['id']), if: $search->get('method')->notEmpty() and $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID)
 			->wherePreparationStatus('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT, \selling\Sale::BASKET])
 			->where('priceExcludingVat != 0.0')
 			->whereInvoice(NULL)
@@ -100,41 +103,15 @@ Class SaleLib {
 			->where(fn() => new \Sql('m1.customer = '.$search->get('customer')['id']), if: $search->get('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
 			->whereReadyForAccounting(FALSE)
-			->whereProfile(\selling\Sale::SALE)
-			->where('deliveredAt BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')))
-			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
+			->whereProfile('IN', [\selling\Sale::SALE, \selling\Sale::MARKET], if: $search->get('method')->empty() or $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID)
+			->whereProfile('=', \selling\Sale::MARKET, if: $search->get('method')->notEmpty() and $search->get('method')['id'] === self::MARKET_PAYMENT_METHOD_FAKE_ID)
+			->where('m1.deliveredAt BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')))
+			->where(new \Sql('DATE(m1.deliveredAt) < CURDATE()'));
 
 	}
 
-	public static function applyConditions(string $type, bool $searchProblems): ?\selling\SaleModel {
 
-		switch($type) {
-
-			case 'payment':
-				return \selling\Sale::model()
-          ->join(\selling\Payment::model(), 'm1.id = m2.sale AND (m2.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR onlineStatus IS NULL)', 'LEFT')
-					->where('m2.id IS NULL', if: $searchProblems === TRUE)
-					->where('m2.id IS NOT NULL', if: $searchProblems === FALSE);
-
-			case 'closed':
-				return \selling\Sale::model()
-					->whereClosed(FALSE, if: $searchProblems === TRUE)
-					->whereClosed(TRUE, if: $searchProblems === FALSE);
-
-		}
-
-		return NULL;
-
-	}
-	public static function countForAccountingCheck(string $type, \farm\Farm $eFarm, \Search $search, bool $searchProblems = TRUE): int {
-
-		self::filterForAccountingCheck($eFarm, $search);
-		self::applyConditions($type, $searchProblems);
-		return \selling\Sale::model()->count();
-
-	}
-
-	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): array {
+	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$selectSale = [
 			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus', 'priceIncludingVat',
@@ -150,21 +127,15 @@ Class SaleLib {
 				)
 				->delegateCollection('sale', 'id'),
 				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
+					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale')
 		];
 
-		self::filterForAccountingCheck($eFarm, $search);
-
-		$cSale = \selling\Sale::model()
+		return self::filterForAccountingCheck($eFarm, $search)
 			->select($selectSale)
-			->sort(['deliveredAt' => SORT_DESC])
+			->sort(['m1_deliveredAt' => SORT_DESC])
 			->option('count')
 			->getCollection(NULL, NULL, 'id');
-
-		$nSale = \selling\Sale::model()->found();
-
-		return [$cSale, $nSale];
 
 	}
 }
