@@ -907,6 +907,15 @@ class OperationLib extends OperationCrud {
 
 				$cOperation->append($eOperationVat);
 
+				if($for === 'create' and $isFromCashflow) {
+					$cOperationCashflow->append(new OperationCashflow([
+						'operation' => $eOperationVat,
+						'cashflow' => $eCashflow,
+						'hash' => $hash,
+						'amount' => min($eOperationVat['amount'], abs($eCashflow['amount']))
+					]));
+				}
+
 				$totalAmount += $eOperationVat['type'] === Operation::DEBIT ? $eOperationVat['amount'] : -1 * $eOperationVat['amount'];
 
 			} elseif($eOperation->exists()) {
@@ -942,6 +951,15 @@ class OperationLib extends OperationCrud {
 
 				Operation::model()->insert($eOperationVatRegul);
 				$cOperation->append($eOperationVatRegul);
+
+				if($for === 'create' and $isFromCashflow) {
+					$cOperationCashflow->append(new OperationCashflow([
+						'operation' => $eOperationVatRegul,
+						'cashflow' => $eCashflow,
+						'hash' => $hash,
+						'amount' => min($eOperationVatRegul['amount'], abs($eCashflow['amount']))
+					]));
+				}
 			}
 
 		}
@@ -977,6 +995,15 @@ class OperationLib extends OperationCrud {
 						->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy())))
 						->update($eOperationVat);
 
+				}
+
+				if($for === 'create' and $isFromCashflow) {
+					$cOperationCashflow->append(new OperationCashflow([
+						'operation' => $eOperationThirdParty,
+						'cashflow' => $eCashflow,
+						'hash' => $hash,
+						'amount' => min($eOperationThirdParty['amount'], abs($eCashflow['amount']))
+					]));
 				}
 
 				$cOperation->append($eOperationThirdParty);
