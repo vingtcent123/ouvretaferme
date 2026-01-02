@@ -230,7 +230,7 @@ Class ImportUi {
 								}
 								$h .= join ('<br />', $amounts);
 							$h .= '</td>';
-							$h .= '<td class="text-center invoicing-import-td-operation td-vertical-align-top">';
+							$h .= '<td class="text-center invoicing-import-td-operation font-sm td-vertical-align-top">';
 								$directions = [];
 								foreach($operations as $operation) {
 									if($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] !== 0.0) {

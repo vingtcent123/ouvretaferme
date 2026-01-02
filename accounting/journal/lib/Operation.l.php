@@ -637,7 +637,6 @@ class OperationLib extends OperationCrud {
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
 		$invoiceFile = var_filter($input['invoiceFile'] ?? NULL);
-		$invoiceId = var_filter($input['invoice']['id'] ?? NULL, '?int');
 		$ePaymentMethodInvoice = var_filter($input['invoice']['paymentMethod'] ?? NULL, 'payment\Method');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$isFromCashflow = $eCashflow->notEmpty();
@@ -913,6 +912,31 @@ class OperationLib extends OperationCrud {
 					->whereOperation($eOperation)
 					->delete();
 
+			}
+
+			// Création de l'opération d'origine
+			// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
+
+			if(
+				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEPOSIT_CLASS) or
+				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS)
+			) {
+
+				$eOperation['amount'] += $eOperationVat['amount'];
+
+				Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
+
+				$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_DEPOSIT);
+
+				// Créer l'écriture de TVA de régul
+				$eOperationVatRegul = new Operation($eOperationVat->getArrayCopy());
+				unset($eOperationVatRegul['id']);
+				$eOperationVatRegul['type'] = $eOperation['type'] === Operation::DEBIT ? Operation::CREDIT : Operation::DEBIT;
+				$eOperationVatRegul['account'] = $eAccountVatRegul;
+				$eOperationVatRegul['accountLabel'] = \account\AccountLabelLib::pad($eAccountVatRegul['class']);
+
+				Operation::model()->insert($eOperationVatRegul);
+				$cOperation->append($eOperationVatRegul);
 			}
 
 		}
