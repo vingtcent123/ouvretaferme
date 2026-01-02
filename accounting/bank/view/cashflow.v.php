@@ -56,23 +56,6 @@ new AdaptativeView('attach', function($data, PanelTemplate $t) {
 
 });
 
-
-new JsonView('query', function($data, AjaxTemplate $t) {
-
-	$results = [];
-
-	foreach($data->cCashflow as $eCashflow) {
-
-		$results[] = \bank\CashflowUi::getAutocomplete($eCashflow);
-
-	}
-
-	$results[] = \bank\CashflowUi::getAutocompleteCreate($data->eFarm);
-
-	$t->push('results', $results);
-
-});
-
 new JsonView('calculateAttach', function($data, AjaxTemplate $t) {
 
 	if($data->cOperation->count() === 0) {

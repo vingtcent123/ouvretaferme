@@ -257,16 +257,4 @@ new \bank\CashflowPage(
 })
 ;
 
-
-new Page()
-	->post('query', function($data) {
-
-		$data->cOperation = \journal\OperationLib::getByIds(GET('operations', 'array'));
-
-		$data->cCashflow = \bank\CashflowLib::getForAttachQuery(POST('query'), $data->cOperation);
-
-		throw new \ViewAction($data);
-
-	})
-;
 ?>

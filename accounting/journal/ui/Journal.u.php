@@ -300,6 +300,7 @@ class JournalUi {
 		\account\FinancialYear $eFinancialYearSelected,
 		\Search $search = new \Search(),
 		bool $readonly = FALSE,
+		bool $displayTotal = FALSE,
 	): string {
 
 		if($readonly === FALSE and $cOperation->empty() === TRUE) {
@@ -727,13 +728,21 @@ class JournalUi {
 
 					}
 
-					if($showLettering) {
+					if($showLettering or $displayTotal) {
 
 						$colspan = ($selectedJournalCode === NULL ? 5 : 4);
+						if($readonly) {
+							$colspan--;
+						}
+						if($showLettering === FALSE) {
+							$colspan--;
+						}
 
 						$h .= '<tr class="row-highlight row-bold">';
 
-							$h .= '<td class="td-checkbox"></td>';
+							if($readonly === FALSE) {
+								$h .= '<td class="td-checkbox"></td>';
+							}
 							$h .= '<td colspan="'.$colspan.'">'.s("Totaux").'</td>';
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
@@ -756,7 +765,9 @@ class JournalUi {
 
 						$h .= '<tr class="row-highlight row-bold">';
 
-							$h .= '<td class="td-checkbox"></td>';
+							if($readonly === FALSE) {
+								$h .= '<td class="td-checkbox"></td>';
+							}
 							$h .= '<td colspan="'.$colspan.'">'.$text.'</td>';
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';

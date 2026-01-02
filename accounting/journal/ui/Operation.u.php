@@ -1330,7 +1330,7 @@ class OperationUi {
 
 	}
 
-	public function getAttach(\farm\Farm $eFarm, \Collection $cOperation, ?string $tip): \Panel {
+	public function getAttach(\farm\Farm $eFarm, \Collection $cOperation, \Collection $cCashflow, ?string $tip): \Panel {
 
 		$h = '';
 
@@ -1343,10 +1343,16 @@ class OperationUi {
 		$h .= '</h3>';
 
 		$h .= '<div class="bg-background">';
-			$h .= new JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE);
+			$h .= new JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE, displayTotal: TRUE);
 		$h .= '</div>';
 
-		$h .= '<h3>';
+		if($cOperation->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS))->notEmpty()) {
+			$h .= '<div class="color-warning">';
+				$h .= s("Attention, dans les écritures que vous avez sélectionnées, il y a déjà des écritures en compte de banques <b>{bankAccount}</b>.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+			$h .= '</div>';
+		}
+
+		$h .= '<h3 class="mt-1">';
 			$h .= s("Rattachement");
 		$h .= '</h3>';
 
@@ -1383,19 +1389,66 @@ class OperationUi {
 			['wrapper' => 'third-party']
 		);
 
+		if($cCashflow->notEmpty()) {
+
+			$cashflow = '<table class="tr-hover tr-even bg-background">';
+
+				$cashflow .= '<thead>';
+					$cashflow .= '<tr>';
+						$cashflow .= '<th class="td-checkbox"></th>';
+						$cashflow .= '<th>'.s("Date").'</th>';
+						$cashflow .= '<th>'.s("Libellé").'</th>';
+						$cashflow .= '<th class="text-end highlight-stick-right td-min-content">'.s("Débit").'</th>';
+						$cashflow .= '<th class="text-end highlight-stick-left td-min-content">'.s("Crédit").'</th>';
+					$cashflow .= '</tr>';
+				$cashflow .= '</thead>';
+
+				$cashflow .= '<tbody>';
+
+					foreach($cCashflow as $eCashflow) {
+
+						$cashflow .= '<tr>';
+							$cashflow .= '<td class="td-checkbox">';
+								$cashflow .= $form->radio('cashflow', $eCashflow['id'], '');
+							$cashflow .= '</td>';
+							$cashflow .= '<td>';
+								$cashflow .= \util\DateUi::numeric($eCashflow['date']);
+							$cashflow .= '</td>';
+							$cashflow .= '<td>';
+								$cashflow .= encode($eCashflow['memo']);
+							$cashflow .= '</td>';
+							$cashflow .= '<td class="text-end highlight-stick-right td-min-content">';
+								if($eCashflow['amount'] < 0) {
+									$cashflow .= \util\TextUi::money($eCashflow['amount']);
+								}
+							$cashflow .= '</td>';
+							$cashflow .= '<td class="text-end highlight-stick-left td-min-content">';
+								if($eCashflow['amount'] >= 0) {
+									$cashflow .= \util\TextUi::money($eCashflow['amount']);
+								}
+							$cashflow .= '</td>';
+						$cashflow .= '</tr>';
+
+					}
+
+				$cashflow .= '</tbody>';
+			$cashflow .= '</table>';
+			$cashflow .= '<div class="util-annotation">';
+				$cashflow .= s("Vous ne trouvez pas l'opération que vous cherchez ? Allez <link>voir toutes les opérations bancaires sans écriture</link> et rattachez-y les opérations.", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?status=waiting">']);
+			$cashflow .= '</div>';
+
+		} else {
+
+			$cashflow = '<div class="util-block-secondary">';
+				$cashflow .= s("Aucune opération bancaire non rattachée à des écritures et d'un montant ±1€ n'a pu être retrouvée. Tentez l'action dans l'autre sens en <link>partant des opérations bancaires</link> pour y rattacher vos écritures !", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?status=waiting">']);
+			$cashflow .= '</div>';
+
+		}
+
+
 		$h .= $form->group(
 			s("Opération bancaire").\util\FormUi::asterisk(),
-			$form->dynamicField(new \journal\OperationCashflow(), 'cashflow', function($d) use($form, $cOperation) {
-			$d->autocompleteDispatch = '[data-cashflow="'.$form->getId().'"]';
-			$d->attributes['data-cashflow'] = $form->getId();
-			$d->default = fn($e, $property) => get('cashflow');
-			$d->label = '';
-			$d->autocompleteBody = function() {
-				return [
-				];
-			};
-				new \bank\CashflowUi()->query($d, GET('farm', 'farm\Farm'), $cOperation);
-			}),
+			$cashflow,
 			['wrapper' => 'cashflow']
 		);
 

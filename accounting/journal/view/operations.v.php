@@ -96,6 +96,6 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 new AdaptativeView('attach', function($data, PanelTemplate $t) {
 
-	return new \journal\OperationUi()->getAttach($data->eFarm, $data->cOperation, $data->tip);
+	return new \journal\OperationUi()->getAttach($data->eFarm, $data->cOperation, $data->cCashflow, $data->tip);
 
 });

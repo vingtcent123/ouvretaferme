@@ -151,6 +151,8 @@ new Page(function($data) {
 
 		$data->cOperation = \journal\OperationLib::getOperationsForAttach(GET('ids', 'array'));
 
+		$data->cCashflow = \bank\CashflowLib::getForAttachQuery(POST('query'), $data->cOperation);
+
 		throw new ViewAction($data);
 
 	})

@@ -57,6 +57,10 @@ class CashflowUi {
 				$h .= '<legend>'.s("Rapprochement").'</legend>';
 				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'));
 			$h .= '</fieldset>';
+			$h .= '<fieldset>';
+				$h .= '<legend>'.s("Écritures comptables").'</legend>';
+				$h .= $form->select('status', [Cashflow::ALLOCATED => s("Avec écritures"), Cashflow::WAITING => s("Sans écriture")], $search->get('status'), ['placeholder' => s("Avec écriture et sans écriture")]);
+			$h .= '</fieldset>';
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
@@ -89,11 +93,18 @@ class CashflowUi {
 
 	public function getTabs(\farm\Farm $eFarm, \Collection $cBankAccount, BankAccount $eBankAccountSelected): string {
 
+		$getArgs = $_GET;
+		unset($getArgs['origin']);
+		unset($getArgs['farm']);
 		$h = '<div class="tabs-item">';
 
 			foreach($cBankAccount as $eBankAccount) {
+
 				$isSelected = ($eBankAccount['id'] === $eBankAccountSelected['id']);
-				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?bankAccount='.encode($eBankAccount['id']).'">'.s("Compte {value}", $eBankAccount['label']).'</a>';
+
+
+				$getArgs['bankAccount'] = $eBankAccount['id'];
+				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?'.http_build_query($getArgs).'">'.s("Compte {value}", $eBankAccount['label']).'</a>';
 
 			}
 
