@@ -199,7 +199,7 @@ class Cashflow {
             return;
         }
 
-        const totalAmount = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
+        const totalAmount = -1 * parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
         const cashflowType = qs('input[type="hidden"][name="type"]').value;
 
         // Pour une lecture plus facile, crédit et débit doivent être affichés en positif

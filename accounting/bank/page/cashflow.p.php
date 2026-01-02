@@ -82,12 +82,8 @@ new Page()
 
 	});
 
-new \bank\CashflowPage(
-	function($data) {
-		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'))->validate('canAllocate');
-	}
-)
-	->get('allocate', function($data) {
+new \bank\CashflowPage()
+	->read('allocate', function($data) {
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
@@ -96,25 +92,21 @@ new \bank\CashflowPage(
 		throw new ViewAction($data);
 
 	})
-	->post('addAllocate', function($data) {
+	->write('addAllocate', function($data) {
 
 		$data->index = POST('index');
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
-		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty, 'cOperationCashflow' => new Collection(['cashflow' => $data->eCashflow]), 'cJournalCode' => \journal\JournalCodeLib::getAll()]);
+		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty, 'cOperationCashflow' => new Collection(['cashflow' => $data->e]), 'cJournalCode' => \journal\JournalCodeLib::getAll()]);
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 
 		throw new ViewAction($data);
 
 	})
-	->post('doAllocate', function($data) {
-		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'),
-			\bank\Cashflow::getSelection() +
-			[
-				'import' => \bank\Import::getSelection() +
-					['account' => \bank\BankAccount::getSelection()]
-			]
-		);
+	->write('doAllocate', function($data) {
+
+		\bank\CashflowLib::getImportData($data->e);
+
 		$fw = new FailWatch();
 
 		\journal\Operation::model()->beginTransaction();
@@ -126,8 +118,8 @@ new \bank\CashflowPage(
 		}
 
 		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation([
-			'paymentDate' => $data->eCashflow['date'],
-		]), eCashflow: $data->eCashflow);
+			'paymentDate' => $data->e['date'],
+		]), eCashflow: $data->e);
 
 		if($cOperation->empty() === TRUE) {
 			\Fail::log('Cashflow::allocate.noOperation');
@@ -136,7 +128,7 @@ new \bank\CashflowPage(
 		$fw->validate();
 
 		\bank\Cashflow::model()->update(
-			$data->eCashflow,
+			$data->e,
 			['status' => \bank\CashflowElement::ALLOCATED, 'updatedAt' => \bank\Cashflow::model()->now(), 'hash' => $cOperation->first()['hash']]
 		);
 
@@ -145,7 +137,7 @@ new \bank\CashflowPage(
 		throw new ReloadAction('bank', 'Cashflow::allocated');
 
 	})
-	->get('attach', function($data) {
+	->read('attach', function($data) {
 
 		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
 
@@ -154,7 +146,7 @@ new \bank\CashflowPage(
 		throw new ViewAction($data);
 
 	})
-	->get('calculateAttach', function($data) {
+	->read('calculateAttach', function($data) {
 
 		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
 
@@ -171,21 +163,11 @@ new \bank\CashflowPage(
 		throw new ViewAction($data);
 
 	})
-	->post('doAttach', function($data) {
+	->write('doAttach', function($data) {
 
-		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'),
-			\bank\Cashflow::getSelection() +
-			[
-				'import' => \bank\Import::getSelection() +
-					['account' => \bank\BankAccount::getSelection()]
-			]
-		);
+		\bank\CashflowLib::getImportData($data->e);
 
 		$fw = new FailWatch();
-
-		if($data->eCashflow->exists() === FALSE) {
-			\bank\Cashflow::fail('internal');
-		}
 
 		if(post_exists('operations') === FALSE) {
 			\bank\Cashflow::fail('operationsRequiredForAttach', wrapper: 'operation');
@@ -200,24 +182,16 @@ new \bank\CashflowPage(
 
 		$fw->validate();
 
-		\bank\CashflowLib::attach($data->eCashflow, $cOperation, $eThirdParty);
+		\bank\CashflowLib::attach($data->e, $cOperation, $eThirdParty);
 
 		throw new ReloadAction('bank', 'Cashflow::attached');
 
-	});
-
-new \bank\CashflowPage(
-	function($data) {
-
-		$data->eCashflow = \bank\CashflowLib::getById(INPUT('id'));
-
-	}
-)
-->post('deAllocate', function($data) {
+	})
+->write('deAllocate', function($data) {
 
 	$fw = new FailWatch();
 
-	if($data->eCashflow->exists() === FALSE) {
+	if($data->e->exists() === FALSE) {
 		\bank\Cashflow::fail('internal');
 	}
 
@@ -228,33 +202,25 @@ new \bank\CashflowPage(
 
 	$fw->validate();
 
-	\journal\OperationLib::unlinkCashflow($data->eCashflow, $action);
+	\journal\OperationLib::unlinkCashflow($data->e, $action);
 
 	throw new ReloadAction('bank', 'Cashflow::deallocated');
 
-})
-->post('doDelete', function($data) {
+}, validate: ['acceptDeallocate'])
+->write('doDelete', function($data) {
 
-	if($data->eCashflow->exists() === FALSE or $data->eCashflow->canDelete() === FALSE) {
-		\bank\Cashflow::fail('internal');
-	}
-
-	\bank\CashflowLib::deleteCasfhlow($data->eCashflow);
+	\bank\CashflowLib::deleteCasfhlow($data->e);
 
 	throw new ReloadAction('bank', 'Cashflow::deleted');
 
 })
-->post('undoDelete', function($data) {
+->write('undoDelete', function($data) {
 
-	if($data->eCashflow->exists() === FALSE or $data->eCashflow['status'] !== \bank\Cashflow::DELETED) {
-		\bank\Cashflow::fail('internal');
-	}
-
-	\bank\CashflowLib::undeleteCashflow($data->eCashflow);
+	\bank\CashflowLib::undeleteCashflow($data->e);
 
 	throw new ReloadAction('bank', 'Cashflow::undeleted');
 
-})
+}, validate: ['acceptUndoDelete'])
 ;
 
 ?>

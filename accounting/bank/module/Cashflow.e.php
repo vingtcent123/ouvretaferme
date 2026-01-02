@@ -13,13 +13,25 @@ class Cashflow extends CashflowElement {
 
 	}
 
+	public function acceptDeallocate(): bool {
+
+		return $this['status'] === Cashflow::ALLOCATED;
+
+	}
+
 	public function acceptCancelReconciliation(): bool {
 
 		return $this['isReconciliated'] === TRUE;
 
 	}
 
-	public function canAllocate(): bool {
+	public function acceptUndoDelete(): bool {
+
+		return $this['status'] == \bank\Cashflow::DELETED;
+
+	}
+
+	public function acceptAllocate(): bool {
 
 		if($this->empty()) {
 			return FALSE;
@@ -28,7 +40,7 @@ class Cashflow extends CashflowElement {
 		return $this['status'] === Cashflow::WAITING;
 	}
 
-	public function canDelete(): bool {
+	public function accept(): bool {
 
 		return $this->canAllocate();
 

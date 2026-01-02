@@ -29,7 +29,7 @@ new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 	return new \bank\CashflowUi()->getAllocate(
 		$data->eFarm,
 		$data->eFarm['eFinancialYear'],
-		$data->eCashflow,
+		$data->e,
 		$data->cPaymentMethod,
 		$data->cJournalCode,
 	);
@@ -40,7 +40,7 @@ new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
 	$t->qs('#operation-create-list')->setAttribute('data-columns', $data->index + 1);
 	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml('afterend', new \bank\CashflowUi()->addAllocate(
-		$data->eFarm, $data->eOperation, $data->eFarm['eFinancialYear'], $data->eCashflow, $data->index, cPaymentMethod: $data->cPaymentMethod));
+		$data->eFarm, $data->eOperation, $data->eFarm['eFinancialYear'], $data->e, $data->index, cPaymentMethod: $data->cPaymentMethod));
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
 	if($data->index >= 4) {
 		$t->qs('#add-operation')->addClass('not-visible');
@@ -52,7 +52,7 @@ new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('attach', function($data, PanelTemplate $t) {
 
-	return new \bank\CashflowUi()->getAttach($data->eFarm, $data->eCashflow, $data->eThirdParty, $data->tip);
+	return new \bank\CashflowUi()->getAttach($data->eFarm, $data->e, $data->eThirdParty, $data->tip);
 
 });
 
@@ -74,7 +74,7 @@ new JsonView('calculateAttach', function($data, AjaxTemplate $t) {
 		$cOperationBank = $data->cOperation->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS));
 		$totalBank = round($cOperationBank->sum(fn($e) => $e['type'] === \journal\Operation::CREDIT ? -1 * $e['amount'] : $e['amount']), 2);
 
-		$amountCashflow = round($data->eCashflow['amount'], 2);
+		$amountCashflow = round($data->e['amount'], 2);
 		if($amountCashflow + $totalBank === (-1) * $totalOther) {
 
 			if($totalBank === 0) {
@@ -107,7 +107,7 @@ new JsonView('calculateAttach', function($data, AjaxTemplate $t) {
 
 		$t->qs('[data-field="totalAmount"]')->innerHtml(\util\TextUi::money(abs($amount)));
 
-		$t->qs('div[data-operations]')->innerHtml(new \bank\CashflowUi()->getSelectedOperationsTableForAttachement($data->eCashflow, $data->cOperationSelected));
+		$t->qs('div[data-operations]')->innerHtml(new \bank\CashflowUi()->getSelectedOperationsTableForAttachement($data->e, $data->cOperationSelected));
 
 	}
 

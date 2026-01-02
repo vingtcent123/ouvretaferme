@@ -3,6 +3,15 @@ namespace bank;
 
 class CashflowLib extends CashflowCrud {
 
+	public static function getImportData(Cashflow $eCashflow): void {
+
+		$eCashflow['import'] = \bank\Import::model()
+			->select(\bank\Import::getSelection() + ['account' => \bank\BankAccount::getSelection()])
+			->whereId($eCashflow['import']['id'])
+			->get();
+
+	}
+
 	public static function countSuggestionWaitingByImport(Import $eImport): int {
 
 		return Cashflow::model()
@@ -39,7 +48,6 @@ class CashflowLib extends CashflowCrud {
 			->whereIsReconciliated('=', $search->get('isReconciliated'), if: $search->get('isReconciliated') !== NULL)
 			->where('amount < 0', if: $search->get('direction') and $search->get('direction') === 'debit')
 			->where('amount >= 0', if: $search->get('direction') and $search->get('direction') === 'credit')
-			->whereStatus('!=', Cashflow::DELETED, if: $search->get('statusNotDeleted'))
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
 			->whereAccount('=', $search->get('bankAccount'), if: $search->get('bankAccount') and $search->get('bankAccount')->notEmpty())
 
