@@ -332,11 +332,10 @@ Class ImportUi {
 		$menu .= '</a>';
 
 		$attributesImport = [
-			'data-ajax-submit' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoiceCollection',
-			'data-confirm' => s("Confirmez-vous importer ces factures dans votre comptabilité ?"),
-			'post-financial-year' => $eFinancialYear['id'],
+			'data-ajax-submit' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:importInvoiceCollection',
+			'data-ajax-method' => 'get'
 		];
-		$menu .= '<a '.attrs($attributesImport).' class="batch-import batch-item" >'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
+		$menu .= '<a '.attrs($attributesImport).' class="batch-import batch-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
 
 		$attributesIgnore = [
 			'data-ajax-submit' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreCollection',

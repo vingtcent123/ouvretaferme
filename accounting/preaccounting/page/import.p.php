@@ -47,6 +47,11 @@ new Page()
 
 	throw new ReloadAction('preaccounting', 'Invoice::ignored');
 })
+->get('importInvoiceCollection', function($data) {
+
+	throw new ViewAction($data);
+
+})
 ->post('doImportInvoiceCollection', function($data) {
 
 	$cInvoice = \preaccounting\ImportLib::getInvoicesByIds(POST('ids', 'array'));
@@ -56,7 +61,7 @@ new Page()
 
 	\account\LogLib::save('importSeveral', 'Invoice', ['ids' => $cInvoice->getIds()]);
 
-	throw new ReloadAction('preaccounting', 'Invoice::importedSeveral');
+	throw new ReloadAction('preaccounting', $cInvoice->count() > 1 ? 'Invoice::importedSeveral' : 'Invoice::imported');
 
 })
 ->post('doIgnoreCollection', function($data) {
