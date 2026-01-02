@@ -10,6 +10,7 @@ new \account\ThirdPartyPage()
 		$financialYearIds = $data->eFarm['cFinancialYear']->getKeys();
 
 		$cOperation = \journal\OperationLib::countGroupByThirdParty(array_slice($financialYearIds, 0, 2));
+		$cOperationAll = \journal\OperationLib::countByThirdParty();
 
 		foreach($data->cThirdParty as &$eThirdParty) {
 
@@ -18,6 +19,7 @@ new \account\ThirdPartyPage()
 			foreach($financialYearIds as $financialYearId) {
 				$eThirdParty['operations'][$financialYearId] = $cOperation[$eThirdParty['id']][$financialYearId]['count'] ?? 0;
 			}
+			$eThirdParty['operations']['all'] = $cOperationAll[$eThirdParty['id']] ?? 0;
 		}
 
 		throw new ViewAction($data);

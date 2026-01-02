@@ -1648,6 +1648,15 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function countByThirdParty(): \Collection {
+
+		return Operation::model()
+			->select(['count' => new \Sql('COUNT(*)', 'int'), 'thirdParty'])
+			->group(['thirdParty'])
+			->getCollection(NULL, NULL, ['thirdParty']);
+
+	}
+
 	public static function countGroupByThirdParty(array $financialYearIds): \Collection {
 
 		return Operation::model()

@@ -178,11 +178,12 @@ class ThirdPartyUi {
 							}
 
 							$h .= '<td class="td-min-content">';
-								if($eThirdParty['operations'] === 0) {
+								if($eThirdParty['operations']['all'] === 0) {
 									$attributes = [
 										'data-ajax' => \company\CompanyUi::urlAccount($eFarm).'/thirdParty:doDelete',
 										'post-id' => $eThirdParty['id'],
-										'class' => 'btn btn-outline-secondary btn-outline-danger'.($eThirdParty['operations'] > 0 ? ' disabled' : ''),
+										'data-confirm' => s("Confirmez-vous la suppression du tiers {value} ?", $eThirdParty['name']),
+										'class' => 'btn btn-outline-secondary btn-outline-danger'.($eThirdParty['operations']['all'] > 0 ? ' disabled' : ''),
 									];
 									$h .= '<a '.attrs($attributes).'>'.\Asset::icon('trash').'</a>';
 								}
