@@ -57,10 +57,6 @@ class CashflowUi {
 				$h .= '<legend>'.s("Rapprochement").'</legend>';
 				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'));
 			$h .= '</fieldset>';
-			$h .= '<fieldset>';
-				$h .= '<legend>'.s("Écritures comptables").'</legend>';
-				$h .= $form->select('status', [Cashflow::ALLOCATED => s("Avec écritures"), Cashflow::WAITING => s("Sans écriture")], $search->get('status'), ['placeholder' => s("Avec écriture et sans écriture")]);
-			$h .= '</fieldset>';
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
 				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
