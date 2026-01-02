@@ -5,6 +5,7 @@ Class AccountingLib {
 
 	const FEC_COLUMN_JOURNAL_CODE = 0;
 	const FEC_COLUMN_JOURNAL_TEXT = 1;
+	const FEC_COLUMN_NUMBER = 2;
 	const FEC_COLUMN_DATE = 3;
 	const FEC_COLUMN_ACCOUNT_LABEL = 4;
 	const FEC_COLUMN_ACCOUNT_DESCRIPTION = 5;
@@ -237,7 +238,7 @@ Class AccountingLib {
 			}
 		}
 
-		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount);
+		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount, $forImport);
 
 	}
 
@@ -312,13 +313,20 @@ Class AccountingLib {
 
 	}
 
-	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount) {
+	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport) {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 		$eAccountBank = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
 		$fecData = [];
+		$number = 0;
 		foreach($cInvoice as $eInvoice) {
+
+			if($eInvoice['cashflow']->notEmpty()) {
+				$referenceDate = $eInvoice['cashflow']['date'];
+			} else {
+				$referenceDate = $eInvoice['date'];
+			}
 
 			$document = $eInvoice['name'];
 			$documentDate = $eInvoice['date'];
@@ -328,7 +336,7 @@ Class AccountingLib {
 			$hasVat = TRUE;
 			if($cFinancialYear->notEmpty()) {
 				$eFinancialYear = $cFinancialYear->find(
-					fn($e) => $e['startDate'] <= $eInvoice['date'] and $eInvoice['date'] <= $e['endDate']
+					fn($e) => $e['startDate'] <= $referenceDate and $referenceDate <= $e['endDate']
 				)->first();
 				if($eFinancialYear and $eFinancialYear->notEmpty() and $eFinancialYear['hasVat'] === FALSE) {
 					$hasVat = FALSE;
@@ -390,7 +398,7 @@ Class AccountingLib {
 					// Montant HT
 					$fecDataExcludingVat = self::getFecLine(
 						eAccount    : $eAccount,
-						date        : $eInvoice['date'],
+						date        : $referenceDate,
 						eCode       : $eAccount['journalCode'],
 						ecritureLib : $document,
 						document    : $document,
@@ -400,8 +408,10 @@ Class AccountingLib {
 						payment     : $payment,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
 					);
 
+					$numberWithoutVat = $number;
 					self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
 
 					// TVA
@@ -414,7 +424,7 @@ Class AccountingLib {
 
 						$fecDataVat = self::getFecLine(
 							eAccount    : $eAccountVat,
-							date        : $eInvoice['date'],
+							date        : $referenceDate,
 							eCode       : $eAccount['journalCode'],
 							ecritureLib : $document,
 							document    : $document,
@@ -424,7 +434,11 @@ Class AccountingLib {
 							payment     : $payment,
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
+							number      : $forImport ? ++$number : NULL,
 						);
+						if($forImport) {
+							$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
+						}
 
 						self::mergeFecLineIntoItemData($items, $fecDataVat);
 
@@ -438,7 +452,7 @@ Class AccountingLib {
 				$eAccountBank['class'] = $eInvoice['cashflow']['account']['label'];
 				$fecDataBank = self::getFecLine(
 					eAccount    : $eAccountBank,
-					date        : $eInvoice['date'],
+					date        : $eInvoice['cashflow']['date'],
 					eCode       : new \journal\JournalCode(),
 					ecritureLib : $eInvoice['cashflow']['memo'],
 					document    : $document,
@@ -448,6 +462,7 @@ Class AccountingLib {
 					payment     : $payment,
 					compAuxNum  : $compAuxNum,
 					compAuxLib  : $compAuxLib,
+					number      : $forImport ? ++$number : NULL,
 				);
 
 				self::mergeFecLineIntoItemData($items, $fecDataBank);
@@ -472,7 +487,7 @@ Class AccountingLib {
 					$eAccountRegul = $cAccount->find(fn($e) => $e['class'] === $accountLabel)->first();
 					$fecDataRegul = self::getFecLine(
 						eAccount    : $eAccountRegul,
-						date        : $eInvoice['date'],
+						date        : $referenceDate,
 						eCode       : $eAccountBank['journalCode'],
 						ecritureLib : $document,
 						document    : $document,
@@ -482,6 +497,7 @@ Class AccountingLib {
 						payment     : $payment,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataRegul);
@@ -683,13 +699,14 @@ Class AccountingLib {
 
 	private static function getFecLine(
 		\account\Account $eAccount, string $date, \journal\JournalCode $eCode, string $ecritureLib,
-		string $document, string $documentDate, float $amount, string $type, string $payment, string $compAuxNum, string $compAuxLib
+		string $document, string $documentDate, float $amount, string $type, string $payment, string $compAuxNum, string $compAuxLib,
+		?int $number = NULL
 	): array {
 
 		return [
 			$eCode['code'] ?? '',
 			$eCode['name'] ?? '',
-			'',
+			$number,
 			date('Ymd', strtotime($date)),
 			$eAccount['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccount['class']),
 			$eAccount['description'],

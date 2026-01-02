@@ -38,7 +38,7 @@ new Page(function($data) {
 
 		$data->unbalanced = GET('unbalanced', 'bool');
 
-		$search->set('cashflowFilter', GET('cashflowFilter', 'bool'));
+		$search->set('cashflowFilter', GET('cashflowFilter', '?bool'));
 
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;

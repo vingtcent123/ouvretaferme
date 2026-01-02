@@ -101,6 +101,10 @@ class OperationLib extends OperationCrud {
 		if($search->get('cashflowFilter') === TRUE) {
 			$model
 				->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+				->where('m2.id IS NOT NULL');
+		} else if($search->get('cashflowFilter') === FALSE) {
+			$model
+				->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
 				->where('m2.id IS NULL');
 		}
 
@@ -139,6 +143,7 @@ class OperationLib extends OperationCrud {
 				$model->whereAsset(NULL);
 			}
 		}
+
 		return $model
 			->whereId('=', $search->get('id'), if: $search->get('id'))
 			->whereHash('=', $search->get('hash'), if: $search->get('hash'))

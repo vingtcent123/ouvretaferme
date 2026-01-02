@@ -125,19 +125,18 @@ class JournalUi {
 					$h .= '<legend>'.s("Pièce comptable").'</legend>';
 					$h .= $form->inputGroup(
 						$form->select('hasDocument', [
-							NULL => s("Avec ou sans"),
 							0 => s("Sans"),
 							1 => s("Avec"),
-						], $search->get('hasDocument'), ['mandatory' => TRUE]).
+						], $search->get('hasDocument'), ['placeholder' => s("Avec ou sans")]).
 						$form->text('document', $search->get('document'), ['placeholder' => s("Nom de la pièce comptable")])
 					);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Opération bancaire").'</legend>';
 					$h .= $form->select('cashflowFilter', [
-						0 => s("Avec ou sans"),
-						1 => s("Sans"),
-					], $search->get('cashflowFilter', 'int', 0), ['mandatory' => TRUE]);
+						1 => s("Avec"),
+						0 => s("Sans"),
+					], $search->get('cashflowFilter'), ['placeholder' => s("Avec ou sans")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Immobilisation").'</legend>';

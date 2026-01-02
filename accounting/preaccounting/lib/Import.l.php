@@ -133,14 +133,14 @@ Class ImportLib {
 
 		$cInvoice = new \Collection();
 		$cInvoice->append($eInvoice);
-		$fecData = \preaccounting\AccountingLib::generateInvoiceFec($cInvoice, new \Collection([$eFinancialYear]), $cAccount);
+		$fecData = \preaccounting\AccountingLib::generateInvoiceFec($cInvoice, new \Collection([$eFinancialYear]), $cAccount, TRUE);
 
 		$eOperationBase = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
 			'hash' => $hash,
 		]);
 
-		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase);
+		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase, $eInvoice);
 
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);
 		\selling\Sale::model()->whereInvoice($eInvoice)->update(['accountingHash' => $hash]);
@@ -209,8 +209,14 @@ Class ImportLib {
 
 	}
 
+	// Note : les opérations doivent concerner une même facture.
 	private static function createOperations(
-		\account\FinancialYear $eFinancialYear, array $fecData, \Collection $cAccount, \Collection $cPaymentMethod, \journal\Operation $eOperationBase
+		\account\FinancialYear $eFinancialYear,
+		array $fecData,
+		\Collection $cAccount,
+		\Collection $cPaymentMethod,
+		\journal\Operation $eOperationBase,
+		\selling\Invoice $eInvoice,
 	): void {
 
 		$cOperation = new \Collection();
@@ -254,11 +260,36 @@ Class ImportLib {
 				'paymentMethod' => $ePaymentMethod,
 			]));
 
-			$cOperation->append($eOperation);
+			if(strpos($data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER], '-') !== FALSE) {
+				list($currentNumber, $number) = array_map('intval', explode('-', $data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER]));
+				if($cOperation->offsetExists($number)) {
+					$eOperationOrigin = $cOperation->offsetGet($number);
+					$eOperation['operation'] = $eOperationOrigin;
+					$eOperationOrigin['vatAccount'] = $eOperation['account'];
+					$eOperationOrigin['vatRate'] = round($eOperation['amount'] / $eOperationOrigin['amount'], 4) * 100;
+				}
+				$offset = $currentNumber;
+			} else {
+				$offset = (int)$data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER];
+			}
+
+			\journal\Operation::model()->insert($eOperation);
+
+			if($eInvoice->notEmpty() and $eInvoice['cashflow']->notEmpty()) {
+
+				$eOperationCashflow = new \journal\OperationCashflow([
+					'operation' => $eOperation,
+					'cashflow' => $eInvoice['cashflow'],
+					'amount' => min($eOperation['amount'], abs($eInvoice['cashflow']['amount'])),
+				]);
+
+				\journal\OperationCashflow::model()->insert($eOperationCashflow);
+
+			}
+
+			$cOperation->offsetSet($offset, $eOperation);
 
 		}
-
-		\journal\Operation::model()->insert($cOperation);
 
 	}
 
