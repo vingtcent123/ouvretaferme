@@ -241,37 +241,27 @@ Class AccountingLib {
 
 	}
 
-	public static function countInvoices(\farm\Farm $eFarm, \Search $search) {
-
-		if($search->get('type')) {
-
-			\selling\Invoice::model()
-				->join(\selling\Customer::model(), 'm1.customer = m2.id')
-				->where('m2.type = '.\selling\Customer::model()->format($search->get('type')))
-				->where('m1.farm = '.$eFarm['id']);
-
-		} else {
-
-			\selling\Invoice::model()->whereFarm($eFarm);
-
-		}
-
-		if($search->get('reconciliated') === 0) {
-
-			\selling\Invoice::model()->whereCashflow('=', NULL);
-
-		} else if($search->get('reconciliated') === 1) {
-
-			\selling\Invoice::model()->whereCashflow('!=', NULL);
-
-		}
+	public static function applyInvoiceFilter(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
 
 		return \selling\Invoice::model()
-			->whereAccountingHash(NULL)
-			->whereReadyForAccounting(TRUE)
+			->join(\selling\Customer::model(), 'm1.customer = m2.id')
+			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
+			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->get('customer')->notEmpty())
+			->where('m1.farm = '.$eFarm['id'])
+			->whereCashflow('=', NULL, if: $search->get('reconciliated') === FALSE)
+			->whereCashflow('!=', NULL, if: $search->get('reconciliated') === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
+		;
+
+	}
+
+	public static function countInvoices(\farm\Farm $eFarm, \Search $search) {
+
+		return self::applyInvoiceFilter($eFarm, $search)
+			->whereAccountingHash(NULL)
+			->whereReadyForAccounting(TRUE)
 			->count();
 
 	}

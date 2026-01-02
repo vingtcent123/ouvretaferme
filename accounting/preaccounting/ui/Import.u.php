@@ -44,7 +44,10 @@ Class ImportUi {
 						0 => s("Factures sans écart de paiement"),
 					], (int)$search->get('accountingDifference'), ['mandatory' => TRUE]);
 				$h .= '</fieldset>';
-
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Client").'</legend>';
+					$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
+				$h .= '</fieldset>';
 
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);

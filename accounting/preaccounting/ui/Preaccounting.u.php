@@ -28,10 +28,12 @@ Class PreaccountingUi {
 					);
 				$h .= '</fieldset>';
 
-				$h .= '<fieldset>';
-					$h .= '<legend>'.s("Client").'</legend>';
-					$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
-				$h .= '</fieldset>';
+				if($type === 'sales') {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Client").'</legend>';
+						$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
+					$h .= '</fieldset>';
+				}
 
 				if($search->get('cGroup') and $search->get('cGroup')->notEmpty()) {
 					$h .= '<fieldset>';

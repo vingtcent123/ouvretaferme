@@ -10,17 +10,9 @@ Class ImportLib {
 		$cAccount = \account\AccountLib::getAll();
 		$extraction = \preaccounting\AccountingLib::extractInvoice($eFarm, $search, $eFarm['cFinancialYear'], $cAccount, forImport: TRUE);
 
-		if($search->get('reconciliated') === 0) {
+		$nameFilter = join('", "', array_column($extraction, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
 
-			\selling\Invoice::model()->whereCashflow('=', NULL);
-
-		} else if($search->get('reconciliated') === 1) {
-
-			\selling\Invoice::model()->whereCashflow('!=', NULL);
-
-		}
-
-		$cInvoice = \selling\Invoice::model()
+		$cInvoice = AccountingLib::applyInvoiceFilter($eFarm, $search)
 			->select([
 				'id', 'document', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
 				'date', 'accountingHash', 'cashflow', 'farm', 'accountingDifference',
@@ -28,8 +20,7 @@ Class ImportLib {
 				'readyForAccounting', 'accountingDifference'
 			])
 			->whereReadyForAccounting(TRUE)
-			->whereName('IN', array_column($extraction, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT))
-			->whereFarm($eFarm)
+			->where(new \Sql('m1.name IN ("'.$nameFilter.'")'), if: mb_strlen($nameFilter) > 0)
 			->sort(['date' => SORT_ASC])
 			->getCollection(NULL, NULL, 'name');
 
