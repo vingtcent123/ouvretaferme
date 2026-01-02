@@ -93,15 +93,11 @@ Class ImportLib {
 
 	public static function importInvoices(\farm\Farm $eFarm, \Collection $cInvoice): void {
 
-		\journal\Operation::model()->beginTransaction();
-
 		foreach($cInvoice as $eInvoice) {
 
 			self::importInvoice($eFarm, $eInvoice);
 
 		}
-
-		\journal\Operation::model()->commit();
 
 	}
 	public static function importInvoice(\farm\Farm $eFarm, \selling\Invoice $eInvoice): void {
