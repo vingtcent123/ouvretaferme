@@ -512,8 +512,8 @@ class CsvLib {
 				'container_size' => ''
 			];
 
-			$sowing = $line['sowing_date'] ?: NULL;
-			$planting = $line['planting_date'] ?: NULL;
+			$sowing = self::formatDateField($line['sowing_date'] ?: NULL);
+			$planting = self::formatDateField($line['planting_date'] ?: NULL);
 
 			// planting_type
 			$plantingType = match($line['planting_type'] ?? NULL) {
@@ -535,6 +535,9 @@ class CsvLib {
 
 			}
 
+			$firstHarvestDate = self::formatDateField($line['first_harvest_date'] ?: NULL);
+			$lastHarvestDate = self::formatDateField($line['last_harvest_date'] ?: NULL);
+
 			$season = (int)substr($firstHarvestDate ?? $planting ?? $sowing ?? currentDate(), 0, 4);
 			$mode = (($line['in_greenhouse'] ?? 'false') === 'true') ? Series::GREENHOUSE : Series::OPEN_FIELD;
 
@@ -543,9 +546,6 @@ class CsvLib {
 
 			$rows = (int)$line['rows'] ?: NULL;
 			$spacingPlants = (int)$line['spacing_plants'] ?: NULL;
-
-			$firstHarvestDate = $line['first_harvest_date'] ?: NULL;
-			$lastHarvestDate = $line['last_harvest_date'] ?: NULL;
 
 			$hash = md5($season.'-'.$mode.'-'.$crop.'-'.$plantingType.'-'.$rows.'-'.$spacingPlants.'-'.$sowing.'-'.$planting.'-'.$harvestUnit.'-'.$firstHarvestDate.'-'.$lastHarvestDate);
 
@@ -1213,7 +1213,7 @@ class CsvLib {
 
 	}
 
-	private static function checkDateField(mixed $value, string $error): ?string {
+	private static function checkDateField(mixed &$value, string $error): ?string {
 
 		if(
 			$value !== NULL and
@@ -1222,6 +1222,19 @@ class CsvLib {
 			return $error;
 		} else {
 			return NULL;
+		}
+
+	}
+
+	private static function formatDateField(mixed $value): ?string {
+
+		if(
+			$value !== NULL and
+			preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $value, $results)
+		) {
+			return $results[3].'-'.$results[2].'-'.$results[1];
+		} else {
+			return $value;
 		}
 
 	}
