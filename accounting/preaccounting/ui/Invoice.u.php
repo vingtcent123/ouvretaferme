@@ -11,18 +11,17 @@ Class InvoiceUi {
 			\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoiceCollection',
 			[
 				'id' => 'preaccounting-import-invoices',
-				'class' => 'panel-dialog',
 			],
 		);
 
 		$h .= '<div class="util-info">';
-			$h .= p("Vous allez importer {value} facture en comptabilité. Souhaitez-vous continuer ?", "Vous allez importer {value} factures en comptabilité. Souhaitez-vous continuer ?", count(get('ids', 'array')));
+			$h .= p("Vous allez importer <b>{value}</b> facture en comptabilité. Souhaitez-vous continuer ?", "Vous allez importer <b>{value}</b> factures en comptabilité. Souhaitez-vous continuer ?", count(get('ids', 'array')));
 		$h .= '</div>';
 		foreach(get('ids', 'array') as $id) {
 			$h .= $form->hidden('ids[]', $id);
 		}
 
-		$h .= $form->group($form->submit(s("Enregistrer"), ['data-waiter' => s("Import en cours...")]));
+		$h .= $form->group($form->submit(s("Importer"), ['data-waiter' => s("Import en cours...")]));
 
 		$h .= $form->close();
 
