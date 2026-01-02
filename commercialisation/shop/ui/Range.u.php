@@ -126,7 +126,7 @@ class RangeUi {
 					$e->expects(['cDateAvailable']);
 
 					if($e['cDateAvailable']->empty()) {
-						return '<div class="util-info">'.s("Aucune vente en cours.").'</div>';
+						return '<div class="util-empty">'.s("Aucune vente en cours.").'</div>';
 					}
 
 					$dates = [];

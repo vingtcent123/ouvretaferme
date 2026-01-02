@@ -61,11 +61,11 @@ Class ImportUi {
 
 			if($search->empty()) {
 
-				$h .= '<div class="util-info">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite">']).'</div>';
+				$h .= '<div class="util-empty">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite">']).'</div>';
 
 			} else {
 
-				$h .= '<div class="util-info">'.s("Aucune facture ne correspond à vos critères de recherche.").'</div>';
+				$h .= '<div class="util-empty">'.s("Aucune facture ne correspond à vos critères de recherche.").'</div>';
 
 			}
 

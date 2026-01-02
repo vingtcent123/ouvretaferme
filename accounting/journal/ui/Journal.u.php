@@ -308,9 +308,9 @@ class JournalUi {
 			$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL) === TRUE;
 
 			if($hideSearch === TRUE) {
-				return '<div class="util-info">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
+				return '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
 			}
-			return '<div class="util-info">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';
+			return '<div class="util-empty">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';
 
 		}
 

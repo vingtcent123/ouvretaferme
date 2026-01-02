@@ -1490,7 +1490,7 @@ class AnalyzeUi {
 		$h .= '<div class="util-block" style="margin-bottom: 1rem">'.implode(' / ', $filters).'</div>';
 
 		if($cTask->empty()) {
-			$h .= '<div class="util-info">'.s("Aucune intervention ne correspond à ce critère.").'</div>';
+			$h .= '<div class="util-empty">'.s("Aucune intervention ne correspond à ce critère.").'</div>';
 		} else {
 
 			$h .= '<div class="analyze-tasks-wrapper">';

@@ -13,7 +13,7 @@ class AbsenceUi {
 		$h .= '</div>';
 
 		if($cAbsence->empty()) {
-			$h .= '<div class="util-info">'.s("Aucune absence n'a été saisie pour cet utilisateur.").'</div>';
+			$h .= '<div class="util-empty">'.s("Aucune absence n'a été saisie pour cet utilisateur.").'</div>';
 		} else {
 
 			$h .= '<div class="util-overflow-sm">';

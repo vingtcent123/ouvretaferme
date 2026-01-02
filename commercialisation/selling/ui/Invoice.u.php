@@ -616,7 +616,7 @@ class InvoiceUi {
 			} else {
 
 				$h .= $form->group(
-					content: '<p class="util-info">'.s("Aucune vente n'est éligible à la facturation pour ce mois.").'</p>'
+					content: '<p class="util-empty">'.s("Aucune vente n'est éligible à la facturation pour ce mois.").'</p>'
 				);
 
 			}

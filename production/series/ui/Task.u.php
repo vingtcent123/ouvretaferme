@@ -139,7 +139,7 @@ class TaskUi {
 
 					} else {
 
-						$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last util-info">';
+						$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last util-empty">';
 							$h .= s("Aucune intervention ce jour.");
 						$h .= '</div>';
 

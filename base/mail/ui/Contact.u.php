@@ -162,7 +162,7 @@ class ContactUi {
 				$h .= '<code id="contact-emails">'.implode(', ', array_map('encode', $emails)).'</code>';
 				$h .= '<a onclick="doCopy(this)" data-selector="#contact-emails" data-message="'.s("Copié !").'" class="btn btn-secondary mb-1 mt-1">'.s("Copier la liste dans le presse-papier").'</a>';
 			} else {
-				$h .= '<p class="util-info">'.s("Aucune adresse e-mail ne correspond aux critères.").'</p>';
+				$h .= '<p class="util-empty">'.s("Aucune adresse e-mail ne correspond aux critères.").'</p>';
 			}
 
 			$h .= '<br/><br/>';

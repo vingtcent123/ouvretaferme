@@ -224,9 +224,9 @@ class BookUi {
 
 		if($cOperation->empty() === TRUE) {
 			if($search->empty(['ids', 'financialYear'])) {
-				return '<div class="util-info">'. s("Aucune écriture n'a encore été enregistrée") .'</div>';
+				return '<div class="util-empty">'. s("Aucune écriture n'a encore été enregistrée") .'</div>';
 			} else {
-				return '<div class="util-info">'. s("Aucune écriture ne correspond à vos critères de recherche.") .'</div>';
+				return '<div class="util-empty">'. s("Aucune écriture ne correspond à vos critères de recherche.") .'</div>';
 			}
 		}
 

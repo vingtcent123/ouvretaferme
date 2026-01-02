@@ -182,7 +182,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 		} else {
 
-			echo '<div class="util-info">';
+			echo '<div class="util-empty">';
 				echo s("Aucune vente ne correspond à vos critères de recherche.");
 			echo '</div>';
 

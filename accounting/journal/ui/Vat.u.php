@@ -18,9 +18,9 @@ Class VatUi {
 		if($cccOperation->empty() === TRUE) {
 
 			if($search->empty(['ids']) === TRUE) {
-				return '<div class="util-info">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
+				return '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
 			}
-			return '<div class="util-info">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';
+			return '<div class="util-empty">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';
 
 		}
 

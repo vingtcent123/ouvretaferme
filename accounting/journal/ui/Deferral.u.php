@@ -179,7 +179,7 @@ class DeferralUi {
 
 		if($cOperation->empty()) {
 
-			$h .= '<div class="util-info">'.s("Aucune opération ne peut être reportée (charge ou produit).").'</div>';
+			$h .= '<div class="util-empty">'.s("Aucune opération ne peut être reportée (charge ou produit).").'</div>';
 
 		} else {
 
