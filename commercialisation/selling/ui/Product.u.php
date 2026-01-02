@@ -1370,18 +1370,21 @@ class ProductUi {
 			$genericLabel = s("Numéro de compte");
 			$specificLabel = s("Vente aux clients particuliers");
 
+			$hasProAccount = $eProduct['proAccount']->notEmpty();
+
 			$h .= $form->group(
-				'<span data-field-label="privateAccount">'.s("Numéro de compte").'</span>',
+				'<span data-field-label="privateAccount">'.$hasProAccount ? $specificLabel : $genericLabel.'</span>',
 				$form->dynamicField($eProduct, 'privateAccount').
 				'<div class="form-info">'.$form->checkbox('accountDissociation', '1', [
 					'callbackLabel' => fn($input) => $input.' '.s("Dissocier le numéro de compte pour la vente aux particuliers et aux professionnels"),
 					'onclick' => 'Product.accountDissociation()',
 					'data-field-account-generic-label' => $genericLabel,
 					'data-field-account-specific-label' => $specificLabel,
+					'checked' => $hasProAccount,
 				]).'</div>'
 			);
 
-			$h .= '<div data-field="proAccount" class="hide">'.$form->group(
+			$h .= '<div data-field="proAccount" class="'.($hasProAccount ? '' : 'hide').'">'.$form->group(
 				s("Vente aux clients professionnels"),
 				$form->dynamicField($eProduct, 'proAccount'),
 			).'</div>';
