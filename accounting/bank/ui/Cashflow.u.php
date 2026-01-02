@@ -118,7 +118,7 @@ class CashflowUi {
 
 			if($search->empty(['ids']) === FALSE) {
 
-				return '<div class="util-info">'.
+				return '<div class="util-empty">'.
 					s("Aucune opération bancaire ne correspond à vos critères de recherche.").
 					'</div>';
 
