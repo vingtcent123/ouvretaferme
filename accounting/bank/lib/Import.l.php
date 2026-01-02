@@ -191,15 +191,19 @@ class ImportLib extends ImportCrud {
 
 		}
 
-		$eImport['result'] = $result;
-		$eImport['status'] = $status;
-		$eImport['processedAt'] = new \Sql('NOW()');
+		if(isset($eImport)) {
 
-		self::update($eImport, ['result', 'status', 'processedAt']);
+			$eImport['result'] = $result;
+			$eImport['status'] = $status;
+			$eImport['processedAt'] = new \Sql('NOW()');
+
+			self::update($eImport, ['result', 'status', 'processedAt']);
+
+		}
 
 		Cashflow::model()->commit();
 
-		return $eImport;
+		return $eImport ?? new Import();
 
 	}
 

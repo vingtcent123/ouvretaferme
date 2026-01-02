@@ -18,7 +18,7 @@ Class AlertUi {
 			'Cashflow::operationsRequiredForAttach' => s("Sélectionnez au moins une écriture."),
 
 			'Import::ofxSize' => s("Votre import ne peut pas excéder 1 Mo, merci de réduire la taille de votre fichier."),
-			'Import::ofxError' => s("Une erreur est survenue lors de l'import de votre fichier, merci de réessayer."),
+			'Import::ofxError' => s("Une erreur est survenue lors de l'import de votre fichier. Est-ce bien un fichier OFX ?"),
 			'Import::nothingImported' => s("Aucun mouvement n'a été importé, n'avez-vous pas déjà importé ce fichier ?"),
 			'Import::nothingImportedNoFinancialYear' => s("Aucun mouvement n'a été importé, avez-vous bien créé l'exercice comptable de ces opérations bancaires ?"),
 

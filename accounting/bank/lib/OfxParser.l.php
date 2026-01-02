@@ -8,6 +8,10 @@ class OfxParserLib {
 		// Récupérer uniquement le contenu OFX
 		preg_match("'<ofx>(.*?)</ofx>'si", file_get_contents($filepath), $match);
 
+		if(empty($match)) {
+			throw new \Exception('OFX File could not be parsed');
+		}
+
 		// Fermer correctement les tags
 		$xmlContent = preg_replace('/<([A-Za-z0-9.]+)>([^<\r\n]+)/', '<\1>\2</\1>', '<OFX>'.$match[1].'</OFX>');
 
