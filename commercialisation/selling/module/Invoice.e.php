@@ -218,9 +218,11 @@ class Invoice extends InvoiceElement {
 
 		$this->expects(['readyForAccounting', 'priceIncludingVat', 'cashflow']);
 
-		if($this['cashflow']->notEmpty()) {
-			$this['cashflow']->expects(['amount']);
+		if($this['cashflow']->empty()) {
+			return FALSE;
 		}
+
+		$this['cashflow']->expects(['amount']);
 
 		return (
 			$this['accountingHash'] === NULL and
