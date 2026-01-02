@@ -943,7 +943,7 @@ class OperationUi {
 			}
 
 			$h .= '<div class="operation-create-title">';
-				$h .= '<h4>'.s("Écriture #{number}", ['number' => $index + 1]).'</h4>';
+				$h .= '<h3>'.s("Écriture #{number}", ['number' => $index + 1]).'</h3>';
 
 					$h .= '<div class="operation-create-actions">';
 					$h .= '<div class="hide" data-index="'.$index.'" data-operation-delete>';
@@ -1232,8 +1232,6 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate" data-wrapper="asset-label"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate cashflow-warning">';
 				$h .= '<div>';
 					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';

@@ -499,38 +499,21 @@ class CashflowUi {
 
 	public function getAllocateTitle(Cashflow $eCashflow, \account\FinancialYear $eFinancialYear, array $defaultValues, \Collection $cPaymentMethod, \util\FormUi $form): string {
 
+		$amount = '<span class="util-badge bg-primary" style="padding-left: .75rem; padding-right: .75rem">'.\util\TextUi::money(abs($eCashflow['amount'])).'</span>';
+
 		$title = '<div class="panel-title-container">';
-			$title .= '<h2 class="panel-title">'.encode($eCashflow['memo']).'</h2>';
+				$title .= '<h2 class="panel-title">'.s(
+				"Opération bancaire de {amount} du {date}</b>",
+				[
+					'amount' => $amount,
+					'date' => \util\DateUi::numeric($eCashflow['date'], \util\DateUi::DATE),
+				]
+			).'</h2>';
 			$title .= '<a class="panel-close-desktop" onclick="Lime.Panel.closeLast()">'.\Asset::icon('x').'</a>';
 			$title .= '<a class="panel-close-mobile" onclick="Lime.Panel.closeLast()">'.\Asset::icon('arrow-left-short').'</a>';
 		$title .= '</div>';
 
-		$subtitle = '<h2 class="panel-subtitle">';
-			$subtitle .= s(
-				"Opération bancaire #<b>{number}</b> du <b>{date}</b> | <b>{type}</b> d'un montant de <b class='color-primary'>{amount}</b>",
-				[
-					'amount' => \util\TextUi::money(abs($eCashflow['amount'])),
-					'number' => $eCashflow['id'],
-					'type' => self::p('type')->values[$eCashflow['type']],
-					'date' => \util\DateUi::numeric($eCashflow['date'], \util\DateUi::DATE),
-				]
-			);
-		$subtitle .= '</h2>';
-		$subtitle .= '<div class="cashflow-create-operation-general">';
-			$subtitle .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentDate').'</div>';
-			$subtitle .= $form->date(
-				'paymentDate',
-					$defaultValues['paymentDate'] ?? '',
-				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
-			);
-			$subtitle .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
-			$subtitle .= $form->select(
-				'paymentMethod',
-				$cPaymentMethod,
-					$defaultValues['paymentMethod'] ?? '',
-				['mandatory' => TRUE] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
-			);
-		$subtitle .= '</div>';
+		$subtitle = '<h2 class="panel-subtitle">'.encode($eCashflow['memo']).'</h2>';
 
 		return $title.$subtitle;
 
@@ -578,6 +561,23 @@ class CashflowUi {
 		$h .= $form->hidden('type', $eCashflow['type']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 		$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
+
+
+		$h .= '<div class="cashflow-create-operation-general">';
+			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentDate').'</div>';
+			$h .= $form->date(
+				'paymentDate',
+					$defaultValues['paymentDate'] ?? '',
+				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
+			);
+			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
+			$h .= $form->select(
+				'paymentMethod',
+				$cPaymentMethod,
+					$defaultValues['paymentMethod'] ?? '',
+				['mandatory' => TRUE] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
+			);
+		$h .= '</div>';
 
 		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
 
