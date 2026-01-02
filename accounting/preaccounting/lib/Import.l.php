@@ -20,6 +20,7 @@ Class ImportLib {
 				'readyForAccounting', 'accountingDifference'
 			])
 			->whereReadyForAccounting(TRUE)
+			->whereAccountingHash('=', NULL)
 			->where(new \Sql('m1.name IN ("'.$nameFilter.'")'), if: mb_strlen($nameFilter) > 0)
 			->sort(['date' => SORT_ASC])
 			->getCollection(NULL, NULL, 'name');

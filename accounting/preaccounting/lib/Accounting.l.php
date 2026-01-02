@@ -252,7 +252,7 @@ Class AccountingLib {
 			->whereCashflow('!=', NULL, if: $search->get('reconciliated') === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
-			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
+			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to') and $eFarm['eFinancialYear']['accountingType'] !== \account\FinancialYear::CASH)
 		;
 
 	}
@@ -307,7 +307,7 @@ Class AccountingLib {
 			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
-			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
+			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
 			->getCollection();
 
 	}
@@ -330,7 +330,7 @@ Class AccountingLib {
 				$eFinancialYear = $cFinancialYear->find(
 					fn($e) => $e['startDate'] <= $eInvoice['date'] and $eInvoice['date'] <= $e['endDate']
 				)->first();
-				if($eFinancialYear->notEmpty() and $eFinancialYear['hasVat'] === FALSE) {
+				if($eFinancialYear and $eFinancialYear->notEmpty() and $eFinancialYear['hasVat'] === FALSE) {
 					$hasVat = FALSE;
 				}
 			}

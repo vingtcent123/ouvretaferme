@@ -155,13 +155,16 @@ new Page(function($data) {
 		$data->selectedTab = in_array(GET('tab'), ['market', 'invoice', 'sales']) ? GET('tab') : 'market';
 
 		$data->search = new Search([
-			'from' => $data->eFarm['eFinancialYear']['startDate'],
-			'to' => $data->eFarm['eFinancialYear']['endDate'],
 			'type' => GET('type'),
 			'reconciliated' => GET('reconciliated', '?bool'),
 			'accountingDifference' => GET('accountingDifference', '?bool'),
 			'customer' => \selling\CustomerLib::getById(GET('customer'))
 		]);
+
+		if(($data->eFarm['eFinancialYear']['accountingType'] ?? NULL) !== \account\FinancialYear::CASH) {
+			$data->search->set('from', $data->eFarm['eFinancialYear']['startDate']);
+			$data->search->set('to', $data->eFarm['eFinancialYear']['endDate']);
+		}
 
 		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
 
