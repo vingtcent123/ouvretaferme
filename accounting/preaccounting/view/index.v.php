@@ -10,24 +10,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$toCheck = $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck;
 
-	$title = '<div class="util-action">';
-
-		$title .= '<h1>';
-
-			$title .= s("Préparer les données des factures");
-			if($toCheck > 0) {
-				$title .= ' <span class="util-counter">'.$toCheck.'</span>';
-			}
-
-		$title .= '</h1>';
-
-		$title .= '<div>';
-			$title .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
-		$title .= '</div>';
-
-	$title .= '</div>';
-
-	$t->mainTitle = $title;
+	$t->mainTitle = new \farm\FarmUi()->getPreAccountingTitle($data->eFarm, 'invoices', ['sales' => 0, 'invoices' => $toCheck], $data->search);
 
 	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
 
@@ -149,22 +132,8 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	$t->nav = 'preaccounting';
 
-	$title = '<div class="util-action">';
-
-		$title .= '<h1>';
-
-			$title .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$title .= s("Explorer les données comptables des ventes");
-
-		$title .= '</h1>';
-
-		$title .= '<div>';
-			$title .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
-		$title .= '</div>';
-
-	$title .= '</div>';
-
-	$t->mainTitle = $title;
+	$toCheck = $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck;
+	$t->mainTitle = new \farm\FarmUi()->getPreAccountingTitle($data->eFarm, 'sales', ['sales' => 0, 'invoices' => $toCheck], $data->search);
 
 	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales', count($data->operations) > 0);
 

@@ -1872,6 +1872,53 @@ class FarmUi {
 		];
 	}
 
+	public function getPreAccountingTitle(Farm $eFarm, string $selectedView, array $numbers, \Search $search): string {
+
+		$categories = $this->getPreAccountingCategories();
+
+		$title = $categories[$selectedView]['label'];
+		$urlMore = 'from='.encode($search->get('from')).'&to='.encode($search->get('to'));
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= self::getNavigation();
+					$h .= '<span class="h-menu-label">';
+						$h .= $title;
+					$h .= '</span>';
+				$h .= '</a>';
+				$h .= '<div class="dropdown-list bg-primary">';
+					foreach($categories as $key => $value) {
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).$value['url'].'?'.$urlMore.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
+							$h .= $value['label'];
+							if($numbers[$key] > 0) {
+								$h .= '<span class="util-counter ml-1">'.$numbers[$key].'</span>';
+							}
+						$h .= '</a>';
+					}
+				$h .= '</div>';
+				if($numbers[$selectedView] > 0) {
+					$h .= '<span class="util-counter ml-1">'.$numbers[$selectedView].'</span>';
+				}
+			$h .= '</h1>';
+
+			$h .= '<div>';
+				$h .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected static function getPreAccountingCategories(): array {
+		return [
+			'invoices' => ['url' => '/precomptabilite', 'label' => s("Préparer les données des factures")],
+			'sales' => ['url' => '/precomptabilite/ventes', 'label' => s("Explorer les données comptables des ventes")],
+		];
+	}
+
 	public function getAccountingInvoiceTitle(Farm $eFarm, array $numbers): string {
 
 		$h = '<div class="util-action">';
