@@ -19,9 +19,9 @@ Class SuggestionLib extends SuggestionCrud {
 	public static function countWaitingByCashflow(): int {
 
 		return Suggestion::model()
-			->select(['nCashflow' => new \Sql('DISTINCT(cashflow)')])
+			->select(['nCashflow' => new \Sql('COUNT(DISTINCT(cashflow))', 'int')])
 			->whereStatus(Suggestion::WAITING)
-			->count();
+			->get()['nCashflow'] ?? 0;
 
 	}
 
@@ -183,7 +183,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 			list($weight, $reason) = self::weightCashflowInvoice($eCashflow, $eInvoice);
 
-			if($weight > 50 and self::countReasons($reason) > self::REASON_MIN) {
+			if($weight > 50) {
 
 				self::createSuggestion(
 					new Suggestion([
