@@ -20,10 +20,6 @@ new Page()
 
 	$eInvoice = \preaccounting\ImportLib::getInvoiceById(POST('id', 'int'));
 
-	if($eInvoice['cashflow']->notEmpty()) {
-		$eInvoice['cashflow'] = \bank\CashflowLib::getById($eInvoice['cashflow']['id']);
-	}
-
 	$eInvoice->validate('acceptAccountingImport');
 
 	$fw = new FailWatch();
@@ -55,6 +51,7 @@ new Page()
 ->post('doImportInvoiceCollection', function($data) {
 
 	$cInvoice = \preaccounting\ImportLib::getInvoicesByIds(POST('ids', 'array'));
+
 	\selling\Invoice::validateBatch($cInvoice);
 
 	\preaccounting\ImportLib::importInvoices($data->eFarm, $cInvoice);

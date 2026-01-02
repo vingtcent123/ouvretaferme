@@ -59,6 +59,7 @@ Class ImportLib {
 	public static function invoiceSelection(): array {
 
 		return \selling\Invoice::getSelection() + [
+			'cashflow' => \bank\Cashflow::getSelection(),
 			'cSale' => \selling\Sale::model()
 				->select([
 					'id',
