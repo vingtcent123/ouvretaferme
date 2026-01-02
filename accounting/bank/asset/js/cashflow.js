@@ -24,12 +24,14 @@ class Cashflow {
 
     }
 
-    static recalculateAmounts(excludeIndex) {
+    static recalculateAmounts(field, excludeIndex) {
 
         const operationNumber = qs('[data-columns]').dataset.columns;
         const id = qs('[data-columns]').getAttribute('id');
 
-        let sum = 0;
+        let sumAmount = 0;
+        let sumAmountIncludingVAT = 0;
+        let sumVatValue = 0;
         for(let index = 0; index < operationNumber; index++) {
 
             if(excludeIndex !== undefined && excludeIndex === index) {
@@ -39,6 +41,9 @@ class Cashflow {
             const targetAmount = qs('[name="amount[' + index + ']"');
             const amount = CalculationField.getValue(targetAmount);
 
+            const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
+            const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
+
             const targetVatValue = Operation.hasVat() ? qs('[name="vatValue[' + index + ']"') : 0;
             const vatValue = Operation.hasVat() ? CalculationField.getValue(targetVatValue) : 0;
 
@@ -46,13 +51,24 @@ class Cashflow {
 
             const amountToAdd = Math.abs(isNaN(amount) ? 0 : amount);
             const vatAmountToAdd = Math.abs(isNaN(vatValue) ? 0 : vatValue);
+            const amountIncludingVATToAdd = Math.abs(isNaN(amountIncludingVAT) ? 0 : amountIncludingVAT);
 
             const totalAmountToAdd = amountToAdd + vatAmountToAdd;
 
-            sum += (type.value === 'credit' ? totalAmountToAdd : totalAmountToAdd * -1);
+            sumAmount += (type.value === 'credit' ? amountToAdd : amountToAdd * -1);
+            sumAmountIncludingVAT += (type.value === 'credit' ? amountIncludingVATToAdd : amountIncludingVATToAdd * -1);
+            sumVatValue += (type.value === 'credit' ? vatAmountToAdd : vatAmountToAdd * -1);
         }
 
-        return round(sum);
+        switch(field) {
+            case 'amount':
+                return round(sumAmount);
+            case 'amountIncludingVAT':
+                return round(sumAmountIncludingVAT);
+            case 'vatValue':
+                return round(sumVatValue);
+        }
+        return round(sumAmountIncludingVAT);
 
     }
 
@@ -61,7 +77,7 @@ class Cashflow {
 
         const totalAmountIncludingVat = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
 
-        const sum = Cashflow.recalculateAmounts(index);
+        const sum = Cashflow.recalculateAmounts('amountIncludingVAT', index);
 
         const missingAmountIncludingVATValue = round(totalAmountIncludingVat - sum);
 
@@ -144,7 +160,7 @@ class Cashflow {
             return;
         }
 
-        const sum = Cashflow.recalculateAmounts(index);
+        const sum = Cashflow.recalculateAmounts('amountIncludingVAT', index);
         // Ce n'est pas la seule écriture : on ne bricole pas automatiquement en cas d'écart de centime.
         if(sum !== 0.0) {
             return;
@@ -183,7 +199,6 @@ class Cashflow {
             return;
         }
 
-        const sum = this.recalculateAmounts();
         const totalAmount = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
         const cashflowType = qs('input[type="hidden"][name="type"]').value;
 
@@ -200,8 +215,8 @@ class Cashflow {
         qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
         qs('.cashflow-create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
 
-        if(sum !== totalAmount) {
-            var difference = round(totalAmount - sum);
+        if(amountIncludingVAT !== totalAmount) {
+            var difference = round(totalAmount - amountIncludingVAT);
             qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.add('danger');
             qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').previousSibling.classList.add('danger');
             qs('#cashflow-allocate-difference-warning').classList.remove('hide');

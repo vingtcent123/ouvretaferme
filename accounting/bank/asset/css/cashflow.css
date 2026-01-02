@@ -126,6 +126,6 @@
 	padding-top: 0.75rem;
 }
 
-#bank-cashflow-allocate div.operation-create-title h3 {
+#bank-cashflow-allocate #operation-create-list {
 	margin-top: 1rem;
 }
