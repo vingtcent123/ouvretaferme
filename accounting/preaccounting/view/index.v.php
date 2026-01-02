@@ -205,7 +205,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$maintitle .= '<h1>'.$navigation.s("Importer les factures").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
 	$t->mainTitle = $maintitle;
 
-		echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->search);
+	echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->search);
 
 });
 
