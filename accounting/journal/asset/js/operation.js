@@ -635,9 +635,7 @@ class Operation {
         const index = e.delegateTarget.getAttribute('data-index');
         const paymentDateElement = e.delegateTarget.firstParent('div.operation-create').qs('[name="paymentDate[' + index + ']"]');
 
-        if(!paymentDateElement.value) {
-            paymentDateElement.setAttribute('value', e.delegateTarget.value);
-        }
+				paymentDateElement.setAttribute('value', e.delegateTarget.value);
 
     }
 
