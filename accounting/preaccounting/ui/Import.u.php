@@ -226,7 +226,7 @@ Class ImportUi {
 							$h .= '<td class="text-end highlight-stick-right invoicing-import-td-operation font-sm td-vertical-align-top">';
 								$amounts = [];
 								foreach($operations as $operation) {
-									$amounts[] = \util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
+									$amounts[] = \util\TextUi::money(abs($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]));
 								}
 								$h .= join ('<br />', $amounts);
 							$h .= '</td>';
