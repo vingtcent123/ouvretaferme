@@ -5,10 +5,6 @@
 	min-height: 20rem;
 }
 
-
-.invoicing-import-table {
-
-}
 .invoicing-import-table tbody:nth-of-type(even) {
 	background-color: var(--background-even);
 }
@@ -33,9 +29,9 @@
 }
 .invoicing-import-table tbody td div.invoicing-import-td-action {
 	display: flex;
-	justify-content: end;
 	gap: 0.5rem;
 	align-items: center;
+	margin-top: 0.5rem;
 }
 .invoicing-import-table tbody td.invoicing-import-td-amount a.util-badge {
 	margin-left: 0.15rem !important;
