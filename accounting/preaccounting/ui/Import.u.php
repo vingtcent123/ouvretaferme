@@ -39,8 +39,9 @@ Class ImportUi {
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Écart de paiement").'</legend>';
 					$h .= $form->select('accountingDifference', [
-						0 => s("Toutes les factures"),
+						NULL => s("Toutes les factures"),
 						1 => s("Factures avec un écart de paiement"),
+						0 => s("Factures sans écart de paiement"),
 					], (int)$search->get('accountingDifference'), ['mandatory' => TRUE]);
 				$h .= '</fieldset>';
 

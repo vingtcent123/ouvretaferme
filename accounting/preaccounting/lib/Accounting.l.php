@@ -270,6 +270,7 @@ Class AccountingLib {
 			->whereAccountingHash(NULL)
 			->whereReadyForAccounting(TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
+			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
 			->count();
 
@@ -315,6 +316,7 @@ Class AccountingLib {
 			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
+			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')))
 			->getCollection();
 
