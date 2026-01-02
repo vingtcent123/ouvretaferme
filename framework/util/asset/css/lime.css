@@ -2092,8 +2092,8 @@ label.btn input:checked + * {
 
 .btn-primary,
 .btn-primary:hover,
-.btn-color-primary:hover,
-.btn-outline-primary:hover {
+.btn-color-primary:not(.btn-readonly):hover,
+.btn-outline-primary:not(.btn-readonly):hover {
 	color: white;
 }
 
@@ -2114,7 +2114,7 @@ label.btn input:checked + * {
 
 .btn-secondary,
 .btn-secondary:hover,
-.btn-outline-secondary:hover {
+.btn-outline-secondary:not(.btn-readonly):hover {
 	color: white;
 }
 
@@ -2151,7 +2151,7 @@ label.btn input:checked + * {
 
 .btn-success,
 .btn-success:hover,
-.btn-outline-success:hover {
+.btn-outline-success:not(.btn-readonly):hover {
 	color: white;
 }
 
@@ -2172,7 +2172,7 @@ label.btn input:checked + * {
 
 .btn-danger,
 .btn-danger:hover,
-.btn-outline-danger:hover {
+.btn-outline-danger:not(.btn-readonly):hover {
 	color: white;
 }
 
@@ -2194,7 +2194,7 @@ label.btn input:checked + * {
 
 .btn-warning,
 .btn-warning:hover,
-.btn-outline-warning:hover {
+.btn-outline-warning:not(.btn-readonly):hover {
 	color: white;
 }
 
@@ -2211,7 +2211,7 @@ label.btn input:checked + * {
 	background: #0003;
 }
 
-.btn-outline-transparent:not(.btn-outline-readonly):hover {
+.btn-outline-transparent:not(.btn-readonly):hover {
 	background: #0005;
 }
 

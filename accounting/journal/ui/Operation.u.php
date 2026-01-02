@@ -1432,7 +1432,7 @@ class OperationUi {
 				$cashflow .= '</tbody>';
 			$cashflow .= '</table>';
 			$cashflow .= '<div class="util-annotation">';
-				$cashflow .= s("Vous ne trouvez pas l'opération que vous cherchez ? Allez <link>voir toutes les opérations bancaires sans écriture</link> et rattachez-y les opérations.", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?status=waiting">']);
+				$cashflow .= s("Vous ne trouvez pas l'opération que vous cherchez ? Essayez de la retrouver en <link>consultant toutes les opérations bancaires sans écriture</link>.", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?status=waiting">']);
 			$cashflow .= '</div>';
 
 		} else {
