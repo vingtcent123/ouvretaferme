@@ -139,17 +139,22 @@ Class PreaccountingUi {
 						$h .= '<td>';
 							$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
 							if($eInvoice['paymentMethod']->empty()) {
+								$h .= $form->openAjax('/selling/invoice:doUpdatePayment', ['id' => 'preaccounting-payment-customer', 'class' => 'flex-justify-space-between']);
+								$h .= $form->hidden('paymentStatus', $eInvoice['paymentStatus'] ?? \selling\Invoice::NOT_PAID);
+								$h .= $form->hidden('id', $eInvoice['id']);
 								$h .= $form->dynamicField($eInvoice, 'paymentMethod', function($d) use($form, $cPaymentMethod, $eInvoice) {
 									$d->values = $cPaymentMethod;
 									$d->default = fn() => $eInvoice['paymentMethod'];
-									$d->attributes['onchange'] = 'Preaccounting.updatePaymentMethod(this);';
 									$d->attributes['onrender'] = '';
+									$d->attributes['onchange'] = '';
 									$d->attributes['data-invoice'] = $eInvoice['id'];
 									$d->attributes['data-payment-status'] = $eInvoice['paymentStatus'];
 									if($eInvoice['paymentMethod']->notEmpty()) {
 										$d->attributes['mandatory'] = TRUE;
 									}
 								});
+								$h .= $form->submit(\Asset::icon('check-lg'), ['class' => 'btn btn-xs btn-outline-secondary', 'title' => s("Enregistrer le moyen de paiement")]);
+								$h .= $form->close();
 							}
 						$h .= '</td>';
 
