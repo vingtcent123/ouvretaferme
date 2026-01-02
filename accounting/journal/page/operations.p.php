@@ -95,9 +95,6 @@ new Page(function($data) {
 		$data->page = GET('page', 'int');
 
 		$data->nUnbalanced = \journal\OperationLib::countUnbalanced($search);
-		if($data->nUnbalanced === 0) {
-			$data->unbalanced = FALSE;
-		}
 
 		if($data->unbalanced === TRUE) {
 

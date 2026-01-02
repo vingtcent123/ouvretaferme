@@ -43,9 +43,14 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 	if($data->unbalanced === TRUE) {
 
 		$nGroup = count(array_unique($data->cOperation->getColumn('hash')));
-		$number = p("Il y a <b>{value}</b> groupe d'écritures déséquilibré.", "Il y a actuellement <b>{value}</b> groupes d'écritures déséquilibrés.", $nGroup);
 
-		echo '<div class="util-block-important">'.s("Vous affichez actuellement tous les groupes d'écritures qui ne sont <b>pas équilibrés</b>.").'<br />'.$number.'</div>';
+		if($nGroup > 0) {
+
+			$number = p("Il y a <b>{value}</b> groupe d'écritures déséquilibré.", "Il y a actuellement <b>{value}</b> groupes d'écritures déséquilibrés.", $nGroup);
+
+			echo '<div class="util-block-important">'.s("Vous affichez actuellement tous les groupes d'écritures qui ne sont <b>pas équilibrés</b>.").'<br />'.$number.'</div>';
+
+		}
 	}
 
 	echo '<div class="tabs-h" id="journals"';
@@ -56,32 +61,39 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFarm['eFinancialYear'], $data->search, $selectedJournalCode, $data->cJournalCode);
 
-		switch($selectedJournalCode) {
+		if($data->unbalanced and $nGroup === 0) {
 
-			case NULL:
-				echo '<div class="tab-panel selected" data-tab="journal">';
-				echo new \journal\JournalUi()->list($data->eFarm, NULL, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
-				echo '</div>';
-				break;
+			echo '<div class="util-success">'.Asset::icon('stars').' '.s("Toutes vos écritures sont équilibrées !<br />").'</div>';
 
-			case 'vat-buy':
-				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-				echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['buy'] ?? new \Collection(), 'buy', $data->search);
-				echo '</div>';
-				break;
+		} else {
 
-			case  'vat-sell':
-				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-				echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['sell'] ?? new \Collection(), 'buy', $data->search);
-				echo '</div>';
-				break;
+			switch($selectedJournalCode) {
 
-			default:
-				echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-				echo new \journal\JournalUi()->list($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
-				echo '</div>';
-				break;
+				case NULL:
+					echo '<div class="tab-panel selected" data-tab="journal">';
+					echo new \journal\JournalUi()->list($data->eFarm, NULL, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
+					echo '</div>';
+					break;
 
+				case 'vat-buy':
+					echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
+					echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['buy'] ?? new \Collection(), 'buy', $data->search);
+					echo '</div>';
+					break;
+
+				case  'vat-sell':
+					echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
+					echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['sell'] ?? new \Collection(), 'buy', $data->search);
+					echo '</div>';
+					break;
+
+				default:
+					echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
+					echo new \journal\JournalUi()->list($data->eFarm, $selectedJournalCode, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
+					echo '</div>';
+					break;
+
+			}
 		}
 
 		echo new \journal\JournalUi()->getBatch($data->eFarm, $data->cPaymentMethod, $data->cJournalCode);
