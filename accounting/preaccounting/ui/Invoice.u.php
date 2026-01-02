@@ -14,20 +14,20 @@ Class InvoiceUi {
 			],
 		);
 
-		$h .= '<div class="util-info">';
-			$h .= p("Vous allez importer <b>{value}</b> facture en comptabilité. Souhaitez-vous continuer ?", "Vous allez importer <b>{value}</b> factures en comptabilité. Souhaitez-vous continuer ?", count(get('ids', 'array')));
+		$h .= '<div class="util-block-important">';
+			$h .= '<p>'.p("Vous allez importer {value} facture en comptabilité.<br/>Souhaitez-vous continuer ?", "Vous allez importer {value} factures en comptabilité.<br/>Souhaitez-vous continuer ?", count(get('ids', 'array'))).'</p>';
+			$h .= $form->submit(s("Importer"), ['data-waiter' => s("Import en cours..."), 'class' => 'btn btn-transparent']);
 		$h .= '</div>';
 		foreach(get('ids', 'array') as $id) {
 			$h .= $form->hidden('ids[]', $id);
 		}
 
-		$h .= $form->group($form->submit(s("Importer"), ['data-waiter' => s("Import en cours...")]));
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-preaccounting-import-invoices',
-			title: p("Importer une facture", "Importer en masse les factures", count(get('ids', 'array'))),
+			title: p("Importer une facture", "Importer en masse des factures", count(get('ids', 'array'))),
 			body: $h,
 		);
 	}
