@@ -310,18 +310,42 @@ class ConfigurationUi {
 			'<div class="util-info">'.s("Ces numéros de compte seront automatiquement attribués aux futures produits que vous créerez.").'</div>'
 		);
 
+
 		foreach($profiles as $key => $profile) {
 
 			$e = new \selling\Product(['farm' => $eFarm]);
-			if(($eConfiguration['profileAccount'][$key] ?? NULL) !== NULL) {
-				$e['privateAccount'] = $cAccount->offsetGet($eConfiguration['profileAccount'][$key]);
+			if(($eConfiguration['profileAccount'][$key]['privateAccount'] ?? '') !== '') {
+				$e['privateAccount'] = $cAccount->offsetGet($eConfiguration['profileAccount'][$key]['privateAccount']);
+			}
+			if(($eConfiguration['profileAccount'][$key]['proAccount'] ?? '') !== '') {
+				$e['proAccount'] = $cAccount->offsetGet($eConfiguration['profileAccount'][$key]['proAccount']);
+				$hasProAccount = TRUE;
+			} else {
+				$hasProAccount = FALSE;
 			}
 
+			$dissociation = '<div class="form-info">'.$form->checkbox('accountDissociation', '1', [
+				'callbackLabel' => fn($input) => $input.' '.s("Dissocier le numéro de compte pour la vente aux particuliers et aux professionnels"),
+				'onclick' => 'Configuration.accountDissociation(this)',
+				'checked' => $hasProAccount
+			]).'</div>';
+
+			$label = $profile.\util\FormUi::info(s("Vente aux clients particuliers"), $hasProAccount ? '' : 'hide');
+
 			$h .= $form->group(
-				$profile,
+				$label,
 				$form->dynamicField($e, 'privateAccount', function($d) use($key, $eConfiguration) {
-					$d->name = 'profileAccount['.$key.']';
-				})
+					$d->name = 'profileAccount['.$key.'][privateAccount]';
+				}).$dissociation
+			);
+
+			$label = $profile.\util\FormUi::info(s("Vente aux clients professionnels"));
+			$h .= $form->group(
+				$label,
+				$form->dynamicField($e, 'proAccount', function($d) use($key, $eConfiguration) {
+					$d->name = 'profileAccount['.$key.'][proAccount]';
+				}),
+				$hasProAccount ? [] : ['class' => 'hide']
 			);
 
 		}

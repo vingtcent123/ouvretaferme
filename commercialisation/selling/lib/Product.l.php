@@ -22,7 +22,12 @@ class ProductLib extends ProductCrud {
 			$eConfiguration = $e['farm']->conf();
 
 			if(isset($eConfiguration['profileAccount'][$e['profile']])) {
-				$e['privateAccount'] = new \account\Account(['id' => $eConfiguration['profileAccount'][$e['profile']]]);
+				if(isset($eConfiguration['profileAccount'][$e['profile']]['privateAccount']) and $eConfiguration['profileAccount'][$e['profile']]['privateAccount'] !== '') {
+					$e['privateAccount'] = new \account\Account(['id' => $eConfiguration['profileAccount'][$e['profile']]['privateAccount']]);
+				}
+				if(isset($eConfiguration['profileAccount'][$e['profile']]['proAccount']) and $eConfiguration['profileAccount'][$e['profile']]['proAccount'] !== '') {
+					$e['proAccount'] = new \account\Account(['id' => $eConfiguration['profileAccount'][$e['profile']]['proAccount']]);
+				}
 			}
 
 		}

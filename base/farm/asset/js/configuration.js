@@ -12,4 +12,25 @@ class Configuration {
 
 	}
 
+	static accountDissociation(target) {
+
+		const proAccountTarget = target.firstParent('.form-group').nextSibling;
+		const specificLabelTarget = target.firstParent('.form-group').qs('label .form-info');
+
+		if(proAccountTarget.classList.contains('hide')) {
+
+			proAccountTarget.removeHide();
+			specificLabelTarget.removeHide();
+
+
+		} else {
+
+			proAccountTarget.hide();
+			specificLabelTarget.hide();
+
+			const element = proAccountTarget.qs(' a[class="autocomplete-empty"]');
+			AutocompleteField.empty(element);
+
+		}
+	}
 }
