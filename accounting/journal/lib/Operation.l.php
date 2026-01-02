@@ -896,6 +896,7 @@ class OperationLib extends OperationCrud {
 
 				}
 
+				// Fait déjà l'ajout dans OperationCashflow
 				$eOperationVat = \journal\OperationLib::createVatOperation(
 					$eOperation,
 					$eAccount,
@@ -906,15 +907,6 @@ class OperationLib extends OperationCrud {
 				);
 
 				$cOperation->append($eOperationVat);
-
-				if($for === 'create' and $isFromCashflow) {
-					$cOperationCashflow->append(new OperationCashflow([
-						'operation' => $eOperationVat,
-						'cashflow' => $eCashflow,
-						'hash' => $hash,
-						'amount' => min($eOperationVat['amount'], abs($eCashflow['amount']))
-					]));
-				}
 
 				$totalAmount += $eOperationVat['type'] === Operation::DEBIT ? $eOperationVat['amount'] : -1 * $eOperationVat['amount'];
 
