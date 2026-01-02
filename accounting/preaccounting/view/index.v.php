@@ -64,7 +64,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		foreach($steps as $step) {
 
-	    echo '<a class="step '.($step['number'] > 0 ? '' : 'step-success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.$t->canonical.'?type='.$step['type'].'">';
+	    echo '<a class="step '.($step['number'] > 0 ? '' : 'step-success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.$t->canonical.'?type='.$step['type'].'&from='.$data->search->get('from').'&to='.$data->search->get('to').'">';
 
 			echo '<div class="step-header">';
 
@@ -97,7 +97,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		}
 
-		echo '<a class="step '.($data->type === 'export' ? 'selected' : '').'" href="'.$t->canonical.'?type=export">';
+		echo '<a class="step '.($data->type === 'export' ? 'selected' : '').'" href="'.$t->canonical.'?type=export&from='.$data->search->get('from').'&to='.$data->search->get('to').'">';
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
