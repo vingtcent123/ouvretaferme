@@ -965,7 +965,6 @@ class OperationUi {
 				$h .=  $form->dynamicField($eOperation, 'document'.$suffix, function($d) use($index) {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-field'] = 'document';
-					$d->attributes['onfocus'] = 'this.select()';
 				});
 			$h .='</div>';
 
