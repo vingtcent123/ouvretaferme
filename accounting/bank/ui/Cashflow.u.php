@@ -351,10 +351,10 @@ class CashflowUi {
 				$confirm = s("Cette action supprimera toutes les écritures liées à l'opération bancaire. Confirmez-vous ?");
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="delete" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
 					$h .= p(
-						"Supprimer <div>(<b><u>Supprimera</u></b> l'écriture)</div>",
-						"Supprimer <div>(<b><u>Supprimera</u></b> les {number} écritures)</div>",
-						$nOperation,
-						['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
+						"Supprimer l'écriture",
+						"Supprimer les {value} écritures",
+						$nOperation
+					);
 				$h .= '</a>';
 
 				$confirm = p(
@@ -363,7 +363,7 @@ class CashflowUi {
 					$nOperation
 				);
 				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="dissociate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$h .= p("Dissocier <div>(Ne supprimera <b><u>pas</u></b> l'écriture)</div>", "Dissocier <div>(Ne supprimera <b><u>pas</u></b> les {number} écritures)</div>", $nOperation, ['number' => $nOperation, 'div' => '<div class="operations-delete-more">']);
+					$h .= p("Dissocier sans supprimer l'écriture", "Dissocier sans supprimer les {value} écritures<br/>de l'opération bancaire", $nOperation);
 				$h .= '</a>';
 
 				$h .= '<div class="dropdown-divider"></div>';
