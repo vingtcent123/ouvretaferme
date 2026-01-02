@@ -68,7 +68,7 @@ class JournalUi {
 
 		\Asset::js('journal', 'operation.js');
 
-		$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL) === TRUE;
+		$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL and $search->get('cashflowFilter') === NULL);
 
 		$h = '<div id="journal-search" class="util-block-search '.($hideSearch ? 'hide' : '').'">';
 
@@ -136,7 +136,7 @@ class JournalUi {
 					$h .= $form->select('cashflowFilter', [
 						1 => s("Avec"),
 						0 => s("Sans"),
-					], $search->get('cashflowFilter'), ['placeholder' => s("Avec ou sans")]);
+					], $search->get('cashflowFilter') === NULL ? '' : (int)$search->get('cashflowFilter'), ['placeholder' => s("Avec ou sans")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Immobilisation").'</legend>';

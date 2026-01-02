@@ -1619,8 +1619,7 @@ class OperationLib extends OperationCrud {
 		$hash = $eCashflow['hash'];
 		$eCashflow['hash'] = NULL;
 		$eCashflow['status'] = \bank\Cashflow::WAITING;
-		\bank\Cashflow::model()
-			->update($eCashflow, $eCashflow->extracts(['hash', 'status']));
+		\bank\Cashflow::model()->update($eCashflow, $eCashflow->extracts(['hash', 'status']));
 
 		if($eCashflow['invoice']->notEmpty()) {
 			$eInvoice = \selling\InvoiceLib::getById($eCashflow['invoice']['id']);
