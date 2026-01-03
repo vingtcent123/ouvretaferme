@@ -1463,6 +1463,7 @@ class OperationLib extends OperationCrud {
 	public static function unlinkCashflow(\bank\Cashflow $eCashflow, string $action): void {
 
 		$cCashflow = \bank\Cashflow::model()
+			->select(\bank\Cashflow::getSelection())
 			->whereHash(($eCashflow['hash']))
 			->getCollection();
 

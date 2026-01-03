@@ -195,7 +195,7 @@ new \bank\CashflowPage()
 
 	\journal\OperationLib::unlinkCashflow($data->e, $action);
 
-	throw new ReloadAction('bank', 'Cashflow::deallocated');
+	throw new ReloadAction('bank', 'Cashflow::deallocated.'.$action);
 
 }, validate: ['acceptDeallocate'])
 ->write('doDelete', function($data) {
