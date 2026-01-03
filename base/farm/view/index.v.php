@@ -90,6 +90,7 @@ new AdaptativeView('/ferme/{id}/taches/{week}/{action}', function($data, FarmTem
 
 	$t->title = $data->eAction['name'];
 	$t->nav = 'planning';
+	$t->subNav = $data->eFarm->getView('viewPlanning');
 
 	$t->mainTitle = new \series\TaskUi()->displayByActionTitle($data->eFarm, $data->week, $data->eAction);
 	echo new \series\TaskUi()->displayByAction($data->eFarm, $data->week, $data->eAction, $data->cTask);
