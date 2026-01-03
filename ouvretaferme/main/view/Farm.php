@@ -280,7 +280,7 @@ class FarmTemplate extends MainTemplate {
 						$farm .= '<div class="nav-title-member">';
 
 							$farm .= '<a class="nav-title-member-link" data-dropdown="bottom" data-dropdown-hover="true">';
-								if($this->data->eFarm['quality'] === \farm\Farm::NO) {
+								if(\association\AssociationSetting::isDiscount($this->data->eFarm) === FALSE) {
 									$farm .= s("Adhérer à {value}", $icon);
 								} else {
 									$farm .= s("Soutenir {value}", $icon);
@@ -295,12 +295,9 @@ class FarmTemplate extends MainTemplate {
 								$farm .= '<a href="'.\association\AssociationSetting::URL.'/nous-soutenir" target="_blank" class="dropdown-item">'.s("Pourquoi soutenir l'association ?").'</a>';
 								$farm .= '<div class="dropdown-divider"></div>';
 								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill').'  ';
-								$farm .= match($this->data->eFarm['quality']) {
-
-									\farm\Farm::NO => s("Adhérer à l'association"),
-									default => s("Adhérer pour seulement {value} €", \association\AssociationSetting::getFee($this->data->eFarm))
-
-								};
+								$farm .= \association\AssociationSetting::isDiscount($this->data->eFarm) ?
+									s("Adhérer pour seulement {value} €", \association\AssociationSetting::getFee($this->data->eFarm)) :
+									s("Adhérer à l'association");
 								$farm .= '</a>';
 
 							$farm .= '</div>';

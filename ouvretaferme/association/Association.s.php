@@ -8,13 +8,12 @@ class AssociationSetting extends \Settings {
 	const FARM = 1608;
 
 	public static function getFee(\farm\Farm $eFarm): int {
+		return self::isDiscount($eFarm) ? AssociationSetting::MEMBERSHIP_FEE_DISCOUNT : AssociationSetting::MEMBERSHIP_FEE_FULL;
+	}
 
-		return match($eFarm['quality']) {
+	public static function isDiscount(\farm\Farm $eFarm): int {
 
-			\farm\Farm::NO => AssociationSetting::MEMBERSHIP_FEE_FULL,
-			default => AssociationSetting::MEMBERSHIP_FEE_DISCOUNT
-
-		};
+		return ($eFarm['quality'] !== \farm\Farm::NO);
 
 	}
 

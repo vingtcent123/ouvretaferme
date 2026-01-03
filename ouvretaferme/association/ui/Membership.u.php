@@ -158,7 +158,7 @@ class MembershipUi {
 			$h .= '</p>';
 
 			$h .= '<p>';
-				$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b>. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);
+				$h .= s("Vous pouvez choisir le montant de votre adhésion, le montant minimum pour une année civile étant de <b>{amount}</b> pour votre ferme. Le règlement s'effectue par un paiement en ligne avec {icon} Stripe après sélection du montant et acceptation des statuts et du règlement intérieur.", ['icon' => \Asset::icon('stripe'), 'amount' => \util\TextUi::money($fee, precision: 0)]);
 			$h .= '</p>';
 
 			$h .= '<p>';

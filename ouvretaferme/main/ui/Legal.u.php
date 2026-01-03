@@ -215,5 +215,148 @@ class LegalUi {
 		return $h;
 	}
 
+	public function friends(bool $isDiscount) : string {
+
+		$h = '<div class="util-block util-overflow-sm">';
+		$h .= '<table style="font-size: 1.2rem" class="tr-bordered">';
+			$h .= '<thead>';
+				$h .= '<tr>';
+					$h .= '<th></th>';
+					$h .= '<th>'.s("Logiciel").'</th>';
+					$h .= '<th>'.s("Tarif annuel").'</th>';
+					$h .= '<th></th>';
+					$h .= '<th></th>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+			$h .= '<tbody>';
+				$h .= '<tr>';
+					$h .= '<td rowspan="3">';
+						$h .= '<span class="util-circle util-circle-lg bg-production mr-1">'.\Asset::icon('leaf').'</span>';
+						$h .= s("Production");
+					$h .= '</td>';
+					$h .= '<td>Elzeard</td>';
+					$h .= '<td>330 - 990 €</td>';
+					$h .= '<td rowspan="12" class="text-center bg-background" style="font-size: 1.5rem; font-weight: bold">Ouvretaferme</td>';
+					if($isDiscount) {
+						$h .= '<td rowspan="7" class="text-center" style="font-size: 1.5rem; font-weight: bold">0 €</td>';
+					} else {
+						$h .= '<td rowspan="11" class="text-center" style="font-size: 1.5rem; font-weight: bold">'.\association\AssociationSetting::MEMBERSHIP_FEE_FULL.' €</td>';
+					}
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>Brinjel</td>';
+					$h .= '<td>50 - 300 €</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>Permatechnics</td>';
+					$h .= '<td>220 - 494 €</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td rowspan="4">';
+						$h .= '<span class="util-circle util-circle-lg bg-commercialisation mr-1">'.\Asset::icon('basket3').'</span>';
+						$h .= s("Commercialisation");
+					$h .= '</td>';
+					$h .= '<td>Socleo</td>';
+					$h .= '<td>Minimum 360 €</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>Kuupanda</td>';
+					$h .= '<td>420 – 1500 €</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>Ciboulette</td>';
+					$h .= '<td>2 % des ventes (60 – 480 €)</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>Cagette</td>';
+					$h .= '<td>2 à 6 % des ventes (max 1400 €)</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td rowspan="3">';
+						$h .= '<span class="util-circle util-circle-lg bg-production mr-1">'.\Asset::icon('bank').'</span>';
+						$h .= s("Comptabilité");
+					$h .= '</td>';
+					$h .= '<td>Isagri</td>';
+					$h .= '<td>420 - 1000 € et plus</td>';
+					if($isDiscount) {
+						$h .= '<td rowspan="4" class="text-center" style="font-size: 1.5rem; font-weight: bold">'.\association\AssociationSetting::MEMBERSHIP_FEE_DISCOUNT.' €</td>';
+					}
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>Macompta</td>';
+					$h .= '<td>159 €</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>Istea</td>';
+					$h .= '<td>320 €</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td rowspan="2">';
+						$h .= '<span class="util-circle util-circle-lg bg-private mr-1">'.\Asset::icon('receipt').'</span>';
+						$h .= s("Facturation électronique");
+					$h .= '</td>';
+					$h .= '<td>Votre banque</td>';
+					$h .= '<td>100 - 300 €</td>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+		$h .= '</table>';
+		$h .= '</div>';
+		
+		return $h;
+		
+	}
+
+	public function membership() : string {
+
+		$arguments = ['sale' => '<b class="color-commercialisation">', 'production' => '<b class="color-production">', 'accounting' => '<b class="color-accounting">'];
+
+		$h = '<h2>'.s("Utilisation du logiciel").'</h2>';
+
+		$h .= '<div class="home-features home-features-2 mb-1">';
+			$h .= '<div class="home-feature"><h4>'.s("Agriculture biologique").'</h4><div>'.s("Utilisation gratuite pour les modules <sale>VENTE</sale> et de <production>PRODUCTION</production> et soumise à l'adhésion à l'association pour {fee} € pour le module <accounting>COMPTABILITÉ</accounting>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_DISCOUNT]).'</div></div>';
+			$h .= '<div class="home-feature"><h4>'.s("Agriculture conventionnelle").'</h4><div>'.s("Utilisation soumise à l'adhésion à l'association pour {fee} € après une période d'essai gratuite de 6 mois pour les modules <sale>VENTE</sale> et de <production>PRODUCTION</production>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_FULL]).'</div></div>';
+		$h .= '</div>';
+		$h .= '<div>'.s("L'utilisation gratuite du module de <production>PRODUCTION</production> uniquement est gratuite pour les particuliers ou les établissements scolaires.", $arguments).'</div>';
+
+		$h .= '<br/>';
+		$h .= '<br/>';
+
+		$h .= '<h2>'.s("Pourquoi le logiciel est-il aussi accessible ?").'</h2>';
+
+		$h .= '<div class="home-category">';
+
+			$h .= '<ul>';
+				$h .= '<li>'.s("Nous sommes une association et nous n'avons pas de pression commerciale").'</li>';
+				$h .= '<li>'.s("Nous sommes bénévoles").'</a></li>';
+			$h .= '</ul>';
+
+		$h .= '</div>';
+
+		$h .= '<br/>';
+		$h .= '<br/>';
+
+		$h .= '<h2>'.s("Vous n'êtes pas tout à fait convaincu ?").'</h2>';
+		$h .= '<p>'.s("Alors jetez un oeil au tableau ci-dessous pour mesurer le coût réel des services équivalents si Ouvretaferme n'existait pas.").'</p>';
+
+		$h .= '<div class="tabs-h mt-2">';
+
+			$h .= '<div class="tabs-item">';
+				$h .= '<a class="tab-item selected" data-tab="legal-organic"  onclick="Lime.Tab.select(this)">'.s("Agriculture biologique").'</a>';
+				$h .= '<a class="tab-item" data-tab="legal-other"  onclick="Lime.Tab.select(this)">'.s("Agriculture conventionnelle").'</a>';
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel selected" data-tab="legal-organic">';
+				$h .= $this->friends(TRUE);
+			$h .= '</div>';
+
+			$h .= '<div class="tab-panel selected" data-tab="legal-other">';
+				$h .= $this->friends(FALSE);
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
 }
 ?>

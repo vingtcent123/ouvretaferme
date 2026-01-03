@@ -12,8 +12,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 		$t->header .= '<h4 class="home-feature-title">'.s("intuitif et facile à utiliser au bureau comme sur le terrain").'</h4>';
 	$t->header .= '</div>';
 
-	echo '<div class="home-features home-features-overlay home-features-3">';
-
+	echo '<div class="home-features home-overlay home-features-3">';
 
 		echo '<div class="home-feature">';
 
@@ -509,7 +508,15 @@ new AdaptativeView('/presentation/adhesion', function($data, MainTemplate $t) {
 
 	Asset::css('main', 'home.css');
 
-	$t->header = '<h1>'.s("Adhésion à l'association Ouvretaferme").'</h1>';
+	$t->header = '<div>';
+		$t->header .= '<h4 class="home-domain">'.Lime::getName().'</h4>';
+		$t->header .= '<h1>'.s("L'association").'</h1>';
+		$t->header .= '<h4>'.s("Nous éditons un logiciel conçu pour organiser le travail à la ferme de la production à la vente.").'</h4>';
+		$t->header .= '<div class="text-center mt-2">';
+			$t->header .= '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-transparent btn-xl">'.s("Découvrir l'association").'</a>  ';
+			$t->header .= '<a href="/presentation/producteur" class="btn btn-transparent btn-xl">'.s("Liste des fonctionnalités").'</a>';
+		$t->header .= '</div>';
+	$t->header .= '</div>';
 
 	echo new \main\LegalUi()->membership();
 

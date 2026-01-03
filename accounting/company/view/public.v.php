@@ -36,12 +36,9 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 		echo '<div class="util-association">';
 			echo '<h4>'.s("Le module de comptabilité est accessible pour les fermes qui ont choisi de soutenir le projet Ouvretaferme en ayant adhéré à notre association.").'</h4>';
 			echo '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="btn btn-primary btn-xl">';
-				echo match($this->data->eFarm['quality']) {
-
-					\farm\Farm::NO => s("Adhérer à l'association"),
-					default => s("Adhérer à l'association pour seulement {value} €", \association\AssociationSetting::getFee($this->data->eFarm))
-
-				};
+				echo \association\AssociationSetting::isDiscount($this->data->eFarm) ?
+					s("Adhérer à l'association pour seulement {value} €", \association\AssociationSetting::getFee($this->data->eFarm)) :
+					s("Adhérer à l'association");
 			echo '</a> ';
 			echo '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-outline-primary btn-xl">'.s("Découvrir l'association").'</a>';
 		echo '</div>';

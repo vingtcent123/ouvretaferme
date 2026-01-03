@@ -1225,7 +1225,7 @@ class SaleUi {
 		$h .= '<h3>'.s("Modèle des étiquettes").'</h3>';
 
 		$h .= '<div class="selling-label-example">';
-			$h .= new PdfUi()->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
+			$h .= new PdfUi()->getLabel($eFarm, new Customer(), $eFarm['quality']);
 		$h .= '</div>';
 
 		$form = new \util\FormUi();

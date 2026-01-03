@@ -56,7 +56,7 @@ class PdfUi {
 						$quantity = $eItem['number'];
 					}
 
-					$items[] = $this->getLabel($eFarm, $eSale['customer'], $eItem['name'], $eItem['product']['quality'], $eItem['additional'], $quantity, $eItem['unit']);
+					$items[] = $this->getLabel($eFarm, $eSale['customer'], $eItem['product']['quality'], $eItem['name'], $eItem['additional'], $quantity, $eItem['unit']);
 
 
 				}
@@ -80,7 +80,7 @@ class PdfUi {
 		if($complete) {
 
 			for($i = $modulo; $i < $itemsPerPage; $i++) {
-				$items[] = $this->getLabel($eFarm, new Customer(), quality: $eFarm['quality']);
+				$items[] = $this->getLabel($eFarm, new Customer(), $eFarm['quality']);
 			}
 
 		}
@@ -124,7 +124,7 @@ class PdfUi {
 
 	}
 
-	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, string $quality = NULL, ?string $additional = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
+	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, string $quality, ?string $name = NULL, ?string $additional = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
 
 		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
 		$colorCustomer = ($eCustomer->notEmpty() and $eCustomer['color']);
