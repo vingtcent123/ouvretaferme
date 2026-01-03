@@ -210,7 +210,7 @@ class OperationLib extends OperationCrud {
 
 		return self::applySearch($search)
 			->select(
-				Operation::getSelection()
+				['id', 'date', 'document', 'description', 'type', 'amount']
 				+ ['thirdParty' => ['name']]
 				+ ['class' => new \Sql('SUBSTRING(IF(accountLabel IS NULL, m2.class, accountLabel), 1, 3)')]
 				+ ['accountLabel' => new \Sql('IF(accountLabel IS NULL, RPAD(m2.class, 8, "0"), accountLabel)')]
