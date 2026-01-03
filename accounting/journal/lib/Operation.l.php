@@ -699,7 +699,7 @@ class OperationLib extends OperationCrud {
 					$eOperation['journalCode'] = $cAccounts->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
 			}
 
-			foreach(['document', 'documentDate', 'thirdParty', 'journalCode'] + ($for === 'create' ? ['date'] : []) as $property) {
+			foreach(['document', 'documentDate', 'thirdParty', 'journalCode'] + ($for === 'create' ? ['date', 'paymentMethod'] : []) as $property) {
 				if(($eOperationDefault[$property] ?? NULL) === NULL) {
 					$eOperationDefault[$property] = $eOperation[$property];
 				}
@@ -1060,7 +1060,7 @@ class OperationLib extends OperationCrud {
 		if($for === 'create') {
 			$values['date'] = $eOperationLinked['date'];
 			$values['paymentDate'] = $eOperationLinked['paymentDate'];
-			$values['paymentMethod'] = $eOperationLinked['paymentMethod'];
+			$values['paymentMethod'] = $eOperationLinked['paymentMethod']['id'] ?? NULL;
 		}
 
 		$eOperationVat = new Operation();
@@ -1380,7 +1380,7 @@ class OperationLib extends OperationCrud {
 			'accountLabel' => $label,
 			'description' => $eCashflow['memo'],
 			'document' => $document,
-			'documentDate' => $eOperation['documentDate'] ?? $eCashflow['date'],
+			'documentDate' => $eOperation['documentDate'],
 			'thirdParty' => $eThirdParty['id'] ?? NULL,
 			'type' => ($eCashflow['amount'] > 0 ? Operation::DEBIT : Operation::CREDIT),
 			'amount' => abs($eCashflow['amount']),

@@ -110,6 +110,7 @@ new \bank\CashflowPage()
 
 		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation([
 			'paymentDate' => $data->e['date'],
+			'paymentMethod' => POST('paymentMethod', 'payment\Method'),
 		]), eCashflow: $data->e);
 
 		if($cOperation->empty() === TRUE) {
