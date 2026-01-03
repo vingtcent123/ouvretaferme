@@ -1689,27 +1689,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	protected static function checkSelectedOperationsForBatch(\Collection $cOperation): bool {
-
-		// On vérifie que toute les opérations liées sont aussi dans la liste
-		$cOperationLinked = Operation::model()
-			->select('id')
-			->whereOperation('IN', $cOperation->getIds())
-			->getCollection();
-
-		if(array_diff($cOperationLinked->getIds(), $cOperation->getIds())) {
-			\Fail::log('Operation::selectedOperationInconsistency');
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
 	public static function updateJournalCodeCollection(\Collection $cOperation, JournalCode $eJournalCode): void {
-
-		if(self::checkSelectedOperationsForBatch($cOperation) === FALSE) {
-			return;
-		}
 
 		$cJournalCode = JournalCodeLib::getAll();
 
@@ -1720,15 +1700,11 @@ class OperationLib extends OperationCrud {
 
 		Operation::model()
 			->select(['journalCode'])
-			->whereId('IN', $cOperation->getIds())
+			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
 			->update(['journalCode' => $eJournalCode]);
 	}
 
 	public static function updateCommentCollection(\Collection $cOperation, ?string $comment): void {
-
-		if(self::checkSelectedOperationsForBatch($cOperation) === FALSE) {
-			return;
-		}
 
 		if($comment === "") {
 			$comment = NULL;
@@ -1736,15 +1712,11 @@ class OperationLib extends OperationCrud {
 
 		Operation::model()
 			->select(['comment'])
-			->whereId('IN', $cOperation->getIds())
+			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
 			->update(new Operation(['comment' => $comment]));
 	}
 
 	public static function updateDocumentCollection(\Collection $cOperation, ?string $document): void {
-
-		if(self::checkSelectedOperationsForBatch($cOperation) === FALSE) {
-			return;
-		}
 
 		if($document === "") {
 			$document = NULL;
@@ -1758,13 +1730,9 @@ class OperationLib extends OperationCrud {
 
 	public static function updatePaymentMethodCollection(\Collection $cOperation, \payment\Method $ePaymentMethod): void {
 
-		if(self::checkSelectedOperationsForBatch($cOperation) === FALSE) {
-			return;
-		}
-
 		Operation::model()
 			->select(['paymentMethod'])
-			->whereId('IN', $cOperation->getIds())
+			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
 			->update(new Operation(['paymentMethod' => $ePaymentMethod]));
 
 	}

@@ -38,7 +38,6 @@ class AlertUi {
 
 			'Operation::FinancialYear.notUpdatable' => s("Il n'est plus possible d'écrire dans cet exercice comptable."),
 
-			'Operation::selectedOperationInconsistency' => s("Les opérations sélectionnées ne sont pas cohérentes, veuillez rafraîchir la page et recommencer."),
 			'Operation::selectedJournalCodeInconsistency' => s("Un problème technique est survenu avec le journal choisi. Veuillez rafraîchir la page et recommencer."),
 
 			'Operation::typeProduitCharge.inconsistent' => s("Il n'est pas possible d'avoir en même temps une écriture de charge et une écriture de produit. Réalisez deux écritures séparément."),
