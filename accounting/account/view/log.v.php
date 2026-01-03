@@ -8,7 +8,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \account\LogUi()->getTitle($data->eFarm);
 
-	echo new \account\LogUi()->getManage($data->eFarm, $data->cLog, $data->page, $data->nLog);
+	echo new \account\LogUi()->list($data->eFarm, $data->cLog, $data->page, $data->nLog);
 
 });
 ?>

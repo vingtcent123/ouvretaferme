@@ -22,7 +22,7 @@ class LogUi {
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cLog, int $page, int $nLog): string {
+	public function list(\farm\Farm $eFarm, \Collection $cLog, int $page, int $nLog): string {
 
 		if($cLog->empty()) {
 			return '<div class="util-info">'.s("Il n'y a encore aucune activité à afficher sur votre compte.").'</div>';
@@ -82,7 +82,6 @@ class LogUi {
 
 	public function getAction(string $action, string $element, array $params): array {
 
-		// TODO DEFERRAL, letter
 		return match(strtolower($element)) {
 			'financialyear' => [s("Exercice comptable"), $this->getFinancialYearAction($action, $params)],
 			'operation' => [s("Écriture"), $this->getOperationAction($action, $params)],
@@ -91,9 +90,10 @@ class LogUi {
 			'cashflow' => [s("Flux bancaire"), $this->getCashflowAction($action, $params)],
 			'deferral' => [s("CCA / PCA"), $this->getDeferralAction($action, $params)],
 			'superpdp' => [s("Factures électroniques"), $this->getSuperPdpAction($action, $params)],
-			'sales' => [s("Ventes", $this->getSalesAction($action, $params))],
-			'invoice' => [s("Factures", $this->getInvoiceAction($action, $params))],
+			'sales' => [s("Ventes"), $this->getSalesAction($action, $params)],
+			'invoice' => [s("Factures"), $this->getInvoiceAction($action, $params)],
 			'market' => [s("Marchés", $this->getMarketAction($action, $params))],
+			default => throw new \Exception("unknown"),
 		};
 
 	}
