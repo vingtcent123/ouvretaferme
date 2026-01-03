@@ -334,7 +334,7 @@ class JournalUi {
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 
 						if($selectedJournalCode === NULL and $readonly === FALSE) {
-							$h .= '<th></th>';
+							$h .= '<th class="td-min-content"></th>';
 						}
 
 						$h .= '<th>'.s("Libellé").'</th>';
