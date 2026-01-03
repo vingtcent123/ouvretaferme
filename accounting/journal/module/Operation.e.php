@@ -235,7 +235,7 @@ class Operation extends OperationElement {
 
 				return $paymentDate !== NULL;
 			})
-			->setCallback('paymentMethod.empty', function(?string $paymentDate): bool {
+			->setCallback('paymentMethod.empty', function(\payment\Method $ePaymentMethod): bool {
 
 				$this->expects(['financialYear']);
 
@@ -243,7 +243,7 @@ class Operation extends OperationElement {
 					return TRUE;
 				}
 
-				return $paymentDate !== NULL;
+				return $ePaymentMethod->notEmpty();
 			})
 			->setCallback('invoice.check', function(?\selling\Invoice $eInvoice) use($input): bool {
 

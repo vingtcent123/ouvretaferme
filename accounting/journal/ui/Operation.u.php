@@ -953,7 +953,6 @@ class OperationUi {
 						'paymentMethod'.$suffix,
 						$cPaymentMethod,
 						$defaultValues['paymentMethod'] ?? '',
-						['mandatory' => $eFinancialYear->isCashAccounting()],
 					);
 				$h .= '</div>';
 

@@ -587,7 +587,10 @@ class Operation {
         }
 
         if(typeof Cashflow !== 'undefined') {
-            Cashflow.checkValidationValues();
+					Cashflow.checkValidationValues();
+					const checkedAmountContainer = qs('[data-check-amount="1"][data-index="' + index + '"]');
+					checkedAmountContainer.classList.remove('btn-warning');
+					checkedAmountContainer.qs('[class="operation-amount-check-legend"]').innerHTML = checkedAmountContainer.qs('[class="operation-amount-check-legend"]').dataset.legendVerified
         }
 
         const targetAmount = qs('[name="amount[' + index + ']"');
@@ -605,10 +608,6 @@ class Operation {
             return;
         }
 
-				const checkedAmountContainer = qs('[data-check-amount="1"][data-index="' + index + '"]');
-				checkedAmountContainer.classList.remove('btn-warning');
-				checkedAmountContainer.qs('[class="operation-amount-check-legend"]').innerHTML = checkedAmountContainer.qs('[class="operation-amount-check-legend"]').dataset.legendVerified
-
         const expectedVatValue = round(amount * vatRate / 100);
 				const expectedVatValueFromAmounts = round(amountIncludingVAT - amount)
 
@@ -619,7 +618,7 @@ class Operation {
 					if(typeof Cashflow !== 'undefined') {
 						Cashflow.vatWarning(true);
 					}
-				} else if(Math.abs(round(vatValue - expectedVatValueFromAmounts)) > 0.01) {
+				} else if(typeof Cashflow !== 'undefined' && Math.abs(round(vatValue - expectedVatValueFromAmounts)) > 0.01) {
 					checkedAmountContainer.classList.add('btn-warning');
 					checkedAmountContainer.qs('[class="operation-amount-check-legend"]').innerHTML = checkedAmountContainer.qs('[class="operation-amount-check-legend"]').dataset.legendInconsistency;
         } else {
