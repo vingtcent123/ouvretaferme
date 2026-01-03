@@ -58,9 +58,9 @@ Class ImportUi {
 
 		if($nInvoice === 0) {
 
-			if($search->empty()) {
+			if($search->empty(['from', 'to'])) {
 
-				$h .= '<div class="util-empty">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite">']).'</div>';
+				$h .= '<div class="util-empty">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link> ?", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite">']).'</div>';
 
 			} else {
 

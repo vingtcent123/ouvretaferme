@@ -15,14 +15,15 @@ Class ImportLib {
 		$cInvoice = AccountingLib::applyInvoiceFilter($eFarm, $search)
 			->select([
 				'id', 'document', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
-				'date', 'accountingHash', 'cashflow', 'farm', 'accountingDifference',
+				'date', 'accountingHash', 'farm', 'accountingDifference',
 				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat',
-				'readyForAccounting', 'accountingDifference'
+				'readyForAccounting', 'accountingDifference',
+				'cashflow' => \bank\Cashflow::getSelection()
 			])
 			->whereReadyForAccounting(TRUE)
 			->whereAccountingHash('=', NULL)
 			->where(new \Sql('m1.name IN ("'.$nameFilter.'")'), if: mb_strlen($nameFilter) > 0)
-			->sort(['date' => SORT_ASC])
+			->sort(['m1.date' => SORT_ASC])
 			->getCollection(NULL, NULL, 'name');
 
 		$cCashflow = \bank\CashflowLib::getByIds($cInvoice->getColumnCollection('cashflow')->getIds(), index: 'id');
@@ -93,9 +94,11 @@ Class ImportLib {
 
 	public static function importInvoices(\farm\Farm $eFarm, \Collection $cInvoice): void {
 
+		$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
+
 		foreach($cInvoice as $eInvoice) {
 
-			self::importInvoice($eFarm, $eInvoice);
+			self::importInvoice($eFarm, $eInvoice, $cFinancialYear);
 
 		}
 
@@ -114,11 +117,6 @@ Class ImportLib {
 		}
 
 		$fw->validate();
-
-		// On regarde s'il y a eu un rapprochement => pour créer la contrepartie en banque
-		if($eInvoice['cashflow']->notEmpty()) {
-			$eInvoice['cashflow'] = \bank\CashflowLib::getById($eInvoice['cashflow']['id']);
-		}
 
 		$cAccount = \account\AccountLib::getAll();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
@@ -141,10 +139,7 @@ Class ImportLib {
 
 		\selling\Invoice::model()->update($eInvoice, ['accountingHash' => $hash]);
 		\selling\Sale::model()->whereInvoice($eInvoice)->update(['accountingHash' => $hash]);
-
-		if($eInvoice['cashflow']->notEmpty()) {
-			\bank\Cashflow::model()->update($eInvoice['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
-		}
+		\bank\Cashflow::model()->update($eInvoice['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
 
 		\journal\Operation::model()->commit();
 
@@ -257,6 +252,7 @@ Class ImportLib {
 				'paymentMethod' => $ePaymentMethod,
 			]));
 
+			// On essaie de rattacher les opérations liées (type TVA) à leurs copines
 			if(strpos($data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER], '-') !== FALSE) {
 				list($currentNumber, $number) = array_map('intval', explode('-', $data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER]));
 				if($cOperation->offsetExists($number)) {

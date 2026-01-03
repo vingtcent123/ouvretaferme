@@ -24,7 +24,8 @@ new Page()
 
 	$fw = new FailWatch();
 
-	\preaccounting\ImportLib::importInvoice($data->eFarm, $eInvoice);
+	$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
+	\preaccounting\ImportLib::importInvoice($data->eFarm, $eInvoice, $cFinancialYear);
 
 	$fw->validate();
 
@@ -52,7 +53,7 @@ new Page()
 
 	$cInvoice = \preaccounting\ImportLib::getInvoicesByIds(POST('ids', 'array'));
 
-	\selling\Invoice::validateBatch($cInvoice);
+	\selling\Invoice::validateBatchImport($cInvoice);
 
 	\preaccounting\ImportLib::importInvoices($data->eFarm, $cInvoice);
 
@@ -65,7 +66,7 @@ new Page()
 
 	$cInvoice = \selling\InvoiceLib::getByIds(POST('ids', 'array'))->validate('acceptAccountingIgnore');
 
-	\selling\Invoice::validateBatch($cInvoice);
+	\selling\Invoice::validateBatchIgnore($cInvoice);
 	\preaccounting\ImportLib::ignoreInvoices($cInvoice);
 
 	\account\LogLib::save('ignoreSeveral', 'Invoice', ['ids' => $cInvoice->getIds()]);

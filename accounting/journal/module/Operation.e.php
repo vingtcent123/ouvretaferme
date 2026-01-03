@@ -74,7 +74,7 @@ class Operation extends OperationElement {
 		$this->expects(['date', 'financialYear', 'hash']);
 
 		return
-			\account\FinancialYearLib::isDateInOpenFinancialYear($this['date']) and
+			\account\FinancialYearLib::isDateInOpenFinancialYear($this['date'])->notEmpty() and
 			$this['financialYear']->canUpdate() and
 			$this['hash'] !== NULL;
 	}

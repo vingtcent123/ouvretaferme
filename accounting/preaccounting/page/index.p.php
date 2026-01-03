@@ -200,13 +200,10 @@ new Page(function($data) {
 			'type' => GET('type'),
 			'reconciliated' => GET('reconciliated', '?bool'),
 			'accountingDifference' => GET('accountingDifference', '?bool'),
-			'customer' => \selling\CustomerLib::getById(GET('customer'))
+			'customer' => \selling\CustomerLib::getById(GET('customer')),
+			'from' => $data->eFarm['eFinancialYear']['startDate'],
+			'to' => $data->eFarm['eFinancialYear']['endDate'],
 		]);
-
-		if(($data->eFarm['eFinancialYear']['accountingType'] ?? NULL) !== \account\FinancialYear::CASH) {
-			$data->search->set('from', $data->eFarm['eFinancialYear']['startDate']);
-			$data->search->set('to', $data->eFarm['eFinancialYear']['endDate']);
-		}
 
 		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
 
