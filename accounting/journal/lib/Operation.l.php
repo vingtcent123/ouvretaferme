@@ -1092,7 +1092,10 @@ class OperationLib extends OperationCrud {
 				->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperationVat->getArrayCopy())))
 				->whereId($defaultValues['id'])
 				->update($eOperationVat);
-			$eOperationVat['id'] = $defaultValues['id'];
+			$eOperationVat = Operation::model()
+				->select(Operation::getSelection())
+				->whereId($defaultValues['id'])
+				->get();
 
 		}
 

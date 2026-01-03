@@ -10,9 +10,6 @@ abstract class OperationElement extends \Element {
 	const DEBIT = 'debit';
 	const CREDIT = 'credit';
 
-	const PARTIAL = 'partial';
-	const TOTAL = 'total';
-
 	public static function getSelection(): array {
 		return Operation::model()->getProperties();
 	}
@@ -69,14 +66,13 @@ class OperationModel extends \ModuleModel {
 			'comment' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'letteringStatus' => ['enum', [\journal\Operation::PARTIAL, \journal\Operation::TOTAL], 'null' => TRUE, 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'letteringStatus', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -131,9 +127,6 @@ class OperationModel extends \ModuleModel {
 		switch($property) {
 
 			case 'type' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'letteringStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -241,10 +234,6 @@ class OperationModel extends \ModuleModel {
 
 	public function wherePaymentMethod(...$data): OperationModel {
 		return $this->where('paymentMethod', ...$data);
-	}
-
-	public function whereLetteringStatus(...$data): OperationModel {
-		return $this->where('letteringStatus', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): OperationModel {
