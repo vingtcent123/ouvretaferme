@@ -10,6 +10,30 @@ Class PreaccountingUi {
 
 	}
 
+	public function summarize(int $nInvoice, int $nSale): string {
+
+		$h = '<ul class="util-summarize">';
+
+			$h .= '<li>';
+				$h .= '<div>';
+					$h .= '<h5>'.p("Vente", "Ventes", $nSale).'</h5>';
+					$h .= '<div>'.$nSale.'</div>';
+				$h .= '</div>';
+			$h .= '</li>';
+
+			$h .= '<li>';
+				$h .= '<div>';
+					$h .= '<h5>'.p("Facture", "Factures", $nInvoice).'</h5>';
+					$h .= '<div>'.$nInvoice.'</div>';
+				$h .= '</div>';
+			$h .= '</li>';
+
+		$h .= '</ul>';
+
+		return $h;
+
+	}
+
 	public function getSearch(\farm\Farm $eFarm, \Search $search, string $type, bool $hasOperations = FALSE): string {
 
 		$h = '<div class="util-block-search">';

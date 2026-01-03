@@ -12,7 +12,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 
 	echo new \bank\CashflowUi()->getReconciliateInfo($data->eFarm, $data->eImportCurrent);
 
-	echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nSuggestion);
+	echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nSuggestion, $data->cCashflow->count());
 
 	if($data->cBankAccount->count() > 1) {
 		echo new \bank\CashflowUi()->getTabs($data->eFarm, $data->cBankAccount, $data->search->get('bankAccount'));

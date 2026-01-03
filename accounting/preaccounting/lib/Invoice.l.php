@@ -121,6 +121,12 @@ Class InvoiceLib {
 
 	}
 
+	public static function countEligible(\farm\Farm $eFarm, \Search $search): int {
+
+		return self::filterForAccountingCheck($eFarm, $search)->count();
+
+	}
+
 	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		return self::filterForAccountingCheck($eFarm, $search)

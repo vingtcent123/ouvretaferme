@@ -42,8 +42,8 @@ new Page(function($data) {
 
 			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
 
-			$data->nSale = 0;
-			$data->nInvoice = 0;
+			$data->nSale = \preaccounting\SaleLib::countEligible($data->eFarm, $data->search);
+			$data->nInvoice = \preaccounting\InvoiceLib::countEligible($data->eFarm, $data->search);
 
 		} else {
 
@@ -156,7 +156,6 @@ new Page(function($data) {
 			$data->search->set('method', $eMethod);
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
-
 
 			$cAccount = \account\AccountLib::getAll();
 

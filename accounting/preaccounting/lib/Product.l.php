@@ -29,6 +29,7 @@ Class ProductLib {
 			->whereFarm($eFarm)
 			->option('index-force', ['farm', 'deliveredAt'])
 			->whereDeliveredAt('BETWEEN', new \Sql(\selling\Item::model()->format($search->get('from')).' AND '.\selling\Item::model()->format($search->get('to'))))
+			->whereStatus(\selling\Sale::DELIVERED)
 			->whereProduct('!=', NULL)
 			->getColumn(new \Sql('DISTINCT product', 'int'));
 

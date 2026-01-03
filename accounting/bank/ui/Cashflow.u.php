@@ -71,15 +71,14 @@ class CashflowUi {
 
 	}
 
-	public function getSummarize(
-		\farm\Farm $eFarm,
-		int $nSuggestion
-	): string {
+	public function getSummarize(\farm\Farm $eFarm, int $nSuggestion, int $nCashflow): string {
 
 		$h = '<div class="mb-1 flex-justify-space-between flex-align-center">';
 
 			$h .= '<div>';
-				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
+				if($nCashflow > 0) {
+					$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($eFarm, $nSuggestion);
+				}
 			$h .= '</div>';
 			$h .= '<a href="/doc/accounting:bank" target="_blank" class="btn btn-xs btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a>';
 		$h .= '</div>';

@@ -46,8 +46,13 @@ new Page()
 		} else {
 			$eBankAccountSelected = $data->cBankAccount->offsetGet($eBankAccountSelected['id']);
 		}
+		if($eBankAccountSelected === NULL) {
+			$eBankAccountSelected = new \bank\BankAccount();
+		}
 		$search->set('bankAccount', $eBankAccountSelected);
-		\session\SessionLib::set('bankAccount', $eBankAccountSelected['id']);
+		if($eBankAccountSelected->notEmpty()) {
+			\session\SessionLib::set('bankAccount', $eBankAccountSelected['id']);
+		}
 
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;

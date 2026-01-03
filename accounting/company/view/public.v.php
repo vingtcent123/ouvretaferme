@@ -100,7 +100,7 @@ new AdaptativeView('beta', function($data, FarmTemplate $t) {
 		echo '<p>'.s("Nous recherchons des fermes :").'</p>';
 		echo '<ul class="mb-0">';
 			echo '<li>'.s("au micro-BA,").'</li>';
-			echo '<li>'.s("à la comptabilité de trésorerie,").'</li>';
+			echo '<li>'.s("à la comptabilité de trésorerie").'</li>';
 		echo '</ul>';
 	echo '</div>';
 

@@ -27,7 +27,23 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	$t->mainTitle = $mainTitle;
 
 	if($data->eFarm['hasSales']) {
+
 		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
+		echo new \preaccounting\PreaccountingUi()->summarize($data->nInvoice, $data->nSale);
+
+		if($data->nInvoice === 0 and $data->nSale === 0) {
+
+			echo '<div class="util-block-important">';
+				echo '<h3>'.s("Aucune donnée disponible").'</h3>';
+				echo '<p>'.s("Aucune vente ni facture éligible à la comptabilité n'a été trouvée sur {siteName} pour cette période. Modifiez la période de recherche, ou <linkSales>consultez vos ventes</linkSales> ou <linkInvoice>vos factures</linkInvoice>.", [
+					'linkSales' => '<a href="'.\farm\FarmUi::urlSellingSales($data->eFarm).'">',
+					'linkInvoice' => '<a href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'">',
+					]).'</p>';
+			echo '</div>';
+			return;
+
+		}
+
 	} else {
 
 		echo '<div class="util-block-important">';

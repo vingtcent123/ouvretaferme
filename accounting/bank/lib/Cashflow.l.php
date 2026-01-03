@@ -50,7 +50,7 @@ class CashflowLib extends CashflowCrud {
 			->where('amount >= 0', if: $search->get('direction') and $search->get('direction') === 'credit')
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
 			->whereStatus('!=', Cashflow::DELETED, if: empty($search->get('status')))
-			->whereAccount('=', $search->get('bankAccount')['id'], if: $search->get('bankAccount') and $search->get('bankAccount')->notEmpty())
+			->whereAccount('=', fn() => $search->get('bankAccount')['id'], if: $search->get('bankAccount') and $search->get('bankAccount')->notEmpty())
 		;
 
 	}
