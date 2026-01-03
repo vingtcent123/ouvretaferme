@@ -902,6 +902,7 @@ ul.autocomplete-list li {
 	display: flex;
 	align-items: center;
 	line-height: 1.2;
+	min-height: 2.5rem;
 }
 
 ul.autocomplete-list li:not(:last-child) {

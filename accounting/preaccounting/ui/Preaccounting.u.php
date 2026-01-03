@@ -28,12 +28,13 @@ Class PreaccountingUi {
 					);
 				$h .= '</fieldset>';
 
-				$h .= '<fieldset>';
-					$h .= '<legend>'.s("Factures").'</legend>';
-					$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes")]);
-				$h .= '</fieldset>';
-
 				if($type === 'sales') {
+
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Ventes").'</legend>';
+						$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes")]);
+					$h .= '</fieldset>';
+
 					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Numéro de compte").'</legend>';
 						$h .= $form->dynamicField(new \journal\Operation(['account' => $search->get('account')]), 'account', function($d) use($form, $eFarm) {
@@ -51,6 +52,7 @@ Class PreaccountingUi {
 						$h .= '<legend>'.s("Client").'</legend>';
 						$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
 					$h .= '</fieldset>';
+
 				}
 
 				if($search->get('cMethod') and $search->get('cMethod')->notEmpty()) {
@@ -488,35 +490,49 @@ Class PreaccountingUi {
 		$h = '';
 
 		$errors = $nProduct + $nPaymentToCheck;
+
 		if($errors > 0) {
 
-			$h .= '<div class="util-block-important">';
+			$h .= '<div class="util-block-important bg-warning">';
 				$h .= '<h3>'.s("Certaines données sont manquantes").'</h3>';
+				$h .= '<ul>';
 
 				if($nProduct > 0) {
-
-					if($nPaymentToCheck > 0) {
-						$h .= s("Vérifiez <link>{icon} vos produits</link> et les <link2>{icon2} moyens de paiement</link2>", [
-							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
-							'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
-						]);
-					} else {
-						$h .= s("Vérifiez <link>{icon} vos produits</link>", [
-							'icon' => \Asset::icon('1-circle'), 'link' => '<a href="'.$urlProduct.'">',
-						]);
-					}
-
-				} else if($nPaymentToCheck > 0) {
-					$h .= s("Vérifiez <link2>{icon2} les moyens de paiement</link2>", [
-						'icon2' => \Asset::icon('2-circle'), 'link2' => '<a href="'.$urlPayment.'">',
-					]);
+					$h .= '<li>'.s("Vérifiez que vous avez <link>associé des classes de comptes à vos produits et articles</link>", ['link' => '<a href="'.$urlProduct.'">']).'</li>';
 				}
+
+				if($nPaymentToCheck > 0) {
+					$h .= '<li>'.s("Vérifiez que vous avez <link>renseigné le moyen de paiement des factures</link>", ['link' => '<a href="'.$urlPayment.'">']).'</li>';
+				}
+				$h .= '</ul>';
+
 			$h .= '</div>';
 
 		}
 
-		$h .= '<div class="step-bloc-export">';
-			$h .= '<div class="util-block">';
+		$h .= '<div class="step-block-export">';
+
+			$h .= '<div class="util-block step-block-item">';
+
+				$h .= '<h3>'.s("Intégrez vos factures dans le logiciel comptable de Ouvretaferme").'</h3>';
+
+				if($nProduct > 0) {
+					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
+				} else {
+					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer vos factures !").'</p>';
+				}
+				$class = 'btn btn-primary';
+				if($nProduct > 0) {
+					$class .= ' disabled';
+					$url = 'javascript: void(0);';
+				} else {
+					$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer';
+				}
+				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer dans ma comptabilité").'</a>';
+
+			$h .= '</div>';
+
+			$h .= '<div class="util-block step-block-item">';
 
 				if($isSearchValid) {
 
@@ -543,25 +559,6 @@ Class PreaccountingUi {
 
 			$h .= '</div>';
 
-			$h .= '<div class="util-block">';
-
-				$h .= '<h3>'.s("Intégrez vos factures dans votre comptabilité").'</h3>';
-
-				if($nProduct > 0) {
-					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
-				} else {
-					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer vos factures !").'</p>';
-				}
-				$class = 'btn btn-primary';
-				if($nProduct > 0) {
-					$class .= ' disabled';
-					$url = 'javascript: void(0);';
-				} else {
-					$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer';
-				}
-				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer dans ma comptabilité").'</a>';
-
-			$h .= '</div>';
 		$h .= '</div>';
 
 		return $h;

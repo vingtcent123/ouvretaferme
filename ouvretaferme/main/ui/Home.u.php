@@ -217,7 +217,7 @@ class HomeUi {
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('cup-hot');
-				$h .= '<h4>'.s("Conçu pour réduire la charge mentale<br/>sans décider à votre place").'</h4>';
+				$h .= '<h4>'.s("Conçu pour réduire la charge mentale sans décider à votre place").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
 				$h .= \Asset::icon('phone');

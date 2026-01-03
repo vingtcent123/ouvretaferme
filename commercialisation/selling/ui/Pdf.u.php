@@ -124,7 +124,7 @@ class PdfUi {
 
 	}
 
-	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, ?string $quality = NULL, ?string $additional = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
+	public function getLabel(\farm\Farm $eFarm, Customer $eCustomer, ?string $name = NULL, string $quality = NULL, ?string $additional = NULL, ?float $quantity = NULL, Unit $unit = new Unit()): string {
 
 		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
 		$colorCustomer = ($eCustomer->notEmpty() and $eCustomer['color']);
@@ -148,7 +148,7 @@ class PdfUi {
 					$h .= $eFarm->getLegalAddress('html');
 				$h .= '</div>';
 				$h .= '<div class="pdf-label-quality">';
-					if($quality) {
+					if($quality !== \farm\Farm::NO) {
 						$h .= \Asset::image('main', $quality.'.png', ['style' => 'height: 0.75cm']);
 					}
 					if($quality === \farm\Farm::ORGANIC and $eFarm->getConf('organicCertifier')) {

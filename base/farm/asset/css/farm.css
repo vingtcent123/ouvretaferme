@@ -99,3 +99,12 @@ div.farmer-farms-item-buttons svg {
 	line-height: 1.7;
 	opacity: 0.7;
 }
+
+.farm-quality-fee {
+	margin-top: 1rem;
+	display: none;
+}
+
+[data-wrapper="quality"]:has(input[name="quality"][value="no"]:checked) .farm-quality-fee {
+	display: block;
+}

@@ -26,11 +26,13 @@ class History extends HistoryElement {
 		$p
 			->setCallback('amount.check', function(?int $amount) use($p): bool {
 
+				$this->expects(['farm']);
+
 				if($p->isBuilt('type') === FALSE or $this['type'] === self::DONATION or post_exists('fromAdmin')) {
 					return TRUE;
 				}
 
-				if($amount === NULL or $amount < AssociationSetting::MEMBERSHIP_FEE) {
+				if($amount === NULL or $amount < AssociationSetting::getFee($this['farm'])) {
 					return FALSE;
 				}
 

@@ -453,6 +453,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['precomptabilite:rapprocher'],
 		],
+		'/presentation/adhesion' => [
+			'request' => 'main/index',
+			'priority' => 5,
+			'route' => ['presentation', 'adhesion'],
+		],
 		'/presentation/faq' => [
 			'request' => 'main/index',
 			'priority' => 5,

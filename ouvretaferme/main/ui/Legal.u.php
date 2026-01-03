@@ -8,12 +8,14 @@ class LegalUi {
 		$h = '<h2>'.s("Fonctionnalités").'</h2>';
 		$h .= '<p>'.s("L'accès aux modules de <sale>VENTE</sale> et de <production>PRODUCTION</production> est libre et gratuit pour :", ['sale' => '<b class="color-commercialisation">', 'production' => '<b class="color-production">']).'</p>';
 		$h .= '<ul>';
-			$h .= '<li>'.s("les agriculteurs dont la ferme est convertie intégralement à l'Agriculture biologique, en cours de conversion vers l'Agriculture biologique ou sous mention Nature & Progrès,").'</li>';
 			$h .= '<li>'.s("les particuliers (jardiniers, étudiants, porteurs de projet...) qui ne sont pas installés comme agriculteurs et ne font pas commerce de leur production").'</li>';
+			$h .= '<li>'.s("les agriculteurs dont la ferme est convertie intégralement à l'Agriculture biologique, en cours de conversion vers l'Agriculture biologique ou sous mention Nature & Progrès,").'</li>';
 			$h .= '<li>'.s("les établissements scolaires.").'</li>';
 		$h .= '</ul>';
-		$h .= '<p>'.s("L'accès au module de <accounting>COMPTABILITÉ</accounting> est possible après adhésion à l'association Ouvretaferme.", ['accounting' => '<b class="color-accounting">']).'</p>';
-		$h .= '<p>'.s("<b>Dans tous les autres cas, l'utilisation du site n'est pas autorisée.</b>").'</p>';
+		$h .= '<p>'.s("L'accès au module de <accounting>COMPTABILITÉ</accounting> ainsi que l'accès au logiciel pour les producteurs non concernés par le paragraphe précédent est possible après adhésion à l'association Ouvretaferme.", ['accounting' => '<b class="color-accounting">']).'</p>';
+		$h .= '<p>';
+			$h .= '<a href="/presentation/adhesion" class="btn btn-outline-primary">'.s("Voir plus d'informations sur l'adhésion").'</a>';
+		$h .= '</p>';
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Données personnelles").'</h2>';
@@ -21,7 +23,7 @@ class LegalUi {
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Garanties").'</h2>';
-		$h .= '<p>'.s("Le site {siteName} est un projet développé bénévolement au service des producteurs en agriculture biologique en circuits courts. La conséquence immédiate est qu'il n'y a aucune garantie sur le bon fonctionnement du service ou sur la pérennité de vos données et vous utilisez le service à vos risques et périls. Si vous perdez des données, quelqu'en soit la cause, y compris à cause d'une erreur de notre part ou d'un arrêt du service, vous ne pourrez prétendre à aucun dédommagement, compensation ou droit particulier.").'</p>';
+		$h .= '<p>'.s("Le site {siteName} est un projet développé bénévolement au service des producteurs en circuits courts. La conséquence immédiate est qu'il n'y a aucune garantie sur le bon fonctionnement du service ou sur la pérennité de vos données et vous utilisez le service à vos risques et périls. Si vous perdez des données, quelqu'en soit la cause, y compris à cause d'une erreur de notre part ou d'un arrêt du service, vous ne pourrez prétendre à aucun dédommagement, compensation ou droit particulier.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Licence d'utilisation du code source").'</h2>';
@@ -50,14 +52,12 @@ class LegalUi {
 			$h .= '<li><a href="/presentation/faq#why">'.s("Pourquoi {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#how">'.s("Comment accéder au service ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#who">'.s("Qui est derrière Ouvretaferme ?").'</a></li>';
-			$h .= '<li><a href="/presentation/faq#much">'.s("Combien ça coûte ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#help">'.s("Comment obtenir de l'aide pour utiliser le site ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#sales">'.s("Comment vendre ma production avec {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#online">'.s("Comment utiliser le paiement par carte bancaire sur la boutique en ligne ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#online">'.s("Existe t-il des formations à l'utilisation de {siteName} ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#data">'.s("Comment sont gérées les données de ma ferme ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#cookies">'.s("Pourquoi n'y a-t-il pas de bandeau <i>Youpi c'est nous les cookies</i> quand je me connecte ?").'</a></li>';
-			$h .= '<li><a href="/presentation/faq#organic">'.s("Puis-je utiliser {siteName} si ma ferme n'est pas en AB ou sous mention N&P ?").'</a></li>';
 			$h .= '<li><a href="/presentation/faq#feature">'.s("Puis-je proposer une nouvelle fonctionnalité ?").'</a></li>';
 		$h .= '</ul>';
 
@@ -75,14 +75,10 @@ class LegalUi {
 			$h .= '<ul>';
 				$h .= '<li>'.s("Donner des outils pour contribuer à réaliser les finalités des fermes").'</li>';
 				$h .= '<li>'.s("Réduire la charge mentale des producteurs").'</li>';
-				$h .= '<li>'.s("Développer l'agriculture biologique").'</li>';
+				$h .= '<li>'.s("Développer les circuits courts").'</li>';
 			$h .= '</ul>';
 
-			$h .= '<h4><u>'.s("Ce que nous ne voulons pas").'</u></h4>';
-			$h .= '<ul>';
-				$h .= '<li>'.s("Un outil qui décide à la place des producteurs").'</li>';
-				$h .= '<li>'.s("Développer l'agriculture conventionnelle").'</li>';
-			$h .= '</ul>';
+			$h .= '<h4>'.s("Nous ne voulons pas un outil qui décide à la place des producteurs.").'</h4>';
 
 		$h .= '</div>';
 
@@ -103,32 +99,8 @@ class LegalUi {
 
 		$h .= '<div class="home-category">';
 
-			$h .= '<p>'.s("Initialement créé par un maraîcher bénévole, Ouvretaferme est géré par une association depuis 2025.<br/>Ouvretaferme est donc un projet collectif au service des producteurs et productrices en agriculture biologique.").'</p>';
+			$h .= '<p>'.s("Initialement créé par un maraîcher bénévole, Ouvretaferme est géré par une association depuis 2025.<br/>Ouvretaferme est donc un projet collectif au service des producteurs et productrices en circuits courts.").'</p>';
 			$h .= '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-secondary">'.s("Découvrir l'association").'</a>';
-
-		$h .= '</div>';
-
-		$h .= '<div id="much"></div>';
-		$h .= '<br/>';
-		$h .= '<h2>'.s("Combien ça coûte ?").'</h2>';
-
-		$h .= '<div class="home-category">';
-
-			$h .= '<h4>'.s("Pour le développement, {siteName} c'est :").'</h4>';
-			$h .= '<ul>';
-				$h .= '<li>'.s("Environ 1000 € de charges par an pour le serveur, le nom de domaine et l'envoi des e-mails").'</li>';
-				$h .= '<li>'.s("Des frais 1000 € de charges par an pour le serveur, le nom de domaine et l'envoi des e-mails").'</li>';
-				$h .= '<li>'.s("3000 heures de travail par an pour le code informatique, soit l'équivalent de 120 000 € par an s'il fallait recruter un informaticien pour cela").'</li>';
-			$h .= '</ul>';
-
-			$h .= '<h4>'.s("Pour les producteurs, {siteName} c'est :").'</h4>';
-			$h .= '<ul>';
-				$h .= '<li>'.s("0 € pour utiliser le service").'</li>';
-				$h .= '<li>'.s("0 % de commission sur vos ventes").'</li>';
-			$h .= '</ul>';
-
-			$h .= '<p>'.s("Si vous voulez soutenir le projet, vous pouvez adhérer à l'association !").'</p>';
-			$h .= '<a href="/adherer" class="btn btn-secondary">'.s("Adhérer à l'association").'</a>';
 
 		$h .= '</div>';
 
@@ -224,16 +196,6 @@ class LegalUi {
 		$h .= '<div class="home-category">';
 
 			$h .= '<p>'.s("Nous ne collectons pas de données à travers ces fameux cookies, et il n'est par conséquent pas nécessaire de vous demander l'autorisation d'en manger.").'</p>';
-
-		$h .= '</div>';
-
-		$h .= '<div id="organic"></div>';
-		$h .= '<br/>';
-		$h .= '<h2>'.s("Puis-je utiliser {siteName} si ma ferme n'est pas intégralement en AB ou sous mention N&P ?").'</h2>';
-
-		$h .= '<div class="home-category">';
-
-			$h .= '<p>'.s("Non, et cela signifie que vous ne pouvez pas utiliser {siteName} si vous pratiquez la bio rotationnelle. Vous pouvez par contre faire un choix d'avenir en convertissant votre ferme intégralement à l'agriculture biologique.").'</p>';
 
 		$h .= '</div>';
 

@@ -29,7 +29,6 @@ body[data-template="home-legal"] header {
 }
 
 body[data-template^="home"] main {
-	font-size: 1.1rem;
 	background-color: var(--background-light);
 }
 

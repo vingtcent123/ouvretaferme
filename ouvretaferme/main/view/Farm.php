@@ -275,10 +275,16 @@ class FarmTemplate extends MainTemplate {
 						$this->data->eFarm->canManage()
 					) {
 
+						$icon = Asset::image('main', 'favicon.png', ['class' => 'hide-lateral-up']).'<span class="hide-lateral-down nav-title-member-name">'.Lime::getName().'</span>';
+
 						$farm .= '<div class="nav-title-member">';
 
 							$farm .= '<a class="nav-title-member-link" data-dropdown="bottom" data-dropdown-hover="true">';
-								$farm .= s("Soutenir {value}", Asset::image('main', 'favicon.png', ['class' => 'hide-lateral-up']).'<span class="hide-lateral-down nav-title-member-name">'.Lime::getName().'</span>');
+								if($this->data->eFarm['quality'] === \farm\Farm::NO) {
+									$farm .= s("Adhérer à {value}", $icon);
+								} else {
+									$farm .= s("Soutenir {value}", $icon);
+								}
 							$farm .= '</a>';
 
 							$farm .= '<div class="dropdown-list bg-primary">';
@@ -288,7 +294,14 @@ class FarmTemplate extends MainTemplate {
 								$farm .= '<a href="'.\association\AssociationSetting::URL.'" target="_blank" class="dropdown-item">'.s("Découvrir l'association").'</a>';
 								$farm .= '<a href="'.\association\AssociationSetting::URL.'/nous-soutenir" target="_blank" class="dropdown-item">'.s("Pourquoi soutenir l'association ?").'</a>';
 								$farm .= '<div class="dropdown-divider"></div>';
-								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill').'  '.s("Adhérer pour seulement {value} €", \association\AssociationSetting::MEMBERSHIP_FEE).'</a>';
+								$farm .= '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('star-fill').'  ';
+								$farm .= match($this->data->eFarm['quality']) {
+
+									\farm\Farm::NO => s("Adhérer à l'association"),
+									default => s("Adhérer pour seulement {value} €", \association\AssociationSetting::getFee($this->data->eFarm))
+
+								};
+								$farm .= '</a>';
 
 							$farm .= '</div>';
 

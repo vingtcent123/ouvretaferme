@@ -39,19 +39,21 @@ new Page(function($data) {
 
 			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
 			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, 'invoice');
-			$data->nProductVerified = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search, FALSE);
 
 			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
-			$data->nPaymentVerified = \preaccounting\InvoiceLib::countForAccountingCheckVerified($data->eFarm, $data->search);
+
+			$data->nSale = 0;
+			$data->nInvoice = 0;
 
 		} else {
 
 			$data->nProductToCheck = 0;
 			$data->nItemToCheck = 0;
-			$data->nProductVerified = 0;
 
 			$data->nPaymentToCheck = 0;
-			$data->nPaymentVerified = 0;
+
+			$data->nSale = 0;
+			$data->nInvoice = 0;
 
 		}
 

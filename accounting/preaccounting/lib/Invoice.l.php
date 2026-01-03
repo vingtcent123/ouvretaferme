@@ -121,13 +121,6 @@ Class InvoiceLib {
 
 	}
 
-	public static function countForAccountingCheckVerified(\farm\Farm $eFarm, \Search $search): int {
-
-		return self::filterForAccountingCheck($eFarm, $search)
-			->wherePaymentMethod('!=', NULL)
-			->count();
-
-	}
 	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		return self::filterForAccountingCheck($eFarm, $search)

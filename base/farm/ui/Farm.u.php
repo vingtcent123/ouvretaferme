@@ -14,6 +14,7 @@ class FarmUi {
 
 	public static function getQualities(bool $short = FALSE): array {
 		return [
+			Farm::NO => s("Non applicable"),
 			Farm::ORGANIC => $short ? s("AB") : s("Agriculture biologique"),
 			Farm::NATURE_PROGRES => $short ? s("N&P") : s("Nature & Progrès"),
 			Farm::CONVERSION => $short ? s("En conversion") : s("En conversion vers l'agriculture biologique"),
@@ -1324,7 +1325,7 @@ class FarmUi {
 			$isAccountingUrl = str_starts_with(LIME_REQUEST_PATH, '/'.$eFarm['id'].'/');
 
 			$cFinancialYearOpen = $eFarm['cFinancialYear']->find(fn($e) => $e['status'] !== \account\FinancialYear::CLOSE);
-			$cFinancialYearClosed = $eFarm['cFinancialYear']->find(fn($e) => $e['status'] == \account\FinancialYear::CLOSE);
+			$cFinancialYearClosed = $eFarm['cFinancialYear']->find(fn($e) => $e['status'] === \account\FinancialYear::CLOSE);
 			$nClose = $cFinancialYearClosed->count();
 
 			$h .= $this->getFinancialYears($cFinancialYearOpen, $eFinancialYearSelected, $eFarm, $isAccountingUrl);
@@ -1353,6 +1354,8 @@ class FarmUi {
 			}
 
 			$url = \util\HttpUi::setArgument($url, 'subNavYear', $eFinancialYear['id']);
+			$url = \util\HttpUi::removeArgument($url, 'from');
+			$url = \util\HttpUi::removeArgument($url, 'to');
 
 			$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear->is($eFinancialYearSelected) ? 'selected' : '').'">';
 
@@ -1914,15 +1917,9 @@ class FarmUi {
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).$value['url'].'?'.$urlMore.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
 							$h .= $value['label'];
-							if($numbers[$key] > 0) {
-								$h .= '<span class="util-counter ml-1">'.$numbers[$key].'</span>';
-							}
 						$h .= '</a>';
 					}
 				$h .= '</div>';
-				if($numbers[$selectedView] > 0) {
-					$h .= '<span class="util-counter ml-1">'.$numbers[$selectedView].'</span>';
-				}
 			$h .= '</h1>';
 
 			$h .= '<div>';
@@ -2935,7 +2932,7 @@ class FarmUi {
 
 			case 'quality' :
 				$d->values = self::getQualities();
-				$d->placeholder = s("Non applicable");
+				$d->after = '<div class="farm-quality-fee util-block-important">'.s("L'accès à Ouvretaferme vous est laissé en accès libre pendant une période d'essai de {value} mois. Au-delà de cette période, vous devrez <link>adhérer à l'association Ouvretaferme</link> pour continuer à utiliser le logiciel.", ['value' => \association\AssociationSetting::MEMBERSHIP_TRY, 'link' => '<a href="/presentation/adhesion">']).'</div>';
 				break;
 
 			case 'emailDefaultTime' :

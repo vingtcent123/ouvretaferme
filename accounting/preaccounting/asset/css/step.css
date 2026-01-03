@@ -148,7 +148,7 @@ a.step:hover {
 	}
 }
 
-.step-bloc-export {
+.step-block-export {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 1rem;
@@ -156,9 +156,14 @@ a.step:hover {
 
 @media (max-width: 767px) {
 
-	.step-bloc-export {
+	.step-block-export {
 		display: block;
 	}
+}
+
+.step-block-item {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
 }
 
 @media (max-width: 991px) {

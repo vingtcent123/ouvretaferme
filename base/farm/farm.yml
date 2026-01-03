@@ -88,7 +88,7 @@ Farm:
   seasonLast: int16(0, null)
   rotationYears: int8(2, 5) = 4
   rotationExclude: json = PHP([])
-  quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION) = ORGANIC
+  quality: enum(NO, ORGANIC, NATURE_PROGRES, CONVERSION)
   defaultBedLength: ?int16(1, null)
   defaultBedWidth: ?int16(1, null)
   defaultAlleyWidth: ?int16(1, null)

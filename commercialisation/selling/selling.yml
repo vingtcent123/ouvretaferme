@@ -159,7 +159,7 @@ Item:
   composition: ?selling\Sale
   ingredientOf: ?selling\Item
   nature: enum(GOOD, SERVICE) = GOOD
-  quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
+  quality: enum(NO, ORGANIC, NATURE_PROGRES, CONVERSION)
   parent: ?selling\Item
   packaging: ?decimal(6, 2, 0.01, null)
   unit: ?selling\Unit
@@ -256,7 +256,7 @@ Product:
   proPackaging: ?float32(0.01, null)
   proStep: ?decimal(6, 2, 0.01, null)
   vat: int16(1, null)
-  quality: ?enum(ORGANIC, NATURE_PROGRES, CONVERSION)
+  quality: enum(NO, ORGANIC, NATURE_PROGRES, CONVERSION)
   stock: ?decimal(8, 2, 0.0, null)
   stockLast: ?selling\Stock
   stockUpdatedAt: ?datetime

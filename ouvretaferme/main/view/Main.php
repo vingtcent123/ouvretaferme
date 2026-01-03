@@ -131,6 +131,10 @@ class MainTemplate extends BaseTemplate {
 				} else {
 
 					$h .= '<div id="signIn-item">';
+						$h .= '<a href="'.Lime::getUrl().'/presentation/adhesion" class="nav-item">'.s("Adhésion").'</a>';
+					$h .= '</div>';
+
+					$h .= '<div id="signIn-item">';
 						$h .= '<a href="'.Lime::getUrl().'/user/signUp" class="nav-item">'.s("Inscription").'</a>';
 					$h .= '</div>';
 

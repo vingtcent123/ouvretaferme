@@ -34,7 +34,7 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 		echo '<h2>'.s("Vous n'êtes pas tout à fait convaincu ?").'</h2>';
 		echo '<p>'.s("Alors jetez un oeil au tableau ci-dessous pour mesurer le coût réel des services équivalents si Ouvretaferme n'existait pas.").'</p>';
 
-		echo '<div class="util-block">';
+		echo '<div class="util-block util-overflow-sm">';
 		echo '<table style="font-size: 1.2rem" class="tr-bordered">';
 			echo '<thead>';
 				echo '<tr>';

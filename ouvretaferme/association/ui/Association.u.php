@@ -220,16 +220,7 @@ Cordialement,
 						$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre générosité !");
 
 					} else {
-
-						if($eHistory['amount'] > AssociationSetting::MEMBERSHIP_FEE) {
-
-							$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement et votre soutien !");
-
-						} else {
-
-							$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement !");
-
-						}
+						$h .= s("L'association <b>Ouvretaferme</b> vous remercie pour votre engagement !");
 					}
 				$h .= '</div>';
 			$h .= '</div>';

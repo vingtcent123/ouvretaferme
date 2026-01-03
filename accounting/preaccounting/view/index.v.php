@@ -8,8 +8,6 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$t->nav = 'preaccounting';
 
-	$toCheck = $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck;
-
 	if($data->eFarm['hasFinancialYears']) {
 		$mainTitle = new \farm\FarmUi()->getAccountingYears($data->eFarm);
 	} else {
@@ -19,9 +17,6 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	$mainTitle .= '<div class="util-action">';
 		$mainTitle .= '<h1>';
 			$mainTitle .= s("Précomptabilité");
-			if($toCheck > 0) {
-				$mainTitle .= '<span class="util-counter ml-1">'.$toCheck.'</span>';
-			}
 		$mainTitle .= '</h1>';
 
 		$mainTitle .= '<div>';
@@ -31,15 +26,17 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	$mainTitle .= '</div>';
 	$t->mainTitle = $mainTitle;
 
-
-	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
-
-	if(($toCheck + $data->nProductVerified + $data->nPaymentVerified) === 0) {
+	if($data->eFarm['hasSales']) {
+		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
+	} else {
 
 		echo '<div class="util-block-important">';
-			echo s("Il n'a aucune facture à afficher. Avez-vous choisi la bonne période ?");
+			echo '<h3>'.s("La précomptabilité n'est pas disponible").'</h3>';
+			echo '<p>'.s("La précomptabilité fonctionne avec les ventes et les factures que vous avez enregistrées sur {siteName}.<br/>Or à ce jour, vous n'avez pas encore utilisé le module de vente.").'</p>';
 		echo '</div>';
+
 		return;
+
 	}
 
 	Asset::css('preaccounting', 'step.css');
@@ -48,7 +45,6 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		[
 			'position' => 1,
 			'number' => $data->nProductToCheck + $data->nItemToCheck,
-			'numberVerified' => $data->nProductVerified,
 			'type' => 'product',
 			'title' => s("Produits"),
 			'description' => s("Associez un numéro de compte à vos produits et articles"),
@@ -56,7 +52,6 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		[
 			'position' => 2,
 			'number' => $data->nPaymentToCheck,
-			'numberVerified' => $data->nPaymentVerified,
 			'type' => 'payment',
 			'title' => s("Moyens de paiement"),
 			'description' => s("Renseignez le moyen de paiement des factures"),
@@ -79,7 +74,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 					echo $step['title'];
 
 					if($step['number'] > 0) {
-						echo '<span class="bg-warning tab-item-count ml-1" title="'.s("À contrôler").'">'.$step['numberVerified'].'  / '.($step['number'] + $step['numberVerified']).'</span>';
+						echo '<span class="bg-warning tab-item-count ml-1" title="'.s("À contrôler").'">'.Asset::icon('exclamation-circle').'  '.$step['number'].'</span>';
 					}
 
 				echo '</div>';
@@ -104,7 +99,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 			echo '<div class="step-header">';
 				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
 				echo '<div class="step-main">';
-					echo '<div class="step-title">'.s("Intégration des factures en comptabilité").'</div>';
+					echo '<div class="step-title">'.s("Intégration en comptabilité").'</div>';
 					echo '<div class="step-value"></div>';
 				echo '</div>';
 			echo '</div>';

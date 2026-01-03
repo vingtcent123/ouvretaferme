@@ -205,7 +205,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	echo '<div class="home-story-wrapper">';
 		echo '<div class="home-story">';
-			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en agriculture biologique. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits en circuits courts. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.").'</p>';
+			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en circuits courts. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.").'</p>';
 			echo '<a href="'.\association\AssociationSetting::URL.'" target="_blank" class="btn btn-secondary">'.S("Découvrir l'association").'</a> ';
 			echo '<a href="'.\association\AssociationSetting::URL.'/nous-soutenir" target="_blank" class="btn btn-outline-secondary">'.S("Nous soutenir").'</a>';
 		echo '</div>';
@@ -379,12 +379,6 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 
 	echo new \main\HomeUi()->getPoints();
 
-	echo '<h2 class="mt-3">'.s("Principe de gratuité").'</h2>';
-
-	echo '<div class="home-story">';
-		echo s("L'accès aux fonctionnalités de vente et de production de {siteName} est ouvert et gratuit pour les producteurs sous signe de qualité <i>Agriculture biologique</i> ou <i>Nature & Progrès</i>. L'accès à la comptabilité est soumis à l'adhésion à l'association Ouvretaferme.");
-	echo '</div>';
-
 });
 
 new AdaptativeView('/facturation-electronique-les-mains-dans-les-poches', function($data, MainTemplate $t) {
@@ -495,15 +489,29 @@ new AdaptativeView('/presentation/formations', function($data, MainTemplate $t) 
 
 new AdaptativeView('/presentation/service', function($data, MainTemplate $t) {
 
-	$t->title = s("Conditions d'utilisation du service");
+	$t->title = s("Conditions d'utilisation de Ouvretaferme");
 	$t->metaNoindex = TRUE;
 	$t->template = 'home-legal';
 
 	Asset::css('main', 'home.css');
 
-	$t->header = '<h1>'.s("Conditions d'utilisation du service").'</h1>';
+	$t->header = '<h1>'.s("Conditions d'utilisation de Ouvretaferme").'</h1>';
 
 	echo new \main\LegalUi()->tos();
+
+});
+
+new AdaptativeView('/presentation/adhesion', function($data, MainTemplate $t) {
+
+	$t->title = s("Adhésion à l'association Ouvretaferme");
+	$t->metaNoindex = TRUE;
+	$t->template = 'home-legal';
+
+	Asset::css('main', 'home.css');
+
+	$t->header = '<h1>'.s("Adhésion à l'association Ouvretaferme").'</h1>';
+
+	echo new \main\LegalUi()->membership();
 
 });
 

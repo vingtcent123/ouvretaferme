@@ -18,6 +18,7 @@ abstract class ProductElement extends \Element {
 	const PUBLIC = 'public';
 	const PRIVATE = 'private';
 
+	const NO = 'no';
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
 	const CONVERSION = 'conversion';
@@ -86,7 +87,7 @@ class ProductModel extends \ModuleModel {
 			'proPackaging' => ['float32', 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'proStep' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'vat' => ['int16', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
-			'quality' => ['enum', [\selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES, \selling\Product::CONVERSION], 'null' => TRUE, 'cast' => 'enum'],
+			'quality' => ['enum', [\selling\Product::NO, \selling\Product::ORGANIC, \selling\Product::NATURE_PROGRES, \selling\Product::CONVERSION], 'cast' => 'enum'],
 			'stock' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
 			'stockLast' => ['element32', 'selling\Stock', 'null' => TRUE, 'cast' => 'element'],
 			'stockUpdatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
