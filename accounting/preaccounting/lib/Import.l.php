@@ -18,7 +18,7 @@ Class ImportLib {
 				'date', 'accountingHash', 'farm', 'accountingDifference',
 				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat',
 				'readyForAccounting', 'accountingDifference',
-				'cashflow' => \bank\Cashflow::getSelection()
+				'cashflow' => \bank\Cashflow::getSelection() + ['account' => \bank\BankAccount::getSelection()]
 			])
 			->whereReadyForAccounting(TRUE)
 			->whereAccountingHash('=', NULL)
@@ -26,13 +26,7 @@ Class ImportLib {
 			->sort(['m1.date' => SORT_ASC])
 			->getCollection(NULL, NULL, 'name');
 
-		$cCashflow = \bank\CashflowLib::getByIds($cInvoice->getColumnCollection('cashflow')->getIds(), index: 'id');
-
 		foreach($cInvoice as &$eInvoice) {
-
-			if($eInvoice['cashflow']->notEmpty() and $cCashflow->offsetExists($eInvoice['cashflow']['id'])) {
-				$eInvoice['cashflow'] = $cCashflow->offsetGet($eInvoice['cashflow']['id']);
-			}
 
 			$eInvoice['operations'] = self::sortOperations($extraction, (string)$eInvoice['name']);
 
@@ -60,7 +54,7 @@ Class ImportLib {
 	public static function invoiceSelection(): array {
 
 		return \selling\Invoice::getSelection() + [
-			'cashflow' => \bank\Cashflow::getSelection(),
+			'cashflow' => \bank\Cashflow::getSelection() + ['account' => \bank\BankAccount::getSelection()],
 			'cSale' => \selling\Sale::model()
 				->select([
 					'id',

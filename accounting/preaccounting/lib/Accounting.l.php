@@ -170,13 +170,6 @@ Class AccountingLib {
 
 		$cInvoice = self::getInvoices($eFarm, $search, $forImport);
 
-		$cCashflow = \bank\CashflowLib::getByIds($cInvoice->getColumnCollection('cashflow')->getIds(), index: 'id');
-		foreach($cInvoice as &$eInvoice) {
-			if($eInvoice['cashflow']->notEmpty() and $cCashflow->offsetExists($eInvoice['cashflow']['id'])) {
-				$eInvoice['cashflow'] = $cCashflow->offsetGet($eInvoice['cashflow']['id']);
-			}
-		}
-
 		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount, $forImport);
 
 	}
@@ -235,7 +228,8 @@ Class AccountingLib {
 						->delegateElement('customer')
 
 				],
-				'cashflow', 'accountingDifference',
+				'cashflow' => \bank\Cashflow::getSelection() + ['account' => \bank\BankAccount::getSelection()],
+				'accountingDifference',
 				'paymentMethod' => ['name'],
 				'cSale' => \selling\Sale::model()
 					->select([
