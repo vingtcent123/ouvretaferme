@@ -274,7 +274,8 @@ class JournalUi {
 
 		$baseUrl = $this->getBaseUrl($eFarm, $eFinancialYear);
 
-		return $baseUrl.'&'.$_search->toQuery();
+		$_search = $_search->getFiltered(['hash']);
+		return $baseUrl.'&'.http_build_query($_search);
 
 	}
 
