@@ -1879,7 +1879,13 @@ class FarmUi {
 		$title = $categories[$selectedView]['label'];
 		$urlMore = 'from='.encode($search->get('from')).'&to='.encode($search->get('to'));
 
-		$h = '<div class="util-action">';
+		$h = '';
+
+		if($eFarm['hasFinancialYears']) {
+			$h .= new \farm\FarmUi()->getAccountingYears($eFarm);
+		}
+
+		$h .= '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= self::getNavigation();
