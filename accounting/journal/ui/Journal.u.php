@@ -405,7 +405,7 @@ class JournalUi {
 											$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$selectedJournalCode.'")';
 										}
 										$h .= '<label>';
-											$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'" data-operation-linked="'.$eOperation['cOperationLinked']->count().'"/>';
+											$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'"/>';
 										$h .= '</label>';
 									}
 								$h .= '</td>';

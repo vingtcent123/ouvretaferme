@@ -85,70 +85,92 @@ Class SigUi {
 			}
 		}
 
-		$h = '<div class="util-overflow-md stick-xs">';
+		$h = '<div class="util-overflow-xs stick-xs">';
 
 			$h .= '<table class="tr-even overview tr-hover'.($hasComparison ? ' sig_has_previous' : '').'">';
 
-					$h .= '<thead class="thead-sticky">';
-						$h .= '<tr class="sig-table-title">';
-							$h .= '<th class="text-center" colspan="'.($hasComparison ? 7 : 3).'">';
-								$h .= encode($eFarm['legalName']).'<br />';
-								if($hasComparison) {
-									$h .= s("Soldes intermédiaires de gestion comparés au {value}", \util\DateUi::numeric($date));
-								} else {
-									$h .= s("Soldes intermédiaires de gestion au {value}", \util\DateUi::numeric($date));
-								}
-							$h .= '</th>';
-						$h .= '</tr>';
-						$h .= '<tr class="tr-title">';
-							$h .= '<th rowspan="2"></th>';
-							$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
+				$h .= '<thead class="thead-sticky">';
+					$h .= '<tr class="sig-table-title">';
+						$h .= '<th class="text-center" colspan="'.($hasComparison ? 7 : 3).'">';
+							$h .= encode($eFarm['legalName']).'<br />';
 							if($hasComparison) {
-								$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
-								$h .= '<th colspan="2" class="text-center">'.s("Comparaison").'</th>';
+								$h .= s("Soldes intermédiaires de gestion comparés au {value}", \util\DateUi::numeric($date));
+							} else {
+								$h .= s("Soldes intermédiaires de gestion au {value}", \util\DateUi::numeric($date));
 							}
-						$h .= '</tr>';
-						$h .= '<tr class="tr-title">';
+						$h .= '</th>';
+					$h .= '</tr>';
+					$h .= '<tr class="tr-title">';
+						$h .= '<th rowspan="2"></th>';
+						$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
+						if($hasComparison) {
+							$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
+							$h .= '<th colspan="2" class="text-center">'.s("Comparaison").'</th>';
+						}
+					$h .= '</tr>';
+					$h .= '<tr class="tr-title">';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Montant (€)").'</th>';
+						$h .= '<th class="text-center highlight-stick-left">'.s("Répartition (%)").'</th>';
+						if($hasComparison) {
 							$h .= '<th class="text-end highlight-stick-right">'.s("Montant (€)").'</th>';
 							$h .= '<th class="text-center highlight-stick-left">'.s("Répartition (%)").'</th>';
-							if($hasComparison) {
-								$h .= '<th class="text-end highlight-stick-right">'.s("Montant (€)").'</th>';
-								$h .= '<th class="text-center highlight-stick-left">'.s("Répartition (%)").'</th>';
-								$h .= '<th class="text-center highlight-stick-right">'.s("Variation (€)").'</th>';
-								$h .= '<th class="text-center highlight-stick-left">'.s("Variation (%)").'</th>';
+							$h .= '<th class="text-center highlight-stick-right">'.s("Variation (€)").'</th>';
+							$h .= '<th class="text-center highlight-stick-left">'.s("Variation (%)").'</th>';
+						}
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+				foreach(SigLib::ACCOUNTS_ORDER as $account) {
+
+					$isCategory = in_array($account, SigLib::ACCOUNTS_TITLES);
+					$isPercentedCategory = ($isCategory and array_search($account, SigLib::ACCOUNTS_ORDER) >= array_search(SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX, SigLib::ACCOUNTS_ORDER));
+
+					$h .= '<tr class="';
+						if($isCategory) {
+							$h .= 'sig-title';
+						} else {
+							$h .= 'sig-content';
+						}
+					$h .= '">';
+						$h .= '<td class="sig-category-name">'.$this->name($account, '=').'</td>';
+						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
+						$h .= '<td class="text-center highlight-stick-left">';
+							if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
+								$h .= round(($valuesCurrent[$account] / $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
 							}
-						$h .= '</tr>';
-					$h .= '</thead>';
-
-					$h .= '<tbody>';
-
-					foreach(SigLib::ACCOUNTS_ORDER as $account) {
-
-						$isCategory = in_array($account, SigLib::ACCOUNTS_TITLES);
-						$isPercentedCategory = ($isCategory and array_search($account, SigLib::ACCOUNTS_ORDER) >= array_search(SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX, SigLib::ACCOUNTS_ORDER));
-
-						$h .= '<tr class="';
-							if($isCategory) {
-								$h .= 'sig-title';
-							} else {
-								$h .= 'sig-content';
-							}
-						$h .= '">';
-							$h .= '<td class="sig-category-name">'.$this->name($account, '=').'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
+						$h .= '</td>';
+						if($hasComparison) {
+							list($value, $percent) = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
 							$h .= '<td class="text-center highlight-stick-left">';
 								if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
-									$h .= round(($valuesCurrent[$account] / $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
+									$h .= round(($valuesComparison[$account] / $valuesComparison[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
 								}
 							$h .= '</td>';
+							$h .= '<td class="text-end highlight-stick-right">';
+								$h .= \util\TextUi::money($value);
+							$h .= '</td>';
+							$h .= '<td class="text-center highlight-stick-left">';
+								if(mb_strlen($percent) > 0) {
+									$h .= s("{value} %", $percent);
+								}
+							$h .= '</td>';
+						}
+					$h .= '</tr>';
+
+					// Répéter ces lignes
+					if(in_array($account, [SigLib::VALEUR_AJOUTEE, SigLib::EBE, SigLib::RESULTAT_EXPLOITATION, SigLib::RCAI])) {
+
+						$h .= '<tr class="sig-content">';
+							$h .= '<td class="sig-category-name">'.$this->name($account, '+').'</td>';
+							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
+							$h .= '<td class="text-end highlight-stick-left"></td>';
 							if($hasComparison) {
 								list($value, $percent) = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
 								$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
-								$h .= '<td class="text-center highlight-stick-left">';
-									if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
-										$h .= round(($valuesComparison[$account] / $valuesComparison[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
-									}
-								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-left"></td>';
 								$h .= '<td class="text-end highlight-stick-right">';
 									$h .= \util\TextUi::money($value);
 								$h .= '</td>';
@@ -159,32 +181,10 @@ Class SigUi {
 								$h .= '</td>';
 							}
 						$h .= '</tr>';
-
-						// Répéter ces lignes
-						if(in_array($account, [SigLib::VALEUR_AJOUTEE, SigLib::EBE, SigLib::RESULTAT_EXPLOITATION, SigLib::RCAI])) {
-
-							$h .= '<tr class="sig-content">';
-								$h .= '<td class="sig-category-name">'.$this->name($account, '+').'</td>';
-								$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
-								$h .= '<td class="text-end highlight-stick-left"></td>';
-								if($hasComparison) {
-									list($value, $percent) = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
-									$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
-									$h .= '<td class="text-end highlight-stick-left"></td>';
-									$h .= '<td class="text-end highlight-stick-right">';
-										$h .= \util\TextUi::money($value);
-									$h .= '</td>';
-									$h .= '<td class="text-center highlight-stick-left">';
-										if(mb_strlen($percent) > 0) {
-											$h .= s("{value} %", $percent);
-										}
-									$h .= '</td>';
-								}
-							$h .= '</tr>';
-						}
 					}
+				}
 
-					$h .= '</tbody>';
+				$h .= '</tbody>';
 
 			$h .= '</table>';
 

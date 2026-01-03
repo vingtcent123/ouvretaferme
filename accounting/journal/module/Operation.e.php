@@ -5,7 +5,7 @@ use account\ThirdPartyLib;
 
 class Operation extends OperationElement {
 
-	public static function getSelection(bool $withLinks = TRUE): array {
+	public static function getSelection(): array {
 
 		return parent::getSelection() + [
 			'operation' => ['id', 'asset', 'accountLabel'],
@@ -20,10 +20,10 @@ class Operation extends OperationElement {
 			'cashflow' => \bank\Cashflow::model()
 				->select(\bank\Cashflow::getSelection())
 				->delegateElement('hash', propertyParent: 'hash')
-		] + ($withLinks ? ['cOperationLinked' => new OperationModel()
-				->select('id', 'operation')
-				->delegateCollection('operation'),
-			] : []);
+		] + ['cOperationHash' => \journal\Operation::model()
+			->select('id')
+			->delegateCollection('hash', propertyParent: 'hash')
+		];
 
 	}
 
@@ -77,11 +77,6 @@ class Operation extends OperationElement {
 			\account\FinancialYearLib::isDateInOpenFinancialYear($this['date'])->notEmpty() and
 			$this['financialYear']->canUpdate() and
 			$this['hash'] !== NULL;
-	}
-
-	public function canUpdateQuick(): bool {
-
-		return $this->canUpdate() and $this['operation']->empty();
 	}
 
 	public function canDelete(): bool {

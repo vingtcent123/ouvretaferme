@@ -727,16 +727,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['@module', 'journal', 'JournalCode', 'quick'],
 		],
-		'/@module/journal/Operation/doQuick' => [
-			'request' => 'journal/operation',
-			'priority' => 5,
-			'route' => ['@module', 'journal', 'Operation', 'doQuick'],
-		],
-		'/@module/journal/Operation/quick' => [
-			'request' => 'journal/operation',
-			'priority' => 5,
-			'route' => ['@module', 'journal', 'Operation', 'quick'],
-		],
 		'/@module/map/Bed/doQuick' => [
 			'request' => 'map/bed',
 			'priority' => 5,

@@ -1261,19 +1261,19 @@ class OperationUi {
 		$amountExcludingVat = 0;
 		$amountIncludingVat = 0;
 
-		foreach($eOperation['cOperationHash'] as $eOperationLinked) {
+		foreach($eOperation['cOperationHash'] as $eOperationHash) {
 
-			if(\account\AccountLabelLib::isFromClass($eOperationLinked['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
+			if(\account\AccountLabelLib::isFromClass($eOperationHash['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
 				continue;
 			}
 
-			$amountIncludingVat += $eOperationLinked['type'] === \journal\Operation::DEBIT ? $eOperationLinked['amount'] : -1 * $eOperationLinked['amount'];
+			$amountIncludingVat += $eOperationHash['type'] === \journal\Operation::DEBIT ? $eOperationHash['amount'] : -1 * $eOperationHash['amount'];
 
-			if(\account\AccountLabelLib::isFromClass($eOperationLinked['accountLabel'], \account\AccountSetting::VAT_CLASS) === FALSE) {
-				if($eOperationLinked['type'] === \journal\Operation::DEBIT) {
-					$amountExcludingVat += $eOperationLinked['amount'];
+			if(\account\AccountLabelLib::isFromClass($eOperationHash['accountLabel'], \account\AccountSetting::VAT_CLASS) === FALSE) {
+				if($eOperationHash['type'] === \journal\Operation::DEBIT) {
+					$amountExcludingVat += $eOperationHash['amount'];
 				} else {
-					$amountExcludingVat += (-1 * $eOperationLinked['amount']);
+					$amountExcludingVat += (-1 * $eOperationHash['amount']);
 				}
 			}
 
@@ -1452,10 +1452,6 @@ class OperationUi {
 				new \account\ThirdPartyUi()->query($d, GET('farm', 'farm\Farm'));
 				break;
 
-			case 'document':
-				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and ($e['cOperationLinked'] ?? new \Collection())->notEmpty()) ? \util\FormUi::info(s("Cette modification sera également reportée sur les écritures liées")) : '';
-				break;
-
 			case 'comment' :
 				$d->attributes['data-limit'] = 250;
 				break;
@@ -1478,7 +1474,6 @@ class OperationUi {
 					}
 					return [];
 				};
-				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and ($e['cOperationLinked'] ?? new \Collection())->notEmpty()) ? \util\FormUi::info(s("Cette modification sera également reportée sur les écritures liées")) : '';
 				break;
 
 		}

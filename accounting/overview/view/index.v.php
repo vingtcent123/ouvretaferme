@@ -12,21 +12,19 @@ new AdaptativeView(\farm\Farmer::CHARGES, function($data, FarmTemplate $t) {
 	echo '<div class="tabs-h" id="analyze-bank" onrender="'.encode('Lime.Tab.restore(this, "expenses")').'">';
 
 	echo '<div class="tabs-item">';
-	echo '<a class="tab-item selected text-center" data-tab="expenses" onclick="Lime.Tab.select(this)">'.s("Charges").'</a>';
-	echo '<a class="tab-item text-center" data-tab="income" onclick="Lime.Tab.select(this)">'.s("Résultat").'</a>';
+		echo '<a class="tab-item selected text-center" data-tab="expenses" onclick="Lime.Tab.select(this)">'.s("Charges").'</a>';
+		echo '<a class="tab-item text-center" data-tab="income" onclick="Lime.Tab.select(this)">'.s("Résultat").'</a>';
 	echo '</div>';
 
 	echo '<div class="tab-panel" data-tab="expenses">';
-	echo new overview\ChargesUi()->get($data->cOperation, $data->cAccount);
+		echo new overview\ChargesUi()->get($data->cOperation, $data->cAccount);
 	echo '</div>';
 
 	echo '<div class="tab-panel" data-tab="income">';
-	echo new overview\ResultUi()->getByMonth($data->eFarm['eFinancialYear'], $data->cOperation);
+		echo new overview\ResultUi()->getByMonth($data->eFarm['eFinancialYear'], $data->cOperation);
 	echo '</div>';
 
 	echo '</div>';
-
-	$t->js()->replaceHistory($t->canonical);
 
 });
 
@@ -41,8 +39,6 @@ new AdaptativeView(\farm\Farmer::BANK, function($data, FarmTemplate $t) {
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
 	echo new overview\BankUi()->get($data->ccOperationBank, $data->ccOperationCash);
-
-	$t->js()->replaceHistory($t->canonical);
 
 });
 
@@ -63,8 +59,6 @@ new AdaptativeView(\farm\Farmer::SIG, function($data, FarmTemplate $t) {
 		eFinancialYear: $data->eFarm['eFinancialYear'],
 		eFinancialYearComparison: $data->eFinancialYearComparison,
 	);
-
-	$t->js()->replaceHistory($t->canonical);
 
 });
 

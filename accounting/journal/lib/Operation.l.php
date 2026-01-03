@@ -1748,7 +1748,7 @@ class OperationLib extends OperationCrud {
 
 		Operation::model()
 			->select(['document'])
-			->whereId('IN', $cOperation->getIds())
+			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
 			->update(new Operation(['document' => $document]));
 	}
 
