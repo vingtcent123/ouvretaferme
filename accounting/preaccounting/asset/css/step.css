@@ -178,7 +178,7 @@ a.step:hover {
 	.step {
 		margin-left: 0;
 		clip-path: none;
-		border-radius: 14px;
+		border-radius: var(--radius);
 		padding: 1rem;
 	}
 

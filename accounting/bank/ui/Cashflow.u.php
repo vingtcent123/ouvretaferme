@@ -33,7 +33,7 @@ class CashflowUi {
 					unset($statuses[Cashflow::ALLOCATED]);
 					$statuses[Cashflow::WAITING] = s("Valide");
 				}
-				$h .= $form->select('status', $statuses, $search->get('status'), ['onchange' => 'Cashflow.changeStatusSelector(this);']);
+				$h .= $form->select('status', $statuses, $search->get('status'));
 			$h .= '</fieldset>';
 			$h .= '<fieldset>';
 				$h .= '<legend>'.s("Libellé").'</legend>';

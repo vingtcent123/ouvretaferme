@@ -35,6 +35,7 @@ class CashflowLib extends CashflowCrud {
 				->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->get('financialYear')->notEmpty())
 				->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->get('financialYear')->notEmpty());
 		}
+
 		return Cashflow::model()
 			->whereId('=', $search->get('id'), if: $search->get('id'))
 			->whereImport('=', $search->get('import'), if: $search->has('import'))
@@ -48,6 +49,7 @@ class CashflowLib extends CashflowCrud {
 			->where('amount < 0', if: $search->get('direction') and $search->get('direction') === 'debit')
 			->where('amount >= 0', if: $search->get('direction') and $search->get('direction') === 'credit')
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
+			->whereStatus('!=', Cashflow::DELETED, if: empty($search->get('status')))
 			->whereAccount('=', $search->get('bankAccount')['id'], if: $search->get('bankAccount') and $search->get('bankAccount')->notEmpty())
 		;
 

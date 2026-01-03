@@ -8,7 +8,7 @@ new Page()
 			'date' => GET('date'),
 			'fitid' => GET('fitid'),
 			'memo' => GET('memo'),
-			'status' => get_exists('status-shortcut') ? \bank\Cashflow::WAITING : GET('status'),
+			'status' => GET('status'),
 			'from' => GET('periodStart'),
 			'to' => GET('periodEnd'),
 			'direction' => GET('direction'),
