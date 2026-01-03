@@ -132,20 +132,15 @@ new Page(function($data) {
 			}
 
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
-			$data->search->set('group', GET('group', 'selling\CustomerGroup'));
-			$data->search->set('cGroup', \selling\CustomerGroupLib::getByFarm($data->eFarm));
 			$data->search->set('cMethod', $cMethod);
 			$data->search->set('method', $eMethod);
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
+			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
 
 			$data->cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
 			$cAccount = \account\AccountLib::getAll();
 			[$data->operations, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
-
-			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
-			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, 'invoice');
-			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
 
 		}
 		throw new ViewAction($data);
@@ -156,8 +151,9 @@ new Page(function($data) {
 		if($data->isSearchValid) {
 
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
-			$data->search->set('group', GET('group', 'selling\CustomerGroup'));
 			$data->search->set('method', GET('method', 'payment\Method'));
+			$data->search->set('account', \account\AccountLib::getById(GET('account')));
+			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
 
 			$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 

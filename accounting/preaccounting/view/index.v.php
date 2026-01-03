@@ -10,7 +10,27 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$toCheck = $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck;
 
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingTitle($data->eFarm, 'invoices', ['sales' => 0, 'invoices' => $toCheck], $data->search);
+	if($data->eFarm['hasFinancialYears']) {
+		$mainTitle = new \farm\FarmUi()->getAccountingYears($data->eFarm);
+	} else {
+		$mainTitle = '';
+	}
+
+	$mainTitle .= '<div class="util-action">';
+		$mainTitle .= '<h1>';
+			$mainTitle .= s("Précomptabilité");
+			if($toCheck > 0) {
+				$mainTitle .= '<span class="util-counter ml-1">'.$toCheck.'</span>';
+			}
+		$mainTitle .= '</h1>';
+
+		$mainTitle .= '<div>';
+			$mainTitle .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
+		$mainTitle .= '</div>';
+
+	$mainTitle .= '</div>';
+	$t->mainTitle = $mainTitle;
+
 
 	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
 
@@ -131,8 +151,23 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	$t->nav = 'preaccounting';
 
-	$toCheck = $data->nProductToCheck + $data->nItemToCheck + $data->nPaymentToCheck;
-	$t->mainTitle = new \farm\FarmUi()->getPreAccountingTitle($data->eFarm, 'sales', ['sales' => 0, 'invoices' => $toCheck], $data->search);
+	if($data->eFarm['hasFinancialYears']) {
+		$mainTitle = new \farm\FarmUi()->getAccountingYears($data->eFarm);
+	} else {
+		$mainTitle = '';
+	}
+
+	$mainTitle .= '<div class="util-action">';
+		$mainTitle .= '<h1>';
+			$mainTitle .= s("Exporter les données des ventes");
+		$mainTitle .= '</h1>';
+
+		$mainTitle .= '<div>';
+			$mainTitle .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
+		$mainTitle .= '</div>';
+
+	$mainTitle .= '</div>';
+	$t->mainTitle = $mainTitle;
 
 	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales', count($data->operations) > 0);
 
@@ -140,28 +175,40 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 		$totalDebit = array_sum(array_column($data->operations, \preaccounting\AccountingLib::FEC_COLUMN_DEBIT));
 		$totalCredit = array_sum(array_column($data->operations, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT));
+
 		echo '<ul class="util-summarize">';
 
-				echo '<li>';
-					echo '<a>';
-						echo '<h5>'.p("Écriture", "Écritures", count($data->operations)).'</h5>';
-						echo '<div>'.count($data->operations).'</div>';
-					echo '</a>';
-				echo '</li>';
+			if($data->search->get('hasInvoice') !== NULL) {
 
 				echo '<li>';
 					echo '<a>';
-						echo '<h5>'.p("Vente", "Ventes", $data->nSale).'</h5>';
-						echo '<div>'.$data->nSale.'</div>';
+						echo '<h5>'.s("Ventes").'</h5>';
+						echo '<div>'.($data->search->get('hasInvoice') === 1 ? s("Facturées") : s("Non facturées")).'</div>';
 					echo '</a>';
 				echo '</li>';
 
-				echo '<li>';
-					echo '<a>';
-						echo '<h5>'.s("Total").'</h5>';
-						echo '<div>'.\util\TextUi::money(round($totalCredit - $totalDebit, 2)).'</div>';
-					echo '</a>';
-				echo '</li>';
+			}
+
+			echo '<li>';
+				echo '<a>';
+					echo '<h5>'.p("Écriture", "Écritures", count($data->operations)).'</h5>';
+					echo '<div>'.count($data->operations).'</div>';
+				echo '</a>';
+			echo '</li>';
+
+			echo '<li>';
+				echo '<a>';
+					echo '<h5>'.p("Vente", "Ventes", $data->nSale).'</h5>';
+					echo '<div>'.$data->nSale.'</div>';
+				echo '</a>';
+			echo '</li>';
+
+			echo '<li>';
+				echo '<a>';
+					echo '<h5>'.s("Total").'</h5>';
+					echo '<div>'.\util\TextUi::money(round($totalCredit - $totalDebit, 2)).'</div>';
+				echo '</a>';
+			echo '</li>';
 
 		echo '</ul>';
 

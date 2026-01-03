@@ -28,6 +28,11 @@ Class PreaccountingUi {
 					);
 				$h .= '</fieldset>';
 
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Factures").'</legend>';
+					$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes")]);
+				$h .= '</fieldset>';
+
 				if($type === 'sales') {
 					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Numéro de compte").'</legend>';
@@ -48,13 +53,6 @@ Class PreaccountingUi {
 					$h .= '</fieldset>';
 				}
 
-				if($search->get('cGroup') and $search->get('cGroup')->notEmpty()) {
-					$h .= '<fieldset>';
-						$h .= '<legend>'.s("Groupe de clients").'</legend>';
-						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'));
-					$h .= '</fieldset>';
-				}
-
 				if($search->get('cMethod') and $search->get('cMethod')->notEmpty()) {
 					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Moyen de paiement").'</legend>';
@@ -66,7 +64,9 @@ Class PreaccountingUi {
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
 					if($hasOperations) {
-						$h .= '<a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes:telecharger?from='.encode($search->get('from')).'&to='.encode($search->get('to')).'&customer='.($search->get('customer')['id'] ?? '').'&group='.($search->get('group')['id'] ?? '').'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger l'export").'</a>';
+						parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
+						$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
+						$h .= '<a class="btn btn-outline-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger l'export").'</a>';
 					}
 
 				$h .= '</div>';
@@ -481,9 +481,7 @@ Class PreaccountingUi {
 	}
 
 	public function export(\farm\Farm $eFarm, int $nProduct, int $nPaymentToCheck, bool $isSearchValid, \Search $search): string {
-		
-		$form = new \util\FormUi();
-		
+
 		$urlProduct = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=product';
 		$urlPayment = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=payment';
 
@@ -523,14 +521,13 @@ Class PreaccountingUi {
 				if($isSearchValid) {
 
 					$attributes = [
-						'href' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:fec?from='.$search->get('from').'&to='.$search->get('to'),
-						'data-ajax-navigation' => 'never',
+						'href' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes?from='.$search->get('from').'&to='.$search->get('to'),
 					];
 					$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
 
 				} else {
 					$attributes = [
-						'href' => 'javascript: void(0);',
+						'href' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:ventes?from='.$search->get('from').'&to='.$search->get('to'),
 					];
 					$class = 'btn-secondary disabled';
 				}
@@ -542,7 +539,7 @@ Class PreaccountingUi {
 					$h .= '<p>'.s("Vous pouvez importer ce fichier des écritures comptables dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
 				}
 
-				$h .= '<a '.attrs($attributes).'>'.$form->button(s("Télécharger le fichier"), ['class' => 'btn '.$class]).'</a>';
+				$h .= '<a '.attrs($attributes).' class="btn '.$class.'">'.s("Exporter les données des ventes").'</a>';
 
 			$h .= '</div>';
 

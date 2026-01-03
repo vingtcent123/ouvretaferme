@@ -93,12 +93,11 @@ Class SaleLib {
 		return \selling\Sale::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
 			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.onlineStatus IS NULL)', 'LEFT') // Moyen de paiement OK
-
-			->where(fn() => new \Sql('JSON_CONTAINS('.\selling\Customer::model()->field('groups').', \''.$search->get('group')['id'].'\')'), if: $search->get('group')->notEmpty())
 			->where(fn() => new \Sql('m3.method = '.$search->get('method')['id']), if: $search->get('method')->notEmpty() and $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID)
 			->wherePreparationStatus('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT, \selling\Sale::BASKET])
 			->where('priceExcludingVat != 0.0')
-			->whereInvoice(NULL)
+			->whereInvoice('=', NULL, if: $search->get('hasInvoice') === 0)
+			->whereInvoice('!=', NULL, if: $search->get('hasInvoice') === 1)
 			->where('m1.type = "'.\selling\Sale::PRIVATE.'"')
 			->where(fn() => new \Sql('m1.customer = '.$search->get('customer')['id']), if: $search->get('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
