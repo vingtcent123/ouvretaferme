@@ -559,7 +559,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$cOperation->append(\journal\OperationLib::createFromValues($values));
 		}
 
-		// Étape 2 : on crédite 777
+		// Étape 2 : on crédite 747
 		$eAccountGrantAmortization = $cAccount[$amortizationChargeClass];
 		$values = [
 			'account' => $eAccountGrantAmortization['id'],

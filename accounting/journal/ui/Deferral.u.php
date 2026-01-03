@@ -263,6 +263,7 @@ class DeferralUi {
 								$isDeferral = FALSE;
 								$period = '';
 								$amount = '';
+								$action = '';
 
 							}
 

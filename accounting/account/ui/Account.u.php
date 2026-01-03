@@ -223,9 +223,9 @@ class AccountUi {
 
 								if($eAccount['vatRate'] !== NULL) {
 									$vatRate = $eAccount['vatRate'].'%';
-								} else if($eAccount['vatAccount']->exists() === TRUE and $eAccount['vatAccount']['vatRate'] !== NULL) {
+								} else if($eAccount['vatAccount']->exists() === TRUE) {
 									$vatRate = '<span class="color-muted" title="'.s("Taux de TVA par défaut").'">'.\Asset::icon('magic').' ';
-										$vatRate .= encode($eAccount['vatAccount']['vatRate']).'%';
+										$vatRate .= encode($eAccount['vatAccount']['vatRate'] ?? 0).'%';
 									$vatRate .= '</span>';
 								} else  {
 									$vatRate = NULL;

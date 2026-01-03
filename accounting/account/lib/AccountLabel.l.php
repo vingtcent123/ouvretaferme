@@ -50,7 +50,7 @@ class AccountLabelLib {
 		}
 
 		if(mb_substr($class, 0, 3) === AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS) {
-			return mb_substr($class, 0, 2).mb_substr($class, 3);
+			return AccountSetting::EQUIPMENT_GRANT_CLASS;
 		}
 
 		return mb_substr($class, 0, 1).mb_substr($class, 2);

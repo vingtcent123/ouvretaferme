@@ -1323,37 +1323,48 @@ class FarmUi {
 
 			$isAccountingUrl = str_starts_with(LIME_REQUEST_PATH, '/'.$eFarm['id'].'/');
 
-			$nClose = $cFinancialYear->find(fn($eFinancialYear) => $eFinancialYear['status'] ===  \account\FinancialYear::CLOSE)->count();
+			$cFinancialYearOpen = $eFarm['cFinancialYear']->find(fn($e) => $e['status'] !== \account\FinancialYear::CLOSE);
+			$cFinancialYearClosed = $eFarm['cFinancialYear']->find(fn($e) => $e['status'] == \account\FinancialYear::CLOSE);
+			$nClose = $cFinancialYearClosed->count();
 
-			foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
-
-				if($isAccountingUrl) {
-					$url = preg_replace('/\/exercice\/[0-9]+\//si', '/exercice/'.$eFinancialYear['id'].'/', LIME_REQUEST);
-				} else {
-					$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
-				}
-
-				$url = \util\HttpUi::setArgument($url, 'subNavYear', $eFinancialYear['id']);
-
-				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
-					$h .= '<div class="dropdown-subtitle">'.p("Exercice clôturé", "Exercices clôturés", $nClose).'</div>';
-				}
-
-				$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear->is($eFinancialYearSelected) ? 'selected' : '').'">';
-
-					if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
-						$h .= \Asset::icon('lock-fill').'  ';
-					}
-
-					$h .= s("Exercice {value}", $eFinancialYear->getLabel());
-
-				$h .= '</a>';
-
+			$h .= $this->getFinancialYears($cFinancialYearOpen, $eFinancialYearSelected, $eFarm, $isAccountingUrl);
+			if($nClose > 0) {
+				$h .= '<div class="dropdown-subtitle">'.p("Exercice clôturé", "Exercices clôturés", $nClose).'</div>';
 			}
+			$h .= $this->getFinancialYears($cFinancialYearClosed, $eFinancialYearSelected, $eFarm, $isAccountingUrl);
 
 			$h .= '</div>';
 
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private function getFinancialYears(\Collection $cFinancialYear, \account\FinancialYear $eFinancialYearSelected, Farm $eFarm, bool $isAccountingUrl): string {
+
+		$h = '';
+		foreach($cFinancialYear as $eFinancialYear) {
+
+			if($isAccountingUrl) {
+				$url = preg_replace('/\/exercice\/[0-9]+\//si', '/exercice/'.$eFinancialYear['id'].'/', LIME_REQUEST);
+			} else {
+				$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
+			}
+
+			$url = \util\HttpUi::setArgument($url, 'subNavYear', $eFinancialYear['id']);
+
+			$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear->is($eFinancialYearSelected) ? 'selected' : '').'">';
+
+				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
+					$h .= \Asset::icon('lock-fill').'  ';
+				}
+
+				$h .= s("Exercice {value}", $eFinancialYear->getLabel());
+
+			$h .= '</a>';
+
+		}
 
 		return $h;
 

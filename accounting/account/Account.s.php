@@ -58,7 +58,7 @@ class AccountSetting extends \Settings {
 	const PROVISION_CLASS = 15;
 	const EXCESS_AMORTIZATION_CLASS = 145;
 	const INVESTMENT_GRANT_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
-	const INVESTMENT_GRANT_TO_RESULT_CLASS = '777'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
+	const INVESTMENT_GRANT_TO_RESULT_CLASS = '747'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
 	const ASSET_AMORTIZATION_GENERAL_CLASS = 28;
 	const ASSET_AMORTIZATION_INTANGIBLE_CLASS = 280;
 	const ASSET_AMORTIZATION_TANGIBLE_CLASS = 281;

@@ -277,7 +277,7 @@ Class BalanceSheetLib {
 		if(\account\AccountLabelLib::isAmortizationOrDepreciationClass($eOperation['class'])) {
 
 			// Classe à 3 chiffres
-			$originClass = \account\AccountLabelLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
+			$originClass = (int)\account\AccountLabelLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
 			$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
 			$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
 
