@@ -84,6 +84,24 @@ new Page(function($data) {
 				$data->type = 'payment';
 			}
 
+		} else if($data->type === 'product') { // On bascule sur l'onglet suivant si + pertinent
+
+			if($data->nProductToCheck + $data->nItemToCheck === 0) {
+				if($data->nPaymentToCheck > 0) {
+					$data->type = 'payment';
+				} else {
+					$data->type = 'export';
+				}
+			}
+		} else if($data->type === 'payment') { // On bascule sur l'onglet suivant si + pertinent
+
+			if($data->nPaymentToCheck === 0) {
+				if($data->nProductToCheck + $data->nItemToCheck > 0) {
+					$data->type = 'product';
+				} else {
+					$data->type = 'export';
+				}
+			}
 		}
 
 		\session\SessionLib::set('preaccounting-type', $data->type);
@@ -97,7 +115,7 @@ new Page(function($data) {
 					$data->search->set('profile', GET('profile'));
 					$data->search->set('name', GET('name'));
 					$data->search->set('plant', GET('plant'));
-					[$data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search);
+					[$data->cProduct, $data->cCategories, $data->products] = \preaccounting\ProductLib::getForAccountingCheck($data->eFarm, $data->search, $data->nItemToCheck);
 					$data->cItem = \preaccounting\ItemLib::getForAccountingCheck($data->eFarm, $data->search, 'invoice');
 					break;
 

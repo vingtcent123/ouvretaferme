@@ -51,7 +51,7 @@ Class ProductLib {
 	/**
 	 * Gets all the products linked to a sale but without any account
 	 */
-	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): array {
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search, int $nItemToCheck): array {
 
 		$cCategories = \selling\CategoryLib::getByFarm($eFarm, index: 'id');
 
@@ -85,7 +85,7 @@ Class ProductLib {
 			\session\SessionLib::set('preAccountingProductTab', 'items');
 		}
 
-		if($tab === 'items') {
+		if($tab === 'items' and $nItemToCheck > 0) {
 
 			return [new \Collection(), $cCategories, $productsByCategory];
 
