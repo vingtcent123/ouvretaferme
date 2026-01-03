@@ -12,8 +12,12 @@ Class SaleUi {
 		return mb_substr($fecDate, 0, 4).'-'.mb_substr($fecDate, 4, 2).'-'.mb_substr($fecDate, 6, 2);
 	}
 
-	public function list(\farm\Farm $eFarm, array $operations): string {
+	public function list(\farm\Farm $eFarm, array $operations, ?int $hasInvoice): string {
 
+		$nOperations = count($operations);
+		if($nOperations > 100) {
+			$operations = array_slice($operations, 0, 100);
+		}
 		$h = '<table class="tr-hover tr-even">';
 
 			$h .= '<thead>';
@@ -31,7 +35,7 @@ Class SaleUi {
 				$h .= '<tr>';
 					$h .= '<th>'.s("Code").'</th>';
 					$h .= '<th>'.s("Libellé").'</th>';
-					$h .= '<th>'.s("# vente").'</th>';
+					$h .= '<th>'.s("Numéro").'</th>';
 					$h .= '<th>'.s("Date").'</th>';
 				$h .= '</tr>';
 
@@ -81,6 +85,18 @@ Class SaleUi {
 			$h .= '</tbody>';
 
 		$h .= '</table>';
+
+		if($nOperations > 100) {
+			$h .= '<div class="util-block-important">';
+				if($hasInvoice === NULL) {
+					$h .= s("Seules les 100 premières ventes et factures sont affichées.<br />Téléchargez l'export pour consulter l'intégralité des données.");
+				} else if($hasInvoice === 0) {
+					$h .= s("Seules les 100 premières ventes non facturées sont affichées.<br />Téléchargez l'export pour consulter l'intégralité des données.");
+				} else if($hasInvoice === 1) {
+					$h .= s("Seules les 100 premières factures sont affichées.<br />Téléchargez l'export pour consulter l'intégralité des données.");
+				}
+			$h .= '</div>';
+		}
 
 		return $h;
 

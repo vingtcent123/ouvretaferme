@@ -159,6 +159,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	$mainTitle .= '<div class="util-action">';
 		$mainTitle .= '<h1>';
+		$mainTitle .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$mainTitle .= s("Exporter les données des ventes");
 		$mainTitle .= '</h1>';
 
@@ -178,42 +179,44 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 		echo '<ul class="util-summarize">';
 
-			if($data->search->get('hasInvoice') !== NULL) {
-
-				echo '<li>';
-					echo '<a>';
-						echo '<h5>'.s("Ventes").'</h5>';
-						echo '<div>'.($data->search->get('hasInvoice') === 1 ? s("Facturées") : s("Non facturées")).'</div>';
-					echo '</a>';
-				echo '</li>';
-
-			}
-
 			echo '<li>';
-				echo '<a>';
+				echo '<div>';
 					echo '<h5>'.p("Écriture", "Écritures", count($data->operations)).'</h5>';
 					echo '<div>'.count($data->operations).'</div>';
-				echo '</a>';
+				echo '</div>';
 			echo '</li>';
 
 			echo '<li>';
-				echo '<a>';
-					echo '<h5>'.p("Vente", "Ventes", $data->nSale).'</h5>';
-					echo '<div>'.$data->nSale.'</div>';
-				echo '</a>';
+				echo '<div>';
+					echo '<h5>';
+						echo match($data->search->get('hasInvoice')) {
+							NULL => s("Ventes et factures"),
+							0 => p("Vente", "Ventes", $data->nSale),
+							1 => p("Facture", "Factures", $data->nInvoice),
+						};
+					echo '</h5>';
+						echo '<div>';
+
+							echo match($data->search->get('hasInvoice')) {
+								NULL => $data->nSale + $data->nInvoice,
+								0 => $data->nSale,
+								1 => $data->nInvoice,
+							};
+					echo '</div>';
+				echo '</div>';
 			echo '</li>';
 
 			echo '<li>';
-				echo '<a>';
+				echo '<div>';
 					echo '<h5>'.s("Total").'</h5>';
 					echo '<div>'.\util\TextUi::money(round($totalCredit - $totalDebit, 2)).'</div>';
-				echo '</a>';
+				echo '</div>';
 			echo '</li>';
 
 		echo '</ul>';
 
 
-		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations);
+		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->search->get('hasInvoice'));
 
 	} else {
 

@@ -155,10 +155,54 @@ new Page(function($data) {
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
 
-			$data->cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
 			$cAccount = \account\AccountLib::getAll();
-			[$data->operations, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
+
+			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 0) {
+
+				$data->cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
+				[$fecSale, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
+
+			} else {
+
+				$fecSale = [];
+				$data->nSale = 0;
+
+			}
+
+			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
+
+				$data->nInvoice = \preaccounting\AccountingLib::countInvoices($data->eFarm, $data->search);
+				$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
+
+				$fecInvoice = [];
+				foreach($data->cInvoice->getColumn('operations') as $operations) {
+					$fecInvoice = array_merge($fecInvoice, $operations);
+				}
+
+			} else {
+
+				$fecInvoice = [];
+				$data->nInvoice = 0;
+
+			}
+
+			$operations = array_merge($fecSale, $fecInvoice);
+
+			usort($operations, function($entry1, $entry2) {
+				if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] === $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
+					if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT] < $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]) {
+						return 0;
+					}
+					return strcmp($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT], $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]);
+				}
+				if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] < $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
+					return -1;
+				}
+				return 1;
+	    });
+
+			$data->operations = $operations;
 
 		}
 		throw new ViewAction($data);
@@ -176,13 +220,34 @@ new Page(function($data) {
 			$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
 			$cAccount = \account\AccountLib::getAll();
-			list($operations, ) = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
 
-			foreach($operations as &$lineFec) {
-				foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
-					$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
-				}
+			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 0) {
+				[$operations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
+			} else {
+				$operations = [];
 			}
+
+			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
+
+				$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
+
+				foreach($data->cInvoice->getColumn('operations') as $invoiceOperations) {
+					$operations = array_merge($operations, $invoiceOperations);
+				}
+
+			}
+
+			// Formattage Nombres
+			foreach($operations as &$lineFec) {
+
+				foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
+
+					$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
+
+				}
+
+			}
+
 
 			$fecData = array_merge([\account\FecLib::getHeader()], $operations);
 
