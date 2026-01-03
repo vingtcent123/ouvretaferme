@@ -78,3 +78,20 @@ tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 .journal-search-document:has(select[name="hasDocument"] option[value="0"]:checked) input[name="document"] {
 	display: none;
 }
+
+.journal-margin-credit {
+	@media (max-width: 767px) {
+		margin-left: 2rem;
+	}
+	@media (min-width: 768px) {
+		margin-left: 3rem;
+	}
+}
+.journal-margin-debit {
+	@media (max-width: 767px) {
+		margin-right: 2rem;
+	}
+	@media (min-width: 768px) {
+		margin-right: 3rem;
+	}
+}

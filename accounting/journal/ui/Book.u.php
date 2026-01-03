@@ -63,7 +63,6 @@ class BookUi {
 			$h .= '<th>'.s("Date").'</th>';
 			$h .= '<th class="hide-sm-down">'.s("Pièce").'</th>';
 			$h .= '<th>'.s("Description").'</th>';
-			$h .= '<td class="text-center td-min-content td-vertical-align-top hide-md-up">'.s("D/C").'</td>';
 			$h .= '<td class="text-end highlight-stick-right hide-md-up">'.s("Montant").'</td>';
 			$h .= '<th class="text-end highlight-stick-right hide-sm-down">'.s("Débit (D)").'</th>';
 			$h .= '<th class="text-end highlight-stick-left hide-sm-down">'.s("Crédit (C)").'</th>';
@@ -116,7 +115,6 @@ class BookUi {
 							'description' => $eOperation['account']['description'],
 						]);
 					$h .= '</td>';
-					$h .= '<td class="text-center hide-md-up"></td>';
 					$h .= '<td class="highlight-stick-right hide-md-up"></td>';
 					$h .= '<td class="highlight-stick-right hide-sm-down"></td>';
 					$h .= '<td class="highlight-stick-left hide-sm-down"></td>';
@@ -148,15 +146,12 @@ class BookUi {
 					$h .= encode($eOperation['description']);
 				$h .= '</td>';
 
-				$h .= '<td class="text-center hide-md-up">';
-					$h .= match($eOperation['type']) {
-						Operation::DEBIT => s("D"),
-						Operation::CREDIT => s("C"),
-					};
-				$h .= '</td>';
-
 				$h .= '<td class="text-end highlight-stick-right hide-md-up">';
-					$h .= \util\TextUi::money($eOperation['amount']);
+					if($eOperation['type'] === Operation::DEBIT) {
+						$h .= \util\TextUi::money($eOperation['amount']);
+					} else {
+						$h .= \util\TextUi::money(-1 * $eOperation['amount']);
+					}
 				$h .= '</td>';
 
 				$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
@@ -195,8 +190,6 @@ class BookUi {
 				$h .= '<td class="hide-sm-down"></td>';
 				$h .= '<td colspan="2" class="text-end">';
 					$h .= '<strong>'.s("Solde").'</strong>';
-				$h .= '</td>';
-				$h .= '<td class="text-end highlight-stick-right hide-md-up">';
 				$h .= '</td>';
 				$h .= '<td class="text-end highlight-stick-right hide-md-up">';
 					$h .= '<strong>'.\util\TextUi::money($totalDebit - $totalCredit).'</strong>';
@@ -261,8 +254,6 @@ class BookUi {
 				]).'</strong>';
 			$h .= '</td>';
 
-			$h .= '<td class="text-center hide-md-up">';
-			$h .= '</td>';
 			$h .= '<td class="text-end highlight-stick-right hide-md-up">';
 				$h .= '<strong>'.\util\TextUi::money($debit - $credit).'</strong>';
 			$h .= '</td>';

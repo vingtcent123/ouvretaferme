@@ -789,30 +789,6 @@ class Operation {
 
     }
 
-    // Seulement pour la création
-    static openInvoiceFileForm() {
-
-        const columns = qs('#operation-create-list').getAttribute('data-columns');
-
-        if(columns > 1) {
-            return false;
-        }
-
-        qs('#read-invoice input[name="columns"]').setAttribute('value', columns);
-        qs('#read-invoice input[type="file"]').click();
-    }
-
-    static submitReadInvoice() {
-        qs('#read-invoice-submit').click();
-    }
-
-    static deactivateInvoiceImport() {
-
-        qs('.import-invoice-button > label').classList.add('disabled');
-        qs('.import-invoice-button > label').setAttribute('onclick', 'void(0);');
-
-    }
-
     static selectAccount(index, accountId, vatRate) {
 
         new Ajax.Query()

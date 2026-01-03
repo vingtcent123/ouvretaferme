@@ -339,7 +339,7 @@ class JournalUi {
 
 		$h = '';
 
-		$h .= '<div class="stick-sm util-overflow-sm">';
+		$h .= '<div class="stick-sm util-overflow-md">';
 
 			$h .= '<table class="tr-even tr-hover">';
 
@@ -354,7 +354,7 @@ class JournalUi {
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 
 						if($selectedJournalCode === NULL and $readonly === FALSE) {
-							$h .= '<th class="hide-sm-down"></th>';
+							$h .= '<th></th>';
 						}
 
 						$h .= '<th>'.s("Libellé").'</th>';
@@ -364,7 +364,6 @@ class JournalUi {
 							$h .= '<th>'.s("Lettrage").'</th>';
 						}
 
-						$h .= '<th class="text-center td-min-content hide-md-up">'.s("D/C").'</th>';
 						$h .= '<th class="text-end highlight-stick-right hide-md-up">'.s("Montant").'</th>';
 
 						$h .= '<th class="text-end highlight-stick-right hide-sm-down">'.s("Débit (D)").'</th>';
@@ -451,18 +450,11 @@ class JournalUi {
 									}
 								$h .= '</div>';
 								$h .= new \account\AccountUi()->getDropdownTitle($eOperation['account']);
-								if($selectedJournalCode === NULL and $readonly === FALSE) {
-									$h .= '<div class="hide-md-up">';
-										$h .= $eOperation['journalCode']->empty()
-											? ''
-											: new JournalCodeUi()->getColoredButton($eOperation['journalCode'], link: \company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eOperation['journalCode']['id'], title: s("Filtrer sur le journal : {value}", encode($eOperation['journalCode']['name'])));
-									$h .= '</div>';
-								}
 							$h .= '</td>';
 
 							if($selectedJournalCode === NULL and $readonly === FALSE) {
 
-								$h .= '<td class="hide-sm-down td-vertical-align-top">';
+								$h .= '<td class="td-vertical-align-top">';
 									$h .= $eOperation['journalCode']->empty()
 										? ''
 										: new JournalCodeUi()->getColoredButton($eOperation['journalCode'], link: \company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$eOperation['journalCode']['id'], title: s("Filtrer sur le journal : {value}", encode($eOperation['journalCode']['name'])));
@@ -471,7 +463,7 @@ class JournalUi {
 							}
 
 							$h .= '<td>';
-								$class = ($eOperation['type'] === Operation::CREDIT ? ' ml-3' : '');
+								$class = ($eOperation['type'] === Operation::CREDIT ? ' journal-margin-credit' : '');
 								$h .= '<div class="description'.$class.'">';
 									if($eOperation['asset']->exists() === TRUE) {
 										$attributes = [
@@ -527,16 +519,12 @@ class JournalUi {
 								$h .= '</td>';
 							}
 
-							$h .= '<td class="text-center td-min-content td-vertical-align-top hide-md-up">';
-								if($eOperation['type'] === Operation::DEBIT) {
-									$h .= s("D");
-								} else {
-									$h .= s("C");
-								}
-							$h .= '</td>';
-
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
-								$h .= \util\TextUi::money($eOperation['amount']);
+								if($eOperation['type'] === Operation::DEBIT) {
+									$h .= '<span class="journal-margin-debit">'.\util\TextUi::money($eOperation['amount']).'</span>';
+								} else {
+									$h .= \util\TextUi::money(-1 * $eOperation['amount']);
+								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">';

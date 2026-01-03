@@ -36,7 +36,7 @@ new AdaptativeView(\farm\Farmer::BANK, function($data, FarmTemplate $t) {
 	$t->subNav = 'analyze';
 
 	$t->title = s("La trésorerie de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/analyze/'.$data->view;
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
@@ -52,7 +52,7 @@ new AdaptativeView(\farm\Farmer::SIG, function($data, FarmTemplate $t) {
 	$t->subNav = 'analyze';
 
 	$t->title = s("Les soldes intermédiaires de gestion de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/analyze/'.$data->view;
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 

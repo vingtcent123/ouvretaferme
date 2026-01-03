@@ -95,11 +95,10 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	echo '</div>';
 
-	echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
+	switch($data->type) {
 
-		switch($data->type) {
-
-			case 'product':
+		case 'product':
+			echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
 				echo new \preaccounting\PreaccountingUi()->products(
 					$data->eFarm,
 					$data->cProduct,
@@ -108,19 +107,19 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 					$data->search,
 					itemData: ['nToCheck' => $data->nItemToCheck, 'cItem' => $data->cItem],
 				);
-				break;
+			echo '</div>';
+			break;
 
-			case 'payment':
+		case 'payment':
+			echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
 				echo new \preaccounting\PreaccountingUi()->invoices($data->eFarm, $data->cInvoice, $data->cPaymentMethod, $data->search);
-				break;
+			echo '</div>';
+			break;
 
-			case 'export':
-				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProductToCheck + $data->nItemToCheck,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
-				break;
-		}
-
-	echo '</div>';
-
+		case 'export':
+			echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProductToCheck + $data->nItemToCheck,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
+			break;
+	}
 
 });
 new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {

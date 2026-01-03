@@ -787,22 +787,9 @@ class OperationUi {
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('account', 'thirdParty.js');
 
-		$dialogOpen = '';
-
-		$invoiceFileForm = new \util\FormUi();
-
-		$importButton = $invoiceFileForm->openAjax(\company\CompanyUi::urlJournal($eFarm).'/operation:readInvoice', ['id' => 'read-invoice', 'binary' => TRUE, 'method' => 'post']);
-			$importButton .= $invoiceFileForm->hidden('farm', $eFarm['id']);
-			$importButton .= $invoiceFileForm->hidden('columns', 1);
-			$importButton .= $invoiceFileForm->file('invoice', ['onchange' => 'Operation.submitReadInvoice();', 'accept' => 'image/*,.pdf']);
-			$importButton .= $invoiceFileForm->submit(s("Envoyer la facture"), ['class' => 'hide', 'id' => 'read-invoice-submit']);
-		$importButton .= $invoiceFileForm->close();
-
-		$dialogOpen .= $importButton;
-
 		$form = new \util\FormUi();
 
-		$dialogOpen .= $form->openAjax(
+		$dialogOpen = $form->openAjax(
 			\company\CompanyUi::urlJournal($eFarm).'/operation:doCreate',
 			[
 				'id' => 'journal-operation-create',
