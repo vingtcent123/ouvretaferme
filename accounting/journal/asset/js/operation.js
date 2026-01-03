@@ -376,10 +376,6 @@ class Operation {
             qs('[name="thirdParty[' + index + ']"]').setAttribute('value', qs('[name="thirdParty[' + (index - 1) + ']"]').value || null)
         }
 
-        if(qs('[name="journalCode[' + index + ']"]') && qs('[name="journalCode[' + (index - 1) + ']"]')) {
-            qs('[name="journalCode[' + index + ']"]').value = qs('[name="journalCode[' + (index - 1) + ']"]').value || null
-        }
-
     }
 
     static resetJournalCode(index) {
