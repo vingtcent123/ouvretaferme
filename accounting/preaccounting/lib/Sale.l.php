@@ -116,6 +116,7 @@ Class SaleLib {
 			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus', 'priceIncludingVat',
 			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes', 'hasVat', 'priceExcludingVat',
 			'onlinePaymentStatus', 'paymentStatus', 'closed', 'invoice',
+			'shipping', 'shippingExcludingVat', 'shippingVatRate',
 			'marketParent' => ['customer' => ['name', 'type', 'destination']],
 			'shopDate' => ['id', 'deliveryDate', 'status', 'orderStartAt', 'orderEndAt'], 'createdBy',
 			'cPayment' => \selling\Payment::model()

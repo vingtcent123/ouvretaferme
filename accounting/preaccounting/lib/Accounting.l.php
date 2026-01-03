@@ -150,6 +150,58 @@ Class AccountingLib {
 
 			}
 
+				// Si la vente a des frais de port
+				if($eSale['shippingExcludingVat'] !== NULL and $eSale['shippingExcludingVat'] > 0) {
+
+					$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
+
+					$fecDataShipping = self::getFecLine(
+						eAccount    : $eAccountShipping,
+						date        : $eSale['deliveredAt'],
+						eCode       : $eAccountShipping['journalCode'],
+						ecritureLib : $document,
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $eSale['shippingExcludingVat'],
+						type        : $eSale['shippingExcludingVat'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+						payment     : $payment['label'],
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+					);
+
+					self::mergeFecLineIntoItemData($items, $fecDataShipping);
+
+					// Si les frais de port ont de la TVA
+					if($eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
+
+						$eAccountVat = $eAccountShipping['vatAccount'];
+						if($eAccountVat->empty()) {
+							$eAccountVat = $eAccountVatDefault;
+						}
+
+						$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
+
+						$fecDataVat = self::getFecLine(
+							eAccount    : $eAccountVat,
+							date        : $eSale['deliveredAt'],
+							eCode       : $eAccountShipping['journalCode'],
+							ecritureLib : $document,
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $amountVat,
+							type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+							payment     : $payment['label'],
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+						);
+
+						self::mergeFecLineIntoItemData($items, $fecDataVat);
+					}
+
+				}
+
+
+
 			if(count($items) > 0) {
 				$nSale++;
 			}
@@ -233,7 +285,7 @@ Class AccountingLib {
 				'paymentMethod' => ['name'],
 				'cSale' => \selling\Sale::model()
 					->select([
-						'id',
+						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
 						'cItem' => \selling\Item::model()
 							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 							->delegateCollection('sale')
@@ -356,6 +408,23 @@ Class AccountingLib {
 						$amountVat = 0.0;
 					}
 
+					$currentExcludingVat += $amountExcludingVat;
+					$currentVat += $amountVat;
+
+					// Si on n'est pas redevable de la TVA => On enregistre TTC
+					if($hasVat === FALSE) {
+						$amountExcludingVat += $amountVat;
+						$amountVat = 0.0;
+					}
+
+					// Fera l'objet d'une autre entrée.
+					if($eSale['shippingExcludingVat'] > 0) {
+						$amountExcludingVat -= $eSale['shippingExcludingVat'];
+						if($eSale['shipping'] != $eSale['shippingExcludingVat']) {
+							$amountVat += ($eSale['shipping'] - $eSale['shippingExcludingVat']);
+						}
+					}
+
 					// On utilise la dernière vente pour réharmoniser les centimes
 					if($eSale->is($eSaleLast) and $eItem->is($eItemLast)) {
 						if($amountExcludingVat !== round($totalExcludingVat - $currentExcludingVat, 2)) {
@@ -364,15 +433,6 @@ Class AccountingLib {
 						if($amountVat !== round($totalVat - $currentVat, 2)) {
 							$amountVat = round($totalVat - $currentVat, 2);
 						}
-					}
-
-					$currentExcludingVat += $amountExcludingVat;
-					$currentVat += $amountVat;
-
-					// Si on n'est pas redevable de la TVA => On enregistre TTC
-					if($hasVat === FALSE) {
-						$amountExcludingVat += $amountVat;
-						$amountVat = 0.0;
 					}
 
 					// Montant HT
@@ -425,6 +485,63 @@ Class AccountingLib {
 					}
 
 				}
+
+				// Si la vente a des frais de port
+				if($eSale['shippingExcludingVat'] !== NULL and $eSale['shippingExcludingVat'] > 0) {
+
+					$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
+
+					$fecDataShipping = self::getFecLine(
+						eAccount    : $eAccountShipping,
+						date        : $referenceDate,
+						eCode       : $eAccountShipping['journalCode'],
+						ecritureLib : $document,
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $eSale['shippingExcludingVat'],
+						type        : $eSale['shippingExcludingVat'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+						payment     : $payment,
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
+					);
+					$numberShipping = $number;
+
+					self::mergeFecLineIntoItemData($items, $fecDataShipping);
+
+					// Si les frais de port ont de la TVA
+					if($eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
+
+						$eAccountVat = $eAccountShipping['vatAccount'];
+						if($eAccountVat->empty()) {
+							$eAccountVat = $eAccountVatDefault;
+						}
+
+						$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
+
+						$fecDataVat = self::getFecLine(
+							eAccount    : $eAccountVat,
+							date        : $referenceDate,
+							eCode       : $eAccountShipping['journalCode'],
+							ecritureLib : $document,
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $amountVat,
+							type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+							payment     : $payment,
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+							number      : $forImport ? ++$number : NULL,
+						);
+						if($forImport) {
+							$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberShipping;
+						}
+
+						self::mergeFecLineIntoItemData($items, $fecDataVat);
+					}
+
+				}
+
 			}
 
 			if($eInvoice['cashflow']->notEmpty()) { // Contrepartie en 512 directe si un rapprochement a déjà été réalisé
