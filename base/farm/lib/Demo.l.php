@@ -15,26 +15,11 @@ class DemoLib {
 	];
 
 	const COPY_MODULE_EXCLUDE = [
-		'account\Account',
-		'account\FinancialYear',
-		'account\Import',
 		'account\Log',
 		'account\Partner',
-		'account\ThirdParty',
-		'asset\Asset',
-		'asset\Amortization',
-		'asset\Depreciation',
 		'association\History',
-		'bank\BankAccount',
-		'bank\Cashflow',
-		'bank\Import',
-		'journal\Deferral',
-		'journal\JournalCode',
-		'journal\Operation',
-		'journal\OperationCashflow',
 		'farm\Invite',
 		'farm\Tip',
-		'overview\VatDeclaration',
 		'payment\StripeFarm',
 		'pdf\Pdf',
 		'pdf\Content',
@@ -257,7 +242,7 @@ class DemoLib {
 		self::anonymizeUsers();
 		self::anonymizeSales();
 		self::anonymizeCustomers();
-
+		self::anonymizeAccounting();
 
 	}
 
@@ -284,7 +269,6 @@ class DemoLib {
 				'legalCity' => NULL,
 				'siret' => NULL,
 				'url' => NULL,
-				'hasAccounting' => FALSE,
 			]);
 
 		Configuration::model()
@@ -295,17 +279,6 @@ class DemoLib {
 				'invoiceHeader' => NULL,
 				'invoiceFooter' => NULL
 			]);
-
-		$cGenericAccount = \company\GenericAccount::model()
-			->select(\company\GenericAccount::getSelection())
-			->whereType(\company\GenericAccount::AGRICULTURAL)
-			->getCollection();
-		foreach($cGenericAccount as $eGenericAccount) {
-			$eUser = new \user\User(['id' => 1]);
-			$eAccount = clone $eGenericAccount;
-			$eAccount['createdBy'] = $eUser;
-			\account\Account::model()->insert($eAccount);
-		}
 
 	}
 
@@ -394,6 +367,57 @@ class DemoLib {
 
 		}
 
+	}
+
+	public static function anonymizeAccounting(): void {
+
+		foreach(new \account\ThirdPartyModel()
+        ->select('id')
+        ->getCollection() as $eThirdParty) {
+
+			$eThirdParty['name'] = self::getFirstName($eThirdParty['id']).' '.self::getLastName().' '.$eThirdParty['id'];
+
+			new \account\ThirdPartyModel()
+				->select('name')
+				->update($eThirdParty);
+
+		}
+
+		foreach(new \bank\CashflowModel()
+        ->select('id')
+        ->getCollection() as $eCashflow) {
+
+			$eCashflow['memo'] = 'Transaction '.$eCashflow['id'];
+			$eCashflow['name'] = self::getFirstName($eCashflow['id']).' '.self::getLastName();
+			$eCashflow['isReconciliated'] = FALSE;
+
+			new \bank\CashflowModel()
+				->select(['memo', 'name', 'isReconciliated'])
+				->update($eCashflow);
+		}
+
+		foreach(new \journal\OperationModel()
+        ->select('id')
+        ->getCollection() as $eJournal) {
+
+			$eJournal['description'] = 'Écriture '.$eJournal['id'];
+
+			new \journal\OperationModel()
+				->select(['description'])
+				->update($eJournal);
+		}
+
+		foreach(new \account\AccountModel()
+        ->select('id')
+				->whereClass('LIKE', '4551%')
+        ->getCollection() as $eAccount) {
+
+			$eAccount['description'] = 'Compte-courant '.self::getFirstName($eAccount['id']);
+
+			new \account\AccountModel()
+				->select(['description'])
+				->update($eAccount);
+		}
 	}
 
 	public static function getModules(): array {

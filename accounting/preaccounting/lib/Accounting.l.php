@@ -164,7 +164,7 @@ Class AccountingLib {
 						documentDate: $documentDate,
 						amount      : $eSale['shippingExcludingVat'],
 						type        : $eSale['shippingExcludingVat'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-						payment     : $payment['label'],
+						payment     : first($payments)['label'] ?? '',
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
 					);
@@ -190,7 +190,7 @@ Class AccountingLib {
 							documentDate: $documentDate,
 							amount      : $amountVat,
 							type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-							payment     : $payment['label'],
+							payment     : first($payments)['label'] ?? '',
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
 						);
