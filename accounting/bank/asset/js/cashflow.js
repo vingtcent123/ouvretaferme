@@ -66,7 +66,7 @@ class Cashflow {
         CalculationField.setValue(targetAmountIncludingVAT, Math.abs(missingAmountIncludingVATValue));
 
         const targetAmount = qs('[name="amount[' + index + ']"');
-        const vatRate = Operation.hasVat() ? qs('[name="vatRate[' + index + ']"]').valueAsNumber : 0;
+        const vatRate = Operation.hasVat() ? qs('[name="vatRate[' + index + ']"]').valueAsNumber || 0 : 0;
         const missingAmountValue = round(missingAmountIncludingVATValue / (1 + vatRate / 100));
         CalculationField.setValue(targetAmount, Math.abs(missingAmountValue));
 
@@ -114,6 +114,7 @@ class Cashflow {
     static recalculate(index) {
 
         Cashflow.fillIndexAccordingly(index); // On remplit les trous
+        Operation.checkVatConsistency(index);
         Cashflow.checkValidationValues();
 
     }

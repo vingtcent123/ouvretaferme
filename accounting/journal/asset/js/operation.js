@@ -593,6 +593,9 @@ class Operation {
         const targetAmount = qs('[name="amount[' + index + ']"');
         const amount = CalculationField.getValue(targetAmount);
 
+        const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
+        const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
+
         const vatRate = parseFloat(qs('[name="vatRate[' + index + ']"').valueAsNumber || 0);
 
         const targetVatValue = qs('[name="vatValue[' + index + ']"');
@@ -602,15 +605,23 @@ class Operation {
             return;
         }
 
+				const checkedAmountContainer = qs('[data-check-amount="1"][data-index="' + index + '"]');
+				checkedAmountContainer.classList.remove('btn-warning');
+				checkedAmountContainer.qs('[class="operation-amount-check-legend"]').innerHTML = checkedAmountContainer.qs('[class="operation-amount-check-legend"]').dataset.legendVerified
+
         const expectedVatValue = round(amount * vatRate / 100);
+				const expectedVatValueFromAmounts = round(amountIncludingVAT - amount)
 
         if(Math.abs(round(vatValue - expectedVatValue)) > 0.01) {
-            qs('[data-vat-warning][data-index="' + index + '"]').removeHide();
-            qs('[data-wrapper="vatValue[' + index + ']"]', node => node.classList.add('form-warning-wrapper'));
-            qsa('[data-vat-warning-value][data-index="' + index + '"]', node => node.innerHTML = money(expectedVatValue));
-            if(typeof Cashflow !== 'undefined') {
-                Cashflow.vatWarning(true);
-            }
+					qs('[data-vat-warning][data-index="' + index + '"]').removeHide();
+					qs('[data-wrapper="vatValue[' + index + ']"]', node => node.classList.add('form-warning-wrapper'));
+					qsa('[data-vat-warning-value][data-index="' + index + '"]', node => node.innerHTML = money(expectedVatValue));
+					if(typeof Cashflow !== 'undefined') {
+						Cashflow.vatWarning(true);
+					}
+				} else if(Math.abs(round(vatValue - expectedVatValueFromAmounts)) > 0.01) {
+					checkedAmountContainer.classList.add('btn-warning');
+					checkedAmountContainer.qs('[class="operation-amount-check-legend"]').innerHTML = checkedAmountContainer.qs('[class="operation-amount-check-legend"]').dataset.legendInconsistency;
         } else {
             qs('[data-vat-rate-warning][data-index="' + index + '"]').hide();
             qs('[data-wrapper="vatValue[' + index + ']"]', node => node.classList.remove('form-warning-wrapper'));
