@@ -349,7 +349,7 @@ class LegalUi {
 				$h .= $this->friends(TRUE);
 			$h .= '</div>';
 
-			$h .= '<div class="tab-panel selected" data-tab="legal-other">';
+			$h .= '<div class="tab-panel" data-tab="legal-other">';
 				$h .= $this->friends(FALSE);
 			$h .= '</div>';
 
