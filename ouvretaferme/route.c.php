@@ -58,6 +58,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['comptabilite', 'parametrer'],
 		],
+		'/configuration/accounting' => [
+			'request' => 'company/configuration',
+			'priority' => 5,
+			'route' => ['configuration', 'accounting'],
+		],
 		'/doc/' => [
 			'request' => 'main/doc/main',
 			'priority' => 5,

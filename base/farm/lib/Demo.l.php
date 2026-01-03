@@ -30,7 +30,6 @@ class DemoLib {
 		'bank\Import',
 		'journal\Deferral',
 		'journal\JournalCode',
-		'journal\Lettering',
 		'journal\Operation',
 		'journal\OperationCashflow',
 		'farm\Invite',

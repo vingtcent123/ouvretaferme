@@ -16,8 +16,6 @@ class AlertUi {
 			'Operation::allocate.accountsCheck' => s("Veuillez sélectionner au moins un numéro de compte."),
 			'Operation::allocate.noOperation' => s("Aucune opération n'a pu être enregistrée."),
 
-			'Operation::payment.noOperation' => s("Aucun paiement n'a pu être enregistré."),
-			'Operation::payment.typeMissing' => s("Choisissez le type de paiement."),
 			'Operation::paymentMethod.empty' => s("Le moyen de paiement est nécessaire."),
 
 			'Operation::description.check' => s("Veuillez saisir un libellé"),
@@ -25,8 +23,6 @@ class AlertUi {
 			'Operation::cashflowRequiredForAttach' => s("Veuillez choisir une opération bancaire"),
 			'Operation::operationsRequiredForAttach' => s("Veuillez choisir une écriture comptable"),
 			'Operation::thirdPartyRequiredForAttach' => s("Veuillez choisir un tiers"),
-
-			'Operation::lettering.duplicate' => s("Ce code de lettrage est déjà utilisé."),
 
 			'thirdParty.empty' => s("Choisissez un tiers pour ce paiement."),
 
@@ -45,7 +41,6 @@ class AlertUi {
 			'Operation::selectedOperationInconsistency' => s("Les opérations sélectionnées ne sont pas cohérentes, veuillez rafraîchir la page et recommencer."),
 			'Operation::selectedJournalCodeInconsistency' => s("Un problème technique est survenu avec le journal choisi. Veuillez rafraîchir la page et recommencer."),
 
-			'Operation::lettering.inconsistency' => s("Un changement sur le montant n'est pas possible du fait du lettrage déjà réalisé."),
 			'Operation::typeProduitCharge.inconsistent' => s("Il n'est pas possible d'avoir en même temps une écriture de charge et une écriture de produit. Réalisez deux écritures séparément."),
 			'Operation::thirdPartys.inconsistent' => s("Il n'est pas possible de créer des écritures pour plusieurs tiers différents, réalisez des écritures séparément par tiers."),
 
@@ -58,9 +53,6 @@ class AlertUi {
 	public static function getSuccess(string $fqn): ?string {
 
 		return match($fqn) {
-
-			'Operation::payment.created' => s("Le paiement a bien été enregistré."),
-			'Operation::payment.createdLettered' => s("Le paiement a bien été enregistré et lettré."),
 
 			'Operation::created' => s("L'écriture a bien été enregistrée."),
 			'Operation::createdCreateAsset' => s("L'écriture a bien été enregistrée. Souhaitez-vous à présent créer la fiche d'immobilisation ?"),

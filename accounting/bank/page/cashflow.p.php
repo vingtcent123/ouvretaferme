@@ -8,11 +8,10 @@ new Page()
 			'date' => GET('date'),
 			'fitid' => GET('fitid'),
 			'memo' => GET('memo'),
-			'status' => \bank\Cashflow::GET('status', 'status'),
-			'amount' => GET('amount'),
-			'margin' => GET('margin'),
+			'status' => get_exists('status-shortcut') ? \bank\Cashflow::WAITING : GET('status'),
 			'from' => GET('periodStart'),
 			'to' => GET('periodEnd'),
+			'direction' => GET('direction'),
 			'periodStart' => GET('periodStart'),
 			'periodEnd' => GET('periodEnd'),
 			'isReconciliated' => GET('isReconciliated', '?bool'),
@@ -32,14 +31,6 @@ new Page()
 			} else {
 				$search->set('amountMax', (int)$amount + 1);
 			}
-		}
-
-		if(GET('direction') and in_array(GET('direction'), ['debit', 'credit'])) {
-			$search->set('direction', GET('direction'));
-		}
-
-		if(GET('status-shortcut')) {
-			$search->set('status', \bank\Cashflow::WAITING);
 		}
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll();
@@ -70,9 +61,9 @@ new Page()
 
 		$data->page = GET('page', 'int');
 
-		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
 		[$data->cCashflow, $data->nCashflow, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
 
+		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
 		$data->eImportCurrent = \bank\ImportLib::getLastImport();
 		if($data->eImportCurrent->notEmpty()) {
 			$data->eImportCurrent['nCashflowWaiting'] = \bank\CashflowLib::countSuggestionWaitingByImport($data->eImportCurrent);

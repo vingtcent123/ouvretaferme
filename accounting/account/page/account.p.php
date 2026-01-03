@@ -10,18 +10,18 @@ new Page()
 	]);
 	$data->cAccount = \account\AccountLib::getAll(search: $data->search);
 
-		$financialYearIds = array_slice($data->eFarm['cFinancialYear']->getKeys(), 0, 2);
+	$financialYearIds = array_slice($data->eFarm['cFinancialYear']->getKeys(), 0, 2);
 
-		$cOperation = \journal\OperationLib::countByAccounts($data->cAccount, $financialYearIds);
+	$cOperation = \journal\OperationLib::countByAccounts($data->cAccount, $financialYearIds);
 
-		foreach($data->cAccount as &$eAccount) {
+	foreach($data->cAccount as &$eAccount) {
 
-			$eAccount['nOperation'] = [];
+		$eAccount['operationByFinancialYear'] = [];
 
-			foreach($financialYearIds as $financialYearId) {
-				$eAccount['nOperation'][$financialYearId] = $cOperation[$eAccount['id']][$financialYearId]['count'] ?? 0;
-			}
+		foreach($financialYearIds as $financialYearId) {
+			$eAccount['operationByFinancialYear'][$financialYearId] = $cOperation[$eAccount['id']][$financialYearId]['count'] ?? 0;
 		}
+	}
 
 	$cProductPro = \selling\Product::model()
 		->select(['proAccount', 'count' => new Sql('COUNT(*)')])
@@ -129,26 +129,21 @@ new \account\AccountPage()
 
 		throw new ViewAction($data);
 
+	});
+
+new \account\AccountPage()
+	->getCreateElement(function($data) {
+
+		return new \account\Account([
+			'eFarm' => $data->eFarm,
+		]);
+
 	})
-	->post('doCreate', function($data) {
-
-		$fw = new FailWatch();
-
-		\account\AccountLib::createCustomClass($_POST);
-
-		$fw->validate();
+	->doCreate(function($data) {
 
 		throw new ReloadAction('account', 'Account::created');
 	})
-	->post('doDelete', function($data) {
-
-		$fw = new FailWatch();
-
-		$eAccount = \account\AccountLib::getById(POST('id', 'int'));
-
-		\account\AccountLib::delete($eAccount);
-
-		$fw->validate();
+	->doDelete(function($data) {
 
 		throw new ReloadAction('account', 'Account::deleted');
 

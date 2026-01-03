@@ -91,8 +91,7 @@ class Operation extends OperationElement {
 		return (
 			$this->notEmpty() and
 			$this->canUpdate() and
-			$this['operation']->empty() and
-			($this['financialYear']->isAccrualAccounting() === FALSE or LetteringLib::isOperationLinkedInLettering($this) === FALSE)
+			$this['operation']->empty()
 		);
 
 	}

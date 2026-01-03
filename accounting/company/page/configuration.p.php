@@ -1,6 +1,6 @@
 <?php
 new Page()
-	->get('index', function($data) {
+	->get('/configuration/accounting', function($data) {
 
 		$data->eFarm->validate('canManage');
 

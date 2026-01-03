@@ -8,14 +8,13 @@ class Cashflow extends CashflowElement {
 		return Cashflow::model()->getProperties() + [
 			'import' => ['account' => ['label']],
 			'createdBy' => ['id', 'firstName', 'lastName'],
-			'account' => BankAccount::getSelection()
 		];
 
 	}
 
 	public function acceptDeallocate(): bool {
 
-		return $this['status'] === Cashflow::ALLOCATED;
+		return $this['status'] === Cashflow::ALLOCATED and $this['hash'] !== NULL;
 
 	}
 

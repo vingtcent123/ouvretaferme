@@ -12,7 +12,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$data->tipNavigation = 'inline';
 
 	echo new \account\AccountUi()->getSearch($data->search);
-	echo new \account\AccountUi()->getManage($data->eFarm, $data->cAccount, $data->cJournalCode);
+	echo new \account\AccountUi()->list($data->eFarm, $data->cAccount, $data->cJournalCode);
 
 });
 
@@ -103,6 +103,7 @@ new JsonView('queryLabel', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
+	$data->e['eFarm'] = $data->eFarm;
 	return new \account\AccountUi()->create($data->eFarm, $data->e);
 
 });

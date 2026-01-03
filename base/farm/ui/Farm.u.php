@@ -350,7 +350,10 @@ class FarmUi {
 	}
 
 	public static function urlSettings(Farm $eFarm, string $category): string {
-		return self::url($eFarm).'/configuration/'.$category;
+		return match($category) {
+			'accounting' => self::urlSettingsAccounting($eFarm),
+			default => self::url($eFarm).'/configuration/'.$category
+		};
 	}
 
 	public static function urlSettingsProduction(Farm $eFarm): string {
@@ -807,9 +810,12 @@ class FarmUi {
 		$section = $this->getMenu($nav);
 
 		$h = '<div id="farm-breadcrumbs-section">';
-			$h .= $section['icon'];
 			if($subNav !== NULL) {
+				$h .= $section['icon'];
 				$h .= '  '.\Asset::icon('chevron-right').'  ';
+			} else {
+				$url = $this->getCategoryUrl($eFarm, $nav, '');
+				$h .= $section['icon'].'<a href="'.$url.'" style="color: white;border: 1px solid transparent;padding-top: 0.25rem;padding-bottom: 0.25rem;margin-left: 0.25rem;">'.$section['label'].'</a>';
 			}
 		$h .= '</div>';
 
@@ -905,10 +911,6 @@ class FarmUi {
 				'icon' => \Asset::icon('file-spreadsheet'),
 				'label' => s("Précomptabilité")
 			],
-			/*'invoicing' => [
-				'icon' => \Asset::icon('receipt'),
-				'label' => s("Facturation électronique")
-			],*/
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
 				'label' => s("Logiciel comptable").' <span class="util-badge bg-primary">'.s("BETA").'</span>'
@@ -930,6 +932,10 @@ class FarmUi {
 	}
 
 	protected function getCategoryUrl(Farm $eFarm, string $section, string $name): string {
+
+		if(str_starts_with($section, 'settings-')) {
+			return self::urlSettings($eFarm, mb_substr($section, strpos($section, '-') + 1));
+		}
 
 		return match($section) {
 

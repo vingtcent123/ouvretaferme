@@ -101,7 +101,15 @@ class CashflowUi {
 
 
 				$getArgs['bankAccount'] = $eBankAccount['id'];
-				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?'.http_build_query($getArgs).'">'.s("Compte {value}", $eBankAccount['label']).'</a>';
+				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?'.http_build_query($getArgs).'">';
+					$label = '<div class="text-center">';
+						$label .= s("Compte {value}", $eBankAccount['label']);
+						if($eBankAccount['description']) {
+							$label .= '<br/><small><span style="font-weight: lighter" class="opacity-75">'.encode($eBankAccount['description']).'</span></small>';
+						}
+					$label .= '</div>';
+					$h .= $label;
+				$h .= '</a>';
 
 			}
 

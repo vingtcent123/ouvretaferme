@@ -7,18 +7,16 @@ class ThirdParty extends ThirdPartyElement {
 
 		return parent::getSelection() + [
 				'customer' => \selling\Customer::getSelection(),
+				'nOperation' => \journal\Operation::model()
+					->select('id')
+					->delegateCollection('thirdParty', callback: fn(\Collection $cOperation) => $cOperation->count()),
 			];
 
 	}
 
-	public function hasOperations(): bool {
-		return (\journal\Operation::model()
-			->whereThirdParty($this)
-			->count() > 0);
-	}
-	public function canDelete(): bool {
+	public function acceptDelete(): bool {
 
-		return ($this->exists() === TRUE and $this->hasOperations() === FALSE);
+		return ($this->exists() === TRUE and $this['nOperation'] === 0);
 
 	}
 

@@ -1,5 +1,5 @@
 <?php
-new AdaptativeView('index', function($data, FarmTemplate $t) {
+new AdaptativeView('/configuration/accounting', function($data, FarmTemplate $t) {
 
 	$t->nav = 'settings-accounting';
 

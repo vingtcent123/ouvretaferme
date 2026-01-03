@@ -22,12 +22,6 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
-new AdaptativeView('createPayment', function($data, PanelTemplate $t) {
-
-		return new \journal\OperationUi()->createPayment($data->eFarm, $data->eFarm['eFinancialYear'], $data->e, $data->cBankAccount);
-
-});
-
 new AdaptativeView('createCommentCollection', function($data, PanelTemplate $t) {
 
 		return new \journal\OperationUi()->createCommentCollection($data->eFarm);
@@ -90,19 +84,6 @@ new JsonView('selectAccount', function($data, AjaxTemplate $t) {
 		$d->attributes['data-account-label'] = $form->getId();
 		$d->label .=  ' '.\util\FormUi::asterisk();
 	}));
-
-});
-
-new JsonView('getWaiting', function($data, AjaxTemplate $t) {
-
-	$form = new \util\FormUi();
-	$form->open('journal-operation-create-payment');
-
-	if($data->cOperation->count() > 0) {
-		$t->qs('#waiting-operations-list')->innerHtml(new \journal\OperationUi()->listWaitingOperations($data->eFarm, $form, $data->cOperation));
-		$t->qs('#waiting-operations-list-info')->innerHtml(new \journal\OperationUi()->letteringInfo());
-		$t->qs('#waiting-operations-list-container')->removeHide();
-	}
 
 });
 

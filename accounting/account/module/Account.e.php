@@ -6,12 +6,21 @@ class Account extends AccountElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
+			'name' => new \Sql('CONCAT(class, ". ", description)'),
 			'vatAccount' => ['id', 'class', 'vatRate', 'description'],
 			'journalCode' => \journal\JournalCode::getSelection(),
+			'nOperation' => \journal\Operation::model()
+				->select('id')
+				->delegateCollection('account', callback: fn(\Collection $cOperation) => $cOperation->count()),
 		];
 
 	}
 
+	public function acceptDelete(): bool {
+
+		return ($this['custom'] === TRUE and $this['nOperation'] === 0);
+
+	}
 	public function canQuickUpdate(?string $property = NULL): bool {
 
 		$this->expects(['custom', 'class']);

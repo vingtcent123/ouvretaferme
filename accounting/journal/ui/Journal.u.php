@@ -28,27 +28,13 @@ class JournalUi {
 					if(
 						GET('financialYear') !== '0' and // Cas où on regarde tous les exercices
 						get_exists('cashflow') === FALSE and
+						get_exists('hash') === FALSE and
 						$eFinancialYear['status'] === \account\FinancialYearElement::OPEN and
 						$eFarm->canManage()
 					) {
-						if($eFinancialYear->isCashAccounting() or $eFinancialYear->isCashAccrualAccounting()) {
-							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?journalCode='.GET('journalCode').'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une écriture").'</a> ';
-						}
-						if($eFinancialYear->isAccrualAccounting()) {
-
-							$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter...").'</a>';
-							$h .= '<div class="dropdown-list">';
-
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="dropdown-item">';
-								$h .= s("une écriture");
-								$h .= '</a>';
-
-								$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createPayment" class="dropdown-item">';
-								$h .= s("un paiement");
-								$h .= '</a>';
-
-							$h .= '</div>';
-						}
+						$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?journalCode='.GET('journalCode').'" class="btn btn-primary">';
+							$h .= \Asset::icon('plus-circle').' '.s("Ajouter une écriture");
+						$h .= '</a>';
 					}
 
 				$h .= '</div>';
@@ -323,14 +309,8 @@ class JournalUi {
 
 		$canUpdateFinancialYear = ($readonly === FALSE and $eFinancialYearSelected->canUpdate() and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
 
-		// On affiche les données de lettrage si on a filtré sur un tiers + sa classe
-		$showLettering = (($eFinancialYearSelected->isAccrualAccounting() or $eFinancialYearSelected->isCashAccrualAccounting()) and $search->get('thirdParty') and $search->get('accountLabel'));
-
 		$columns = 6;
 		if($selectedJournalCode === NULL) {
-			$columns++;
-		}
-		if($showLettering) {
 			$columns++;
 		}
 
@@ -359,10 +339,6 @@ class JournalUi {
 
 						$h .= '<th>'.s("Libellé").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
-
-						if($showLettering) {
-							$h .= '<th>'.s("Lettrage").'</th>';
-						}
 
 						$h .= '<th class="text-end highlight-stick-right hide-md-up">'.s("Montant").'</th>';
 
@@ -498,26 +474,6 @@ class JournalUi {
 									}
 								}
 							$h .= '</td>';
-
-							if($showLettering) {
-
-								$c = new \Collection();
-								$c->mergeCollection($eOperation['cLetteringDebit']);
-								$c->mergeCollection($eOperation['cLetteringCredit']);
-
-								[$icon, $class, $title] = match($eOperation['letteringStatus']) {
-									NULL => [\Asset::icon('x-lg'), 'color-danger', s("Non lettrée")],
-									Operation::PARTIAL => [\Asset::icon('exclamation-triangle'), 'color-warning', s("Lettrage partiel")],
-									Operation::TOTAL => [\Asset::icon('check'), 'color-success', s("Lettrée")],
-								};
-
-								$h .= '<td title="'.$title.'">';
-									$h .= '<div class="journal-operation-letters">';
-										$h .= '<div class="'.$class.'">'.$icon.'</div>';
-										$h .= '<div>'.join('<br />', $c->getColumn('code')).'</div>';
-									$h .= '</div>';
-								$h .= '</td>';
-							}
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
 								if($eOperation['type'] === Operation::DEBIT) {
@@ -715,13 +671,10 @@ class JournalUi {
 
 					}
 
-					if($showLettering or $displayTotal) {
+					if($displayTotal) {
 
 						$colspan = ($selectedJournalCode === NULL ? 5 : 4);
 						if($readonly) {
-							$colspan--;
-						}
-						if($showLettering === FALSE) {
 							$colspan--;
 						}
 

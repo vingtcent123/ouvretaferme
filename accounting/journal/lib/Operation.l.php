@@ -155,7 +155,7 @@ class OperationLib extends OperationCrud {
 			->whereAccountLabel('LIKE', $search->get('accountLabel').'%', if: $search->get('accountLabel'))
 			->where(fn() => 'accountLabel LIKE "'.join('%" OR accountLabel LIKE "', $search->get('accountLabels')).'"', if: $search->get('accountLabels'))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
-			->whereDocument($search->get('document'), if: $search->get('document'))
+			->whereDocument('LIKE', '%'.$search->get('document').'%', if: $search->get('document'))
 			->whereType($search->get('type'), if: $search->get('type'))
 			->whereAsset($search->get('asset'), if: $search->get('asset'))
 			->whereThirdParty('=', $search->get('thirdParty'), if: $search->get('thirdParty'));
@@ -253,28 +253,6 @@ class OperationLib extends OperationCrud {
 			['account' => ['class', 'description']],
 			['thirdParty' => ['id', 'name']]
 		);
-
-		// On requête un compte auxiliaire
-		if($search->get('thirdParty') and $search->get('accountLabel')) {
-
-			$eThirdParty = \account\ThirdPartyLib::getById($search->get('thirdParty'));
-
-			if(
-				(
-					$eThirdParty['clientAccountLabel'] !== NULL and
-					mb_substr($eThirdParty['clientAccountLabel'], 0, mb_strlen($search->get('accountLabel'))) === $search->get('accountLabel')
-				) or
-				(
-					$eThirdParty['supplierAccountLabel'] !== NULL and
-					mb_substr($eThirdParty['supplierAccountLabel'], 0, mb_strlen($search->get('accountLabel'))) === $search->get('accountLabel')
-				)
-			) {
-				$selection = array_merge($selection, [
-					'cLetteringCredit' => LetteringLib::delegate('credit'),
-					'cLetteringDebit' => LetteringLib::delegate('debit'),
-				]);
-			}
-		}
 
 		self::applySearch($search)
 			->select($selection)
@@ -510,102 +488,6 @@ class OperationLib extends OperationCrud {
 		}
 
 		\account\LogLib::save('update', 'Operation', ['id' => $e['id'], 'properties' => $properties]);
-
-	}
-
-	public static function preparePayments(array $input): ?\Collection {
-
-		$fw = new \FailWatch();
-		$paymentType = POST('paymentType');
-		$cOperation = new \Collection();
-
-		if(in_array($paymentType, ['incoming-client', 'incoming-supplier', 'outgoing-client', 'outgoing-supplier']) === FALSE) {
-			\Fail::log('Operation::payment.typeMissing');
-			return NULL;
-		}
-
-		$eOperation = new Operation();
-		$eOperation->build(['financialYear', 'thirdParty', 'amount', 'paymentDate', 'paymentMethod'], $input);
-
-		$fw->validate();
-
-		$eOperation['thirdParty'] = \account\ThirdPartyLib::getById($eOperation['thirdParty']['id']);
-
-		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_PAYMENT;
-		$eOperation['hash'] = $hash;
-
-		if(mb_strpos($paymentType, 'client') !== FALSE) {
-
-			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-			$thirdPartyType = 'client';
-
-			if($eOperation['thirdParty']['clientAccountLabel'] === NULL) {
-
-				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-				\account\ThirdParty::model()->update($eOperation['thirdParty'], ['clientAccountLabel' => $nextLabel]);
-				$accountLabel = $nextLabel;
-
-			} else {
-
-				$accountLabel = $eOperation['thirdParty']['clientAccountLabel'];
-
-			}
-
-		} else if(mb_strpos($paymentType, 'supplier') !== FALSE) {
-
-			$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-			$thirdPartyType = 'supplier';
-
-			if($eOperation['thirdParty']['supplierAccountLabel'] === NULL) {
-
-				$nextLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['supplierAccountLabel' => $nextLabel]);
-				$accountLabel = $nextLabel;
-
-			} else {
-
-				$accountLabel = $eOperation['thirdParty']['supplierAccountLabel'];
-
-			}
-		}
-
-		if(mb_strpos($paymentType, 'incoming') !== FALSE) {
-
-			$type = Operation::CREDIT;
-
-		} else if(mb_strpos($paymentType, 'outgoing') !== FALSE) {
-
-			$type = Operation::DEBIT;
-
-		}
-
-		$eOperation['account'] = $eAccount;
-		$eOperation['accountLabel'] = $accountLabel;
-		$eOperation['date'] = $eOperation['paymentDate'];
-		$eOperation['type'] = $type;
-
-		$eOperation['description'] = new \account\ThirdPartyUi()->getOperationDescription($eOperation['thirdParty'], $thirdPartyType);
-
-		$cOperation->append($eOperation);
-		Operation::model()->insert($eOperation);
-
-		$eOperationBank = clone $eOperation;
-		$eOperationBank->offsetUnset('id');
-		$eOperationBank['type'] = ($type === Operation::CREDIT) ? Operation::DEBIT : Operation::CREDIT;
-		$eBankAccount = \bank\BankAccountLib::getById($input['bankAccountLabel']);
-		$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS);
-		$eOperationBank['accountLabel'] = $eBankAccount->empty() ? \account\AccountLabelLib::pad($eBankAccount['class']) : $eBankAccount['label'];
-		$eOperationBank['account'] = $eAccount;
-		$eOperationBank['description'] = OperationUi::getDescriptionBank($paymentType);
-		$eOperationBank['hash'] = $hash;
-
-		$cOperation->append($eOperationBank);
-		Operation::model()->insert($eOperationBank);
-
-		// Lettrage
-		LetteringLib::letterOperation($eOperation, 'create');
-
-		return $cOperation;
 
 	}
 
@@ -966,13 +848,6 @@ class OperationLib extends OperationCrud {
 
 		if(count($thirdPartys) === 1 and $eThirdParty->notEmpty()) {
 
-			// On supprime les lettrages concernés (seront recalculés)
-			if($for === 'update') {
-				foreach($cOperation as $eOperation) {
-					LetteringLib::deleteByOperation($eOperation);
-				}
-			}
-
 			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
 			$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $totalAmount, $hash, $cOperation, $eThirdParty);
 
@@ -1037,23 +912,6 @@ class OperationLib extends OperationCrud {
 
 			}
 
-		}
-
-		// On recalcule les lettrages (à faire en create et en update)
-		foreach($cOperation as $eOperation) {
-			if(
-				(
-					$eFinancialYear->isAccrualAccounting() and
-					in_array($eOperation['accountLabel'], [$eThirdParty['clientAccountLabel'], $eThirdParty['supplierAccountLabel']])
-				) or (
-					(FEATURE_ACCOUNTING_CASH_ACCRUAL and $eFinancialYear->isCashAccrualAccounting()) and
-					$eOperation['accountLabel'] === $eThirdParty['clientAccountLabel']
-				)
-			) {
-
-				LetteringLib::letterOperation($eOperation, $for);
-
-			}
 		}
 
 		if(($eOperationDefault['invoice'] ?? NULL) !== NULL and $eOperationDefault['invoice']->exists() and $ePaymentMethodInvoice->exists()) {
@@ -1601,98 +1459,85 @@ class OperationLib extends OperationCrud {
 
 	public static function unlinkCashflow(\bank\Cashflow $eCashflow, string $action): void {
 
-		if($eCashflow->exists() === FALSE) {
-			return;
-		}
+		$cCashflow = \bank\Cashflow::model()
+			->whereHash(($eCashflow['hash']))
+			->getCollection();
 
-		Operation::model()->beginTransaction();
+		foreach($cCashflow as $eCashflow) {
 
-		// Mise à jour du cashflow
-		$hash = $eCashflow['hash'];
-		$eCashflow['hash'] = NULL;
-		$eCashflow['status'] = \bank\Cashflow::WAITING;
-		\bank\Cashflow::model()->update($eCashflow, $eCashflow->extracts(['hash', 'status']));
+			Operation::model()->beginTransaction();
 
-		if($eCashflow['invoice']->notEmpty()) {
-			$eInvoice = \selling\InvoiceLib::getById($eCashflow['invoice']['id']);
-			\preaccounting\InvoiceLib::recalculateReadyForAccounting($eInvoice, $eCashflow);
-		}
+			// Mise à jour du cashflow
+			$hash = $eCashflow['hash'];
+			$eCashflow['hash'] = NULL;
+			$eCashflow['status'] = \bank\Cashflow::WAITING;
+			\bank\Cashflow::model()->update($eCashflow, $eCashflow->extracts(['hash', 'status']));
 
-		$cOperation = OperationLib::getByHash($hash);
-
-		// Suppression de l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
-		\journal\Operation::model()
-			->whereId('IN', $cOperation->getIds())
-			->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
-      ->delete();
-
-		// Dissociation cashflow <-> operation
-		OperationCashflow::model()
-			->whereCashflow($eCashflow)
-			->delete();
-
-		// Dissociation cashflow <-> operation
-		OperationCashflow::model()
-			->whereOperation('IN', $cOperation->getIds(), if: count($cOperation->getIds()) > 0)
-			->delete();
-
-		if($action === 'delete') {
-
-			// Suppression des immos
-			$cAsset = $cOperation->getColumnCollection('asset');
-			if($cAsset->empty() === FALSE) {
-				\asset\AssetLib::deleteByIds($cAsset->getIds());
+			if($eCashflow['invoice']->notEmpty()) {
+				$eInvoice = \selling\InvoiceLib::getById($eCashflow['invoice']['id']);
+				\preaccounting\InvoiceLib::recalculateReadyForAccounting($eInvoice, $eCashflow);
 			}
 
-			// Suppression des liens vers les factures
-			\selling\Invoice::model()
-				->whereAccountingHash($eCashflow['hash'])
-				->update(['accountingHash' => NULL]);
+			$cOperation = OperationLib::getByHash($hash);
 
-			// On ne peut pas supprimer d'écritures qui ont été lettrées
-			$hasBeenLettered = (Lettering::model()
-				->or(
-					fn() => $this->whereCredit('IN', $cOperation),
-					fn() => $this->whereDebit('IN', $cOperation),
-				)
-				->count() > 0);
+			// Suppression de l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
+			\journal\Operation::model()
+        ->whereId('IN', $cOperation->getIds())
+        ->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
+        ->delete();
 
-			if($hasBeenLettered) {
+			// Dissociation cashflow <-> operation
+			OperationCashflow::model()
+       ->whereCashflow($eCashflow)
+       ->delete();
 
-				\Fail::log('Operation::cashflow.letteredUndeletable');
+			// Dissociation cashflow <-> operation
+			OperationCashflow::model()
+       ->whereOperation('IN', $cOperation->getIds(), if: count($cOperation->getIds()) > 0)
+       ->delete();
 
-			} else {
+			if($action === 'delete') {
+
+				// Suppression des immos
+				$cAsset = $cOperation->getColumnCollection('asset');
+				if($cAsset->empty() === FALSE) {
+					\asset\AssetLib::deleteByIds($cAsset->getIds());
+				}
+
+				// Suppression des liens vers les factures
+				\selling\Invoice::model()
+          ->whereAccountingHash($eCashflow['hash'])
+          ->update(['accountingHash' => NULL]);
 
 				// Suppression des écritures
 				Operation::model()
-					->whereId('IN', $cOperation->getIds())
-					->delete();
-			}
+         ->whereId('IN', $cOperation->getIds())
+         ->delete();
 
-		} else {
+			} else {
 
-			// Réinitialiser les hash des opérations
-			foreach($cOperation as $eOperation) {
+				// Réinitialiser les hash des opérations
+				foreach($cOperation as $eOperation) {
 
-				if($eOperation['operation']->notEmpty()) {
-					continue; // Sera traitée avec le parent
+					if($eOperation['operation']->notEmpty()) {
+						continue; // Sera traitée avec le parent
+					}
+
+					$hash = self::generateHash().JournalSetting::HASH_LETTER_WRITE;
+
+					// On affecte un nouveau hash aux opérations et leurs copines.
+					Operation::model()
+	         ->where('id = '.$eOperation['id'].' OR operation = '.$eOperation['id'])
+	         ->update(['hash' => $hash]);
+
 				}
 
-				$hash = self::generateHash().JournalSetting::HASH_LETTER_WRITE;
-
-				// On affecte un nouveau hash aux opérations et leurs copines.
-				Operation::model()
-					->where('id = '.$eOperation['id'].' OR operation = '.$eOperation['id'])
-					->update(['hash' => $hash]);
-
 			}
 
+			\account\LogLib::save('unlinkCashflow', 'Operation', ['id' => $eCashflow['id'], 'action' => $action]);
+
+			Operation::model()->commit();
 		}
-
-		\account\LogLib::save('unlinkCashflow', 'Operation', ['id' => $eCashflow['id'], 'action' => $action]);
-
-		Operation::model()->commit();
-
 	}
 
 	public static function countByThirdParty(): \Collection {
@@ -1786,39 +1631,6 @@ class OperationLib extends OperationCrud {
 			Operation::model()->select('number')->update($eOperation);
 
 		}
-
-	}
-
-	public static function getWaiting(\account\ThirdParty $eThirdParty): \Collection {
-
-		$search = new \Search([
-			'thirdParty' => $eThirdParty['id'],
-			'accountLabels' => [\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS, \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS]
-		]);
-
-		return self::applySearch($search)
-			->select(Operation::getSelection() + [
-				'cLetteringCredit' => LetteringLib::delegate('credit'),
-				'cLetteringDebit' => LetteringLib::delegate('debit'),
-			])
-			->or(
-				fn() => $this->whereLetteringStatus(NULL),
-				fn() => $this->whereLetteringStatus('!=', Operation::TOTAL),
-			)
-			->sort(['date' => SORT_ASC, 'm1.id' => SORT_ASC])
-			->getCollection();
-
-	}
-
-	private static function getExtension(string $mimeType): ?string {
-
-		return match($mimeType) {
-			'image/jpeg' => 'jpeg',
-			'image/png' => 'png',
-			'image/gif' => 'gif',
-			'application/pdf' => 'pdf',
-			default => null,
-		};
 
 	}
 

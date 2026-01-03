@@ -8,7 +8,7 @@ class CompanyUi {
 	}
 
 	public static function urlSettings(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
-		return self::urlFarm($eFarm, $eFinancialYear).'/company/configuration';
+		return self::urlFarm($eFarm, $eFinancialYear).'/configuration/accounting';
 	}
 
 	public static function urlJournal(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {

@@ -6,7 +6,12 @@ class BankAccountLib extends BankAccountCrud {
 	public static function getAll(?string $index = NULL): \Collection {
 
 		return BankAccount::model()
-			->select(BankAccount::getSelection())
+			->select(
+				BankAccount::getSelection() + [
+				'nCashflow' => Cashflow::model()
+					->select('id')
+					->delegateCollection('account', callback: fn(\Collection $cCashflow) => $cCashflow->count()),
+			])
 			->sort(['accountId' => SORT_ASC])
 			->getCollection(NULL, NULL,  $index);
 	}

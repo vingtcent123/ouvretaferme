@@ -73,7 +73,7 @@ class FinancialYearUi {
 			$hasAction = FALSE;
 			if($eFinancialYear->acceptUpdate()) {
 
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:update" class="dropdown-item">';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:update?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 					$h .= s("Modifier");
 				$h .= '</a>';
 				$hasAction = TRUE;
@@ -137,14 +137,16 @@ class FinancialYearUi {
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cFinancialYear): string {
+	public function list(\farm\Farm $eFarm, \Collection $cFinancialYear): string {
 
 		if($cFinancialYear->empty() === TRUE) {
 
-			return '<div class="util-info">'
-				.s("Aucun exercice comptable n'a encore été enregistré, créez-en un maintenant pour pouvoir démarrer !")
-			.'</div>'
-			.(new \account\FinancialYearUi()->create($eFarm, new FinancialYear()))->body;
+			$h = '<div class="util-info">';
+				$h .= s("Aucun exercice comptable n'a encore été enregistré, créez-en un maintenant pour pouvoir démarrer !");
+			$h .= '</div>';
+			$h .= (new \account\FinancialYearUi()->create($eFarm, new FinancialYear()))->body;
+			return $h;
+
 		}
 
 		$yes = '<span title="'.s("oui").'">'.\Asset::icon('check-lg').'</span>';
@@ -152,7 +154,7 @@ class FinancialYearUi {
 
 		$h = '';
 
-		$h .= '<div class="stick-sm util-overflow-sm">';
+		$h .= '<div class="stick-sm util-overflow-md">';
 
 			$h .= '<table class="financialYear-item-table tr-even tr-hover">';
 
@@ -164,7 +166,10 @@ class FinancialYearUi {
 						$h .= '<th class="text-center" colspan="2">'.s("Dates").'</th>';
 						$h .= '<th class="text-center" colspan="2">'.s("Bilans").'</th>';
 						$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Régime fiscal").'</th>';
+						$h .= '<th class="text-center" rowspan="2">';
+							$h .= '<span class="hide-md-up">'.s("Régime").'</span>';
+							$h .= '<span class="hide-sm-down">'.s("Régime fiscal").'</span>';
+						$h .= '</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Statut").'</th>';
 						$h .= '<th rowspan="2"></th>';
 
@@ -176,8 +181,11 @@ class FinancialYearUi {
 						$h .= '<th class="text-center">'.s("Fin").'</th>';
 						$h .= '<th class="text-center">'.s("Ouverture").'</th>';
 						$h .= '<th class="text-center">'.s("Clôture").'</th>';
-						$h .= '<th class="text-center">'.s("Redevable ?").'</th>';
-						$h .= '<th class="text-center">'.s("Fréquence de <br />déclaration").'</th>';
+						$h .= '<th class="text-center">'.s("Redevable").'</th>';
+						$h .= '<th class="text-center">';
+							$h .= '<span class="hide-md-up">'.s("Déclaration").'</span>';
+							$h .= '<span class="hide-sm-down">'.s("Fréquence de <br />déclaration").'</span>';
+						$h .= '</th>';
 
 					$h .= '</tr>';
 

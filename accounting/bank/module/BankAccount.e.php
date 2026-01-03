@@ -3,6 +3,12 @@ namespace bank;
 
 class BankAccount extends BankAccountElement {
 
+	public static function getSelection(): array {
+
+		return parent::getSelection();
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

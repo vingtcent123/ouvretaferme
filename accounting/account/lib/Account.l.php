@@ -3,6 +3,14 @@ namespace account;
 
 class AccountLib extends AccountCrud {
 
+	public static function getPropertiesCreate(): array {
+		return self::getPropertiesUpdate();
+	}
+
+	public static function getPropertiesUpdate(): array {
+		return ['class', 'description', 'vatAccount', 'vatRate'];
+	}
+
 	public static function getByClass(string $class): Account {
 
 		$eAccount = new Account();
@@ -27,11 +35,7 @@ class AccountLib extends AccountCrud {
 	public static function getByClasses(array $classes, string $index = 'id'): \Collection {
 
 		return Account::model()
-			->select(
-				['name' => new \Sql('CONCAT(class, ". ", description)')]
-				+ Account::getSelection()
-				+ ['vatAccount' => ['class', 'vatRate', 'description']]
-			)
+			->select(Account::getSelection())
 			->whereClass('IN', $classes)
 			->getCollection(NULL, NULL, $index);
 
@@ -40,11 +44,7 @@ class AccountLib extends AccountCrud {
 	public static function getByIdsWithVatAccount(array $ids): \Collection {
 
 		return Account::model()
-			->select(
-				['name' => new \Sql('CONCAT(class, ". ", description)')]
-				+ Account::getSelection()
-				+ ['vatAccount' => ['class', 'vatRate', 'description']]
-			)
+			->select(Account::getSelection())
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, 'id');
 
@@ -54,11 +54,7 @@ class AccountLib extends AccountCrud {
 
 		$eAccount = new Account();
 		Account::model()
-			->select(
-				['name' => new \Sql('CONCAT(class, ". ", description)')]
-				+ Account::getSelection()
-				+ ['vatAccount' => ['class', 'vatRate', 'description']]
-			)
+			->select(Account::getSelection())
 			->whereClass('LIKE', $prefix.'%')
 			->get($eAccount);
 
@@ -70,11 +66,7 @@ class AccountLib extends AccountCrud {
 
 		$eAccount = new Account();
 		Account::model()
-			->select(
-				['name' => new \Sql('CONCAT(class, ". ", description)')]
-				+ Account::getSelection()
-				+ ['vatAccount' => ['class', 'vatRate', 'description']]
-			)
+			->select(Account::getSelection())
 			->whereId('=', $id)
 			->get($eAccount);
 
@@ -119,11 +111,7 @@ class AccountLib extends AccountCrud {
 			}
 		}
 		return Account::model()
-			->select(
-        ['name' => new \Sql('CONCAT(class, ". ", description)')]
-        + Account::getSelection()
-				+ ['journalCode' => ['id', 'code', 'name']],
-      )
+			->select(Account::getSelection())
 			->sort(['class' => SORT_ASC])
 			->where('class LIKE "'.$search->get('classPrefix').'%"', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
@@ -255,30 +243,23 @@ class AccountLib extends AccountCrud {
 
 	}
 
-	public static function createCustomClass(array $input): void {
+	public static function create(Account $e): void {
 
-		$fw = new \FailWatch();
+		$vatRates = \selling\SellingSetting::getVatRates($e['eFarm']);
 
-		$eAccount = new Account();
-		$eAccount->build(['class', 'description', 'vatAccount', 'vatRate'], $input);
+		if($e['vatRate'] != NULL and array_key_exists($e['vatRate'], $vatRates)) {
+			$e['vatRate'] = $vatRates[$e['vatRate']];
+		} else {
+			$e['vatRate'] = NULL;
+		}
 
-		$fw->validate();
+		$e['custom'] = TRUE;
 
-		$eAccount['custom'] = TRUE;
-
-		Account::model()->insert($eAccount);
+		Account::model()->insert($e);
 
 	}
 
 	public static function delete(Account $e): void {
-
-		if($e['custom'] === FALSE) {
-			throw new \NotExpectedAction();
-		}
-
-		if(\journal\OperationLib::countByAccount($e) > 0) {
-			throw new \NotExpectedAction();
-		}
 
 		Account::model()->delete($e);
 

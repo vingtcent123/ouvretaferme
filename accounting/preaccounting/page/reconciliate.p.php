@@ -9,9 +9,11 @@ new \Page()
 	})
 	->post('cancel', function($data) {
 
-		$eCashflow = \bank\CashflowLib::getById(POST('cashflow'))->validate('acceptCancelReconciliation');
+		$eCashflow = \bank\CashflowLib::getById(POST('cashflow'));
 
-		\preaccounting\ReconciliateLib::cancelReconciliation($data->eFarm, $eCashflow);
+		if($eCashflow['isReconciliated']) {
+			\preaccounting\ReconciliateLib::cancelReconciliation($data->eFarm, $eCashflow);
+		}
 
 		throw new ReloadAction('preaccounting', 'Reconciliation::cancelled');
 

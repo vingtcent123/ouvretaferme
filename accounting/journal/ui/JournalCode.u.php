@@ -31,7 +31,7 @@ Class JournalCodeUi {
 
 	public function getManage(\farm\Farm $eFarm, \Collection $cJournalCode): string {
 
-		$h = '<div class="util-overflow-sm">';
+		$h = '<div class="util-overflow-xs">';
 
 			$h .= '<table id="journal-code-list" class="tr-even tr-hover">';
 
@@ -50,13 +50,13 @@ Class JournalCodeUi {
 							$h .= s("Couleur");
 						$h .= '</th>';
 						$h .= '<th class="text-center">';
-							$h .= s("Extournable ?");
+							$h .= s("Extournable");
 						$h .= '</th>';
 						$h .= '<th class="text-center">';
-							$h .= s("Dans les onglets du livre-journal ?");
+							$h .= s("Dans le journal");
 						$h .= '</th>';
 						$h .= '<th class="text-center">';
-							$h .= s("Nombre de comptes");
+							$h .= s("Comptes associés");
 						$h .= '</th>';
 						$h .= '<th>';
 						$h .= '</th>';
@@ -270,8 +270,8 @@ Class JournalCodeUi {
 			'name' => s("Nom"),
 			'code' => s("Code"),
 			'color' => s("Couleur"),
-			'isReversable' => s("Extournable ?"),
-			'isDisplayed' => s("Dans les onglets du livre-journal ?"),
+			'isReversable' => s("Extournable"),
+			'isDisplayed' => s("Affiché dans le journal"),
 		]);
 
 		switch($property) {

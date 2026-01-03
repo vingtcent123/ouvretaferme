@@ -12,10 +12,6 @@ new \journal\OperationPage(
 	})
 ->read('/journal/operation/{id}', function($data) {
 
-	if($data->e['financialYear']->isAccrualAccounting() or $data->e['financialYear']->isCashAccrualAccounting()) {
-		$data->e['cLetteringCredit'] = \journal\LetteringLib::getByOperation('credit', $data->e);
-		$data->e['cLetteringDebit'] = \journal\LetteringLib::getByOperation('debit', $data->e);
-	}
 	$data->e['cOperationHash'] = \journal\OperationLib::getByHash($data->e['hash']);
 
 	throw new ViewAction($data);
@@ -191,48 +187,6 @@ new \journal\OperationPage(
 
 		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal:'.$success);
 
-	})
-	->create(function($data) {
-
-		// Third party
-		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
-
-		$data->e->merge([
-			'farm' => $data->eFarm,
-			'thirdParty' => $thirdParty,
-			'date' => GET('date'),
-			'description' => GET('description'),
-			'document' => GET('document'),
-			'type' => GET('type'),
-			'amount' => GET('amount', 'float'),
-			'cPaymentMethod' => $data->cPaymentMethod,
-			'cJournalCode' => \journal\JournalCodeLib::getAll(),
-			'financialYear' => $data->eFarm['eFinancialYear'],
-		]);
-
-
-		$data->cBankAccount = \bank\BankAccountLib::getAll();
-
-		throw new ViewAction($data);
-	}, page: 'createPayment')
-	->post('doCreatePayment', function($data) {
-
-		$fw = new FailWatch();
-
-		\journal\Operation::model()->beginTransaction();
-
-		$cOperation = \journal\OperationLib::preparePayments($_POST);
-
-		if($cOperation === NULL or $cOperation->empty() === TRUE) {
-			\Fail::log('Operation::payment.noOperation');
-		}
-
-		$fw->validate();
-
-		\journal\Operation::model()->commit();
-
-		throw new ReloadAction('journal', 'Operation::payment.created');
-
 	});
 
 new Page(
@@ -241,13 +195,6 @@ new Page(
 		if($data->eFarm->usesAccounting() === FALSE) {
 			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 		}
-
-	})
-	->post('getWaiting', function($data) {
-
-		$data->cOperation = \journal\OperationLib::getWaiting(POST('thirdParty', 'account\ThirdParty'));
-
-		throw new ViewAction($data);
 
 	});
 

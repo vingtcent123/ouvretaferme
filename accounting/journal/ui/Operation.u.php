@@ -200,10 +200,6 @@ class OperationUi {
 		$h .= $this->getUtil($eFarm, $eOperation);
 		$h .= $this->getLinked($eFarm, $eOperation);
 
-		if($eOperation['financialYear']->isAccrualAccounting() or $eOperation['financialYear']->isCashAccrualAccounting()) {
-			$h .= $this->getLettering($eFarm, $eOperation);
-		}
-
 		return new \Panel(
 			id: 'panel-operation-view',
 			title: s("Détail d'écriture"),
@@ -334,67 +330,6 @@ class OperationUi {
 		return $h;
 	}
 
-	public function getLettering(\farm\Farm $eFarm, Operation $eOperation): string {
-
-		// On ne doit lettrer que les opérations en 401 ou 411
-		if(
-			\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS) === FALSE and
-			\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS) === FALSE
-		) {
-			return '';
-		}
-
-		if($eOperation['type'] === Operation::CREDIT) {
-			$letteringField = 'cLetteringCredit';
-			$letteringOperation = Operation::DEBIT;
-		} else {
-			$letteringField = 'cLetteringDebit';
-			$letteringOperation = Operation::CREDIT;
-		}
-
-		$totalLettered = $eOperation[$letteringField]->reduce(fn($e, $n) => $e['amount'] + $n, 0);
-
-		$h = '<div class="util-title mt-2">';
-			$h .= '<h3>'.s("Lettrage").'</h3>';
-		$h .= '</div>';
-
-		$h .= '<table class="tr-even">';
-
-			$h .= '<tr>';
-				$h .= '<th>'.s("Lettrage").'</th>';
-				$h .= '<td>'.match($eOperation['letteringStatus']) {
-						NULL => s("Non lettré"),
-						Operation::PARTIAL => s("Partiel"),
-						Operation::TOTAL => s("Soldé"),
-					}.'</td>';
-			$h .= '</tr>';
-
-			$h .= '<tr>';
-				$h .= '<th>'.s("Montant lettré").'</th>';
-				$h .= '<td>'.\util\TextUi::money($totalLettered).'</td>';
-			$h .= '</tr>';
-
-			$h .= '<tr>';
-				$h .= '<th>'.s("Montant non lettré").'</th>';
-				$h .= '<td>'.\util\TextUi::money($eOperation['amount'] - $totalLettered).'</td>';
-			$h .= '</tr>';
-
-		$h .= '</table>';
-
-		if($eOperation[$letteringField]->notEmpty()) {
-
-			$h .= '<div class="util-title mt-2">';
-				$h .= '<h5>'.s("Écritures de lettrage").'</h5>';
-			$h .= '</div>';
-
-			foreach($eOperation[$letteringField] as $eLettering) {
-				$h .= $this->getLinkedOperationDetails($eFarm, $eLettering[$letteringOperation], $eLettering);
-			}
-		}
-
-		return $h;
-
-	}
 	public function getLinked(\farm\Farm $eFarm, Operation $eOperation): string {
 
 		if(
@@ -530,7 +465,7 @@ class OperationUi {
 
 	}
 
-	protected function getLinkedOperationDetails(\farm\Farm $eFarm, Operation $eOperation, Lettering $eLettering = new Lettering()): string {
+	protected function getLinkedOperationDetails(\farm\Farm $eFarm, Operation $eOperation): string {
 
 		$h = '<table class="tr-even">';
 			$h .= '<tr>';
@@ -563,29 +498,6 @@ class OperationUi {
 					$h .= \util\TextUi::money($eOperation['amount']);
 				$h .= '</td>';
 			$h .= '</tr>';
-
-			if($eLettering->notEmpty()) {
-				$h .= '<tr>';
-					$h .= '<td>';
-						$h .= '<div class="operation-view-label">';
-							$h .= s("Code lettrage");
-						$h .= '</div>';
-					$h .= '</td>';
-					$h .= '<td>';
-						$h .= encode($eLettering['code']);
-					$h .= '</td>';
-				$h .= '</tr>';
-				$h .= '<tr>';
-					$h .= '<td>';
-						$h .= '<div class="operation-view-label">';
-							$h .= s("Montant lettré");
-						$h .= '</div>';
-					$h .= '</td>';
-					$h .= '<td>';
-						$h .= \util\TextUi::money($eLettering['amount']);
-					$h .= '</td>';
-				$h .= '</tr>';
-			}
 			$h .= '<tr>';
 				$h .= '<td>';
 					$h .= '<div class="operation-view-label">';
@@ -624,160 +536,6 @@ class OperationUi {
 			body: $h,
 			footer: '',
 		);
-
-	}
-
-	public function createPayment(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Operation $eOperation, \Collection $cBankAccount): \Panel {
-
-		\Asset::css('journal', 'operation.css');
-		\Asset::js('journal', 'payment.js');
-		\Asset::js('account', 'thirdParty.js');
-
-		$form = new \util\FormUi();
-
-		$dialogOpen = $form->openAjax(
-			\company\CompanyUi::urlJournal($eFarm).'/operation:doCreatePayment',
-			[
-				'id' => 'journal-operation-create-payment',
-				'third-party-create-index' => 0,
-				'class' => 'panel-dialog',
-			],
-		);
-
-		$h = '<div class="util-block-help">';
-			$h .= s("En renseignant un paiement, une écriture sur le compte de banque {bankAccount} et une écriture sur le compte fournisseur {supplierAccount} ou le compte client {clientAccount} seront automatiquement créés.<br />De même, le lettrage avec le compte de tiers sera effectué s'il y a des opérations dans le sens inverse !", [
-				'bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>',
-				'clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>',
-				'supplierAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS.'</b>',
-			]);
-		$h .= '</div>';
-		$h .= $form->hidden('farm', $eFarm['id']);
-		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
-
-		$h .= $form->group(
-			s("Type de paiement").\util\FormUi::asterisk(),
-			'<div class="form-control field-radio-group operation-payment-type-radio">'
-					.'<label>'
-						.s("Encaissement : ")
-						.$form->radios(
-						'paymentType',
-						['incoming-client' => s("Un client paie une facture"), 'incoming-supplier' => s("Un fournisseur me rembourse")],
-						attributes: ['mandatory' => TRUE, 'onchange' => 'PaymentOperation.updateAccountLabel();'])
-				.'</label>'
-				.'<label>'
-						.s("Décaissement : ")
-					.$form->radios(
-						'paymentType',
-						['outgoing-client' => s("Je rembourse un client"), 'outgoing-supplier' => s("Je paie un fournisseur")],
-						attributes: ['mandatory' => TRUE, 'onchange' => 'PaymentOperation.updateAccountLabel();'])
-				.'</label>'
-			.'</div>'
-		);
-
-		$h .= $form->dynamicGroup($eOperation, 'thirdParty*', function($d) use($form) {
-			$d->autocompleteDispatch = '[data-third-party="'.$form->getId().'"]';
-			$d->attributes['data-third-party'] = $form->getId();
-			$d->default = fn($e, $property) => get('thirdParty');
-		});
-
-		$h .= $form->dynamicGroup($eOperation, 'amount*', function($d) {
-			$d->label = s("Montant du paiement");
-		});
-		$h .= $form->dynamicGroups($eOperation, ['paymentMethod*', 'paymentDate*']);
-
-		$bankValues = $cBankAccount->makeArray(fn($e) => ['value' => $e['id'], 'label' => $e['label']]);
-
-		$h .= $form->group(
-			s("Libellé de compte banque").\util\FormUi::asterisk(),
-			$form->select(
-				'bankAccountLabel',
-				$bankValues,
-				first($bankValues),
-				attributes: ['mandatory' => TRUE]
-			).\util\FormUi::info(s(
-				"Pour modifier vos comptes bancaires, rendez-vous dans les <link>Paramètres > Les comptes bancaires</link> de votre ferme",
-				['link' => '<a href="'.\company\CompanyUi::urlBank($eFarm).'/account" target="_blank">'])
-			)
-		);
-
-		$h .= $form->group(s("Numéro de compte"), $form->text('accountLabel', NULL, ['disabled' => TRUE]).\util\FormUi::info(s("Le numéro de compte (fournisseur ou client) est automatiquement rempli")));
-
-		$h .= '<div id="waiting-operations-list-container" class="hide">'
-			.$form->group(
-				s("Écritures non lettrées"),
-				'<div class="util-info" id="waiting-operations-list-info">'.$this->letteringInfo().'</div><div id="waiting-operations-list"></div>'
-			)
-		.'</div>';
-
-		$saveButton = $form->submit(
-			s("Enregistrer le paiement et lettrer automatiquement"),
-			[
-				'id' => 'submit-save-payment',
-			],
-		);
-
-		$dialogClose = $form->close();
-
-		return new \Panel(
-			id: 'panel-journal-payment-create',
-			title: s("Ajouter un paiement"),
-			dialogOpen: $dialogOpen,
-			dialogClose: $dialogClose,
-			body: $h,
-			footer: '<div class="operation-create-buttons">'.$saveButton.'</div>',
-		);
-
-	}
-
-	public function letteringInfo(): string {
-		return s("Note : Les opérations non lettrées sont lettrées dans l'ordre chronologique d'écriture (de la plus ancienne à la plus récente).");
-	}
-
-	public function listWaitingOperations(\farm\Farm $eFarm, \util\FormUi $form, \Collection $cOperation): string {
-
-		$h = '<table class="tr-even">';
-			$h .= '<tr>';
-				$h .= '<th class="text-center">#</th>';
-				$h .= '<th>'.s("Date").'</th>';
-				$h .= '<th>'.s("Libellé").'</th>';
-				$h .= '<th>'.s("Numéro de compte").'</th>';
-				$h .= '<th class="text-end">'.s("Débit (restant à lettrer)").'</th>';
-				$h .= '<th class="text-end">'.s("Crédit (restant à lettrer)").'</th>';
-			$h .= '</tr>';
-
-			foreach($cOperation as $eOperation) {
-
-				$balance = $eOperation['amount']
-					- $eOperation['cLetteringDebit']->reduce(fn($e, $n) => $n + $e['amount'], 0)
-					- $eOperation['cLetteringCredit']->reduce(fn($e, $n) => $n + $e['amount'], 0);
-
-				$h .= '<tr>';
-					$h .= '<td class="td-min-content text-center">'.OperationUi::link($eFarm, $eOperation, newTab: TRUE).'</td>';
-					$h .= '<td>'.\util\DateUi::numeric($eOperation['date']).'</td>';
-					$h .= '<td>'.encode($eOperation['description']).'</td>';
-					$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
-
-					$h .= '<td class="text-end">';
-						if($eOperation['type'] === Operation::DEBIT) {
-							$h .= \util\TextUi::money($balance);
-						} else {
-							$h .= '-';
-						}
-					$h .= '</td>';
-
-					$h .= '<td class="text-end">';
-						if($eOperation['type'] === Operation::CREDIT) {
-							$h .= \util\TextUi::money($balance);
-						} else {
-							$h .= '-';
-						}
-					$h .= '</td>';
-				$h .= '</tr>';
-			}
-
-		$h .= '</table>';
-
-		return $h;
 
 	}
 

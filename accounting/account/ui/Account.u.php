@@ -74,7 +74,7 @@ class AccountUi {
 
 	}
 
-	public function getManage(\farm\Farm $eFarm, \Collection $cAccount, \Collection $cJournalCode): string {
+	public function list(\farm\Farm $eFarm, \Collection $cAccount, \Collection $cJournalCode): string {
 
 		\Asset::css('company' , 'company.css');
 
@@ -83,7 +83,7 @@ class AccountUi {
 		}
 
 		$displayProductsCount = $cAccount->match(fn($eAccount) => ($eAccount['nProductPro'] ?? 0) > 0 or ($eAccount['nProductPrivate'] ?? 0) > 0);
-		$displayOperationsCount = $cAccount->match(fn($eAccount) => (array_sum($eAccount['nOperation']) ?? 0) > 0);
+		$displayOperationsCount = $cAccount->match(fn($eAccount) => (array_sum($eAccount['operationByFinancialYear']) ?? 0) > 0);
 
 		\Asset::css('util', 'batch.css');
 		\Asset::js('util', 'batch.js');
@@ -164,8 +164,6 @@ class AccountUi {
 				$h .= '<tbody>';
 
 				foreach($cAccount as $eAccount) {
-
-					$eAccount->setQuickAttribute('farm', $eFarm['id']);
 
 					$classNumber = strlen($eAccount['class']) - 2;
 
@@ -254,8 +252,8 @@ class AccountUi {
 
 								$h .= '<td class="text-end '.($financialYear === first($financialYears) ? 'highlight-stick-right ' : 'highlight-stick-left').'">';
 
-									if(($eAccount['nOperation'][$financialYear] ?? 0) > 0) {
-										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal?accountLabel='.$eAccount['class'].'"  title="'.s("Filtrer les opérations sur ce numéro de compte").'">'.($eAccount['nOperation'][$financialYear] ?? 0).'</a>';
+									if(($eAccount['operationByFinancialYear'][$financialYear] ?? 0) > 0) {
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal?accountLabel='.$eAccount['class'].'"  title="'.s("Filtrer les opérations sur ce numéro de compte").'">'.($eAccount['operationByFinancialYear'][$financialYear] ?? 0).'</a>';
 									}
 
 								$h .= '</td>';
@@ -270,7 +268,7 @@ class AccountUi {
 						}
 
 						$h .= '<td>';
-							if($eAccount['custom'] === TRUE and $eAccount['nOperation'] === 0) {
+							if($eAccount->acceptDelete()) {
 								$message = s("Confirmez-vous la suppression de ce numéro de compte ?");
 								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
 							}
@@ -846,8 +844,8 @@ class AccountUi {
 				$d->default = fn(Account $e) => array_find_key((\selling\SellingSetting::getVatRates($e['eFarm'])), function($vat) use($e) {
 					return $vat === ($e['vatRate'] ?? $e['vatAccount']['vatRate'] ?? NULL);
 				});
-				$d->before = fn(\util\FormUi $form, Account $e) => '<p>'.s("{class} - {description}", ['class' => $e['class'], 'description' => $e['description']]).'</p>';
-				$d->after = \util\FormUi::info((s("Taux de TVA en vigueur dans le pays configuré pour votre ferme"))).'<p>'.\Asset::icon('info-circle').' '.s("Attention, la modification du taux de TVA pour ce numéro de compte n'est pas rétroactive et n'aura aucune incidence sur les écritures comptables précédemment créées.").'</p>';
+				$d->before = fn(\util\FormUi $form, Account $e) => $e->exists() ? '<p>'.s("{class} - {description}", ['class' => $e['class'], 'description' => $e['description']]).'</p>' : NULL;
+				$d->after = fn(\util\FormUi $form, Account $e) => $e->exists() ? \util\FormUi::info((s("Taux de TVA en vigueur dans le pays configuré pour votre ferme"))).'<p>'.\Asset::icon('info-circle').' '.s("Attention, la modification du taux de TVA pour ce numéro de compte n'est pas rétroactive et n'aura aucune incidence sur les écritures comptables précédemment créées.").'</p>' : NULL;
 				break;
 
 			case 'class':
