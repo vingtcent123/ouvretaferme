@@ -8,7 +8,7 @@ class JournalUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	public function getJournalTitle(\farm\Farm $eFarm): string {
+	public function getJournalTitle(\farm\Farm $eFarm, bool $hasSearch = TRUE): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
 
@@ -23,7 +23,9 @@ class JournalUi {
 
 				$h .= '<div class="journal-title-buttons">';
 
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#journal-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+					if($hasSearch) {
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#journal-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+					}
 
 					if(
 						GET('financialYear') !== '0' and // Cas où on regarde tous les exercices
@@ -33,7 +35,7 @@ class JournalUi {
 						$eFarm->canManage()
 					) {
 						$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?journalCode='.GET('journalCode').'" class="btn btn-primary">';
-							$h .= \Asset::icon('plus-circle').' '.s("Ajouter une écriture");
+							$h .= \Asset::icon('plus-circle').' '.s("Enregistrer une écriture");
 						$h .= '</a>';
 					}
 

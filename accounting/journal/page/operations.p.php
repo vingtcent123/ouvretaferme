@@ -14,6 +14,10 @@ new Page(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
+		if(get_exists('onboarding')) {
+			throw new ViewAction($data, ':onboarding');
+		}
+
 		$data->eThirdParty = get_exists('thirdParty')
 			? account\ThirdPartyLib::getById(GET('thirdParty', 'int'))
 			: NULL;

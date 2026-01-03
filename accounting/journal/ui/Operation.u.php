@@ -590,7 +590,7 @@ class OperationUi {
 
 		$footer = '<div class="operation-create-button-add">'.$addButton.$saveButton.'</div>';
 
-		$defaultTitle = s("Ajouter une écriture");
+		$defaultTitle = s("Enregistrer une écriture");
 		return new \Panel(
 			id: 'panel-journal-operation-create',
 			title: '<div id="panel-journal-operation-create-title" data-text-singular="'.$defaultTitle.'" data-text-plural="'.s("Ajouter plusieurs écritures").'">'.$defaultTitle.'</div>',

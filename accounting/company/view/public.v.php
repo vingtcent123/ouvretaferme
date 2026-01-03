@@ -105,20 +105,15 @@ new AdaptativeView('beta', function($data, FarmTemplate $t) {
 	echo '</div>';
 
 	echo '<h2 class="mt-2">'.s("Rejoindre la beta").'</h2>';
-	echo '<div class="util-block">';
-		echo new \company\BetaApplicationUi()->create($data->eFarm);
-	echo '</div>';
 
 	if($data->eBetaApplication->notEmpty()) {
 
-		echo '<div class="util-box-success">'.s("Nous avons bien pris en compte votre demande et reviendrons vers vous dès que possible ! Merci pour votre soutien").'</div>';
+		echo '<div class="util-box-success">'.s("Nous avons bien pris en compte votre demande et reviendrons vers vous dès que possible ! Merci pour votre soutien.").'</div>';
 
 	} else {
 
-		echo '<div id="beta-form-container" class="hide">';
-
+		echo '<div class="util-block">';
 			echo new \company\BetaApplicationUi()->create($data->eFarm);
-
 		echo '</div>';
 	}
 

@@ -29,7 +29,7 @@ FinancialYear:
   hasVat: bool # Est-ce que cet exercice est soumis à la TVA ?
   vatFrequency: ?enum(MONTHLY, QUARTERLY, ANNUALLY)
   taxSystem: ?enum(MICRO_BA, BA_REEL_SIMPLIFIE, BA_REEL_NORMAL, AUTRE_BIC, AUTRE_BNC)
-  accountingType: enum(ACCRUAL, CASH, CASH_ACCRUAL) = CASH
+  accountingType: enum(ACCRUAL, CASH) = CASH
   legalCategory: ?int16(1000, 9999) # Catégorie juridique (au sens INSEE) sur 4 chiffres
   associates: ?int8(0, null) # Nombre d'associés
   closeDate: ?date # Quand le bilan de clôture a été réalisé

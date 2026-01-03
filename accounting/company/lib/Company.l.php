@@ -117,14 +117,13 @@ class CompanyLib {
 
 		$fw->validate();
 
-		if(OTF_DEMO === FALSE) {
-			self::createDatabase($eFarm);
-		}
+		\account\FinancialYear::model()->beginTransaction();
 
-		// Réinstanciation nécessaire car il a été précédemment instancié avec une mauvaise connexion.
-		new \account\FinancialYearModel()->insert($eFinancialYear);
+		\account\FinancialYear::model()->insert($eFinancialYear);
 
-		\farm\Farm::model()->update($eFarm, ['hasAccounting' => TRUE]);
+		\farm\Farm::model()->update($eFarm, ['hasFinancialYears' => TRUE]);
+
+		\account\FinancialYear::model()->commit();
 
 	}
 

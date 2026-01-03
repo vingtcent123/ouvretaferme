@@ -82,7 +82,6 @@ class ThirdPartyUi {
 		}
 
 		$isAccrual = (FEATURE_ACCOUNTING_ACCRUAL and ($eFarm['eFinancialYear']['accountingType'] === FinancialYear::ACCRUAL));
-		$isCashAccrual = (FEATURE_ACCOUNTING_CASH_ACCRUAL and (($eFarm['eFinancialYear']['accountingType'] === FinancialYear::CASH_ACCRUAL) or $eFarm->usesAccounting() === FALSE));
 
 		$h = '';
 
@@ -102,7 +101,7 @@ class ThirdPartyUi {
 						$h .= '</th>';
 						$h .= '<th rowspan="2">'.s("Client").'</th>';
 
-						if($isAccrual or $isCashAccrual) {
+						if($isAccrual) {
 							$h .= '<th rowspan="2">'.s("Compte Client").'</th>';
 						}
 
@@ -147,7 +146,7 @@ class ThirdPartyUi {
 									$h .= $eThirdParty->quick('customer', $eThirdParty['customer']->exists() ? encode($eThirdParty['customer']['name']) : '<span class="undefined">'.s("Non renseigné").'</span>');
 								$h .= '</td>';
 
-								if($isAccrual or $isCashAccrual) {
+								if($isAccrual) {
 
 									$h .= '<td>';
 										$h .= $eThirdParty->quick('clientAccountLabel', $eThirdParty['clientAccountLabel'] ? encode($eThirdParty['clientAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');

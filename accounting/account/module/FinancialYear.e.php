@@ -27,11 +27,6 @@ class FinancialYear extends FinancialYearElement {
 		return $this['accountingType'] === FinancialYear::CASH;
 	}
 
-	// Comptabilité de trésorerie avec engagement pour les ventes
-	public function isCashAccrualAccounting() {
-		return FEATURE_ACCOUNTING_CASH_ACCRUAL and $this['accountingType'] === FinancialYear::CASH_ACCRUAL;
-	}
-
 	public function isCurrent() {
 		return $this['startDate'] <= date('Y-m-d') and $this['endDate'] >= date('Y-m-d');
 	}

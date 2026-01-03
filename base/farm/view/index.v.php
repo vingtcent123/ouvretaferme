@@ -748,7 +748,7 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page qui permet de générer les factures de vos ventes").'</h4>';
 			echo '<ul>';
-				echo '<li>'.s("Éditez vos factures à partir de n'importe laquelle de vos ventes déjà livrée ou à partir de plusieurs ventes d'un même client").'</li>';
+				echo '<li>'.s("Éditez vos factures à partir de n'importe laquelle de vos ventes déjà livrées ou à partir de plusieurs ventes d'un même client").'</li>';
 				echo '<li>'.s("Envoyez automatiquement les factures par e-mail à vos clients").'</li>';
 			echo '</ul>';
 			if($data->hasSales) {

@@ -13,7 +13,7 @@ new Page(function($data) {
 	})
 	->get('/comptabilite/parametrer', function ($data) {
 
-		if(\company\CompanySetting::BETA) {
+		if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
 
 			$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
 
@@ -39,7 +39,7 @@ new Page(function($data) {
 
 		$fw->validate();
 
-		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal?success=company:Company::created');
+		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal?onboarding&success=company:Company::created');
 
 	});
 

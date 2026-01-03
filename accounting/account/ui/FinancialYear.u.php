@@ -866,21 +866,11 @@ class FinancialYearUi {
 				$cash .= '</ul>';
 				$cash .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour tenir une comptabilité de façon simple.").'</i></p>';
 
-
-				$cashAccrual = '<h4>'.s("Comptabilité de trésorerie et à l'engagement pour les ventes").'</h4>';
-				$cashAccrual .= '<ul>';
-					$cashAccrual .= '<li>'.s("Peut être choisie lorsque l'exploitation est imposée au régime du micro-BA ou au réel simplifié").'</li>';
-				$cashAccrual .= '</ul>';
-				$cashAccrual .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour tenir une comptabilité de façon simple, tout en suivant ses encours client en comptabilité.").'</i></p>';
-
 				$d->values = [
 					FinancialYear::CASH => $cash,
 					FinancialYear::ACCRUAL => $accrual,
 				];
 
-				if(FEATURE_ACCOUNTING_CASH_ACCRUAL) {
-					$d->values[FinancialYear::CASH_ACCRUAL] = $cashAccrual;
-				}
 				break;
 
 			case 'startDate' :

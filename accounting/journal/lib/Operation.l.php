@@ -965,7 +965,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		// Le mix engagement / trésorerie n'est effectué que pour les opérations avec les clients
-		if(FEATURE_ACCOUNTING_CASH_ACCRUAL and $eFinancialYear->isCashAccrualAccounting() and $hasCharge) {
+		if($hasCharge) {
 			return new Operation();
 		}
 

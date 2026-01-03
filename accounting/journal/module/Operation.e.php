@@ -229,7 +229,7 @@ class Operation extends OperationElement {
 					return TRUE;
 				}
 
-				if($this['financialYear']->isAccrualAccounting() or $this['financialYear']->isCashAccrualAccounting()) {
+				if($this['financialYear']->isAccrualAccounting()) {
 					return TRUE;
 				}
 

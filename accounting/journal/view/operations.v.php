@@ -1,5 +1,33 @@
 <?php
+new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
+
+	$t->nav = 'accounting';
+	$t->subNav = 'operations';
+
+	$t->title = s("Le livre journal de {farm}", ['farm' => encode($data->eFarm['name'])]);
+	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/livre-journal';
+
+	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, FALSE);
+
+	echo '<div class="util-block-help">';
+		echo '<h4>'.s("Vous êtes sur la page pour gérer vos écritures comptables").'</h4>';
+		echo '<p>'.s("Avec {siteName}, vous allez gérer facilement et de façon fiable la comptabilité de votre ferme :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("Analysez les écritures comptables proposées pour vos ventes").'</li>';
+			echo '<li>'.s("Importez vos factures en comptabilité en un clic").'</li>';
+			echo '<li>'.s("Enregistrez facilement vos écritures comptables d'achats, ou de ventes effectuées hors de {siteName}").'</li>';
+			echo '<li>'.s("Suivez l'amortissement de vos immobilisations").'</li>';
+			echo '<li>'.s("Consultez les analyses financières de votre ferme comme le compte de résultat, le bilan, les soldes intermédiaires de gestion mais aussi, avec des graphiques : le suivi de trésorerie, des charges et produits.").'</li>';
+		echo '</ul>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-primary btn-lg">'.s("Réaliser mon premier import bancaire").'</a>';
+});
+
 new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
+
 
 	$t->nav = 'accounting';
 	$t->subNav = 'operations';
