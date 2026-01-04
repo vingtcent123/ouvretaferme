@@ -5,7 +5,6 @@ class CompanySetting extends \Settings {
 
 	const BETA = TRUE;
 	const ACCOUNTING_FARM_BETA = [
-		2468,
 	];
 
 	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
