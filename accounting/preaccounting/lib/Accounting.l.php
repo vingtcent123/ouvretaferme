@@ -73,7 +73,11 @@ Class AccountingLib {
 
 			$items = []; // groupement par accountlabel, moyen de paiement
 
-			$payments = self::explodePaymentsRatio($eSale);
+			if($eSale['cPayment']->empty()) { // Pas de moyen de paiement => On fake
+				$payments = [0 => ['label' => '', 'rate' => 100.0]];
+			} else {
+				$payments = self::explodePaymentsRatio($eSale);
+			}
 
 			foreach($eSale['cItem'] as $eItem) {
 
@@ -230,6 +234,14 @@ Class AccountingLib {
 
 		$dateCondition = \selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to'));
 
+		if($forImport) {
+			\selling\Invoice::model()
+				->whereCashflow('!=', NULL)
+				->whereAccountingHash(NULL)
+				->whereReadyForAccounting(TRUE)
+				->where('m3.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
+			;
+		}
 		return \selling\Invoice::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
 			->join(\bank\Cashflow::model(), 'm1.cashflow = m3.id', 'LEFT')
@@ -237,12 +249,9 @@ Class AccountingLib {
 			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
 			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
-			->whereCashflow('!=', NULL, if: $forImport === TRUE)
-			->whereAccountingHash(NULL, if: $forImport === TRUE)
-			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
-			->where('m3.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
+			->where('m1.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
 		;
 
 	}

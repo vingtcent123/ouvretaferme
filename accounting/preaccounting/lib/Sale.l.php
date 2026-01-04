@@ -39,55 +39,6 @@ Class SaleLib {
 
 	}
 
-	public static function setReadyForAccountingByProducts(\Collection $cProduct): void {
-
-		// Ventes qui contiennent ces produits
-		$cSale = \selling\Sale::model()
-			->select(['id'])
-			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
-			->whereReadyForAccounting(FALSE)
-			->whereAccountingHash(NULL)
-			->where('m2.product IN ('.join(', ', $cProduct->getIds()).')')
-			->getCollection();
-
-		if($cSale->notEmpty()) {
-			self::setReadyForAccountingSaleCollection($cSale);
-		}
-
-		// Factures qui contiennent ces produits
-		$cInvoiceFiltered = \selling\Sale::model()
-			->select(['invoice', 'total' => new \Sql('COUNT(*)'), 'countOk' => new \Sql('SUM(IF(m1.readyForAccounting = 1, 1, 0))')])
-			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
-			->whereInvoice('!=', NULL)
-			->where('m2.product IN ('.join(', ', $cProduct->getIds()).')')
-			->where('m1.accountingHash IS NULL')
-			->group('invoice')
-			->having('m1_total = m1_countOk')
-			->getCollection()
-			->getColumnCollection('invoice');
-
-		if($cInvoiceFiltered->notEmpty()) {
-
-			\selling\Invoice::model()
-        ->whereId('IN', $cInvoiceFiltered->getIds())
-        ->update(['readyForAccounting' => TRUE]);
-		}
-
-	}
-
-	public static function filterForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\SaleModel {
-
-		return \selling\Sale::model()
-			->wherePreparationStatus('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT, \selling\Sale::BASKET])
-			->where('priceExcludingVat != 0.0')
-			->where('m1.farm = '.$eFarm['id'])
-			->where('deliveredAt BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
-			->whereReadyForAccounting(TRUE, if: $forImport)
-			->whereId($search->get('id'), if: $search->get('id'))
-			->where(new \Sql('DATE(deliveredAt) < CURDATE()'));
-
-	}
-
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\SaleModel {
 
 		\selling\Sale::model()
@@ -104,13 +55,12 @@ Class SaleLib {
 		}
 
 		return \selling\Sale::model()
-			->wherePreparationStatus('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::CANCELED, \selling\Sale::EXPIRED, \selling\Sale::DRAFT, \selling\Sale::BASKET])
+			->wherePreparationStatus(\selling\Sale::DELIVERED)
 			->where('priceExcludingVat != 0.0')
-			->whereInvoice('=', NULL)
+			->whereInvoice(NULL)
 			->where('m1.type = "'.\selling\Sale::PRIVATE.'"')
 			->where(fn() => new \Sql('m1.customer = '.$search->get('customer')['id']), if: $search->get('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
-			->whereReadyForAccounting(FALSE)
 			->where('m1.deliveredAt BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')))
 			->where(new \Sql('DATE(m1.deliveredAt) < CURDATE()'));
 
