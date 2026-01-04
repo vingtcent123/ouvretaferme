@@ -1948,7 +1948,7 @@ class FarmUi {
 			$h .= '</h1>';
 
 				$h .= '<div>';
-					if(array_sum($numbers['import']) > 0) {
+					if(array_sum($numbers['import']) > 0 and $eFarm->usesAccounting()) {
 						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
 					}
 					if($numbers['reconciliate'] > 0) {

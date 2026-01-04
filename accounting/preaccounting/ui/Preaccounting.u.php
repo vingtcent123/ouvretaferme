@@ -561,13 +561,15 @@ Class PreaccountingUi {
 
 				$h .= '<h3>'.s("Intégrez vos factures dans le logiciel comptable de Ouvretaferme").'</h3>';
 
-				if($nProduct > 0) {
+				if($eFarm->usesAccounting() === FALSE) {
+					$h .= '<p class="util-info">'.s("L'import sera possible dès lors que vous utiliserez le logiciel comptable de {siteName} pour tenir votre comptabilité !").'</p>';
+				} else if($nProduct > 0) {
 					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
 				} else {
 					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer les factures avec lesquelles vous avez fait un rapprochement bancaire !").'</p>';
 				}
 				$class = 'btn btn-primary';
-				if($nProduct > 0) {
+				if($nProduct > 0 or $eFarm->usesAccounting() === FALSE) {
 					$class .= ' disabled';
 					$url = 'javascript: void(0);';
 				} else {

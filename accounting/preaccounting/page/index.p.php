@@ -268,6 +268,10 @@ new Page(function($data) {
 	})
 	->get('/precomptabilite:importer', function($data) {
 
+		if($data->eFarm->usesAccounting() === FALSE) {
+			throw new NotExistsAction();
+		}
+
 		$data->selectedTab = in_array(GET('tab'), ['market', 'invoice', 'sales']) ? GET('tab') : 'market';
 
 		$data->search = new Search([
