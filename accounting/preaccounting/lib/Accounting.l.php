@@ -296,6 +296,7 @@ Class AccountingLib {
 			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
+			->whereCustomer('=', $search->get('customer'), if: $search->get('customer')->notEmpty())
 			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
 			->getCollection();
 
@@ -611,12 +612,47 @@ Class AccountingLib {
 
 	}
 
-	public static function countMarkets(\farm\Farm $eFarm, string $from, string $to): int {
+	public static function filterOperations(array $operations, \Search $search): array {
 
-		return \preaccounting\SaleLib::filterForAccounting($eFarm, new \Search(['from' => $from, 'to' => $to]), TRUE)
-	    ->whereProfile(\selling\Sale::MARKET)
-	    ->whereAccountingHash(NULL)
-	    ->count();
+		$operationsFiltered = [];
+
+		foreach($operations as $operation) {
+
+			if($search->get('account') and $search->get('account')->notEmpty()) {
+				if($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] !== \account\AccountLabelLib::pad($search->get('account')['class'])) {
+					continue;
+				}
+			}
+
+			if($search->get('method') and $search->get('method')->notEmpty()) {
+				if($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD] !== $search->get('method')['name']) {
+					continue;
+				}
+			}
+
+			$operationsFiltered[] = $operation;
+		}
+
+		return $operationsFiltered;
+
+	}
+
+	public static function sortOperations(array $operations): array {
+
+		usort($operations, function($entry1, $entry2) {
+			if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] === $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
+				if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT] === $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]) {
+					return 0;
+				}
+				return strcmp($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT], $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]);
+			}
+			if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] < $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
+				return -1;
+			}
+			return 1;
+    });
+
+		return $operations;
 
 	}
 

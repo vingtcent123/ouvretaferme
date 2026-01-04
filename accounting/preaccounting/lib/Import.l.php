@@ -28,7 +28,7 @@ Class ImportLib {
 
 		foreach($cInvoice as &$eInvoice) {
 
-			$eInvoice['operations'] = self::sortOperations($extraction, (string)$eInvoice['name']);
+			$eInvoice['operations'] = self::filterOperations($extraction, (string)$eInvoice['name']);
 
 		}
 
@@ -184,21 +184,11 @@ Class ImportLib {
 
 	}
 
-	protected static function sortOperations(array $extraction, string $document) {
+	protected static function filterOperations(array $extraction, string $document) {
 
 		$operations = array_filter($extraction, fn($line) => $line[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT] === $document);
 
-		usort($operations, function($entry1, $entry2) {
-			if((int)$entry1[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] < (int)$entry2[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
-				return -1;
-			}
-			if((int)$entry1[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] > (int)$entry2[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) {
-				return 1;
-			}
-			return strcmp($entry1[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD], $entry2[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
-		});
-
-		return $operations;
+		return AccountingLib::sortOperations($operations);
 
 	}
 

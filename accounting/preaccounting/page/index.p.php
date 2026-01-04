@@ -151,7 +151,7 @@ new Page(function($data) {
 				if($methodId === \preaccounting\SaleLib::MARKET_PAYMENT_METHOD_FAKE_ID) {
 					$eMethod = $cMethod->offsetGet(\preaccounting\SaleLib::MARKET_PAYMENT_METHOD_FAKE_ID);
 				} else {
-					$eMethod = GET('method', 'payment\Method');
+					$eMethod = $cMethod->offsetGet($methodId);
 				}
 			} else {
 				$eMethod = new \payment\Method();
@@ -179,13 +179,11 @@ new Page(function($data) {
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
 
-				$data->nInvoice = \preaccounting\AccountingLib::countInvoices($data->eFarm, $data->search);
-				$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
+				$cAccount = \account\AccountLib::getAll();
+				$invoiceOperations= \preaccounting\AccountingLib::extractInvoice($data->eFarm, $data->search, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
+				$fecInvoice = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
 
-				$fecInvoice = [];
-				foreach($data->cInvoice->getColumn('operations') as $operations) {
-					$fecInvoice = array_merge($fecInvoice, $operations);
-				}
+				$data->nInvoice = count(array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT)));
 
 			} else {
 
@@ -194,22 +192,7 @@ new Page(function($data) {
 
 			}
 
-			$operations = array_merge($fecSale, $fecInvoice);
-
-			usort($operations, function($entry1, $entry2) {
-				if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] === $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
-					if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT] < $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]) {
-						return 0;
-					}
-					return strcmp($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT], $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]);
-				}
-				if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] < $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
-					return -1;
-				}
-				return 1;
-	    });
-
-			$data->operations = $operations;
+			$data->operations = \preaccounting\AccountingLib::sortOperations(array_merge($fecSale, $fecInvoice));
 
 		}
 		throw new ViewAction($data);
@@ -229,32 +212,33 @@ new Page(function($data) {
 			$cAccount = \account\AccountLib::getAll();
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 0) {
-				[$operations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
+
+				[$saleOperations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
+
 			} else {
-				$operations = [];
+				$saleOperations = [];
 			}
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
 
-				$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
+				$cAccount = \account\AccountLib::getAll();
+				$invoiceOperations = \preaccounting\AccountingLib::extractInvoice($data->eFarm, $data->search, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
+				$invoiceOperations = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
 
-				foreach($data->cInvoice->getColumn('operations') as $invoiceOperations) {
-					$operations = array_merge($operations, $invoiceOperations);
-				}
-
+			} else {
+				$invoiceOperations = [];
 			}
 
-			// Formattage Nombres
+			$operations = \preaccounting\AccountingLib::sortOperations(array_merge($saleOperations, $invoiceOperations));
+
+			// Formattage des nombres
 			foreach($operations as &$lineFec) {
 
 				foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
-
 					$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
-
 				}
 
 			}
-
 
 			$fecData = array_merge([\account\FecLib::getHeader()], $operations);
 

@@ -187,8 +187,17 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	if(count($data->operations) > 0) {
 
-		$totalDebit = array_sum(array_column($data->operations, \preaccounting\AccountingLib::FEC_COLUMN_DEBIT));
-		$totalCredit = array_sum(array_column($data->operations, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT));
+		// On exclut les lignes de banque du total
+		$filteredOperations = array_filter(
+			$data->operations,
+			fn($operation) => \account\AccountLabelLib::isFromClass(
+				$operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
+				\account\AccountSetting::BANK_ACCOUNT_CLASS
+			) === FALSE
+		);
+
+		$totalDebit = array_sum(array_column($filteredOperations, \preaccounting\AccountingLib::FEC_COLUMN_DEBIT));
+		$totalCredit = array_sum(array_column($filteredOperations, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT));
 
 		echo '<ul class="util-summarize">';
 
