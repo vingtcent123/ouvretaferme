@@ -583,6 +583,7 @@ class OperationUi {
 				'data-text-plural' => s(("Enregistrer les écritures")),
 				'data-confirm-text-singular' => s("Il y a une incohérence de valeur de TVA, voulez-vous quand même enregistrer ?"),
 				'data-confirm-text-plural' => s("Il y a plusieurs incohérences de valeur de TVA, voulez-vous quand même enregistrer ?"),
+				'data-waiter' => s("Enregistrement en cours"),
 			],
 		);
 

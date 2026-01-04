@@ -594,6 +594,7 @@ class CashflowUi {
 				'data-text-singular' => s("Enregistrer l'écriture"),
 				'data-text-plural' => s("Enregistrer les écritures"),
 				'data-confirm-text' => s("Il y a une incohérence entre les écritures saisies et le montant de l'opération bancaire. Voulez-vous vraiment les enregistrer tel quel ?"),
+				'data-waiter' => s("Enregistrement en cours"),
 			],
 		);
 
