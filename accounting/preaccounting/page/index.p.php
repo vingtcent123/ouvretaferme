@@ -293,7 +293,7 @@ new Page(function($data) {
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
 		$data->tipNavigation = 'inline';
 
-		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaitingByCashflow();
+		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaiting();
 
 		$data->eImportLast = \bank\ImportLib::getLastImport();
 
