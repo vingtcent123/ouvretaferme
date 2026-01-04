@@ -609,7 +609,7 @@ class ItemLib extends ItemCrud {
 
 		if($e['product']->notEmpty()) {
 
-			$e['product']->expects(['profile', 'origin', 'additional', 'proAccount', 'privateAccount']);
+			$e['product']->expects(['profile', 'origin', 'additional']);
 
 		}
 		
@@ -635,20 +635,6 @@ class ItemLib extends ItemCrud {
 			};
 			$e['additional'] = $e['product']['additional'];
 			$e['origin'] = $e['product']['origin'];
-
-			if($eSale['farm']->hasAccounting()) {
-
-				if($eSale['type'] === Sale::PRIVATE and $e['product']['privateAccount']->notEmpty()) {
-					$e['account'] = $e['product']['privateAccount'];
-				} else if($eSale['type'] === Sale::PRO) {
-					if($e['product']['proAccount']->notEmpty()) {
-						$e['account'] = $e['product']['proAccount'];
-					} else if($e['product']['privateAccount']->notEmpty()) {
-						$e['account'] = $e['product']['privateAccount'];
-					}
-				}
-
-			}
 
 		} else {
 			$e->expects(['nature']);
