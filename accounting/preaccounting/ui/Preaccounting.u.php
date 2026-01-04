@@ -189,7 +189,7 @@ Class PreaccountingUi {
 						$h .= '</td>';
 
 						$h .= '<td class="sale-item-status">';
-						$h .= new \selling\InvoiceUi()->getStatusForUpdate($eInvoice, 'btn-xs');
+							$h .= '<span class="btn btn-readonly invoice-status-'.$eInvoice['status'].'-button btn-xs">'.\selling\InvoiceUi::p('status')->values[$eInvoice['status']].'</span>';
 						$h .= '</td>';
 
 					$h .= '</tr>';
