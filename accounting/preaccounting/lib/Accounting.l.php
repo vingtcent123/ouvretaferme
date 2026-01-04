@@ -255,7 +255,7 @@ Class AccountingLib {
 
 	}
 
-	private static function getInvoices(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
+	public static function getInvoices(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
 
 		if($search->get('type')) {
 
@@ -272,17 +272,17 @@ Class AccountingLib {
 
 		return \selling\Invoice::model()
 			->select([
-				'id', 'date', 'name',
-				'priceExcludingVat', 'priceIncludingVat', 'vat',
+				'id', 'date', 'name', 'document', 'farm',
+				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat',
 				'customer' => [
-					'id', 'name',
+					'id', 'name', 'type', 'destination',
 					'thirdParty' => \account\ThirdParty::model()
 						->select('id', 'clientAccountLabel')
 						->delegateElement('customer')
 
 				],
 				'cashflow' => \bank\Cashflow::getSelection() + ['account' => \bank\BankAccount::getSelection()],
-				'accountingDifference',
+				'accountingDifference', 'readyForAccounting', 'accountingHash',
 				'paymentMethod' => ['name'],
 				'cSale' => \selling\Sale::model()
 					->select([
@@ -428,14 +428,19 @@ Class AccountingLib {
 						}
 					}
 
-					// On utilise la dernière vente pour réharmoniser les centimes
+					// On utilise le dernier item de la dernière vente pour réharmoniser les centimes
 					if($eSale->is($eSaleLast) and $eItem->is($eItemLast)) {
-						if($amountExcludingVat !== round($totalExcludingVat - $currentExcludingVat, 2)) {
-							$amountExcludingVat = round($totalExcludingVat - $currentExcludingVat, 2);
+
+						// Cts manquants sur la TVA
+						if($totalVat !== $currentVat) {
+							$amountVat += ($totalVat - $currentVat);
 						}
-						if($amountVat !== round($totalVat - $currentVat, 2)) {
-							$amountVat = round($totalVat - $currentVat, 2);
+
+						// Cts manquants sur le HT
+						if($totalExcludingVat !== $currentExcludingVat) {
+							$amountExcludingVat += ($totalExcludingVat - $currentExcludingVat);
 						}
+
 					}
 
 					// Montant HT

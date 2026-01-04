@@ -8,27 +8,15 @@ Class ImportLib {
 		$eFarm->expects(['cFinancialYear']);
 
 		$cAccount = \account\AccountLib::getAll();
-		$extraction = \preaccounting\AccountingLib::extractInvoice($eFarm, $search, $eFarm['cFinancialYear'], $cAccount, forImport: TRUE);
 
-		$nameFilter = join('", "', array_column($extraction, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
+		$cInvoice = AccountingLib::getInvoices($eFarm, $search, TRUE);
 
-		$cInvoice = AccountingLib::applyInvoiceFilter($eFarm, $search)
-			->select([
-				'id', 'document', 'name', 'customer' => ['id', 'name', 'type', 'destination'],
-				'date', 'accountingHash', 'farm', 'accountingDifference',
-				'taxes', 'hasVat', 'vat', 'priceExcludingVat', 'priceIncludingVat',
-				'readyForAccounting', 'accountingDifference',
-				'cashflow' => \bank\Cashflow::getSelection() + ['account' => \bank\BankAccount::getSelection()]
-			])
-			->whereReadyForAccounting(TRUE)
-			->whereAccountingHash('=', NULL)
-			->where(new \Sql('m1.name IN ("'.$nameFilter.'")'), if: mb_strlen($nameFilter) > 0)
-			->sort(['m1.date' => SORT_ASC])
-			->getCollection(NULL, NULL, 'name');
+		$fec = AccountingLib::generateInvoiceFec($cInvoice, $eFarm['cFinancialYear'], $cAccount, TRUE);
 
+		// Rattacher les opérations aux invoices
 		foreach($cInvoice as &$eInvoice) {
 
-			$eInvoice['operations'] = self::filterOperations($extraction, (string)$eInvoice['name']);
+			$eInvoice['operations'] = self::filterOperations($fec, (string)$eInvoice['name']);
 
 		}
 
