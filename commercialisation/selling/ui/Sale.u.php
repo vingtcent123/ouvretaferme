@@ -1901,7 +1901,7 @@ class SaleUi {
 
 		if($eSale['farm']['hasSales'] === FALSE) {
 
-			$h .= '<div class="util-block-important mt-2">';
+			$h .= '<div class="util-block-info mt-2">';
 				$h .= '<h3>'.s("Si vous souhaitez créer des ventes pour tester {siteName}").'</h3>';
 				$h .= '<p>'.s("Nous vous suggérons d'utiliser la ferme de démonstration ou de créer une ferme de test si vous souhaitez tester les fonctionnalités de commercialisation de Ouvretaferme. En raison de contraintes réglementaires, vous ne pouvez pas supprimer des ventes qui ne sont pas à l'état de brouillon sur le logiciel.").'</p>';
 				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/1/ventes" target="_blank" class="btn btn-transparent">'.s("Utiliser la démo").'</a>';

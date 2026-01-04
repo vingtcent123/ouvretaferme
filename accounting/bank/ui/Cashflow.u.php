@@ -826,7 +826,7 @@ class CashflowUi {
 			return '';
 		}
 
-		$h = '<div class="util-block-important">';
+		$h = '<div class="util-block-info">';
 			$h .= \Asset::icon('fire', ['class' => 'util-block-icon']);
 			$h .= '<h3>'.s("Rapprochement bancaire").'</h3>';
 			$h .= '<p>';

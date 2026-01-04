@@ -310,7 +310,7 @@ class ShopManageUi {
 
 			if($eShop['cShare']->empty()) {
 
-				$h .= '<div class="util-block-important">';
+				$h .= '<div class="util-block-info">';
 					$h .= '<h4>'.s("Il est trop tôt pour commencer à vendre !").'</h4>';
 					$h .= '<p>'.s("Vous devez d'abord inviter des premiers producteurs et les inciter à associer un ou plusieurs de ses catalogues à la boutique.").'</p>';
 					$h .= '<a href="/shop/:invite?id='.$eShop['id'].'" class="btn btn-transparent">'.s("Envoyer des invitations").'</a>';

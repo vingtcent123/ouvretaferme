@@ -27,7 +27,7 @@ new AdaptativeView('/factures/', function($data, FarmTemplate $t) {
 
 	if(FEATURE_PA === FALSE) {
 
-		echo '<div class="util-block-important	">'.s("Cette fonctionnalité arrive bientôt ! On se dépêche... ").' '.Asset::icon('lightning-charge-fill').Asset::icon('lightning-charge-fill').Asset::icon('lightning-charge-fill').'</div>';
+		echo '<div class="util-block-info	">'.s("Cette fonctionnalité arrive bientôt ! On se dépêche... ").' '.Asset::icon('lightning-charge-fill').Asset::icon('lightning-charge-fill').Asset::icon('lightning-charge-fill').'</div>';
 
 	} else {
 

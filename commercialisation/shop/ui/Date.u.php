@@ -349,7 +349,7 @@ class DateUi {
 
 						$canSubmit = FALSE;
 
-						$h .= '<div class="util-block-important">';
+						$h .= '<div class="util-block-info">';
 							$h .= '<h4>'.s("Vous n'avez pas encore créé de produit").'</h4>';
 							$h .= '<p>'.s("Avant d'aller plus loin, vous devez d'abord constituer votre gamme de produits à proposer sur votre boutique en ligne.").'</p>';
 							$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($e['farm']).'" class="btn btn-transparent" target="_blank">'.s("Ajouter un premier produit").'</a>';
@@ -371,7 +371,7 @@ class DateUi {
 
 						$h .= $form->group(
 							self::p('catalogs')->label,
-							'<div class="util-block-important">'.s("Vos producteurs n'ont pas encore connecté de catalogue à cette boutique. Vous devez d'abord battre le rappel des troupes avant de créer une première livraison !").'</div>'
+							'<div class="util-block-info">'.s("Vos producteurs n'ont pas encore connecté de catalogue à cette boutique. Vous devez d'abord battre le rappel des troupes avant de créer une première livraison !").'</div>'
 						);
 
 					} else {

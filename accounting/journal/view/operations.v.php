@@ -76,7 +76,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 			$number = p("Il y a <b>{value}</b> groupe d'écritures déséquilibré.", "Il y a actuellement <b>{value}</b> groupes d'écritures déséquilibrés.", $nGroup);
 
-			echo '<div class="util-block-important">'.s("Vous affichez actuellement tous les groupes d'écritures qui ne sont <b>pas équilibrés</b>.").'<br />'.$number.'</div>';
+			echo '<div class="util-block-info">'.s("Vous affichez actuellement tous les groupes d'écritures qui ne sont <b>pas équilibrés</b>.").'<br />'.$number.'</div>';
 
 		}
 	}

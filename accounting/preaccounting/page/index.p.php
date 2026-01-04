@@ -1,7 +1,11 @@
 <?php
 new Page(function($data) {
 
-	if(get_exists('from') === FALSE and get_exists('to') === FALSE and $data->eFarm->usesAccounting()) {
+	if(
+		get_exists('from') === FALSE and
+		get_exists('to') === FALSE and
+		$data->eFarm->usesAccounting()
+	) {
 
 		$data->search = new Search([
 			'from' => $data->eFarm['eFinancialYear']['startDate'],
@@ -11,8 +15,8 @@ new Page(function($data) {
 	} else {
 
 		$data->search = new Search([
-			'from' => GET('from'),
-			'to' => GET('to'),
+			'from' => GET('from', default: date('Y-01-01')),
+			'to' => GET('to', default: date('Y-12-31')),
 		]);
 
 	}
@@ -32,8 +36,10 @@ new Page(function($data) {
 })
 	->get('/precomptabilite', function($data) {
 
-		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-pre-accounting');
-		$data->tipNavigation = 'inline';
+		if($data->eFarm['hasSales']) {
+			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-pre-accounting');
+			$data->tipNavigation = 'inline';
+		}
 
 		if($data->isSearchValid) {
 
@@ -278,7 +284,7 @@ new Page(function($data) {
 
 		$data->search = new Search([
 			'type' => GET('type'),
-			'reconciliated' => GET('reconciliated', '?bool'),
+			'reconciliated' => GET('reconciliated', '?bool', TRUE),
 			'accountingDifference' => GET('accountingDifference', '?bool'),
 			'customer' => \selling\CustomerLib::getById(GET('customer')),
 			'from' => $data->eFarm['eFinancialYear']['startDate'],

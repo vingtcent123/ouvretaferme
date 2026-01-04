@@ -1000,7 +1000,6 @@ tbody .td-checkbox > label {
 }
 
 .util-info,
-.util-info-outline,
 .util-success,
 .util-warning,
 .util-warning-outline,
@@ -1013,7 +1012,6 @@ tbody .td-checkbox > label {
 @media print {
 
 	.util-info,
-	.util-info-outline,
 	.util-success,
 	.util-warning,
 	.util-warning-outline,
@@ -1024,7 +1022,6 @@ tbody .td-checkbox > label {
 }
 
 .util-info p:last-child,
-.util-info-outline p:last-child,
 .util-success p:last-child,
 .util-warning p:last-child,
 .util-warning-outline p:last-child,
@@ -1037,16 +1034,6 @@ tbody .td-checkbox > label {
 	color: var(--secondary);
 }
 
-.util-info-outline {
-	border: 1px solid var(--secondary);
-	border-radius: var(--radius);
-	color: var(--secondary);
-}
-
-.util-info-outline a:not(.btn) {
-	color: var(--secondary);
-	text-decoration: underline;
-}
 .util-info a:not(.btn) {
 	text-decoration: underline;
 }
@@ -1294,7 +1281,7 @@ a.util-badge {
 .util-block,
 .util-block-secondary,
 .util-block-help,
-.util-block-important {
+.util-block-info {
 	border-radius: var(--radius);
 	margin-bottom: 1rem;
 	padding: 1rem;
@@ -1303,7 +1290,7 @@ a.util-badge {
 .util-block *:last-child,
 .util-block-secondary *:last-child,
 .util-block-help *:last-child,
-.util-block-important *:last-child {
+.util-block-info *:last-child {
 	margin-bottom: 0;
 }
 
@@ -1342,7 +1329,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help,
-.util-block-important {
+.util-block-info {
 	padding: 1rem;
 	line-height: 1.5;
 	position: relative;
@@ -1350,7 +1337,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help:has(h3),
-.util-block-important:has(h3) {
+.util-block-info:has(h3) {
 	padding-top: 1.5rem;
 }
 
@@ -1358,7 +1345,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	background-color: var(--info);
 }
 
-.util-block-important {
+.util-block-info {
 	background-color: var(--secondary);
 	color: white;
 }
@@ -1370,12 +1357,12 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help,
-.util-block-important {
+.util-block-info {
 	padding-left: 4.5rem;
 }
 
 .util-block-help h4,
-.util-block-important h4 {
+.util-block-info h4 {
 	font-weight: bold;
 	height: 2.5rem;
 	margin-bottom: 0.5rem;
@@ -1384,7 +1371,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help h4:first-child,
-.util-block-important h4:first-child {
+.util-block-info h4:first-child {
 	margin-top: -0.5rem;
 }
 
@@ -1393,12 +1380,12 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	color: var(--text);
 }
 
-.util-block-important a:not(.btn) {
+.util-block-info a:not(.btn) {
 	text-decoration: underline;
 }
 
 .util-block-help:before,
-.util-block-important:before,
+.util-block-info:before,
 .util-block-icon {
 	position: absolute;
 	font-style: italic;
@@ -1417,7 +1404,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 }
 
 .util-block-help:before,
-.util-block-important:before {
+.util-block-info:before {
 	border-radius: 50%;
 }
 
@@ -1426,7 +1413,7 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	content: 'i';
 }
 
-.util-block-important:not(:has(.util-block-icon)):before {
+.util-block-info:not(:has(.util-block-icon)):before {
 	background-color: white;
 	color: var(--secondary);
 	content: '!';
@@ -1438,11 +1425,11 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	content: '!';
 }
 
-.util-block-important a {
+.util-block-info a {
 	color: white;
 }
 
-.util-block-important .form-info {
+.util-block-info .form-info {
 	color: #fff8;
 }
 

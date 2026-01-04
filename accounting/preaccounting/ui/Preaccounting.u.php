@@ -189,7 +189,7 @@ Class PreaccountingUi {
 										$d->attributes['mandatory'] = TRUE;
 									}
 								});
-								$h .= $form->submit(\Asset::icon('check-lg'), ['class' => 'btn btn-xs btn-outline-secondary', 'title' => s("Enregistrer le moyen de paiement")]);
+								$h .= $form->submit(s("Valider"), ['class' => 'btn btn-xs btn-outline-secondary']);
 								$h .= $form->close();
 							}
 						$h .= '</td>';
@@ -517,7 +517,7 @@ Class PreaccountingUi {
 
 		if($errors > 0) {
 
-			$h .= '<div class="util-block-important bg-warning">';
+			$h .= '<div class="util-block-info bg-warning">';
 				$h .= '<h3>'.s("Certaines données sont manquantes").'</h3>';
 				$h .= '<ul>';
 
@@ -552,7 +552,7 @@ Class PreaccountingUi {
 				} else {
 					$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer';
 				}
-				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer dans ma comptabilité").'</a>';
+				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer les factures").'</a>';
 
 			$h .= '</div>';
 

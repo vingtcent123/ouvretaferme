@@ -87,14 +87,15 @@ Class SaleUi {
 		$h .= '</table>';
 
 		if($nOperations > 100) {
-			$h .= '<div class="util-block-important">';
+			$h .= '<div class="util-info">';
 				if($hasInvoice === NULL) {
-					$h .= s("Seules les 100 premières ventes et factures sont affichées.<br />Téléchargez l'export pour consulter l'intégralité des données.");
+					$h .= s("Seules les 100 premières ventes et factures sont affichées.");
 				} else if($hasInvoice === 0) {
-					$h .= s("Seules les 100 premières ventes non facturées sont affichées.<br />Téléchargez l'export pour consulter l'intégralité des données.");
+					$h .= s("Seules les 100 premières ventes non facturées sont affichées.");
 				} else if($hasInvoice === 1) {
-					$h .= s("Seules les 100 premières factures sont affichées.<br />Téléchargez l'export pour consulter l'intégralité des données.");
+					$h .= s("Seules les 100 premières factures sont affichées.");
 				}
+				$h .= '<br/>'.s("Vous pouvez télécharger l'export pour consulter l'intégralité des données.");
 			$h .= '</div>';
 		}
 

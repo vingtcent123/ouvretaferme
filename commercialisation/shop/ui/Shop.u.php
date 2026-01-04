@@ -374,7 +374,7 @@ class ShopUi {
 			content: $form->submit(s("Mettre à jour le paiement"))
 		);
 
-		$hasPayment = '<div class="util-block-important mt-2" id="shop-payment-disabled">';
+		$hasPayment = '<div class="util-block-info mt-2" id="shop-payment-disabled">';
 			$hasPayment .= '<h4>'.s("Désactiver le choix du moyen de paiement").'</h4>';
 			$hasPayment .= '<p>'.s("Vos clients doivent choisir explicitement un moyen de paiement sur votre boutique, parmi ceux que vous avez activés. Vous pouvez <link>désactiver la page de choix du moyen de paiement</link> si vous n'acceptez que le paiement en direct et que vous souhaitez simplifier l'interface de commande en ligne pour vos clients.", ['link' => '<a data-ajax="/shop/:doUpdatePayment" post-id="'.$eShop['id'].'" post-has-payment="0" data-confirm="'.s("Souhaitez-vous réellement désactiver la page de choix du moyen de paiement sur votre boutique ?").'">']).'</p>';
 		$hasPayment .= '</div>';

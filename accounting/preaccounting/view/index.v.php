@@ -33,9 +33,9 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		if($data->nInvoice === 0 and $data->nSale === 0) {
 
-			echo '<div class="util-block-important">';
+			echo '<div class="util-block-info">';
 				echo '<h3>'.s("Aucune donnée disponible").'</h3>';
-				echo '<p>'.s("Aucune vente ni facture éligible à la comptabilité n'a été trouvée sur {siteName} pour cette période. Modifiez la période de recherche, ou <linkSales>consultez vos ventes</linkSales> ou <linkInvoice>vos factures</linkInvoice>.", [
+				echo '<p>'.s("Aucune vente ni facture éligible à la comptabilité n'a été trouvée sur {siteName} pour cette période.<br/>Modifiez la période de recherche, ou <linkSales>consultez vos ventes</linkSales> ou <linkInvoice>vos factures</linkInvoice>.", [
 					'linkSales' => '<a href="'.\farm\FarmUi::urlSellingSales($data->eFarm).'">',
 					'linkInvoice' => '<a href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'">',
 					]).'</p>';
@@ -46,9 +46,11 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	} else {
 
-		echo '<div class="util-block-important">';
-			echo '<h3>'.s("La précomptabilité n'est pas disponible").'</h3>';
-			echo '<p>'.s("La précomptabilité fonctionne avec les ventes et les factures que vous avez enregistrées sur {siteName}.<br/>Or à ce jour, vous n'avez pas encore utilisé le module de vente.").'</p>';
+		echo '<div class="util-block-help">';
+			echo '<h3>'.s("La précomptabilité").'</h3>';
+			echo '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité. Après avoir associé des numéros de compte à vos produits, vous pourrez exporter un {fec} ou importer vos factures en un clic dans le logiciel comptable de {siteName}.", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</p>';
+			echo '<p>'.s("La précomptabilité fonctionne avec les ventes et les factures que vous avez enregistrées sur {siteName}.<br/>À ce jour, vous n'avez pas encore utilisé le module de vente, la précomptabilité n'est donc pas disponible.").'</p>';
+			echo '<a href="'.\farm\FarmUi::urlSellingSales($data->eFarm).'" class="btn btn-secondary">'.s("Créer une première vente").'</a>';
 		echo '</div>';
 
 		return;
@@ -259,7 +261,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 
 	$navigation = '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 	$maintitle = new \farm\FarmUi()->getAccountingYears($data->eFarm);
-	$maintitle .= '<h1>'.$navigation.s("Importer les factures").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
+	$maintitle .= '<h1>'.$navigation.s("Importer les factures dans le logiciel comptable").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
 	$t->mainTitle = $maintitle;
 
 	echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->search);
@@ -279,7 +281,7 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 
 		echo '<div class="util-empty">'.s("Il n'y a aucune facture à rapprocher pour le moment !").'</div>';
 
-		echo '<div class="util-block-important">';
+		echo '<div class="util-block-info">';
 			echo \Asset::icon('fire', ['class' => 'util-block-icon']);
 
 			echo '<p>';

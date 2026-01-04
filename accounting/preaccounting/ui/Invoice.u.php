@@ -14,7 +14,7 @@ Class InvoiceUi {
 			],
 		);
 
-		$h .= '<div class="util-block-important">';
+		$h .= '<div class="util-block-info">';
 			$h .= '<p>'.p("Vous allez importer {value} facture en comptabilité.<br/>Souhaitez-vous continuer ?", "Vous allez importer {value} factures en comptabilité.<br/>Souhaitez-vous continuer ?", count(get('ids', 'array'))).'</p>';
 			$h .= $form->submit(s("Importer"), ['data-waiter' => s("Import en cours..."), 'class' => 'btn btn-transparent']);
 		$h .= '</div>';

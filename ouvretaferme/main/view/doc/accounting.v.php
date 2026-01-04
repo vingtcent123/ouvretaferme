@@ -20,7 +20,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<p>'.s("Au final, ").'</p>';
 	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format FEC puis l'importez dans votre logiciel de comptabilité habituel");
 	echo '<br />';
-	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos factures dans le module de comptabilité de Ouvretaferme");
+	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos factures dans le logiciel comptable de Ouvretaferme");
 	echo '<p class="mt-1">'.s("... C'est <b>vous qui choisissez</b> le niveau d'utilisation de la comptabilité proposé par Ouvretaferme !").'</p>';
 
 	echo '</div>';
@@ -87,7 +87,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<p>';
 			echo s("Si vous avez filtré les résultat des ventes à afficher, l'export sera basé dessus.");
 		echo '</p>';
-		echo '<div class="util-info-outline">';
+		echo '<div class="util-info">';
 			echo Asset::icon('exclamation-triangle').' '.s("La complétude de l'export est soumise à la complétude de la phase préparatoire. Plus vos données seront remplies, plus votre import sera complet et facile à utiliser par la suite.");
 		echo '</div>';
 	echo '</div>';
@@ -297,12 +297,12 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Importer les factures").'</h2>';
-		echo '<p>'.s("Pour accéder au récapitulatif de vos factures à importer en comptabilité, rendez-vous dans la page <b>Précomptabilité</b>, sur le 3<sup>ème</sup> onglet, et cliquez sur le bouton <b>Importer dans ma comptabilité</b>.").'</p>';
+		echo '<p>'.s("Pour accéder au récapitulatif de vos factures à importer en comptabilité, rendez-vous dans la page <b>Précomptabilité</b>, sur le 3<sup>ème</sup> onglet, et cliquez sur le bouton <b>Importer les factures</b>.").'</p>';
 		echo '<p>'.s("Seules les factures dont les données sont préparées et <link>qui sont rapprochées avec une opération bancaire</link> sont éligibles à l'import en comptabilité.", ['link' => '<a href="/doc/accounting:bank#reconciliate">']).'</p>';
 		echo '<p>'.s("Vous pouvez :").'</p>';
 		echo '<ul class="doc-list-icons">';
 		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les intégrer en comptabilité").'</li>';
-		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, elles ne vous seront alors plus proposés à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
+		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, elles ne vous seront alors plus proposées à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 		echo '<p>'.s("En les intégrant dans votre comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
 		echo '<ul>';

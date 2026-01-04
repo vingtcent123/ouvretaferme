@@ -543,7 +543,7 @@ class ZoneUi {
 
 		if($canCartography === FALSE) {
 
-			$map .= '<div class="util-block-important">';
+			$map .= '<div class="util-block-info">';
 				$map .= '<p>'.s("Si vous souhaitez dessiner plus facilement votre parcelle sur la carte, vous pouvez renseigner le lieu précis de production de la ferme. Vous pouvez aussi sauter cette étape et saisir directement la surface de cette parcelle.").'</p>';
 				$map .= '<a href="/farm/farm:updatePlace?id='.$eZone['farm']['id'].'" class="btn btn-transparent">'.s("Renseigner le lieu de production").'</a>';
 			$map .= '</div>';

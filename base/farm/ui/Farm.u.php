@@ -2932,7 +2932,7 @@ class FarmUi {
 
 			case 'quality' :
 				$d->values = self::getQualities();
-				$d->after = '<div class="farm-quality-fee util-block-important">'.s("L'accès à Ouvretaferme vous est laissé en accès libre pendant une période d'essai de {value} mois après votre inscription. Au-delà de cette période, vous devrez <link>adhérer à l'association Ouvretaferme</link> pour continuer à utiliser le logiciel.", ['value' => \association\AssociationSetting::MEMBERSHIP_TRY, 'link' => '<a href="/presentation/adhesion">']).'</div>';
+				$d->after = '<div class="farm-quality-fee util-block-info">'.s("L'accès à Ouvretaferme vous est laissé en accès libre pendant une période d'essai de {value} mois après votre inscription. Au-delà de cette période, vous devrez <link>adhérer à l'association Ouvretaferme</link> pour continuer à utiliser le logiciel.", ['value' => \association\AssociationSetting::MEMBERSHIP_TRY, 'link' => '<a href="/presentation/adhesion">']).'</div>';
 				break;
 
 			case 'emailDefaultTime' :
