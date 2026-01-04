@@ -210,13 +210,19 @@ class CompanyLib {
 		}
 
 		// Cas particulier de la table Account : s'il n'y a pas encore eu de compte custom, il faut replacer le next auto increment
-		$maxId = \account\Account::model()
-			->select(['id' => new \Sql('MAX(id)', 'int')])
-			->getValue('id');
-		if($maxId < \account\AccountSetting::FIRST_CUSTOM_ID) {
-			$db = new \Database(new \account\AccountModel()->getPackage());
-			$database = new \account\AccountModel()->getDatabase();
-			$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
+		if(GET('module') === 'Account') {
+
+			$maxId = \account\Account::model()
+				->select(['id' => new \Sql('MAX(id)', 'int')])
+				->getValue('id');
+
+			if($maxId < \account\AccountSetting::FIRST_CUSTOM_ID) {
+
+				$db = new \Database(new \account\AccountModel()->getPackage());
+				$database = new \account\AccountModel()->getDatabase();
+				$db->exec('ALTER TABLE '.\account\Account::model()->field($database).'.`account` AUTO_INCREMENT = '.\account\AccountSetting::FIRST_CUSTOM_ID);
+
+			}
 		}
 
 	}
