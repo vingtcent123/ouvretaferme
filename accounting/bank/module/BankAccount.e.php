@@ -23,7 +23,7 @@ class BankAccount extends BankAccountElement {
 			})
 			->setCallback('label.numbers', function(string $label): bool {
 
-				return \account\AccountLabelLib::isFromClass($label, \account\AccountSetting::BANK_ACCOUNT_CLASS);
+				return (\account\AccountLabelLib::isFromClass($label, \account\AccountSetting::BANK_ACCOUNT_CLASS) and is_numeric($label));
 
 			});
 

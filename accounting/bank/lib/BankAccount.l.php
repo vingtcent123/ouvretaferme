@@ -78,7 +78,7 @@ class BankAccountLib extends BankAccountCrud {
 		parent::update($e, $properties);
 
 		// Quick label update
-		if(in_array('label', $properties) === TRUE) {
+		if(in_array('label', $properties) === TRUE and $e['farm']->usesAccounting()) {
 			\journal\OperationLib::updateAccountLabels($e);
 		}
 
