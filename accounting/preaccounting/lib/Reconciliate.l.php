@@ -79,12 +79,14 @@ Class ReconciliateLib {
 
 		// Invalidation de toutes les suggestions de l'opération, de la facture, de la vente et du cashflow concernés (out)
 		\preaccounting\Suggestion::model()
-			->whereCashflow($eSuggestionValidated['cashflow'])
-			->whereInvoice($eSuggestionValidated['invoice'])
+			->or(
+				fn() => $this->whereCashflow($eSuggestionValidated['cashflow']),
+				fn() => $this->whereInvoice($eSuggestionValidated['invoice']),
+			)
 			->whereStatus(\preaccounting\Suggestion::WAITING)
 			->update(['status' => \preaccounting\Suggestion::OUT]);
 
-		// Invalidation de la suggestion validée
+		// Enregistrement de la suggestion validée
 		\preaccounting\Suggestion::model()->update($eSuggestionValidated, ['status' => \preaccounting\Suggestion::VALIDATED]);
 
 	}
