@@ -467,6 +467,7 @@ class MembershipLib {
 				'customer' => $eCustomer,
 				'unitPrice' => $eHistory['amount'],
 				'number' => 1,
+				'quality' => \selling\Item::NO,
 				'product' => $eProduct,
 				'locked' => \selling\Item::PRICE,
 				'packaging' => NULL,
