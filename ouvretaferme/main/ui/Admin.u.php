@@ -15,6 +15,7 @@ Class AdminUi {
 		$packages = [
 			'user' => s("Utilisateurs"),
 			'farm' => s("Fermes"),
+			'company' => s("Comptabilité"),
 			'dev' => \Asset::icon('code-slash'),
 		];
 

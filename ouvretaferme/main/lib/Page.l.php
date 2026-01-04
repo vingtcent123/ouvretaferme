@@ -66,9 +66,10 @@ class PageLib {
 
 		$data->logInExternal = \user\ConnectionLib::checkLoginExternal();
 
-		$app = \Package::getApp($data->__page['package']);
+		$package = $data->__page['package'];
+		$app = \Package::getApp($package);
 
-		if($app === 'accounting') {
+		if($app === 'accounting' and $package !== 'company') {
 
 			\company\CompanyLib::load($data);
 
