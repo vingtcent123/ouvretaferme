@@ -206,7 +206,8 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 				echo s("Logiciel comptable pour le micro-BA");
 			echo '</h2>';
 			echo '<ul>';
-				echo '<li>'.s("Je tiens la comptabilité de ma ferme avec Ouvretaferme").'</li>';
+				echo '<li>'.s("Je suis en comptabilité de trésorerie").'</li>';
+				echo '<li>'.s("Je veux tenir la comptabilité de ma ferme avec Ouvretaferme").'</li>';
 				echo '<li>'.s("En version {value} pour le moment", '<span class="util-badge bg-primary">BETA</span>').'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';

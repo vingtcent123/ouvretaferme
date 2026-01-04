@@ -189,7 +189,7 @@ class HomeUi {
 					$h .= '<div class="home-feature-icon">'.\Asset::icon('journal-bookmark').'</div>';
 					$h .= s("Logiciel comptable pour le micro-BA");
 				$h .= '</h2>';
-				$h .= '<h4 style="padding-right: 5rem">'.s("Vous savez tenir la comptabilité de votre ferme et connaissez vos écritures comptables et classes de compte ?<br/>Utilisez Ouvretaferme comme logiciel comptable, c'est toujours inclus dans le montant de l'adhésion à l'association.").'</h4>';
+				$h .= '<h4 style="padding-right: 5rem">'.s("Vous êtes en comptabilité de trésorerie, savez tenir la comptabilité de votre ferme et connaissez vos écritures comptables et classes de compte ?<br/>Utilisez Ouvretaferme comme logiciel comptable, c'est toujours inclus dans le montant de l'adhésion à l'association.").'</h4>';
 				$h .= '<h5>'.s("Déjà disponible en version beta").'</h5>';
 			$h .= '</div>';
 		$h .= '</div>';
