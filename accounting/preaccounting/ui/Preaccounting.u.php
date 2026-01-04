@@ -89,12 +89,6 @@ Class PreaccountingUi {
 				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
 					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
-					if($hasOperations) {
-						parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
-						$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
-						$h .= '<a class="btn btn-outline-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger l'export").'</a>';
-					}
-
 				$h .= '</div>';
 
 			$h .= $form->close();

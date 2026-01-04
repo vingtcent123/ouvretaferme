@@ -1534,10 +1534,6 @@ ul.util-summarize-overflow {
 	flex-wrap: nowrap;
 }
 
-ul.util-summarize-last {
-	align-self: end;
-}
-
 ul.util-summarize:not(:last-child) {
 	margin-bottom: 1rem;
 }

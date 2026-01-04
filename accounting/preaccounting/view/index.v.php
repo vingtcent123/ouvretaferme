@@ -221,13 +221,18 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 			echo '<li>';
 				echo '<div>';
-					echo '<h5>'.s("Total").'</h5>';
+					echo '<h5>'.s("Montant").'</h5>';
 					echo '<div>'.\util\TextUi::money(round($totalCredit - $totalDebit, 2)).'</div>';
 				echo '</div>';
 			echo '</li>';
 
-		echo '</ul>';
+			echo '<li style="align-self: end">';
+				parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
+				$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
+				echo '<a class="btn btn-xl btn-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger le {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
+			echo '</li>';
 
+		echo '</ul>';
 
 		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->search->get('hasInvoice'));
 
