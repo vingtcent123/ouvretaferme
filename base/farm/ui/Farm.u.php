@@ -293,6 +293,7 @@ class FarmUi {
 		return match($view) {
 			'website' => self::urlCommunicationsWebsite($eFarm),
 			'mailing' => self::urlCommunicationsMailing($eFarm, $subView),
+			default => self::urlCommunicationsWebsite($eFarm),
 		};
 
 	}
