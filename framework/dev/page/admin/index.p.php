@@ -11,9 +11,13 @@ new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 
 			if($eError->notEmpty()) {
 				$data->cError = new Collection([$eError]);
+				$data->nError = 1;
 			} else {
 				$data->cError = new Collection();
+				$data->nError = 0;
 			}
+
+			$data->search = new Search();
 
 		} else {
 
