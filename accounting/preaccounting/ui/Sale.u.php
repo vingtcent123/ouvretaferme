@@ -95,7 +95,7 @@ Class SaleUi {
 				} else if($hasInvoice === 1) {
 					$h .= s("Seules les 100 premières factures sont affichées.");
 				}
-				$h .= '<br/>'.s("Vous pouvez télécharger le {fec} pour consulter l'intégralité des données.", ['fec' => '<span class="util-badge bg-primary">FEC</span>']);
+				$h .= '<br/>'.s("Vous pouvez télécharger le fichier {fec} pour consulter l'intégralité des données.", ['fec' => '<span class="util-badge bg-primary">FEC</span>']);
 			$h .= '</div>';
 		}
 

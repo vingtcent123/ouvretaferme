@@ -229,7 +229,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 			echo '<li style="align-self: end">';
 				parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
 				$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
-				echo '<a class="btn btn-xl btn-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger le {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
+				echo '<a class="btn btn-xl btn-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
 			echo '</li>';
 
 		echo '</ul>';
