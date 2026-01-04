@@ -141,7 +141,7 @@ Class ReconciliateUi {
 
 								$h .= $form->openAjax(\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doUpdatePaymentMethod', ['id' => 'preaccounting-payment', 'class' => 'flex-justify-space-between']);
 								$h .= $form->hidden('id', $eSuggestion['id']);
-								$h .= $form->addon(
+								$h .= $form->inputGroup(
 									$form->dynamicField($eSuggestion, 'paymentMethod', function($d) use($form, $cMethod, $eSuggestion) {
 										$d->values = $cMethod;
 										$d->default = fn() => $eSuggestion['paymentMethod'];
