@@ -57,7 +57,7 @@ Class AdminUi {
 							}
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= '<a href="'.\farm\FarmUi::urlPlanningWeekly($eFarm).'">';
+							$h .= '<a href="/farm/admin/?id='.$eFarm['id'].'">';
 								if($eFarm['membership']) {
 									$h .= \Asset::icon('star-fill').' ';
 								}
