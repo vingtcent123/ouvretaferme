@@ -35,6 +35,9 @@ class DemoLib {
 	];
 
 	const COPY_PROPERTY_EXCLUDE = [
+		'account\ThirdParty' => ['name', 'names', 'memo', 'normalizedName'],
+		'bank\Cashflow' => ['memo', 'name', 'document'],
+		'journal\Operation' => ['document', 'description'],
 		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
@@ -149,6 +152,11 @@ class DemoLib {
 					($m->getModule() === 'series\\Task' and $value === 'description')
 				) {
 					$value = 'NULL AS '.$pdo->api->field($value);
+				} else if(
+					($m->getModule() === 'account\\ThirdParty' and $value === 'name') or
+					($m->getModule() === 'journal\\Operation' and $value === 'description')
+				) {
+					$value = 'id AS '.$pdo->api->field($value);
 				} else if(in_array($value, self::COPY_PROPERTY_EXCLUDE[$module] ?? [])) {
 					$value = 'NULL AS '.$pdo->api->field($value);
 				} else {
@@ -392,6 +400,7 @@ class DemoLib {
         ->getCollection() as $eCashflow) {
 
 			$eCashflow['memo'] = 'Transaction '.$eCashflow['id'];
+			$eCashflow['document'] = new \Sql('IF(document IS NULL, "Justificatif '.$eCashflow['id'].'", NULL)');
 			$eCashflow['name'] = self::getFirstName($eCashflow['id']).' '.self::getLastName();
 			$eCashflow['isReconciliated'] = FALSE;
 
@@ -405,6 +414,7 @@ class DemoLib {
         ->getCollection() as $eJournal) {
 
 			$eJournal['description'] = 'Écriture '.$eJournal['id'];
+			$eJournal['document'] = 'Document '.$eJournal['id'];
 
 			new \journal\OperationModel()
 				->select(['description'])
