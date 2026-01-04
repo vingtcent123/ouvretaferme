@@ -23,34 +23,6 @@ class OperationUi {
 
 	}
 
-	public function createCommentCollection(\farm\Farm $eFarm): \Panel {
-
-		$form = new \util\FormUi();
-		$dialogOpen = $form->openAjax(
-			\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateCommentCollection',
-			[
-				'id' => 'journal-operation-comment',
-				'class' => 'panel-dialog',
-			],
-		);
-
-		$h = $form->dynamicGroup(new Operation(), 'comment');
-		foreach(get('ids', 'array') as $id) {
-			$h .= $form->hidden('ids[]', $id);
-		}
-
-		$dialogClose = $form->close();
-		$footer = $form->submit(s("Enregistrer"));
-		return new \Panel(
-			id: 'panel-journal-operations-comment',
-			title: s("Commenter"),
-			dialogOpen: $dialogOpen,
-			dialogClose: $dialogClose,
-			body: $h,
-			footer: $footer,
-		);
-	}
-
 	public function createDocumentCollection(\farm\Farm $eFarm): \Panel {
 
 		$form = new \util\FormUi();
@@ -313,14 +285,6 @@ class OperationUi {
 		$h .= '<div class="operation-view-value">';
 			$paymentMethod = ($eOperation['paymentMethod']['name'] ?? NULL) !== NULL ? \payment\MethodUi::getName($eOperation['paymentMethod']) : '<i>'.s("Non indiqué").'</i>';
 			$h .= $paymentMethod;
-		$h .= '</div>';
-
-		$h .= '<div class="operation-view-label">';
-			$h .= s("Commentaire");
-		$h .= '</div>';
-		$h .= '<div class="operation-view-value">';
-			$comment = ($eOperation['comment'] !== NULL) ? encode($eOperation['comment']) : '<i>-</i>';
-			$h .= $comment;
 		$h .= '</div>';
 
 		if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
@@ -616,7 +580,6 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header" data-wrapper="asset-label">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('comment')->label.'</div>';
 			$h .= '<div class="operation-create-header amount-header"></div>';
 			$h .= '<div class="operation-create-header">'.s("Montant TTC").'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -793,12 +756,6 @@ class OperationUi {
 				$h .= $form->dynamicField($eOperation, 'description'.$suffix, function($d) use($defaultValues, $form, $index, $suffix) {
 					$d->attributes['onfocus'] = 'this.select()';
 					$d->attributes['data-description'] = $form->getId();
-				});
-			$h .='</div>';
-
-			$h .= '<div data-wrapper="comment'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'comment'.$suffix, function($d) {
-					$d->default = $defaultValues['comment'] ?? '';
 				});
 			$h .='</div>';
 
@@ -1360,7 +1317,6 @@ class OperationUi {
 			'amount' => s("Montant (HT)"),
 			'type' => s("Type (débit / crédit)"),
 			'thirdParty' => s("Tiers"),
-			'comment' => s("Commentaire"),
 			'paymentMethod' => s("Mode de paiement"),
 			'paymentDate' => s("Date de paiement"),
 			'vatRate' => s("Taux de TVA"),
@@ -1450,10 +1406,6 @@ class OperationUi {
 						.$form->hidden('thirdPartyName['.($attributes['data-index'] ?? 0).']');
 				};
 				new \account\ThirdPartyUi()->query($d, GET('farm', 'farm\Farm'));
-				break;
-
-			case 'comment' :
-				$d->attributes['data-limit'] = 250;
 				break;
 
 			case 'paymentDate' :

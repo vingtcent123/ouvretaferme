@@ -63,7 +63,6 @@ class OperationModel extends \ModuleModel {
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
-			'comment' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -72,7 +71,7 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'comment', 'paymentDate', 'paymentMethod', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -222,10 +221,6 @@ class OperationModel extends \ModuleModel {
 
 	public function whereAsset(...$data): OperationModel {
 		return $this->where('asset', ...$data);
-	}
-
-	public function whereComment(...$data): OperationModel {
-		return $this->where('comment', ...$data);
 	}
 
 	public function wherePaymentDate(...$data): OperationModel {

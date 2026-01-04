@@ -229,11 +229,6 @@ new \journal\OperationPage(function($data) {
 	}
 
 })
-	->get('createCommentCollection', function($data) {
-
-		throw new ViewAction($data);
-
-	})
 	->get('createDocumentCollection', function($data) {
 
 		throw new ViewAction($data);
@@ -264,25 +259,13 @@ new \journal\OperationPage(function($data) {
 
 		throw new ReloadAction('journal', 'Operations::updated');
 	})
-	->writeCollection('doUpdateCommentCollection', function($data) {
-
-		$comment = POST('comment');
-
-		$fw = new FailWatch();
-
-		\journal\OperationLib::updateCommentCollection($data->c, $comment);
-
-		$fw->validate();
-
-		throw new ReloadAction('journal', 'Operations::updated');
-	})
 	->writeCollection('doUpdateDocumentCollection', function($data) {
 
-		$comment = POST('document');
+		$document = POST('document');
 
 		$fw = new FailWatch();
 
-		\journal\OperationLib::updateDocumentCollection($data->c, $comment);
+		\journal\OperationLib::updateDocumentCollection($data->c, $document);
 
 		$fw->validate();
 

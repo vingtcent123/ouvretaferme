@@ -9,7 +9,7 @@ class OperationLib extends OperationCrud {
 		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'vatRate', 'thirdParty', 'asset', 'hash'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'thirdParty', 'comment', 'journalCode', 'vatRate'];
+		return ['account', 'accountLabel', 'date', 'description', 'document', 'documentDate', 'amount', 'type', 'thirdParty', 'journalCode', 'vatRate'];
 	}
 
 	public static function countByFinancialYear(\account\FinancialYear $eFinancialYear): int {
@@ -543,7 +543,7 @@ class OperationLib extends OperationCrud {
 		$cOperationCashflow = new \Collection();
 		$properties = [
 			'account', 'accountLabel',
-			'description', 'amount', 'type', 'document', 'vatRate', 'comment',
+			'description', 'amount', 'type', 'document', 'vatRate',
 			'asset',
 			'journalCode',
 		];
@@ -1700,18 +1700,6 @@ class OperationLib extends OperationCrud {
 			->select(['journalCode'])
 			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
 			->update(['journalCode' => $eJournalCode]);
-	}
-
-	public static function updateCommentCollection(\Collection $cOperation, ?string $comment): void {
-
-		if($comment === "") {
-			$comment = NULL;
-		}
-
-		Operation::model()
-			->select(['comment'])
-			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
-			->update(new Operation(['comment' => $comment]));
 	}
 
 	public static function updateDocumentCollection(\Collection $cOperation, ?string $document): void {
