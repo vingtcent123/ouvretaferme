@@ -33,25 +33,32 @@ new Page()
 			}
 		}
 
-		$data->cBankAccount = \bank\BankAccountLib::getAll();
+		$data->cBankAccount = \bank\BankAccountLib::getAll('id');
 
 		if(get_exists('bankAccount') === FALSE and \session\SessionLib::exists('bankAccount')) {
-			$search->set('bankAccount', \bank\BankAccountLib::getById(\session\SessionLib::get('bankAccount')));
-		} else {
-			$search->set('bankAccount', \bank\BankAccountLib::getById(GET('bankAccount')));
-		}
-		$eBankAccountSelected = $search->get('bankAccount');
-		if($eBankAccountSelected->empty() or $data->cBankAccount->offsetExists($eBankAccountSelected['id']) === FALSE) {
-			$eBankAccountSelected = $data->cBankAccount->first();
-		} else {
-			$eBankAccountSelected = $data->cBankAccount->offsetGet($eBankAccountSelected['id']);
-		}
-		if($eBankAccountSelected === NULL) {
-			$eBankAccountSelected = new \bank\BankAccount();
-		}
-		$search->set('bankAccount', $eBankAccountSelected);
-		if($eBankAccountSelected->notEmpty()) {
-			\session\SessionLib::set('bankAccount', $eBankAccountSelected['id']);
+
+				$eBankAccount = \session\SessionLib::get('bankAccount');
+				$search->set('bankAccount', \bank\BankAccountLib::getById($eBankAccount));
+
+		} else if(get_exists('bankAccount')) {
+
+			if($data->cBankAccount->offsetExists(GET('bankAccount'))) {
+
+				$eBankAccount = $data->cBankAccount->offsetGet(GET('bankAccount'));
+
+			} else if($data->cBankAccount->notEmpty()) {
+
+				$eBankAccount = $data->cBankAccount->first();
+
+			} else {
+
+				$eBankAccount = new \bank\BankAccount();
+
+			}
+
+			$search->set('bankAccount', $eBankAccount);
+			\session\SessionLib::set('bankAccount', $eBankAccount['id']);
+
 		}
 
 		$hasSort = get_exists('sort') === TRUE;

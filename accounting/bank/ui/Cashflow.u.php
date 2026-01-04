@@ -98,7 +98,6 @@ class CashflowUi {
 
 				$isSelected = ($eBankAccount['id'] === $eBankAccountSelected['id']);
 
-
 				$getArgs['bankAccount'] = $eBankAccount['id'];
 				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?'.http_build_query($getArgs).'">';
 					$label = '<div class="text-center">';
