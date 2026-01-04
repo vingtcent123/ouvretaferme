@@ -2,7 +2,7 @@
 new Page()
 	->get('/banque/operations', function($data) {
 
-		$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByCashflow();
+		$data->nSuggestion = \preaccounting\SuggestionLib::countWaiting();
 
 		$search = new Search([
 			'date' => GET('date'),

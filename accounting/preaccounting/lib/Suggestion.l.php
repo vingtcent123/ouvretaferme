@@ -6,17 +6,8 @@ Class SuggestionLib extends SuggestionCrud {
 	const AMOUNT_DIFFERENCE_MAX = 5;
 	const REASON_MIN = 2; // Au moins 2 critères donnent quelque chose
 
-	public static function countWaitingByInvoice(): int {
 
-		return (Suggestion::model()
-			->select(['nInvoice' => new \Sql('COUNT(DISTINCT(invoice))')])
-			->whereInvoice('!=', NULL)
-			->whereStatus(Suggestion::WAITING)
-			->get()['nInvoice'] ?? 0);
-
-	}
-
-	public static function countWaitingByCashflow(): int {
+	public static function countWaiting(): int {
 
 		return Suggestion::model()
 			->select(['nCashflow' => new \Sql('COUNT(DISTINCT(cashflow))', 'int')])

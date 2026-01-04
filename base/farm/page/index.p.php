@@ -333,7 +333,7 @@ new Page(function($data) {
 
 		if($data->eFarm->hasAccounting()) {
 			\company\CompanyLib::connectDatabase($data->eFarm);
-			$data->nSuggestion = \preaccounting\SuggestionLib::countWaitingByInvoice();
+			$data->nSuggestion = \preaccounting\SuggestionLib::countWaiting();
 		} else {
 			$data->nSuggestion = 0;
 		}
