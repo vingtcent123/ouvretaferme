@@ -69,7 +69,7 @@ class PageLib {
 		$package = $data->__page['package'];
 		$app = \Package::getApp($package);
 
-		if($app === 'accounting' and $package !== 'company') {
+		if($app === 'accounting') {
 
 			\company\CompanyLib::load($data);
 
