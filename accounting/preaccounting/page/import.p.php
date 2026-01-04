@@ -53,7 +53,7 @@ new Page()
 
 	$cInvoice = \preaccounting\ImportLib::getInvoicesByIds(POST('ids', 'array'));
 
-	\selling\Invoice::validateBatchImport($cInvoice);
+	\selling\Invoice::validateBatch($cInvoice);
 
 	\preaccounting\ImportLib::importInvoices($data->eFarm, $cInvoice);
 

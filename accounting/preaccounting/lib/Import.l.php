@@ -57,7 +57,7 @@ Class ImportLib {
 			'cashflow' => \bank\Cashflow::getSelection() + ['account' => \bank\BankAccount::getSelection()],
 			'cSale' => \selling\Sale::model()
 				->select([
-					'id',
+					'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
 					'cPayment' => \selling\Payment::model()
 						->select(\selling\Payment::getSelection())
 						->or(
@@ -88,11 +88,9 @@ Class ImportLib {
 
 	public static function importInvoices(\farm\Farm $eFarm, \Collection $cInvoice): void {
 
-		$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
-
 		foreach($cInvoice as $eInvoice) {
 
-			self::importInvoice($eFarm, $eInvoice, $cFinancialYear);
+			self::importInvoice($eFarm, $eInvoice);
 
 		}
 
@@ -103,10 +101,19 @@ Class ImportLib {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
 
+		if($eInvoice->acceptAccountingImport() === FALSE) {
+			return;
+		}
+
 		$fw = new \FailWatch();
 
 		if($eFinancialYear->empty()) {
-			\Fail::log('Sale::importNoFinancialYear');
+			\Fail::log('Invoice::importNoFinancialYear');
+			return;
+		}
+
+		if(\account\FinancialYearLib::isDateInFinancialYear($eInvoice['cashflow']['date'], $eFinancialYear) === FALSE) {
+			\Fail::log('Invoice::importNotBelongsToFinancialYear');
 			return;
 		}
 
@@ -116,7 +123,7 @@ Class ImportLib {
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
 
-		\journal\Operation::model()->beginTransaction();
+		\selling\Invoice::model()->beginTransaction();
 
 		$eThirdParty = self::getOrCreateThirdParty($eInvoice['customer']);
 
@@ -135,7 +142,7 @@ Class ImportLib {
 		\selling\Sale::model()->whereInvoice($eInvoice)->update(['accountingHash' => $hash]);
 		\bank\Cashflow::model()->update($eInvoice['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
 
-		\journal\Operation::model()->commit();
+		\selling\Invoice::model()->commit();
 
 	}
 
@@ -248,7 +255,7 @@ Class ImportLib {
 
 			// On essaie de rattacher les opérations liées (type TVA) à leurs copines
 			if(strpos($data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER], '-') !== FALSE) {
-				list($currentNumber, $number) = array_map('intval', explode('-', $data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER]));
+				[$currentNumber, $number] = array_map('intval', explode('-', $data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER]));
 				if($cOperation->offsetExists($number)) {
 					$eOperationOrigin = $cOperation->offsetGet($number);
 					$eOperation['operation'] = $eOperationOrigin;

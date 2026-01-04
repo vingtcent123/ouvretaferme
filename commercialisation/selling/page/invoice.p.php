@@ -164,19 +164,34 @@ new Page(function($data) {
 
 	});
 
-(new Page(function($data) {
+new Page(function($data) {
 
 		$data->c = \selling\InvoiceLib::getByIds(REQUEST('ids', 'array'));
 
 		\selling\Invoice::validateBatch($data->c);
 
-
-	}))
+	})
 	->post('doUpdateConfirmedCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptStatusConfirmed');
 
 		\selling\InvoiceLib::updateStatusCollection($data->c, \selling\Sale::CONFIRMED);
+
+		throw new ReloadAction();
+
+	})
+	->post('doUpdatePaymentCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptUpdatePayment');
+
+		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
+
+		\selling\InvoiceLib::updatePaymentCollection(
+			$data->c, [
+				'paymentMethod' => $eMethod,
+				'paymentStatus' => new Sql('IF(paymentStatus IS NULL, "'.\selling\Invoice::NOT_PAID.'", paymentStatus)')
+			]
+		);
 
 		throw new ReloadAction();
 

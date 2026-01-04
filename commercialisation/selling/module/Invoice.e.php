@@ -91,35 +91,6 @@ class Invoice extends InvoiceElement {
 					throw new \NotExpectedAction('Different farms');
 				}
 
-				$eInvoice->validate('acceptAccountingImport');
-
-			}
-		}
-
-	}
-	public static function validateBatchImport(\Collection $cInvoice): void {
-
-		if($cInvoice->empty()) {
-
-			throw new \FailAction('selling\Invoice::invoices.check');
-
-		} else {
-
-			$eFarm = $cInvoice->first()['farm'];
-			$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
-
-			foreach($cInvoice as $eInvoice) {
-
-				if($eInvoice['farm']['id'] !== $eFarm['id']) {
-					throw new \NotExpectedAction('Different farms');
-				}
-
-				$eInvoice->validate('acceptAccountingImport');
-
-				if(\account\FinancialYearLib::isDateInOpenFinancialYear($eInvoice['cashflow']['date'], $cFinancialYear)->empty()) {
-					throw new \NotExpectedAction('Cannot import invoice : do not belong to an open financialYear');
-				}
-
 			}
 		}
 

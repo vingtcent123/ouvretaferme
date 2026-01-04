@@ -316,6 +316,22 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function updatePaymentCollection(\Collection $c, array $payment): void {
+
+		foreach($c as $e) {
+
+			Invoice::model()->beginTransaction();
+
+			$e['paymentMethod'] = $payment['paymentMethod'];
+			$e['paymentStatus'] = $payment['paymentStatus'];
+
+			self::update($e, array_keys($payment));
+
+			Invoice::model()->commit();
+		}
+
+	}
+
 	public static function update(Invoice $e, array $properties): void {
 
 		Invoice::model()->beginTransaction();
@@ -381,35 +397,7 @@ class InvoiceLib extends InvoiceCrud {
 
 			}
 
-			if(self::isReadyForAccounting($e)) {
-				Invoice::model()->update($e, ['readyForAccounting' => TRUE]);
-			}
-
 		Invoice::model()->commit();
-
-	}
-
-	public static function isReadyForAccounting(Invoice $eInvoice): bool {
-
-		if(
-			$eInvoice['closed'] === FALSE or
-			$eInvoice['accountingHash'] !== NULL or
-			$eInvoice['paymentMethod']->empty() or
-			$eInvoice['readyForAccounting'] === TRUE // On l'a déjà setté
-		) {
-			return FALSE;
-		}
-
-		if(
-			Item::model()
-				->whereSale('IN', $eInvoice['sales'])
-				->whereAccount(NULL)
-				->count() > 0
-		) {
-			return FALSE;
-		}
-
-		return TRUE;
 
 	}
 

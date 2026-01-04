@@ -127,6 +127,12 @@ Class ImportUi {
 									$h .= '</div>';
 								}
 
+								if($eInvoice['cashflow']->empty()) {
+									$h .= '<span class="font-sm color-warning">';
+										$h .= s("Facture non rapprochée");
+									$h .= '</span>';
+								}
+
 								if($eInvoice->hasAccountingDifference()) {
 									$h .= '<div class="mb-1">';
 										$difference = abs($eInvoice['priceIncludingVat'] - $eInvoice['cashflow']['amount']);
@@ -143,17 +149,20 @@ Class ImportUi {
 									$h .= '</div>';
 								}
 								$h .= '<div class="invoicing-import-td-action">';
-									if($eInvoice->acceptAccountingImport()) {
-										$attributes = [
-											'data-confirm' => s("Confirmez-vous importer cette facture dans votre comptabilité ?"),
-											'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoice',
-											'post-id' => $eInvoice['id'],
-											'post-financial-year' => $eFinancialYear['id'],
-										];
-										$h .= '<a '.attrs($attributes).' class="btn btn-sm btn-secondary">';
-											$h .= \Asset::icon('hand-thumbs-up').' '.s("Importer");
-										$h .= '</a>';
+									$attributes = [
+										'data-confirm' => s("Confirmez-vous importer cette facture dans votre comptabilité ?"),
+										'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoice',
+										'post-id' => $eInvoice['id'],
+										'post-financial-year' => $eFinancialYear['id'],
+									];
+									$class = 'btn btn-sm btn-secondary';
+									if($eInvoice->acceptAccountingImport() === FALSE) {
+										$attributes = ['disabled' => 'disabled'];
+										$class .= ' disabled';
 									}
+									$h .= '<button '.attrs($attributes).' class="'.$class.'">';
+										$h .= \Asset::icon('hand-thumbs-up').' '.s("Importer");
+									$h .= '</button>';
 									if($eInvoice->acceptAccountingIgnore()) {
 										$attributes = [
 											'data-confirm' => s("Confirmez-vous ignorer cette facture ? Elle ne vous sera plus jamais proposée à l'import."),

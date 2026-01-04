@@ -40,6 +40,8 @@ class AlertUi {
 			'Invoice::inconsistencySales' => s("Vous ne pouvez pas regénérer cette facture car une ou plusieurs ventes ne sont plus éligibles à la facturation !"),
 			'Invoice::fileAlreadySent' => s("Cette facture a déjà été envoyée au client"),
 			'Invoice::fileEmpty' => s("Le fichier PDF de cette facture n'existe pas."),
+			'Invoice::importNoFinancialYear' => s("Il n'y a pas d'exercice comptable dans lequel importer les factures."),
+			'Invoice::importNotBelongsToFinancialYear' => s("Les dates des factures ne correspondent pas à l'exercice comptable."),
 
 			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
 			'Product::proOrPrivatePrice.empty' => s("Veuillez indiquer au moins un prix pour ce produit"),
