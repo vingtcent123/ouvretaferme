@@ -9,6 +9,7 @@ new AdaptativeView('/ferme/{farm}/adherer', function($data, FarmTemplate $t) {
 
 	if($data->eFarm->isMembership() === FALSE) {
 		echo '<p>'.s("Votre ferme <i>{farmName}</i> n'a pas encore adhéré à l'association Ouvretaferme pour l'année {year}.<br/><b>Rejoignez les {count} adhérents de l'association !</b>", ['farmName' => encode($data->eFarm['name']), 'year' => date('Y'), 'count' => $data->members	]).'</p>';
+		echo '<br/>';
 	}
 
 	if(get_exists('membership')) {

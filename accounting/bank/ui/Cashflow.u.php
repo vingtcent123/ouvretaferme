@@ -232,7 +232,7 @@ class CashflowUi {
 							$h .= '</td>';
 						}
 
-						$h .= '<td class="td-vertical-align-top">';
+						$h .= '<td class="td-vertical-align-top td-min-content">';
 							$h .= \util\DateUi::numeric($eCashflow['date']);
 						$h .= '</td>';
 

@@ -564,7 +564,7 @@ Class PreaccountingUi {
 				if($nProduct > 0) {
 					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
 				} else {
-					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer vos factures !").'</p>';
+					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer les factures avec lesquelles vous avez fait un rapprochement bancaire !").'</p>';
 				}
 				$class = 'btn btn-primary';
 				if($nProduct > 0) {
