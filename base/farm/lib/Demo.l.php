@@ -26,10 +26,8 @@ class DemoLib {
 		'preaccounting\Suggestion',
 		'selling\Grid',
 		'selling\History',
-		'selling\Invoice',
 		'selling\Pdf',
 		'selling\PdfContent',
-		'selling\Payment',
 		'series\Comment',
 		'user\Log',
 		'user\UserAuto',
@@ -40,7 +38,9 @@ class DemoLib {
 		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
-		'selling\Sale' => ['invoice', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry'],
+		'selling\Sale' => ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry'],
+		'selling\Invoice' => ['paymentCondition', 'header', 'footer', 'comment'],
+		'selling\Payment' => ['checkoutId', 'paymentIntentId'],
 		'selling\Customer' => ['name', 'firstName', 'lastName', 'email', 'phone', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']
 	];
 
@@ -148,7 +148,7 @@ class DemoLib {
 				} else if(
 					($m->getModule() === 'series\\Task' and $value === 'description')
 				) {
-					$value = 'IF('.$pdo->api->field($value).' IS NULL, NULL, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.") AS '.$pdo->api->field($value);
+					$value = 'NULL AS '.$pdo->api->field($value);
 				} else if(in_array($value, self::COPY_PROPERTY_EXCLUDE[$module] ?? [])) {
 					$value = 'NULL AS '.$pdo->api->field($value);
 				} else {
@@ -212,6 +212,10 @@ class DemoLib {
 		if($m->getModule() === 'selling\\Sale') {
 			$conditions[] = 'preparationStatus != "'.\selling\Sale::BASKET.'"';
 			$conditions[] = 'type = "'.\selling\Customer::PRIVATE.'" OR (id IN ('.\selling\SellingSetting::EXAMPLE_SALE_PRIVATE.', '.\selling\SellingSetting::EXAMPLE_SALE_PRO.'))';
+		}
+
+		if($m->getModule() === 'selling\\Invoice') {
+			$conditions[] = 'taxes = "'.\selling\Invoice::INCLUDING.'"';
 		}
 
 		return $conditions ? implode(' AND ', $conditions) : 1;
