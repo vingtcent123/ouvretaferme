@@ -7,10 +7,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 		$t->header .= new \main\AdminUi()->getNavigation('company');
 	$t->header .= '</div>';
 
-	echo '<h2>'.s("Activation").'</h2>';
 	echo new \company\AdminUi()->displayStats($data->nFarms);
-
-	echo '<h2>'.s("Usages").'</h2>';
 	echo new \company\AdminUi()->displayFarms($data->cFarm, $data->nFarm, $data->page);
 
 
