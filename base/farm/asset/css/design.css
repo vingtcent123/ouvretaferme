@@ -384,6 +384,14 @@ body[data-template~="farm"] .container {
 		margin-top: 0.75rem;
 	}
 
+	@keyframes colorMembership {
+		0% { background: #c9ffd8; }
+		20% { background: #f1ffc9; }
+		50% { background: #fff2c9; }
+		80% { background: #f1ffc9; }
+		100% { background: #c9ffd8; }
+	}
+
 	body[data-template~="farm"] .nav-title-member-link {
 		background-color: var(--background-body);
 		border-radius: var(--radius);
@@ -392,6 +400,16 @@ body[data-template~="farm"] .container {
 		font-size: 0.9rem;
 		letter-spacing: 0.5px;
 		color: var(--text);
+	}
+
+	body[data-template~="farm"] .nav-title-member-link.nav-title-member-link-1 {
+		animation: colorMembership 10s linear;
+		animation-iteration-count: infinite;
+	}
+
+	body[data-template~="farm"] .nav-title-member-link.nav-title-member-link-2 {
+		animation: colorMembership 20s linear;
+		animation-iteration-count: infinite;
 	}
 
 	body[data-template~="farm"] .nav-title-member-link img {

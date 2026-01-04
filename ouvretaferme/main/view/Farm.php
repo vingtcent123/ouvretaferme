@@ -279,7 +279,21 @@ class FarmTemplate extends MainTemplate {
 
 						$farm .= '<div class="nav-title-member">';
 
-							$farm .= '<a class="nav-title-member-link" data-dropdown="bottom" data-dropdown-hover="true">';
+							if($this->data->eFarm['hasSales'] or $this->data->eFarm['hasCultivations']) {
+
+								if($this->data->eFarm['createdAt'] < date('Y-m-d 00:00:00', strtotime('NOW - 1 YEAR'))) {
+									$position = 2;
+								} else if($this->data->eFarm['createdAt'] < date('Y-m-d 00:00:00', strtotime('NOW - 9 MONTH'))) {
+									$position = 1;
+								} else {
+									$position = 0;
+								}
+
+							} else {
+								$position = 0;
+							}
+
+							$farm .= '<a class="nav-title-member-link nav-title-member-link-'.$position.'" data-dropdown="bottom" data-dropdown-hover="true">';
 								if(\association\AssociationSetting::isDiscount($this->data->eFarm) === FALSE) {
 									$farm .= s("Adhérer à {value}", $icon);
 								} else {

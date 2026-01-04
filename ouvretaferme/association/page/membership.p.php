@@ -16,6 +16,8 @@ new Page(function($data) {
 		$data->cHistory = \association\HistoryLib::getByFarm($data->eFarm);
 		$data->hasJoinedForNextYear = $data->cHistory->contains(fn($e) => $e['status'] === \association\History::VALID and $e['membership'] === nextYear());
 
+		$data->members = \association\MembershipLib::count();
+
 		throw new ViewAction($data);
 
 	})

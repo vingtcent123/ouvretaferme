@@ -3,6 +3,19 @@ namespace association;
 
 class MembershipLib {
 
+	public static function count(): int {
+
+		return \Cache::redis()->query('membership-count', function() {
+
+			return \farm\Farm::model()
+				->whereMembership(TRUE)
+				->count();
+
+		}, 86400);
+
+
+	}
+
 	private static function getProductName(string $type, ?int $year) {
 
 		return match($type) {
@@ -516,6 +529,8 @@ class MembershipLib {
 			->setContent(...new AssociationUi()->getDocumentMail($eFarmOtf, $eHistory))
 			->addAttachment($pdfContent, new AssociationUi()->getDocumentFilename($eHistory).'.pdf', 'application/pdf')
 			->send();
+
+		\Cache::redis()->delete('farm-membership-count');
 
 	}
 
