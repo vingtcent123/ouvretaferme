@@ -11,9 +11,11 @@ class OfxParserLib {
 		if(empty($match)) {
 			throw new \Exception('OFX File could not be parsed');
 		}
-
-		// Fermer correctement les tags
-		$xmlContent = preg_replace('/<([A-Za-z0-9.]+)>([^<\r\n]+)/', '<\1>\2</\1>', '<OFX>'.$match[1].'</OFX>');
+		if(stripos($match[1], '</code>') === FALSE) { // Fermer correctement les tags. Ce script est à améliorer.
+			$xmlContent = preg_replace('/<([A-Za-z0-9.]+)>([^<\r\n]+)/', '<\1>\2</\1>', '<OFX>'.$match[1].'</OFX>');
+		} else {
+			$xmlContent = '<OFX>'.$match[1].'</OFX>';
+		}
 
 		return simplexml_load_string($xmlContent);
 
