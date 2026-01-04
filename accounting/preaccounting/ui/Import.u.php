@@ -49,7 +49,7 @@ Class ImportUi {
 
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-				$h .= '<a href="'.LIME_REQUEST_PATH.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= '<a href="'.LIME_REQUEST_PATH.'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
 			$h .= '</div>';
 
 			$h .= $form->close();

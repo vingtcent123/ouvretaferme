@@ -34,7 +34,7 @@ Class PreaccountingUi {
 
 	}
 
-	public function getSearch(\farm\Farm $eFarm, \Search $search, string $type, bool $hasOperations = FALSE): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search, string $type): string {
 
 		$h = '<div class="util-block-search">';
 
@@ -88,7 +88,9 @@ Class PreaccountingUi {
 
 				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					if($type === 'sales') {
+						$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
+					}
 				$h .= '</div>';
 
 			$h .= $form->close();
@@ -379,7 +381,7 @@ Class PreaccountingUi {
 						$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 						$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
 						$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-						$h .= '<a href="'.LIME_REQUEST_PATH.'?'.http_build_query($args).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+						$h .= '<a href="'.LIME_REQUEST_PATH.'?'.http_build_query($args).'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
 					$h .= '</div>';
 				$h .= $form->close();
 			$h .= '</div>';

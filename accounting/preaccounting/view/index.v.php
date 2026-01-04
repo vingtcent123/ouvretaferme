@@ -183,7 +183,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 	$mainTitle .= '</div>';
 	$t->mainTitle = $mainTitle;
 
-	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales', count($data->operations) > 0);
+	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales');
 
 	if(count($data->operations) > 0) {
 
