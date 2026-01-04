@@ -62,9 +62,9 @@ class AdminUi {
 			$h .= '</fieldset>';
 
 			$h .= '<div class="util-search-submit">';
-				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+				$h .= $form->submit(s("Chercher"));
 				if($search->notEmpty()) {
-					$h .= '<a href="/farm/admin/" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="/farm/admin/" class="btn">'.\Asset::icon('x-lg').'</a>';
 				}
 				$h .= '<div class="util-badge bg-primary">';
 					$h .= p("{value} ferme", "{value} fermes", $count);
@@ -84,7 +84,7 @@ class AdminUi {
 	public function displayFarms(\Collection $cFarm, int $nFarm, int $page, \Search $search): string {
 
 		if($nFarm === 0) {
-			return '<div class="util-info">'.s("Il n'y a aucune ferme à afficher...").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune ferme à afficher...").'</div>';
 		}
 
 		$h = '<div class="util-overflow-xs stick-sm">';

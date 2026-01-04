@@ -12,7 +12,7 @@ Class ImportUi {
 	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice, int $nInvoice, \Search $search): string {
 
 		if($cInvoice->empty() and $search->empty(['id'])) {
-			return '<div class="util-info">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
 		}
 
 		$h = '<div id="invoice-search" class="util-block-search">';
@@ -48,8 +48,10 @@ Class ImportUi {
 				$h .= '</fieldset>';
 
 			$h .= '<div class="util-search-submit">';
-				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-				$h .= '<a href="'.LIME_REQUEST_PATH.'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
+				$h .= $form->submit(s("Chercher"));
+				if($search->notEmpty(['from', 'to'])) {
+					$h .= '<a href="'.LIME_REQUEST_PATH.'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
+				}
 			$h .= '</div>';
 
 			$h .= $form->close();

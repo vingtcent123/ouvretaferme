@@ -56,8 +56,8 @@ Class BalanceUi {
 				], (int)$search->get('summary'), ['mandatory' => TRUE]);
 			$h .= '</fieldset>';
 			$h .= '<div class="util-search-submit">';
-				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-				$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+				$h .= $form->submit(s("Chercher"));
+				$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
 			$h .= '</div>';
 
 		$h .= $form->close();
@@ -94,7 +94,7 @@ Class BalanceUi {
 	public function displayThirdParty(\farm\Farm $eFarm, \Collection $cOperation, string $type): string {
 
 		if($cOperation->empty()) {
-			return '<div class="util-info">'.s("Il n'y a pas encore d'écriture à afficher").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a pas encore d'écriture à afficher").'</div>';
 		}
 
 		$h = '<div class="stick-sm util-overflow-sm">';

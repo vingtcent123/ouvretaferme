@@ -25,7 +25,7 @@ class LogUi {
 	public function list(\farm\Farm $eFarm, \Collection $cLog, int $page, int $nLog): string {
 
 		if($cLog->empty()) {
-			return '<div class="util-info">'.s("Il n'y a encore aucune activité à afficher sur votre compte.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a encore aucune activité à afficher sur votre compte.").'</div>';
 		}
 
 		$h = '<table class="tr-hover tr-even">';

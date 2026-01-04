@@ -567,8 +567,8 @@ class AnalyzeUi {
 						], $search->get('use'));
 				$h .= '</fieldset>';
 				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 			$h .= $form->close();
 

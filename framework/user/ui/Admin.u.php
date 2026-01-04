@@ -52,9 +52,9 @@ class AdminUi {
 				$h .= $form->text('email', $search->get('email'), ['placeholder' => 'E-mail']);
 			$h .= '</fieldset>';
 			$h .= '<div class="util-search-submit">';
-				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+				$h .= $form->submit(s("Chercher"));
 				if($search->notEmpty()) {
-					$h .= ' <a href="/user/admin/" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= ' <a href="/user/admin/" class="btn">'.\Asset::icon('x-lg').'</a>';
 				}
 
 				$h .= '<span class="util-badge bg-primary">'.p("{value} utilisateur", "{value} utilisateurs", $count).'</span>';

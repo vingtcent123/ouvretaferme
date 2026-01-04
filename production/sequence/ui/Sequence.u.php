@@ -88,8 +88,8 @@ class SequenceUi {
 				$h .= '</fieldset>';
 
 				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();
@@ -752,7 +752,7 @@ class SequenceUi {
 				$h .= $form->dynamicField($eSequence, 'comment');
 
 				$h .= '<div class="sequence-comment-submit">';
-					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
+					$h .= $form->submit(s("Valider"));
 					$h .= $form->button(s("Annuler"), ['class' => 'btn', 'data-ajax' => '/sequence/sequence:restoreComment', 'post-id' => $eSequence['id']]);
 				$h .= '</div>';
 

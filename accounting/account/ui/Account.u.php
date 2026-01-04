@@ -62,8 +62,8 @@ class AccountUi {
 					], (int)$search->get('customFilter'), ['mandatory' => TRUE]);
 				$h .= '</fieldset>';
 				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();
@@ -79,7 +79,7 @@ class AccountUi {
 		\Asset::css('company' , 'company.css');
 
 		if($cAccount->empty() === TRUE) {
-			return '<div class="util-info">'.s("Aucun compte n'a encore été enregistré").'</div>';
+			return '<div class="util-empty">'.s("Aucun compte n'a encore été enregistré").'</div>';
 		}
 
 		$displayProductsCount = $cAccount->match(fn($eAccount) => ($eAccount['nProductPro'] ?? 0) > 0 or ($eAccount['nProductPrivate'] ?? 0) > 0);

@@ -339,8 +339,8 @@ class ToolUi {
 				$h .= '</fieldset>';
 				$h .= '<div class="util-search-submit">';
 
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.self::urlManage($eFarm).'" class="btn">'.\Asset::icon('x-lg').'</a>';
 
 				$h .= '</div>';
 

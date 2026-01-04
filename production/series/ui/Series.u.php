@@ -313,7 +313,7 @@ class SeriesUi {
 				$h .= $form->dynamicField($eSeries, 'comment');
 
 				$h .= '<div class="series-comment-submit">';
-					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
+					$h .= $form->submit(s("Valider"));
 					$h .= $form->button(s("Annuler"), ['class' => 'btn', 'data-ajax' => '/series/series:restoreComment', 'post-id' => $eSeries['id']]);
 				$h .= '</div>';
 

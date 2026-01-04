@@ -24,7 +24,7 @@ class BankAccountUi {
 	public function list(\farm\Farm $eFarm ,\Collection $cBankAccount): string {
 
 		if($cBankAccount->empty()) {
-			return '<div class="util-info">'.s("Aucun compte bancaire n'a encore été enregistré. Lorsque vous effectuerez votre premier import de relevé bancaire, le compte bancaire rattaché sera automatiquement créé.").'</div>';
+			return '<div class="util-empty">'.s("Aucun compte bancaire n'a encore été enregistré. Lorsque vous effectuerez votre premier import de relevé bancaire, le compte bancaire rattaché sera automatiquement créé.").'</div>';
 		}
 
 		$canUpdate = $eFarm->canManage();

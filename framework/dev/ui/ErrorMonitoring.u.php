@@ -42,9 +42,9 @@ class ErrorMonitoringUi {
 				], (int)$search->get('unexpected'), ['mandatory' => TRUE]);
 			$h .= '</fieldset>';
 			$h .= '<div class="util-search-submit">';
-				$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
+				$h .= $form->submit(s("Chercher"));
 				if($search->notEmpty()) {
-					$h .= '<a href="/dev/admin/" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= '<a href="/dev/admin/" class="btn">'.\Asset::icon('x-lg').'</a>';
 				}
 				$h .= '<span class="util-badge bg-primary">';
 					$h .= p("{value} erreur", "{value} erreurs", $nError);

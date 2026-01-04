@@ -198,7 +198,7 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 		$h .= $form->addressGroup(s("Adresse"), 'invoice', $eUser);
 
 		$h .= $form->group(
-			content: $form->submit(s("Enregistrer"), ['class' => 'btn btn-primary'])
+			content: $form->submit(s("Enregistrer"))
 		);
 
 		$h .= $form->close();
@@ -233,7 +233,7 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 		}
 
 		$h .= $form->group(
-			content: $form->submit(s("Modifier mon e-mail"), ['class' => 'btn btn-primary'])
+			content: $form->submit(s("Modifier mon e-mail"))
 		);
 
 		$h .= $form->close();
@@ -348,7 +348,7 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 		);
 
 		$h .= $form->group(
-			content: $form->submit($textButton, ['class' => 'btn btn-primary'])
+			content: $form->submit($textButton)
 		);
 
 		$h .= $form->close();

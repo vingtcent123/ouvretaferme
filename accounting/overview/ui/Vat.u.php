@@ -154,7 +154,7 @@ Class VatUi {
 
 				if($cOperation->empty()) {
 
-					$h .= '<div class="util-info">'.s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.").'</div>';
+					$h .= '<div class="util-empty">'.s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.").'</div>';
 
 				} else {
 

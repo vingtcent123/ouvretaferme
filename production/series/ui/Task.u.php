@@ -982,8 +982,8 @@ class TaskUi {
 					}
 
 				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.LIME_REQUEST_PATH.'?search" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.LIME_REQUEST_PATH.'?search" class="btn">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

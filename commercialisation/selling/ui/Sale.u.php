@@ -141,8 +141,8 @@ class SaleUi {
 				$h .= '</fieldset>';
 
 				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();
@@ -2611,7 +2611,7 @@ class SaleUi {
 				$d->field = function(\util\FormUi $form, Sale $e) {
 
 					if($e['cProduct']->empty()) {
-						return '<div class="util-info">'.s("Aucun produit n'est disponible à la vente.").'</div>';
+						return '<div class="util-empty">'.s("Aucun produit n'est disponible à la vente.").'</div>';
 					}
 
 					return new ItemUi()->getCreateList(

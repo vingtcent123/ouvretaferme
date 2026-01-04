@@ -649,7 +649,7 @@ class ItemUi {
 	public function getSummary(\farm\Farm $eFarm, ?string $date, \Collection $cSale, \Collection $ccItemProduct, \Collection $ccItemSale, \Collection $cPaymentMethod) {
 
 		if($cSale->empty()) {
-			$h = '<div class="util-info">'.s("Il n'y a aucune commande à préparer pour ce jour").'</div>';
+			$h = '<div class="util-empty">'.s("Il n'y a aucune commande à préparer pour ce jour").'</div>';
 		} else {
 
 			$h = '';

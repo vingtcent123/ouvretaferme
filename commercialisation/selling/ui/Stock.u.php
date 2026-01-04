@@ -339,7 +339,7 @@ class StockUi {
 	public function getBookmarks(Product $eProduct, \Collection $cBookmark): \Panel {
 
 		if($cBookmark->empty()) {
-			$h = '<div class="util-info">'.s("Il n'y a aucune récolte en mémoire pour le stock de ce produit.").'</div>';
+			$h = '<div class="util-empty">'.s("Il n'y a aucune récolte en mémoire pour le stock de ce produit.").'</div>';
 		} else {
 
 			$h = '<p class="util-info">'.s("Les récoltes réalisés sur les espèces suivantes augmentent automatiquement le stock du produit {value}.", '<u>'.encode($eProduct['name']).'</u>').'</p>';

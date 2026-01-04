@@ -28,7 +28,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	if($data->eFarm['hasSales']) {
 
-		echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'invoices');
+		echo new \preaccounting\PreaccountingUi()->getSearchPeriod($data->search);
 		echo new \preaccounting\PreaccountingUi()->summarize($data->nInvoice, $data->nSale);
 
 		if($data->nInvoice === 0 and $data->nSale === 0) {
@@ -138,7 +138,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 					$data->cCategories,
 					$data->products,
 					$data->search,
-					itemData: ['nToCheck' => $data->nItemToCheck, 'cItem' => $data->cItem],
+					itemData: ['nToCheck' => $data->nProductToCheck + $data->nItemToCheck, 'cItem' => $data->cItem],
 				);
 			echo '</div>';
 			break;
@@ -183,7 +183,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 	$mainTitle .= '</div>';
 	$t->mainTitle = $mainTitle;
 
-	echo new \preaccounting\PreaccountingUi()->getSearch($data->eFarm, $data->search, 'sales');
+	echo new \preaccounting\PreaccountingUi()->getSearchSales($data->eFarm, $data->search);
 
 	if(count($data->operations) > 0) {
 
@@ -235,13 +235,14 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 				echo '</div>';
 			echo '</li>';
 
-			echo '<li style="align-self: end">';
-				parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
-				$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
-				echo '<a class="btn btn-xl btn-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
-			echo '</li>';
-
 		echo '</ul>';
+
+		parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
+		$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
+
+		echo '<div class="mt-2 mb-2 text-center">';
+			echo '<a class="btn btn-lg btn-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
+		echo '</div>';
 
 		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->search->get('hasInvoice'));
 

@@ -519,7 +519,7 @@ class FinancialYearUi {
 		$h = '<h3 class="mt-1 mb-2">'.s("2. Enregistrement du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
 
 		if($eOperationResult->empty()) {
-			return $h.'<div class="util-info">'.s("Il n'y a rien à enregistrer").'</div>';
+			return $h.'<div class="util-empty">'.s("Il n'y a rien à enregistrer").'</div>';
 		}
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
@@ -571,7 +571,7 @@ class FinancialYearUi {
 
 		if($eFinancialYearPrevious->empty()) {
 
-			$h .= '<div class="util-info">'.s("Il n'y a aucune écriture à extourner").'</div>';
+			$h .= '<div class="util-empty">'.s("Il n'y a aucune écriture à extourner").'</div>';
 
 			return $h;
 		}

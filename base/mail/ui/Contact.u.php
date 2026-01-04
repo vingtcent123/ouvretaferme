@@ -70,8 +70,8 @@ class ContactUi {
 				$h .= '</fieldset>';
 
 				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'" class="btn btn-outline-secondary">'.\Asset::icon('x-lg').'</a>';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'" class="btn">'.\Asset::icon('x-lg').'</a>';
 				$h .= '</div>';
 
 			$h .= $form->close();

@@ -34,14 +34,13 @@ Class PreaccountingUi {
 
 	}
 
-	public function getSearch(\farm\Farm $eFarm, \Search $search, string $type): string {
+	public function getSearchPeriod(\Search $search): string {
 
 		$h = '<div class="util-block-search">';
 
 			$form = new \util\FormUi();
-			$url = LIME_REQUEST_PATH;
 
-			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search util-search-3']);
 
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Période").'</legend>';
@@ -52,44 +51,68 @@ Class PreaccountingUi {
 					);
 				$h .= '</fieldset>';
 
-				if($type === 'sales') {
+				$h .= '<div>';
+					$h .= $form->submit(s("Valider"));
+				$h .= '</div>';
 
-					$h .= '<fieldset>';
-						$h .= '<legend>'.s("Ventes").'</legend>';
-						$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes")]);
-					$h .= '</fieldset>';
+			$h .= $form->close();
 
-					$h .= '<fieldset>';
-						$h .= '<legend>'.s("Numéro de compte").'</legend>';
-						$h .= $form->dynamicField(new \journal\Operation(['account' => $search->get('account')]), 'account', function($d) use($form, $eFarm) {
-							$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::VAT_CLASS];
-							$d->autocompleteUrl = function(\util\FormUi $form, $e) use ($eFarm, $query) {
-								if($eFarm->empty()) {
-									$eFarm = $e['farm'];
-								}
-								return \company\CompanyUi::urlAccount($eFarm).'/account:query?'.http_build_query($query);
-							};
-						});
-					$h .= '</fieldset>';
+		$h .= '</div>';
 
-					$h .= '<fieldset>';
-						$h .= '<legend>'.s("Client").'</legend>';
-						$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
-					$h .= '</fieldset>';
+		return $h;
 
-				}
+	}
 
-				if($search->get('cMethod') and $search->get('cMethod')->notEmpty()) {
-					$h .= '<fieldset>';
-						$h .= '<legend>'.s("Moyen de paiement").'</legend>';
-						$h .= $form->select('method', $search->get('cMethod'), $search->get('method'));
-					$h .= '</fieldset>';
-				}
+	public function getSearchSales(\farm\Farm $eFarm, \Search $search): string {
 
-				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Valider"), ['class' => 'btn btn-secondary']);
-					if($type === 'sales') {
-						$h .= '<a href="'.$url.'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
+		$h = '<div class="util-block-search">';
+
+			$form = new \util\FormUi();
+			$url = LIME_REQUEST_PATH;
+
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search util-search-3']);
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Période").'</legend>';
+					$h .= $form->inputGroup($form->addon(s("Du")).
+						$form->date('from', $search->get('from')).
+						$form->addon(s("au")).
+						$form->date('to', $search->get('to'))
+					);
+				$h .= '</fieldset>';
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Ventes").'</legend>';
+					$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes")]);
+				$h .= '</fieldset>';
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Numéro de compte").'</legend>';
+					$h .= $form->dynamicField(new \journal\Operation(['account' => $search->get('account')]), 'account', function($d) use($form, $eFarm) {
+						$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::VAT_CLASS];
+						$d->autocompleteUrl = function(\util\FormUi $form, $e) use ($eFarm, $query) {
+							if($eFarm->empty()) {
+								$eFarm = $e['farm'];
+							}
+							return \company\CompanyUi::urlAccount($eFarm).'/account:query?'.http_build_query($query);
+						};
+					});
+				$h .= '</fieldset>';
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Client").'</legend>';
+					$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
+				$h .= '</fieldset>';
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Moyen de paiement").'</legend>';
+					$h .= $form->select('method', $search->get('cMethod'), $search->get('method'));
+				$h .= '</fieldset>';
+
+				$h .= '<div>';
+					$h .= $form->submit(s("Valider"));
+					if($search->notEmpty(['from', 'to', 'cMethod'])) {
+						$h .= ' <a href="'.$url.'" class="btn">'.s("Réinitialiser").'</a>';
 					}
 				$h .= '</div>';
 
@@ -106,10 +129,9 @@ Class PreaccountingUi {
 		\Asset::css('selling', 'sale.css');
 
 		$form = new \util\FormUi();
-		parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
 
 		$h = '<div class="mb-2">';
-			$h .= $form->openUrl(LIME_REQUEST_PATH.'?'.http_build_query($args), ['id' => 'preaccounting-payment-customer']);
+			$h .= $form->openUrl(LIME_REQUEST, ['id' => 'preaccounting-payment-customer']);
 				$h .= $form->dynamicField(new \selling\Invoice(['farm' => $eFarm, 'customer' => $search->get('customer')]), 'customer');
 			$h .= $form->close();
 		$h .= '</div>';
@@ -352,10 +374,8 @@ Class PreaccountingUi {
 
 	public function products(\farm\Farm $eFarm, \Collection $cProduct, \Collection $cCategory, array $products, \Search $search, array $itemData): string {
 
-		if(empty($products) and $itemData['nToCheck'] === 0) {
-
+		if($itemData['nToCheck'] === 0) {
 			return '<div class="util-empty">'.s("Tous vos produits ont un numéro de compte associé !").'</div>';
-
 		}
 
 		$h = $this->getCategories($eFarm, $cCategory, $products, $itemData['nToCheck'], $search);
@@ -369,28 +389,33 @@ Class PreaccountingUi {
 		} else {
 
 			$form = new \util\FormUi();
-			parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
-			unset($args['profile']);
-			unset($args['name']);
-			unset($args['plant']);
+
+			$url = LIME_REQUEST;
+			$url = \util\HttpUi::removeArgument($url, 'profile');
+			$url = \util\HttpUi::removeArgument($url, 'name');
+			$url = \util\HttpUi::removeArgument($url, 'plant');
 
 			$h .= '<div class="mb-2">';
-				$h .= $form->openUrl(LIME_REQUEST_PATH.'?'.http_build_query($args), ['id' => 'preaccounting-payment-product', 'method' => 'get']);
+				$h .= $form->openUrl($url, ['id' => 'preaccounting-payment-product', 'method' => 'get']);
 					$h .= '<div style="display: flex; column-gap: 0.5rem;">';
 						$h .= $form->select('profile', \selling\ProductUi::p('profile')->values, $search->get('profile'), ['placeholder' => s("Type")]);
 						$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 						$h .= $form->text('plant', $search->get('plant'), ['placeholder' => s("Espèce")]);
-						$h .= $form->submit(s("Chercher"), ['class' => 'btn btn-secondary']);
-						$h .= '<a href="'.LIME_REQUEST_PATH.'?'.http_build_query($args).'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
+						$h .= $form->submit(s("Chercher"));
+
+						if($search->notEmpty(['from', 'to'])) {
+							$h .= '<a href="'.$url.'" class="btn">'.s("Réinitialiser").'</a>';
+						}
+
 					$h .= '</div>';
 				$h .= $form->close();
 			$h .= '</div>';
 
 			if($cProduct->empty()) {
 				if($search->get('profile') or $search->get('name') or $search->get('plant')) {
-					$h .= '<div class="util-info">'.s("Il n'y a pas de produit sans numéro de compte à afficher avec vos critères de recherche.").'</div>';
+					$h .= '<div class="util-empty">'.s("Il n'y a pas de produit sans numéro de compte à afficher avec vos critères de recherche.").'</div>';
 				} else {
-					$h .= '<div class="util-info">'.s("Il n'y a plus de produit sans numéro de compte à afficher.").'</div>';
+					$h .= '<div class="util-empty">'.s("Il n'y a plus de produit sans numéro de compte à afficher.").'</div>';
 				}
 				return $h;
 			}
