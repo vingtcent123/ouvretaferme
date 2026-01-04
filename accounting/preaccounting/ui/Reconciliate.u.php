@@ -141,15 +141,16 @@ Class ReconciliateUi {
 
 								$h .= $form->openAjax(\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doUpdatePaymentMethod', ['id' => 'preaccounting-payment', 'class' => 'flex-justify-space-between']);
 								$h .= $form->hidden('id', $eSuggestion['id']);
-								$h .= $form->dynamicField($eSuggestion, 'paymentMethod', function($d) use($form, $cMethod, $eSuggestion) {
-									$d->values = $cMethod;
-									$d->default = fn() => $eSuggestion['paymentMethod'];
-									if($eSuggestion['paymentMethod']->notEmpty()) {
-										$d->attributes['mandatory'] = TRUE;
-									}
-								});
-
-								$h .= $form->submit(s("Valider"), ['class' => 'btn btn-xs btn-secondary']);
+								$h .= $form->addon(
+									$form->dynamicField($eSuggestion, 'paymentMethod', function($d) use($form, $cMethod, $eSuggestion) {
+										$d->values = $cMethod;
+										$d->default = fn() => $eSuggestion['paymentMethod'];
+										if($eSuggestion['paymentMethod']->notEmpty()) {
+											$d->attributes['mandatory'] = TRUE;
+										}
+									}).
+									$form->submit(s("Valider"), ['class' => 'btn btn-primary'])
+								);
 								$h .= $form->close();
 
 							$h .= '</td>';
