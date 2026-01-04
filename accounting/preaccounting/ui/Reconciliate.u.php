@@ -149,7 +149,7 @@ Class ReconciliateUi {
 											$d->attributes['mandatory'] = TRUE;
 										}
 									}).
-									$form->submit(s("Valider"), ['class' => 'btn btn-primary'])
+									$form->submit(s("Modifier"), ['class' => 'btn btn-outline-primary'])
 								);
 								$h .= $form->close();
 
