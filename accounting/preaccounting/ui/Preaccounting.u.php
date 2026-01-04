@@ -83,7 +83,7 @@ Class PreaccountingUi {
 
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Ventes").'</legend>';
-					$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes")]);
+					$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes livrées non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes livrées")]);
 				$h .= '</fieldset>';
 
 				$h .= '<fieldset>';
