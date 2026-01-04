@@ -138,15 +138,9 @@ class CashflowUi {
 
 			}
 
-			return '<div class="util-block-help">'.
-				'<h3>'.s("Importer vos relevés bancaires").'</h3>'.
-				'<p>'.s("En important vos relevés bancaires, vous pourrez :").'</p>'.
-				'<ul>'.
-					'<li>'.s("rapprocher automatiquement vos factures et vos opérations bancaires pour vérifier qui a payé").'</li>'.
-					'<li>'.s("créer vos écritures comptables à partir du relevé bancaire si vous utilisez le logiciel comptable").'</li>'.
-				'</ul>'.
-				'<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-secondary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé bancaire").'</a>'.
-			'</div>';
+			return '<div class="util-empty">'.
+				s("Il n'y aucune opération bancaire à afficher.").
+				'</div>';
 		}
 
 		$showMonthHighlight = str_starts_with($search->getSort(), 'date');

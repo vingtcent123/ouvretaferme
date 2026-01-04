@@ -39,6 +39,7 @@ new Page(function($data) {
 		}
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll('id');
+
 		if(get_exists('bankAccount')) {
 			$eBankAccount = \bank\BankAccountLib::getById(GET('bankAccount'));
 		} else if(\session\SessionLib::exists('bankAccount')) {
@@ -49,11 +50,13 @@ new Page(function($data) {
 			$eBankAccount = new \bank\BankAccount();
 		}
 
-		if($eBankAccount->empty()) {
+		if($eBankAccount->notEmpty()) {
 			$eBankAccount = $data->cBankAccount->first();
 		}
 		$search->set('bankAccount', $eBankAccount);
-		\session\SessionLib::set('bankAccount', $eBankAccount['id']);
+		if($eBankAccount->notEmpty()) {
+			\session\SessionLib::set('bankAccount', $eBankAccount['id']);
+		}
 
 
 		$hasSort = get_exists('sort') === TRUE;
