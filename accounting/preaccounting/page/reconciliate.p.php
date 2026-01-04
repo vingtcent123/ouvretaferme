@@ -20,7 +20,7 @@ new \Page()
 	})
 ;
 new \preaccounting\SuggestionPage()
-	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn($data) => throw new ViewAction($data))
+	->doUpdateProperties('doUpdatePaymentMethod', ['paymentMethod'], fn($data) => throw new ReloadAction('preaccounting', 'Suggestion::paymentMethod.updated'))
 	->write('doIgnore', function($data) {
 
 		$data->e->validate('acceptIgnore');
