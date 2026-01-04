@@ -2009,9 +2009,12 @@ class FarmUi {
 		];
 
 	}
-	public function getAccountingFinancialsTitle(Farm $eFarm, string $selectedView): string {
+	public function getAccountingFinancialsTitle(Farm $eFarm, string $selectedView, ?bool $hasData = NULL): string {
 
 		$categories = $this->getAccountingFinancialsCategories();
+		if($eFarm['eFinancialYear']['hasVat'] === FALSE) {
+			unset($categories[Farmer::VAT]);
+		}
 
 		$title = $categories[$selectedView]['label'];
 
@@ -2035,24 +2038,27 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-		switch($selectedView) {
+			if($hasData) {
 
-			case Farmer::INCOME_STATEMENT:
+				switch($selectedView) {
 
-				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-				$h .= '</div>';
+					case Farmer::INCOME_STATEMENT:
 
-				break;
+						$h .= '<div>';
+							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
+						$h .= '</div>';
 
-			case Farmer::BALANCE_SHEET:
+						break;
 
-				$h .= '<div>';
-					$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-				$h .= '</div>';
+					case Farmer::BALANCE_SHEET:
 
-				break;
-		}
+						$h .= '<div>';
+							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
+						$h .= '</div>';
+
+						break;
+				}
+			}
 
 		$h .= '</div>';
 

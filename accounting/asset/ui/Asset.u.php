@@ -148,7 +148,7 @@ Class AssetUi {
 
 		return new \Panel(
 			id: 'panel-asset-create',
-			title: s("Ajouter une immobilisation ou une subvention"),
+			title: s("Créer une immobilisation ou une subvention"),
 			body: $h,
 			close: 'passthrough',
 		);

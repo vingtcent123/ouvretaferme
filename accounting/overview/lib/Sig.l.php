@@ -131,6 +131,11 @@ class SigLib {
 			->where(new \Sql('date BETWEEN '.\journal\Operation::model()->format($eFinancialYear['startDate']).' AND '.\journal\Operation::model()->format($eFinancialYear['endDate'])))
 			->get();
 
+		// Il n'y a aucune donnée
+		if(count(array_filter($eOperation->getArrayCopy(), fn($operation) => $operation)) === 0) {
+			return [];
+		}
+
 		// Formattage du tableau des valeurs
 		$values = [];
 		foreach($indexes as $index => $category) {

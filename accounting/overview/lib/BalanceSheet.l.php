@@ -49,6 +49,10 @@ Class BalanceSheetLib {
 				->getCollection()
 			);
 
+		if($cOperation->empty()) {
+			return [[], []];
+		}
+
 		if($isDetailed) {
 			$cOperationDetail = \overview\BalanceSheetLib::getDetailData(eFinancialYear: $eFinancialYear, eFinancialYearComparison: $eFinancialYearComparison);
 		} else {

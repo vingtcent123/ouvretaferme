@@ -62,7 +62,7 @@ class FinancialYearModel extends \ModuleModel {
 			'status' => ['enum', [\account\FinancialYear::OPEN, \account\FinancialYear::CLOSE], 'cast' => 'enum'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'vatFrequency' => ['enum', [\account\FinancialYear::MONTHLY, \account\FinancialYear::QUARTERLY, \account\FinancialYear::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
-			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL, \account\FinancialYear::AUTRE_BIC, \account\FinancialYear::AUTRE_BNC], 'null' => TRUE, 'cast' => 'enum'],
+			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL, \account\FinancialYear::AUTRE_BIC, \account\FinancialYear::AUTRE_BNC], 'cast' => 'enum'],
 			'accountingType' => ['enum', [\account\FinancialYear::ACCRUAL, \account\FinancialYear::CASH], 'cast' => 'enum'],
 			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'null' => TRUE, 'cast' => 'int'],
 			'associates' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],

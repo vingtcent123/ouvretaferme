@@ -296,7 +296,9 @@ class JournalUi {
 			$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL) === TRUE;
 
 			if($hideSearch === TRUE) {
-				return '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
+				$h = '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="btn btn-primary">'.s("Enregistrer ma première écriture comptable").'</a>';
+				return $h;
 			}
 			return '<div class="util-empty">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';
 

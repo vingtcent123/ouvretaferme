@@ -40,6 +40,10 @@ Class IncomeStatementLib {
 			->sort(['class' => SORT_ASC])
 			->getCollection();
 
+		if($cOperations->empty()) {
+			return [];
+		}
+
 		$expenses = [];
 		$incomes = [];
 

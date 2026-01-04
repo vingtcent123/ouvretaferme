@@ -53,12 +53,23 @@ new AdaptativeView(\farm\Farmer::SIG, function($data, FarmTemplate $t) {
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
 	echo new \overview\SigUi()->getSearch(search: $data->search, cFinancialYear: $data->eFarm['cFinancialYear'], eFinancialYear: $data->eFarm['eFinancialYear']);
-	echo new \overview\SigUi()->display(
-		eFarm: $data->eFarm,
-		values: $data->values,
-		eFinancialYear: $data->eFarm['eFinancialYear'],
-		eFinancialYearComparison: $data->eFinancialYearComparison,
-	);
+
+	if(empty($data->values[$data->eFarm['eFinancialYear']['id']])) {
+
+		echo '<div class="util-empty">';
+			echo s("Le suivi des Soldes Intermédiaires de Gestion sera disponible lorsque vous aurez créé des écritures pour cet exercice.");
+		echo '</div>';
+
+	} else {
+
+		echo new \overview\SigUi()->display(
+			eFarm: $data->eFarm,
+			values: $data->values,
+			eFinancialYear: $data->eFarm['eFinancialYear'],
+			eFinancialYearComparison: $data->eFinancialYearComparison,
+		);
+
+	}
 
 });
 
@@ -70,24 +81,33 @@ new AdaptativeView(\farm\Farmer::BALANCE_SHEET, function($data, FarmTemplate $t)
 	$t->title = s("Le bilan de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view, count($data->balanceSheetData) > 0);
 
-	echo new \overview\BalanceSheetUi()->getSearch(
-		search        : $data->search,
-		cFinancialYear: $data->eFarm['cFinancialYear'],
-		eFinancialYear: $data->eFarm['eFinancialYear'],
-	);
+	if(count($data->balanceSheetData) === 0) {
 
-	echo new \overview\BalanceSheetUi()->getTable(
-		eFarm                   : $data->eFarm,
-		eFinancialYear          : $data->eFarm['eFinancialYear'],
-		eFinancialYearComparison: $data->eFinancialYearComparison,
-		balanceSheetData        : $data->balanceSheetData,
-		totals                  : $data->totals,
-		cAccount                : $data->cAccount,
-		hasDetail               : $data->search->get('view') === \overview\BalanceSheetLib::VIEW_DETAILED,
-	);
+		echo '<div class="util-empty">';
+			echo s("Le bilan sera disponible lorsque vous aurez créé des écritures pour cet exercice.");
+		echo '</div>';
 
+	} else {
+
+		echo new \overview\BalanceSheetUi()->getSearch(
+			search        : $data->search,
+			cFinancialYear: $data->eFarm['cFinancialYear'],
+			eFinancialYear: $data->eFarm['eFinancialYear'],
+		);
+
+		echo new \overview\BalanceSheetUi()->getTable(
+			eFarm                   : $data->eFarm,
+			eFinancialYear          : $data->eFarm['eFinancialYear'],
+			eFinancialYearComparison: $data->eFinancialYearComparison,
+			balanceSheetData        : $data->balanceSheetData,
+			totals                  : $data->totals,
+			cAccount                : $data->cAccount,
+			hasDetail               : $data->search->get('view') === \overview\BalanceSheetLib::VIEW_DETAILED,
+		);
+
+	}
 
 });
 
@@ -99,40 +119,28 @@ new AdaptativeView(\farm\Farmer::INCOME_STATEMENT, function($data, FarmTemplate 
 	$t->title = s("Le compte de résultat de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view, count($data->resultData) > 0);
 
-	echo new \overview\IncomeStatementUi()->getSearch(search: $data->search, cFinancialYear: $data->eFarm['cFinancialYear'], eFinancialYear: $data->eFarm['eFinancialYear']);
-	echo new \overview\IncomeStatementUi()->getTable(
-		eFarm: $data->eFarm,
-		eFinancialYearComparison: $data->eFinancialYearComparison,
-		eFinancialYear: $data->eFarm['eFinancialYear'],
-		resultData: $data->resultData,
-		cAccount: $data->cAccount,
-		displaySummary: (bool)$data->search->get('view') === \overview\IncomeStatementLib::VIEW_DETAILED,
-	);
+	if(count($data->resultData) === 0) {
 
+		echo '<div class="util-empty">';
+			echo s("Le compte de résultat sera disponible lorsque vous aurez créé des écritures pour cet exercice.");
+		echo '</div>';
 
-});
-
-new AdaptativeView('noVat', function($data, FarmTemplate $t) {
-
-	$t->nav = 'accounting';
-	$t->subNav = 'analyze';
-
-	$t->title = s("La TVA de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
-
-	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
-
-	echo '<div class="util-info">';
-	echo s("Cet exercice comptable n'a pas été configuré pour être assujetti à la TVA.");
-	if($data->eFarm['eFinancialYear']['status'] === \account\FinancialYear::OPEN) {
-		echo s("(<link>modifier les paramètres</link>).", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/:update?id='.$data->eFarm['eFinancialYear']['id'].'">']);
 	} else {
-		echo s("Les paramètres de l'exercice ne sont pas modifiables car il est terminé (<link>voir les exercices</link>).", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/">']);
-	}
-	echo '</div>';
 
+		echo new \overview\IncomeStatementUi()->getSearch(search: $data->search, cFinancialYear: $data->eFarm['cFinancialYear'], eFinancialYear: $data->eFarm['eFinancialYear']);
+
+		echo new \overview\IncomeStatementUi()->getTable(
+			eFarm: $data->eFarm,
+			eFinancialYearComparison: $data->eFinancialYearComparison,
+			eFinancialYear: $data->eFarm['eFinancialYear'],
+			resultData: $data->resultData,
+			cAccount: $data->cAccount,
+			displaySummary: (bool)$data->search->get('view') === \overview\IncomeStatementLib::VIEW_DETAILED,
+		);
+
+	}
 
 });
 

@@ -11,9 +11,10 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 
 	if(empty($data->amortizations)) {
 
-		echo '<div class="util-info">';
-			echo s("Il n'y a pas d'information à afficher pour le moment.");
+		echo '<div class="util-empty">';
+			echo s("Il n'y a aucune fiche d'immobilisation enregistrée pour l'instant.");
 		echo '</div>';
+		echo '<a href="'.\company\CompanyUi::urlAsset($data->eFarm).'/:create" class="btn btn-primary">'.s("Créer ma première fiche d'immobilisation").'</a>';
 
 	} else {
 

@@ -13,8 +13,8 @@ Class ResultUi {
 
 		if($cOperation->empty() === TRUE) {
 
-			$h = '<div class="util-info">';
-			$h .= s("Le suivi du résultat sera disponible lorsque vous aurez créé des écritures pour cet exercice.");
+			$h = '<div class="util-empty">';
+				$h .= s("Le suivi du résultat sera disponible lorsque vous aurez créé des écritures pour cet exercice.");
 			$h .= '</div>';
 
 			return $h;

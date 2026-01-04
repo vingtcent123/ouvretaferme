@@ -223,6 +223,12 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		$eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
 
+		if($e['endDate'] < $e['startDate']) {
+			$startDate = $e['endDate'];
+			$e['endDate'] = $e['startDate'];
+			$e['startDate'] = $startDate;
+		}
+
 		FinancialYear::model()->beginTransaction();
 
 			FinancialYear::model()->insert($e);

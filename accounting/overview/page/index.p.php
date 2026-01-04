@@ -19,6 +19,10 @@ new Page(function($data) {
 
 	}
 
+	if($data->eFarm['eFinancialYear']['hasVat'] === FALSE and $data->view === \farm\Farmer::VAT) {
+		$data->view = \farm\FarmerLib::setView('viewAccountingFinancials', $data->eFarm, \farm\Farmer::BANK);
+	}
+
 })
 	->get(['/etats-financiers/', '/etats-financiers/{view}'], function($data) {
 
@@ -76,19 +80,23 @@ new Page(function($data) {
 					isDetailed: $data->search->get('type') === \overview\BalanceSheetLib::VIEW_DETAILED
 				);
 
-				$classes = [];
-				foreach($data->balanceSheetData as $category => $list) {
-					$classes = array_unique(array_merge($classes, array_map(fn($element) => $element['class'], $list)));
-				}
-				$twoNumbersClasses = array_map(fn($class) => substr($class, 0, 2), $classes);
-				// Si certaines classes exactes existent (pour le détail), les prendre
-				$completeNumbersClasses = array_map(fn($class) => trim($class, '0'), $classes);
-				$classes = array_unique(array_merge(
-						$twoNumbersClasses, $completeNumbersClasses,
-						[\account\AccountSetting::PROFIT_CLASS, \account\AccountSetting::LOSS_CLASS, \account\AccountSetting::RESULT_CLASS])
-				);
+				if(count($data->balanceSheetData) > 0) {
 
-				$data->cAccount = \account\AccountLib::getByClasses($classes, 'class');
+					$classes = [];
+					foreach($data->balanceSheetData as $list) {
+						$classes = array_unique(array_merge($classes, array_map(fn($element) => $element['class'], $list)));
+					}
+					$twoNumbersClasses = array_map(fn($class) => substr($class, 0, 2), $classes);
+					// Si certaines classes exactes existent (pour le détail), les prendre
+					$completeNumbersClasses = array_map(fn($class) => trim($class, '0'), $classes);
+					$classes = array_unique(array_merge(
+							$twoNumbersClasses, $completeNumbersClasses,
+							[\account\AccountSetting::PROFIT_CLASS, \account\AccountSetting::LOSS_CLASS, \account\AccountSetting::RESULT_CLASS])
+					);
+
+					$data->cAccount = \account\AccountLib::getByClasses($classes, 'class');
+
+				}
 				break;
 
 			case \farm\Farmer::INCOME_STATEMENT:
@@ -101,26 +109,26 @@ new Page(function($data) {
 					eFinancialYearComparison: $data->eFinancialYearComparison
 				);
 
-				$threeNumbersClasses = array_merge(
-					array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['operating']),
-					array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['financial']),
-					array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['exceptional']),
-					array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['operating']),
-					array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['financial']),
-					array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['exceptional']),
-				);
-				$twoNumbersClasses = array_map(fn($class) => (int)substr($class, 0, 2), $threeNumbersClasses);
-				$classes = array_unique(array_merge($threeNumbersClasses, $twoNumbersClasses));
+				if(count($data->resultData) > 0) {
 
-				$data->cAccount = \account\AccountLib::getByClasses($classes, 'class');
+					$threeNumbersClasses = array_merge(
+						array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['operating']),
+						array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['financial']),
+						array_map(fn($data) => (int)$data['class'], $data->resultData['expenses']['exceptional']),
+						array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['operating']),
+						array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['financial']),
+						array_map(fn($data) => (int)$data['class'], $data->resultData['incomes']['exceptional']),
+					);
+					$twoNumbersClasses = array_map(fn($class) => (int)substr($class, 0, 2), $threeNumbersClasses);
+					$classes = array_unique(array_merge($threeNumbersClasses, $twoNumbersClasses));
+
+					$data->cAccount = \account\AccountLib::getByClasses($classes, 'class');
+
+				}
 
 				break;
 
 			case \farm\Farmer::VAT:
-
-				if($data->eFarm['eFinancialYear']['hasVat'] === FALSE) {
-					throw new ViewAction($data, ':noVat');
-				}
 
 				$tab = GET('tab');
 				if(in_array($tab, ['journal-sell', 'journal-buy', 'check', 'cerfa', 'history']) === FALSE) {

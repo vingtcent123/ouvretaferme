@@ -12,7 +12,7 @@ class BankUi {
 
 		if($ccOperationBank->empty() === TRUE) {
 
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Le suivi de la trésorerie sera disponible lorsque vous aurez attribué des écritures à vos opérations bancaires pour cet exercice.");
 			$h .= '</div>';
 

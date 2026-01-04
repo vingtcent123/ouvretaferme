@@ -28,8 +28,16 @@ new AdaptativeView(
 
 		default:
 			echo '<div class="tab-panel selected" data-tab="">';
+
 				echo new \journal\BalanceUi()->getSearch($data->search, $data->eFarm['eFinancialYear']);
-				echo new \journal\BalanceUi()->display($data->eFarm['eFinancialYear'], $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search, $data->searches);
+
+				if(count($data->trialBalanceData) === 0 and $data->search->empty()) {
+					echo '<div class="util-empty">'.s("La balance n'est pas disponible car il n'y a aucune écriture pour cet exercice comptable.").'</div>';
+					echo '<a class="btn btn-primary" href="'.\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal">'.s("Créer ma première écriture comptable dans le journal").'</a>';
+				} else {
+
+					echo new \journal\BalanceUi()->list($data->eFarm['eFinancialYear'], $data->eFinancialYearPrevious, $data->trialBalanceData, $data->trialBalancePreviousData, $data->search, $data->searches);
+				}
 			echo '</div>';
 
 	}

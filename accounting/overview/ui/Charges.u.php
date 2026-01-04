@@ -12,7 +12,7 @@ class ChargesUi {
 
 		if($cOperation->empty() === TRUE) {
 
-			$h = '<div class="util-info">';
+			$h = '<div class="util-empty">';
 				$h .= s("Le suivi des charges sera disponible lorsque vous aurez attribué des écritures à vos opérations bancaires pour cet exercice.");
 			$h .= '</div>';
 

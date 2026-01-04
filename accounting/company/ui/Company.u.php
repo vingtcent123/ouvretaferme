@@ -76,7 +76,17 @@ class CompanyUi {
 
 		$h .= $form->hidden('farm', $eFarm['id']);
 
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['accountingType', 'startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*'], [
+		$h .= $form->group(
+			\account\FinancialYearUi::p('accountingType')->label.\util\FormUi::asterisk(),
+			$form->radios('accountingType', \account\FinancialYearUi::p('accountingType')->values, $eFinancialYear['accountingType'] ?? NULL, attributes: ['mandatory' => TRUE, 'callbackRadioAttributes' => function($option, $key) {
+				if(FEATURE_ACCOUNTING_ACCRUAL === FALSE and $key === \account\FinancialYear::ACCRUAL) {
+					return ['disabled' => 'disabled'];
+				}
+				return [];
+			}])
+		);
+
+		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*'], [
 			'hasVat*' => function($d) use($form) {
 				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 			},

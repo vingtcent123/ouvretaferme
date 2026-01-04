@@ -83,6 +83,14 @@ class FinancialYear extends FinancialYearElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('accountingType.check', function(?string $accountingType): bool {
+
+				if(FEATURE_ACCOUNTING_ACCRUAL === FALSE) {
+					return $accountingType === FinancialYear::CASH;
+				}
+
+				return TRUE;
+			})
 			->setCallback('startDate.loseOperations', function(string $date) use($p): bool {
 
 				if($p->for === 'update') {
@@ -92,6 +100,10 @@ class FinancialYear extends FinancialYearElement {
 				return TRUE;
 			})
 			->setCallback('startDate.check', function(string $date) use($input): bool {
+
+				if(mb_strlen($date) !== 10 or \util\DateLib::isValid($date) === FALSE) {
+					return FALSE;
+				}
 
 				// Si on est en création de module de compta (= la BD n'existe pas encore)
 				$hasAccounting = ($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] ?? TRUE;
@@ -114,6 +126,10 @@ class FinancialYear extends FinancialYearElement {
 
 			})
 			->setCallback('endDate.check', function(string $date) use($input): bool {
+
+				if(mb_strlen($date) !== 10 or \util\DateLib::isValid($date) === FALSE) {
+					return FALSE;
+				}
 
 				// Si on est en création de module de compta (= la BD n'existe pas encore)
 				$hasAccounting = ($input['eFarm'] ?? new \farm\Farm())['hasAccounting'] ?? TRUE;

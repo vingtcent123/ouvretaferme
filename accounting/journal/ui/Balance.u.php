@@ -163,7 +163,7 @@ Class BalanceUi {
 
 	}
 
-	public function display(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious, array $balance, array $balancePrevious, \Search $search, array $searches): string {
+	public function list(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious, array $balance, array $balancePrevious, \Search $search, array $searches): string {
 
 		$hasPrevious = $eFinancialYearPrevious->notEmpty();
 		$classes = array_unique(array_merge(array_keys($balance), array_keys($balancePrevious)));
