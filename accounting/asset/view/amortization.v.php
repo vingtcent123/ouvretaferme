@@ -65,22 +65,31 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, 0);
 
-	echo '<div class="tabs-h" id="asset-acquisition" onrender="'.encode('Lime.Tab.restore(this, "acquisition-asset")').'">';
+	if($data->cAsset->empty() and $data->cAssetSubvention->empty()) {
 
-		echo '<div class="tabs-item">';
-		echo '<a class="tab-item selected" data-tab="acquisition-asset" onclick="Lime.Tab.select(this)">'.s("Immobilisations").'</a>';
-		echo '<a class="tab-item" data-tab="acquisition-subvention" onclick="Lime.Tab.select(this)">'.s("Subventions").'</a>';
+		echo '<div class="util-empty">';
+			echo s("Il n'y a pas encore d'immobilisation nouvellement acquise sur cet exercice comptable.");
 		echo '</div>';
 
-		echo '<div class="tab-panel" data-tab="acquisition-asset">';
-		echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAsset, 'asset');
+	} else {
+
+		echo '<div class="tabs-h" id="asset-acquisition" onrender="'.encode('Lime.Tab.restore(this, "acquisition-asset")').'">';
+
+			echo '<div class="tabs-item">';
+			echo '<a class="tab-item selected" data-tab="acquisition-asset" onclick="Lime.Tab.select(this)">'.s("Immobilisations").'</a>';
+			echo '<a class="tab-item" data-tab="acquisition-subvention" onclick="Lime.Tab.select(this)">'.s("Subventions").'</a>';
+			echo '</div>';
+
+			echo '<div class="tab-panel" data-tab="acquisition-asset">';
+			echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAsset, 'asset');
+			echo '</div>';
+
+			echo '<div class="tab-panel" data-tab="acquisition-subvention">';
+			echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAssetSubvention, 'subvention');
+			echo '</div>';
+
 		echo '</div>';
 
-		echo '<div class="tab-panel" data-tab="acquisition-subvention">';
-		echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAssetSubvention, 'subvention');
-		echo '</div>';
-
-	echo '</div>';
-
+	}
 
 });
