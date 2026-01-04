@@ -30,7 +30,6 @@ class JournalUi {
 					if(
 						GET('financialYear') !== '0' and // Cas où on regarde tous les exercices
 						get_exists('cashflow') === FALSE and
-						get_exists('hash') === FALSE and
 						$eFinancialYear['status'] === \account\FinancialYearElement::OPEN and
 						$eFarm->canManage()
 					) {

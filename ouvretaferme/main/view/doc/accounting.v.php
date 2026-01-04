@@ -337,6 +337,23 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 		echo '<p>'.s("Et c'est tout !").'</p>';
 		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page des opérations bancaires.").'</p>';
 
+		$form = new \util\FormUi();
+		echo '<label>';
+			echo $form->inputCheckbox('export-ofx-ca', 1, [
+				'checked' => FALSE,
+				'class' => 'hide doc-hidden-checkbox',
+			]);
+			echo '<a>'.s("Voir comment exporter un fichier OFX depuis le Crédit Agricole").'</a>';
+			echo '<div doc-hidden-checkbox>';
+				echo Asset::image('main', 'doc/accounting-ofx-ca-1.png', ['style' => 'max-height: 9rem; margin-bottom: 0 !important']);
+				echo '<span class="util-annotation">'.s("Cliquez sur <b>Documents</b>").'</span>';
+				echo Asset::image('main', 'doc/accounting-ofx-ca-2.png', ['style' => 'max-height: 15rem; margin-bottom: 0 !important']);
+				echo '<span class="util-annotation">'.s("Puis cliquez sur <b>Télécharger l'historique des opérations</b>").'</span>';
+				echo Asset::image('main', 'doc/accounting-ofx-ca-3.png', ['style' => 'max-height: 40rem; margin-bottom: 0 !important']);
+				echo '<span class="util-annotation">'.s("Choisissez le compte bancaire, le format <b>OFX</b>, la période de transactions, puis validez").'</span>';
+			echo '</div>';
+		echo '</label>';
+
 	echo '</div>';
 
 	echo '<div class="util-block">';

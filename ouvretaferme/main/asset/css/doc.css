@@ -187,3 +187,15 @@ ul.doc-list-icons {
 	list-style-type: none;
 	padding-left: 0.75rem;
 }
+
+label:has(.doc-hidden-checkbox) {
+	display: block;
+}
+label:has(.doc-hidden-checkbox:checked) [doc-hidden-checkbox] {
+	border-color: red;
+	display: inherit;
+}
+label:has(.doc-hidden-checkbox:not(:checked)) [doc-hidden-checkbox] {
+	border-color: green;
+	display: none;
+}
