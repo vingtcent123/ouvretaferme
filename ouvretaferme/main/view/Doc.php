@@ -37,7 +37,7 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/import" '.$this->menuSelected('import').'>'.s("Importer un plan de culture").'</a>';
 				if(FEATURE_PRE_ACCOUNTING) {
 					$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
-					$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le module").'</a>';
+					$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le logiciel").'</a>';
 					$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
 					$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer les factures").'</a>';
 				}

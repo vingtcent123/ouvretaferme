@@ -4,21 +4,21 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting';
 
-	$t->title = s("Prendre en main le module de comptabilité");
+	$t->title = s("Prendre en main le logiciel de comptabilité");
 	$t->subTitle = s("Utiliser Ouvretaferme pour tenir sa comptabilité simplement");
 
 	echo '<div class="util-block">';
 
 	echo '<h5 style="text-transform: uppercase">'.s("Introduction à la comptabilité sur Ouvretaferme").'</h5>';
 	echo '<h2>'.s("Utiliser Ouvretaferme pour préparer (puis tenir) sa comptabilité").'</h2>';
-	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer les données de vos factures sans être obligé·e·s d'utiliser le module de comptabilité. Cela signifie que : ").'</p>';
+	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer les données de vos factures sans être obligé·e·s d'utiliser le logiciel de comptabilité. Cela signifie que : ").'</p>';
 	echo '<ul>';
 		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, comptes de clients, numéros de comptes des produits de vos ventes)").'</li>';
 		echo '<li>'.s("Vous indiquez pour chaque produit à quel compte le rattacher").'</li>';
 		echo '<li>'.s("Vous indiquez le moyen de paiement").'</li>';
 	echo '</ul>';
 	echo '<p>'.s("Au final, ").'</p>';
-	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format FEC puis l'importez dans votre logiciel de comptabilité habituel");
+	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format {fec} puis l'importez dans votre logiciel de comptabilité habituel", ['fec' => '<span class="util-badge bg-primary">FEC</span>']);
 	echo '<br />';
 	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos factures dans le logiciel comptable de Ouvretaferme");
 	echo '<p class="mt-1">'.s("... C'est <b>vous qui choisissez</b> le niveau d'utilisation de la comptabilité proposé par Ouvretaferme !").'</p>';
@@ -64,7 +64,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '</p>';
 		echo '<h3>'.s("Et si des factures n'ont pas pour objectif d'entrer en comptabilité par un import ?").'</h3>';
 		echo '<p>';
-			echo s("Dans ce cas, il est possible, dans la page d'import, d'ignorer simplement ces factures. Elles ne seront plus proposées, ni pour la préparation, ni pour l'export, ni pour l'import en comptablité.");
+			echo s("Dans ce cas, il est possible, dans la page d'import, d'ignorer simplement ces factures. Elles ne seront plus proposées, ni pour la préparation, ni pour l'export, ni pour l'import dans la comptablité.");
 		echo '</p>';
 
 	echo '</div>';
@@ -289,25 +289,25 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:import';
 
-	$t->title = s("Importer les factures dans la comptabilité de Ouvretaferme");
-	$t->subTitle = s("Créer les écritures comptables en un clic");
+	$t->title = s("Importer les factures dans le logiciel de comptabilité de {siteName}");
+	$t->subTitle = s("... et créer les écritures comptables en un clic");
 
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vos factures</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';
 
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Importer les factures").'</h2>';
-		echo '<p>'.s("Pour accéder au récapitulatif de vos factures à importer en comptabilité, rendez-vous dans la page <b>Précomptabilité</b>, sur le 3<sup>ème</sup> onglet, et cliquez sur le bouton <b>Importer les factures</b>.").'</p>';
-		echo '<p>'.s("Seules les factures dont les données sont préparées et <link>qui sont rapprochées avec une opération bancaire</link> sont éligibles à l'import en comptabilité.", ['link' => '<a href="/doc/accounting:bank#reconciliate">']).'</p>';
+		echo '<p>'.s("Pour accéder au récapitulatif de vos factures à importer dans la comptabilité, rendez vous dans la page <b>Précomptabilité</b>, sur le 3<sup>ème</sup> onglet, et cliquez sur le bouton <b>Importer les factures</b>.").'</p>';
+		echo '<p>'.s("Seules les factures dont les données sont préparées et <link>qui sont rapprochées avec une opération bancaire</link> sont éligibles à l'import dans la comptabilité.", ['link' => '<a href="/doc/accounting:bank#reconciliate">']).'</p>';
 		echo '<p>'.s("Vous pouvez :").'</p>';
 		echo '<ul class="doc-list-icons">';
-		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les intégrer en comptabilité").'</li>';
-		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>(attention, elles ne vous seront alors plus proposées à l'import)</span>", ['span' => '<span class="doc-annotation">']).'</li>';
+		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les importer").'</li>';
+		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>Note : ces factures ne vous seront alors plus proposées à l'import</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
-		echo '<p>'.s("En les intégrant dans votre comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
+		echo '<p>'.s("En les important dans la comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("Classe {productAccount} pour tous vos numéros de comptes de produits ou pour la livraison, et il y aura autant d'écritures que de comptes différents", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
-			echo '<li>'.s("Numéro de compte de TVA {vatAccount}, et il y aura autant d'écritures que de numéros de comptes et taux de TVA différents. <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
+			echo '<li>'.s("Classe {productAccount} pour tous vos numéros de comptes de produits ou pour la livraison, avec autant d'écritures que de comptes différents", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
+			echo '<li>'.s("Numéro de compte de TVA {vatAccount}, avec autant d'écritures que de numéros de comptes et taux de TVA différents. <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
 
 			if(FEATURE_ACCOUNTING_ACCRUAL) {
 				echo '<li>'.s("Numéro de compte {clientAccount} pour la contrepartie liée au client (tiers). <br /><span>Note : uniquement si vous êtes en comptabilité d'engagement (globalement ou uniquement pour les ventes)</span>", ['clientAccount' => '<b>'.\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
