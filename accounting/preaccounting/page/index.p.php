@@ -272,7 +272,6 @@ new Page(function($data) {
 
 		$data->search = new Search([
 			'type' => GET('type'),
-			'reconciliated' => GET('reconciliated', '?bool'),
 			'accountingDifference' => GET('accountingDifference', '?bool'),
 			'customer' => \selling\CustomerLib::getById(GET('customer')),
 			'from' => $data->eFarm['eFinancialYear']['startDate'],

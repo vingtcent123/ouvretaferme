@@ -30,6 +30,12 @@ class Suggestion extends SuggestionElement {
 
 	}
 
+	public function acceptUpdate(): bool {
+
+		return $this['status'] === Suggestion::WAITING;
+
+	}
+
 	public static function validateBatch(\Collection $cSuggestion): void {
 
 		if($cSuggestion->empty()) {

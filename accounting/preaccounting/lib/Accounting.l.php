@@ -237,8 +237,7 @@ Class AccountingLib {
 			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
 			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
-			->whereCashflow('=', NULL, if: $search->get('reconciliated') === FALSE)
-			->whereCashflow('!=', NULL, if: $search->get('reconciliated') === TRUE)
+			->whereCashflow('!=', NULL)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
 			->where('m1.date BETWEEN '.$dateCondition.' OR m3.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
@@ -294,6 +293,7 @@ Class AccountingLib {
 					->delegateCollection('invoice'),
 			])
 			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->whereCashflow('!=', NULL, if: $forImport === TRUE)
 			->whereAccountingHash(NULL, if: $forImport === TRUE)
 			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)

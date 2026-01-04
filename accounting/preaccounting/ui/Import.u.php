@@ -29,13 +29,6 @@ Class ImportUi {
 					], $search->get('type'), ['placeholder' => s("Tous types de clients")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
-					$h .= '<legend>'.s("Rapprochement").'</legend>';
-					$h .= $form->select('reconciliated', [
-						1 => s("Factures rapprochées"),
-						0 => s("Factures non rapprochées"),
-					], $search->get('reconciliated'), ['placeholder' => s("Rapprochées ou non")]);
-				$h .= '</fieldset>';
-				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Écart de paiement").'</legend>';
 					$h .= $form->select('accountingDifference', [
 						1 => s("Factures avec un écart de paiement"),

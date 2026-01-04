@@ -1,19 +1,5 @@
 class Reconciliate {
 
-	static updatePaymentMethod(target) {
-
-		const suggestionId = target.dataset.suggestion;
-		const paymentMethod = target.options[target.selectedIndex].value;
-
-		new Ajax.Query()
-			.url('/7/preaccounting/reconciliate:doUpdatePaymentMethod')
-			.method('post')
-			.body({
-					id: suggestionId, paymentMethod
-			})
-			.fetch();
-	}
-
 	static toggleGroupSelection(target) {
 
 		const currentConfidence = target.dataset.confidence;
