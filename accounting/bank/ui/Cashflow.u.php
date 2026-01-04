@@ -55,7 +55,7 @@ class CashflowUi {
 			$h .= '</fieldset>';
 			$h .= '<fieldset>';
 				$h .= '<legend>'.s("Rapprochement").'</legend>';
-				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], (int)$search->get('isReconciliated'));
+				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated') === NULL ? '' : (int)$search->get('isReconciliated'));
 			$h .= '</fieldset>';
 
 			$h .= '<div class="util-search-submit">';
