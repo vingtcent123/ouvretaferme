@@ -38,7 +38,7 @@ class CashflowLib extends CashflowCrud {
 
 		return Cashflow::model()
 			->whereId('=', $search->get('id'), if: $search->get('id'))
-			->whereImport('=', $search->get('import'), if: $search->has('import'))
+			->whereImport('=', $search->get('import'), if: $search->has('import') and $search->get('import')->notEmpty())
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->whereDate('>=', $search->get('from'), if: $search->get('from'))
 			->whereDate('<=', $search->get('to'), if: $search->get('to'))
@@ -46,8 +46,7 @@ class CashflowLib extends CashflowCrud {
 			->whereMemo('LIKE', '%'.mb_strtolower($search->get('memo') ?? '').'%', if: $search->get('memo'))
 			->whereCreatedAt('<=', $search->get('createdAt'), if: $search->get('createdAt'))
 			->whereIsReconciliated('=', $search->get('isReconciliated'), if: $search->get('isReconciliated') !== NULL)
-			->where('amount < 0', if: $search->get('direction') and $search->get('direction') === 'debit')
-			->where('amount >= 0', if: $search->get('direction') and $search->get('direction') === 'credit')
+			->whereType($search->get('type'), if: $search->has('type') and $search->get('type'))
 			->whereStatus('=', $search->get('status'), if: $search->get('status'))
 			->whereStatus('!=', Cashflow::DELETED, if: empty($search->get('status')))
 			->whereAccount('=', fn() => $search->get('bankAccount')['id'], if: $search->get('bankAccount') and $search->get('bankAccount')->notEmpty())

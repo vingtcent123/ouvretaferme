@@ -108,10 +108,10 @@ class OperationLib extends OperationCrud {
 				->where('m2.id IS NULL');
 		}
 
-		if($search->get('cashflow')) {
+		if($search->has('cashflow') and $search->get('cashflow')->notEmpty()) {
 			$model
 				->join(OperationCashflow::model(), 'm1.id = m2.operation')
-				->where('m2.cashflow = '.$search->get('cashflow'));
+				->where('m2.cashflow = '.$search->get('cashflow')['id']);
 
 		}
 
@@ -151,14 +151,14 @@ class OperationLib extends OperationCrud {
 			->whereDate('>=', $search->get('minDate'), if: $search->get('minDate'))
 			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))
 			->wherePaymentDate('LIKE', '%'.$search->get('paymentDate').'%', if: $search->get('paymentDate'))
-			->wherePaymentMethod($search->get('paymentMethod'), if: $search->get('paymentMethod'))
+			->wherePaymentMethod($search->get('paymentMethod'), if: $search->has('paymentMethod') and $search->get('paymentMethod')->notEmpty())
 			->whereAccountLabel('LIKE', $search->get('accountLabel').'%', if: $search->get('accountLabel'))
 			->where(fn() => 'accountLabel LIKE "'.join('%" OR accountLabel LIKE "', $search->get('accountLabels')).'"', if: $search->get('accountLabels'))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereDocument('LIKE', '%'.$search->get('document').'%', if: $search->get('document'))
 			->whereType($search->get('type'), if: $search->get('type'))
-			->whereAsset($search->get('asset'), if: $search->get('asset'))
-			->whereThirdParty('=', $search->get('thirdParty'), if: $search->get('thirdParty'));
+			->whereAsset($search->get('asset'), if: $search->has('asset') and $search->get('asset')->notEmpty())
+			->whereThirdParty('=', $search->get('thirdParty'), if: $search->has('thirdParty') and $search->get('thirdParty')->notEmpty());
 
 	}
 
@@ -272,9 +272,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function countUnbalanced(\Search $search): int {
-
-		$eFinancialYear = $search->get('financialYear');
+	public static function countUnbalanced(\account\FinancialYear $eFinancialYear): int {
 
 		$hashes = self::applySearch(new \Search(['financialYear' => $eFinancialYear]))
 			->select(['hash', 'balance' => new \Sql('SUM(IF(type = "'.Operation::CREDIT.'", amount, -amount))', 'float')])

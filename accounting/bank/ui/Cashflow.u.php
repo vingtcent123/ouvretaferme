@@ -41,12 +41,12 @@ class CashflowUi {
 			$h .= '</fieldset>';
 			$h .= '<fieldset>';
 				$h .= '<legend>'.s("Mouvement").'</legend>';
-				$h .= $form->select('direction', ['debit-credit' => s("Débit / Crédit"), 'debit' => s("Débit"), 'credit' => s("Crédit")], $search->get('direction') ?? 'debit-credit', ['mandatory' => TRUE]);
+				$h .= $form->select('type', [Cashflow::DEBIT => s("Débit"), Cashflow::CREDIT => s("Crédit")], $search->get('type'));
 			$h .= '</fieldset>';
 			$h .= '<fieldset>';
 				$h .= '<legend>'.s("Montant").'</legend>';
 				$h .= $form->inputGroup(
-			$form->addon(s('Montant')).
+					$form->addon(s('Montant')).
 					$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01]).
 					$form->addon(s('+/-')).
 					$form->number('margin', $search->get('margin', 1)).
@@ -55,7 +55,7 @@ class CashflowUi {
 			$h .= '</fieldset>';
 			$h .= '<fieldset>';
 				$h .= '<legend>'.s("Rapprochement").'</legend>';
-				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], $search->get('isReconciliated'));
+				$h .= $form->select('isReconciliated', [1 => s("Opérations rapprochées"), 0 => s("Opérations non rapprochées")], (int)$search->get('isReconciliated'));
 			$h .= '</fieldset>';
 
 			$h .= '<div class="util-search-submit">';

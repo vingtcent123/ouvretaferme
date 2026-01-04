@@ -18,25 +18,25 @@ new Page(function($data) {
 			throw new ViewAction($data, ':onboarding');
 		}
 
-		$data->eThirdParty = get_exists('thirdParty')
-			? account\ThirdPartyLib::getById(GET('thirdParty', 'int'))
-			: NULL;
+		$data->eCashflow = \bank\CashflowLib::getById(GET('cashflow'));
+		$data->eThirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 
 		$search = new Search([
-			'date' => GET('date'),
+			'date' => \journal\Operation::GET('date', 'date'),
 			'accountLabel' => GET('accountLabel'),
 			'description' => GET('description'),
 			'type' => GET('type'),
 			'document' => GET('document'),
-			'thirdParty' => GET('thirdParty'),
-			'asset' => GET('asset'),
-			'paymentMethod' => GET('paymentMethod'),
+			'thirdParty' => $data->eThirdParty,
+			'asset' => \asset\AssetLib::getById(GET('asset')),
+			'paymentMethod' => \payment\MethodLib::getById(GET('paymentMethod')),
+			'cashflow' => $data->eCashflow,
 			'hasDocument' => GET('hasDocument', '?int'),
 			'needsAsset' => GET('needsAsset', '?int'),
-			'periodStart' => GET('periodStart'),
-			'periodEnd' => GET('periodEnd'),
-			'minDate' => GET('periodStart'),
-			'maxDate' => GET('periodEnd'),
+			'periodStart' => \journal\Operation::GET('periodStart', 'date'),
+			'periodEnd' => \journal\Operation::GET('periodEnd', 'date'),
+			'minDate' => \journal\Operation::GET('periodStart', 'date'),
+			'maxDate' => \journal\Operation::GET('periodEnd', 'date'),
 			'hash' => GET('hash'),
 		], GET('sort'));
 
@@ -63,11 +63,6 @@ new Page(function($data) {
 		} else {
 			// Ne pas ouvrir le bloc de recherche
 			$search->set('financialYear', $data->eFarm['eFinancialYear']);
-		}
-
-		$data->eCashflow = \bank\CashflowLib::getById(GET('cashflow'));
-		if($data->eCashflow->exists() === TRUE) {
-			$search->set('cashflow', GET('cashflow'));
 		}
 
 		if($data->eOperationRequested->notEmpty() and !GET('code')) {
@@ -98,7 +93,7 @@ new Page(function($data) {
 		$data->operationsVat = [];
 		$data->page = GET('page', 'int');
 
-		$data->nUnbalanced = \journal\OperationLib::countUnbalanced($search);
+		$data->nUnbalanced = \journal\OperationLib::countUnbalanced($search->get('financialYear'));
 
 		if($data->unbalanced === TRUE) {
 

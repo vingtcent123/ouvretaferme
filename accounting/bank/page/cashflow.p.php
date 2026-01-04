@@ -4,18 +4,21 @@ new Page()
 
 		$data->nSuggestion = \preaccounting\SuggestionLib::countWaiting();
 
+		$data->eImport = \bank\ImportLib::getById(GET('import', 'int'));
+
 		$search = new Search([
-			'date' => GET('date'),
+			'date' => \bank\Cashflow::GET('date', 'date'),
 			'fitid' => GET('fitid'),
 			'memo' => GET('memo'),
-			'status' => GET('status'),
-			'from' => GET('periodStart'),
-			'to' => GET('periodEnd'),
-			'direction' => GET('direction'),
-			'periodStart' => GET('periodStart'),
-			'periodEnd' => GET('periodEnd'),
+			'status' => \bank\Cashflow::GET('status', 'status'),
+			'from' => \bank\Cashflow::GET('periodStart', 'date'),
+			'to' => \bank\Cashflow::GET('periodEnd', 'date'),
+			'periodStart' => \bank\Cashflow::GET('periodStart', 'date'),
+			'periodEnd' => \bank\Cashflow::GET('periodEnd', 'date'),
+			'type' => \bank\Cashflow::GET('type', 'type'),
 			'isReconciliated' => GET('isReconciliated', '?bool'),
 			'id' => GET('id'),
+			'import' => $data->eImport,
 			'financialYear' => $data->eFarm->usesAccounting() ? \account\FinancialYearLib::getById(GET('year')) : new \account\FinancialYear(),
 		], GET('sort', default: 'date-'));
 
@@ -63,13 +66,6 @@ new Page()
 
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
-
-		if(get_exists('import') === TRUE) {
-			$search->set('import', GET('import'));
-			$data->eImport = \bank\ImportLib::getById(GET('import', 'int'));
-		} else {
-			$data->eImport = new \bank\Import();
-		}
 
 		$data->page = GET('page', 'int');
 
