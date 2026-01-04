@@ -135,6 +135,9 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
             } else {
 
                 qs('[data-index="' + index + '"][data-vat="account-info"]').hide();
+                const targetVatValue = qs('[name="vatValue[' + index + ']"');
+                CalculationField.setValue(targetVatValue, 0);
+                qs('[data-index="' + index + '"][data-field="vatRate"]').value = 0;
                 qs('[data-index="' + index + '"][data-field="vatRate"]').setAttribute('disabled', 'disabled');
                 qs('[data-index="' + index + '"][data-field="vatValue"]').setAttribute('disabled', 'disabled');
 
