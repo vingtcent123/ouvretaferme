@@ -13,7 +13,6 @@ L::setVariables([
 
 Lime::setName('Ouvretaferme');
 
-define('FEATURE_ACCOUNTING', LIME_ENV === 'dev');
 define('FEATURE_ACCOUNTING_CASH_ACCRUAL', FALSE);
 define('FEATURE_ACCOUNTING_ACCRUAL', FALSE);
 define('FEATURE_RECONCILIATE_OPERATIONS', FALSE);

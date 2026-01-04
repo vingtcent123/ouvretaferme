@@ -10,10 +10,6 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = $h;
 
-	if(LIME_ENV === 'prod') {
-		die('Bientôt disponible');
-	}
-
 	Asset::css('company', 'company.css');
 
 	Asset::css('main', 'font-ptserif.css');
