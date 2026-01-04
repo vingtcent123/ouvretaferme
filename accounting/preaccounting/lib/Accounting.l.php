@@ -715,7 +715,7 @@ Class AccountingLib {
 		foreach($cPayment as $ePayment) {
 			$payments[$ePayment['method']['id']] = [
 				'label' => $ePayment['method']['name'],
-				'rate' => round($ePayment['amountIncludingVat'] / $totalAmount * 100, 2),
+				'rate' => $totalAmount !== 0.0 ? round($ePayment['amountIncludingVat'] / $totalAmount * 100, 2) : 100,
 			];
 		}
 
