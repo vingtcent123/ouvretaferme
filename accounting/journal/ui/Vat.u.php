@@ -64,7 +64,7 @@ Class VatUi {
 			$h .= '<table class="td-vertical-top tbody-hover table-'.$for.' no-background">';
 
 				$h .= '<thead '.($for === 'web' ? 'class="thead-sticky"' : '').'>';
-					$h .= '<tr '.($for === 'pdf' ? 'class="row-header row-upper"' : '').'>';
+					$h .= '<tr '.($for === 'pdf' ? 'class="tr-header tr-upper"' : '').'>';
 						$h .= '<th>';
 							$label = s("Date");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('date', $label) : $label);
@@ -178,7 +178,7 @@ Class VatUi {
 
 	private static function getMonthTotal(?string $currentMonth, array $totals): string {
 
-		$h = '<tr class="row-bold tr-border-top">';
+		$h = '<tr class="tr-bold tr-border-top">';
 
 			$h .= '<td colspan="2">';
 				$h .= s("Total TVA");

@@ -135,7 +135,7 @@ class BalanceSheetUi {
 
 					$h .= $this->displaySubCategoryLines(eFarm: $eFarm, assets: $balanceSheetData['fixedAssets'], liabilities: $balanceSheetData['equity'],cAccount: $cAccount, hasDetail: $hasDetail, hasComparison: $hasComparison);
 
-					$h .= '<tr class="overview_group-total row-bold">';
+					$h .= '<tr class="overview_group-total tr-bold">';
 
 						$h .= '<th colspan="3">'.s("Total actif immobilisé").'</th>';
 						if($netOnly === FALSE) {
@@ -184,7 +184,7 @@ class BalanceSheetUi {
 
 					$h .= $this->displaySubCategoryLines(eFarm: $eFarm, assets: $balanceSheetData['currentAssets'],liabilities: $balanceSheetData['debts'], cAccount: $cAccount, hasDetail: $hasDetail, hasComparison: $hasComparison);
 
-					$h .= '<tr class="overview_group-total row-bold">';
+					$h .= '<tr class="overview_group-total tr-bold">';
 
 						$h .= '<th colspan="3">'.s("Total actif circulant").'</th>';
 						if($netOnly === FALSE) {
@@ -231,7 +231,7 @@ class BalanceSheetUi {
 
 					$h .= '</tr>';
 
-					$h .= '<tr class="overview_group-total row-bold">';
+					$h .= '<tr class="overview_group-total tr-bold">';
 
 						$h .= '<th colspan="3">'.s("Total Actif").'</th>';
 						if($netOnly === FALSE) {

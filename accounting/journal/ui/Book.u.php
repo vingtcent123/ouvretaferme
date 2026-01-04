@@ -107,7 +107,7 @@ class BookUi {
 				$currentClass = $eOperation['class'];
 				$currentAccountLabel = $eOperation['accountLabel'];
 
-				$h .= '<tr class="row-header">';
+				$h .= '<tr class="tr-header">';
 					$h .= '<td class="hide-sm-down"></td>';
 					$h .= '<td colspan="2">';
 					$h .= s("{class} - {description}", [

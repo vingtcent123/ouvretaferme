@@ -683,7 +683,7 @@ class JournalUi {
 							$colspan--;
 						}
 
-						$h .= '<tr class="row-highlight row-bold">';
+						$h .= '<tr class="row-highlight tr-bold">';
 
 							if($readonly === FALSE) {
 								$h .= '<td class="td-checkbox"></td>';
@@ -708,7 +708,7 @@ class JournalUi {
 							$text = s("Solde débiteur");
 						}
 
-						$h .= '<tr class="row-highlight row-bold">';
+						$h .= '<tr class="row-highlight tr-bold">';
 
 							if($readonly === FALSE) {
 								$h .= '<td class="td-checkbox"></td>';

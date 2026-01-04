@@ -733,7 +733,7 @@ class CashflowUi {
 		$h = '<table id="cashflow-operations" class="tr-even mt-2 tr-hover '.($cOperation->empty() ? 'hide' : '').'">';
 
 			$h .= '<thead>';
-				$h .= '<tr class="row-header">';
+				$h .= '<tr class="tr-header">';
 					$h .= '<th>';
 						$h .= s("Date");
 					$h .= '</th>';

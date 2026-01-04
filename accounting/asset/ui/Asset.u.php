@@ -308,7 +308,7 @@ Class AssetUi {
 
 					}
 
-					$h .= '<tr class="row-bold">';
+					$h .= '<tr class="tr-bold">';
 						$h .= '<td></td>';
 						$h .= '<td>';
 							$h .= match($type) {
@@ -350,7 +350,7 @@ Class AssetUi {
 			$h .= '<table class="tr-even td-vertical-top tr-hover table-bordered">';
 
 				$h .= '<thead class="thead-sticky">';
-					$h .= '<tr class="row-bold">';
+					$h .= '<tr class="tr-bold">';
 						$h .= '<th colspan="2" class="text-center">'.s("Caractéristiques").'</th>';
 						$h .= '<th colspan="4" class="text-center">'.s("Valeurs brutes").'</th>';
 						$h .= '<th colspan="6" class="text-center">'.s("Amortissements économiques").'</th>';

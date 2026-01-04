@@ -332,7 +332,7 @@ Class VatUi {
 						$totalCollected = $collectedVat;
 					}
 
-					$h .= '<tr class="row-bold">';
+					$h .= '<tr class="tr-bold">';
 						$h .= '<th class="text-center td-min-content text-end">'.s("Totaux").'</th>';
 						$h .= '<td class="text-end highlight-stick-right"></td>';
 						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalCalculated, precision: 0).'</td>';
@@ -455,7 +455,7 @@ Class VatUi {
 					$h .= '<td>'.\Asset::icon('6-circle').'</td>';
 				$h .= '</tr>';
 
-				$h .= '<tr class="row-bold">';
+				$h .= '<tr class="tr-bold">';
 					$h .= '<th>'.s("Total : ");
 					if($vatBalance - $vatDeposit < 0) {
 						$h .= s("Crédit de TVA");

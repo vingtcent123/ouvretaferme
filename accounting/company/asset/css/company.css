@@ -19,35 +19,8 @@ span.undefined {
 	opacity: 0.5;
 }
 
-
-tr.row-highlight {
-	background-color: var(--background-dark) !important;
-}
-
-tr.row-upper,
-tr.row-upper td,
-tr.row-upper th {
-	text-transform: uppercase;
-}
-
-tr.row-bold > th,
-tr.row-bold > td {
-	font-weight: bold;
-}
-tr.row-light > td {
-	opacity: 0.5;
-}
-
 .util-quick-dropdown .form-info {
 	color: var(--muted-light);
-}
-
-tr.row-header,
-tr.row-header td,
-tr.row-header th
-{
-	background-color: var(--background-dark) !important;
-	font-weight: bold;
 }
 
 div.financial-year-dropdown,

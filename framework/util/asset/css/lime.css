@@ -168,6 +168,32 @@ table.tr-bordered tr {
 	border-bottom: 1px solid #0002;
 }
 
+tr.row-highlight {
+	background-color: var(--background-dark) !important;
+}
+
+tr.tr-upper,
+tr.tr-upper td,
+tr.tr-upper th {
+	text-transform: uppercase;
+}
+
+tr.tr-bold > th,
+tr.tr-bold > td {
+	font-weight: bold;
+}
+tr.tr-light > td {
+	opacity: 0.5;
+}
+
+tr.tr-header,
+tr.tr-header td,
+tr.tr-header th
+{
+	background-color: var(--background-dark) !important;
+	font-weight: bold;
+}
+
 tr.tr-title {
 	background-color: transparent !important;
 	text-transform: uppercase;

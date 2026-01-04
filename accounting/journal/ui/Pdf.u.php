@@ -51,7 +51,7 @@ class PdfUi {
 				$h .= '<table class="">';
 
 					$h .= '<thead>';
-						$h .= '<tr class="row-header row-upper">';
+						$h .= '<tr class="tr-header tr-upper">';
 							$h .= '<th>'.s("Date de l'écriture").'</th>';
 							$h .= '<th>'.s("Pièce comptable").'</th>';
 							$h .= '<th colspan="2">'.s("Compte (Libellé et numéro)").'</th>';

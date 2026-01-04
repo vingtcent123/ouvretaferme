@@ -64,7 +64,7 @@ Class ReconciliateUi {
 						$currentConfidence = $element['confidence'];
 						$h .= '<tbody data-confidence="'.$currentConfidence[0].'">';
 
-							$h .= '<tr class="tr-title row-header">';
+							$h .= '<tr class="tr-title tr-header">';
 								$h .= '<td class="td-checkbox">';
 									$h .= '<label>';
 										$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="reconciliate" data-confidence="'.$currentConfidence[0].'" onclick="Reconciliate.toggleGroupSelection(this)"/>';
@@ -94,7 +94,7 @@ Class ReconciliateUi {
 
 					$h .= '<tbody>';
 
-						$h .= '<tr class="row-bold">';
+						$h .= '<tr class="tr-bold">';
 							$h .= '<td class="td-checkbox"></td>';
 							$h .= '<td>'.\util\DateUi::numeric($element['date']).'</td>';
 							$h .= '<td>';

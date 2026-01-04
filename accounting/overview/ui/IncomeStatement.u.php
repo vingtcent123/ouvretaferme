@@ -173,7 +173,7 @@ class IncomeStatementUi {
 
 					$h .= '</tr>';
 
-					$h .= '<tr class="overview_group-total row-bold">';
+					$h .= '<tr class="overview_group-total tr-bold">';
 
 						$h .= '<th colspan="3">'.s("Total général").'</th>';
 						$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0), precision: 0).'</td>';
@@ -216,7 +216,7 @@ class IncomeStatementUi {
 				break;
 		}
 
-		$h = '<tr class="overview_group-total row-bold">';
+		$h = '<tr class="overview_group-total tr-bold">';
 
 			$h .= '<th colspan="3">'.$expensesTitle.'</th>';
 			$h .= '<td class="text-end">'.\util\TextUi::money($totals[$type.'Expense']['current'], precision: 0).'</td>';

@@ -17,7 +17,7 @@ Class AmortizationUi {
 
 		if($isTotalLine === TRUE) {
 
-			$class = 'row-header';
+			$class = 'tr-header';
 			$default = '0.00';
 
 		} else {
@@ -118,7 +118,7 @@ Class AmortizationUi {
 			$h .= '<table id="asset-list" class="tr-even td-vertical-top tr-hover table-bordered" '.($highlightedAssetId !== NULL ? ' onrender="DepreciationList.scrollTo('.$highlightedAssetId.');"' : '').'>';
 
 			$h .= '<thead class="thead-sticky">';
-				$h .= '<tr class="row-bold">';
+				$h .= '<tr class="tr-bold">';
 					$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
 					$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';

@@ -486,7 +486,7 @@ class FinancialYearUi {
 
 					}
 
-					$h .= '<tr class="row-bold row-highlight">';
+					$h .= '<tr class="tr-bold row-highlight">';
 
 						$h .= '<td></td>';
 						$h .= '<td></td>';
@@ -662,7 +662,7 @@ class FinancialYearUi {
 
 						}
 
-						$h .= '<tr class="row-bold row-highlight">';
+						$h .= '<tr class="tr-bold row-highlight">';
 
 							$h .= '<td></td>';
 							$h .= '<td></td>';

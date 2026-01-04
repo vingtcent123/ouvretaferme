@@ -299,7 +299,7 @@ Class BalanceUi {
 						$h .= $this->displaySummary($classesTotal, $lastClass, $hasPrevious);
 					}
 
-					$h .= '<tr class="row-bold">';
+					$h .= '<tr class="tr-bold">';
 						$h .= '<td class="hide-sm-down"></td>';
 						$h .= '<td class="text-end">'.s("Totaux").'</td>';
 						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent).'</td>';
@@ -324,7 +324,7 @@ Class BalanceUi {
 
 	private function displaySummary(array $classes, int $class, bool $hasPrevious): string {
 
-		$h = '<tr class="row-bold">';
+		$h = '<tr class="tr-bold">';
 
 		$h .= '<td class="hide-sm-down text-end">'.encode($class).'</td>';
 		$h .= '<td class="text-start">';
