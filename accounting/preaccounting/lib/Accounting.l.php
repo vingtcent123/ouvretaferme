@@ -226,7 +226,7 @@ Class AccountingLib {
 
 	}
 
-	public static function applyInvoiceFilter(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
+	public static function applyInvoiceFilter(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\InvoiceModel {
 
 		$dateCondition = \selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to'));
 
@@ -237,39 +237,26 @@ Class AccountingLib {
 			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
 			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
-			->whereCashflow('!=', NULL)
+			->whereCashflow('!=', NULL, if: $forImport === TRUE)
+			->whereAccountingHash(NULL, if: $forImport === TRUE)
+			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
-			->where('m1.date BETWEEN '.$dateCondition.' OR m3.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
+			->where('m3.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
 		;
 
 	}
 
 	public static function countInvoices(\farm\Farm $eFarm, \Search $search) {
 
-		return self::applyInvoiceFilter($eFarm, $search)
-			->whereAccountingHash(NULL)
-			->whereReadyForAccounting(TRUE)
+		return self::applyInvoiceFilter($eFarm, $search, TRUE)
 			->count();
 
 	}
 
 	public static function getInvoices(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
 
-		if($search->get('type')) {
-
-			\selling\Invoice::model()
-	      ->join(\selling\Customer::model(), 'm1.customer = m2.id')
-	      ->where('m2.type = '.\selling\Customer::model()->format($search->get('type')))
-				->where('m1.farm = '.$eFarm['id']);
-
-		} else {
-
-			\selling\Invoice::model()->whereFarm($eFarm);
-
-		}
-
-		return \selling\Invoice::model()
+		return self::applyInvoiceFilter($eFarm, $search, $forImport)
 			->select([
 				'id', 'date', 'name', 'document', 'farm',
 				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat',
@@ -292,14 +279,6 @@ Class AccountingLib {
 					])
 					->delegateCollection('invoice'),
 			])
-			->whereStatus('!=', \selling\Invoice::DRAFT)
-			->whereCashflow('!=', NULL, if: $forImport === TRUE)
-			->whereAccountingHash(NULL, if: $forImport === TRUE)
-			->whereReadyForAccounting(TRUE, if: $forImport === TRUE)
-			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
-			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
-			->whereCustomer('=', $search->get('customer'), if: $search->get('customer')->notEmpty())
-			->where('date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')), if: $search->get('from') and $search->get('to'))
 			->getCollection();
 
 	}
