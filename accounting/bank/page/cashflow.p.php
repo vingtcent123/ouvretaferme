@@ -1,5 +1,7 @@
 <?php
-new Page()
+new Page(function($data) {
+	$data->eFarm->validate('hasAccounting');
+})
 	->get('/banque/operations', function($data) {
 
 		$data->nSuggestion = \preaccounting\SuggestionLib::countWaiting();
@@ -37,32 +39,20 @@ new Page()
 		}
 
 		$data->cBankAccount = \bank\BankAccountLib::getAll('id');
-
-		if(get_exists('bankAccount') === FALSE and \session\SessionLib::exists('bankAccount')) {
-
-				$eBankAccount = \session\SessionLib::get('bankAccount');
-				$search->set('bankAccount', \bank\BankAccountLib::getById($eBankAccount));
-
-		} else if(get_exists('bankAccount')) {
-
-			if($data->cBankAccount->offsetExists(GET('bankAccount'))) {
-
-				$eBankAccount = $data->cBankAccount->offsetGet(GET('bankAccount'));
-
-			} else if($data->cBankAccount->notEmpty()) {
-
-				$eBankAccount = $data->cBankAccount->first();
-
-			} else {
-
-				$eBankAccount = new \bank\BankAccount();
-
-			}
-
-			$search->set('bankAccount', $eBankAccount);
-			\session\SessionLib::set('bankAccount', $eBankAccount['id']);
-
+		if(get_exists('bankAccount')) {
+			$eBankAccount = \bank\BankAccountLib::getById(GET('bankAccount'));
+		} else if(\session\SessionLib::exists('bankAccount')) {
+			$eBankAccount = \bank\BankAccountLib::getById(\session\SessionLib::get('bankAccount'));
+		} else if($data->cBankAccount->notEmpty()) {
+			$eBankAccount = $data->cBankAccount->first();
 		}
+
+		if($eBankAccount->empty()) {
+			$eBankAccount = $data->cBankAccount->first();
+		}
+		$search->set('bankAccount', $eBankAccount);
+		\session\SessionLib::set('bankAccount', $eBankAccount['id']);
+
 
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
