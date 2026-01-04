@@ -1,4 +1,7 @@
 <?php
+/**
+ * À appeler comme ça : php framework/lime.php -a ouvretaferme -e prod company/configure/migrate module=Account
+ */
 new Page()
 	->cli('index', function($data) {
 

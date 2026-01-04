@@ -192,7 +192,10 @@ class CompanyLib {
 		$classes = $libModule->getClasses();
 		foreach($classes as $class) {
 			$libModule->buildModule($class);
-			list($package) = explode('\\', $class);
+			list($package, $module) = explode('\\', $class);
+			if($module !== GET('module')) {
+				continue;
+			}
 			if(in_array($package, \company\CompanyLib::$specificPackages) === FALSE) {
 				continue;
 			}
