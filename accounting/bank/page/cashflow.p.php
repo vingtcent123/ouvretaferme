@@ -45,6 +45,8 @@ new Page(function($data) {
 			$eBankAccount = \bank\BankAccountLib::getById(\session\SessionLib::get('bankAccount'));
 		} else if($data->cBankAccount->notEmpty()) {
 			$eBankAccount = $data->cBankAccount->first();
+		} else {
+			$eBankAccount = new \bank\BankAccount();
 		}
 
 		if($eBankAccount->empty()) {
