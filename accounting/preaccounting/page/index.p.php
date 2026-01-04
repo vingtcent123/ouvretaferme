@@ -194,6 +194,10 @@ new Page(function($data) {
 
 			$data->operations = \preaccounting\AccountingLib::sortOperations(array_merge($fecSale, $fecInvoice));
 
+		} else {
+
+			$data->operations = [];
+
 		}
 		throw new ViewAction($data);
 
