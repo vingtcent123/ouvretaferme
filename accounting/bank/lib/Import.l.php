@@ -154,11 +154,11 @@ class ImportLib extends ImportCrud {
 
 		try {
 
-			$xmlFile = \bank\OfxParserLib::extractFile($filepath);;
+			$ofx = \bank\OfxParserLib::extractFile($filepath);;
 
-			$eBankAccount = \bank\OfxParserLib::extractAccount($xmlFile);
+			$eBankAccount = \bank\OfxParserLib::extractAccount($ofx);
 
-			$import = \bank\OfxParserLib::extractImport($xmlFile);
+			$import = \bank\OfxParserLib::extractImport($ofx);
 
 			$eImport = new Import([
 				'filename' => $filename,
@@ -171,13 +171,13 @@ class ImportLib extends ImportCrud {
 
 			Import::model()->insert($eImport);
 
-			$cashflows = \bank\OfxParserLib::extractOperations($xmlFile, $eBankAccount, $eImport);
-			$result = \bank\CashflowLib::insertMultiple($cashflows);
+			$cCashflow = \bank\OfxParserLib::extractOperations($ofx, $eBankAccount, $eImport);
+			$result = \bank\CashflowLib::insertMultiple($cCashflow);
 
 			if(count($result['imported']) === 0) {
 				\Fail::log('Import::nothingImported');
 				$status = ImportElement::NONE;
-			} else if(count($result['alreadyImported']) > 0 or count($result['invalidDate']) > 0) {
+			} else if(count($result['alreadyImported']) > 0) {
 				$status = ImportElement::PARTIAL;
 			} else {
 				$status = ImportElement::FULL;

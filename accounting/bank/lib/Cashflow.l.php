@@ -102,49 +102,20 @@ class CashflowLib extends CashflowCrud {
 
 	}
 
-	public static function insertMultiple(array $cashflows): array {
+	public static function insertMultiple(\Collection $cCashflow): array {
 
-		$alreadyImported = [];
-		$imported = [];
-		$invalidDate = [];
+		$cCashflowAlreadyImported = Cashflow::model()
+			->select('fitid')
+			->whereFitid('IN', $cCashflow->getColumn('fitid'))
+			->getCollection(NULL, NULL, 'fitid');
 
-		foreach($cashflows as $cashflow) {
+		$cCashflowFiltered = $cCashflow->find(fn($e) => $cCashflowAlreadyImported->offsetExists($e['fitid']) === FALSE);
 
-			$isAlreadyImportedTransaction = (Cashflow::model()->whereFitid($cashflow['fitid'])->count() > 0);
+		Cashflow::model()->option('add-ignore')->insert($cCashflowFiltered);
 
-			if($isAlreadyImportedTransaction === TRUE) {
-				$alreadyImported[] = $cashflow['fitid'];
-				continue;
-			}
+		$imported = $cCashflowFiltered->getColumn('fitid');
 
-			$type = match($cashflow['type']) {
-				'DEBIT' => CashflowElement::DEBIT,
-				'CREDIT' => CashflowElement::CREDIT,
-				default => $cashflow['amount'] > 0 ? CashflowElement::CREDIT : CashflowElement::DEBIT,
-			};
-			$date = substr($cashflow['date'], 0, 4).'-'.substr($cashflow['date'], 4, 2).'-'.substr($cashflow['date'], 6, 2);
-
-			if(\util\DateLib::isValid($date) === FALSE) {
-				$invalidDate[] = $cashflow['fitid'];
-				continue;
-			}
-
-			$eCashflow = new Cashflow(
-				array_merge(
-					$cashflow,
-					[
-						'type' => $type,
-						'date' => $date
-					]
-				)
-			);
-
-			Cashflow::model()->insert($eCashflow);
-			$imported[] = $cashflow['fitid'];
-
-		}
-
-		return ['alreadyImported' => $alreadyImported, 'invalidDate' => $invalidDate, 'imported' => $imported];
+		return ['alreadyImported' => $cCashflowAlreadyImported->getColumn('fitid'), 'imported' => $imported];
 
 	}
 

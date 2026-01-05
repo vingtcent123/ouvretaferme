@@ -50,7 +50,7 @@ new Page(function($data) {
 			$eBankAccount = new \bank\BankAccount();
 		}
 
-		if($eBankAccount->notEmpty()) {
+		if($eBankAccount->empty() and $data->cBankAccount->notEmpty()) {
 			$eBankAccount = $data->cBankAccount->first();
 		}
 		$search->set('bankAccount', $eBankAccount);
