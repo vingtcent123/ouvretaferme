@@ -276,3 +276,6 @@ body[data-touch="no"] #panel-operation-view .panel-header {
 	align-items: center;
 	justify-content: space-between;
 }
+.operation-hint {
+	cursor: help !important;
+}

@@ -523,6 +523,7 @@ class CashflowUi {
 	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode): \Panel {
 
 		\Asset::js('journal', 'operation.js');
+		\Asset::js('journal', 'amount.js');
 		\Asset::js('bank', 'cashflow.js');
 		\Asset::js('account', 'thirdParty.js');
 

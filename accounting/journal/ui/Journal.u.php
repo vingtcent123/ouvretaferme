@@ -6,6 +6,8 @@ class JournalUi {
 	public function __construct() {
 		\Asset::css('journal', 'journal.css');
 		\Asset::css('company', 'company.css');
+		\Asset::js('journal', 'operation.js');
+		\Asset::js('journal', 'amount.js');
 	}
 
 	public function getJournalTitle(\farm\Farm $eFarm, bool $hasSearch = TRUE): string {
@@ -52,8 +54,6 @@ class JournalUi {
 		return \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
 	}
 	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod, int $nUnbalanced): string {
-
-		\Asset::js('journal', 'operation.js');
 
 		$hideSearch = ($search->empty(['ids']) and $search->get('hasDocument') === NULL and $search->get('needsAsset') === NULL and $search->get('cashflowFilter') === NULL);
 

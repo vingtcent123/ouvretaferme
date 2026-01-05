@@ -34,8 +34,6 @@ class Cashflow {
             const vatAmountToAdd = Math.abs(isNaN(vatValue) ? 0 : vatValue);
             const amountIncludingVATToAdd = Math.abs(isNaN(amountIncludingVAT) ? 0 : amountIncludingVAT);
 
-            const totalAmountToAdd = amountToAdd + vatAmountToAdd;
-
             sumAmount += (type.value === 'credit' ? amountToAdd : amountToAdd * -1);
             sumAmountIncludingVAT += (type.value === 'credit' ? amountIncludingVATToAdd : amountIncludingVATToAdd * -1);
             sumVatValue += (type.value === 'credit' ? vatAmountToAdd : vatAmountToAdd * -1);
@@ -114,7 +112,6 @@ class Cashflow {
     static recalculate(index) {
 
         Cashflow.fillIndexAccordingly(index); // On remplit les trous
-        Operation.checkVatConsistency(index);
         Cashflow.checkValidationValues();
 
     }
@@ -273,7 +270,7 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-operation="cash
 
 });
 
-document.delegateEventListener('autocompleteSelect', '[data-third-party="cashflow-doAttach"]', function(e) {
+document.delegateEventListener('autocompleteSelect', '[data-third-party="cashflow-doAttach"]', function() {
 
     CashflowAttach.replaceState();
 

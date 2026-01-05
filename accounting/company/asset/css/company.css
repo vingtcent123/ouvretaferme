@@ -144,6 +144,7 @@ tr.account_not-visible {
 .company_form_group-with-tip:has(div.form-control-field) div.form-control-field {
 	display: flex;
 	gap: 0.5rem;
+	align-items: center;
 }
 
 .dropdown-list-minimalist:has([data-ajax-form^="/@module/"]) {

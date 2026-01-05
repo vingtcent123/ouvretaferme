@@ -225,7 +225,7 @@ class CalculationField {
 	 * Calculates the final value according to the input content
 	 */
 	static calculateValue(target) {
-		const currentOperation = target.value.replace(/,/g, '.');
+		const currentOperation = target.value.replace(/,/g, '.').replace(/=/g, '');
 		const hiddenElement = target.firstParent('div').qs('input[type="hidden"]');
 		const resultElement = target.firstParent('div').qs('[data-calculated]');
 
