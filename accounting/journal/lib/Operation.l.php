@@ -767,7 +767,7 @@ class OperationLib extends OperationCrud {
 					$defaultValues = $isFromCashflow === TRUE
 						? [
 							'date' => $eCashflow['date'],
-							'description' => $eOperation['description'] ?? $eCashflow['memo'],
+							'description' => $eOperation['description'] ?? $eCashflow->getMemo(),
 							'cashflow' => $eCashflow,
 							'paymentMethod' => $eOperation['paymentMethod'],
 							'hash' => $hash,
@@ -1376,7 +1376,7 @@ class OperationLib extends OperationCrud {
 			'date' => $eCashflow['date'],
 			'account' => $eAccountBank['id'] ?? NULL,
 			'accountLabel' => $label,
-			'description' => $eCashflow['memo'],
+			'description' => $eCashflow->getMemo(),
 			'document' => $document,
 			'documentDate' => $eOperation['documentDate'],
 			'thirdParty' => $eThirdParty['id'] ?? NULL,

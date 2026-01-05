@@ -41,7 +41,16 @@ class Cashflow extends CashflowElement {
 
 	public function accept(): bool {
 
-		return $this->canAllocate();
+		return $this->acceptAllocate();
+
+	}
+
+	public function getMemo(): string {
+
+		if(mb_strlen($this['memo']) <= 1) {
+			return $this['name'];
+		}
+		return $this['memo'];
 
 	}
 }

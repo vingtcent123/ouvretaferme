@@ -348,7 +348,7 @@ class OperationUi {
 							$h .= '</div>';
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= encode($eCashflow['memo']);
+							$h .= encode($eCashflow->getMemo());
 						$h .= '</td>';
 					$h .= '</tr>';
 					$h .= '<tr>';
@@ -1115,7 +1115,7 @@ class OperationUi {
 								$cashflow .= \util\DateUi::numeric($eCashflow['date']);
 							$cashflow .= '</td>';
 							$cashflow .= '<td>';
-								$cashflow .= encode($eCashflow['memo']);
+								$cashflow .= encode($eCashflow->getMemo());
 							$cashflow .= '</td>';
 							$cashflow .= '<td class="text-end highlight-stick-right td-min-content">';
 								if($eCashflow['amount'] < 0) {

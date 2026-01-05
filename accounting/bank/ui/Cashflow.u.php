@@ -231,7 +231,7 @@ class CashflowUi {
 						$h .= '</td>';
 
 						$h .= '<td class="td-description td-vertical-align-top color-primary">';
-							$h .= encode($eCashflow['memo']);
+							$h .= encode($eCashflow->getMemo());
 						$h .= '</td>';
 
 						if($showReconciliate) {
@@ -443,7 +443,7 @@ class CashflowUi {
 				$h .= '<dt>'.s("Date").'</dt>';
 				$h .= '<dd>'.\util\DateUi::numeric($eCashflow['date'], \util\DateUi::DATE).'</dd>';
 				$h .= '<dt>'.s("Libellé").'</dt>';
-				$h .= '<dd>'.encode($eCashflow['memo']).'</dd>';
+				$h .= '<dd>'.encode($eCashflow->getMemo()).'</dd>';
 				$h .= '<dt>'.s("Type").'</dt>';
 				$h .= '<dd>'.$type.'</dd>';
 				$h .= '<dt>'.s("Montant").'</dt>';
@@ -514,7 +514,7 @@ class CashflowUi {
 			$title .= '<a class="panel-close-mobile" onclick="Lime.Panel.closeLast()">'.\Asset::icon('arrow-left-short').'</a>';
 		$title .= '</div>';
 
-		$subtitle = '<h2 class="panel-subtitle">'.encode($eCashflow['memo']).'</h2>';
+		$subtitle = '<h2 class="panel-subtitle">'.encode($eCashflow->getMemo()).'</h2>';
 
 		return $title.$subtitle;
 
@@ -551,9 +551,9 @@ class CashflowUi {
 			'date' => $eCashflow['date'],
 			'amount' => abs($eCashflow['amount']),
 			'type' => $eCashflow['type'],
-			'description' => $eCashflow['memo'],
+			'description' => $eCashflow->getMemo(),
 			'paymentDate' => $eCashflow['date'],
-			'paymentMethod' => self::extractPaymentTypeFromCashflowDescription($eCashflow['memo'], $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::ACCOUNTING))),
+			'paymentMethod' => self::extractPaymentTypeFromCashflowDescription($eCashflow->getMemo(), $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::ACCOUNTING))),
 			'amountIncludingVAT' => abs($eCashflow['amount']),
 		];
 
@@ -621,7 +621,7 @@ class CashflowUi {
 		$defaultValues = [
 			'date' => $eCashflow['date'],
 			'type' => $eCashflow['type'],
-			'description' => $eCashflow['memo'],
+			'description' => $eCashflow->getMemo(),
 		];
 
 		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $cPaymentMethod);
@@ -867,13 +867,13 @@ class CashflowUi {
 					'amount' => \util\TextUi::money(abs($eCashflow['amount'])),
 				]);
 				$itemHtml .= '<br />';
-				$itemHtml .= encode($eCashflow['memo']);
+				$itemHtml .= encode($eCashflow->getMemo());
 			$itemHtml .= '</div>';
 		$itemHtml .= '</div>';
 
 		return [
 			'value' => $eCashflow['id'],
-			'itemText' => encode($eCashflow['memo']).s(" ({amount} au {type})", ['amount' => \util\TextUi::money(abs($eCashflow['amount'])), 'type' => $eCashflow['amount'] > 0 ? s("crédit") : s("débit")]),
+			'itemText' => encode($eCashflow->getMemo()).s(" ({amount} au {type})", ['amount' => \util\TextUi::money(abs($eCashflow['amount'])), 'type' => $eCashflow['amount'] > 0 ? s("crédit") : s("débit")]),
 			'itemHtml' => $itemHtml,
 		];
 

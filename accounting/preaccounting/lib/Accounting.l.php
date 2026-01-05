@@ -547,7 +547,7 @@ Class AccountingLib {
 					eAccount    : $eAccountBank,
 					date        : $eInvoice['cashflow']['date'],
 					eCode       : new \journal\JournalCode(),
-					ecritureLib : $eInvoice['cashflow']['memo'],
+					ecritureLib : $eInvoice['cashflow']->getMemo(),
 					document    : $document,
 					documentDate: $documentDate,
 					amount      : $eInvoice['cashflow']['amount'],

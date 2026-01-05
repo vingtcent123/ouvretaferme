@@ -148,7 +148,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 	public static function calculateForCashflow(\farm\Farm $eFarm, \bank\Cashflow $eCashflow): void {
 
-		$methodFqn = self::determinePaymentMethod($eCashflow['memo']);
+		$methodFqn = self::determinePaymentMethod($eCashflow->getMemo());
 		if($methodFqn !== NULL) {
 			$eMethod = \payment\MethodLib::getByFqn($methodFqn);
 		} else {
@@ -215,8 +215,8 @@ Class SuggestionLib extends SuggestionCrud {
 			$reason->value(Suggestion::THIRD_PARTY, TRUE);
 		}
 
-		$score = InvoiceLib::scoreInvoiceReference($eInvoice['name'], $eCashflow['memo']);
-		if($score > 250 or mb_strpos(mb_strtolower($eCashflow['memo']), mb_strtolower($eInvoice['name'])) !== FALSE) {
+		$score = InvoiceLib::scoreInvoiceReference($eInvoice['name'], $eCashflow->getMemo());
+		if($score > 250 or mb_strpos(mb_strtolower($eCashflow->getMemo()), mb_strtolower($eInvoice['name'])) !== FALSE) {
 			$weight += 100;
 			$reason->value(Suggestion::REFERENCE, TRUE);
 		}

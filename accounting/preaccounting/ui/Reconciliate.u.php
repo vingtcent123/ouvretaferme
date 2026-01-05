@@ -118,7 +118,7 @@ Class ReconciliateUi {
 
 							$h .= '<td>'.\util\DateUi::numeric($eCashflow['date']).'</td>';
 							$h .= '<td colspan="2">';
-								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</div> <div>'.encode($eCashflow['memo']).'</div></div>';
+								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</div> <div>'.encode($eCashflow->getMemo()).'</div></div>';
 							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($eCashflow['amount']).'</td>';
 							$h .= '<td class="text-center td-vertical-align-top" rowspan="2">'.$this->confidence($eSuggestion).'</td>';

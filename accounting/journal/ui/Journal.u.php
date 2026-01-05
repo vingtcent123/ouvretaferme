@@ -153,7 +153,7 @@ class JournalUi {
 					"Vous visualisez actuellement les écritures correspondant à l'opération bancaire du {date}, \"{memo}\" d'un {type} de {amount} (<link>annuler le filtre</link>).",
 					[
 						'date' => \util\DateUi::numeric($eCashflow['date']),
-						'memo' => encode($eCashflow['memo']),
+						'memo' => encode($eCashflow->getMemo()),
 						'type' => mb_strtolower(\bank\CashflowUi::p('type')->values[$eCashflow['type']]),
 						'amount' => \util\TextUi::money(abs($eCashflow['amount'])),
 						'link' => '<a href="'.$url.'">',
