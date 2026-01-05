@@ -87,6 +87,10 @@ new \bank\CashflowPage(function($data) {
 			throw new NotExistsAction();
 		}
 
+		if($e->acceptAllocate() === FALSE) {
+			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations');
+		}
+
 	})
 	->read('allocate', function($data) {
 
@@ -193,26 +197,7 @@ new \bank\CashflowPage(function($data) {
 		throw new ReloadAction('bank', 'Cashflow::attached');
 
 	})
-->write('deAllocate', function($data) {
-
-	$fw = new FailWatch();
-
-	if($data->e->exists() === FALSE) {
-		\bank\Cashflow::fail('internal');
-	}
-
-	$action = POST('action');
-	if(in_array($action, ['dissociate', 'delete']) === FALSE) {
-		throw new NotExpectedAction('Unable to do nothing but dissociate nor delete');
-	}
-
-	$fw->validate();
-
-	\journal\OperationLib::unlinkCashflow($data->e, $action);
-
-	throw new ReloadAction('bank', 'Cashflow::deallocated.'.$action);
-
-}, validate: ['acceptDeallocate']);
+;
 
 new \bank\CashflowPage(function($data) {
 
@@ -233,6 +218,26 @@ new \bank\CashflowPage(function($data) {
 	throw new ReloadAction('bank', 'Cashflow::undeleted');
 
 }, validate: ['acceptUndoDelete'])
+->write('deAllocate', function($data) {
+
+	$fw = new FailWatch();
+
+	if($data->e->exists() === FALSE) {
+		\bank\Cashflow::fail('internal');
+	}
+
+	$action = POST('action');
+	if(in_array($action, ['dissociate', 'delete']) === FALSE) {
+		throw new NotExpectedAction('Unable to do nothing but dissociate nor delete');
+	}
+
+	$fw->validate();
+
+	\journal\OperationLib::unlinkCashflow($data->e, $action);
+
+	throw new ReloadAction('bank', 'Cashflow::deallocated.'.$action);
+
+}, validate: ['acceptDeallocate']);
 ;
 
 ?>
