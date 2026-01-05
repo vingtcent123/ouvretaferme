@@ -37,21 +37,17 @@ class OperationAmount {
 		}
 
 		const targetAmount = qs('[name="amount[' + index + ']"');
-		const amount = CalculationField.getValue(targetAmount);
+		const amount = CalculationField.getValue(targetAmount) || 0;
 
 		const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
-		const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
+		const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT) || 0;
 
 		const vatRate = parseFloat(qs('[name="vatRate[' + index + ']"').valueAsNumber || 0);
 
 		const targetVatValue = qs('[name="vatValue[' + index + ']"');
-		const vatValue = CalculationField.getValue(targetVatValue);
+		const vatValue = CalculationField.getValue(targetVatValue) || 0;
 
 		OperationAmount.switchDataAmountCheck(index, true);
-
-		if(isNaN(amount) || isNaN(amountIncludingVAT) || isNaN(vatValue)) {
-			return;
-		}
 
 		// Check TTC = HT + TVA
 		if(Math.round(amountIncludingVAT * 100) !== Math.round((amount + vatValue) * 100)) {

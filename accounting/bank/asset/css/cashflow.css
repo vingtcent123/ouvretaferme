@@ -129,7 +129,3 @@
 #bank-cashflow-allocate #operation-create-list {
 	margin-top: 1rem;
 }
-
-[data-columns="1"] [data-magic][data-index="0"] {
-	display: none;
-}

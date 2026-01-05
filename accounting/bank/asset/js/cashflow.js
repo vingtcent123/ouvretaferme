@@ -114,6 +114,8 @@ class Cashflow {
         Cashflow.fillIndexAccordingly(index); // On remplit les trous
         Cashflow.checkValidationValues();
 
+        OperationAmount.checkAmounts(index);
+
     }
 
     static sumType(type) {
