@@ -76,7 +76,18 @@ new Page(function($data) {
 
 	});
 
-new \bank\CashflowPage()
+new \bank\CashflowPage(function($data) {
+
+	$data->eFarm->validate('usesAccounting');
+
+})
+	->applyElement(function($data, \bank\Cashflow $e) {
+
+		if(\account\FinancialYearLib::isDateInFinancialYear($e['date'], $data->eFarm['eFinancialYear']) === FALSE) {
+			throw new NotExistsAction();
+		}
+
+	})
 	->read('allocate', function($data) {
 
 		// Payment methods
@@ -201,7 +212,13 @@ new \bank\CashflowPage()
 
 	throw new ReloadAction('bank', 'Cashflow::deallocated.'.$action);
 
-}, validate: ['acceptDeallocate'])
+}, validate: ['acceptDeallocate']);
+
+new \bank\CashflowPage(function($data) {
+
+	$data->eFarm->validate('hasAccounting');
+
+})
 ->write('doDelete', function($data) {
 
 	\bank\CashflowLib::deleteCasfhlow($data->e);

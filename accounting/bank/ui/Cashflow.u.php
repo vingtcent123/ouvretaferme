@@ -269,32 +269,46 @@ class CashflowUi {
 
 								if($eCashflow['status'] === Cashflow::WAITING) {
 
-									$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.s("Ajouter").'</a> ';
+									$canBeAdded = FALSE;
+									foreach($cFinancialYear as $eFinancialYearCurrent) {
+										if($eFinancialYearCurrent->acceptUpdate() and \account\FinancialYearLib::isDateInFinancialYear($eCashflow['date'], $eFinancialYearCurrent)) {
+											$canBeAdded = TRUE;
+											break;
+										}
+									}
 
-									$h .= '<div class="dropdown-list">';
-										$h .= '<div class="dropdown-title">'.s("Ajouter des écritures comptables").'</div>';
+									if($canBeAdded) {
 
-											$financialYearOptions = [];
-											foreach($cFinancialYear as $eFinancialYearCurrent) {
+										$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.s("Ajouter").'</a> ';
 
-												if($eFinancialYearCurrent->acceptUpdate() === FALSE) {
-													continue;
+										$h .= '<div class="dropdown-list">';
+											$h .= '<div class="dropdown-title">'.s("Ajouter des écritures comptables").'</div>';
+
+												$financialYearOptions = [];
+												foreach($cFinancialYear as $eFinancialYearCurrent) {
+
+													if(
+														$eFinancialYearCurrent->acceptUpdate() === FALSE or
+														\account\FinancialYearLib::isDateInFinancialYear($eCashflow['date'], $eFinancialYearCurrent) === FALSE
+													) {
+														continue;
+													}
+
+													$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", $eFinancialYearCurrent->getLabel()).'</div>';
+													$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
+														$financialYearOption .= s("Créer de nouvelles écritures");
+													$financialYearOption .= '</a>';
+
+													$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
+														$financialYearOption .= s("Rattacher des écritures existantes");
+													$financialYearOption .= '</a>';
+
+													$financialYearOptions[] = $financialYearOption;
 												}
 
-												$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", $eFinancialYearCurrent->getLabel()).'</div>';
-												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
-													$financialYearOption .= s("Créer de nouvelles écritures");
-												$financialYearOption .= '</a>';
-
-												$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
-													$financialYearOption .= s("Rattacher des écritures existantes");
-												$financialYearOption .= '</a>';
-
-												$financialYearOptions[] = $financialYearOption;
-											}
-
-										$h .= join('<div class="dropdown-divider"></div>', $financialYearOptions);
-									$h .= '</div>';
+											$h .= join('<div class="dropdown-divider"></div>', $financialYearOptions);
+										$h .= '</div>';
+									}
 
 								} else if($eCashflow['status'] !== Cashflow::DELETED) {
 
@@ -307,14 +321,8 @@ class CashflowUi {
 
 						$h .= '<td class="td-min-content text-center">';
 
-							$eFinancialYearForCashflow = \account\FinancialYearLib::getFinancialYearForDate($eCashflow['date'], $cFinancialYear);
-
-							if($eFinancialYearForCashflow->notEmpty() and $eFinancialYearForCashflow->acceptUpdate()) {
-
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
-								$h .= $this->getAction($eFarm, $eFinancialYear, $eCashflow);
-
-							}
+								$h .= $this->getAction($eFarm, $eCashflow);
 
 						$h .= '</td>';
 
@@ -329,19 +337,15 @@ class CashflowUi {
 
 	}
 
-	protected function getAction(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow): string {
+	protected function getAction(\farm\Farm $eFarm, Cashflow $eCashflow): string {
 
 		if($eFarm->canManage() === FALSE) {
 			return '';
 		}
 
-
 		$h = '<div class="dropdown-list">';
 
-			$actions = FALSE;
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-
-				$actions = TRUE;
 
 				$nOperation = $eCashflow['cOperationHash']->count();
 
