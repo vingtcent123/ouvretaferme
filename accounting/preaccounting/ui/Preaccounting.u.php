@@ -599,7 +599,7 @@ Class PreaccountingUi {
 				if($errors > 0) {
 					$h .= '<p class="util-info">'.s("Vous pouvez faire un export du fichier des écritures comptables mais il sera incomplet et un travail de configuration sera nécessaire lors de l'import").'</p>';
 				} else {
-					$h .= '<p>'.s("Vous pouvez importer ce fichier des écritures comptables dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
+					$h .= '<p>'.s("Vous pourrez importer ce fichier des écritures comptables dans votre logiciel de comptabilité habituel pour y retrouver toutes vos ventes ventilées par numéro de compte.").'</p>';
 				}
 
 				$h .= '<a '.attrs($attributes).' class="btn '.$class.'">'.s("Exporter les données des ventes").'</a>';

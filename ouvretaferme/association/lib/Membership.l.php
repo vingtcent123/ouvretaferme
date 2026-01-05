@@ -531,7 +531,7 @@ class MembershipLib {
 			->addAttachment($pdfContent, new AssociationUi()->getDocumentFilename($eHistory).'.pdf', 'application/pdf')
 			->send();
 
-		\Cache::redis()->delete('farm-membership-count');
+		\Cache::redis()->delete('membership-count');
 
 	}
 

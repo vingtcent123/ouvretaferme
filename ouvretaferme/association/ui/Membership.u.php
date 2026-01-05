@@ -60,11 +60,11 @@ class MembershipUi {
 
 	public function getMembership(\farm\Farm $eFarm, bool $hasJoinedForNextYear): string {
 
-		$h = '<div class="">';
+		$h = '<div>';
 
 			if($eFarm['membership']) {
 
-				$h .= '<p>';
+				$h .= '<p class="mb-2">';
 					$h .= \Asset::icon('star-fill').' ';
 
 					if($hasJoinedForNextYear) {

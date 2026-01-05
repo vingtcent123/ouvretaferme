@@ -313,8 +313,8 @@ class LegalUi {
 		$h = '<h2>'.s("Utilisation du logiciel").'</h2>';
 
 		$h .= '<div class="home-features home-features-2 mb-1">';
-			$h .= '<div class="home-feature"><h4>'.s("Agriculture biologique").'</h4><div>'.s("Utilisation gratuite pour les modules <sale>VENTE</sale> et de <production>PRODUCTION</production> et soumise à l'adhésion à l'association pour {fee} € pour le module <accounting>COMPTABILITÉ</accounting>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_DISCOUNT]).'</div></div>';
-			$h .= '<div class="home-feature"><h4>'.s("Agriculture conventionnelle").'</h4><div>'.s("Utilisation soumise à l'adhésion à l'association pour {fee} € après une période d'essai gratuite de 6 mois pour les modules <sale>VENTE</sale> et de <production>PRODUCTION</production>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_FULL]).'</div></div>';
+			$h .= '<div class="home-feature"><h4>'.s("Agriculture biologique").'</h4><div>'.s("Utilisation gratuite pour les modules <sale>VENTE</sale> et de <production>PRODUCTION</production> et soumise à l'adhésion à l'association pour {fee} € / an pour le module <accounting>COMPTABILITÉ</accounting>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_DISCOUNT]).'</div></div>';
+			$h .= '<div class="home-feature"><h4>'.s("Agriculture conventionnelle").'</h4><div>'.s("Utilisation soumise à l'adhésion à l'association pour {fee} € / an, avec une période d'essai gratuite de 6 mois pour les modules <sale>VENTE</sale> et de <production>PRODUCTION</production>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_FULL]).'</div></div>';
 		$h .= '</div>';
 		$h .= '<div>'.s("L'utilisation du module de <production>PRODUCTION</production> uniquement est gratuite pour les particuliers ou les établissements scolaires.", $arguments).'</div>';
 
