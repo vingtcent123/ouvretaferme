@@ -55,13 +55,24 @@ class InvoiceLib extends InvoiceCrud {
 			]);
 		}
 
+		if($search->has('paymentStatus')) {
+			if($search->get('paymentStatus') === Invoice::NOT_PAID) {
+			Invoice::model()
+				->or(
+					fn() => $this->wherePaymentStatus(NULL),
+					fn() => $this->wherePaymentStatus(Invoice::NOT_PAID)
+				);
+			} else if($search->get('paymentStatus') === Invoice::PAID) {
+				Invoice::model()->wherePaymentStatus(Invoice::PAID);
+			}
+		}
+
 		$cInvoice = Invoice::model()
 			->select(Invoice::getSelection())
 			->option('count')
 			->whereId('=', $search->get('invoice'), if: $search->get('invoice'))
 			->whereFarm($eFarm)
 			->whereStatus('LIKE', $search->get('status'), if: $search->get('status'))
-			->wherePaymentStatus('LIKE', $search->get('paymentStatus'), if: $search->get('paymentStatus'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->sort($search->buildSort())
 			->getCollection($position, $number);
