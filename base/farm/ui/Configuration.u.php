@@ -56,7 +56,7 @@ class ConfigurationUi {
 				$h .= $this->updateInvoice($eFarm, $eSaleExample, $cCustomize);
 			$h .= '</div>';
 
-			if(FEATURE_PRE_ACCOUNTING) {
+			if($eFarm->hasAccounting()) {
 				$h .= '<div class="tab-panel" data-tab="accounting">';
 					$h .= $this->updateAccounting($eFarm, $cAccount);
 				$h .= '</div>';

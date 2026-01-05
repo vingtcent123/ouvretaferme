@@ -8,7 +8,7 @@ new \farm\FarmPage()
 
 		$data->cCustomize = \mail\CustomizeLib::getByFarm($data->eFarm);
 
-		if(FEATURE_PRE_ACCOUNTING and $data->eFarm->hasAccounting()) {
+		if($data->eFarm->hasAccounting()) {
 			\company\CompanyLib::connectDatabase($data->e);
 			$data->cAccount = \account\AccountLib::getAll();
 		} else {

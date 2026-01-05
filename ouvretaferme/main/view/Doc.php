@@ -35,15 +35,11 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';
 				$h .= '<a href="/doc/import" '.$this->menuSelected('import').'>'.s("Importer un plan de culture").'</a>';
-				if(FEATURE_PRE_ACCOUNTING) {
-					$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
-					$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le logiciel").'</a>';
-					$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
-					$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer les factures").'</a>';
-				}
-				if(FEATURE_RECONCILIATE_OPERATIONS) {
-					$h .= '<a href="/doc/accounting:reconciliate" '.$this->menuSelected('accounting:reconciliate').'>'.s("Rapprochement bancaire").'</a>';
-				}
+				$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
+				$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le logiciel").'</a>';
+				$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
+				$h .= '<a href="/doc/accounting:start" '.$this->menuSelected('accounting:start').'>'.s("Démarrer la comptabilité").'</a>';
+				$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer les factures").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Divers").'</div>';
 				$h .= '<a href="/doc/editor" '.$this->menuSelected('editor').'>'.s("Utiliser l'éditeur de texte").'</a>';
 			$h .= '</div>';

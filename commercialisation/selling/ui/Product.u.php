@@ -1357,10 +1357,6 @@ class ProductUi {
 
 	private function getFieldAccounting(\util\FormUi $form, Product $eProduct): string {
 
-		if(FEATURE_PRE_ACCOUNTING === FALSE) {
-			return '';
-		}
-
 		if($eProduct['farm']->hasAccounting() === FALSE) {
 			return '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
 		}
