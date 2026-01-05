@@ -183,12 +183,23 @@ new Page(function($data) {
 				$invoiceOperations= \preaccounting\AccountingLib::extractInvoice($data->eFarm, $data->search, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
 				$fecInvoice = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
 
-				$data->nInvoice = count(array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT)));
+				$documents = array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
+				$data->nInvoice = count($documents);
+
+				// Pour avoir le lien vers la facture
+				$data->cInvoice = count($documents) > 0 ?
+					\selling\Invoice::model()
+						->select(['document', 'name', 'customer' => ['name']])
+						->whereFarm($data->eFarm)
+						->whereName('IN', $documents)
+						->getCollection(NULL, NULL, 'name') :
+					new Collection();
 
 			} else {
 
 				$fecInvoice = [];
 				$data->nInvoice = 0;
+				$data->cInvoice = new Collection();
 
 			}
 

@@ -244,7 +244,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 			echo '<a class="btn btn-lg btn-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
 		echo '</div>';
 
-		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->search->get('hasInvoice'));
+		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->search->get('hasInvoice'), $data->cInvoice);
 
 	} else {
 

@@ -12,7 +12,7 @@ Class SaleUi {
 		return mb_substr($fecDate, 0, 4).'-'.mb_substr($fecDate, 4, 2).'-'.mb_substr($fecDate, 6, 2);
 	}
 
-	public function list(\farm\Farm $eFarm, array $operations, ?int $hasInvoice): string {
+	public function list(\farm\Farm $eFarm, array $operations, ?int $hasInvoice, \Collection $cInvoice): string {
 
 		$nOperations = count($operations);
 		if($nOperations > 100) {
@@ -56,7 +56,13 @@ Class SaleUi {
 						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]).'</td>';
 						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]).'</td>';
 						$h .= '<td>';
-							$h .= '<a href="'.\farm\FarmUi::urlSellingSalesAll($eFarm).'?document='.$operation[AccountingLib::FEC_COLUMN_DOCUMENT].'">';
+							if($cInvoice->offsetExists($operation[AccountingLib::FEC_COLUMN_DOCUMENT])) {
+								$eInvoice = $cInvoice[$operation[AccountingLib::FEC_COLUMN_DOCUMENT]];
+								$url = \farm\FarmUi::urlSellingInvoices($eFarm).'?document='.$eInvoice['document'].'&customer='.urlencode($eInvoice['customer']['name']);
+							} else {
+								$url = \farm\FarmUi::urlSellingSalesAll($eFarm).'?document='.$operation[AccountingLib::FEC_COLUMN_DOCUMENT];
+							}
+							$h .= '<a href="'.$url.'">';
 								$h .= encode($operation[AccountingLib::FEC_COLUMN_DOCUMENT]);
 							$h .= '</a>';
 						$h .= '</td>';
