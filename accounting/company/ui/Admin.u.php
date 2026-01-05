@@ -3,6 +3,10 @@ namespace company;
 
 Class AdminUi {
 
+	public function __construct() {
+		\Asset::css('farm', 'admin.css');
+	}
+
 	public function displayStats(array $farms): string {
 
 		$h = '<ul class="util-summarize">';
