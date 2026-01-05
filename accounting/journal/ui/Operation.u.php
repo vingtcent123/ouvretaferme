@@ -147,7 +147,7 @@ class OperationUi {
 		if($eCashflow->empty()) {
 			$title = $cOperationFormatted->count() > 1 ? s("Modifier les écritures") : s("Modifier une écriture");
 		} else {
-			$title = new \bank\CashflowUi()->getAllocateTitle($eCashflow, $eFinancialYear, $eOperationBank->getArrayCopy(), $cPaymentMethod, $form);
+			$title = new \bank\CashflowUi()->getAllocateTitle($eCashflow);
 		}
 
 		return new \Panel(

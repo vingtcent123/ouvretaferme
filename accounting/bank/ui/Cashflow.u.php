@@ -353,8 +353,7 @@ class CashflowUi {
 					$h .= p("Actions sur l'écriture comptable liée", "Actions sur les {value} écritures comptables liées", $nOperation);
 				$h .= '</div>';
 
-				$confirm = s("Cette action supprimera toutes les écritures liées à l'opération bancaire. Confirmez-vous ?");
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="delete" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=delete" class="dropdown-item">';
 					$h .= p(
 						"Supprimer l'écriture",
 						"Supprimer les {value} écritures",
@@ -362,12 +361,7 @@ class CashflowUi {
 					);
 				$h .= '</a>';
 
-				$confirm = p(
-					"Cette action dissociera l'écriture de l'opération bancaire sans la supprimer. Confirmez-vous ?",
-					"Cette action dissociera les écritures de l'opération bancaire sans les supprimer. Confirmez-vous ?",
-					$nOperation
-				);
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate" post-action="dissociate" post-id="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=dissociate" class="dropdown-item" >';
 					$h .= p("Dissocier sans supprimer l'écriture", "Dissocier sans supprimer les {value} écritures<br/>de l'opération bancaire", $nOperation);
 				$h .= '</a>';
 
@@ -498,7 +492,7 @@ class CashflowUi {
 
 	}
 
-	public function getAllocateTitle(Cashflow $eCashflow, \account\FinancialYear $eFinancialYear, array $defaultValues, \Collection $cPaymentMethod, \util\FormUi $form): string {
+	public function getAllocateTitle(Cashflow $eCashflow): string {
 
 		$amount = '<span class="util-badge bg-primary" style="padding-left: .75rem; padding-right: .75rem">'.\util\TextUi::money(abs($eCashflow['amount'])).'</span>';
 
@@ -517,6 +511,96 @@ class CashflowUi {
 		$subtitle = '<h2 class="panel-subtitle">'.encode($eCashflow->getMemo()).'</h2>';
 
 		return $title.$subtitle;
+
+	}
+
+	public function getDeallocate(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cOperation, string $action): \Panel {
+
+		\Asset::css('bank', 'cashflow.css');
+
+		$form = new \util\FormUi();
+
+		$dialogOpen = $form->openAjax(
+			\company\CompanyUi::urlBank($eFarm).'/cashflow:doDeallocate',
+			[
+				'id' => 'bank-cashflow-deallocate','class' => 'panel-dialog',]
+		);
+
+		$h = $form->hidden('farm', $eFarm['id']);
+		$h .= $form->hidden('id', $eCashflow['id']);
+		$h .= $form->hidden('action', $action);
+
+		$cOperationBank = $cOperation->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS));
+
+		if($action === 'delete') {
+
+			$h .= '<h3 class="mt-2">';
+				$h .= p("Écriture comptable liée à cette opération bancaire", "Écritures comptables liées à cette opération bancaire", $cOperation->count());
+			$h .= '</h3>';
+
+			$h .= '<div class="bg-background">';
+				$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE);
+			$h .= '</div>';
+
+		} else {
+
+			$h .= '<h3 class="mt-2">';
+				$h .= p(
+					"Écriture comptable du compte banque {bankAccount} liée à cette opération bancaire qui sera supprimée",
+					"Écritures comptables du compte banque {bankAccount} liées à cette opération bancaire qui seront supprimées",
+					$cOperationBank->count(), ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+			$h .= '</h3>';
+
+			$h .= '<div class="bg-background">';
+				$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperationBank, $eFarm['eFinancialYear'], readonly: TRUE);
+			$h .= '</div>';
+
+
+			$cOperationFiltered = $cOperation->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS) === FALSE);
+
+			$h .= '<h3 class="mt-2">';
+				$h .= p(
+					"Autre écriture comptable qui sera isolée",
+					"Autres écritures comptables liées à cette opération bancaire qui seront groupées ensemble",
+					$cOperationFiltered->count(), ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+			$h .= '</h3>';
+
+			$h .= '<div class="bg-background">';
+				$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperationFiltered, $eFarm['eFinancialYear'], readonly: TRUE);
+			$h .= '</div>';
+
+		}
+
+		if($action === 'delete') {
+			$submit = s("Confirmer la suppression");
+			$waiter = s("Suppression en cours");
+			$title = p("Supprimer l'écriture liée à une opération bancaire", "Supprimer les écritures liées à une opération bancaire", $cOperation->count());
+			$confirm = s("Confirmez-vous la suppression ?");
+		} else {
+			$submit = s("Confirmer la dissociation");
+			$waiter = s("Dissociation en cours...");
+			$title = p("Dissocier l'écriture liée à une opération bancaire", "Dissocier les écritures liées à une opération bancaire", $cOperation->count());
+			$confirm = s("Confirmez-vous la dissociation ?");
+		}
+
+		$h .= $form->submit(
+			$submit,
+			[
+				'id' => 'submit-deallocate',
+				'class' => 'btn btn-primary',
+				'data-waiter' => $waiter,
+				'data-confirm' => $confirm,
+			],
+		);
+
+		return new \Panel(
+			id         : 'panel-bank-cashflow-allocate',
+			title      : $title,
+			dialogOpen : $dialogOpen,
+			dialogClose: $form->close(),
+			body       : $h,
+			header     : $this->getAllocateTitle($eCashflow),
+		);
 
 	}
 
@@ -609,7 +693,7 @@ class CashflowUi {
 			dialogOpen : $dialogOpen,
 			dialogClose: $form->close(),
 			body       : $h,
-			header     : $this->getAllocateTitle($eCashflow, $eFinancialYear, $defaultValues, $cPaymentMethod, $form),
+			header     : $this->getAllocateTitle($eCashflow),
 			footer     : $amountWarning.'<div class="operation-create-buttons">'.$addButton.$saveButton.'</div>',
 		);
 

@@ -664,8 +664,13 @@ Document.prototype.ready = function(listener) {
 
 document.delegateEventListener('click', '[data-waiter]', function(e) {
 
-	this.innerHTML = this.dataset.waiter;
-	this.classList.add('click-waiting');
+	// Sera traité dans le [data-confirm]
+	if(this.getAttribute('data-confirm') === null) {
+
+		this.innerHTML = this.dataset.waiter;
+		this.classList.add('click-waiting');
+
+	}
 
 });
 
@@ -676,8 +681,12 @@ document.delegateEventListener('click', '[data-confirm]', function(e) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 
-	}
+	} else if(this.getAttribute('data-waiter') !== null) {
 
+		this.innerHTML = this.dataset.waiter;
+		this.classList.add('click-waiting');
+
+	}
 
 });
 

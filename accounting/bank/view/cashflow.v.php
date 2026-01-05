@@ -50,6 +50,17 @@ new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('deAllocate', function($data, PanelTemplate $t) {
+
+	return new \bank\CashflowUi()->getDeallocate(
+		$data->eFarm,
+		$data->e,
+		$data->cOperation,
+		$data->action,
+	);
+
+});
+
 new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 
 	$t->qs('#operation-create-list')->setAttribute('data-columns', $data->index + 1);

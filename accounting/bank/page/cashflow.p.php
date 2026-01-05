@@ -218,7 +218,16 @@ new \bank\CashflowPage(function($data) {
 	throw new ReloadAction('bank', 'Cashflow::undeleted');
 
 }, validate: ['acceptUndoDelete'])
-->write('deAllocate', function($data) {
+->read('deAllocate', function($data) {
+
+	$data->action = GET('action');
+
+	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
+
+	throw new ViewAction($data);
+
+}, validate: ['acceptDeallocate'])
+->write('doDeallocate', function($data) {
 
 	$fw = new FailWatch();
 
@@ -235,9 +244,9 @@ new \bank\CashflowPage(function($data) {
 
 	\journal\OperationLib::unlinkCashflow($data->e, $action);
 
-	throw new ReloadAction('bank', 'Cashflow::deallocated.'.$action);
+	throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Cashflow::deallocated.'.$action);
 
-}, validate: ['acceptDeallocate']);
+}, validate: ['acceptDeallocate'])
 ;
 
 ?>
