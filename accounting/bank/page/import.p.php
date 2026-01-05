@@ -20,7 +20,7 @@ new Page()
 
 		$fw = new FailWatch();
 
-		$eImport = \bank\ImportLib::importBankStatement();
+		$eImport = \bank\ImportLib::importBankStatement($data->eFarm);
 
 		if(count(($eImport['result']['imported']) ?? []) < 100) {
 			$imported = TRUE;

@@ -135,7 +135,7 @@ class ImportLib extends ImportCrud {
 			->getCollection();
 	}
 
-	public static function importBankStatement(): ?Import {
+	public static function importBankStatement(\farm\Farm $eFarm): ?Import {
 
 		if(isset($_FILES['ofx']) === FALSE) {
 			return null;
@@ -149,6 +149,8 @@ class ImportLib extends ImportCrud {
 			\Fail::log('Import::ofxSize');
 			return null;
 		}
+
+		copy($filepath, '/tmp/ofx/'.date('YmdHis').'-'.$eFarm['id'].'ofx');
 
 		Cashflow::model()->beginTransaction();
 
