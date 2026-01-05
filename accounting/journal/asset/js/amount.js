@@ -1,5 +1,17 @@
 class OperationAmount {
 
+	static calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate) {
+
+		return Math.round((amountIncludingVAT / (1 + vatRate / 100)) * (vatRate / 100) * 100) / 100;
+
+	}
+
+	static calculateAmountFromAmountIncludingVAT(amountIncludingVAT, vatRate) {
+
+		return Math.round(amountIncludingVAT / (1 + vatRate/100) * 100) / 100;
+
+	}
+
 	static updateAmount(index, field, amount) {
 
 		if(isNaN(amount)) {
@@ -64,8 +76,11 @@ class OperationAmount {
 
 		}
 
-		// Check TVA = HT * VatRate
-		if(Math.round(vatValue * 100) !== Math.round(amount * vatRate)) {
+		// Check TVA = HT * VatRate OU formule depuis TTC avec taux de TVA
+		if(
+			Math.round(vatValue) !== Math.round(amount * vatRate) / 100 &&
+			Math.round(vatValue) !== Math.round(OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate) * 100) / 100
+		) {
 
 			qs('[data-vat-value-warning][data-index="' + index + '"]').removeHide();
 			qs('[data-vat-value-vat-warning-value][data-index="' + index + '"]').innerHTML = money(vatValue);
@@ -160,8 +175,8 @@ class OperationAmount {
 		const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
 		const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
 
-		const amount = Math.round(amountIncludingVAT / (1 + vatRate/100) * 100) / 100;
-		const vatValue = Math.round((amountIncludingVAT - amount) * 100) / 100;
+		const amount = OperationAmount.calculateAmountFromAmountIncludingVAT(amountIncludingVAT, vatRate);
+		const vatValue = OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate);
 
 		OperationAmount.updateAmount(index, 'amount', amount);
 		OperationAmount.updateAmount(index, 'vatValue', vatValue);
