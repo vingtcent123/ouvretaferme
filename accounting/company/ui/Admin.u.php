@@ -41,7 +41,7 @@ Class AdminUi {
 						$h .= '<th class="text-center">'.s("Produits").'</th>';
 						$h .= '<th class="text-center">'.s("Opérations bancaires").'</th>';
 						$h .= '<th class="text-center">'.s("Écritures comptables").'</th>';
-						$h .= '<th class="text-center">'.s("Rapprochements ({iconValidated}/ Σ)", ['iconValidated' => \Asset::icon('check')]).'</th>';
+						$h .= '<th class="text-center">'.s("Rapprochements<br />({iconValidated}/{iconRejected})", ['iconValidated' => \Asset::icon('check'), 'iconRejected' => \Asset::icon('x')]).'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -67,7 +67,7 @@ Class AdminUi {
 						$h .= '<td class="text-center">'.encode($eFarm['nProduct']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nCashflow']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['cSuggestion'][\preaccounting\Suggestion::VALIDATED]['count'] ?? 0).' / '.array_sum($eFarm['cSuggestion']->getColumn('count')).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['cSuggestion'][\preaccounting\Suggestion::VALIDATED]['count'] ?? 0).' / '.encode($eFarm['cSuggestion'][\preaccounting\Suggestion::REJECTED]['count'] ?? 0).'</td>';
 					$h .= '</tr>';
 				}
 				$h .= '</tbody>';
