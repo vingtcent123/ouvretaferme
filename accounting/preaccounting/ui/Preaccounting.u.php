@@ -301,27 +301,25 @@ Class PreaccountingUi {
 	public function getCategories(\farm\Farm $eFarm, \Collection $cCategory, array $products, int $toVerifyItems, \Search $search): string {
 
 		$tab = \session\SessionLib::get('preAccountingProductTab');
+		if($tab instanceof \selling\Category) {
+			$tab = ($tab['id'] ?? NULL);
+		}
 		$h = '';
+
+		$cCategory->filter(fn($e) => ($products[$e['id']] ?? 0) > 0);
 
 		if($cCategory->notEmpty()) {
 
-			$isItemSelected = ($tab === 'items');
-			if($isItemSelected) {
-				$eCategorySelected = new \selling\Category();
-			} else {
-				$eCategorySelected = $search->get('tab');
-			}
-
 			$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=product&from='.$search->get('from').'&to='.$search->get('to');
 
-			$list = function(string $class) use ($eFarm, $cCategory, $eCategorySelected, $isItemSelected, $products, $toVerifyItems, $url) {
+			$list = function(string $class) use ($eFarm, $cCategory, $products, $toVerifyItems, $url, $tab) {
 
 				$h = '';
 
 				foreach($cCategory as $eCategory) {
 
 					if(($products[$eCategory['id']] ?? 0) > 0) {
-						$h .= '<a href="'.$url.'&tab='.$eCategory['id'].'" class="'.$class.' '.(($eCategorySelected->notEmpty() and $eCategorySelected['id'] === $eCategory['id']) ? 'selected' : '').'" >'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
+						$h .= '<a href="'.$url.'&tab='.$eCategory['id'].'" class="'.$class.' '.($eCategory['id'] === $tab ? 'selected' : '').'" >'.encode($eCategory['name']).' <small class="'.$class.'-count">'.($products[$eCategory['id']] ?? 0).'</small></a>';
 					}
 
 				}
@@ -330,13 +328,13 @@ Class PreaccountingUi {
 
 				if($uncategorized > 0) {
 
-					$h .= '<a href="'.$url.'&tab=0" data-ajax-method="get" class="'.$class.' '.(($eCategorySelected === NULL or $eCategorySelected->empty() and $isItemSelected === FALSE) ? 'selected' : '').'" data-step="product" data-tab="0">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
+					$h .= '<a href="'.$url.'&tab=0" data-ajax-method="get" class="'.$class.' '.(NULL === $tab ? 'selected' : '').'" data-step="product" data-tab="0">'.s("Non catégorisé").' <small class="'.$class.'-count">'.$uncategorized.'</small></a>';
 
 				}
 
 				if($toVerifyItems > 0) {
 
-					$h .= '<a href="'.$url.'&tab=items" data-ajax-method="get" class="'.$class.' '.($isItemSelected ? 'selected' : '').'" data-step="product" data-tab="items">'.s("Articles").' <small class="'.$class.'-count">'.$toVerifyItems.'</small></a>';
+					$h .= '<a href="'.$url.'&tab=items" data-ajax-method="get" class="'.$class.' '.($tab === 'items' ? 'selected' : '').'" data-step="product" data-tab="items">'.s("Articles").' <small class="'.$class.'-count">'.$toVerifyItems.'</small></a>';
 				}
 
 				return $h;
@@ -345,11 +343,22 @@ Class PreaccountingUi {
 
 			if($cCategory->count() > 4) {
 
+				if($tab === 'items') {
+					$current = s("Articles");
+					$count = $toVerifyItems;
+				} else if($tab) {
+					$current = $cCategory[$tab]['name'];
+					$count = $products[$tab];
+				} else {
+					$current = s("Non catégorisé");
+					$count = $products[0];
+				}
+
 				$h .= '<div class="btn-group mb-1">';
 					$h .= '<div class="btn btn-group-addon btn-outline-primary">'.s("Catégorie").'</div>';
 						$h .= '<a class="dropdown-toggle btn btn-primary" data-dropdown="bottom-start" data-dropdown-hover="true" data-dropdown-id="product-dropdown-categories">';
-							$h .= ($eCategorySelected->notEmpty() ? encode($cCategory[$eCategorySelected['id']]['name']) : s("Non catégorisé"));
-							$h .= '<small class="dropdown-item-count">'.($products[$eCategorySelected->notEmpty() ? $eCategorySelected['id'] : NULL] ?? 0).'</small>';
+							$h .= encode($current);
+							$h .= '<small class="dropdown-item-count">'.$count.'</small>';
 						$h .= '</a>';
 					$h .= '</div>';
 					$h .= '<div class="dropdown-list '.($cCategory->count() > 10 ? 'dropdown-list-2' : '').'" data-dropdown-id="product-dropdown-categories-list">';

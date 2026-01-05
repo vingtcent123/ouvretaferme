@@ -19,7 +19,9 @@ Class ItemLib {
 	}
 	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search, string $type): int {
 
-		return self::filterForAccountingCheck($eFarm, $search, $type)->count();
+		return self::filterForAccountingCheck($eFarm, $search, $type)
+      ->select(['count' => new \Sql('COUNT(DISTINCT(m1.name))', 'int')])
+			->get()['count'] ?? 0;
 
 	}
 
