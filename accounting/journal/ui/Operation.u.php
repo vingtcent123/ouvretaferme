@@ -377,6 +377,9 @@ class OperationUi {
 
 			$h .= '<div class="util-title mt-2">';
 				$h .= '<h3>'.p("Écriture comptable liée","Écritures comptables liées", $count).'</h3>';
+				if($count > 1) {
+					$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hash='.$eOperation['hash'].'">'.s("Tout voir dans le journal").'</a>';
+				}
 			$h .= '</div>';
 
 			foreach($eOperation['cOperationHash'] as $eOperationHash) {

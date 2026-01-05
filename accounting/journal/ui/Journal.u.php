@@ -509,6 +509,7 @@ class JournalUi {
 									$h .= '<div class="dropdown-list">';
 										$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'?'.http_build_query($args).'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
+										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hash='.$eOperation['hash'].'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Filtrer sur le groupe d'écritures").'</a>';
 
 										if($eOperation->canUpdate() and $eOperation->acceptUpdate()) {
 
