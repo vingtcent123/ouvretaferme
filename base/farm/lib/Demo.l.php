@@ -35,6 +35,8 @@ class DemoLib {
 	];
 
 	const COPY_PROPERTY_EXCLUDE = [
+		'bank\BankAccount' => ['bankId', 'accountId'],
+		'asset\Asset' => ['description'],
 		'account\ThirdParty' => ['name', 'names', 'memo', 'normalizedName'],
 		'bank\Cashflow' => ['memo', 'name', 'document'],
 		'journal\Operation' => ['document', 'description'],
@@ -152,8 +154,10 @@ class DemoLib {
 					($m->getModule() === 'series\\Task' and $value === 'description')
 				) {
 					$value = 'NULL AS '.$pdo->api->field($value);
-				} else if(
+				} else if( // Champs not nullable de l'app accounting
 					($m->getModule() === 'account\\ThirdParty' and $value === 'name') or
+					($m->getModule() === 'asset\\Asset' and $value === 'description') or
+					($m->getModule() === 'bank\BankAccount' and in_array($value, ['bankId', 'accountId'])) or
 					($m->getModule() === 'journal\\Operation' and $value === 'description')
 				) {
 					$value = 'id AS '.$pdo->api->field($value);
@@ -409,29 +413,29 @@ class DemoLib {
 				->update($eCashflow);
 		}
 
-		foreach(new \journal\OperationModel()
-        ->select('id')
-        ->getCollection() as $eJournal) {
+		new \journal\OperationModel()
+			->where(TRUE)
+			->update([
+				'description' => new \Sql('CONCAT("Écriture ", id)'),
+				'document' => new \Sql('CONCAT("Document ", id)'),
+			]);
 
-			$eJournal['description'] = 'Écriture '.$eJournal['id'];
-			$eJournal['document'] = 'Document '.$eJournal['id'];
+		new \asset\AssetModel()->where(TRUE)->update(['description' => new \Sql('CONCAT("Immobilisation ", id)')]);
+		new \journal\JournalCodeModel()->whereIsCustom(TRUE)->update(['name' => new \Sql('CONCAT("Journal ", id)')]);
+		new \account\AccountModel()
+			->or(
+				fn() => $this->whereClass('LIKE', '4551%'),
+				fn() => $this->whereCustom(TRUE)
+			)
+			->update(['description' => new \Sql('CONCAT("Compte personnalisé ", id)')]);
 
-			new \journal\OperationModel()
-				->select(['description'])
-				->update($eJournal);
-		}
+		new \bank\BankAccountModel()
+			->where(TRUE)
+			->update([
+				'bankId' => new \Sql('CONCAT("Numéro banque ", id)'),
+				'accountId' => new \Sql('CONCAT("Numéro compte ", id)'),
+			]);
 
-		foreach(new \account\AccountModel()
-        ->select('id')
-				->whereClass('LIKE', '4551%')
-        ->getCollection() as $eAccount) {
-
-			$eAccount['description'] = 'Compte-courant '.self::getFirstName($eAccount['id']);
-
-			new \account\AccountModel()
-				->select(['description'])
-				->update($eAccount);
-		}
 	}
 
 	public static function getModules(): array {
