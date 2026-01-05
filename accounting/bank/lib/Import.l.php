@@ -150,7 +150,7 @@ class ImportLib extends ImportCrud {
 			return null;
 		}
 
-		copy($filepath, '/tmp/ofx/'.date('YmdHis').'-'.$eFarm['id'].'ofx');
+		copy($filepath, '/tmp/ofx/'.date('YmdHis').'-'.$eFarm['id'].'.ofx');
 
 		Cashflow::model()->beginTransaction();
 
