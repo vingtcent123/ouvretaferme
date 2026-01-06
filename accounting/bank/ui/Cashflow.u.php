@@ -575,12 +575,10 @@ class CashflowUi {
 			$submit = s("Confirmer la suppression");
 			$waiter = s("Suppression en cours");
 			$title = p("Supprimer l'écriture liée à une opération bancaire", "Supprimer les écritures liées à une opération bancaire", $cOperation->count());
-			$confirm = s("Confirmez-vous la suppression ?");
 		} else {
 			$submit = s("Confirmer la dissociation");
 			$waiter = s("Dissociation en cours...");
 			$title = p("Dissocier l'écriture liée à une opération bancaire", "Dissocier les écritures liées à une opération bancaire", $cOperation->count());
-			$confirm = s("Confirmez-vous la dissociation ?");
 		}
 
 		$h .= $form->submit(
@@ -589,7 +587,6 @@ class CashflowUi {
 				'id' => 'submit-deallocate',
 				'class' => 'btn btn-primary',
 				'data-waiter' => $waiter,
-				'data-confirm' => $confirm,
 			],
 		);
 
