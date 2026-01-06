@@ -51,13 +51,13 @@ class MapboxUi {
 							$h .= $form->group(
 								s("Longueur"),
 								$form->inputGroup(
-									$form->number('length').$form->addon(s("m"))
+									$form->number('length', attributes: ['step' => 0.01]).$form->addon(s("m"))
 								)
 							);
 							$h .= $form->group(
 								s("Largeur"),
 								$form->inputGroup(
-									$form->number('width').$form->addon(s("m"))
+									$form->number('width', attributes: ['step' => 0.01]).$form->addon(s("m"))
 								)
 							);
 							$h .= $form->button(s("Valider"), ['onclick' => 'Cartography.get("'.$container.'").drawRectangle(this)']);
