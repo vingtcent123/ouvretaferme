@@ -247,7 +247,7 @@ Class AccountingLib {
 			->join(\bank\Cashflow::model(), 'm1.cashflow = m3.id', 'LEFT')
 			->where('m1.status != "'.\selling\Invoice::DRAFT.'"')
 			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
-			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->get('customer')->notEmpty())
+			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->has('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)

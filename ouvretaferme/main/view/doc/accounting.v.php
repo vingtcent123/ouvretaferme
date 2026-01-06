@@ -29,6 +29,15 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<br/>';
 
 	echo '<div class="util-block">';
+	echo '<h2>'.s("Tutoriels en vidéo").'</h2>';
+	echo '<p>'.s("Des tutoriels vidéos sont également disponibles sur Youtube. Cliquez sur le petit menu en haut à droite de la vidéo pour voir le sommaire des vidéos disponibles.").'</p>';
+	echo '<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?si=M_vGvQ9gfoS6PwdI&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+	echo '</div>';
+
+
+	echo '<br/>';
+
+	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Préparer mes données").'</h2>';
 		echo '<h3>'.s("Les numéros de compte").'</h3>';

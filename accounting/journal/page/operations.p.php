@@ -15,6 +15,11 @@ new Page(function($data) {
 		\user\ConnectionLib::checkLogged();
 
 		if(get_exists('onboarding')) {
+
+			$data->cImport = \bank\Import::model()->count();
+			$search = new Search(['financialYear' => $data->eFarm['eFinancialYear']]);
+			$data->nInvoice = \preaccounting\AccountingLib::countInvoices($data->eFarm, $search);
+
 			throw new ViewAction($data, ':onboarding');
 		}
 

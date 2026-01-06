@@ -23,7 +23,20 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 
 	echo '<br/>';
 
-	echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-primary btn-lg">'.s("Réaliser mon premier import bancaire").'</a>';
+	if($data->cImport === 0) {
+
+		echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-primary btn-lg">'.s("Réaliser mon premier import bancaire").'</a>';
+
+	} else if($data->nInvoice > 0) {
+
+		echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer" class="btn btn-primary btn-lg">'.p("Importer ma facture", "Importer mes factures", $data->nInvoice).'</a>';
+
+	} else {
+
+		echo '<a href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode=" class="btn btn-primary btn-lg">'.s("Enregistrer ma première écriture comptable").'</a>';
+
+	}
+
 });
 
 new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
