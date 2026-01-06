@@ -381,9 +381,9 @@ Class PreaccountingUi {
 
 	}
 
-	public function products(\farm\Farm $eFarm, \Collection $cProduct, \Collection $cCategory, array $products, \Search $search, array $itemData): string {
+	public function products(\farm\Farm $eFarm, \Collection $cProduct, \Collection $cCategory, array $products, \Search $search, int $nProductToCheck, array $itemData): string {
 
-		if($itemData['nToCheck'] === 0) {
+		if($itemData['nToCheck'] === 0 and $nProductToCheck === 0) {
 			return '<div class="util-empty">'.s("Tous vos produits ont un numéro de compte associé !").'</div>';
 		}
 

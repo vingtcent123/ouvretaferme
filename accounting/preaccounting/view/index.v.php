@@ -138,6 +138,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 					$data->cCategories,
 					$data->products,
 					$data->search,
+					$data->nProductToCheck,
 					itemData: ['nToCheck' => $data->nItemToCheck, 'cItem' => $data->cItem],
 				);
 			echo '</div>';
