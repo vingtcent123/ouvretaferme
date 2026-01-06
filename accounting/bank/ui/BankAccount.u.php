@@ -38,7 +38,7 @@ class BankAccountUi {
 
 			$h .= '<div class="util-info">'.s("Les comptes bancaires se créent automatiquement lors de l'import d'un relevé. Le numéro du compte comptable est personnalisable mais doit toujours commencer par {bankAccount} pour respecter le plan comptable..", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</div>';
 
-			$h .= '<div class="util-block-info">'.s("Attention, en <b>modifiant le libellé d'un compte bancaire</b>, toutes les écritures comptables de l'exercice comptable en cours qui sont liées à ce numéro de compte bancaire verront leur libellé de compte être mis à jour.").'</div>';
+			$h .= '<div class="util-block-info">'.s("Attention, en <b>modifiant numéro comptable d'un compte bancaire</b>, toutes les écritures comptables de l'exercice comptable en cours qui sont liées à ce numéro de compte bancaire verront leur numéro de compte être mis à jour.").'</div>';
 
 		}
 

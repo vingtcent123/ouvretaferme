@@ -62,8 +62,8 @@ Class AdminUi {
 						$h .= '</td>';
 						$h .= '<td>';
 							$h .= '<a href="/farm/admin/?id='.$eFarm['id'].'">';
-								if($eFarm['membership']) {
-									$h .= \Asset::icon('star-fill').' ';
+								if($eFarm['hasFinancialYears']) {
+									$h .= '<span class="font-xl">'.\Asset::icon('calculator-fill').'</span> ';
 								}
 								$h .= encode($eFarm['name']);
 							$h .= '</a>';
