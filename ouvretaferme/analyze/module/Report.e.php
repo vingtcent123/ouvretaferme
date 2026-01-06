@@ -104,10 +104,17 @@ class Report extends ReportElement {
 				if($this['workingTimeAdditional'] > 0) {
 
 					$totalTime = $cCultivationAnalyze->sum('workingTime');
-					$timeFactor = ($totalTime + $this['workingTimeAdditional']) / $totalTime;
 
-					foreach($cCultivationAnalyze as $eCultivationAnalyze) {
-						$eCultivationAnalyze['workingTime'] = $eCultivationAnalyze['workingTime'] * $timeFactor;
+					if($totalTime > 0) {
+
+						$timeFactor = ($totalTime + $this['workingTimeAdditional']) / $totalTime;
+
+						foreach($cCultivationAnalyze as $eCultivationAnalyze) {
+							$eCultivationAnalyze['workingTime'] = $eCultivationAnalyze['workingTime'] * $timeFactor;
+						}
+
+					} else {
+						$cCultivationAnalyze->setColumn('workingTime', $this['workingTimeAdditional'] / $cCultivationAnalyze->count());
 					}
 
 				}
