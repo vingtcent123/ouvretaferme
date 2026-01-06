@@ -152,6 +152,17 @@ class Operation extends OperationElement {
 				return $account !== NULL;
 
 			})
+			->setCallback('accountLabel.format', function(?string &$accountLabel): bool {
+
+				if(mb_strlen($accountLabel) > 8) {
+					return FALSE;
+				}
+
+				$accountLabel = \account\AccountLabelLib::pad($accountLabel);
+
+				return TRUE;
+
+			})
 			->setCallback('accountLabel.inconsistency', function(?string $accountLabel): bool {
 
 				$this->expects(['account']);

@@ -78,8 +78,8 @@ class OperationAmount {
 
 		// Check TVA = HT * VatRate OU formule depuis TTC avec taux de TVA
 		if(
-			Math.round(vatValue) !== Math.round(amount * vatRate) / 100 &&
-			Math.round(vatValue) !== Math.round(OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate) * 100) / 100
+			Math.round(vatValue * 100) / 100 !== Math.round(amount * vatRate) / 100 &&
+			Math.round(vatValue * 100) / 100 !== Math.round(OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate) * 100) / 100
 		) {
 
 			qs('[data-vat-value-warning][data-index="' + index + '"]').removeHide();

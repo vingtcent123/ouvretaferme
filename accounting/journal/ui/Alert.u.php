@@ -28,7 +28,8 @@ class AlertUi {
 
 			'Operation::date.check' => s("La date doit correspondre à l'exercice comptable actuellement ouvert."),
 			'Operation::account.check' => s("N'oubliez pas de choisir un numéro de compte !"),
-			'Operation::accountLabel.inconsistency' => s("Le compte doit commencer par les mêmes chiffres que le numéro de compte."),
+			'Operation::accountLabel.inconsistency' => s("Le numéro de compte doit commencer par les mêmes chiffres que le compte."),
+			'Operation::accountLabel.format' => s("Le numéro de compte doit être composé exactement de 8 chiffres."),
 
 			'Operation::invoice.incorrectType' => s("Le fichier n'est pas reconnu comme une facture. Vous pouvez effectuer la saisie manuellement ou réessayer."),
 			'Operation::invoice.unknownExtension' => s("Le format du fichier n'est pas reconnu, veuillez essayer avec un autre fichier ou faire une saisie manuelle."),
