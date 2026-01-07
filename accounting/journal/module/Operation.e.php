@@ -19,18 +19,11 @@ class Operation extends OperationElement {
 			'createdBy' => ['id', 'firstName', 'lastName'],
 			'cashflow' => \bank\Cashflow::model()
 				->select(\bank\Cashflow::getSelection())
-				->delegateElement('hash', propertyParent: 'hash')
-		] + ['cOperationHash' => \journal\Operation::model()
-			->select('id')
-			->delegateCollection('hash', propertyParent: 'hash')
+				->delegateElement('hash', propertyParent: 'hash'),
+			'cOperationHash' => \journal\Operation::model()
+			->select('id', 'hash', 'accountLabel', 'asset')
+			->delegateCollection('hash', propertyParent: 'hash'),
 		];
-
-	}
-
-	public function acceptDelete(): bool {
-
-		return $this['asset']->empty() or
-			$this['asset']->acceptDelete();
 
 	}
 
@@ -62,33 +55,18 @@ class Operation extends OperationElement {
 
 	}
 
-	public function acceptUpdate(): bool {
+	public function acceptWrite(): bool {
 
-		$this->expects(['hash']);
-
-		return $this['hash'] and mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED;
-
-	}
-	public function canUpdate(): bool {
-
-		$this->expects(['date', 'financialYear', 'hash']);
-
-		return
-			\account\FinancialYearLib::isDateInOpenFinancialYear($this['date'])->notEmpty() and
-			$this['financialYear']->canUpdate() and
-			$this['hash'] !== NULL;
-	}
-
-	public function canDelete(): bool {
-
-		$this->expects(['operation']);
-
-		return (
-			$this->notEmpty() and
-			$this->canUpdate() and
-			$this['operation']->empty()
+		return $this['id'] === NULL or (
+			mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED and
+			$this['financialYear']->acceptUpdate()
 		);
 
+	}
+
+	public function acceptDelete(): bool {
+		return $this->acceptWrite() and
+			($this['cOperationCashflow']->empty() or $this['cOperationCashflow']->getColumnCollection('asset')->empty());
 	}
 
 	public function isClassAccount(int $class): bool {
@@ -113,7 +91,7 @@ class Operation extends OperationElement {
 	public function isFromImport(): bool {
 
 		return in_array(substr($this['hash'], -1), [
-			JournalSetting::HASH_LETTER_IMPORT_INVOICE, JournalSetting::HASH_LETTER_IMPORT_SALE, JournalSetting::HASH_LETTER_IMPORT_MARKET
+			JournalSetting::HASH_LETTER_IMPORT_INVOICE
 		]);
 
 	}

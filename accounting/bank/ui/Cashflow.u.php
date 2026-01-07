@@ -348,27 +348,42 @@ class CashflowUi {
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
 				$nOperation = $eCashflow['cOperationHash']->count();
+				$isLinkedToAsset = $eCashflow['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
 
 				$h .= '<div class="dropdown-title">';
 					$h .= p("Actions sur l'écriture comptable liée", "Actions sur les {value} écritures comptables liées", $nOperation);
 				$h .= '</div>';
 
-				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=delete" class="dropdown-item">';
+				if($isLinkedToAsset) {
+
+					$h .= '<a class="dropdown-item inactive">';
+						$h .= p(
+							"Supprimer l'écriture",
+							"Supprimer les {value} écritures",
+							$nOperation
+						);
+						$h .= '<div class="operations-delete-more">'.s("(Supprimez d'abord l'<b>immobilisation</b> liée)").'</div>';
+					$h .= '</a>';
+
+				} else {
+
+					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=delete" class="dropdown-item">';
 					$h .= p(
 						"Supprimer l'écriture",
 						"Supprimer les {value} écritures",
 						$nOperation
 					);
-				$h .= '</a>';
+					$h .= '</a>';
+
+				}
 
 				$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=dissociate" class="dropdown-item" >';
-					$h .= p("Dissocier sans supprimer l'écriture", "Dissocier sans supprimer les {value} écritures<br/>de l'opération bancaire", $nOperation);
+					$h .= p("Dissocier sans supprimer l'écriture", "Dissocier sans supprimer les écritures<br/>de l'opération bancaire", $nOperation - 1);
 				$h .= '</a>';
 
 				$h .= '<div class="dropdown-divider"></div>';
 
 			}
-
 
 			if($eCashflow->acceptCancelReconciliation()) {
 
@@ -401,7 +416,7 @@ class CashflowUi {
 
 				$h .= $reconciliate;
 
-				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les écritures liées)</div>", ['div' => '<div class="operations-delete-more">']);
+				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les <b>écritures comptables</b> liées)</div>", ['div' => '<div class="operations-delete-more">']);
 				$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 
 			} else {
@@ -410,9 +425,13 @@ class CashflowUi {
 
 				$h .= $reconciliate;
 
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
-					$h .= s("Supprimer l'opération bancaire");
-				$h .= '</a>';
+				if($eCashflow->acceptDelete()) {
+
+					$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
+						$h .= s("Supprimer l'opération bancaire");
+					$h .= '</a>';
+
+				}
 
 			}
 
@@ -514,7 +533,7 @@ class CashflowUi {
 
 	}
 
-	public function getDeallocate(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cOperation, string $action): \Panel {
+	public function getDeallocate(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cOperation, \Collection $cInvoice, string $action): \Panel {
 
 		\Asset::css('bank', 'cashflow.css');
 
@@ -571,14 +590,25 @@ class CashflowUi {
 
 		}
 
+		if($cInvoice->notEmpty()) {
+
+			$eInvoice = $cInvoice->first();
+
+				$h .= '<div class="util-info">';
+					$h .= s("Cette opération bancaire est rapprochée avec la facture {name}.", ['name' => '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?document='.$eInvoice['document'].'">'.encode($eInvoice['name']).'</a>']);
+					$h .= ' '.s("Ce rapprochement entre la facture et l'opération bancaire sera conservé.");
+				$h .= '</div>';
+
+		}
+
 		if($action === 'delete') {
 			$submit = s("Confirmer la suppression");
 			$waiter = s("Suppression en cours");
-			$title = p("Supprimer l'écriture liée à une opération bancaire", "Supprimer les écritures liées à une opération bancaire", $cOperation->count());
+			$title = p("Supprimer l'écriture comptable liée à une opération bancaire", "Supprimer les écritures comptables liées à une opération bancaire", $cOperation->count());
 		} else {
 			$submit = s("Confirmer la dissociation");
 			$waiter = s("Dissociation en cours...");
-			$title = p("Dissocier l'écriture liée à une opération bancaire", "Dissocier les écritures liées à une opération bancaire", $cOperation->count());
+			$title = p("Dissocier l'écriture comptable liée à une opération bancaire", "Dissocier les écritures comptables liées à une opération bancaire", $cOperation->count());
 		}
 
 		$h .= $form->submit(

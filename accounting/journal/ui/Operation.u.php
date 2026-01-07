@@ -51,6 +51,70 @@ class OperationUi {
 		);
 	}
 
+	public function getDelete(\farm\Farm $eFarm, \Collection $cOperation, Operation $eOperation): \Panel {
+
+		\Asset::css('bank', 'cashflow.css');
+
+		$form = new \util\FormUi();
+
+		$dialogOpen = $form->openAjax(
+			\company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
+			[
+				'id' => 'operation-delete','class' => 'panel-dialog',]
+		);
+
+		$h = $form->hidden('farm', $eFarm['id']);
+		$h .= $form->hidden('id', $eOperation['id']);
+
+		if($cOperation->notEmpty()) {
+
+			if($cOperation->count() > 1) {
+				$h .= '<div class="util-info">';
+					$h .= s("Cette écriture comptable fait partie d'un groupe d'écritures. En la supprimant, vous supprimerez tout le groupe.");
+				$h .= '</div>';
+			}
+
+			$h .= '<h3 class="mt-2">';
+				$h .= p("Écriture comptable à supprimer", "Toutes les écritures comptables à supprimer", $cOperation->count());
+			$h .= '</h3>';
+
+			$h .= '<div class="bg-background">';
+				$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE);
+			$h .= '</div>';
+
+		} else {
+
+			$h .= '<h3 class="mt-2">';
+				$h .= s("Écriture comptable à supprimer");
+			$h .= '</h3>';
+
+			$h . $this->getSummary($eOperation);
+
+		}
+
+		$submit = s("Confirmer la suppression");
+		$waiter = s("Suppression en cours...");
+		$title = p("Suppression d'une écriture comptable", "Suppression d'écritures comptables", $cOperation->count());
+
+		$h .= $form->submit(
+			$submit,
+			[
+				'id' => 'submit-delete-operation',
+				'class' => 'btn btn-primary',
+				'data-waiter' => $waiter,
+			],
+		);
+
+		return new \Panel(
+			id         : 'panel-operation-delete',
+			title      : $title,
+			dialogOpen : $dialogOpen,
+			dialogClose: $form->close(),
+			body       : $h,
+			header     : '<h1>'.p("Supprimer une écriture comptable", "Supprimer des écritures comptables", $cOperation->count()).'</h1>',
+		);
+	}
+
 	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase): \Panel {
 
 		\Asset::css('journal', 'operation.css');

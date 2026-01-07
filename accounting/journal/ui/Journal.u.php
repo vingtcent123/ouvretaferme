@@ -369,9 +369,7 @@ class JournalUi {
 							$batch[] = 'accept-asset';
 						}
 
-						$hash = $eOperation['hash'];
-						$hasBankForHash = $cOperation->find(fn($e) => ($e['hash'] === $hash and $e['cashflow']->notEmpty()))->notEmpty();
-						if($hasBankForHash === FALSE) {
+						if($eOperation['cOperationCashflow']->empty()) {
 							$batch[] = 'accept-attach';
 						}
 
@@ -513,8 +511,6 @@ class JournalUi {
 
 										if($eOperation->canUpdate() and $eOperation->acceptUpdate()) {
 
-											$more = null;
-
 											$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
 
 											if(
@@ -527,135 +523,44 @@ class JournalUi {
 
 											}
 
-											$hash = $eOperation['hash'];
-											$hasBankForHash = $cOperation->find(fn($e) => ($e['hash'] === $hash and \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)))->notEmpty();
-											if($hasBankForHash === FALSE) {
+											// Rattacher à une opération bancaire
+											if($eOperation['cOperationCashflow']->empty()) {
 
 												$h .= '<div class="dropdown-divider"></div>';
 												$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operations:attach?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Rattacher à une opération bancaire").'</a>';
 
 											}
 
-											// ACTION "SUPPRIMER"
-											if($eOperation['cOperationCashflow']->empty()) { // Cette opération est liée à une autre : on ne peut pas la supprimer.
+											// SUPPRIMER
+											$isLinkedToAsset = $eOperation['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
 
-												if($eOperation['operation']->notEmpty()) {
+											// Si immo : d'abord supprimer l'immo
+											if($isLinkedToAsset) {
 
-													$attributes = [
-														'class' => 'dropdown-item inactive',
-														'onclick' => 'void(0);',
-														'data-highlight' => 'operation-'.$eOperation['operation']['id'],
-													];
-
-													$more = s("Cette écriture est liée à une autre écriture. Supprimer l'autre écriture supprimera celle-ci.");
-
-													$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-
-													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
-
-												} else if($eOperation['cashflow']->notEmpty()) {
-
-													$attributes = [
-														'class' => 'dropdown-item inactive',
-														'onclick' => 'void(0);',
-													];
-
-													$more = s("Cette écriture est rattachée à une opération bancaire. Passez par l'opération bancaire.");
-
-													$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-
-													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
-
-												} else if($eOperation['hash'] !== NULL and $eOperation->isFromImport()) {
-
-													$confirmText = match($eOperation->importType()) {
-														JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture. Confirmez-vous la suppression de ces écritures et du lien avec la facture ?"),
-														JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente. Confirmez-vous la suppression de ces écritures et du lien avec la vente ?"),
-														JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché. Confirmez-vous la suppression de ces écritures et du lien avec le marché ?"),
-													};
-													$attributes = [
-														'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
-														'post-id' => $eOperation['id'],
-														'data-confirm' => $confirmText,
-														'class' => 'dropdown-item',
-													];
-
-													$more = match($eOperation->importType()) {
-														JournalSetting::HASH_LETTER_IMPORT_INVOICE => s("Cette opération est liée à d'autres opérations et à une facture"),
-														JournalSetting::HASH_LETTER_IMPORT_SALE => s("Cette opération est liée à d'autres opérations et à une vente"),
-														JournalSetting::HASH_LETTER_IMPORT_MARKET => s("Cette opération est liée à d'autres opérations et à un marché"),
-													};
-													$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-
-													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
-
-												} else {
-
-													$attributes = [
-														'data-ajax' => \company\CompanyUi::urlJournal($eFarm).'/operation:doDelete',
-														'post-id' => $eOperation['id'],
-														'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
-														'class' => 'dropdown-item',
-													];
-
-													if($eOperation['vatAccount']->notEmpty()) {
-
-														$attributes += [
-															'data-highlight' => $eOperation['vatAccount']->exists()
-																? 'operation-linked-'.$eOperation['id']
-																: 'operation-'.$eOperation['operation']['id'],
-															'data-confirm' => s("Confirmez-vous la suppression de cette écriture ?"),
-														];
-
-													}
-
-													if($eOperation['asset']->exists() === TRUE) {
-
-														if($eOperation['vatAccount']->exists() === TRUE) {
-
-															$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture, de l'entrée de TVA liée, ainsi que de l'entrée dans les immobilisations ?");
-
-															$more = s("En supprimant cette écriture, l'écriture de TVA associée et l'entrée dans les immobilisations seront également supprimées.");
-
-														} else {
-
-															$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'entrée dans les immobilisations ?");
-
-															$more = s("En supprimant cette écriture, l'entrée dans les immobilisations sera également supprimée.");
-
-														}
-
-													} elseif($eOperation['vatAccount']->exists() === TRUE) {
-
-														$attributes['data-confirm'] = s("Confirmez-vous la suppression de cette écriture ainsi que de l'écriture de TVA associée ?");
-
-														$more = s("En supprimant cette écriture, l'écriture de TVA associée sera également supprimée.");
-
-													}
-
-													if(isset($more)) {
-
-														$deleteText = s("Supprimer <div>({more})</div>", ['div' => '<div class="operations-delete-more">', 'more' => $more]);
-
-													} else {
-
-														$deleteText = s("Supprimer");
-
-													}
-
-													$buttonDelete = '<a '.attrs($attributes).'>'.$deleteText.'</a>';
-												}
+												$deleteText = s("Supprimer <div>(Supprimez d'abord l'<b>immobilisation</b> liée)</div>", ['div' => '<div class="operations-delete-more">']);
 
 												$h .= '<div class="dropdown-divider"></div>';
-												$h .= $buttonDelete;
+												$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 
-											} else {
+											// Si cashflow : passer par le cashlow
+											} else if($eOperation['cOperationCashflow']->notEmpty()) {
 
 												$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
 
 												$h .= '<div class="dropdown-divider"></div>';
 												$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 
+											// Sinon: ok
+											} else {
+
+												$h .= '<div class="dropdown-divider"></div>';
+												$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:delete?id='.$eOperation['id'].'" class="dropdown-item">';
+													$h .= p(
+														"Supprimer l'écriture",
+														"Supprimer les {value} écritures",
+														$eOperation['cOperationHash']->count()
+													);
+												$h .= '</a>';
 											}
 
 										}

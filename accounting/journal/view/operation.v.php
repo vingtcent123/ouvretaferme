@@ -10,6 +10,11 @@ new AdaptativeView('/journal/operation/{id}/update', function($data, PanelTempla
 	return new \journal\OperationUi()->getUpdate($data->eFarm, $data->eFarm['eFinancialYear'], $data->cOperation, $data->cPaymentMethod, $data->eCashflow, $data->e);
 
 });
+new AdaptativeView('delete', function($data, PanelTemplate $t) {
+
+	return new \journal\OperationUi()->getDelete($data->eFarm, $data->cOperation, $data->e);
+
+});
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 

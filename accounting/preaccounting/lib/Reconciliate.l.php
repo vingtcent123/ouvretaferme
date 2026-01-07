@@ -100,18 +100,22 @@ Class ReconciliateLib {
 			->whereCashflow($eCashflow)
 			->get();
 
-		\selling\Invoice::model()->update($eInvoice, ['cashflow' => NULL]);
+		if($eInvoice->notEmpty()) {
 
-		\bank\Cashflow::model()->update($eCashflow, ['isReconciliated' => FALSE, 'isSuggestionCalculated' => FALSE]);
+			\selling\Invoice::model()->update($eInvoice, ['cashflow' => NULL]);
 
-		Suggestion::model()
-			->or(
-				fn() => $this->whereCashflow($eCashflow),
-				fn() => $this->whereInvoice($eInvoice),
-			)
-			->delete();
+			\bank\Cashflow::model()->update($eCashflow, ['invoice' => NULL, 'isReconciliated' => FALSE, 'isSuggestionCalculated' => FALSE]);
 
-		SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
+			Suggestion::model()
+				->or(
+					fn() => $this->whereCashflow($eCashflow),
+					fn() => $this->whereInvoice($eInvoice),
+				)
+				->delete();
+
+			SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
+
+		}
 
 		\selling\Invoice::model()->commit();
 

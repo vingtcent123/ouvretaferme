@@ -1117,68 +1117,31 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function deleteByHash(string $hash): void {
+
+		// Suppression de toutes les opérations liées par le hash
+		Operation::model()
+			->whereHash($hash)
+			->delete();
+
+		// Si l'opération est issue d'un import en compta => supprimer le lien dans la facture
+		\selling\Invoice::model()
+			->whereAccountingHash($hash)
+			->update(['accountingHash' => NULL]);
+
+	}
+
 	public static function delete(Operation $e): void {
 
 		\journal\Operation::model()->beginTransaction();
 
 		$e->expects(['id', 'asset']);
 
-		// Deletes related operations (like assets... or VAT)
-		if($e['asset']->exists() === TRUE) {
-			\asset\AssetLib::deleteByIds([$e['asset']['id']]);
+		if($e['asset']->notEmpty()) {
+			throw new \Exception('Impossible to delete operation with Asset');
 		}
 
-		// Opérations liées à celle-ci
-		Operation::model()
-			->whereOperation($e)
-			->delete();
-
-		parent::delete($e);
-
-		// Suppression de toutes les opérations liées par le hash
-		$cOperation = Operation::model()
-			->select('id')
-			->whereHash($e['hash'])
-			->getCollection();
-
-		Operation::model()->whereHash($e['hash'])->delete();
-
-		// Si l'opération est issue d'un import en compta => supprimer le lien
-		if($e->isFromImport()) {
-
-			switch($e->importType()) {
-
-				case JournalSetting::HASH_LETTER_IMPORT_MARKET:
-				case JournalSetting::HASH_LETTER_IMPORT_SALE:
-					\selling\Sale::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
-					break;
-
-				case JournalSetting::HASH_LETTER_IMPORT_INVOICE:
-
-					\selling\Sale::model()->whereAccountingHash($e['hash'])->update(['accountingHash' => NULL]);
-
-					$eInvoice = \selling\Invoice::model()->select(\selling\Invoice::getSelection())->whereAccountingHash($e['hash'])->get();
-
-					if($eInvoice->notEmpty()) {
-
-						$eInvoice['cashflow'] = new \bank\Cashflow();
-						$eInvoice['accountingHash'] = NULL;
-						$eInvoice['readyForAccounting'] = FALSE;
-						$eInvoice['accountingDifference'] = NULL;
-
-						\selling\Invoice::model()->whereAccountingHash($e['hash'])->update($eInvoice->extracts(['cashflow', 'accountingHash', 'readyForAccounting']));
-
-						\preaccounting\InvoiceLib::recalculateReadyForAccounting($eInvoice, new \bank\Cashflow());
-					}
-
-					break;
-			}
-
-		}
-
-		OperationCashflow::model()
-			->whereOperation('IN', $cOperation->getIds())
-			->delete();
+		self::deleteByHash($e['hash']);
 
 		\journal\Operation::model()->commit();
 
@@ -1460,86 +1423,56 @@ class OperationLib extends OperationCrud {
 
 	public static function unlinkCashflow(\bank\Cashflow $eCashflow, string $action): void {
 
-		$cCashflow = \bank\Cashflow::model()
-			->select(\bank\Cashflow::getSelection())
-			->whereHash(($eCashflow['hash']))
+		$hash = $eCashflow['hash'];
+
+		Operation::model()->beginTransaction();
+
+		$cOperation = Operation::model()
+			->select('id')
+			->whereHash($hash)
 			->getCollection();
 
-		foreach($cCashflow as $eCashflow) {
+		// Dissociation cashflow et operation
+		OperationCashflow::model()
+			->or(
+				fn() => $this->whereCashflow($eCashflow),
+				fn() => $this->whereOperation('IN', $cOperation->getIds(), if: count($cOperation->getIds()) > 0)
+			)
+     ->delete();
 
-			Operation::model()->beginTransaction();
+		// Suppression du lien écritures - factures (mais pas du rapprochement)
+		\selling\Invoice::model()
+      ->whereAccountingHash($eCashflow['hash'])
+      ->update(['accountingHash' => NULL]);
 
-			// Mise à jour du cashflow
-			$hash = $eCashflow['hash'];
-			$eCashflow['hash'] = NULL;
-			$eCashflow['status'] = \bank\Cashflow::WAITING;
-			\bank\Cashflow::model()->update($eCashflow, $eCashflow->extracts(['hash', 'status']));
+		if($action === 'delete') {
 
-			if($eCashflow['invoice']->notEmpty()) {
-				$eInvoice = \selling\InvoiceLib::getById($eCashflow['invoice']['id']);
-				\preaccounting\InvoiceLib::recalculateReadyForAccounting($eInvoice, $eCashflow);
-			}
+			self::deleteByHash($hash);
 
-			$cOperation = OperationLib::getByHash($hash);
+		} else {
 
-			// Suppression de l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
-			\journal\Operation::model()
-        ->whereId('IN', $cOperation->getIds())
-        ->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
-        ->delete();
+		// Suppression de l'écriture sur le compte 512 (banque) (qui est créée automatiquement)
+		\journal\Operation::model()
+      ->whereHash($hash)
+      ->whereAccountLabel('LIKE', \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'%')
+      ->delete();
 
-			// Dissociation cashflow <-> operation
-			OperationCashflow::model()
-       ->whereCashflow($eCashflow)
-       ->delete();
+			// On affecte 1 hash à tout le nouveau groupe d'opérations
+			$hash = self::generateHash().JournalSetting::HASH_LETTER_WRITE;
+			Operation::model()
+				->whereHash($hash)
+				->update(['hash' => $hash]);
 
-			// Dissociation cashflow <-> operation
-			OperationCashflow::model()
-       ->whereOperation('IN', $cOperation->getIds(), if: count($cOperation->getIds()) > 0)
-       ->delete();
-
-			if($action === 'delete') {
-
-				// Suppression des immos
-				$cAsset = $cOperation->getColumnCollection('asset');
-				if($cAsset->empty() === FALSE) {
-					\asset\AssetLib::deleteByIds($cAsset->getIds());
-				}
-
-				// Suppression des liens vers les factures
-				\selling\Invoice::model()
-          ->whereAccountingHash($eCashflow['hash'])
-          ->update(['accountingHash' => NULL]);
-
-				// Suppression des écritures
-				Operation::model()
-         ->whereId('IN', $cOperation->getIds())
-         ->delete();
-
-			} else {
-
-				// Réinitialiser les hash des opérations
-				foreach($cOperation as $eOperation) {
-
-					if($eOperation['operation']->notEmpty()) {
-						continue; // Sera traitée avec le parent
-					}
-
-					$hash = self::generateHash().JournalSetting::HASH_LETTER_WRITE;
-
-					// On affecte un nouveau hash aux opérations et leurs copines.
-					Operation::model()
-	         ->where('id = '.$eOperation['id'].' OR operation = '.$eOperation['id'])
-	         ->update(['hash' => $hash]);
-
-				}
-
-			}
-
-			\account\LogLib::save('unlinkCashflow', 'Operation', ['id' => $eCashflow['id'], 'action' => $action]);
-
-			Operation::model()->commit();
 		}
+
+		// Mise à jour du cashflow
+		$eCashflow['hash'] = NULL;
+		$eCashflow['status'] = \bank\Cashflow::WAITING;
+		\bank\Cashflow::model()->update($eCashflow, $eCashflow->extracts(['hash', 'status']));
+
+		\account\LogLib::save('unlinkCashflow', 'Operation', ['id' => $eCashflow['id'], 'action' => $action]);
+
+		Operation::model()->commit();
 	}
 
 	public static function countByThirdParty(): \Collection {

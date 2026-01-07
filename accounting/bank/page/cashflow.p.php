@@ -198,55 +198,55 @@ new \bank\CashflowPage(function($data) {
 
 	})
 ;
-
 new \bank\CashflowPage(function($data) {
 
 	$data->eFarm->validate('hasAccounting');
 
 })
-->write('doDelete', function($data) {
+	->write('doDelete', function($data) {
 
-	\bank\CashflowLib::deleteCasfhlow($data->e);
+		\bank\CashflowLib::deleteCasfhlow($data->e);
 
-	throw new ReloadAction('bank', 'Cashflow::deleted');
+		throw new ReloadAction('bank', 'Cashflow::deleted');
 
-})
-->write('undoDelete', function($data) {
+	})
+	->write('undoDelete', function($data) {
 
-	\bank\CashflowLib::undeleteCashflow($data->e);
+		\bank\CashflowLib::undeleteCashflow($data->e);
 
-	throw new ReloadAction('bank', 'Cashflow::undeleted');
+		throw new ReloadAction('bank', 'Cashflow::undeleted');
 
-}, validate: ['acceptUndoDelete'])
-->read('deAllocate', function($data) {
+	}, validate: ['acceptUndoDelete'])
+	->read('deAllocate', function($data) {
 
-	$data->action = GET('action');
+		$data->action = GET('action');
 
-	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
+		$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
+		list($data->cInvoice,) = \selling\InvoiceLib::getByFarm($data->eFarm, search: new Search(['accountingHash' => $data->e['hash']]));
 
-	throw new ViewAction($data);
+		throw new ViewAction($data);
 
-}, validate: ['acceptDeallocate'])
-->write('doDeallocate', function($data) {
+	}, validate: ['acceptDeallocate'])
+	->write('doDeallocate', function($data) {
 
-	$fw = new FailWatch();
+		$fw = new FailWatch();
 
-	if($data->e->exists() === FALSE) {
-		\bank\Cashflow::fail('internal');
-	}
+		if($data->e->exists() === FALSE) {
+			\bank\Cashflow::fail('internal');
+		}
 
-	$action = POST('action');
-	if(in_array($action, ['dissociate', 'delete']) === FALSE) {
-		throw new NotExpectedAction('Unable to do nothing but dissociate nor delete');
-	}
+		$action = POST('action');
+		if(in_array($action, ['dissociate', 'delete']) === FALSE) {
+			throw new NotExpectedAction('Unable to do nothing but dissociate nor delete');
+		}
 
-	$fw->validate();
+		$fw->validate();
 
-	\journal\OperationLib::unlinkCashflow($data->e, $action);
+		\journal\OperationLib::unlinkCashflow($data->e, $action);
 
-	throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank:Cashflow::deallocated.'.$action);
+		throw new ReloadAction('bank', 'Cashflow::deallocated.'.$action);
 
-}, validate: ['acceptDeallocate'])
+	}, validate: ['acceptDeallocate'])
 ;
 
 ?>

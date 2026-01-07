@@ -50,7 +50,21 @@ new \journal\OperationPage(
 
 	throw new ReloadAction('journal', $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated');
 
-});
+})
+->read('delete', function($data) {
+
+	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
+
+	throw new ViewAction($data);
+
+})
+
+->doDelete(function($data) {
+
+	throw new ReloadAction('journal', 'Operation::deleted');
+
+})
+;
 
 new \journal\OperationPage(
 	function($data) {
@@ -187,38 +201,6 @@ new \journal\OperationPage(
 		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal:'.$success);
 
 	});
-
-new Page(
-	function($data) {
-
-		if($data->eFarm->usesAccounting() === FALSE) {
-			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-		}
-
-	});
-
-new \journal\OperationPage(
-	function($data) {
-
-		if($data->eFarm->usesAccounting() === FALSE) {
-			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-		}
-
-		$data->eOperation = \journal\OperationLib::getById(REQUEST('id', 'int'))->validate('canDelete');
-	}
-)
-->post('doDelete', function($data) {
-
-	$fw = new FailWatch();
-
-	\journal\OperationLib::delete($data->eOperation);
-
-	if($fw->ok()) {
-
-		throw new ReloadAction('journal', 'Operation::deleted');
-
-	}
-});
 
 new \journal\OperationPage(function($data) {
 

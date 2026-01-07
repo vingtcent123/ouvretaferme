@@ -56,6 +56,7 @@ new AdaptativeView('deAllocate', function($data, PanelTemplate $t) {
 		$data->eFarm,
 		$data->e,
 		$data->cOperation,
+		$data->cInvoice,
 		$data->action,
 	);
 

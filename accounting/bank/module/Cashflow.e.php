@@ -8,13 +8,15 @@ class Cashflow extends CashflowElement {
 		return Cashflow::model()->getProperties() + [
 			'import' => ['account' => ['label']],
 			'createdBy' => ['id', 'firstName', 'lastName'],
+			'cOperationCashflow' => \journal\OperationCashflowLib::delegateByCashflow(),
 		];
 
 	}
 
 	public function acceptDeallocate(): bool {
 
-		return $this['status'] === Cashflow::ALLOCATED and $this['hash'] !== NULL;
+		return $this['status'] === Cashflow::ALLOCATED and $this['hash'] !== NULL and
+			($this['cOperationCashflow']->empty() or $this['cOperationCashflow']->getColumnCollection('asset')->empty());
 
 	}
 
@@ -43,6 +45,10 @@ class Cashflow extends CashflowElement {
 
 		return $this->acceptAllocate();
 
+	}
+
+	public function acceptDelete(): bool {
+		return $this['status'] === Cashflow::WAITING and $this['invoice']->empty() and $this['isReconciliated'] === FALSE;
 	}
 
 	public function getMemo(): string {
