@@ -214,7 +214,9 @@ class AccountUi {
 						$h .= '</td>';
 
 						$h .= '<td>';
-							$h .= ($eAccount['vatAccount']->exists() === TRUE ? '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>' : '');
+							if($eAccount['vatAccount']->notEmpty) {
+								$h .= '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>';
+							}
 						$h .= '</td>';
 
 						$h .= '<td class="text-center td-min-content">';
