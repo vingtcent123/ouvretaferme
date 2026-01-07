@@ -436,7 +436,7 @@ class DateLib extends DateCrud {
 
 		$cDate = Date::model()
 			->select(Date::getSelection() + [
-				'shop' => ['name', 'shared', 'email', 'emailEndDate'],
+				'shop' => ['name', 'shared', 'email', 'emailEndDate', 'status'],
 				'farm' => ['legalEmail', 'emailBanner', 'emailFooter']
 			])
 			->whereDeliveryDate('!=', NULL)
@@ -447,6 +447,7 @@ class DateLib extends DateCrud {
 		foreach($cDate as $eDate) {
 
 			if(
+				$eDate['shop']['status'] === Shop::DELETED or
 				$eDate['shop']['emailEndDate'] === FALSE or
 				Date::model()->update($eDate, [
 					'orderEndEmailedAt' => $eDate['orderEndAt']
