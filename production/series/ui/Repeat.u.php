@@ -36,10 +36,6 @@ class RepeatUi {
 				$d->attributes['mandatory'] = TRUE;
 				break;
 
-			case 'stop' :
-				$d->after = \util\FormUi::info(s("Laisser vide si vous ne souhaitez pas mettre de limite de temps."));
-				break;
-
 		}
 
 		return $d;
