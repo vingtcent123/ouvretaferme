@@ -323,10 +323,9 @@ class Operation {
 		qs('[name="document[' + index + ']"]').setAttribute('value', qs('[name="document[' + (index - 1) + ']"]').value)
 		qs('[name="description[' + index + ']"]').setAttribute('value', qs('[name="description[' + (index - 1) + ']"]').value)
 
-		if(typeof Cashflow === 'undefined' && qs('[name="paymentMethod[' + (index - 1) + ']"]').value) {
+		if(qs('[name="paymentMethod[' + (index - 1) + ']"]') && qs('[name="paymentMethod[' + (index - 1) + ']"]').value) {
 			qs('[name="paymentMethod[' + index + ']"]').value = qs('[name="paymentMethod[' + (index - 1) + ']"]').value;
 		}
-		//document.getElementById('sel').value = 'bike';
 
 		if(qs('[name="paymentDate[' + index + ']"]') && qs('[name="paymentDate[' + (index - 1) + ']"]')) {
 			qs('[name="paymentDate[' + index + ']"]').setAttribute('value', qs('[name="paymentDate[' + (index - 1) + ']"]').value)

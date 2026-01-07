@@ -97,9 +97,9 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml(
 		'afterend',
 		new \journal\OperationUi()::getFieldsCreateGrid(
-			$data->eFarm,
 			$form,
 			$data->eOperation,
+			new \bank\Cashflow(),
 			$data->eFarm['eFinancialYear'],
 			'['.$data->index.']',
 			$defaultValues,

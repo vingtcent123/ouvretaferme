@@ -197,17 +197,23 @@ class Cashflow {
         qs('.cashflow-create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
 
         if(amountIncludingVAT !== totalAmount) {
+
             var difference = round(totalAmount - amountIncludingVAT);
             qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.add('danger');
             qs('.cashflow-warning').classList.add('danger');
-            qs('#cashflow-allocate-difference-warning').classList.remove('hide');
-            qs('#cashflow-allocate-difference-value').innerHTML = money(Math.abs(difference));
+            qs('#cashflow-allocate-difference-warning').removeHide();
+            qsa('[cashflow-allocate-difference-value]', node => node.innerHTML = money(Math.abs(difference)));
+            qs('#cashflow-allocate-difference-warning [data-direction="' + (totalAmount > amountIncludingVAT ? 'missing' : 'tooMuch') + '"]').removeHide();
             qs('#submit-save-operation').setAttribute('data-confirm', qs('#submit-save-operation').getAttribute('data-confirm-text'));
+
         } else {
+
             qs('.cashflow-warning').classList.remove('danger');
             qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.remove('danger');
-            qs('#cashflow-allocate-difference-warning').classList.add('hide');
+            qs('#cashflow-allocate-difference-warning').hide();
+            qsa('[cashflow-allocate-difference-warning] [data-direction]', node => node.hide());
             qs('#submit-save-operation').removeAttribute('data-confirm');
+
         }
     }
 

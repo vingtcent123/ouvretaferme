@@ -571,7 +571,7 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, ?string $invoice = NULL): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -600,7 +600,7 @@ class OperationUi {
 			$index = 0;
 			$defaultValues = $eOperation->getArrayCopy();
 
-			$h .= self::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
+			$h .= self::getCreateGrid($eFarm, $eOperation, new \bank\Cashflow(), $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
 
 		$h .= '</div>';
 
@@ -636,7 +636,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateHeader(\account\FinancialYear $eFinancialYear, bool $isFromCashflow): string {
+	private static function getCreateHeader(\account\FinancialYear $eFinancialYear, \bank\Cashflow $eCashflow): string {
 
 		$h = '<div class="operation-create operation-create-headers">';
 
@@ -651,7 +651,7 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
 
-			if($isFromCashflow === FALSE) {
+			if($eCashflow->empty()) {
 
 				$mandatory = $eFinancialYear->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
 				$h .= '<div class="operation-create-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
@@ -664,7 +664,13 @@ class OperationUi {
 			if($eFinancialYear['hasVat']) {
 				$h .= '<div class="operation-create-header">'.s("TVA").' '.\util\FormUi::asterisk().'</div>';
 			}
-			$h .= '<div class="operation-create-header">'.s("Montant TTC").'</div>';
+
+			$h .= '<div class="operation-create-header">';
+				$h .= s("Montant TTC");
+				if($eCashflow->notEmpty()) {
+					$h .= '<h5 class="util-badge bg-primary ml-1">'.\util\TextUi::money(abs($eCashflow['amount'])).'</h5>';
+				}
+			$h .= '</div>';
 
 		$h .= '</div>';
 
@@ -684,9 +690,9 @@ class OperationUi {
 	}
 
 	public static function getFieldsCreateGrid(
-		\farm\Farm $eFarm,
 		\util\FormUi $form,
 		Operation $eOperation,
+		\bank\Cashflow $eCashflow,
 		\account\FinancialYear $eFinancialYear,
 		?string $suffix,
 		array $defaultValues,
@@ -698,7 +704,7 @@ class OperationUi {
 		\Asset::js('journal', 'amount.js');
 
 		$index = ($suffix !== NULL) ? mb_substr($suffix, 1, mb_strlen($suffix) - 2) : NULL;
-		$isFromCashflow = ($eOperation['cOperationCashflow'] ?? new \Collection())->notEmpty();
+		$isFromCashflow = $eCashflow->notEmpty();
 
 		$h = '<div class="operation-create'.(($eOperation['isRequested'] ?? FALSE) ? ' operation-update-selected' : '').'" data-index="'.$index.'">';
 
@@ -826,7 +832,7 @@ class OperationUi {
 					]);
 			$h .= '</div>';
 
-			if($isFromCashflow === FALSE) {
+			if($eCashflow->empty()) {
 
 				$h .= '<div data-wrapper="paymentDate'.$suffix.'">';
 					$h .= $form->date('paymentDate'.$suffix, $defaultValues['paymentDate'] ?? '', ['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
@@ -858,7 +864,7 @@ class OperationUi {
 					$h .= '<a class="btn btn-sm btn-outline-primary" data-index="'.$index.'" data-check-amount="1" onclick="Operation.toggleCorrect('.$index.')" title="'.s("Les montants sont ajustés dès que possible").'">';
 						$h .= '<span data-check-amount-icon="ok">'.\Asset::icon('check-lg').'</span>';
 						$h .= '<span data-check-amount-icon="ko" class="hide">'.\Asset::icon('exclamation-triangle').'</span>';
-						$h .= '<span class="operation-amount-check-legend" data-index="'.$index.'" data-check-amount-legend-ok="'.s("Mode automatique").'" data-check-amount-legend-ko="'.s("Incohérence détectée").'"> ';
+						$h .= '<span class="operation-amount-check-legend" data-index="'.$index.'" data-check-amount-legend-ok="'.s("Mode automatique").'" data-check-amount-legend-ko="'.s("Incohérence détectée ").'">';
 							$h .= s("Mode automatique");
 						$h .= '</span>';
 					$h .= '</a>';
@@ -924,7 +930,7 @@ class OperationUi {
 						$form->addon(s("€"))
 					);
 					$h .= '<div data-vat-value-warning class="hide" data-index="'.$index.'">';
-						$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'" onclick="Operation.setVatValue('.$index.');">';
+						$h .= '<a class="btn btn-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'" onclick="Operation.setVatValue('.$index.');">';
 							$h .= \Asset::icon('exclamation-triangle');
 						$h .= '</a>';
 						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
@@ -963,7 +969,7 @@ class OperationUi {
 					)
 					.$form->addon('€ '));
 					$h .= '<div data-amount-including-vat-warning class="hide" data-index="'.$index.'">';
-						$h .= '<a class="btn btn-outline-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'" onclick="Operation.setAmountIncludingVat('.$index.');">';
+						$h .= '<a class="btn btn-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'" onclick="Operation.setAmountIncludingVat('.$index.');">';
 							$h .= \Asset::icon('exclamation-triangle');
 						$h .= '</a>';
 						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
@@ -987,7 +993,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateValidate(bool $hasVat): string {
+	private static function getCreateValidate(bool $hasVat, bool $isFromCashflow): string {
 
 		$h = '<div class="operation-create operation-create-validation">';
 
@@ -999,10 +1005,20 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate" data-wrapper="asset-label"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
+			if($isFromCashflow === FALSE) {
+				$h .= '<div class="cashflow-create-operation-validate"></div>';
+				$h .= '<div class="cashflow-create-operation-validate"></div>';
+			}
 			$h .= '<div class="cashflow-create-operation-validate cashflow-warning">';
 				$h .= '<div>';
 					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
-					$h .= s("⚠️ Différence de <span></span>", ['span' => '<span id="cashflow-allocate-difference-value">']);
+						$h .= '<span data-direction="missing" class="hide">';
+							$h .= s("⚠️ Manquent <span></span>", ['span' => '<span cashflow-allocate-difference-value>']);
+						$h .= '</span>';
+						$h .= '<span data-direction="tooMuch" class="hide">';
+							$h .= '⚠️ &nbsp;<span cashflow-allocate-difference-value></span>';
+							$h .= '<br />'.s("en trop").'';
+						$h .= '</span>';
 					$h .= '</span>';
 				$h .= '</div>';
 			$h .= '</div>';
@@ -1023,6 +1039,7 @@ class OperationUi {
 	public static function getCreateGrid(
 		\farm\Farm $eFarm,
 		Operation $eOperation,
+		\bank\Cashflow $eCashflow,
 		\account\FinancialYear $eFinancialYear,
 		int $index,
 		\util\FormUi $form,
@@ -1031,15 +1048,14 @@ class OperationUi {
 	): string {
 
 		$suffix = '['.$index.']';
-		$isFromCashflow = ($eOperation['cOperationCashflow'] ?? new \Collection())->notEmpty();
 
-		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
+		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($eCashflow->notEmpty() ? '1' : '0').'">';
 
-			$h .= self::getCreateHeader($eFinancialYear, $isFromCashflow);
-			$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $defaultValues, [], $cPaymentMethod);
+			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
+			$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $defaultValues, [], $cPaymentMethod);
 
-			if($isFromCashflow === TRUE) {
-				$h .= self::getCreateValidate($eFinancialYear['hasVat']);
+			if($eCashflow->notEmpty()) {
+				$h .= self::getCreateValidate($eFinancialYear['hasVat'], $eCashflow->notEmpty());
 			}
 
 		$h .= '</div>';
@@ -1079,12 +1095,12 @@ class OperationUi {
 				$eOperation['isRequested'] = ($eOperationRequested['id'] === $eOperation['id']);
 
 				$eOperation['amountIncludingVAT'] = $eOperation['amount'] + ($eOperation['vatAmount'] ?? 0);
-				$h .= self::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $cPaymentMethod);
+				$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $cPaymentMethod);
 				$index++;
 			}
 
 			if($isFromCashflow === TRUE) {
-				$h .= self::getCreateValidate($eFinancialYear['hasVat']);
+				$h .= self::getCreateValidate($eFinancialYear['hasVat'], $isFromCashflow);
 			}
 
 		$h .= '</div>';

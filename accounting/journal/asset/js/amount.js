@@ -107,14 +107,14 @@ class OperationAmount {
 			qs('[data-index="' + index + '"][data-check-amount="1"]').classList.remove('btn-warning');
 			qs('[data-index="' + index + '"][data-check-amount="1"] [data-check-amount-icon="ok"]').removeHide();
 			qs('[data-index="' + index + '"][data-check-amount="1"] [data-check-amount-icon="ko"]').hide();
-			qs('.operation-amount-check-legend[data-index="' + index + '"]').innerHTML = qs('.operation-amount-check-legend[data-index="' + index + '"]').dataset.checkAmountLegendOk;
+			qs('.operation-amount-check-legend[data-index="' + index + '"]').innerHTML = '&nbsp;' + qs('.operation-amount-check-legend[data-index="' + index + '"]').dataset.checkAmountLegendOk;
 
 		} else {
 
 			qs('[data-index="' + index + '"][data-check-amount="1"]').classList.add('btn-warning');
 			qs('[data-index="' + index + '"][data-check-amount="1"] [data-check-amount-icon="ko"]').removeHide();
 			qs('[data-index="' + index + '"][data-check-amount="1"] [data-check-amount-icon="ok"]').hide();
-			qs('.operation-amount-check-legend[data-index="' + index + '"]').innerHTML = qs('.operation-amount-check-legend[data-index="' + index + '"]').dataset.checkAmountLegendKo;
+			qs('.operation-amount-check-legend[data-index="' + index + '"]').innerHTML = '&nbsp;' + qs('.operation-amount-check-legend[data-index="' + index + '"]').dataset.checkAmountLegendKo;
 
 		}
 	}

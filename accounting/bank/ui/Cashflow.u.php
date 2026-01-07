@@ -692,7 +692,7 @@ class CashflowUi {
 			);
 		$h .= '</div>';
 
-		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
+		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eCashflow, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
@@ -736,7 +736,7 @@ class CashflowUi {
 			'description' => $eCashflow->getMemo(),
 		];
 
-		return \journal\OperationUi::getFieldsCreateGrid($eFarm, $form, $eOperation, $eFinancialYear, '['.$index.']', $defaultValues, [], $cPaymentMethod);
+		return \journal\OperationUi::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, '['.$index.']', $defaultValues, [], $cPaymentMethod);
 
 	}
 

@@ -90,7 +90,7 @@
 	grid-row: span 3;
 }
 #cashflow-allocate-difference-warning {
-	text-align: center;
+	margin: auto;
 }
 
 .cashflow-create-operation-validate.warning {
