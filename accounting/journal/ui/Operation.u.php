@@ -1013,7 +1013,7 @@ class OperationUi {
 				$h .= '<div>';
 					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
 						$h .= '<span data-direction="missing" class="hide">';
-							$h .= s("⚠️ Manquent <span></span>", ['span' => '<span cashflow-allocate-difference-value>']);
+							$h .= s("⚠️ Manque <span></span>", ['span' => '<span cashflow-allocate-difference-value>']);
 						$h .= '</span>';
 						$h .= '<span data-direction="tooMuch" class="hide">';
 							$h .= '⚠️ &nbsp;<span cashflow-allocate-difference-value></span>';

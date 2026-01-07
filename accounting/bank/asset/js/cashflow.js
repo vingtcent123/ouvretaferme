@@ -196,6 +196,8 @@ class Cashflow {
         qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
         qs('.cashflow-create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
 
+        qsa('#cashflow-allocate-difference-warning [data-direction]', node => node.hide());
+
         if(amountIncludingVAT !== totalAmount) {
 
             var difference = round(totalAmount - amountIncludingVAT);
@@ -211,7 +213,6 @@ class Cashflow {
             qs('.cashflow-warning').classList.remove('danger');
             qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.remove('danger');
             qs('#cashflow-allocate-difference-warning').hide();
-            qsa('[cashflow-allocate-difference-warning] [data-direction]', node => node.hide());
             qs('#submit-save-operation').removeAttribute('data-confirm');
 
         }
