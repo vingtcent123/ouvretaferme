@@ -721,7 +721,7 @@ class CashflowUi {
 			dialogClose: $form->close(),
 			body       : $h,
 			header     : $this->getAllocateTitle($eCashflow),
-			footer     : $amountWarning.'<div class="operation-create-buttons">'.$addButton.$saveButton.'</div>',
+			footer     : $amountWarning.'<div class="operation-create-buttons">'.$saveButton.$addButton.'</div>',
 		);
 
 	}

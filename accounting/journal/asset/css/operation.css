@@ -35,7 +35,7 @@
 @media (min-width: 992px) {
 	.operation-create-several-container[data-cashflow="1"] {
 		display: grid;
-		grid-template-columns: 15rem 50rem 10rem;
+		grid-template-columns: 15rem 40rem 10rem;
 	}
 }
 
@@ -63,21 +63,51 @@
 	grid-template-columns: 15rem repeat(5, 25rem) 10rem;
 }
 
-.operation-create-several-container[data-cashflow="0"] {
-	display: grid;
-	grid-template-columns: 15rem 1fr;
+
+
+@media (max-width: 767px) {
+	.operation-create-several-container[data-cashflow="0"] {
+		display: grid;
+		grid-template-columns: 15rem 35rem;
+	}
+
 }
-.operation-create-several-container[data-cashflow="0"][data-columns="2"] {
-	grid-template-columns: 15rem repeat(2, 1fr);
+@media (min-width: 768px) and (max-width: 991px) {
+	.operation-create-several-container[data-cashflow="0"] {
+		display: grid;
+		grid-template-columns: 15rem 1fr;
+	}
+
+}
+@media (min-width: 992px) {
+	.operation-create-several-container[data-cashflow="0"] {
+		display: grid;
+		grid-template-columns: 15rem 40rem;
+	}
+}
+
+@media (max-width: 767px) {
+
+	.operation-create-several-container[data-cashflow="0"][data-columns="2"] {
+		grid-template-columns: 15rem repeat(2, 25rem);
+	}
+
+}
+@media (min-width: 768px) {
+
+	.operation-create-several-container[data-cashflow="0"][data-columns="2"] {
+		grid-template-columns: 15rem repeat(2, 1fr);
+	}
+
 }
 .operation-create-several-container[data-cashflow="0"][data-columns="3"] {
-	grid-template-columns: 15rem repeat(3, 1fr);
+	grid-template-columns: 15rem repeat(3, 25rem);
 }
 .operation-create-several-container[data-cashflow="0"][data-columns="4"] {
-	grid-template-columns: auto repeat(4, 1fr);
+	grid-template-columns: 15rem repeat(4, 25rem);
 }
 .operation-create-several-container[data-cashflow="0"][data-columns="5"] {
-	grid-template-columns: auto repeat(5, 1fr);
+	grid-template-columns: 15rem repeat(5, 25rem);
 }
 
 .operation-create-validation {
@@ -140,7 +170,7 @@
 .operation-create-buttons,
 .operation-create-button-add {
 	display: flex;
-	justify-content: end;
+	justify-content: space-between;
 	gap: 1rem;
 }
 .operation-create-actions {

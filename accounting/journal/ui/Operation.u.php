@@ -622,7 +622,7 @@ class OperationUi {
 
 		$dialogClose = $form->close();
 
-		$footer = '<div class="operation-create-button-add">'.$addButton.$saveButton.'</div>';
+		$footer = '<div class="operation-create-button-add">'.$saveButton.$addButton.'</div>';
 
 		$defaultTitle = s("Enregistrer une écriture");
 		return new \Panel(
