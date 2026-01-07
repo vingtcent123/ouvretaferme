@@ -88,6 +88,10 @@ class Invite extends InviteElement {
 
 				$this->expects(['farm', 'type']);
 
+				if($this['type'] !== Invite::CUSTOMER) {
+					return TRUE;
+				}
+
 				$eUser = \user\UserLib::getByEmail($email);
 
 				if($eUser->empty()) {
