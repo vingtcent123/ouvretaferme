@@ -76,6 +76,23 @@
 	color: var(--text);
 	border-radius: 8px;
 }
+@media (min-width: 576px) {
+	.operation-create:not(.operation-create-headers):not(.operation-create-validation) {
+		width: 35rem;
+	}
+	[data-columns="1"] .operation-create[data-index="0"] {
+		width: 50rem;
+	}
+}
+
+@media (max-width: 575px) {
+	.operation-create:not(.operation-create-headers):not(.operation-create-validation) {
+		width: 30rem;
+	}
+}
+[data-columns="1"] {
+	max-width: 75rem;
+}
 .operation-update-selected {
 	border: 2px solid var(--primary);
 }

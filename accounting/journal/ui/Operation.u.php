@@ -917,13 +917,6 @@ class OperationUi {
 				$h .= '<div data-wrapper="vatRate'.$suffix.'" class="company_form_group-with-tip">';
 					$h .= $form->inputGroup(
 						$form->addon(OperationUi::getAmountButtonIcons('vatValue', $index)).
-						$form->number(
-							'vatRate'.$suffix,
-							$vatRateDefault,
-							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1, 'style' => 'max-width: 6rem;'],
-						).
-						$form->addon(s("%")).
-						$form->addon(s("Montant"), ['style' => 'border-left: 1px solid #0005;']).
 						$form->calculation(
 							'vatValue'.$suffix,
 							$vatAmountDefault ?? '',
@@ -947,6 +940,15 @@ class OperationUi {
 							$h .= '</span>';
 						$h .= '</div>';
 					$h .= '</div>';
+					$h .= $form->inputGroup(
+					$form->addon(s('Taux')).
+						$form->number(
+							'vatRate'.$suffix,
+							$vatRateDefault,
+							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1, 'tabindex' => -1],
+						).
+						$form->addon(s("%"))
+					);
 				$h .= '</div>';
 
 			$h .= '<div data-wrapper="amountIncludingVAT'.$suffix.'" class="company_form_group-with-tip">';
@@ -978,33 +980,6 @@ class OperationUi {
 						$h .= '</div>';
 					$h .= '</div>';
 			$h .='</div>';
-
-				/*$h .= '<div data-wrapper="vatValue'.$suffix.'" class="company_form_group-with-tip">';
-					$h .= $form->dynamicField($eOperation, 'vatValue'.$suffix, function($d) use($vatAmountDefault, $index) {
-						$d->default = $vatAmountDefault ?? '';
-						$d->attributes['min'] = 0;
-						$d->attributes['step'] = 0.01;
-						$d->attributes['data-field'] = 'vatValue';
-						$d->attributes['data-index'] = $index;
-						$d->prepend = OperationUi::getAmountButtonIcons('vatValue', $index);
-					});
-						$h .= '<div data-vat-value-warning class="hide" data-index="'.$index.'">';
-							$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'">';
-								$h .= \Asset::icon('exclamation-triangle');
-							$h .= '</a>';
-							$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-								$h .= '<span class="dropdown-item">';
-									$h .= s(
-										"La valeur indiquée de la TVA, {vatValue}, ne correspond pas au calcul (montant HT * taux de TVA) qui est {vatValueCalculated}.",
-										[
-											'vatValue' => '<b><span data-vat-value-vat-warning-value data-index="'.$index.'"></span></b>',
-											'vatValueCalculated' => '<b><span data-vat-value-vat-warning-calculated-value data-index="'.$index.'"></span></b>',
-										]
-									);
-								$h .= '</span>';
-							$h .= '</div>';
-						$h .= '</div>';
-				$h .= '</div>';*/
 			}
 
 		$h .= '</div>';
