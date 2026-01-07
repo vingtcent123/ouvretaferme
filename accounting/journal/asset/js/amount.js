@@ -66,7 +66,8 @@ class OperationAmount {
 
 			qs('[data-amount-including-vat-warning][data-index="' + index + '"]').removeHide();
 			qs('[data-amount-including-vat-warning-value][data-index="' + index + '"]').innerHTML = money(amountIncludingVAT);
-			qs('[data-amount-including-vat-warning-calculated-value][data-index="' + index + '"]').innerHTML = money(Math.round((amount + vatValue) * 100) / 100);
+			qs('[data-amount-including-vat-warning-calculated-value][data-index="' + index + '"]').innerHTML = money(round(amount + vatValue, 2));
+			qs('[data-amount-including-vat-warning-calculated-value][data-index="' + index + '"]').dataset.value =round(amount + vatValue, 2);
 
 			OperationAmount.switchDataAmountCheck(index, false);
 
@@ -78,14 +79,15 @@ class OperationAmount {
 
 		// Check TVA = HT * VatRate OU formule depuis TTC avec taux de TVA
 		if(
-			Math.round(vatValue * 100) / 100 !== Math.round(amount * vatRate) / 100 &&
-			Math.round(vatValue * 100) / 100 !== Math.round(OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate) * 100) / 100
+			round(vatValue, 2) !== round(amount * vatRate / 100, 2) &&
+			round(vatValue, 2) !== round(OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate), 2)
 		) {
 
 			qs('[data-vat-value-warning][data-index="' + index + '"]').removeHide();
-			qs('[data-vat-value-vat-warning-value][data-index="' + index + '"]').innerHTML = money(vatValue);
-			qs('[data-vat-value-vat-warning-calculated-value][data-index="' + index + '"]').innerHTML = money(Math.round(amount * vatRate) / 100);
-
+			qs('[data-vat-value-vat-warning-value][data-index="' + index + '"]').innerHTML = money(round(vatValue, 2));
+			qs('[data-vat-value-vat-warning-value][data-index="' + index + '"]').dataset.value = round(vatValue, 2);
+			qs('[data-vat-value-vat-warning-calculated-value][data-index="' + index + '"]').innerHTML = money(round(amount * vatRate / 100, 2));
+			qs('[data-vat-value-vat-warning-calculated-value][data-index="' + index + '"]').dataset.value = round(amount * vatRate / 100, 2);
 
 			OperationAmount.switchDataAmountCheck(index, false);
 
@@ -215,38 +217,21 @@ class OperationAmount {
 
 		const vatRate = parseFloat(qs('[name="vatRate[' + index + ']"').valueAsNumber || 0);
 
-		const recommendedVatRate = qs('[data-field="vatRate"][data-index="' + index + '"]').dataset.vatRateRecommended;
-
-		qs('[data-vat-rate-warning][data-index="' + index + '"]').hide();
-
-		if(Math.round(vatRate * 100) / 100 !== Math.round(recommendedVatRate * 100) / 100) {
-
-			const vatClassChosen = qs('[data-field="vatRate"][data-index="' + index + '"]').dataset.vatClassChosen;
-			qs('[data-vat-rate-default][data-index="' + index + '"]').innerHTML = recommendedVatRate;
-			qs('[data-vat-rate-class][data-index="' + index + '"]').innerHTML = vatClassChosen;
-			qs('[data-vat-rate-warning][data-index="' + index + '"]').removeHide();
-		}
-
-		if(OperationAmount.areAmountsChecked(index) === false) {
-			return;
-		}
-
-
 		const targetAmount = qs('[name="amount[' + index + ']"');
 		const amount = CalculationField.getValue(targetAmount);
 
-		if(amount) {
-			const vatValue = Math.round(amount * vatRate) / 100;
-			OperationAmount.updateAmount(index, 'vatValue', vatValue);
+		if(!amount) {
 			return;
 		}
 
-		const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
-		const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
+		const vatValue = Math.round(amount * vatRate) / 100;
+		OperationAmount.updateAmount(index, 'vatValue', vatValue);
 
-		if(amountIncludingVAT) {
-			const vatValue = Math.round((amountIncludingVAT - amountIncludingVAT / (1 + vatRate / 100)) * 100) / 100;
-			OperationAmount.updateAmount(index, 'vatValue', vatValue);
+		if(typeof Cashflow === 'undefined' || parseInt(qs('[data-columns]').dataset.columns) > 1) {
+
+			const amountIncludingVAT = amount + vatValue;
+			const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
+			CalculationField.setValue(targetAmountIncludingVAT, amountIncludingVAT);
 
 		}
 

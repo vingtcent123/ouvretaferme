@@ -649,26 +649,7 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header" data-wrapper="asset-label">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header amount-header"></div>';
-			$h .= '<div class="operation-create-header">'.s("Montant TTC").'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
-
-			if($eFinancialYear['hasVat']) {
-				$h .= '<div class="operation-create-header">';
-					$h .= '<div>';
-						$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-							$h .= self::p('vatRate')->label.' '.\util\FormUi::asterisk().' '.\Asset::icon('question-circle');
-						$h .= '</div>';
-						$h .= '<div class="dropdown-list bg-primary">';
-							$h .= '<span class="dropdown-item">'.s("Les taux de TVA habituels en vigueur en France sont : 20%, 10% et 5.5% (<link>en savoir plus {icon}</link>)", [
-								'icon' => \Asset::icon('box-arrow-up-right'),
-								'link' => '<a style="color: white;" href="https://www.economie.gouv.fr/cedef/les-fiches-pratiques/quels-sont-les-taux-de-tva-en-vigueur-en-france-et-dans-lunion" target="_blank">']).'</span>';
-						$h .= '</div>';
-					$h .= '</div>';
-				$h .= '</div>';
-				$h .= '<div class="operation-create-header" data-wrapper="vatValue">'.self::p('vatValue')->label.' '.\util\FormUi::asterisk().'</div>';
-			}
 
 			if($isFromCashflow === FALSE) {
 
@@ -677,6 +658,13 @@ class OperationUi {
 				$h .= '<div class="operation-create-header">'.self::p('paymentMethod')->label.$mandatory.'</div>';
 
 			}
+			$h .= '<div class="operation-create-header amount-header"></div>';
+			$h .= '<div class="operation-create-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
+
+			if($eFinancialYear['hasVat']) {
+				$h .= '<div class="operation-create-header">'.s("TVA").' '.\util\FormUi::asterisk().'</div>';
+			}
+			$h .= '<div class="operation-create-header">'.s("Montant TTC").'</div>';
 
 		$h .= '</div>';
 
@@ -829,6 +817,31 @@ class OperationUi {
 				});
 			$h .='</div>';
 
+			$h .= '<div data-wrapper="type'.$suffix.'">';
+				$h .= $form->radios('type'.$suffix, self::p('type')->values, $defaultValues['type'] ?? '', [
+						'data-index' => $index,
+						'columns' => 2,
+						'data-field' => 'type',
+						'mandatory' => TRUE,
+					]);
+			$h .= '</div>';
+
+			if($isFromCashflow === FALSE) {
+
+				$h .= '<div data-wrapper="paymentDate'.$suffix.'">';
+					$h .= $form->date('paymentDate'.$suffix, $defaultValues['paymentDate'] ?? '', ['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
+				$h .= '</div>';
+
+				$h .= '<div data-wrapper="paymentMethod'.$suffix.'">';
+					$h .= $form->select(
+						'paymentMethod'.$suffix,
+						$cPaymentMethod,
+						$defaultValues['paymentMethod'] ?? '',
+					);
+				$h .= '</div>';
+
+			}
+
 			$h .= '<div data-wrapper="amounts" class="operation-create-title">';
 
 				$h .= '<h4 style="margin: auto 0;">'.s("Montants").'</h4>';
@@ -857,36 +870,6 @@ class OperationUi {
 				$h .= '</div>';
 			$h .='</div>';
 
-			$h .= '<div data-wrapper="amountIncludingVAT'.$suffix.'" class="company_form_group-with-tip">';
-				$h .= $form->inputGroup($form->addon(self::getAmountButtonIcons('amountIncludingVAT', $index))
-					.$form->calculation(
-						'amountIncludingVAT'.$suffix,
-						$defaultValues['amountIncludingVAT'] ?? '',
-						[
-							'min' => 0, 'step' => 0.01,
-							'data-field' => 'amountIncludingVAT',
-							'data-index' => $index,
-						]
-					)
-					.$form->addon('€ '));
-					$h .= '<div data-amount-including-vat-warning class="hide" data-index="'.$index.'">';
-						$h .= '<a class="btn btn-outline-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'">';
-							$h .= \Asset::icon('exclamation-triangle');
-						$h .= '</a>';
-						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-							$h .= '<span class="dropdown-item">';
-								$h .= s(
-									"Le montant de <b>{amountIncludingVat} TTC</b> n'est pas cohérent avec le calcul (HT + TVA) qui est de <b>{amountIncludingVatCalculated}</b>",
-									[
-										'amountIncludingVat' => '<span data-amount-including-vat-warning-value data-index="'.$index.'"></span>',
-										'amountIncludingVatCalculated' => '<span data-amount-including-vat-warning-calculated-value data-index="'.$index.'"></span>',
-									]
-								);
-							$h .= '</span>';
-						$h .= '</div>';
-					$h .= '</div>';
-			$h .='</div>';
-
 			$h .= '<div data-wrapper="amount'.$suffix.'">';
 				$h .= $form->dynamicField($eOperation, 'amount'.$suffix, function($d) use($defaultValues, $index) {
 					$d->default = $defaultValues['amount'] ?? '';
@@ -897,15 +880,6 @@ class OperationUi {
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
 				});
 			$h .='</div>';
-
-			$h .= '<div data-wrapper="type'.$suffix.'">';
-				$h .= $form->radios('type'.$suffix, self::p('type')->values, $defaultValues['type'] ?? '', [
-						'data-index' => $index,
-						'columns' => 2,
-						'data-field' => 'type',
-						'mandatory' => TRUE,
-					]);
-			$h .= '</div>';
 
 			if($eFinancialYear['hasVat']) {
 
@@ -942,42 +916,70 @@ class OperationUi {
 
 				$h .= '<div data-wrapper="vatRate'.$suffix.'" class="company_form_group-with-tip">';
 					$h .= $form->inputGroup(
-						$form->addon(self::getAmountButtonIcons('vatRate', $index))
-						.$form->number(
+						$form->addon(OperationUi::getAmountButtonIcons('vatValue', $index)).
+						$form->number(
 							'vatRate'.$suffix,
 							$vatRateDefault,
-							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1],
-						))
-					;
-					$h .= '<div data-vat="account-info" class="hide" data-index="'.$index.'">';
-						$h .= '<a class="btn btn-outline-primary" data-dropdown="bottom" data-dropdown-hover="true">';
-							$h .= \Asset::icon('question-circle');
-						$h .= '</a>';
-						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-							$h .= '<span class="dropdown-item">';
-								$h .= s("Le compte de TVA utilisé est le <b>{value}</b>. Si vous souhaitez en spécifier un autre, indiquez 0% ici et créez une autre écriture.", ['value' => '<span data-index="'.$index.'" data-vat="account-value"></span>']);
-							$h .= '</span>';
-						$h .= '</div>';
-					$h .= '</div>';
-					$h .= '<div data-vat-rate-warning class="hide" data-index="'.$index.'">';
-						$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'">';
+							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.1, 'style' => 'max-width: 6rem;'],
+						).
+						$form->addon(s("%")).
+						$form->addon(s("Montant"), ['style' => 'border-left: 1px solid #0005;']).
+						$form->calculation(
+							'vatValue'.$suffix,
+							$vatAmountDefault ?? '',
+							['data-index' => $index, 'data-field' => 'vatValue']
+						).
+						$form->addon(s("€"))
+					);
+					$h .= '<div data-vat-value-warning class="hide" data-index="'.$index.'">';
+						$h .= '<a class="btn btn-outline-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'" onclick="Operation.setVatValue('.$index.');">';
 							$h .= \Asset::icon('exclamation-triangle');
 						$h .= '</a>';
 						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
 							$h .= '<span class="dropdown-item">';
 								$h .= s(
-									"Attention : Habituellement, pour le numéro de compte de TVA <b>{class}</b> le taux de <b>{vatRate}%</b> est utilisé. Souhaitez-vous l'utiliser ?",
+									"La valeur indiquée de la TVA, {vatValue}, ne correspond pas au calcul (montant HT * taux de TVA) qui est {vatValueCalculated}.",
 									[
-										'vatRate' => '<span data-vat-rate-default data-index="'.$index.'"></span>',
-										'class' => '<span data-vat-rate-class data-index="'.$index.'"></span>',
-									],
+										'vatValue' => '<b><span data-vat-value-vat-warning-value data-index="'.$index.'"></span></b>',
+										'vatValueCalculated' => '<b><span data-vat-value-vat-warning-calculated-value data-index="'.$index.'"></span></b>',
+									]
 								);
 							$h .= '</span>';
 						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
 
-				$h .= '<div data-wrapper="vatValue'.$suffix.'" class="company_form_group-with-tip">';
+			$h .= '<div data-wrapper="amountIncludingVAT'.$suffix.'" class="company_form_group-with-tip">';
+				$h .= $form->inputGroup($form->addon(self::getAmountButtonIcons('amountIncludingVAT', $index))
+					.$form->calculation(
+						'amountIncludingVAT'.$suffix,
+						$defaultValues['amountIncludingVAT'] ?? '',
+						[
+							'min' => 0, 'step' => 0.01,
+							'data-field' => 'amountIncludingVAT',
+							'data-index' => $index,
+						]
+					)
+					.$form->addon('€ '));
+					$h .= '<div data-amount-including-vat-warning class="hide" data-index="'.$index.'">';
+						$h .= '<a class="btn btn-outline-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'" onclick="Operation.setAmountIncludingVat('.$index.');">';
+							$h .= \Asset::icon('exclamation-triangle');
+						$h .= '</a>';
+						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+							$h .= '<span class="dropdown-item">';
+								$h .= s(
+									"Le montant de <b>{amountIncludingVat} TTC</b> n'est pas cohérent avec le calcul (HT + TVA) qui est de <b>{amountIncludingVatCalculated}</b>",
+									[
+										'amountIncludingVat' => '<span data-amount-including-vat-warning-value data-index="'.$index.'"></span>',
+										'amountIncludingVatCalculated' => '<span data-amount-including-vat-warning-calculated-value data-index="'.$index.'"></span>',
+									]
+								);
+							$h .= '</span>';
+						$h .= '</div>';
+					$h .= '</div>';
+			$h .='</div>';
+
+				/*$h .= '<div data-wrapper="vatValue'.$suffix.'" class="company_form_group-with-tip">';
 					$h .= $form->dynamicField($eOperation, 'vatValue'.$suffix, function($d) use($vatAmountDefault, $index) {
 						$d->default = $vatAmountDefault ?? '';
 						$d->attributes['min'] = 0;
@@ -1002,23 +1004,7 @@ class OperationUi {
 								$h .= '</span>';
 							$h .= '</div>';
 						$h .= '</div>';
-				$h .= '</div>';
-			}
-
-			if($isFromCashflow === FALSE) {
-
-				$h .= '<div data-wrapper="paymentDate'.$suffix.'">';
-					$h .= $form->date('paymentDate'.$suffix, $defaultValues['paymentDate'] ?? '', ['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']]);
-				$h .= '</div>';
-
-				$h .= '<div data-wrapper="paymentMethod'.$suffix.'">';
-					$h .= $form->select(
-						'paymentMethod'.$suffix,
-						$cPaymentMethod,
-						$defaultValues['paymentMethod'] ?? '',
-					);
-				$h .= '</div>';
-
+				$h .= '</div>';*/
 			}
 
 		$h .= '</div>';
@@ -1038,6 +1024,7 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate" data-wrapper="asset-label"></div>';
+			$h .= '<div class="cashflow-create-operation-validate"></div>';
 			$h .= '<div class="cashflow-create-operation-validate cashflow-warning">';
 				$h .= '<div>';
 					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
@@ -1045,15 +1032,13 @@ class OperationUi {
 					$h .= '</span>';
 				$h .= '</div>';
 			$h .= '</div>';
-			$h .= '<div class="cashflow-create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>';
 			$h .= '<div class="cashflow-create-operation-validate" data-field="amount"><div><span>=</span><span data-type="value"></span></div></div>';
-
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-
 			if($hasVat) {
-				$h .= '<div class="cashflow-create-operation-validate"></div>';
 				$h .= '<div class="cashflow-create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>';
 			}
+			$h .= '<div class="cashflow-create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>';
+
+
 
 		$h .= '</div>';
 

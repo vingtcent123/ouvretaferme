@@ -199,12 +199,12 @@ class Cashflow {
         if(amountIncludingVAT !== totalAmount) {
             var difference = round(totalAmount - amountIncludingVAT);
             qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.add('danger');
-            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').previousSibling.classList.add('danger');
+            qs('.cashflow-warning').classList.add('danger');
             qs('#cashflow-allocate-difference-warning').classList.remove('hide');
             qs('#cashflow-allocate-difference-value').innerHTML = money(Math.abs(difference));
             qs('#submit-save-operation').setAttribute('data-confirm', qs('#submit-save-operation').getAttribute('data-confirm-text'));
         } else {
-            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').previousSibling.classList.remove('danger');
+            qs('.cashflow-warning').classList.remove('danger');
             qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.remove('danger');
             qs('#cashflow-allocate-difference-warning').classList.add('hide');
             qs('#submit-save-operation').removeAttribute('data-confirm');

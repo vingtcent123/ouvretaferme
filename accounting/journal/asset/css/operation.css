@@ -277,5 +277,5 @@ body[data-touch="no"] #panel-operation-view .panel-header {
 	justify-content: space-between;
 }
 .operation-hint {
-	cursor: help !important;
+	cursor: pointer;
 }

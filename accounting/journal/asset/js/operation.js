@@ -127,14 +127,11 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
 
 			if(e.detail.vatClass) {
 
-				qs('[data-index="' + index + '"][data-vat="account-info"]').removeHide();
-				qs('[data-index="' + index + '"][data-vat="account-value"]').innerHTML = e.detail.vatClass;
 				qs('[data-index="' + index + '"][data-field="vatRate"]').removeAttribute('disabled');
 				qs('[data-index="' + index + '"][data-field="vatValue"]').removeAttribute('disabled');
 
 			} else {
 
-				qs('[data-index="' + index + '"][data-vat="account-info"]').hide();
 				const targetVatValue = qs('[name="vatValue[' + index + ']"');
 				CalculationField.setValue(targetVatValue, 0);
 				qs('[data-index="' + index + '"][data-field="vatRate"]').value = 0;
@@ -512,5 +509,25 @@ class Operation {
 		OperationAmount.updateAmount(index, type, 0);
 		OperationAmount.checkAmounts(index);
 
+	}
+
+	// Appelé uniquement lors d'un warning
+	static setVatValue(index) {
+
+		const newVatValue = parseFloat(qs('[data-vat-value-vat-warning-calculated-value][data-index="' + index + '"]').dataset.value);
+
+		OperationAmount.updateAmount(index, 'vatValue', newVatValue);
+
+		OperationAmount.checkAmounts(index);
+	}
+
+	// Appelé uniquement lors d'un warning
+	static setAmountIncludingVat(index) {
+
+		const newAmountIncludingVat = parseFloat(qs('[data-amount-including-vat-warning-calculated-value][data-index="' + index + '"]').dataset.value);
+
+		OperationAmount.updateAmount(index, 'amountIncludingVAT', newAmountIncludingVat);
+
+		OperationAmount.checkAmounts(index);
 	}
 }
