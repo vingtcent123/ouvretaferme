@@ -1010,7 +1010,6 @@ class OperationUi {
 			$h .= '<div></div>';
 			if($hasVat) {
 				$h .= '<div></div>';
-				$h .= '<div></div>';
 			}
 			if($isFromCashflow === FALSE) {
 				$h .= '<div></div>';
