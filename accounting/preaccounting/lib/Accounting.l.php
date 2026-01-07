@@ -17,6 +17,7 @@ Class AccountingLib {
 	const FEC_COLUMN_DEVISE_AMOUNT = 16;
 	const FEC_COLUMN_PAYMENT_DATE = 18;
 	const FEC_COLUMN_PAYMENT_METHOD = 19;
+	const FEC_COLUMN_OPERATION_NATURE = 20;
 
 	public static function generateFec(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, bool $forImport): array {
 
@@ -471,6 +472,7 @@ Class AccountingLib {
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
 							number      : $forImport ? ++$number : NULL,
+							for         : $eAccount['class'],
 						);
 						if($forImport) {
 							$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
@@ -665,13 +667,13 @@ Class AccountingLib {
 	private static function getFecLine(
 		\account\Account $eAccount, string $date, \journal\JournalCode $eCode, string $ecritureLib,
 		string $document, string $documentDate, float $amount, string $type, string $payment, string $compAuxNum, string $compAuxLib,
-		?int $number = NULL
+		?int $number = NULL, ?string $for = NULL
 	): array {
 
 		return [
 			$eCode['code'] ?? '',
 			$eCode['name'] ?? '',
-			$number,
+			$number, // Utilisé pour l'import (pour rattacher la TVA à son écriture d'origine)
 			date('Ymd', strtotime($date)),
 			$eAccount['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccount['class']),
 			$eAccount['description'],
@@ -689,7 +691,7 @@ Class AccountingLib {
 			'EUR',
 			date('Ymd', strtotime($date)),
 			$payment,
-			''
+			$for,
 		];
 	}
 
@@ -729,6 +731,7 @@ Class AccountingLib {
 			if(
 				$item[self::FEC_COLUMN_ACCOUNT_LABEL] === $fecLine[self::FEC_COLUMN_ACCOUNT_LABEL]
 				and $item[self::FEC_COLUMN_PAYMENT_METHOD] === $fecLine[self::FEC_COLUMN_PAYMENT_METHOD]
+				and $item[self::FEC_COLUMN_OPERATION_NATURE] === $fecLine[self::FEC_COLUMN_OPERATION_NATURE]
 			) {
 				$item[self::FEC_COLUMN_DEBIT] = round($item[self::FEC_COLUMN_DEBIT] + $fecLine[self::FEC_COLUMN_DEBIT], 2);
 				$item[self::FEC_COLUMN_CREDIT] = round($item[self::FEC_COLUMN_CREDIT] + $fecLine[self::FEC_COLUMN_CREDIT], 2);

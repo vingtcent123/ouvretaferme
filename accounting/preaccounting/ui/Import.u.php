@@ -221,7 +221,12 @@ Class ImportUi {
 										$accountLabel = '<div data-dropdown="bottom" data-dropdown-hover="true">';
 											$accountLabel .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
 										$accountLabel .= '</div>';
-										$accountLabel .= new \account\AccountUi()->getDropdownTitle($eAccount);
+										if($operation[AccountingLib::FEC_COLUMN_OPERATION_NATURE] !== NULL) {
+											$more = s(" - rattaché au compte {value}", $operation[AccountingLib::FEC_COLUMN_OPERATION_NATURE]);
+										} else {
+											$more = '';
+										}
+										$accountLabel .= new \account\AccountUi()->getDropdownTitle($eAccount, $more);
 									}
 									$accountLabels[] = $accountLabel;
 								}

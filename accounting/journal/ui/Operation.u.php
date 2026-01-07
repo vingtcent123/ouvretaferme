@@ -1086,7 +1086,7 @@ class OperationUi {
 				$h .= $form->hidden('type', $eCashflow['type']);
 			}
 
-			$h .= self::getCreateHeader($eFinancialYear, $isFromCashflow);
+			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
 
 			foreach($cOperation as $eOperation) {
 

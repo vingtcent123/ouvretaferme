@@ -233,12 +233,20 @@ Class ImportLib {
 
 			// On essaie de rattacher les opérations liées (type TVA) à leurs copines
 			if(strpos($data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER], '-') !== FALSE) {
+
 				[$currentNumber, $number] = array_map('intval', explode('-', $data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER]));
+
 				if($cOperation->offsetExists($number)) {
+
 					$eOperationOrigin = $cOperation->offsetGet($number);
 					$eOperation['operation'] = $eOperationOrigin;
-					$eOperationOrigin['vatAccount'] = $eOperation['account'];
-					$eOperationOrigin['vatRate'] = round($eOperation['amount'] / $eOperationOrigin['amount'], 4) * 100;
+
+					\journal\Operation::model()
+						->update($eOperationOrigin, [
+							'vatRate' => round($eOperation['amount'] / $cOperation[$number]['amount'], 4) * 100,
+							'vatAccount' => $eOperation['account']]
+						);
+
 				}
 				$offset = $currentNumber;
 			} else {

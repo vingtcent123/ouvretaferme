@@ -308,10 +308,10 @@ class AccountUi {
 		return \util\BatchUi::group('batch-journal', $menu, '', title: s("Pour les numéros de compte sélectionnés"));
 
 	}
-	public function getDropdownTitle(Account $eAccount): string {
+	public function getDropdownTitle(Account $eAccount, ?string $more = NULL): string {
 
 		$h = '<div class="dropdown-list bg-primary">';
-			$h .= '<span class="dropdown-item">'.encode($eAccount['class']).' '.encode($eAccount['description']).'</span>';
+			$h .= '<span class="dropdown-item">'.encode($eAccount['class']).' '.encode($eAccount['description']).''.$more.'</span>';
 		$h .= '</div>';
 
 		return $h;
