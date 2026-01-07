@@ -986,7 +986,7 @@ new Page(function($data) {
 
 					\farm\FarmerLib::setView('viewSellingCategory', $data->eFarm, \farm\Farmer::SHOP);
 
-					$data->cShop = \shop\ShopLib::getByFarm($data->eFarm);
+					$data->cShop = \shop\ShopLib::getList($data->eFarm)->linearize();
 
 					if($data->cShop->notEmpty()) {
 
