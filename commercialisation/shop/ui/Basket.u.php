@@ -387,7 +387,7 @@ class BasketUi {
 
 	}
 
-	public function getAuthenticateText(string $step): string {
+	public function getAuthenticateText(?int $step): string {
 
 		$h = '';
 
