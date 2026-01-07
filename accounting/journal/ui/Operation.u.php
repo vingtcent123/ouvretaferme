@@ -850,17 +850,16 @@ class OperationUi {
 
 				$h .= '<div data-index="'.$index.'" class="flex-align-center">';
 
-					$h .= '<a class="btn btn-sm btn-outline-primary hide" data-index="'.$index.'" data-check-amount="0" onclick="Operation.toggleCheck('.$index.')" title="'.s("Les montants ne sont pas vérifiés. {value}", $more).'">';
-						$h .= \Asset::icon('calculator').\Asset::icon('x-lg');
-						$h .= '<span class="operation-amount-check-legend"> '.s("Montants non vérifiés").'</span>';
+					$h .= '<a class="btn btn-sm btn-outline-primary hide" data-index="'.$index.'" data-check-amount="0" onclick="Operation.toggleCorrect('.$index.')" title="'.s("Les montants ne sont pas vérifiés. {value}", $more).'">';
+						$h .= \Asset::icon('x-lg');
+						$h .= '<span class="operation-amount-check-legend"> '.s("Mode manuel").'</span>';
 					$h .= '</a>';
 
-					$h .= '<a class="btn btn-sm btn-outline-primary" data-index="'.$index.'" data-check-amount="1" onclick="Operation.toggleCheck('.$index.')" title="'.s("La cohérence des montants est vérifiée et ajustée dès que possible").'">';
-						$h .= \Asset::icon('calculator');
+					$h .= '<a class="btn btn-sm btn-outline-primary" data-index="'.$index.'" data-check-amount="1" onclick="Operation.toggleCorrect('.$index.')" title="'.s("Les montants sont ajustés dès que possible").'">';
 						$h .= '<span data-check-amount-icon="ok">'.\Asset::icon('check-lg').'</span>';
 						$h .= '<span data-check-amount-icon="ko" class="hide">'.\Asset::icon('exclamation-triangle').'</span>';
-						$h .= '<span class="operation-amount-check-legend" data-index="'.$index.'" data-check-amount-legend-ok="'.s("Montants vérifiés").'" data-check-amount-legend-ko="'.s("Incohérence détectée").'"> ';
-							$h .= s("Montants vérifiés");
+						$h .= '<span class="operation-amount-check-legend" data-index="'.$index.'" data-check-amount-legend-ok="'.s("Mode automatique").'" data-check-amount-legend-ko="'.s("Incohérence détectée").'"> ';
+							$h .= s("Mode automatique");
 						$h .= '</span>';
 					$h .= '</a>';
 

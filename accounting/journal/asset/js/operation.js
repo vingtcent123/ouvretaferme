@@ -272,17 +272,7 @@ document.delegateEventListener('change', '[data-field="document"]', function(e) 
 
 class Operation {
 
-	static checkAmount(index) {
-
-		if(qs('[data-check-amount="0"][data-index="' + index + '"]')) {
-			return qs('[data-check-amount="0"][data-index="' + index + '"]').isHidden();
-		}
-
-		return true;
-
-	}
-
-	static toggleCheck(index) {
+	static toggleCorrect(index) {
 
 		const isChecked = qs('[data-check-amount="0"][data-index="' + index + '"]').isHidden();
 

@@ -23,7 +23,7 @@ class OperationAmount {
 
 	}
 
-	static areAmountsChecked(index) {
+	static areAmountsCorrected(index) {
 
 		return qs('[data-check-amount="1"][data-index="' + index + '"]').isVisible()
 
@@ -35,13 +35,6 @@ class OperationAmount {
 	static checkAmounts(index) {
 
 		if(Operation.hasVat() === false) {
-			if(typeof Cashflow !== 'undefined') {
-				Cashflow.checkValidationValues();
-			}
-			return;
-		}
-
-		if(OperationAmount.areAmountsChecked(index) === false) {
 			if(typeof Cashflow !== 'undefined') {
 				Cashflow.checkValidationValues();
 			}
@@ -62,7 +55,7 @@ class OperationAmount {
 		OperationAmount.switchDataAmountCheck(index, true);
 
 		// Check TTC = HT + TVA
-		if(Math.round(amountIncludingVAT * 100) !== Math.round((amount + vatValue) * 100)) {
+		if(Math.abs(round(amountIncludingVAT) - round(amount + vatValue)) > 0.01) {
 
 			qs('[data-amount-including-vat-warning][data-index="' + index + '"]').removeHide();
 			qs('[data-amount-including-vat-warning-value][data-index="' + index + '"]').innerHTML = money(amountIncludingVAT);
@@ -79,8 +72,8 @@ class OperationAmount {
 
 		// Check TVA = HT * VatRate OU formule depuis TTC avec taux de TVA
 		if(
-			round(vatValue, 2) !== round(amount * vatRate / 100, 2) &&
-			round(vatValue, 2) !== round(OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate), 2)
+			Math.abs(round(vatValue, 2) - round(amount * vatRate / 100, 2)) > 0.01 &&
+			Math.abs(round(vatValue, 2) - round(OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate), 2)) > 0.01
 		) {
 
 			qs('[data-vat-value-warning][data-index="' + index + '"]').removeHide();
@@ -168,7 +161,7 @@ class OperationAmount {
 	 */
 	static calculateFromAmountIncludingVAT(index) {
 
-		if(OperationAmount.areAmountsChecked(index) === false) {
+		if(OperationAmount.areAmountsCorrected(index) === false) {
 			return;
 		}
 
@@ -191,7 +184,7 @@ class OperationAmount {
 	 */
 	static calculateFromAmount(index) {
 
-		if(OperationAmount.areAmountsChecked(index) === false) {
+		if(OperationAmount.areAmountsCorrected(index) === false) {
 			return;
 		}
 
