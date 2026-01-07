@@ -304,13 +304,19 @@ class FarmerLib extends FarmerCrud {
 
 	public static function associateUser(Farmer $e, \user\User $eUser): void {
 
-		$affected = Farmer::model()
-			->whereStatus(Farmer::INVITED)
-			->update($e, [
-				'user' => $eUser,
-				'farmGhost' => FALSE,
-				'status' => Farmer::IN
-			]);
+		try {
+
+			$affected = Farmer::model()
+				->whereStatus(Farmer::INVITED)
+				->update($e, [
+					'user' => $eUser,
+					'farmGhost' => FALSE,
+					'status' => Farmer::IN
+				]);
+
+		} catch(\DuplicateException) {
+			return;
+		}
 
 		if($affected) {
 
