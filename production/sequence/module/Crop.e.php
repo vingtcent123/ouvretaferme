@@ -39,7 +39,7 @@ class Crop extends CropElement {
 			'sequence' => ['use']
 		]);
 
-		$spacing = function(?int $value): bool {
+		$spacing = function(float|int|null &$value): bool {
 
 			$this->expects(['distance']);
 

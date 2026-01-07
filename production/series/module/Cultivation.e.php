@@ -352,6 +352,18 @@ class Cultivation extends CultivationElement {
 		$this->expects([
 			'series' => ['use']
 		]);
+
+		$spacing = function(float|int|null &$value): bool {
+
+			$this->expects(['distance']);
+
+			if($this['distance'] !== Cultivation::SPACING) {
+				$value = NULL;
+			}
+
+			return TRUE;
+
+		};
 		
 		$p
 			->setCallback('crop.check', function(\sequence\Crop $eCrop): bool {
@@ -482,34 +494,9 @@ class Cultivation extends CultivationElement {
 				return TRUE;
 
 			})
-			->setCallback('rowSpacing.check', function(?int $rowSpacing): bool {
-
-				switch($this['series']['use']) {
-
-					case Series::BED :
-						$this['rowSpacing'] = NULL;
-						return TRUE;
-
-					case Series::BLOCK :
-						return Cultivation::model()->check('rowSpacing', $rowSpacing);
-
-				}
-
-			})
-			->setCallback('rows.check', function(?int $rows): bool {
-
-				switch($this['series']['use']) {
-
-					case Series::BED :
-						return Cultivation::model()->check('rows', $rows);
-
-					case Series::BLOCK :
-						$this['rows'] = NULL;
-						return TRUE;
-
-				}
-
-			})
+			->setCallback('rowSpacing.prepare', $spacing)
+			->setCallback('rows.prepare', $spacing)
+			->setCallback('plantSpacing.prepare', $spacing)
 			->setCallback('harvestMonthsExpected.check', function(?array $months): bool {
 
 				$this->expects(['harvestPeriodExpected']);

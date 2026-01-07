@@ -25,9 +25,9 @@ Cultivation:
   startAction: ?enum(SOWING, PLANTING)
   distance: enum(SPACING, DENSITY) = SPACING
   rows: ?int8(1, null)
-  rowSpacing: ?int16(1, null)
-  plantSpacing: ?int16(1, null)
-  density: ?float32(0.01, null)
+  rowSpacing: ?decimal(8, 2, 0.01, null)
+  plantSpacing: ?decimal(8, 2, 0.01, null)
+  density: ?decimal(8, 2, 0.01, null)
   sliceUnit: enum(PERCENT, AREA, LENGTH, PLANT, TRAY) = PERCENT
   sliceTool: ?farm\Tool
   area: ?int24(0, null)

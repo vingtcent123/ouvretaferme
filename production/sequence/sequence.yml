@@ -7,9 +7,9 @@ Crop:
   farm: farm\Farm
   distance: enum(SPACING, DENSITY) = SPACING
   rows: ?int8(1, null)
-  rowSpacing: ?int16(1, null)
-  plantSpacing: ?int16(1, null)
-  density: ?float32(0.01, null)
+  rowSpacing: ?decimal(8, 2, 0.01, null)
+  plantSpacing: ?decimal(8, 2, 0.01, null)
+  density: ?decimal(8, 2, 0.01, null)
   mainUnit: enum(KG, UNIT, BUNCH) = KG
   seedling: ?enum(SOWING, YOUNG_PLANT)
   seedlingSeeds: ?int8(1, null)
