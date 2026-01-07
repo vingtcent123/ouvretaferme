@@ -88,10 +88,6 @@ class Invite extends InviteElement {
 
 				$this->expects(['farm', 'type']);
 
-				if($this['type'] !== Invite::CUSTOMER) {
-					return TRUE;
-				}
-
 				$eUser = \user\UserLib::getByEmail($email);
 
 				if($eUser->empty()) {
@@ -99,7 +95,7 @@ class Invite extends InviteElement {
 				}
 
 				return \selling\Customer::model()
-						->whereEmail($eUser)
+						->whereUser($eUser)
 						->whereFarm($this['farm'])
 						->exists() === FALSE;
 
