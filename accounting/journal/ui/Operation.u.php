@@ -657,19 +657,21 @@ class OperationUi {
 				$h .= '<div class="operation-create-header">'.self::p('paymentMethod')->label.$mandatory.'</div>';
 
 			}
-			$h .= '<div class="operation-create-header amount-header"></div>';
-			$h .= '<div class="operation-create-header">'.self::p('amount')->label.' '.\util\FormUi::asterisk().'</div>';
+			if($eFinancialYear['hasVat']) {
+				$h .= '<div class="operation-create-header amount-header"></div>';
+			}
+			$h .= '<div class="operation-create-header">'.($eFinancialYear['hasVat'] ? self::p('amount')->label : s("Montant")).' '.\util\FormUi::asterisk().'</div>';
 
 			if($eFinancialYear['hasVat']) {
 				$h .= '<div class="operation-create-header">'.s("TVA").' '.\util\FormUi::asterisk().'</div>';
-			}
 
-			$h .= '<div class="operation-create-header">';
-				$h .= s("Montant TTC");
-				if($eCashflow->notEmpty()) {
-					$h .= '<h5 class="util-badge bg-primary ml-1">'.\util\TextUi::money(abs($eCashflow['amount'])).'</h5>';
-				}
-			$h .= '</div>';
+				$h .= '<div class="operation-create-header">';
+					$h .= s("Montant TTC");
+					if($eCashflow->notEmpty()) {
+						$h .= '<h5 class="util-badge bg-primary ml-1">'.\util\TextUi::money(abs($eCashflow['amount'])).'</h5>';
+					}
+				$h .= '</div>';
+			}
 
 		$h .= '</div>';
 
@@ -846,33 +848,37 @@ class OperationUi {
 				$h .= '</div>';
 
 			}
+			if($eFinancialYear['hasVat']) {
 
-			$h .= '<div data-wrapper="amounts" class="operation-create-title">';
+				$h .= '<div data-wrapper="amounts" class="operation-create-title">';
 
-				$h .= '<h4 style="margin: auto 0;">'.s("Montants").'</h4>';
+					$h .= '<h4 style="margin: auto 0;">'.s("Montants").'</h4>';
 
-				$more = s("Seule la cohérence de l'ensemble des écritures (HT + TVA) est vérifiée par rapport à l'opération bancaire.");
+					$more = s("Seule la cohérence de l'ensemble des écritures (HT + TVA) est vérifiée par rapport à l'opération bancaire.");
 
-				$h .= '<div data-index="'.$index.'" class="flex-align-center">';
+					$h .= '<div data-index="'.$index.'" class="flex-align-center">';
 
-					$h .= '<a class="btn btn-sm btn-outline-primary hide" data-index="'.$index.'" data-check-amount="0" onclick="Operation.toggleCorrect('.$index.')" title="'.s("Les montants ne sont pas vérifiés. {value}", $more).'">';
-						$h .= \Asset::icon('x-lg');
-						$h .= '<span class="operation-amount-check-legend"> '.s("Mode manuel").'</span>';
-					$h .= '</a>';
+						$h .= '<a class="btn btn-sm btn-outline-primary hide" data-index="'.$index.'" data-check-amount="0" onclick="Operation.toggleCorrect('.$index.')" title="'.s("Les montants ne sont pas vérifiés. {value}", $more).'">';
+							$h .= \Asset::icon('x-lg');
+							$h .= '<span class="operation-amount-check-legend"> '.s("Mode manuel").'</span>';
+						$h .= '</a>';
 
-					$h .= '<a class="btn btn-sm btn-outline-primary" data-index="'.$index.'" data-check-amount="1" onclick="Operation.toggleCorrect('.$index.')" title="'.s("Les montants sont ajustés dès que possible").'">';
-						$h .= '<span data-check-amount-icon="ok">'.\Asset::icon('check-lg').'</span>';
-						$h .= '<span data-check-amount-icon="ko" class="hide">'.\Asset::icon('exclamation-triangle').'</span>';
-						$h .= '<span class="operation-amount-check-legend" data-index="'.$index.'" data-check-amount-legend-ok="'.s("Mode automatique").'" data-check-amount-legend-ko="'.s("Incohérence détectée ").'">';
-							$h .= s("Mode automatique");
-						$h .= '</span>';
-					$h .= '</a>';
+						$h .= '<a class="btn btn-sm btn-outline-primary" data-index="'.$index.'" data-check-amount="1" onclick="Operation.toggleCorrect('.$index.')" title="'.s("Les montants sont ajustés dès que possible").'">';
+							$h .= '<span data-check-amount-icon="ok">'.\Asset::icon('check-lg').'</span>';
+							$h .= '<span data-check-amount-icon="ko" class="hide">'.\Asset::icon('exclamation-triangle').'</span>';
+							$h .= '<span class="operation-amount-check-legend" data-index="'.$index.'" data-check-amount-legend-ok="'.s("Mode automatique").'" data-check-amount-legend-ko="'.s("Incohérence détectée ").'">';
+								$h .= s("Mode automatique");
+							$h .= '</span>';
+						$h .= '</a>';
 
-					if($isFromCashflow === TRUE) {
-						$h .= '<a data-index="'.$index.'" data-magic onclick="Cashflow.recalculate('.$index.')" class="btn btn-sm btn-outline-primary" title="'.s("Réinitialiser par rapport aux autres écritures").'">'.\Asset::icon('magic').'</a>';
-					}
-				$h .= '</div>';
-			$h .='</div>';
+						if($isFromCashflow === TRUE) {
+							$h .= '<a data-index="'.$index.'" data-magic onclick="Cashflow.recalculate('.$index.')" class="btn btn-sm btn-outline-primary" title="'.s("Réinitialiser par rapport aux autres écritures").'">'.\Asset::icon('magic').'</a>';
+						}
+					$h .= '</div>';
+				$h .='</div>';
+
+			}
+
 
 			$h .= '<div data-wrapper="amount'.$suffix.'">';
 				$h .= $form->dynamicField($eOperation, 'amount'.$suffix, function($d) use($defaultValues, $index) {
@@ -1002,8 +1008,10 @@ class OperationUi {
 			$h .= '<div></div>';
 			$h .= '<div></div>';
 			$h .= '<div></div>';
-			$h .= '<div class="cashflow-create-operation-validate" data-wrapper="asset-label"></div>';
-			$h .= '<div></div>';
+			if($hasVat) {
+				$h .= '<div></div>';
+				$h .= '<div></div>';
+			}
 			if($isFromCashflow === FALSE) {
 				$h .= '<div></div>';
 				$h .= '<div></div>';
@@ -1024,8 +1032,8 @@ class OperationUi {
 			$h .= '<div class="cashflow-create-operation-validate" data-field="amount"><div><span>=</span><span data-type="value"></span></div></div>';
 			if($hasVat) {
 				$h .= '<div class="cashflow-create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>';
+				$h .= '<div class="cashflow-create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>';
 			}
-			$h .= '<div class="cashflow-create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>';
 
 
 

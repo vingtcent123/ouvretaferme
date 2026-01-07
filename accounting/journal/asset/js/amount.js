@@ -21,14 +21,18 @@ class OperationAmount {
 
 	static setValidationValues(multiplier) {
 
-			const amountIncludingVAT = OperationAmount.sumType('amountIncludingVAT') * (multiplier ?? 1);
 			const amount = OperationAmount.sumType('amount') * (multiplier ?? 1);
-			const vatValue = OperationAmount.sumType('vatValue') * (multiplier ?? 1);
 
 			if(Operation.hasVat()) {
-					qs('.operation-create-validation [data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
+
+				const amountIncludingVAT = OperationAmount.sumType('amountIncludingVAT') * (multiplier ?? 1);
+				const vatValue = OperationAmount.sumType('vatValue') * (multiplier ?? 1);
+
+				qs('.operation-create-validation [data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
+				qs('.operation-create-validation [data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
+
 			}
-			qs('.operation-create-validation [data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
+
 			qs('.operation-create-validation [data-field="amount"] [data-type="value"]').innerHTML = money(amount);
 
 	}
@@ -57,6 +61,10 @@ class OperationAmount {
 	}
 
 	static areAmountsCorrected(index) {
+
+		if(Operation.hasVat() === false) {
+			return true;
+		}
 
 		return qs('[data-check-amount="1"][data-index="' + index + '"]').isVisible()
 
@@ -196,7 +204,7 @@ class OperationAmount {
 	 */
 	static calculateFromAmountIncludingVAT(index) {
 
-		if(OperationAmount.areAmountsCorrected(index) === false) {
+		if(Operation.hasVat() === false || OperationAmount.areAmountsCorrected(index) === false) {
 			return;
 		}
 
@@ -219,7 +227,7 @@ class OperationAmount {
 	 */
 	static calculateFromAmount(index) {
 
-		if(OperationAmount.areAmountsCorrected(index) === false) {
+		if(Operation.hasVat() === false || OperationAmount.areAmountsCorrected(index) === false) {
 			return;
 		}
 

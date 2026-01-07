@@ -171,7 +171,7 @@ class Cashflow {
 
         OperationAmount.setValidationValues(multiplier);
 
-        const amountIncludingVAT = parseFloat(qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML);
+        const amountIncludingVAT = OperationAmount.sumType('amountIncludingVAT') * multiplier;
 
         qsa('#cashflow-allocate-difference-warning [data-direction]', node => node.hide());
 
