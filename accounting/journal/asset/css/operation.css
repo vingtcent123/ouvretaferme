@@ -19,14 +19,14 @@
 }
 
 @media (max-width: 767px) {
-	.operation-create-several-container[data-cashflow="1"] {
+	.operation-create-several-container {
 		display: grid;
 		grid-template-columns: 15rem 35rem 10rem;
 	}
 
 }
 @media (min-width: 768px) {
-	.operation-create-several-container[data-cashflow="1"] {
+	.operation-create-several-container {
 		display: grid;
 		grid-template-columns: 15rem 1fr 10rem;
 	}
@@ -35,69 +35,32 @@
 
 @media (max-width: 991px) {
 
-	.operation-create-several-container[data-cashflow="1"][data-columns="2"] {
+	.operation-create-several-container[data-columns="2"] {
 		grid-template-columns: 15rem repeat(2, 25rem) 10rem;
 	}
 
 }
 @media (min-width: 992px) {
 
-	.operation-create-several-container[data-cashflow="1"][data-columns="2"] {
+	.operation-create-several-container[data-columns="2"] {
 		grid-template-columns: 15rem repeat(2, 1fr) 10rem;
 	}
 
 }
-.operation-create-several-container[data-cashflow="1"][data-columns="3"] {
+.operation-create-several-container[data-columns="3"] {
 	grid-template-columns: 15rem repeat(3, 25rem) 10rem;
 }
-.operation-create-several-container[data-cashflow="1"][data-columns="4"] {
+.operation-create-several-container[data-columns="4"] {
 	grid-template-columns: 15rem repeat(4, 25rem) 10rem;
 }
-.operation-create-several-container[data-cashflow="1"][data-columns="5"] {
+.operation-create-several-container[data-columns="5"] {
 	grid-template-columns: 15rem repeat(5, 25rem) 10rem;
 }
 
-
-
-@media (max-width: 767px) {
-	.operation-create-several-container[data-cashflow="0"] {
-		display: grid;
-		grid-template-columns: 15rem 35rem;
-	}
-
+.cashflow-warning {
+	align-content: end;
+	grid-row: span 3;
 }
-@media (min-width: 768px) {
-	.operation-create-several-container[data-cashflow="0"] {
-		display: grid;
-		grid-template-columns: 15rem 1fr;
-	}
-
-}
-
-@media (max-width: 767px) {
-
-	.operation-create-several-container[data-cashflow="0"][data-columns="2"] {
-		grid-template-columns: 15rem repeat(2, 25rem);
-	}
-
-}
-@media (min-width: 768px) {
-
-	.operation-create-several-container[data-cashflow="0"][data-columns="2"] {
-		grid-template-columns: 15rem repeat(2, 1fr);
-	}
-
-}
-.operation-create-several-container[data-cashflow="0"][data-columns="3"] {
-	grid-template-columns: 15rem repeat(3, 25rem);
-}
-.operation-create-several-container[data-cashflow="0"][data-columns="4"] {
-	grid-template-columns: 15rem repeat(4, 25rem);
-}
-.operation-create-several-container[data-cashflow="0"][data-columns="5"] {
-	grid-template-columns: 15rem repeat(5, 25rem);
-}
-
 .operation-create-validation {
     margin-left: 0.5rem;
 }

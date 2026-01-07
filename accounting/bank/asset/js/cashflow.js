@@ -118,23 +118,6 @@ class Cashflow {
 
     }
 
-    static sumType(type) {
-
-        const allValues = Array.from(qsa('[type="hidden"][name^="' + type + '["]', element => element.value));
-
-        return round(allValues.reduce(function (acc, value) {
-            const index = value.firstParent('.input-group').qs('input[data-index]').dataset.index;
-
-            const creditType = qs('[name="type[' + index + ']"]:checked').getAttribute('value');
-
-            if(creditType === 'credit') {
-                return acc - parseFloat(value.value || 0);
-            } else {
-                return acc + parseFloat(value.value || 0);
-            }
-        }, 0));
-    }
-
     static fillVatValue(index) {
 
         if(qs('form#bank-cashflow-allocate') === null) {
@@ -186,15 +169,9 @@ class Cashflow {
         // Pour une lecture plus facile, crédit et débit sont affichés en positif
         const multiplier = cashflowType === 'credit' ? -1 : 1;
 
-        const amountIncludingVAT = Cashflow.sumType('amountIncludingVAT') * multiplier;
-        const amount = Cashflow.sumType('amount') * multiplier;
-        const vatValue = Cashflow.sumType('vatValue') * multiplier;
+        OperationAmount.setValidationValues(multiplier);
 
-        if(Operation.hasVat()) {
-            qs('.cashflow-create-operation-validate[data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
-        }
-        qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
-        qs('.cashflow-create-operation-validate[data-field="amount"] [data-type="value"]').innerHTML = money(amount);
+        const amountIncludingVAT = parseFloat(qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"] [data-type="value"]').innerHTML);
 
         qsa('#cashflow-allocate-difference-warning [data-direction]', node => node.hide());
 

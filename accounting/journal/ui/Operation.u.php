@@ -1053,9 +1053,7 @@ class OperationUi {
 			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
 			$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $defaultValues, [], $cPaymentMethod);
 
-			if($eCashflow->notEmpty()) {
-				$h .= self::getCreateValidate($eFinancialYear['hasVat'], $eCashflow->notEmpty());
-			}
+			$h .= self::getCreateValidate($eFinancialYear['hasVat'], $eCashflow->notEmpty());
 
 		$h .= '</div>';
 
@@ -1098,9 +1096,7 @@ class OperationUi {
 				$index++;
 			}
 
-			if($isFromCashflow === TRUE) {
-				$h .= self::getCreateValidate($eFinancialYear['hasVat'], $isFromCashflow);
-			}
+			$h .= self::getCreateValidate($eFinancialYear['hasVat'], $isFromCashflow);
 
 		$h .= '</div>';
 

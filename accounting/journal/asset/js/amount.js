@@ -1,5 +1,38 @@
 class OperationAmount {
 
+    static sumType(type) {
+
+        const allValues = Array.from(qsa('[type="hidden"][name^="' + type + '["]', element => element.value));
+
+        return round(allValues.reduce(function (acc, value) {
+            const index = value.firstParent('.input-group').qs('input[data-index]').dataset.index;
+
+            const creditType = qs('[name="type[' + index + ']"]:checked')?.getAttribute('value') || null;
+
+            if(creditType === 'credit') {
+							return acc - parseFloat(value.value || 0);
+						} else if(creditType === 'debit') {
+                return acc + parseFloat(value.value || 0);
+            } else {
+							return acc;
+						}
+        }, 0));
+    }
+
+	static setValidationValues(multiplier) {
+
+			const amountIncludingVAT = OperationAmount.sumType('amountIncludingVAT') * (multiplier ?? 1);
+			const amount = OperationAmount.sumType('amount') * (multiplier ?? 1);
+			const vatValue = OperationAmount.sumType('vatValue') * (multiplier ?? 1);
+
+			if(Operation.hasVat()) {
+					qs('.operation-create-validation [data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
+			}
+			qs('.operation-create-validation [data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
+			qs('.operation-create-validation [data-field="amount"] [data-type="value"]').innerHTML = money(amount);
+
+	}
+
 	static calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate) {
 
 		return Math.round((amountIncludingVAT / (1 + vatRate / 100)) * (vatRate / 100) * 100) / 100;
@@ -33,6 +66,8 @@ class OperationAmount {
 	 * Vérification générale des montants
 	 */
 	static checkAmounts(index) {
+
+		OperationAmount.setValidationValues(index);
 
 		if(Operation.hasVat() === false) {
 			if(typeof Cashflow !== 'undefined') {
