@@ -1171,7 +1171,7 @@ class OperationLib extends OperationCrud {
 
 	public static function getForAttachQuery(string $query, \account\ThirdParty $eThirdParty, array $excludedOperationIds, array $excludedPrefix): \Collection {
 
-		$selection = Operation::getSelection(FALSE);
+		$selection = Operation::getSelection();
 		if($eThirdParty->notEmpty()) {
 			$selection['isThirdParty'] = new \Sql('IF(thirdParty = '.$eThirdParty['id'].', 1, 0)', 'bool');
 			$sort = ['m1_isThirdParty' => SORT_DESC];
@@ -1237,35 +1237,12 @@ class OperationLib extends OperationCrud {
 			->having('totalBank != - totalOther')
 			->getCollection();
 
-		$cOperation = Operation::model()
+		return Operation::model()
 			->select($selection)
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
 			->whereHash('IN', $cOperationNotBalanced->getColumn('hash'))
 			->sort($sort + ['m1_date' => SORT_DESC])
 			->getCollection(NULL, NULL, 'hash'); // Pour ne conserver que 1 opération par hash
-
-		return self::setHashOperations($cOperation);
-
-	}
-
-	public static function setHashOperations(\Collection $cOperation): \Collection {
-
-		$cOperationLinked = Operation::model()
-			->select('id', 'hash', 'amount', 'type', 'operation', 'accountLabel')
-			->whereHash('IN', $cOperation->getColumn('hash'))
-			->getCollection();
-
-		foreach($cOperation as &$eOperation) {
-
-			if(isset($eOperation['cOperationHash']) === FALSE) {
-				$eOperation['cOperationHash'] = new \Collection();
-			}
-
-			$eOperation['cOperationHash']->mergeCollection($cOperationLinked->find(fn($e) => $e['hash'] === $eOperation['hash']));
-
-		}
-
-		return $cOperation;
 
 	}
 
@@ -1341,7 +1318,7 @@ class OperationLib extends OperationCrud {
 			'accountLabel' => $label,
 			'description' => $eCashflow->getMemo(),
 			'document' => $document,
-			'documentDate' => $eOperation['documentDate'],
+			'documentDate' => $eOperation['documentDate'] ?? NULL,
 			'thirdParty' => $eThirdParty['id'] ?? NULL,
 			'type' => ($eCashflow['amount'] > 0 ? Operation::DEBIT : Operation::CREDIT),
 			'amount' => abs($eCashflow['amount']),

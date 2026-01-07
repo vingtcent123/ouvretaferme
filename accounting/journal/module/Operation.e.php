@@ -21,7 +21,7 @@ class Operation extends OperationElement {
 				->select(\bank\Cashflow::getSelection())
 				->delegateElement('hash', propertyParent: 'hash'),
 			'cOperationHash' => \journal\Operation::model()
-			->select('id', 'hash', 'accountLabel', 'asset')
+			->select('id', 'hash', 'accountLabel', 'asset', 'type', 'amount')
 			->delegateCollection('hash', propertyParent: 'hash'),
 		];
 

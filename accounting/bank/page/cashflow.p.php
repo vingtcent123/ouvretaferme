@@ -161,7 +161,6 @@ new \bank\CashflowPage(function($data) {
 		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
 
 		$data->cOperationSelected = \journal\OperationLib::getByIds(GET('operations', 'array'));
-		\journal\OperationLib::setHashOperations($data->cOperationSelected);
 
 		$hashes = array_unique($data->cOperationSelected->getColumn('hash'));
 		$cOperationAll = new Collection();
