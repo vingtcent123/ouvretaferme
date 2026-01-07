@@ -217,7 +217,7 @@ class Collection extends ArrayIterator {
 	 *
 	 * @return array
 	 */
-	public function linearize(): Collection {
+	public function linearize(bool $reindex = TRUE): Collection {
 
 		if($this->depth === 1) {
 			throw new Exception('Invalid depth');
@@ -226,7 +226,7 @@ class Collection extends ArrayIterator {
 		$c = new Collection();
 
 		foreach($this as $subC) {
-			$c->mergeCollection($subC);
+			$c->mergeCollection($subC, $reindex);
 		}
 
 		return $c;
