@@ -146,7 +146,7 @@ new \bank\CashflowPage(function($data) {
 
 		throw new ReloadAction('bank', 'Cashflow::allocated');
 
-	})
+	}, validate: ['acceptAllocate'])
 	->read('attach', function($data) {
 
 		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
@@ -155,7 +155,7 @@ new \bank\CashflowPage(function($data) {
 
 		throw new ViewAction($data);
 
-	})
+	}, validate: ['acceptAllocate'])
 	->read('calculateAttach', function($data) {
 
 		$data->eThirdParty = \account\ThirdPartyLib::getById(GET('thirdParty'));
@@ -195,7 +195,7 @@ new \bank\CashflowPage(function($data) {
 
 		throw new ReloadAction('bank', 'Cashflow::attached');
 
-	})
+	}, validate: ['acceptAllocate'])
 ;
 new \bank\CashflowPage(function($data) {
 
