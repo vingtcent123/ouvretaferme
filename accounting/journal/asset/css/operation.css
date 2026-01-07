@@ -200,12 +200,6 @@
 #operation-update-list {
 	flex: 1;
 }
-#operation-create-list .operation-create-headers,
-#operation-update-list .operation-create-headers,
-#operation-create-list .operation-create-validation,
-#operation-update-list .operation-create-validation {
-	background-color: transparent !important;
-}
 #operation-create-list .operation-create-headers > :nth-child(2),
 #operation-update-list .operation-create-headers > :nth-child(2),
 #operation-create-list .operation-create-validation > :nth-child(2),

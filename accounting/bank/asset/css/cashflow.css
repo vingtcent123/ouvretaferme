@@ -78,8 +78,16 @@
 	align-items: center;
 }
 
-#cashflow-allocate-difference-value {
+[cashflow-allocate-difference-value] {
 	font-weight: bold;
+	white-space: nowrap;
+}
+@media (min-width: 768px) {
+	.operation-create-validation {
+		background-color: white !important;
+		position: sticky;
+		right: 0;
+	}
 }
 .cashflow-create-operation-validate.danger > div {
 	color: white;
@@ -90,7 +98,13 @@
 	grid-row: span 3;
 }
 #cashflow-allocate-difference-warning {
-	margin: auto;
+	text-align: center;
+    border-radius: var(--radius);
+    background: var(--danger);
+    color: white;
+    padding: 1rem;
+    width: 100%;
+    line-height: 1.3;
 }
 
 .cashflow-create-operation-validate.warning {

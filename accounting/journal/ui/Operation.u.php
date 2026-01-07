@@ -998,19 +998,19 @@ class OperationUi {
 		$h = '<div class="operation-create operation-create-validation">';
 
 			$h .= '<h4></h4>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
+			$h .= '<div></div>';
+			$h .= '<div></div>';
+			$h .= '<div></div>';
+			$h .= '<div></div>';
+			$h .= '<div></div>';
 			$h .= '<div class="cashflow-create-operation-validate" data-wrapper="asset-label"></div>';
-			$h .= '<div class="cashflow-create-operation-validate"></div>';
+			$h .= '<div></div>';
 			if($isFromCashflow === FALSE) {
-				$h .= '<div class="cashflow-create-operation-validate"></div>';
-				$h .= '<div class="cashflow-create-operation-validate"></div>';
+				$h .= '<div></div>';
+				$h .= '<div></div>';
 			}
-			$h .= '<div class="cashflow-create-operation-validate cashflow-warning">';
-				$h .= '<div>';
+			$h .= '<div class="cashflow-warning" style="display: flex; align-items: end; ">';
+				$h .= '<div style="width: 100%;">';
 					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
 						$h .= '<span data-direction="missing" class="hide">';
 							$h .= s("⚠️ Manque <span></span>", ['span' => '<span cashflow-allocate-difference-value>']);
