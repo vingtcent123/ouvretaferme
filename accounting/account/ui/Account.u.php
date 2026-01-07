@@ -214,7 +214,7 @@ class AccountUi {
 						$h .= '</td>';
 
 						$h .= '<td>';
-							if($eAccount['vatAccount']->notEmpty) {
+							if($eAccount['vatAccount']->notEmpty()) {
 								$h .= '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>';
 							}
 						$h .= '</td>';
