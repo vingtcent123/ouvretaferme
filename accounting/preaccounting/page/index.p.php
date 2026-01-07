@@ -246,19 +246,29 @@ new Page(function($data) {
 
 			$operations = \preaccounting\AccountingLib::sortOperations(array_merge($saleOperations, $invoiceOperations));
 
-			// Formattage des nombres
-			foreach($operations as &$lineFec) {
+			if((GET('format') ?? 'csv') === 'csv') {
 
-				foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
-					$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
+				// Formattage des nombres
+				foreach($operations as &$lineFec) {
+
+					foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
+						$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
+					}
+
 				}
+
+				$fecData = array_merge([\account\FecLib::getHeader()], $operations);
+
+				throw new CsvAction($fecData, 'pre-comptabilite-ventes-'.$data->search->get('from').'-'.$data->search->get('to').'.csv');
 
 			}
 
 			$fecData = array_merge([\account\FecLib::getHeader()], $operations);
+			$fecDataString = join("\n", array_map(fn($operation) => join('|', $operation), $fecData));
 
-			throw new CsvAction($fecData, 'pre-comptabilite-ventes-'.$data->search->get('from').'-'.$data->search->get('to').'.csv');
+			$filename = \account\FecLib::getFilename($data->eFarm, new \account\FinancialYear());
 
+			throw new DataAction($fecDataString, 'text/txt', $filename);
 		}
 
 		throw new VoidAction();

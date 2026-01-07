@@ -242,7 +242,15 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 		$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
 
 		echo '<div class="mt-2 mb-2 text-center">';
-			echo '<a class="btn btn-lg btn-secondary" href="'.$url.'" data-ajax-navigation="never">'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
+			echo '<a class="dropdown-toggle btn btn-lg btn-secondary" data-dropdown="bottom-down" >'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
+			echo '<div class="dropdown-list">';
+				echo '<a href="'.$url.'&format=csv" class="dropdown-item" data-ajax-navigation="never">';
+					echo s("Au format CSV");
+				echo '</a>';
+				echo '<a href="'.$url.'&format=txt" class="dropdown-item" data-ajax-navigation="never">';
+					echo s("Au format TXT");
+				echo '</a>';
+			echo '</div>';
 		echo '</div>';
 
 		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->search->get('hasInvoice'), $data->cInvoice);
