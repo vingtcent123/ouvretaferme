@@ -49,7 +49,7 @@ class CashflowModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'date' => ['date', 'min' => toDate('NOW - 2 YEARS'), 'max' => toDate('NOW + 1 YEARS'), 'null' => TRUE, 'cast' => 'string'],
+			'date' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\bank\Cashflow::DEBIT, \bank\Cashflow::CREDIT, \bank\Cashflow::OTHER], 'cast' => 'enum'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],

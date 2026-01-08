@@ -84,24 +84,6 @@ class CashflowLib extends CashflowCrud {
 		];
 	}
 
-	public static function getMinMaxDate(): array {
-
-		$eCashflow = Cashflow::model()
-			->select([
-				'min' => new \Sql('MIN(date)'),
-				'max' => new \Sql('MAX(date)'),
-			])
-			->where(TRUE)
-			->get();
-
-		if($eCashflow->empty() or $eCashflow['min'] === NULL) {
-			return ['', ''];
-		}
-
-		return array_values($eCashflow->getArrayCopy());
-
-	}
-
 	public static function insertMultiple(\Collection $cCashflow): array {
 
 		$cCashflowAlreadyImported = Cashflow::model()

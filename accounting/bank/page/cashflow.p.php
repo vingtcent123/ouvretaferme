@@ -66,7 +66,6 @@ new Page(function($data) {
 		[$data->cCashflow, $data->nCashflow, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
 		\bank\CashflowLib::searchSimilarAffectedCashflows($data->cCashflow);
 
-		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
 		$data->eImportCurrent = \bank\ImportLib::getLastImport();
 		if($data->eImportCurrent->notEmpty()) {
 			$data->eImportCurrent['nCashflowWaiting'] = \bank\CashflowLib::countSuggestionWaitingByImport($data->eImportCurrent);

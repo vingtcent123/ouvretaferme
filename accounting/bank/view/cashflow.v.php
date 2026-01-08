@@ -8,7 +8,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingBankTitle($data->eFarm, 'bank', $data->nCashflow);
 
-	echo new \bank\CashflowUi()->getSearch($data->eFarm, $data->search, $data->minDate, $data->maxDate);
+	echo new \bank\CashflowUi()->getSearch($data->eFarm, $data->search);
 
 	echo new \bank\CashflowUi()->getReconciliateInfo($data->eFarm, $data->eImportCurrent);
 

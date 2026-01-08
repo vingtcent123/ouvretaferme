@@ -10,7 +10,7 @@ class CashflowUi {
 		\Asset::css('journal', 'journal.css');
 	}
 
-	public function getSearch(\farm\Farm $eFarm, \Search $search, string $minDate, string $maxDate): string {
+	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
 		$h = '<div id="cashflow-search" class="util-block-search '.(($search->empty(['ids', 'bankAccount']) and $search->get('isReconciliated') === NULL) ? 'hide' : '').'">';
 
@@ -22,9 +22,9 @@ class CashflowUi {
 			$h .= '<fieldset>';
 				$h .= '<legend>'.s("Période").'</legend>';
 				$h .= $form->inputGroup(
-					$form->date('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
+					$form->date('periodStart', $search->get('periodStart'), ['placeholder' => s("Début")]).
 					$form->addon(s("à")).
-					$form->date('periodEnd', $search->get('periodEnd'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Fin")])
+					$form->date('periodEnd', $search->get('periodEnd'), ['placeholder' => s("Fin")])
 				);
 			$h .= '</fieldset>';
 			$h .= '<fieldset>';
