@@ -51,7 +51,7 @@ new AdaptativeView('close', function($data, FarmTemplate $t) {
 	echo new \account\FinancialYearUi()->close(
 		$data->eFarm,
 		$data->e,
-		$data->cOperationToDefer,
+		$data->cDeferral,
 		$data->cAssetGrant,
 		$data->cAsset,
 	);

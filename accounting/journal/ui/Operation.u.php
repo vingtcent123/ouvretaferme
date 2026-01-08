@@ -1382,6 +1382,64 @@ class OperationUi {
 
 	}
 
+	public static function getAutocompleteDeferral(\farm\Farm $eFarm, Operation $eOperation): array {
+
+		\Asset::css('media', 'media.css');
+
+		if($eOperation['document']) {
+			$document = '<br /><small class="color-muted">'.s("Pièce comptable : ").encode($eOperation['document']).'</small>';
+		} else {
+			$document = '';
+		}
+
+		$itemHtml = '<div style="display: flex; gap: 0.5rem;">';
+			$itemHtml .= '<div class="text-end">';
+				$itemHtml .= \util\DateUi::numeric($eOperation['date']);
+				$itemHtml .= '<br />'.encode($eOperation['accountLabel']);
+			$itemHtml .= '</div>';
+			$itemHtml .= '<div>';
+				$itemHtml .= encode($eOperation['description']).' - '.s("{type} de {amount}", [
+					'type' => \journal\OperationUi::p('type')->values[$eOperation['type']],
+					'amount' => \util\TextUi::money($eOperation['amount']),
+				]);
+				if($eOperation['thirdParty']->notEmpty()) {
+					$itemHtml .= '<br />';
+					$itemHtml .= \Asset::icon('person-rolodex').' '.encode($eOperation['thirdParty']['name']);
+				}
+
+				$itemHtml .= $document;
+			$itemHtml .= '</div>';
+		$itemHtml .= '</div>';
+
+		return [
+			'value' => $eOperation['id'],
+			'link' => \company\CompanyUi::urlFarm($eFarm).'/journal/deferral:set?id='.$eOperation['id'],
+			'itemHtml' => $itemHtml,
+			'itemText' => encode($eOperation['description']).' - '.s(
+					"{type} de {amount}", [
+					'type' => \journal\OperationUi::p('type')->values[$eOperation['type']],
+					'amount' => $eOperation['amount'].' €',
+				]
+			)
+		];
+
+	}
+
+	public function queryForDeferral(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE) {
+
+		$d->prepend = \Asset::icon('journal-bookmark');
+		$d->field = 'autocomplete';
+
+		$d->placeholder ??= s("Écriture...");
+		$d->multiple = $multiple;
+
+		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:queryForDeferral';
+		$d->autocompleteResults = function(Operation $eOperation) {
+			return self::getAutocompleteDeferral($eOperation);
+		};
+
+	}
+
 	public function queryDescription(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE) {
 
 		$d->prepend = \Asset::icon('pencil-fill');

@@ -8,6 +8,11 @@ document.delegateEventListener('input', '#journal-deferral-set input[name="amoun
 });
 
 
+document.delegateEventListener('autocompleteSelect', '[data-operation="operation-deferral"]', function(e) {
+
+	window.location.href = e.detail.link;
+
+});
 
 
 class Deferral {
@@ -19,6 +24,9 @@ class Deferral {
 	}
 
 	static updateDates(formId) {
+
+		qs('#fieldAmount').checked = true;
+		Deferral.updateField();
 
 		const amount = qs('#' + formId + ' input[name="amount"]').value;
 
@@ -33,6 +41,7 @@ class Deferral {
 
 		const joursN = Math.round((financialYearEndDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // inclusif
 		const montantConsomme = initialAmount - amount;
+
 		if (montantConsomme <= 0) {
 			return;
 		}
@@ -45,12 +54,18 @@ class Deferral {
 		if(minEndDate < endDate) {
 
 			qs('#' + formId + ' input[name="endDate"]').setAttribute('value', endDate.toISOString().substring(0, 10));
+			qs('#warning-amount-end-date').hide();
 
+		} else {
+			qs('#warning-amount-end-date').removeHide();
 		}
 
 	}
 
 	static updateAmount(formId) {
+
+		qs('#fieldDates').checked = true;
+		Deferral.updateField();
 
 		const startDate = new Date(qs('#' + formId + ' input[name="startDate"]').value);
 		const endDate = new Date(qs('#' + formId + ' input[name="endDate"]').value);
@@ -59,8 +74,11 @@ class Deferral {
 		const initialAmount = this.getInitialAmount(formId);
 
 		if(endDate < financialYearEndDate || endDate < startDate) {
+			qs('#warning-dates-amount').removeHide();
 			return;
 		}
+
+		qs('#warning-dates-amount').hide();
 
 		const joursN = Math.round((financialYearEndDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // inclusif
 		const joursTotal = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // inclusif
@@ -70,4 +88,20 @@ class Deferral {
 
 	}
 
+	static updateField() {
+
+		const field = qs('[name="field"]:checked').value;
+
+		if(field === 'dates') {
+			qs('[name="amount"]').setAttribute('disabled', 'disabled');
+			qs('[name="startDate"]').removeAttribute('disabled');
+			qs('[name="endDate"]').removeAttribute('disabled');
+		}
+
+		if(field === 'amount') {
+			qs('[name="amount"]').removeAttribute('disabled');
+			qs('[name="startDate"]').setAttribute('disabled', 'disabled');
+			qs('[name="endDate"]').setAttribute('disabled', 'disabled');
+		}
+	}
 }

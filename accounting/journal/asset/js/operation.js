@@ -519,4 +519,5 @@ class Operation {
 
 		OperationAmount.checkAmounts(index);
 	}
+
 }

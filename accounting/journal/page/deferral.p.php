@@ -1,31 +1,23 @@
 <?php
 new \journal\OperationPage(function($data) {
 
-
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
 })
-	->applyElement(function($data, \journal\Operation $e) {
-
-		$e->validate('acceptDeferral');
-
-	})
 	->read('set', function($data) {
-
-			$data->field = GET('field');
 
 			throw new ViewAction($data);
 
-	})
+	}, validate: ['acceptDeferral'])
 	->write('doSet', function($data) {
 
 			$success = \journal\DeferralLib::createDeferral($data->e, $_POST);
 
-			throw new ReloadAction('journal', $success);
+			throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/:close?id='.$data->eFarm['eFinancialYear']['id'].'&success=journal:'.$success);
 
-	})
+	}, validate: ['acceptDeferral'])
 ;
 
 new \journal\DeferralPage(function($data) {
@@ -34,11 +26,6 @@ new \journal\DeferralPage(function($data) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 })
-	->applyElement(function($data, \journal\Deferral $e) {
-
-		$e->validate('acceptDelete');
-
-	})
 	->doDelete(function($data) {
 
 		\account\LogLib::save('delete', 'Deferral', ['id' => $data->e['id']]);

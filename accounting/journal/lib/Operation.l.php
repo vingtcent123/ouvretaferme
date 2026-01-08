@@ -357,29 +357,6 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getAllChargesForClosing(\Search $search): \Collection {
-
-		return self::applySearch($search)
-			->select(
-				Operation::getSelection()
-				+ ['operation' => [
-					'id', 'account', 'accountLabel', 'document', 'type',
-					'thirdParty' => ['id', 'name'],
-					'description', 'amount', 'vatRate', 'date',
-					'financialYear',
-				]]
-				+ ['account' => ['class', 'description']]
-				+ ['thirdParty' => ['id', 'name']]
-				+ ['month' => new \Sql('SUBSTRING(date, 1, 7)')]
-			)
-			->sort(['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
-			->or(
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%'),
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%'),
-			)
-			->getCollection();
-	}
-
 	public static function getAllForVatJournal(string $type, \Search $search = new \Search(), bool $hasSort = FALSE,
 		?array $index = ['accountLabel', 'month', NULL]): \Collection {
 
@@ -1171,22 +1148,22 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getForAttachQuery(string $query, \account\ThirdParty $eThirdParty, array $excludedOperationIds, array $excludedPrefix): \Collection {
+	public static function getForAttachQuery(\Search $search): \Collection {
 
 		$selection = Operation::getSelection();
-		if($eThirdParty->notEmpty()) {
-			$selection['isThirdParty'] = new \Sql('IF(thirdParty = '.$eThirdParty['id'].', 1, 0)', 'bool');
+		if($search->get('thirdParty')->notEmpty()) {
+			$selection['isThirdParty'] = new \Sql('IF(thirdParty = '.$search->get('thirdParty')['id'].', 1, 0)', 'bool');
 			$sort = ['m1_isThirdParty' => SORT_DESC];
 		} else {
 			$selection['isThirdParty'] = new \Sql('0');
 			$sort = ['m1_isThirdParty' => SORT_DESC];
 		}
 
-		if($query !== '') {
+		if($search->get('query') !== '') {
 
 			$keywords = [];
 
-			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $search->get('query')));
 
 			foreach(preg_split('/\s+/', $query) as $word) {
 				$keywords[] = '*'.$word.'*';
@@ -1198,11 +1175,11 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		if(count($excludedOperationIds) > 0) {
+		if(count($search->get('excludedOperationIds')) > 0) {
 
 			$hashToExclude = Operation::model()
 				->select('hash')
-				->whereId('IN', $excludedOperationIds)
+				->whereId('IN', $search->get('excludedOperationIds'))
 				->getCollection()
 				->getColumn('hash');
 
@@ -1212,7 +1189,7 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		$excludedPrefix = array_filter($excludedPrefix, fn($val) => $val);
+		$excludedPrefix = array_filter($search->get('excludedPrefix'), fn($val) => $val);
 		if(count($excludedPrefix) > 0) {
 			foreach($excludedPrefix as $prefix) {
 				Operation::model()->where(new \Sql('m1.accountLabel NOT LIKE "'.$prefix.'%"'));
@@ -1244,6 +1221,39 @@ class OperationLib extends OperationCrud {
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
 			->whereHash('IN', $cOperationNotBalanced->getColumn('hash'))
 			->sort($sort + ['m1_date' => SORT_DESC])
+			->getCollection(NULL, NULL, 'hash'); // Pour ne conserver que 1 opération par hash
+
+	}
+
+	public static function getForDeferral(string $query, \account\FinancialYear $eFinancialYear): \Collection {
+
+		if($query !== '') {
+
+			$keywords = [];
+
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
+
+			foreach(preg_split('/\s+/', $query) as $word) {
+				$keywords[] = '*'.$word.'*';
+			}
+
+			$match = 'MATCH(accountLabel, description, document) AGAINST ('.Operation::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+			Operation::model()->where($match.' > 0');
+
+		}
+
+		return Operation::model()
+			->select(Operation::getSelection())
+			->or(
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ACCOUNT_CLASS.'%'),
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%'),
+			)
+			->join(Deferral::model(), 'm1.id = m2.operation', 'LEFT')
+			->where('m2.id IS NULL')
+			->whereDate('>=', $eFinancialYear['startDate'])
+			->whereDate('<=', $eFinancialYear['endDate'])
+			->sort(['date' => SORT_DESC])
 			->getCollection(NULL, NULL, 'hash'); // Pour ne conserver que 1 opération par hash
 
 	}

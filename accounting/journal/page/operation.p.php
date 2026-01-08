@@ -261,12 +261,40 @@ new \journal\OperationPage(function($data) {
 new Page()
 	->post('query', function($data) {
 
-		$data->eCashflow = \bank\CashflowLib::getById(POST('cashflow'));
-		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
-		$excludedOperationIds = explode(',', POST('excludedOperations'));
-		$excludedPrefix = explode(',', POST('excludedPrefix'));
+		$search = new Search([
+			'query' => POST('query'),
+			'cashflow' => \bank\CashflowLib::getById(POST('cashflow')),
+			'thirdParty' => \account\ThirdPartyLib::getById(POST('thirdParty')),
+			'excludedOperationIds' => explode(',', POST('excludedOperations')),
+			'excludedPrefix' => explode(',', POST('excludedPrefix')),
+		]);
+		$data->eCashflow = $search->get('cashflow');
 
-		$data->cOperation = \journal\OperationLib::getForAttachQuery(POST('query'), $eThirdParty, $excludedOperationIds, $excludedPrefix);
+		$data->cOperation = \journal\OperationLib::getForAttachQuery($search);
+
+		throw new \ViewAction($data);
+
+	})
+	->post('queryForDeferral', function($data) {
+
+ 		$data->cOperation = \journal\OperationLib::getForDeferral(POST('query'), $data->eFarm['eFinancialYear']);
+
+		throw new \ViewAction($data);
+
+	})
+	->post('queryForDeferral', function($data) {
+
+		$search = new Search([
+			'query' => POST('query'),
+			'cashflow' => \bank\CashflowLib::getById(POST('cashflow')),
+			'thirdParty' => \account\ThirdPartyLib::getById(POST('thirdParty')),
+			'excludedOperationIds' => explode(',', POST('excludedOperations')),
+			'excludedPrefix' => explode(',', POST('excludedPrefix')),
+			'accountLabelPrefixes' => POST('accountLabelPrefixes', 'array'),
+		]);
+		$data->eCashflow = $search->get('cashflow');
+
+		$data->cOperation = \journal\OperationLib::getForAttachQuery($search);
 
 		throw new \ViewAction($data);
 

@@ -737,7 +737,7 @@ class FinancialYearUi {
 		return s("Résultat exercice {value}", $eFinancialYear->getLabel());
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cOperationToDefer, \Collection $cAssetGrant, \Collection $cAsset): string {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cDeferral, \Collection $cAssetGrant, \Collection $cAsset): string {
 
 		$form = new \util\FormUi();
 
@@ -778,7 +778,7 @@ class FinancialYearUi {
 			$h .= '</div>';
 
 			// Étape 1 : PCA et CCA
-			$h .= new \journal\DeferralUi()->listForClosing($eFarm, $eFinancialYear, $cOperationToDefer);
+			$h .= new \journal\DeferralUi()->listForClosing($eFarm, $eFinancialYear, $cDeferral);
 
 			// Étape 2 : Visualisation des amortissements
 			$h .= new \asset\AssetUi()->listForClosing($eFarm, $eFinancialYear, $form, $cAsset);

@@ -44,11 +44,11 @@ class DeferralLib extends DeferralCrud {
 				'financialYear' => $eFinancialYear['id'],
 				'account' => ($eDeferral['type'] === Deferral::CHARGE ? \account\AccountLib::getByClass($class) : $eDeferral['operation']['account'])['id'],
 				'accountLabel' => $eDeferral['type'] === Deferral::CHARGE ? \account\AccountLabelLib::pad($class) : $eDeferral['operation']['accountLabel'],
-				'thirdParty' => $eDeferral['operation']['thirdParty']['id'],
+				'thirdParty' => $eDeferral['operation']['thirdParty']['id'] ?? NULL,
 				'description' => DeferralUi::getTranslation(Deferral::DEFERRED, $eDeferral['type']).' - '.$eDeferral['operation']['description'],
 				'type' => Operation::CREDIT,
 				'amount' => $eDeferral['amount'],
-				'journalCode' => $eJournalCode['id'],
+				'journalCode' => $eJournalCode['id'] ?? NULL,
 				'date' => $eFinancialYear['startDate'],
 				'paymentDate' => $eFinancialYear['startDate'],
 				'hash' => $hash,
@@ -60,11 +60,11 @@ class DeferralLib extends DeferralCrud {
 				'financialYear' => $eFinancialYear['id'],
 				'account' => ($eDeferral['type'] === Deferral::CHARGE ? $eDeferral['operation']['account'] : \account\AccountLib::getByClass($class))['id'],
 				'accountLabel' => $eDeferral['type'] === Deferral::CHARGE ? $eDeferral['operation']['accountLabel'] : \account\AccountLabelLib::pad($class),
-				'thirdParty' => $eDeferral['operation']['thirdParty']['id'],
+				'thirdParty' => $eDeferral['operation']['thirdParty']['id'] ?? NULL,
 				'description' => DeferralUi::getTranslation(Deferral::DEFERRED, $eDeferral['type']).' - '.$eDeferral['operation']['description'],
 				'type' => Operation::DEBIT,
 				'amount' => $eDeferral['amount'],
-				'journalCode' => $eJournalCode['id'],
+				'journalCode' => $eJournalCode['id'] ?? NULL,
 				'date' => $eFinancialYear['startDate'],
 				'paymentDate' => $eFinancialYear['startDate'],
 				'hash' => $hash,
@@ -116,11 +116,11 @@ class DeferralLib extends DeferralCrud {
 				'financialYear' => $eFinancialYear['id'],
 				'account' => ($eDeferral['type'] === Deferral::CHARGE ? \account\AccountLib::getByClass($class) : $eDeferral['operation']['account'])['id'],
 				'accountLabel' => $eDeferral['type'] === Deferral::CHARGE ? \account\AccountLabelLib::pad($class) : $eDeferral['operation']['accountLabel'],
-				'thirdParty' => $eDeferral['operation']['thirdParty']['id'],
+				'thirdParty' => $eDeferral['operation']['thirdParty']['id'] ?? NULL,
 				'description' => DeferralUi::getTranslation(Deferral::RECORDED, $eDeferral['type']).' - '.$eDeferral['operation']['description'],
 				'type' => Operation::DEBIT,
 				'amount' => $eDeferral['amount'],
-				'journalCode' => $eJournalCode['id'],
+				'journalCode' => $eJournalCode['id'] ?? NULL,
 				'date' => $eFinancialYear['endDate'],
 				'paymentDate' => $eFinancialYear['endDate'],
 				'hash' => $hash,
@@ -132,11 +132,11 @@ class DeferralLib extends DeferralCrud {
 				'financialYear' => $eFinancialYear['id'],
 				'account' => ($eDeferral['type'] === Deferral::CHARGE ? $eDeferral['operation']['account'] : \account\AccountLib::getByClass($class))['id'],
 				'accountLabel' => $eDeferral['type'] === Deferral::CHARGE ? $eDeferral['operation']['accountLabel'] : \account\AccountLabelLib::pad($class),
-				'thirdParty' => $eDeferral['operation']['thirdParty']['id'],
+				'thirdParty' => $eDeferral['operation']['thirdParty']['id'] ?? NULL,
 				'description' => DeferralUi::getTranslation(Deferral::RECORDED, $eDeferral['type']).' - '.$eDeferral['operation']['description'],
 				'type' => Operation::CREDIT,
 				'amount' => $eDeferral['amount'],
-				'journalCode' => $eJournalCode['id'],
+				'journalCode' => $eJournalCode['id'] ?? NULL,
 				'date' => $eFinancialYear['endDate'],
 				'paymentDate' => $eFinancialYear['endDate'],
 				'hash' => $hash,
@@ -155,42 +155,12 @@ class DeferralLib extends DeferralCrud {
 
 	}
 
-	public static function getDeferralsForOperations(\Collection $cOperation): void {
+	public static function getDeferralsForOperations(): \Collection {
 
-		$cDeferral = Deferral::model()
-			->select(Deferral::getSelection())
-			->whereOperation('IN', $cOperation)
+		return Deferral::model()
+			->select(Deferral::getSelection() + ['operation' => Operation::getSelection()])
 			->whereStatus(Deferral::PLANNED)
 			->getCollection(NULL, NULL, 'operation');
-
-		$cOperation->map(function($eOperation) use($cDeferral) {
-			$eOperation['deferral'] = $cDeferral->find(function($e) use ($eOperation) {
-				return $e['operation']['id'] === $eOperation['id'];
-			})->first();
-		});
-
-		// On affichera les PCA et CCA déjà reportés en premier
-		$cOperation->sort(function($e1, $e2) {
-
-			if($e1['deferral'] !== null and $e2['deferral'] === NULL) {
-				return -1;
-			}
-
-			if($e1['deferral'] === NULL and $e2['deferral'] !== NULL) {
-				return 1;
-			}
-
-			if(substr($e1['accountLabel'], 0, 1) > substr($e2['accountLabel'], 0, 1)) {
-				return 1;
-			}
-
-			if(substr($e1['accountLabel'], 0, 1) < substr($e2['accountLabel'], 0, 1)) {
-				return -1;
-			}
-
-			return $e1['date'] > $e2['date'] ? 1 : -1;
-
-		});
 
 	}
 
@@ -199,13 +169,6 @@ class DeferralLib extends DeferralCrud {
 		$field = $input['field'] ?? NULL;
 		if(in_array($field, ['dates', 'amount']) === FALSE) {
 			return FALSE;
-		}
-
-		$isCharge = \account\AccountLabelLib::isChargeClass($eOperation['accountLabel']);
-		$isProduct = \account\AccountLabelLib::isProductClass($eOperation['accountLabel']);
-
-		if($isCharge === FALSE and $isProduct === FALSE) {
-			throw new \NotExpectedAction('Unable to defer operation (not a charge nor a product)');
 		}
 
 		if($field === 'dates') {
@@ -220,6 +183,8 @@ class DeferralLib extends DeferralCrud {
 
 		$fw = new \FailWatch();
 
+		$isCharge = \account\AccountLabelLib::isChargeClass($eOperation['accountLabel']);
+
 		$eDeferral = new Deferral();
 		$values = [
 			'operation' => $eOperation['id'],
@@ -230,7 +195,7 @@ class DeferralLib extends DeferralCrud {
 			'status' => Deferral::PLANNED,
 			'type' => $isCharge ? Deferral::CHARGE : Deferral::PRODUCT
 		];
-		$eDeferral->build(['type', 'operation', 'financialYear', 'startDate', 'endDate', 'amount', 'status'], $values);
+		$eDeferral->build(['type', 'financialYear', 'operation', 'startDate', 'endDate', 'amount', 'status'], $values);
 
 		$fw->validate();
 

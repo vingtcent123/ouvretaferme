@@ -105,10 +105,8 @@ new \account\FinancialYearPage()
 	->read('close', function($data) {
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
-		$search = new Search(['financialYear' => $data->e]);
 
-		$data->cOperationToDefer = \journal\OperationLib::getAllChargesForClosing($search);
-		\journal\DeferralLib::getDeferralsForOperations($data->cOperationToDefer);
+		$data->cDeferral = \journal\DeferralLib::getDeferralsForOperations();
 
 		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
 		\asset\AmortizationLib::simulateGrants($data->e, $data->cAssetGrant);

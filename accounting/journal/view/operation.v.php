@@ -166,6 +166,18 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 });
 
+new JsonView('queryForDeferral', function($data, AjaxTemplate $t) {
+
+	$results = [];
+
+	foreach($data->cOperation as $eOperation) {
+		$results [] = \journal\OperationUi::getAutocompleteDeferral($data->eFarm, $eOperation);
+	}
+
+	$t->push('results', $results);
+
+});
+
 
 new JsonView('queryDescription', function($data, AjaxTemplate $t) {
 
