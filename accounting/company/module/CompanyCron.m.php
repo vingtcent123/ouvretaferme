@@ -9,7 +9,6 @@ abstract class CompanyCronElement extends \Element {
 
 	const WAITING = 'waiting';
 	const PROCESSING = 'processing';
-	const DONE = 'done';
 
 	public static function getSelection(): array {
 		return CompanyCron::model()->getProperties();
@@ -47,11 +46,12 @@ class CompanyCronModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'action' => ['text8', 'cast' => 'string'],
-			'status' => ['enum', [\company\CompanyCron::WAITING, \company\CompanyCron::PROCESSING, \company\CompanyCron::DONE], 'null' => TRUE, 'cast' => 'enum'],
+			'status' => ['enum', [\company\CompanyCron::WAITING, \company\CompanyCron::PROCESSING], 'null' => TRUE, 'cast' => 'enum'],
+			'element' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'action', 'status'
+			'id', 'farm', 'action', 'status', 'element'
 		]);
 
 		$this->propertiesToModule += [
@@ -96,6 +96,10 @@ class CompanyCronModel extends \ModuleModel {
 
 	public function whereStatus(...$data): CompanyCronModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereElement(...$data): CompanyCronModel {
+		return $this->where('element', ...$data);
 	}
 
 

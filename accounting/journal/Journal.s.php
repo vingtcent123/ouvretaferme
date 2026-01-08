@@ -11,12 +11,9 @@ class JournalSetting extends \Settings {
 	const HASH_LETTER_ASSETS = 'i'; // hash des écritures d'inventaire (immos)
 	const HASH_LETTER_DEFERRAL = 'd'; // hash des écritures d'inventaire (PCA et CCA)
 
-	const HASH_LETTER_PAYMENT = 'p'; // hash des écritures de paiement
 	const HASH_LETTER_IMPORT_INVOICE = 'f'; // Hash des écritures importées depuis le module de vente (factures)
-	const HASH_LETTER_IMPORT_SALE = 'v'; // Hash des écritures importées depuis le module de vente (ventes)
-	const HASH_LETTER_IMPORT_MARKET = 'm'; // Hash des écritures importées depuis le module de vente (marché)
-	const HASH_LETTER_RECONCILIATE = 'r'; // Hash des réconciliations
 	const HASH_LETTER_WRITE = 'w'; // Hash de la création d'écriture (base)
+	const HASH_LETTER_FEC_IMPORT = 'e'; // Hash d'un import FEC
 }
 
 ?>

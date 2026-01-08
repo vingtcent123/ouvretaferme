@@ -42,7 +42,7 @@ class FinancialYear extends FinancialYearElement {
 	public function acceptImportFec(): bool {
 
 		$this->expects(['nOperation']);
-		return $this['nOperation'] === 0;
+		return ($this['nOperation'] === 0 and $this->isOpen() === FALSE);
 
 	}
 

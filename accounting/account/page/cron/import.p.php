@@ -5,20 +5,18 @@ new Page()
 		$cCompanyCron = \company\CompanyCron::model()
 			->select(\company\CompanyCron::getSelection())
 			->whereAction(\company\CompanyCronLib::FEC_IMPORT)
-			->whereStatus(\company\CompanyCron::WAITING)
 			->getCollection();
 
 		foreach($cCompanyCron as $eCompanyCron) {
 
-			$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\CompanyCron::PROCESSING]);
+			\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
 
-			if($updated === 1) {
+			$eImport = \account\ImportLib::getById($eCompanyCron['element']);
 
-				\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
-				\account\ImportLib::manageImports($eCompanyCron['farm']);
+			$imported = \account\ImportLib::treatImport($eCompanyCron['farm'], $eImport);
 
+			if($imported) {
 				\company\CompanyCron::model()->delete($eCompanyCron);
-
 			}
 
 		}

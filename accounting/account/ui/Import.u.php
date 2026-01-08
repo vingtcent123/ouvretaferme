@@ -171,7 +171,7 @@ class ImportUi {
 					$class = 'class="'.(($dataJournal['journalCode']['id'] ?? NULL) === NULL ? 'color-danger' : '').'"';
 					$h .= '<tr>';
 						$h .= '<td '.$class.'>'.encode($journal).'</td>';
-						$h .= '<td> '.$class.''.encode($dataJournal['label']).'</td>';
+						$h .= '<td '.$class.'>'.encode($dataJournal['label']).'</td>';
 						$h .= '<td>'.$form->select('journalCode['.$journal.']', $journaux, $dataJournal['journalCode']['id'] ?? NULL, [
 							'data-label' => $journal,
 							'onchange' => 'Import.updateJournal(this)',
