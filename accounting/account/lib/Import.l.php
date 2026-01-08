@@ -9,7 +9,7 @@ Class ImportLib extends ImportCrud {
 
 	}
 
-	public static function updateRuleValue(\farm\Farm $eFarm, Import $eImport, array $input): void {
+	public static function updateRuleValue(Import $eImport, array $input): void {
 
 		switch($input['type']) {
 			case 'comptes':

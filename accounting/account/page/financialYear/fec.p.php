@@ -37,9 +37,9 @@ new \account\ImportPage()
 	}, validate: ['acceptUpdate'])
 	->write('doUpdateRuleValue', function($data) {
 
-		\account\ImportLib::updateRuleValue($data->eFarm, $data->e, $_POST);
+		\account\ImportLib::updateRuleValue($data->e, $_POST);
 
-		throw new VoidAction();
+		throw new ReloadAction();
 
 	}, validate: ['acceptUdpate']);
 
