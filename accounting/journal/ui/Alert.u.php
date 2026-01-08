@@ -28,6 +28,7 @@ class AlertUi {
 
 			'Operation::date.check' => s("La date doit correspondre à l'exercice comptable actuellement ouvert."),
 			'Operation::account.check' => s("N'oubliez pas de choisir un numéro de compte !"),
+			'Operation::account.notExists' => s("Le compte n'existe pas"),
 			'Operation::accountLabel.inconsistency' => s("Le numéro de compte doit commencer par les mêmes chiffres que le compte."),
 			'Operation::accountLabel.format' => s("Le numéro de compte doit être composé exactement de 8 chiffres."),
 

@@ -98,9 +98,11 @@ class Operation extends OperationElement {
 				return FALSE;
 
 			})
-			->setCallback('account.empty', function(?\account\Account $account): bool {
+			->setCallback('account.notExists', function(\account\Account &$eAccount): bool {
 
-				return $account !== NULL;
+				$eAccount = \account\AccountLib::getById($eAccount['id'] ?? NULL);
+
+				return $eAccount->notEmpty();
 
 			})
 			->setCallback('accountLabel.format', function(?string &$accountLabel): bool {
@@ -114,9 +116,11 @@ class Operation extends OperationElement {
 				return TRUE;
 
 			})
-			->setCallback('accountLabel.inconsistency', function(?string $accountLabel): bool {
+			->setCallback('accountLabel.inconsistency', function(?string $accountLabel) use ($p): bool {
 
-				$this->expects(['account']);
+				if($p->isInvalid('account')) {
+					return TRUE;
+				}
 
 				$eAccount = \account\AccountLib::getById($this['account']['id']);
 

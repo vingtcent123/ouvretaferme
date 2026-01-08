@@ -528,6 +528,8 @@ class OperationLib extends OperationCrud {
 		$eThirdParty = new \account\ThirdParty();
 		$thirdPartys = [];
 
+		$indexes = count($input['accountLabel']);
+
 		$totalAmount = 0; // Par défaut : débit - crédit
 
 		$fw = new \FailWatch();
@@ -589,7 +591,7 @@ class OperationLib extends OperationCrud {
 			$eOperationDefault['hash'] = $cOperationOrigin->first()['hash'];
 		}
 
-		foreach($accounts as $index => $account) {
+		for($index = 0; $index < $indexes; $index++) {
 
 			// Si on a déjà l'opération de départ, on part de celle-ci et on la modifie.
 			if(isset($input['id'][$index]) and $cOperationOriginByIds->find(fn($e) => $e['id'] === (int)$input['id'][$index])->notEmpty()) {
@@ -674,7 +676,7 @@ class OperationLib extends OperationCrud {
 			}
 
 			// Ce type d'écriture a un compte de TVA correspondant
-			$eAccount = $cAccounts[$account] ?? new \account\Account();
+			$eAccount = $eOperation['account'];
 			$vatValue = var_filter($vatValues[$index] ?? NULL, 'float', 0.0);
 			$hasVatAccount = (
 				$eFinancialYear['hasVat'] and
