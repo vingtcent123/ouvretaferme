@@ -58,13 +58,13 @@ new Page(function($data) {
 			\session\SessionLib::set('bankAccount', $eBankAccount['id']);
 		}
 
-
 		$hasSort = get_exists('sort') === TRUE;
 		$data->search = clone $search;
 
 		$data->page = GET('page', 'int');
 
 		[$data->cCashflow, $data->nCashflow, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
+		\bank\CashflowLib::searchSimilarAffectedCashflows($data->cCashflow);
 
 		list($data->minDate, $data->maxDate) = \bank\CashflowLib::getMinMaxDate();
 		$data->eImportCurrent = \bank\ImportLib::getLastImport();
@@ -90,6 +90,23 @@ new \bank\CashflowPage(function($data) {
 		if($e->acceptAllocate() === FALSE) {
 			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations');
 		}
+
+	})
+	->read('copy', function($data) {
+
+		$data->similar = \bank\CashflowLib::getSimilarAffectedCashflows($data->e, NULL);
+
+		throw new ViewAction($data);
+
+	})
+	->write('doCopy', function($data) {
+
+		$key = POST('key');
+		$eCashflowOrigin = \bank\CashflowLib::getById(POST('copy'));
+
+		\bank\CashflowLib::createSimilarOperations($data->eFarm['eFinancialYear'], $data->e, $eCashflowOrigin, $key);
+
+		throw new ReloadAction('bank', 'Cashflow::copied');
 
 	})
 	->read('allocate', function($data) {

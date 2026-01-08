@@ -41,7 +41,7 @@ class OperationUi {
 		$h .= '</div>';
 
 		$h .= '<h3>';
-			$h .= s("Récapitulatif des opérations sélectionnées :");
+			$h .= s("Récapitulatif des opérations sélectionnées");
 		$h .= '</h3>';
 
 		$h .= new JournalUi()->list($eFarm, NULL, $cOperation, eFinancialYearSelected: $eFarm['eFinancialYear'], readonly: TRUE, columnsSelected: ['document']);

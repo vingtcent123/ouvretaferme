@@ -1265,7 +1265,9 @@ class OperationLib extends OperationCrud {
 
 	public static function attachOperationsToCashflow(\bank\Cashflow $eCashflow, \Collection $cOperation, \account\ThirdParty $eThirdParty): void {
 
-		$hash = $cOperation->first()['hash'];
+		$eOperationModel = $cOperation->first();
+
+		$hash = $eOperationModel['hash'];
 		$update = [
 			'updatedAt' => Operation::model()->now(),
 			'paymentDate' => $eCashflow['date'],
@@ -1289,14 +1291,17 @@ class OperationLib extends OperationCrud {
 		}
 		OperationCashflow::model()->insert($cOperationCashflow);
 
+
 		// Create Bank line with the good third party
 		OperationLib::createBankOperationFromCashflow($eCashflow, new Operation([
 			'thirdParty' => $eThirdParty,
-			'paymentMethod' => $eOperation['paymentMethod'],
-			'financialYear' => $eOperation['financialYear'],
+			'journalCode' => $eOperationModel['journalCode'],
+			'documentDate' => $eOperationModel['documentDate'],
+			'paymentMethod' => $eOperationModel['paymentMethod'],
+			'financialYear' => $eOperationModel['financialYear'],
 			'hash' => $hash,
 			'accountLabel' => \account\AccountLabelLib::pad($eCashflow['account']['label'] ?? \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL),
-		]));
+		]), $eOperationModel['document']);
 
 	}
 

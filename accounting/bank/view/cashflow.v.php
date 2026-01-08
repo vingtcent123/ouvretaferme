@@ -38,6 +38,17 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('copy', function($data, PanelTemplate $t) {
+
+	return new \bank\CashflowUi()->getCopy(
+		$data->eFarm,
+		$data->eFarm['eFinancialYear'],
+		$data->e,
+		$data->similar,
+	);
+
+});
+
 new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 
 	return new \bank\CashflowUi()->getAllocate(

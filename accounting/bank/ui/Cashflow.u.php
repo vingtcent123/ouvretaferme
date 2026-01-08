@@ -5,6 +5,7 @@ class CashflowUi {
 
 	public function __construct() {
 		\Asset::js('bank', 'cashflow.js');
+		\Asset::css('bank', 'cashflow.css');
 		\Asset::css('company', 'company.css');
 		\Asset::css('journal', 'journal.css');
 	}
@@ -303,6 +304,14 @@ class CashflowUi {
 														$financialYearOption .= s("Rattacher des écritures existantes");
 													$financialYearOption .= '</a>';
 
+													if(($eCashflow['similar'] ?? 0) > 0) {
+
+														$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:copy?id='.$eCashflow['id'].'" class="dropdown-item">';
+															$financialYearOption .= s("Copier des écritures");
+														$financialYearOption .= '</a>';
+
+													}
+
 													$financialYearOptions[] = $financialYearOption;
 												}
 
@@ -542,7 +551,7 @@ class CashflowUi {
 		$dialogOpen = $form->openAjax(
 			\company\CompanyUi::urlBank($eFarm).'/cashflow:doDeallocate',
 			[
-				'id' => 'bank-cashflow-deallocate','class' => 'panel-dialog',]
+				'id' => 'bank-cashflow-deallocate', 'class' => 'panel-dialog',]
 		);
 
 		$h = $form->hidden('farm', $eFarm['id']);
@@ -721,6 +730,59 @@ class CashflowUi {
 			body       : $h,
 			header     : $this->getAllocateTitle($eCashflow),
 			footer     : $amountWarning.'<div class="operation-create-buttons">'.$saveButton.$addButton.'</div>',
+		);
+
+	}
+
+	public function getCopy(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, array $similar): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '<div class="util-info">';
+			$h .= p(
+				"Un schéma d'écriture correspondant à cette opération bancaire a été trouvé. S'il correspond à l'opération que vous traitez actuellement, choisissez-le et les écritures seront copiées à l'identique.",
+				"{value} schémas d'écritures correspondant à cette opération bancaire ont été trouvés. Si l'un d'eux correspond à l'opération que vous traitez actuellement, choisissez-le et les écritures seront copiées à l'identique.",
+				count($similar),
+			);
+		$h .= '</div>';
+
+		$h .= '<h3>'.p("Schéma trouvé", "Schémas trouvés", count($similar)).'</h3>';
+
+		$h .= '<table id="bank-cashflow-copy-table">';
+
+			foreach($similar as $key => $cOperation) {
+
+				$h .= '<tr>';
+
+					$h .= '<td>';
+						$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE);
+					$h .= '</td>';
+
+					$h .= '<td>';
+						$attributes = [
+							'data-ajax' => \company\CompanyUi::urlBank($eFarm).'/cashflow:doCopy',
+							'post-id' => $eCashflow['id'],
+							'post-key' => $key,
+							'post-copy' => $cOperation->first()['cashflow']['id'],
+							'class' => 'btn btn-primary',
+						];
+						$h .= '<a '.attrs($attributes).'>';
+							$h .= s("Choisir ce modèle");
+						$h .= '</a>';
+					$h .= '</td>';
+
+				$h .= '</tr>';
+			}
+
+		$h .= '</table>';
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id         : 'panel-bank-cashflow-copy',
+			title      : s("Copier une structure d'écritures comptables"),
+			body       : $h,
+			header     : $this->getAllocateTitle($eCashflow),
 		);
 
 	}

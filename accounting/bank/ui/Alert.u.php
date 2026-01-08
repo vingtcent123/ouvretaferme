@@ -31,7 +31,8 @@ Class AlertUi {
 
 		return match($fqn) {
 
-			'Cashflow::allocated' => s("Les écritures ont bien été attribuées "),
+			'Cashflow::allocated' => s("Les écritures ont bien été attribuées."),
+			'Cashflow::copied' => s("Les écritures comptables ont bien été copiées à l'identique."),
 			'Cashflow::deallocated.delete' => s("L'opération bancaire a bien été dissociée et les écritures supprimées."),
 			'Cashflow::deallocated.dissociate' => s("L'opération bancaire a bien été dissociée des écritures."),
 			'Cashflow::deleted' => s("L'opération bancaire a bien été supprimée."),

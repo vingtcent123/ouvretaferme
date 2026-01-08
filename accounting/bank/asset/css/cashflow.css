@@ -67,11 +67,13 @@
 
 #bank-cashflow-deallocate > div.panel-header > a,
 #bank-cashflow-allocate > div.panel-header > a,
+#panel-bank-cashflow-copy div.panel-header > a,
 #journal-operation-update[data-cashflow] > div.panel-header > a {
 	display: none;
 }
 #bank-cashflow-deallocate div.panel-title-container,
 #bank-cashflow-allocate div.panel-title-container,
+#panel-bank-cashflow-copy div.panel-title-container,
 #journal-operation-update[data-cashflow] div.panel-title-container {
 	display: flex;
 	justify-content: space-between;
@@ -140,4 +142,9 @@
 
 #bank-cashflow-allocate #operation-create-list {
 	margin-top: 1rem;
+}
+
+#bank-cashflow-copy-table tr.tr-title,
+#bank-cashflow-copy-table td a:has(svg.asset-icon-piggy-bank) {
+	display: none;
 }

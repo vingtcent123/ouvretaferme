@@ -370,12 +370,16 @@ class JournalUi {
 
 						$batch = [];
 
-						if($eOperation->acceptNewAsset() or ($eOperation['operation']->notEmpty() and $eOperation['operation']->acceptNewAsset())) {
-							$batch[] = 'accept-asset';
-						}
+						if($readonly === FALSE) {
 
-						if($eOperation['cOperationCashflow']->empty()) {
-							$batch[] = 'accept-attach';
+							if($eOperation->acceptNewAsset() or ($eOperation['operation']->notEmpty() and $eOperation['operation']->acceptNewAsset())) {
+								$batch[] = 'accept-asset';
+							}
+
+							if($eOperation['cOperationCashflow']->empty()) {
+								$batch[] = 'accept-attach';
+							}
+
 						}
 
 						$referenceDate = ($eFinancialYearSelected->isCashAccounting() and $eOperation['paymentDate'])? $eOperation['paymentDate'] : $eOperation['date'];
