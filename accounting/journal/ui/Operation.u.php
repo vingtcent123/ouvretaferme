@@ -23,7 +23,7 @@ class OperationUi {
 
 	}
 
-	public function createDocumentCollection(\farm\Farm $eFarm): \Panel {
+	public function createDocumentCollection(\farm\Farm $eFarm, \Collection $cOperation): \Panel {
 
 		$form = new \util\FormUi();
 		$dialogOpen = $form->openAjax(
@@ -34,7 +34,21 @@ class OperationUi {
 			],
 		);
 
-		$h = $form->dynamicGroup(new Operation(), 'document');
+		$h = '';
+
+		$h .= '<div class="util-info">';
+			$h .= s("La pièce comptable est l'identifiant de la pièce justificative de vos écritures. Cette identification vous permet de faire plus facilement le lien entre vos écritures comptables et le justificatif.");
+		$h .= '</div>';
+
+		$h .= '<h3>';
+			$h .= s("Récapitulatif des opérations sélectionnées :");
+		$h .= '</h3>';
+
+		$h .= new JournalUi()->list($eFarm, NULL, $cOperation, eFinancialYearSelected: $eFarm['eFinancialYear'], readonly: TRUE, columnsSelected: ['document']);
+
+		$h .= '<h3>'.s("Nouvelle pièce comptable").'</h3>';
+
+		$h .= $form->dynamicGroup(new Operation(), 'document');
 		foreach(get('ids', 'array') as $id) {
 			$h .= $form->hidden('ids[]', $id);
 		}
@@ -43,7 +57,7 @@ class OperationUi {
 		$footer = $form->submit(s("Enregistrer"));
 		return new \Panel(
 			id: 'panel-journal-operations-document',
-			title: s("Enregister la pièce comptable"),
+			title: s("Modifier la pièce comptable"),
 			dialogOpen: $dialogOpen,
 			dialogClose: $dialogClose,
 			body: $h,

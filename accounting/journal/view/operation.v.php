@@ -30,7 +30,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 new AdaptativeView('createDocumentCollection', function($data, PanelTemplate $t) {
 
-		return new \journal\OperationUi()->createDocumentCollection($data->eFarm);
+	return new \journal\OperationUi()->createDocumentCollection($data->eFarm, $data->c);
 
 });
 

@@ -213,6 +213,10 @@ new \journal\OperationPage(function($data) {
 })
 	->get('createDocumentCollection', function($data) {
 
+		$data->c = \journal\OperationLib::getByIds(GET('ids', 'array'));
+
+		\journal\Operation::validateBatch($data->c);
+
 		throw new ViewAction($data);
 
 	})

@@ -69,40 +69,13 @@ class Operation extends OperationElement {
 			($this['cOperationCashflow']->empty() or $this['cOperationCashflow']->getColumnCollection('asset')->empty());
 	}
 
-	public function isClassAccount(int $class): bool {
+	public static function validateBatch(\Collection $cOperation): void {
 
-		$this->expects(['accountLabel']);
+		foreach($cOperation as $eOperation) {
 
-		$stringClass = (string)$class;
-		return str_starts_with($this['accountLabel'], $stringClass);
+			$eOperation->validate('acceptWrite');
 
-	}
-
-	public function isVatAdjustement(?array $period): bool {
-
-		if($period === NULL) {
-			return FALSE;
 		}
-
-		return $this['date'] < $period['start'];
-
-	}
-
-	public function isFromImport(): bool {
-
-		return in_array(substr($this['hash'], -1), [
-			JournalSetting::HASH_LETTER_IMPORT_INVOICE
-		]);
-
-	}
-
-	public function importType(): ?string {
-
-		if($this->isFromImport() === FALSE) {
-			return NULL;
-		}
-
-		return substr($this['hash'], -1);
 
 	}
 

@@ -288,6 +288,7 @@ class JournalUi {
 		\Search $search = new \Search(),
 		bool $readonly = FALSE,
 		bool $displayTotal = FALSE,
+		array $columnsSelected = [],
 	): string {
 
 		if($readonly === FALSE and $cOperation->empty() === TRUE) {
@@ -336,6 +337,10 @@ class JournalUi {
 						}
 
 						$h .= '<th>'.s("Numéro de compte").'</th>';
+
+						if(in_array('document', $columnsSelected)) {
+							$h .= '<th>'.s("Pièce comptable").'</th>';
+						}
 
 						if($selectedJournalCode === NULL and $readonly === FALSE) {
 							$h .= '<th class="td-min-content"></th>';
@@ -412,6 +417,7 @@ class JournalUi {
 									}
 								$h .= '</td>';
 							}
+
 							$h .= '<td class="td-vertical-align-top">';
 								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
 									if($eOperation['accountLabel'] !== NULL) {
@@ -430,6 +436,13 @@ class JournalUi {
 								$h .= new \account\AccountUi()->getDropdownTitle($eOperation['account']);
 							$h .= '</td>';
 
+							if(in_array('document', $columnsSelected)) {
+
+								$h .= '<td class="td-vertical-align-top">';
+									$h .= encode($eOperation['document']);
+								$h .= '</td>';
+
+							}
 							if($selectedJournalCode === NULL and $readonly === FALSE) {
 
 								$h .= '<td class="td-vertical-align-top">';
@@ -593,6 +606,10 @@ class JournalUi {
 							if($readonly === FALSE) {
 								$h .= '<td class="td-checkbox"></td>';
 							}
+
+							if(in_array('document', $columnsSelected)) {
+								$h .= '<td></td>';
+							}
 							$h .= '<td colspan="'.$colspan.'">'.s("Totaux").'</td>';
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
@@ -617,6 +634,9 @@ class JournalUi {
 
 							if($readonly === FALSE) {
 								$h .= '<td class="td-checkbox"></td>';
+							}
+							if(in_array('document', $columnsSelected)) {
+								$h .= '<td></td>';
 							}
 							$h .= '<td colspan="'.$colspan.'">'.$text.'</td>';
 
