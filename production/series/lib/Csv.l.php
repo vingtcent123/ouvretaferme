@@ -545,7 +545,7 @@ class CsvLib {
 			$crop = $line['crop'] ?? NULL;
 
 			$rows = (int)$line['rows'] ?: NULL;
-			$spacingPlants = (int)$line['spacing_plants'] ?: NULL;
+			$spacingPlants = round((float)$line['spacing_plants'], 2) ?: NULL;
 
 			$hash = md5($season.'-'.$mode.'-'.$crop.'-'.$plantingType.'-'.$rows.'-'.$spacingPlants.'-'.$sowing.'-'.$planting.'-'.$harvestUnit.'-'.$firstHarvestDate.'-'.$lastHarvestDate);
 
@@ -750,10 +750,10 @@ class CsvLib {
 				'last_harvest_date' => $line['last_harvest_date'] ?: NULL,
 				'block_density' => (float)$line['block_density'] ? round((float)$line['block_density'], 2) : NULL,
 				'block_spacing_rows' => (int)round((float)$line['block_spacing_rows']) ?: NULL,
-				'block_spacing_plants' => (int)round((float)$line['block_spacing_plants']) ?: NULL,
+				'block_spacing_plants' => round((float)$line['block_spacing_plants'], 2) ?: NULL,
 				'bed_density' => (float)$line['bed_density'] ? round((float)$line['bed_density'], 2) : NULL,
 				'bed_rows' => (int)round((float)$line['bed_rows']) ?: NULL,
-				'bed_spacing_plants' => (int)round((float)$line['bed_spacing_plants']) ?: NULL,
+				'bed_spacing_plants' => round((float)$line['bed_spacing_plants'], 2) ?: NULL,
 				'harvest_unit' => $line['harvest_unit'] ?: NULL,
 				'yield_expected_area' => (float)$line['yield_expected_area'] ? round((float)$line['yield_expected_area'], 2) : NULL,
 				'yield_expected_length' => NULL,
