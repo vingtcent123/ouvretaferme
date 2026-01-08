@@ -60,7 +60,7 @@ Class ImportLib extends ImportCrud {
 			array_find($eImport['rules']['paiements'], fn($paiement) => count($paiement['payment']) === 0) === NULL)
 		;
 
-		$update['status'] = $isImportable ? Import::IN_PROGRESS : Import::FEEDBACK_REQUESTED;
+		$update['status'] = $isImportable ? Import::FEEDBACK_TO_TREAT : Import::FEEDBACK_REQUESTED;
 
 		$update['rules'] = $eImport['rules'];
 
@@ -130,7 +130,37 @@ Class ImportLib extends ImportCrud {
 
 	}
 
-	public static function findAccount(\Collection $cAccount, string $account): Account {
+	public static function findAccount(\Collection $cAccount, string $account, string $accountLib, \Collection $cImport): Account {
+
+		// On regarde dans les imports précédents
+		if($cImport->notEmpty()) {
+
+			foreach($cImport as $eImport) {
+
+				if(
+					isset($eImport['rules']['comptes'][$account]) === FALSE and
+					isset($eImport['rules']['comptesAux'][$account]) === FALSE
+				) {
+					continue;
+				}
+
+				if(
+					$eImport['rules']['comptes'][$account]['label'] === $accountLib and
+					isset($eImport['rules']['comptes'][$account]['account']['id'])
+				) {
+
+					return $cAccount->find(fn($e) => $e['id'] === $eImport['rules']['comptes'][$account]['account']['id'])->first();
+
+				} else if(
+					$eImport['rules']['comptesAux'][$account]['label'] === $accountLib and
+					isset($eImport['rules']['comptesAux'][$account]['account']['id'])
+				) {
+
+					return $cAccount->find(fn($e) => $e['id'] === $eImport['rules']['comptesAux'][$account]['account']['id'])->first();
+
+				}
+			}
+		}
 
 		$length = mb_strlen($account);
 		for($i = 1; $i < $length ; $i++) {
@@ -152,7 +182,26 @@ Class ImportLib extends ImportCrud {
 
 	}
 
-	public static function findJournal(\Collection $cJournalCode, string $code): \journal\JournalCode {
+	public static function findJournal(\Collection $cJournalCode, string $code, string $journalLib, \Collection $cImport): \journal\JournalCode {
+
+		if($cImport->notEmpty()) {
+
+			foreach($cImport as $eImport) {
+
+				if(isset($eImport['rules']['journaux'][$code]) === FALSE) {
+					continue;
+				}
+
+				if(
+					$eImport['rules']['journaux'][$code]['label'] === $journalLib and
+					isset($eImport['rules']['journaux'][$code]['journalCode']['id'])
+				) {
+
+					return $cJournalCode->find(fn($e) => $e['id'] === $eImport['rules']['journaux'][$code]['journalCode']['id'])->first();
+
+				}
+			}
+		}
 
 		$cJournalCodeFiltered = $cJournalCode->find(fn($e) => $e['code'] === $code);
 
@@ -164,7 +213,40 @@ Class ImportLib extends ImportCrud {
 
 	}
 
+	protected static function extractLineElements(Import $eImport, string $line): array {
+
+			$lineElements = explode($eImport['delimiter'], $line);
+
+			if(count($lineElements) === 18) {
+
+				$lineElements[] = NULL;
+				$lineElements[] = NULL;
+				$lineElements[] = NULL;
+
+				[
+					$journalCode, $journalLib,
+					$ecritureNum, $ecritureDate,
+					$compteNum, $compteLib,
+					$compAuxNum, $compAuxLib,
+					$pieceRef, $pieceDate,
+					$ecritureLib,
+					$debit, $credit,
+					$ecritureLet, $dateLet, $validDate,
+					$montantDevise, $IDDevise,
+				] = $lineElements;
+
+			}
+
+			return $lineElements;
+	}
+
 	public static function extractRules(\farm\Farm $eFarm, Import $eImport): array {
+
+		// Va se baser sur d'autres imports s'il en existe
+		$cImport = Import::model()
+			->select('rules')
+			->whereId('!=', $eImport['id'])
+			->getCollection();
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 		$cAccount = AccountLib::getAll();
@@ -177,6 +259,7 @@ Class ImportLib extends ImportCrud {
 		$paiements = [];
 
 		foreach($lines as $line) {
+
 			[
 				$journalCode, $journalLib,
 				$ecritureNum, $ecritureDate,
@@ -188,19 +271,19 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-				] = explode($eImport['delimiter'], $line);
+			] = self::extractLineElements($eImport, $line);
 
 			if($journalCode and $journalLib) {
-				$journaux[$journalCode] = ['journalCode' => self::findJournal($cJournalCode, $journalCode), 'label' => $journalLib];
+				$journaux[$journalCode] = ['journalCode' => self::findJournal($cJournalCode, $journalCode, $journalLib, $cImport), 'label' => $journalLib];
 			}
 
 			if($compteNum and $compteLib) {
-				$eAccount = self::findAccount($cAccount, (string)$compteNum);
+				$eAccount = self::findAccount($cAccount, (string)$compteNum, $compteLib, $cImport);
 				$comptes[$compteNum] = ['account' => $eAccount, 'label' => $compteLib];
 			}
 
 			if($compAuxNum and $compAuxLib) {
-				$eAccount = self::findAccount($cAccount, (string)$compAuxNum);
+				$eAccount = self::findAccount($cAccount, (string)$compAuxNum, $compAuxLib, $cImport);
 				$comptesAux[$compAuxNum] = ['account' => $eAccount, 'label' => $compAuxLib];
 			}
 
@@ -252,10 +335,24 @@ Class ImportLib extends ImportCrud {
 
 			$eImport['status'] = $isImportable ? Import::WAITING : Import::FEEDBACK_REQUESTED;
 			$properties[] = 'status';
+			$properties[] = 'rules';
 
-		} else {
+		} else { // On revérifie les règles.
 
-			$isImportable = TRUE;
+			$missingJournals = array_find($eImport['rules']['journaux'], fn($journal) => isset($journal['journalCode']['id']) === FALSE);
+			$missingAccounts = array_find($eImport['rules']['comptes'], fn($compte) => isset($compte['account']['id']) === FALSE);
+			$missingAuxAccounts = array_find($eImport['rules']['comptesAux'], fn($compte) => isset($compte['account']['id']) === FALSE);
+			$missingPayments = $eImport['rules']['paiements'] ? [] : array_find($eImport['rules']['paiements'], fn($paiement) => isset($paiement['paiements']['id']) === FALSE);
+
+			$isImportable = (
+				($missingJournals === NULL or count($missingJournals) > 0) and
+				($missingAccounts === NULL or count($missingAccounts) > 0) and
+				($missingAuxAccounts === NULL or count($missingAuxAccounts) > 0) and
+				($missingPayments === NULL or count($missingPayments) > 0)
+			);
+
+			$eImport['status'] = $isImportable ? Import::WAITING : Import::FEEDBACK_REQUESTED;
+			$properties[] = 'status';
 
 		}
 
@@ -290,7 +387,7 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-			] = explode($eImport['delimiter'], $line);
+			] = self::extractLineElements($eImport, $line);
 
 			$ecritureDate = new \preaccounting\SaleUi()->toDate($ecritureDate);
 
