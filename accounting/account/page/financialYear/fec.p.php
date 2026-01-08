@@ -19,7 +19,7 @@ new \account\ImportPage()
 	})
 	->doCreate(function($data) {
 
-		\company\CompanyCronLib::addConfiguration($data->eFarm, 'fecImport', \company\CompanyCron::WAITING);
+		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FEC_IMPORT, \company\CompanyCron::WAITING, $data->e['id']);
 
 		throw new ReloadAction('account', 'Import::created');
 
@@ -34,7 +34,7 @@ new \account\ImportPage()
 		}
 		throw new ReloadAction('account', 'Import::updated');
 
-	}, validate: ['acceptUdpate'])
+	}, validate: ['acceptUpdate'])
 	->write('doUpdateRuleValue', function($data) {
 
 		\account\ImportLib::updateRuleValue($data->eFarm, $data->e, $_POST);

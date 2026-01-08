@@ -171,7 +171,7 @@ class ImportUi {
 					$class = 'class="'.(($dataJournal['journalCode']['id'] ?? NULL) === NULL ? 'color-danger' : '').'"';
 					$h .= '<tr>';
 						$h .= '<td '.$class.'>'.encode($journal).'</td>';
-						$h .= '<td> '.$class.''.encode($dataJournal['label']).'</td>';
+						$h .= '<td '.$class.'>'.encode($dataJournal['label']).'</td>';
 						$h .= '<td>'.$form->select('journalCode['.$journal.']', $journaux, $dataJournal['journalCode']['id'] ?? NULL, [
 							'data-label' => $journal,
 							'onchange' => 'Import.updateJournal(this)',
@@ -241,38 +241,41 @@ class ImportUi {
 
 			}
 
+			if(count($eImport['rules']['paiements']) > 0) {
 
-			$h .= '<h4>'.s("Correspondance de paiements").'</h4>';
+				$h .= '<h4>'.s("Correspondance de paiements").'</h4>';
 
-			if($nPayments > 0) {
+				if($nPayments > 0) {
 
-				$h .= '<div class="util-info">'.s("Certains moyens de paiement du FEC n'ont pas été trouvés, veuillez indiquer ici à quel moyen de paiement sur {siteName} les rattacher.").'</div>';
+					$h .= '<div class="util-info">'.s("Certains moyens de paiement du FEC n'ont pas été trouvés, veuillez indiquer ici à quel moyen de paiement sur {siteName} les rattacher.").'</div>';
 
-			} else {
+				} else {
 
-				$h .= '<div class="util-info">'.s("Vous pouvez vérifier les moyens de paiement rattachés aux écritures du FEC.").'</div>';
-			}
-
-			$h .= '<table class="tr-even">';
-				$h .= '<tr>';
-					$h .= '<th>'.s("Moyen de paiement dans le fichier FEC").'</th>';
-					$h .= '<th>'.s("Moyen de paiement dans {siteName}").'</th>';
-				$h .= '</tr>';
-				$payments = [];
-				foreach($cMethod as $eMethod) {
-					$payments[$eMethod['id']] = $eMethod['name'];
+					$h .= '<div class="util-info">'.s("Vous pouvez vérifier les moyens de paiement rattachés aux écritures du FEC.").'</div>';
 				}
-				foreach($eImport['rules']['paiements'] as $paiement => $dataPaiement) {
-					$class = 'class="'.(($dataPaiement['payment']['id'] ?? NULL) === NULL ? 'color-danger' : '').'"';
+
+				$h .= '<table class="tr-even">';
 					$h .= '<tr>';
-						$h .= '<td '.$class.'>'.encode($paiement).'</td>';
-						$h .= '<td>'.$form->select('paiements['.$paiement.']', $payments, $dataPaiement['payment']['id'] ?? NULL, [
-							'data-label' => $paiement,
-							'onchange' => 'Import.updatePayment(this)',
-						]).'</td>';
+						$h .= '<th>'.s("Moyen de paiement dans le fichier FEC").'</th>';
+						$h .= '<th>'.s("Moyen de paiement dans {siteName}").'</th>';
 					$h .= '</tr>';
-				}
-			$h .= '</table>';
+					$payments = [];
+					foreach($cMethod as $eMethod) {
+						$payments[$eMethod['id']] = $eMethod['name'];
+					}
+					foreach($eImport['rules']['paiements'] as $paiement => $dataPaiement) {
+						$class = 'class="'.(($dataPaiement['payment']['id'] ?? NULL) === NULL ? 'color-danger' : '').'"';
+						$h .= '<tr>';
+							$h .= '<td '.$class.'>'.encode($paiement).'</td>';
+							$h .= '<td>'.$form->select('paiements['.$paiement.']', $payments, $dataPaiement['payment']['id'] ?? NULL, [
+								'data-label' => $paiement,
+								'onchange' => 'Import.updatePayment(this)',
+							]).'</td>';
+						$h .= '</tr>';
+					}
+				$h .= '</table>';
+
+			}
 
 			$h .= $form->submit(s("Relancer l'import"), ['class' => 'mb-2 btn btn-primary']);
 		}
@@ -296,6 +299,7 @@ class ImportUi {
 					Import::CANCELLED => s("Annulé"),
 					Import::CREATED => s("En attente de traitement"),
 					Import::IN_PROGRESS => s("En cours"),
+					Import::FEEDBACK_TO_TREAT => s("En attente de retraitement"),
 					Import::FEEDBACK_REQUESTED => s("Action à réaliser"),
 					Import::WAITING => s("En attente de traitement"),
 				];

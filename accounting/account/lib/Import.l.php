@@ -60,7 +60,7 @@ Class ImportLib extends ImportCrud {
 			array_find($eImport['rules']['paiements'], fn($paiement) => count($paiement['payment']) === 0) === NULL)
 		;
 
-		$update['status'] = $isImportable ? Import::IN_PROGRESS : Import::FEEDBACK_REQUESTED;
+		$update['status'] = $isImportable ? Import::FEEDBACK_TO_TREAT : Import::FEEDBACK_REQUESTED;
 
 		$update['rules'] = $eImport['rules'];
 
@@ -76,7 +76,7 @@ Class ImportLib extends ImportCrud {
 			throw new \NotExpectedAction('File content not found for FEC import.');
 		}
 
-		$e['content'] = file_get_contents($_FILES['fec']['tmp_name']);
+		$e['content'] = trim(file_get_contents($_FILES['fec']['tmp_name']));
 		$e['filename'] = $_FILES['fec']['name'];
 
 		// Check filename at least
@@ -97,17 +97,17 @@ Class ImportLib extends ImportCrud {
 		$e['delimiter'] = $matches[1];
 
 		// Vérifier le nombre de colonnes
-		$lines = explode("\n", $e['content']);
-		$header = first($lines);
+		$lines = explode("\n", trim($e['content']));
+		$header = trim(first($lines));
 		$cols = explode($e['delimiter'], $header);
 		if(in_array(count($cols), [18, 21]) === FALSE) {
 			\Fail::log('Import::header.missingCols', wrapper: 'fec');
 			return;
 		}
 
-		$headerModel = FecLib::getHeader(TRUE);
+		$headerModel = array_map(fn($head) => mb_strtolower($head), FecLib::getHeader(TRUE));
 		foreach($cols as $col) {
-			if(in_array($col, $headerModel) === FALSE) {
+			if(in_array(mb_strtolower($col), $headerModel) === FALSE) {
 			\Fail::log('Import::header.incorrectCol', wrapper: 'fec');
 			return;
 			}
@@ -130,7 +130,37 @@ Class ImportLib extends ImportCrud {
 
 	}
 
-	public static function findAccount(\Collection $cAccount, string $account): Account {
+	public static function findAccount(\Collection $cAccount, string $account, string $accountLib, \Collection $cImport): Account {
+
+		// On regarde dans les imports précédents
+		if($cImport->notEmpty()) {
+
+			foreach($cImport as $eImport) {
+
+				if(
+					isset($eImport['rules']['comptes'][$account]) === FALSE and
+					isset($eImport['rules']['comptesAux'][$account]) === FALSE
+				) {
+					continue;
+				}
+
+				if(
+					$eImport['rules']['comptes'][$account]['label'] === $accountLib and
+					isset($eImport['rules']['comptes'][$account]['account']['id'])
+				) {
+
+					return $cAccount->find(fn($e) => $e['id'] === $eImport['rules']['comptes'][$account]['account']['id'])->first();
+
+				} else if(
+					$eImport['rules']['comptesAux'][$account]['label'] === $accountLib and
+					isset($eImport['rules']['comptesAux'][$account]['account']['id'])
+				) {
+
+					return $cAccount->find(fn($e) => $e['id'] === $eImport['rules']['comptesAux'][$account]['account']['id'])->first();
+
+				}
+			}
+		}
 
 		$length = mb_strlen($account);
 		for($i = 1; $i < $length ; $i++) {
@@ -152,7 +182,26 @@ Class ImportLib extends ImportCrud {
 
 	}
 
-	public static function findJournal(\Collection $cJournalCode, string $code): \journal\JournalCode {
+	public static function findJournal(\Collection $cJournalCode, string $code, string $journalLib, \Collection $cImport): \journal\JournalCode {
+
+		if($cImport->notEmpty()) {
+
+			foreach($cImport as $eImport) {
+
+				if(isset($eImport['rules']['journaux'][$code]) === FALSE) {
+					continue;
+				}
+
+				if(
+					$eImport['rules']['journaux'][$code]['label'] === $journalLib and
+					isset($eImport['rules']['journaux'][$code]['journalCode']['id'])
+				) {
+
+					return $cJournalCode->find(fn($e) => $e['id'] === $eImport['rules']['journaux'][$code]['journalCode']['id'])->first();
+
+				}
+			}
+		}
 
 		$cJournalCodeFiltered = $cJournalCode->find(fn($e) => $e['code'] === $code);
 
@@ -164,7 +213,40 @@ Class ImportLib extends ImportCrud {
 
 	}
 
+	protected static function extractLineElements(Import $eImport, string $line): array {
+
+			$lineElements = explode($eImport['delimiter'], $line);
+
+			if(count($lineElements) === 18) {
+
+				$lineElements[] = NULL;
+				$lineElements[] = NULL;
+				$lineElements[] = NULL;
+
+				[
+					$journalCode, $journalLib,
+					$ecritureNum, $ecritureDate,
+					$compteNum, $compteLib,
+					$compAuxNum, $compAuxLib,
+					$pieceRef, $pieceDate,
+					$ecritureLib,
+					$debit, $credit,
+					$ecritureLet, $dateLet, $validDate,
+					$montantDevise, $IDDevise,
+				] = $lineElements;
+
+			}
+
+			return $lineElements;
+	}
+
 	public static function extractRules(\farm\Farm $eFarm, Import $eImport): array {
+
+		// Va se baser sur d'autres imports s'il en existe
+		$cImport = Import::model()
+			->select('rules')
+			->whereId('!=', $eImport['id'])
+			->getCollection();
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 		$cAccount = AccountLib::getAll();
@@ -177,6 +259,7 @@ Class ImportLib extends ImportCrud {
 		$paiements = [];
 
 		foreach($lines as $line) {
+
 			[
 				$journalCode, $journalLib,
 				$ecritureNum, $ecritureDate,
@@ -188,19 +271,19 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-				] = explode($eImport['delimiter'], $line);
+			] = self::extractLineElements($eImport, $line);
 
 			if($journalCode and $journalLib) {
-				$journaux[$journalCode] = ['journalCode' => self::findJournal($cJournalCode, $journalCode), 'label' => $journalLib];
+				$journaux[$journalCode] = ['journalCode' => self::findJournal($cJournalCode, $journalCode, $journalLib, $cImport), 'label' => $journalLib];
 			}
 
 			if($compteNum and $compteLib) {
-				$eAccount = self::findAccount($cAccount, (string)$compteNum);
+				$eAccount = self::findAccount($cAccount, (string)$compteNum, $compteLib, $cImport);
 				$comptes[$compteNum] = ['account' => $eAccount, 'label' => $compteLib];
 			}
 
 			if($compAuxNum and $compAuxLib) {
-				$eAccount = self::findAccount($cAccount, (string)$compAuxNum);
+				$eAccount = self::findAccount($cAccount, (string)$compAuxNum, $compAuxLib, $cImport);
 				$comptesAux[$compAuxNum] = ['account' => $eAccount, 'label' => $compAuxLib];
 			}
 
@@ -208,8 +291,6 @@ Class ImportLib extends ImportCrud {
 				$paiements[$modeRglt] = ['payment' => new \payment\Method(), 'label' => $modeRglt];
 			}
 		}
-
-		$paiements = array_unique($paiements);
 
 		return [
 			'journaux' => $journaux,
@@ -219,53 +300,70 @@ Class ImportLib extends ImportCrud {
 		];
 	}
 
-	public static function manageImports(\farm\Farm $eFarm): void {
+	public static function treatImport(\farm\Farm $eFarm, Import $eImport): bool {
 
-		$eImport = ImportLib::currentOpenImport();
-
-		if($eImport->notEmpty()) {
-			self::treatImport($eFarm, $eImport);
+		if($eImport->empty()) {
+			return TRUE;
 		}
 
-	}
+		// Traitement en cours ou alors en attente de correction de l'utilisateur
+		if(in_array($eImport['status'], [Import::IN_PROGRESS, Import::FEEDBACK_REQUESTED])) {
+			return FALSE;
+		}
 
-	public static function treatImport(\farm\Farm $eFarm, Import $eImport): void {
+		// On bloque les accès concurrents à cet import
+		$oldStatus = $eImport['status'];
+		$eImport['status'] = Import::IN_PROGRESS;
+		Import::model()->update($eImport, $eImport->extracts(['status']));
 
-		$update = ['updatedAt' => new \Sql('NOW()')];
+		// On commence le traitement
+		$eImport['updatedAt'] = new \Sql('NOW()');
+		$properties = ['updatedAt'];
 
-		if($eImport['status'] === Import::CREATED) {
+		if($oldStatus === Import::CREATED) {
 
-			$update['rules'] = self::extractRules($eFarm, $eImport);
+			$eImport['rules'] = self::extractRules($eFarm, $eImport);
+			$properties[] = 'rules';
 
 			// Vérifie si on a toutes les infos
 			$isImportable =
-				(count(array_find($update['rules']['journaux'], fn($journal) => $journal['journalCode']->empty()) ?? []) === 0 and
-				count(array_find($update['rules']['comptes'], fn($compte) => $compte['account']->empty()) ?? []) === 0 and
-				count(array_find($update['rules']['comptesAux'], fn($compte) => $compte['account']->empty()) ?? []) === 0 and
-				count(array_find($update['rules']['paiements'], fn($paiement) => $paiement['payment']->empty()) ?? []) === 0)
+				(count(array_find($eImport['rules']['journaux'], fn($journal) => $journal['journalCode']->empty()) ?? []) === 0 and
+				count(array_find($eImport['rules']['comptes'], fn($compte) => $compte['account']->empty()) ?? []) === 0 and
+				count(array_find($eImport['rules']['comptesAux'], fn($compte) => $compte['account']->empty()) ?? []) === 0 and
+				count(array_find($eImport['rules']['paiements'], fn($paiement) => $paiement['payment']->empty()) ?? []) === 0)
 			;
 
-			$update['status'] = $isImportable ? Import::WAITING : Import::FEEDBACK_REQUESTED;
+			$eImport['status'] = $isImportable ? Import::WAITING : Import::FEEDBACK_REQUESTED;
+			$properties[] = 'status';
+			$properties[] = 'rules';
 
-		} else if($eImport['status'] === Import::IN_PROGRESS) {
+		} else { // On revérifie les règles.
 
-			return;
+			$missingJournals = array_find($eImport['rules']['journaux'], fn($journal) => isset($journal['journalCode']['id']) === FALSE);
+			$missingAccounts = array_find($eImport['rules']['comptes'], fn($compte) => isset($compte['account']['id']) === FALSE);
+			$missingAuxAccounts = array_find($eImport['rules']['comptesAux'], fn($compte) => isset($compte['account']['id']) === FALSE);
+			$missingPayments = $eImport['rules']['paiements'] ? [] : array_find($eImport['rules']['paiements'], fn($paiement) => isset($paiement['paiements']['id']) === FALSE);
 
-		} else {
+			$isImportable = (
+				($missingJournals === NULL or count($missingJournals) > 0) and
+				($missingAccounts === NULL or count($missingAccounts) > 0) and
+				($missingAuxAccounts === NULL or count($missingAuxAccounts) > 0) and
+				($missingPayments === NULL or count($missingPayments) > 0)
+			);
 
-			$isImportable = TRUE;
+			$eImport['status'] = $isImportable ? Import::WAITING : Import::FEEDBACK_REQUESTED;
+			$properties[] = 'status';
 
 		}
 
-		Import::model()->update($eImport, $update);
+		Import::model()->update($eImport, $eImport->extracts($properties));
 
 		if($isImportable === FALSE) {
-			return;
+			return FALSE;
 		}
 
-		Import::model()->beginTransaction();
-
-		$eImport = ImportLib::getById($eImport['id']);
+		// Import créé et importable ou alors import dont les règles ont été validées par l'utilisateur
+		// => On procède à l'import
 
 		$cOperation = new \Collection();
 
@@ -289,12 +387,12 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-			] = explode($eImport['delimiter'], $line);
+			] = self::extractLineElements($eImport, $line);
 
 			$ecritureDate = new \preaccounting\SaleUi()->toDate($ecritureDate);
 
 			if(FinancialYearLib::isDateInFinancialYear($ecritureDate, $eImport['financialYear']) === FALSE) {
-				$update['errors'] = Import::DATES;
+				continue;
 			}
 
 			if(
@@ -336,7 +434,11 @@ Class ImportLib extends ImportCrud {
 
 			}
 
+			$debit = (float)str_replace(',', '.', $debit);
+			$credit = (float)str_replace(',', '.', $credit);
+
 			$eOperation = new \journal\Operation([
+				'hash' => \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_FEC_IMPORT,
 				'number' => $ecritureNum,
 				'financialYear' => $eImport['financialYear'],
 				'journalCode' => $eJournalCode,
@@ -355,13 +457,21 @@ Class ImportLib extends ImportCrud {
 
 		}
 
-		if(isset($update['errors']) === FALSE) {
-			\journal\Operation::model()->insert($cOperation);
-		}
+		Import::model()->beginTransaction();
 
-		Import::model()->update($eImport, $update);
+			Import::model()->update($eImport, $update);
+
+			\journal\Operation::model()->insert($cOperation);
+
+			LogLib::save('open', 'FinancialYear', ['id' => $eImport['financialYear']['id']]);
+
+			FinancialYear::model()->update($eImport['financialYear'], [
+				'openDate' => new \Sql('NOW()'),
+			]);
 
 		Import::model()->commit();
+
+		return TRUE;
 
 	}
 
