@@ -767,7 +767,7 @@ class CashflowUi {
 							'class' => 'btn btn-primary',
 						];
 						$h .= '<a '.attrs($attributes).'>';
-							$h .= s("Choisir ce modèle");
+							$h .= s("Choisir ce schéma");
 						$h .= '</a>';
 					$h .= '</td>';
 
