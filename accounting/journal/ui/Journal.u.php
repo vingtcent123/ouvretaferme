@@ -93,7 +93,7 @@ class JournalUi {
 					$h .= $form->text('accountLabel', $search->get('accountLabel'), ['placeholder' => s("Numéro de compte")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
-					$h .= '<legend>'.s("Description").'</legend>';
+					$h .= '<legend>'.s("Libellé").'</legend>';
 					$h .= $form->text('description', $search->get('description'), ['placeholder' => s("Description")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';

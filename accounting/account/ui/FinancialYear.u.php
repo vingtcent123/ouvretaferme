@@ -578,8 +578,17 @@ class FinancialYearUi {
 
 		if($cJournalCode->empty()) {
 
-			$h .= '<div class="util-info">'.s("Vous n'avez aucun journal configuré comme \"extournable\". Il n'y a donc aucune écriture à extourner.").'</div>';
+			$h .= '<div class="util-info">'.s("Vous n'avez aucun journal extournable. Il n'y a donc aucune écriture à extourner.").'</div>';
 
+			return $h;
+
+		}
+
+		$hasExtournableOperations = $ccOperation->find(fn($cOperation) => $cOperation->notEmpty())->notEmpty();
+
+		if($hasExtournableOperations === FALSE) {
+
+			$h .= '<div class="util-info">'.s("Aucun journal extournable n'a d'écriture à extourner.").'</div>';
 			return $h;
 
 		}
@@ -770,9 +779,9 @@ class FinancialYearUi {
 			$h .= '<div class="util-block-help">'; 
 				$h .= s("Pour comptabiliser vos FNP et FAE, saisissez-les sur l'exercice à imputer en utilisant les comptes suivants, respectivement, si c'est une FNP ou une FAE : ");
 				$h .= '<ul>';
-					$h .= '<li>'.s("Le compte {charge} (au crédit) ou {product} (au débit)", ['charge' => AccountSetting::CHARGE_ACCOUNT_CLASS, 'product' => AccountSetting::PRODUCT_ACCOUNT_CLASS]).'</li>';
-					$h .= '<li>'.s("Les comptes de TVA {charge} (au crédit) ou {product} (au débit)", ['charge' => AccountSetting::VAT_CHARGES_TO_PAY_CLASS, 'product' => AccountSetting::VAT_CHARGES_TO_COLLECT_CLASS]).'</li>';
-					$h .= '<li>'.s("Les comptes de contrepartie {charge} (au débit) ou {product} (au crédit)", ['charge' => join(', ', [AccountSetting::THIRD_ACCOUNT_SUPPLIER_TO_PAY_CLASS, AccountSetting::EMPLOYEE_TO_PAY_CLASS, AccountSetting::SOCIAL_TO_PAY_CLASS, AccountSetting::TAXES_TO_PAY_CLASS, AccountSetting::INTERESTS_TO_PAY_CLASS]), 'product' => join(', ', [AccountSetting::THIRD_ACCOUNT_RECEIVABLE_TO_GET_CLASS, AccountSetting::SOCIAL_TO_GET_CLASS, AccountSetting::TAXES_TO_GET_CLASS, AccountSetting::INTERESTS_TO_GET_CLASS])]).'</li>';
+					$h .= '<li>'.s("Le compte <b>{charge}</b> (au crédit) ou <b>{product}</b> (au débit)", ['charge' => AccountSetting::CHARGE_ACCOUNT_CLASS, 'product' => AccountSetting::PRODUCT_ACCOUNT_CLASS]).'</li>';
+					$h .= '<li>'.s("Les comptes de TVA <b>{charge}</b> (au crédit) ou <b>{product}</b> (au débit)", ['charge' => AccountSetting::VAT_CHARGES_TO_PAY_CLASS, 'product' => AccountSetting::VAT_CHARGES_TO_COLLECT_CLASS]).'</li>';
+					$h .= '<li>'.s("Les comptes de contrepartie <b>{charge}</b> (au débit) ou <b>{product}</b> (au crédit)", ['charge' => join(', ', [AccountSetting::THIRD_ACCOUNT_SUPPLIER_TO_PAY_CLASS, AccountSetting::EMPLOYEE_TO_PAY_CLASS, AccountSetting::SOCIAL_TO_PAY_CLASS, AccountSetting::TAXES_TO_PAY_CLASS, AccountSetting::INTERESTS_TO_PAY_CLASS]), 'product' => join(', ', [AccountSetting::THIRD_ACCOUNT_RECEIVABLE_TO_GET_CLASS, AccountSetting::SOCIAL_TO_GET_CLASS, AccountSetting::TAXES_TO_GET_CLASS, AccountSetting::INTERESTS_TO_GET_CLASS])]).'</li>';
 				$h .= '</ul>';
 				$h .= s("En les ajoutant dans un journal dit \"extournable\", lors de l'ouverture de l'exercice suivant, toutes les opérations de contrepassation seront automatiquement reprises.");
 			$h .= '</div>';

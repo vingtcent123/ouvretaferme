@@ -510,7 +510,7 @@ class OperationLib extends OperationCrud {
 			return new \Collection();
 		}
 
-		$cAccounts = \account\AccountLib::getByIdsWithVatAccount($accounts);
+		$cAccount = \account\AccountLib::getByIdsWithVatAccount($accounts);
 
 		$cOperation = new \Collection();
 		$cOperationCashflow = new \Collection();
@@ -533,9 +533,10 @@ class OperationLib extends OperationCrud {
 				$properties = array_merge($properties, ['paymentDate', 'paymentMethod']);
 			}
 
-		}
-
-		if($for === 'update') {
+			$cOperationOriginByIds = new \Collection();
+			$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
+			
+		} else if($for === 'update') {
 
 			if(isset($input['id']) === FALSE or isset($input['hash']) === FALSE) {
 				throw new \NotExpectedAction('no ids or hash for the update');
@@ -547,11 +548,6 @@ class OperationLib extends OperationCrud {
 
 			$cOperationOriginByHash = OperationLib::getByHash($input['hash']);
 			$hash = $cOperationOriginByHash->first()['hash'];
-
-		} else {
-
-			$cOperationOriginByIds = new \Collection();
-			$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
 
 		}
 
@@ -618,8 +614,9 @@ class OperationLib extends OperationCrud {
 
 			$fw->validate();
 
+			// Doit passer après validate (account doit être setté)
 			if($eOperation['journalCode']->empty()) {
-					$eOperation['journalCode'] = $cAccounts->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
+					$eOperation['journalCode'] = $cAccount->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
 			}
 
 			// Données que l'on va recopier par défaut sur toutes les autres écritures du groupe
@@ -722,15 +719,14 @@ class OperationLib extends OperationCrud {
 
 			}
 
-			// Création de l'opération d'origine
-
 			// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
 			if(
-				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEPOSIT_CLASS) or
-				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS)
+				(\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEPOSIT_CLASS) or
+				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS)) and
+				$eOperationVat->notEmpty()
 			) {
 
-				$eOperation['amount'] += $eOperationVat['amount'];
+				$eOperation['amount'] += $eOperationVat['amount'] ?? 0;
 
 				Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
 
@@ -921,7 +917,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function getForAttachQuery(\Search $search): \Collection {
+	public static function getForAttachQuery(\bank\Cashflow $eCashflow, \Search $search): \Collection {
 
 		$selection = Operation::getSelection();
 		if($search->get('thirdParty')->notEmpty()) {
@@ -948,19 +944,7 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		if(count($search->get('excludedOperationIds')) > 0) {
-
-			$hashToExclude = Operation::model()
-				->select('hash')
-				->whereId('IN', $search->get('excludedOperationIds'))
-				->getCollection()
-				->getColumn('hash');
-
-		} else {
-
-			$hashToExclude = [];
-
-		}
+		$excludedOperationIds = array_filter($search->get('excludedOperationIds'), fn($entry) => $entry);
 
 		$excludedPrefix = array_filter($search->get('excludedPrefix'), fn($val) => $val);
 		if(count($excludedPrefix) > 0) {
@@ -969,14 +953,8 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
-		$cOperation = Operation::model()
-			->select(['hash' => new \Sql('DISTINCT(hash)')])
-			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
-			->where('m1.hash NOT IN ("'.join('", "', $hashToExclude).'")', if: count($hashToExclude) > 0)
-			->getCollection();
-
-		// On va déterminer toutes les opérations déjà équilibrées pour les exclure
-		$hashes = array_unique($cOperation->getColumn('hash'));
+		$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
+		$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eCashflow['date'], $cFinancialYear);
 
 		$cOperationNotBalanced = Operation::model()
 			->select([
@@ -984,14 +962,17 @@ class OperationLib extends OperationCrud {
 				'totalBank' => new \Sql('SUM(IF(accountLabel LIKE "512%", IF(type = "credit", -amount, amount), 0))'),
 				'totalOther' => new \Sql('SUM(IF(accountLabel NOT LIKE "512%", IF(type = "credit", -amount, amount), 0))'),
 			])
-			->whereHash('IN', $hashes)
+			->whereFinancialYear($eFinancialYear)
 			->group('hash')
 			->having('totalBank != - totalOther')
 			->getCollection();
 
 		return Operation::model()
 			->select($selection)
+			->whereFinancialYear($eFinancialYear)
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
+			->where('m2.id IS NULL')
+			->where('m1.id NOT IN ('.join(', ', $excludedOperationIds).')', if: count($excludedOperationIds) > 0)
 			->whereHash('IN', $cOperationNotBalanced->getColumn('hash'))
 			->sort($sort + ['m1_date' => SORT_DESC])
 			->getCollection(NULL, NULL, 'hash'); // Pour ne conserver que 1 opération par hash
@@ -1012,8 +993,8 @@ class OperationLib extends OperationCrud {
 
 			$match = 'MATCH(accountLabel, description, document) AGAINST ('.Operation::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
 
-			Operation::model()->where($match.' > 0');
-
+		} else {
+			$match = '';
 		}
 
 		return Operation::model()
@@ -1024,6 +1005,7 @@ class OperationLib extends OperationCrud {
 			)
 			->join(Deferral::model(), 'm1.id = m2.operation', 'LEFT')
 			->where('m2.id IS NULL')
+			->where($match.' > 0', if: $match)
 			->whereDate('>=', $eFinancialYear['startDate'])
 			->whereDate('<=', $eFinancialYear['endDate'])
 			->sort(['date' => SORT_DESC])

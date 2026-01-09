@@ -400,7 +400,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'rate' => $rate,
 				'amortizationValue' => $amortization,
 				'amortizationValueCumulated' => round($amortizationCumulated, 2),
-				'endValue' => round($amortizableBase - $amortizationCumulated),
+				'endValue' => round($amortizableBase - $amortizationCumulated, 2),
 			];
 
 			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));

@@ -121,11 +121,11 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 	$results = [];
 	$found = FALSE;
 
-	$hasThirdParty = $data->cOperation->find(fn($e) => $e['isThirdParty'] === TRUE)->count() > 0;
+	$nThirdParty = $data->cOperation->find(fn($e) => $e['isThirdParty'] === TRUE)->count();
 
 	foreach($data->cOperation as $eOperation) {
 
-		if($hasThirdParty === FALSE) {
+		if($nThirdParty === 0) {
 
 			$results[] = [
 				'type' => 'title',
@@ -133,14 +133,12 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 				'itemText' => s("Toutes les écritures comptables (non liées au tiers)"),
 			];
 
-			$hasThirdParty = NULL;
-
 		} else if($found === FALSE and $eOperation['isThirdParty'] === TRUE) {
 
 			$results[] = [
 				'type' => 'title',
-				'itemHtml' => '<div>'.s("Écritures comptables liées au tiers").'</div>',
-				'itemText' => s("Écritures comptables liées au tiers"),
+				'itemHtml' => '<div>'.p("Écriture comptable liée au tiers", "Écritures comptables liées au tiers", $nThirdParty).'</div>',
+				'itemText' => p("Écriture comptable liée au tiers", "Écritures comptables liées au tiers", $nThirdParty),
 			];
 
 			$found = TRUE;

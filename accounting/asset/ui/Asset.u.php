@@ -766,7 +766,7 @@ Class AssetUi {
 		$h = '<h3 class="mt-2">'.s("Amortissements").'</h3>';
 
 		$h .= '<div class="util-info">';
-			$h .= s("Les écritures suivantes seront automatiquement enregistrées lors de la clôture.");
+			$h .= s("Les écritures d'amortissement suivantes seront automatiquement enregistrées lors de la clôture.");
 		$h .= '</div>';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
@@ -823,7 +823,7 @@ Class AssetUi {
 								$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
 								$h .= '</div>';
 							$h .= '</td>';
-							$h .= '<td><a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
+							$h .= '<td><a href="'.\company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';
