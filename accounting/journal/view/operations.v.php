@@ -10,32 +10,22 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 	$t->mainTitle = new \journal\JournalUi()->getJournalTitle($data->eFarm, FALSE);
 
 	echo '<div class="util-block-help">';
-		echo '<h4>'.s("Vous êtes sur la page pour gérer vos écritures comptables").'</h4>';
-		echo '<p>'.s("Avec {siteName}, vous allez gérer facilement et de façon fiable la comptabilité de votre ferme :").'</p>';
+		echo '<h4>'.s("Vous pouvez maintenant créer votre première écriture pour l'exercice {value} !", \account\FinancialYearUi::getYear($data->eFarm['eFinancialYear'])).'</h4>';
+		echo '<p>'.s("Vous pouvez enregistrer vos écritures de plusieurs manières sur {siteName} :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("Analysez les écritures comptables proposées pour vos ventes").'</li>';
-			echo '<li>'.s("Importez vos factures en comptabilité en un clic").'</li>';
-			echo '<li>'.s("Enregistrez facilement vos écritures comptables d'achats, ou de ventes effectuées hors de {siteName}").'</li>';
-			echo '<li>'.s("Suivez l'amortissement de vos immobilisations").'</li>';
-			echo '<li>'.s("Consultez les analyses financières de votre ferme comme le compte de résultat, le bilan, les soldes intermédiaires de gestion mais aussi, avec des graphiques : le suivi de trésorerie, des charges et produits.").'</li>';
+			echo '<li>'.s("Depuis vos <link>opérations bancaires</link>, après avoir importé un relevé bancaire", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">']).'</li>';
+			echo '<li>';
+				echo s("En important les <link>factures que vous avez rapprochées</link>.", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer">']);
+				if($data->nInvoice > 0) {
+					echo ' '.p("Vous avez d'ailleurs <b>{value}</b> facture à importer.", "Vous avez d'ailleurs <b>{value}</b> factures à importer.", $data->nInvoice);
+				}
+			echo '</li>';
+			echo '<li>'.s("Directement sur cette page, en cliquant sur <link>{icon}Enregistrer une écriture</link>", ['link' => '<a class="btn btn-xs btn-primary" href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode">', 'icon' => \Asset::icon('plus-circle').' ']).'</li>';
 		echo '</ul>';
 	echo '</div>';
 
 	echo '<br/>';
 
-	if($data->cImport === 0) {
-
-		echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-primary btn-lg">'.s("Réaliser mon premier import bancaire").'</a>';
-
-	} else if($data->nInvoice > 0) {
-
-		echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer" class="btn btn-primary btn-lg">'.p("Importer ma facture", "Importer mes factures", $data->nInvoice).'</a>';
-
-	} else {
-
-		echo '<a href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode=" class="btn btn-primary btn-lg">'.s("Enregistrer ma première écriture comptable").'</a>';
-
-	}
 
 });
 
