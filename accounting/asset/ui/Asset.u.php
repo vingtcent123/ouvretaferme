@@ -25,6 +25,99 @@ Class AssetUi {
 
 	}
 
+	public function attach(\farm\Farm $eFarm, \Collection $cOperation, \Collection $cAssetWaiting): \Panel {
+
+
+		$h = '';
+
+		$h .= '<h3>'.p("Écriture comptable sélectionnée", "Écritures comptables sélectionnées", $cOperation->count()).'</h3>';
+		$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE);
+
+		if($cAssetWaiting->empty()) {
+
+			$h .= '<div class="util-info">'.s("Aucune immobilisation ni subvention n'est disponible pour être rattachée. Souhaitez-vous plutôt créer l'immobilisation ?").'</div>';
+
+			$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.join('&ids[]=', $cOperation->getIds()).'">'.s("Créer l'immobilisation").'</a>';
+
+		} else {
+
+			$cAsset = $cAssetWaiting->find(fn($e) => AssetLib::isAsset($e['accountLabel']));
+			$cGrant = $cAssetWaiting->find(fn($e) => AssetLib::isGrant($e['accountLabel']));
+
+			if($cAsset->count() > 0) {
+
+				$h .= '<h3>'.p("Immobilisation disponible", "Immobilisations disponibles", $cOperation->count()).'</h3>';
+				$h .= $this->showAssetToAttach($eFarm, $cAsset, $cOperation);
+
+			}
+
+			if($cGrant->count() > 0) {
+
+				$h .= '<h3>'.p("Subvention disponible", "Subvensions disponibles", $cOperation->count()).'</h3>';
+				$h .= $this->showAssetToAttach($eFarm, $cGrant, $cOperation);
+
+			}
+
+		}
+
+		return new \Panel(
+			id: 'panel-asset-attach',
+			title: s("Lier une immobilisation ou une subvention avec des écritures comptables"),
+			body: $h,
+			close: 'passthrough',
+		);
+
+
+	}
+
+	public function showAssetToAttach(\farm\Farm $eFarm, \Collection $cAsset, \Collection $cOperation): string {
+
+		$h = '<div class="stick-sm util-overflow-md">';
+			$h .= '<table class="tr-hover tr-even">';
+
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
+						$h .= '<th>'.s("Date d'acquisition").'</th>';
+						$h .= '<th>'.s("Libellé").'</th>';
+						$h .= '<th>'.s("Valeur d'acquisition (HT)").'</th>';
+						$h .= '<th>'.s("Durée éco").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+					foreach($cAsset as $eAsset) {
+
+						$h .= '<tr>';
+							$h .= '<td>'.encode($eAsset['accountLabel']).'</td>';
+							$h .= '<td>'.\util\DateUi::numeric($eAsset['acquisitionDate']).'</td>';
+							$h .= '<td>'.encode($eAsset['description']).'</td>';
+							$h .= '<td>'.\util\TextUi::money($eAsset['value']).'</td>';
+							$h .= '<td>'.p("{value} mois", "{value} mois", $eAsset['economicDuration']).'</td>';
+
+							$attributes = [
+								'class' => 'btn btn-primary',
+								'data-confirm' => s("Ce choix est définitif. Confirmez-vous confirmer ce rattachement ?"),
+								'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/asset/:doAttach',
+								'post-id' => $eAsset['id'],
+								'post-operations' => join(',', $cOperation->getIds())
+							];
+							$h .= '<td><a '.attrs($attributes).'>'.s("Choisir").'</a></td>';
+						$h .= '</tr>';
+
+					}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
 	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \Collection $cOperation, \Collection $cAmortizationDuration): \Panel {
 
 		$script = '<script type="text/javascript">';
@@ -740,7 +833,7 @@ Class AssetUi {
 
 		if($eAsset['cOperation']->notEmpty()) {
 
-			$h .= '<h3 class="mt-2">'.s("Écritures comptables liées à cette immobilisation").'</h3>';
+			$h .= '<h3 class="mt-2">'.p("Écriture comptable liée à cette immobilisation", "Écritures comptables liées à cette immobilisation", $eAsset['cOperation']->count()).'</h3>';
 
 			$h .= '<div class="bg-background">';
 				$h .= new \journal\JournalUi()->list($eFarm, NULL, $eAsset['cOperation'], $eFarm['eFinancialYear'], readonly: TRUE);

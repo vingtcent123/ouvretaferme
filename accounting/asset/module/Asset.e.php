@@ -17,6 +17,12 @@ class Asset extends AssetElement {
 
 	}
 
+	public function acceptAttach(): bool {
+
+		return (\journal\Operation::model()->whereAsset($this)->count() === 0);
+
+	}
+
 	public function acceptDelete(): bool {
 
 		return $this->acceptUdpate();

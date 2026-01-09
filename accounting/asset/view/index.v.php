@@ -6,6 +6,12 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('attach', function($data, PanelTemplate $t) {
+
+	return new \asset\AssetUi()->attach($data->eFarm, $data->cOperation, $data->cAssetWaiting);
+
+});
+
 new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = [];

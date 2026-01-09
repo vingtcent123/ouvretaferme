@@ -310,11 +310,12 @@ class OperationUi {
 			$h .= '<h3>'.s("Informations générales").'</h3>';
 		$h .= '</div>';
 
-		if(\asset\AssetLib::isAsset($eOperation['accountLabel'])/* and $eOperation['asset']->empty()*/) {
+		if(\asset\AssetLib::isAsset($eOperation['accountLabel']) and $eOperation['asset']->empty()) {
 			$h .= '<div class="mt-1 mb-1">';
-				$h .= '<span class="color-warning">'.\Asset::icon('exclamation-triangle').' '.s("Attention, l'immobilisation correspondante n'a pas encore été créée.").'</span>';
+				$h .= '<span class="color-warning">'.\Asset::icon('exclamation-triangle').' '.s("Attention, l'immobilisation correspondante n'a pas encore été créée ou rattachée.").'</span>';
 				$h .= '<br />';
-				$h .= '<a class="btn btn-outline-warning" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?operation='.$eOperation['id'].'">'.s("Créer l'immobilisation").'</a>';
+				$h .= '<a class="btn btn-outline-warning" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'">'.s("Créer").'</a>';
+				$h .= ' <a class="btn btn-outline-warning" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'">'.s("Rattacher").'</a>';
 			$h .= '</div>';
 		}
 

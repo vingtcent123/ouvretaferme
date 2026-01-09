@@ -537,6 +537,7 @@ class JournalUi {
 
 												$h .= '<div class="dropdown-divider"></div>';
 												$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
+												$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Rattacher à une immobilisation").'</a>';
 
 											}
 
@@ -721,6 +722,7 @@ class JournalUi {
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createDocumentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('paperclip').'<span>'.s("Pièce comptable").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlAsset($eFarm).'/:create" data-ajax-method="get" class="batch-item batch-asset" data-batch-not-only="hide" data-batch-test="accept-asset">'.\Asset::icon('house-door').'<span>'.s("Créer la fiche d'immo").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlAsset($eFarm).'/:attach" data-ajax-method="get" class="batch-item batch-asset" data-batch-not-only="hide" data-batch-test="accept-asset">'.\Asset::icon('house-door').'<span>'.s("Rattacher à une immo").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operations:attach" data-ajax-method="get" class="batch-item" data-batch-test="accept-attach" data-batch-not-only="hide">'.\Asset::icon('piggy-bank').'<span>'.s("Rattacher").'</span></a>';
 

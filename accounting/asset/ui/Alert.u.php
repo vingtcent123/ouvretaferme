@@ -39,6 +39,7 @@ Class AlertUi {
 			'Asset::asset.updated' => s("L'immobilisation a bien été modifiée"),
 			'Asset::grant.updated' => s("La subvention a bien été modifiée"),
 			'Asset::disposed' => s("L'immobilisation a bien été cédée"),
+			'Asset::attached' => s("L'immobilisation a bien été liée"),
 
 			default => null,
 

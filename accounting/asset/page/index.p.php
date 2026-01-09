@@ -36,6 +36,23 @@ new \asset\AssetPage(function($data) {
 		}
 
 	})
+	->write('doAttach', function($data) {
+
+		$data->e->validate('acceptAttach');
+		$operations = explode(',', POST('operations'));
+
+		$cOperation = \journal\OperationLib::getByIds($operations);
+		foreach($cOperation as $eOperation) {
+			if($eOperation['asset']->notEmpty()) {
+				throw new NotExistsAction();
+			}
+		}
+
+		\asset\AssetLib::attach($data->e, $cOperation);
+
+		throw new ReloadAction('asset', 'Asset::attached');
+
+	})
 	->update(function($data) {
 
 		// Références de durées
@@ -117,5 +134,15 @@ new Page()
 
 		throw new \ViewAction($data);
 
-	});
+	})
+	->get('attach', function($data) {
+
+		$data->cOperation = \journal\OperationLib::getByIdsForAsset(GET('ids', 'array'));
+
+		$data->cAssetWaiting = \asset\AssetLib::getNotAssigned();
+
+		throw new ViewAction($data);
+
+	})
+;
 ?>

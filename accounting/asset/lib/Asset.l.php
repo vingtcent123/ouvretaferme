@@ -287,6 +287,14 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	public static function attach(Asset $eAsset, \Collection $cOperation): void{
+
+		\journal\OperationLib::applyAssetCondition()
+			->whereId('IN', $cOperation->getIds())
+			->update(['asset' => $eAsset]);
+
+	}
+
 	/**
 	 * Mise au rebut ou vente d'une immo
 	 */
@@ -449,6 +457,15 @@ class AssetLib extends \asset\AssetCrud {
 		} else {
 			return $eAsset['value'];
 		}
+	}
+
+	public static function getNotAssigned(): \Collection {
+
+		return Asset::model()
+			->select(Asset::getSelection())
+			->join(\journal\Operation::model(), 'm1.id = m2.asset', 'LEFT')
+			->where('m2.id IS NULL')
+			->getCollection();
 	}
 }
 ?>
