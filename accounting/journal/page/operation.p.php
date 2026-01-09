@@ -40,9 +40,11 @@ new \journal\OperationPage(
 
 	$fw = new FailWatch();
 
+	$eCashflow = \bank\CashflowLib::getById(POST('cashflow'));
+
 	\journal\Operation::model()->beginTransaction();
 
-	$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation(), for: 'update');
+	$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation(), for: 'update', eCashflow: $eCashflow);
 
 	$fw->validate();
 

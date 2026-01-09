@@ -744,6 +744,9 @@ class CashflowUi {
 				"{value} schémas d'écritures correspondant à cette opération bancaire ont été trouvés. Si l'un d'eux correspond à l'opération que vous traitez actuellement, choisissez-le et les écritures seront copiées à l'identique.",
 				count($similar),
 			);
+			$h .= '<p>';
+				$h .= s("Si nécessaire, vous pourrez modifier les écritures nouvellement créées comme habituellement : pièce comptable, tiers, libellé etc.");
+			$h .= '</p>';
 		$h .= '</div>';
 
 		$h .= '<h3>'.p("Schéma trouvé", "Schémas trouvés", count($similar)).'</h3>';

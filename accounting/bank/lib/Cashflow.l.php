@@ -196,9 +196,19 @@ class CashflowLib extends CashflowCrud {
 
 	public static function applySimilarCashflowSearch(Cashflow $eCashflow): CashflowModel {
 
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $eCashflow['memo'])).' '.
+				trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $eCashflow['name']))
+			;
+
+			$keywords = [];
+			foreach(preg_split('/\s+/', $query) as $word) {
+				$keywords[] = '*'.$word.'*';
+			}
+
+			$match = 'MATCH(memo, name, document) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
 		return Cashflow::model()
-			->whereMemo($eCashflow['memo'])
-			->whereName($eCashflow['name'])
+      ->where($match.' > 0')
 			->whereAmount($eCashflow['amount'])
 			->whereType($eCashflow['type'])
 			->whereId('!=', $eCashflow['id'])

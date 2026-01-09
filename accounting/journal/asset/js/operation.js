@@ -371,6 +371,8 @@ class Operation {
 		Operation.showOrHideDeleteOperation();
 		Operation.updateSingularPluralText();
 
+		Cashflow.checkValidationValues();
+
 	}
 
 	// Seulement pour la création

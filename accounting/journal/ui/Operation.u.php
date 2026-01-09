@@ -1104,6 +1104,7 @@ class OperationUi {
 			if($eCashflow->notEmpty()) {
 				$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
 				$h .= $form->hidden('type', $eCashflow['type']);
+				$h .= $form->hidden('cashflow', $eCashflow['id']);
 			}
 
 			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);

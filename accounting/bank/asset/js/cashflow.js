@@ -22,8 +22,13 @@ class Cashflow {
             const targetAmount = qs('[name="amount[' + index + ']"');
             const amount = CalculationField.getValue(targetAmount);
 
-            const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
-            const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
+            let amountIncludingVAT;
+            if(Operation.hasVat()) {
+                const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
+                amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
+            } else {
+                amountIncludingVAT = amount;
+            }
 
             const targetVatValue = Operation.hasVat() ? qs('[name="vatValue[' + index + ']"') : 0;
             const vatValue = Operation.hasVat() ? CalculationField.getValue(targetVatValue) : 0;
@@ -56,12 +61,16 @@ class Cashflow {
 
         const totalAmountIncludingVat = parseFloat(qs('span[name="cashflow-amount"]').innerHTML);
 
-        const sum = Cashflow.recalculateAmounts('amountIncludingVAT', index);
+        const sum = Operation.hasVat() ? Cashflow.recalculateAmounts('amountIncludingVAT', index) : Cashflow.recalculateAmounts('amount', index);
 
         const missingAmountIncludingVATValue = round(totalAmountIncludingVat - sum);
 
-        const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
-        CalculationField.setValue(targetAmountIncludingVAT, Math.abs(missingAmountIncludingVATValue));
+        if(Operation.hasVat()) {
+
+            const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
+            CalculationField.setValue(targetAmountIncludingVAT, Math.abs(missingAmountIncludingVATValue));
+
+        }
 
         const targetAmount = qs('[name="amount[' + index + ']"');
         const vatRate = Operation.hasVat() ? qs('[name="vatRate[' + index + ']"]').valueAsNumber || 0 : 0;
@@ -171,14 +180,18 @@ class Cashflow {
 
         OperationAmount.setValidationValues(multiplier);
 
-        const amountIncludingVAT = OperationAmount.sumType('amountIncludingVAT') * multiplier;
+        const amountIncludingVAT = Operation.hasVat() ? OperationAmount.sumType('amountIncludingVAT') * multiplier : OperationAmount.sumType('amount') * multiplier;
 
         qsa('#cashflow-allocate-difference-warning [data-direction]', node => node.hide());
 
         if(amountIncludingVAT !== totalAmount) {
 
             var difference = round(totalAmount - amountIncludingVAT);
-            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.add('danger');
+            if(Operation.hasVat()) {
+                qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.add('danger');
+            } else {
+                qs('.cashflow-create-operation-validate[data-field="amount"]').classList.add('danger');
+            }
             qs('.cashflow-warning').classList.add('danger');
             qs('#cashflow-allocate-difference-warning').removeHide();
             qsa('[cashflow-allocate-difference-value]', node => node.innerHTML = money(Math.abs(difference)));
@@ -188,7 +201,11 @@ class Cashflow {
         } else {
 
             qs('.cashflow-warning').classList.remove('danger');
-            qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.remove('danger');
+            if(Operation.hasVat()) {
+                qs('.cashflow-create-operation-validate[data-field="amountIncludingVAT"]').classList.remove('danger');
+            } else {
+                qs('.cashflow-create-operation-validate[data-field="amount"]').classList.remove('danger');
+            }
             qs('#cashflow-allocate-difference-warning').hide();
             qs('#submit-save-operation').removeAttribute('data-confirm');
 
@@ -197,7 +214,7 @@ class Cashflow {
 
     static vatWarning(on) {
 
-        if(qs('form#bank-cashflow-allocate') === null) {
+        if(qs('form#bank-cashflow-allocate') === null || Operation.hasVat() === false) {
             return;
         }
 

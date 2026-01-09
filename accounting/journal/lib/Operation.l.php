@@ -541,6 +541,7 @@ class OperationLib extends OperationCrud {
 			if(isset($input['id']) === FALSE or isset($input['hash']) === FALSE) {
 				throw new \NotExpectedAction('no ids or hash for the update');
 			}
+
 			$cOperationOriginByIds = self::getByIds($input['id']);
 			if($cOperationOriginByIds->empty() or $cOperationOriginByIds->count() !== count($input['id'])) {
 				throw new \NotExpectedAction('no ids for the update');
@@ -755,27 +756,37 @@ class OperationLib extends OperationCrud {
 		}
 
 		// Ajout de la transaction sur le numéro de compte bancaire 512 (seulement pour une création)
-		if($for === 'create' and $isFromCashflow === TRUE) {
+		if($isFromCashflow === TRUE) {
 
-			// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
-			$documents = $cOperation->getColumn('document');
-			$uniqueDocuments = array_unique($documents);
-			if(count($uniqueDocuments) === 1 and count($documents) === $cOperation->count()) {
-				$document = first($uniqueDocuments);
+			if($for === 'create') {
+
+				// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
+				$documents = $cOperation->getColumn('document');
+				$uniqueDocuments = array_unique($documents);
+				if(count($uniqueDocuments) === 1 and count($documents) === $cOperation->count()) {
+					$document = first($uniqueDocuments);
+				} else {
+					$document = NULL;
+				}
+
+				$eOperationDefault['hash'] = $hash;
+
+				// Cette fonction crée automatiquement l'operationCashflow correspondante
+				$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
+					$eCashflow,
+					$eOperationDefault,
+					$document,
+				);
+				$cOperation->append($eOperationBank);
+
 			} else {
-				$document = NULL;
+
+				$label = \account\AccountLabelLib::pad($eCashflow['import']['account']['label']);
+				$eOperationBank = $cOperationOriginByHash->find(fn($e) => $e['accountLabel'] === $label)->first();
+
+				Operation::model()->update($eOperationBank, $eOperationDefault->extracts(['document', 'thirdParty']));
+
 			}
-
-			$eOperationDefault['hash'] = $hash;
-
-			// Cette fonction crée automatiquement l'operationCashflow correspondante
-			$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
-				$eCashflow,
-				$eOperationDefault,
-				$document,
-			);
-			$cOperation->append($eOperationBank);
-
 		}
 
 		if($cOperationCashflow->notEmpty()) {
@@ -1078,11 +1089,7 @@ class OperationLib extends OperationCrud {
 
 		$eThirdParty = $eOperation['thirdParty'] ?? new \account\ThirdParty();
 
-		if($eCashflow['import']['account']['label'] !== NULL) {
-			$label = $eCashflow['import']['account']['label'];
-		} else {
-			$label = \account\AccountLabelLib::pad(\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL);
-		}
+		$label = $eCashflow['import']['account']['label'];
 
 		$values = [
 			'date' => $eCashflow['date'],
