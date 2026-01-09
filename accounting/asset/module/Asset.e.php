@@ -19,7 +19,7 @@ class Asset extends AssetElement {
 
 	public function acceptAttach(): bool {
 
-		return (\journal\Operation::model()->whereAsset($this)->count() === 0);
+		return ($this->exists() and \journal\Operation::model()->whereAsset($this)->count() === 0);
 
 	}
 
