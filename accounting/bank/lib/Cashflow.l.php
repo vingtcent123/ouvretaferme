@@ -223,6 +223,9 @@ class CashflowLib extends CashflowCrud {
 
 		$cCashflowFormatted = new \Collection();
 
+		// Les structures trouvées avec une clé qui regroupe n° compte + montants
+		$schemas = [];
+
 		foreach($cCashflow as $eCashflow) {
 			$cOperation = new \Collection();
 
@@ -239,13 +242,16 @@ class CashflowLib extends CashflowCrud {
 			$amounts = $cOperation->getColumn('amount');
 			sort($amounts);
 
-			// Cette clé pour éviter de proposer des blocs d'écriture avec une structure similaire
 			$key .= '|'.join('-', $amounts);
 
-			if(isset($schemas[$key]) === FALSE) {
+			if(in_array($key, $schemas) === FALSE) {
+
+				$schemas[] = $key;
+
 				$cOperation->sort('id');
 				$eCashflow['cOperation'] = $cOperation;
 				$cCashflowFormatted->append($eCashflow);
+
 			}
 
 		}
