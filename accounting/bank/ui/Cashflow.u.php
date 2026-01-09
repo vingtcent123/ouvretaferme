@@ -632,6 +632,27 @@ class CashflowUi {
 
 	}
 
+	public function getAllocateGeneralPayment(\account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, array $defaultValues, \util\FormUi $form, string $for): string {
+
+		$h = '<div class="cashflow-create-operation-general">';
+			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentDate').'</div>';
+			$h .= $form->date(
+				'paymentDate',
+					$defaultValues['paymentDate'] ?? '',
+				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + ($for == 'update' ? ['disabled' => 'disabled'] : []),
+			);
+			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
+			$h .= $form->select(
+				'paymentMethod',
+				$cPaymentMethod,
+					$defaultValues['paymentMethod'] ?? '',
+				['mandatory' => TRUE] + ($for === 'update' ? ['disabled' => 'disabled'] : []),
+			);
+		$h .= '</div>';
+
+		return $h;
+	}
+
 	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode): \Panel {
 
 		\Asset::js('journal', 'operation.js');
@@ -676,22 +697,7 @@ class CashflowUi {
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 		$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
 
-
-		$h .= '<div class="cashflow-create-operation-general">';
-			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentDate').'</div>';
-			$h .= $form->date(
-				'paymentDate',
-					$defaultValues['paymentDate'] ?? '',
-				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
-			);
-			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
-			$h .= $form->select(
-				'paymentMethod',
-				$cPaymentMethod,
-					$defaultValues['paymentMethod'] ?? '',
-				['mandatory' => TRUE] + (array_key_exists('id', $defaultValues) ? ['disabled' => 'disabled'] : []),
-			);
-		$h .= '</div>';
+		$h .= $this->getAllocateGeneralPayment($eFinancialYear,  $cPaymentMethod, $defaultValues, $form, 'copy');
 
 		// Proposer de partir d'une opération similaire
 		if(count($eCashflow['similar']) > 0) {

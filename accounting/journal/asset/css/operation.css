@@ -159,6 +159,9 @@
 	text-decoration: none;
 }
 
+#journal-operation-update #operation-update-list {
+	margin-top: 1rem;
+}
 #operation-create-list,
 #operation-update-list {
 	flex: 1;

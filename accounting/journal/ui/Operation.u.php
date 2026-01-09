@@ -187,8 +187,6 @@ class OperationUi {
 			\Asset::js('bank', 'cashflow.js');
 		}
 
-		$eOperationBank = new Operation();
-
 		$cOperationFormatted = $this->formatOperationForUpdate($eCashflow, $cOperation, $eOperationBase, 'update');
 
 		$form = new \util\FormUi();
@@ -209,6 +207,13 @@ class OperationUi {
 		$h .= $form->hidden('hash', $cOperation->first()['hash']);
 		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
+
+		$defaultValues = [
+			'paymentDate' => $eCashflow['date'],
+			'paymentMethod' => \bank\CashflowUi::extractPaymentTypeFromCashflowDescription($eCashflow->getMemo(), $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::ACCOUNTING))),
+		];
+
+		$h .= new \bank\CashflowUi()->getAllocateGeneralPayment($eFinancialYear,  $cPaymentMethod, $defaultValues, $form, 'update');
 
 		$h .= self::getUpdateGrid(
 			eFinancialYear: $eFinancialYear,
