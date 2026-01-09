@@ -545,18 +545,17 @@ class OperationLib extends OperationCrud {
 				throw new \NotExpectedAction('no ids for the update');
 			}
 
-			$cOperationOrigin = OperationLib::getByHash($input['hash']);
-			$hash = $cOperationOrigin->first()['hash'];
+			$cOperationOriginByHash = OperationLib::getByHash($input['hash']);
+			$hash = $cOperationOriginByHash->first()['hash'];
 
 		} else {
 
 			$cOperationOriginByIds = new \Collection();
-			$hash = self::generateHash().($eCashflow->empty() ? 'w' : 'c');
+			$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
 
 		}
 
 		$eOperationDefault['hash'] = $hash;
-
 
 		for($index = 0; $index < $indexes; $index++) {
 
@@ -662,7 +661,7 @@ class OperationLib extends OperationCrud {
 
 				if($for === 'update') {
 
-					$cOperationVatOrigin = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index] ?? NULL));
+					$cOperationVatOrigin = $cOperationOriginByHash->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index] ?? NULL));
 
 					// L'écriture n'existe pas ! On va la créer
 					if($cOperationVatOrigin->empty()) {

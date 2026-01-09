@@ -13,6 +13,7 @@ class JournalSetting extends \Settings {
 
 	const HASH_LETTER_IMPORT_INVOICE = 'f'; // Hash des écritures importées depuis le module de vente (factures)
 	const HASH_LETTER_WRITE = 'w'; // Hash de la création d'écriture (base)
+	const HASH_LETTER_CASHFLOW = 'c'; // Hash de la création d'écriture (depuis un cashflow)
 	const HASH_LETTER_FEC_IMPORT = 'e'; // Hash d'un import FEC
 }
 
