@@ -58,9 +58,10 @@ Class VatLib {
 		$referenceDate = $eFinancialYear['startDate'];
 		for($i = 0; $i < $totalPeriods; $i++) {
 			$date = mb_substr($referenceDate, 0, 5) // YEAR
-				.mb_str_pad(((int)mb_substr($referenceDate, 5, 2) + $i * $monthsPerPeriod), 2, '0', STR_PAD_LEFT) // MONTH
+				.mb_str_pad(((int)mb_substr($referenceDate, 5, 2)), 2, '0', STR_PAD_LEFT) // MONTH
  				.mb_substr($referenceDate, -3) // DAY
 			;
+			$date = date('Y-m-d', strtotime($date.' +'.($i * $monthsPerPeriod).' month'));
 			$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $date);
 			$periods[$period['from'].'|'.$period['to']] = $period;
 		}

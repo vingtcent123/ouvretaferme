@@ -478,6 +478,10 @@ Class VatUi {
 
 		$h = '<div class="tab-panel selected" data-tab="cerfa">';
 
+			$h .= '<div class="util-warning">';
+				$h .= s("Ce formulaire est encore expérimental, ne l'utilisez pas pour déclarer votre TVA ou comparez-le à votre déclaration de TVA et signalez les différences sur Discord. Merci !");
+			$h .= '</div>';
+
 			$h .= $this->displayPeriod($vatParameters);
 
 			if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
