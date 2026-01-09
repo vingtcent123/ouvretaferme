@@ -129,23 +129,11 @@ class OperationUi {
 		);
 	}
 
-	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase): \Panel {
-
-		\Asset::css('journal', 'operation.css');
-		\Asset::js('journal', 'operation.js');
-		\Asset::js('journal', 'amount.js');
-		\Asset::js('account', 'thirdParty.js');
-
-		if($eCashflow->notEmpty()) {
-			\Asset::css('bank', 'cashflow.css');
-			\Asset::js('bank', 'cashflow.js');
-		}
-
-		$eOperationBank = new Operation();
-		$linkedOperationIds = [];
+	public function formatOperationForUpdate(\bank\Cashflow $eCashflow, \Collection $cOperation, Operation $eOperationBase, string $for): \Collection {
 
 		// Formattage des opérations (association de la TVA avec son écriture d'origine + ne pas mettre l'opération de banque)
 		$cOperationFormatted = new \Collection();
+		$linkedOperationIds = [];
 
 		foreach($cOperation as $eOperation) {
 
@@ -168,20 +156,45 @@ class OperationUi {
 			$eOperationVAT = $cOperation->find(fn($e) => $e['operation']->notEmpty() and $e['operation']['id'] === $eOperation['id'])->first();
 			if($eOperationVAT !== NULL and \account\AccountLabelLib::isFromClass($eOperationVAT['accountLabel'], \account\AccountSetting::VAT_CLASS)) {
 				$linkedOperationIds[] = $eOperationVAT['id'];
+				if($for === 'copy') {
+					unset($eOperationVAT['id']);
+				}
 				$eOperation['vatAmount'] = $eOperationVAT['amount'];
 				$eOperation['vatOperation'] = $eOperationVAT;
 			}
 
+			if($for === 'copy') {
+				unset($eOperation['id']);
+			}
 			$eOperation['cJournalCode'] = $eOperationBase['cJournalCode'];
 
 			$cOperationFormatted->append($eOperation);
 
 		}
 
+		return $cOperationFormatted;
+	}
+
+	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase): \Panel {
+
+		\Asset::css('journal', 'operation.css');
+		\Asset::js('journal', 'operation.js');
+		\Asset::js('journal', 'amount.js');
+		\Asset::js('account', 'thirdParty.js');
+
+		if($eCashflow->notEmpty()) {
+			\Asset::css('bank', 'cashflow.css');
+			\Asset::js('bank', 'cashflow.js');
+		}
+
+		$eOperationBank = new Operation();
+
+		$cOperationFormatted = $this->formatOperationForUpdate($eCashflow, $cOperation, $eOperationBase, 'update');
+
 		$form = new \util\FormUi();
 
 		$dialogOpen = $form->openAjax(
-			\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/doUpdate',
+			\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperationBase['id'].'/doUpdate',
 			array_merge([
 				'id' => 'journal-operation-update',
 				'third-party-create-index' => 0,
@@ -198,7 +211,6 @@ class OperationUi {
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 
 		$h .= self::getUpdateGrid(
-			eFarm: $eFarm,
 			eFinancialYear: $eFinancialYear,
 			form: $form,
 			cPaymentMethod: $cPaymentMethod,
@@ -727,7 +739,7 @@ class OperationUi {
 			if(($eOperation['id'] ?? NULL) !== NULL) {
 				$h .= $form->hidden('id['.$index.']', $eOperation['id']);
 			}
-			if(($eOperation['vatOperation'] ?? NULL) !== NULL) {
+			if(($eOperation['vatOperation']['id'] ?? NULL) !== NULL) {
 				$h .= $form->hidden('vatOperation['.$index.']', $eOperation['vatOperation']['id']);
 			}
 
@@ -788,7 +800,7 @@ class OperationUi {
 				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($eOperation, $index) {
 					$d->attributes['data-index'] = $index;
 					$d->attributes['data-field'] = 'journalCode';
-					$d->default = fn() => $eOperation->exists() === FALSE ? GET('journalCode') : $eOperation['journalCode'];
+					$d->default = fn() => isset($eOperation['journalCode']) === FALSE ? GET('journalCode') : $eOperation['journalCode'];
 				});
 				$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
 					$h .= '<a class="btn btn-outline-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true">';
@@ -1084,7 +1096,6 @@ class OperationUi {
 	}
 
 	public static function getUpdateGrid(
-		\farm\Farm $eFarm,
 		\account\FinancialYear $eFinancialYear,
 		\util\FormUi $form,
 		\Collection $cPaymentMethod,
@@ -1099,20 +1110,21 @@ class OperationUi {
 
 		$hasAsset = $cOperation->find(fn($e) => \asset\AssetLib::isAsset($e['accountLabel']))->count() > 0;
 
-		$h = '<div id="operation-update-list" class="operation-create-several-container" '.($hasAsset ? 'data-asset'  : '').' data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
+		$h = '';
 
-			if($eCashflow->notEmpty()) {
-				$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
-				$h .= $form->hidden('type', $eCashflow['type']);
-				$h .= $form->hidden('cashflow', $eCashflow['id']);
-			}
+		if($eCashflow->notEmpty()) {
+			$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
+			$h .= $form->hidden('type', $eCashflow['type']);
+			$h .= $form->hidden('cashflow', $eCashflow['id']);
+		}
 
+		$h .= '<div id="operation-update-list" class="operation-create-several-container" '.($hasAsset ? 'data-asset'  : '').' data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
 
 			foreach($cOperation as $eOperation) {
 
 				$suffix = '['.$index.']';
-				$eOperation['isRequested'] = ($eOperationRequested['id'] === $eOperation['id']);
+				$eOperation['isRequested'] = ($eOperationRequested->notEmpty() and $eOperationRequested['id'] === $eOperation['id']);
 
 				$eOperation['amountIncludingVAT'] = $eOperation['amount'] + ($eOperation['vatAmount'] ?? 0);
 				$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $cPaymentMethod);

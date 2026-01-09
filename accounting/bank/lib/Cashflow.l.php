@@ -184,16 +184,6 @@ class CashflowLib extends CashflowCrud {
 
 	}
 
-	public static function searchSimilarAffectedCashflows(\Collection $cCashflow): void {
-
-		foreach($cCashflow as &$eCashflow) {
-			if($eCashflow['hash'] === NULL) {
-				$eCashflow['similar'] = self::countSimilarAffectedCashflows($eCashflow);
-			}
-		}
-
-	}
-
 	public static function applySimilarCashflowSearch(Cashflow $eCashflow): CashflowModel {
 
 			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $eCashflow['memo'])).' '.
@@ -216,13 +206,7 @@ class CashflowLib extends CashflowCrud {
 
 	}
 
-	public static function countSimilarAffectedCashflows(Cashflow $eCashflow): int {
-
-		return self::applySimilarCashflowSearch($eCashflow)->count();
-
-	}
-
-	public static function getSimilarAffectedCashflows(Cashflow $eCashflow, ?int $id): array {
+	public static function getSimilarAffectedCashflows(Cashflow $eCashflow): \Collection {
 
 		$operationSelection = \journal\Operation::getSelection();
 		unset($operationSelection['cashflow']);
@@ -235,18 +219,16 @@ class CashflowLib extends CashflowCrud {
 						'operation' => $operationSelection])
 					->delegateCollection('cashflow', 'id')
 			]))
-			->whereId($id, if: $id !== NULL)
 			->getCollection();
 
-		$schemas = [];
+		$cCashflowFormatted = new \Collection();
 
 		foreach($cCashflow as $eCashflow) {
-
 			$cOperation = new \Collection();
 
 			foreach($eCashflow['cOperationCashflow'] as $eOperationCashflow) {
 				$eOperationCashflow['operation']['cashflow'] = $eOperationCashflow['cashflow'];
-				$cOperation->offsetSet($eOperationCashflow['operation']['accountLabel'], $eOperationCashflow['operation']);
+				$cOperation->append($eOperationCashflow['operation']);
 			}
 
 			$accountLabels = $cOperation->getColumn('accountLabel');
@@ -257,82 +239,19 @@ class CashflowLib extends CashflowCrud {
 			$amounts = $cOperation->getColumn('amount');
 			sort($amounts);
 
+			// Cette clé pour éviter de proposer des blocs d'écriture avec une structure similaire
 			$key .= '|'.join('-', $amounts);
 
 			if(isset($schemas[$key]) === FALSE) {
-				$schemas[$key] = $cOperation;
+				$cOperation->sort('id');
+				$eCashflow['cOperation'] = $cOperation;
+				$cCashflowFormatted->append($eCashflow);
 			}
 
 		}
 
-		return $schemas;
+		return $cCashflowFormatted;
 	}
 
-	public static function createSimilarOperations(\account\FinancialYear $eFinancialYear, Cashflow $eCashflow, Cashflow $eCashflowOrigin, string $key): void {
-
-		$similar = self::getSimilarAffectedCashflows($eCashflow, $eCashflowOrigin['id']);
-
-		if(isset($similar[$key]) === FALSE) {
-			return;
-		}
-
-		// On ne copie pas l'écriture de banque qui sera copiée dans le attach
-		$cOperationCopy = clone $similar[$key]->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS) === FALSE);
-
-		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_WRITE;
-
-		foreach($cOperationCopy as &$eOperation) {
-			unset($eOperation['id']);
-			$eOperation['date'] = $eCashflow['date'];
-			$eOperation['paymentDate'] = $eCashflow['date'];
-			$eOperation['hash'] = $hash;
-			$eOperation['financialYear'] = $eFinancialYear;
-			$eOperation['number'] = NULL;
-			$eOperation['createdAt'] = new \Sql('NOW()');
-			$eOperation['updatedAt'] = new \Sql('NOW()');
-			$eOperation['createdBy'] = \user\ConnectionLib::getOnline();
-		}
-
-		if($cOperationCopy->notEmpty()) {
-
-			\journal\Operation::model()->beginTransaction();
-
-				\journal\Operation::model()->insert($cOperationCopy);
-
-				// On re-récupère les opérations avec leurs IDs
-				$cOperation = \journal\OperationLib::getByHash($hash);
-
-				// On rattache le cashflow aux opérations
-				self::attach($eCashflow, $cOperation, $cOperation->first()['thirdParty']);
-
-				// On doit raccrocher les opérations liées
-				$cLinkedOperation = $similar[$key]->find(fn($e) => $e['operation']->notEmpty());
-
-				$cOperationMothers = \journal\OperationLib::getByIds($cLinkedOperation->getColumnCollection('operation')->getIds());
-
-				foreach($cLinkedOperation as $eOperation) {
-					$eOperationMother = $cOperationMothers->find(fn($e) => $e['id'] === $eOperation['operation']['id'])->first();
-
-					// On cherche les correspondances dans les copies
-					$cOperationMotherCopy = $cOperation->find(function($e) use($eOperationMother) {
-						return ($e['amount'] === $eOperationMother['amount'] and
-							$e['type'] === $eOperationMother['type'] and
-							$e['accountLabel'] === $eOperationMother['accountLabel']);
-					});
-
-					$cOperationBabyCopy = $cOperation->find(function($e) use($eOperation) {
-						return ($e['amount'] === $eOperation['amount'] and
-							$e['type'] === $eOperation['type'] and
-							$e['accountLabel'] === $eOperation['accountLabel']);
-					});
-
-					if($cOperationMotherCopy->notEmpty() and $cOperationBabyCopy->notEmpty()) {
-						\journal\Operation::model()->update($cOperationBabyCopy->first(), ['operation' => $cOperationMotherCopy->first()]);
-					}
-				}
-
-			\journal\Operation::model()->commit();
-		}
-	}
 }
 ?>

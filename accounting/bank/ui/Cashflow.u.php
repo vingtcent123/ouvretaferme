@@ -304,14 +304,6 @@ class CashflowUi {
 														$financialYearOption .= s("Rattacher des écritures existantes");
 													$financialYearOption .= '</a>';
 
-													if(($eCashflow['similar'] ?? 0) > 0) {
-
-														$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:copy?id='.$eCashflow['id'].'" class="dropdown-item">';
-															$financialYearOption .= s("Copier des écritures");
-														$financialYearOption .= '</a>';
-
-													}
-
 													$financialYearOptions[] = $financialYearOption;
 												}
 
@@ -701,7 +693,74 @@ class CashflowUi {
 			);
 		$h .= '</div>';
 
-		$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eCashflow, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
+		// Proposer de partir d'une opération similaire
+		if(count($eCashflow['similar']) > 0) {
+
+			$eCashflowCopySelected = $eCashflow['similar']->find(fn($e) => $e['id'] === GET('copy', 'int'))->first() ?? new Cashflow();
+
+			if($eCashflowCopySelected->notEmpty()) {
+
+				$h .= ' <a class="btn btn-md btn-outline-primary mt-1 mb-1" href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'">';
+					$h .= s("Ne plus repartir d'une opération similaire");
+				$h .= '</a>';
+
+			} else {
+
+				$values = [];
+
+				foreach($eCashflow['similar'] as $eCashflowSimilar) {
+
+					$eOperationBank = $eCashflowSimilar['cOperation']->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS))->first() ?? new \journal\Operation();
+
+					if($eOperationBank->notEmpty()) {
+						$label = s("{thirdParty} à {amount}", ['thirdParty' => encode($eOperationBank['thirdParty']['name']), 'amount' => \util\TextUi::money(abs($eCashflowSimilar['amount']))]);
+						$values[] = ['id' => $eCashflowSimilar['id'], 'label' => $label];
+					}
+
+				}
+
+				$h .= '<a class="dropdown-toggle btn btn-md btn-outline-primary mt-1 mb-1" data-dropdown="bottom-start">'.s("Repartir d'une opération similaire").'</a>';
+
+				$h .= '<div class="dropdown-list">';
+
+					foreach($values as $value) {
+
+						$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:allocate?id='.$eCashflow['id'].'&copy='.$value['id'].'" class="dropdown-item">';
+							if($eCashflowCopySelected->notEmpty()) {
+								$h .= \Asset::icon('check-lg').' ';
+							}
+							$h .= $value['label'];
+						$h .= '</a>';
+
+					}
+
+				$h .= '</div>';
+
+			}
+
+		}
+
+		if(isset($eCashflowCopySelected) and $eCashflowCopySelected->notEmpty()) {
+
+			$eOperationBase = $eCashflowCopySelected['cOperation']->find(fn($e) => $e['operation']->empty())->first();
+			$eOperationBase['cJournalCode'] = $cJournalCode;
+
+			$cOperationFormatted = new \journal\OperationUi()->formatOperationForUpdate($eCashflow, $eCashflowCopySelected['cOperation'], $eOperationBase, 'copy');
+
+			$h .= \journal\OperationUi::getUpdateGrid(
+				eFinancialYear: $eFinancialYear,
+				form: $form,
+				cPaymentMethod: $cPaymentMethod,
+				cOperation: $cOperationFormatted,
+				eCashflow: $eCashflow,
+				eOperationRequested: new \journal\Operation(),
+			);
+
+		} else {
+
+			$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eCashflow, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
+
+		}
 
 		$amountWarning = '<div id="cashflow-allocate-difference-warning" class="util-danger hide">';
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);

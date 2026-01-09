@@ -64,7 +64,6 @@ new Page(function($data) {
 		$data->page = GET('page', 'int');
 
 		[$data->cCashflow, $data->nCashflow, $data->nPage] = \bank\CashflowLib::getAll($search, $data->page, $hasSort);
-		\bank\CashflowLib::searchSimilarAffectedCashflows($data->cCashflow);
 
 		$data->eImportCurrent = \bank\ImportLib::getLastImport();
 		if($data->eImportCurrent->notEmpty()) {
@@ -91,24 +90,9 @@ new \bank\CashflowPage(function($data) {
 		}
 
 	})
-	->read('copy', function($data) {
-
-		$data->similar = \bank\CashflowLib::getSimilarAffectedCashflows($data->e, NULL);
-
-		throw new ViewAction($data);
-
-	})
-	->write('doCopy', function($data) {
-
-		$key = POST('key');
-		$eCashflowOrigin = \bank\CashflowLib::getById(POST('copy'));
-
-		\bank\CashflowLib::createSimilarOperations($data->eFarm['eFinancialYear'], $data->e, $eCashflowOrigin, $key);
-
-		throw new ReloadAction('bank', 'Cashflow::copied');
-
-	})
 	->read('allocate', function($data) {
+
+		$data->e['similar'] = \bank\CashflowLib::getSimilarAffectedCashflows($data->e);
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
