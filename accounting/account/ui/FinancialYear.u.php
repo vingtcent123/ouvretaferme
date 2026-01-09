@@ -409,11 +409,11 @@ class FinancialYearUi {
 
 	private function retainedEarnings(\Collection $cOperation, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
-		$h = '<h3>'.s("1. Report des soldes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+		$h = '<h3>'.\Asset::icon('1-circle').' '.s("Report des soldes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
 
 		if($eFinancialYearPrevious->empty()) {
 
-			$h .= '<div class="util-info">';
+			$h .= '<div class="util-empty">';
 				$h .= s("Il n'y a aucune écriture à reprendre.");
 			$h .= '</div>';
 
@@ -423,7 +423,7 @@ class FinancialYearUi {
 
 		if($cOperation->empty()) {
 
-			$h .= '<div class="util-info">';
+			$h .= '<div class="util-empty">';
 				$h .= s("Il n'y a aucune écriture à reprendre, avez-vous bien effectué la saisie comptable de l'exercice précédent ainsi que son bilan de clôture ?");
 			$h .= '</div>';
 
@@ -516,7 +516,7 @@ class FinancialYearUi {
 
 	private function result(\journal\Operation $eOperationResult, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
-		$h = '<h3 class="mt-1 mb-2">'.s("2. Enregistrement du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+		$h = '<h3>'.\Asset::icon('2-circle').' '.s("Enregistrement du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
 
 		if($eOperationResult->empty()) {
 			return $h.'<div class="util-empty">'.s("Il n'y a rien à enregistrer").'</div>';
@@ -567,7 +567,7 @@ class FinancialYearUi {
 
 	private function reversal(\util\FormUi $form, \Collection $cJournalCode, \Collection $ccOperation, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
-		$h = '<h3>'.s("3. Extournes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+		$h = '<h3>'.\Asset::icon('3-circle').' '.s("Extournes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
 
 		if($eFinancialYearPrevious->empty()) {
 
