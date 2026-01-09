@@ -552,6 +552,7 @@ class OperationLib extends OperationCrud {
 		}
 
 		$eOperationDefault['hash'] = $hash;
+		$eOperationDefault['financialYear'] = $eFinancialYear;
 
 		for($index = 0; $index < $indexes; $index++) {
 
@@ -588,9 +589,8 @@ class OperationLib extends OperationCrud {
 
 			// Enregistre les termes du libellé de banque pour améliorer les prédictions
 			if($isFromCashflow === TRUE) {
-
-				$eOperation['thirdParty'] = \account\ThirdPartyLib::recalculateMemos($eCashflow, $eOperation['thirdParty']);
-				\account\ThirdPartyLib::update($eOperation['thirdParty'], $eOperation['thirdParty']->extracts(['memos']));
+				$eThirdParty = \account\ThirdPartyLib::recalculateMemos($eCashflow, $eOperation['thirdParty']);
+				\account\ThirdPartyLib::update($eThirdParty, ['memos']);
 
 			}
 
