@@ -195,13 +195,10 @@ document.delegateEventListener('autocompleteUpdate', '[data-third-party="journal
 
 document.delegateEventListener('autocompleteSelect', '[data-third-party="journal-operation-create"], [data-third-party="journal-operation-update"], [data-third-party="bank-cashflow-allocate"]', function(e) {
 
-	const index = parseInt(this.dataset.index);
-
 	if(this.disabled) {
 		return;
 	}
 
-	Operation.updateThirdParty(index, e.detail);
 	Operation.checkAutocompleteStatus(e);
 });
 
@@ -361,19 +358,6 @@ class Operation {
 		if(e.detail.value === undefined) {
 			qs('[data-wrapper="' + field + '"]', node => node.classList.add('form-error-wrapper'));
 		}
-	}
-
-	static updateThirdParty(index, detail) {
-
-		const columns = qs('[data-columns]').getAttribute('data-columns');
-		detail.input.firstParent('form').qs('#add-operation').setAttribute('post-third-party', detail.value);
-
-		for(let i = 0; i < columns; i++) {
-			if(i !== index && qs('[data-third-party][data-index="' + i + '"]').getAttribute('disabled') === '1') {
-				const dropdown = qs('[data-third-party][data-index="' + i + '"]');
-				AutocompleteField.apply(dropdown, detail);
-			}
-		}
 
 	}
 
@@ -481,8 +465,6 @@ class Operation {
 		} else {
 
 			qs('input[data-third-party][data-index="' + index + '"]').setAttribute('value', name);
-			qs('input[name="thirdPartyName[' + index + ']"]').setAttribute('value', name);
-			qs('input[name="thirdPartyVatNumber[' + index + ']"]').setAttribute('value', vatNumber);
 
 			const autocompleteId = qs('input[data-third-party][data-index="' + index + '"]').getAttribute('id');
 			qs('input[data-third-party][data-index="' + index + '"]').focus();

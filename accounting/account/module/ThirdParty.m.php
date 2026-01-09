@@ -46,13 +46,12 @@ class ThirdPartyModel extends \ModuleModel {
 			'supplierAccountLabel' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
-			'names' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'memos' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'normalizedName' => ['json', 'null' => TRUE, 'cast' => 'array'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'customer', 'names', 'memos', 'normalizedName'
+			'id', 'name', 'clientAccountLabel', 'supplierAccountLabel', 'vatNumber', 'customer', 'memos', 'normalizedName'
 		]);
 
 		$this->propertiesToModule += [
@@ -148,10 +147,6 @@ class ThirdPartyModel extends \ModuleModel {
 
 	public function whereCustomer(...$data): ThirdPartyModel {
 		return $this->where('customer', ...$data);
-	}
-
-	public function whereNames(...$data): ThirdPartyModel {
-		return $this->where('names', ...$data);
 	}
 
 	public function whereMemos(...$data): ThirdPartyModel {

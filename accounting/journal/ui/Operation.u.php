@@ -1434,8 +1434,8 @@ class OperationUi {
 		$d->multiple = $multiple;
 
 		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:queryForDeferral';
-		$d->autocompleteResults = function(Operation $eOperation) {
-			return self::getAutocompleteDeferral($eOperation);
+		$d->autocompleteResults = function(Operation $eOperation) use($eFarm) {
+			return self::getAutocompleteDeferral($eFarm, $eOperation);
 		};
 
 	}
@@ -1553,10 +1553,6 @@ class OperationUi {
 				$d->autocompleteBody = function(\util\FormUi $form, Operation $e) {
 					return [
 					];
-				};
-				$d->after = function(\util\FormUi $form, Operation $e, string $property, string $field, array $attributes) {
-					return $form->hidden('thirdPartyVatNumber['.($attributes['data-index'] ?? 0).']')
-						.$form->hidden('thirdPartyName['.($attributes['data-index'] ?? 0).']');
 				};
 				new \account\ThirdPartyUi()->query($d, GET('farm', 'farm\Farm'));
 				break;

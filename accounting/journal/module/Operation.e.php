@@ -162,18 +162,14 @@ class Operation extends OperationElement {
 				return FALSE;
 
 			})
-			->setCallback('thirdParty.empty', function(?\account\ThirdParty $eThirdParty): bool {
-
-				return $eThirdParty !== NULL;
-
-			})
-			->setCallback('thirdParty.check', function(?\account\ThirdParty $eThirdParty): bool {
+			->setCallback('thirdParty.unknown', function(?\account\ThirdParty &$eThirdParty): bool {
 
 				if($eThirdParty->empty()) {
-					return TRUE;
+					return FALSE;
 				}
 
-				return ThirdPartyLib::getById($eThirdParty['id'])->notEmpty();
+				$eThirdParty = ThirdPartyLib::getById($eThirdParty['id']);
+				return $eThirdParty->notEmpty();
 
 			})
 			->setCallback('cashflow.check', function(?\bank\Cashflow $eCashflow): bool {
@@ -223,6 +219,11 @@ class Operation extends OperationElement {
 				$eFarm = new \farm\Farm(['id' => POST('farm', '?int')]);
 
 				return $eInvoice['farm']->is($eFarm);
+
+			})
+			->setCallback('amount.negative', function(float $amount): bool {
+
+				return $amount > 0;
 
 			})
 		;

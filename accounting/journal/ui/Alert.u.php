@@ -24,7 +24,8 @@ class AlertUi {
 			'Operation::operationsRequiredForAttach' => s("Veuillez choisir une écriture comptable"),
 			'Operation::thirdPartyRequiredForAttach' => s("Veuillez choisir un tiers"),
 
-			'thirdParty.empty' => s("Choisissez un tiers pour ce paiement."),
+			'Operation::thirdParty.unknown' => s("Choisissez un tiers pour ce paiement."),
+			'Operation::amount.negative' => s("Le montant doit être positif. Utilisez le type débit / crédit pour modifier le sens de l'écriture."),
 
 			'Operation::date.check' => s("La date doit correspondre à l'exercice comptable actuellement ouvert."),
 			'Operation::account.check' => s("N'oubliez pas de choisir un numéro de compte !"),

@@ -498,16 +498,10 @@ class OperationLib extends OperationCrud {
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
-		$invoiceFile = var_filter($input['invoiceFile'] ?? NULL);
-		$ePaymentMethodInvoice = var_filter($input['invoice']['paymentMethod'] ?? NULL, 'payment\Method');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$isFromCashflow = $eCashflow->notEmpty();
-		$eThirdParty = new \account\ThirdParty();
-		$thirdPartys = [];
 
 		$indexes = count($input['accountLabel']);
-
-		$totalAmount = 0; // Par défaut : débit - crédit
 
 		$fw = new \FailWatch();
 
@@ -524,14 +518,13 @@ class OperationLib extends OperationCrud {
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document', 'vatRate',
 			'asset',
-			'journalCode',
+			'journalCode', 'thirdParty',
 		];
 		if($eFinancialYear['hasVat']) {
 			$properties[] = 'vat';
 		}
 
 		$eOperationDefault['thirdParty'] = NULL;
-		$eOperationDefault['financialYear'] = $eFinancialYear;
 
 		if($for === 'create') {
 
@@ -543,37 +536,35 @@ class OperationLib extends OperationCrud {
 		}
 
 		if($for === 'update') {
-			if(isset($input['id']) === FALSE) {
-				throw new \NotExpectedAction('no ids for the update');
+
+			if(isset($input['id']) === FALSE or isset($input['hash']) === FALSE) {
+				throw new \NotExpectedAction('no ids or hash for the update');
 			}
 			$cOperationOriginByIds = self::getByIds($input['id']);
-			if ($cOperationOriginByIds->empty()) {
+			if($cOperationOriginByIds->empty() or $cOperationOriginByIds->count() !== count($input['id'])) {
 				throw new \NotExpectedAction('no ids for the update');
 			}
-		} else {
-			$cOperationOriginByIds = new \Collection();
-		}
-
-		if($for === 'update' and ($input['hash'] ?? NULL) !== NULL) {
 
 			$cOperationOrigin = OperationLib::getByHash($input['hash']);
+			$hash = $cOperationOrigin->first()['hash'];
 
-		}
-
-		$hash = self::generateHash().($eCashflow->empty() ? 'w' : 'c');
-
-		if($for === 'create') {
-			$eOperationDefault['hash'] = $hash;
 		} else {
-			$eOperationDefault['hash'] = $cOperationOrigin->first()['hash'];
+
+			$cOperationOriginByIds = new \Collection();
+			$hash = self::generateHash().($eCashflow->empty() ? 'w' : 'c');
+
 		}
+
+		$eOperationDefault['hash'] = $hash;
+
 
 		for($index = 0; $index < $indexes; $index++) {
 
 			// Si on a déjà l'opération de départ, on part de celle-ci et on la modifie.
-			if(isset($input['id'][$index]) and $cOperationOriginByIds->find(fn($e) => $e['id'] === (int)$input['id'][$index])->notEmpty()) {
+			if($for === 'update') {
 
 				$eOperation = $cOperationOriginByIds->find(fn($e) => $e['id'] === (int)$input['id'][$index])->first();
+
 				foreach(array_keys($eOperationDefault->getArrayCopy()) as $field) {
 					$eOperation[$field] = $eOperationDefault[$field];
 				}
@@ -587,24 +578,11 @@ class OperationLib extends OperationCrud {
 			$eOperation['index'] = $index;
 			$eOperation['financialYear'] = $eFinancialYear;
 
-			$input['invoiceFile'] = [$index => $invoiceFile];
 			$input['accountLabel'][$index] = \account\AccountLabelLib::pad($input['accountLabel'][$index]);
 
 			$eOperation->buildIndex($properties, $input, $index);
 
-			if($isFromCashflow and $for === 'create') {
-				$eOperation->build(['paymentDate', 'paymentMethod'], $input);
-			}
-
-			if($for === 'update') {
-
-				$eOperationOriginal = $cOperationOrigin->offsetGet($input['id'][$index]);
-				$eOperation['date'] = $eOperationOriginal['date'];
-			}
-
 			$fw->validate();
-
-			$eOperation['amount'] = abs($eOperation['amount']);
 
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
@@ -613,42 +591,11 @@ class OperationLib extends OperationCrud {
 				$eOperation['documentDate'] = NULL;
 			}
 
-			$thirdParty = $input['thirdParty'][$index] ?? null;
+			// Enregistre les termes du libellé de banque pour améliorer les prédictions
+			if($isFromCashflow === TRUE) {
 
-			if($thirdParty !== null) {
-
-				if($eThirdParty->empty() or $eThirdParty['id'] !== (int)$thirdParty) {
-					$eThirdParty = \account\ThirdPartyLib::getById($thirdParty);
-				}
-
-				$eOperation['thirdParty'] = $eThirdParty;
-				$thirdPartys[] = $eThirdParty['id'];
-
-				// Vérifier si on doit enregistrer des données supplémentaires (issues de la facture pdf)
-				if($eOperation['thirdParty']['vatNumber'] === NULL and ($input['thirdPartyVatNumber'][$index] ?? NULL) !== NULL) {
-					$eOperation['thirdParty']['vatNumber'] = rtrim(trim($input['thirdPartyVatNumber'][$index]));
-				}
-
-				if(($input['thirdPartyName'][$index] ?? NULL) !== NULL and ($eOperation['thirdParty']['names'] === NULL or mb_strpos($eOperation['thirdParty']['names'], $input['thirdPartyName'][$index]) !== FALSE)) {
-					if($eOperation['thirdParty']['names'] === NULL) {
-						$eOperation['thirdParty']['names'] = rtrim(trim($input['thirdPartyName'][$index]));
-					} else {
-						$eOperation['thirdParty']['names'] .= '|'.rtrim(trim($input['thirdPartyName'][$index]));
-					}
-				}
-
-				// Enregistre les termes du libellé de banque pour améliorer les prédictions
-				if($isFromCashflow === TRUE) {
-
-					$eOperation['thirdParty'] = \account\ThirdPartyLib::recalculateMemos($eCashflow, $eOperation['thirdParty']);
-
-				}
-
-				\account\ThirdPartyLib::update($eOperation['thirdParty'], ['vatNumber', 'names', 'memos']);
-
-			} else {
-
-				$eOperation['thirdParty'] = new \account\ThirdParty();
+				$eOperation['thirdParty'] = \account\ThirdPartyLib::recalculateMemos($eCashflow, $eOperation['thirdParty']);
+				\account\ThirdPartyLib::update($eOperation['thirdParty'], $eOperation['thirdParty']->extracts(['memos']));
 
 			}
 
@@ -676,6 +623,7 @@ class OperationLib extends OperationCrud {
 					$eOperation['journalCode'] = $cAccounts->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
 			}
 
+			// Données que l'on va recopier par défaut sur toutes les autres écritures du groupe
 			foreach(['document', 'documentDate', 'thirdParty', 'journalCode'] + ($for === 'create' ? ['date', 'paymentMethod'] : []) as $property) {
 				if(($eOperationDefault[$property] ?? NULL) === NULL) {
 					$eOperationDefault[$property] = $eOperation[$property];
@@ -685,8 +633,6 @@ class OperationLib extends OperationCrud {
 			if($for === 'create') {
 
 				\journal\Operation::model()->insert($eOperation);
-
-				$totalAmount += $eOperation['type'] === Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'];
 
 			} else {
 
@@ -716,26 +662,26 @@ class OperationLib extends OperationCrud {
 
 				if($for === 'update') {
 
-					$eOperationVatOrigin = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index] ?? -1))->first();
+					$cOperationVatOrigin = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index] ?? NULL));
 
-					// L'écriture n'existe pas !
-					if($eOperationVatOrigin === NULL or $eOperationVatOrigin->empty()) {
+					// L'écriture n'existe pas ! On va la créer
+					if($cOperationVatOrigin->empty()) {
 
 						$defaultValues = $eOperation->getArrayCopy();
 						$forVat = 'create';
 
 					} else {
 
-						$defaultValues = $cOperationOrigin->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index]))->first()->getArrayCopy();
+						$defaultValues = $cOperationVatOrigin->first()->getArrayCopy();
 
 					}
 
-					// Certains champs doivent être automatiquement recopiés de l'originale à l'écriture de TVA
+					// Certains champs doivent être toujours identiques entre l'originale et l'écriture de TVA
 					if(isset($defaultValues['operation']['id'])) {
 
 						$eOperationExcludingVat = $cOperation->find(fn($e) => $e['id'] === $defaultValues['operation']['id'])->first();
 
-						foreach(['description'] as $fieldCopy) {
+						foreach(['description', 'document', 'documentDate'] as $fieldCopy) {
 							$defaultValues[$fieldCopy] = $eOperationExcludingVat[$fieldCopy];
 						}
 
@@ -755,7 +701,7 @@ class OperationLib extends OperationCrud {
 
 				}
 
-				// Fait déjà l'ajout dans OperationCashflow
+				// Cette fonction fait déjà l'ajout dans OperationCashflow
 				$eOperationVat = \journal\OperationLib::createVatOperation(
 					$eOperation,
 					$eAccount,
@@ -767,9 +713,7 @@ class OperationLib extends OperationCrud {
 
 				$cOperation->append($eOperationVat);
 
-				$totalAmount += $eOperationVat['type'] === Operation::DEBIT ? $eOperationVat['amount'] : -1 * $eOperationVat['amount'];
-
-			} elseif($eOperation->exists()) {
+			} else if($eOperation->exists()) {
 
 				// S'il y avait une opération de TVA => il faut la supprimer
 				Operation::model()
@@ -780,8 +724,8 @@ class OperationLib extends OperationCrud {
 			}
 
 			// Création de l'opération d'origine
-			// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
 
+			// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
 			if(
 				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEPOSIT_CLASS) or
 				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS)
@@ -815,47 +759,6 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		// Liste des opérations AVANT d'ajouter l'opération du compte de tiers
-		$cOperationWithoutThirdParties = new \Collection();
-		foreach($cOperation as $eOperation) {
-			$cOperationWithoutThirdParties->append(clone $eOperation);
-		}
-
-		$thirdPartys = array_unique($thirdPartys);
-
-		if(count($thirdPartys) === 1 and $eThirdParty->notEmpty()) {
-
-			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
-			$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $totalAmount, $hash, $cOperation, $eThirdParty);
-
-			if($eOperationThirdParty->notEmpty()) {
-
-				if($for === 'update') {
-
-					$eOperationThirdPartyDb = $cOperation->find(fn($e) => $e['account']['id'] === $eOperationThirdParty['account']['id']);
-					$eOperationThirdParty['id'] = $eOperationThirdPartyDb['id'];
-
-					Operation::model()
-						->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy())))
-						->update($eOperationVat);
-
-				}
-
-				if($for === 'create' and $isFromCashflow) {
-					$cOperationCashflow->append(new OperationCashflow([
-						'operation' => $eOperationThirdParty,
-						'cashflow' => $eCashflow,
-						'hash' => $hash,
-						'amount' => min($eOperationThirdParty['amount'], abs($eCashflow['amount']))
-					]));
-				}
-
-				$cOperation->append($eOperationThirdParty);
-
-			}
-
-		}
-
 		// Ajout de la transaction sur le numéro de compte bancaire 512 (seulement pour une création)
 		if($for === 'create' and $isFromCashflow === TRUE) {
 
@@ -870,36 +773,13 @@ class OperationLib extends OperationCrud {
 
 			$eOperationDefault['hash'] = $hash;
 
-			// Crée automatiquement l'operationCashflow correspondante
+			// Cette fonction crée automatiquement l'operationCashflow correspondante
 			$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
 				$eCashflow,
 				$eOperationDefault,
 				$document,
 			);
 			$cOperation->append($eOperationBank);
-
-			// En cas de comptabilité à l'engagement : création de l'entrée en 401 ou 411 correspondante
-			if(count($thirdPartys) === 1 and $eThirdParty->notEmpty()) {
-
-				$eOperationThirdParty = self::createThirdPartyOperation($eFinancialYear, $eCashflow['amount'], $hash, $cOperationWithoutThirdParties, $eThirdParty);
-
-				if($eOperationThirdParty->notEmpty()) {
-					$cOperation->append($eOperationThirdParty);
-				}
-
-			}
-
-		}
-
-		if(($eOperationDefault['invoice'] ?? NULL) !== NULL and $eOperationDefault['invoice']->exists() and $ePaymentMethodInvoice->exists()) {
-
-			$ePaymentMethod = \payment\MethodLib::getById($ePaymentMethodInvoice['id']);
-
-			if($ePaymentMethod['use']->value(\payment\Method::SELLING) and ($ePaymentMethod['farm']->exists() === FALSE or $ePaymentMethod['farm']->is($eFarm))) {
-
-				\selling\Invoice::model()->update($eOperationDefault['invoice'], ['paymentStatus' => \selling\Invoice::PAID, 'paymentMethod' => $ePaymentMethod]);
-
-			}
 
 		}
 
@@ -912,109 +792,6 @@ class OperationLib extends OperationCrud {
 		}
 
 		return $cOperation;
-
-	}
-
-	private static function createThirdPartyOperation(\account\FinancialYear $eFinancialYear, float $amount, string $hash, \Collection $cOperation, \account\ThirdParty $eThirdParty): Operation {
-
-		if($amount === 0.0 or $eFinancialYear->isCashAccounting()) {
-			return new Operation();
-		}
-
-		// On ne doit avoir qu'un seul type (charge ou produit) d'opération, pas les 2 en même temps
-		$hasCharge = FALSE;
-		$hasProduit = FALSE;
-		$hasThirdPartyOperation = FALSE;
-		foreach($cOperation as $eOperation) {
-
-			if(\account\AccountLabelLib::isChargeClass($eOperation['accountLabel'])) {
-				$hasCharge = TRUE;
-			} else if(\account\AccountLabelLib::isProductClass($eOperation['accountLabel'])) {
-				$hasProduit = TRUE;
-			}
-
-			if(
-				\account\AccountLabelLib::isFromClass(\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS, $eOperation['accountLabel']) or
-				\account\AccountLabelLib::isFromClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, $eOperation['accountLabel'])
-			) {
-				$hasThirdPartyOperation = TRUE;
-			}
-		}
-
-		// Le mix engagement / trésorerie n'est effectué que pour les opérations avec les clients
-		if($hasCharge) {
-			return new Operation();
-		}
-
-		if($hasCharge and $hasProduit) {
-			\Fail::log('Operation::typeProduitCharge.inconsistent');
-			return new Operation();
-		}
-
-		// Si dans le lot il y a déjà une opération en 401 ou 411 => On ne crée pas d'opération Third Party
-		if($hasThirdPartyOperation) {
-			return new Operation();
-		}
-
-		// Opération avec un fournisseur
-		if($hasCharge) {
-
-			$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'supplier');
-			$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-
-			if($eThirdParty['supplierAccountLabel'] === NULL) {
-
-				$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-				$eThirdParty['supplierAccountLabel'] = $accountLabel;
-				\account\ThirdPartyLib::update($eThirdParty, ['supplierAccountLabel']);
-
-			} else {
-
-				$accountLabel = $eThirdParty['supplierAccountLabel'];
-
-			}
-
-		} else if($hasProduit) {
-
-			$description = new \account\ThirdPartyUi()->getOperationDescription($eThirdParty, 'client');
-			$eAccountThirdParty = \account\AccountLib::getByClass(\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-
-			if($eThirdParty['clientAccountLabel'] === NULL) {
-
-				$accountLabel = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-				$eThirdParty['clientAccountLabel'] = $accountLabel;
-				\account\ThirdPartyLib::update($eThirdParty, ['clientAccountLabel']);
-
-			} else {
-
-				$accountLabel = $eThirdParty['clientAccountLabel'];
-
-			}
-		} else {
-			return new Operation();
-		}
-
-		$eOperationThirdParty = new Operation(
-			[
-				'thirdParty' => $eThirdParty,
-				'date' => $eOperation['date'],
-				'document' => $eOperation['document'],
-				'documentDate' => $eOperation['documentDate'],
-				'amount' => abs($amount),
-				'account' => $eAccountThirdParty,
-				'type' => $amount > 0 ? Operation::CREDIT : Operation::DEBIT,
-				'accountLabel' => $accountLabel,
-				'description' => $description,
-				'financialYear' => $eFinancialYear,
-				'hash' => $hash,
-				'journalCode' => $eOperation['journalCode'],
-				'paymentDate' => $eOperation['paymentDate'],
-			]
-		);
-
-		\journal\Operation::model()->insert($eOperationThirdParty);
-
-		return $eOperationThirdParty;
 
 	}
 
@@ -1065,14 +842,11 @@ class OperationLib extends OperationCrud {
 
 		} else if($for === 'update' and isset($defaultValues['id'])) {
 
+			$eOperationVat['id'] = (int)$defaultValues['id'];
+
 			Operation::model()
 				->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperationVat->getArrayCopy())))
-				->whereId($defaultValues['id'])
 				->update($eOperationVat);
-			$eOperationVat = Operation::model()
-				->select(Operation::getSelection())
-				->whereId($defaultValues['id'])
-				->get();
 
 		}
 

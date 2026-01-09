@@ -44,7 +44,6 @@ Operation:
   description: text8(1, null) @collate(general)
   document: ?text8(1, null) @collate(general)
   documentDate: ?date
-  documentStorage: ?text16
   invoice: ?selling\Invoice
   # Une opération est toujours HT
   amount: decimal(8, 2)

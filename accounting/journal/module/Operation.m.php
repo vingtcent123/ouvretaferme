@@ -55,7 +55,6 @@ class OperationModel extends \ModuleModel {
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'document' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'documentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'documentStorage' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
 			'type' => ['enum', [\journal\Operation::DEBIT, \journal\Operation::CREDIT], 'cast' => 'enum'],
@@ -71,7 +70,7 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'documentStorage', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -189,10 +188,6 @@ class OperationModel extends \ModuleModel {
 
 	public function whereDocumentDate(...$data): OperationModel {
 		return $this->where('documentDate', ...$data);
-	}
-
-	public function whereDocumentStorage(...$data): OperationModel {
-		return $this->where('documentStorage', ...$data);
 	}
 
 	public function whereInvoice(...$data): OperationModel {
