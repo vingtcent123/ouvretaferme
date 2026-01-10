@@ -195,11 +195,14 @@ document.delegateEventListener('autocompleteUpdate', '[data-third-party="journal
 
 document.delegateEventListener('autocompleteSelect', '[data-third-party="journal-operation-create"], [data-third-party="journal-operation-update"], [data-third-party="bank-cashflow-allocate"]', function(e) {
 
+	const index = parseInt(this.dataset.index);
+
 	if(this.disabled) {
 		return;
 	}
 
 	Operation.checkAutocompleteStatus(e);
+	Operation.updateThirdParty(index, e.detail);
 });
 
 document.delegateEventListener('mouseover', '[data-highlight]', function(e) {
@@ -321,7 +324,7 @@ class Operation {
 		}
 
 		if(qs('[name="thirdParty[' + index + ']"]') && qs('[name="thirdParty[' + (index - 1) + ']"]')) {
-			qs('[name="thirdParty[' + index + ']"]').setAttribute('value', qs('[name="thirdParty[' + (index - 1) + ']"]').value || null)
+			qs('[name="thirdParty[' + index + ']"]').value = qs('[name="thirdParty[' + (index - 1) + ']"]').value || null;
 		}
 
 	}
@@ -351,6 +354,20 @@ class Operation {
 			qs('[data-wrapper="' + field + '"]', node => node.classList.add('form-error-wrapper'));
 		}
 
+	}
+	static updateThirdParty(index, detail) {
+
+		const columns = qs('[data-columns]').getAttribute('data-columns');
+
+		detail.input.firstParent('form').qs('#add-operation').setAttribute('post-third-party', detail.value);
+
+		for(let i = 0; i < columns; i++) {
+			if(i !== index && qs('[data-third-party][data-index="' + i + '"]').getAttribute('disabled') === '1') {
+				const dropdown = qs('[data-third-party][data-index="' + i + '"]');
+				AutocompleteField.apply(dropdown, detail);
+			}
+
+		}
 	}
 
 	static deleteOperation(target) {

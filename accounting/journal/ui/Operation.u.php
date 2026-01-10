@@ -165,6 +165,8 @@ class OperationUi {
 
 			if($for === 'copy') {
 				unset($eOperation['id']);
+				$eOperation['date'] = $eCashflow['date'];
+				$eOperation['paymentDate'] = $eCashflow['date'];
 			}
 			$eOperation['cJournalCode'] = $eOperationBase['cJournalCode'];
 
@@ -222,6 +224,7 @@ class OperationUi {
 			cOperation: $cOperationFormatted,
 			eCashflow: $eCashflow,
 			eOperationRequested: $eOperationBase,
+			for: 'update',
 		);
 
 		$saveButton = $form->submit(
@@ -1107,6 +1110,7 @@ class OperationUi {
 		\Collection $cOperation,
 		\bank\Cashflow $eCashflow,
 		Operation $eOperationRequested,
+		string $for,
 	): string {
 
 		$isFromCashflow = $eCashflow->notEmpty();
@@ -1123,7 +1127,7 @@ class OperationUi {
 			$h .= $form->hidden('cashflow', $eCashflow['id']);
 		}
 
-		$h .= '<div id="operation-update-list" class="operation-create-several-container" '.($hasAsset ? 'data-asset'  : '').' data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
+		$h .= '<div id="'.($for === 'update' ? 'operation-update-list' : 'operation-create-list').'" class="operation-create-several-container" '.($hasAsset ? 'data-asset'  : '').' data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
 			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
 
 			foreach($cOperation as $eOperation) {

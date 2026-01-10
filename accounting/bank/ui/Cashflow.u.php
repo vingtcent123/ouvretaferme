@@ -700,6 +700,7 @@ class CashflowUi {
 		$h .= $this->getAllocateGeneralPayment($eFinancialYear,  $cPaymentMethod, $defaultValues, $form, 'copy');
 
 		// Proposer de partir d'une opération similaire
+		$eCashflowCopySelected = new Cashflow();
 		if(count($eCashflow['similar']) > 0) {
 
 			$eCashflowCopySelected = $eCashflow['similar']->find(fn($e) => $e['id'] === GET('copy', 'int'))->first() ?? new Cashflow();
@@ -746,7 +747,7 @@ class CashflowUi {
 
 		}
 
-		if(isset($eCashflowCopySelected) and $eCashflowCopySelected->notEmpty()) {
+		if($eCashflowCopySelected->notEmpty()) {
 
 			$eOperationBase = $eCashflowCopySelected['cOperation']->find(fn($e) => $e['operation']->empty())->first();
 			$eOperationBase['cJournalCode'] = $cJournalCode;
@@ -760,6 +761,7 @@ class CashflowUi {
 				cOperation: $cOperationFormatted,
 				eCashflow: $eCashflow,
 				eOperationRequested: new \journal\Operation(),
+				for: 'copy',
 			);
 
 		} else {
@@ -772,7 +774,7 @@ class CashflowUi {
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
 		$amountWarning .= '</div>';
 
-		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:addAllocate" post-index="'.($index + 1).'" post-id="'.$eCashflow['id'].'" post-third-party="" post-amount="" class="btn btn-outline-secondary">';
+		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:addAllocate" post-index="'.($index + 1).'" post-id="'.$eCashflow['id'].'" post-third-party="'.($eCashflowCopySelected['cOperation']->first()['thirdParty']['id'] ?? NULL).'" post-amount="" class="btn btn-outline-secondary">';
 		$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
 		$addButton .= '</a>';
 
