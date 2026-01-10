@@ -22,8 +22,6 @@ class AlertUi {
 			'FinancialYear::endDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
 
 			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
-			'ThirdParty::clientAccountLabel.check' => s("Ce compte client a déjà été attribué, choisissez-en un autre."),
-			'ThirdParty::supplierAccountLabel.check' => s("Ce compte client a déjà été attribué, choisissez-en un autre."),
 
 			'Import::filename.incorrect' => s("Le nom de votre fichier FEC est incorrect. Il doit être de la forme : <i><b>siren</b>FEC<b>date</b>.txt</i> avec <b>siren</b> le numéro de siren de votre ferme et <b>date</b> la date de clôture ou de l'export."),
 			'Import::header.incorrect' => s("Le format de votre fichier FEC est incorrect. Les entêtes de colonnes n'ont pas été détectées. <link>Lire plus d'informations sur la norme</link>.", ['link' => '<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027804775" target="_blank">']),
@@ -52,6 +50,7 @@ class AlertUi {
 			'FinancialYear::reclose' => s("L'exercice comptable a bien été refermé."),
 
 			'ThirdParty::created' => s("Le tiers a bien été créé."),
+			'ThirdParty::updated' => s("Le tiers a bien été mis à jour."),
 			'ThirdParty::deleted' => s("Le tiers a bien été supprimé."),
 
 			'Import::created' => s("L'import sera réalisé d'ici quelques instants ! L'état de l'import sera affiché dans le tableau des imports."),

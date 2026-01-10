@@ -33,6 +33,12 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('update', function($data, PanelTemplate $t) {
+
+	return new \account\ThirdPartyUi()->update($data->eFarm, $data->e);
+
+});
+
 new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = [];

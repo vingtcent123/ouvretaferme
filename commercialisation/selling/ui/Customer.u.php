@@ -113,8 +113,8 @@ class CustomerUi {
 			'discount' => $eCustomer['discount'],
 			'type' => $eCustomer['type'],
 			'itemHtml' => $item,
-			'itemText' => $eCustomer['name'].' / '.$eCustomer->getTextCategory(short: TRUE)
-		];
+			'itemText' => $eCustomer['name'].' / '.$eCustomer->getTextCategory(short: TRUE),
+		] + (POST('withAdministrative', 'bool', FALSE) ? ['siret' => $eCustomer['siret'], 'vatNumber' => $eCustomer['vatNumber']] : []);
 
 	}
 

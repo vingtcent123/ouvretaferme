@@ -37,7 +37,19 @@ new \account\ThirdPartyPage()
 		throw new ViewAction($data);
 
 	})
-	->quick(['name', 'customer', 'clientAccountLabel', 'supplierAccountLabel'])
+	->update(function($data) {
+
+		$data->e['farm'] = $data->eFarm;
+
+		throw new ViewAction($data);
+
+	})
+	->doUpdate(function($data) {
+
+		throw throw new ReloadAction('account', 'ThirdParty::updated');
+
+	})
+	->quick(['name', 'customer'])
 	->doDelete(fn($data) => throw new ReloadAction('account', 'ThirdParty::deleted'));
 
 new Page()
@@ -54,14 +66,6 @@ new Page()
 		$cThirdParty = account\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow);
 	}
 
-	$supplierAccountLabel = account\ThirdPartyLib::getNextThirdPartyAccountLabel('supplierAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-	$clientAccountLabel = account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-
-	// On affecte le prochain incrément automatiquement
-	foreach($cThirdParty as &$eThirdParty) {
-		$eThirdParty['supplierAccountLabel'] ??= $supplierAccountLabel;
-		$eThirdParty['clientAccountLabel'] ??= $clientAccountLabel;
-	}
 
 	$data->cThirdParty = $cThirdParty;
 

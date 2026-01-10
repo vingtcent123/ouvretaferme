@@ -6,7 +6,10 @@ class ThirdPartyLib extends ThirdPartyCrud {
 	const EXCLUDED_WORDS = ['vir', 'sas', 'web', 'mlle', 'les', 'sasu', 'mme', 'paiement', 'carte', 'votre', 'inst', 'faveur', 'virement', 'emis', 'vers', 'facture', 'remise', 'cheque', 'especes', 'versement', 'prelevement', 'devis', 'earl'];
 
 	public static function getPropertiesCreate(): array {
-		return ['name', 'customer'];
+		return ['name', 'customer', 'siret', 'vatNumber'];
+	}
+	public static function getPropertiesUpdate(): array {
+		return ['name', 'customer', 'siret', 'vatNumber'];
 	}
 
 	public static function getAll(\Search $search): \Collection {
@@ -297,6 +300,14 @@ class ThirdPartyLib extends ThirdPartyCrud {
 		parent::create($e);
 
 		ThirdParty::model()->commit();
+
+	}
+
+	public static function updateByCustomer(\selling\Customer $eCustomer): void {
+
+		ThirdParty::model()
+			->whereCustomer($eCustomer)
+			->update($eCustomer->extracts(['siret', 'vatNumber']));
 
 	}
 

@@ -70,7 +70,7 @@ Class AccountingLib {
 			$document = $eSale['document'];
 			$documentDate = $eSale['deliveredAt'];
 			$compAuxLib = ($eSale['customer']['name'] ?? '');
-			$compAuxNum = ($eSale['customer']['thirdParty']['clientAccountLabel'] ?? '');
+			$compAuxNum = '';
 
 			$items = []; // groupement par accountlabel, moyen de paiement
 
@@ -273,7 +273,7 @@ Class AccountingLib {
 				'customer' => [
 					'id', 'name', 'type', 'destination',
 					'thirdParty' => \account\ThirdParty::model()
-						->select('id', 'clientAccountLabel')
+						->select('id')
 						->delegateElement('customer')
 
 				],
@@ -359,7 +359,7 @@ Class AccountingLib {
 			$document = $eInvoice['name'];
 			$documentDate = $eInvoice['date'];
 			$compAuxLib = ($eInvoice['customer']['name'] ?? '');
-			$compAuxNum = ($eInvoice['customer']['thirdParty']['clientAccountLabel'] ?? '');
+			$compAuxNum = '';
 
 			$hasVat = TRUE;
 			if($cFinancialYear->notEmpty()) {

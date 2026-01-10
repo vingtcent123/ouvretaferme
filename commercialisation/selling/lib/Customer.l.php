@@ -375,6 +375,14 @@ class CustomerLib extends CustomerCrud {
 			\mail\ContactLib::synchronizeCustomerEmail($e);
 		}
 
+		if(
+			$e['farm']->hasAccounting() and
+			(in_array('vatNumber', $properties) or in_array('siret', $properties))
+		) {
+			\company\CompanyLib::connectDatabase($e['farm']);
+			\account\ThirdPartyLib::updateByCustomer($e);
+		}
+
 		Customer::model()->commit();
 
 	}

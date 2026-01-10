@@ -23,32 +23,6 @@ class ThirdParty extends ThirdPartyElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('clientAccountLabel.format', function(?string $clientAccountLabel): bool {
-
-				return AccountLabelLib::isFromClass($clientAccountLabel, AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-
-			})
-			->setCallback('clientAccountLabel.duplicate', function(?string $clientAccountLabel): bool {
-
-				return (ThirdParty::model()
-					->whereClientAccountLabel($clientAccountLabel)
-					->whereId('!=', fn() => $this['id'], if: $this->exists())
-					->count() === 0);
-
-			})
-			->setCallback('supplierAccountLabel.format', function(?string $clientAccountLabel): bool {
-
-				return AccountLabelLib::isFromClass($clientAccountLabel, AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS);
-
-			})
-			->setCallback('supplierAccountLabel.duplicate', function(?string $supplierAccountLabel): bool {
-
-				return (ThirdParty::model()
-					->whereSupplierAccountLabel($supplierAccountLabel)
-					->whereId('!=', fn() => $this['id'], if: $this->exists())
-					->count() === 0);
-
-			})
 			->setCallback('name.duplicate', function(?string $name) use($p): bool {
 
 				if($p->for === 'update') {

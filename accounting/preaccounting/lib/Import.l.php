@@ -148,23 +148,16 @@ Class ImportLib {
 		}
 
 		if($eThirdParty->empty()) {
+
 			$eThirdParty = new \account\ThirdParty([
 				'name' => $eCustomer->getName(),
 				'customer' => $eCustomer,
-				'clientAccountLabel' => \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS),
 				'normalizedName' => \account\ThirdPartyLib::normalizeName($eCustomer->getName()),
 			]);
 
 			\account\ThirdPartyLib::create($eThirdParty);
 
 			$eThirdParty = \account\ThirdPartyLib::getByCustomer($eCustomer);
-
-		} else if($eThirdParty['clientAccountLabel'] === NULL) {
-
-			$label = \account\ThirdPartyLib::getNextThirdPartyAccountLabel('clientAccountLabel', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS);
-
-			\account\ThirdParty::model()->update($eThirdParty, ['clientAccountLabel' => $label]);
-			$eThirdParty['clientAccountLabel'] = $label;
 
 		}
 

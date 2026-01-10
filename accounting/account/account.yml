@@ -73,14 +73,11 @@ Partner:
 ThirdParty:
   id: serial32
   name: text8(1, null) @collate(general)
-  clientAccountLabel: ?text8(1, null) @collate(general)
-  supplierAccountLabel: ?text8(1, null) @collate(general)
+  siret: ?text8(1, null)
   vatNumber: ?text8
   customer: ?selling\Customer
   memos: ?json = PHP([])
   normalizedName: ?json = PHP([])
   UNIQUE: [
     ["name"],
-    ["clientAccountLabel"],
-    ["supplierAccountLabel"],
   ]

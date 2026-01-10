@@ -28,26 +28,17 @@ class ThirdPartyUi {
 
 	}
 
-	public function getOperationDescription(ThirdParty $eThirdParty, string $thirdPartyType): string {
-
-		return match($thirdPartyType) {
-			'client' => s("Client {name}", ['name' => $eThirdParty['name']]),
-			'supplier' => s("Fournisseur {name}", ['name' => $eThirdParty['name']]),
-		};
-
-	}
-
 	public function create(\farm\Farm $eFarm, ThirdParty $eThirdParty): \Panel {
 
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/thirdParty:doCreate', ['id' => 'journal-thirdParty-create', 'autocomplete' => 'off', 'onrender' => 'ThirdParty.focusInput();']);
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/thirdParty:doCreate', ['id' => 'journal-thirdParty-create', 'autocomplete' => 'off', 'onrender' => 'ThirdParty.focusInput();', 'write-third-party']);
 
 		$h .= $form->asteriskInfo();
 
-		$h .= $form->dynamicGroups($eThirdParty, ['name*', 'customer']);
+		$h .= $form->dynamicGroups($eThirdParty, ['name*', 'customer', 'siret', 'vatNumber']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Créer le tiers"))
@@ -58,6 +49,34 @@ class ThirdPartyUi {
 		return new \Panel(
 			id: 'panel-journal-thirdParty-create',
 			title: s("Ajouter un tiers"),
+			body: $h
+		);
+
+	}
+
+	public function update(\farm\Farm $eFarm, ThirdParty $eThirdParty): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/thirdParty:doUpdate', ['id' => 'journal-thirdParty-update', 'autocomplete' => 'off', 'write-third-party']);
+
+		$h .= $form->asteriskInfo();
+
+		$h .= $form->hidden('id', $eThirdParty['id']);
+
+		$h .= $form->dynamicGroups($eThirdParty, ['name*', 'customer', 'siret', 'vatNumber']);
+
+		$h .= $form->group(
+			content: $form->submit(s("Enregistrer"))
+		);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-journal-thirdParty-update',
+			title: s("Modifier un tiers"),
 			body: $h
 		);
 
@@ -81,7 +100,15 @@ class ThirdPartyUi {
 
 		}
 
-		$isAccrual = (FEATURE_ACCOUNTING_ACCRUAL and ($eFarm['eFinancialYear']['accountingType'] === FinancialYear::ACCRUAL));
+		$count = 0;
+		$financialYears = [];
+		foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
+			if($count >= 2) {
+				break;
+			}
+			$count++;
+			$financialYears[] = $eFinancialYear['id'];
+		}
 
 		$h = '';
 
@@ -101,27 +128,14 @@ class ThirdPartyUi {
 						$h .= '</th>';
 						$h .= '<th rowspan="2">'.s("Client").'</th>';
 
-						if($isAccrual) {
-							$h .= '<th rowspan="2">'.s("Compte Client").'</th>';
-						}
-
-						if($isAccrual) {
-							$h .= '<th rowspan="2">'.s("Compte Fournisseur").'</th>';
-						}
-
-						$h .= '<th class="text-center" colspan="2">'.s("Écritures comptables").'</th>';
+						$h .= '<th class="text-center" colspan="'.count($financialYears).'">'.s("Écritures comptables").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$count = 0;
-						$financialYears = [];
-						foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
-							if($count >= 2) {
-								break;
-							}
+						foreach($financialYears as $financialYear) {
+							$h .= '<th class="text-end '.($count === 0 ? 'highlight-stick-right' : 'highlight-stick-left').'">'.$eFarm['cFinancialYear']->offsetGet($financialYear)->getLabel().'</th>';
 							$count++;
-							$financialYears[] = $eFinancialYear['id'];
-							$h .= '<th class="text-end '.($count === 1 ? 'highlight-stick-right' : 'highlight-stick-left').'">'.$eFinancialYear->getLabel().'</th>';
 						}
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -135,7 +149,7 @@ class ThirdPartyUi {
 						$h .= '<tr>';
 
 						$h .= '<td>';
-								$h .= $eThirdParty['id'];
+								$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/thirdParty:update?id='.$eThirdParty['id'].'" class="btn btn-sm btn-outline-primary">'.$eThirdParty['id'].'</a>';
 							$h .= '</td>';
 
 							$h .= '<td>';
@@ -145,22 +159,6 @@ class ThirdPartyUi {
 								$h .= '<td>';
 									$h .= $eThirdParty->quick('customer', $eThirdParty['customer']->exists() ? encode($eThirdParty['customer']['name']) : '<span class="undefined">'.s("Non renseigné").'</span>');
 								$h .= '</td>';
-
-								if($isAccrual) {
-
-									$h .= '<td>';
-										$h .= $eThirdParty->quick('clientAccountLabel', $eThirdParty['clientAccountLabel'] ? encode($eThirdParty['clientAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
-									$h .= '</td>';
-
-								}
-
-								if($isAccrual) {
-
-									$h .= '<td>';
-										$h .= $eThirdParty->quick('supplierAccountLabel', $eThirdParty['supplierAccountLabel'] ? encode($eThirdParty['supplierAccountLabel']) : '<span class="undefined">'.s("Non défini").'</span>');
-									$h .= '</td>';
-
-								}
 
 							foreach($financialYears as $financialYear) {
 
@@ -230,8 +228,6 @@ class ThirdPartyUi {
 
 		return [
 			'value' => $eThirdParty['id'],
-			'clientAccountLabel' => $eThirdParty['clientAccountLabel'],
-			'supplierAccountLabel' => $eThirdParty['supplierAccountLabel'],
 			'farm' => $eFarm['id'],
 			'itemHtml' => $eThirdParty['name'],
 			'itemText' => $eThirdParty['name']
@@ -273,23 +269,11 @@ class ThirdPartyUi {
 		$d = ThirdParty::model()->describer($property, [
 			'name' => s("Nom"),
 			'customer' => s("Client"),
-			'clientAccountLabel' => s("Compte client"),
-			'supplierAccountLabel' => s("Compte fournisseur"),
+			'vatNumber' => s("Numéro de TVA intracommunautaire"),
+			'siret' => s("Numéro d'immatriculation SIRET"),
 		]);
 
 		switch($property) {
-
-			case 'clientAccountLabel':
-				$d->after = \util\FormUi::info(s("Le compte client commence toujours par {accountPrefix}", ['accountPrefix' => AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS]));
-				$d->placeholder = AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS;
-				$d->default = fn($e, $property) => $e[$property] ?? AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS;
-				break;
-
-			case 'supplierAccountLabel':
-				$d->after = \util\FormUi::info(s("Le compte fournisseur commence toujours par {accountPrefix}", ['accountPrefix' => AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS]));
-				$d->placeholder = AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS;
-				$d->default = fn($e, $property) => $e[$property] ?? AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEBT_CLASS;
-				break;
 
 			case 'name':
 				$d->before = fn(\util\FormUi $form, $e) => $e->isQuick() ? \util\FormUi::info(s("Attention, ce changement sera répercuté sur toutes les opérations déjà créées")) : '';
@@ -301,6 +285,7 @@ class ThirdPartyUi {
 					return [
 						'farm' => $e['farm']['id'] ?? POST('farm'),
 						'withCollective' => 0,
+						'withAdministrative' => 1,
 					];
 				};
 				new \selling\CustomerUi()->query($d);
