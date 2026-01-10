@@ -764,9 +764,12 @@ class CashflowUi {
 				for: 'copy',
 			);
 
+			$thirdParty = $eOperationBase['thirdParty']['id'] ?? '';
+
 		} else {
 
 			$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eCashflow, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
+			$thirdParty = '';
 
 		}
 
@@ -774,7 +777,7 @@ class CashflowUi {
 			$amountWarning .= s("Attention, les montants saisis doivent correspondre au montant total de la transaction. Il y a une différence de {difference}.", ['difference' => '<span id="cashflow-allocate-difference-value">0</span>']);
 		$amountWarning .= '</div>';
 
-		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:addAllocate" post-index="'.($index + 1).'" post-id="'.$eCashflow['id'].'" post-third-party="'.($eCashflowCopySelected['cOperation']->first()['thirdParty']['id'] ?? NULL).'" post-amount="" class="btn btn-outline-secondary">';
+		$addButton = '<a id="add-operation" data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:addAllocate" post-index="'.($index + 1).'" post-id="'.$eCashflow['id'].'" post-third-party="'.$thirdParty.'" post-amount="" class="btn btn-outline-secondary">';
 		$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
 		$addButton .= '</a>';
 
