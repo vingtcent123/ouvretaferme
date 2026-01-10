@@ -56,6 +56,18 @@
 .operation-create-several-container[data-columns="5"] {
 	grid-template-columns: 15rem repeat(5, 25rem) 10rem;
 }
+.operation-create-several-container[data-columns="6"] {
+	grid-template-columns: 15rem repeat(6, 25rem) 10rem;
+}
+.operation-create-several-container[data-columns="7"] {
+	grid-template-columns: 15rem repeat(7, 25rem) 10rem;
+}
+.operation-create-several-container[data-columns="8"] {
+	grid-template-columns: 15rem repeat(8, 25rem) 10rem;
+}
+.operation-create-several-container[data-columns="9"] {
+	grid-template-columns: 15rem repeat(9, 25rem) 10rem;
+}
 
 .cashflow-warning {
 	align-content: end;
@@ -135,7 +147,11 @@
 }
 [data-columns="3"] .operation-create-title div span.operation-amount-check-legend,
 [data-columns="4"] .operation-create-title div span.operation-amount-check-legend,
-[data-columns="5"] .operation-create-title div span.operation-amount-check-legend {
+[data-columns="5"] .operation-create-title div span.operation-amount-check-legend,
+[data-columns="6"] .operation-create-title div span.operation-amount-check-legend,
+[data-columns="7"] .operation-create-title div span.operation-amount-check-legend,
+[data-columns="8"] .operation-create-title div span.operation-amount-check-legend,
+[data-columns="9"] .operation-create-title div span.operation-amount-check-legend {
 	display: none;
 }
 
@@ -165,6 +181,7 @@
 #operation-create-list,
 #operation-update-list {
 	flex: 1;
+	padding-bottom: 2rem;
 }
 #operation-create-list .operation-create-headers > :nth-child(2),
 #operation-update-list .operation-create-headers > :nth-child(2),

@@ -79,7 +79,7 @@ new JsonView('addAllocate', function($data, AjaxTemplate $t) {
 	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml('afterend', new \bank\CashflowUi()->addAllocate(
 		$data->eFarm, $data->eOperation, $data->eFarm['eFinancialYear'], $data->e, $data->index, cPaymentMethod: $data->cPaymentMethod));
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
-	if($data->index >= 4) {
+	if($data->index >= 8) {
 		$t->qs('#add-operation')->addClass('not-visible');
 	}
 	$t->js()->eval('Cashflow.updateNewOperationLine('.$data->index.')');

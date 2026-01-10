@@ -108,7 +108,7 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 		)
 	);
 	$t->qs('#add-operation')->setAttribute('post-index', $data->index + 1);
-	if($data->index >= 4) {
+	if($data->index >= 8) {
 		$t->qs('#add-operation')->addClass('not-visible');
 	}
 	$t->js()->eval('Operation.showOrHideDeleteOperation()');
