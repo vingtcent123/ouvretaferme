@@ -348,12 +348,10 @@ class PaymentLib extends PaymentCrud {
 
 	public static function deleteBySale(Sale $eSale): void {
 
-		$eSale->expects(['id', 'farm', 'customer']);
+		$eSale->expects(['id']);
 
 		Payment::model()
 			->whereSale($eSale)
-			->whereFarm($eSale['farm'])
-			->whereCustomer($eSale['customer'])
 			->delete();
 
 	}

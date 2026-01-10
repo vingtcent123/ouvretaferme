@@ -1181,8 +1181,7 @@ class SaleLib extends SaleCrud {
 			if($e['cPayment']->notEmpty() and $e->isMarketSale() === FALSE) {
 
 				foreach($e['cPayment'] as $ePayment) {
-					unset($ePayment['id']);
-					Payment::model()->insert($ePayment);
+					PaymentLib::createBySale($e, $ePayment['method']);
 				}
 			}
 

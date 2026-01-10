@@ -550,13 +550,23 @@ class InvoiceLib extends InvoiceCrud {
 			parent::update($e, $properties);
 
 			$updateSale = [];
+			$updateSaleProperties = [];
+
+			if(in_array('paymentMethod', $properties)) {
+				$updateSale['cPayment'] = new \Collection([
+					new Payment(['method' => $e['paymentMethod']]),
+				]);
+				$updateSaleProperties[] = 'paymentMethod';
+			}
 
 			if(in_array('paymentStatus', $properties)) {
 				$updateSale['paymentStatus'] = $e['paymentStatus'];
+				$updateSaleProperties[] = 'paymentStatus';
 			}
 
 			if(in_array('paidAt', $properties)) {
 				$updateSale['paidAt'] = $e['paidAt'];
+				$updateSaleProperties[] = 'paidAt';
 			}
 
 			if(in_array('status', $properties)) {
@@ -579,8 +589,6 @@ class InvoiceLib extends InvoiceCrud {
 			}
 
 			if($updateSale) {
-
-				$updateSaleProperties = array_keys($updateSale);
 
 				$cSale = SaleLib::getByIds($e['sales']);
 
