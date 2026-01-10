@@ -153,8 +153,9 @@ class OperationUi {
 			}
 
 			// On regarde s'il y a une opération de TVA liée
-			$eOperationVAT = $cOperation->find(fn($e) => $e['operation']->notEmpty() and $e['operation']['id'] === $eOperation['id'])->first();
-			if($eOperationVAT !== NULL and \account\AccountLabelLib::isFromClass($eOperationVAT['accountLabel'], \account\AccountSetting::VAT_CLASS)) {
+			$cOperationVAT = $cOperation->find(fn($e) => $e['operation']->notEmpty() and $e['operation']['id'] === $eOperation['id']);
+			if($cOperationVAT->notEmpty() and \account\AccountLabelLib::isFromClass($cOperationVAT->first()['accountLabel'], \account\AccountSetting::VAT_CLASS)) {
+				$eOperationVAT = $cOperationVAT->first();
 				$linkedOperationIds[] = $eOperationVAT['id'];
 				if($for === 'copy') {
 					unset($eOperationVAT['id']);
