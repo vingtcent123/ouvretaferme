@@ -524,7 +524,7 @@ class ConfigurationUi {
 			'creditPrefix' => s("Préfixe pour la numérotation des avoirs"),
 			'invoicePrefix' => s("Préfixe pour la numérotation des factures"),
 			'invoiceDue' => s("Date d'échéance par défaut sur les factures"),
-			'invoiceReminder' => s("Alerter sur les factures non payées"),
+			'invoiceReminder' => s("Relancer sur les factures non payées"),
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
@@ -652,7 +652,7 @@ class ConfigurationUi {
 
 			case 'invoiceReminder' :
 				$d->append = s("jours après la date d'échéance");
-				$d->after = \util\FormUi::info(s("Laissez vide pour ne pas être alerté sur les factures non payées"));
+				$d->after = \util\FormUi::info(s("Laissez vide pour ne pas relancer sur les factures non payées"));
 				break;
 
 			case 'invoiceDueMonth' :

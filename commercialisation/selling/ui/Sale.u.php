@@ -1439,7 +1439,7 @@ class SaleUi {
 			if($eSale['invoice']->isCreditNote()) {
 				$paymentList[] = s("Avoir");
 			} else {
-				$paymentList[] = s("Facture").' '.InvoiceUi::getPaymentStatusBadge($eSale['invoice']['paymentStatus']);
+				$paymentList[] = s("Facture").' '.InvoiceUi::getPaymentStatusBadge($eSale['invoice']['paymentStatus'], $eSale['invoice']['paidAt']);
 			}
 		} else {
 
