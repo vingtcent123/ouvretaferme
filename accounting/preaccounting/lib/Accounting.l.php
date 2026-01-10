@@ -247,6 +247,7 @@ Class AccountingLib {
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
 			->join(\bank\Cashflow::model(), 'm1.cashflow = m3.id', 'LEFT')
 			->where('m1.status != "'.\selling\Invoice::DRAFT.'"')
+			->where('m1.paymentStatus IS NULL OR m1.paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
 			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->has('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])

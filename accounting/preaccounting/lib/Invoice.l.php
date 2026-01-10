@@ -21,31 +21,6 @@ Class InvoiceLib {
 
 	}
 
-	public static function recalculateReadyForAccounting(\selling\Invoice $eInvoice, \bank\Cashflow $eCashflow): void {
-
-		if($eCashflow->empty()) {
-
-			\selling\Invoice::model()
-				->whereFarm($eInvoice['farm'])
-				->whereStatus('!=', \selling\Invoice::DRAFT)
-				->whereAccountingHash(NULL)
-				->whereCashflow('=', NULL)
-				->wherePaymentMethod('!=', NULL)
-				->whereReadyForAccounting(FALSE)
-				->whereId($eInvoice['id'])
-				->update(['readyForAccounting' => TRUE]);
-
-		} else {
-
-			$updateFields = self::getReadyForAccountingFields($eInvoice, $eCashflow, force: TRUE);
-
-			if(count($updateFields) > 0) {
-				\selling\Invoice::model()->update($eInvoice, $updateFields);
-			}
-		}
-
-	}
-
 	private static function getReadyForAccountingFields(\selling\Invoice $eInvoice, \bank\Cashflow $eCashflow, bool $force = FALSE): array {
 
 		$updateFields = [];
@@ -71,6 +46,7 @@ Class InvoiceLib {
 		\selling\Invoice::model()
 			->whereFarm($eFarm)
 			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->whereAccountingHash(NULL)
 			->whereCashflow('=', NULL)
 			->wherePaymentMethod('!=', NULL)
@@ -81,6 +57,7 @@ Class InvoiceLib {
 			->select('id', 'cashflow', 'priceIncludingVat', 'accountingDifference')
 			->whereFarm($eFarm)
 			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->whereAccountingHash(NULL)
 			->whereCashflow('!=', NULL)
 			->wherePaymentMethod('!=', NULL)
@@ -106,6 +83,7 @@ Class InvoiceLib {
 
 		return \selling\Invoice::model()
 			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->where('priceExcludingVat != 0.0')
 			->where('m1.farm = '.$eFarm['id'])
 			->where('date BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')));
