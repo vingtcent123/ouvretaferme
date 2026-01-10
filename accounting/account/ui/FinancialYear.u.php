@@ -113,23 +113,9 @@ class FinancialYearUi {
 				$h .= '<div class="dropdown-divider"></div>';
 			}
 
-			$h .= '<div class="dropdown-title"><b>'.s("Documents").'</b></div>';
-
 			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:view" data-ajax-navigation="never" class="dropdown-item">';
 				$h .= s("Générer le FEC");
 			$h .= '</a>';
-
-			if($eFinancialYear->isOpen()) {
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/document:opening" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan d'Ouverture (Bientôt disponible !)").'</a>';
-			}
-
-			if($eFinancialYear->isClosed()) {
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/document:closing" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">'.s("Télécharger le Bilan de Clôture (Bientôt disponible !)").'</a>';
-			}
-
-			if($eFinancialYear->acceptOpen()) {
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Créer le bilan d'ouverture").'</a>';
-			}
 
 		$h .= '</div>';
 
