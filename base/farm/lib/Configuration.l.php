@@ -144,18 +144,6 @@ class ConfigurationLib extends ConfigurationCrud {
 		$beforeYear = $year - 1;
 
 		Configuration::model()
-			->whereOrderFormPrefix('LIKE', '%'.$beforeYear.'%')
-			->update([
-				'orderFormPrefix' => new \Sql('REPLACE(orderFormPrefix, '.$beforeYear.', '.$year.')')
-			]);
-
-		Configuration::model()
-			->whereDeliveryNotePrefix('LIKE', '%'.$beforeYear.'%')
-			->update([
-				'deliveryNotePrefix' => new \Sql('REPLACE(deliveryNotePrefix, '.$beforeYear.', '.$year.')')
-			]);
-
-		Configuration::model()
 			->whereInvoicePrefix('LIKE', '%'.$beforeYear.'%')
 			->update([
 				'invoicePrefix' => new \Sql('REPLACE(invoicePrefix, '.$beforeYear.', '.$year.')'),

@@ -3,7 +3,7 @@ new AdaptativeView('salePanel', function($data, PanelTemplate $t) {
 
 		$h = '';
 
-		$h .= new \selling\SaleUi()->getContent($data->e, $data->cPdf);
+		$h .= new \selling\SaleUi()->getContent($data->e, $data->ccPdf);
 		$h .= new \selling\ItemUi()->getBySale($data->e, $data->cItem);
 		$h .= new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 		$h .= new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
@@ -26,7 +26,7 @@ new AdaptativeView('salePlain', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 
-	echo new \selling\SaleUi()->getContent($data->e, $data->cPdf);
+	echo new \selling\SaleUi()->getContent($data->e, $data->ccPdf);
 	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem);
 	echo new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
@@ -45,7 +45,7 @@ new AdaptativeView('salePreparing', function($data, FarmTemplate $t) {
 	$t->mainTitle = new \selling\PreparationUi()->getHeader($data->e, $data->preparing);
 
 	echo new \selling\SaleUi()->getHeader($data->e);
-	echo new \selling\SaleUi()->getPresentation($data->e, $data->cPdf);
+	echo new \selling\SaleUi()->getPresentation($data->e, $data->ccPdf);
 	echo new \selling\PreparationUi()->getSummary($data->e, $data->cItem, $data->preparing);
 	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem, isPreparing: $data->e['preparationStatus'] === \selling\Sale::CONFIRMED);
 	echo new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
@@ -65,7 +65,7 @@ new AdaptativeView('doGenerateDocument', function($data, AjaxTemplate $t) {
 
 	$actions = '<div class="mt-1">';
 		$actions .= '<a href="'.\selling\PdfUi::url($data->ePdf).'" data-ajax-navigation="never" class="btn btn-transparent">'.s("Télécharger").'</a>';
-		if($data->ePdf->canSend()) {
+		if($data->ePdf->acceptSend()) {
 			$actions .= ' <a data-ajax="/selling/sale:doSendDocument" post-id="'.$data->e['id'].'" post-type="'.$data->ePdf['type'].'" class="btn btn-transparent" data-confirm="'.s("Confirmer l'envoi du document au client par e-mail ?").'">'.\Asset::icon('send').' '.s("Envoyer au client par e-mail").'</a>';
 		}
 	$actions .= '</div>';
@@ -88,6 +88,10 @@ new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 	return new \selling\SaleUi()->update($data->e);
+});
+
+new AdaptativeView('updatePayment', function($data, PanelTemplate $t) {
+	return new \selling\SaleUi()->updatePayment($data->e);
 });
 
 new AdaptativeView('duplicate', function($data, PanelTemplate $t) {

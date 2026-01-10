@@ -25,17 +25,6 @@ class InvoiceLib extends InvoiceCrud {
 
 	public static function getByFarm(\farm\Farm $eFarm, bool $selectSales = FALSE, int $page = 0, \Search $search = new \Search()): array {
 
-		if($search->get('document')) {
-
-			$document = $search->get('document');
-			if(stripos($document, 'FA') === 0 or stripos($document, 'AV') === 0) {
-				$document = substr($document, 2);
-			}
-
-			Invoice::model()->whereDocument($document);
-
-		}
-
 		if($search->get('customer')) {
 			$cCustomer = CustomerLib::getFromQuery($search->get('customer'), $eFarm, withCollective: FALSE);
 			Invoice::model()->whereCustomer('IN', $cCustomer);
@@ -55,22 +44,38 @@ class InvoiceLib extends InvoiceCrud {
 			]);
 		}
 
-		if($search->has('paymentStatus')) {
+		if($search->get('paymentStatus')) {
+
 			if($search->get('paymentStatus') === Invoice::NOT_PAID) {
+				Invoice::model()
+					->or(
+						fn() => $this->wherePaymentStatus(NULL),
+						fn() => $this->wherePaymentStatus(Invoice::NOT_PAID)
+					);
+			} else {
+				Invoice::model()->wherePaymentStatus($search->get('paymentStatus'));
+			}
+		}
+
+		if($search->get('reminder')) {
+
+			$days = $eFarm->getConf('invoiceReminder');
+
 			Invoice::model()
 				->or(
 					fn() => $this->wherePaymentStatus(NULL),
-					fn() => $this->wherePaymentStatus(Invoice::NOT_PAID)
-				);
-			} else if($search->get('paymentStatus') === Invoice::PAID) {
-				Invoice::model()->wherePaymentStatus(Invoice::PAID);
-			}
+					fn() => $this->wherePaymentStatus(Invoice::NOT_PAID),
+				)
+				->whereStatus('IN', [Invoice::GENERATED, Invoice::DELIVERED])
+				->where('dueDate < CURRENT_DATE - INTERVAL '.$days.' DAY');
+
 		}
 
 		$cInvoice = Invoice::model()
 			->select(Invoice::getSelection())
 			->option('count')
 			->whereId('=', $search->get('invoice'), if: $search->get('invoice'))
+			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
 			->whereFarm($eFarm)
 			->whereStatus('LIKE', $search->get('status'), if: $search->get('status'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
@@ -79,6 +84,26 @@ class InvoiceLib extends InvoiceCrud {
 			->getCollection($position, $number);
 
 		return [$cInvoice, Invoice::model()->found()];
+
+	}
+
+	public static function countReminder(\farm\Farm $eFarm): int {
+
+		$days = $eFarm->getConf('invoiceReminder');
+
+		if($days === NULL) {
+			return 0;
+		}
+
+		return Invoice::model()
+			->whereFarm($eFarm)
+			->or(
+				fn() => $this->wherePaymentStatus(NULL),
+				fn() => $this->wherePaymentStatus(Invoice::NOT_PAID),
+			)
+			->whereStatus('IN', [Invoice::GENERATED, Invoice::DELIVERED])
+			->where('dueDate < CURRENT_DATE - INTERVAL '.$days.' DAY')
+			->count();
 
 	}
 
@@ -146,6 +171,75 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function reminder(\farm\Farm $eFarm, Invoice $eInvoice): void {
+
+		$eFarm->expects([
+			'name',
+		]);
+
+		$eInvoice->expects([
+			'customer' => ['email']
+		]);
+
+		$eCustomer = $eInvoice['customer'];
+		$customerEmail = $eCustomer['invoiceEmail'] ?? $eCustomer['email'];
+
+		if($customerEmail === NULL) {
+			Pdf::fail('noCustomerEmail');
+			return;
+		}
+
+		$ePdfContent = $eInvoice['content'];
+
+		if(PdfContent::model()
+			->select('hash')
+			->get($ePdfContent) === FALSE) {
+			Invoice::fail('fileEmpty');
+			return;
+		}
+
+		if($eInvoice->acceptReminder() === FALSE) {
+			Invoice::fail('fileAlreadyReminder');
+			return;
+		}
+
+		$cSale = SaleLib::getByInvoice($eInvoice);
+
+		$template = NULL;
+		$customize = NULL;
+
+		if($eInvoice['taxes'] === Invoice::EXCLUDING) {
+			$customize = \mail\Customize::SALE_REMINDER_PRO;
+			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, $customize);
+		}
+
+		if($template === NULL) {
+			$customize = \mail\Customize::SALE_REMINDER_PRIVATE;
+			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, $customize);
+		}
+
+		$content = new PdfUi()->getReminderMail($eFarm, $eInvoice, $cSale, $customize, $template);
+
+		$libSend = new \mail\SendLib();
+
+		$pdf = PdfLib::getContentByPdf($ePdfContent);
+
+		$libSend
+			->setFarm($eFarm)
+			->setCustomer($eCustomer)
+			->setFromName($eFarm['name'])
+			->setTo($customerEmail)
+			->setReplyTo($eFarm['legalEmail'])
+			->setContent(...$content)
+			->addAttachment($pdf, $eInvoice['name'].'.pdf', 'application/pdf')
+			->send();
+
+		Invoice::model()->update($eInvoice, [
+			'remindedAt' => currentDate()
+		]);
+
+	}
+
 	public static function createCollection(\Collection $c): void {
 
 		foreach($c as $e) {
@@ -175,6 +269,7 @@ class InvoiceLib extends InvoiceCrud {
 
 			$e['taxes'] = $e['cSale']->first()['taxes'];
 			$e['hasVat'] = $e['cSale']->first()['hasVat'];
+			$e['nature'] = NULL;
 			$e['organic'] = FALSE;
 			$e['conversion'] = FALSE;
 			$e['createdAt'] = Invoice::model()->now(); // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée
@@ -195,6 +290,14 @@ class InvoiceLib extends InvoiceCrud {
 
 				if($eSale['conversion']) {
 					$e['conversion'] = TRUE;
+				}
+				
+				if($eSale['nature'] === Sale::GOOD) {
+					$e['nature'] = ($e['nature'] === Sale::SERVICE) ? Invoice::MIXED : Invoice::GOOD;
+				} else if($eSale['nature'] === Sale::SERVICE) {
+					$e['nature'] = ($e['nature'] === Sale::GOOD) ? Invoice::MIXED : Invoice::SERVICE;
+				} else {
+					$e['nature'] = Invoice::MIXED;
 				}
 
 				// Calcul de la somme de TVA sur les différentes ventes
@@ -328,6 +431,16 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function updateNeverPaid(Invoice $e): void {
+
+		$e['paymentMethod'] = new \payment\Method();
+		$e['paymentStatus'] = Invoice::NEVER_PAID;
+		$e['paidAt'] = NULL;
+
+		self::update($e, ['paymentMethod', 'paymentStatus', 'paidAt']);
+
+	}
+
 	public static function updatePaymentCollection(\Collection $c, array $payment): void {
 
 		foreach($c as $e) {
@@ -344,9 +457,78 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod): void {
+
+		foreach($c as $e) {
+
+			$e['paymentMethod'] = $eMethod;
+			self::update($e, ['paymentMethod']);
+
+		}
+
+	}
+
+	public static function updatePaymentStatusCollection(\Collection $c, string $paymentStatus): void {
+
+		$properties = ['paymentStatus'];
+
+		if($paymentStatus === Invoice::PAID) {
+			$properties[] = 'paidAt';
+		}
+
+		foreach($c as $e) {
+
+			$e['paymentStatus'] = $paymentStatus;
+
+			if($paymentStatus === Invoice::PAID) {
+				$e['paidAt'] = currentDate();
+			}
+
+			self::update($e, $properties);
+
+		}
+
+	}
+
 	public static function update(Invoice $e, array $properties): void {
 
 		Invoice::model()->beginTransaction();
+
+			if(in_array('paymentMethod', $properties)) {
+
+				// On met un statut de paiement par défaut s'il n'est pas renseigné
+				if(
+					$e['paymentMethod']->notEmpty() and
+					$e['paymentStatus'] === NULL
+				) {
+
+					$e['paymentStatus'] = Sale::NOT_PAID;
+					$properties[] = 'paymentStatus';
+
+				}
+
+				if(
+					$e['paymentMethod']->empty() and
+					in_array($e['paymentStatus'], [Invoice::PAID, Invoice::NOT_PAID])
+				) {
+
+					$e['paymentStatus'] = NULL;
+					$properties[] = 'paymentStatus';
+
+				}
+
+			}
+
+			if(in_array('paymentStatus', $properties)) {
+
+				if($e['paymentStatus'] !== Invoice::PAID) {
+
+					$e['paidAt'] = NULL;
+					$properties[] = 'paidAt';
+
+				}
+
+			}
 
 			if(in_array('status', $properties)) {
 
@@ -371,6 +553,10 @@ class InvoiceLib extends InvoiceCrud {
 
 			if(in_array('paymentStatus', $properties)) {
 				$updateSale['paymentStatus'] = $e['paymentStatus'];
+			}
+
+			if(in_array('paidAt', $properties)) {
+				$updateSale['paidAt'] = $e['paidAt'];
 			}
 
 			if(in_array('status', $properties)) {
@@ -489,20 +675,10 @@ class InvoiceLib extends InvoiceCrud {
 
 		Invoice::model()->beginTransaction();
 
-			if($e['cSale']->count() === 1) {
+			$e['customer'] = CustomerLib::getById($e['customer']['id']);
+			$content = FacturXLib::generate($e, self::build($e));
 
-				$callback = function() use ($e) {
-					$e['customer'] = CustomerLib::getById($e['customer']['id']);
-					return FacturXLib::generate($e, PdfLib::build('/selling/pdf:getDocumentInvoice?id='.$e['id']));
-				};
-
-				$ePdfContent = \selling\PdfLib::generateDocument(Pdf::INVOICE, $e['cSale']->first(), $callback);
-
-			} else {
-
-				$ePdfContent = \selling\PdfLib::generateInvoice($e);
-
-			}
+			$ePdfContent = \selling\PdfLib::generateDocument($content);
 
 			$e['content'] = $ePdfContent;
 			$e['status'] = Invoice::GENERATED;
@@ -513,6 +689,12 @@ class InvoiceLib extends InvoiceCrud {
 				->update($e);
 
 		Invoice::model()->commit();
+
+	}
+
+	public static function build(Invoice $e): string {
+
+		return PdfLib::build('/selling/pdf:getDocumentInvoice?id='.$e['id']);
 
 	}
 
@@ -575,6 +757,15 @@ class InvoiceLib extends InvoiceCrud {
 		}
 
 		return $cInvoice;
+
+	}
+
+	public static function deletePayment(Invoice $e): void {
+
+		$e['paymentMethod'] = new \payment\Method();
+		$e['paymentStatus'] = NULL;
+
+		self::update($e, ['paymentMethod', 'paymentStatus']);
 
 	}
 

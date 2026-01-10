@@ -676,9 +676,10 @@ class SaleLib {
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
+		$eSale['paidAt'] = currentDate();
 		$eSale['onlinePaymentStatus'] = \selling\Sale::SUCCESS;
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus', 'onlinePaymentStatus']);
+		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus', 'paidAt', 'onlinePaymentStatus']);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 

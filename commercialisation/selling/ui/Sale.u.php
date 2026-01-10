@@ -132,6 +132,10 @@ class SaleUi {
 					$h .= $form->select('paymentMethod', $paymentMethods, $search->get('paymentMethod'));
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Règlement").'</legend>';
+					$h .= $form->select('paymentStatus', self::p('paymentStatus')->values, $search->get('paymentStatus'));
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Client").'</legend>';
 					$h .= $form->text('customerName', $search->get('customerName'), ['placeholder' => s("Client")]);
 				$h .= '</fieldset>';
@@ -409,6 +413,10 @@ class SaleUi {
 							$batch[] = 'accept-update-payment';
 						}
 
+						if($eSale->acceptUpdatePaymentStatus()) {
+							$batch[] = 'accept-update-payment-status';
+						}
+
 					}
 
 					$h .= '<tr';
@@ -543,7 +551,7 @@ class SaleUi {
 								$h .= '</td>';
 
 							} else {
-								$h .= $this->getDocuments($eSale, $eSale['cPdf'] ?? new \Collection(), 'list');
+								$h .= $this->getDocuments($eSale, $eSale['ccPdf'] ?? new \Collection(), 'list');
 							}
 
 						}
@@ -576,11 +584,31 @@ class SaleUi {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
 
-								$h .= self::getPaymentMethodName($eSale);
+								if($eSale['cPayment']->empty()) {
 
-								$paymentStatus = self::getPaymentStatus($eSale);
-								if($paymentStatus) {
-									$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+									if($eSale['paymentStatus'] !== NULL) {
+										$h .= self::getPaymentStatusBadge($eSale['paymentStatus']);
+									} else if($eSale->acceptUpdatePayment()) {
+										$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
+									}
+
+								} else {
+
+									if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
+										$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary invoice-button">';
+									}
+
+										$h .= self::getPaymentMethodName($eSale);
+
+										$paymentStatus = self::getPaymentStatus($eSale);
+										if($paymentStatus) {
+											$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+										}
+
+									if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
+										$h .= '</a>';
+									}
+
 								}
 
 							$h .= '</td>';
@@ -664,19 +692,22 @@ class SaleUi {
 
 		$menu .= '</div>';
 
-		$menu .= '<a data-dropdown="top-start" data-batch-test="accept-update-payment" data-batch-not-only="hide" class="batch-item">';
+		$menu .= '<a data-dropdown="top-start" data-batch-test="accept-update-payment" data-batch-not-contains="hide" class="batch-item">';
 			$menu .= \Asset::icon('cash-coin');
-			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen<br/>de paiement").'</span>';
+			$menu .= '<span>'.s("Règlement").'</span>';
 		$menu .= '</a>';
 
-		$menu .= '<div class="dropdown-list bg-secondary">';
-			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").'</div>';
+		$menu .= '<div class="dropdown-list dropdown-list-2 bg-secondary">';
+			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment" data-batch-contains="count" data-batch-only="hide"></span></div>';
 			foreach($cPaymentMethod as $ePaymentMethod) {
-				if($ePaymentMethod['online'] === FALSE) {
-					$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-sale-form" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+				if($ePaymentMethod->acceptManualUpdate()) {
+					$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentMethodCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 				}
 			}
-			$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentMethodCollection" data-ajax-target="#batch-sale-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentMethodCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<div class="dropdown-subtitle">'.s("Changer l'état du paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment-status" data-batch-always="count" data-batch-only="hide"></span></div>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Sale::PAID).'</a>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::NOT_PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Sale::NOT_PAID).'</a>';
 		$menu .= '</div>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-item">';
@@ -698,14 +729,15 @@ class SaleUi {
 
 	}
 
-	protected function getDocuments(Sale $eSale, \Collection $cPdf, string $origin): string {
+	protected function getDocuments(Sale $eSale, \Collection $ccPdf, string $origin): string {
 
 		if($eSale['items'] > 0) {
 
-			$list = array_merge(
-				$this->getBusinessDocuments($eSale, $cPdf, $origin),
-				[$this->getInvoiceDocument($eSale, $origin)],
-			);
+			$list = [
+				$this->getOrderFormDocuments($eSale, $ccPdf[Pdf::ORDER_FORM] ?? new \Collection(), $origin),
+				$this->getDeliveryNoteDocument($eSale, $ccPdf->offsetExists(Pdf::DELIVERY_NOTE) ? $ccPdf[Pdf::DELIVERY_NOTE]->first() : new Pdf(), $origin),
+				$this->getInvoiceDocument($eSale, $origin)
+			];
 
 		} else {
 			$list = [NULL, NULL, NULL];
@@ -737,7 +769,9 @@ class SaleUi {
 
 	protected function getInvoiceDocument(Sale $eSale, string $origin): ?string {
 
-		if($eSale->acceptDocument(Pdf::INVOICE) === FALSE) {
+		\Asset::css('selling', 'invoice.css');
+
+		if($eSale->acceptInvoice() === FALSE) {
 			return NULL;
 		}
 
@@ -843,142 +877,219 @@ class SaleUi {
 
 	}
 
-	protected function getBusinessDocuments(Sale $eSale, \Collection $cPdf, string $origin): array {
+	protected function getOrderFormDocuments(Sale $eSale, \Collection $cPdf, string $origin): ?string {
 
-		$list = [];
+		if($eSale->acceptOrderForm() === FALSE) {
+			return NULL;
+		}
 
-		foreach([Pdf::ORDER_FORM, Pdf::DELIVERY_NOTE] as $type) {
+		if($cPdf->empty()) {
 
-			if($eSale->acceptDocument($type) === FALSE) {
-				$list[] = NULL;
-				continue;
-			}
+			if(
+				$eSale->acceptGenerateOrderForm() and
+				$eSale->canDocument(Pdf::ORDER_FORM)
+			) {
 
-			$ePdf = $cPdf[$type] ?? new Pdf();
-
-			$canSend = $ePdf->empty() ? FALSE : $ePdf->canSend();
-
-			$label = PdfUi::getName($type, $eSale);
-			$shortLabel = PdfUi::getName($type, $eSale, TRUE);
-			$texts = PdfUi::getTexts($type);
-
-			$acceptGenerate = $eSale->acceptGenerateDocument($type);
-			$acceptRegenerate = $eSale->acceptRegenerateDocument($type);
-
-			$urlGenerate = match($type) {
-				Pdf::DELIVERY_NOTE => 'href="/selling/sale:generateDeliveryNote?id='.$eSale['id'].'"',
-				Pdf::ORDER_FORM => 'href="/selling/sale:generateOrderForm?id='.$eSale['id'].'"',
-			};
-
-			if($ePdf->empty()) {
-
-				if(
-					$acceptGenerate and
-					$eSale->canDocument($type)
-				) {
-
-					$document = '<a '.$urlGenerate.' class="btn btn-sm sale-document sale-document-new" title="'.$texts['generate'].'">';
-						$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
-						$document .= '<div class="sale-document-status">';
-							$document .= \Asset::icon('plus');
-						$document .= '</div>';
-					$document .= '</a> ';
-
-				} else {
-					$document = '';
-				}
+				$h = '<a href="/selling/sale:generateOrderForm?id='.$eSale['id'].'" class="btn btn-sm sale-document sale-document-new" title="'.s("Générer un devis").'">';
+					$h .= '<div class="sale-document-name">'.SellingSetting::ORDER_FORM.'</div>';
+					$h .= '<div class="sale-document-status">';
+						$h .= \Asset::icon('plus');
+					$h .= '</div>';
+				$h .= '</a> ';
 
 			} else {
-
-				$dropdown = match($origin) {
-					'list' => 'bottom-end',
-					'element' => 'bottom-start',
-				};
-
-				$document = '<a class="btn sale-document" title="'.$label.'" data-dropdown="'.$dropdown.'">';
-					$document .= '<div class="sale-document-name">'.$shortLabel.'</div>';
-					$document .= '<div class="sale-document-status">';
-
-						if($ePdf['emailedAt']) {
-							$document .= \Asset::icon('check-all');
-						} else {
-							$document .= \Asset::icon('check');
-						}
-
-					$document .= '</div>';
-				$document .= '</a> ';
-
-				$document .= '<div class="dropdown-list bg-primary">';
-					$document .= '<div class="dropdown-title">';
-						$document .= $label.'<br/>';
-						$document .= '<small>';
-							$date = \util\DateUi::numeric($ePdf['createdAt'], \util\DateUi::DATE);
-							$document .= s("Généré le {value}", $date);
-							if($ePdf['used'] > 1) {
-								$document .= '<br/>'.s("Généré à partir de {value} ventes", $ePdf['used']);
-							}
-						$document .= '</small>';
-					$document .= '</div>';
-
-					if($ePdf['content']->notEmpty()) {
-						$document .= '<a href="'.PdfUi::url($ePdf).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
-					} else {
-						$document .= '<span class="dropdown-item">';
-							$document .= '<span class="sale-document-forbidden">'.s("Télécharger").'</span>';
-							$document .= ' <span class="sale-document-expired">'.s("Document expiré").'</span>';
-						$document .= '</span>';
-					}
-
-					if($eSale->canDocument($type)) {
-
-						if($texts['generateNew'] !== NULL) {
-
-							if($acceptRegenerate) {
-								$class = '';
-							} else {
-								$class = 'sale-document-forbidden';
-							}
-
-							$document .= '<a '.$urlGenerate.' class="dropdown-item '.$class.'">'.$texts['generateNew'].'</a>';
-
-						}
-
-						if($ePdf['emailedAt']) {
-							$document .= '<div class="dropdown-divider"></div>';
-							$document .= ' <div class="dropdown-item">'.\Asset::icon('check-all').'&nbsp;&nbsp;'.s("Envoyé par e-mail le {value}", \util\DateUi::numeric($ePdf['emailedAt'], \util\DateUi::DATE)).'</div>';
-						} else {
-
-							$document .= '<div class="dropdown-divider"></div>';
-
-							if($canSend) {
-								$text = s("Envoyer au client par e-mail").'</a>';
-							} else {
-								$text = '<span class="sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
-							}
-
-							$document .= '<a data-ajax="/selling/sale:doSendDocument" post-id="'.$eSale['id'].'" post-type="'.$type.'" data-confirm="'.$texts['sendConfirm'].'" class="dropdown-item">'.$text.'</a>';
-
-						}
-
-						$document .= '<div class="dropdown-divider"></div>';
-
-						if($eSale->canManage()) {
-
-							$document .= ' <a data-ajax="/selling/sale:doDeleteDocument" post-id="'.$ePdf['id'].'" data-confirm="'.$texts['deleteConfirm'].'" class="dropdown-item">'.s("Supprimer le document").'</a>';
-
-						}
-
-					}
-
-				$document .= '</div>';
-
+				$h = '';
 			}
 
-			$list[] = $document;
+		} else {
+
+			$ePdfLast = $cPdf->first();
+
+			$consistency = (
+				$eSale['preparationStatus'] !== Sale::DRAFT or
+				$eSale['crc32'] === NULL or  // Historique
+				$ePdfLast['crc32'] === NULL or // Historique
+				$eSale['crc32'] === $ePdfLast['crc32']
+			);
+
+			$dropdown = match($origin) {
+				'list' => 'bottom-end',
+				'element' => 'bottom-start',
+			};
+
+			$h = '<a class="btn sale-document '.($consistency ? '' : 'sale-document-inconsistency').'" title="'.s("Devis").'" data-dropdown="'.$dropdown.'">';
+				$h .= '<div class="sale-document-name">'.SellingSetting::ORDER_FORM.'</div>';
+				$h .= '<div class="sale-document-status">';
+
+					if($ePdfLast['emailedAt']) {
+						$h .= \Asset::icon('check-all');
+					} else {
+						$h .= \Asset::icon('check');
+					}
+
+				$h .= '</div>';
+			$h .= '</a> ';
+
+			$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="dropdown-title">';
+					$h .= s("Devis");
+					if($ePdfLast['emailedAt']) {
+						$h .= ' <span class="btn btn-sm btn-readonly btn-success">'.s("Envoyé").'</span>';
+					}
+					$h .= '<div class="font-sm">';
+						$h .= \util\DateUi::numeric($eSale['createdAt'], \util\DateUi::DATE);
+						if($ePdfLast['version'] > 1) {
+							$h .= ' '.s("| Version {value}", $ePdfLast['version']);
+						}
+					$h .= '</div>';
+					if($consistency === FALSE) {
+						$h .= '<div class="util-box-danger mt-1" style="max-width: 20rem">'.s("La vente a été modifiée et le devis n'est plus à jour. Vous devriez en générer une nouvelle version.").'</div>';
+					}
+				$h .= '</div>';
+
+				$h .= $this->getDownloadDocument($eSale, $ePdfLast);
+
+				if($eSale->acceptGenerateOrderForm()) {
+					$h .= '<a href="/selling/sale:generateOrderForm?id='.$eSale['id'].'" class="dropdown-item">'.s("Générer une nouvelle version").'</a>';
+				}
+
+				$cPdfOther = $cPdf->slice(1);
+
+				if($cPdfOther->notEmpty()) {
+					$h .= '<div class="dropdown-divider"></div>';
+					$h .= '<div class="dropdown-subtitle">'.s("Anciennes versions").'</div>';
+				}
+
+				foreach($cPdfOther as $ePdf) {
+
+					$label = s("Version {value}", $ePdf['version']);
+
+					if($ePdf['content']->notEmpty()) {
+						$h .= '<a href="'.PdfUi::url($ePdf).'" data-ajax-navigation="never" class="dropdown-item">'.$label.'</a>';
+					} else {
+						$h .= '<span class="dropdown-item">';
+							$h .= '<span class="sale-document-forbidden">'.$label.'</span>';
+							$h .= ' <span class="sale-document-expired">'.s("Document expiré").'</span>';
+						$h .= '</span>';
+					}
+
+				}
+
+			$h .= '</div>';
 
 		}
 
-		return $list;
+		return $h;
+
+	}
+
+	protected function getDeliveryNoteDocument(Sale $eSale, Pdf $ePdf, string $origin): ?string {
+
+		if($eSale->acceptDeliveryNote() === FALSE) {
+			return NULL;
+		}
+
+		if($ePdf->empty()) {
+
+			if(
+				$eSale->acceptGenerateDeliveryNote() and
+				$eSale->canDocument(Pdf::DELIVERY_NOTE)
+			) {
+
+				$h = '<a href="/selling/sale:generateDeliveryNote?id='.$eSale['id'].'" class="btn btn-sm sale-document sale-document-new" title="'.s("Générer le bon de livraison").'">';
+					$h .= '<div class="sale-document-name">'.s("BL").'</div>';
+					$h .= '<div class="sale-document-status">';
+						$h .= \Asset::icon('plus');
+					$h .= '</div>';
+				$h .= '</a> ';
+
+			} else {
+				$h = '';
+			}
+
+		} else {
+
+			$dropdown = match($origin) {
+				'list' => 'bottom-end',
+				'element' => 'bottom-start',
+			};
+
+			$consistency = (
+				$eSale['crc32'] === NULL or  // Historique
+				$ePdf['crc32'] === NULL or // Historique
+				$eSale['crc32'] === $ePdf['crc32']
+			);
+
+			$h = '<a class="btn sale-document '.($consistency ? '' : 'sale-document-inconsistency').'" title="'.s("Bon de livraison").'" data-dropdown="'.$dropdown.'">';
+				$h .= '<div class="sale-document-name">'.SellingSetting::DELIVERY_NOTE.'</div>';
+				$h .= '<div class="sale-document-status">';
+
+					if($ePdf['emailedAt']) {
+						$h .= \Asset::icon('check-all');
+					} else {
+						$h .= \Asset::icon('check');
+					}
+
+				$h .= '</div>';
+			$h .= '</a> ';
+
+			$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="dropdown-title">';
+					$h .= s("Bon de livraison");
+					if($ePdf['emailedAt']) {
+						$h .= ' <span class="btn btn-sm btn-readonly btn-success">'.s("Envoyé").'</span>';
+					}
+					if($eSale['deliveryNoteDate'] !== NULL) {
+						$h .= '<div class="font-sm">'.\util\DateUi::numeric($eSale['deliveryNoteDate']).'</div>';
+					}
+					if($consistency === FALSE) {
+						$h .= '<div class="util-box-danger mt-1" style="max-width: 20rem">'.s("La vente a été modifiée et le bon de livraison n'est plus à jour. Vous devriez en générer une nouvelle version.").'</div>';
+					}
+				$h .= '</div>';
+
+				$h .= $this->getDownloadDocument($eSale, $ePdf);
+
+				if($eSale->canDocument(Pdf::DELIVERY_NOTE)) {
+
+					if($eSale->acceptGenerateDeliveryNote()) {
+						$h .= '<a href="/selling/sale:generateDeliveryNote?id='.$eSale['id'].'" class="dropdown-item">'.s("Générer une nouvelle version").'</a>';
+					}
+
+					if($eSale->canManage()) {
+
+						$h .= '<div class="dropdown-divider"></div>';
+						$h .= ' <a data-ajax="/selling/sale:doDeleteDocument" post-id="'.$ePdf['id'].'" data-confirm="'.s("Voulez-vous vraiment supprimer ce bon de livraison ?").'" class="dropdown-item">'.s("Supprimer").'</a>';
+
+					}
+
+				$h .= '</div>';
+
+			}
+
+		}
+
+		return $h;
+
+	}
+
+	public function getDownloadDocument(Sale $eSale, Pdf $ePdf): string {
+
+		$h = '';
+
+		if($ePdf->acceptSend()) {
+			$h .= '<a data-ajax="/selling/sale:doSendDocument" post-id="'.$eSale['id'].'" post-type="'.$ePdf['type'].'" data-confirm="'.s("Confirmer l'envoi du bon de livraison au client par e-mail ?").'" class="dropdown-item">'.s("Envoyer au client par e-mail").'</a>';
+		}
+
+		if($ePdf['content']->notEmpty()) {
+			$h .= '<a href="'.PdfUi::url($ePdf).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger").'</a>';
+		} else {
+			$h .= '<span class="dropdown-item">';
+				$h .= '<span class="sale-document-forbidden">'.s("Télécharger").'</span>';
+				$h .= ' <span class="sale-document-expired">'.s("Document expiré").'</span>';
+			$h .= '</span>';
+		}
+
+		return $h;
 
 	}
 
@@ -1130,13 +1241,39 @@ class SaleUi {
 	public static function getPaymentStatus(Sale $eSale): string {
 
 		if($eSale['onlinePaymentStatus'] !== NULL) {
-			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['onlinePaymentStatus'].'">'.self::p('onlinePaymentStatus')->values[$eSale['onlinePaymentStatus']].'</span>';
+			$h = '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['onlinePaymentStatus'].'">';
+				$label = self::p('onlinePaymentStatus')->values[$eSale['onlinePaymentStatus']];
+				if($eSale['paidAt'] !== NULL) {
+					$h .= s("{status} le {date}", ['status' => $label, 'date' => \util\DateUi::numeric($eSale['paidAt'])]);
+				} else {
+					$h .= $label;
+				}
+			$h .= '</span>';
 		} else if($eSale['paymentStatus'] !== NULL) {
-			return '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['paymentStatus'].'">'.self::p('paymentStatus')->values[$eSale['paymentStatus']].'</span>';
+			$h = self::getPaymentStatusBadge($eSale['paymentStatus'], $eSale['paidAt']);
 		} else {
-			return '';
+			$h = '';
 		}
 
+		return $h;
+
+	}
+
+	public static function getPaymentStatusBadge(string $status, ?string $paidAt = NULL): string {
+
+		$label = self::p('paymentStatus')->values[$status];
+
+		$h = '<span class="util-badge sale-payment-status sale-payment-status-'.$status.'">';
+
+			if($paidAt !== NULL) {
+				$h .= s("{status} le {date}", ['status' => $label, 'date' => \util\DateUi::numeric($paidAt)]);
+			} else {
+				$h .= $label;
+			}
+
+		$h .= '</span>';
+
+		return $h;
 
 	}
 
@@ -1302,12 +1439,18 @@ class SaleUi {
 			if($eSale['invoice']->isCreditNote()) {
 				$paymentList[] = s("Avoir");
 			} else {
-				$paymentList[] = s("Facture").' '.InvoiceUi::getPaymentStatus($eSale['invoice']);
+				$paymentList[] = s("Facture").' '.InvoiceUi::getPaymentStatusBadge($eSale['invoice']);
 			}
 		} else {
 
 			if($eSale['cPayment']->empty()) {
-				return '';
+
+				if($eSale['paymentStatus'] === NULL) {
+					return '';
+				} else {
+					return self::getPaymentStatus($eSale);
+				}
+
 			}
 
 			$payment = self::getPaymentMethodName($eSale);
@@ -1551,15 +1694,21 @@ class SaleUi {
 			$primaryList .= '</a>';
 		}
 
-		if($eSale->acceptAssociateShop()) {
-			$primaryList .= '<a href="/selling/sale:updateShop?id='.$eSale['id'].'" class="dropdown-item">'.s("Associer la vente à une boutique").'</a>';
-		}
-
-		if($eSale->acceptDissociateShop()) {
-			$primaryList .= '<a data-ajax="/selling/sale:doDissociateShop" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Dissocier la vente de la boutique").'</a>';
+		if($eSale->acceptUpdatePayment()) {
+			$primaryList .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="dropdown-item">';
+				$primaryList .= $eSale['cPayment']->empty() ? s("Choisir le règlement") : s("Changer le règlement");
+			$primaryList .= '</a>';
 		}
 
 		$secondaryList = '';
+
+		if($eSale->acceptAssociateShop()) {
+			$secondaryList .= '<a href="/selling/sale:updateShop?id='.$eSale['id'].'" class="dropdown-item">'.s("Associer la vente à une boutique").'</a>';
+		}
+
+		if($eSale->acceptDissociateShop()) {
+			$secondaryList .= '<a data-ajax="/selling/sale:doDissociateShop" post-id="'.$eSale['id'].'" class="dropdown-item">'.s("Dissocier la vente de la boutique").'</a>';
+		}
 
 		if(
 			$eSale->acceptDelete() and
@@ -2105,62 +2254,7 @@ class SaleUi {
 
 			}
 
-			if($eSale['invoice']->notEmpty()) {
-
-				$paymentInfo = '<div class="util-info">';
-					$paymentInfo .= '<p>';
-						$paymentInfo .= s("Cette vente est incluse dans la facture <b>{invoiceNumber}</b>. Vous pouvez modifier le moyen de paiement et l'état du paiement directement dans la facture.", [
-						'invoiceNumber' => encode($eSale['invoice']['name']),
-					]);
-					$paymentInfo .= '</p>';
-					$paymentInfo .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-secondary">';
-						$paymentInfo .= s("Consulter la facture");
-					$paymentInfo .= '</a>';
-				$paymentInfo .= '</div>';
-
-				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->group(content: $paymentInfo);
-				$h .= '</div>';
-
-
-			} else if($eSale->acceptUpdatePayment()) {
-
-				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-
-					$h .= $form->group(
-						s("Moyen de paiement"),
-						$form->select(
-							'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
-								'onrender' => 'Sale.changePaymentMethod(this)',
-								'onchange' => 'Sale.changePaymentMethod(this)',
-								'placeholder' => s("Non défini"),
-							]
-						)
-					);
-
-					$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
-						$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] ?? Sale::NOT_PAID;
-					});
-				$h .= '</div>';
-
-			} else if($eSale->isPaymentOnline()) {
-
-				$content = '<div class="flex-justify-space-between flex-align-center">';
-					$content .= '<div>'.SaleUi::getPaymentMethodName($eSale).' '.SaleUi::getPaymentStatus($eSale).'</div>';
-					$content .= '<a data-ajax="/selling/sale:doDeleteOnlinePaymentMethod" post-id="'.$eSale['id'].'" class="btn btn-xs btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce mode de règlement pour la vente ?").'">'.s("Supprimer").'</a>';
-				$content .= '</div>';
-
-				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->group(
-						self::p('paymentMethod')->label,
-						$content
-					);
-				$h .= '</div>';
-
-			}
+			$h .= $form->dynamicGroup($eSale, 'comment');
 
 			if(
 				$eSale->acceptUpdateShipping() or
@@ -2191,8 +2285,6 @@ class SaleUi {
 
 			}
 
-			$h .= $form->dynamicGroup($eSale, 'comment');
-
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
 			);
@@ -2206,6 +2298,106 @@ class SaleUi {
 		);
 
 	}
+
+	public function updatePayment(Sale $eSale): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/sale:doUpdatePayment');
+
+			$h .= $form->hidden('id', $eSale['id']);
+
+			if($eSale['invoice']->notEmpty()) {
+
+				$paymentInfo = '<div class="util-info">';
+					$paymentInfo .= '<p>';
+						$paymentInfo .= s("Cette vente est incluse dans la facture <b>{invoiceNumber}</b>. Vous pouvez modifier le moyen de paiement et l'état du paiement directement dans la facture.", [
+						'invoiceNumber' => encode($eSale['invoice']['name']),
+					]);
+					$paymentInfo .= '</p>';
+					$paymentInfo .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-secondary">';
+						$paymentInfo .= s("Consulter la facture");
+					$paymentInfo .= '</a>';
+				$paymentInfo .= '</div>';
+
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+					$h .= $form->group(content: $paymentInfo);
+				$h .= '</div>';
+
+				$h .= $form->group(
+					content: $form->submit(s("Enregistrer"))
+				);
+
+
+			} else if($eSale->isPaymentOnline(NULL)) {
+
+				$content = '<div class="flex-justify-space-between flex-align-center">';
+					$content .= '<div>'.SaleUi::getPaymentMethodName($eSale).' '.SaleUi::getPaymentStatus($eSale).'</div>';
+					$content .= '<a data-ajax="/selling/sale:doDeletePayment" post-id="'.$eSale['id'].'" class="btn btn-xs btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce mode de règlement pour la vente ?").'">'.s("Supprimer").'</a>';
+				$content .= '</div>';
+
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+					$h .= $form->group(
+						self::p('paymentMethod')->label,
+						$content
+					);
+				$h .= '</div>';
+
+			} else {
+
+				if($eSale['paymentStatus'] === Sale::NEVER_PAID) {
+					$h .= $form->group(
+						content: '<div class="util-block-info">'.s("Cette vente est actuellement enregistrée comme une facture qui ne sera pas payée, mais vous pouvez revenir sur votre choix.").'</div>'
+					);
+				}
+
+				$h .= '<div class="sale-payment-controler">';
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+
+					$h .= $form->group(
+						s("Moyen de paiement"),
+						$form->select(
+							'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
+								'onrender' => 'Sale.changePaymentMethod(this)',
+								'onchange' => 'Sale.changePaymentMethod(this)',
+								'placeholder' => s("Non défini"),
+							]
+						)
+					);
+
+					$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
+						$d->default = fn(Sale $eSale) => ($eSale['paymentStatus'] === Sale::PAID) ? Sale::PAID : Sale::NOT_PAID;
+					});
+					$h .= $form->dynamicGroup($eSale, 'paidAt', function($d) {
+						$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] === Sale::PAID ? $eSale['paidAt'] : currentDate();
+					});
+				$h .= '</div>';
+
+				$h .= $form->group(
+					content: '<div class="flex-justify-space-between">'
+						.$form->submit(s("Enregistrer"))
+						.'<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>'
+					.'</div>'
+				);
+
+			}
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-sale-update',
+			title: $eSale['cPayment']->empty() ?
+				s("Choisir le règlement") :
+				s("Changer le règlement"),
+			body: $h
+		);
+
+	}
+
 
 	public function updateShop(Sale $eSale): \Panel {
 
@@ -2353,6 +2545,7 @@ class SaleUi {
 			'customers' => s("Clients"),
 			'customer' => s("Client"),
 			'deliveredAt' => fn($e) => $e->isComposition() ? s("Pour les livraisons à partir du") : s("Date de vente"),
+			'paidAt' => s("Date de paiement"),
 			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
@@ -2584,6 +2777,7 @@ class SaleUi {
 				$d->values = [
 					Sale::PAID => s("Payé"),
 					Sale::NOT_PAID => s("Non payé"),
+					Sale::NEVER_PAID => s("Ne sera pas payé"),
 				];
 				$d->field = 'switch';
 				$d->attributes = [

@@ -18,8 +18,9 @@ new Page()
 	->remote('getDocument', 'selling',  function($data) {
 
 		$data->type = GET('type', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM], fn() => throw new NotExpectedAction());
-		$data->e = \selling\SaleLib::getById(GET('id'))->validate(fn($e) => $e->acceptDocument($data->type));
+		$data->ePdf = \selling\PdfLib::getById(GET('id'))->validate();
 
+		$data->e = \selling\SaleLib::getById($data->ePdf['sale']);
 		$data->e['customer']['user'] = \user\UserLib::getById($data->e['customer']['user']); // Récupération de l'e-mail
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
@@ -28,6 +29,28 @@ new Page()
 		$data->cItem = \selling\SaleLib::getItemsForDocument($data->e, $data->type);
 
 		throw new ViewAction($data);
+
+	});
+
+new \selling\PdfPage()
+	->read('/pdf/{id}', function($data) {
+
+		if(in_array($data->e['type'], [\selling\Pdf::ORDER_FORM, \selling\Pdf::DELIVERY_NOTE]) === FALSE) {
+			throw new NotExpectedAction();
+		}
+
+		$content = \selling\PdfLib::getContentBySale($data->e['sale'], $data->e['type']);
+
+		if($content === NULL) {
+			throw new NotExistsAction();
+		}
+
+		$eSale = \selling\SaleLib::getById($data->e['sale']);
+
+		$filename = new \selling\PdfUi()->getFilename($data->e['type'], $data->e['farm'], $eSale);
+
+		throw new PdfAction($content, $filename);
+
 
 	});
 

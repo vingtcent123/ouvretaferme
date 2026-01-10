@@ -40,18 +40,17 @@ Configuration:
   saleClosing: int(7, 365) = 30
   documentCopy: bool = FALSE
   documentTarget: enum(ALL, PRIVATE, PRO, DISABLED) = PRO
-  orderFormPrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultOrderFormPrefix())
   orderFormDelivery: bool = TRUE
   orderFormPaymentCondition: ?editor16(1, 500)
   orderFormHeader: ?editor16(1, 500)
   orderFormFooter: ?editor16(1, 500)
-  deliveryNotePrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultDeliveryNotePrefix())
   deliveryNoteHeader: ?editor16(1, 500)
   deliveryNoteFooter: ?editor16(1, 500)
   creditPrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultCreditPrefix())
-  invoiceDue: bool = FALSE
-  invoiceDueDays: ?int(0, 360)
+  invoiceDue: bool = TRUE
+  invoiceDueDays: ?int(0, 360) = 30
   invoiceDueMonth: ?bool
+  invoiceReminder: ?int(1, 360) = 7
   invoicePrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultInvoicePrefix())
   invoicePaymentCondition: ?editor16(1, 500)
   invoiceHeader: ?editor16(1, 500)

@@ -350,14 +350,12 @@ class PaymentLib extends PaymentCrud {
 
 		$eSale->expects(['id', 'farm', 'customer']);
 
-		$cMethod = \payment\MethodLib::getOnline();
-
 		Payment::model()
 			->whereSale($eSale)
 			->whereFarm($eSale['farm'])
-			->whereMethod('NOT IN', $cMethod)
 			->whereCustomer($eSale['customer'])
 			->delete();
+
 	}
 
 	public static function cleanBySale(Sale $eSale): void {

@@ -21,7 +21,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 			'<p>'.s("En important vos relevés bancaires, vous pourrez :").'</p>'.
 			'<ul>'.
 				'<li>'.s("rapprocher automatiquement vos factures et vos opérations bancaires pour vérifier qui a payé").'</li>'.
-				'<li>'.s("créer vos écritures comptables à partir du relevé bancaire si vous utilisez le logiciel comptable").'</li>'.
+				'<li>'.s("créer vos écritures comptables en un clic à partir du relevé bancaire si vous utilisez le logiciel comptable").'</li>'.
 			'</ul>'.
 			'<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import" class="btn btn-secondary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé bancaire").'</a>'.
 		'</div>';

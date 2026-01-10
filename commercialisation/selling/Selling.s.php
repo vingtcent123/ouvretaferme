@@ -3,6 +3,9 @@ namespace selling;
 
 class SellingSetting extends \Settings {
 
+	const ORDER_FORM = 'DE';
+	const DELIVERY_NOTE = 'BL';
+
 	const UNIT_DEFAULT_ID = 1;
 
 	const EXAMPLE_SALE_PRO = 1736;

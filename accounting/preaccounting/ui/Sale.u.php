@@ -58,7 +58,7 @@ Class SaleUi {
 						$h .= '<td>';
 							if($cInvoice->offsetExists($operation[AccountingLib::FEC_COLUMN_DOCUMENT])) {
 								$eInvoice = $cInvoice[$operation[AccountingLib::FEC_COLUMN_DOCUMENT]];
-								$url = \farm\FarmUi::urlSellingInvoices($eFarm).'?document='.$eInvoice['document'].'&customer='.urlencode($eInvoice['customer']['name']);
+								$url = \farm\FarmUi::urlSellingInvoices($eFarm).'?id='.$eInvoice['id'].'&customer='.urlencode($eInvoice['customer']['name']);
 							} else {
 								$url = \farm\FarmUi::urlSellingSalesAll($eFarm).'?document='.$operation[AccountingLib::FEC_COLUMN_DOCUMENT];
 							}

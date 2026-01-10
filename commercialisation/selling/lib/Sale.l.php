@@ -3,8 +3,6 @@ namespace selling;
 
 class SaleLib extends SaleCrud {
 
-	private static $close;
-
 	public static function getPropertiesCreate(): \Closure {
 
 		return function(Sale $e) {
@@ -45,11 +43,6 @@ class SaleLib extends SaleCrud {
 
 			if($e->acceptUpdateShopPoint()) {
 				$properties[] = 'shopPointPermissive';
-			}
-
-			if($e->acceptUpdatePayment()) {
-				$properties[] = 'paymentMethod';
-				$properties[] = 'paymentStatus';
 			}
 
 			return $properties;
@@ -126,6 +119,7 @@ class SaleLib extends SaleCrud {
 		$eSale['invoice']['customer'] = $eSale['customer'];
 		$eSale['cItem'] = self::getItems($eSale);
 		$eSale['cPayment'] = $cPayment;
+		$eSale['ccPdf'] = new \Collection();
 
 		$position = 0;
 		foreach($eSale['cItem'] as $eItem) {
@@ -342,9 +336,10 @@ class SaleLib extends SaleCrud {
 		$cSale = Sale::model()
 			->select(Sale::getSelection())
 			->select([
-				'cPdf' => Pdf::model()
+				'ccPdf' => Pdf::model()
 					->select(Pdf::getSelection())
-					->delegateCollection('sale', 'type'),
+					->sort(['version' => SORT_DESC])
+					->delegateCollection('sale', ['type', NULL]),
 			])
 			->option('count')
 			->where('m1.id', 'NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
@@ -357,6 +352,7 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
 			->wherePreparationStatus('!=', Sale::COMPOSITION)
+			->wherePaymentStatus($search->get('paymentStatus'), if: $search->get('paymentStatus'))
 			->where('m1.stats', TRUE)
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
@@ -493,9 +489,10 @@ class SaleLib extends SaleCrud {
 		return Sale::model()
 			->select(Sale::getSelection())
 			->select([
-				'cPdf' => Pdf::model()
+				'ccPdf' => Pdf::model()
 					->select(Pdf::getSelection())
-					->delegateCollection('sale', 'type')
+					->sort(['version' => SORT_DESC])
+					->delegateCollection('sale', ['type', NULL])
 			])
 			->select(['cPayment' => PaymentLib::delegateBySale()])
 			->whereCustomer($eCustomer)
@@ -519,9 +516,10 @@ class SaleLib extends SaleCrud {
 		$cSale = Sale::model()
 			->select(Sale::getSelection())
 			->select([
-				'cPdf' => Pdf::model()
+				'ccPdf' => Pdf::model()
 					->select(Pdf::getSelection())
-					->delegateCollection('sale', 'type')
+					->sort(['version' => SORT_DESC])
+					->delegateCollection('sale', ['type', NULL])
 			])
 			->whereCustomer($eCustomer)
 			->whereId('IN', $ids)
@@ -673,8 +671,10 @@ class SaleLib extends SaleCrud {
 		) {
 
 			if($e['customer']['defaultPaymentMethod']->notEmpty()) {
+
 				$e['paymentStatus'] = Sale::NOT_PAID;
 				$ePaymentMethod = $e['customer']['defaultPaymentMethod'];
+
 			}
 
 		}
@@ -965,19 +965,48 @@ class SaleLib extends SaleCrud {
 
 			if($e['cPayment']->empty()) {
 
-				$e['paymentStatus'] = NULL;
-				$e['onlinePaymentStatus'] = NULL;
+				if(in_array($e['paymentStatus'], [Invoice::PAID, Invoice::NOT_PAID])) {
 
-				$properties[] = 'paymentStatus';
-				$properties[] = 'onlinePaymentStatus';
+					$e['paymentStatus'] = NULL;
+					$e['onlinePaymentStatus'] = NULL;
+
+					$properties[] = 'paymentStatus';
+					$properties[] = 'onlinePaymentStatus';
+
+				}
 
 			} else {
 
-				$e['paidAt'] = match($e['paymentStatus']) {
-					Sale::PAID => new \Sql('NOW()'),
-					Sale::NOT_PAID => NULL
-				};
+				// On met un statut de paiement par défaut s'il n'est pas renseigné
+				if($e['paymentStatus'] === NULL) {
 
+					$e['paymentStatus'] = Sale::NOT_PAID;
+					$e['onlinePaymentStatus'] = NULL;
+
+					$properties[] = 'paymentStatus';
+					$properties[] = 'onlinePaymentStatus';
+
+				}
+
+			}
+
+		}
+
+		if(in_array('paymentStatus', $properties)) {
+
+			if(
+				$e['paymentStatus'] !== Sale::PAID and
+				$e['onlinePaymentStatus'] !== NULL
+			) {
+
+				$e['onlinePaymentStatus'] = NULL;
+				$properties[] = 'onlinePaymentStatus';
+
+			}
+
+			if($e['paymentStatus'] !== Sale::PAID) {
+
+				$e['paidAt'] = NULL;
 				$properties[] = 'paidAt';
 
 			}
@@ -1068,7 +1097,10 @@ class SaleLib extends SaleCrud {
 			) {
 
 				$properties[] = 'paymentStatus';
+				$properties[] = 'paidAt';
+
 				$e['paymentStatus'] = Sale::NOT_PAID;
+				$e['paidAt'] = NULL;
 
 			}
 
@@ -1183,6 +1215,16 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function updateNeverPaid(Sale $e): void {
+
+		$e['cPayment'] = new \Collection();
+		$e['paymentStatus'] = Sale::NEVER_PAID;
+		$e['paidAt'] = NULL;
+
+		self::update($e, ['paymentMethod', 'paymentStatus', 'paidAt']);
+
+	}
+
 	public static function updatePreparationStatus(Sale $e, string $newStatus): void {
 
 		if($e['preparationStatus'] === $newStatus) {
@@ -1210,22 +1252,23 @@ class SaleLib extends SaleCrud {
 
 	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod): void {
 
-		Sale::model()->beginTransaction();
-
-		$methodId = ($eMethod['id'] ?? NULL);
-
 		foreach($c as $e) {
 
 			if(
-				($e['cPayment']->empty() and $methodId === NULL) or
-				($e['cPayment']->notEmpty() and in_array($methodId, $e['cPayment']->getColumnCollection('method')->getIds()))
+				($e['cPayment']->empty() and $eMethod->empty()) or
+				($e['cPayment']->notEmpty() and $eMethod->notEmpty() and in_array($eMethod['id'], $e['cPayment']->getColumnCollection('method')->getIds()))
 			) {
 				continue;
 			}
 
+			Sale::model()->beginTransaction();
+
 			$e['cPayment'] = new Payment();
-			if($methodId !== NULL and ($e['paymentStatus'] === NULL or $e['paymentStatus'] === Sale::NOT_PAID)) {
+
+			if($eMethod->notEmpty()) {
+
 				$e['cPayment']->append(
+
 					new Payment([
 						'sale' => $e,
 						'customer' => $e['customer'],
@@ -1235,17 +1278,50 @@ class SaleLib extends SaleCrud {
 						'amountIncludingVat' => $e['priceIncludingVat'],
 						'onlineStatus' => NULL,
 					])
+
 				);
-				$e['paymentStatus'] = Sale::NOT_PAID;
+
 			}
 
-			self::update($e, ['paymentMethod', 'paymentStatus']);
+			self::update($e, ['paymentMethod']);
+
+			Sale::model()->commit();
 
 		}
 
-		Sale::model()->commit();
+	}
+
+	public static function deletePayment(Sale $e): void {
+
+		$e['cPayment'] = new Payment();
+		$e['paymentStatus'] = NULL;
+
+		self::update($e, ['paymentMethod', 'paymentStatus']);
 
 	}
+
+	public static function updatePaymentStatusCollection(\Collection $c, string $paymentStatus): void {
+
+		$properties = ['paymentStatus'];
+
+		if($paymentStatus === Sale::PAID) {
+			$properties[] = 'paidAt';
+		}
+
+		foreach($c as $e) {
+
+			$e['paymentStatus'] = $paymentStatus;
+
+			if($paymentStatus === Sale::PAID) {
+				$e['paidAt'] = currentDate();
+			}
+
+			self::update($e, $properties);
+
+		}
+
+	}
+
 	public static function updateReadyForAccountingCollection(\Collection $c, ?bool $value): void {
 
 		Sale::model()->beginTransaction();
@@ -1292,21 +1368,6 @@ class SaleLib extends SaleCrud {
 			self::delete($eSale);
 		}
 
-	}
-
-	public static function emptyOnlinePaymentMethod(Sale $e): void {
-
-		$e->expects(['id']);
-
-		$cOnlineMethod = \payment\MethodLib::getOnline();
-		foreach($cOnlineMethod as $eMethod) {
-			PaymentLib::deleteBySaleAndMethod($e, $eMethod);
-		}
-
-		Sale::model()
-			->update($e, [
-				'paymentStatus' => NULL
-			]);
 	}
 
 	public static function delete(Sale $e): void {

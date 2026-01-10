@@ -14,11 +14,7 @@ class InvoiceUi {
 	}
 
 	public static function link(Invoice $eInvoice, bool $newTab = FALSE): string {
-		if($eInvoice['document'] === NULL) {
-			return '<span class="btn btn-sm btn-readonly btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>?</a>';
-		} else {
-			return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.encode($eInvoice['name']).'</a>';
-		}
+		return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.($eInvoice['document'] === NULL ? 'PROFORMA' : encode($eInvoice['name'])).'</a>';
 	}
 
 	public static function url(Invoice $e): string {
@@ -41,19 +37,27 @@ class InvoiceUi {
 			
 	}
 
-	public static function getPaymentStatus(Invoice $eInvoice): string {
+	public static function getPaymentStatusBadge(string $status, ?string $paidAt = NULL): string {
 
-		if($eInvoice->isCreditNote() or $eInvoice['paymentStatus'] === NULL) {
-			return '';
-		}
+		$label = self::p('paymentStatus')->values[$status];
 
-		return '<span class="util-badge sale-payment-status sale-payment-status-'.$eInvoice['paymentStatus'].'">'.self::p('paymentStatus')->values[$eInvoice['paymentStatus']].'</span>';
+		$h = '<span class="util-badge sale-payment-status sale-payment-status-'.$status.'">';
+
+			if($paidAt !== NULL) {
+				$h .= s("{status} le {date}", ['status' => $label, 'date' => \util\DateUi::numeric($paidAt)]);
+			} else {
+				$h .= $label;
+			}
+
+		$h .= '</span>';
+
+		return $h;
 
 	}
 
 	public function getSearch(\Search $search): string {
 
-		$h = '<div id="invoice-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
+		$h = '<div id="invoice-search" class="util-block-search '.($search->empty(['reminder']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
@@ -61,7 +65,7 @@ class InvoiceUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search util-search-3']);
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Numéro").'</legend>';
-					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Numéro")]);
+					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Numéro")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Client").'</legend>';
@@ -91,13 +95,13 @@ class InvoiceUi {
 
 	}
 
-	public function getList(\Collection $cInvoice, ?int $nInvoice = NULL, array $hide = [], ?int $page = NULL) {
+	public function getList(\Collection $cInvoice, \Collection $cPaymentMethod, ?int $nInvoice = NULL, array $hide = [], ?int $page = NULL) {
 
 		if($cInvoice->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucune facture à afficher.").'</div>';
 		}
 
-		$h = '<div class="util-overflow-sm stick-xs">';
+		$h = '<div class="util-overflow-lg stick-xs">';
 
 			$columns = 7;
 
@@ -172,13 +176,25 @@ class InvoiceUi {
 						$batch[] = 'accept-confirmed';
 					}
 
-					$h .= '<tr id="invoice-list-'.$eInvoice['id'].'"';
+					if($eInvoice->acceptUpdatePayment()) {
+						$batch[] = 'accept-update-payment';
+					}
+
+					if($eInvoice->acceptUpdatePaymentStatus()) {
+						$batch[] = 'accept-update-payment-status';
+					}
+
+					if($eInvoice->acceptReminder()) {
+						$batch[] = 'accept-reminder';
+					}
+
+					$h .= '<tr';
 						if($eInvoice['status'] === Invoice::CANCELED) {
 							$h .= ' style="opacity: 0.5"';
 						}
 					$h .= '>';
 						$h .= '<td class="td-checkbox">';
-							if($eInvoice->acceptUpdate()) {
+							if($batch) {
 								$h .= '<label>';
 									$h .= '<input type="checkbox" name="batch[]" value="'.$eInvoice['id'].'" oninput="Invoice.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
 								$h .= '</label>';
@@ -233,6 +249,19 @@ class InvoiceUi {
 										$h .= s("Échue le {value}", \util\DateUi::numeric($eInvoice['dueDate']));
 									}
 								$h .= '</div>';
+
+								if(
+									$eInvoice['remindedAt'] !== NULL and
+									($eInvoice['paymentStatus'] === Invoice::NOT_PAID or $eInvoice['paymentStatus'] === NULL)
+								) {
+
+									$h .= '<div class="util-badge bg-primary">';
+										$h .= s("Relancée le {value}", \util\DateUi::numeric($eInvoice['remindedAt']));
+									$h .= '</div>';
+
+								}
+
+
 							}
 						$h .= '</td>';
 
@@ -249,26 +278,57 @@ class InvoiceUi {
 
 							if($eInvoice['status'] !== Invoice::CANCELED) {
 
-								if($eInvoice['paymentMethod']->empty()) {
+								if(
+									$eInvoice['paymentStatus'] !== Invoice::PAID and
+									$eInvoice['dueDate'] !== NULL and
+									$eInvoice['dueDate'] < currentDate()
+								) {
 
-									$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="btn btn-outline-primary">'.s("Choisir").'</a>';
+									$days = round((strtotime(currentDate()) - strtotime($eInvoice['dueDate'])) / 86400);
+									$reminder = $eInvoice['farm']->getConf('invoiceReminder');
+									$color = ($reminder !== NULL and $reminder <= $days) ? 'secondary' : 'muted';
+
+									$late = '<span class="util-badge bg-'.$color.'">'.p("{value} jour de retard", "{value} jours de retard", $days).'</span>';
 
 								} else {
-									$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
+									$late = '';
+								}
 
-									if($eInvoice->isCreditNote() === FALSE) {
+								if($eInvoice['paymentMethod']->empty()) {
+
+									if($eInvoice['paymentStatus'] !== NULL) {
+										$h .= self::getPaymentStatusBadge($eInvoice['paymentStatus']);
+									} else if($eInvoice->acceptUpdatePayment()) {
 										$h .= '<div class="invoice-payment-block">';
-											$h .= \util\TextUi::switch([
-												'id' => 'invoice-switch-'.$eInvoice['id'],
-												'class' => 'field-switch-sm',
-												'disabled' => $eInvoice->isPaymentOnline(),
-												'data-ajax' => $eInvoice->canWrite() ? '/selling/invoice:doUpdatePaymentStatus' : NULL,
-												'post-id' => $eInvoice['id'],
-												'post-payment-status' => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::NOT_PAID : Invoice::PAID
-											], $eInvoice['paymentStatus'] === Invoice::PAID, textOn: self::p('paymentStatus')->values[Sale::PAID],textOff: self::p('paymentStatus')->values[Sale::NOT_PAID]);
-											$h .= ($eInvoice['cashflow']['id'] ?? NULL) ? '<a href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</a>' :  '';
+											$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
+											$h .= $late;
 										$h .= '</div>';
 									}
+
+								} else {
+
+									if($eInvoice->acceptUpdatePayment() and $eInvoice['paymentStatus'] !== Invoice::PAID) {
+										$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="btn btn-sm btn-outline-primary invoice-button">';
+									}
+
+										$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
+
+										$h .= '<div class="invoice-payment-block">';
+
+											if($eInvoice['paymentStatus'] !== NULL) {
+												$h .= self::getPaymentStatusBadge($eInvoice['paymentStatus'], $eInvoice['paidAt']);
+											}
+
+											$h .= ($eInvoice['cashflow']['id'] ?? NULL) ? '<a href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</a>' :  '';
+
+											$h .= $late;
+
+										$h .= '</div>';
+
+									if($eInvoice->acceptUpdatePayment() and $eInvoice['paymentStatus'] !== Invoice::PAID) {
+										$h .= '</a>';
+									}
+
 								}
 
 							}
@@ -354,7 +414,7 @@ class InvoiceUi {
 			$h .= \util\TextUi::pagination($page, $nInvoice / 100);
 		}
 
-		$h .= $this->getBatch();
+		$h .= $this->getBatch($cPaymentMethod);
 
 		return $h;
 
@@ -414,11 +474,34 @@ class InvoiceUi {
 
 	}
 
-	public function getBatch(): string {
+	public function getBatch(\Collection $cPaymentMethod): string {
 
 		$menu = '<a data-ajax="/selling/invoice:doSendCollection" data-batch-test="accept-send" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Confirmer l'envoi des factures par e-mail aux clients ?").'" class="batch-item">';
 			$menu .= \Asset::icon('envelope');
 			$menu .= '<span>'.s("Envoyer par e-mail").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-send" data-batch-contains="count" data-batch-only="hide"></span></span>';
+		$menu .= '</a>';
+
+		$menu .= '<a data-dropdown="top-start" data-batch-test="accept-update-payment" data-batch-not-contains="hide" class="batch-item">';
+			$menu .= \Asset::icon('cash-coin');
+			$menu .= '<span>'.s("Règlement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment" data-batch-contains="count" data-batch-only="hide"></span></span>';
+		$menu .= '</a>';
+
+		$menu .= '<div class="dropdown-list dropdown-list-2 bg-secondary">';
+			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").'</div>';
+			foreach($cPaymentMethod as $ePaymentMethod) {
+				if($ePaymentMethod->acceptManualUpdate()) {
+					$menu .= '<a data-ajax="/selling/invoice:doUpdatePaymentMethodCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+				}
+			}
+			$menu .= '<a data-ajax="/selling/invoice:doUpdatePaymentMethodCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<div class="dropdown-subtitle">'.s("Changer l'état du paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment-status" data-batch-always="count" data-batch-only="hide"></span></div>';
+			$menu .= '<a data-ajax="/selling/invoice:doUpdatePaymentStatusCollection" data-confirm="'.s("Les factures seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Invoice::PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Invoice::PAID).'</a>';
+			$menu .= '<a data-ajax="/selling/invoice:doUpdatePaymentStatusCollection" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Invoice::NOT_PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Invoice::NOT_PAID).'</a>';
+		$menu .= '</div>';
+
+		$menu .= '<a data-ajax-submit="/selling/invoice:doReminderCollection" data-batch-test="accept-reminder" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Envoyer une relance par e-mail aux clients pour leur demander de régler ces factures ?").'" class="batch-item">';
+			$menu .= \Asset::icon('bell');
+			$menu .= '<span>'.s("Relance de paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-reminder" data-batch-contains="count" data-batch-only="hide"></span></span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateConfirmedCollection" data-batch-test="accept-confirmed" data-batch-contains="post" data-batch-not-contains="hide" data-confirm="'.s("Confirmer ces factures ?").'" class="batch-item">';
@@ -878,14 +961,47 @@ class InvoiceUi {
 
 			$h .= $form->hidden('id', $eInvoice['id']);
 
-			$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
-			$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
-				$d->default = fn(Invoice $eInvoice) => $eInvoice['paymentStatus'] ?? Sale::NOT_PAID;
-			});
+			if($eInvoice->isPaymentOnline()) {
 
-			$h .= $form->group(
-				content: $form->submit(s("Enregistrer"))
-			);
+				$content = '<div class="flex-justify-space-between flex-align-center">';
+					$content .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).' '.self::getPaymentStatusBadge($eInvoice['paymentStatus']).'</div>';
+					$content .= '<a data-ajax="/selling/invoice:doDeletePayment" post-id="'.$eInvoice['id'].'" class="btn btn-xs btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce mode de règlement pour la facture ?").'">'.s("Supprimer").'</a>';
+				$content .= '</div>';
+
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+					$h .= $form->group(
+						self::p('paymentMethod')->label,
+						$content
+					);
+				$h .= '</div>';
+
+			} else {
+
+				if($eInvoice['paymentStatus'] === Invoice::NEVER_PAID) {
+					$h .= $form->group(
+						content: '<div class="util-block-info">'.s("Cette facture est actuellement enregistrée comme une facture qui ne sera pas payée, mais vous pouvez revenir sur votre choix.").'</div>'
+					);
+				}
+
+				$h .= '<div class="invoice-payment-controler">';
+					$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
+					$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
+						$d->default = fn(Invoice $eInvoice) => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::PAID : Invoice::NOT_PAID;
+					});
+					$h .= $form->dynamicGroup($eInvoice, 'paidAt', function($d) {
+						$d->default = fn(Invoice $eInvoice) => $eInvoice['paymentStatus'] === Invoice::PAID ? $eInvoice['paidAt'] : currentDate();
+					});
+				$h .= '</div>';
+
+				$h .= $form->group(
+					content: '<div class="flex-justify-space-between">'
+						.$form->submit(s("Enregistrer"))
+						.'<a data-ajax="/selling/invoice:doUpdateNeverPaid" post-id="'.$eInvoice['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette facture ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>'
+					.'</div>'
+				);
+
+			}
 
 		$h .= $form->close();
 
@@ -926,32 +1042,13 @@ class InvoiceUi {
 
 	}
 
-	public function getIconPaid(Invoice $eInvoice): string {
-
-		switch($eInvoice['paymentStatus']) {
-
-			case Invoice::PAID :
-				$color = '--success';
-				$text = \Asset::icon('check-lg');
-				break;
-
-			case Invoice::NOT_PAID :
-				$color = '--muted';
-				$text = \Asset::icon('x-lg');
-				break;
-
-		}
-
-		return '<span style="color: var('.$color.')">'.$text.'</span>';
-
-	}
-
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Invoice::model()->describer($property, [
 			'status' => s("État"),
 			'date' => s("Date de facturation"),
 			'dueDate' => s("Date d'échéance"),
+			'paidAt' => s("Date de paiement"),
 			'paymentCondition' => s("Conditions de paiement"),
 			'header' => s("Texte personnalisé affiché en haut de facture"),
 			'footer' => s("Texte personnalisé affiché en bas de facture"),
@@ -1052,6 +1149,7 @@ class InvoiceUi {
 				$d->attributes = fn(\util\FormUi $form, Invoice $e) => [
 					'data-due-days' => $e['farm']->getConf('invoiceDueDays') ?? '',
 					'data-due-month' => (int)$e['farm']->getConf('invoiceDueMonth'),
+					'mandatory' => TRUE,
 				];
 				break;
 
@@ -1062,8 +1160,6 @@ class InvoiceUi {
 
 			case 'paymentMethod' :
 				$d->values = fn(Invoice $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
-				$d->attributes['onrender'] = 'Invoice.changePaymentMethod(this)';
-				$d->attributes['onchange'] = 'Invoice.changePaymentMethod(this)';
 				$d->placeholder = s("Non défini");
 				break;
 
@@ -1071,6 +1167,7 @@ class InvoiceUi {
 				$d->values = [
 					Invoice::PAID => s("Payé"),
 					Invoice::NOT_PAID => s("Non payé"),
+					Invoice::NEVER_PAID => s("Ne sera pas payé"),
 				];
 				$d->field = 'switch';
 				$d->attributes = [

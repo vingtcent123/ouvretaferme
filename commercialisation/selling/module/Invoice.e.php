@@ -71,6 +71,19 @@ class Invoice extends InvoiceElement {
 		return in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED]);
 	}
 
+	public function acceptReminder(): bool {
+
+		$days = $this['farm']->getConf('invoiceReminder');
+
+		return (
+			in_array($this['status'], [Invoice::GENERATED, Invoice::DELIVERED]) and
+			in_array($this['paymentStatus'], [NULL, Invoice::NOT_PAID]) and
+			$this['remindedAt'] === NULL and
+			$this['dueDate'] !== NULL and
+			round(strtotime(currentDate()) - strtotime($this['dueDate'])) > $days
+		);
+	}
+
 	public function acceptDelete(): bool {
 		return ($this['status'] === Invoice::DRAFT);
 	}
@@ -132,10 +145,16 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptUpdatePayment(): bool {
+		return in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED, Invoice::DELIVERED]);
+	}
+
+	public function acceptUpdatePaymentStatus(): bool {
+
 		return (
-			in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED, Invoice::DELIVERED]) and
-			$this->isPaymentOnline() === FALSE
+			$this->acceptUpdatePayment() and
+			$this['paymentMethod']->notEmpty()
 		);
+
 	}
 
 	public function isCreditNote(): bool {
@@ -347,6 +366,9 @@ class Invoice extends InvoiceElement {
 				return ($this['lastDate'] === NULL or $date >= $this['lastDate']);
 
 			})
+			->setCallback('dueDate.check', function(?string $dueDate): bool {
+				return ($dueDate !== NULL);
+			})
 			->setCallback('dueDate.consistency', function(?string $dueDate) use ($p): bool {
 
 				if(
@@ -387,6 +409,25 @@ class Invoice extends InvoiceElement {
 				} else {
 					return in_array($status, [Invoice::PAID, Invoice::NOT_PAID]);
 				}
+
+			})
+			->setCallback('paidAt.prepare', function(?string &$paidAt) use($p): bool {
+
+				$this->expects(['paymentStatus']);
+
+				if($this['paymentStatus'] !== Invoice::PAID) {
+					$paidAt = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('paidAt.future', function(?string &$paidAt) use($p): bool {
+
+				return (
+					$paidAt === NULL or
+					$paidAt <= currentDate()
+				);
 
 			});
 		

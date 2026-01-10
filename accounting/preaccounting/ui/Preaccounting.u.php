@@ -170,7 +170,7 @@ Class PreaccountingUi {
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content">';
-							$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eInvoice['document']).'&customer='.encode($eInvoice['customer']['name']).'">'.encode($eInvoice['name']).'</a></td>';
+							$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.encode($eInvoice['id']).'&customer='.encode($eInvoice['customer']['name']).'">'.encode($eInvoice['name']).'</a></td>';
 						$h .= '</td>';
 
 						$h .= '<td>';

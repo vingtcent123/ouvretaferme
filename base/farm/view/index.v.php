@@ -734,15 +734,6 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 	echo new \selling\InvoiceUi()->getSearch($data->search);
 
-	if($data->transfer > 0) {
-
-		echo '<div class="util-block-help">';
-			echo '<p>'.s("Vous pouvez maintenant générer les factures des ventes à régler par virement bancaire au mois de {value}.", '<b>'.\util\DateUi::textual($data->transferMonth, \util\DateUi::MONTH_YEAR).'</b>').'</p>';
-			echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'&month='.$data->transferMonth.'&type='.\payment\MethodLib::TRANSFER.'" class="btn btn-secondary">'.s("Générer les factures").'</a>';
-		echo '</div>';
-
-	}
-
 	if($data->hasInvoices === FALSE) {
 
 		echo '<div class="util-block-help">';
@@ -770,7 +761,36 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 	} else {
 
-		echo new \selling\InvoiceUi()->getList($data->cInvoice, $data->nInvoice, page: $data->page);
+		if($data->search->empty()) {
+
+			if($data->transfer > 0) {
+
+				echo '<div class="util-block-help">';
+					echo '<p>'.s("Vous pouvez maintenant générer les factures des ventes à régler par virement bancaire au mois de {value}.", '<b>'.\util\DateUi::textual($data->transferMonth, \util\DateUi::MONTH_YEAR).'</b>').'</p>';
+					echo '<a href="/selling/invoice:createCollection?farm='.$data->eFarm['id'].'&month='.$data->transferMonth.'&type='.\payment\MethodLib::TRANSFER.'" class="btn btn-secondary">'.s("Générer les factures").'</a>';
+				echo '</div>';
+
+			}
+
+			if($data->nInvoiceReminder > 0) {
+
+				echo \Asset::icon('exclamation-circle-fill', ['class' => 'color-secondary']).' ';
+				echo '<a class="color-secondary" href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'?reminder">';
+					echo p("Actuellement {value} facture impayée {days} après la date d'échéance", "Actuellement {value} factures impayées {days} après la date d'échéance", $data->nInvoiceReminder, ['days' => p("{value} jour", "{value} jours", $data->eFarm->getConf('invoiceReminder'))]);
+				echo '</a>';
+			}
+
+		} else {
+
+			if($data->search->get('reminder')) {
+				echo '<a href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'" class="btn btn-outline-primary">';
+					echo Asset::icon('arrow-left-short').'  '.s("Retourner sur toutes les factures");
+				echo '</a>';
+			}
+
+		}
+
+		echo new \selling\InvoiceUi()->getList($data->cInvoice, $data->cPaymentMethod, $data->nInvoice, page: $data->page);
 
 	}
 

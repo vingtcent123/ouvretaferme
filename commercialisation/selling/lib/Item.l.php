@@ -10,7 +10,13 @@ class ItemLib extends ItemCrud {
 				'sale' => ['hasVat']
 			]);
 
-			$properties = ['name', 'additional', 'origin', 'quality', 'locked', 'packaging', 'number', 'unitPrice', 'unitPriceDiscount', 'price'];
+			$properties = ['name', 'additional', 'locked'];
+
+			if($e['nature'] === Item::GOOD) {
+				$properties = array_merge($properties, ['origin', 'quality', 'packaging']);
+			}
+
+			$properties = array_merge($properties, ['number', 'unitPrice', 'unitPriceDiscount', 'price']);
 
 			if($e['sale']['hasVat']) {
 				$properties[] = 'vatRate';

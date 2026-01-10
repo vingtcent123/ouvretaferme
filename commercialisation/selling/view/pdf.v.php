@@ -5,7 +5,7 @@ new HtmlView('getLabels', function($data, PdfTemplate $t) {
 
 new HtmlView('getDocument', function($data, PdfTemplate $t) {
 	$t->title = new \selling\PdfUi()->getFilename($data->type, $data->eFarm, $data->e);
-	echo new \selling\PdfUi()->getDocument($data->e, $data->type, $data->eFarm, $data->cItem);
+	echo new \selling\PdfUi()->getDocument($data->e, $data->type, $data->ePdf['name'], $data->eFarm, $data->cItem);
 });
 
 new HtmlView('getDocumentInvoice', function($data, PdfTemplate $t) {
@@ -23,7 +23,7 @@ new HtmlView('getDocumentInvoice', function($data, PdfTemplate $t) {
 
 		$cItem = $eSale['cItem'];
 
-		echo new \selling\PdfUi()->getDocument($eSale, \selling\Pdf::INVOICE, $data->eFarm, $cItem);
+		echo new \selling\PdfUi()->getDocument($eSale, \selling\Pdf::INVOICE, $eSale['invoice']['name'], $data->eFarm, $cItem);
 
 	}
 

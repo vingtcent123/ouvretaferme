@@ -13,12 +13,7 @@ class PdfUi {
 
 		$e->expects(['type', 'sale']);
 
-		return match($e['type']) {
-
-			Pdf::ORDER_FORM => SaleUi::url($e['sale']).'/devis',
-			Pdf::DELIVERY_NOTE => SaleUi::url($e['sale']).'/bon-livraison',
-
-		};
+		return '/pdf/'.$e['id'];
 
 	}
 
@@ -209,19 +204,13 @@ class PdfUi {
 
 	}
 
-	public function getDocument(Sale $eSale, string $type, \farm\Farm $eFarm, \Collection $cItem): string {
+	public function getDocument(Sale $eSale, string $type, string $number, \farm\Farm $eFarm, \Collection $cItem): string {
 
 		$h = '<style>@page {	size: A4; margin: 1cm; }</style>';
 
 		$h .= $this->getWatermark();
 
 		$h .= '<div class="pdf-document-wrapper">';
-
-			$number = match($type) {
-				Pdf::DELIVERY_NOTE => $eSale->getDeliveryNote($eFarm),
-				Pdf::ORDER_FORM => $eSale->getOrderForm($eFarm),
-				Pdf::INVOICE => $eSale['invoice']['name']
-			};
 
 			switch($type) {
 
@@ -267,6 +256,21 @@ class PdfUi {
 			$h .= $this->getDocumentTop($type, $eSale, $eFarm, $number, $dateDocument, $top);
 
 			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
+
+			if(
+				$type === Pdf::INVOICE and
+				$eSale['ccPdf']->notEmpty()
+			) {
+
+				$references = $this->getReferences($eSale);
+
+				if($references) {
+					$h .= '<div class="pdf-document-callback">';
+						$h .= $references;
+					$h .= '</div>';
+				}
+
+			}
 
 			$h .= '<div class="pdf-document-body">';
 
@@ -375,16 +379,17 @@ class PdfUi {
 
 						foreach($cSale as $eSale) {
 
+							$references = $this->getReferences($eSale);
+
 							$h .= '<tr class="pdf-document-item pdf-document-item-main">';
-								$h .= '<td class="pdf-document-product" colspan="3">';
-									$h .= s("Livraison du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
-									if($eSale['cPdf']->offsetExists(Pdf::DELIVERY_NOTE)) {
-										$h .= '<div class="pdf-document-product-details">';
-											$h .= s("Bon de livraison {value}", $eSale->getDeliveryNote($eFarm));
-										$h .= '</div>';
-									}
+								$h .= '<td colspan="'.($eInvoice['hasVat'] ? 6 : 5).'">';
+									$h .= '<div class="pdf-document-product-header">';
+										$h .= '<div>'.s("Livraison du {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</div>';
+										if($references) {
+											$h .= '<div class="pdf-document-product-references">'.$references.'</div>';
+										}
+									$h .= '</div>';
 								$h .= '</td>';
-								$h .= '<td colspan="'.($eInvoice['hasVat'] ? 3 : 2).'"></td>';
 							$h .= '</tr>';
 
 							foreach($eSale['vatByRate'] as $key => ['vat' => $vat, 'vatRate' => $vatRate, 'amount' => $amount]) {
@@ -467,6 +472,32 @@ class PdfUi {
 
 	}
 
+	protected function getReferences(Sale $eSale): string {
+
+		$references = [];
+
+		if(
+			$eSale['ccPdf']->offsetExists(Pdf::ORDER_FORM) and
+			$eSale['ccPdf'][Pdf::ORDER_FORM]->first()['crc32'] === $eSale['crc32']
+		) {
+			$references[] = s("Devis {value}", '<u>'.$eSale['ccPdf'][Pdf::ORDER_FORM]->first()['name'].'</u>');
+		}
+
+		if(
+			$eSale['ccPdf']->offsetExists(Pdf::DELIVERY_NOTE) and
+			$eSale['ccPdf'][Pdf::DELIVERY_NOTE]->first()['crc32'] === $eSale['crc32']
+		) {
+			$references[] = s("Bon de livraison {value}", '<u>'.$eSale['ccPdf'][Pdf::DELIVERY_NOTE]->first()['name'].'</u>');
+		}
+
+		if($references) {
+			return p("Référence :", "Références :", count($references)).' '.implode(' / ', $references);
+		} else {
+			return '';
+		}
+
+	}
+
 	protected function getItemShipping(Sale $eSale): Item {
 
 		return new Item([
@@ -543,6 +574,18 @@ class PdfUi {
 
 		$h = '<tr class="pdf-document-item-total">';
 			$h .= '<td class="pdf-document-item-quality">';
+
+				if($type === Pdf::INVOICE) {
+
+					$h .= '<div class="pdf-document-nature">';
+						$h .= match($e['nature']) {
+							Invoice::GOOD => s("Cette facture est constituée de livraison de biens."),
+							Invoice::SERVICE => s("Cette facture est constituée de prestations de services."),
+							Invoice::MIXED => s("Cette facture est constituée de livraison de biens et de prestations de services.")
+						};
+					$h .= '</div>';
+
+				}
 
 				if($e['organic'] and $e['conversion']) {
 
@@ -673,7 +716,7 @@ class PdfUi {
 		
 	}
 
-	protected function getDocumentTop(string $type, Sale|Invoice $e, \farm\Farm $eFarm, string $number, string $dateDocument, ?string $top): string {
+	protected function getDocumentTop(string $type, Sale|Invoice $e, \farm\Farm $eFarm, ?string $number, string $dateDocument, ?string $top): string {
 
 		$eCustomer = $e['customer'];
 		$logo = new \media\FarmLogoUi()->getUrlByElement($eFarm, 'm');
@@ -708,8 +751,10 @@ class PdfUi {
 
 					$h .= '<h2 class="pdf-document-title">'.self::getName($type, $e).'</h2>';
 					$h .= '<div class="pdf-document-details">';
-						$h .= '<div class="pdf-document-detail-label">'.s("Numéro").'</div>';
-						$h .= '<div><b>'.$number.'</b></div>';
+						if($number !== NULL) {
+							$h .= '<div class="pdf-document-detail-label">'.s("Numéro").'</div>';
+							$h .= '<div><b>'.$number.'</b></div>';
+						}
 						$h .= $dateDocument;
 					$h .= '</div>';
 
@@ -1016,28 +1061,25 @@ class PdfUi {
 
 	}
 
-	public static function getTexts(string $type): array {
-		return [
-			Pdf::DELIVERY_NOTE => [
-				'generate' => s("Générer le bon de livraison"),
-				'generateNew' => s("Regénérer le bon de livraison"),
-				'sendConfirm' => s("Confirmer l'envoi du bon de livraison au client par e-mail ?"),
-				'deleteConfirm' => s("Voulez-vous vraiment supprimer ce bon de livraison ?"),
-			],
-			Pdf::ORDER_FORM => [
-				'generate' => s("Générer un devis"),
-				'generateNew' => s("Regénérer le devis"),
-				'sendConfirm' => s("Confirmer l'envoi du devis au client par e-mail ?"),
-				'deleteConfirm' => s("Voulez-vous vraiment supprimer ce devis ?"),
-			],
-		][$type];
+	public function getReminderMail(\farm\Farm $eFarm, Invoice $eInvoice, \Collection $cSale, string $type, ?string $template): array {
+
+		$template ??= \mail\CustomizeUi::getDefaultTemplate($type);
+		$variables = \mail\CustomizeUi::getSaleVariables($type, $eFarm, $eInvoice, $cSale);
+
+		$eCustomer = $eInvoice['customer'];
+
+		$title = s("Relance de paiement pour la facture {value}", $eInvoice['name'].' - '.($eCustomer->getLegalName()));
+		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
+
+		return \mail\DesignUi::format($eFarm, $title, $content);
+
 	}
 
 	public static function getName(string $type, Sale|Invoice $e, bool $short = FALSE): string {
 		return [
-			Pdf::DELIVERY_NOTE => $short ? s("BL") : s("Bon de livraison"),
-			Pdf::ORDER_FORM => $short ? s("DE") : s("Devis"),
-			Pdf::INVOICE => $e->isCreditNote() ? ($short ? s("AV") : s("Avoir")) : ($short ? s("FA") : s("Facture")),
+			Pdf::DELIVERY_NOTE => $short ? SellingSetting::DELIVERY_NOTE : s("Bon de livraison"),
+			Pdf::ORDER_FORM => $short ? SellingSetting::ORDER_FORM : s("Devis"),
+			Pdf::INVOICE => $e->isCreditNote() ? ($short ? s("AV") : s("Avoir")) : ($short ? s("FA") : ($e['document'] === NULL ? s("Facture proforma") : s("Facture"))),
 		][$type];
 	}
 
@@ -1445,7 +1487,7 @@ class PdfUi {
 				return $e->getDeliveryNote($eFarm).'-'.str_replace('-', '', $e['deliveredAt']).'-'.$e['customer']->getName().'.pdf';
 
 			case \selling\Pdf::INVOICE:
-				return $e['name'].'-'.str_replace('-', '', $e['date']).'-'.$e['customer']->getName().'.pdf';
+				return ($e['name'] ?? 'Proforma').'-'.str_replace('-', '', $e['date']).'-'.$e['customer']->getName().'.pdf';
 
 			default:
 				return '';

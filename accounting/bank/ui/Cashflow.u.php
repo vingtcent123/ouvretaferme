@@ -241,7 +241,7 @@ class CashflowUi {
 									if($eCashflow['sale']->notEmpty()) {
 										$h .= '<a href="/vente/'.$eCashflow['sale']['id'].'">'.encode($eCashflow['sale']['document']).'</a>';
 									} else if($eCashflow['invoice']->notEmpty()) {
-										$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?document='.encode($eCashflow['invoice']['document']).'&customer='.encode($eCashflow['invoice']['customer']['name']).'">'.encode($eCashflow['invoice']['name']).'</a>';
+										$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.$eCashflow['invoice']['id'].'&customer='.encode($eCashflow['invoice']['customer']['name']).'">'.encode($eCashflow['invoice']['name']).'</a>';
 									}
 								}
 							$h .= '</td>';
@@ -596,7 +596,7 @@ class CashflowUi {
 			$eInvoice = $cInvoice->first();
 
 				$h .= '<div class="util-info">';
-					$h .= s("Cette opération bancaire est rapprochée avec la facture {name}.", ['name' => '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?document='.$eInvoice['document'].'">'.encode($eInvoice['name']).'</a>']);
+					$h .= s("Cette opération bancaire est rapprochée avec la facture {name}.", ['name' => '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eInvoice['id'].'">'.encode($eInvoice['name']).'</a>']);
 					$h .= ' '.s("Ce rapprochement entre la facture et l'opération bancaire sera conservé.");
 				$h .= '</div>';
 

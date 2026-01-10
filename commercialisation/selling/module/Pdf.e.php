@@ -3,7 +3,11 @@ namespace selling;
 
 class Pdf extends PdfElement {
 
-	public function canSend(): bool {
+	public function canRead(): bool {
+		return $this['farm']->canSelling();
+	}
+
+	public function acceptSend(): bool {
 
 		$this->expects(['type', 'emailedAt', 'createdAt']);
 

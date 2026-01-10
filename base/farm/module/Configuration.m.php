@@ -63,18 +63,17 @@ class ConfigurationModel extends \ModuleModel {
 			'saleClosing' => ['int16', 'min' => 7, 'max' => 365, 'cast' => 'int'],
 			'documentCopy' => ['bool', 'cast' => 'bool'],
 			'documentTarget' => ['enum', [\farm\Configuration::ALL, \farm\Configuration::PRIVATE, \farm\Configuration::PRO, \farm\Configuration::DISABLED], 'cast' => 'enum'],
-			'orderFormPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'orderFormDelivery' => ['bool', 'cast' => 'bool'],
 			'orderFormPaymentCondition' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'orderFormHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'orderFormFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
-			'deliveryNotePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'deliveryNoteHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryNoteFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'creditPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'invoiceDue' => ['bool', 'cast' => 'bool'],
 			'invoiceDueDays' => ['int16', 'min' => 0, 'max' => 360, 'null' => TRUE, 'cast' => 'int'],
 			'invoiceDueMonth' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'invoiceReminder' => ['int16', 'min' => 1, 'max' => 360, 'null' => TRUE, 'cast' => 'int'],
 			'invoicePrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
@@ -86,7 +85,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNotePrefix', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'taxCountry', 'taxCountryVerified', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -126,20 +125,20 @@ class ConfigurationModel extends \ModuleModel {
 			case 'documentTarget' :
 				return Configuration::PRO;
 
-			case 'orderFormPrefix' :
-				return \farm\ConfigurationUi::getDefaultOrderFormPrefix();
-
 			case 'orderFormDelivery' :
 				return TRUE;
-
-			case 'deliveryNotePrefix' :
-				return \farm\ConfigurationUi::getDefaultDeliveryNotePrefix();
 
 			case 'creditPrefix' :
 				return \farm\ConfigurationUi::getDefaultCreditPrefix();
 
 			case 'invoiceDue' :
-				return FALSE;
+				return TRUE;
+
+			case 'invoiceDueDays' :
+				return 30;
+
+			case 'invoiceReminder' :
+				return 7;
 
 			case 'invoicePrefix' :
 				return \farm\ConfigurationUi::getDefaultInvoicePrefix();
@@ -262,10 +261,6 @@ class ConfigurationModel extends \ModuleModel {
 		return $this->where('documentTarget', ...$data);
 	}
 
-	public function whereOrderFormPrefix(...$data): ConfigurationModel {
-		return $this->where('orderFormPrefix', ...$data);
-	}
-
 	public function whereOrderFormDelivery(...$data): ConfigurationModel {
 		return $this->where('orderFormDelivery', ...$data);
 	}
@@ -280,10 +275,6 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereOrderFormFooter(...$data): ConfigurationModel {
 		return $this->where('orderFormFooter', ...$data);
-	}
-
-	public function whereDeliveryNotePrefix(...$data): ConfigurationModel {
-		return $this->where('deliveryNotePrefix', ...$data);
 	}
 
 	public function whereDeliveryNoteHeader(...$data): ConfigurationModel {
@@ -308,6 +299,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereInvoiceDueMonth(...$data): ConfigurationModel {
 		return $this->where('invoiceDueMonth', ...$data);
+	}
+
+	public function whereInvoiceReminder(...$data): ConfigurationModel {
+		return $this->where('invoiceReminder', ...$data);
 	}
 
 	public function whereInvoicePrefix(...$data): ConfigurationModel {

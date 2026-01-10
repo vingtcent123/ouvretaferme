@@ -36,10 +36,19 @@ new Page(function($data) {
 
 		if($data->eProduct->empty()) {
 
-			$data->eItem['nature'] = \selling\Item::GET('nature', 'nature');
+			$data->eItem['nature'] = \selling\Item::GET('nature', 'nature', \selling\Item::GOOD);
 
-			if($data->eItem['nature'] === \selling\Item::SERVICE) {
-				$data->eItem['vatRate'] = \selling\SellingSetting::getStandardVatRate($data->eSale['farm']);
+			switch($data->eItem['nature']) {
+
+				case \selling\Item::SERVICE :
+					$data->eItem['vatRate'] = \selling\SellingSetting::getStandardVatRate($data->eSale['farm']);
+					break;
+
+				case \selling\Item::GOOD :
+					$eFarm = \farm\FarmLib::getById($data->eSale['farm']);
+					$data->eItem['quality'] = $eFarm['quality'];
+					break;
+
 			}
 
 		}

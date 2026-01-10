@@ -77,7 +77,7 @@
 
 .batch-item-count {
 	top: 0.25rem;
-	margin: auto;
+	margin-left: 0.25rem;
 	width: max-content;
 }
 

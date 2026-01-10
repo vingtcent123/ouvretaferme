@@ -840,6 +840,7 @@ class AnalyzeLib {
 					match($eInvoice['paymentStatus']) {
 						Invoice::PAID => 'paid',
 						Invoice::NOT_PAID => 'not_paid',
+						NULL => ''
 					},
 					\util\TextUi::csvNumber($eInvoice['priceExcludingVat']),
 				];

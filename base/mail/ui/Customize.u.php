@@ -90,6 +90,8 @@ class CustomizeUi {
 			Customize::SALE_DELIVERY_NOTE_PRO => s("Personnaliser l'e-mail pour les bons de livraison destinés aux clients professionnels"),
 			Customize::SALE_INVOICE_PRIVATE => s("Personnaliser l'e-mail pour les factures destinées aux clients particuliers"),
 			Customize::SALE_INVOICE_PRO => s("Personnaliser l'e-mail pour les factures destinées aux clients professionnels"),
+			Customize::SALE_REMINDER_PRIVATE => s("Personnaliser l'e-mail pour les relances destinées aux clients particuliers"),
+			Customize::SALE_REMINDER_PRO => s("Personnaliser l'e-mail pour les relances destinées aux clients professionnels"),
 			Customize::SHOP_CONFIRMED_NONE => s("Personnaliser l'e-mail de confirmation de commande"),
 			Customize::SHOP_CONFIRMED_PLACE => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons en point de retrait"),
 			Customize::SHOP_CONFIRMED_HOME => s("Personnaliser l'e-mail de confirmation de commande pour les livraisons à domicile"),
@@ -116,12 +118,14 @@ class CustomizeUi {
 				'delivered' => s("Date de livraison")
 			],
 
-			Customize::SALE_INVOICE_PRIVATE, Customize::SALE_INVOICE_PRO => [
+			Customize::SALE_INVOICE_PRIVATE, Customize::SALE_INVOICE_PRO,
+			Customize::SALE_REMINDER_PRIVATE, Customize::SALE_REMINDER_PRO => [
 				'number' => s("Numéro de facture"),
 				'customer' => s("Nom du client"),
 				'farm' => s("Nom de votre ferme"),
 				'amount' => s("Montant de la facture"),
 				'date' => s("Date de facturation"),
+				'dueDate' => s("Date d'échéance"),
 				'sales' => s("Ventes facturées")
 			],
 
@@ -153,6 +157,8 @@ class CustomizeUi {
 
 			case Customize::SALE_INVOICE_PRIVATE :
 			case Customize::SALE_INVOICE_PRO :
+			case Customize::SALE_REMINDER_PRIVATE :
+			case Customize::SALE_REMINDER_PRO :
 				return self::getSaleVariables($type, $eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]));
 
 			case Customize::SHOP_CONFIRMED_NONE :
@@ -214,6 +220,8 @@ class CustomizeUi {
 
 			case Customize::SALE_INVOICE_PRIVATE :
 			case Customize::SALE_INVOICE_PRO :
+			case Customize::SALE_REMINDER_PRIVATE :
+			case Customize::SALE_REMINDER_PRO :
 
 				[$eInvoice, $cSale] = $more;
 
@@ -235,6 +243,7 @@ class CustomizeUi {
 					'farm' => encode($eFarm['name']),
 					'amount' => \util\TextUi::money($eInvoice['priceIncludingVat']).' '.($eInvoice['hasVat'] ? ' '.\selling\SaleUi::getTaxes(\selling\Sale::INCLUDING) : ''),
 					'date' => \util\DateUi::textual($eInvoice['date']),
+					'dueDate' => ($eInvoice['dueDate'] !== NULL) ? \util\DateUi::textual($eInvoice['dueDate']) : '?',
 					'sales' => $sales
 				];
 
@@ -488,6 +497,19 @@ Cordialement,
 
 Vous trouverez en pièce jointe notre facture d'un montant de @amount.
 @sales
+
+Cordialement,
+@farm");
+
+			case Customize::SALE_REMINDER_PRIVATE :
+			case Customize::SALE_REMINDER_PRO :
+				return s("Bonjour,
+
+Nous sommes toujours en attente de paiement pour la facture @number du @date d'un montant de @amount.
+La date d'échéance de cette facture était fixée au @dueDate.
+
+Nous vous prions de bien vouloir régulariser la situation.
+Si vous avez déjà réglé cette facture, vous pouvez ignorer cette relance.
 
 Cordialement,
 @farm");

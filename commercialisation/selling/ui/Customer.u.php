@@ -585,7 +585,7 @@ class CustomerUi {
 
 				if($cInvoice->notEmpty()) {
 					$h .= '<div data-tab="invoices" class="tab-panel">';
-						$h .= new \selling\InvoiceUi()->getList($cInvoice, hide: ['customer']);
+						$h .= new \selling\InvoiceUi()->getList($cInvoice, $cPaymentMethod, hide: ['customer']);
 					$h .= '</div>';
 				}
 

@@ -169,7 +169,7 @@ class ItemUi {
 				$eSale['hasVat'] and
 				$eSale->isComposition() === FALSE
 			);
-			$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
+			$withPackaging = $cItem->contains(fn($eItem) => ($eItem['packaging'] !== NULL));
 			$columns = 0;
 
 			foreach($cItem as $eItem) {
@@ -1251,14 +1251,26 @@ class ItemUi {
 
 					$h .= $form->hidden('product[0]', '');
 					$h .= $form->hidden('locked[0]', Item::PRICE);
-					$h .= $form->dynamicGroup($eItem, 'nature[0]*');
+					$h .= $form->hidden('nature[0]', $eItem['nature']);
+
+					$h .= $form->group(
+						s("Nature"),
+						'<b>'.self::p('nature')->values[$eItem['nature']].'</b>'
+					);
+
 					$h .= $form->dynamicGroup($eItem, 'name[0]*');
 
-					if($eItem['sale']['type'] === Customer::PRO) {
-						$eItem['unit'] = new Unit();
-						$h .= self::getPackagingGroup($form, 'packaging[0]', $eItem);
-					} else {
-						$h .= $form->hidden('packaging[0]', '');
+					if($eItem['nature'] === Item::GOOD) {
+
+						$h .= $form->dynamicGroup($eItem, 'quality[0]');
+
+						if($eItem['sale']['type'] === Customer::PRO) {
+							$eItem['unit'] = new Unit();
+							$h .= self::getPackagingGroup($form, 'packaging[0]', $eItem);
+						} else {
+							$h .= $form->hidden('packaging[0]', '');
+						}
+
 					}
 
 					$h .= $form->dynamicGroups($eItem, $eItem['sale']->isMarket() ?
@@ -1318,15 +1330,26 @@ class ItemUi {
 				);
 			}
 
-			$h .= $form->dynamicGroups($eItem, ['name', 'additional', 'origin', 'quality']);
+			$h .= $form->group(
+				s("Nature"),
+				'<b>'.self::p('nature')->values[$eItem['nature']].'</b>'
+			);
 
-			if($eItem['sale']->isPro()) {
-				$h .= self::getPackagingGroup($form, 'packaging', $eItem);
+			$h .= $form->dynamicGroups($eItem, ['name', 'additional']);
+
+			if($eItem['nature'] === Item::GOOD) {
+
+				$h .= $form->dynamicGroup($eItem, 'origin');
+				$h .= $form->dynamicGroup($eItem, 'quality');
+
+				if($eItem['sale']->isPro()) {
+					$h .= self::getPackagingGroup($form, 'packaging', $eItem);
+				}
+
 			}
 
-			$h .= $form->dynamicGroup($eItem, 'number');
-
 			$h .= $form->dynamicGroup($eItem, 'unitPrice');
+			$h .= $form->dynamicGroup($eItem, 'number');
 
 			if($eItem['sale']->isMarket() === FALSE) {
 				$h .= $form->dynamicGroup($eItem, 'price');
@@ -1495,7 +1518,7 @@ class ItemUi {
 			case 'quality' :
 				$d->field = 'select';
 				$d->values = \farm\FarmUi::getQualities();
-				$d->placeholder = s("Aucun");
+				$d->attributes['mandatory'] = TRUE;
 				break;
 
 			case 'packaging' :

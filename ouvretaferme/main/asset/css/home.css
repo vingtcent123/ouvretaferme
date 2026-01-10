@@ -268,11 +268,8 @@ div.home-overlay {
 }
 
 .home-feature-title {
-	font-style: italic;
-	font-weight: lighter;
 	font-size: 1.5rem;
 	text-align: center;
-	font-family: 'PT Serif', serif;
 }
 
 .home-feature-subtitle {

@@ -94,12 +94,9 @@ td.invoice-item-amount {
 }
 
 .invoice-payment-block {
-	@media (min-width: 768px) {
-		display: flex;
-	}
-	@media (max-width: 767px) {
-		display: block;
-	}
+
+	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.5rem;
 
@@ -114,4 +111,30 @@ td.invoice-item-amount {
 
 #panel-invoice-create-collection:not(:has(input[name="sales[]"]:checked)) #invoice-sales-required {
 	display: none;
+}
+
+.btn.invoice-button {
+	line-height: 1.3;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+	text-align: left;
+}
+
+.invoice-payment-controler {
+	margin-bottom: 1rem;
+}
+
+.invoice-payment-controler:has(select[name="paymentMethod"] option[value=""]:checked) {
+
+	[data-wrapper="paymentStatus"],
+	[data-wrapper="paidAt"] {
+		display: none;
+	}
+}
+
+.invoice-payment-controler:has(input[name="paymentStatus"][value="not-paid"]) {
+
+	[data-wrapper="paidAt"] {
+		display: none;
+	}
 }

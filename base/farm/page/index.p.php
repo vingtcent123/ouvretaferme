@@ -79,6 +79,7 @@ new Page(function($data) {
 			'deliveredAt' => GET('deliveredAt'),
 			'preparationStatus' => GET('preparationStatus'),
 			'paymentMethod' => GET('paymentMethod'),
+			'paymentStatus' => GET('paymentStatus'),
 		], GET('sort'));
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
@@ -324,9 +325,10 @@ new Page(function($data) {
 
 		$data->search = new Search([
 			'invoice' => GET('invoice'),
-			'document' => GET('document'),
+			'name' => GET('name'),
 			'customer' => GET('customer'),
 			'date' => GET('date'),
+			'reminder' => get_exists('reminder'),
 			'status' => \selling\Invoice::GET('status', 'status'),
 			'paymentStatus' => \selling\Invoice::GET('paymentStatus', 'paymentStatus')
 		], GET('sort'));
@@ -338,7 +340,11 @@ new Page(function($data) {
 			$data->nSuggestion = 0;
 		}
 
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE);
+
 		[$data->cInvoice, $data->nInvoice] = \selling\InvoiceLib::getByFarm($data->eFarm, selectSales: TRUE, page: $data->page, search: $data->search);
+
+		$data->nInvoiceReminder = \selling\InvoiceLib::countReminder($data->eFarm);
 
 		$data->hasInvoices = (
 			$data->cInvoice->notEmpty() or

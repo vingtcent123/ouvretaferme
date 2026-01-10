@@ -261,7 +261,7 @@ new \selling\SalePage()
 		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE);
 		$data->ccSaleMarket = \selling\SaleLib::getByParent($data->e);
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
-		$data->cPdf = \selling\PdfLib::getBySale($data->e);
+		$data->ccPdf = \selling\PdfLib::getBySale($data->e);
 
 		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice'], properties: \selling\InvoiceElement::getSelection());
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
@@ -281,38 +281,6 @@ new \selling\SalePage()
 		}
 
 	})
-	->read('/vente/{id}/devis', function($data) {
-
-		$data->e->validate('acceptOrderForm');
-
-		$content = \selling\PdfLib::getContentBySale($data->e, \selling\Pdf::ORDER_FORM);
-
-		if($content === NULL) {
-			throw new NotExistsAction();
-		}
-
-		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::ORDER_FORM, $data->e['farm'], $data->e);
-
-		throw new PdfAction($content, $filename);
-
-
-	}, validate: ['canAccess'])
-	->read('/vente/{id}/bon-livraison', function($data) {
-
-		$data->e->validate('acceptDeliveryNote');
-
-		$content = \selling\PdfLib::getContentBySale($data->e, \selling\Pdf::DELIVERY_NOTE);
-
-		if($content === NULL) {
-			throw new NotExistsAction();
-		}
-
-		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::DELIVERY_NOTE, $data->e['farm'], $data->e);
-
-		throw new PdfAction($content, $filename);
-
-
-	}, validate: ['canAccess'])
 	->read('generateOrderForm', function($data) {
 
 		$data->e->validate('canManage');
@@ -407,7 +375,7 @@ new \selling\SalePage()
 
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-		$data->type = POST('type', [\selling\Pdf::ORDER_FORM, \selling\Pdf::DELIVERY_NOTE], fn($value) => throw new NotExpectedAction('Invalid type \''.$value.'\''));
+		$data->type = POST('type', [\selling\Pdf::ORDER_FORM, \selling\Pdf::DELIVERY_NOTE], fn($value) => throw new NotExpectedAction());
 
 		if($data->e->canDocument($data->type) === FALSE) {
 			throw new NotAllowedAction();
@@ -432,11 +400,18 @@ new \selling\SalePage()
 	->update(function($data) {
 
 		$data->e['cPoint'] = \shop\PointLib::getAlphabeticalByFarm($data->e['farm']);
-		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 		throw new ViewAction($data);
 
 	})
+	->update(function($data) {
+
+		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+
+		throw new ViewAction($data);
+
+	}, page: 'updatePayment')
+	->doUpdateProperties('doUpdatePayment', ['paymentMethod', 'paymentStatus', 'paidAt'], fn($data) => throw new ReloadAction('selling', 'Sale::updatedPayment'), validate: ['canWrite', 'acceptUpdatePayment'])
 	->read('updateShop', function($data) {
 
 		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm'], $data->e['type']);
@@ -504,21 +479,28 @@ new \selling\SalePage()
 
 		throw new ReloadAction();
 	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
+	->write('doUpdateNeverPaid', function($data) {
+
+		\selling\SaleLib::updateNeverPaid($data->e);
+
+		throw new ReloadAction();
+
+	}, validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doDeletePayment', function($data) {
+
+		\selling\SaleLib::deletePayment($data->e);
+
+		throw new ReloadLayerAction();
+
+	}, validate: ['canWrite', 'acceptUpdatePayment'])
 	->write('doFillPaymentMethod', function($data) {
 
 		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
 
 		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
 
-		throw new ReloadAction();
-	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
-	->write('doDeleteOnlinePaymentMethod', function($data) {
-
-		\selling\SaleLib::emptyOnlinePaymentMethod($data->e);
-
 		throw new ReloadLayerAction();
-
-	}, validate: ['canWrite', 'acceptEmptyOnlinePayment'])
+	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
@@ -664,8 +646,8 @@ new Page(function($data) {
 
 		$data->c->validate('canWrite', 'acceptUpdatePayment');
 
-		$methodId = \payment\Method::POST('paymentMethod', 'id');
-		$eMethod = \payment\MethodLib::getById($methodId);
+		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'));
+
 		if($eMethod->notEmpty()) {
 			$eMethod->validate('canUse', 'acceptManualUpdate');
 		}
@@ -677,6 +659,17 @@ new Page(function($data) {
 		}
 
 		throw new ReloadAction('selling', 'Sale::paymentMethodUpdated');
+
+	})
+	->post('doUpdatePaymentStatusCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptUpdatePaymentStatus');
+
+		$paymentStatus = POST('paymentStatus', [\selling\Sale::PAID, \selling\Sale::NOT_PAID]);
+
+		\selling\SaleLib::updatePaymentStatusCollection($data->c, $paymentStatus);
+
+		throw new ReloadAction('selling', 'Sale::paymentStatusUpdated');
 
 	})
 	->post('doUpdateRefuseReadyForAccountingCollection', function($data) {

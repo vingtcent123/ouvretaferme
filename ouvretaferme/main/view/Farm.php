@@ -286,7 +286,7 @@ class FarmTemplate extends MainTemplate {
 
 								if($this->data->eFarm['createdAt'] < date('Y-m-d 00:00:00', strtotime('NOW - 1 YEAR'))) {
 									$position = 2;
-								} else if($this->data->eFarm['createdAt'] < date('Y-m-d 00:00:00', strtotime('NOW - 9 MONTH'))) {
+								} else if($this->data->eFarm['createdAt'] < date('Y-m-d 00:00:00', strtotime('NOW - 6 MONTH'))) {
 									$position = 1;
 								} else {
 									$position = 0;

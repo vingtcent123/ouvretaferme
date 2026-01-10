@@ -155,6 +155,15 @@ class Item extends ItemElement {
 				}
 
 			})
+			->setCallback('quality.prepare', function(?string &$quality): bool {
+
+				if($this['nature'] === Item::SERVICE) {
+					$quality = Item::NO;
+				}
+
+				return TRUE;
+
+			})
 			->setCallback('name.prepare', function(?string &$name) use($p): bool {
 
 				if($p->for === 'create') {
@@ -168,6 +177,15 @@ class Item extends ItemElement {
 
 					}
 
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('packaging.prepare', function(?float &$packaging): bool {
+
+				if($this['nature'] === Item::SERVICE) {
+					$packaging = NULL;
 				}
 
 				return TRUE;
@@ -192,6 +210,15 @@ class Item extends ItemElement {
 					($p->isBuilt('locked') and $this['locked'] !== Item::UNIT_PRICE) or
 					$number !== 0.0
 				);
+
+			})
+			->setCallback('unit.prepare', function(Unit &$eUnit): bool {
+
+				if($this['nature'] === Item::SERVICE) {
+					$eUnit = new Unit();
+				}
+
+				return TRUE;
 
 			})
 			->setCallback('unit.check', function(Unit $eUnit): bool {

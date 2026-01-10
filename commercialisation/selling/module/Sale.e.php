@@ -264,7 +264,6 @@ class Sale extends SaleElement {
 		return (
 			$this->isMarket() === FALSE and
 			$this->isComposition() === FALSE and
-			($this['cPayment']->empty() or $this->isPaymentOnline() === FALSE) and
 			$this['preparationStatus'] !== Sale::CANCELED and
 			$this['closed'] === FALSE and
 			$this['invoice']->empty()
@@ -272,14 +271,11 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptEmptyOnlinePayment(): bool {
-
-		$this->expects(['cPayment', 'invoice']);
+	public function acceptUpdatePaymentStatus(): bool {
 
 		return (
-			$this->isPaymentOnline() and
-			$this['preparationStatus'] !== Sale::CANCELED and
-			$this['invoice']->empty()
+			$this->acceptUpdatePayment() and
+			$this['cPayment']->notEmpty()
 		);
 
 	}
@@ -485,7 +481,7 @@ class Sale extends SaleElement {
 	}
 
 	// Une vente est online seulement si le paiement lié est validé.
-	public function isPaymentOnline(): bool {
+	public function isPaymentOnline(?string $onlineStatus = Payment::SUCCESS): bool {
 
 		$this->expects(['cPayment']);
 
@@ -494,7 +490,10 @@ class Sale extends SaleElement {
 		}
 
 		foreach($this['cPayment'] as $ePayment) {
-			if($ePayment['method']->isOnline() and $ePayment['onlineStatus'] === Payment::SUCCESS) {
+			if(
+				$ePayment['method']->isOnline() and
+				($onlineStatus === NULL or $ePayment['onlineStatus'] === $onlineStatus)
+			) {
 				return TRUE;
 			}
 		}
@@ -553,16 +552,6 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptDocument(string $type): bool {
-
-		return match($type) {
-			Pdf::DELIVERY_NOTE => $this->acceptDeliveryNote(),
-			Pdf::ORDER_FORM => $this->acceptOrderForm(),
-			Pdf::INVOICE => $this->acceptInvoice(),
-		};
-
-	}
-
 	public function acceptGenerateDocument(string $type): bool {
 
 		return match($type) {
@@ -593,7 +582,10 @@ class Sale extends SaleElement {
 
 	public function acceptGenerateOrderForm(): bool {
 
-		return $this->acceptOrderForm() and in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED]);
+		return (
+			$this->acceptOrderForm() and
+			in_array($this['preparationStatus'], [Sale::DRAFT, Sale::CONFIRMED])
+		);
 
 	}
 
@@ -675,9 +667,7 @@ class Sale extends SaleElement {
 
 		$this->expects(['document']);
 
-		$code = $eFarm->getConf('orderFormPrefix');
-
-		return \farm\Configuration::getNumber($code, $this['document']);
+		return \farm\Configuration::getNumber(SellingSetting::ORDER_FORM, $this['document']);
 
 	}
 
@@ -685,9 +675,7 @@ class Sale extends SaleElement {
 
 		$this->expects(['document']);
 
-		$code = $eFarm->getConf('deliveryNotePrefix');
-
-		return \farm\Configuration::getNumber($code, $this['document']);
+		return \farm\Configuration::getNumber(SellingSetting::DELIVERY_NOTE, $this['document']);
 
 	}
 

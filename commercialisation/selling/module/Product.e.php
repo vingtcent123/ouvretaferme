@@ -148,6 +148,8 @@ class Product extends ProductElement {
 	public static function getProfiles(string $property): array {
 		return match($property) {
 			'characteristics' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
+			'quality' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
+			'origin' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
 			'compositionVisibility' => [Product::COMPOSITION],
 			'unprocessedPlant' => [Product::UNPROCESSED_PLANT],
 			'unprocessedVariety' => [Product::UNPROCESSED_PLANT],
@@ -155,6 +157,7 @@ class Product extends ProductElement {
 			'processedPackaging' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 			'processedAllergen' => [Product::PROCESSED_FOOD],
 			'processedComposition' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
+			'proPackaging' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
 		};
 	}
 
@@ -177,6 +180,24 @@ class Product extends ProductElement {
 						$eCategory->canRead()
 					)
 				);
+
+			})
+			->setCallback('origin.prepare', function(?string &$origin): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('origin')) === FALSE) {
+					$origin = NULL;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('quality.prepare', function(?string &$quality): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('quality')) === FALSE) {
+					$quality = Product::NO;
+				}
+
+				return TRUE;
 
 			})
 			->setCallback('processedComposition.prepare', function(?string &$composition): bool {
@@ -381,6 +402,15 @@ class Product extends ProductElement {
 
 			})
 
+			->setCallback('proPackaging.prepare', function(?float &$proPackaging): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('proPackaging')) === FALSE) {
+					$proPackaging = NULL;
+				}
+
+				return TRUE;
+
+			})
 			->setCallback('proPrice.prepare', function (?float &$proPrice): bool {
 
 				if($this['pro'] === FALSE) {

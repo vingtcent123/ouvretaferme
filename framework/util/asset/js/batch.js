@@ -79,12 +79,13 @@ class Batch {
 				const only = selectionFiltered.length === selection.length;
 				const notOnly = selectionFiltered.length !== selection.length;
 
+				const testAlways = (value) => node.dataset.batchAlways?.includes(value);
 				const testContains = (value) => (contains && node.dataset.batchContains?.includes(value));
 				const testNotContains = (value) => (notContains && node.dataset.batchNotContains?.includes(value));
 				const testOnly = (value) => (only && node.dataset.batchOnly?.includes(value));
 				const testNotOnly = (value) => (notOnly && node.dataset.batchNotOnly?.includes(value));
 
-				const test = (value) => (testContains(value) || testNotContains(value) || testOnly(value) || testNotOnly(value));
+				const test = (value) => (testAlways(value) || testContains(value) || testNotContains(value) || testOnly(value) || testNotOnly(value));
 
 				if(test('count')) {
 					node.innerHTML = countFitered +' / '+ count;

@@ -1042,7 +1042,14 @@ class ProductUi {
 				];
 			});
 
-			$h .= $form->dynamicGroups($eProduct, ['origin', 'quality']);
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('origin')).'">';
+				$h .= $form->dynamicGroup($eProduct, 'origin');
+			$h .= '</div>';
+
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('quality')).'">';
+				$h .= $form->dynamicGroup($eProduct, 'quality');
+			$h .= '</div>';
+
 			$h .= $form->dynamicGroup($eProduct, 'vat');
 
 			$h .= '<br/>';
@@ -1264,13 +1271,15 @@ class ProductUi {
 
 			$unit = ($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : self::p('unit')->placeholder);
 
-			$h .= $form->group(
-				s("Colis de base"),
-				$form->inputGroup(
-					$form->dynamicField($eProduct, 'proPackaging').
-					'<div class="input-group-addon" data-ref="product-unit">'.$unit.'</div>'
-				)
-			);
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('proPackaging')).'">';
+				$h .= $form->group(
+					s("Colis de base"),
+					$form->inputGroup(
+						$form->dynamicField($eProduct, 'proPackaging').
+						'<div class="input-group-addon" data-ref="product-unit">'.$unit.'</div>'
+					)
+				);
+			$h .= '</div>';
 
 			if($for === 'update') {
 
@@ -1658,7 +1667,7 @@ class ProductUi {
 			case 'quality' :
 				$d->field = 'select';
 				$d->values = \farm\FarmUi::getQualities();
-				$d->placeholder = s("Aucun");
+				$d->attributes['mandatory'] = TRUE;
 				break;
 
 			case 'compositionVisibility' :

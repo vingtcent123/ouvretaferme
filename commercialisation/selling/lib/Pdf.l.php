@@ -18,7 +18,8 @@ class PdfLib extends PdfCrud {
 		return Pdf::model()
 			->select(Pdf::getSelection())
 			->whereSale($eSale)
-			->getCollection(NULL, NULL, 'type');
+			->sort(['version' => SORT_DESC])
+			->getCollection(NULL, NULL, ['type', NULL]);
 
 	}
 
@@ -100,6 +101,9 @@ class PdfLib extends PdfCrud {
 			->whereType($type)
 			->whereContent('!=', NULL)
 			->whereEmailedAt(NULL)
+			->sort([
+				'version' => SORT_DESC
+			])
 			->get();
 
 		if($ePdf->empty()) {
@@ -113,7 +117,7 @@ class PdfLib extends PdfCrud {
 		}
 
 		if(
-			$ePdf->canSend() === FALSE or
+			$ePdf->acceptSend() === FALSE or
 			Pdf::model()->update($ePdf, ['emailedAt' => new \Sql('NOW()')]) === 0
 		) {
 			Pdf::fail('fileAlreadySent');
@@ -218,15 +222,16 @@ class PdfLib extends PdfCrud {
 		}
 
 		$template = NULL;
+		$customize = NULL;
 
 		if($eInvoice['taxes'] === Invoice::EXCLUDING) {
 			$customize = \mail\Customize::SALE_INVOICE_PRO;
-			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_INVOICE_PRO);
+			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, $customize);
 		}
 
 		if($template === NULL) {
 			$customize = \mail\Customize::SALE_INVOICE_PRIVATE;
-			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, \mail\Customize::SALE_INVOICE_PRIVATE);
+			$template = \mail\CustomizeLib::getTemplateByFarm($eFarm, $customize);
 		}
 
 		$content = new PdfUi()->getInvoiceMail($eFarm, $eInvoice, $cSale, $customize, $template);
@@ -251,54 +256,65 @@ class PdfLib extends PdfCrud {
 
 	}
 
-	public static function generateBusiness(string $type, Sale $eSale, ?\Closure $callback = NULL): Pdf {
+	public static function generateBusiness(string $type, Sale $eSale): Pdf {
 
 		Pdf::model()->beginTransaction();
-
-			$ePdfContent = self::generateDocument($type, $eSale, $callback);
 
 			$ePdf = new Pdf([
 				'type' => $type,
 				'sale' => $eSale,
 				'crc32' => $eSale['crc32'],
 				'farm' => $eSale['farm'],
-				'content' => $ePdfContent,
 				'createdAt' => Pdf::model()->now() // Besoin de la date pour pouvoir envoyer le PDF par e-mail dans la foulée
 			]);
 
-			Pdf::model()
-				->option('add-replace')
-				->insert($ePdf);
+			switch($type) {
+
+				case Pdf::DELIVERY_NOTE :
+
+					$ePdf['name'] = $eSale->getDeliveryNote($eSale['farm']);
+
+					Pdf::model()
+						->whereSale($eSale)
+						->whereType(Pdf::DELIVERY_NOTE)
+						->delete();
+
+					break;
+
+				case Pdf::ORDER_FORM :
+
+					$ePdf['name'] = $eSale->getOrderForm($eSale['farm']);
+					$ePdf['version'] = Pdf::model()
+						->whereSale($eSale)
+						->whereType(Pdf::ORDER_FORM)
+						->getValue(new \Sql('MAX(version)', 'int')) + 1;
+
+					if($ePdf['version'] > 1) {
+
+						$ePdf['name'] .= '-'.$ePdf['version'];
+
+					}
+					break;
+
+			}
+
+			Pdf::model()->insert($ePdf);
 
 		Pdf::model()->commit();
+
+		$ePdfContent = self::generateDocument(
+			self::build('/selling/pdf:getDocument?id='.$ePdf['id'].'&type='.$type)
+		);
+
+		Pdf::model()->update($ePdf, [
+			'content' => $ePdfContent
+		]);
 
 		return $ePdf;
 
 	}
 
-	public static function generateDocument(string $type, Sale $eSale, ?\Closure $callback = NULL): PdfContent {
-
-		$eSale->expects(['farm']);
-
-		$callback ??= fn() => self::build('/selling/pdf:getDocument?id='.$eSale['id'].'&type='.$type);
-
-		$content = $callback();
-
-		$ePdfContent = new PdfContent();
-		PdfContent::model()->insert($ePdfContent);
-
-		$hash = NULL;
-		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
-
-		return $ePdfContent;
-
-	}
-
-	public static function generateInvoice(Invoice $eInvoice): PdfContent {
-
-		$eInvoice->expects(['farm', 'sales']);
-
-		$content = FacturXLib::generate($eInvoice, self::build('/selling/pdf:getDocumentInvoice?id='.$eInvoice['id']));
+	public static function generateDocument($content): PdfContent {
 
 		$ePdfContent = new PdfContent();
 		PdfContent::model()->insert($ePdfContent);

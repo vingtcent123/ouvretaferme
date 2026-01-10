@@ -89,11 +89,24 @@ new \selling\InvoicePage()
 	}, propertiesUpdate: ['dueDate', 'paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
 
-		if($data->e['content']->empty()) {
-			throw new NotExistsAction();
+		switch($data->e['status']) {
+
+			case \selling\Invoice::DRAFT :
+				$content = \selling\InvoiceLib::build($data->e);
+				break;
+
+			default :
+
+				if($data->e['content']->empty()) {
+					throw new NotExistsAction();
+				}
+
+				$content = \selling\PdfLib::getContentByInvoice($data->e);
+
+				break;
+
 		}
 
-		$content = \selling\PdfLib::getContentByInvoice($data->e);
 		$filename = new \selling\PdfUi()->getFilename(\selling\Pdf::INVOICE, $data->e['farm'], $data->e);
 
 		throw new PdfAction($content, $filename);
@@ -108,8 +121,21 @@ new \selling\InvoicePage()
 	}, page: 'updatePayment', validate: ['canWrite', 'acceptUpdatePayment'])
 	->update(page: 'updateComment', validate: ['canWrite'])
 	->doUpdateProperties('doUpdateComment', ['comment'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePayment', ['paymentMethod', 'paymentStatus'], fn($data) => throw new ReloadAction('selling', 'Invoice::updatedPayment'), validate: ['canWrite', 'acceptUpdatePayment'])
-	->doUpdateProperties('doUpdatePaymentStatus', ['paymentStatus'], fn($data) => throw new ViewAction($data), validate: ['canWrite', 'acceptUpdatePayment'])
+	->doUpdateProperties('doUpdatePayment', ['paymentMethod', 'paymentStatus', 'paidAt'], fn($data) => throw new ReloadAction('selling', 'Invoice::updatedPayment'), validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doUpdateNeverPaid', function($data) {
+
+		\selling\InvoiceLib::updateNeverPaid($data->e);
+
+		throw new ReloadAction();
+
+	}, validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doDeletePayment', function($data) {
+
+		\selling\InvoiceLib::deletePayment($data->e);
+
+		throw new ReloadLayerAction();
+
+	}, validate: ['canWrite', 'acceptUpdatePayment'])
 	->quick(['comment'])
 	->doDelete(fn() => throw new ReloadAction('selling', 'Invoice::deleted'));
 
@@ -180,6 +206,32 @@ new Page(function($data) {
 		throw new ReloadAction();
 
 	})
+	->post('doUpdatePaymentMethodCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptUpdatePayment');
+
+		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'));
+
+		if($eMethod->notEmpty()) {
+			$eMethod->validate('canUse', 'acceptManualUpdate');
+		}
+
+		\selling\InvoiceLib::updatePaymentMethodCollection($data->c, $eMethod);
+
+		throw new ReloadAction('selling', 'Invoice::paymentMethodUpdated');
+
+	})
+	->post('doUpdatePaymentStatusCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptUpdatePaymentStatus');
+
+		$paymentStatus = POST('paymentStatus', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID]);
+
+		\selling\InvoiceLib::updatePaymentStatusCollection($data->c, $paymentStatus);
+
+		throw new ReloadAction('selling', 'Invoice::paymentStatusUpdated');
+
+	})
 	->post('doUpdatePaymentCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptUpdatePayment');
@@ -203,6 +255,23 @@ new Page(function($data) {
 		\selling\InvoiceLib::updateStatusCollection($data->c, \selling\Sale::CANCELED);
 
 		throw new ReloadAction();
+
+	})
+	->post('doReminderCollection', function($data) {
+
+		$data->c->validate('canWrite', 'acceptReminder');
+
+		$data->eFarm = \farm\FarmLib::getById($data->c->first()['farm']);
+
+		$fw = new FailWatch();
+
+		foreach($data->c as $e) {
+			\selling\InvoiceLib::reminder($data->eFarm, $e);
+		}
+
+		$fw->validate();
+
+		throw new ReloadAction('selling', $data->c->count() > 1 ? 'Invoice::remindedCollection' : 'Invoice::reminded');
 
 	})
 	->post('doSendCollection', function($data) {

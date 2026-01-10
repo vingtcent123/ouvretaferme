@@ -9,7 +9,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 
 	$t->header .= '<div>';
 		$t->header .= '<h1>'.s("Toute votre ferme sur un seul logiciel").'</h1>';
-		$t->header .= '<h4 class="home-feature-title">'.s("intuitif et facile à utiliser au bureau comme sur le terrain").'</h4>';
+		$t->header .= '<h4 class="home-feature-title">'.s("Intuitif et facile à utiliser au bureau comme sur le terrain").'</h4>';
 	$t->header .= '</div>';
 
 	echo '<div class="home-features home-overlay home-features-3">';

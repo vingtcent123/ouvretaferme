@@ -46,17 +46,19 @@ class PdfModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
+			'name' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'used' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'content' => ['element32', 'selling\PdfContent', 'null' => TRUE, 'cast' => 'element'],
 			'crc32' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'type' => ['enum', [\selling\Pdf::DELIVERY_NOTE, \selling\Pdf::ORDER_FORM, \selling\Pdf::INVOICE], 'cast' => 'enum'],
+			'version' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'used', 'farm', 'content', 'crc32', 'type', 'emailedAt', 'createdAt'
+			'id', 'sale', 'name', 'used', 'farm', 'content', 'crc32', 'type', 'version', 'emailedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -66,11 +68,8 @@ class PdfModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['sale', 'type'],
 			['content']
-		]);
-
-		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['sale', 'type']
 		]);
 
 	}
@@ -122,6 +121,10 @@ class PdfModel extends \ModuleModel {
 		return $this->where('sale', ...$data);
 	}
 
+	public function whereName(...$data): PdfModel {
+		return $this->where('name', ...$data);
+	}
+
 	public function whereUsed(...$data): PdfModel {
 		return $this->where('used', ...$data);
 	}
@@ -140,6 +143,10 @@ class PdfModel extends \ModuleModel {
 
 	public function whereType(...$data): PdfModel {
 		return $this->where('type', ...$data);
+	}
+
+	public function whereVersion(...$data): PdfModel {
+		return $this->where('version', ...$data);
 	}
 
 	public function whereEmailedAt(...$data): PdfModel {

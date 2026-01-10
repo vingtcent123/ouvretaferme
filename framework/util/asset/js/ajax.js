@@ -1462,9 +1462,9 @@ document.delegateEventListener('click', '[data-ajax]', function(e) {
 		case 'post' :
 		default :
 
-			const body = this.hasAttribute('data-ajax-body') ?
-				new URLSearchParams(JSON.parse(this.dataset.ajaxBody)) :
-				this.post();
+			const body = new URLSearchParams(this.hasAttribute('data-ajax-body') ? JSON.parse(this.dataset.ajaxBody) : []);
+
+			this.post(body);
 
 			object
 				.url(url)

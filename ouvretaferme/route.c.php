@@ -423,6 +423,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['outil', '{id@int}'],
 		],
+		'/pdf/{id}' => [
+			'request' => 'selling/pdf',
+			'priority' => 5,
+			'route' => ['pdf', '{id}'],
+		],
 		'/precomptabilite' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,
@@ -607,16 +612,6 @@ Route::register([
 			'request' => 'selling/sale',
 			'priority' => 5,
 			'route' => ['vente', '{id}'],
-		],
-		'/vente/{id}/bon-livraison' => [
-			'request' => 'selling/sale',
-			'priority' => 5,
-			'route' => ['vente', '{id}', 'bon-livraison'],
-		],
-		'/vente/{id}/devis' => [
-			'request' => 'selling/sale',
-			'priority' => 5,
-			'route' => ['vente', '{id}', 'devis'],
 		],
 		'/vente/{id}/marche' => [
 			'request' => 'selling/market',

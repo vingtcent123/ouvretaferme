@@ -484,8 +484,10 @@ class MembershipLib {
 		}
 
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
+		$eSale['paidAt'] = currentDate();
+
 		\selling\Sale::model()
-			->select(['paymentStatus'])
+			->select(['paymentStatus', 'paidAt'])
 			->update($eSale);
 
 		$properties = [

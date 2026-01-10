@@ -14,27 +14,20 @@ class ConfigurationUi {
 		return s("FA");
 	}
 
-	public static function getDefaultDeliveryNotePrefix(): string {
-		return s("BL");
-	}
-
-	public static function getDefaultOrderFormPrefix(): string {
-		return s("DE");
-	}
-
 	public static function getDefaultCreditPrefix(): string {
 		return s("AV");
 	}
 
-	public function update(\farm\Farm $eFarm, \Collection $cCustomize, \selling\Sale $eSaleExample, \Collection $cAccount): string {
+	public function update(\farm\Farm $eFarm, \Collection $cAccount): string {
+
+		if($eFarm->hasAccounting() === FALSE) {
+			return $this->updateSettings($eFarm);
+		}
 
 		$h = '<div class="tabs-h" id="selling-configure" onrender="'.encode('Lime.Tab.restore(this, "settings")').'">';
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="settings" onclick="Lime.Tab.select(this)">'.s("Administratif").'</a>';
-				$h .= '<a class="tab-item" data-tab="orderForm" onclick="Lime.Tab.select(this)">'.s("Devis").'</a>';
-				$h .= '<a class="tab-item" data-tab="deliveryNote" onclick="Lime.Tab.select(this)">'.s("Bons de livraisons").'</a>';
-				$h .= '<a class="tab-item" data-tab="invoice" onclick="Lime.Tab.select(this)">'.s("Factures").'</a>';
 				if($eFarm->hasAccounting()) {
 					$h .= '<a class="tab-item tab-item-accounting" data-tab="accounting" onclick="Lime.Tab.select(this)">'.s("Comptabilité").'</a>';
 				}
@@ -42,18 +35,6 @@ class ConfigurationUi {
 
 			$h .= '<div class="tab-panel selected" data-tab="settings">';
 				$h .= $this->updateSettings($eFarm);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="orderForm">';
-				$h .= $this->updateOrderForm($eFarm, $eSaleExample, $cCustomize);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="deliveryNote">';
-				$h .= $this->updateDeliveryNote($eFarm, $eSaleExample, $cCustomize);
-			$h .= '</div>';
-
-			$h .= '<div class="tab-panel" data-tab="invoice">';
-				$h .= $this->updateInvoice($eFarm, $eSaleExample, $cCustomize);
 			$h .= '</div>';
 
 			if($eFarm->hasAccounting()) {
@@ -168,14 +149,12 @@ class ConfigurationUi {
 
 		}
 
-		$h .= '<h2 class="mb-2">'.s("Personnalisation des devis").'</h2>';
-
-		$h .= '<div class="util-section mb-2">';
+		$h .= '<div class="mb-2">';
 			$h .= $form->openAjax('/farm/configuration:doUpdateOrderForm', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
-				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'orderFormPrefix', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
+				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter']);
 
 				$h .= $form->group(
 					content: $form->submit(s("Enregistrer"))
@@ -186,7 +165,7 @@ class ConfigurationUi {
 
 		$h .= '<h2 class="mb-2">'.s("Envoi des devis par e-mail").'</h2>';
 
-		$h .= '<div class="util-section mb-2">';
+		$h .= '<div class="mb-2">';
 			$h .= $this->updateDocumentMail('order-form', $eFarm, $eSaleExample, $cCustomize);
 		$h .= '</div>';
 
@@ -194,7 +173,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::ORDER_FORM, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::ORDER_FORM, $eSaleExample->getOrderForm($eFarm), $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -208,24 +187,7 @@ class ConfigurationUi {
 
 		$form = new \util\FormUi();
 
-		$h = '';
-
-		if($eFarm->isLegal() === FALSE) {
-
-			$h .= '<div class="util-block-help">';
-				$h .= \farm\AlertUi::getError('Farm::notLegal', [
-					'farm' => $eFarm,
-					'btn' => 'btn-secondary'
-				]);
-			$h .= '</div>';
-
-			return $h;
-
-		}
-
-		$h .= '<h2 class="mb-2">'.s("Personnalisation des factures").'</h2>';
-
-		$h .= '<div class="mb-2">';
+		$h = '<div class="mb-2">';
 			$h .= $form->openAjax('/farm/configuration:doUpdateInvoice', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
@@ -235,7 +197,7 @@ class ConfigurationUi {
 					$this->getInvoiceDueField($form, $eConfiguration),
 					['wrapper' => 'invoiceDue invoiceDueDays invoiceDueMonth']
 				);
-				$h .= $form->dynamicGroups($eConfiguration, ['invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
+				$h .= $form->dynamicGroups($eConfiguration, ['invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
 
 				$eConfiguration['documentInvoices']++;
 
@@ -260,11 +222,17 @@ class ConfigurationUi {
 			$h .= $this->updateDocumentMail('invoice', $eFarm, $eSaleExample, $cCustomize);
 		$h .= '</div>';
 
+		$h .= '<h2 class="mb-2">'.s("Envoi des relances de paiement par e-mail").'</h2>';
+
+		$h .= '<div class="mb-2">';
+			$h .= $this->updateDocumentMail('reminder', $eFarm, $eSaleExample, $cCustomize);
+		$h .= '</div>';
+
 		$h .= '<h2>'.s("Exemple de facture").'</h2>';
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::INVOICE, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::INVOICE, $eSaleExample['invoice']['name'], $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -363,24 +331,7 @@ class ConfigurationUi {
 
 		$eConfiguration = $eFarm->conf();
 
-		$h = '';
-
-		if($eFarm->isLegal() === FALSE) {
-
-			$h .= '<div class="util-block-help">';
-				$h .= \farm\AlertUi::getError('Farm::notLegal', [
-					'farm' => $eFarm,
-					'btn' => 'btn-secondary'
-				]);
-			$h .= '</div>';
-
-			return $h;
-
-		}
-
-		$h .= '<h2 class="mb-2">'.s("Personnalisation des bons de livraison").'</h2>';
-
-		$h .= '<div class="util-section mb-2">';
+		$h = '<div class="mb-2">';
 
 			$form = new \util\FormUi();
 
@@ -388,7 +339,7 @@ class ConfigurationUi {
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
-				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'deliveryNotePrefix', 'deliveryNoteHeader', 'deliveryNoteFooter']);
+				$h .= $form->dynamicGroups($eConfiguration, ['documentTarget', 'deliveryNoteHeader', 'deliveryNoteFooter']);
 
 				$h .= $form->group(
 					content: $form->submit(s("Enregistrer"))
@@ -400,7 +351,7 @@ class ConfigurationUi {
 
 		$h .= '<h2 class="mb-2">'.s("Envoi des bons de livraison par e-mail").'</h2>';
 
-		$h .= '<div class="util-section mb-2">';
+		$h .= '<div class="mb-2">';
 			$h .= $this->updateDocumentMail('delivery-note', $eFarm, $eSaleExample, $cCustomize);
 		$h .= '</div>';
 
@@ -410,7 +361,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::DELIVERY_NOTE, $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::DELIVERY_NOTE, $eSaleExample->getDeliveryNote($eFarm), $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -424,12 +375,14 @@ class ConfigurationUi {
 			'order-form' => \mail\Customize::SALE_ORDER_FORM_PRIVATE,
 			'delivery-note' => \mail\Customize::SALE_DELIVERY_NOTE_PRIVATE,
 			'invoice' => \mail\Customize::SALE_INVOICE_PRIVATE,
+			'reminder' => \mail\Customize::SALE_REMINDER_PRIVATE,
 		};
 
 		$customizePro = match($type) {
 			'order-form' => \mail\Customize::SALE_ORDER_FORM_PRO,
 			'delivery-note' => \mail\Customize::SALE_DELIVERY_NOTE_PRO,
 			'invoice' => \mail\Customize::SALE_INVOICE_PRO,
+			'reminder' => \mail\Customize::SALE_REMINDER_PRO,
 		};
 
 		$h = '<div class="tabs-h mb-3" id="selling-configure-mail-'.$type.'" onrender="'.encode('Lime.Tab.restore(this, "private")').'">';
@@ -454,6 +407,7 @@ class ConfigurationUi {
 								'order-form' => s("Cet e-mail est envoyé lorsque vous envoyez un devis par e-mail à un client particulier."),
 								'delivery-note' => s("Cet e-mail est envoyé lorsque vous envoyez un bon de livraison par e-mail à un client particulier."),
 								'invoice' => s("Cet e-mail est envoyé lorsque vous envoyez une facture par e-mail à un client particulier."),
+								'reminder' => s("Cet e-mail est envoyé lorsque vous envoyez une relance de paiement à un client particulier."),
 							};
 						$h .= '</p>';
 					$h .= '</div>';
@@ -482,6 +436,7 @@ class ConfigurationUi {
 									'order-form' => s("Cet e-mail est envoyé lorsque vous envoyez un devis par e-mail à un client professionnel."),
 									'delivery-note' => s("Cet e-mail est envoyé lorsque vous envoyez un bon de livraison par e-mail à un client professionnel."),
 									'invoice' => s("Cet e-mail est envoyé lorsque vous envoyez une facture par e-mail à un client professionnel."),
+									'reminder' => s("Cet e-mail est envoyé lorsque vous envoyez une relance de paiement à un client professionnel."),
 								};
 							$h .= '</p>';
 						$h .= '</div>';
@@ -501,6 +456,7 @@ class ConfigurationUi {
 								'order-form' => s("Vous n'avez pas personnalisé l'e-mail pour les devis des clients professionnels. Vos clients professionnels recevront l'e-mail configuré pour les clients particuliers."),
 								'delivery-note' => s("Vous n'avez pas personnalisé l'e-mail pour les bons de livraison des clients professionnels. Vos clients professionnels recevront l'e-mail configuré pour les clients particuliers."),
 								'invoice' => s("Vous n'avez pas personnalisé l'e-mail pour les factures des clients professionnels. Vos clients professionnels recevront l'e-mail configuré pour les clients particuliers."),
+								'reminder' => s("Vous n'avez pas personnalisé l'e-mail pour les relances de paiement aux clients professionnels. Vos clients professionnels recevront l'e-mail configuré pour les clients particuliers."),
 							};
 						$h .= '</p>';
 						$h .= '<a href="/mail/customize:create?farm='.$eFarm['id'].'&type='.$customizePro.'" class="btn btn-secondary">'.s("Personnaliser l'e-mail").'</a>';
@@ -536,7 +492,11 @@ class ConfigurationUi {
 				return new \mail\CustomizeUi()->getMailExample($title, $html);
 
 			case 'invoice' :
-				[$title, , $html] = new \selling\PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $customize,$template);
+				[$title, , $html] = new \selling\PdfUi()->getInvoiceMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $customize, $template);
+				return new \mail\CustomizeUi()->getMailExample($title, $html);
+
+			case 'reminder' :
+				[$title, , $html] = new \selling\PdfUi()->getReminderMail($eFarm, $eSaleExample['invoice'], new \Collection([$eSaleExample]), $customize, $template);
 				return new \mail\CustomizeUi()->getMailExample($title, $html);
 
 		}
@@ -555,10 +515,8 @@ class ConfigurationUi {
 			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),
 			'organicCertifier' => s("Organisme de certification pour l'Agriculture Biologique"),
 			'paymentMode' => s("Moyens de paiement affichés sur les devis et les factures"),
-			'deliveryNotePrefix' => s("Préfixe pour la numérotation des bons de livraison"),
 			'deliveryNoteHeader' => s("Ajouter un texte personnalisé affiché en haut des bons de livraison"),
 			'deliveryNoteFooter' => s("Ajouter un texte personnalisé affiché en bas des bons de livraison"),
-			'orderFormPrefix' => s("Préfixe pour la numérotation des devis"),
 			'orderFormDelivery' => s("Afficher la date de livraison de la commande sur les devis"),
 			'orderFormPaymentCondition' => s("Conditions de paiement affichées sur les devis"),
 			'orderFormHeader' => s("Ajouter un texte personnalisé affiché en haut des devis"),
@@ -566,6 +524,7 @@ class ConfigurationUi {
 			'creditPrefix' => s("Préfixe pour la numérotation des avoirs"),
 			'invoicePrefix' => s("Préfixe pour la numérotation des factures"),
 			'invoiceDue' => s("Date d'échéance par défaut sur les factures"),
+			'invoiceReminder' => s("Alerter sur les factures non payées"),
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
@@ -642,14 +601,6 @@ class ConfigurationUi {
 				$d->after = \util\FormUi::info(s("Indiquez ici les moyens de paiement autorisés pour régler vos devis et factures."));
 				break;
 
-			case 'deliveryNotePrefix' :
-				$d->placeholder = ConfigurationUi::getDefaultOrderFormPrefix();
-				break;
-
-			case 'orderFormPrefix' :
-				$d->placeholder = ConfigurationUi::getDefaultOrderFormPrefix();
-				break;
-
 			case 'orderFormDelivery' :
 			case 'documentCopy' :
 				$d->field = 'yesNo';
@@ -695,8 +646,13 @@ class ConfigurationUi {
 				break;
 
 			case 'invoiceDueDays' :
-				$d->prepend = s("Date de facturation").'   '.\Asset::icon('plus');
+				$d->prepend = s("À date de facturation").'   '.\Asset::icon('plus');
 				$d->append = s("jours");
+				break;
+
+			case 'invoiceReminder' :
+				$d->append = s("jours après la date d'échéance");
+				$d->after = \util\FormUi::info(s("Laissez vide pour ne pas être alerté sur les factures non payées"));
 				break;
 
 			case 'invoiceDueMonth' :
@@ -713,7 +669,7 @@ class ConfigurationUi {
 
 			case 'invoicePaymentCondition' :
 				$d->placeholder = s("Exemple : Paiement à réception de facture.");
-				$d->after = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients pour régler vos factures."));
+				$d->labelAfter = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients pour régler vos factures."));
 				break;
 
 		}

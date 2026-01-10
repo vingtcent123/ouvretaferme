@@ -322,11 +322,12 @@ class MarketLib {
 		// Supprime les moyens de paiement vide / à 0€
 		PaymentLib::cleanBySale($eSale);
 
-		$properties = ['preparationStatus', 'paymentStatus'];
+		$properties = ['preparationStatus', 'paymentStatus', 'paidAt'];
 
 		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = Sale::DELIVERED;
 		$eSale['paymentStatus'] = $paymentStatus;
+		$eSale['paidAt'] = ($paymentStatus === Sale::PAID) ? currentDate() : NULL;
 
 		SaleLib::update($eSale, $properties);
 

@@ -2633,6 +2633,25 @@ class FarmUi {
 				$h .= \Asset::icon('receipt');
 			$h .= '</a>';
 
+			if($eFarm->isTax()) {
+
+				$h .= '<a href="/farm/configuration:updateOrderForm?id='.$eFarm['id'].'" class="util-button">';
+					$h .= '<h4>'.s("Les devis").'</h4>';
+					$h .= \Asset::icon('journal');
+				$h .= '</a>';
+
+				$h .= '<a href="/farm/configuration:updateDeliveryNote?id='.$eFarm['id'].'" class="util-button">';
+					$h .= '<h4>'.s("Les bons de livraison").'</h4>';
+					$h .= \Asset::icon('journal-check');
+				$h .= '</a>';
+
+				$h .= '<a href="/farm/configuration:updateInvoice?id='.$eFarm['id'].'" class="util-button">';
+					$h .= '<h4>'.s("Les factures").'</h4>';
+					$h .= \Asset::icon('journal-bookmark');
+				$h .= '</a>';
+
+			}
+
 			$h .= '<a href="/payment/method:manage?farm='.$eFarm['id'].'" class="util-button">';
 				$h .= '<h4>'.s("Les moyens de paiement").'</h4>';
 				$h .= \Asset::icon('cash-coin');

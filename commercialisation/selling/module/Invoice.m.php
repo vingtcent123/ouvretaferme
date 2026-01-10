@@ -10,8 +10,13 @@ abstract class InvoiceElement extends \Element {
 	const INCLUDING = 'including';
 	const EXCLUDING = 'excluding';
 
+	const GOOD = 'good';
+	const SERVICE = 'service';
+	const MIXED = 'mixed';
+
 	const PAID = 'paid';
 	const NOT_PAID = 'not-paid';
+	const NEVER_PAID = 'never-paid';
 
 	const DRAFT = 'draft';
 	const CONFIRMED = 'confirmed';
@@ -67,6 +72,7 @@ class InvoiceModel extends \ModuleModel {
 			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
 			'sales' => ['json', 'cast' => 'array'],
 			'taxes' => ['enum', [\selling\Invoice::INCLUDING, \selling\Invoice::EXCLUDING], 'cast' => 'enum'],
+			'nature' => ['enum', [\selling\Invoice::GOOD, \selling\Invoice::SERVICE, \selling\Invoice::MIXED], 'null' => TRUE, 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
 			'conversion' => ['bool', 'cast' => 'bool'],
 			'comment' => ['text16', 'null' => TRUE, 'cast' => 'string'],
@@ -80,7 +86,7 @@ class InvoiceModel extends \ModuleModel {
 			'date' => ['date', 'cast' => 'string'],
 			'dueDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID, \selling\Invoice::NEVER_PAID], 'null' => TRUE, 'cast' => 'enum'],
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
@@ -95,11 +101,13 @@ class InvoiceModel extends \ModuleModel {
 			'accountingDifference' => ['enum', [\selling\Invoice::AUTOMATIC, \selling\Invoice::NOTHING], 'null' => TRUE, 'cast' => 'enum'],
 			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'remindedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'createdAt'
+			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -149,6 +157,9 @@ class InvoiceModel extends \ModuleModel {
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
 
 			case 'taxes' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'nature' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'vatByRate' :
@@ -220,6 +231,10 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereTaxes(...$data): InvoiceModel {
 		return $this->where('taxes', ...$data);
+	}
+
+	public function whereNature(...$data): InvoiceModel {
+		return $this->where('nature', ...$data);
 	}
 
 	public function whereOrganic(...$data): InvoiceModel {
@@ -332,6 +347,14 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereEmailedAt(...$data): InvoiceModel {
 		return $this->where('emailedAt', ...$data);
+	}
+
+	public function wherePaidAt(...$data): InvoiceModel {
+		return $this->where('paidAt', ...$data);
+	}
+
+	public function whereRemindedAt(...$data): InvoiceModel {
+		return $this->where('remindedAt', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): InvoiceModel {
