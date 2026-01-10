@@ -25,47 +25,13 @@ Class ReconciliateLib {
 			'updatedAt' => new \Sql('NOW()'),
 		]);
 
-		$cSale = \selling\SaleLib::getByInvoice($eInvoice);
-
 		if($eInvoice->notEmpty()) {
 
-			$updateInvoice = [
-				'paymentStatus' => \selling\Invoice::PAID,
-				'paymentMethod' => $eSuggestion['paymentMethod'],
-				'cashflow' => $eCashflow,
-			];
-
-			\selling\Invoice::model()->update($eInvoice, $updateInvoice);
-
-		}
-
-		if($cSale->notEmpty()) {
-
-			$updateSale = ['paymentStatus' => \selling\Sale::PAID];
-
-			\selling\Sale::model()
-				->whereId('IN', $cSale->getIds())
-				->wherePaymentStatus(\selling\Sale::NOT_PAID)
-				->update($updateSale);
-
-			$cPayment = new \Collection();
-
-			foreach($cSale as $eSale) {
-
-				if($eSale['cPayment']->notEmpty()) {
-					\selling\PaymentLib::deleteBySale($eSale);
-				}
-
-				$cPayment->append(new \selling\Payment([
-					'method' => $eSuggestion['paymentMethod'],
-					'sale' => $eSale,
-					'farm' => $eFarm,
-					'amountIncludingVat' => $eInvoice['priceIncludingVat']
-				]));
-
-			}
-
-			\selling\Payment::model()->insert($cPayment);
+			$eInvoice['paymentMethod'] = $eSuggestion['paymentMethod'];
+			$eInvoice['paymentStatus'] = \selling\Invoice::PAID;
+			$eInvoice['cashflow'] = $eCashflow;
+			$eInvoice['paidAt'] = $eCashflow['date'];
+			\selling\InvoiceLib::update($eInvoice, ['paymentMethod', 'paymentStatus', 'cashflow', 'paidAt']);
 
 		}
 
