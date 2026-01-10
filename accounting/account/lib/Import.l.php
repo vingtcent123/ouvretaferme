@@ -5,7 +5,7 @@ Class ImportLib extends ImportCrud {
 
 	public static function getPropertiesCreate(): array {
 
-		return ['financialYear', 'delimiter'];
+		return ['financialYear', 'financialYearStatus'];
 
 	}
 
@@ -86,6 +86,17 @@ Class ImportLib extends ImportCrud {
 			return;
 		}
 
+		$eFinancialYear = FinancialYearLib::getById($e['financialYear']['id']);
+		$importDate = date('Y-m-d', strtotime($matches[2]));
+		if(
+			!!\util\DateLib::isValid(date('Y-m-d', strtotime($importDate))) === FALSE or
+			$importDate > $eFinancialYear['endDate'] or
+			$importDate < $eFinancialYear['startDate']
+		) {
+			\Fail::log('Import::dates.incorrect', wrapper: 'fec');
+			return;
+		}
+
 		// Check headers
 		// Trouver le délimiteur
 		preg_match('/JournalCode(.*)JournalLib/', $e['content'], $matches);
@@ -112,6 +123,8 @@ Class ImportLib extends ImportCrud {
 			return;
 			}
 		}
+
+		$e->validate();
 
 		Import::model()->beginTransaction();
 
@@ -465,9 +478,15 @@ Class ImportLib extends ImportCrud {
 
 			LogLib::save('open', 'FinancialYear', ['id' => $eImport['financialYear']['id']]);
 
-			FinancialYear::model()->update($eImport['financialYear'], [
+			$update = [
 				'openDate' => new \Sql('NOW()'),
-			]);
+				'status' => FinancialYear::OPEN,
+			];
+			if($eImport['financialYearStatus'] === Import::CLOSED) {
+				$update['status'] = FinancialYear::CLOSE;
+				$update['closeDate'] = new \Sql('NOW()');
+			}
+			FinancialYear::model()->update($eImport['financialYear'], $update);
 
 		Import::model()->commit();
 

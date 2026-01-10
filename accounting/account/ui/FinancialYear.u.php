@@ -109,13 +109,23 @@ class FinancialYearUi {
 				$hasAction = TRUE;
 			}
 
-			if($hasAction) {
-				$h .= '<div class="dropdown-divider"></div>';
+			if($eFinancialYear['nOperation'] > 0) {
+
+				if($hasAction) {
+					$h .= '<div class="dropdown-divider"></div>';
+				}
+
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:view" data-ajax-navigation="never" class="dropdown-item">';
+					$h .= s("Générer le FEC");
+				$h .= '</a>';
 			}
 
-			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:view" data-ajax-navigation="never" class="dropdown-item">';
-				$h .= s("Générer le FEC");
-			$h .= '</a>';
+			if($eFinancialYear->acceptDelete()) {
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doDelete" post-id="'.$eFinancialYear['id'].'" data-ajax-navigation="never" class="dropdown-item" data-confirm="'.s("Confirmez-vous cette suppression ? Cette action est irréversible.").'">';
+					$h .= s("Supprimer cet exercice");
+				$h .= '</a>';
+			}
 
 		$h .= '</div>';
 

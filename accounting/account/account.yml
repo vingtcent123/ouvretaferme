@@ -42,6 +42,7 @@ Import:
   financialYear: account\FinancialYear
   filename: text8
   status: enum(CREATED, WAITING, IN_PROGRESS, FEEDBACK_REQUESTED, FEEDBACK_TO_TREAT, DONE, CANCELLED) = CREATED
+  financialYearStatus: enum(OPEN, CLOSED) = OPEN
   errors: ?set(DATES)
   delimiter: ?textFixed(1,1)
   content: text32

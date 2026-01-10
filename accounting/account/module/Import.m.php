@@ -15,6 +15,9 @@ abstract class ImportElement extends \Element {
 	const DONE = 'done';
 	const CANCELLED = 'cancelled';
 
+	const OPEN = 'open';
+	const CLOSED = 'closed';
+
 	const DATES = 1;
 
 	public static function getSelection(): array {
@@ -54,6 +57,7 @@ class ImportModel extends \ModuleModel {
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'filename' => ['text8', 'cast' => 'string'],
 			'status' => ['enum', [\account\Import::CREATED, \account\Import::WAITING, \account\Import::IN_PROGRESS, \account\Import::FEEDBACK_REQUESTED, \account\Import::FEEDBACK_TO_TREAT, \account\Import::DONE, \account\Import::CANCELLED], 'cast' => 'enum'],
+			'financialYearStatus' => ['enum', [\account\Import::OPEN, \account\Import::CLOSED], 'cast' => 'enum'],
 			'errors' => ['set', [\account\Import::DATES], 'null' => TRUE, 'cast' => 'set'],
 			'delimiter' => ['textFixed', 'min' => 1, 'max' => 1, 'null' => TRUE, 'cast' => 'string'],
 			'content' => ['text32', 'cast' => 'string'],
@@ -64,7 +68,7 @@ class ImportModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'financialYear', 'filename', 'status', 'errors', 'delimiter', 'content', 'rules', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'financialYear', 'filename', 'status', 'financialYearStatus', 'errors', 'delimiter', 'content', 'rules', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -80,6 +84,9 @@ class ImportModel extends \ModuleModel {
 
 			case 'status' :
 				return Import::CREATED;
+
+			case 'financialYearStatus' :
+				return Import::OPEN;
 
 			case 'rules' :
 				return [];
@@ -105,6 +112,9 @@ class ImportModel extends \ModuleModel {
 		switch($property) {
 
 			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'financialYearStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'rules' :
@@ -153,6 +163,10 @@ class ImportModel extends \ModuleModel {
 
 	public function whereStatus(...$data): ImportModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereFinancialYearStatus(...$data): ImportModel {
+		return $this->where('financialYearStatus', ...$data);
 	}
 
 	public function whereErrors(...$data): ImportModel {

@@ -81,8 +81,11 @@ class ImportUi {
 				$d->default = $eFarm['eFinancialYear']['id'];
 				$d->attributes['mandatory'] = TRUE;
 			});
+			$h .= $form->dynamicGroup($eImport, 'financialYearStatus*', function($d) {
+				$d->default = NULL;
+			});
 
-			$h .= $form->group(s("Fichier FEC"), $form->file('fec', ['accept' => '.txt']));
+			$h .= $form->group(s("Fichier FEC").\util\FormUi::asterisk(), $form->file('fec', ['accept' => '.txt']));
 
 
 			$h .= $form->group(
@@ -125,6 +128,11 @@ class ImportUi {
 
 				$h .= '<dt>'.s("Date d'export / de clôture").'</dt>';
 				$h .= '<dd>'.\util\DateUi::numeric(mb_substr($eImport['filename'], 12, 4).'-'.mb_substr($eImport['filename'], 16, 2).'-'.mb_substr($eImport['filename'], 18, 2)).'</dd>';
+
+				$h .= '<dt>'.s("État de l'exercice comptable<br />à la fin de l'import").'</dt>';
+				$h .= '<dd>';
+					$h .= $eImport['financialYearStatus'] === Import::OPEN ? s("Ouvert") : s("Clôturé");
+				$h .= '</dd>';
 
 			$h .= '</dl>';
 		$h .= '</div>';
@@ -288,6 +296,7 @@ class ImportUi {
 			'delimiter' => s("Caractère de délimitation"),
 			'status' => s("État"),
 			'financialYear' => s("Exercice comptable"),
+			'financialYearStatus' => s("Après l'import..."),
 			'filename' => s("Nom du fichier"),
 		]);
 
@@ -308,6 +317,20 @@ class ImportUi {
 			case 'financialYear':
 				$d->after = \util\FormUi::info(s("Seuls les exercices sans aucune écriture comptable sont disponibles."));
 				break;
+
+			case 'financialYearStatus':
+				$open = '<h4>'.s("... l'exercice comptable sera ouvert").'</h4>';
+				$open .= '<p>'.\Asset::icon('arrow-right').' <i><small>'.s("Les écritures comptables d'inventaire <b>d'ouverture</b> sont dans le FEC").'</small></i></p>';
+
+				$close = '<h4>'.s("... l'exercice comptable sera clôturé").'</h4>';
+				$close .= '<p>'.\Asset::icon('arrow-right').' <i><small>'.s("Les écritures comptables d'inventaire <b>d'ouverture ET de clôture</b> sont dans le FEC").'</small></i></p>';
+
+				$d->values = [
+					Import::OPEN => $open,
+					Import::CLOSED => $close,
+				];
+				break;
+
 
 		}
 		return $d;

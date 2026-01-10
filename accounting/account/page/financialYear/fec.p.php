@@ -1,5 +1,18 @@
 <?php
 new \account\ImportPage()
+	->applyElement(function($data, \account\Import $e) {
+
+		$e['financialYear'] = $data->eFarm['financialYear'];
+
+	})
+	->doCreate(function($data) {
+
+		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FEC_IMPORT, \company\CompanyCron::WAITING, $data->e['id']);
+
+		throw new ReloadAction('account', 'Import::created');
+
+	});
+new \account\ImportPage()
 	->get('import', function($data) {
 
 		$data->cImport = \account\ImportLib::getImports();
@@ -80,4 +93,5 @@ new \account\FinancialYearPage()
 
 		throw new DataAction($fecData, 'text/txt', $filename);
 
-	});
+	})
+;

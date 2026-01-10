@@ -5269,9 +5269,11 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate(...$validate);
+			$e->validate();
 
 			$this->applyElement->call($this, $data, $e);
+
+			$e->validate(...$validate);
 
 			$data->e = $e;
 
@@ -5306,9 +5308,11 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate(...$validate);
+			$e->validate();
 
 			$this->applyElement->call($this, $data, $e);
+
+			$e->validate(...$validate);
 
 			$fw = new \FailWatch();
 
@@ -5398,9 +5402,11 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$data->e->validate(...$validate);
+			$data->e->validate();
 
 			$this->applyElement->call($this, $data, $data->e);
+
+			$data->e->validate(...$validate);
 
 			$fw = new \FailWatch();
 
@@ -5442,9 +5448,11 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate(...$validate);
+			$e->validate();
 
 			$this->applyElement->call($this, $data, $e);
+
+			$e->validate(...$validate);
 
 			$fw = new \FailWatch();
 
@@ -5540,9 +5548,11 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate(...$validate);
+			$e->validate();
 
 			$this->applyElement->call($this, $data, $e);
+
+			$e->validate(...$validate);
 			$data->e = $e;
 
 			$action->call($this, $data, $e);
@@ -5574,9 +5584,11 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate(...$validate);
+			$e->validate();
 
 			$this->applyElement->call($this, $data, $e);
+
+			$e->validate(...$validate);
 			$data->e = $e;
 
 			$action->call($this, $data);
@@ -5651,9 +5663,11 @@ abstract class ModulePage extends Page {
 
 			}
 
-			$e->validate(...$validate);
+			$e->validate();
 
 			$this->applyElement->call($this, $data, $e);
+
+			$e->validate(...$validate);
 
 			$fw = new \FailWatch();
 

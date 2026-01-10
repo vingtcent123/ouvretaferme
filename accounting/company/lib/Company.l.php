@@ -34,7 +34,7 @@ class CompanyLib {
 
 			if(get_exists('financialYear')) {
 
-				$eFinancialYear = $cFinancialYear[GET('financialYear', 'int')] ?? throw new \NotExpectedAction('Invalid financial year');
+				$eFinancialYear = $cFinancialYear[GET('financialYear', 'int')] ?? $cFinancialYear->first();
 
 				\farm\FarmerLib::setView('viewAccountingYear', $data->eFarm, $eFinancialYear);
 

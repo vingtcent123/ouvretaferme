@@ -51,6 +51,13 @@ class FinancialYear extends FinancialYearElement {
 		return $this['openDate'] === NULL and $this['closeDate'] === NULL and $this['status'] === FinancialYear::OPEN;
 
 	}
+
+	public function acceptDelete(): bool {
+
+		return $this['nOperation'] === 0;
+
+	}
+
 	public function isOpen(): bool {
 
 		return $this['openDate'] !== NULL and $this['status'] === FinancialYear::OPEN;

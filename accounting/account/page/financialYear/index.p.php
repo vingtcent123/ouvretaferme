@@ -52,7 +52,15 @@ new \account\FinancialYearPage(
 
 	});
 
-new \account\FinancialYearPage()
+new \account\FinancialYearPage(function($data) {
+
+	$data->eFarm->validate('canManage');
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
+})
 	->applyElement(function($data, \account\FinancialYear $e) {
 
 		$e->validate('canUpdate');
@@ -95,7 +103,15 @@ new \account\FinancialYearPage()
 
 	});
 
-new \account\FinancialYearPage()
+new \account\FinancialYearPage(function($data) {
+
+	$data->eFarm->validate('canManage');
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
+})
 	->applyElement(function($data, \account\FinancialYear $e) {
 
 		$e->validate('acceptClose');
@@ -132,7 +148,15 @@ new \account\FinancialYearPage()
 	})
 	;
 
-new \account\FinancialYearPage()
+new \account\FinancialYearPage(function($data) {
+
+	$data->eFarm->validate('canManage');
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
+})
 	->write('doReopen', function($data) {
 
 		$data->e->validate('isClosed');
@@ -149,4 +173,24 @@ new \account\FinancialYearPage()
 
 		throw new ReloadAction('account', 'FinancialYear::reclose');
 	});
+
+new \account\FinancialYearPage(function($data) {
+	$data->eFarm->validate('canManage');
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
+})
+	->applyElement(function($data, \account\FinancialYear $e) {
+
+		$e['nOperation'] = \journal\OperationLib::countByFinancialYear($e);
+
+	})
+	->doDelete(function($data) {
+
+		throw new ReloadAction('account', 'FinancialYear::deleted');
+
+	})
+;
 ?>

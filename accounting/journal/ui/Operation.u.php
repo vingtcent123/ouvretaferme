@@ -148,7 +148,6 @@ class OperationUi {
 				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)
 			) {
 				$linkedOperationIds[] = $eOperation['id'];
-				$eOperationBank = clone $eOperation;
 				continue;
 			}
 
