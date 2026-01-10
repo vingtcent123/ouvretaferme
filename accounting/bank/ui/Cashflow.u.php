@@ -1155,7 +1155,6 @@ class CashflowUi {
 
 		$d = Cashflow::model()->describer($property, [
 			'date' => s("Date"),
-			'document' => s("Pièce comptable"),
 			'type' => s("Type"),
 			'amount' => s("Montant"),
 			'fitid' => s("Id transaction"),
@@ -1169,13 +1168,6 @@ class CashflowUi {
 
 			case 'date' :
 				$d->prepend = \Asset::icon('calendar-date');
-				break;
-
-			case 'document':
-				$d->after = \util\FormUi::info(s("Nom de la pièce comptable de référence (n° facture, ...)."));
-				$d->attributes = [
-					'onchange' => 'Cashflow.copyDocument(this)'
-				];
 				break;
 
 			case 'type':

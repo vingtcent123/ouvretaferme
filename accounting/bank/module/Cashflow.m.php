@@ -63,14 +63,13 @@ class CashflowModel extends \ModuleModel {
 			'isSuggestionCalculated' => ['bool', 'cast' => 'bool'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
-			'document' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'document', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -86,7 +85,7 @@ class CashflowModel extends \ModuleModel {
 		]);
 
 		$this->searchConstraints = array_merge($this->searchConstraints, [
-			['memo', 'name', 'document']
+			['memo', 'name']
 		]);
 
 	}
@@ -203,10 +202,6 @@ class CashflowModel extends \ModuleModel {
 
 	public function whereSale(...$data): CashflowModel {
 		return $this->where('sale', ...$data);
-	}
-
-	public function whereDocument(...$data): CashflowModel {
-		return $this->where('document', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): CashflowModel {

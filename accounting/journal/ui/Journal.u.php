@@ -115,7 +115,7 @@ class JournalUi {
 							0 => s("Sans"),
 							1 => s("Avec"),
 						], $search->get('hasDocument'), ['placeholder' => s("Avec ou sans")]).
-						$form->text('document', $search->get('document'), ['placeholder' => s("Nom de la pièce comptable")])
+						$form->text('document', $search->get('document'), ['placeholder' => s("Pièce comptable")])
 					);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';

@@ -38,7 +38,7 @@ class DemoLib {
 		'bank\BankAccount' => ['bankId', 'accountId'],
 		'asset\Asset' => ['description'],
 		'account\ThirdParty' => ['name', 'memo', 'normalizedName'],
-		'bank\Cashflow' => ['memo', 'name', 'document'],
+		'bank\Cashflow' => ['memo', 'name'],
 		'journal\Operation' => ['document', 'description'],
 		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
 		'series\Repeat' => ['description'],
@@ -404,7 +404,6 @@ class DemoLib {
         ->getCollection() as $eCashflow) {
 
 			$eCashflow['memo'] = 'Transaction '.$eCashflow['id'];
-			$eCashflow['document'] = new \Sql('IF(document IS NULL, "Justificatif '.$eCashflow['id'].'", NULL)');
 			$eCashflow['name'] = self::getFirstName($eCashflow['id']).' '.self::getLastName();
 			$eCashflow['isReconciliated'] = FALSE;
 

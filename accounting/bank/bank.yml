@@ -25,7 +25,6 @@ Cashflow:
   isSuggestionCalculated: bool = FALSE
   invoice: ?selling\Invoice
   sale: ?selling\Sale
-  document: ?text8(1, null) @collate(general)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
@@ -33,7 +32,7 @@ Cashflow:
     ["fitid"]
   ]
   SEARCH: [
-    ["memo", "name", "document"]
+    ["memo", "name"]
   ]
 
 Import:

@@ -195,7 +195,7 @@ class CashflowLib extends CashflowCrud {
 				$keywords[] = '*'.$word.'*';
 			}
 
-			$match = 'MATCH(memo, name, document) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+			$match = 'MATCH(memo, name) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
 
 		return Cashflow::model()
       ->where($match.' > 0')
