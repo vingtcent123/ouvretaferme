@@ -524,7 +524,7 @@ class ConfigurationUi {
 			'creditPrefix' => s("Préfixe pour la numérotation des avoirs"),
 			'invoicePrefix' => s("Préfixe pour la numérotation des factures"),
 			'invoiceDue' => s("Date d'échéance par défaut sur les factures"),
-			'invoiceReminder' => s("Relancer sur les factures non payées"),
+			'invoiceReminder' => s("Autoriser les relances sur les factures non payées"),
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
