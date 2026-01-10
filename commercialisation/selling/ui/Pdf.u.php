@@ -204,7 +204,7 @@ class PdfUi {
 
 	}
 
-	public function getDocument(Sale $eSale, string $type, string $number, \farm\Farm $eFarm, \Collection $cItem): string {
+	public function getDocument(Sale $eSale, string $type, ?string $number, \farm\Farm $eFarm, \Collection $cItem): string {
 
 		$h = '<style>@page {	size: A4; margin: 1cm; }</style>';
 
