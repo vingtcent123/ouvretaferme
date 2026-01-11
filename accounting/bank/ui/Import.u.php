@@ -134,7 +134,7 @@ class ImportUi {
 		$status = (match($eImport['status']) {
 			ImportElement::NONE => ['class' => 'util-info mb-0', 'text' => s("Aucune donnée importée"), 'icon' => 'slash-circle'],
 			ImportElement::PROCESSING => ['class' => 'util-info mb-0', 'text' => s("En cours d'import"), 'icon' => 'arrow-repeat'],
-			ImportElement::FULL => ['class' => 'util-success mb-0', 'text' => s("Import total #{id} du {date}", $args), 'icon' => 'check2-all'],
+			ImportElement::FULL => ['class' => 'util-block-success mb-0', 'text' => s("Import total #{id} du {date}", $args), 'icon' => 'check2-all'],
 			ImportElement::PARTIAL => ['class' => 'util-warning-outline', 'text' => s("Import partiel #{id} du {date}", $args), 'icon' => 'check2'],
 			ImportElement::ERROR => ['class' => 'util-info', 'text' => s("Import #{id} en erreur", $args), 'icon' => 'exclamation-octogon'],
 		});

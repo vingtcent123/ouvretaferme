@@ -67,6 +67,7 @@ class ProductModel extends \ModuleModel {
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'profile' => ['enum', [\selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER, \selling\Product::SERVICE], 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
+			'reference' => ['text8', 'min' => 1, 'max' => NULL, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
 			'unprocessedVariety' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'mixedFrozen' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
@@ -98,7 +99,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'privateAccount', 'proAccount', 'status'
+			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'reference', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'privateAccount', 'proAccount', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -114,6 +115,10 @@ class ProductModel extends \ModuleModel {
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm'],
 			['unprocessedPlant']
+		]);
+
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['farm', 'reference']
 		]);
 
 		$this->searchConstraints = array_merge($this->searchConstraints, [
@@ -205,6 +210,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereCategory(...$data): ProductModel {
 		return $this->where('category', ...$data);
+	}
+
+	public function whereReference(...$data): ProductModel {
+		return $this->where('reference', ...$data);
 	}
 
 	public function whereUnprocessedPlant(...$data): ProductModel {

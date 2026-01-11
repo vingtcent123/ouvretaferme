@@ -84,7 +84,7 @@ class FecUi {
 
 		if($nonCompliances === 0) {
 
-			$h .= '<div class="util-success">'.s("Félicitations ! Aucune non-conformité à la génération d'un FEC n'a été détecté pour cet exercice").'</div>';
+			$h .= '<div class="util-block-success">'.s("Félicitations ! Aucune non-conformité à la génération d'un FEC n'a été détecté pour cet exercice").'</div>';
 
 		} else {
 

@@ -24,9 +24,6 @@ Class AlertUi {
 			'Asset::accounts.check' => s("Indiquez le même compte que les opérations auxquelles cette immobilisation est rattachée."),
 			'Asset::fiscalDuration.range' => s("La durée d'amortissement fiscale doit respecter la fourchette de durées recommandées."),
 
-			'csvSize' => s("Le fichier ne peut pas excéder 1 Mo, merci de réduire la taille de votre fichier."),
-			'csvSource' => s("Le fichier que vous avez envoyé n'est pas reconnu, vérifiez qu'il respecte bien le format demandé."),
-
 			default => null,
 		};
 

@@ -80,7 +80,7 @@ class Invoice extends InvoiceElement {
 			in_array($this['paymentStatus'], [NULL, Invoice::NOT_PAID]) and
 			$this['remindedAt'] === NULL and
 			$this['dueDate'] !== NULL and
-			round(strtotime(currentDate()) - strtotime($this['dueDate'])) > $days
+			round((strtotime(currentDate()) - strtotime($this['dueDate'])) / 86400) > $days
 		);
 	}
 

@@ -252,7 +252,7 @@ class MainTemplate extends BaseTemplate {
 		}
 
 		if($this->data->browserObsolete) {
-			$h .= '<div class="util-box-warning util-box-sticked">'.$this->getWarningObsoleteBrowser().'</div>';
+			$h .= '<div class="util-block-warning util-block-sticked">'.$this->getWarningObsoleteBrowser().'</div>';
 		}
 
 		return $h;

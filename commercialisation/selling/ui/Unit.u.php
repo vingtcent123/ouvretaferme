@@ -3,6 +3,12 @@ namespace selling;
 
 class UnitUi {
 
+	public static function urlManage(\farm\Farm $eFarm): string {
+
+		return '/selling/unit:manage?farm='.$eFarm['id'];
+
+	}
+
 	public static function getValue(?float $value, string|\selling\Unit|null $unit, bool $short = FALSE, bool $noWrap = TRUE, ?\Closure $callback = NULL): string {
 
 		if($value === NULL) {

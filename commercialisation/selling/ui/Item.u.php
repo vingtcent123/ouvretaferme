@@ -530,6 +530,10 @@ class ItemUi {
 			$more[] = '<span><u>'.encode($eItem['additional']).'</u></span>';
 		}
 
+		if($eItem['reference']) {
+			$more[] = '<span><u>'.s("Référence {value}", encode($eItem['reference'])).'</u></span>';
+		}
+
 		if($eItem['origin']) {
 			$more[] = '<span>'.s("Origine {value}", '<u>'.encode($eItem['origin']).'</u>').'</span>';
 		}

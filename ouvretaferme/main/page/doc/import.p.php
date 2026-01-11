@@ -6,5 +6,6 @@
 		$data->eFarm = $cFarmer->notEmpty() ? $cFarmer->first()['farm'] : new \farm\Farm();
 
 	}))
-	->get('index', fn($data) => throw new ViewAction($data));
+	->get('series', fn($data) => throw new ViewAction($data))
+	->get('products', fn($data) => throw new ViewAction($data));
 ?>

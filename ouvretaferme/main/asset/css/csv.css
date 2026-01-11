@@ -1,0 +1,23 @@
+tr.csv-error {
+	border-top: 2px solid var(--danger);
+	border-left: 2px solid var(--danger);
+	border-right: 2px solid var(--danger);
+}
+
+tr.csv-error + tr {
+	border-bottom: 2px solid var(--danger);
+	border-left: 2px solid var(--danger);
+	border-right: 2px solid var(--danger);
+}
+
+tr.csv-warning {
+	border-top: 2px solid var(--warning);
+	border-left: 2px solid var(--warning);
+	border-right: 2px solid var(--warning);
+}
+
+tr.csv-warning + tr {
+	border-bottom: 2px solid var(--warning);
+	border-left: 2px solid var(--warning);
+	border-right: 2px solid var(--warning);
+}

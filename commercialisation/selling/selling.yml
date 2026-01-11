@@ -148,6 +148,7 @@ Invoice:
 Item:
   id: serial32
   name: text8(1, null) @collate(general)
+  reference: ?text8(1, null) @charset(ascii)
   sale: selling\Sale
   customer: ?selling\Customer
   type: enum(PRIVATE, PRO)
@@ -239,6 +240,7 @@ Product:
   vignette: ?textFixed(30, 30) @charset(ascii)
   profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER, SERVICE)
   category: ?selling\Category
+  reference: ?text8(1, null) @charset(ascii)
   unprocessedPlant: ?plant\Plant
   unprocessedVariety: ?text8(1, null) @collate(general)
   mixedFrozen: ?bool
@@ -270,6 +272,9 @@ Product:
   INDEX: [
     ["farm"],
     ["unprocessedPlant"]
+  ]
+  UNIQUE: [
+    ["farm", "reference"]
   ]
   SEARCH: [
     ["name", "origin", "unprocessedVariety"]

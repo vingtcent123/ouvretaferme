@@ -147,6 +147,7 @@ class Product extends ProductElement {
 
 	public static function getProfiles(string $property): array {
 		return match($property) {
+			'import' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::SERVICE],
 			'characteristics' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
 			'quality' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
 			'origin' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
@@ -179,6 +180,23 @@ class Product extends ProductElement {
 							->get($eCategory) and
 						$eCategory->canRead()
 					)
+				);
+
+			})
+			->setCallback('reference.prepare', function(?string &$reference): bool {
+
+				if($reference !== NULL) {
+					$reference = strtoupper($reference);
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('reference.check', function(?string $reference): bool {
+
+				return (
+					$reference === NULL or
+					preg_match('/^[A-Z0-9\-\_]+$/s', $reference) > 0
 				);
 
 			})

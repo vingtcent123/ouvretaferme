@@ -1,10 +1,6 @@
 <?php
 namespace game;
 
-/**
- * Alert messages
- *
- */
 class AlertUi {
 
 	public static function getError(string $fqn): mixed {
@@ -13,7 +9,7 @@ class AlertUi {
 
 			'Action::missingTime' => s("Vous n'avez plus assez de temps disponible !"),
 
-			'Player::name.duplicate' => \s("Un autre joueur utilise déjà ce nom, trouvez un nom plus original !"),
+			'Player::name.duplicate' => s("Un autre joueur utilise déjà ce nom, trouvez un nom plus original !"),
 
 			default => null
 

@@ -1,10 +1,6 @@
 <?php
 namespace account;
 
-/**
- * Alert messages
- *
- */
 class VatUi {
 
 	public function getVatTranslation(): string {

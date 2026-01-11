@@ -132,6 +132,10 @@ class ProductUi {
 					$h .= $form->select('profile', self::p('profile')->values, $search->get('profile'));
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Référence").'</legend>';
+					$h .= $form->text('reference', $search->get('reference'), ['placeholder' => s("Référence du produit")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Nom").'</legend>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom du produit")]);
 				$h .= '</fieldset>';
@@ -585,6 +589,10 @@ class ProductUi {
 
 		$more = [];
 
+		if($eProduct['reference']) {
+			$more[] = '<span><u>'.$eProduct['reference'].'</u></span>';
+		}
+
 		if($eProduct['additional']) {
 			$more[] = '<span><u>'.encode($eProduct['additional']).'</u></span>';
 		}
@@ -698,12 +706,19 @@ class ProductUi {
 		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
+				if($eProduct['reference'] !== NULL) {
+					$h .= '<dt>'.self::p('reference')->label.'</dt>';
+					$h .= '<dd>'.$eProduct['reference'].'</dd>';
+				}
+
 				$h .= '<dt>'.self::p('unit')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['unit']->notEmpty() ? encode($eProduct['unit']['singular']) : '').'</dd>';
+
 				if($eProduct['origin'] !== NULL) {
 					$h .= '<dt>'.self::p('origin')->label.'</dt>';
 					$h .= '<dd>'.($eProduct['origin'] ? encode($eProduct['origin']) : '').'</dd>';
 				}
+
 				$h .= '<dt>'.self::p('quality')->label.'</dt>';
 				$h .= '<dd>'.($eProduct['quality'] ? \farm\FarmUi::getQualityLogo($eProduct['quality'], '1.5rem').' '.self::p('quality')->values[$eProduct['quality']] : '').'</dd>';
 				if($eProduct['category']->notEmpty()) {
@@ -1030,7 +1045,7 @@ class ProductUi {
 
 
 			$h .= $form->dynamicGroup($eProduct, 'profile');
-			$h .= $form->dynamicGroups($eProduct, ['name*']);
+			$h .= $form->dynamicGroups($eProduct, ['name*', 'reference']);
 
 			if($eProduct['cCategory']->notEmpty()) {
 				$h .= $form->dynamicGroup($eProduct, 'category');
@@ -1119,6 +1134,7 @@ class ProductUi {
 
 			$h .= $form->dynamicGroup($eProduct, 'profile');
 			$h .= $form->dynamicGroup($eProduct, 'name');
+			$h .= $form->dynamicGroup($eProduct, 'reference');
 
 			if($eProduct['cCategory']->notEmpty()) {
 				$h .= $form->dynamicGroup($eProduct, 'category');
@@ -1412,6 +1428,7 @@ class ProductUi {
 			'category' => s("Catégorie"),
 			'vignette' => s("Vignette"),
 			'name' => s("Nom du produit"),
+			'reference' => s("Référence du produit"),
 			'additional' => s("Complément d'information"),
 			'unprocessedPlant' => s("Espèce"),
 			'unprocessedVariety' => s("Variété"),
@@ -1425,7 +1442,6 @@ class ProductUi {
 			'quality' => s("Signe de qualité"),
 			'farm' => s("Ferme"),
 			'unit' => s("Unité de vente"),
-			'variant' => s("Variantes"),
 			'private' => s("Vente aux clients particuliers"),
 			'privatePrice' => s("Prix particulier"),
 			'privatePriceInitial' => s("Prix particulier de base"),
@@ -1461,6 +1477,11 @@ class ProductUi {
 				$d->attributes = [
 					'columns' => 2,
 				];
+				break;
+
+			case 'reference' :
+				$d->placeholder = s("Uniquement des caractères alphanumériques et tirets");
+				$d->prepend = '#';
 				break;
 
 			case 'profile' :

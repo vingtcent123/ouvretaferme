@@ -36,13 +36,13 @@ class AssociationUi {
 
 		if($eHistory->empty()) {
 
-			return '<div class="util-box-success">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse indiquée lorsque vous avez rempli votre don.").'</div>';
+			return '<div class="util-block-success">'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité. Vous allez recevoir dans quelques minutes votre reçu par e-mail à l'adresse indiquée lorsque vous avez rempli votre don.").'</div>';
 
 		}
 
 		\Asset::js('association', 'association.js');
 
-		$h = '<div class="util-box-success" onrender="Association.cleanArgs();">';
+		$h = '<div class="util-block-success" onrender="Association.cleanArgs();">';
 
 			$h .= '<p>'.s("Nous avons bien reçu votre don de {amount}.", ['amount' => '<b>'.\util\TextUi::money($eHistory['amount'], precision: 0).'</b>']).'</p>';
 			$h .= '<p>'.s("Vous allez recevoir dans quelques minutes votre attestation de paiement par e-mail à l'adresse {email}.", ['email' => '<b>'.$eHistory['customer']['invoiceEmail'].'</b>']).'</p>';

@@ -5,8 +5,8 @@ class CsvUi {
 
 	public function __construct() {
 
-		\Asset::css('series', 'csv.css');
-		\Asset::js('series', 'csv.js');
+		\Asset::css('main', 'csv.css');
+		\Asset::js('main', 'csv.js');
 
 	}
 
@@ -145,22 +145,6 @@ class CsvUi {
 
 	}
 
-	public function getImportCultivations(\farm\Farm $eFarm): string {
-
-		$form = new \util\FormUi();
-
-		$h = $form->openUrl('/series/csv:doImportCultivations', ['binary' => TRUE, 'method' => 'post']);
-			$h .= $form->hidden('id', $eFarm['id']);
-			$h .= '<label class="btn btn-primary">';
-				$h .= $form->file('csv', ['onchange' => 'this.form.submit()']);
-				$h .= s("Importer un fichier CSV depuis mon ordinateur");
-			$h .= '</label>';
-		$h .= $form->close();
-
-		return $h;
-
-	}
-
 	public function getImportFile(\farm\Farm $eFarm, array $data, \Collection $cAction): string {
 
 		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
@@ -168,10 +152,7 @@ class CsvUi {
 		$h = '';
 
 		if($errorsCount > 0) {
-			$h .= '<div class="util-block">';
-				$h .= '<h4 class="color-danger">'.p("{value} problème a été trouvé dans le fichier CSV", "{value} problèmes ont été trouvés dans le fichier CSV", $errorsCount).'</h4>';
-				$h .= '<p>'.s("Vous pouvez parcourir le tableau ci-dessous pour identifier ces problèmes et les corriger. Pour que {siteName} puisse importer vos données sans erreur, il est indispensable que le format CSV soit strictement respecté. Si vous n'êtes pas à l'aise avec cela, nous vous recommandons de ne pas utiliser cette fonctionnalité.").'</p>';
-			$h .= '</div>';
+			$h .= \main\CsvUi::getGlobalErrors($errorsCount, '/doc/import:series');
 		} else {
 			$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
@@ -200,8 +181,7 @@ class CsvUi {
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les séries que vous importez maintenant").'</li>';
 				$h .= '</ul>';
-				$h .= '<a post-id="'.$eFarm['id'].'" class="csv-import-button btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} série ?", "Importer maintenant {value} séries ?", count($data['import'])).'" onclick="Csv.import(this)">'.s("Importer maintenant").'</a>';
-				$h .= '<a class="btn disabled csv-import-waiter">'.s("Importation en cours, merci de patienter...").'</a>';
+				$h .= '<a data-url="/series/csv:doCreateCultivations" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} série ?", "Importer maintenant {value} séries ?", count($data['import'])).'" data-waiter="'.s("Importation en cours, merci de patienter...").'" onclick="Csv.import(this)">'.s("Importer maintenant").'</a>';
 			$h .= '</div>';
 		}
 

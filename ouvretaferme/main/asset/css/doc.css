@@ -15,7 +15,7 @@ div.doc-wrapper {
 	div.doc-wrapper {
 		grid-template:
 			"menu header" auto
-			"menu content" auto / minmax(15rem, 20vw) 1fr;
+			"menu content" auto / minmax(20rem, 20vw) 1fr;
 	}
 
 	#doc-menu {
@@ -134,6 +134,9 @@ div.doc-header h4 {
 
 div.doc-content {
 	grid-area: content;
+	padding: 0 1.5rem;
+	max-width: 1600px;
+	margin: auto;
 }
 
 div.doc-content h2 {
@@ -169,6 +172,12 @@ div.doc-content .doc-icon {
 	color: white;
 	background-color: var(--primary);
 	border-radius: 50%;
+}
+
+div.doc-condition {
+	font-size: 0.9rem;
+	color: var(--muted);
+	margin-top: 0.125rem;
 }
 
 div.doc-example {

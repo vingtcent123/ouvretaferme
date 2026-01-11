@@ -71,11 +71,11 @@ Class CsvLib {
 				$errorsCommon[] = 'fiscalMode';
 			}
 
-			$error = self::checkDateField($line['acquisitionDate'], 'acquisitionDate');
+			$error = \main\CsvLib::checkDateField($line['acquisitionDate'], 'acquisitionDate');
 			if($error !== NULL) {
 				$errorsCommon[] = $error;
 			}
-			$error = self::checkDateField($line['startDate'], 'startDate');
+			$error = \main\CsvLib::checkDateField($line['startDate'], 'startDate');
 			if($error !== NULL) {
 				$errorsCommon[] = $error;
 			}
@@ -110,127 +110,88 @@ Class CsvLib {
 
 	public static function uploadAssets(\farm\Farm $eFarm): bool {
 
-		if(isset($_FILES['csv']) === FALSE) {
-			return FALSE;
-		}
+		return \main\CsvLib::upload('import-assets-'.$eFarm['id'], function($assets) {
 
-		$file = $_FILES['csv']['tmp_name'];
+			$import = ['assets' => []];
 
-		if(empty($file)) {
-			return FALSE;
-		}
+			$head = array_shift($assets);
 
-		// Vérification de la taille (max 1 Mo)
-		if(filesize($file) > 1024 * 1024) {
-			\Fail::log('csvSize');
-			return FALSE;
-		}
+			foreach($assets as $asset) {
 
-		$content = file_get_contents($file);
-
-		if(mb_detect_encoding($content, ['UTF-8', 'UTF-16']) === 'UTF-16') {
-			$content = iconv('UTF-16', 'UTF-8', $content);
-		}
-
-		$content = trim($content);
-
-		file_put_contents($file, $content);
-
-		$delimiter = \series\CsvLib::detectDelimiter($file);
-		$assets = \util\CsvLib::parseCsv($file, $delimiter);
-
-
-		if($assets === []) {
-			\Fail::log('csvSource');
-			return FALSE;
-		}
-
-		$import = ['assets' => []];
-
-		$head = array_shift($assets);
-
-		foreach($assets as $asset) {
-
-			if(count($asset) < count($head)) {
-				$asset = array_merge($asset, array_fill(0, count($head) - count($asset), ''));
-			} else if(count($head) < count($asset)) {
-				$asset = array_slice($head, 0, count($head));
-			}
-
-			$line = array_combine($head, $asset) + [
-				'account' => '',
-				'value' => '',
-				'description' => '',
-				'economic_mode' => '',
-				'economic_duration' => '',
-				'economic_amortization' => '',
-				'fiscal_mode' => '',
-				'fiscal_duration' => '',
-				'acquisition_date' => '',
-				'start_date' => '',
-				'residual_value' => '',
-			];
-
-			$acquisitionDate = $line['acquisition_date'];
-			$startDate = $line['start_date'] ?: $line['acquisition_date'];
-
-			$economicMode = self::formatMode($line['economic_mode']);
-			$fiscalMode = self::formatMode($line['fiscal_mode'] !== '' ? $line['fiscal_mode']:  $line['economic_mode']);
-
-			$economicDuration = (int)$line['economic_duration'];
-			$fiscalDuration = (int)($line['fiscal_duration'] !== '' ? $line['fiscal_duration'] : $line['economic_duration']);
-
-			$value = self::formatMoney($line['value']);
-			$residualValue = self::formatMoney($line['residual_value']);
-			$economicAmortization = self::formatMoney($line['economic_amortization']);
-
-			$description = $line['description'];
-			$account = $line['account'];
-			$cAccount = \account\Account::model()
-				->select('id', 'class')
-				->whereClass('LIKE', mb_substr($account, 0, 3).'%')
-				->getCollection(NULL, NULL, 'class');
-
-			$eAccount = new \account\Account();
-			$currentAccount = $account;
-			while($eAccount->empty() and mb_strlen($currentAccount) >= 3) {
-				if($cAccount->offsetExists($currentAccount)) {
-					$eAccount = $cAccount->offsetGet($currentAccount);
-				} else {
-					$currentAccount = mb_substr($currentAccount, 0, mb_strlen($currentAccount) - 1);
+				if(count($asset) < count($head)) {
+					$asset = array_merge($asset, array_fill(0, count($head) - count($asset), ''));
+				} else if(count($head) < count($asset)) {
+					$asset = array_slice($head, 0, count($head));
 				}
+
+				$line = array_combine($head, $asset) + [
+					'account' => '',
+					'value' => '',
+					'description' => '',
+					'economic_mode' => '',
+					'economic_duration' => '',
+					'economic_amortization' => '',
+					'fiscal_mode' => '',
+					'fiscal_duration' => '',
+					'acquisition_date' => '',
+					'start_date' => '',
+					'residual_value' => '',
+				];
+
+				$acquisitionDate = $line['acquisition_date'];
+				$startDate = $line['start_date'] ?: $line['acquisition_date'];
+
+				$economicMode = self::formatMode($line['economic_mode']);
+				$fiscalMode = self::formatMode($line['fiscal_mode'] !== '' ? $line['fiscal_mode']:  $line['economic_mode']);
+
+				$economicDuration = (int)$line['economic_duration'];
+				$fiscalDuration = (int)($line['fiscal_duration'] !== '' ? $line['fiscal_duration'] : $line['economic_duration']);
+
+				$value = \main\CsvLib::formatFloat($line['value']);
+				$residualValue = \main\CsvLib::formatFloat($line['residual_value']);
+				$economicAmortization = \main\CsvLib::formatFloat($line['economic_amortization']);
+
+				$description = $line['description'];
+				$account = $line['account'];
+				$cAccount = \account\Account::model()
+					->select('id', 'class')
+					->whereClass('LIKE', mb_substr($account, 0, 3).'%')
+					->getCollection(NULL, NULL, 'class');
+
+				$eAccount = new \account\Account();
+				$currentAccount = $account;
+				while($eAccount->empty() and mb_strlen($currentAccount) >= 3) {
+					if($cAccount->offsetExists($currentAccount)) {
+						$eAccount = $cAccount->offsetGet($currentAccount);
+					} else {
+						$currentAccount = mb_substr($currentAccount, 0, mb_strlen($currentAccount) - 1);
+					}
+				}
+
+				$hash = md5($acquisitionDate.'-'.$startDate.'-'.$economicMode.'-'.$fiscalMode.'-'.$economicDuration.'-'.$fiscalDuration.'-'.$value.'-'.$residualValue.'-'.$economicAmortization.'-'.($eAccount->notEmpty() ? $eAccount['id'] : '').'-'.$description);
+
+				$import['assets'][$hash] ??= [
+					'acquisitionDate' => $acquisitionDate,
+					'startDate' => $startDate,
+					'economicMode' => $economicMode,
+					'fiscalMode' => $fiscalMode,
+					'economicDuration' => $economicDuration,
+					'fiscalDuration' => $fiscalDuration,
+					'value' => $value,
+					'residualValue' => $residualValue,
+					'economicAmortization' => $economicAmortization,
+					'accountId' => $eAccount['id'] ?? NULL,
+					'description' => $description,
+					'account' => $account,
+				];
 			}
 
-			$hash = md5($acquisitionDate.'-'.$startDate.'-'.$economicMode.'-'.$fiscalMode.'-'.$economicDuration.'-'.$fiscalDuration.'-'.$value.'-'.$residualValue.'-'.$economicAmortization.'-'.($eAccount->notEmpty() ? $eAccount['id'] : '').'-'.$description);
+			$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYears()->last();
+			$import['resumeDate'] = $eFinancialYear['startDate'];
 
-			$import['assets'][$hash] ??= [
-				'acquisitionDate' => $acquisitionDate,
-				'startDate' => $startDate,
-				'economicMode' => $economicMode,
-				'fiscalMode' => $fiscalMode,
-				'economicDuration' => $economicDuration,
-				'fiscalDuration' => $fiscalDuration,
-				'value' => $value,
-				'residualValue' => $residualValue,
-				'economicAmortization' => $economicAmortization,
-				'accountId' => $eAccount['id'] ?? NULL,
-				'description' => $description,
-				'account' => $account,
-			];
-		}
+			return $import;
 
-		$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYears()->last();
-		$import['resumeDate'] = $eFinancialYear['startDate'];
-
-		\Cache::redis()->set('import-assets-'.$eFarm['id'], $import);
-
-		return TRUE;
-
-	}
-
-	private static function formatMoney(mixed $value): ?float {
-
-		return (float)str_replace(',', '.', $value);
+		});
 
 	}
 
@@ -245,19 +206,6 @@ Class CsvLib {
 			'deg' => Asset::DEGRESSIVE,
 			default => NULL,
 		};
-
-	}
-
-	private static function checkDateField(mixed &$value, string $error): ?string {
-
-		if(
-			$value !== NULL and
-			\Filter::check('date', $value) === FALSE
-		) {
-			return $error;
-		} else {
-			return NULL;
-		}
 
 	}
 

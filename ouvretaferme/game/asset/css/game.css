@@ -12,7 +12,7 @@ body[data-template~="game"] main {
     }
 }
 
-body[data-template~="game"] .util-box-sticked {
+body[data-template~="game"] .util-block-sticked {
 	width: 25rem;
 	left: calc(50vw - 12.5rem);
 	font-size: 1.5rem;

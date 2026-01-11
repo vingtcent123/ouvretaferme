@@ -34,7 +34,8 @@ class DocTemplate extends MainTemplate {
 				$h .= '<div class="doc-menu-title">'.s("Boutiques en ligne").'</div>';
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';
-				$h .= '<a href="/doc/import" '.$this->menuSelected('import').'>'.s("Importer un plan de culture").'</a>';
+				$h .= '<a href="/doc/import:series" '.$this->menuSelected('importSeries').'>'.s("Importer un plan de culture").'</a>';
+				$h .= '<a href="/doc/import:products" '.$this->menuSelected('importProducts').'>'.s("Importer des produits").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
 				$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le logiciel").'</a>';
 				$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
@@ -51,9 +52,7 @@ class DocTemplate extends MainTemplate {
 				}
 			$h .= '</div>';
 			$h .= '<div class="doc-content">';
-				$h .= '<div class="container">';
-					$h .= parent::getMain($stream);
-				$h .= '</div>';
+				$h .= parent::getMain($stream);
 			$h .= '</div>';
 		$h .= '</div>';
 

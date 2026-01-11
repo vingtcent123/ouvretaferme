@@ -16,9 +16,9 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	if(get_exists('created')) {
 
-		echo '<div class="util-success">';
+		echo '<div class="util-block-success">';
 			echo '<p>'.s("Les immobilisations contenues dans votre fichier CSV ont bien été ajoutées à votre ferme !").'</p>';
-			echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/immobilisations" class="btn btn-success">'.s("Voir toutes mes immobilisations").'</a>';
+			echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/immobilisations" class="btn btn-transparent">'.s("Voir toutes mes immobilisations").'</a>';
 		echo '</div>';
 
 	}
@@ -28,7 +28,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 		echo '<a href="/doc/accounting:asset#import" class="btn btn-secondary">'.Asset::icon('person-raised-hand').' '.s("Voir la documentation").'</a>';
 	echo '</div>';
 
-	echo new \asset\CsvUi()->getImportAssets($data->eFarm);
+	echo new \main\CsvUi()->getImportButton($data->eFarm, \company\CompanyUi::urlAsset($data->eFarm).'/csv:doImportAssets');
 
 });
 

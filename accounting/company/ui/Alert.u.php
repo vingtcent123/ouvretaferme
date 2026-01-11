@@ -1,10 +1,6 @@
 <?php
 namespace company;
 
-/**
- * Alert messages
- *
- */
 class AlertUi {
 
 	public static function getError(string $fqn): mixed {

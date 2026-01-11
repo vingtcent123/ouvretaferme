@@ -6,9 +6,9 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 
 	if(get_exists('created')) {
 
-		echo '<div class="util-success">';
+		echo '<div class="util-block-success">';
 			echo '<p>'.s("Les séries contenues dans votre fichier CSV ont bien été ajoutées à votre planification !").'</p>';
-			echo '<a href="'.\farm\FarmUi::urlCultivationSeries($data->eFarm).'" class="btn btn-success">'.s("Voir ma planification").'</a>';
+			echo '<a href="'.\farm\FarmUi::urlCultivationSeries($data->eFarm).'" class="btn btn-transparent">'.s("Voir ma planification").'</a>';
 		echo '</div>';
 
 	}
@@ -26,10 +26,10 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 			echo '<li>'.s("le format {siteName}").'</li>';
 			echo '<li>'.s("le format Brinjel, qui permet d'importer vos séries depuis ce logiciel ou depuis Qrop").'</li>';
 		echo '</ul>';
-		echo '<a href="/doc/import" class="btn btn-secondary">'.Asset::icon('person-raised-hand').' '.s("Voir la documentation").'</a>';
+		echo '<a href="/doc/import:series" class="btn btn-secondary">'.Asset::icon('person-raised-hand').' '.s("Voir la documentation").'</a>';
 	echo '</div>';
 
-	echo new \series\CsvUi()->getImportCultivations($data->eFarm);
+	echo new \main\CsvUi()->getImportButton($data->eFarm, '/series/csv:doImportCultivations');
 
 });
 

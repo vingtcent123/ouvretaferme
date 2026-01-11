@@ -101,7 +101,7 @@ new AdaptativeView('beta', function($data, FarmTemplate $t) {
 
 	if($data->eBetaApplication->notEmpty()) {
 
-		echo '<div class="util-box-success">'.s("Nous avons bien pris en compte votre demande et reviendrons vers vous dès que possible ! Merci pour votre soutien.").'</div>';
+		echo '<div class="util-block-success">'.s("Nous avons bien pris en compte votre demande et reviendrons vers vous dès que possible ! Merci pour votre soutien.").'</div>';
 
 	} else {
 

@@ -943,7 +943,7 @@ class SaleUi {
 						}
 					$h .= '</div>';
 					if($consistency === FALSE) {
-						$h .= '<div class="util-box-danger mt-1" style="max-width: 20rem">'.s("La vente a été modifiée et le devis n'est plus à jour. Vous devriez en générer une nouvelle version.").'</div>';
+						$h .= '<div class="util-block-danger mt-1" style="max-width: 20rem">'.s("La vente a été modifiée et le devis n'est plus à jour. Vous devriez en générer une nouvelle version.").'</div>';
 					}
 				$h .= '</div>';
 
@@ -1043,7 +1043,7 @@ class SaleUi {
 						$h .= '<div class="font-sm">'.\util\DateUi::numeric($eSale['deliveryNoteDate']).'</div>';
 					}
 					if($consistency === FALSE) {
-						$h .= '<div class="util-box-danger mt-1" style="max-width: 20rem">'.s("La vente a été modifiée et le bon de livraison n'est plus à jour. Vous devriez en générer une nouvelle version.").'</div>';
+						$h .= '<div class="util-block-danger mt-1" style="max-width: 20rem">'.s("La vente a été modifiée et le bon de livraison n'est plus à jour. Vous devriez en générer une nouvelle version.").'</div>';
 					}
 				$h .= '</div>';
 

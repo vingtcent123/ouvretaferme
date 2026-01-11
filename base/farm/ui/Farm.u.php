@@ -23,7 +23,9 @@ class FarmUi {
 
 	public static function getQualityLogo(string $quality, string $size): string {
 
-		if($quality === Farm::CONVERSION) {
+		if($quality === Farm::NO) {
+			return '';
+		} else if($quality === Farm::CONVERSION) {
 			return s("En conversion");
 		} else {
 			return '<div class="media-rectangle-view" style="'.\media\MediaUi::getSquareCss($size).'; background-image: url('.\Asset::getPath('farm', $quality.'.png', 'image').');"></div>';
@@ -2690,6 +2692,23 @@ class FarmUi {
 
 		$h .= '</div>';
 
+		if($eFarm->canManage()) {
+
+			$h .= '<h3>'.s("Importer des données").'</h3>';
+
+			$h .= '<div class="util-buttons">';
+
+				$h .= '<a href="/selling/csv:importProducts?id='.$eFarm['id'].'" class="util-button">';
+					$h .= '<div>';
+						$h .= '<h4>'.s("Importer des produits").'</h4>';
+					$h .= '</div>';
+					$h .= \Asset::icon('upload');
+				$h .= '</a>';
+
+			$h .= '</div>';
+
+		}
+
 		return $h;
 
 	}
@@ -2728,7 +2747,13 @@ class FarmUi {
 				$h .= \Asset::icon('buildings');
 			$h .= '</a>';
 
-			if($eFarm->canManage()) {
+		$h .= '</div>';
+
+		if($eFarm->canManage()) {
+
+			$h .= '<h3>'.s("Importer des données").'</h3>';
+
+			$h .= '<div class="util-buttons">';
 
 				$h .= '<a href="/series/csv:importCultivations?id='.$eFarm['id'].'" class="util-button">';
 					$h .= '<div>';
@@ -2738,9 +2763,9 @@ class FarmUi {
 					$h .= \Asset::icon('upload');
 				$h .= '</a>';
 
-			}
+			$h .= '</div>';
 
-		$h .= '</div>';
+		}
 
 		return $h;
 

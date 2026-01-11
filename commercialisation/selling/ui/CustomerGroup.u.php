@@ -128,7 +128,7 @@ class CustomerGroupUi {
 						$h .= '<th>'.self::p('name')->label.'</th>';
 						$h .= '<th>'.self::p('type')->label.'</th>';
 						$h .= '<th class="text-center">'.s("Clients").'</th>';
-						$h .= '<th class="text-center hide-xs-down">'.s("Prix personnalisés").'</th>';
+						$h .= '<th class="text-center hide-xs-down">'.s("Prix<br/>personnalisés").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';

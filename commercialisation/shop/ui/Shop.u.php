@@ -442,7 +442,7 @@ class ShopUi {
 				$content .= '<p>'.s("Actuellement, vous n'avez pas ajouté de conditions générales de vente à votre boutique.").'</p>';
 			$content .= '</div>';
 		} else {
-			$content .= '<div class="util-success">';
+			$content .= '<div class="util-block-success">';
 				$content .= '<p>'.\Asset::icon('check-lg').' '.s("Vous avez configuré des conditions générales de vente d'une longueur de {value} caractères.", mb_strlen(strip_tags($eShop['terms']))).'</p>';
 			$content .= '</div>';
 		}

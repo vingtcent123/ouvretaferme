@@ -615,7 +615,7 @@ class ItemLib extends ItemCrud {
 
 		if($e['product']->notEmpty()) {
 
-			$e['product']->expects(['profile', 'origin', 'additional']);
+			$e['product']->expects(['profile', 'reference', 'origin', 'additional']);
 
 		}
 		
@@ -641,6 +641,7 @@ class ItemLib extends ItemCrud {
 			};
 			$e['additional'] = $e['product']['additional'];
 			$e['origin'] = $e['product']['origin'];
+			$e['reference'] = $e['product']['reference'];
 
 		} else {
 			$e->expects(['nature']);

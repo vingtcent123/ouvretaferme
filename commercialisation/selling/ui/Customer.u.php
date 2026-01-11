@@ -203,7 +203,7 @@ class CustomerUi {
 						$h .= '<th colspan="2" class="text-center hide-xs-down highlight">'.s("Ventes").'</th>';
 					}
 					if(in_array('prices', $hide) === FALSE) {
-						$h .= '<th rowspan="2" class="customer-item-grid">'.s("Prix personnalisés").'</th>';
+						$h .= '<th rowspan="2" class="customer-item-grid">'.s("Prixpersonnalisés").'</th>';
 					}
 					$h .= '<th rowspan="2" class="customer-item-contact">'.s("Contact").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
@@ -314,12 +314,15 @@ class CustomerUi {
 						}
 
 						$h .= '<td class="customer-item-contact">';
+							if($eCustomer['email']) {
+								$h .= '<div>';
+									$h .= \Asset::icon('at').'  '.encode($eCustomer['email']);
+								$h .= '</div>';
+							}
 							if($eCustomer['phone']) {
 								$h .= '<div>';
-									$h .= encode($eCustomer['phone']);
+									$h .= \Asset::icon('telephone').'  '.encode($eCustomer['phone']);
 								$h .= '</div>';
-							} else {
-								$h .= '-';
 							}
 						$h .= '</td>';
 

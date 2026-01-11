@@ -15,7 +15,7 @@ class SurveyUi {
 
 			$h .= $form->group(
 				s("Votre ferme"),
-				'<b>'.\encode($eSurvey['farm']['name']).'</b>'
+				'<b>'.encode($eSurvey['farm']['name']).'</b>'
 			);
 
 			$h .= '<br/><br/>';

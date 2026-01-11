@@ -366,7 +366,7 @@ Class VatUi {
 
 			} else if($totalCalculated !== 0) {
 
-				$h .= '<div class="util-success vat-width-100">'.s("Félicitations ! Vos écritures de TVA sont cohérentes avec vos écritures de ventes, vous pouvez passer à l'étape suivante.").'</div>';
+				$h .= '<div class="util-block-success vat-width-100">'.s("Félicitations ! Vos écritures de TVA sont cohérentes avec vos écritures de ventes, vous pouvez passer à l'étape suivante.").'</div>';
 
 			}
 

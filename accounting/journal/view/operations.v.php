@@ -94,7 +94,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 		if($data->unbalanced and $nGroup === 0) {
 
-			echo '<div class="util-success">'.Asset::icon('stars').' '.s("Toutes vos écritures sont équilibrées !<br />").'</div>';
+			echo '<div class="util-block-success">'.Asset::icon('stars').' '.s("Toutes vos écritures sont équilibrées !<br />").'</div>';
 
 		} else {
 

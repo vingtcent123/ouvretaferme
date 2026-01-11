@@ -62,6 +62,7 @@ class ItemModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'reference' => ['text8', 'min' => 1, 'max' => NULL, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\selling\Item::PRIVATE, \selling\Item::PRO], 'cast' => 'enum'],
@@ -97,7 +98,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -201,6 +202,10 @@ class ItemModel extends \ModuleModel {
 
 	public function whereName(...$data): ItemModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereReference(...$data): ItemModel {
+		return $this->where('reference', ...$data);
 	}
 
 	public function whereSale(...$data): ItemModel {

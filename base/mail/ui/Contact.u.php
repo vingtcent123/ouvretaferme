@@ -412,7 +412,7 @@ class ContactUi {
 		$h .= '</table>';
 
 		if($eContact->getOptIn() === FALSE) {
-			$h .= '<div class="util-box-danger mb-2">'.s("Ce client a refusé explicitement de recevoir des e-mails de communication de votre part. Outrepasser ce refus de consentement conduira à l'exclusion de votre ferme de la plateforme {siteName}.").'</div>';
+			$h .= '<div class="util-block-danger mb-2">'.s("Ce client a refusé explicitement de recevoir des e-mails de communication de votre part. Outrepasser ce refus de consentement conduira à l'exclusion de votre ferme de la plateforme {siteName}.").'</div>';
 		}
 
 		return $h;

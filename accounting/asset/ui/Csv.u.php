@@ -5,8 +5,8 @@ class CsvUi {
 
 	public function getImportFile(\farm\Farm $eFarm, array $import): string {
 
-		\Asset::css('asset', 'csv.css');
-		\Asset::js('asset', 'csv.js');
+		\Asset::css('main', 'csv.css');
+		\Asset::js('main', 'csv.js');
 
 		['import' => $assets, 'errorsCount' => $errorsCount, 'resumeDate' => $resumeDate] = $import;
 
@@ -14,13 +14,7 @@ class CsvUi {
 
 		if($errorsCount > 0) {
 
-			$h .= '<div class="util-block">';
-
-				$h .= '<h4 class="color-danger">'.p("{value} problème a été trouvé dans le fichier CSV", "{value} problèmes ont été trouvés dans le fichier CSV", $errorsCount).'</h4>';
-
-				$h .= '<p>'.s("Vous pouvez parcourir le tableau ci-dessous pour identifier ces problèmes et les corriger. Pour que {siteName} puisse importer vos données sans erreur, il est indispensable que le format CSV soit strictement respecté. Si vous n'êtes pas à l'aise avec cela, nous vous recommandons de ne pas utiliser cette fonctionnalité et de saisir vos immobilisations manuellement.").'</p>';
-
-			$h .= '</div>';
+			$h .= \main\CsvUi::getGlobalErrors($errorsCount, '/doc/accounting:asset');
 
 		} else {
 
@@ -35,7 +29,7 @@ class CsvUi {
 					$h .= '<li>'.s("La reprise de ces amortissements sera comptabilisée à partir du {value}", \util\DateUi::numeric($resumeDate)).'</li>';
 				$h .= '</ul>';
 
-				$h .= '<a data-url="'.\company\CompanyUi::urlAsset($eFarm).'/csv:doCreateAssets" post-id="'.$eFarm['id'].'" class="csv-import-button btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} immobilisation ?", "Importer maintenant {value} immobilisation ?", count($assets)).'" onclick="Csv.import(this)" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+				$h .= '<a data-url="'.\company\CompanyUi::urlAsset($eFarm).'/csv:doCreateAssets" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} immobilisation ?", "Importer maintenant {value} immobilisation ?", count($assets)).'" onclick="Csv.import(this)" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
 			$h .= '</div>';
 
 		}
@@ -189,19 +183,4 @@ class CsvUi {
 
 	}
 
-	public function getImportAssets(\farm\Farm $eFarm): string {
-
-		$form = new \util\FormUi();
-
-		$h = $form->openUrl(\company\CompanyUi::urlAsset($eFarm).'/csv:doImportAssets', ['binary' => TRUE, 'method' => 'post']);
-			$h .= $form->hidden('id', $eFarm['id']);
-			$h .= '<label class="btn btn-primary">';
-				$h .= $form->file('csv', ['onchange' => 'this.form.submit()']);
-				$h .= s("Importer un fichier CSV depuis mon ordinateur");
-			$h .= '</label>';
-		$h .= $form->close();
-
-		return $h;
-
-	}
 }

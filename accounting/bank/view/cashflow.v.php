@@ -116,11 +116,11 @@ new JsonView('calculateAttach', function($data, AjaxTemplate $t) {
 
 			if($totalBank === 0) {
 
-				$t->qs('#cashflow-attach-information')->innerHtml('<div class="util-success">'.Asset::icon('fire').' '.s("Vos écritures sont équilibrées.").'</div>');
+				$t->qs('#cashflow-attach-information')->innerHtml('<div class="util-block-success">'.Asset::icon('fire').' '.s("Vos écritures sont équilibrées.").'</div>');
 
 			} else {
 
-				$t->qs('#cashflow-attach-information')->innerHtml('<div class="util-success">'.Asset::icon('fire').' '.s("Vous équilibrez ainsi les écritures précédentes !").'</div>');
+				$t->qs('#cashflow-attach-information')->innerHtml('<div class="util-block-success">'.Asset::icon('fire').' '.s("Vous équilibrez ainsi les écritures précédentes !").'</div>');
 
 			}
 

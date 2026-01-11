@@ -15,7 +15,7 @@ class MembershipUi {
 		// Promo adhésion 2025-2026
 		$years = $cHistory->find(fn($eHistory) => $eHistory['type'] === History::MEMBERSHIP and $eHistory['status'] === History::VALID and $eHistory['membership'] !== 2025)->count();
 
-		$h = '<div class="util-box-success mb-2">';
+		$h = '<div class="util-block-success mb-2">';
 			if($years >= 2) {
 				$h .= '<h4>'.s("Votre réadhésion a bien été prise en compte !").'</h4>';
 				$h .= '<div>'.s("Toujours fidèle au poste 🥳").'</div>';
@@ -31,7 +31,7 @@ class MembershipUi {
 
 	public function getDonationSuccess(): string {
 
-		$h = '<div class="util-box-success mb-2">';
+		$h = '<div class="util-block-success mb-2">';
 			$h .= '<h4>'.s("Nous avons bien reçu votre don !").'</h4>';
 			$h .= '<div>'.s("Toute l'équipe de Ouvretaferme vous remercie pour votre générosité 🥳").'</div>';
 		$h .= '</div>';

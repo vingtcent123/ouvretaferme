@@ -106,15 +106,11 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<p>';
 			echo s("Le fichier CSV téléchargé répond aux normes codifiées à <link>l'article 1.47 A-1 du livre des procédures fiscales {icon}</link> (FEC).", ['icon' => Asset::icon('box-arrow-up-right'), 'link' => '<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027804775">']);
 		echo '</p>';
-		echo '<ul>';
-			echo '<li>'.s("La première ligne du fichier CSV correspond aux en-têtes").'</li>';
-			echo '<li>'.s("Le séparateur des colonnes dans le fichier est la virgule (,)").'</li>';
-			echo '<li>'.s("Le séparateur des nombres décimaux est le point (.) et non la virgule (,)").'</li>';
-		echo '</ul>';
+		echo \main\CsvUi::getSyntaxInfo();
 		echo '<br/>';
 		echo '<h3>'.s("Format des données du fichier").'</h3>';
 
-		$data = [
+		$list = [
 			[
 				'JournalCode',
 				s("Code journal"),
@@ -153,7 +149,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			],
 		];
 		if(FEATURE_ACCOUNTING_ACCRUAL) {
-			$data = array_merge($data, [[
+			$list = array_merge($list, [[
 				'CompAuxNum',
 				s("Numéro de compte auxiliaire"),
 				s("Numéro du compte du tiers concerné par cette vente."),
@@ -167,7 +163,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				],
 			]);
 		} else {
-			$data = array_merge($data, [[
+			$list = array_merge($list, [[
 				'CompAuxNum',
 				s("Numéro de compte auxiliaire"),
 				s("Ne sera jamais renseigné."),
@@ -181,7 +177,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 				],
 			]);
 		}
-		$data = array_merge($data, [[
+		$list = array_merge($list, [[
 				'PieceRef',
 				s("Référence de pièce justificative"),
 				s("Généralement le numéro de facture lié à la ligne de vente"),
@@ -261,30 +257,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			],
 		]);
 
-		echo '<div class="util-overflow-sm">';
-			echo '<table>';
-				echo '<thead>';
-					echo '<tr>';
-						echo '<th>'.s("Nom de l'entête").'</th>';
-						echo '<th>'.s("Type de donnée").'</th>';
-						echo '<th>'.s("Description").'</th>';
-						echo '<th>'.s("Exemple").'</th>';
-					echo '</tr>';
-				echo '</thead>';
-				echo '<tbody>';
-					foreach($data as [$column, $title, $description, $example]) {
-						echo '<tr>';
-							echo '<td><pre>'.$column.'</pre></td>';
-							echo '<td>'.$title.'</td>';
-							echo '<td style="max-width: 25rem">'.$description.'</td>';
-							echo '<td>'.($example ? '<div class="doc-example">'.$example.'</div>' : '').'</td>';
-						echo '</tr>';
-					}
-				echo '</tbody>';
-			echo '</table>';
-		echo '</div>';
-
-		echo \util\FormUi::asteriskInfo(NULL);
+		echo \main\CsvUi::getDataList($list);
 
 	echo '</div>';
 

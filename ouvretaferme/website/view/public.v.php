@@ -18,13 +18,13 @@ new AdaptativeView('nothing', function($data, MainTemplate $t) {
 
 new AdaptativeView('doContact', function($data, AjaxTemplate $t) {
 
-	$t->qs('#website-contact')->outerHtml('<div class="util-box-success">'.\website\AlertUi::getSuccess('Contact::created').'</div>');
+	$t->qs('#website-contact')->outerHtml('<div class="util-block-success">'.\website\AlertUi::getSuccess('Contact::created').'</div>');
 
 });
 
 new AdaptativeView('doNewsletter', function($data, AjaxTemplate $t) {
 
-	$t->qs('#website-newsletter')->outerHtml('<div class="util-box-success">'.\mail\AlertUi::getSuccess('Contact::createdNewsletter').'</div>');
+	$t->qs('#website-newsletter')->outerHtml('<div class="util-block-success">'.\mail\AlertUi::getSuccess('Contact::createdNewsletter').'</div>');
 
 });
 

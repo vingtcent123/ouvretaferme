@@ -981,11 +981,18 @@ table th,
 	white-space: nowrap;
 }
 
-.td-vertical-align-middle {
+
+td.td-vertical-align-middle,
+.td-vertical-align-middle td,
+th.td-vertical-align-middle,
+.td-vertical-align-middle th {
 	vertical-align: middle;
 }
 
-.td-vertical-align-top {
+td.td-vertical-align-top,
+.td-vertical-align-top td,
+th.td-vertical-align-top,
+.td-vertical-align-top th {
 	vertical-align: top;
 }
 
@@ -1026,7 +1033,6 @@ tbody .td-checkbox > label {
 }
 
 .util-info,
-.util-success,
 .util-warning,
 .util-warning-outline,
 .util-danger {
@@ -1038,7 +1044,6 @@ tbody .td-checkbox > label {
 @media print {
 
 	.util-info,
-	.util-success,
 	.util-warning,
 	.util-warning-outline,
 	.util-danger {
@@ -1048,7 +1053,6 @@ tbody .td-checkbox > label {
 }
 
 .util-info p:last-child,
-.util-success p:last-child,
 .util-warning p:last-child,
 .util-warning-outline p:last-child,
 .util-danger p:last-child {
@@ -1083,17 +1087,6 @@ tbody .td-checkbox > label {
 
 .util-warning-outline a:not(.btn) {
 	color: var(--warning);
-	text-decoration: underline;
-}
-
-.util-success {
-	border: 1px solid var(--success);
-	border-radius: var(--radius);
-	color: var(--success);
-}
-
-.util-success a:not(.btn) {
-	color: var(--success);
 	text-decoration: underline;
 }
 
@@ -1499,16 +1492,15 @@ table.util-block tbody:last-child tr:last-child td:last-child {
 	margin-bottom: 0.5rem;
 }
 
-.util-box-danger,
-.util-box-warning,
-.util-box-success {
-	z-index:2000;
+.util-block-danger,
+.util-block-warning,
+.util-block-success {
 	padding: 1rem;
 	border-radius: var(--radius);
 	margin-bottom: 1rem;
 }
 
-a.util-box-close {
+a.util-block-close {
 	color: white;
 	position: absolute;
 	top: 0;
@@ -1516,22 +1508,22 @@ a.util-box-close {
 	padding: 1rem;
 }
 
-.util-box-danger {
+.util-block-danger {
 	background-color: var(--danger);
 	color: white;
 }
 
-.util-box-success {
+.util-block-success {
 	background-color: var(--success);
 	color: white;
 }
 
-.util-box-warning {
+.util-block-warning {
 	background-color: var(--warning);
 	color: white;
 }
 
-.util-box-sticked {
+.util-block-sticked {
 	margin-bottom: 0;
 	left: 1rem;
 	bottom: 1rem;
@@ -1540,9 +1532,10 @@ a.util-box-close {
 	box-shadow: 0px -5px 5px rgba(0, 0, 0, 0.1);
 	font-size: 1.1rem;
 	transition: all 0.25s;
+	z-index: 2000;
 }
 
-.util-box-remove {
+.util-block-remove {
 	opacity: 0;
 }
 

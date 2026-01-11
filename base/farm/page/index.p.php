@@ -135,6 +135,7 @@ new Page(function($data) {
 			'category' => $data->eCategory,
 			'profile' => GET('profile'),
 			'name' => GET('name'),
+			'reference' => GET('reference'),
 			'plant' => GET('plant')
 		], GET('sort', default: 'name'));
 

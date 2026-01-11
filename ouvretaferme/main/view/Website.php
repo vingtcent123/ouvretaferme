@@ -166,7 +166,7 @@ class WebsiteTemplate extends BaseTemplate {
 			}
 
 			if($alerts) {
-				$h .= '<div class="util-box-warning util-box-sticked">'.implode('', $alerts).'</div>';
+				$h .= '<div class="util-block-warning util-block-sticked">'.implode('', $alerts).'</div>';
 			}
 
 			return $h;

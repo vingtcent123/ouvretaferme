@@ -5,7 +5,7 @@ class ProductLib extends ProductCrud {
 
 	public static function getPropertiesCreate(): array {
 		return [
-			'unit', 'name', 'category', 'profile',
+			'unit', 'name', 'category', 'profile', 'reference',
 			'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen',
 			'origin', 'additional', 'description', 'quality',
 			'pro', 'private', 'proOrPrivate',
@@ -32,7 +32,12 @@ class ProductLib extends ProductCrud {
 
 		}
 
-		parent::create($e);
+		try {
+			parent::create($e);
+		}
+		catch(\DuplicateException) {
+			Product::fail('reference.duplicate');
+		}
 
 	}
 
@@ -58,7 +63,7 @@ class ProductLib extends ProductCrud {
 			}
 
 			$properties = array_merge($properties, [
-				'name', 'category',
+				'name', 'category', 'reference',
 				'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'processedComposition', 'mixedFrozen', 'processedPackaging', 'processedAllergen',
 				'origin', 'additional', 'description', 'quality',
 				'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep', 'privatePrice', 'privatePriceDiscount', 'privateStep', 'vat',
@@ -89,7 +94,14 @@ class ProductLib extends ProductCrud {
 
 		Product::model()->beginTransaction();
 
-		parent::update($e, $properties);
+		try {
+			parent::update($e, $properties);
+		}
+		catch(\DuplicateException) {
+			Product::fail('reference.duplicate');
+			Product::model()->rollBack();
+			return;
+		}
 
 		if(in_array('category', $properties)) {
 
@@ -232,6 +244,10 @@ class ProductLib extends ProductCrud {
 
 		if($search->get('name')) {
 			Product::model()->whereName('LIKE', '%'.$search->get('name').'%');
+		}
+
+		if($search->get('reference')) {
+			Product::model()->whereReference('LIKE', '%'.strtoupper($search->get('reference')).'%');
 		}
 
 		if($search->get('stock')) {

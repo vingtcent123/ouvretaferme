@@ -23,6 +23,7 @@ new \selling\ProductPage()
 					->validate('acceptDuplicate')
 			);
 			$data->e['status'] = \shop\Product::ACTIVE;
+			$data->e['reference'] = NULL;
 
 		} else {
 

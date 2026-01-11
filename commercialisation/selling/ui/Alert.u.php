@@ -55,6 +55,8 @@ class AlertUi {
 			'Product::proPriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix de base"),
 			'Product::proPrice.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
 			'Product::proPriceInitial.value' => s("Le prix de base doit être plus élevé que le prix remisé"),
+			'Product::reference.check' => s("La référence ne peut contenir que des chiffres, des lettres ou des tirets"),
+			'Product::reference.duplicate' => s("Cette référence est déjà utilisée pour un autre produit"),
 
 			'Sale::deletedNotDraft' => s("Il n'est possible de supprimer que les ventes à l'état de brouillon ou de panier."),
 			'Sale::deletedMarketSale' => s("Cette vente de marché ne peut pas être supprimée."),

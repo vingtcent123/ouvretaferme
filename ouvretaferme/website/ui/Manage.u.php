@@ -89,7 +89,7 @@ class ManageUi {
 
 		if($farmEmail === NULL) {
 
-			$h .= '<div class="util-box-danger">';
+			$h .= '<div class="util-block-danger">';
 				$h .= '<p>'.s("Pour intégrer un formulaire de contact sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
 				$h .= '<a href="/farm/farm:update?id='.$eWebsite['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
 			$h .= '</div>';
@@ -138,7 +138,7 @@ class ManageUi {
 
 		if($farmEmail === NULL) {
 
-			$h .= '<div class="util-box-danger">';
+			$h .= '<div class="util-block-danger">';
 				$h .= '<p>'.s("Pour intégrer un formulaire d'inscription à votre lettre d'information sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
 				$h .= '<a href="/farm/farm:update?id='.$eWebsite['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
 			$h .= '</div>';

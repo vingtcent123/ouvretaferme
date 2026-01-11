@@ -954,10 +954,10 @@ Lime.Alert = class {
 		}
 
 		if(document.getElementById('alert-danger') === null) {
-			document.body.insertAdjacentHTML('beforeend', '<div id="alert-danger" class="util-box-danger util-box-sticked"></div>');
+			document.body.insertAdjacentHTML('beforeend', '<div id="alert-danger" class="util-block-danger util-block-sticked"></div>');
 		}
 
-		document.getElementById('alert-danger').innerHTML = message + '<a onclick="Lime.Alert.hideStaticErrors()" class="util-box-close">'+ Lime.Asset.icon('x-circle') +'</a>';
+		document.getElementById('alert-danger').innerHTML = message + '<a onclick="Lime.Alert.hideStaticErrors()" class="util-block-close">'+ Lime.Asset.icon('x-circle') +'</a>';
 		document.getElementById('alert-danger').style.display = 'block';
 
 		setTimeout(() => history.removeArgument('error'), 2500);
@@ -976,10 +976,10 @@ Lime.Alert = class {
 		}
 
 		if(document.getElementById('alert-success') === null) {
-			document.body.insertAdjacentHTML('beforeend', '<div id="alert-success" class="util-box-success util-box-sticked"></div>');
+			document.body.insertAdjacentHTML('beforeend', '<div id="alert-success" class="util-block-success util-block-sticked"></div>');
 		}
 
-		document.getElementById('alert-success').innerHTML = message + '<a onclick="Lime.Alert.hideStaticSuccess()" class="util-box-close">'+ Lime.Asset.icon('x-circle') +'</a>';
+		document.getElementById('alert-success').innerHTML = message + '<a onclick="Lime.Alert.hideStaticSuccess()" class="util-block-close">'+ Lime.Asset.icon('x-circle') +'</a>';
 		document.getElementById('alert-success').style.display = 'block';
 
 		setTimeout(() => history.removeArgument('success'), 2500);
@@ -995,7 +995,7 @@ Lime.Alert = class {
 
 		qs(id, node => {
 
-			node.classList.add('util-box-remove');
+			node.classList.add('util-block-remove');
 			setTimeout(() => node.remove(), 500);
 
 		});
@@ -1005,7 +1005,7 @@ Lime.Alert = class {
 	static hideErrors(selector) {
 
 		// Hide previous errors
-		selector.qsa('.util-box-danger', node => node.remove());
+		selector.qsa('.util-block-danger', node => node.remove());
 
 		selector.qsa('.form-error', node => node.classList.remove('form-error'));
 		selector.qsa('.form-error-wrapper', node => node.classList.remove('form-error-wrapper'));

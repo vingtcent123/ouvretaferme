@@ -401,76 +401,29 @@ class CsvLib {
 
 	public static function uploadCultivations(\farm\Farm $eFarm): bool {
 
-		if(isset($_FILES['csv']) === FALSE) {
-			return FALSE;
-		}
+		return \main\CsvLib::upload('import-cultivations-'.$eFarm['id'], function($csv) {
 
-		$file = $_FILES['csv']['tmp_name'];
+			$header = $csv[0];
 
-		if(empty($file)) {
-			return FALSE;
-		}
+			if(count(array_intersect($header, ['crop', 'in_greenhouse', 'planting_type', 'unit'])) === 4) {
 
-		// Vérification de la taille (max 1 Mo)
-		if(filesize($file) > 1024 * 1024) {
-			\Fail::log('csvSize');
-			return FALSE;
-		}
+				$csv = self::convertFromBrinjel($csv);
 
-		$content = file_get_contents($file);
-
-		if(mb_detect_encoding($content, ['UTF-8', 'UTF-16']) === 'UTF-16') {
-			$content = iconv('UTF-16', 'UTF-8', $content);
-		}
-
-		$content = trim($content);
-
-		file_put_contents($file, $content);
-
-		$delimiter = self::detectDelimiter($file);
-		$csv = \util\CsvLib::parseCsv($file, $delimiter);
-
-		if($csv === []) {
-			\Fail::log('csvSource');
-			return FALSE;
-		}
-
-		$header = $csv[0];
-
-		if(count(array_intersect($header, ['crop', 'in_greenhouse', 'planting_type', 'unit'])) === 4) {
-
-			$csv = self::convertFromBrinjel($csv);
-
-		} else if(count(array_intersect($header, ['series_name', 'season', 'mode', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
-			$csv = self::convertFromOtf($csv);
-			if($csv === NULL) {
-				return FALSE;
+			} else if(count(array_intersect($header, ['name', 'season', 'mode', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
+				$csv = self::convertFromOtf($csv);
+				if($csv === NULL) {
+					return NULL;
+				}
+			} else {
+				\Fail::log('main\csvSource');
+				return NULL;
 			}
-		} else {
-			\Fail::log('csvSource');
-			return FALSE;
-		}
 
-		\Cache::redis()->set('import-cultivations-'.$eFarm['id'], $csv);
+			return $csv;
 
-		return TRUE;
+		});
 
 	}
-
-	public static function detectDelimiter($csvFile) {
-
-		$delimiters = [";" => 0, "," => 0, "\t" => 0, "|" => 0];
-
-		$handle = fopen($csvFile, "r");
-		$firstLine = fgets($handle);
-		fclose($handle);
-		foreach($delimiters as $delimiter => &$count) {
-		  $count = count(str_getcsv($firstLine, $delimiter, escape: ''));
-		}
-		return array_search(max($delimiters), $delimiters);
-
-	}
-
 
 	public static function convertFromBrinjel(array $cultivations): array {
 
@@ -512,8 +465,8 @@ class CsvLib {
 				'container_size' => ''
 			];
 
-			$sowing = self::formatDateField($line['sowing_date'] ?: NULL);
-			$planting = self::formatDateField($line['planting_date'] ?: NULL);
+			$sowing = \main\CsvLib::formatDateField($line['sowing_date'] ?: NULL);
+			$planting = \main\CsvLib::formatDateField($line['planting_date'] ?: NULL);
 
 			// planting_type
 			$plantingType = match($line['planting_type'] ?? NULL) {
@@ -535,8 +488,8 @@ class CsvLib {
 
 			}
 
-			$firstHarvestDate = self::formatDateField($line['first_harvest_date'] ?: NULL);
-			$lastHarvestDate = self::formatDateField($line['last_harvest_date'] ?: NULL);
+			$firstHarvestDate = \main\CsvLib::formatDateField($line['first_harvest_date'] ?: NULL);
+			$lastHarvestDate = \main\CsvLib::formatDateField($line['last_harvest_date'] ?: NULL);
 
 			$season = (int)substr($firstHarvestDate ?? $planting ?? $sowing ?? currentDate(), 0, 4);
 			$mode = (($line['in_greenhouse'] ?? 'false') === 'true') ? Series::GREENHOUSE : Series::OPEN_FIELD;
@@ -1121,10 +1074,10 @@ class CsvLib {
 						$errors[] = 'seedlingInvalid';
 					}
 
-					$errors[] = self::checkDateField($cultivation['sowing_date'], 'sowingDateFormat');
-					$errors[] = self::checkDateField($cultivation['planting_date'], 'plantingDateFormat');
-					$errors[] = self::checkDateField($cultivation['first_harvest_date'], 'firstHarvestDateFormat');
-					$errors[] = self::checkDateField($cultivation['last_harvest_date'], 'lastHarvestDateFormat');
+					$errors[] = \main\CsvLib::checkDateField($cultivation['sowing_date'], 'sowingDateFormat');
+					$errors[] = \main\CsvLib::checkDateField($cultivation['planting_date'], 'plantingDateFormat');
+					$errors[] = \main\CsvLib::checkDateField($cultivation['first_harvest_date'], 'firstHarvestDateFormat');
+					$errors[] = \main\CsvLib::checkDateField($cultivation['last_harvest_date'], 'lastHarvestDateFormat');
 
 					if(
 						$cultivation['first_harvest_date'] === NULL xor
@@ -1210,32 +1163,6 @@ class CsvLib {
 			'errorsGlobal' => $errorsGlobal,
 			'infoGlobal' => $infoGlobal
 		];
-
-	}
-
-	private static function checkDateField(mixed &$value, string $error): ?string {
-
-		if(
-			$value !== NULL and
-			\Filter::check('date', $value) === FALSE
-		) {
-			return $error;
-		} else {
-			return NULL;
-		}
-
-	}
-
-	private static function formatDateField(mixed $value): ?string {
-
-		if(
-			$value !== NULL and
-			preg_match('/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $value, $results)
-		) {
-			return $results[3].'-'.$results[2].'-'.$results[1];
-		} else {
-			return $value;
-		}
 
 	}
 

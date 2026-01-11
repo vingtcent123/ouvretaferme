@@ -11,7 +11,7 @@ class UnitLib extends UnitCrud {
 		return self::getPropertiesCreate();
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, string|\Sql|null $sort = 'singular'): \Collection {
+	public static function getByFarm(\farm\Farm $eFarm, string|\Sql|null $sort = 'singular', ?string $index = NULL): \Collection {
 
 		return Unit::model()
 			->select(Unit::getSelection())
@@ -20,7 +20,7 @@ class UnitLib extends UnitCrud {
 				fn() => $this->whereFarm(NULL)
 			)
 			->sort($sort)
-			->getCollection();
+			->getCollection(index: $index);
 
 	}
 
