@@ -686,6 +686,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	 */
 	public static function amortize(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate, bool $simulate = FALSE): \Collection {
 
+		if($eAsset['economicDuration'] === Asset::WITHOUT) {
+			return new \Collection();
+		}
+
 		$cOperation = new \Collection();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 

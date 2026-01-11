@@ -370,64 +370,69 @@ class AssetLib extends \asset\AssetCrud {
 
 			// Étape 3. Reprise des éventuelles dépréciations
 			$cDepreciation = DepreciationLib::getByAsset($eAsset);
-			$depreciationExceptionalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::EXCEPTIONAL)->sum('amount'), 2);
-			$depreciationNormalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::NORMAL)->sum('amount'), 2);
-			$accountLabelDepreciation = \account\AccountLabelLib::geDepreciationClassFromClass($eAsset['accountLabel']);
 
-			foreach([Depreciation::NORMAL => $depreciationNormalAmount, Depreciation::EXCEPTIONAL => $depreciationExceptionalAmount] as $type => $amount) {
+			if($cDepreciation->notEmpty()) {
 
-				if($amount <= 0.0) {
-					continue;
+				$depreciationExceptionalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::EXCEPTIONAL)->sum('amount'), 2);
+				$depreciationNormalAmount = round($cDepreciation->find(fn($e) => $e['type'] === Depreciation::NORMAL)->sum('amount'), 2);
+				$accountLabelDepreciation = \account\AccountLabelLib::geDepreciationClassFromClass($eAsset['accountLabel']);
+
+				foreach([Depreciation::NORMAL => $depreciationNormalAmount, Depreciation::EXCEPTIONAL => $depreciationExceptionalAmount] as $type => $amount) {
+
+					if($amount <= 0.0) {
+						continue;
+					}
+
+					$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
+
+					$class = match($type) {
+						Depreciation::NORMAL => \account\AccountSetting::RECOVERY_NORMAL_ON_ASSET_DEPRECIATION,
+						Depreciation::EXCEPTIONAL => \account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION,
+					};
+					$eAccountRecovery = \account\AccountLib::getByClass($class);
+					$eAccountAssetDepreciation = \account\AccountLib::getByClass(mb_substr($accountLabelDepreciation, 0, 3));
+
+					// Débiter le compte 29
+					$values = [
+						'account' => $eAccountAssetDepreciation['id'],
+						'accountLabel' => $accountLabelDepreciation,
+						'date' => $endDate,
+						'paymentDate' => $endDate,
+						'description' => new AssetUi()->getTranslation('depreciation-asset').' '.$eAsset['description'],
+						'amount' => $amount,
+						'type' => \journal\OperationElement::DEBIT,
+						'asset' => $eAsset,
+						'financialYear' => $eFinancialYear['id'],
+						'hash' => $hash,
+						'journalCode' => $eAccountAssetDepreciation['journalCode'],
+					];
+					\journal\OperationLib::createFromValues($values);
+
+					// Créditer le compte 7816 ou 7876
+					$values = [
+						'account' => $eAccountRecovery['id'],
+						'accountLabel' => \account\AccountLabelLib::pad($eAccountRecovery['class']),
+						'date' => $endDate,
+						'paymentDate' => $endDate,
+						'description' => new AssetUi()->getTranslation('recovery-depreciation-'.($type === Depreciation::EXCEPTIONAL ? 'exceptional' : 'asset')).' '.$eAsset['description'],
+						'amount' => $amount,
+						'type' => \journal\OperationElement::CREDIT,
+						'asset' => $eAsset,
+						'financialYear' => $eFinancialYear['id'],
+						'hash' => $hash,
+						'journalCode' => $eAccountRecovery['journalCode'],
+					];
+					\journal\OperationLib::createFromValues($values);
+
 				}
 
-				$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
+				if($depreciationNormalAmount > 0 or $depreciationExceptionalAmount > 0) {
 
-				$class = match($type) {
-					Depreciation::NORMAL => \account\AccountSetting::RECOVERY_NORMAL_ON_ASSET_DEPRECIATION,
-					Depreciation::EXCEPTIONAL => \account\AccountSetting::RECOVERY_EXCEPTIONAL_ON_ASSET_DEPRECIATION,
-				};
-				$eAccountRecovery = \account\AccountLib::getByClass($class);
-				$eAccountAssetDepreciation = \account\AccountLib::getByClass(mb_substr($accountLabelDepreciation, 0, 3));
+					Depreciation::model()
+						->whereAsset($eAsset)
+						->update(['recoverDate' => new \Sql('NOW()')]);
 
-				// Débiter le compte 29
-				$values = [
-					'account' => $eAccountAssetDepreciation['id'],
-					'accountLabel' => $accountLabelDepreciation,
-					'date' => $endDate,
-					'paymentDate' => $endDate,
-					'description' => new AssetUi()->getTranslation('depreciation-asset').' '.$eAsset['description'],
-					'amount' => $amount,
-					'type' => \journal\OperationElement::DEBIT,
-					'asset' => $eAsset,
-					'financialYear' => $eFinancialYear['id'],
-					'hash' => $hash,
-					'journalCode' => $eAccountAssetDepreciation['journalCode'],
-				];
-				\journal\OperationLib::createFromValues($values);
-
-				// Créditer le compte 7816 ou 7876
-				$values = [
-					'account' => $eAccountRecovery['id'],
-					'accountLabel' => \account\AccountLabelLib::pad($eAccountRecovery['class']),
-					'date' => $endDate,
-					'paymentDate' => $endDate,
-					'description' => new AssetUi()->getTranslation('recovery-depreciation-'.($type === Depreciation::EXCEPTIONAL ? 'exceptional' : 'asset')).' '.$eAsset['description'],
-					'amount' => $amount,
-					'type' => \journal\OperationElement::CREDIT,
-					'asset' => $eAsset,
-					'financialYear' => $eFinancialYear['id'],
-					'hash' => $hash,
-					'journalCode' => $eAccountRecovery['journalCode'],
-				];
-				\journal\OperationLib::createFromValues($values);
-
-			}
-
-			if($depreciationNormalAmount > 0 or $depreciationExceptionalAmount > 0) {
-
-				Depreciation::model()
-					->whereAsset($eAsset)
-					->update(['recoverDate' => new \Sql('NOW()')]);
+				}
 
 			}
 
