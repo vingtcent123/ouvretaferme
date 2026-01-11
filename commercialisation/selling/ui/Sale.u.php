@@ -1340,7 +1340,11 @@ class SaleUi {
 										$h .= CustomerUi::getColorCircle($eSale['customer']).' '.CustomerUi::link($eSale['customer']);
 									$h .= '</td>';
 									$h .= '<td class="text-center">'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
-									$h .= '<td class="text-center">'.\util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes().'</td>';
+									$h .= '<td class="text-center">';
+										if($eSale['priceExcludingVat'] !== NULL) {
+											$h .= \util\TextUi::money($eSale['priceExcludingVat']).' '.$eSale->getTaxes();
+										}
+									$h .= '</td>';
 									$h .= '<td class="text-center hide-sm-down">'.$eSale['items'].'</td>';
 								$h .= '</tr>';
 
