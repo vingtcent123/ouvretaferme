@@ -6,7 +6,6 @@ class CsvUi {
 	public function __construct() {
 
 		\Asset::css('main', 'csv.css');
-		\Asset::js('main', 'csv.js');
 
 	}
 
@@ -26,7 +25,7 @@ class CsvUi {
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les produits que vous importez maintenant").'</li>';
 				$h .= '</ul>';
-				$h .= '<a data-url="/selling/csv:doCreateProducts" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} produit ?", "Importer maintenant {value} produits ?", count($data['import'])).'" data-waiter="'.s("Importation en cours, merci de patienter...").'" onclick="Csv.import(this)">'.s("Importer maintenant").'</a>';
+				$h .= '<a data-ajax="/selling/csv:doCreateProducts" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} produit ?", "Importer maintenant {value} produits ?", count($data['import'])).'" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
 			$h .= '</div>';
 		}
 
