@@ -135,7 +135,7 @@ class JournalUi {
 				$h .= '</fieldset>';
 				if($nUnbalanced > 0) {
 					$h .= '<div class="util-search-fill text-end">';
-						$h .= \Asset::icon('search').' '.'<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.p("Retrouver {value} groupe d'écritures déséquilibrés", "Retrouver les {value} groupes d'écritures déséquilibrés", $nUnbalanced, ['value' => '<span class="util-badge bg-primary">'.$nUnbalanced.'</span>']).'</a>';
+						$h .= \Asset::icon('search').' '.'<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.p("Retrouver {value} groupe d'écritures déséquilibré", "Retrouver les {value} groupes d'écritures déséquilibrés", $nUnbalanced, ['value' => '<span class="util-badge bg-primary">'.$nUnbalanced.'</span>']).'</a>';
 					$h .= '</div>';
 				}
 				$h .= '<div class="util-search-submit">';

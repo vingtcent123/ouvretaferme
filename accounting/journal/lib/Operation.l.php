@@ -279,6 +279,7 @@ class OperationLib extends OperationCrud {
 			->select(['hash', 'balance' => new \Sql('SUM(IF(type = "'.Operation::CREDIT.'", amount, -amount))', 'float')])
 			->group('hash')
 			->having('balance != 0.0')
+			->where(new \Sql('SUBSTRING(hash, LENGTH(hash), 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
 			->getCollection()
 			->getColumn('hash');
 
@@ -294,6 +295,7 @@ class OperationLib extends OperationCrud {
 		// Récupérer les hash des opérations déséquilibrées
 		$hashes = self::applySearch(new \Search(['financialYear' => $eFinancialYear]))
 			->select(['hash', 'balance' => new \Sql('SUM(IF(type = "'.Operation::CREDIT.'", amount, -amount))', 'float')])
+			->where(new \Sql('SUBSTRING(hash, LENGTH(hash), 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
 			->group('hash')
 			->having('balance != 0.0')
 			->getCollection()
@@ -307,6 +309,7 @@ class OperationLib extends OperationCrud {
 			)
 			->sort( $defaultOrder)
 			->option('count')
+			->where(new \Sql('SUBSTRING(hash, LENGTH(hash), 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
 			->whereHash('IN', $hashes)
 			->getCollection();
 
