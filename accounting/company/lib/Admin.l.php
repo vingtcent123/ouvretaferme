@@ -69,10 +69,12 @@ Class AdminLib {
 
 			$eFarm['nAsset'] = \asset\Asset::model()->count();
 			$eFarm['nBankAccount'] = \bank\BankAccount::model()->count();
+			$eFarm['nFinancialYear'] = \account\FinancialYear::model()->count();
 		}
 
 		switch($search->getSort()) {
 			case 'nBankAccount':
+			case 'nFinancialYear':
 			case 'nAsset':
 			case 'nCashflow':
 			case 'nOperation':
@@ -82,6 +84,7 @@ Class AdminLib {
 				$cFarm->sort([$search->getSort() => SORT_ASC]);
 				break;
 
+			case 'nFinancialYear-':
 			case 'nBankAccount-':
 			case 'nAsset-':
 			case 'nCashflow-':

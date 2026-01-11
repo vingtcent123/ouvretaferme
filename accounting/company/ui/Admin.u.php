@@ -43,6 +43,7 @@ Class AdminUi {
 						$h .= '<th class="td-min-content"></th>';
 						$h .= '<th>'.s("Nom").'</th>';
 						$h .= '<th class="text-center"'.$search->linkSort('nProduct', s("Produits")).'</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('nFinancialYear', s("Exercices")).'</th>';
 						$h .= '<th class="text-center"'.$search->linkSort('nBankAccount', s("Comptes bancaires")).'</th>';
 						$h .= '<th class="text-center"'.$search->linkSort('nCashflow', s("Opérations bancaires")).'</th>';
 						$h .= '<th class="text-center"'.$search->linkSort('nOperation', s("Écritures comptables")).'</th>';
@@ -71,6 +72,7 @@ Class AdminUi {
 							$h .= '</a>';
 						$h .= '</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nProduct']).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['nFinancialYear']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nBankAccount']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nCashflow']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
