@@ -516,7 +516,6 @@ new AdaptativeView('asset', function($data, DocTemplate $t) {
 		echo '<ul>';
       echo '<li>'.s("La première ligne du fichier CSV correspond aux en-têtes qui doivent être recopiées sans modification").'</li>';
       echo '<li>'.s("Le séparateur des colonnes dans le fichier est la virgule (,)").'</li>';
-      echo '<li>'.s("Le séparateur des nombres décimaux est le point (.) et non la virgule (,)").'</li>';
 		echo '</ul>';
 
 		echo '<p>';
