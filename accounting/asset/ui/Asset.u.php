@@ -566,7 +566,13 @@ Class AssetUi {
 				$h .= '<dt>'.self::p('acquisitionDate')->label.'</dt>';
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE).'</dd>';
 				$h .= '<dt>'.self::p('startDate')->label.'</dt>';
-				$h .= '<dd>'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</dd>';
+				$h .= '<dd>';
+					if($eAsset['startDate'] !== NULL) {
+						$h .= \util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE);
+					} else {
+						$h .= s("n/a");
+					}
+				$h .= '</dd>';
 				$h .= '<dt>'.self::p('value')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
 				$h .= '<dt>'.self::p('amortizableBase')->label.'</dt>';
@@ -581,8 +587,14 @@ Class AssetUi {
 				$h .= '<dt>'.self::p('residualValue')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['residualValue']).'</dd>';
 				$h .= '<dt>'.self::p('economicDuration')->label.'</dt>';
-				$h .= '<dd>'.p("{value} mois" ,"{value} mois", $eAsset['economicDuration']).' ('.s("soit {value}", self::getDurationInYears($eAsset['economicDuration'])).')</dd>';
-				$h .= '<dt>'.self::p('status')->label.'</dt>';
+				$h .= '<dd>';
+					if($eAsset['economicDuration'] !== NULL) {
+						$h .= p("{value} mois", "{value} mois", $eAsset['economicDuration']).' ('.s("soit {value}", self::getDurationInYears($eAsset['economicDuration'])).')</dd>';
+					} else {
+						$h .= s("n/a");
+					}
+					$h .= '</dt>';
+					$h .= '<dt>'.self::p('status')->label;
 				$h .= '<dd>';
 					$h .= self::p('status')->values[$eAsset['status']];
 					if($eAsset['endedDate'] !== NULL) {
@@ -728,114 +740,117 @@ Class AssetUi {
 
 		}
 
-		$h .= '<h3 class="mt-2">'.s("Plan d'amortissement").'</h3>';
+		if($eAsset['economicMode'] !== Asset::WITHOUT) {
 
-		$h .= '<div class="stick-sm util-overflow-sm">';
+			$h .= '<h3 class="mt-2">'.s("Plan d'amortissement").'</h3>';
 
-			$h .= '<table class="tr-even td-vertical-top tr-hover">';
+			$h .= '<div class="stick-sm util-overflow-sm">';
 
-				$h .= '<thead>';
-					$h .= '<tr>';
-						$h .= '<th class="text-center">'.s("Exercice").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.self::p('amortizableBase')->label.'</th>';
+				$h .= '<table class="tr-even td-vertical-top tr-hover">';
 
-							if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
+					$h .= '<thead>';
+						$h .= '<tr>';
+							$h .= '<th class="text-center">'.s("Exercice").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.self::p('amortizableBase')->label.'</th>';
 
-								$h .= '<th class="text-center">'.s("Taux linéaire").'</th>';
-								$h .= '<th class="text-center">'.s("Taux dégressif").'</th>';
-								$h .= '<th class="text-center">'.s("Taux retenu").'</th>';
+								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
-							} else {
+									$h .= '<th class="text-center">'.s("Taux linéaire").'</th>';
+									$h .= '<th class="text-center">'.s("Taux dégressif").'</th>';
+									$h .= '<th class="text-center">'.s("Taux retenu").'</th>';
 
-								$h .= '<th class="text-center">'.s("Taux").'</th>';
-							}
+								} else {
 
-						$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement éco").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement éco").'</th>';
+									$h .= '<th class="text-center">'.s("Taux").'</th>';
+								}
 
-						if($eAsset['isExcess']) {
-
-							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement fiscal").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement fiscal").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement dérogatoire").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Reprise dérogatoire").'</th>';
-
-						}
-
-						$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
-
-				$h .= '<tbody>';
-
-					foreach($eAsset['table'] as $period) {
-
-						$h .= '<tr class="'.(($period['amortization'] ?? new Amortization())->empty() ? 'asset-line-future' : '').'">';
-
-							$h .= '<td class="text-center">';
-								$h .= $period['financialYear']->getLabel();
-							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right">';
-								$h .= \util\TextUi::money($period['base']);
-							$h .= '</td>';
-
-							if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
-
-								$h .= '<td class="text-center td-min-content">';
-									$h .= s("{value} %", $period['linearRate']);
-								$h .= '</td>';
-
-
-								$h .= '<td class="text-center td-min-content">';
-									$h .= s("{value} %", $period['degressiveRate']);
-								$h .= '</td>';
-
-
-								$h .= '<td class="text-center td-min-content">';
-									$h .= s("{value} %", $period['rate']);
-								$h .= '</td>';
-
-							} else {
-
-								$h .= '<td class="text-center td-min-content">';
-									$h .= s("{value} %", $period['rate']);
-								$h .= '</td>';
-
-							}
-							$h .= '<td class="text-end highlight-stick-right">';
-								$h .= \util\TextUi::money($period['amortizationValue']);
-							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right">';
-								$h .= \util\TextUi::money($period['amortizationValueCumulated']);
-							$h .= '</td>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement éco").'</th>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement éco").'</th>';
 
 							if($eAsset['isExcess']) {
 
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
-								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-right">';
-									$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
-								$h .= '</td>';
-									$h .= '<td class="text-end highlight-stick-right">';
-										$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
-									$h .= '</td>';
-									$h .= '<td class="text-end highlight-stick-right">';
-										$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
-									$h .= '</td>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement fiscal").'</th>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement fiscal").'</th>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement dérogatoire").'</th>';
+								$h .= '<th class="text-end highlight-stick-right">'.s("Reprise dérogatoire").'</th>';
 
 							}
 
-							$h .= '<td class="text-end highlight-stick-right">';
-								$h .= \util\TextUi::money($period['endValue']);
-							$h .= '</td>';
+							$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
 						$h .= '</tr>';
-					}
-				$h .= '</tbody>';
+					$h .= '</thead>';
 
-			$h .= '</table>';
+					$h .= '<tbody>';
 
-		$h .= '</div>';
+						foreach($eAsset['table'] as $period) {
+
+							$h .= '<tr class="'.(($period['amortization'] ?? new Amortization())->empty() ? 'asset-line-future' : '').'">';
+
+								$h .= '<td class="text-center">';
+									$h .= $period['financialYear']->getLabel();
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['base']);
+								$h .= '</td>';
+
+								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
+
+									$h .= '<td class="text-center td-min-content">';
+										$h .= s("{value} %", $period['linearRate']);
+									$h .= '</td>';
+
+
+									$h .= '<td class="text-center td-min-content">';
+										$h .= s("{value} %", $period['degressiveRate']);
+									$h .= '</td>';
+
+
+									$h .= '<td class="text-center td-min-content">';
+										$h .= s("{value} %", $period['rate']);
+									$h .= '</td>';
+
+								} else {
+
+									$h .= '<td class="text-center td-min-content">';
+										$h .= s("{value} %", $period['rate']);
+									$h .= '</td>';
+
+								}
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['amortizationValue']);
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['amortizationValueCumulated']);
+								$h .= '</td>';
+
+								if($eAsset['isExcess']) {
+
+									$h .= '<td class="text-end highlight-stick-right">';
+										$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
+									$h .= '</td>';
+									$h .= '<td class="text-end highlight-stick-right">';
+										$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
+									$h .= '</td>';
+										$h .= '<td class="text-end highlight-stick-right">';
+											$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
+										$h .= '</td>';
+										$h .= '<td class="text-end highlight-stick-right">';
+											$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
+										$h .= '</td>';
+
+								}
+
+								$h .= '<td class="text-end highlight-stick-right">';
+									$h .= \util\TextUi::money($period['endValue']);
+								$h .= '</td>';
+							$h .= '</tr>';
+						}
+					$h .= '</tbody>';
+
+				$h .= '</table>';
+
+			$h .= '</div>';
+		}
 
 		if($eAsset['cOperation']->notEmpty()) {
 

@@ -34,24 +34,6 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function isOutOfDurationRange(Asset $eAsset, string $type): bool {
-
-		$cAmortizationDuration = \company\AmortizationDurationLib::getAll();
-
-		if($cAmortizationDuration->offsetExists((int)mb_substr($eAsset['accountLabel'], 0, 4))) {
-			$eAmortizationDuration = $cAmortizationDuration->offsetGet((int)mb_substr($eAsset['accountLabel'], 0, 4));
-		} else if($cAmortizationDuration->offsetExists((int)mb_substr($eAsset['accountLabel'], 0, 3))) {
-			$eAmortizationDuration = $cAmortizationDuration->offsetGet((int)mb_substr($eAsset['accountLabel'], 0, 3));
-		} else {
-			return FALSE;
-		}
-
-		return (
-			$eAsset[$type.'Duration'] < $eAmortizationDuration['durationMin'] * 12 * (1 - AssetSetting::AMORTIZATION_DURATION_TOLERANCE) or
-			$eAsset[$type.'Duration'] > $eAmortizationDuration['durationMax'] * 12 * (1 + AssetSetting::AMORTIZATION_DURATION_TOLERANCE)
-		);
-	}
-
 	public static function hasAmortization(Asset $eAsset): bool {
 
 		return (Amortization::model()->whereAsset($eAsset)->count() > 0);
