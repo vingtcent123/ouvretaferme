@@ -37,7 +37,7 @@ class DemoLib {
 	const COPY_PROPERTY_EXCLUDE = [
 		'bank\BankAccount' => ['bankId', 'accountId'],
 		'asset\Asset' => ['description'],
-		'account\ThirdParty' => ['name', 'memo', 'normalizedName'],
+		'account\ThirdParty' => ['name', 'memo', 'normalizedName', 'siret', 'vatNumber'],
 		'bank\Cashflow' => ['memo', 'name'],
 		'journal\Operation' => ['document', 'description'],
 		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
