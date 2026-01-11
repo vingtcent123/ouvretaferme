@@ -37,6 +37,8 @@ document.delegateEventListener('change', '[data-field="economicMode"]', function
     if(selectedEconomicMode === 'without') {
         qs('[name="economicDuration"]').value = '';
         qs('[name="economicDuration"]').setAttribute('disabled', 'disabled');
+        qs('[name="fiscalDuration"]').value = '';
+        qs('[name="fiscalDuration"]').setAttribute('disabled', 'disabled');
     } else {
         qs('[name="economicDuration"]').removeAttribute('disabled');
     }

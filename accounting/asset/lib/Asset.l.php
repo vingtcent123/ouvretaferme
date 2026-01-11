@@ -30,7 +30,7 @@ class AssetLib extends \asset\AssetCrud {
 		return \journal\OperationLib::applyAssetCondition()
 			->whereFinancialYear($eFinancialYear)
 			->whereAsset(NULL)
-			->where(new \Sql('SUBSTRING(hash, LENGTH(hash) - 1, 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
+			->where(new \Sql('SUBSTRING(hash, LENGTH(hash), 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
 			->count();
 
 	}
@@ -54,10 +54,14 @@ class AssetLib extends \asset\AssetCrud {
 		$e['accountLabel'] = \account\AccountLabelLib::pad($e['accountLabel']);
 
 		// Calculate endDate
-		$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
+		if($e['economicDuration'] !== NULL and $e['economicMode'] !== Asset::WITHOUT) {
+			$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
+		} else {
+			$e['endDate'] = NULL;
+		}
 		$e['isGrant'] = \asset\AssetLib::isGrant($e['accountLabel']);
 
-		// Amortissement économique uniqueemnt si la durée d'amort. fiscale est plus rapide que la durée d'amort. éco.
+		// Amortissement économique uniquement si la durée d'amort. fiscale est plus rapide que la durée d'amort. éco.
 		if($e['isGrant']) {
 
 			$isExcess = FALSE;
