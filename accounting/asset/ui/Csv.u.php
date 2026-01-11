@@ -29,7 +29,7 @@ class CsvUi {
 					$h .= '<li>'.s("La reprise de ces amortissements sera comptabilisée à partir du {value}", \util\DateUi::numeric($resumeDate)).'</li>';
 				$h .= '</ul>';
 
-				$h .= '<a data-url="'.\company\CompanyUi::urlAsset($eFarm).'/csv:doCreateAssets" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} immobilisation ?", "Importer maintenant {value} immobilisation ?", count($assets)).'" onclick="Csv.import(this)" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+				$h .= '<a data-url="'.\company\CompanyUi::urlAsset($eFarm).'/csv:doCreateAssets" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm-text="'.p("Importer maintenant {value} immobilisation ?", "Importer maintenant {value} immobilisations ?", count($assets)).'" onclick="Csv.import(this)" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
 			$h .= '</div>';
 
 		}
