@@ -153,7 +153,7 @@ class AccountSetting extends \Settings {
 
 	// Charges et produits constatés d'avance
 	const PREPAID_EXPENSE_CLASS = '486';  // Charge constatée d'avance
-	const ACCRUED_EXPENSE_CLASS = '486'; // Produit constaté d'avance
+	const ACCRUED_EXPENSE_CLASS = '487'; // Produit constaté d'avance
 
 	// Compte de stock => Compte de variation correspondant
 	const STOCK_VARIATION_CLASSES = [ // Réfléchir à supprimer cette const au profit de 3* et 603*

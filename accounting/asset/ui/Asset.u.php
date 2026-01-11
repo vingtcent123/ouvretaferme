@@ -850,13 +850,9 @@ Class AssetUi {
 
 	}
 
-	public function listForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \util\FormUi $form, \Collection $cAsset): string {
+	public function listForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cAsset, int $step): string {
 
-		if($cAsset->empty()) {
-			return '';
-		}
-
-		$h = '<h3 class="mt-2">'.s("Amortissements").'</h3>';
+		$h = '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Amortissements").'</h3>';
 
 		$h .= '<div class="util-info">';
 			$h .= s("Les écritures d'amortissement suivantes seront automatiquement enregistrées lors de la clôture.");
@@ -947,13 +943,9 @@ Class AssetUi {
 
 		return $h;
 	}
-	public function listGrantsForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \util\FormUi $form, \Collection $cAssetGrant): string {
+	public function listGrantsForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cAssetGrant, int $step): string {
 
-		if($cAssetGrant->empty()) {
-			return '';
-		}
-
-		$h = '<h3 class="mt-2">'.s("Subventions").'</h3>';
+		$h = '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Subventions").'</h3>';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 

@@ -170,18 +170,18 @@ class DeferralUi {
 
 	}
 
-	public function listForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cDeferral): string {
+	public function listForClosing(\farm\Farm $eFarm, \Collection $cDeferral, int $step): string {
 
 		\Asset::js('account', 'financialYear.js');
 
-		$h = '<h3 class="mt-2">'.s("Charges et Produits constatés d'avance (CCA et PCA)").'</h3>';
+		$h = '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Charges et Produits constatés d'avance (CCA et PCA)").'</h3>';
 
 		$h .= '<div class="util-info">';
 			$h .= '<p>'.s("Si certaines écritures de charge (classe {chargeAccount}) ou de produit (classe {productAccount}) doivent être en partie reportées au prochain exercice, vous pouvez les retrouver ici et indiquer leur période de consommation ou le montant à reporter.", ['chargeAccount' => \account\AccountSetting::CHARGE_ACCOUNT_CLASS, 'productAccount' => \account\AccountSetting::PRODUCT_ACCOUNT_CLASS]).'</p>';
 			$h .= '<p>'.s("Les comptes de contrepartie utilisés sont :").'</p>';
 			$h .= '<ul>';
 				$h .= '<li>'.s("<b>{chargeClass}</b> pour une <b>charge</b> constatée d'avance", ['chargeClass' => \account\AccountSetting::PREPAID_EXPENSE_CLASS]).'</li>';
-				$h .= '<li>'.s("<b>{productClass}</b> et pour un <b>produit</b> constaté d'avance", ['productClass' => \account\AccountSetting::ACCRUED_EXPENSE_CLASS]).'</li>';
+				$h .= '<li>'.s("<b>{productClass}</b> pour un <b>produit</b> constaté d'avance", ['productClass' => \account\AccountSetting::ACCRUED_EXPENSE_CLASS]).'</li>';
 			$h .= '</ul>';
 		$h .= '</div>';
 
