@@ -304,7 +304,7 @@ class TipUi {
 
 				$link = \company\CompanyUi::urlFarm($eFarm).'/banque/imports:import';
 
-				$h = '<p>'.s("Il vous est possible de marquer vos factures <b>payées</b> avec leur moyen de paiement, en les rapprochant avec une opération bancaire.").'</p>';
+				$h = '<p>'.s("Il vous est possible de marquer vos factures <b>payées</b> avec leur moyen et date de paiement, en les rapprochant avec une opération bancaire.").'</p>';
 				$h .= '<p>'.s("Pour que cela fonctionne, il faut :").'</p>';
 				$h .= '<ul>';
 					$h .= '<li>'.s("Avoir réalisé un import bancaire,").'</li>';
