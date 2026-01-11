@@ -393,7 +393,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de le refuser.<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 
-		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement renseigné et <span2>{icon} rapprochée</span2>, dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">', 'span2' => '<span class="util-badge bg-accounting">', 'icon' => Asset::icon('piggy-bank')]).'</p>';
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement et la date de paiement renseignés et <span2>{icon} rapprochée</span2>, dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">', 'span2' => '<span class="util-badge bg-accounting">', 'icon' => Asset::icon('piggy-bank')]).'</p>';
 		echo '<p>'.s("Vous pouvez ensuite passer à l'étape suivante : <link>Importer vos factures dans la comptabilité de {siteName}</link> en quelques clics !", ['link' => '<a href="/doc/accounting:import">']).'</p>';
 
 	echo '</div>';
@@ -402,7 +402,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 
 		echo '<h2 id="cashflow-manage">'.s("Masquer les opérations bancaires").'</h2>';
-		echo '<p>'.s("Si certaines opérations bancaires ne concernent pas votre exploitation et que vous ne souhaitez pas les voir dans la liste, vous pouvez simplement les <i>Supprimer</i>.<br />Pas de panique, si vous voulez les réafficher, utilisez le formulaire de recherche et choisissez d'afficher les opérations supprimées, ce qui vous permettra de les réintégrer si besoin.").'</p>';
+		echo '<p>'.s("Si certaines opérations bancaires ne concernent pas votre exploitation et que vous ne souhaitez pas les voir dans la liste, vous pouvez simplement les <i>Supprimer</i>.<br />Pas de panique, si vous voulez les réafficher, utilisez le formulaire de recherche, champ de recherche <b>Écritures</b> et choisissez d'afficher les opérations supprimées, ce qui vous permettra de les réintégrer si besoin.").'</p>';
 
 	echo '</div>';
 	echo '<br />';
