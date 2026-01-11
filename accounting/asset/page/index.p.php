@@ -38,21 +38,17 @@ new \asset\AssetPage(function($data) {
 	})
 	->write('doAttach', function($data) {
 
-		$data->e->validate('acceptAttach');
 		$operations = explode(',', POST('operations'));
 
-		$cOperation = \journal\OperationLib::getByIds($operations);
-		foreach($cOperation as $eOperation) {
-			if($eOperation['asset']->notEmpty()) {
-				throw new NotExistsAction();
-			}
-		}
+		$cOperation = \journal\OperationLib::getForAssetAttach($operations);
 
-		\asset\AssetLib::attach($data->e, $cOperation);
+		if($cOperation->notEmpty()) {
+			\asset\AssetLib::attach($data->e, $cOperation);
+		}
 
 		throw new ReloadAction('asset', 'Asset::attached');
 
-	})
+	}, validate: ['acceptAttach'])
 	->update(function($data) {
 
 		// Références de durées

@@ -52,6 +52,16 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getForAssetAttach(array $ids): \Collection {
+
+		return Operation::model()
+			->select(Operation::getSelection())
+			->whereId('IN', $ids)
+			->whereAsset(NULL)
+			->getCollection();
+
+	}
+
 	public static function getByIdsForAsset(array $ids): \Collection {
 
 		return self::applyAssetCondition()

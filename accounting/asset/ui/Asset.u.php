@@ -46,14 +46,14 @@ Class AssetUi {
 
 			if($cAsset->count() > 0) {
 
-				$h .= '<h3>'.p("Immobilisation disponible", "Immobilisations disponibles", $cOperation->count()).'</h3>';
+				$h .= '<h3>'.p("Immobilisation sans écriture comptable", "Immobilisations sans écriture comptable", $cAsset->count()).'</h3>';
 				$h .= $this->showAssetToAttach($eFarm, $cAsset, $cOperation);
 
 			}
 
 			if($cGrant->count() > 0) {
 
-				$h .= '<h3>'.p("Subvention disponible", "Subvensions disponibles", $cOperation->count()).'</h3>';
+				$h .= '<h3>'.p("Subvention disponible", "Subventions disponibles", $cAsset->count()).'</h3>';
 				$h .= $this->showAssetToAttach($eFarm, $cGrant, $cOperation);
 
 			}
@@ -105,7 +105,7 @@ Class AssetUi {
 
 							$attributes = [
 								'class' => 'btn btn-primary',
-								'data-confirm' => s("Ce choix est définitif. Confirmez-vous confirmer ce rattachement ?"),
+								'data-confirm' => s("Ce choix est définitif. Confirmez-vous ce rattachement ?"),
 								'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/asset/:doAttach',
 								'post-id' => $eAsset['id'],
 								'post-operations' => join(',', $cOperation->getIds())
