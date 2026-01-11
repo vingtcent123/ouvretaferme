@@ -25,7 +25,7 @@ Class ReconciliateUi {
 				'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
 				'customer'=> $eSuggestion['invoice']['customer']->getName(),
 				'customerType'=> $eSuggestion['invoice']['customer']['type'],
-				'reference'=> s("Facture {value}", encode($eSuggestion['invoice']['name'])),
+				'reference'=> '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eSuggestion['invoice']['id'].'">'.s("Facture {value}", encode($eSuggestion['invoice']['name'])).'</a>',
 				'confidence' => $this->confidenceValue($eSuggestion),
 			];
 
@@ -100,7 +100,7 @@ Class ReconciliateUi {
 							$h .= '<td>';
 								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-'.($element['customerType'] ?? '').'">'.\Asset::icon('person').'</div> <div>'.encode($element['customer']).'</div></div>';
 							$h .= '</td>';
-							$h .= '<td>'.encode($element['reference']).'</td>';
+							$h .= '<td>'.$element['reference'].'</td>';
 							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($element['amount']).'</td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
@@ -157,14 +157,18 @@ Class ReconciliateUi {
 
 							$h .= '<td>';
 
-								if($eSuggestion->acceptReconciliate()) {
+								$attributes['class'] = 'btn  btn-secondary btn-sm';
+								if($eSuggestion->acceptReconciliate() === FALSE) {
+									$attributes['disabled'] = 'disabled';
+									$attributes['class'] .= ' disabled';
+								} else {
 									$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ?");
-									$h .= '<a class="btn btn-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
-										$h .= \Asset::icon('hand-thumbs-up');
-										$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
-									$h .= '</a>';
-									$h .= '  ';
 								}
+								$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
+									$h .= \Asset::icon('hand-thumbs-up');
+									$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
+								$h .= '</a>';
+								$h .= '  ';
 								$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
 								$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.attrs($attributes).'>';
 									$h .= \Asset::icon('hand-thumbs-down');
@@ -254,7 +258,7 @@ Class ReconciliateUi {
 
 	public function confidence(Suggestion $eSuggestion) {
 
-		list($count, $class) = $this->confidenceValue($eSuggestion);
+		[$count, $class] = $this->confidenceValue($eSuggestion);
 
 		return '<span class="reconciliate-confidence fs-2 color-'.$class.'">'.\Asset::icon($count.'-circle-fill').'</span>';
 
