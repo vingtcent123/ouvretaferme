@@ -13,6 +13,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-empty">';
 			echo s("Il n'y a aucune fiche d'immobilisation enregistrée pour l'instant.");
+			echo '<a href="/doc/accounting:asset" class="btn btn-xs btn-outline-primary ml-1">'.\Asset::icon('person-raised-hand').' '.s("Lire l'aide sur l'import d'immobilisations").'</a>';
 		echo '</div>';
 		echo '<a href="'.\company\CompanyUi::urlAsset($data->eFarm).'/csv" class="btn btn-primary mr-1">'.s("Importer un fichier CSV d'immobilisations").'</a>';
 		echo '<a href="'.\company\CompanyUi::urlAsset($data->eFarm).'/:create" class="btn btn-primary">'.s("Créer ma première fiche d'immobilisation").'</a>';
