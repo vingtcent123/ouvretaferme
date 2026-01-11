@@ -31,7 +31,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 	echo '<h2>'.s("Tutoriels en vidéo").'</h2>';
 	echo '<p>'.s("Des tutoriels vidéos sont également disponibles sur Youtube. Cliquez sur le petit menu en haut à droite de la vidéo pour voir le sommaire des vidéos disponibles.").'</p>';
-	echo '<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?si=M_vGvQ9gfoS6PwdI&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+	echo '<iframe width="100%" src="https://www.youtube.com/embed/videoseries?si=M_vGvQ9gfoS6PwdI&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
 	echo '</div>';
 
 
@@ -261,26 +261,28 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 			],
 		]);
 
-		echo '<table>';
-			echo '<thead>';
-				echo '<tr>';
-					echo '<th>'.s("Nom de l'entête").'</th>';
-					echo '<th>'.s("Type de donnée").'</th>';
-					echo '<th>'.s("Description").'</th>';
-					echo '<th>'.s("Exemple").'</th>';
-				echo '</tr>';
-			echo '</thead>';
-			echo '<tbody>';
-				foreach($data as [$column, $title, $description, $example]) {
+		echo '<div class="util-overflow-sm">';
+			echo '<table>';
+				echo '<thead>';
 					echo '<tr>';
-						echo '<td><pre>'.$column.'</pre></td>';
-						echo '<td>'.$title.'</td>';
-						echo '<td style="max-width: 25rem">'.$description.'</td>';
-						echo '<td>'.($example ? '<div class="doc-example">'.$example.'</div>' : '').'</td>';
+						echo '<th>'.s("Nom de l'entête").'</th>';
+						echo '<th>'.s("Type de donnée").'</th>';
+						echo '<th>'.s("Description").'</th>';
+						echo '<th>'.s("Exemple").'</th>';
 					echo '</tr>';
-				}
-			echo '</tbody>';
-		echo '</table>';
+				echo '</thead>';
+				echo '<tbody>';
+					foreach($data as [$column, $title, $description, $example]) {
+						echo '<tr>';
+							echo '<td><pre>'.$column.'</pre></td>';
+							echo '<td>'.$title.'</td>';
+							echo '<td style="max-width: 25rem">'.$description.'</td>';
+							echo '<td>'.($example ? '<div class="doc-example">'.$example.'</div>' : '').'</td>';
+						echo '</tr>';
+					}
+				echo '</tbody>';
+			echo '</table>';
+		echo '</div>';
 
 		echo \util\FormUi::asteriskInfo(NULL);
 
@@ -505,6 +507,152 @@ new AdaptativeView('start', function($data, DocTemplate $t) {
 		echo '<h2>'.s("Et ensuite ?").'</h2>';
 
 		echo '<p>'.s("Vous pouvez <link>Importer vos factures rapprochées</link>, <linkCreate>créer vos écritures comptables à partir de vos opérations bancaires</linkCreate>, ou encore créer directement vos écritures comptables !", ['link' => '<a href="/doc/accounting:import">', 'linkCreate' => '<a href="/doc/accounting:bank#cashflow-manage">']).'</p>';
+
+	echo '</div>';
+
+	echo '<br />';
+	echo '<br /><br />';
+
+});
+
+new AdaptativeView('asset', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+	$t->menuSelected = 'accounting:asset';
+
+	$t->title = s("Importer les immobilisations");
+	$t->subTitle = '';
+
+	echo '<div class="util-block" id="import">';
+
+		echo '<h2>'.s("Comment importer mes immobilisations ?").'</h2>';
+
+		echo '<p>'.s("Si vous avez déjà une comptabilité antérieure, il est très probable que vous ayez fait des acquisitions et que vous souhaitiez les reprendre en même temps que votre comptabilité sur {siteName}.").'</p>';
+
+		echo '<p>'.s("Vous pouvez importer un fichier au format CSV avec toutes vos immobilisations.").'</p>';
+
+	echo '</div>';
+
+	echo '<br />';
+	echo '<div class="util-block" id="financial-year">';
+
+
+		echo '<h2>'.s("Importer un fichier CSV").'</h2>';
+
+		echo '<p>'.s("Le fichier CSV que vous importez doit comporter une ligne par immobilisation, et les colonnes de ce fichier doivent correspondre à la liste des données à fournir décrite plus bas. Si vous ne respectez pas ce format, {siteName} refusera d'importer vos données.").'</p>';
+		echo '<ul>';
+      echo '<li>'.s("La première ligne du fichier CSV correspond aux en-têtes qui doivent être recopiées sans modification").'</li>';
+      echo '<li>'.s("Le séparateur des colonnes dans le fichier est la virgule (,)").'</li>';
+      echo '<li>'.s("Le séparateur des nombres décimaux est le point (.) et non la virgule (,)").'</li>';
+		echo '</ul>';
+
+		echo '<p>';
+			echo '<a href="'.Asset::getPath('asset', 'immobilisations.csv').'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.s("Télécharger un exemple CSV").'</a>';
+		echo '</p>';
+		echo '<br/>';
+		echo '<h3>'.s("Liste des données à fournir").'</h3>';
+
+		$data = [
+			[
+				s("Numéro de compte").' '.\util\FormUi::asterisk(),
+				'account',
+				s("Le numéro de compte auquel correspond votre immobilisation"),
+				2154
+			],
+			[
+				s("Valeur d'acquisition").' '.\util\FormUi::asterisk(),
+				'value',
+				s("Le prix de l'acquisition de votre immobilisation, sur lequel sont basés les calculs d'amortissement"),
+				1244.35
+			],
+			[
+				s("Libellé").' '.\util\FormUi::asterisk(),
+				'description',
+				s("Le nom de votre immobilisation"),
+				s("Irrigation")
+			],
+			[
+				s("Mode d'amortissement économique").' '.\util\FormUi::asterisk(),
+				'economic_mode',
+				s("Les valeurs possibles :").
+				'<ul>'.
+					'<li>'.s("{value} → Sans amortissement", '<div class="doc-example">'.s("S").'</div>').'</li>'.
+					'<li>'.s("{value} → Sans amortissement", '<div class="doc-example">'.s("Sans").'</div>').'</li>'.
+					'<li>'.s("{value} → Linéaire", '<div class="doc-example">'.s("L").'</div>').'</li>'.
+					'<li>'.s("{value} → Linéaire", '<div class="doc-example">'.s("LIN").'</div>').'</li>'.
+					'<li>'.s("{value} → Dégressif", '<div class="doc-example">'.s("D").'</div>').'</li>'.
+					'<li>'.s("{value} → Dégressif", '<div class="doc-example">'.s("Deg").'</div>').'</li>'.
+				'</ul>',
+				'L'
+			],
+			[
+				s("Durée d'amortissement économique").' '.\util\FormUi::asterisk(),
+				'economic_duration',
+				s("La durée de l'amortissement économique, exprimée en mois"),
+				120
+			],
+			[
+				s("Montant déjà amorti").' '.\util\FormUi::asterisk(),
+				'economic_amortization',
+				s("Ce qui a déjà été amorti jusqu'à la réintégration dans {siteName}"),
+				1000
+			],
+			[
+				s("Mode d'amortissement fiscal"),
+				'fiscal_mode',
+				s("Les valeurs possibles sont les mêmes que pour le mode d'amortissement économique. Si cette donnée n'est pas indiquée, c'est le mode d'amortissement économique qui sera utilisé"),
+				'L'
+			],
+			[
+				s("Durée d'amortissement fiscal"),
+				'fiscal_duration',
+				s("La durée de l'amortissement fiscal, exprimée en mois. Si cette donnée n'est pas indiquée, c'est la durée de l'amortissement économique qui sera utilisée."),
+				120
+			],
+			[
+				s("Date d'acquisition").' '.\util\FormUi::asterisk(),
+				'acquisition_date',
+				s("Date d'acquisition de l'immobilisation"),
+				'2025-04-03'
+			],
+			[
+				s("Date de mise en service"),
+				'start_date',
+				s("Date de mise en service. Si cette donnée n'est pas indiquée, c'est la date d'acquisition qui sera utilisée."),
+				'2025-04-03'
+			],
+			[
+				s("Valeur résiduelle"),
+				'residual_value',
+				s("La valeur résiduelle du bien, à 0 si l'information n'est pas indiquée."),
+				90
+			],
+		];
+
+		echo '<div class="util-overflow-sm">';
+			echo '<table>';
+				echo '<thead>';
+					echo '<tr>';
+						echo '<th>'.s("Type de donnée").'</th>';
+						echo '<th>'.s("Nom de l'entête").'</th>';
+						echo '<th>'.s("Description").'</th>';
+						echo '<th>'.s("Exemple").'</th>';
+					echo '</tr>';
+				echo '</thead>';
+				echo '<tbody>';
+					foreach($data as [$title, $column, $description, $example]) {
+						echo '<tr>';
+							echo '<td>'.$title.'</td>';
+							echo '<td><pre>'.$column.'</pre></td>';
+							echo '<td style="max-width: 25rem">'.$description.'</td>';
+							echo '<td><div class="doc-example">'.$example.'</div></td>';
+						echo '</tr>';
+					}
+				echo '</tbody>';
+			echo '</table>';
+		echo '</div>';
+
+		echo \util\FormUi::asteriskInfo(NULL);
 
 	echo '</div>';
 

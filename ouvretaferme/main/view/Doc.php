@@ -40,6 +40,7 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
 				$h .= '<a href="/doc/accounting:start" '.$this->menuSelected('accounting:start').'>'.s("Démarrer la comptabilité").'</a>';
 				$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer les factures").'</a>';
+				$h .= '<a href="/doc/accounting:asset" '.$this->menuSelected('accounting:asset').'>'.s("Importer les immobilisations").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Divers").'</div>';
 				$h .= '<a href="/doc/editor" '.$this->menuSelected('editor').'>'.s("Utiliser l'éditeur de texte").'</a>';
 			$h .= '</div>';

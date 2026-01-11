@@ -19,6 +19,12 @@ class AssetLib extends \asset\AssetCrud {
 		return self::getPropertiesCreate();
 	}
 
+	public static function hasAssets(): bool {
+
+		return (Asset::model()->count() > 0);
+
+	}
+
 	public static function countOperationMissingAsset(\account\FinancialYear $eFinancialYear): int {
 
 		return \journal\OperationLib::applyAssetCondition()

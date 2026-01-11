@@ -1961,7 +1961,7 @@ class FarmUi {
 
 	}
 
-	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, int $nOperationMissingAsset): string {
+	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, int $nOperationMissingAsset, bool $hasAsset): string {
 
 		$eFarm->expects(['eFinancialYear']);
 
@@ -1993,7 +1993,33 @@ class FarmUi {
 					$h .= '</a> ';
 				}
 				if($eFarm['eFinancialYear']->acceptUpdate()) {
-					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' <span class="">'.s("Créer une immobilisation").'</span></a> ';
+					if($hasAsset === FALSE) {
+
+						$h .= '<a class="dropdown-toggle btn btn-md btn-primary" data-dropdown="bottom-end">'.s("Ajouter une immobilisation").'</a>';
+
+						$h .= '<div class="dropdown-list">';
+
+								$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="dropdown-item">';
+									$h .= \Asset::icon('plus-circle').' ';
+									$h .= s("Créer ma première immobilisation");
+								$h .= '</a>';
+
+								$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/csv?" class="dropdown-item">';
+									$h .= \Asset::icon('upload').' ';
+									$h .= s("Importer mes immobilisations");
+								$h .= '</a>';
+
+						$h .= '</div>';
+
+					} else {
+
+						$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:create?" class="btn btn-primary">'.\Asset::icon('plus-circle').' <span class="">'.s("Créer une immobilisation").'</span></a> ';
+
+						$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/csv" class="btn btn-primary" title="'.s("Importer mes immobilisations").'">';
+							$h .= \Asset::icon('upload').' ';
+						$h .= '</a>';
+
+					}
 				}
 			$h .= '</div>';
 		$h .= '</div>';

@@ -7,13 +7,14 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/immobilisations';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->nOperationMissingAsset);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->nOperationMissingAsset, $data->hasAsset);
 
 	if(empty($data->amortizations)) {
 
 		echo '<div class="util-empty">';
 			echo s("Il n'y a aucune fiche d'immobilisation enregistrée pour l'instant.");
 		echo '</div>';
+		echo '<a href="'.\company\CompanyUi::urlAsset($data->eFarm).'/csv" class="btn btn-primary mr-1">'.s("Importer un fichier CSV d'immobilisations").'</a>';
 		echo '<a href="'.\company\CompanyUi::urlAsset($data->eFarm).'/:create" class="btn btn-primary">'.s("Créer ma première fiche d'immobilisation").'</a>';
 
 	} else {
@@ -63,7 +64,7 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 	$t->title = s("Les acquisitions de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/acquisition';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, 0);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, 0, 0);
 
 	if($data->cAsset->empty() and $data->cAssetSubvention->empty()) {
 

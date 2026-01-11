@@ -26,5 +26,6 @@ new Page(function($data) {
 	->get('import', fn($data) => throw new ViewAction($data))
 	->get('bank', fn($data) => throw new ViewAction($data))
 	->get('start', fn($data) => throw new ViewAction($data))
+	->get('asset', fn($data) => throw new ViewAction($data))
 ;
 ?>

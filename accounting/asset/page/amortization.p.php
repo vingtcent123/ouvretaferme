@@ -19,6 +19,12 @@ new Page(function($data) {
 
 		$data->nOperationMissingAsset = \asset\AssetLib::countOperationMissingAsset($data->eFarm['eFinancialYear']);
 
+		if(count($data->amortizations) > 0 or $data->nOperationMissingAsset > 0) {
+			$data->hasAsset = TRUE;
+		} else {
+			$data->hasAsset = \asset\AssetLib::hasAssets();
+		}
+
 		$data->selectedTab = $selectedTab;
 
 		$data->view = 'assets';
