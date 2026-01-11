@@ -1342,40 +1342,6 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	/**
-	 * @param \Collection $cOperation Opérations sommées par compte de l'exercice précédent
-	 * @param \account\FinancialYear $eFinancialYear Exercice sur lequel écrire les opérations d'ouverture
-	 * @param \account\FinancialYear $eFinancialYearPrevious Exercice sur lequel sont basées les opérations $cOperation
-	 */
-	public static function createForOpening(\Collection $cOperation, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious): void {
-
-		$eJournalCodeOD = JournalCodeLib::getByCode(JournalSetting::JOURNAL_CODE_OD);
-		$number = 1;
-
-		foreach($cOperation as $eOperation) {
-
-			$values = [
-				'financialYear' => $eFinancialYear['id'],
-				'amount' => abs($eOperation['total']),
-				'type' => ($eOperation['total'] > 0 ? Operation::CREDIT : Operation::DEBIT),
-				'account' => $eOperation['account']['id'],
-				'accountLabel' => $eOperation['accountLabel'],
-				'date' => $eFinancialYear['startDate'],
-				'paymentDate' => $eFinancialYear['startDate'],
-				'description' => new \account\FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious),
-				'journalCode' => $eJournalCodeOD,
-				'document' => 'OUV-'.str_pad($number, 4, '0', STR_PAD_LEFT),
-				'documentDate' => $eFinancialYear['startDate'],
-			];
-
-			self::createFromValues($values);
-
-			$number++;
-
-		}
-
-	}
-
 	public static function updateJournalCodeCollection(\Collection $cOperation, JournalCode $eJournalCode): void {
 
 		$cJournalCode = JournalCodeLib::getAll();

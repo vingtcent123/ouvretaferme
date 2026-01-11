@@ -28,11 +28,12 @@ Class OpeningLib {
 				'paymentDate' => $eFinancialYear['startDate'],
 				'description' => $eOperation['account']['description'].' - '.new FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious),
 				'amount' => abs($eOperation['total']),
+				'document' => new FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious),
+				'documentDate' => $eFinancialYear['startDate'],
 				'type' => $eOperation['total'] < 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
 				'financialYear' => $eFinancialYear['id'],
 				'hash' => $hash,
 				'journalCode' => $eJournalCode,
-
 			]);
 			$cOperationNew->append($eOperationNew);
 

@@ -30,6 +30,7 @@ class AssetLib extends \asset\AssetCrud {
 		return \journal\OperationLib::applyAssetCondition()
 			->whereFinancialYear($eFinancialYear)
 			->whereAsset(NULL)
+			->where(new \Sql('SUBSTRING(hash, LENGTH(hash) - 1, 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
 			->count();
 
 	}
