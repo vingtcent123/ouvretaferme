@@ -575,7 +575,10 @@ class PdfUi {
 		$h = '<tr class="pdf-document-item-total">';
 			$h .= '<td class="pdf-document-item-quality">';
 
-				if($type === Pdf::INVOICE) {
+				if(
+					$type === Pdf::INVOICE and
+					$e['nature'] !== NULL
+				) {
 
 					$h .= '<div class="pdf-document-nature">';
 						$h .= match($e['nature']) {
