@@ -122,6 +122,11 @@ new \account\FinancialYearPage(function($data) {
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
+		$data->accountsToSettle = [
+			'farmersAccount' => \journal\OperationLib::getFarmersAccountValue($data->e),
+			'waitingAccounts' => \journal\OperationLib::getWaitingAccountValues($data->e),
+		];
+
 		$data->cDeferral = \journal\DeferralLib::getDeferralsForOperations();
 
 		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);

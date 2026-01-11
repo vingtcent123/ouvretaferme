@@ -745,7 +745,7 @@ class FinancialYearUi {
 		return s("Résultat exercice {value}", $eFinancialYear->getLabel());
 	}
 
-	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cDeferral, \Collection $cAssetGrant, \Collection $cAsset): string {
+	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cDeferral, \Collection $cAssetGrant, \Collection $cAsset, array $accountsToSettle): string {
 
 		$form = new \util\FormUi();
 
@@ -773,7 +773,23 @@ class FinancialYearUi {
 
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
 
-		$step = 1;
+			if($accountsToSettle['farmersAccount'] > 0.0) {
+				$h .= '<div class="util-box-warning">';
+					$h .= '<h3>'.s("Comptes de l'exploitant").'</h3>';
+					$h .= s("Attention, le compte {farmersAccount} est débiteur de {amount}. Soldez-le avant la clôture de l'exercice !", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'amount' => \util\TextUi::money($accountsToSettle['farmersAccount'])]);
+				$h .= '</div>';
+			}
+			if(array_reduce($accountsToSettle['waitingAccounts'], function($sum, $waitingAccount) {
+				return $waitingAccount['total'] + $sum;
+			}, 0) > 0.0) {
+				$h .= '<div class="util-box-warning">';
+					$h .= '<h3>'.s("Comptes d'attente").'</h3>';
+					$h .= s("Attention, un ou plusieurs comptes d'attente, dont le numéro de compte commence par <b>{accounts}</b>, ne sont pas soldés. Soldez-les avant la clôture de l'exercice !", ['accounts' => join('</b>, <b>', AccountSetting::WAITING_ACCOUNT_CLASSES)]);
+				$h .= '</div>';
+
+			}
+
+			$step = 1;
 			$h .= '<h3 class="mt-2">'.\Asset::icon('1-circle').' '.s("Factures Non Parvenues (FNP ou Charges à payer) et Factures à Établir (FAE ou Produits à Recevoir, PAR)").'</h3>';
 			
 			$h .= '<div class="util-block-help">'; 

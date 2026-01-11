@@ -54,6 +54,7 @@ new AdaptativeView('close', function($data, FarmTemplate $t) {
 		$data->cDeferral,
 		$data->cAssetGrant,
 		$data->cAsset,
+		$data->accountsToSettle,
 	);
 
 });

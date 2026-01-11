@@ -1325,6 +1325,39 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	/**
+	 * Comptes de l'exploitant
+	 */
+	public static function getFarmersAccountValue(\account\FinancialYear $eFinancialYear): float {
+
+		return Operation::model()
+			->select([
+				'total' => new \Sql('SUM(IF(type="debit", -amount, amount))', 'float'),
+			])
+			->whereFinancialYear($eFinancialYear)
+			->whereAccountLabel('LIKE', \account\AccountSetting::FARMER_S_ACCOUNT_CLASS.'%')
+			->get()['total'] ?? 0.0;
+
+	}
+
+	/**
+	 * Comptes d'attente
+	 */
+	public static function getWaitingAccountValues(\account\FinancialYear $eFinancialYear): array {
+
+		return Operation::model()
+			->select([
+				'total' => new \Sql('SUM(IF(type="debit", -amount, amount))', 'float'),
+				'accountLabel' => new \Sql('SUBSTRING(accountLabel, 1, 3)')
+			])
+			->whereFinancialYear($eFinancialYear)
+			->where(new \Sql('SUBSTRING(accountLabel, 1, 3) IN ('.join(',', \account\AccountSetting::WAITING_ACCOUNT_CLASSES).')'))
+			->group('accountLabel')
+			->getCollection(NULL, NULL, 'accountLabel')
+			->getArrayCopy();
+
+	}
+
 	public static function getForOpening(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Operation::model()

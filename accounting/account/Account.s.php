@@ -42,7 +42,9 @@ class AccountSetting extends \Settings {
 	const FINANCIAL_GENERAL_CLASS = 5;
 	const CHARGE_ACCOUNT_CLASS = 6;
 	const PRODUCT_ACCOUNT_CLASS = 7;
-	
+	const FARMER_S_ACCOUNT_CLASS = 108; // Compte de l'exploitant
+	const WAITING_ACCOUNT_CLASSES = [471, 472, 473]; // Comptes d'attente
+
 	// IMMOBILISATIONS
 	const INTANGIBLE_ASSETS_CLASS = 20; // Immobilisations incorporelles
 	const TANGIBLE_ASSETS_CLASS = 21; // Immobilisations corporelles

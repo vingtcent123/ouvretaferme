@@ -395,9 +395,19 @@ Class AssetUi {
 								};
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								$h .= $eAsset['economicDuration'];
+								if($eAsset['economicDuration']) {
+									$h .= $eAsset['economicDuration'];
+								} else {
+									$h .= s("n/a");
+								}
 							$h .= '</td>';
-							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE).'</td>';
+							$h .= '<td class="text-center">';
+								if($eAsset['startDate']) {
+									$h .= \util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE);
+								} else {
+									$h .= s("n/a");
+								}
+							$h .= '</td>';
 							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['value'], '', 2).'</td>';
 							$h .= '<td class="text-end highlight-stick-left">'.$this->number($amortizableBase, '', 2).'</td>';
 
