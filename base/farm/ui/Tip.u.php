@@ -318,7 +318,7 @@ class TipUi {
 					$h .= '<li>'.s("Le montant de la facture correspond à celui de l'opération bancaire.").'</li>';
 					$h .= '<li>'.s("La date du paiement de la facture arrive dans le mois qui suit la date de la facture.").'</li>';
 				$h .= '</ul>';
-				$h .= '<p>'.s("Une petite icone {icon} sera ensuite affichée sur la page des factures ou la page des opérations bancaires et vous indiquera que des rapprochement peuvent être faits. Cliquez dessus pour allez les vérifier et les valider.", ['icon' => \Asset::icon('fire')]).'</p>';
+				$h .= '<p>'.s("Une petite icone {icon} sera ensuite affichée sur la page des factures ou la page des opérations bancaires et vous indiquera que des rapprochement peuvent être faits. Cliquez dessus pour les vérifier et les valider.", ['icon' => \Asset::icon('fire')]).'</p>';
 				$h .= '<p>'.s("Une fois les rapprochements validés, vos factures seront marquées payées et le moyen de paiement renseigné. Tout simplement !").'</p>';
 
 				return [
