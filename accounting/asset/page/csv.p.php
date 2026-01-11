@@ -21,9 +21,9 @@ new \asset\AssetPage(function($data) {
 		\asset\CsvLib::uploadAssets($data->eFarm);
 
 		if($fw->ok()) {
-			throw new RedirectAction(\company\CompanyUi::urlAsset($data->eFarm).'/csv:importAssets?id='.$data->e['id']);
+			throw new RedirectAction(\company\CompanyUi::urlAsset($data->eFarm).'/csv:importAssets?id='.$data->eFarm['id']);
 		} else {
-			throw new RedirectAction(\company\CompanyUi::urlAsset($data->eFarm).'/csv:importAssets?id='.$data->e['id'].'&error='.$fw->getLast());
+			throw new RedirectAction(\company\CompanyUi::urlAsset($data->eFarm).'/csv:importAssets?id='.$data->eFarm['id'].'&error='.$fw->getLast());
 		}
 
 	})
