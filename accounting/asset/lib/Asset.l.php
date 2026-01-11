@@ -176,8 +176,11 @@ class AssetLib extends \asset\AssetCrud {
 				Asset::getSelection()
 				+ ['account' => \account\Account::getSelection()]
 			)
-			->whereStartDate('<=', $eFinancialYear['endDate'])
-			->whereEndDate('>=', $eFinancialYear['startDate'])
+			->or(
+				fn() => $this->where('economicMode = "linear" AND startDate <='.Asset::model()->format($eFinancialYear['endDate'])),
+				fn() => $this->where('economicMode != "linear" AND acquisitionDate <='.Asset::model()->format($eFinancialYear['endDate'])),
+			)
+			->where('endDate IS NULL or endDate >='.Asset::model()->format($eFinancialYear['startDate']))
 			->where('endedDate IS NULL or endedDate >= '.Asset::model()->format($eFinancialYear['startDate']))
 			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])

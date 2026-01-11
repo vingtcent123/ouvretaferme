@@ -20,7 +20,7 @@ Asset:
   # Date de mise en service (= début de l'amortissement si linéaire), null si type grant
   startDate: ?date
   # Date de fin d'amortissement (calculé)
-  endDate: date
+  endDate: ?date
   endedDate: ?date # Date de fin réelle (cession, mise au rebut, fin d'amort.)
   status: enum(ONGOING, SOLD, SCRAPPED, ENDED) = ONGOING
   isGrant: bool = false

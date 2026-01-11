@@ -66,7 +66,7 @@ class AssetModel extends \ModuleModel {
 			'resumeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'acquisitionDate' => ['date', 'cast' => 'string'],
 			'startDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'endDate' => ['date', 'cast' => 'string'],
+			'endDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'endedDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\asset\Asset::ONGOING, \asset\Asset::SOLD, \asset\Asset::SCRAPPED, \asset\Asset::ENDED], 'cast' => 'enum'],
 			'isGrant' => ['bool', 'cast' => 'bool'],

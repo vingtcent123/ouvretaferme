@@ -1037,7 +1037,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 			$alreadyAmortized = 0;
 			$alreadyExcessAmortized = 0;
-			$alreadyExcessRecovered = 0;
 
 			$currentAmortization = 0;
 			$currentExcessAmortization = 0;

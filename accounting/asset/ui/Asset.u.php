@@ -80,8 +80,8 @@ Class AssetUi {
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Date d'acquisition").'</th>';
 						$h .= '<th>'.s("Libellé").'</th>';
-						$h .= '<th>'.s("Valeur d'acquisition (HT)").'</th>';
-						$h .= '<th>'.s("Durée éco").'</th>';
+						$h .= '<th class="highlight-stick-right text-end">'.s("Valeur d'acquisition (HT)").'</th>';
+						$h .= '<th class="text-center">'.s("Durée éco").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -94,8 +94,14 @@ Class AssetUi {
 							$h .= '<td>'.encode($eAsset['accountLabel']).'</td>';
 							$h .= '<td>'.\util\DateUi::numeric($eAsset['acquisitionDate']).'</td>';
 							$h .= '<td>'.encode($eAsset['description']).'</td>';
-							$h .= '<td>'.\util\TextUi::money($eAsset['value']).'</td>';
-							$h .= '<td>'.p("{value} mois", "{value} mois", $eAsset['economicDuration']).'</td>';
+							$h .= '<td class="highlight-stick-right text-end">'.\util\TextUi::money($eAsset['value']).'</td>';
+							$h .= '<td class="text-center">';
+								if($eAsset['economicDuration'] !== NULL) {
+									$h .= p("{value} mois", "{value} mois", $eAsset['economicDuration']);
+								} else {
+									$h .= s("n/a");
+								}
+							$h .= '</td>';
 
 							$attributes = [
 								'class' => 'btn btn-primary',
