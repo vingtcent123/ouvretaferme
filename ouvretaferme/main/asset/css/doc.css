@@ -10,7 +10,7 @@ div.doc-wrapper {
 	display: grid;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
 
 	div.doc-wrapper {
 		grid-template:
@@ -30,7 +30,7 @@ div.doc-wrapper {
 
 }
 
-@media (max-width: 575px) {
+@media (max-width: 767px) {
 
 	div.doc-wrapper {
 		grid-template:
@@ -98,7 +98,7 @@ div.doc-header {
 	margin-bottom: 2rem;
 }
 
-@media (max-width: 575px) {
+@media (max-width: 767px) {
 
 	div.doc-header {
 		padding: 7rem 0 2rem;

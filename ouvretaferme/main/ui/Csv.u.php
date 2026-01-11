@@ -50,31 +50,33 @@ class CsvUi {
 
 		$mandatory = FALSE;
 
-		$h = '<table>';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th>'.s("Type de donnée").'</th>';
-					$h .= '<th>'.s("Nom de l'entête").'</th>';
-					$h .= '<th>'.s("Description").'</th>';
-					$h .= '<th>'.s("Exemple").'</th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
-			$h .= '<tbody>';
-				foreach($data as $row) {
-
-					[$title, $column, $description, $example] = $row;
-
-					$mandatory = ($mandatory or str_contains($title, 'form-asterisk'));
-
+		$h = '<div class="util-overflow-lg">';
+			$h .= '<table>';
+				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<td>'.$title.'</td>';
-						$h .= '<td><pre>'.$column.'</pre></td>';
-						$h .= '<td style="max-width: 25rem">'.$description.'</td>';
-						$h .= '<td><div class="doc-example">'.$example.'</div></td>';
+						$h .= '<th>'.s("Type de donnée").'</th>';
+						$h .= '<th>'.s("Nom de l'entête").'</th>';
+						$h .= '<th>'.s("Description").'</th>';
+						$h .= '<th>'.s("Exemple").'</th>';
 					$h .= '</tr>';
-				}
-			$h .= '</tbody>';
-		$h .= '</table>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
+					foreach($data as $row) {
+
+						[$title, $column, $description, $example] = $row;
+
+						$mandatory = ($mandatory or str_contains($title, 'form-asterisk'));
+
+						$h .= '<tr>';
+							$h .= '<td>'.$title.'</td>';
+							$h .= '<td><pre>'.$column.'</pre></td>';
+							$h .= '<td style="max-width: 25rem">'.$description.'</td>';
+							$h .= '<td><div class="doc-example">'.$example.'</div></td>';
+						$h .= '</tr>';
+					}
+				$h .= '</tbody>';
+			$h .= '</table>';
+		$h .= '</div>';
 
 		if($mandatory) {
 			$h .= \util\FormUi::asteriskInfo(NULL);

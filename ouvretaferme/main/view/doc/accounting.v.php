@@ -601,30 +601,7 @@ new AdaptativeView('asset', function($data, DocTemplate $t) {
 			],
 		];
 
-		echo '<div class="util-overflow-sm">';
-			echo '<table>';
-				echo '<thead>';
-					echo '<tr>';
-						echo '<th>'.s("Type de donnée").'</th>';
-						echo '<th>'.s("Nom de l'entête").'</th>';
-						echo '<th>'.s("Description").'</th>';
-						echo '<th>'.s("Exemple").'</th>';
-					echo '</tr>';
-				echo '</thead>';
-				echo '<tbody>';
-					foreach($data as [$title, $column, $description, $example]) {
-						echo '<tr>';
-							echo '<td>'.$title.'</td>';
-							echo '<td><pre>'.$column.'</pre></td>';
-							echo '<td style="max-width: 25rem">'.$description.'</td>';
-							echo '<td><div class="doc-example">'.$example.'</div></td>';
-						echo '</tr>';
-					}
-				echo '</tbody>';
-			echo '</table>';
-		echo '</div>';
-
-		echo \util\FormUi::asteriskInfo(NULL);
+		echo \main\CsvUi::getDataList($data);
 
 	echo '</div>';
 
