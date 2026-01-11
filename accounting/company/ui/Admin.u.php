@@ -36,7 +36,7 @@ Class AdminUi {
 
 		$h = '<div class="util-overflow-xs stick-sm">';
 
-			$h .= '<table class="tr-even farm-admin-table">';
+			$h .= '<table class="tr-even tr-hover farm-admin-table">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center td-min-content">#</th>';
