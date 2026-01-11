@@ -1077,8 +1077,8 @@ class Collection extends ArrayIterator {
 						} else if(is_scalar($value1)) {
 							return ($value1 < $value2 ? -1 : 1) * $mul;
 						} else if($value1 instanceof Element) {
-							$id1 = $value1->empty() ? NULL : $value1['id'];
-							$id2 = $value2->empty() ? NULL : $value2['id'];
+							$id1 = $value1->exists() ? $value1['id'] : NULL;
+							$id2 = $value2->exists() ? $value2['id'] : NULL;
 							return ($id1 < $id2 ? -1 : 1) * $mul;
 						}
 

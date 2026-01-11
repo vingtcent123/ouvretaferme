@@ -8,7 +8,8 @@ new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 
 		list($data->cFarm, $data->nFarm) = \company\AdminLib::getFarms($data->page);
 
-		\company\AdminLib::loadAccountingData($data->cFarm);
+		$data->search = new Search([], GET('sort'));
+		\company\AdminLib::loadAccountingData($data->cFarm, $data->search);
 
 
 		throw new ViewAction($data);

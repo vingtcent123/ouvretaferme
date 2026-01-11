@@ -31,7 +31,7 @@ Class AdminLib {
 
 	}
 
-	public static function loadAccountingData(\Collection $cFarm): void {
+	public static function loadAccountingData(\Collection $cFarm, \Search $search): void {
 
 		$cProduct = \selling\Product::model()
 			->select([
@@ -52,18 +52,58 @@ Class AdminLib {
 
 			$eFarm['nCashflow'] = \bank\Cashflow::model()->count();
 			$eFarm['nOperation'] = \journal\Operation::model()->count();
-			$eFarm['cSuggestion'] = \preaccounting\Suggestion::model()
+			$cSuggestion = \preaccounting\Suggestion::model()
 				->select([
 					'status', 'count' => new \Sql('COUNT(*)', 'int')
 				])
 				->group(['status'])
 				->getCollection(NULL, NULL, 'status');
-
+			foreach($cSuggestion as $eSuggestion) {
+				$eFarm['suggestion-'.$eSuggestion['status']] = $eSuggestion['count'];
+			}
 			if($cProduct->offsetExists($eFarm['id'])) {
 				$eFarm['nProduct'] = $cProduct[$eFarm['id']]['count'];
 			} else {
 				$eFarm['nProduct'] = 0;
 			}
+
+		}
+
+		switch($search->getSort()) {
+			case 'cashflow':
+				$cFarm->sort(['nCashflow' => SORT_ASC]);
+				break;
+			case 'cashflow-':
+				$cFarm->sort(['nCashflow' => SORT_DESC]);
+				break;
+
+			case 'operation':
+				$cFarm->sort(['nOperation' => SORT_ASC]);
+				break;
+			case 'operation-':
+				$cFarm->sort(['nOperation' => SORT_DESC]);
+				break;
+
+			case 'product':
+				$cFarm->sort(['nProduct' => SORT_ASC]);
+				break;
+			case 'product-':
+				$cFarm->sort(['nProduct' => SORT_DESC]);
+				break;
+
+			case 'reconciliationValidated':
+				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::VALIDATED => SORT_ASC]);
+				break;
+			case 'reconciliationValidated-':
+				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::VALIDATED => SORT_DESC]);
+				break;
+
+			case 'reconciliationRejected':
+				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::REJECTED => SORT_ASC]);
+				break;
+			case 'reconciliationRejected-':
+				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::REJECTED => SORT_DESC]);
+				break;
 
 		}
 

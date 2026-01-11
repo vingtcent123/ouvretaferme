@@ -28,7 +28,7 @@ Class AdminUi {
 
 	}
 
-	public function displayFarms(\Collection $cFarm, int $nFarm, int $page): string {
+	public function displayFarms(\Collection $cFarm, int $nFarm, int $page, \Search $search): string {
 
 		if($nFarm === 0) {
 			return '<div class="util-empty">'.s("Il n'y a aucune ferme à afficher...").'</div>';
@@ -42,10 +42,10 @@ Class AdminUi {
 						$h .= '<th class="text-center td-min-content">#</th>';
 						$h .= '<th class="td-min-content"></th>';
 						$h .= '<th>'.s("Nom").'</th>';
-						$h .= '<th class="text-center">'.s("Produits").'</th>';
-						$h .= '<th class="text-center">'.s("Opérations bancaires").'</th>';
-						$h .= '<th class="text-center">'.s("Écritures comptables").'</th>';
-						$h .= '<th class="text-center">'.s("Rapprochements<br />({iconValidated}/{iconRejected})", ['iconValidated' => \Asset::icon('check'), 'iconRejected' => \Asset::icon('x')]).'</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('product', s("Produits")).'</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('cashflow', s("Opérations bancaires")).'</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('operation', s("Écritures comptables")).'</th>';
+						$h .= '<th class="text-center">'.s("Rapprochements").' ('.$search->linkSort('reconciliationValidated', \Asset::icon('check')).' / '.$search->linkSort('reconciliationRejected', \Asset::icon('x')).')</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -71,7 +71,7 @@ Class AdminUi {
 						$h .= '<td class="text-center">'.encode($eFarm['nProduct']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nCashflow']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['cSuggestion'][\preaccounting\Suggestion::VALIDATED]['count'] ?? 0).' / '.encode($eFarm['cSuggestion'][\preaccounting\Suggestion::REJECTED]['count'] ?? 0).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] ?? 0).' / '.encode($eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] ?? 0).'</td>';
 					$h .= '</tr>';
 				}
 				$h .= '</tbody>';
