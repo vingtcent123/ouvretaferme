@@ -17,9 +17,10 @@ new Page()
 
 		$eFinancialYear = \account\FinancialYear::model()->select(\account\FinancialYear::getSelection())->whereStartDate('2024-01-01')->get();
 
-		$fec = \account\FecLib::generate($eFinancialYear);
+		$operations = \account\FecLib::generate($eFinancialYear);
+		$fecData = \account\FecLib::formatFecData($operations);
 
-		file_put_contents(LIME_DIRECTORY.'/'.mb_substr($eFarm['siret'], 0, 9).'FEC20250531.txt', $fec);
+		file_put_contents(LIME_DIRECTORY.'/'.mb_substr($eFarm['siret'], 0, 9).'FEC20250531.txt', $fecData);
 
 	});
 

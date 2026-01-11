@@ -151,7 +151,7 @@ class FecUi {
 					$h .= '<td>';
 						if($data['noDocument'] > 0) {
 							$h .= p("{value} écriture n'a pas de document comptable", "{value} écritures n'ont pas de document comptable", $data['noDocument']);
-							$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hasDocument=1">']).'</div>';
+							$h .= '<div class="util-annotation">'.s("<link>Voir les écritures concernées</link>", ['link' => '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hasDocument=0">']).'</div>';
 						}
 					$h .= '</td>';
 				$h .= '</tr>';

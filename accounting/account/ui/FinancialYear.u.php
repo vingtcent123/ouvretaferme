@@ -116,7 +116,10 @@ class FinancialYearUi {
 				}
 
 				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:view" data-ajax-navigation="never" class="dropdown-item">';
-					$h .= s("Générer le FEC");
+					$h .= s("Générer le fichier FEC");
+				$h .= '</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:downloadCsv" data-ajax-navigation="never" class="dropdown-item">';
+					$h .= s("Télécharger au format CSV");
 				$h .= '</a>';
 			}
 

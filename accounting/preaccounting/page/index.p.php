@@ -268,7 +268,7 @@ new Page(function($data) {
 
 			$filename = \account\FecLib::getFilename($data->eFarm, new \account\FinancialYear());
 
-			throw new DataAction($fecDataString, 'text/txt', $filename);
+			throw new DataAction($fecDataString, 'text/txt', $filename.'.txt');
 		}
 
 		throw new VoidAction();

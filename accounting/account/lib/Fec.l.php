@@ -114,7 +114,7 @@ class FecLib  {
 			$filename .= date('YmdHis');
 		}
 
-		return $filename.'.txt';
+		return $filename;
 
 	}
 
@@ -153,56 +153,12 @@ class FecLib  {
 
 	public static function formatFecData(array $operations): string {
 
-		return join("\n", array_reduce($operations, fn($operation) => join('|', $operation)));
-
-		$headers = self::getHeader($eFinancialYear->isCashAccounting());
-		$fecData = [
-			join('|', $headers),
-		];
-
-		$search = new \Search(['financialYear' => $eFinancialYear, 'startDate' => $startDate, 'endDate' => $endDate]);
-		list($cOperation, , ) = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
-
-		$number = 1;
-
-		foreach($cOperation as $eOperation) {
-
-			if($eOperation['amount'] === 0.0) {
-				continue;
-			}
-
-			$operationData = [
-				$eOperation['journalCode']['code'] ?? '',
-				$eOperation['journalCode']['name'] ?? '',
-				str_pad($number++, 6, '0', STR_PAD_LEFT),
-				date('Ymd', strtotime($eOperation['date'])),
-				$eOperation['accountLabel'],
-				$eOperation['account']['description'],
-				'',
-				'',
-				$eOperation['document'],
-				$eOperation['documentDate'] !== NULL ? date('Ymd', strtotime($eOperation['documentDate'])) : date('Ymd', strtotime($eOperation['date'])),
-				$eOperation['description'],
-				$eOperation['type'] === \journal\OperationElement::DEBIT ? $eOperation['amount'] : 0,
-				$eOperation['type'] === \journal\OperationElement::CREDIT ? $eOperation['amount'] : 0,
-				'',
-				'',
-				date('Ymd', strtotime($eOperation['date'])),
-				$eOperation['type'] === \journal\OperationElement::DEBIT ? $eOperation['amount'] : -$eOperation['amount'],
-				'EUR',
-			];
-			if($eFinancialYear['accountingType'] === FinancialYear::CASH) {
-				$operationData[] = $eOperation['paymentDate'] !== NULL ? date('Ymd', strtotime($eOperation['paymentDate'])) : NULL;
-				$operationData[] = $eOperation['paymentMethod']['name'] ?? '';
-				$operationData[] = '';
-			}
-			$fecData[] = join('|', $operationData);
-
+		$flattenData = [];
+		foreach($operations as $operation) {
+			$flattenData[] = join('|', $operation);
 		}
+		return join("\n", $flattenData);
 
-		LogLib::save('generateFec', 'FinancialYear', ['id' => $eFinancialYear['id']]);
-
-		return join("\n", $fecData);
 	}
 
 	/**
@@ -210,14 +166,14 @@ class FecLib  {
 	 * @param FinancialYear $eFinancialYear
 	 * @return string
 	 */
-	public static function generate(FinancialYear $eFinancialYear, string $startDate, string $endDate): string {
+	public static function generate(FinancialYear $eFinancialYear): array {
 
 		$headers = self::getHeader($eFinancialYear->isCashAccounting());
 		$fecData = [
-			join('|', $headers),
+			$headers,
 		];
 
-		$search = new \Search(['financialYear' => $eFinancialYear, 'startDate' => $startDate, 'endDate' => $endDate]);
+		$search = new \Search(['financialYear' => $eFinancialYear]);
 		list($cOperation, , ) = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
 
 		$number = 1;
@@ -253,13 +209,11 @@ class FecLib  {
 				$operationData[] = $eOperation['paymentMethod']['name'] ?? '';
 				$operationData[] = '';
 			}
-			$fecData[] = join('|', $operationData);
+			$fecData[] = $operationData;
 
 		}
 
-		LogLib::save('generateFec', 'FinancialYear', ['id' => $eFinancialYear['id']]);
-
-		return join("\n", $fecData);
+		return $fecData;
 
 	}
 

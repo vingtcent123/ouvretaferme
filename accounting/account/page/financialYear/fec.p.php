@@ -71,27 +71,39 @@ new \account\FinancialYearPage()
 
 		$eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'));
 
-		$startDate = $eFinancialYear['startDate'];
-		$endDate = $eFinancialYear['endDate'];
+		$operations = \account\FecLib::generate($eFinancialYear);
+		$fecData = \account\FecLib::formatFecData($operations);
 
-		if(get_exists('startDate') and get_exists('endDate')) {
-
-			$startDate = GET('startDate');
-			$endDate = GET('endDate');
-
-			if(\util\DateLib::isValid($startDate) === FALSE) {
-				$startDate = $eFinancialYear['startDate'];
-			}
-			if(\util\DateLib::isValid($endDate) === FALSE) {
-				$endDate = $eFinancialYear['endDate'];
-			}
-		}
-
-		$fecData = \account\FecLib::generate($eFinancialYear, $startDate, $endDate);
+		\account\LogLib::save('generateFec', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
 		$filename = \account\FecLib::getFilename($data->eFarm, $eFinancialYear);
 
-		throw new DataAction($fecData, 'text/txt', $filename);
+		throw new DataAction($fecData, 'text/txt', $filename.'.txt');
+
+	})
+	->get('downloadCsv', function($data) {
+
+		$eFinancialYear = \account\FinancialYearLib::getById(GET('financialYear'));
+
+		$operations = \account\FecLib::generate($eFinancialYear);
+
+		// Formattage des nombres
+		$line = 0;
+		foreach($operations as &$lineFec) {
+
+			$line++;
+			if($line === 1) {
+				continue;
+			}
+			foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
+				$lineFec[$column] = \util\TextUi::csvNumber((float)$lineFec[$column]);
+			}
+
+		}
+
+		$filename = \account\FecLib::getFilename($data->eFarm, $eFinancialYear);
+
+		throw new CsvAction($operations, $filename.'.csv');
 
 	})
 ;
