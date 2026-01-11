@@ -67,42 +67,29 @@ Class AdminLib {
 				$eFarm['nProduct'] = 0;
 			}
 
+			$eFarm['nAsset'] = \asset\Asset::model()->count();
+			$eFarm['nBankAccount'] = \bank\BankAccount::model()->count();
 		}
 
 		switch($search->getSort()) {
-			case 'cashflow':
-				$cFarm->sort(['nCashflow' => SORT_ASC]);
-				break;
-			case 'cashflow-':
-				$cFarm->sort(['nCashflow' => SORT_DESC]);
-				break;
-
-			case 'operation':
-				$cFarm->sort(['nOperation' => SORT_ASC]);
-				break;
-			case 'operation-':
-				$cFarm->sort(['nOperation' => SORT_DESC]);
+			case 'nBankAccount':
+			case 'nAsset':
+			case 'nCashflow':
+			case 'nOperation':
+			case 'nProduct':
+			case 'suggestion-'.\preaccounting\Suggestion::VALIDATED:
+			case 'suggestion-'.\preaccounting\Suggestion::REJECTED:
+				$cFarm->sort([$search->getSort() => SORT_ASC]);
 				break;
 
-			case 'product':
-				$cFarm->sort(['nProduct' => SORT_ASC]);
-				break;
-			case 'product-':
-				$cFarm->sort(['nProduct' => SORT_DESC]);
-				break;
-
-			case 'reconciliationValidated':
-				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::VALIDATED => SORT_ASC]);
-				break;
-			case 'reconciliationValidated-':
-				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::VALIDATED => SORT_DESC]);
-				break;
-
-			case 'reconciliationRejected':
-				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::REJECTED => SORT_ASC]);
-				break;
-			case 'reconciliationRejected-':
-				$cFarm->sort(['suggestion-'.\preaccounting\Suggestion::REJECTED => SORT_DESC]);
+			case 'nBankAccount-':
+			case 'nAsset-':
+			case 'nCashflow-':
+			case 'nOperation-':
+			case 'nProduct-':
+			case 'suggestion-'.\preaccounting\Suggestion::VALIDATED.'-':
+			case 'suggestion-'.\preaccounting\Suggestion::REJECTED.'-':
+				$cFarm->sort([mb_substr($search->getSort(), 0, -1) => SORT_DESC]);
 				break;
 
 		}

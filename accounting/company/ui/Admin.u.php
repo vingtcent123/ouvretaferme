@@ -42,10 +42,12 @@ Class AdminUi {
 						$h .= '<th class="text-center td-min-content">#</th>';
 						$h .= '<th class="td-min-content"></th>';
 						$h .= '<th>'.s("Nom").'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('product', s("Produits")).'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('cashflow', s("Opérations bancaires")).'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('operation', s("Écritures comptables")).'</th>';
-						$h .= '<th class="text-center">'.s("Rapprochements").' ('.$search->linkSort('reconciliationValidated', \Asset::icon('check')).' / '.$search->linkSort('reconciliationRejected', \Asset::icon('x')).')</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('nProduct', s("Produits")).'</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('nBankAccount', s("Comptes bancaires")).'</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('nCashflow', s("Opérations bancaires")).'</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('nOperation', s("Écritures comptables")).'</th>';
+						$h .= '<th class="text-center">'.s("Rapprochements").' ('.$search->linkSort('suggestion-validated', \Asset::icon('check')).' / '.$search->linkSort('suggestion-rejected', \Asset::icon('x')).')</th>';
+						$h .= '<th class="text-center"'.$search->linkSort('nAsset', s("Immos")).'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -69,9 +71,11 @@ Class AdminUi {
 							$h .= '</a>';
 						$h .= '</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nProduct']).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['nBankAccount']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nCashflow']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] ?? 0).' / '.encode($eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] ?? 0).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['nAsset']).'</td>';
 					$h .= '</tr>';
 				}
 				$h .= '</tbody>';
