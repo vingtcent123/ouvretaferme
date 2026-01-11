@@ -93,12 +93,12 @@ class FinancialYearUi {
 				$hasAction = TRUE;
 			}
 
-			if($eFinancialYear->acceptOpen()) {
+			if(FALSE and $eFinancialYear->acceptOpen()) {
 
 				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Ouvrir").'</a>';
 				$hasAction = TRUE;
 
-			} else if($eFinancialYear->isOpen() and $eFinancialYear->acceptClose()) {
+			} else if(FALSE and $eFinancialYear->isOpen() and $eFinancialYear->acceptClose()) {
 
 				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';
 				$hasAction = TRUE;
