@@ -352,6 +352,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$financialYearStartDate = $eFinancialYear['startDate'];
+		$financialYearEndDate = $eFinancialYear['endDate'];
 
 		while($found === FALSE) {
 
