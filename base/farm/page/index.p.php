@@ -1005,16 +1005,16 @@ new Page(function($data) {
 						}
 
 
-						$data->cSaleTurnover = \selling\AnalyzeLib::getShopTurnover($data->eShop, $years, $data->month, $data->week);
-						$data->cItemProduct = \selling\AnalyzeLib::getShopProducts($data->eShop, $data->year, $data->month, $data->week);
-						$data->cPlant = \selling\AnalyzeLib::getShopPlants($data->eShop, $data->year, $data->month, $data->week);
-						$data->ccItemCustomer = \selling\AnalyzeLib::getShopCustomers($data->eShop, $data->year, $data->month, $data->week);
+						$data->cSaleTurnover = \selling\AnalyzeLib::getShopTurnover($data->eShop, $data->eFarm, $years, $data->month, $data->week);
+						$data->cItemProduct = \selling\AnalyzeLib::getShopProducts($data->eShop, $data->eFarm, $data->year, $data->month, $data->week);
+						$data->cPlant = \selling\AnalyzeLib::getShopPlants($data->eShop, $data->eFarm, $data->year, $data->month, $data->week);
+						$data->ccItemCustomer = \selling\AnalyzeLib::getShopCustomers($data->eShop, $data->eFarm, $data->year, $data->month, $data->week);
 
 						$data->monthly = GET('monthly', ['turnover', 'quantity', 'average'], NULL);
 
 						if($data->monthly) {
-							$data->cItemProductMonthly = \selling\AnalyzeLib::getMonthlyShopProducts($data->eShop, $data->year)  ;
-							$data->cccItemPlantMonthly = \selling\AnalyzeLib::getMonthlyShopPlants($data->eShop, $data->year);
+							$data->cItemProductMonthly = \selling\AnalyzeLib::getMonthlyShopProducts($data->eShop, $data->eFarm, $data->year)  ;
+							$data->cccItemPlantMonthly = \selling\AnalyzeLib::getMonthlyShopPlants($data->eShop, $data->eFarm, $data->year);
 						} else {
 							$data->cItemProductMonthly = new Collection();
 							$data->cccItemPlantMonthly = new Collection();

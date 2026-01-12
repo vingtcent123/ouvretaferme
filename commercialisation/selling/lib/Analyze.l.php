@@ -181,11 +181,11 @@ class AnalyzeLib {
 
 	}
 
-	public static function getShopCustomers(\shop\Shop $eShop, int $year, ?int $month, ?string $week): \Collection {
+	public static function getShopCustomers(\shop\Shop $eShop, \farm\Farm $eFarm, int $year, ?int $month, ?string $week): \Collection {
 
 		Item::model()->whereShop($eShop);
 
-		return self::getCustomers($eShop['farm'], $year, $month, $week);
+		return self::getCustomers($eFarm, $year, $month, $week);
 
 	}
 
@@ -326,7 +326,7 @@ class AnalyzeLib {
 
 	}
 
-	public static function getShopTurnover(\shop\Shop $eShop, array $years, ?int $month, ?string $week): \Collection {
+	public static function getShopTurnover(\shop\Shop $eShop, \farm\Farm $eFarm, array $years, ?int $month, ?string $week): \Collection {
 
 		self::filterSaleStats();
 
@@ -337,6 +337,7 @@ class AnalyzeLib {
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 			])
 			->whereShop($eShop)
+			->whereFarm($eFarm)
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), 'IN', $years)
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
 			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
@@ -468,13 +469,13 @@ class AnalyzeLib {
 
 	}
 
-	public static function getShopProducts(\shop\Shop $eShop, int $year, ?int $month, ?string $week): \Collection {
+	public static function getShopProducts(\shop\Shop $eShop, \farm\Farm $eFarm, int $year, ?int $month, ?string $week): \Collection {
 
 		Item::model()->whereShop($eShop);
 
 		self::filterItemStats(TRUE);
 
-		return self::getProducts($eShop['farm'], $year, $month, $week);
+		return self::getProducts($eFarm, $year, $month, $week);
 
 	}
 
@@ -598,11 +599,11 @@ class AnalyzeLib {
 
 	}
 
-	public static function getMonthlyShopProducts(\shop\Shop $eShop, int $year): \Collection {
+	public static function getMonthlyShopProducts(\shop\Shop $eShop, \farm\Farm $eFarm, int $year): \Collection {
 
 		Item::model()->whereShop($eShop);
 
-		return self::getMonthlyProducts($eShop['farm'], $year);
+		return self::getMonthlyProducts($eFarm, $year);
 
 	}
 
@@ -640,11 +641,11 @@ class AnalyzeLib {
 
 	}
 
-	public static function getShopPlants(\shop\Shop $eShop, int $year, ?int $month, ?string $week): \Collection {
+	public static function getShopPlants(\shop\Shop $eShop, \farm\Farm $eFarm, int $year, ?int $month, ?string $week): \Collection {
 
 		Item::model()->where('m1.shop', $eShop);
 
-		return self::getPlants($eShop['farm'], $year, $month, $week);
+		return self::getPlants($eFarm, $year, $month, $week);
 
 	}
 
@@ -711,9 +712,11 @@ class AnalyzeLib {
 
 	}
 
-	public static function getMonthlyShopPlants(\shop\Shop $eShop, int $year): \Collection {
+	public static function getMonthlyShopPlants(\shop\Shop $eShop, \farm\Farm $eFarm, int $year): \Collection {
 
-		Item::model()->where('m1.shop', $eShop);
+		Item::model()
+			->where('m1.farm', $eFarm)
+			->where('m1.shop', $eShop);
 
 		return self::getMonthlyPlants($year);
 
