@@ -16,7 +16,17 @@ class AssetLib extends \asset\AssetCrud {
 		];
 	}
 	public static function getPropertiesUpdate(): array {
-		return self::getPropertiesCreate();
+		return [
+			'acquisitionDate',
+			'account', 'accountLabel',
+			'value', 'residualValue',
+			'economicMode', 'fiscalMode',
+			'startDate', // Doit venir après les modes (pour le check)
+			'description',
+			'economicDuration', 'fiscalDuration',
+			'isExcess',
+			'economicAmortization',
+		];
 	}
 
 	public static function hasAssets(): bool {
@@ -41,6 +51,41 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
+	private static function updateEndDate(Asset $e): ?string {
+
+		if($e['economicDuration'] !== NULL and $e['economicMode'] !== Asset::WITHOUT) {
+			return date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
+		} else {
+			return NULL;
+		}
+
+	}
+
+	// Amortissement économique uniquement si la durée d'amort. fiscale est plus rapide que la durée d'amort. éco.
+	private static function isExcess(Asset $e): bool {
+
+		if($e['isGrant']) {
+
+			return FALSE;
+
+		}
+
+		return($e['economicDuration'] < $e['fiscalDuration']);
+
+	}
+
+	public static function update(Asset $e, array $properties): void {
+
+		$e['accountLabel'] = \account\AccountLabelLib::pad($e['accountLabel']);
+
+		$e['endDate'] = self::updateEndDate($e);
+		$e['isGrant'] = \asset\AssetLib::isGrant($e['accountLabel']);
+
+		$e['isExcess'] = self::isExcess($e);
+
+		parent::update($e, $properties);
+
+	}
 	public static function create(Asset $e): void {
 
 		Asset::model()->beginTransaction();
@@ -54,29 +99,10 @@ class AssetLib extends \asset\AssetCrud {
 		$e['accountLabel'] = \account\AccountLabelLib::pad($e['accountLabel']);
 
 		// Calculate endDate
-		if($e['economicDuration'] !== NULL and $e['economicMode'] !== Asset::WITHOUT) {
-			$e['endDate'] = date('Y-m-d', strtotime($e['startDate'].' + '.$e['economicDuration'].' month'));
-		} else {
-			$e['endDate'] = NULL;
-		}
+		$e['endDate'] = self::updateEndDate($e);
 		$e['isGrant'] = \asset\AssetLib::isGrant($e['accountLabel']);
 
-		// Amortissement économique uniquement si la durée d'amort. fiscale est plus rapide que la durée d'amort. éco.
-		if($e['isGrant']) {
-
-			$isExcess = FALSE;
-
-		} else {
-
-			if($e['economicDuration'] > $e['fiscalDuration']) {
-				$isExcess = TRUE;
-			} else {
-				$isExcess = FALSE;
-			}
-
-		}
-
-		$e['isExcess'] = $isExcess;
+		$e['isExcess'] = self::isExcess($e);
 
 		if($cOperation->notEmpty()) {
 			if($cOperation->count() === 1) {

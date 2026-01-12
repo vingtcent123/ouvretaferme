@@ -175,29 +175,37 @@ Class AssetUi {
 
 		$h .= $form->dynamicGroups($eAsset, ['value*', 'residualValue', 'acquisitionDate*', 'startDate']);
 
-		$h .= '<div class="mb-1"><a onclick="Asset.showAlreadyAmortizePart();" class="color-muted font-md" data-already-amortize-icon>';
-			$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
-			$h .= ' ';
-			$h .= s("L'amortissement de cette immobilisation a déjà commencé");
-		$h .= '</a></div>';
-		$h .= '<div data-already-amortize-part class="hide">';
-			$h .= '<h3>'.s("Réintégration de l'immobilisation").'</h3>';
-			$h .= $form->group(
-				s("Exercice"),
-				$form->select(
-					'resumeDate',
-					$cFinancialYear->toArray(fn($e) => [
-						'value' => $e['startDate'], 'label' => s("Exercice {value}", $e->getLabel())
-					])
-				).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
-			);
-		$h .= '</div>';
-		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.(($eAsset->exists() or $cOperation->notEmpty()) ? '' : 'hide').'" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
-			if($eAsset->exists()) {
-				$h .= $this->getDurationRecommandation($eAsset['accountLabel'], $cAmortizationDuration);
-			} else if($cOperation->notEmpty()) {
-				$h .= $this->getDurationRecommandation($cOperation->first()['accountLabel'], $cAmortizationDuration);
-			}
+		if($eAsset->exists() === FALSE) {
+
+			$h .= '<div class="mb-1"><a onclick="Asset.showAlreadyAmortizePart(this);" class="color-muted font-md" data-already-amortize-icon>';
+				$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
+				$h .= ' ';
+				$h .= s("L'amortissement de cette immobilisation a déjà commencé");
+			$h .= '</a></div>';
+
+			$h .= '<div data-already-amortize-part class="hide">';
+				$h .= '<h3>'.s("Réintégration de l'immobilisation").'</h3>';
+				$h .= $form->group(
+					s("Exercice"),
+					$form->select(
+						'resumeDate',
+						$cFinancialYear->toArray(fn($e) => [
+							'value' => $e['startDate'], 'label' => s("Exercice {value}", $e->getLabel())
+						])
+					).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
+				);
+			$h .= '</div>';
+		}
+
+		if($eAsset->exists()) {
+			$recommendationText = $this->getDurationRecommandation($eAsset['accountLabel'], $cAmortizationDuration);
+		} else if($cOperation->notEmpty()) {
+			$recommendationText = $this->getDurationRecommandation($cOperation->first()['accountLabel'], $cAmortizationDuration);
+		} else {
+			$recommendationText = '';
+		}
+		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.($recommendationText ? '' : 'hide').'" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
+			$h .= $recommendationText;
 		$h .= '</div>';
 
 		$h .= '<h3>'.s("Amortissement économique").'</h3>';
@@ -228,9 +236,17 @@ Class AssetUi {
 			]);
 		$h .= '</div>';
 
-		$h .= '<h3>'.s("Amortissement fiscal").'</h3>';
-		$h .= '<div class="util-block bg-background-light">';
-			$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration']);
+		$h .= '<div class="mb-1"><a onclick="Asset.showFiscalAmortization(this);" class="color-muted font-md" data-fiscal-amortization-icon>';
+			$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
+			$h .= ' ';
+			$h .= s("L'amortissement fiscal est différent");
+		$h .= '</a></div>';
+
+		$h .= '<div data-fiscal-amortization class="hide">';
+			$h .= '<h3>'.s("Amortissement fiscal").'</h3>';
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration']);
+			$h .= '</div>';
 		$h .= '</div>';
 
 		if($eAsset->exists()) {
@@ -245,9 +261,19 @@ Class AssetUi {
 
 		$h .= $form->close();
 
+		if($eAsset->exists()) {
+			if(AssetLib::isAsset($eAsset['accountLabel'])) {
+				$title = s("Modifier une immobilisation");
+			} else {
+				$title = s("Modifier une subvention");
+			}
+		} else {
+			$title = s("Créer une immobilisation ou une subvention");
+		}
+
 		return new \Panel(
 			id: 'panel-asset-create',
-			title: s("Créer une immobilisation ou une subvention"),
+			title: $title,
 			body: $h,
 			close: 'passthrough',
 		);

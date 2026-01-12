@@ -27,12 +27,14 @@ document.delegateEventListener('change', '[data-wrapper="value-calculation"] inp
     }
 });
 
+document.delegateEventListener('input', 'input[name="acquisitionDate"]', function() {
+    qs('input[name="startDate"]').value = this.value;
+});
+
 document.delegateEventListener('change', '[data-field="economicMode"]', function() {
 
     const selectedEconomicMode = qs('[name="economicMode"]:checked').value;
-    if(qs('[name="fiscalMode"]:checked') === null) {
-        qs('[name="fiscalMode"][value="' + selectedEconomicMode + '"]').checked = true;
-    }
+    qs('[name="fiscalMode"][value="' + selectedEconomicMode + '"]').checked = true;
 
     if(selectedEconomicMode === 'without') {
         qs('[name="economicDuration"]').value = '';
@@ -41,6 +43,7 @@ document.delegateEventListener('change', '[data-field="economicMode"]', function
         qs('[name="fiscalDuration"]').setAttribute('disabled', 'disabled');
     } else {
         qs('[name="economicDuration"]').removeAttribute('disabled');
+        qs('[name="fiscalDuration"]').removeAttribute('disabled');
     }
 
 });
@@ -60,9 +63,7 @@ document.delegateEventListener('change', '[data-field="fiscalMode"]', function()
 
 document.delegateEventListener('change', '[name="economicDuration"]', function() {
 
-    if(!qs('[name="fiscalDuration"]').value) {
-        qs('[name="fiscalDuration"]').value = qs('[name="economicDuration"]').value;
-    }
+    qs('[name="fiscalDuration"]').value = qs('[name="economicDuration"]').value;
 
     Asset.checkEconomicDuration();
 
@@ -158,8 +159,21 @@ class Asset {
 
     }
 
-    static showAlreadyAmortizePart() {
-        const isOpen = qs('.asset-icon-chevron-right').classList.contains('hide');
+    static showFiscalAmortization(target) {
+        const isOpen = target.qs('.asset-icon-chevron-right').classList.contains('hide');
+        qs('[data-fiscal-amortization]').toggle();
+
+        if(isOpen) {
+            qs('a[data-fiscal-amortization-icon] .asset-icon-chevron-down').hide();
+            qs('a[data-fiscal-amortization-icon] .asset-icon-chevron-right').removeHide();
+        } else {
+            qs('a[data-fiscal-amortization-icon] .asset-icon-chevron-down').removeHide();
+            qs('a[data-fiscal-amortization-icon] .asset-icon-chevron-right').hide();
+        }
+    }
+
+    static showAlreadyAmortizePart(target) {
+        const isOpen = target.qs('.asset-icon-chevron-right').classList.contains('hide');
         qs('[data-already-amortize-part]').toggle();
 
         if(isOpen) {
