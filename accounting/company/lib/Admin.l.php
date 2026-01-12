@@ -61,6 +61,7 @@ Class AdminLib {
 			if($eFarm['nBankAccount'] === 0) {
 
 				$eFarm['nCashflow'] = 0;
+				$eFarm['nBankImport'] = 0;
 
 				$eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] = 0;
 				$eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] = 0;
@@ -68,6 +69,7 @@ Class AdminLib {
 			} else {
 
 				$eFarm['nCashflow'] = \bank\Cashflow::model()->count();
+				$eFarm['nBankImport'] = \bank\Import::model()->count();
 
 				$cSuggestion = \preaccounting\Suggestion::model()
 					->select([

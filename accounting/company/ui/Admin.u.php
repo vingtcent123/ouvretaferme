@@ -39,16 +39,21 @@ Class AdminUi {
 			$h .= '<table class="tr-even tr-hover farm-admin-table">';
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th class="text-center td-min-content">#</th>';
-						$h .= '<th class="td-min-content"></th>';
-						$h .= '<th>'.s("Nom").'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('nProduct', s("Produits")).'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('nFinancialYear', s("Exercices")).'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('nBankAccount', s("Comptes bancaires")).'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('nCashflow', s("Opérations bancaires")).'</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('nOperation', s("Écritures comptables")).'</th>';
-						$h .= '<th class="text-center">'.s("Rapprochements").' ('.$search->linkSort('suggestion-validated', \Asset::icon('check')).' / '.$search->linkSort('suggestion-rejected', \Asset::icon('x')).')</th>';
-						$h .= '<th class="text-center"'.$search->linkSort('nAsset', s("Immos")).'</th>';
+						$h .= '<th class="text-center td-min-content" rowspan="2">#</th>';
+						$h .= '<th class="td-min-content" rowspan="2"></th>';
+						$h .= '<th rowspan="2">'.s("Nom").'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.$search->linkSort('nProduct', s("Produits")).'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.$search->linkSort('nFinancialYear', s("Exercices")).'</th>';
+						$h .= '<th colspan="3" class="text-center">'.s("Banque").'</th>';
+						$h .= '<th class="text-center"  rowspan="2">'.s("Rapprochements").'<br />'.$search->linkSort('suggestion-validated', \Asset::icon('check')).' / '.$search->linkSort('suggestion-rejected', \Asset::icon('x')).'</th>';
+						$h .= '<th colspan="2" class="text-center">'.s("Écritures").'</th>';
+					$h .= '</tr>';
+					$h .= '<tr>';
+						$h .= '<th class="text-center">'.$search->linkSort('nBankAccount', s("Comptes")).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort('nBankImport', s("Imports")).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort('nCashflow', s("Opérations")).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort('nOperation', s("Écritures")).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort('nAsset', s("Immos")).'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -74,9 +79,10 @@ Class AdminUi {
 						$h .= '<td class="text-center">'.encode($eFarm['nProduct']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nFinancialYear']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nBankAccount']).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['nBankImport']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nCashflow']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] ?? 0).' / '.encode($eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] ?? 0).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nAsset']).'</td>';
 					$h .= '</tr>';
 				}
