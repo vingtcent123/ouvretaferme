@@ -43,6 +43,12 @@ class Asset extends AssetElement {
 		return $this->canManage() and $this['status'] === Asset::ONGOING;
 	}
 
+	public function isAmortizable(): bool {
+
+		return $this['economicMode'] !== Asset::WITHOUT;
+
+	}
+
 	public function isTangible(): bool {
 
 		return AssetLib::isTangibleAsset($this['accountLabel']);

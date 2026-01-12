@@ -181,6 +181,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	public static function computeTable(Asset $eAsset): array {
 
+		if($eAsset->isAmortizable() === FALSE) {
+			return [];
+		}
+
 		$table = self::computeTheoricTable($eAsset);
 
 		if($eAsset['endedDate'] === NULL) {
@@ -255,6 +259,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			Asset::DEGRESSIVE => self::computeDegressiveTable($eAsset, 'economic'),
 			default => [],
 		};
+
 		$fiscalTable = match($eAsset['fiscalMode']) {
 			Asset::LINEAR => self::computeLinearTable($eAsset, 'fiscal'),
 			Asset::DEGRESSIVE => self::computeDegressiveTable($eAsset, 'fiscal'),
@@ -347,11 +352,12 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$financialYearStartDate = $eFinancialYear['startDate'];
-		$financialYearEndDate = $eFinancialYear['endDate'];
+
 		while($found === FALSE) {
 
+			// On décale de 1 an par rapport à la startdate pour couvrir le cas d'un 1er exercice comptable < 1 an
+			$financialYearEndDate = date('Y-m-d', strtotime($financialYearStartDate. ' - 1 DAY'));
 			$financialYearStartDate = date('Y-m-d', strtotime($financialYearStartDate. ' - 1 YEAR'));
-			$financialYearEndDate = date('Y-m-d', strtotime($financialYearEndDate. ' - 1 YEAR'));
 
 			if($financialYearStartDate <= $startDate and $financialYearEndDate >= $startDate) {
 				$found = TRUE;
@@ -1035,6 +1041,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$amortizations = [];
 
 		foreach($cAsset as $eAsset) {
+
+			if($eAsset->isAmortizable() === FALSE) {
+				continue;
+			}
 
 			$table = self::computeTable($eAsset);
 			$accountLabel = $eAsset['accountLabel'];
