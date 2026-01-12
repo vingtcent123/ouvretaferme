@@ -37,7 +37,11 @@ class InvoiceUi {
 			
 	}
 
-	public static function getPaymentStatusBadge(string $status, ?string $paidAt = NULL): string {
+	public static function getPaymentStatusBadge(?string $status, ?string $paidAt = NULL): string {
+
+		if($status === NULL) {
+			return '';
+		}
 
 		$label = self::p('paymentStatus')->values[$status];
 

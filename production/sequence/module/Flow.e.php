@@ -214,10 +214,16 @@ class Flow extends FlowElement {
 
 			});
 
+		$fw = new \FailWatch();
+
 		parent::build($properties, $input, $p);
 
-		$this->buildSeason($properties, $input);
-		$this->buildPeriod($properties, $input);
+		if($fw->ok()) {
+
+			$this->buildSeason($properties, $input);
+			$this->buildPeriod($properties, $input);
+
+		}
 
 	}
 
