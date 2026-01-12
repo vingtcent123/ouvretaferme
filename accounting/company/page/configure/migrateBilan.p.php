@@ -1,6 +1,6 @@
 <?php
 /**
- * php framework/lime.php -a ouvretaferme -e prod company/configure/migrateBilan
+ * php framework/lime.php -a ouvretaferme -e prod company/configure/migrateBilan farm=7
  */
 new Page()
 	->cli('index', function($data) {

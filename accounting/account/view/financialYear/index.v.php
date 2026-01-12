@@ -32,7 +32,7 @@ new AdaptativeView('open', function($data, FarmTemplate $t) {
 		$data->e,
 		$data->eFinancialYearPrevious,
 		$data->cOperation,
-		$data->eOperationResult,
+		$data->cOperationResult,
 		$data->cJournalCode,
 		$data->ccOperationReversed,
 	);

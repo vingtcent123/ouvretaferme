@@ -91,6 +91,16 @@ new AdaptativeView(\farm\Farmer::BALANCE_SHEET, function($data, FarmTemplate $t)
 
 	} else {
 
+		if($data->eFinancialYearPrevious->notEmpty() and $data->eFarm['eFinancialYear']['openDate'] === NULL) {
+
+			echo '<div class="util-block-danger">';
+				echo '<p>⚠️ '.s("️Le bilan d'ouverture n'a pas encore été réalisé, les données ne sont donc pas fiables.").'</p>';
+				echo '<a class="btn btn-md btn-primary" href="'.\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/:open?id='.$data->eFarm['eFinancialYear']['id'].'">';
+					echo s("Réaliser le bilan d'ouverture maintenant");
+				echo '</a>';
+			echo '</div>';
+		}
+
 		echo new \overview\BalanceSheetUi()->getSearch(
 			search        : $data->search,
 			cFinancialYear: $data->eFarm['cFinancialYear'],

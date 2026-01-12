@@ -63,3 +63,16 @@ tr {
 .table-pdf {
 	font-size: 0.85rem;
 }
+
+table.pdf-table-bordered {
+	border:1px solid black;
+}
+tr.pdf-tr-title {
+	background-color: lightgrey;
+}
+tr.pdf-tr-total-general {
+	text-transform: uppercase;
+}
+tr.pdf-tr-total-general > td {
+	text-align: right;
+}

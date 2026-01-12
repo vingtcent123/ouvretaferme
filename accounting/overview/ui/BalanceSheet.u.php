@@ -60,7 +60,6 @@ class BalanceSheetUi {
 
 	}
 
-
 	public function getTable(
 		\farm\Farm $eFarm,
 		\account\FinancialYear $eFinancialYear,
@@ -488,5 +487,348 @@ class BalanceSheetUi {
 		return $h;
 	}
 
+	public function getPdfTHead(string $type): string {
+
+		if($type === 'assets') {
+
+			$h = '<tr class="pdf-tr-title">';
+				$h .= '<th>'.s("Actif").'</th>';
+				$h .= '<th class="text-center">'.s("Brut").'</th>';
+				$h .= '<th class="text-center">'.s("Amort. prov.").'</th>';
+				$h .= '<th class="text-center">'.s("Net").'</th>';
+				$h .= '<th class="text-center">'.s("% actif").'</th>';
+				$h .= '<th class="text-center">'.s("N-1").'</th>';
+			$h .= '</tr>';
+
+			return $h;
+
+		}
+
+		$h = '<tr class="pdf-tr-title">';
+			$h .= '<th>'.s("Passif").'</th>';
+			$h .= '<th class="text-center">'.s("N").'</th>';
+			$h .= '<th class="text-center">'.s("% passif").'</th>';
+			$h .= '<th class="text-center">'.s("N-1").'</th>';
+		$h .= '</tr>';
+
+		return $h;
+	}
+
+	public function getPdfTBodyAssets(string $type, array $balanceSheetData, array $totals, \Collection $cAccount): string {
+
+		$h = '';
+
+		if($type === 'assets') {
+
+			$totalAsset = array_sum(array_column($balanceSheetData['fixedAssets'], 'currentNet')) + array_sum(array_column($balanceSheetData['currentAssets'], 'currentNet'));
+
+			$h .= $this->displaySubCategoryPdfLinesAssets('fixedAssets', $balanceSheetData['fixedAssets'], $cAccount, $totalAsset);
+			$h .= $this->displaySubCategoryPdfLinesAssets('currentAssets', $balanceSheetData['currentAssets'], $cAccount, $totalAsset);
+
+			$h .= '<tr class="overview_line tr-bold pdf-tr-title pdf-tr-total-general">';
+
+				$h .= '<td>';
+					$h .= s("Total de l'actif");
+				$h .= '</td>';
+
+				$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($totals['fixedAssets']['currentBrut'] + $totals['currentAssets']['currentBrut'], precision: 0).'</td>';
+				$h .= '<td class="text-end balance-td-amortization">';
+				if(round($totals['fixedAssets']['currentDepreciation'] + $totals['currentAssets']['currentDepreciation']) !== 0.0) {
+					$h .= \util\TextUi::money($totals['fixedAssets']['currentDepreciation'] + $totals['currentAssets']['currentDepreciation'], precision: 0);
+				}
+				$h .= '</td>';
+				$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['fixedAssets']['currentNet'] + $totals['currentAssets']['currentNet'], precision: 0).'</td>';
+				$h .= '<td class="text-end balance-td-net">';
+					$percentValue = (($totals['fixedAssets']['currentNet'] + $totals['currentAssets']['currentNet']) / $totalAsset);
+					if((int)$percentValue === 0) {
+						$h .= '';
+					} else {
+						$h .= $this->getPercent(($totals['fixedAssets']['currentNet'] + $totals['currentAssets']['currentNet']) / $totalAsset);
+					}
+				$h .= '</td>';
+				$h .= '<td class="text-end balance-td-net">'.(($totals['fixedAssets']['comparisonNet'] + $totals['currentAssets']['comparisonNet']) === 0 ? '' : \util\TextUi::money($totals['fixedAssets']['comparisonNet'] + $totals['currentAssets']['comparisonNet'], precision: 0)).'</td>';
+
+			$h .= '</tr>';
+
+		} else {
+
+			$totalAsset = array_sum(array_column($balanceSheetData['equity'], 'currentNet')) +
+				array_sum(array_column($balanceSheetData['debts'], 'currentNet'));
+
+			$h .= $this->displaySubCategoryPdfLinesLiabilities('equity', $balanceSheetData['equity'], $cAccount, $totalAsset);
+			$h .= $this->displaySubCategoryPdfLinesLiabilities('debts', $balanceSheetData['debts'], $cAccount, $totalAsset);
+
+			$h .= '<tr class="overview_line tr-bold pdf-tr-title pdf-tr-total-general">';
+
+				$h .= '<td>';
+					$h .= s("Total du passif");
+				$h .= '</td>';
+
+				$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($totals['equity']['currentNet'] + $totals['debts']['currentNet'], precision: 0).'</td>';
+				$h .= '<td class="text-end balance-td-net">';
+					$percentValue = (($totals['equity']['currentNet'] + $totals['debts']['currentNet']) / $totalAsset);
+					if((int)$percentValue === 0) {
+						$h .= '';
+					} else {
+						$h .= $this->getPercent(($totals['equity']['currentNet'] + $totals['debts']['currentNet']) / $totalAsset);
+					}
+				$h .= '</td>';
+				$h .= '<td class="text-end balance-td-net">'.(($totals['equity']['comparisonNet'] + $totals['debts']['comparisonNet']) === 0 ? '' : \util\TextUi::money($totals['equity']['comparisonNet'] + $totals['debts']['comparisonNet'], precision: 0)).'</td>';
+
+			$h .= '</tr>';
+
+
+		}
+
+		return $h;
+
+	}
+
+	private function getPercent(float $value): string {
+
+		$percent = round($value * 100);
+
+		if($percent < 1) {
+			return '';
+		}
+
+		return s("{rate}%", ['rate' => $percent]);
+
+	}
+
+	private function displaySubCategoryPdfLinesAssets(string $type, array $category, \Collection $cAccount, float $total): string {
+
+		$h = '';
+		$lastClass = NULL;
+
+		$cumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
+		$categoryCumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
+
+		foreach($category as $line) {
+
+			if($lastClass !== NULL and (
+				(mb_substr($lastClass, 0, 1) !== '4' and mb_substr($line['class'], 0, 2) !== mb_substr($lastClass, 0, 2)) or
+				(mb_substr($line['class'], 0, 1) !== mb_substr($lastClass, 0, 1) and mb_substr($lastClass, 0, 1) === '4')
+			)) {
+
+				$eAccount = $cAccount->offsetGet(mb_substr($lastClass, 0, 2));
+
+				$h .= '<tr class="overview_line tr-bold">';
+
+					$h .= '<td>';
+						if(mb_substr($lastClass, 0, 1) === '4') {
+							$h .= s("4x CRÉANCES");
+						} else {
+							$h .= encode($eAccount['class']).' ';
+							$h .= encode($eAccount['description']);
+						}
+					$h .= '</td>';
+
+					$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($cumulation['currentBrut'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-amortization">';
+					if(round($cumulation['currentDepreciation']) !== 0.0) {
+						$h .= \util\TextUi::money($cumulation['currentDepreciation'], precision: 0);
+					}
+					$h .= '</td>';
+					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($cumulation['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net">';
+						$h .= $this->getPercent($cumulation['currentNet'] / $total);
+					$h .= '</td>';
+					$h .= '<td class="text-end balance-td-net">'.($cumulation['comparisonNet'] === 0 ? '' : \util\TextUi::money($cumulation['comparisonNet'], precision: 0)).'</td>';
+
+				$h .= '</tr>';
+
+				$categoryCumulation['currentBrut'] += $cumulation['currentBrut'];
+				$categoryCumulation['currentDepreciation'] += $cumulation['currentDepreciation'];
+				$categoryCumulation['currentNet'] += $cumulation['currentNet'];
+				$categoryCumulation['comparisonNet'] += $cumulation['comparisonNet'];
+
+				$cumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
+
+			}
+
+			$h .= '<tr class="overview_line">';
+
+					$h .= '<td>';
+						if($cAccount->offsetExists($line['class'])) {
+							$eAccount = $cAccount->offsetGet($line['class']);
+						} else {
+							$eAccount = $cAccount->offsetGet(substr($line['class'], 0, 2));
+						}
+						$h .= encode($eAccount['class']).' ';
+						$h .= encode($eAccount['description']);
+					$h .= '</td>';
+					$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($line['currentBrut'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-amortization">';
+					if(round($line['currentDepreciation']) !== 0.0) {
+						$h .= \util\TextUi::money($line['currentDepreciation'], precision: 0);
+					}
+					$h .= '</td>';
+					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($line['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net"></td>';
+					$h .= '<td class="text-end balance-td-net">'.($line['comparisonNet'] === 0 ? '' : \util\TextUi::money($line['comparisonNet'], precision: 0)).'</td>';
+				$h .= '</tr>';
+
+				$lastClass = $line['class'];
+
+				$cumulation['currentBrut'] += $line['currentBrut'];
+				$cumulation['currentDepreciation'] += $line['currentDepreciation'];
+				$cumulation['currentNet'] += $line['currentNet'];
+				$cumulation['comparisonNet'] += $line['comparisonNet'];
+
+		}
+
+		$eAccount = $cAccount->offsetGet(mb_substr($lastClass, 0, 2));
+
+		$h .= '<tr class="overview_line tr-bold">';
+
+			$h .= '<td>';
+				$h .= encode($eAccount['class']).' ';
+				$h .= encode($eAccount['description']);
+			$h .= '</td>';
+
+			$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($cumulation['currentBrut'], precision: 0).'</td>';
+			$h .= '<td class="text-end balance-td-amortization">';
+			if(round($cumulation['currentDepreciation']) !== 0.0) {
+				$h .= \util\TextUi::money($cumulation['currentDepreciation'], precision: 0);
+			}
+			$h .= '</td>';
+			$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($cumulation['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net">';
+						$h .= $this->getPercent($cumulation['currentNet'] / $total);
+					$h .= '</td>';
+			$h .= '<td class="text-end balance-td-net">'.($cumulation['comparisonNet'] === 0 ? '' : \util\TextUi::money($cumulation['comparisonNet'], precision: 0)).'</td>';
+
+		$h .= '</tr>';
+
+		$categoryCumulation['currentBrut'] += $cumulation['currentBrut'];
+		$categoryCumulation['currentDepreciation'] += $cumulation['currentDepreciation'];
+		$categoryCumulation['currentNet'] += $cumulation['currentNet'];
+		$categoryCumulation['comparisonNet'] += $cumulation['comparisonNet'];
+
+		$h .= '<tr class="overview_line tr-bold pdf-tr-title">';
+
+			$h .= '<td>';
+				$h .= $type === 'fixedAssets' ? s("Total actif immobilisé") : s("Total actif circulant");
+			$h .= '</td>';
+
+			$h .= '<td class="text-end balance-td-brut">'.\util\TextUi::money($categoryCumulation['currentBrut'], precision: 0).'</td>';
+			$h .= '<td class="text-end balance-td-amortization">';
+			if(round($categoryCumulation['currentDepreciation']) !== 0.0) {
+				$h .= \util\TextUi::money($categoryCumulation['currentDepreciation'], precision: 0);
+			}
+			$h .= '</td>';
+			$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($categoryCumulation['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net">';
+						$h .= $this->getPercent($categoryCumulation['currentNet'] / $total);
+					$h .= '</td>';
+			$h .= '<td class="text-end balance-td-net">'.($categoryCumulation['comparisonNet'] === 0 ? '' : \util\TextUi::money($categoryCumulation['comparisonNet'], precision: 0)).'</td>';
+
+		$h .= '</tr>';
+
+		return $h;
+	}
+
+	private function displaySubCategoryPdfLinesLiabilities(string $type, array $category, \Collection $cAccount, float $total): string {
+
+		$h = '';
+		$lastClass = NULL;
+
+		$cumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
+		$categoryCumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
+
+		foreach($category as $line) {
+
+			if($lastClass !== NULL and mb_substr($line['class'], 0, 2) !== mb_substr($lastClass, 0, 2)) {
+
+				$eAccount = $cAccount->offsetGet(mb_substr($lastClass, 0, 2));
+
+				$h .= '<tr class="overview_line tr-bold">';
+
+					$h .= '<td>';
+						$h .= encode($eAccount['class']).' ';
+						$h .= encode($eAccount['description']);
+					$h .= '</td>';
+
+					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($cumulation['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net">';
+						$h .= $this->getPercent($cumulation['currentNet'] / $total);
+					$h .= '</td>';
+					$h .= '<td class="text-end balance-td-net">'.($cumulation['comparisonNet'] === 0 ? '' : \util\TextUi::money($cumulation['comparisonNet'], precision: 0)).'</td>';
+
+				$h .= '</tr>';
+
+				$categoryCumulation['currentBrut'] += $cumulation['currentBrut'];
+				$categoryCumulation['currentDepreciation'] += $cumulation['currentDepreciation'];
+				$categoryCumulation['currentNet'] += $cumulation['currentNet'];
+				$categoryCumulation['comparisonNet'] += $cumulation['comparisonNet'];
+
+				$cumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
+
+			}
+
+			$h .= '<tr class="overview_line">';
+
+					$h .= '<td>';
+						if($cAccount->offsetExists($line['class'])) {
+							$eAccount = $cAccount->offsetGet($line['class']);
+						} else {
+							$eAccount = $cAccount->offsetGet(substr($line['class'], 0, 2));
+						}
+						$h .= encode($eAccount['class']).' ';
+						$h .= encode($eAccount['description']);
+					$h .= '</td>';
+					$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($line['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net"></td>';
+					$h .= '<td class="text-end balance-td-net">'.($line['comparisonNet'] === 0 ? '' : \util\TextUi::money($line['comparisonNet'], precision: 0)).'</td>';
+				$h .= '</tr>';
+
+				$lastClass = $line['class'];
+
+				$cumulation['currentBrut'] += $line['currentBrut'];
+				$cumulation['currentDepreciation'] += $line['currentDepreciation'];
+				$cumulation['currentNet'] += $line['currentNet'];
+				$cumulation['comparisonNet'] += $line['comparisonNet'];
+
+		}
+
+		$eAccount = $cAccount->offsetGet(mb_substr($lastClass, 0, 2));
+
+		$h .= '<tr class="overview_line tr-bold">';
+
+			$h .= '<td>';
+				$h .= encode($eAccount['class']).' ';
+				$h .= encode($eAccount['description']);
+			$h .= '</td>';
+
+			$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($cumulation['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net">';
+						$h .= $this->getPercent($cumulation['currentNet'] / $total);
+					$h .= '</td>';
+			$h .= '<td class="text-end balance-td-net">'.($cumulation['comparisonNet'] === 0 ? '' : \util\TextUi::money($cumulation['comparisonNet'], precision: 0)).'</td>';
+
+		$h .= '</tr>';
+
+		$categoryCumulation['currentBrut'] += $cumulation['currentBrut'];
+		$categoryCumulation['currentDepreciation'] += $cumulation['currentDepreciation'];
+		$categoryCumulation['currentNet'] += $cumulation['currentNet'];
+		$categoryCumulation['comparisonNet'] += $cumulation['comparisonNet'];
+
+		$h .= '<tr class="overview_line tr-bold pdf-tr-title">';
+
+			$h .= '<td>';
+				$h .= $type === 'equity' ? s("Total capitaux propres") : s("Total dettes");
+			$h .= '</td>';
+
+			$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($categoryCumulation['currentNet'], precision: 0).'</td>';
+					$h .= '<td class="text-end balance-td-net">';
+						$h .= $this->getPercent($categoryCumulation['currentNet'] / $total);
+					$h .= '</td>';
+			$h .= '<td class="text-end balance-td-net">'.($categoryCumulation['comparisonNet'] === 0 ? '' : \util\TextUi::money($categoryCumulation['comparisonNet'], precision: 0)).'</td>';
+
+		$h .= '</tr>';
+
+		return $h;
+	}
 }
 ?>

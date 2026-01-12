@@ -74,6 +74,8 @@ new Page(function($data) {
 
 				$data->search->set('type', GET('type', 'string', \overview\BalanceSheetLib::VIEW_BASIC));
 
+				$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
+
 				[$data->balanceSheetData, $data->totals] = \overview\BalanceSheetLib::getData(
 					eFinancialYear: $data->eFarm['eFinancialYear'],
 					eFinancialYearComparison: $data->eFinancialYearComparison,

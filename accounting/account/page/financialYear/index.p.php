@@ -86,7 +86,7 @@ new \account\FinancialYearPage(function($data) {
 
 		$data->cOperation = \account\OpeningLib::getRetainedEarnings($data->eFinancialYearPrevious, $data->e, '');
 
-		$data->eOperationResult = \account\OpeningLib::getResultOperation($data->eFinancialYearPrevious, $data->e, '');
+		$data->cOperationResult = \account\OpeningLib::getResultOperation($data->eFinancialYearPrevious, $data->e, '');
 
 		list($data->cJournalCode, $data->ccOperationReversed) = \account\OpeningLib::getReversableData($data->eFinancialYearPrevious, $data->e, '');
 

@@ -183,6 +183,7 @@ Class BalanceSheetLib {
 					'comparisonDepreciation' => 0,
 					'comparisonNet' => 0,
 				];
+				ksort($balanceSheetData['equity']);
 			}
 
 			$balanceSheetData['equity'][$class]['currentBrut'] = $result;

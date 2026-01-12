@@ -103,25 +103,41 @@ Class OpeningLib {
 	/**
 	 * Résultat
 	 */
-	public static function getResultOperation(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, string $hash): \journal\Operation {
+	public static function getResultOperation(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, string $hash): \Collection {
 
+		$cOperation = new \Collection();
 		$result = \overview\IncomeStatementLib::computeResult($eFinancialYearPrevious);
 
 		if($result === 0.0) {
-			return new \journal\Operation();
-		}
-		if($result >= 0) {
-			
-			$class = \account\AccountSetting::PROFIT_CLASS;
-			$type = \journal\Operation::DEBIT;
-			
-		} else {
-			
-			$class = \account\AccountSetting::LOSS_CLASS;
-			$type = \journal\Operation::CREDIT;
-			
+			return $cOperation;
 		}
 
+		if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
+
+			$retainedClass = AccountSetting::FARMER_S_ACCOUNT_CLASS;
+
+		} else {
+
+			if($result >= 0) {
+				$retainedClass = AccountSetting::PROFIT_RETAINED_CLASS;
+			} else {
+				$retainedClass = AccountSetting::LOSS_RETAINED_CLASS;
+			}
+		}
+
+		if($result >= 0) {
+
+			$class = \account\AccountSetting::PROFIT_CLASS;
+			$type = \journal\Operation::CREDIT;
+
+		} else {
+
+			$class = \account\AccountSetting::LOSS_CLASS;
+			$type = \journal\Operation::DEBIT;
+
+		}
+
+		// Résultat
 		$eAccount = AccountLib::getByClass($class);
 		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD);
 
@@ -137,9 +153,43 @@ Class OpeningLib {
 			'hash' => $hash,
 			'journalCode' => $eJournalCode,
 		];
-		
-		return new \journal\Operation($values);
-		
+
+		$cOperation->append(new \journal\Operation($values));
+
+		// Affectation du résultat : écriture équilibrée qui solde le résultat
+		$values = [
+			'account' => $eAccount,
+			'accountLabel' => \account\AccountLabelLib::pad($class),
+			'date' => $eFinancialYear['startDate'],
+			'paymentDate' => $eFinancialYear['startDate'],
+			'description' => new FinancialYearUi()->getOpeningAffectResult($eFinancialYearPrevious),
+			'amount' => abs($result),
+			'type' => $type === \journal\Operation::DEBIT ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+			'financialYear' => $eFinancialYear,
+			'hash' => $hash,
+			'journalCode' => $eJournalCode,
+		];
+
+		$cOperation->append(new \journal\Operation($values));
+
+		$eAccount = AccountLib::getByClass($retainedClass);
+
+		$values = [
+			'account' => $eAccount,
+			'accountLabel' => \account\AccountLabelLib::pad($retainedClass),
+			'date' => $eFinancialYear['startDate'],
+			'paymentDate' => $eFinancialYear['startDate'],
+			'description' => new FinancialYearUi()->getOpeningAffectResult($eFinancialYearPrevious),
+			'amount' => abs($result),
+			'type' => $type,
+			'financialYear' => $eFinancialYear,
+			'hash' => $hash,
+			'journalCode' => $eJournalCode,
+		];
+
+		$cOperation->append(new \journal\Operation($values));
+
+		return $cOperation;
 	}
 
 	public static function open(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, array $journalCodes): void {
@@ -148,10 +198,10 @@ Class OpeningLib {
 		
 		$cOperation = \account\OpeningLib::getRetainedEarnings($eFinancialYearPrevious, $eFinancialYear, $hash);
 
-		$eOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
+		$cOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
 
-		if($eOperationResult->notEmpty()) {
-			$cOperation->append($eOperationResult);
+		if($cOperationResult->notEmpty()) {
+			$cOperation->mergeCollection($cOperationResult);
 		}
 
 		if($eFinancialYear->isCashAccounting() === FALSE) {

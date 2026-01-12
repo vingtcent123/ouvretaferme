@@ -93,12 +93,12 @@ class FinancialYearUi {
 				$hasAction = TRUE;
 			}
 
-			if(FALSE and $eFinancialYear->acceptOpen()) {
+			if(LIME_ENV === 'dev' and $eFinancialYear->acceptOpen()) {
 
 				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Ouvrir").'</a>';
 				$hasAction = TRUE;
 
-			} else if(FALSE and $eFinancialYear->isOpen() and $eFinancialYear->acceptClose()) {
+			} else if(LIME_ENV === 'dev' and $eFinancialYear->isOpen() and $eFinancialYear->acceptClose()) {
 
 				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">'.s("Clôturer").'</a>';
 				$hasAction = TRUE;
@@ -513,13 +513,15 @@ class FinancialYearUi {
 
 	}
 
-	private function result(\journal\Operation $eOperationResult, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
+	private function result(\Collection $cOperationResult, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
-		$h = '<h3>'.\Asset::icon('2-circle').' '.s("Enregistrement du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+		$h = '<h3>'.\Asset::icon('2-circle').' '.s("Enregistrement et affectation automatique du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
 
-		if($eOperationResult->empty()) {
+		if($cOperationResult->empty()) {
 			return $h.'<div class="util-empty">'.s("Il n'y a rien à enregistrer").'</div>';
 		}
+
+
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
@@ -536,26 +538,32 @@ class FinancialYearUi {
 				$h .= '</thead>';
 				$h .= '<tbody>';
 
-					$h .= '<tr>';
-						$h .= '<td>'.\util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE).'</td>';
-						$h .= '<td>'.encode($eOperationResult['accountLabel']).'</td>';
-						$h .= '<td>'.AccountUi::getLabelByAccount((int)rtrim($eOperationResult['accountLabel'], '0')).'</td>';
-						$h .= '<td class="text-end highlight-stick-right">';
-							if($eOperationResult['type'] === \journal\Operation::DEBIT) {
-								$h .= \util\TextUi::money($eOperationResult['amount']);
-							} else {
-								$h .= '';
-							}
-						$h .= '</td>';
-						$h .= '<td class="text-end highlight-stick-left">';
-							if($eOperationResult['type'] === \journal\Operation::CREDIT) {
-								$h .= \util\TextUi::money($eOperationResult['amount']);
-							} else {
-								$h .= '';
-							}
-						$h .= '</td>';
-						$h .= '<td>'.s("Résultat exercice {value}", self::getYear($eFinancialYearPrevious)).'</td>';
-					$h .= '</tr>';
+					foreach($cOperationResult as $eOperationResult) {
+
+						$h .= '<tr>';
+
+							$h .= '<td>'.\util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE).'</td>';
+							$h .= '<td>'.encode($eOperationResult['accountLabel']).'</td>';
+							$h .= '<td>'.encode($eOperationResult['account']['description']).'</td>';
+							$h .= '<td class="text-end highlight-stick-right">';
+								if($eOperationResult['type'] === \journal\Operation::DEBIT) {
+									$h .= \util\TextUi::money($eOperationResult['amount']);
+								} else {
+									$h .= '';
+								}
+							$h .= '</td>';
+							$h .= '<td class="text-end highlight-stick-left">';
+								if($eOperationResult['type'] === \journal\Operation::CREDIT) {
+									$h .= \util\TextUi::money($eOperationResult['amount']);
+								} else {
+									$h .= '';
+								}
+							$h .= '</td>';
+							$h .= '<td>'.encode($eOperationResult['description']).'</td>';
+
+						$h .= '</tr>';
+
+					}
 				$h .= '</tbody>';
 			$h .= '</table>';
 		$h .= '</div>';
@@ -704,7 +712,7 @@ class FinancialYearUi {
 		FinancialYear $eFinancialYear,
 		FinancialYear $eFinancialYearPrevious,
 		\Collection $cOperation,
-		\journal\Operation $eOperationResult,
+		\Collection $cOperationResult,
 		\Collection $cJournalCode,
 		\Collection $ccOperationReversed,
 	): string {
@@ -717,7 +725,7 @@ class FinancialYearUi {
 
 			$h .= $this->retainedEarnings($cOperation, $eFinancialYear, $eFinancialYearPrevious);
 
-			$h .= $this->result($eOperationResult, $eFinancialYear, $eFinancialYearPrevious);
+			$h .= $this->result($cOperationResult, $eFinancialYear, $eFinancialYearPrevious);
 
 			if($eFinancialYear->isCashAccounting() === FALSE) {
 				$h .= $this->reversal($form, $cJournalCode, $ccOperationReversed, $eFinancialYear, $eFinancialYearPrevious);
@@ -745,6 +753,9 @@ class FinancialYearUi {
 	}
 	public function getOpeningResult(FinancialYear $eFinancialYear): string {
 		return s("Résultat exercice {value}", $eFinancialYear->getLabel());
+	}
+	public function getOpeningAffectResult(FinancialYear $eFinancialYear): string {
+		return s("Affectation résultat exercice {value}", $eFinancialYear->getLabel());
 	}
 
 	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cDeferral, \Collection $cAssetGrant, \Collection $cAsset, array $accountsToSettle): string {
