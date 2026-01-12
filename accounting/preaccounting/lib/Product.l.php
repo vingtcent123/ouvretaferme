@@ -118,7 +118,7 @@ Class ProductLib {
 			->select([
 				'id' => new \Sql('DISTINCT(m1.id)'), 'name' => new \Sql('m1.name'),
 				'proAccount' => ['id', 'class', 'description'], 'privateAccount' => ['id', 'class', 'description'],
-				'category',
+				'category', 'reference',
 				'vignette', 'unprocessedPlant' => ['fqn', 'vignette'], 'profile', 'farm', 'status', 'unprocessedVariety', 'mixedFrozen', 'quality', 'additional', 'origin',
 			])
 			->whereCategory($tab)
