@@ -49,9 +49,11 @@ Class JournalCodeUi {
 						$h .= '<th class="text-center">';
 							$h .= s("Couleur");
 						$h .= '</th>';
-						$h .= '<th class="text-center">';
-							$h .= s("Extournable");
-						$h .= '</th>';
+						if($eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
+							$h .= '<th class="text-center">';
+								$h .= s("Extournable");
+							$h .= '</th>';
+						}
 						$h .= '<th class="text-center">';
 							$h .= s("Dans le journal");
 						$h .= '</th>';
@@ -96,15 +98,19 @@ Class JournalCodeUi {
 
 							$h .= $eJournalCode->quick('color', $color);
 						$h .= '</td>';
-						$h .= '<td class="text-center">';
-							$h .= \util\TextUi::switch([
-								'id' => 'isReversable-switch-'.$eJournalCode['id'],
-								'disabled' => $eJournalCode->canWrite() === FALSE,
-								'data-ajax' => $eJournalCode->canWrite() ? \company\CompanyUi::urlJournal($eFarm).'/journalCode:doUpdateIsReversable' : NULL,
-								'post-id' => $eJournalCode['id'],
-								'post-isReversable' => !$eJournalCode['isReversable'],
-							], $eJournalCode['isReversable']);
-						$h .= '</td>';
+
+						if($eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
+							$h .= '<td class="text-center">';
+								$h .= \util\TextUi::switch([
+									'id' => 'isReversable-switch-'.$eJournalCode['id'],
+									'disabled' => $eJournalCode->canWrite() === FALSE,
+									'data-ajax' => $eJournalCode->canWrite() ? \company\CompanyUi::urlJournal($eFarm).'/journalCode:doUpdateIsReversable' : NULL,
+									'post-id' => $eJournalCode['id'],
+									'post-isReversable' => !$eJournalCode['isReversable'],
+								], $eJournalCode['isReversable']);
+							$h .= '</td>';
+						}
+
 						$h .= '<td class="text-center">';
 							$h .= \util\TextUi::switch([
 								'id' => 'isDisplayed-switch-'.$eJournalCode['id'],
@@ -239,7 +245,10 @@ Class JournalCodeUi {
 
 		$h .= $form->asteriskInfo();
 
-		$h .= $form->dynamicGroups($eJournalCode, ['code*', 'name*', 'color', 'isReversable', 'isDisplayed']);
+		$h .= $form->dynamicGroups($eJournalCode, ['code*', 'name*', 'color', 'isDisplayed']);
+		if($eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
+			$h .= $form->dynamicGroups($eJournalCode, ['isReversable']);
+		}
 
 		$h .= $form->group(
 			content: $form->submit(s("Créer le journal"))

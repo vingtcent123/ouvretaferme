@@ -719,7 +719,9 @@ class FinancialYearUi {
 
 			$h .= $this->result($eOperationResult, $eFinancialYear, $eFinancialYearPrevious);
 
-			$h .= $this->reversal($form, $cJournalCode, $ccOperationReversed, $eFinancialYear, $eFinancialYearPrevious);
+			if($eFinancialYear->isCashAccounting() === FALSE) {
+				$h .= $this->reversal($form, $cJournalCode, $ccOperationReversed, $eFinancialYear, $eFinancialYearPrevious);
+			}
 
 
 			if($eFinancialYearPrevious->empty()) {
