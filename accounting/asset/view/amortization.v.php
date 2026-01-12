@@ -9,7 +9,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->nOperationMissingAsset, $data->hasAsset);
 
-	if(empty($data->amortizations)) {
+	if($data->nAmortizations === 0) {
 
 		echo '<div class="util-empty">';
 			echo s("Il n'y a aucune fiche d'immobilisation enregistrée pour l'instant.");
@@ -43,8 +43,12 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 				if(count($data->amortizations) > 0) {
 					echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->amortizations);
 				} else {
-					echo '<div class="util-info">';
-						echo s("Il n'y a aucun amortissement à afficher.");
+					echo '<div class="util-empty">';
+						if($data->selectedTab === 'asset') {
+							echo s("Il n'y a aucun amortissement à afficher.");
+						} else {
+							echo s("Il n'y a aucune subvention à afficher.");
+						}
 					echo '</div>';
 				}
 			echo '</div>';
@@ -74,6 +78,14 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 		echo '</div>';
 
 	} else {
+
+		if($data->eFarm['eFinancialYear']['status'] !== \account\FinancialYearElement::CLOSE) {
+
+			echo '<div class="util-warning">';
+				echo s("Vous visualisez actuellement les immobilisations d'un exercice comptable encore ouvert : il s'agit donc d'une projection à la fin de l'exercice dans le cas où les immobilisations ne changent pas dans le courant de l'exercice.");
+			echo '</div>';
+
+		}
 
 		echo '<div class="tabs-h" id="asset-acquisition" onrender="'.encode('Lime.Tab.restore(this, "acquisition-asset")').'">';
 

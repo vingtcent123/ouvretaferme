@@ -363,7 +363,7 @@ Class AssetUi {
 
 		if($cAsset->empty() === TRUE) {
 
-				return '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
+				return '<div class="util-empty">'.s("Aucune fiche n'a encore été enregistrée").'</div>';
 
 		}
 

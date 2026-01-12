@@ -171,31 +171,55 @@ class AssetLib extends \asset\AssetCrud {
 
 	}
 
-	public static function getGrantsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
+	private static function applyGrantConditions(\account\FinancialYear $eFinancialYear): AssetModel {
 
 		return Asset::model()
-      ->select(Asset::getSelection())
       ->whereStartDate('<=', $eFinancialYear['endDate'])
       ->whereEndDate('>=', $eFinancialYear['startDate'])
-			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%');
+
+	}
+
+	public static function countGrantsByFinancialYear(\account\FinancialYear $eFinancialYear): int {
+
+		return self::applyGrantConditions($eFinancialYear)->count();
+
+	}
+
+	public static function getGrantsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
+
+		return self::applyGrantConditions($eFinancialYear)
+      ->select(Asset::getSelection())
       ->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
       ->getCollection();
 	}
 
-	public static function getAssetsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
+	private static function applyAssetConditions(\account\FinancialYear $eFinancialYear): AssetModel {
 
 		return Asset::model()
-			->select(
-				Asset::getSelection()
-				+ ['account' => \account\Account::getSelection()]
-			)
 			->or(
 				fn() => $this->where('economicMode = "linear" AND startDate <='.Asset::model()->format($eFinancialYear['endDate'])),
 				fn() => $this->where('economicMode != "linear" AND acquisitionDate <='.Asset::model()->format($eFinancialYear['endDate'])),
 			)
 			->where('endDate IS NULL or endDate >='.Asset::model()->format($eFinancialYear['startDate']))
 			->where('endedDate IS NULL or endedDate >= '.Asset::model()->format($eFinancialYear['startDate']))
-			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%');
+
+	}
+
+	public static function countAssetsByFinancialYear(\account\FinancialYear $eFinancialYear): int {
+
+		return self::applyAssetConditions($eFinancialYear)->count();
+
+	}
+
+	public static function getAssetsByFinancialYear(\account\FinancialYear $eFinancialYear): \Collection {
+
+		return self::applyAssetConditions($eFinancialYear)
+			->select(
+				Asset::getSelection()
+				+ ['account' => \account\Account::getSelection()]
+			)
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();
 

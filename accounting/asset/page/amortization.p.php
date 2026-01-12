@@ -16,6 +16,7 @@ new Page(function($data) {
 			$selectedTab = 'asset';
 		}
 		$data->amortizations = \asset\AmortizationLib::getByFinancialYear($data->eFarm['eFinancialYear'], $selectedTab);
+		$data->nAmortizations = \asset\AmortizationLib::countByFinancialYear($data->eFarm['eFinancialYear']);
 
 		$data->nOperationMissingAsset = \asset\AssetLib::countOperationMissingAsset($data->eFarm['eFinancialYear']);
 

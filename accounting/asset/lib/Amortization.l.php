@@ -1086,6 +1086,12 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
+	public static function countByFinancialYear(\account\FinancialYear $eFinancialYear): int {
+
+		return AssetLib::countAssetsByFinancialYear($eFinancialYear) + AssetLib::countGrantsByFinancialYear($eFinancialYear);
+
+	}
+
 	public static function getByFinancialYear(\account\FinancialYear $eFinancialYear, string $type): array {
 
 		$cAsset = match($type) {

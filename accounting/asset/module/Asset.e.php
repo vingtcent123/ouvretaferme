@@ -246,6 +246,15 @@ class Asset extends AssetElement {
 				return $startDate !== NULL;
 
 			})
+			->setCallback('startDate.inconsistency', function(?string $startDate) use($p): bool {
+
+				if($p->isBuilt('acquisitionDate') === FALSE) {
+					return TRUE;
+				}
+
+				return $startDate >= $this['acquisitionDate'];
+
+			})
 			->setCallback('resumeDate.inconsistent', function(?string $resumeDate) use($p): bool {
 
 				if($resumeDate === NULL) {
