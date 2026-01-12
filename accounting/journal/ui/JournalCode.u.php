@@ -49,7 +49,7 @@ Class JournalCodeUi {
 						$h .= '<th class="text-center">';
 							$h .= s("Couleur");
 						$h .= '</th>';
-						if($eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
+						if($eFarm->usesAccounting() and $eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
 							$h .= '<th class="text-center">';
 								$h .= s("Extournable");
 							$h .= '</th>';
