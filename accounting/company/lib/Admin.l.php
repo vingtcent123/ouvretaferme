@@ -50,26 +50,51 @@ Class AdminLib {
 
 			CompanyLib::connectDatabase($eFarm);
 
-			$eFarm['nCashflow'] = \bank\Cashflow::model()->count();
-			$eFarm['nOperation'] = \journal\Operation::model()->count();
-			$cSuggestion = \preaccounting\Suggestion::model()
-				->select([
-					'status', 'count' => new \Sql('COUNT(*)', 'int')
-				])
-				->group(['status'])
-				->getCollection(NULL, NULL, 'status');
-			foreach($cSuggestion as $eSuggestion) {
-				$eFarm['suggestion-'.$eSuggestion['status']] = $eSuggestion['count'];
-			}
 			if($cProduct->offsetExists($eFarm['id'])) {
 				$eFarm['nProduct'] = $cProduct[$eFarm['id']]['count'];
 			} else {
 				$eFarm['nProduct'] = 0;
 			}
 
-			$eFarm['nAsset'] = \asset\Asset::model()->count();
 			$eFarm['nBankAccount'] = \bank\BankAccount::model()->count();
-			$eFarm['nFinancialYear'] = \account\FinancialYear::model()->count();
+
+			if($eFarm['nBankAccount'] === 0) {
+
+				$eFarm['nCashflow'] = 0;
+
+				$eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] = 0;
+				$eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] = 0;
+
+			} else {
+
+				$eFarm['nCashflow'] = \bank\Cashflow::model()->count();
+
+				$cSuggestion = \preaccounting\Suggestion::model()
+					->select([
+						'status', 'count' => new \Sql('COUNT(*)', 'int')
+					])
+					->group(['status'])
+					->getCollection(NULL, NULL, 'status');
+				foreach($cSuggestion as $eSuggestion) {
+					$eFarm['suggestion-'.$eSuggestion['status']] = $eSuggestion['count'];
+				}
+
+			}
+
+			if($eFarm->usesAccounting()) {
+
+				$eFarm['nOperation'] = \journal\Operation::model()->count();
+
+				$eFarm['nAsset'] = \asset\Asset::model()->count();
+				$eFarm['nFinancialYear'] = \account\FinancialYear::model()->count();
+
+			} else {
+
+				$eFarm['nOperation'] = 0;
+				$eFarm['nAsset'] = 0;
+				$eFarm['nFinancialYear'] = 0;
+
+			}
 		}
 
 		switch($search->getSort()) {
