@@ -132,7 +132,8 @@ Class AmortizationUi {
 				$h .= '<tr>';
 					$h .= '<th class="text-center">'.s("Libellé").'</th>';
 					$h .= '<th class="text-center">'.s("Date").'</th>';
-					$h .= '<th colspan="2" class="text-center border-bottom">'.s("Mode E/F et durée").'</th>';
+					$h .= '<th class="text-center border-bottom">'.s("Mode E/F").'</th>';
+					$h .= '<th class="text-center border-bottom">'.s("Durée").'</th>';
 					$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Fin exercice").'</th>';

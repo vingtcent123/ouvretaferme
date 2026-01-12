@@ -377,7 +377,8 @@ Class AssetUi {
 						$h .= '<th class="" rowspan="2">'.self::p('description')->label.'</th>';
 						$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Date").'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.s("Date d'acquisition").'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.s("Date de mise en service").'</th>';
 						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur d'acquisition").'</th>';
 						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Base amortissable").'</th>';
 					$h .= '</tr>';
@@ -426,6 +427,9 @@ Class AssetUi {
 								} else {
 									$h .= s("n/a");
 								}
+							$h .= '</td>';
+							$h .= '<td class="text-center">';
+								$h .= \util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE);
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
 								if($eAsset['startDate']) {
