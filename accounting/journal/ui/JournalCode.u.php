@@ -99,7 +99,7 @@ Class JournalCodeUi {
 							$h .= $eJournalCode->quick('color', $color);
 						$h .= '</td>';
 
-						if($eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
+						if($eFarm->usesAccounting() and $eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
 							$h .= '<td class="text-center">';
 								$h .= \util\TextUi::switch([
 									'id' => 'isReversable-switch-'.$eJournalCode['id'],
