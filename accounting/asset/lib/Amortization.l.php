@@ -59,7 +59,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		if($eAsset[$type.'Mode'] === Asset::LINEAR) {
 
 			$startDate = $eAsset['startDate'];
-			$daysFirstMonth = self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2);
+			$daysFirstMonth = max(1, self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2));
 
 		} else {
 
@@ -95,6 +95,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			}
 
 		}
+
 		if($found) {
 
 			$startDate = max($amortizationYearData['financialYear']['startDate'], $eAsset['startDate']);
@@ -239,7 +240,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'financialYear' => $period['financialYear'],
 				'base' => $period['base'],
 				'rate' => $period['rate'],
-				'amortizationValue' => $amortization,
+				'amortizationValue' => max(0, $amortization),
 				'amortizationValueCumulated' => $amortizationCumulated,
 				'endValue' => round($period['base'] - $amortizationCumulated, 2),
 				'fiscalAmortizationValue' => $amortizationFiscal,
@@ -531,18 +532,39 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
-	public static function amortizeGrant(\account\FinancialYear $eFinancialYear, Asset $eAsset, bool $simulate = FALSE): \Collection {
+	public static function amortizeGrant(\account\FinancialYear $eFinancialYear, Asset $eAsset, bool $simulate): \Collection {
 
-		$amortizationValue = self::computeAmortizationUntil($eAsset, $eFinancialYear['endDate'], 'economic');
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
 
 		$grantDebitClass = \account\AccountSetting::INVESTMENT_GRANT_AMORTIZATION_CLASS;
 		$amortizationChargeClass = \account\AccountSetting::INVESTMENT_GRANT_TO_RESULT_CLASS;
 
 		$cAccount = \account\AccountLib::getByClasses([$eAsset['account']['class'], $grantDebitClass, $amortizationChargeClass], index: 'class');
-		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_INV);
+		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
 
 		$cOperation = new \Collection();
+
+		$eAsset['table'] = self::computeTable($eAsset);
+		// On récupère la période de l'amortissement concernée
+		$currentPeriod = NULL;
+		foreach($eAsset['table'] as $period) {
+			if(
+				$period['financialYear']['startDate'] === $eFinancialYear['startDate'] and
+				$period['financialYear']['endDate'] === $eFinancialYear['endDate']
+			) {
+				$currentPeriod = $period;
+				break;
+			}
+		}
+		if($currentPeriod === NULL) {
+			$amortizationValue = 0;
+		} else {
+			$amortizationValue = $period['amortizationValue'];
+		}
+
+		if($amortizationValue === 0) {
+			return new \Collection();
+		}
 
 		// Étape 1 : On débite 139
 		$eAccountGrantDebit = $cAccount[(int)$grantDebitClass];
@@ -672,8 +694,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	public static function simulate(\account\FinancialYear $eFinancialYear, \Collection $cAsset): void {
 
+		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+
 		foreach($cAsset as &$eAsset) {
-			$eAsset['operations'] = self::amortize($eFinancialYear, $eAsset, NULL, TRUE);
+			$eAsset['operations'] = self::amortize($eFinancialYear, $eAsset, endDate: NULL, eJournalCode: $eJournalCode, simulate: TRUE);
 		}
 
 	}
@@ -691,7 +715,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 	 * Crée une entrée "Dotation aux amortissements" (classe 6) au débit et une entrée "Amortissement" (classe 2) au crédit
 	 *
 	 */
-	public static function amortize(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate, bool $simulate = FALSE): \Collection {
+	public static function amortize(\account\FinancialYear $eFinancialYear, Asset $eAsset, ?string $endDate, \journal\JournalCode $eJournalCode, bool $simulate): \Collection {
 
 		if($eAsset['economicDuration'] === Asset::WITHOUT) {
 			return new \Collection();
@@ -699,13 +723,44 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		$cOperation = new \Collection();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
+		$eJournalCodeOD = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD);
 
-		// Cas où on sort l'immo manuellement (cassé, mise au rebus etc.)
 		if($endDate === NULL) {
+
 			$endDate = $eFinancialYear['endDate'];
+			$bilan = TRUE;
+			$eAsset['table'] = self::computeTable($eAsset);
+			// On récupère la période de l'amortissement concernée
+			$currentPeriod = NULL;
+			foreach($eAsset['table'] as $period) {
+				if(
+					$period['financialYear']['startDate'] === $eFinancialYear['startDate'] and
+					$period['financialYear']['endDate'] === $eFinancialYear['endDate']
+				) {
+					$currentPeriod = $period;
+					break;
+				}
+			}
+			if($currentPeriod === NULL) {
+				$amortizationEconomicValue = 0;
+				$amortizationFiscalValue = 0;
+			} else {
+				$amortizationEconomicValue = $period['amortizationValue'];
+				$amortizationFiscalValue = $period['fiscalAmortizationValue'] ?? 0;
+			}
+
+		} else {
+
+			// Cas où on sort l'immo manuellement (cassé, mise au rebus etc.)
+			$bilan = FALSE;
+			$amortizationEconomicValue = self::computeAmortizationUntil($eAsset, $endDate, 'economic');
+			$amortizationFiscalValue = self::computeAmortizationUntil($eAsset, $endDate, 'fiscal');
+
 		}
 
-		$amortizationEconomicValue = self::computeAmortizationUntil($eAsset, $endDate, 'economic');
+		if($amortizationEconomicValue === 0) {
+			return new \Collection();
+		}
 
 		$amortizationValue = $amortizationEconomicValue;
 		$amortizationExcessValue = 0;
@@ -715,8 +770,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 			$amortizationExcessClass = \account\AccountSetting::EXCESS_AMORTIZATION_CLASS;
 			$eAccountExcessAmortization = \account\AccountLib::getByClass($amortizationExcessClass);
-
-			$amortizationFiscalValue = self::computeAmortizationUntil($eAsset, $endDate, 'fiscal');
 
 			if($amortizationFiscalValue > $amortizationEconomicValue) { // Dotation
 				$amortizationExcessValue = $amortizationFiscalValue - $amortizationEconomicValue;
@@ -747,7 +800,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			'asset' => $eAsset,
 			'financialYear' => $eFinancialYear['id'],
 			'hash' => $hash,
-			'journalCode' => $eAccountAmortizationCharge['journalCode'],
+			'journalCode' => $bilan ? $eJournalCode['id'] : $eAccountAmortizationCharge['journalCode']['id'] ?? $eJournalCodeOD['id'],
 		];
 
 		if($simulate) {
@@ -773,7 +826,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'asset' => $eAsset,
 				'financialYear' => $eFinancialYear['id'],
 				'hash' => $hash,
-				'journalCode' => $eAccountAmortizationCharge['journalCode'],
+				'journalCode' => $bilan ? $eJournalCode['id'] : $eAccountAmortizationCharge['journalCode']['id'] ?? $eJournalCodeOD['id'],
 			];
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
@@ -796,7 +849,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'asset' => $eAsset,
 				'financialYear' => $eFinancialYear['id'],
 				'hash' => $hash,
-				'journalCode' => $eAccountExcessAmortization['journalCode'],
+				'journalCode' => $bilan ? $eJournalCode['id'] : $eAccountExcessAmortization['journalCode']['id'] ?? $eJournalCodeOD['id'],
 			];
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
@@ -809,6 +862,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		// Étape 2 : Amortissement, on crédite 28XXXXXX
 		$values = self::getAmortizationOperationValues($eFinancialYear, $eAsset, $endDate, $amortizationValue);
 		$values['hash'] = $hash;
+		$values['journalCode'] = $bilan ? $eJournalCode['id'] : $eAsset['account']['journalCode']['id'] ?? $eJournalCodeOD['id'];
 
 		if($amortizationValue !== 0.0) {
 			if($simulate) {
@@ -834,7 +888,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'asset' => $eAsset,
 				'financialYear' => $eFinancialYear['id'],
 				'hash' => $hash,
-				'journalCode' => $eAccountAmortizationCharge['journalCode'],
+				'journalCode' => $bilan ? $eJournalCode['id'] : $eAccountAmortizationCharge['journalCode']['id'] ?? $eJournalCodeOD['id'],
 			];
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));
@@ -859,7 +913,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				'asset' => $eAsset,
 				'financialYear' => $eFinancialYear['id'],
 				'hash' => $hash,
-				'journalCode' => $eAccountExcessRecoveryAmortization['journalCode'],
+				'journalCode' => $bilan ? $eJournalCode['id'] : $eAccountExcessRecoveryAmortization['journalCode']['id'] ?? $eJournalCodeOD['id'],
 			];
 			if($simulate) {
 				$cOperation->append(new \journal\Operation($values));

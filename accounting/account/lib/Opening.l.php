@@ -154,11 +154,15 @@ Class OpeningLib {
 			$cOperation->append($eOperationResult);
 		}
 
-		[$cJournalCode, $ccOperationReversed] = \account\OpeningLib::getReversableData($eFinancialYearPrevious, $eFinancialYear, $hash);
-		foreach($cJournalCode as $eJournalCode) {
-			if(in_array((string)$eJournalCode['id'], $journalCodes)) {
-				$cOperation->mergeCollection($ccOperationReversed->offsetGet($eJournalCode['id']));
+		if($eFinancialYear->isCashAccounting() === FALSE) {
+
+			[$cJournalCode, $ccOperationReversed] = \account\OpeningLib::getReversableData($eFinancialYearPrevious, $eFinancialYear, $hash);
+			foreach($cJournalCode as $eJournalCode) {
+				if(in_array((string)$eJournalCode['id'], $journalCodes)) {
+					$cOperation->mergeCollection($ccOperationReversed->offsetGet($eJournalCode['id']));
+				}
 			}
+
 		}
 
 		if($cOperation->empty()) {

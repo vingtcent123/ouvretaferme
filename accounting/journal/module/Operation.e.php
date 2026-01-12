@@ -82,6 +82,17 @@ class Operation extends OperationElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('journalCode.check', function(?JournalCode &$eJournalCode): bool {
+
+				if($eJournalCode->empty()) {
+					return TRUE;
+				}
+
+				$eJournalCode = JournalCodeLib::getById($eJournalCode['id']);
+
+				return TRUE;
+
+			})
 			->setCallback('financialYear.check', function(?\account\FinancialYear &$eFinancialYear): bool {
 
 				if($eFinancialYear === NULL or $eFinancialYear->empty()) {
@@ -164,8 +175,13 @@ class Operation extends OperationElement {
 			})
 			->setCallback('thirdParty.unknown', function(?\account\ThirdParty &$eThirdParty): bool {
 
-				if($eThirdParty->empty()) {
+				if($eThirdParty->empty() and $this['journalCode']['code'] !== JournalSetting::JOURNAL_CODE_OD_BILAN) {
 					return FALSE;
+				}
+
+				// Pas de tiers pour les opérations de bilan
+				if($eThirdParty->empty() and $this['journalCode']['code'] === JournalSetting::JOURNAL_CODE_OD_BILAN) {
+					return TRUE;
 				}
 
 				$eThirdParty = ThirdPartyLib::getById($eThirdParty['id']);
@@ -223,7 +239,7 @@ class Operation extends OperationElement {
 			})
 			->setCallback('amount.negative', function(float $amount): bool {
 
-				return $amount > 0;
+				return $amount > 0.0;
 
 			})
 		;

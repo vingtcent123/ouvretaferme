@@ -65,7 +65,9 @@ class FinancialYearLib extends FinancialYearCrud {
 		\asset\AssetLib::amortizeAll($eFinancialYear);
 
 		// 2- Charges et Produits constatés d'avance
-		\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
+		if($eFinancialYear->isCashAccounting() === FALSE) {
+			\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
+		}
 
 		// Mettre les numéros d'écritures
 		\journal\OperationLib::setNumbers($eFinancialYear);

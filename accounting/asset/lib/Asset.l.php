@@ -236,11 +236,15 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->beginTransaction();
 
+		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+
 		$cAsset = self::getAssetsByFinancialYear($eFinancialYear);
 
 		foreach($cAsset as $eAsset) {
 
-			AmortizationLib::amortize($eFinancialYear, $eAsset, NULL);
+			if($eAsset->isAmortizable()) {
+				AmortizationLib::amortize($eFinancialYear, $eAsset, endDate: NULL, eJournalCode: $eJournalCode, simulate: FALSE);
+			}
 
 		}
 
@@ -248,7 +252,9 @@ class AssetLib extends \asset\AssetCrud {
 
 		foreach($cAssetGrant as $eAsset) {
 
-			AmortizationLib::amortizeGrant($eFinancialYear, $eAsset);
+			if($eAsset->isAmortizable()) {
+				AmortizationLib::amortizeGrant($eFinancialYear, $eAsset, simulate: FALSE);
+			}
 
 		}
 
@@ -315,7 +321,7 @@ class AssetLib extends \asset\AssetCrud {
 		if(AmortizationLib::isAmortizable($eAsset)) {
 
 			// Étape 1 : On calcule la dotation aux amortissements
-			AmortizationLib::amortize($eFinancialYear, $eAsset, $endDate);
+			AmortizationLib::amortize($eFinancialYear, $eAsset, endDate: $endDate, eJournalCode: new \journal\JournalCode(), simulate: FALSE);
 
 			// Étape 2 : Écriture de la sortie du bien du patrimoine
 			$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;

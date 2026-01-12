@@ -791,36 +791,42 @@ class FinancialYearUi {
 
 			}
 
-			$step = 1;
-			$h .= '<h3 class="mt-2">'.\Asset::icon('1-circle').' '.s("Factures Non Parvenues (FNP ou Charges à payer) et Factures à Établir (FAE ou Produits à Recevoir, PAR)").'</h3>';
-			
-			$h .= '<div class="util-block-help">'; 
-				$h .= s("Pour comptabiliser vos FNP et FAE, saisissez-les sur l'exercice à imputer en utilisant les comptes suivants, respectivement, si c'est une FNP ou une FAE : ");
-				$h .= '<ul>';
-					$h .= '<li>'.s("Le compte <b>{charge}</b> (au crédit) ou <b>{product}</b> (au débit)", ['charge' => AccountSetting::CHARGE_ACCOUNT_CLASS, 'product' => AccountSetting::PRODUCT_ACCOUNT_CLASS]).'</li>';
-					$h .= '<li>'.s("Les comptes de TVA <b>{charge}</b> (au crédit) ou <b>{product}</b> (au débit)", ['charge' => AccountSetting::VAT_CHARGES_TO_PAY_CLASS, 'product' => AccountSetting::VAT_CHARGES_TO_COLLECT_CLASS]).'</li>';
-					$h .= '<li>'.s("Les comptes de contrepartie <b>{charge}</b> (au débit) ou <b>{product}</b> (au crédit)", [
-						'charge' => join(', ', [AccountSetting::THIRD_ACCOUNT_SUPPLIER_TO_PAY_CLASS, AccountSetting::EMPLOYEE_TO_PAY_CLASS, AccountSetting::SOCIAL_TO_PAY_CLASS, AccountSetting::TAXES_TO_PAY_CLASS, AccountSetting::INTERESTS_TO_PAY_CLASS]),
-						'product' => join(', ', [AccountSetting::THIRD_ACCOUNT_RECEIVABLE_TO_GET_CLASS, AccountSetting::SOCIAL_TO_GET_CLASS, AccountSetting::TAXES_TO_GET_CLASS, AccountSetting::INTERESTS_TO_GET_CLASS])
-					]).'</li>';
-				$h .= '</ul>';
-				$h .= s("En les ajoutant dans un journal dit \"extournable\", lors de l'ouverture de l'exercice suivant, toutes les opérations de contrepassation seront automatiquement reprises.");
-			$h .= '</div>';
+			$step = 0;
 
-			// Étape 1 : PCA et CCA
-			$step++;
-			$h .= new \journal\DeferralUi()->listForClosing($eFarm, $cDeferral, $step);
-
-			// Étape 2 : Visualisation des amortissements
+			// Visualisation des amortissements
 			if($cAsset->notEmpty()) {
 				$step++;
 				$h .= new \asset\AssetUi()->listForClosing($eFarm, $eFinancialYear, $cAsset, $step);
 			}
 
-			// Étape 3 : Visualisation des subventions
+			// Visualisation des subventions
 			if($cAssetGrant->notEmpty()) {
 				$step++;
 				$h .= new \asset\AssetUi()->listGrantsForClosing($eFarm, $eFinancialYear, $cAssetGrant, $step);
+			}
+
+			if($eFinancialYear->isCashAccounting() === FALSE) {
+
+				$step++;
+				$h .= '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Factures Non Parvenues (FNP ou Charges à payer) et Factures à Établir (FAE ou Produits à Recevoir, PAR)").'</h3>';
+
+				$h .= '<div class="util-block-help">';
+					$h .= s("Pour comptabiliser vos FNP et FAE, saisissez-les sur l'exercice à imputer en utilisant les comptes suivants, respectivement, si c'est une FNP ou une FAE : ");
+					$h .= '<ul>';
+						$h .= '<li>'.s("Le compte <b>{charge}</b> (au crédit) ou <b>{product}</b> (au débit)", ['charge' => AccountSetting::CHARGE_ACCOUNT_CLASS, 'product' => AccountSetting::PRODUCT_ACCOUNT_CLASS]).'</li>';
+						$h .= '<li>'.s("Les comptes de TVA <b>{charge}</b> (au crédit) ou <b>{product}</b> (au débit)", ['charge' => AccountSetting::VAT_CHARGES_TO_PAY_CLASS, 'product' => AccountSetting::VAT_CHARGES_TO_COLLECT_CLASS]).'</li>';
+						$h .= '<li>'.s("Les comptes de contrepartie <b>{charge}</b> (au débit) ou <b>{product}</b> (au crédit)", [
+							'charge' => join(', ', [AccountSetting::THIRD_ACCOUNT_SUPPLIER_TO_PAY_CLASS, AccountSetting::EMPLOYEE_TO_PAY_CLASS, AccountSetting::SOCIAL_TO_PAY_CLASS, AccountSetting::TAXES_TO_PAY_CLASS, AccountSetting::INTERESTS_TO_PAY_CLASS]),
+							'product' => join(', ', [AccountSetting::THIRD_ACCOUNT_RECEIVABLE_TO_GET_CLASS, AccountSetting::SOCIAL_TO_GET_CLASS, AccountSetting::TAXES_TO_GET_CLASS, AccountSetting::INTERESTS_TO_GET_CLASS])
+						]).'</li>';
+					$h .= '</ul>';
+					$h .= s("En les ajoutant dans un journal dit \"extournable\", lors de l'ouverture de l'exercice suivant, toutes les opérations de contrepassation seront automatiquement reprises.");
+				$h .= '</div>';
+
+				// Étape PCA et CCA
+				$step++;
+				$h .= new \journal\DeferralUi()->listForClosing($eFarm, $cDeferral, $step);
+
 			}
 
 			$step++;
