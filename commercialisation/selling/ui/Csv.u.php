@@ -11,7 +11,7 @@ class CsvUi {
 
 	public function getImportFile(\farm\Farm $eFarm, array $data, \Collection $cPlant): string {
 
-		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal] = $data;
+		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
 
 		$h = '';
 
@@ -70,11 +70,23 @@ class CsvUi {
 					$h .= '</div>';
 					break;
 
+			}
+
+		}
+
+		foreach($infoGlobal as $type => $values) {
+
+			if(empty($values)) {
+				continue;
+			}
+
+			switch($type) {
+
 				case 'references' :
 					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Références utilisées plusieurs fois").'</h4>';
-						$h .= '<p>'.s("Les références suivantes seront utilisées plusieurs fois si vous ajoutez ces produits. Or une référence ne peut être utilisée que pour un seul produit.").'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+					$h .= '<h4>'.s("Références déjà connues").'</h4>';
+					$h .= '<p>'.s("Les références suivantes sont déjà reconnues. Les produits concernés ne seront pas ajoutés une deuxième fois mais seront modifiés avec les nouvelles valeurs, à l'exception de l'unité de vente qui ne peut pas être modifiée par un import.").'</p>';
+					$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 					$h .= '</div>';
 					break;
 
@@ -122,6 +134,10 @@ class CsvUi {
 								$h .= $product['description'];
 							}
 
+							if(in_array($product['reference'], $infoGlobal['references'])) {
+								$h .= '<div class="color-secondary mt-1">'.\Asset::icon('info-circle').' '.s("Référence {value} déjà connue", encode($product['reference'])).'</div>';
+							}
+
 						$h .= '</td>';
 						$h .= '<td>';
 							if($product['eUnit']->notEmpty()) {
@@ -155,9 +171,7 @@ class CsvUi {
 								if($product['reference']) {
 									$h .= '<dt>'.ProductUi::p('reference')->label.'</dt>';
 									$h .= '<dd>';
-										if(in_array($product['reference'], $errorsGlobal['references'])) {
-											$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("{value} en doublon", encode($product['reference'])).'</span>';
-										} else if(in_array('referenceInvalid', $product['errors'])) {
+										if(in_array('referenceInvalid', $product['errors'])) {
 											$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode($product['reference']).'</span>';
 										} else {
 											$h .= $product['reference'];

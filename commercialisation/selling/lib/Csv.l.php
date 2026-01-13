@@ -102,9 +102,10 @@ class CsvLib {
 
 			$eProduct = new Product([
 				'farm' => $eFarm,
+				'reference' => $product['reference'],
+				'unit' => $product['eUnit'],
 				'profile' => $product['profile'],
 				'name' => $product['name'],
-				'unit' => $product['eUnit'],
 				'private' => ($product['price_private'] !== NULL),
 				'privatePrice' => $product['price_private'],
 				'pro' => ($product['price_pro'] !== NULL),
@@ -113,7 +114,6 @@ class CsvLib {
 				'additional' => $product['additional'],
 				'origin' => $product['origin'],
 				'quality' => $product['quality'] ?? Product::NO,
-				'reference' => $product['reference'],
 				'description' => new \editor\XmlLib()->fromHtml($product['description']),
 				'unprocessedPlant' => $product['ePlant'],
 				'unprocessedVariety' => $product['variety'],
@@ -132,7 +132,28 @@ class CsvLib {
 			Product::model()->beginTransaction();
 
 			foreach($cProduct as $eProduct) {
-				ProductLib::create($eProduct);
+
+				if(
+					$eProduct['reference'] !== NULL and
+					Product::model()
+						->select('id')
+						->whereReference($eProduct['reference'])
+						->get($eProduct)
+				) {
+
+					ProductLib::update($eProduct, [
+						'name',
+						'private', 'privatePrice', 'pro', 'proPrice', 'vat',
+						'profile', 'additional', 'origin', 'quality', 'description',
+						'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedComposition', 'processedAllergen'
+					]);
+
+				} else {
+
+					ProductLib::create($eProduct);
+
+				}
+
 			}
 
 			if($fw->ko()) {
@@ -168,6 +189,8 @@ class CsvLib {
 			'vatRates' => [],
 			'units' => [],
 			'species' => [],
+		];
+		$infoGlobal = [
 			'references' => [],
 		];
 
@@ -193,7 +216,7 @@ class CsvLib {
 			$referencesCount = array_count_values($references);
 			$referencesCount = array_filter($referencesCount, fn($value) => $value > 1);
 
-			$errorsGlobal['references'] = array_keys($referencesCount);
+			$infoGlobal['references'] = array_keys($referencesCount);
 
 		}
 
@@ -358,8 +381,9 @@ class CsvLib {
 
 		return [
 			'import' => $import,
-			'errorsCount' => $errorsCount + count($errorsGlobal['species']) + count($errorsGlobal['references']),
+			'errorsCount' => $errorsCount + count($errorsGlobal['species']),
 			'errorsGlobal' => $errorsGlobal,
+			'infoGlobal' => $infoGlobal,
 		];
 
 	}

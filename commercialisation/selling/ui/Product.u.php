@@ -1482,6 +1482,7 @@ class ProductUi {
 			case 'reference' :
 				$d->placeholder = s("Uniquement des caractères alphanumériques et tirets");
 				$d->prepend = '#';
+				$d->after = \util\FormUi::info(s("La référence est facultative, mais si vous l'indiquez, elle doit être différente pour chaque produit"));
 				break;
 
 			case 'profile' :
