@@ -45,7 +45,7 @@ class AmortizationModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'asset' => ['element32', 'asset\Asset', 'cast' => 'element'],
-			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
 			'type' => ['enum', [\asset\Amortization::ECONOMIC, \asset\Amortization::EXCESS], 'cast' => 'enum'],
 			'date' => ['date', 'cast' => 'string'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],

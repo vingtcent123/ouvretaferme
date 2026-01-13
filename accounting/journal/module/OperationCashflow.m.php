@@ -43,7 +43,7 @@ class OperationCashflowModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
-			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [

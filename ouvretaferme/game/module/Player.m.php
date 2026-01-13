@@ -44,7 +44,7 @@ class PlayerModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => 20, 'collate' => 'general', 'unique' => TRUE, 'cast' => 'string'],
 			'code' => ['text8', 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'user' => ['element32', 'user\User', 'unique' => TRUE, 'cast' => 'element'],
-			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'cast' => 'float'],
+			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => 999999.99, 'cast' => 'float'],
 			'timeUpdatedAt' => ['date', 'cast' => 'string'],
 			'giftSentAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'giftReceivedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],

@@ -48,7 +48,7 @@ class AccountModel extends \ModuleModel {
 			'custom' => ['bool', 'cast' => 'bool'],
 			'journalCode' => ['element32', 'journal\JournalCode', 'null' => TRUE, 'cast' => 'element'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
-			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);

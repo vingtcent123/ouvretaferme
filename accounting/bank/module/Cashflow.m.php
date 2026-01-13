@@ -52,7 +52,7 @@ class CashflowModel extends \ModuleModel {
 			'date' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\bank\Cashflow::DEBIT, \bank\Cashflow::CREDIT, \bank\Cashflow::OTHER], 'cast' => 'enum'],
-			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'cast' => 'float'],
+			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
 			'fitid' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'name' => ['text24', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'memo' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],

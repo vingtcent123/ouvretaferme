@@ -56,7 +56,7 @@ class HistoryModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\association\History::MEMBERSHIP, \association\History::DONATION], 'cast' => 'enum'],
-			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
+			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'cast' => 'float'],
 			'membership' => ['int32', 'min' => 2025, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'cast' => 'string'],

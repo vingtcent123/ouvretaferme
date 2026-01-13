@@ -89,7 +89,7 @@ class ShopModel extends \ModuleModel {
 			'termsField' => ['bool', 'cast' => 'bool'],
 			'limitCustomers' => ['json', 'cast' => 'array'],
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'customColor' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'customBackground' => ['color', 'null' => TRUE, 'cast' => 'string'],

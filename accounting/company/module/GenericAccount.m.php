@@ -48,7 +48,7 @@ class GenericAccountModel extends \ModuleModel {
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'visible' => ['bool', 'cast' => 'bool'],
 			'vatAccount' => ['element32', 'company\GenericAccount', 'null' => TRUE, 'cast' => 'element'],
-			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'journalCode' => ['element32', 'company\JournalCode', 'null' => TRUE, 'cast' => 'element'],
 			'deletedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'type' => ['enum', [\company\GenericAccount::AGRICULTURAL, \company\GenericAccount::ASSOCIATION], 'cast' => 'enum'],

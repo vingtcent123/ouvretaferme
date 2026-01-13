@@ -152,7 +152,7 @@ class Cultivation {
 
 			}
 
-			wrapper.qs('input[name^="density"]').value = density ? Math.round(density * 10) / 10 : '';
+			wrapper.qs('input[name^="density"]').value = density ? Math.ceil(density * 100) / 100 : '';
 
 		} else {
 			density = parseInt(wrapper.qs('input[name^="density"]').value) || null;

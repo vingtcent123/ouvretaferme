@@ -42,7 +42,7 @@ class HistoryModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'user' => ['element32', 'user\User', 'cast' => 'element'],
-			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'time' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'message' => ['text16', 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);

@@ -53,7 +53,7 @@ class DeferralModel extends \ModuleModel {
 			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
-			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => NULL, 'cast' => 'float'],
+			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'cast' => 'float'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'status' => ['enum', [\journal\Deferral::PLANNED, \journal\Deferral::RECORDED, \journal\Deferral::DEFERRED, \journal\Deferral::CANCELLED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],

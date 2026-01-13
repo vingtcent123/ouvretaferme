@@ -62,7 +62,7 @@ class PointModel extends \ModuleModel {
 			'paymentTransfer' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'paymentOffline' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => NULL, 'null' => TRUE, 'cast' => 'float'],
+			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'status' => ['enum', [\shop\Point::ACTIVE, \shop\Point::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],

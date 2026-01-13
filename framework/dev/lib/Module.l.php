@@ -1128,10 +1128,14 @@ class ModuleLib {
 			case 'decimal' :
 				if(count($property['params']) === 2) {
 					[$digits, $decimal] = $property['params'];
-					$values = ['digits' => $digits, 'decimal' => $decimal];
+					$limit = pow(10, $digits - $decimal) - 1 / pow(10, $decimal);
+					$values = ['digits' => $digits, 'decimal' => $decimal, 'min' => $limit * -1, 'max' => $limit];
 				} else if(count($property['params']) === 4) {
 					[$digits, $decimal, $min, $max] = $property['params'];
-					$values = ['digits' => $digits, 'decimal' => $decimal, 'min' => $min, 'max' => $max];
+					$limit = pow(10, $digits - $decimal) - 1 / pow(10, $decimal);
+					$min ??= $limit * -1;
+					$max ??= $limit;
+					$values = ['digits' => $digits, 'decimal' => $decimal, 'min' => max($limit * -1, $min), 'max' => min($limit, $max)];
 				} else {
 					throw new \Exception('Bad use of decimal type');
 				}

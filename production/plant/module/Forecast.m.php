@@ -51,9 +51,9 @@ class ForecastModel extends \ModuleModel {
 			'unit' => ['enum', [\plant\Forecast::KG, \plant\Forecast::UNIT, \plant\Forecast::BUNCH], 'cast' => 'enum'],
 			'harvestObjective' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'proPart' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
-			'proPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'proPrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'privatePart' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
-			'privatePrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'null' => TRUE, 'cast' => 'float'],
+			'privatePrice' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
