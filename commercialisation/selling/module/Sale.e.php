@@ -1056,6 +1056,12 @@ class Sale extends SaleElement {
 			})
 			->setCallback('deliveredAt.check', function(string &$date) use($p): bool {
 
+				// Erreur dans la date de vente, on ignore cette vérification
+				// Ce test ne pose pas de problème sur les ventes réalisées hors boutique
+				if($p->isInvalid('shopDate')) {
+					return TRUE;
+				}
+
 				// La date est gérée directement dans la boutique
 				if(
 					$this->isComposition() === FALSE and
