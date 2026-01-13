@@ -218,8 +218,10 @@ class CsvLib {
 
 			if($product['unit'] !== NULL) {
 
-				if(array_key_exists(mb_strtolower($product['unit']), $units)) {
-					$import[$key]['eUnit'] = $units[$product['unit']];
+				$unit = mb_strtolower($product['unit']);
+
+				if(array_key_exists($unit, $units)) {
+					$import[$key]['eUnit'] = $units[$unit];
 				} else {
 					$errorsGlobal['units'][] = $product['unit'];
 					$errors[] = 'unitInvalid';
