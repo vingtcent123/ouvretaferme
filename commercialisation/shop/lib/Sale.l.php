@@ -503,7 +503,7 @@ class SaleLib {
 			]
 		];
 
-		$successUrl = ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate']);
+		$successUrl = ShopUi::confirmationUrl($eSale['shop'], $eSale['shopDate'], new \Collection([$eSale]));
 		$cancelUrl = ShopUi::paymentUrl($eSale['shop'], $eSale['shopDate']);
 
 		$arguments = [
