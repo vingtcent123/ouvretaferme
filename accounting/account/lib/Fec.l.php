@@ -109,7 +109,7 @@ class FecLib  {
 		$filename .= 'FEC';
 
 		if($eFinancialYear->notEmpty() and $eFinancialYear->isClosed()) {
-			$filename .= date('Ymd', $eFinancialYear['closeDate']);
+			$filename .= date('Ymd', strtotime($eFinancialYear['endDate']));
 		} else {
 			$filename .= date('YmdHis');
 		}

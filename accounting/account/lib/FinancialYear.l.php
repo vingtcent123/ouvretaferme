@@ -51,6 +51,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->update($eFinancialYear, [
 			'openDate' => new \Sql('NOW()'),
+			'openGeneration' => FinancialYear::WAITING,
 		]);
 
 		FinancialYear::model()->commit();
@@ -75,6 +76,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		FinancialYear::model()->update($eFinancialYear, [
 			'status' => FinancialYear::CLOSE,
 			'closeDate' => new \Sql('NOW()'),
+			'closeGeneration' => FinancialYear::WAITING
 		]);
 
 		LogLib::save('close', 'FinancialYear', ['id' => $eFinancialYear['id']]);
@@ -244,14 +246,17 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function cbUpdate(FinancialYear $e, FinancialYear $eOld): void {
+	public static function update(FinancialYear $e, array $properties): void {
+
+		parent::update($e, $properties);
 
 		$changes = [];
-		foreach($eOld as $property => $value) {
+		foreach($e['eOld'] as $property => $value) {
 			if($e[$property] !== $value) {
 				$changes[$property] = ['old' => $value, 'new' => $e[$property]];
 			}
 		}
+
 		LogLib::save('update', 'FinancialYear', ['id' => $e['id'], 'changes' => $changes]);
 
 	}
@@ -275,6 +280,100 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function regenerate(\farm\Farm $eFarm, FinancialYear $eFinancialYear, string $type) {
+
+		if($type === Pdf::FINANCIAL_YEAR_OPENING and FinancialYear::model()
+				->where('openGeneration IS NULL OR openGeneration NOT IN ("'.FinancialYear::NOW.'", "'.FinancialYear::WAITING.'")')
+				->update($eFinancialYear, [
+					'openGeneration' => FinancialYear::NOW,
+			]) === 0) {
+			return;
+		}
+		if($type === Pdf::FINANCIAL_YEAR_CLOSING and FinancialYear::model()
+				->where('closeGeneration IS NULL OR closeGeneration NOT IN ("'.FinancialYear::NOW.'", "'.FinancialYear::WAITING.'")')
+				->update($eFinancialYear, [
+					'closeGeneration' => FinancialYear::NOW,
+			]) === 0) {
+			return;
+		}
+
+		self::generate($eFarm, $eFinancialYear, $type);
+
+	}
+	public static function generate(\farm\Farm $eFarm, FinancialYear $eFinancialYear, string $type) {
+
+		if($type === Pdf::FINANCIAL_YEAR_OPENING and
+			FinancialYear::model()
+				->whereOpenGeneration('IN', [FinancialYear::NOW, FinancialYear::WAITING])
+				->update($eFinancialYear, [
+					'openGeneration' => FinancialYear::PROCESSING,
+					'openGenerationAt' => new \Sql('NOW()'),
+			]) === 0
+		) {
+			return;
+		}
+		if($type === Pdf::FINANCIAL_YEAR_CLOSING and
+			FinancialYear::model()
+				->whereCloseGeneration('IN', [FinancialYear::NOW, FinancialYear::WAITING])
+				->update($eFinancialYear, [
+					'closeGeneration' => FinancialYear::PROCESSING,
+					'closeGenerationAt' => new \Sql('NOW()'),
+			]) === 0
+		) {
+			return;
+		}
+
+		$ePdf = \overview\PdfLib::generate($eFarm, $eFinancialYear, $type);
+
+		switch($type) {
+			case Pdf::FINANCIAL_YEAR_OPENING:
+				$eFinancialYear['openContent'] = $ePdf['content'];
+				$eFinancialYear['openGeneration'] = FinancialYear::SUCCESS;
+				$properties = ['openContent', 'openGeneration'];
+				break;
+
+			case Pdf::FINANCIAL_YEAR_CLOSING:
+				$eFinancialYear['closeContent'] = $ePdf['content'];
+				$eFinancialYear['closeGeneration'] = FinancialYear::SUCCESS;
+				$properties = ['closeContent', 'closeGeneration'];
+				break;
+
+		}
+
+		FinancialYear::model()
+			->select($properties)
+			->update($eFinancialYear);
+
+	}
+
+	public static function generateOpenWaiting(\farm\Farm $eFarm) {
+
+		$cFinancialYear = FinancialYear::model()
+			->select(FinancialYear::getSelection())
+			->whereOpenGeneration(FinancialYear::WAITING)
+			->getCollection();
+
+		foreach($cFinancialYear as $eFinancialYear) {
+
+			self::generate($eFarm, $eFinancialYear, Pdf::FINANCIAL_YEAR_OPENING);
+
+		}
+	}
+
+	public static function generateCloseWaiting(\farm\Farm $eFarm) {
+
+		$cFinancialYear = FinancialYear::model()
+			->select(FinancialYear::getSelection())
+			->whereCloseGeneration(FinancialYear::WAITING)
+			->getCollection();
+
+		foreach($cFinancialYear as $eFinancialYear) {
+
+			self::generate($eFarm, $eFinancialYear, Pdf::FINANCIAL_YEAR_CLOSING);
+
+		}
+
+	}
 }
 
 ?>

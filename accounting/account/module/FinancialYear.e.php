@@ -69,6 +69,24 @@ class FinancialYear extends FinancialYearElement {
 
 	}
 
+	public function acceptDownloadOpen(): bool {
+		return $this['openContent']->notEmpty();
+	}
+
+	public function acceptDownloadClose(): bool {
+		return $this['closeContent']->notEmpty();
+	}
+
+	public function acceptGenerateOpen(): bool {
+		return ($this['openDate'] !== NULL and in_array($this['openGeneration'], [NULL, FinancialYear::FAIL, FinancialYear::SUCCESS]));
+	}
+
+
+	public function acceptGenerateClose(): bool {
+		return ($this['closeDate'] !== NULL and in_array($this['closeGeneration'], [NULL, FinancialYear::FAIL, FinancialYear::SUCCESS]));
+	}
+
+
 	public function acceptClose(): bool {
 
 		return $this['closeDate'] === NULL and $this['status'] === FinancialYear::OPEN;
@@ -149,13 +167,33 @@ class FinancialYear extends FinancialYearElement {
 				return $eFinancialYear->exists() === FALSE and \util\DateLib::isValid($date);
 
 			})
-			->setCallback('dates.inconsistency', function(?string $endDate) use ($p): bool {
+			->setCallback('endDate.after', function(?string $endDate) use ($p): bool {
 
-				if($p->isBuilt('startDate') === FALSE or $p->isBuilt('endDate') === FALSE) {
+				if($p->isBuilt('startDate') === FALSE) {
 					return TRUE;
 				}
 
-				return $this['startDate'] < $this['endDate'];
+				return ($this['startDate'] < $endDate);
+
+			})
+			->setCallback('endDate.intervalMin', function(?string $endDate) use ($p): bool {
+
+				if($p->isBuilt('startDate') === FALSE or $this['startDate'] >= $endDate) {
+					return TRUE;
+				}
+
+				$intervalInMonths = round(\util\DateLib::interval($endDate, $this['startDate']) / 60 / 60 / 24 / 30);
+				return ($intervalInMonths > 0);
+
+			})
+			->setCallback('endDate.intervalMax', function(?string $endDate) use ($p): bool {
+
+				if($p->isBuilt('startDate') === FALSE or $this['startDate'] >= $endDate) {
+					return TRUE;
+				}
+
+				$intervalInMonths = round(\util\DateLib::interval($endDate, $this['startDate']) / 60 / 60 / 24 / 30);
+				return ($intervalInMonths <= 24);
 
 			})
 			->setCallback('hasVat.check', function(?bool $hasVat) use($p, $input): bool {

@@ -23,6 +23,12 @@ abstract class FinancialYearElement extends \Element {
 	const ACCRUAL = 'accrual';
 	const CASH = 'cash';
 
+	const WAITING = 'waiting';
+	const NOW = 'now';
+	const PROCESSING = 'processing';
+	const FAIL = 'fail';
+	const SUCCESS = 'success';
+
 	public static function getSelection(): array {
 		return FinancialYear::model()->getProperties();
 	}
@@ -66,17 +72,25 @@ class FinancialYearModel extends \ModuleModel {
 			'accountingType' => ['enum', [\account\FinancialYear::ACCRUAL, \account\FinancialYear::CASH], 'cast' => 'enum'],
 			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'null' => TRUE, 'cast' => 'int'],
 			'associates' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'openDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'openGeneration' => ['enum', [\account\FinancialYear::WAITING, \account\FinancialYear::NOW, \account\FinancialYear::PROCESSING, \account\FinancialYear::FAIL, \account\FinancialYear::SUCCESS], 'null' => TRUE, 'cast' => 'enum'],
+			'openGenerationAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'openContent' => ['element32', 'account\PdfContent', 'null' => TRUE, 'cast' => 'element'],
+			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'closeGeneration' => ['enum', [\account\FinancialYear::WAITING, \account\FinancialYear::NOW, \account\FinancialYear::PROCESSING, \account\FinancialYear::FAIL, \account\FinancialYear::SUCCESS], 'null' => TRUE, 'cast' => 'enum'],
+			'closeGenerationAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'closeContent' => ['element32', 'account\PdfContent', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'closeDate', 'openDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'openDate', 'openGeneration', 'openGenerationAt', 'openContent', 'closeDate', 'closeGeneration', 'closeGenerationAt', 'closeContent', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
+			'openContent' => 'account\PdfContent',
+			'closeContent' => 'account\PdfContent',
 			'createdBy' => 'user\User',
 		];
 
@@ -119,6 +133,12 @@ class FinancialYearModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'accountingType' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'openGeneration' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'closeGeneration' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -176,12 +196,36 @@ class FinancialYearModel extends \ModuleModel {
 		return $this->where('associates', ...$data);
 	}
 
+	public function whereOpenDate(...$data): FinancialYearModel {
+		return $this->where('openDate', ...$data);
+	}
+
+	public function whereOpenGeneration(...$data): FinancialYearModel {
+		return $this->where('openGeneration', ...$data);
+	}
+
+	public function whereOpenGenerationAt(...$data): FinancialYearModel {
+		return $this->where('openGenerationAt', ...$data);
+	}
+
+	public function whereOpenContent(...$data): FinancialYearModel {
+		return $this->where('openContent', ...$data);
+	}
+
 	public function whereCloseDate(...$data): FinancialYearModel {
 		return $this->where('closeDate', ...$data);
 	}
 
-	public function whereOpenDate(...$data): FinancialYearModel {
-		return $this->where('openDate', ...$data);
+	public function whereCloseGeneration(...$data): FinancialYearModel {
+		return $this->where('closeGeneration', ...$data);
+	}
+
+	public function whereCloseGenerationAt(...$data): FinancialYearModel {
+		return $this->where('closeGenerationAt', ...$data);
+	}
+
+	public function whereCloseContent(...$data): FinancialYearModel {
+		return $this->where('closeContent', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): FinancialYearModel {

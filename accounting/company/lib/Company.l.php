@@ -203,7 +203,6 @@ class CompanyLib {
 			try {
 				new \ModuleAdministration($class)->rebuild([]);
 			} catch (\Exception $e) {
-				d($e);
 				new \ModuleAdministration($class)->init();
 			}
 

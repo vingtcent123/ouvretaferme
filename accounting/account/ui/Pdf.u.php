@@ -1,15 +1,38 @@
 <?php
-namespace pdf;
+namespace account;
 
 class PdfUi {
 
 	public function __construct() {
 
-		\Asset::css('pdf', 'pdf.css');
 
 	}
 
-	public static function getHeader(string $title, \account\FinancialYear $eFinancialYear): string {
+	public function getFilename(\account\FinancialYear $eFinancialYear, string $type): string {
+
+		return $this->getName($eFinancialYear, $type);
+
+	}
+
+	public function getName(\account\FinancialYear $eFinancialYear, string $type): string {
+
+		return match($type) {
+			\account\Pdf::FINANCIAL_YEAR_OPENING => s("bilan-ouverture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			\account\Pdf::FINANCIAL_YEAR_CLOSING => s("bilan-cloture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+		};
+
+	}
+
+	public function getTitle(string $type): string {
+
+		return match($type) {
+			\account\Pdf::FINANCIAL_YEAR_OPENING => s("Bilan d'ouverture"),
+			\account\Pdf::FINANCIAL_YEAR_CLOSING => s("Bilan de clôture"),
+		};
+
+	}
+
+	public static function getHeader(\farm\Farm $eFarm, string $title, \account\FinancialYear $eFinancialYear): string {
 
 		$borderColor = '#D5D5D5';
 		$h = '<style>
@@ -37,6 +60,16 @@ class PdfUi {
 					font-size: 12px;
 					align-content: center;
 				}
+				.pdf-document-header > div > h2 {
+					margin: 0.5cm auto 0.25cm;
+				}
+				.pdf-document-header > div > h3 {
+					margin-bottom: 0.1cm;
+				}
+				.pdf-document-header > div > * {
+					text-align: center;
+					margin: auto;
+				}
 				.pdf-document-header-details > table {
 			    width: 100%;
 			    line-height: 1.4;
@@ -57,7 +90,13 @@ class PdfUi {
         </style>';
 		$h .= '<div class="pdf-document-header">';
 
-			$h .= '<h2 class="pdf-document-title">'.$title.'</h2>';
+			$h .= '<div>';
+				$h .= '<h2 class="pdf-document-title">'.$title.'</h2>';
+				$h .= '<h3>'.encode($eFarm['legalName'] ?? $eFarm['name']).'</h3>';
+				if($eFarm['siret'] !== NULL) {
+					$h .= '<div>'.encode($eFarm['siret']).'</div>';
+				}
+			$h .= '</div>';
 
 			$h .= '<div class="pdf-document-header-details">';
 

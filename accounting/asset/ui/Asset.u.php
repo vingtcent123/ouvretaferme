@@ -913,7 +913,62 @@ Class AssetUi {
 
 	public function listForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cAsset, int $step): string {
 
+		$tableContent = '';
+		foreach($cAsset as $eAsset) {
+
+			$currentPeriod = NULL;
+			foreach($eAsset['table'] as $period) {
+				if(
+					$period['financialYear']['startDate'] === $eFinancialYear['startDate'] and
+					$period['financialYear']['endDate'] === $eFinancialYear['endDate']
+				) {
+					$currentPeriod = $period;
+					break;
+				}
+			}
+
+			if($currentPeriod === NULL) {
+				continue;
+			}
+
+			$tableContent .= '<tr id="'.$eAsset['id'].'">';
+
+				$tableContent .= '<td>';
+					$tableContent .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
+						$tableContent .= encode($eAsset['accountLabel']);
+					$tableContent .= '</div>';
+					$tableContent .= '<div class="dropdown-list bg-primary">';
+					$tableContent .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
+					$tableContent .= '</div>';
+				$tableContent .= '</td>';
+				$tableContent .= '<td><a href="'.\company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
+				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
+				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
+				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';
+				$tableContent .= '<td class="text-center">';
+					foreach($eAsset['operations'] as $eOperation) {
+						if($eOperation['type'] === \journal\Operation::DEBIT) {
+							$tableContent .= '<div>'.$eOperation['accountLabel'].'</div>';
+						}
+					}
+				$tableContent .= '</td>';
+				$tableContent .= '<td class="text-center">';
+					foreach($eAsset['operations'] as $eOperation) {
+						if($eOperation['type'] === \journal\Operation::CREDIT) {
+							$tableContent .= '<div>'.$eOperation['accountLabel'].'</div>';
+						}
+					}
+				$tableContent .= '</td>';
+
+			$tableContent .= '</tr>';
+
+		}
+
 		$h = '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Amortissements").'</h3>';
+
+		if(mb_strlen($tableContent) === 0) {
+			return $h.'<div class="util-empty">'.s("Il n'y a aucune écriture d'amortissement à enregistrer pour la clôture.").'</div>';
+		}
 
 		$h .= '<div class="util-info">';
 			$h .= s("Les écritures d'amortissement suivantes seront automatiquement enregistrées lors de la clôture.");
@@ -946,55 +1001,6 @@ Class AssetUi {
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
-					foreach($cAsset as $eAsset) {
-
-						$currentPeriod = NULL;
-						foreach($eAsset['table'] as $period) {
-							if(
-								$period['financialYear']['startDate'] === $eFinancialYear['startDate'] and
-								$period['financialYear']['endDate'] === $eFinancialYear['endDate']
-							) {
-								$currentPeriod = $period;
-								break;
-							}
-						}
-
-						if($currentPeriod === NULL) {
-							continue;
-						}
-
-						$h .= '<tr id="'.$eAsset['id'].'">';
-
-							$h .= '<td>';
-								$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-									$h .= encode($eAsset['accountLabel']);
-								$h .= '</div>';
-								$h .= '<div class="dropdown-list bg-primary">';
-								$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
-								$h .= '</div>';
-							$h .= '</td>';
-							$h .= '<td><a href="'.\company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';
-							$h .= '<td class="text-center">';
-								foreach($eAsset['operations'] as $eOperation) {
-									if($eOperation['type'] === \journal\Operation::DEBIT) {
-										$h .= '<div>'.$eOperation['accountLabel'].'</div>';
-									}
-								}
-							$h .= '</td>';
-							$h .= '<td class="text-center">';
-								foreach($eAsset['operations'] as $eOperation) {
-									if($eOperation['type'] === \journal\Operation::CREDIT) {
-										$h .= '<div>'.$eOperation['accountLabel'].'</div>';
-									}
-								}
-							$h .= '</td>';
-
-						$h .= '</tr>';
-
-					}
 
 				$h .= '</tbody>';
 

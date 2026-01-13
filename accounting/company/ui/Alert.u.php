@@ -7,8 +7,6 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'FinancialYear::dates.inconsistency' => s("La date de début de votre exercice comptable doit être antérieure à la date de fin."),
-
 			default => null
 
 		};

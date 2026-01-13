@@ -32,8 +32,14 @@ FinancialYear:
   accountingType: enum(ACCRUAL, CASH) = CASH
   legalCategory: ?int16(1000, 9999) # Catégorie juridique (au sens INSEE) sur 4 chiffres
   associates: ?int8(0, null) # Nombre d'associés
-  closeDate: ?date # Quand le bilan de clôture a été réalisé
   openDate: ?date # Quand le bilan d'ouverture a été réalisé
+  openGeneration: ?enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
+  openGenerationAt: ?datetime
+  openContent: ?account\PdfContent
+  closeDate: ?date # Quand le bilan de clôture a été réalisé
+  closeGeneration: ?enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
+  closeGenerationAt: ?datetime
+  closeContent: ?account\PdfContent
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
 
@@ -70,6 +76,26 @@ Partner:
   UNIQUE: [
     ["partner"]
   ]
+
+Pdf:
+  id: serial32
+  financialYear: account\FinancialYear
+  name: text8(1, null)
+  used: int16(0, null) = 1
+  content: ?account\PdfContent
+  crc32: ?int32(0, null)
+  type: enum(FINANCIAL_YEAR_OPENING, FINANCIAL_YEAR_CLOSING, BALANCE_SHEET, INCOME_SHEET, SIG)
+  version: ?int16(0, null)
+  createdAt: datetime = SPECIAL(now)
+  INDEX: [
+    ["financialYear", "type"],
+    ["content"]
+  ]
+
+PdfContent:
+  id: serial32
+  hash: ?textFixed(20, 20) @charset(ascii)
+  createdAt: datetime = SPECIAL(now)
 
 ThirdParty:
   id: serial32

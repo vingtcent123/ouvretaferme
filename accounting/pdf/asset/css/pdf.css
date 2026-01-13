@@ -65,7 +65,8 @@ tr {
 }
 
 table.pdf-table-bordered {
-	border:1px solid black;
+	border: 1px solid black;
+	page-break-after: always;
 }
 tr.pdf-tr-title {
 	background-color: lightgrey;

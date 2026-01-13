@@ -218,7 +218,7 @@ Class BalanceSheetLib {
 
 			$categoryBalance = $balanceSheetData[$category];
 
-			foreach(['currentBrut', 'currentDepreciation', 'currentNet', 'comparisonBrut', 'comparaisonDepreciation', 'comparaisonNet'] as $key) {
+			foreach(['currentBrut', 'currentDepreciation', 'currentNet', 'comparisonBrut', 'comparisonDepreciation', 'comparisonNet'] as $key) {
 
 				$sum = 0;
 				foreach($categoryBalance as $class => $balance) {
@@ -232,6 +232,7 @@ Class BalanceSheetLib {
 
 			}
 		}
+
 		return [$balanceSheetData, $totals];
 	}
 
@@ -283,8 +284,17 @@ Class BalanceSheetLib {
 
 			// Classe à 3 chiffres
 			$originClass = (int)\account\AccountLabelLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
-			$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
-			$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
+			if($eOperation['financialYear']->is($eFinancialYear)) {
+
+				$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
+				$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
+			} else {
+
+				$balanceSheetDataCategory[$originClass]['comparisonDepreciation'] += abs($eOperation['amount']);
+				$balanceSheetDataCategory[$originClass]['comparisonNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['comparisonDepreciation'], 2);
+
+
+			}
 
 			// Classe complète (si isDetailed)
 			$originClass = \account\AccountLabelLib::pad($originClass);
@@ -313,6 +323,7 @@ Class BalanceSheetLib {
 			}
 
 		}
+
 	}
 
 	public static function getDetailData(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison): \Collection {

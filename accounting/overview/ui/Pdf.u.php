@@ -14,6 +14,7 @@ class PdfUi {
 		array $balanceSheetData,
 		array $totals,
 		\Collection $cAccount,
+		string $type,
 	): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
@@ -27,7 +28,7 @@ class PdfUi {
 		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
 
 		if(get_exists('test') === TRUE) {
-			$h .= \pdf\PdfUi::getHeader(s("{farm} - exercice {year}<br />Bilan au {date}", ['farm' => $eFarm['legalName'], 'year' => $eFinancialYear->getLabel(), 'date' => \util\DateUi::numeric($date)]), $eFinancialYear);
+			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type), $eFinancialYear);
 		}
 
 		$h .= '<div class="pdf-document-wrapper">';
@@ -59,7 +60,7 @@ class PdfUi {
 		$h .= '</div>';
 
 		if(get_exists('test') === TRUE) {
-			$h .= \pdf\PdfUi::getFooter();
+			$h .= \account\PdfUi::getFooter();
 		}
 		return $h;
 

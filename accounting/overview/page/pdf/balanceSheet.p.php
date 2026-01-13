@@ -2,10 +2,25 @@
 new Page()
 	->remote('index', 'accounting', function($data) {
 
-		$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
+		$data->type = GET('type');
+		if(in_array($data->type, [\account\Pdf::FINANCIAL_YEAR_OPENING, \account\Pdf::FINANCIAL_YEAR_CLOSING]) === FALSE) {
+			throw new VoidAction();
+		}
+
+		if($data->type === \account\Pdf::FINANCIAL_YEAR_OPENING) {
+			$eFinancialYear = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
+			if($eFinancialYear->empty()) {
+				return new VoidAction();
+			}
+			$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
+		} else {
+			$eFinancialYear = $data->eFarm['eFinancialYear'];
+			$eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
+		}
+
 
 		[$data->balanceSheetData, $data->totals] = \overview\BalanceSheetLib::getData(
-			eFinancialYear: $data->eFarm['eFinancialYear'],
+			eFinancialYear: $eFinancialYear,
 			eFinancialYearComparison: $eFinancialYearPrevious,
 			isDetailed: FALSE
 		);

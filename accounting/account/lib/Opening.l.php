@@ -221,8 +221,8 @@ Class OpeningLib {
 
 		\journal\Operation::model()->insert($cOperation);
 
-		// Récupération des PCA et CCA
-		\journal\DeferralLib::deferIntoFinancialYear($eFinancialYearPrevious, $eFinancialYear);
+		// Récupération des PCA et CCA (ACCRUAL UNIQUEMENT)
+		//\journal\DeferralLib::deferIntoFinancialYear($eFinancialYearPrevious, $eFinancialYear);
 
 	}
 	

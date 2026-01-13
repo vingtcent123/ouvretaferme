@@ -16,6 +16,9 @@ class AlertUi {
 			'FinancialYear::endDate.check' => s("Cette date est incluse dans un autre exercice."),
 			'FinancialYear::startDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
 			'FinancialYear::endDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
+			'FinancialYear::endDate.after' => s("La date de fin de votre exercice comptable doit être après la date de début"),
+			'FinancialYear::endDate.intervalMin' => s("L'exercice comptable doit durer au minimum 1 mois"),
+			'FinancialYear::endDate.intervalMax' => s("L'exercice comptable ne peut pas durer plus de 24 mois."),
 
 			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
 
@@ -33,7 +36,7 @@ class AlertUi {
 
 	}
 
-	public static function getSuccess(string $fqn): ?string {
+	public static function getSuccess(string $fqn, array $options = []): ?string {
 
 		return match($fqn) {
 
@@ -47,6 +50,10 @@ class AlertUi {
 			'FinancialYear::reopen' => s("L'exercice comptable a bien été rouvert ! Faites bien attention..."),
 			'FinancialYear::reclose' => s("L'exercice comptable a bien été refermé."),
 			'FinancialYear::deleted' => s("L'exercice comptable a bien été supprimé."),
+			'FinancialYear::pdf.generated' => [
+				Pdf::FINANCIAL_YEAR_OPENING => s("Le bilan d'ouverture a bien été généré."),
+				Pdf::FINANCIAL_YEAR_CLOSING => s("Le bilan de clôture a bien été généré."),
+			][$options['type']].($options['actions'] ?? ''),
 
 			'ThirdParty::created' => s("Le tiers a bien été créé."),
 			'ThirdParty::updated' => s("Le tiers a bien été mis à jour."),

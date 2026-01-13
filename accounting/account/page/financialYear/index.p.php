@@ -14,13 +14,18 @@ new Page()
 
 		foreach($data->eFarm['cFinancialYear'] as $key => $eFinancialYear) {
 			$data->eFarm['cFinancialYear'][$key]['nOperation'] = $data->nOperationByFinancialYear[$eFinancialYear['id']]['count'] ?? 0;
+			$data->eFarm['cFinancialYear'][$key]['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
 		}
 
 		throw new ViewAction($data);
 
 	});
 
-new \account\FinancialYearPage()
+new \account\FinancialYearPage(function($data) {
+
+	$data->eFarm->validate('canManage');
+
+})
 	->create(function($data) {
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
@@ -65,6 +70,7 @@ new \account\FinancialYearPage(function($data) {
 
 		$e->validate('canUpdate');
 		$data->eOld = clone $e;
+		$e['eOld'] = $data->eOld;
 
 	})
 	->update(function($data) {
@@ -74,7 +80,6 @@ new \account\FinancialYearPage(function($data) {
 	})
 	->doUpdate(function($data) {
 
-		\account\FinancialYearLib::cbUpdate($data->e, $data->eOld);
 		throw new ReloadAction('account', 'FinancialYear::updated');
 
 	})
@@ -88,7 +93,7 @@ new \account\FinancialYearPage(function($data) {
 
 		$data->cOperationResult = \account\OpeningLib::getResultOperation($data->eFinancialYearPrevious, $data->e, '');
 
-		list($data->cJournalCode, $data->ccOperationReversed) = \account\OpeningLib::getReversableData($data->eFinancialYearPrevious, $data->e, '');
+		[$data->cJournalCode, $data->ccOperationReversed] = \account\OpeningLib::getReversableData($data->eFinancialYearPrevious, $data->e, '');
 
 		throw new ViewAction($data);
 
@@ -98,6 +103,8 @@ new \account\FinancialYearPage(function($data) {
 		$data->e->validate('acceptOpen');
 
 		\account\FinancialYearLib::openFinancialYear($data->e, POST('journalCode', 'array'));
+
+		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_OPENING, \company\CompanyCron::WAITING, $data->e['id']);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');
 
@@ -148,6 +155,8 @@ new \account\FinancialYearPage(function($data) {
 		$data->e->validate('acceptClose');
 
 		\account\FinancialYearLib::closeFinancialYear($data->e);
+
+		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_CLOSING, \company\CompanyCron::WAITING, $data->e['id']);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	})
