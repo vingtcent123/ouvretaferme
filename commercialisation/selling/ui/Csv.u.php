@@ -9,7 +9,7 @@ class CsvUi {
 
 	}
 
-	public function getImportFile(\farm\Farm $eFarm, array $data, \Collection $cPlant): string {
+	public function getImportFile(\farm\Farm $eFarm, array $data): string {
 
 		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
 
@@ -85,7 +85,7 @@ class CsvUi {
 				case 'references' :
 					$h .= '<div class="util-block">';
 					$h .= '<h4>'.s("Références déjà connues").'</h4>';
-					$h .= '<p>'.s("Les références suivantes sont déjà reconnues. Les produits concernés ne seront pas ajoutés une deuxième fois mais seront modifiés avec les nouvelles valeurs, à l'exception de l'unité de vente qui ne peut pas être modifiée par un import.").'</p>';
+					$h .= '<p>'.s("Les références suivantes ont été reconnues. Les produits concernés ne seront pas ajoutés une deuxième fois mais seront modifiés avec les nouvelles valeurs. <b>Toutes les valeurs, à l'exception de l'unité de vente qui ne peut pas être modifiée par un import, seront mises à jour y compris celles qui sont vides ou ne sont pas présentes dans votre fichier CSV, soyez vigilant pour ne pas perdre des données !</b>").'</p>';
 					$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 					$h .= '</div>';
 					break;
