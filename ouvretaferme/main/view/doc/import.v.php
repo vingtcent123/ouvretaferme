@@ -253,6 +253,9 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 			echo s("Les produits que vous importez au format CSV sont ajoutés à la liste de vos produits existants, à l'exception de ceux que vous tentez d'importer sous une référence déjà existante. Les produits concernés ne seront pas ajoutés une deuxième fois mais seront modifiés avec les nouvelles valeurs, à l'exception de l'unité de vente qui ne peut pas être modifiée par un import.");
 		echo '</p>';
 		echo '<p>';
+			echo '<b>'.s("Si vous réimportez un produit avec une référence identique, toutes les valeurs seront mises à jour y compris celles qui ne sont pas présentes dans votre fichier CSV. Soyez donc vigilant car si vous importez un fichier sans la colonne <i>quality</i> par exemple, tous les produits réimportés avec une référence identique perdront leur signe de qualité.").'</b>';
+		echo '</p>';
+		echo '<p>';
 			echo s("Le fichier CSV que vous importez doit comporter une ligne par produit, et les colonnes de ce fichier doivent correspondre à la liste des données à fournir décrite plus bas.");
 		echo '</p>';
 		echo \main\CsvUi::getSyntaxInfo();
