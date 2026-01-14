@@ -101,13 +101,17 @@ class AccountLib extends AccountCrud {
 
 				$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
 
-				foreach(preg_split('/\s+/', $query) as $word) {
-					$keywords[] = '*'.$word.'*';
+				$words = array_filter(preg_split('/\s+/', $query));
+				if(count($words) > 0) {
+
+					foreach($words as $word) {
+						$keywords[] = '*'.$word.'*';
+					}
+
+					$match = 'MATCH(description) AGAINST ('.Account::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+					Account::model()->where($match.' > 0');
 				}
-
-				$match = 'MATCH(description) AGAINST ('.Account::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
-
-				Account::model()->where($match.' > 0');
 			}
 		}
 		return Account::model()

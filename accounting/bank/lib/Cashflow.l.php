@@ -165,13 +165,18 @@ class CashflowLib extends CashflowCrud {
 
 			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
 
-			foreach(preg_split('/\s+/', $query) as $word) {
-				$keywords[] = '*'.$word.'*';
+			$words = array_filter(preg_split('/\s+/', $query));
+
+			if(count($words) > 0) {
+
+				foreach($words as $word) {
+					$keywords[] = '*'.$word.'*';
+				}
+
+				$match = 'MATCH(memo, name) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+				Cashflow::model()->where($match.' > 0');
 			}
-
-			$match = 'MATCH(memo, name) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
-
-			Cashflow::model()->where($match.' > 0');
 
 		}
 
@@ -186,16 +191,24 @@ class CashflowLib extends CashflowCrud {
 
 	public static function applySimilarCashflowSearch(Cashflow $eCashflow): CashflowModel {
 
-			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $eCashflow['memo'])).' '.
-				trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $eCashflow['name']))
-			;
+		$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $eCashflow['memo'])).' '.
+			trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $eCashflow['name']))
+		;
 
-			$keywords = [];
-			foreach(preg_split('/\s+/', $query) as $word) {
+		$keywords = [];
+
+		$words = array_filter(preg_split('/\s+/', $query));
+
+		if(count($words) > 0) {
+
+			foreach($words as $word) {
 				$keywords[] = '*'.$word.'*';
 			}
 
 			$match = 'MATCH(memo, name) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+			Cashflow::model()->where($match.' > 0');
+		}
 
 		return Cashflow::model()
       ->where($match.' > 0')

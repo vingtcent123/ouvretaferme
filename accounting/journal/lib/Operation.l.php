@@ -971,17 +971,21 @@ class OperationLib extends OperationCrud {
 
 		if($search->get('query') !== '') {
 
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $search->get('query')));
 			$keywords = [];
 
-			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $search->get('query')));
+			$words = array_filter(preg_split('/\s+/', $query));
 
-			foreach(preg_split('/\s+/', $query) as $word) {
-				$keywords[] = '*'.$word.'*';
+			if(count($words) > 0) {
+
+				foreach($words as $word) {
+					$keywords[] = '*'.$word.'*';
+				}
+
+				$match = 'MATCH(accountLabel, description, document) AGAINST ('.Operation::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+				Operation::model()->where($match.' > 0');
 			}
-
-			$match = 'MATCH(accountLabel, description, document) AGAINST ('.Operation::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
-
-			Operation::model()->where($match.' > 0');
 
 		}
 
@@ -1024,15 +1028,21 @@ class OperationLib extends OperationCrud {
 
 		if($query !== '') {
 
+			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
 			$keywords = [];
 
-			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
+			$words = array_filter(preg_split('/\s+/', $query));
 
-			foreach(preg_split('/\s+/', $query) as $word) {
-				$keywords[] = '*'.$word.'*';
+			if(count($words) > 0) {
+
+				foreach($words as $word) {
+					$keywords[] = '*'.$word.'*';
+				}
+
+				$match = 'MATCH(accountLabel, description, document) AGAINST ('.Operation::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+				Operation::model()->where($match.' > 0');
 			}
-
-			$match = 'MATCH(accountLabel, description, document) AGAINST ('.Operation::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
 
 		} else {
 			$match = '';
