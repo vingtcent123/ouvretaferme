@@ -137,12 +137,14 @@ new \farm\SurveyPage()
 	})
 	->create(function($data) {
 
+		$analyze = ($data->eUserOnline['id'] === 1140 or $data->eUserOnline['id'] === 1);
+
 		$data->eFarm = $data->e['farm'];
-		$data->hasSurvey = \farm\SurveyLib::existsByFarm($data->eFarm);
+		$data->hasSurvey = ($analyze === FALSE);// and \farm\SurveyLib::existsByFarm($data->eFarm));
 
 		if(
 			get_exists('id') and
-			($data->eUserOnline['id'] === 1140 or $data->eUserOnline['id'] === 1)
+			$analyze
 		) {
 			\farm\Survey::model()
 				->select(\farm\Survey::getSelection())
