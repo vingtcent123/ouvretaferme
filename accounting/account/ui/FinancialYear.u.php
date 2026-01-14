@@ -273,7 +273,7 @@ class FinancialYearUi {
 										$h .= s("Réaliser le bilan d'ouverture");
 									$h .= '</a>';
 								}
-
+/*
 								if($eFinancialYear->acceptGenerateOpen() and $eFinancialYear['previous']->notEmpty()) {
 									$h .= '<a data-ajax-navigation="never" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.Pdf::FINANCIAL_YEAR_OPENING.'" post-id='.$eFinancialYear['id'].'" class="dropdown-item">';
 										$h .= s("Regénérer le PDF du bilan d'ouverture");
@@ -285,7 +285,7 @@ class FinancialYearUi {
 										$h .= s("Regénérer le PDF du bilan de clôture");
 									$h .= '</a>';
 								}
-
+*/
 								if($eFinancialYear->isOpen() and $eFinancialYear->acceptClose()) {
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 										$h .= s("Réaliser le bilan de clôture");
@@ -331,7 +331,7 @@ class FinancialYearUi {
 									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:downloadCsv" class="dropdown-item">';
 										$h .= s("Exporter les écritures comptables au format CSV");
 									$h .= '</a>';
-								}
+								}/*
 								if($eFinancialYear->acceptDownloadOpen() and $eFinancialYear['previous']->notEmpty()) {
 									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?id='.$eFinancialYear['id'].'&type='.Pdf::FINANCIAL_YEAR_OPENING.'" class="dropdown-item">';
 										$h .= s("Télécharger le bilan d'ouverture");
@@ -342,7 +342,7 @@ class FinancialYearUi {
 									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?id='.$eFinancialYear['id'].'&type='.Pdf::FINANCIAL_YEAR_CLOSING.'" class="dropdown-item">';
 										$h .= s("Télécharger le bilan de clôture");
 									$h .= '</a>';
-								}
+								}*/
 							$h .= '</div>';
 
 						}
