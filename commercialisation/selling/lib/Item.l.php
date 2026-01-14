@@ -496,7 +496,7 @@ class ItemLib extends ItemCrud {
 
 	public static function update(Item $e, array $properties): void {
 
-		if($e->canUpdate() === FALSE and ($properties === ['account'] and $e->canWriteAccounting() === FALSE)) {
+		if($e->canUpdate() === FALSE and ($properties === ['account'] or $e->canWriteAccounting()) === FALSE) {
 			Item::fail('canNotUpdate');
 		}
 

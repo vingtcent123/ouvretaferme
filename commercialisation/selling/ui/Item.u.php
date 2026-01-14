@@ -1445,6 +1445,7 @@ class ItemUi {
 
 		$h = $form->openAjax('/selling/item:doUpdateAccountCollection', ['id' => 'item-update-account']);
 
+		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->group(
 			s("Numéro de compte"),
 			$form->dynamicField(new Item(['farm' => $eFarm, 'account' => new \account\Account()]), 'account'),

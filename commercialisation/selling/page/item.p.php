@@ -192,10 +192,12 @@ new Page()
 	->get('updateAccount', function($data) {
 
 		$names = GET('ids', 'array');
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'));
 
 		$data->cItem = \selling\Item::model()
-			->select('id', 'name', 'account', 'farm')
+			->select(['id', 'name', 'account', 'farm' => \farm\Farm::getSelection()])
 			->whereName('IN', $names)
+			->whereFarm($data->eFarm)
 			->getCollection();
 
 		if($data->cItem->empty()) {
@@ -211,9 +213,9 @@ new Page()
 new \selling\ItemPage()
 	->applyCollection(function($data, Collection $c) {
 
-		$eFarm = $c->first()['farm']->validate('hasAccounting');
+		$eFarm = $c->first()['farm']->validate('hasAccounting')->validate('canManage');
 		$c->validateProperty('farm', $eFarm);
 		\company\CompanyLib::connectDatabase($eFarm);
 	})
-	->doUpdateCollectionProperties('doUpdateAccountCollection', ['account'], fn($data) => throw new ReloadAction('selling', 'Item::updatedSeveral'), validate: ['canWriteAccounting']);
+	->doUpdateCollectionProperties('doUpdateAccountCollection', ['account'], fn($data) => throw new ReloadAction('selling', 'Item::updatedSeveral'), validate: []);
 ?>
