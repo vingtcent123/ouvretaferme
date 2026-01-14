@@ -3,6 +3,16 @@ namespace account;
 
 class FinancialYear extends FinancialYearElement {
 
+	public static function getSelection(): array {
+
+		return parent::getSelection() + [
+			'cDocument' => FinancialYearDocument::model()
+				->select(FinancialYearDocument::getSelection())
+				->delegateCollection('financialYear', 'type'),
+		];
+
+	}
+
 	public function getLabel(): string {
 
 		if($this->empty()) {
@@ -70,20 +80,43 @@ class FinancialYear extends FinancialYearElement {
 	}
 
 	public function acceptDownloadOpen(): bool {
-		return $this['openContent']->notEmpty();
+		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::OPENING);
+	}
+
+	public function acceptDownloadOpenDetailed(): bool {
+		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::OPENING_DETAILED);
 	}
 
 	public function acceptDownloadClose(): bool {
-		return $this['closeContent']->notEmpty();
+		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::CLOSING);
+	}
+
+	public function acceptDownloadCloseDetailed(): bool {
+		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::CLOSING_DETAILED);
+	}
+
+	public function acceptDownloadIncomeStatement(): bool {
+		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::INCOME_STATEMENT);
+	}
+	public function acceptDownloadIncomeStatementDetailed(): bool {
+		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED);
+	}
+
+	public function acceptDownloadSig(): bool {
+		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::SIG);
 	}
 
 	public function acceptGenerateOpen(): bool {
-		return ($this['openDate'] !== NULL and in_array($this['openGeneration'], [NULL, FinancialYear::FAIL, FinancialYear::SUCCESS]));
+
+		return ($this['openDate'] !== NULL and FinancialYearDocumentLib::canGenerate($this, FinancialYearDocumentLib::OPENING));
+
 	}
 
 
 	public function acceptGenerateClose(): bool {
-		return ($this['closeDate'] !== NULL and in_array($this['closeGeneration'], [NULL, FinancialYear::FAIL, FinancialYear::SUCCESS]));
+
+		return ($this['openDate'] !== NULL and $this['closeDate'] !== NULL and FinancialYearDocumentLib::canGenerate($this, FinancialYearDocumentLib::CLOSING));
+
 	}
 
 

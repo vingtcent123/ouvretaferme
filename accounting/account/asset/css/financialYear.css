@@ -29,6 +29,11 @@ div.financial-year-list {
 	border: 2px solid var(--secondary);
 }
 
+.financial-year-list > .financial-year-block.financial-year-highlight {
+	background-color: var(--background-even);
+	border: 2px solid var(--accounting);
+}
+
 .financial-year-title {
 	text-align: center;
 }

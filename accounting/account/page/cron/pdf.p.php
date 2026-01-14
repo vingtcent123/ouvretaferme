@@ -4,18 +4,14 @@ new Page()
 
 		$cCompanyCron = \company\CompanyCron::model()
 			->select(\company\CompanyCron::getSelection() + ['farm' => ['id', 'name', 'legalName', 'siret']])
-			->whereAction('IN', [\company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_OPENING, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_CLOSING])
+			->whereAction(\company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT)
 			->getCollection();
 
 		foreach($cCompanyCron as $eCompanyCron) {
 
 			\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
 
-			if($eCompanyCron['action'] === \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_OPENING) {
-				\account\FinancialYearLib::generateOpenWaiting($eCompanyCron['farm']);
-			} else {
-				\account\FinancialYearLib::generateCloseWaiting($eCompanyCron['farm']);
-			}
+			\account\FinancialYearDocumentLib::generateAll($eCompanyCron['farm']);
 
 			\company\CompanyCron::model()->delete($eCompanyCron);
 
@@ -23,4 +19,22 @@ new Page()
 
 
 	}, interval: 'permanent@2');
+
+new Page()
+	->cron('clean', function($data) {
+
+		$cFarm = \farm\Farm::model()
+			->select(\farm\Farm::getSelection())
+			->whereHasFinancialYears(TRUE)
+			->getCollection();
+
+		foreach($cFarm as $eFarm) {
+
+			\company\CompanyLib::connectDatabase($eFarm);
+
+			\account\FinancialYearDocumentLib::clean();
+
+		}
+
+	}, interval: '0 5 * * *');
 ?>

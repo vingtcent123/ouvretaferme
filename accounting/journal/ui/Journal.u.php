@@ -297,7 +297,7 @@ class JournalUi {
 
 			if($hideSearch === TRUE) {
 				$h = '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="btn btn-primary">'.s("Enregistrer ma première écriture comptable").'</a>';
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="btn btn-primary">'.s("Enregistrer la première écriture comptable pour cet exercice").'</a>';
 				return $h;
 			}
 			return '<div class="util-empty">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';

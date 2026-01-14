@@ -1,12 +1,13 @@
 <?php
-new Page()
+new Page(function($data) {
+
+	$data->eFarm->validate('canManage');
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+})
 	->get('index', function($data) {
-
-		$data->eFarm->validate('canManage');
-
-		if($data->eFarm->usesAccounting() === FALSE) {
-			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-		}
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
@@ -19,7 +20,16 @@ new Page()
 
 		throw new ViewAction($data);
 
-	});
+	})
+	->get('document', function($data) {
+
+		$data->eFarm['eFinancialYear']['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
+		$data->eFarm['eFinancialYear']['nOperation'] = \journal\OperationLib::countByFinancialYear($data->eFarm['eFinancialYear']);
+
+		throw new ViewAction($data);
+
+	})
+;
 
 new \account\FinancialYearPage(function($data) {
 
@@ -104,8 +114,6 @@ new \account\FinancialYearPage(function($data) {
 
 		\account\FinancialYearLib::openFinancialYear($data->e, POST('journalCode', 'array'));
 
-		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_OPENING, \company\CompanyCron::WAITING, $data->e['id']);
-
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');
 
 	});
@@ -155,8 +163,6 @@ new \account\FinancialYearPage(function($data) {
 		$data->e->validate('acceptClose');
 
 		\account\FinancialYearLib::closeFinancialYear($data->e);
-
-		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_CLOSING, \company\CompanyCron::WAITING, $data->e['id']);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	})

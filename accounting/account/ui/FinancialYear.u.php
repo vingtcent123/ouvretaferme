@@ -154,7 +154,7 @@ class FinancialYearUi {
 
 			foreach($cFinancialYear as $eFinancialYear) {
 
-				$h .= '<div class="financial-year-block">';
+				$h .= '<div class="financial-year-block'.(GET('id', 'int') === $eFinancialYear['id'] ? ' financial-year-highlight' : '').'">';
 					$h .= '<div class="financial-year-title">';
 						$h .= '<h3 financial-year-name>';
 							$h .= s("Exercice {value}", $eFinancialYear->getLabel());
@@ -248,7 +248,6 @@ class FinancialYearUi {
 
 					$h .= '</div>';
 
-					$hasFiles = ($eFinancialYear['nOperation'] > 0 or $eFinancialYear['openDate'] !== NULL or $eFinancialYear['closeDate'] !== NULL or $eFinancialYear->acceptGenerateOpen() or $eFinancialYear->acceptGenerateClose());
 					$canGear = ($eFinancialYear->acceptUpdate() or $eFinancialYear->acceptClose() or $eFinancialYear->acceptReOpen() or $eFinancialYear->acceptDelete() or $eFinancialYear->acceptReClose());
 
 					$h .= '<div class="financial-year-buttons">';
@@ -279,19 +278,7 @@ class FinancialYearUi {
 										$h .= s("Réaliser le bilan d'ouverture");
 									$h .= '</a>';
 								}
-/*
-								if($eFinancialYear->acceptGenerateOpen() and $eFinancialYear['previous']->notEmpty()) {
-									$h .= '<a data-ajax-navigation="never" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.Pdf::FINANCIAL_YEAR_OPENING.'" post-id='.$eFinancialYear['id'].'" class="dropdown-item">';
-										$h .= s("Regénérer le PDF du bilan d'ouverture");
-									$h .= '</a>';
-								}
 
-								if($eFinancialYear->acceptGenerateClose()) {
-									$h .= '<a data-ajax-navigation="never" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.Pdf::FINANCIAL_YEAR_CLOSING.'" post-id="'.$eFinancialYear['id'].'" class="dropdown-item">';
-										$h .= s("Regénérer le PDF du bilan de clôture");
-									$h .= '</a>';
-								}
-*/
 								if($eFinancialYear->isOpen() and $eFinancialYear->acceptClose()) {
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 										$h .= s("Réaliser le bilan de clôture");
@@ -299,7 +286,6 @@ class FinancialYearUi {
 								}
 
 								if($eFinancialYear->acceptReOpen()) {
-									$h .= '<div class="dropdown-divider"></div>';
 									$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item">';
 										$h .= '<span class="bg-danger btn color-white">'.\Asset::icon('exclamation-triangle').' '.s("Rouvrir").'</span>';
 									$h .= '</a>';
@@ -322,37 +308,28 @@ class FinancialYearUi {
 
 						}
 
-						if($hasFiles) {
+						$h .= '<a class="dropdown-toggle btn btn-primary" data-dropdown="bottom-end">';
+							$h .= \Asset::icon('files');
+							$h  .= '<span class="financial-year-action-label"> '.s("Documents").'</span>';
+						$h .= '</a>';
 
-							$h .= '<a class="dropdown-toggle btn btn-primary" data-dropdown="bottom-end">';
-								$h .= \Asset::icon('files');
-								$h  .= '<span class="financial-year-action-label"> '.s("Documents").'</span>';
+						$h .= '<div class="dropdown-list">';
+
+							if($eFinancialYear['nOperation'] > 0) {
+								$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download?" class="dropdown-item">';
+									$h .= s("Télécharger le fichier FEC");
+								$h .= '</a>';
+								$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:downloadCsv" class="dropdown-item">';
+									$h .= s("Exporter les écritures comptables au format CSV");
+								$h .= '</a>';
+								$h .= '<div class="dropdown-divider"></div>';
+							}
+
+							$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:document" class="dropdown-item">';
+								$h .= s("Voir tous les documents");
 							$h .= '</a>';
 
-							$h .= '<div class="dropdown-list">';
-								if($eFinancialYear['nOperation'] > 0) {
-									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download?" class="dropdown-item">';
-										$h .= s("Télécharger le fichier FEC");
-									$h .= '</a>';
-									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:downloadCsv" class="dropdown-item">';
-										$h .= s("Exporter les écritures comptables au format CSV");
-									$h .= '</a>';
-								}/*
-								if($eFinancialYear->acceptDownloadOpen() and $eFinancialYear['previous']->notEmpty()) {
-									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?id='.$eFinancialYear['id'].'&type='.Pdf::FINANCIAL_YEAR_OPENING.'" class="dropdown-item">';
-										$h .= s("Télécharger le bilan d'ouverture");
-									$h .= '</a>';
-								}
-
-								if($eFinancialYear->acceptDownloadClose()) {
-									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?id='.$eFinancialYear['id'].'&type='.Pdf::FINANCIAL_YEAR_CLOSING.'" class="dropdown-item">';
-										$h .= s("Télécharger le bilan de clôture");
-									$h .= '</a>';
-								}*/
-							$h .= '</div>';
-
-						}
-
+						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
 
@@ -485,13 +462,13 @@ class FinancialYearUi {
 	public function getSuccessActions(\farm\Farm $eFarm, FinancialYear $eFinancialYear, string $type) {
 
 		switch($type) {
-			case Pdf::FINANCIAL_YEAR_OPENING:
+			case FinancialYearDocumentLib::OPENING:
 				if($eFinancialYear->acceptDownloadOpen() === FALSE) {
 					return '';
 				}
 				break;
 
-			case Pdf::FINANCIAL_YEAR_CLOSING:
+			case FinancialYearDocumentLib::CLOSING:
 				if($eFinancialYear->acceptDownloadClose() === FALSE) {
 					return '';
 				}

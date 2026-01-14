@@ -76,16 +76,19 @@ Class PdfLib {
 		// Pour le bilan d'ouverture on récupère le bilan de clôture de l'exercice précédent.
 		$eFarm['eFinancialYear'] = $eFinancialYear;
 
-		if(
-			$type === \account\Pdf::FINANCIAL_YEAR_OPENING or
-			$type === \account\Pdf::FINANCIAL_YEAR_CLOSING
-		) {
-			$document = 'balanceSheet';
-			$title = new \account\PdfUi()->getTitle($type);
-		} else {
-			throw new \Exception('Unknown document type');
-		}
+		$document = match($type) {
+			\account\FinancialYearDocumentLib::BALANCE => 'balanceSheet',
+			\account\FinancialYearDocumentLib::OPENING => 'balanceSheet',
+			\account\FinancialYearDocumentLib::OPENING_DETAILED => 'balanceSheet',
+			\account\FinancialYearDocumentLib::CLOSING => 'balanceSheet',
+			\account\FinancialYearDocumentLib::CLOSING_DETAILED => 'balanceSheet',
+			\account\FinancialYearDocumentLib::INCOME_STATEMENT => 'incomeStatement',
+			\account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => 'incomeStatement',
+			\account\FinancialYearDocumentLib::SIG => 'sig',
+			default => throw new \Exception('Unknown document type'),
+		};
 
+		$title = new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE);
 		$footer = \account\PdfUi::getFooter();
 		$header = \account\PdfUi::getHeader($eFarm, $title, $eFinancialYear);
 

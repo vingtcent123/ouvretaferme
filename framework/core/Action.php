@@ -508,7 +508,8 @@ class ReloadAction extends Action {
 
 	public function __construct(
 		protected string $package = '',
-		protected string $fqn = ''
+		protected string $fqn = '',
+		protected array $options = []
 	) {
 
 	}
@@ -540,7 +541,7 @@ class ReloadAction extends Action {
 				}
 
 				if($this->package and $this->fqn) {
-					$t->js()->success($this->package, $this->fqn);
+					$t->js()->success($this->package, $this->fqn, $this->options);
 				}
 
 				(new JsonAction($t

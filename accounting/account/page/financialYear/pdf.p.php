@@ -9,46 +9,56 @@ new \account\FinancialYearPage(function($data) {
 	}
 
 })
-	->applyElement(function($data, \account\FinancialYear $e) {
-
-		$e['nOperation'] = \journal\OperationLib::countByFinancialYear($e);
-
-	})
 	->post('generate', function($data) {
 
 		$data->type = GET('type');
-		if(in_array($data->type, Pdf::model()->getPropertyEnum('type')) === FALSE) {
+		if(in_array($data->type, FinancialYearDocumentLib::getTypes()) === FALSE) {
 			throw new \NotExistsAction();
 		}
 
 		$data->eFinancialYear = FinancialYearLib::getById(POST('id'));
 
 		FinancialYearLib::regenerate($data->eFarm, $data->eFinancialYear, $data->type);
+		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT, \company\CompanyCron::WAITING, $data->eFinancialYear['id']);
 
-		throw new \ViewAction($data);
+		throw new \ReloadLayerAction('account', 'FinancialYear::pdf.generationStacked', [
+			'type' => $data->type,
+		]);
+
+	})
+	->post('check', function($data) {
+
+		if(FinancialYearDocumentLib::countWaiting($data->eFarm['eFinancialYear']) === 0) {
+			throw new \ReloadLayerAction();
+		}
+
+		throw new \JsonAction([
+			 'result' => 'not-finished',
+		]);
 
 	})
 	->get('download', function($data) {
 
 		$type = GET('type');
 		$eFinancialYear = FinancialYearLib::getById(GET('id'));
-		if($eFinancialYear->empty() or in_array($type, Pdf::model()->getPropertyEnum('type')) === FALSE) {
+		if($eFinancialYear->empty() or in_array($type, FinancialYearDocumentLib::getTypes()) === FALSE) {
 			throw new \NotExistsAction();
 		}
 
 		switch($type) {
-			case Pdf::FINANCIAL_YEAR_OPENING:
+			case FinancialYearDocumentLib::OPENING:
 				$eFinancialYear->validate('acceptDownloadOpen');
-				$field = 'openContent';
 				break;
-			case Pdf::FINANCIAL_YEAR_CLOSING:
+			case FinancialYearDocumentLib::CLOSING:
 				$eFinancialYear->validate('acceptDownloadClose');
-				$field = 'closeContent';
 				break;
 		}
 
-		$ePdfContent = PdfContentLib::getById($eFinancialYear[$field]['id']);
-		$content = \overview\PdfLib::getContentByPdf($ePdfContent);
+		$content = FinancialYearDocumentLib::getContent($eFinancialYear, $type);
+
+		if($content === NULL) {
+			throw new \VoidAction();
+		}
 
 		$filename = new \account\PdfUi()->getFilename($eFinancialYear, $type);
 

@@ -12,7 +12,7 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 	echo '<div class="util-block-help">';
 		echo '<h4>'.s("Vous pouvez maintenant créer votre première écriture pour l'exercice {value} !", \account\FinancialYearUi::getYear($data->eFarm['eFinancialYear'])).'</h4>';
 		echo '<p>'.s("Vous pouvez enregistrer vos écritures de plusieurs manières sur {siteName} :").'</p>';
-		echo '<ul>';
+		echo '<ul class="journal-onboarding-list">';
 			echo '<li>'.s("Depuis vos <link>opérations bancaires</link>, après avoir importé un relevé bancaire", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations">']).'</li>';
 			echo '<li>';
 				echo s("En important les <link>factures que vous avez rapprochées</link>.", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer">']);
@@ -21,6 +21,7 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 				}
 			echo '</li>';
 			echo '<li>'.s("Directement sur cette page, en cliquant sur <link>{icon}Enregistrer une écriture</link>", ['link' => '<a class="btn btn-xs btn-primary" href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode">', 'icon' => \Asset::icon('plus-circle').' ']).'</li>';
+			echo '<li>'.s("Ou en important un fichier {fec}, si vous utilisiez un autre logiciel de comptabilité, depuis les {icon} <link>Paramètres de l'exercice comptable</link>", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?id='.$data->eFarm['eFinancialYear']['id'].'">', 'icon' => \Asset::icon('gear')]).'</li>';
 		echo '</ul>';
 	echo '</div>';
 

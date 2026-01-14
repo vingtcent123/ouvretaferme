@@ -7,12 +7,6 @@ abstract class PdfElement extends \Element {
 
 	private static ?PdfModel $model = NULL;
 
-	const FINANCIAL_YEAR_OPENING = 'financial-year-opening';
-	const FINANCIAL_YEAR_CLOSING = 'financial-year-closing';
-	const BALANCE_SHEET = 'balance-sheet';
-	const INCOME_SHEET = 'income-sheet';
-	const SIG = 'sig';
-
 	public static function getSelection(): array {
 		return Pdf::model()->getProperties();
 	}
@@ -52,7 +46,7 @@ class PdfModel extends \ModuleModel {
 			'used' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'content' => ['element32', 'account\PdfContent', 'null' => TRUE, 'cast' => 'element'],
 			'crc32' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'type' => ['enum', [\account\Pdf::FINANCIAL_YEAR_OPENING, \account\Pdf::FINANCIAL_YEAR_CLOSING, \account\Pdf::BALANCE_SHEET, \account\Pdf::INCOME_SHEET, \account\Pdf::SIG], 'cast' => 'enum'],
+			'type' => ['text8', 'cast' => 'string'],
 			'version' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
@@ -85,20 +79,6 @@ class PdfModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
-
-		}
-
-	}
-
-	public function encode(string $property, $value) {
-
-		switch($property) {
-
-			case 'type' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			default :
-				return parent::encode($property, $value);
 
 		}
 

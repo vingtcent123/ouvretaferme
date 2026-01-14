@@ -183,7 +183,22 @@ Class BalanceSheetLib {
 					'comparisonDepreciation' => 0,
 					'comparisonNet' => 0,
 				];
-				ksort($balanceSheetData['equity']);
+
+				// Tri par clés pour insérer le résultat au bon endroit
+				uasort($balanceSheetData['equity'], function($line1, $line2) {
+					$class1 = (int)mb_substr($line1['class'], 0, 3);
+					$class2 = (int)mb_substr($line2['class'], 0, 3);
+					if($class1 < $class2) {
+						return -1;
+					}
+					if($class1 > $class2) {
+						return 1;
+					}
+					if(mb_strlen($line1['class']) > mb_strlen($line2['class'])) {
+						return -1;
+					}
+					return 1;
+				});
 			}
 
 			$balanceSheetData['equity'][$class]['currentBrut'] = $result;
@@ -291,7 +306,7 @@ Class BalanceSheetLib {
 			} else {
 
 				$balanceSheetDataCategory[$originClass]['comparisonDepreciation'] += abs($eOperation['amount']);
-				$balanceSheetDataCategory[$originClass]['comparisonNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['comparisonDepreciation'], 2);
+				$balanceSheetDataCategory[$originClass]['comparisonNet'] = round($balanceSheetDataCategory[$originClass]['comparisonBrut'] - $balanceSheetDataCategory[$originClass]['comparisonDepreciation'], 2);
 
 
 			}

@@ -68,6 +68,8 @@ table.pdf-table-bordered {
 	border: 1px solid black;
 	page-break-after: always;
 }
+tr.overview_group-title,
+tr.overview_group-total,
 tr.pdf-tr-title {
 	background-color: lightgrey;
 }
@@ -76,4 +78,24 @@ tr.pdf-tr-total-general {
 }
 tr.pdf-tr-total-general > td {
 	text-align: right;
+}
+
+.pdf-document-content td.highlight-stick-left,
+.pdf-document-content th.highlight-stick-left {
+	background: #8881;
+}
+.pdf-document-content td.highlight-stick-right,
+.pdf-document-content th.highlight-stick-right {
+	background: lightgrey;
+}
+.pdf-document-content a.nav-item {
+	display: none;
+}
+
+tr.pdf-tr-muted {
+	font-style: italic;
+	color: var(--muted);
+}
+tr.pdf-tr-muted.pdf-tr-ml-1 > td:first-child {
+	padding-left: 0.5cm;
 }

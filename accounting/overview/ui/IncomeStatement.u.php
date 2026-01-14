@@ -55,12 +55,82 @@ class IncomeStatementUi {
 
 	}
 
+	public function getTHead(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison): string  {
 
-	public function getTable(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearComparison, \account\FinancialYear $eFinancialYear, array $resultData, \Collection $cAccount, bool $displaySummary): string {
+		$hasComparison = $eFinancialYearComparison->notEmpty();
+
+		$h = '';
+
+
+		$h .= '<tr class="overview_group-title">';
+			$h .= '<th colspan="3">'.s("Charges").'</th>';
+			$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
+			if($hasComparison) {
+				$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
+			}
+			$h .= '<th colspan="3">'.s("Produits").'</th>';
+			$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
+			if($hasComparison) {
+				$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
+			}
+		$h .= '</tr>';
+
+		return $h;
+	}
+
+	public function getPdfTHead(string $type, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison): string  {
+
+		$hasComparison = $eFinancialYearComparison->notEmpty();
+
+		$h = '<tr class="overview_group-title">';
+			$h .= '<th colspan="2">'.($type === 'expenses' ? s("Charges") : s("Produits")).'</th>';
+			$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
+			if($hasComparison) {
+				$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
+			}
+		$h .= '</tr>';
+
+		return $h;
+	}
+
+	public function getPdfTBody(string $type, \farm\Farm $eFarm, \Collection $cAccount, array $resultData, \account\FinancialYear $eFinancialYearComparison): string  {
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 
 		$totals = [
+			'operating' => [
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['operating'])),
+				'comparison' => $hasComparison === FALSE ? 0 : array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['operating'])),
+			],
+			'financial' => [
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['financial'])),
+				'comparison' => $hasComparison === FALSE ? 0 : array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['financial'])),
+			],
+			'exceptional' => [
+				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['exceptional'])),
+				'comparison' => $hasComparison === FALSE ? 0 : array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['exceptional'])),
+			],
+		];
+
+		$h = $this->displayPdfSubCategoryLines($eFarm, $resultData['operating'], $cAccount, $hasComparison);
+
+		$h .= $this->displayPdfSubTotal($type, $totals['operating'], 'operating', $hasComparison);
+
+		$h .= $this->displayPdfSubCategoryLines($eFarm, $resultData['financial'], $cAccount, $hasComparison);
+
+		$h .= $this->displayPdfSubTotal($type, $totals['financial'], 'financial', $hasComparison);
+
+		$h .= $this->displayPdfSubCategoryLines($eFarm, $resultData['exceptional'], $cAccount, $hasComparison);
+
+		$h .= $this->displayPdfSubTotal($type, $totals['exceptional'], 'exceptional', $hasComparison);
+
+		return $h;
+
+	}
+
+	public function generateTotals(array $resultData): array {
+
+		return [
 			'operatingExpense' => [
 				'current' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['current'], $resultData['expenses']['operating'])),
 				'comparison' => array_sum(array_map(fn($data) => ($data['isSummary'] ?? FALSE) ? 0 : $data['comparison'], $resultData['expenses']['operating'])),
@@ -87,6 +157,11 @@ class IncomeStatementUi {
 			],
 		];
 
+	}
+	public function getTable(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearComparison, \account\FinancialYear $eFinancialYear, array $resultData, \Collection $cAccount, bool $displaySummary): string {
+
+		$hasComparison = $eFinancialYearComparison->notEmpty();
+
 		if($eFinancialYear['endDate'] > date('Y-m-d')) {
 			$date = date('Y-m-d');
 		} else {
@@ -108,22 +183,15 @@ class IncomeStatementUi {
 						$h .= '<th class="text-center" colspan="'.($hasComparison ? 10 : 8).'">'.s("{farm} - exercice {year}<br />Compte de résultat au {date}", ['farm' => $eFarm['legalName'], 'year' => $eFinancialYear->getLabel(), 'date' => \util\DateUi::numeric($date)]).'</th>';
 					$h .= '</tr>';
 
-					$h .= '<tr class="overview_group-title">';
-						$h .= '<th colspan="3">'.s("Charges").'</th>';
-						$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
-						if($hasComparison) {
-							$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
-						}
-						$h .= '<th colspan="3">'.s("Produits").'</th>';
-						$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
-						if($hasComparison) {
-							$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYearComparison->getLabel()).'</th>';
-						}
-					$h .= '</tr>';
+					$h .= $this->getTHead($eFinancialYear, $eFinancialYearComparison);
 
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
+
+					$totals = $this->generateTotals($resultData);
+
+					$hasComparison = $eFinancialYearComparison->notEmpty();
 
 					$h .= $this->displaySubCategoryLines($eFarm, $resultData['expenses']['operating'], $resultData['incomes']['operating'], $cAccount, $hasComparison);
 
@@ -188,6 +256,7 @@ class IncomeStatementUi {
 
 					$h .= '</tr>';
 
+
 				$h .= '</tbody>';
 			$h .= '</table>';
 
@@ -196,7 +265,6 @@ class IncomeStatementUi {
 		return $h;
 
 	}
-
 	private function displaySubTotal(array $totals, string $type, bool $hasComparison): string {
 
 		switch($type) {
@@ -302,6 +370,65 @@ class IncomeStatementUi {
 					if($hasComparison) {
 						$h .= '<td></td>';
 					}
+				}
+
+			$h .= '</tr>';
+
+		}
+
+		return $h;
+	}
+
+	private function displayPdfSubTotal(string $category, array $totals, string $type, bool $hasComparison): string {
+
+		$title = match($category) {
+			'expenses' => match($type) {
+				'exceptional' => s("Total charges exceptionnelles"),
+				'financial' => s("Total charges financières"),
+				'operating' => s("Total charges d'exploitation"),
+			},
+			'incomes' => match($type) {
+				'exceptional' => s("Total produits exceptionnels"),
+				'financial' => s("Total produits financiers"),
+				'operating' => s("Total produits d'exploitation"),
+			},
+		};
+
+		$h = '<tr class="overview_group-total tr-bold">';
+
+			$h .= '<th colspan="2">'.$title.'</th>';
+			$h .= '<td class="text-end">'.\util\TextUi::money($totals['current'], precision: 0).'</td>';
+			if($hasComparison) {
+				$h .= '<td class="text-end">'.\util\TextUi::money($totals['comparison'], precision: 0).'</td>';
+			}
+
+		$h .= '</tr>';
+
+		return $h;
+
+	}
+	private function displayPdfSubCategoryLines(\farm\Farm$eFarm, array $data, \Collection $cAccount, bool $hasComparison): string {
+
+		$h = '';
+
+		foreach($data as $line) {
+
+			$h .= '<tr class="overview_line">';
+
+				$style = ($line['isSummary'] ?? FALSE) ? ' style="font-weight: bold";' : '';
+
+				$h .= '<td class="text-end td-min-content"'.$style.'>'.encode($line['class']).'</td>';
+				$h .= '<td'.$style.'>';
+					if($cAccount->offsetExists($line['class'])) {
+						$eAccount = $cAccount->offsetGet($line['class']);
+					} else {
+						$eAccount = $cAccount->offsetGet(substr($line['class'], 0, 2));
+					}
+					$h .= encode($eAccount['description']);
+				$h .= '</td>';
+				$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($line['current'], precision: 0).'</td>';
+				if($hasComparison) {
+					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($line['comparison'], precision: 0).'</td>';
 				}
 
 			$h .= '</tr>';

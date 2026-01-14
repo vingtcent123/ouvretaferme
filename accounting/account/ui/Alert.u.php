@@ -50,9 +50,16 @@ class AlertUi {
 			'FinancialYear::reopen' => s("L'exercice comptable a bien été rouvert ! Faites bien attention..."),
 			'FinancialYear::reclose' => s("L'exercice comptable a bien été refermé."),
 			'FinancialYear::deleted' => s("L'exercice comptable a bien été supprimé."),
-			'FinancialYear::pdf.generated' => [
-				Pdf::FINANCIAL_YEAR_OPENING => s("Le bilan d'ouverture a bien été généré."),
-				Pdf::FINANCIAL_YEAR_CLOSING => s("Le bilan de clôture a bien été généré."),
+			'FinancialYear::pdf.generationStackedGeneric' => s("Le document sera bientôt généré."),
+			'FinancialYear::pdf.generationStacked' => [
+				FinancialYearDocumentLib::BALANCE => s("Le bilan sera généré dans quelques instants."),
+				FinancialYearDocumentLib::OPENING => s("Le bilan d'ouverture sera généré dans quelques instants."),
+				FinancialYearDocumentLib::OPENING_DETAILED => s("Le bilan d'ouverture détaillé sera généré dans quelques instants."),
+				FinancialYearDocumentLib::CLOSING => s("Le bilan de clôture sera généré dans quelques instants."),
+				FinancialYearDocumentLib::CLOSING_DETAILED => s("Le bilan de clôture détaillé sera généré dans quelques instants."),
+				FinancialYearDocumentLib::INCOME_STATEMENT => s("Le compte de résultat sera généré dans quelques instants."),
+				FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => s("Le compte de résultat détaillé sera généré dans quelques instants."),
+				FinancialYearDocumentLib::SIG => s("Le SIG sera généré dans quelques instants."),
 			][$options['type']].($options['actions'] ?? ''),
 
 			'ThirdParty::created' => s("Le tiers a bien été créé."),

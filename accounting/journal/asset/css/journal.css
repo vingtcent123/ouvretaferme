@@ -1,4 +1,6 @@
-
+.journal-onboarding-list li {
+	line-height: 2;
+}
 ul.list-unstyled {
 	padding-left: 0;
 	list-style: none;

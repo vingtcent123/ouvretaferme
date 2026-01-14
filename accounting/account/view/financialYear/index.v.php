@@ -12,6 +12,11 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('document', function($data, PanelTemplate $t) {
+
+	return new \account\FinancialYearDocumentUi()->list($data->eFarm, $data->eFarm['eFinancialYear']);
+
+});
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 	return new \account\FinancialYearUi()->create($data->eFarm, $data->e);

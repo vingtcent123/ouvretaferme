@@ -514,14 +514,19 @@ class BalanceSheetUi {
 		return $h;
 	}
 
-	public function getPdfTBodyAssets(string $type, array $balanceSheetData, array $totals, \Collection $cAccount): string {
+	public function getPdfTBodyAssets(string $type, array $balanceSheetData, array $totals, \Collection $cAccount, bool $isDetailed): string {
 
 		$h = '';
 
 		if($type === 'assets') {
-
-			$totalAsset = array_sum(array_column($balanceSheetData['fixedAssets'], 'currentNet')) + array_sum(array_column($balanceSheetData['currentAssets'], 'currentNet'));
-			$totalAssetComparison = array_sum(array_column($balanceSheetData['fixedAssets'], 'comparisonNet')) + array_sum(array_column($balanceSheetData['currentAssets'], 'comparisonNet'));
+			$totalAsset = 0;
+			$totalAssetComparison = 0;
+			foreach($balanceSheetData['fixedAssets'] + $balanceSheetData['currentAssets'] as $class => $data) {
+				if(mb_strlen($class) === 3) {
+					$totalAsset += $data['currentNet'];
+					$totalAssetComparison += $data['comparisonNet'];
+				}
+			}
 
 			$h .= $this->displaySubCategoryPdfLinesAssets('fixedAssets', $balanceSheetData['fixedAssets'], $cAccount, $totalAsset);
 			$h .= $this->displaySubCategoryPdfLinesAssets('currentAssets', $balanceSheetData['currentAssets'], $cAccount, $totalAsset);
@@ -607,24 +612,25 @@ class BalanceSheetUi {
 		$cumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
 		$categoryCumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
 
-		foreach($category as $line) {
+		foreach($category as $class => $line) {
 
-			if($lastClass !== NULL and (
-				(mb_substr($lastClass, 0, 1) !== '4' and mb_substr($line['class'], 0, 2) !== mb_substr($lastClass, 0, 2)) or
-				(mb_substr($line['class'], 0, 1) !== mb_substr($lastClass, 0, 1) and mb_substr($lastClass, 0, 1) === '4')
-			)) {
+			// Le jeu des arrondis fait qu'on aura une ligne vide
+			if(
+				(int)$line['comparisonBrut'] === 0 and (int)$line['comparisonDepreciation'] === 0 and (int)$line['comparisonNet'] === 0 and
+				(int)$line['currentBrut'] === 0 and (int)$line['currentDepreciation'] === 0 and (int)$line['currentNet'] === 0
+			) {
+				continue;
+			}
+
+			if($lastClass !== NULL and mb_substr($line['class'], 0, 2) !== mb_substr($lastClass, 0, 2)) {
 
 				$eAccount = $cAccount->offsetGet(mb_substr($lastClass, 0, 2));
 
 				$h .= '<tr class="overview_line tr-bold">';
 
 					$h .= '<td>';
-						if(mb_substr($lastClass, 0, 1) === '4') {
-							$h .= s("4x CRÉANCES");
-						} else {
-							$h .= encode($eAccount['class']).' ';
-							$h .= encode($eAccount['description']);
-						}
+						$h .= encode($eAccount['class']).' ';
+						$h .= encode($eAccount['description']);
 					$h .= '</td>';
 
 					$h .= '<td class="text-end balance-td-brut">';
@@ -658,16 +664,38 @@ class BalanceSheetUi {
 
 			}
 
-			$h .= '<tr class="overview_line">';
+			$isLineDetail = (mb_strlen($class) > 3);
+
+			$h .= '<tr class="overview_line'.($isLineDetail ? ' pdf-tr-muted pdf-tr-ml-1' : '').'">';
 
 					$h .= '<td>';
-						if($cAccount->offsetExists($line['class'])) {
+
+						// 2 premiers cas : détail de ligne
+						if($cAccount->offsetExists((int)trim($line['class'], '0'))) {
+
+							$eAccount = $cAccount[(int)trim($line['class'], '0')];
+							$classDisplay = $line['class'];
+
+						} else if($isLineDetail) { // Numéro de compte personnalisé mais non créé dans les comptes
+
+							$eAccount = new \account\Account(['description' => $line['description']]);
+							$classDisplay = $line['class'];
+
+						} else if($cAccount->offsetExists($line['class'])) { // Ligne "normale"
+
 							$eAccount = $cAccount->offsetGet($line['class']);
-						} else {
+							$classDisplay = $eAccount['class'];
+
+						} else { // Ligne "synthèse" sur 2 chiffres
+
 							$eAccount = $cAccount->offsetGet(substr($line['class'], 0, 2));
+							$classDisplay = $eAccount['class'];
+
 						}
-						$h .= encode($eAccount['class']).' ';
+
+						$h .= encode($classDisplay).' ';
 						$h .= encode($eAccount['description']);
+
 					$h .= '</td>';
 					$h .= '<td class="text-end balance-td-brut">';
 						if((int)$line['currentBrut'] !== 0) {
@@ -690,10 +718,14 @@ class BalanceSheetUi {
 
 				$lastClass = $line['class'];
 
-				$cumulation['currentBrut'] += $line['currentBrut'];
-				$cumulation['currentDepreciation'] += $line['currentDepreciation'];
-				$cumulation['currentNet'] += $line['currentNet'];
-				$cumulation['comparisonNet'] += $line['comparisonNet'];
+				if($isLineDetail === FALSE) {
+
+					$cumulation['currentBrut'] += $line['currentBrut'];
+					$cumulation['currentDepreciation'] += $line['currentDepreciation'];
+					$cumulation['currentNet'] += $line['currentNet'];
+					$cumulation['comparisonNet'] += $line['comparisonNet'];
+
+				}
 
 		}
 
@@ -768,7 +800,15 @@ class BalanceSheetUi {
 		$cumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
 		$categoryCumulation = ['currentBrut' => 0, 'currentDepreciation' => 0, 'currentNet' => 0, 'comparisonNet' => 0];
 
-		foreach($category as $line) {
+		foreach($category as $class => $line) {
+
+			// Le jeu des arrondis fait qu'on aura une ligne vide
+			if(
+				(int)$line['comparisonBrut'] === 0 and (int)$line['comparisonDepreciation'] === 0 and (int)$line['comparisonNet'] === 0 and
+				(int)$line['currentBrut'] === 0 and (int)$line['currentDepreciation'] === 0 and (int)$line['currentNet'] === 0
+			) {
+				continue;
+			}
 
 			if($lastClass !== NULL and mb_substr($line['class'], 0, 2) !== mb_substr($lastClass, 0, 2)) {
 
@@ -802,15 +842,35 @@ class BalanceSheetUi {
 
 			}
 
-			$h .= '<tr class="overview_line">';
+			$isLineDetail = (mb_strlen($class) > 3);
+
+			$h .= '<tr class="overview_line'.($isLineDetail ? ' pdf-tr-muted pdf-tr-ml-1' : '').'">';
 
 					$h .= '<td>';
-						if($cAccount->offsetExists($line['class'])) {
+						// 2 premiers cas : détail de ligne
+						if($cAccount->offsetExists((int)trim($line['class'], '0'))) {
+
+							$eAccount = $cAccount[(int)trim($line['class'], '0')];
+							$classDisplay = $line['class'];
+
+						} else if($isLineDetail) { // Numéro de compte personnalisé mais non créé dans les comptes
+
+							$eAccount = new \account\Account(['description' => $line['description']]);
+							$classDisplay = $line['class'];
+
+						} else if($cAccount->offsetExists($line['class'])) { // Ligne "normale"
+
 							$eAccount = $cAccount->offsetGet($line['class']);
-						} else {
+							$classDisplay = $eAccount['class'];
+
+						} else { // Ligne "synthèse" sur 2 chiffres
+
 							$eAccount = $cAccount->offsetGet(substr($line['class'], 0, 2));
+							$classDisplay = $eAccount['class'];
+
 						}
-						$h .= encode($eAccount['class']).' ';
+
+						$h .= encode($classDisplay).' ';
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
 					$h .= '<td class="text-end balance-td-net">';
@@ -824,12 +884,17 @@ class BalanceSheetUi {
 
 				$lastClass = $line['class'];
 
-				$cumulation['currentBrut'] += $line['currentBrut'];
-				$cumulation['currentDepreciation'] += $line['currentDepreciation'];
-				$cumulation['currentNet'] += $line['currentNet'];
-				$cumulation['comparisonNet'] += $line['comparisonNet'];
+				if($isLineDetail === FALSE) {
+
+					$cumulation['currentBrut'] += $line['currentBrut'];
+					$cumulation['currentDepreciation'] += $line['currentDepreciation'];
+					$cumulation['currentNet'] += $line['currentNet'];
+					$cumulation['comparisonNet'] += $line['comparisonNet'];
+
+			}
 
 		}
+
 		if($lastClass !== NULL) {
 
 			$eAccount = $cAccount->offsetGet(mb_substr($lastClass, 0, 2));

@@ -257,7 +257,7 @@ Class PreaccountingUi {
 
 	}
 
-	public function items(\Collection $cItem): string {
+	public function items(\farm\Farm $eFarm, \Collection $cItem): string {
 
 			$h = '<table class="tr-even" data-batch="#batch-accounting-item">';
 				$h .= '<thead>';
@@ -291,7 +291,7 @@ Class PreaccountingUi {
 
 			$h .= '</table>';
 
-			$h .= $this->getBatch('item');
+			$h .= $this->getBatch($eFarm, 'item');
 
 
 		return $h;
@@ -393,7 +393,7 @@ Class PreaccountingUi {
 
 		if($tab === 'items') {
 
-			$h .= $this->items($itemData['cItem']);
+			$h .= $this->items($eFarm, $itemData['cItem']);
 
 		} else {
 
@@ -485,7 +485,7 @@ Class PreaccountingUi {
 
 			$h .= '</table>';
 
-			$h .= $this->getBatch('product');
+			$h .= $this->getBatch($eFarm, 'product');
 
 		}
 
@@ -493,11 +493,11 @@ Class PreaccountingUi {
 
 	}
 
-	public function getBatch(string $type): string {
+	public function getBatch(\farm\Farm $eFarm, string $type): string {
 
 		$url = match($type) {
-			'product' => '/selling/product:updateAccount',
-			'item' => '/selling/item:updateAccount',
+			'product' => '/selling/product:updateAccount?farm='.$eFarm['id'],
+			'item' => '/selling/item:updateAccount?farm='.$eFarm['id'],
 		};
 		$title = match($type) {
 			'product' => s("Pour les produits sélectionnés"),

@@ -968,7 +968,6 @@ class CashflowUi {
 			body: $h,
 			dialogOpen : $dialogOpen,
 			dialogClose: $form->close(),
-		//	footer: $footer,
 		);
 
 	}

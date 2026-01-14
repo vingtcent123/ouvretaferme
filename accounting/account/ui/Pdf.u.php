@@ -17,17 +17,29 @@ class PdfUi {
 	public function getName(\account\FinancialYear $eFinancialYear, string $type): string {
 
 		return match($type) {
-			\account\Pdf::FINANCIAL_YEAR_OPENING => s("bilan-ouverture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
-			\account\Pdf::FINANCIAL_YEAR_CLOSING => s("bilan-cloture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::BALANCE => s("bilan-privisoire-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::OPENING => s("bilan-ouverture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::OPENING_DETAILED => s("bilan-ouverture-detaille-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::CLOSING => s("bilan-cloture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::CLOSING_DETAILED => s("bilan-cloture-detaille-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::INCOME_STATEMENT => s("compte-de-resultat-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => s("compte-de-resultat-detaille-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::SIG => s("sig-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 		};
 
 	}
 
-	public function getTitle(string $type): string {
+	public function getTitle(string $type, bool $isTemporary): string {
 
 		return match($type) {
-			\account\Pdf::FINANCIAL_YEAR_OPENING => s("Bilan d'ouverture"),
-			\account\Pdf::FINANCIAL_YEAR_CLOSING => s("Bilan de clôture"),
+			FinancialYearDocumentLib::BALANCE => s("Bilan provisoire"),
+			FinancialYearDocumentLib::OPENING => s("Bilan d'ouverture"),
+			FinancialYearDocumentLib::OPENING_DETAILED => s("Bilan d'ouverture détaillé"),
+			FinancialYearDocumentLib::CLOSING => s("Bilan de clôture"),
+			FinancialYearDocumentLib::CLOSING_DETAILED => s("Bilan de clôture détaillé"),
+			FinancialYearDocumentLib::INCOME_STATEMENT => $isTemporary ? s("Compte de résultat provisoire") : s("Compte de résultat"),
+			FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => $isTemporary ? s("Compte de résultat provisoire avec synthèse") : s("Compte de résultat avec synthèse"),
+			FinancialYearDocumentLib::SIG => $isTemporary ? s("Soldes intermédiaires de gestion provisoires") : s("Soldes intermédiaires de gestion"),
 		};
 
 	}
@@ -60,10 +72,10 @@ class PdfUi {
 					font-size: 12px;
 					align-content: center;
 				}
-				.pdf-document-header > div > h2 {
-					margin: 0.5cm auto 0.25cm;
-				}
 				.pdf-document-header > div > h3 {
+					margin: 0.4cm auto 0.25cm;
+				}
+				.pdf-document-header > div > h4 {
 					margin-bottom: 0.1cm;
 				}
 				.pdf-document-header > div > * {
@@ -85,14 +97,14 @@ class PdfUi {
 			    font-weight: bold;
 			    text-align: center;
 			    margin: auto;
-			    font-size: 0.8cm;
+			    font-size: 0.6cm;
 				}
         </style>';
 		$h .= '<div class="pdf-document-header">';
 
 			$h .= '<div>';
-				$h .= '<h2 class="pdf-document-title">'.$title.'</h2>';
-				$h .= '<h3>'.encode($eFarm['legalName'] ?? $eFarm['name']).'</h3>';
+				$h .= '<h3 class="pdf-document-title">'.$title.'</h3>';
+				$h .= '<h4>'.encode($eFarm['legalName'] ?? $eFarm['name']).'</h4>';
 				if($eFarm['siret'] !== NULL) {
 					$h .= '<div>'.encode($eFarm['siret']).'</div>';
 				}
