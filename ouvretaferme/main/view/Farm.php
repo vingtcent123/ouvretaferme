@@ -325,7 +325,7 @@ class FarmTemplate extends MainTemplate {
 
 						$farm .= '</div>';
 
-					} else if(
+					}/* else if(
 						in_array($this->data->eFarm['id'], \farm\Survey::getFarms()) and
 						\farm\SurveyLib::existsByFarm($this->data->eFarm) === FALSE
 					) {
@@ -338,7 +338,7 @@ class FarmTemplate extends MainTemplate {
 
 						$farm .= '</div>';
 
-					}
+					}*/
 
 				$farm .= '</div>';
 

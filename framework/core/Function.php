@@ -136,6 +136,10 @@ function attrAjaxBody(array $values): string {
 	return attr('data-ajax-body', json_encode($values));
 }
 
+function mb_ucwords(string $value) {
+	return mb_convert_case($value, MB_CASE_TITLE, "UTF-8");
+}
+
 /**
  * Checks if some properties have been set for an array and throws an exception if not
  */

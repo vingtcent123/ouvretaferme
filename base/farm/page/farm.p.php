@@ -140,6 +140,16 @@ new \farm\SurveyPage()
 		$data->eFarm = $data->e['farm'];
 		$data->hasSurvey = \farm\SurveyLib::existsByFarm($data->eFarm);
 
+		if(
+			get_exists('id') and
+			($data->eUserOnline['id'] === 1140 or $data->eUserOnline['id'] === 1)
+		) {
+			\farm\Survey::model()
+				->select(\farm\Survey::getSelection())
+				->whereId(GET('id'))
+				->get($data->e);
+		}
+
 		throw new \ViewAction($data);
 
 	}, page: 'survey')

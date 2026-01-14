@@ -5,6 +5,45 @@ class CompanyLib {
 
 	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing', 'pdf'];
 
+	public static function get(string $query): array {
+
+		$params = [
+			'q' => $query,
+			'page' => 1,
+			'per_page' => 1
+		];
+
+		$curl = new \util\CurlLib();
+
+		try {
+			$values = $curl->exec('https://recherche-entreprises.api.gouv.fr/search', $params);
+		} catch(\Exception) {
+		}
+
+		if($curl->getLastInfos()['httpCode'] !== 200) {
+			return [];
+		}
+
+		$data = json_decode($values, TRUE)['results'];
+
+		if($data === []) {
+			return [];
+		}
+
+		$company = $data[0];
+
+		return [
+			'siren' => $company['siren'],
+			'legalName' => $company['nom_raison_sociale'] ? mb_ucwords($company['nom_raison_sociale']) : ($company['nom_complet'] ? mb_ucwords($company['nom_complet']) : NULL),
+			'legalCity' => mb_ucwords($company['siege']['libelle_commune']),
+			'legalPostcode' => $company['siege']['code_postal'],
+			'legalStreet1' => mb_ucwords(($company['siege']['numero_voie'] ? $company['siege']['numero_voie'].' ' : '').($company['siege']['type_voie'] ? $company['siege']['type_voie'].' ' : '').$company['siege']['libelle_voie']),
+			'legalStreet2' => $company['siege']['complement_adresse'] ? mb_ucwords($company['siege']['complement_adresse']) : NULL,
+			'isOrganic' => $company['complements']['est_bio']
+		];
+
+	}
+
 	public static function load(\stdClass $data): void {
 
 		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
