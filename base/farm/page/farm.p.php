@@ -147,7 +147,9 @@ new \farm\SurveyPage()
 			$analyze
 		) {
 			\farm\Survey::model()
-				->select(\farm\Survey::getSelection())
+				->select(\farm\Survey::getSelection() + [
+					'farm' => ['name']
+				])
 				->whereId(GET('id'))
 				->get($data->e);
 		}
