@@ -87,20 +87,37 @@ Class AdminLib {
 
 				$eFarm['nOperation'] = \journal\Operation::model()->count();
 
+				if($eFarm['nOperation'] > 0) {
+					$eFarm['nAccountImport'] = \account\Import::model()->count();
+				} else {
+					$eFarm['nAccountImport'] = 0;
+				}
+
 				$eFarm['nAsset'] = \asset\Asset::model()->count();
+
 				$eFarm['nFinancialYear'] = \account\FinancialYear::model()->count();
+
+				if($eFarm['nFinancialYear'] > 0) {
+					$eFarm['nFinancialDocument'] = \account\FinancialYearDocument::model()->count();
+				} else {
+					$eFarm['nFinancialDocument'] = 0;
+				}
 
 			} else {
 
 				$eFarm['nOperation'] = 0;
 				$eFarm['nAsset'] = 0;
 				$eFarm['nFinancialYear'] = 0;
+				$eFarm['nFinancialDocument'] = 0;
+				$eFarm['nAccountImport'] = 0;
 
 			}
 		}
 
 		switch($search->getSort()) {
 			case 'nBankAccount':
+			case 'nAccountImport':
+			case 'nFinancialDocument':
 			case 'nFinancialYear':
 			case 'nAsset':
 			case 'nCashflow':
@@ -113,6 +130,8 @@ Class AdminLib {
 
 			case 'nFinancialYear-':
 			case 'nBankAccount-':
+			case 'nAccountImport-':
+			case 'nFinancialDocument-':
 			case 'nAsset-':
 			case 'nCashflow-':
 			case 'nOperation-':
