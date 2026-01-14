@@ -268,6 +268,12 @@ class FinancialYearUi {
 									$h .= '</a>';
 								}
 
+								if($eFinancialYear->acceptImportFec()) {
+									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="dropdown-item">';
+										$h .= s("Importer un fichier FEC");
+									$h .= '</a>';
+								}
+
 								if($eFinancialYear->acceptOpen()) {
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 										$h .= s("Réaliser le bilan d'ouverture");
