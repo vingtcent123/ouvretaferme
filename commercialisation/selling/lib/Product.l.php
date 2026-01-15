@@ -422,6 +422,10 @@ class ProductLib extends ProductCrud {
 					->exists()
 			) {
 
+				\shop\Product::model()
+					->whereProduct($e)
+					->delete();
+
 				Product::model()->update($e, [
 					'status' => Product::DELETED
 				]);
