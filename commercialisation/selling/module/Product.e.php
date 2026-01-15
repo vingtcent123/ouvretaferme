@@ -145,6 +145,10 @@ class Product extends ProductElement {
 
 	}
 
+	public static function checkReference(string $reference): bool {
+		return (preg_match('/^[A-Z0-9\-\_]+$/s', $reference) > 0);
+	}
+
 	public static function getProfiles(string $property): array {
 		return match($property) {
 			'import' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::SERVICE],
@@ -196,7 +200,7 @@ class Product extends ProductElement {
 
 				return (
 					$reference === NULL or
-					preg_match('/^[A-Z0-9\-\_]+$/s', $reference) > 0
+					Product::checkReference($reference)
 				);
 
 			})

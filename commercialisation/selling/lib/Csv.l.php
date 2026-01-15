@@ -189,6 +189,7 @@ class CsvLib {
 			'vatRates' => [],
 			'units' => [],
 			'species' => [],
+			'references' => [],
 		];
 		$infoGlobal = [
 			'references' => [],
@@ -199,7 +200,9 @@ class CsvLib {
 		$references = [];
 		foreach($import as $product) {
 			if($product['reference'] !== NULL) {
-				$references[] = $product['reference'];
+				if(Product::checkReference($product['reference'])) {
+					$references[] = $product['reference'];
+				}
 			}
 		}
 
@@ -235,6 +238,13 @@ class CsvLib {
 
 			if($product['name'] === NULL) {
 				$errors[] = 'nameMissing';
+			}
+
+			if(
+				$product['reference'] !== NULL and
+				Product::checkReference($product['reference']) === FALSE
+			) {
+				$errors[] = 'referenceInvalid';
 			}
 
 			$import[$key]['eUnit'] = new Unit();
