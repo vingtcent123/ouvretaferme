@@ -16,6 +16,7 @@ Customer:
   commercialName: ?text8
   legalName: ?text8
   email: ?email
+  contactName: ?text8
   farm: farm\Farm
   user: ?user\User
   groups: json = PHP([])

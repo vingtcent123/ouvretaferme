@@ -314,6 +314,11 @@ class CustomerUi {
 						}
 
 						$h .= '<td class="customer-item-contact">';
+							if($eCustomer['contactName']) {
+								$h .= '<div>';
+									$h .= \Asset::icon('person-vcard').'  '.encode($eCustomer['contactName']);
+								$h .= '</div>';
+							}
 							if($eCustomer['email']) {
 								$h .= '<div>';
 									$h .= \Asset::icon('at').'  '.encode($eCustomer['email']);
@@ -862,6 +867,9 @@ class CustomerUi {
 					$h .= $form->dynamicGroups($eCustomer, ['email', 'phone']);
 				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->dynamicGroups($eCustomer, ['contactName']);
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'siret');
 					$h .= $form->dynamicGroup($eCustomer, 'legalName');
 					$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
@@ -913,6 +921,7 @@ class CustomerUi {
 			'commercialName' => s("Nom commercial"),
 			'firstName' => s("Prénom"),
 			'lastName' => s("Nom"),
+			'contactName' => s("Nom du contact"),
 			'email' => s("Adresse e-mail"),
 			'groups' => s("Groupe"),
 			'orderFormEmail' => s("Adresse e-mail pour l'envoi des devis"),
@@ -1005,6 +1014,11 @@ class CustomerUi {
 						return NULL;
 					}
 				};
+				$d->prepend = \Asset::icon('telephone');
+				break;
+
+			case 'contactName' :
+				$d->prepend = \Asset::icon('person-vcard');
 				break;
 
 			case 'legalName' :
@@ -1023,6 +1037,7 @@ class CustomerUi {
 						return NULL;
 					}
 				};
+				$d->prepend = \Asset::icon('at');
 				break;
 
 			case 'orderFormEmail' :

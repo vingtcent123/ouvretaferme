@@ -2801,7 +2801,7 @@ class SaleUi {
 				break;
 
 			case 'orderFormPaymentCondition' :
-				$d->placeholder = s("Exemple : Acompte de 20 % à la signature du devis, et solde à la livraison.");
+				$d->placeholder = s("Ex. : Acompte de 20 % à la signature du devis, et solde à la livraison.");
 				$d->after = \util\FormUi::info(s("Facultatif, indiquez ici les conditions de paiement après acceptation du devis."));
 				break;
 

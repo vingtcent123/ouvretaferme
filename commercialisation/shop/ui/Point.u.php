@@ -568,15 +568,15 @@ class PointUi {
 				break;
 
 			case 'place' :
-				$d->placeholder = s("Exemple : Saint-Alban");
+				$d->placeholder = s("Ex. : Saint-Alban");
 				break;
 
 			case 'address' :
-				$d->placeholder = s("Exemple : 12 rue sous les Augustins");
+				$d->placeholder = s("Ex. : 12 rue sous les Augustins");
 				break;
 
 			case 'zone' :
-				$d->placeholder = s("Exemple :\n- Ce village\n- Cet autre village\n- Ce départment\n\nNous assurons la livraison en vélo.");
+				$d->placeholder = s("Ex. :\n- Ce village\n- Cet autre village\n- Ce départment\n\nNous assurons la livraison en vélo.");
 				$d->after = s("Indiquez une zone géographique par ligne. Vous pouvez également ajouter du texte si vous souhaitez apporter des précisions supplémentaires à vos clients.");
 				break;
 

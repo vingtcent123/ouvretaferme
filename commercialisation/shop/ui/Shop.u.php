@@ -1405,12 +1405,12 @@ class ShopUi {
 				break;
 
 			case 'paymentOfflineHow' :
-				$d->placeholder = s("Exemple : Règlement en espèces ou par chèque au moment du retrait des commandes.");
+				$d->placeholder = s("Ex. : Règlement en espèces ou par chèque au moment du retrait des commandes.");
 				$d->after = \util\FormUi::info(s("Indiquez ici comment vous pouvez être payé par vos clients s'ils choisissent de régler leurs commandes en direct avec vous.<br/>Si vous n'autorisez que le paiement en direct sur cette boutique, nous vous suggérons de <link>désactiver la page de choix du moyen de paiement</link> pour simplifier l'interface pour vos clients.", ['link' => '<a href="'.LIME_REQUEST.'#shop-payment-disabled">']));
 				break;
 
 			case 'paymentTransferHow' :
-				$d->placeholder = s("Exemple : Règlement des commandes par virement bancaire chaque début de mois à réception de facture.");
+				$d->placeholder = s("Ex. : Règlement des commandes par virement bancaire chaque début de mois à réception de facture.");
 				$d->after = \util\FormUi::info(s("Indiquez ici comment vous comptez facturer vos clients pour qu'ils vous règlent par virement."));
 				break;
 

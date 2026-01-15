@@ -269,6 +269,17 @@ class Customer extends CustomerElement {
 				return ($name !== NULL);
 
 			})
+			->setCallback('contactName.empty', function(?string &$name): bool {
+
+				$this->expects(['user']);
+
+				if($this->getCategory() !== Customer::PRO) {
+					$name = NULL;
+				}
+
+				return TRUE;
+
+			})
 			->setCallback('name.empty', function(?string &$name): bool {
 
 				$this->expects(['user']);

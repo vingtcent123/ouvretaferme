@@ -2950,7 +2950,7 @@ class FarmUi {
 
 		\Asset::js('farm', 'farm.js');
 
-		$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
+		$d->placeholder = s("Ex. : {value}", '123 456 789 00013');
 
 		$h = '<div class="util-block siret-found hide mt-1">';
 			$h .= '<h4>'.s("Nous avons trouvé ce SIRET dans la base de données de l'administration :").'</h4>';

@@ -56,6 +56,7 @@ class CustomerModel extends \ModuleModel {
 			'commercialName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
+			'contactName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'groups' => ['json', 'cast' => 'array'],
@@ -85,7 +86,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'email', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'email', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -200,6 +201,10 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereEmail(...$data): CustomerModel {
 		return $this->where('email', ...$data);
+	}
+
+	public function whereContactName(...$data): CustomerModel {
+		return $this->where('contactName', ...$data);
 	}
 
 	public function whereFarm(...$data): CustomerModel {

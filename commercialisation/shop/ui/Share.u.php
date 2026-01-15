@@ -272,7 +272,7 @@ class ShareUi {
 		switch($property) {
 
 			case 'label' ;
-				$d->placeholder = s("Exemple : Maraîcher, Arboricultrice...");
+				$d->placeholder = s("Ex. : Maraîcher, Arboricultrice...");
 				$d->labelAfter = \util\FormUi::info(s("Si elle est défini, l'activité de ce producteur sera indiquée aux clients sur la boutique"));
 				break;
 

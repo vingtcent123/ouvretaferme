@@ -32,7 +32,7 @@ class CustomerLib extends CustomerCrud {
 
 		return match($category) {
 
-			Customer::PRO => array_merge(['category'], $properties, ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'email', 'defaultPaymentMethod', 'phone']),
+			Customer::PRO => array_merge(['category'], $properties, ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'email', 'defaultPaymentMethod', 'phone', 'contactName']),
 			Customer::PRIVATE => array_merge(['category'], $properties, ['email', 'defaultPaymentMethod', 'phone']),
 			Customer::COLLECTIVE => match($for) {
 				'create' => array_merge(['category'], $properties),

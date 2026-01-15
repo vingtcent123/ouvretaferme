@@ -662,8 +662,12 @@ L'équipe");
 			case 'firstName' :
 			case 'lastName' :
 			case 'email' :
+				$d->placeholder = $d->label;
+				break;
+
 			case 'phone' :
 				$d->placeholder = $d->label;
+				$d->prepend = \Asset::icon('telephone');
 				break;
 
 		}

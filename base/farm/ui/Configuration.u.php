@@ -502,7 +502,7 @@ class ConfigurationUi {
 		switch($property) {
 
 			case 'vatNumber' :
-				$d->palceholder = s("Exemple : {value}", 'FR01234567890');
+				$d->palceholder = s("Ex. : {value}", 'FR01234567890');
 				$d->after = \util\FormUi::info(s("Indiquez ici un numéro de TVA intracommunautaire si vous souhaitez le voir apparaître sur les factures."));
 				break;
 
@@ -549,12 +549,12 @@ class ConfigurationUi {
 				break;
 
 			case 'organicCertifier' :
-				$d->placeholder = s("Exemple : {value}", 'FR-BIO-01');
+				$d->placeholder = s("Ex. : {value}", 'FR-BIO-01');
 				$d->after = \util\FormUi::info(s("Indiquez ici le code ISO de votre organisme certificateur pour le voir apparaître sur les bons de commande, bons de livraison et factures."));
 				break;
 
 			case 'paymentMode' :
-				$d->placeholder = s("Exemple : Paiement en espèces ou par virement bancaire. Coordonnées bancaires : FR76 XXXX XXXX XXXX XXXX XXX");
+				$d->placeholder = s("Ex. : Paiement en espèces ou par virement bancaire. Coordonnées bancaires : FR76 XXXX XXXX XXXX XXXX XXX");
 				$d->after = \util\FormUi::info(s("Indiquez ici les moyens de paiement autorisés pour régler vos devis et factures."));
 				break;
 
@@ -594,7 +594,7 @@ class ConfigurationUi {
 				break;
 
 			case 'orderFormPaymentCondition' :
-				$d->placeholder = s("Exemple : Acompte de 20 % à la signature du devis, et solde à la livraison.");
+				$d->placeholder = s("Ex. : Acompte de 20 % à la signature du devis, et solde à la livraison.");
 				$d->after = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients après acceptation d'un devis."));
 				break;
 
@@ -625,7 +625,7 @@ class ConfigurationUi {
 				break;
 
 			case 'invoicePaymentCondition' :
-				$d->placeholder = s("Exemple : Paiement à réception de facture.");
+				$d->placeholder = s("Ex. : Paiement à réception de facture.");
 				$d->labelAfter = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients pour régler vos factures."));
 				break;
 

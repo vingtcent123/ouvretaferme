@@ -1158,7 +1158,7 @@ class InvoiceUi {
 				break;
 
 			case 'paymentCondition' :
-				$d->placeholder = s("Exemple : Paiement à réception de facture.");
+				$d->placeholder = s("Ex. : Paiement à réception de facture.");
 				$d->after = \util\FormUi::info(s("Indiquez ici les conditions de paiement pour régler cette facture ou si cette facture est acquittée."));
 				break;
 

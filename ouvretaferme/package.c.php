@@ -23,7 +23,6 @@ Package::setList([
 	'media' => 'base',
 	'overview' => 'accounting',
 	'payment' => 'commercialisation',
-	'pdf' => 'accounting',
 	'plant' => 'production',
 	'preaccounting' => 'accounting',
 	'selling' => 'commercialisation',
