@@ -7,7 +7,7 @@
 	->post('doUpdate', function($data) {
 
 		$eUser = \user\ConnectionLib::getOnline();
-		$properties = \user\UserLib::getPropertiesUpdate();
+		$properties = \user\UserLib::getPropertiesUpdate()($eUser);
 
 		$fw = new \FailWatch();
 

@@ -118,27 +118,13 @@ class UserUi {
 			'firstColumnSize' => 40
 		]);
 
-		$h = $form->openAjax('/user/signUp:doCreate', ['autocomplete' => 'off']);
+		$h = $form->openAjax('/user/signUp:doCreate', ['id' => 'user-signup', 'autocomplete' => 'off', 'style' => 'max-width: 768px; margin: auto']);
 
 			$h .= $form->hidden('redirect', $redirect);
 
 			$h .= $form->hidden('role', $eRole['id']);
 
-			$h .= implode('', self::notify('signUpFormTop', $form, $eRole));
-
-			$h .= $form->dynamicGroups($e, ['firstName', 'lastName', 'invoiceCountry', 'email']);
-
-			$h .= $form->group(
-				s("Votre mot de passe"),
-				$form->password('password', NULL, ['placeholder' => s("Mot de passe")])
-			);
-
-			$h .= $form->group(
-				s("Retapez le mot de passe"),
-				$form->password('passwordBis')
-			);
-
-			$h .= implode('', self::notify('signUpFormBottom', $form, $eRole));
+			$h .= implode('', self::notify('signUpForm', $form, $e, $eRole));
 
 			$h .= $form->group(
 				content: $form->submit(s("S'inscrire"))
@@ -187,6 +173,11 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 		$h = $form->openAjax('/user/update:doUpdate');
 
 		$h .= $form->group(
+			s("Client"),
+			'<b>'.self::p('type')->values[$eUser['type']].'</b>'
+		);
+
+		$h .= $form->group(
 			self::p('email')->label,
 			$form->inputGroup(
 				$form->addon(\Asset::icon('envelope-fill')).
@@ -194,8 +185,17 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 				'<a href="/user/settings:updateEmail" class="btn btn-primary">'.\Asset::icon('pencil-fill').'</a>'
 			)
 		);
+
 		$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName', 'phone']);
-		$h .= $form->addressGroup(s("Adresse"), 'invoice', $eUser);
+
+		if($eUser['type'] === User::PRO) {
+			$h .= $form->dynamicGroup($eUser, 'siret');
+			$h .= $form->dynamicGroup($eUser, 'legalName');
+			$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eUser);
+		} else {
+			$h .= $form->addressGroup(s("Adresse"), 'invoice', $eUser);
+		}
+
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
@@ -605,19 +605,33 @@ L'équipe");
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = User::model()->describer($property, [
+			'type' => s("Je suis"),
 			'role' => s("Profil"),
 			'invoiceCountry' => s("Pays"),
 			'email' => s("Adresse e-mail"),
 			'phone' => s("Numéro de téléphone"),
 			'lastName' => s("Nom"),
 			'firstName' => s("Prénom"),
-			'birthdate' => s("Date de naissance"),
+			'legalName' => s("Nom de la société"),
+			'siret' => s("SIRET"),
 			'invoiceStreet' => s("Adresse"),
 			'invoicePostcode' => s("Code postal"),
 			'invoiceCity' => s("Ville"),
 		]);
 
 		switch($property) {
+
+			case 'type' :
+				$d->values = [
+					User::PRIVATE => s("Particulier"),
+					User::PRO => s("Professionnel"),
+				];
+				$d->attributes = ['columns' => 2];
+				break;
+
+			case 'siret' :
+				\main\PlaceUi::querySiret($d, 'invoice');
+				break;
 
 			case 'role' :
 				$d->field = function(\util\FormUi $form, User $e) {
@@ -653,10 +667,6 @@ L'équipe");
 					'group' => is_array(\user\Country::form()),
 					'mandatory' => TRUE
 				];
-				break;
-
-			case 'birthdate' :
-				$d->prepend = \Asset::icon('calendar-date');
 				break;
 
 			case 'firstName' :

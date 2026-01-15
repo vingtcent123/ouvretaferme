@@ -7,8 +7,10 @@ abstract class UserElement extends \Element {
 
 	private static ?UserModel $model = NULL;
 
-	const PUBLIC = 'public';
 	const PRIVATE = 'private';
+	const PRO = 'pro';
+
+	const PUBLIC = 'public';
 
 	const ACTIVE = 'active';
 	const SUSPENDED = 'suspended';
@@ -48,11 +50,13 @@ class UserModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'type' => ['enum', [\user\User::PRIVATE, \user\User::PRO], 'cast' => 'enum'],
 			'firstName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'lastName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'cast' => 'string'],
+			'legalName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'email' => ['email', 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
-			'birthdate' => ['date', 'min' => toDate('NOW - 100 YEARS'), 'max' => toDate('NOW - 10 YEARS'), 'null' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'siret' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'invoiceStreet1' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceStreet2' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -75,7 +79,7 @@ class UserModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'firstName', 'lastName', 'email', 'birthdate', 'phone', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'verified', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
+			'id', 'type', 'firstName', 'lastName', 'legalName', 'email', 'phone', 'siret', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'verified', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
 		]);
 
 		$this->propertiesToModule += [
@@ -97,6 +101,9 @@ class UserModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'type' :
+				return User::PRIVATE;
 
 			case 'verified' :
 				return FALSE;
@@ -139,6 +146,9 @@ class UserModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'type' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'visibility' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -164,6 +174,10 @@ class UserModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
+	public function whereType(...$data): UserModel {
+		return $this->where('type', ...$data);
+	}
+
 	public function whereFirstName(...$data): UserModel {
 		return $this->where('firstName', ...$data);
 	}
@@ -172,16 +186,20 @@ class UserModel extends \ModuleModel {
 		return $this->where('lastName', ...$data);
 	}
 
+	public function whereLegalName(...$data): UserModel {
+		return $this->where('legalName', ...$data);
+	}
+
 	public function whereEmail(...$data): UserModel {
 		return $this->where('email', ...$data);
 	}
 
-	public function whereBirthdate(...$data): UserModel {
-		return $this->where('birthdate', ...$data);
-	}
-
 	public function wherePhone(...$data): UserModel {
 		return $this->where('phone', ...$data);
+	}
+
+	public function whereSiret(...$data): UserModel {
+		return $this->where('siret', ...$data);
 	}
 
 	public function whereInvoiceCountry(...$data): UserModel {

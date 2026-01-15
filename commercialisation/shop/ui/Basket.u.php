@@ -643,7 +643,7 @@ class BasketUi {
 
 		$h .= $form->openAjax(\shop\ShopUi::userUrl($eShop, $eDate, ':doUpdatePhone'));
 
-			$h .= $form->dynamicField($eUser, 'phone').'<br/>';
+			$h .= $form->dynamicField($eUser, 'phone').'<br/><br/>';
 			$h .= $form->submit(s("Enregistrer le numéro").' '.\Asset::icon('chevron-right'), ['class' => 'btn btn-lg btn-secondary']);
 
 		$h .= $form->close();

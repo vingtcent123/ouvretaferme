@@ -108,3 +108,11 @@ div.user-light-actions a {
 .user-account-header > h1 {
 	margin-bottom: 0;
 }
+
+#user-signup:has(input[name="type"][value="pro"]:not(:checked)) #user-signup-company {
+	display: none;
+}
+
+#user-signup:has(select[name="invoiceCountry"] option[value="75"]:not(:checked)) [data-wrapper="siret"] {
+	display: none;
+}

@@ -11,5 +11,23 @@ class Country extends CountryElement {
 		return \user\CountryLib::ask($e);
 	}
 
+	public function isFR(): bool {
+
+		return (
+			$this->exists() and
+			$this['id'] === \user\UserSetting::FR
+		);
+
+	}
+
+	public function isBE(): bool {
+
+		return (
+			$this->exists() and
+			$this['id'] === \user\UserSetting::BE
+		);
+
+	}
+
 }
 ?>

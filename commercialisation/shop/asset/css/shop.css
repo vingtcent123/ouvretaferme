@@ -255,12 +255,12 @@ span.shop-closed {
 
 div.shop-identification {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 2fr 3fr;
 	grid-gap: 1rem;
 	margin-top: 1rem;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 991px) {
 
 	div.shop-identification {
 		grid-template-columns: 1fr;

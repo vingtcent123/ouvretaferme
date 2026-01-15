@@ -41,7 +41,7 @@ class DemoLib {
 		'account\FinancialYear' => ['openContent', 'closeContent'],
 		'bank\Cashflow' => ['memo', 'name'],
 		'journal\Operation' => ['document', 'description'],
-		'user\User' => ['birthdate', 'phone', 'vignette', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
+		'user\User' => ['phone', 'vignette', 'siret', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
 		'series\Repeat' => ['description'],
 		'series\Series' => ['comment'],
 		'selling\Sale' => ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry'],

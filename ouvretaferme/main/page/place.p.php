@@ -9,5 +9,12 @@ new Page()
 
 		throw new ViewAction($data);
 
+	})
+	->get('siret', function($data) {
+
+		$siret = \farm\FarmLib::getSiretApi(GET('siret'));
+
+		throw new JsonAction(['result' => $siret]);
+
 	});
 ?>

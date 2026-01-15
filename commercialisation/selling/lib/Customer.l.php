@@ -252,7 +252,7 @@ class CustomerLib extends CustomerCrud {
 			->get();
 
 	}
-	public static function getByUserAndFarm(\user\User $eUser, \farm\Farm $eFarm, bool $autoCreate = FALSE, ?string $autoCreateType = NULL): Customer {
+	public static function getByUserAndFarm(\user\User $eUser, \farm\Farm $eFarm, bool $autoCreate = FALSE): Customer {
 
 		if($eUser->empty()) {
 			return new \selling\Customer();
@@ -266,7 +266,7 @@ class CustomerLib extends CustomerCrud {
 
 		if($eCustomer->empty() and $autoCreate) {
 			// Possible problème de DUPLICATE si le customer a été créé entre cette instruction et la précédente
-			$eCustomer = \selling\CustomerLib::createFromUser($eUser, $eFarm, $autoCreateType ?? throw new \Exception('Missing type'));
+			$eCustomer = \selling\CustomerLib::createFromUser($eUser, $eFarm);
 		}
 
 		return $eCustomer;
@@ -283,24 +283,47 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function createFromUser(\user\User $eUser, \farm\Farm $eFarm, string $type): Customer {
+	public static function createFromUser(\user\User $eUser, \farm\Farm $eFarm): Customer {
 
 		$eUser->expects(['email']);
 
 		$eCustomer = new Customer([
-			'name' => self::getNameFromUser($eUser),
-			'firstName' => $eUser['firstName'],
-			'lastName' => $eUser['lastName'],
+			'type' => $eUser['type'],
 			'email' => $eUser['email'],
 			'phone' => $eUser['phone'],
-			'type' => $type,
-			'destination' => match($type) {
+			'destination' => match($eUser['type']) {
 				Customer::PRIVATE => Customer::INDIVIDUAL,
 				Customer::PRO => NULL
 			},
 			'farm' => $eFarm,
 			'user' => $eUser
 		]);
+
+		switch($eUser['type']) {
+
+			case \user\User::PRIVATE :
+				$eCustomer->merge([
+					'name' => self::getNameFromUser($eUser),
+					'firstName' => $eUser['firstName'],
+					'lastName' => $eUser['lastName'],
+				]);
+				break;
+
+			case \user\User::PRO :
+				$eCustomer->merge([
+					'name' => $eUser['legalName'],
+					'commercialName' => $eUser['legalName'],
+					'contactName' => self::getNameFromUser($eUser),
+					'siret' => $eUser['siret'],
+					'invoiceStreet1' => $eUser['invoiceStreet1'],
+					'invoiceStreet2' => $eUser['invoiceStreet2'],
+					'invoicePostcode' => $eUser['invoicePostcode'],
+					'invoiceCity' => $eUser['invoiceCity'],
+					'invoiceCountry' => $eUser['invoiceCountry'],
+				]);
+				break;
+
+		}
 
 		Customer::model()->insert($eCustomer);
 

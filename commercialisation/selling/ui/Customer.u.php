@@ -478,10 +478,6 @@ class CustomerUi {
 				$h .= '<dl class="util-presentation util-presentation-2">';
 					$h .= '<dt>'.s("Catégorie").'</dt>';
 					$h .= '<dd>'.$type.'</dd>';
-					$h .= '<dt>'.s("Téléphone").'</dt>';
-					$h .= '<dd>'.($eCustomer['phone'] !== NULL ? encode($eCustomer['phone']) : '').'</dd>';
-					$h .= '<dt>'.s("Compte client").'</dt>';
-					$h .= '<dd>'.($eCustomer['user']->notEmpty() ? \Asset::icon('person-fill').' '.encode($eCustomer['user']['email']) : s("Non")).'</dd>';
 					$h .= '<dt>'.s("Adresse e-mail").'</dt>';
 					$h .= '<dd>';
 						$email = $eCustomer['email'] ?? NULL;
@@ -494,6 +490,10 @@ class CustomerUi {
 							$h .= ' <span class="color-danger" title="'.s("E-mail en erreur").'">'.\Asset::icon('x-circle-fill', ['class' => 'asset-icon-lg']).'</span>';
 						}
 					$h .= '</dd>';
+					$h .= '<dt>'.s("Compte client").'</dt>';
+					$h .= '<dd>'.($eCustomer['user']->notEmpty() ? \Asset::icon('person-fill').' '.encode($eCustomer['user']['email']) : s("Non")).'</dd>';
+					$h .= '<dt>'.s("Téléphone").'</dt>';
+					$h .= '<dd>'.($eCustomer['phone'] !== NULL ? encode($eCustomer['phone']) : '').'</dd>';
 
 					if($eCustomer['type'] === Customer::PRO) {
 
@@ -508,6 +508,8 @@ class CustomerUi {
 							}
 
 						$h .= '</dd>';
+						$h .= '<dt>'.s("Contact").'</dt>';
+						$h .= '<dd>'.($eCustomer['contactName'] !== NULL ? encode($eCustomer['contactName']) : '').'</dd>';
 
 					}
 
@@ -967,7 +969,7 @@ class CustomerUi {
 				break;
 
 			case 'siret' :
-				\farm\FarmUi::querySiret($d, 'invoice');
+				\main\PlaceUi::querySiret($d, 'invoice');
 				break;
 
 			case 'groups' :

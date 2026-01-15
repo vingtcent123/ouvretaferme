@@ -18,7 +18,6 @@ class AlertUi {
 			'User::firstName.check' => s("Veuillez indiquer votre prénom"),
 			'User::lastName.check' => s("Veuillez indiquer votre nom"),
 			'User::country.check' => s("Veuillez indiquer votre pays"),
-			'User::birthdate.check' => s("La date de naissance n'est pas correcte"),
 			'User::gender.check' => s("Votre sexe n'existe pas"),
 			'User::hashConnectedWrongAccount'=> s("Veuillez vous déconnecter de ce compte pour pouvoir confirmer votre adresse e-mail."),
 			'User::email.check' => s("L'adresse e-mail n'est pas correcte"),

@@ -289,12 +289,12 @@ new AdaptativeView('signUp', function($data, MainTemplate $t) {
 			echo '<div class="util-block-info mb-2">';
 				echo \Asset::icon('person-workspace', ['class' => 'util-block-icon']);
 				echo '<h4>'.s("Bienvenue sur {siteName} !").'</h4>';
-				echo '<p>'.s("Pour travailler avec le logiciel comme producteur, nous vous suggérons de créer un compte personnel en renseignant vos nom et prénom.").'</p>';
-				echo '<p>'.s("Vous pourrez créer votre ferme ou rejoindre une ferme existante et profiter de toutes les fonctionnalités juste après cette étape !<br/>Par la suite, vous pourrez également inviter autant de collègues que nécessaire dans l'équipe de votre ferme.").'</p>';
+				echo '<p>'.s("Pour travailler avec le logiciel comme producteur, nous vous suggérons de créer un compte personnel avec vos nom et prénom.").'</p>';
+				echo '<p>'.s("Vous pourrez créer votre ferme ou rejoindre une ferme existante et profiter de toutes les fonctionnalités juste après !<br/>Vous pourrez également inviter autant de collègues que nécessaire dans l'équipe de votre ferme.").'</p>';
 			echo '</div>';
 		}
 
-		echo '<h2>'.s("Mes informations").'</h2>';
+		echo '<h2 class="text-center mb-2">'.s("Mes informations").'</h2>';
 
 		echo new \user\UserUi()->signUp($data->eUser, $data->eRole, REQUEST('redirect'));
 	}
@@ -334,7 +334,7 @@ new AdaptativeView('/presentation/producteur', function($data, MainTemplate $t) 
 			echo '<div class="home-presentation-item">'.s("<b>Partagez vos boutiques en ligne avec d'autres producteurs</b><br/><small>Vendez à plusieurs sur la même boutique pour partager vos créneaux de vente et simplifier l'expérience pour vos clients.</small>").'</div>';
 			echo '<div class="home-presentation-item">'.s("<b>Éditez des mercuriales pour vos clients professionnels</b><br/><small>Créez des boutiques en ligne exclusivement réservées à vos clients professionnels. Personnalisez les prix et les disponibilités par client.</small>").'</div>';
 			echo '<div class="home-presentation-item">'.s("<b>Pilotez vos stocks</b><br/><small>Choisissez les produits pour lesquels vous souhaitez avoir un suivi des stocks. Les récoltes et les ventes que vous saisissez impactent automatiquement le stock et vous savez toujours ce qui vous reste à vendre.</small>").'</div>';
-			echo '<div class="home-presentation-item">'.s("<b>Gérez vos devis, bons de livraison et factures</b><br/><small>Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients. Obtenez-les au format PDF.</small>").'</div>';
+			echo '<div class="home-presentation-item">'.s("<b>Gérez vos devis, bons de livraison et factures</b><br/><small>Créez toutes les factures du mois en une seule fois. Envoyez-les en un clic par e-mail à vos clients. Obtenez-les au format PDF. Suivez et relancez vos impayés.</small>").'</div>';
 			echo '<div class="home-presentation-item">'.s("<b>Compatible avec la facturation électronique</b><br/><small>Les factures intègrent le format Factur-X.</small>").'</div>';
 
 		echo '</div>';

@@ -8,8 +8,13 @@ class UserLib extends UserCrud {
 
 	use \Notifiable;
 
-	public static function getPropertiesUpdate(): array {
-		return ['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'];
+	public static function getPropertiesUpdate(): \Closure {
+		return function(User $e) {
+			return match($e['type']) {
+				User::PRIVATE => ['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
+				User::PRO => ['firstName', 'lastName', 'legalName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret']
+			};
+		};
 	}
 
 	public static function count(): int {

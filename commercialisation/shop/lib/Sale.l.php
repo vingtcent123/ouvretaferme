@@ -156,7 +156,7 @@ class SaleLib {
 
 		// Création du client sur la ferme à l'origine de la boutique partagée
 		if($eShop->isShared()) {
-			$eSaleReference['customer'] = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
+			$eSaleReference['customer'] = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE);
 		}
 
 		$cSale = new \Collection();
@@ -164,7 +164,7 @@ class SaleLib {
 		foreach($ccItem as $farm => $cItem) {
 
 			$eFarm = $cFarm[$farm];
-			$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eFarm, autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
+			$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eFarm, autoCreate: TRUE);
 
 			$eSale = (clone $eSaleReference)->merge([
 				'farm' => $eFarm,
@@ -404,7 +404,7 @@ class SaleLib {
 
 					} else {
 
-						$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eFarm, autoCreate: TRUE, autoCreateType: $eSaleReference['type']);
+						$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eFarm, autoCreate: TRUE);
 
 						$eSaleNew = (clone $eSaleReference)->merge([
 							'id' => NULL,

@@ -242,7 +242,7 @@ class AdminUi {
 
 			$h .= $form->hidden('id', $eUser['id']);
 
-			$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName', 'birthdate']);
+			$h .= $form->dynamicGroups($eUser, ['email', 'firstName', 'lastName']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))

@@ -49,6 +49,7 @@ new Page()
 
 		$eUser = new \user\User([
 			'email' => NULL,
+			'type' => \user\User::PRIVATE,
 			'visibility' => \user\User::PRIVATE,
 			'role' => \user\RoleLib::getByFqn('farmer')
 		]);

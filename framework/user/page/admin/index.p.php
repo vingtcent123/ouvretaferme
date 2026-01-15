@@ -27,7 +27,7 @@ new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 
 new \user\UserPage(
 		fn() => \user\ConnectionLib::getOnline()->checkIsAdmin(),
-		propertiesUpdate: ['email', 'birthdate', 'firstName', 'lastName']
+		propertiesUpdate: ['email', 'firstName', 'lastName']
 	)
 	->read('forgottenPassword', function($data) {
 

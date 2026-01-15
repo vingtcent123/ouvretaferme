@@ -125,15 +125,19 @@ class User extends UserElement {
 		}
 
 		$p
-			->setCallback('birthdate.future', function(?string $date): bool {
+			->setCallback('siret.prepare', function(?string &$siret) use($p): void {
 
-				if($date === NULL) {
-					return TRUE;
+				$this->expects(['type', 'invoiceCountry']);
+
+				if(
+					$this['type'] === User::PRIVATE or
+					$this['invoiceCountry']->isFR() === FALSE
+				) {
+					$siret = NULL;
 				}
 
-				return (\util\DateLib::compare($date, currentDate()) < 0);
-
 			})
+			->setCallback('siret.check', fn(?string &$siret) => \farm\Farm::checkSiret($siret))
 			->setCallback('phone.empty', function(?string $phone): bool {
 
 				$this->expects(['visibility']);
@@ -161,7 +165,7 @@ class User extends UserElement {
 				return Country::model()->exists($eCountry);
 
 			})
-			->setCallback('firstName.empty', function(?string $firstName): bool {
+			->setCallback('firstName.prepare', function(?string $firstName): bool {
 
 				$this->expects(['visibility']);
 
@@ -169,6 +173,15 @@ class User extends UserElement {
 					$this['visibility'] == User::PRIVATE or
 					$firstName !== NULL
 				);
+
+			})
+			->setCallback('legalName.prepare', function(?string &$legalName): void {
+
+				$this->expects(['type']);
+
+				if($this['type'] === User::PRIVATE) {
+					$legalName = NULL;
+				}
 
 			})
 			->setCallback('address.empty', function(): bool {

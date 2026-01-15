@@ -62,7 +62,7 @@ Package::setObservers([
 	],
 	'ui' => [
 		'user' => [
-			'signUpFormBottom' => ['main'],
+			'signUpForm' => ['main'],
 			'emailSignUp' => ['main'],
 		],
 	],

@@ -46,11 +46,13 @@ Role:
 
 User:
   id: serial32
+  type: enum(PRIVATE, PRO) = PRIVATE
   firstName: ?text8(1, PHP(\user\UserSetting::NAME_SIZE_MAX)) @collate(general)
   lastName: text8(1, PHP(\user\UserSetting::NAME_SIZE_MAX)) @collate(general)
+  legalName: ?text8(1, PHP(\user\UserSetting::NAME_SIZE_MAX)) @collate(general)
   email: ?email(1, 100) @collate(general)
-  birthdate: ?date(PHP(toDate('NOW - 100 YEARS')), PHP(toDate('NOW - 10 YEARS')))
   phone: ?text8(1, null)
+  siret: ?text8(1, null)
   invoiceCountry: ?user\Country
   invoiceStreet1: ?text8(1, null)
   invoiceStreet2: ?text8(1, null)

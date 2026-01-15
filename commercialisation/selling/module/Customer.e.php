@@ -14,7 +14,7 @@ class Customer extends CustomerElement {
 	}
 
 	public function getLegalName(): string {
-		return ($this['legalName'] ?? $this['name']);
+		return ($this['legalName'] ?? $this['commercialName']);
 	}
 
 	public function getName(): ?string {
@@ -120,8 +120,7 @@ class Customer extends CustomerElement {
 
 		return (
 			$this->isPro() and
-			$this['invoiceCountry']->notEmpty() and
-			$this['invoiceCountry']['id'] === 75
+			$this['invoiceCountry']->isFR()
 		);
 
 	}
@@ -130,8 +129,7 @@ class Customer extends CustomerElement {
 
 		return (
 			$this->isPro() and
-			$this['invoiceCountry']->notEmpty() and
-			$this['invoiceCountry']['id'] === 20
+			$this['invoiceCountry']->isBE()
 		);
 
 	}
@@ -311,7 +309,11 @@ class Customer extends CustomerElement {
 					}
 
 				} else if($this->getCategory() === Customer::PRO) {
-					$this['name'] = $this['commercialName'];
+					if($p->isBuilt('commercialName')) {
+						$this['name'] = $this['commercialName'];
+					} else {
+						return FALSE;
+					}
 				} else {
 					$this['name'] = $name;
 				}

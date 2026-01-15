@@ -26,15 +26,6 @@ new \farm\FarmPage(
 	});
 
 new \farm\FarmPage()
-	->read('querySiret', function($data) {
-
-		$siret = \farm\FarmLib::getSiretApi(GET('siret'));
-
-		throw new JsonAction(['result' => $siret]);
-
-	}, validate: ['canRead']);
-
-new \farm\FarmPage()
 	->applyElement(function($data, \farm\Farm $e) {
 
 		$e->validate('canManage');
