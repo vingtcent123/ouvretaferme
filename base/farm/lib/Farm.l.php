@@ -13,14 +13,18 @@ class FarmLib extends FarmCrud {
 
 		return function(Farm $e) {
 
-			$properties = ['name', 'legalName', 'legalEmail', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
+			$properties = ['name', 'legalEmail', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
 
-			if($e->getConf('taxCountry')->empty()) {
+			if($e->isVerified()) {
+
+				$properties = array_merge($properties, ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity']);
+
+				if($e->isFR()) {
+					$properties[] = 'siret';
+				}
+
+			} else {
 				$properties[] = 'legalCountry';
-			}
-
-			if($e->isFR()) {
-				$properties[] = 'siret';
 			}
 
 			return $properties;
@@ -33,9 +37,10 @@ class FarmLib extends FarmCrud {
 
 		$properties = ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'];
 
-			if($e->getConf('taxCountry')->empty()) {
-				$properties[] = 'legalCountry';
-			}
+		if($e->isVerified() === FALSE) {
+			$properties[] = 'legalCountry';
+			$properties[] = 'verified';
+		}
 
 		if($e->isFR()) {
 			$properties[] = 'siret';
@@ -176,13 +181,15 @@ class FarmLib extends FarmCrud {
 		parent::update($e, $properties);
 
 		// On fait suivre le pays tant qu'il n'a pas été vérifié par l'utilisateur
-		if(in_array('legalCountry', $properties)) {
+		if(
+			in_array('verified', $properties) and
+			$e['verified']
+		) {
 
 			Configuration::model()
 				->whereFarm($e)
-				->whereTaxCountryVerified(FALSE)
 				->update([
-					'taxCountry' => $e['legalCountry']
+					'defaultVat' => \selling\SellingSetting::getStartVat($e['legalCountry'])
 				]);
 
 		}
@@ -260,7 +267,11 @@ class FarmLib extends FarmCrud {
 
 	}
 
-	public static function getSiretApi(string $query): array {
+	public static function getSiretApi(string $query): ?array {
+
+		if(Farm::checkSiret($query) === FALSE) {
+			return NULL;
+		}
 
 		$params = [
 			'q' => $query,
@@ -276,13 +287,13 @@ class FarmLib extends FarmCrud {
 		}
 
 		if($curl->getLastInfos()['httpCode'] !== 200) {
-			return [];
+			return NULL;
 		}
 
 		$data = json_decode($values, TRUE)['results'];
 
 		if($data === []) {
-			return [];
+			return NULL;
 		}
 
 		$company = $data[0];

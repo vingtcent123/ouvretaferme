@@ -26,15 +26,6 @@ class Configuration extends ConfigurationElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('taxCountry.check', function($eCountry): bool {
-
-				if($this['taxCountryVerified']) {
-					return FALSE;
-				}
-
-				return \user\Country::model()->exists($eCountry);
-
-			})
 			->setCallback('documentInvoices.set', function(int &$value): void {
 				$this['documentInvoices'] = $value - 1;
 			})

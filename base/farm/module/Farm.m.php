@@ -54,6 +54,7 @@ class FarmModel extends \ModuleModel {
 			'legalEmail' => ['email', 'cast' => 'string'],
 			'legalCountry' => ['element32', 'user\Country', 'cast' => 'element'],
 			'siret' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'verified' => ['bool', 'cast' => 'bool'],
 			'legalStreet1' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalStreet2' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalPostcode' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -95,7 +96,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'hasFinancialYears', 'membership', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'verified', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'hasFinancialYears', 'membership', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -108,6 +109,9 @@ class FarmModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'verified' :
+				return FALSE;
 
 			case 'rotationYears' :
 				return 4;
@@ -231,6 +235,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereSiret(...$data): FarmModel {
 		return $this->where('siret', ...$data);
+	}
+
+	public function whereVerified(...$data): FarmModel {
+		return $this->where('verified', ...$data);
 	}
 
 	public function whereLegalStreet1(...$data): FarmModel {

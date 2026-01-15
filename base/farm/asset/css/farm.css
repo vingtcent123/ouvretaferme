@@ -108,3 +108,9 @@ div.farmer-farms-item-buttons svg {
 [data-wrapper="quality"]:has(input[name="quality"][value="no"]:checked) .farm-quality-fee {
 	display: block;
 }
+
+/* Legal form */
+
+form.farm-legal-form:has(select[name="legalCountry"] option[value="75"]:not(:checked)) [data-wrapper="siret"] {
+	display: none;
+}

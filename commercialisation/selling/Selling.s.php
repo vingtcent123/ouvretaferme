@@ -13,7 +13,9 @@ class SellingSetting extends \Settings {
 
 	public static function getStandardVat(\farm\Farm $eFarm): float {
 
-		$eCountry = $eFarm->getConf('taxCountry');
+		$eFarm->expects(['legalCountry']);
+
+		$eCountry = $eFarm['legalCountry'];
 
 		if($eCountry['id'] === \user\UserSetting::FR) {
 			return 4;
@@ -33,7 +35,9 @@ class SellingSetting extends \Settings {
 
 	public static function getVatRates(\farm\Farm $eFarm): array {
 
-		$eCountry = $eFarm->getConf('taxCountry');
+		$eFarm->expects(['legalCountry']);
+
+		$eCountry = $eFarm['legalCountry'];
 
 		if($eCountry['id'] === \user\UserSetting::FR) {
 

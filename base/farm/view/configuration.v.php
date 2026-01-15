@@ -11,10 +11,10 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	
 	$t->mainTitle = $h;
 
-	if($data->eFarm->isTax()) {
+	if($data->eFarm->isVerified()) {
 		echo new \farm\ConfigurationUi()->update($data->e, $data->cAccount);
 	} else {
-		echo new \farm\ConfigurationUi()->updateTax($data->eFarm);
+		echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 	}
 
 });

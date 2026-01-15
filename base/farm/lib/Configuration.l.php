@@ -13,7 +13,6 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		$e = new Configuration([
 			'farm' => $eFarm,
-			'taxCountry' => $eFarm['legalCountry'],
 			'defaultVat' => \selling\SellingSetting::getStartVat($eFarm['legalCountry'])
 		]);
 
@@ -27,34 +26,6 @@ class ConfigurationLib extends ConfigurationCrud {
 			->select(Configuration::getSelection())
 			->whereFarm($eFarm)
 			->get();
-
-	}
-
-	public static function update(Configuration $e, array $properties): void {
-
-		if(in_array('taxCountry', $properties)) {
-
-			$e['taxCountryVerified'] = TRUE;
-			$e['defaultVat'] = \selling\SellingSetting::getStartVat($e['taxCountry']);
-
-			$properties[] = 'taxCountryVerified';
-			$properties[] = 'defaultVat';
-
-		}
-
-		Configuration::model()->beginTransaction();
-
-			parent::update($e, $properties);
-
-			if(in_array('taxCountry', $properties)) {
-
-				$e['farm']['legalCountry'] = $e['taxCountry'];
-
-				FarmLib::update($e['farm'], ['legalCountry']);
-
-			}
-
-		Configuration::model()->commit();
 
 	}
 

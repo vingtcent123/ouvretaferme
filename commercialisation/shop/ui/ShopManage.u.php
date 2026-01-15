@@ -26,7 +26,7 @@ class ShopManageUi {
 
 		$h .= '<br/>';
 
-		if($eFarm->isTax()) {
+		if($eFarm->isVerified()) {
 
 			$h .= '<h3>'.s("Créer une boutique").'</h3>';
 
@@ -38,7 +38,7 @@ class ShopManageUi {
 			$h .= new ShopUi()->create($eShop)->body;
 
 		} else {
-			$h .= new \farm\ConfigurationUi()->updateTax($eFarm);
+			$h .= new \farm\FarmUi()->getLegalForm($eFarm);
 		}
 
 		return $h;

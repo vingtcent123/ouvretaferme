@@ -153,6 +153,14 @@ class Farm extends FarmElement {
 
 	}
 
+	public function canRead(): bool {
+		return (
+			$this->canProduction() or
+			$this->canCommercialisation() or
+			$this->canAccounting()
+		);
+	}
+
 	public function canProduction(): bool {
 		return (
 			$this->canPlanning() or
@@ -271,17 +279,20 @@ class Farm extends FarmElement {
 		return $this->isLegal() ? $this : throw new \FailAction('farm\Farm::notLegal', ['farm' => $this]);
 	}
 
-	public function isTax(): bool {
+	public function isVerified(): bool {
 
-		return $this->getConf('taxCountryVerified');
+		return (
+			$this->exists() and
+			$this['verified']
+		);
 
 	}
 
-	public function validateTax(): self {
+	public function validateVerified(): self {
 
 		$this->validate();
 
-		return $this->isTax() ? $this : throw new \FailAction('farm\Farm::notTax', ['farm' => $this]);
+		return $this->isVerified() ? $this : throw new \FailAction('farm\Farm::notVerified', ['farm' => $this]);
 
 	}
 
@@ -319,6 +330,7 @@ class Farm extends FarmElement {
 
 		if(array_key_exists($this['id'], self::$conf) === FALSE) {
 			self::$conf[$this['id']] = \farm\ConfigurationLib::getByFarm($this);
+			self::$conf[$this['id']]['farm'] = $this;
 		}
 
 		return self::$conf[$this['id']];
@@ -444,6 +456,10 @@ class Farm extends FarmElement {
 		$p
 			->setCallback('legalCountry.check', function($eCountry): bool {
 
+				if($this->isVerified()) {
+					return FALSE;
+				}
+
 				return \user\Country::model()->exists($eCountry);
 
 			})
@@ -466,26 +482,19 @@ class Farm extends FarmElement {
 				return ($email !== NULL);
 			})
 			->setCallback('legalName.empty', function(?string $legalName) use($p) {
-				if($p->for !== 'legal') {
-					return TRUE;
-				}
 				return ($legalName !== NULL);
 			})
 			->setCallback('siret.empty', function(?string &$siret) use($p) {
 
-				if($p->for !== 'legal') {
-					return TRUE;
+				if($this->isFR()) {
+					return ($siret !== NULL);
+				} else {
+					$siret = NULL;
 				}
-
-				return ($siret !== NULL);
 
 			})
 			->setCallback('siret.check', fn(?string &$siret) => Farm::checkSiret($siret))
 			->setCallback('legalCity.empty', function(?string $legalCity) use($p) {
-
-				if($p->for !== 'legal') {
-					return TRUE;
-				}
 
 				$fw = new \FailWatch();
 

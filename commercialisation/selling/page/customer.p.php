@@ -2,7 +2,7 @@
 new \selling\CustomerPage()
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateTax();
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateVerified();
 
 		return new \selling\Customer([
 			'farm' => $data->eFarm,

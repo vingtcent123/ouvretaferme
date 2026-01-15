@@ -19,9 +19,10 @@ class Farm {
 
 	static pendingSection = null;
 
-	static querySiret(target) {
+	static querySiret(farm, target) {
 
 		const form = target.firstParent('form');
+		const wrapper = target.firstParent('[data-wrapper]');
 
 		const siret = target.value.replace(/\s/g, '');
 
@@ -29,7 +30,60 @@ class Farm {
 			return false;
 		}
 
-		d(siret);
+
+		new Ajax.Query()
+			.url('/farm/farm:querySiret?id='+ farm +'&siret='+ siret)
+			.method('get')
+			.fetch()
+			.then((json) => {
+
+				const result = json.result;
+
+				if(result === null) {
+					this.querySiretNotFound(wrapper);
+				} else {
+					this.querySiretFound(wrapper, result);
+				}
+
+			});
+
+	}
+
+	static fillSiret(target) {
+
+		const form = target.firstParent('form');
+
+		form.qs('input[name="legalName"]').value = form.qs('.siret-found .siret-name').innerHTML;
+		form.qs('input[name="legalStreet1"]').value = form.qs('.siret-found .siret-street1').innerHTML;
+		form.qs('input[name="legalStreet2"]').value = form.qs('.siret-found .siret-street2').innerHTML;
+		form.qs('input[name="legalPostcode"]').value = form.qs('.siret-found .siret-postcode').innerHTML;
+		form.qs('input[name="legalCity"]').value = form.qs('.siret-found .siret-city').innerHTML;
+
+		form.qs('.siret-found').hide();
+
+	}
+
+	static querySiretFound(wrapper, result) {
+
+		wrapper.qs('.siret-name').innerHTML = result.legalName;
+		wrapper.qs('.siret-street1').innerHTML = result.legalStreet1;
+		wrapper.qs('.siret-street2').innerHTML = result.legalStreet2;
+		wrapper.qs('.siret-postcode').innerHTML = result.legalPostcode;
+		wrapper.qs('.siret-city').innerHTML = result.legalCity;
+
+		wrapper.qs('.siret-found').removeHide();
+		wrapper.qs('.siret-unknown').hide();
+
+		return false;
+
+	}
+
+	static querySiretNotFound(wrapper) {
+
+		wrapper.qs('.siret-found').hide();
+		wrapper.qs('.siret-unknown').removeHide();
+
+		return false;
 
 	}
 

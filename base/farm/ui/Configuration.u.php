@@ -49,40 +49,6 @@ class ConfigurationUi {
 
 	}
 
-	public function updateTax(\farm\Farm $eFarm): string {
-
-		$eConfiguration = $eFarm->conf();
-
-		$form = new \util\FormUi();
-
-		$h = '<div class="util-block">';
-
-			$h .= $form->openAjax('/farm/configuration:doUpdateTax');
-
-				$h .= '<h3>'.s("Confirmer les informations légales de votre entité").'</h3>';
-				$h .= '<p>'.s("Merci de confirmer les informations légales de votre entité pour que Ouvretaferme puisse vous proposer des fonctionnalités adaptées à sa situation.<br/><b>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.</b>").'</p>';
-
-				$h .= $form->hidden('id', $eConfiguration['id']);
-
-				$h .= $form->group(
-					s("Ferme"),
-					'<b>'.encode($eFarm['name']).'</b>'
-				);
-
-				$h .= $form->dynamicGroup($eConfiguration, 'taxCountry');
-
-				$h .= $form->group(
-					content: $form->submit(s("Confirmer"), ['data-confirm' =>s("Le choix du pays est définitif et vous ne pourrez plus le modifier pour cette ferme. Validez-vous votre choix ?") ])
-				);
-
-			$h .= $form->close();
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function updateSettings(\farm\Farm $eFarm): string {
 
 		$eConfiguration = $eFarm->conf();
@@ -508,7 +474,6 @@ class ConfigurationUi {
 		$d = Configuration::model()->describer($property, [
 			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
 			'documentTarget' => s("Permettre l'édition de devis et de bons de livraison"),
-			'taxCountry' => s("Pays"),
 			'hasVat' => s("Êtes-vous redevable de la TVA ?"),
 			'vatNumber' => s("Numéro de TVA intracommunautaire"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
@@ -535,14 +500,6 @@ class ConfigurationUi {
 		]);
 
 		switch($property) {
-
-			case 'taxCountry' :
-				$d->values = fn(Configuration $e) => \user\Country::form();
-				$d->attributes = fn(\util\FormUi $form, Configuration $e) => [
-					'group' => is_array(\user\Country::form()),
-					'mandatory' => TRUE
-				];
-				break;
 
 			case 'vatNumber' :
 				$d->palceholder = s("Exemple : {value}", 'FR01234567890');

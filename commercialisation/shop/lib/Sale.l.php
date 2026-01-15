@@ -147,7 +147,7 @@ class SaleLib {
 
 		// Création des produits
 		$total = 0.0;
-		$ccItem = self::buildItems($eSaleReference['basket'], $total);
+		$ccItem = self::buildItems($cFarm, $eSaleReference['basket'], $total);
 
 		self::applyShopOrderMin($eSaleReference, $total);
 		self::applyShopShipping($eSaleReference, $total);
@@ -266,14 +266,14 @@ class SaleLib {
 
 	}
 
-	public static function buildItems(array $basket, float &$total): \Collection {
+	public static function buildItems(\Collection $cFarm, array $basket, float &$total): \Collection {
 
 		$ccItem = new \Collection()->setDepth(2);
 
 		foreach($basket as ['product' => $eProduct, 'number' => $number]) {
 
 			$eProductSelling = $eProduct['product'];
-			$eFarm = $eProductSelling['farm'];
+			$eFarm = $cFarm[$eProductSelling['farm']['id']];
 
 			$eItem = new \selling\Item([
 				'farm' => $eFarm,
@@ -371,7 +371,7 @@ class SaleLib {
 
 		// Ajout des produits
 		$total = 0.0;
-		$ccItem = self::buildItems($eSaleReference['basket'], $total);
+		$ccItem = self::buildItems($cFarm, $eSaleReference['basket'], $total);
 
 		self::applyShopOrderMin($eSaleReference, $total);
 		self::applyShopShipping($eSaleReference, $total);

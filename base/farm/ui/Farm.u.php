@@ -450,20 +450,40 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off']);
+		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off', 'class' => 'farm-legal-form']);
+
+			$h .= '<h3>'.s("Informations légales de votre entité").'</h3>';
+			$h .= '<div class="util-block-info">';
+				$h .= \Asset::icon('check', ['class' => 'util-block-icon']);
+				$h .= s("Afin de respecter vos obligations réglementaires, notamment en lien avec le passage à la facturation électronique, nous avons besoin que vous confirmiez les informations légales de votre entité.<br/>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
+			$h .= '</div>';
 
 			$h .= $form->hidden('id', $eFarm['id']);
+			$h .= $form->hidden('verified', TRUE);
 			$h .= $form->asteriskInfo();
+
+			if($eFarm->isVerified()) {
+
+				$h .= $form->group(
+					s("Pays du siège social de la ferme"),
+					'<b>'.\user\Country::ask($eFarm['legalCountry'])['name'].'</b>'
+				);
+
+			} else {
+				$h .= $form->dynamicGroup($eFarm, 'legalCountry');
+			}
 
 			if($eFarm->isFR()) {
 				$h .= $form->dynamicGroup($eFarm, 'siret*');
 			}
 
 			$h .= $form->dynamicGroup($eFarm, 'legalName*');
-			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => $eFarm->getConf('taxCountry')->empty()]);
+			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => FALSE]);
+
+			$confirm = $eFarm->isVerified() ? [] : ['data-confirm' =>s("Le choix du pays est définitif et vous ne pourrez plus le modifier pour cette ferme. Validez-vous votre choix ?") ];
 
 			$h .= $form->group(
-				content: $form->submit(s("Valider"))
+				content: $form->submit(s("Valider"), $confirm)
 			);
 
 		$h .= $form->close();
@@ -476,8 +496,6 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
-		$updateCountry = $eFarm->getConf('taxCountry')->empty();
-
 		$h = $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eFarm['id']);
@@ -487,16 +505,24 @@ class FarmUi {
 				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
 			);;
 			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail']);
-			$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName']);
 
-			if($updateCountry === FALSE) {
+			if($eFarm->isVerified()) {
+
 				$h .= $form->group(
 					s("Pays du siège social de la ferme"),
 					'<b>'.\user\Country::ask($eFarm['legalCountry'])['name'].'</b>'
 				);
-			}
 
-			$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => $updateCountry]);
+				if($eFarm->isFR()) {
+					$h .= $form->dynamicGroup($eFarm, 'siret');
+				}
+
+				$h .= $form->dynamicGroup($eFarm, 'legalName');
+				$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => FALSE]);
+
+			} else {
+				$h .= $form->dynamicGroup($eFarm, 'legalCountry');
+			}
 
 			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality']);
 
@@ -2671,7 +2697,7 @@ class FarmUi {
 				$h .= \Asset::icon('receipt');
 			$h .= '</a>';
 
-			if($eFarm->isTax()) {
+			if($eFarm->isVerified()) {
 
 				$h .= '<a href="/farm/configuration:updateOrderForm?id='.$eFarm['id'].'" class="util-button">';
 					$h .= '<h4>'.s("Les devis").'</h4>';
@@ -2913,6 +2939,35 @@ class FarmUi {
 		return \util\FormUi::info(\Asset::icon('exclamation-circle').' '.s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied."));
 	}
 
+	public static function querySiret(\PropertyDescriber $d): void {
+
+		$h = '<div class="util-block siret-found hide mt-1">';
+			$h .= '<h4>'.s("Nous avons trouvé ce SIRET dans la base de données de l'administration fiscale :").'</h4>';
+			$h .= '<dl class="util-presentation util-presentation-1">';
+				$h .= '<dt>'.s("Raison sociale").'</dt>';
+				$h .= '<dd class="siret-name"></dd>';
+				$h .= '<dt>'.s("Adresse du siège social").'</dt>';
+				$h .= '<dd>';
+					$h .= '<div class="siret-street1"></div>';
+					$h .= '<div class="siret-street2"></div>';
+					$h .= '<div>';
+						$h .= '<span class="siret-postcode"></span> ';
+						$h .= '<span class="siret-city"></span>';
+					$h .= '</div>';
+				$h .= '</dd>';
+			$h .= '</dl>';
+			$h .= '<a onclick="Farm.fillSiret(this)" class="btn btn-secondary btn-sm mt-1">'.s("Utiliser ces informations").'</a>';
+		$h .= '</div>';
+		$h .= '<div class="siret-unknown hide mt-1">';
+			$h .= '<div class="util-warning">'.s("Nous n'avons pas trouvé ce SIRET dans la base de données de l'administration fiscale. Nous vous incitons à vérifier votre saisie mais vous pouvez toujours l'utiliser si vous pensez qu'il est correct.").'</div>';
+		$h .= '</div>';
+
+		$d->after = $h;
+		$d->labelAfter = \util\FormUi::info(s("Commencez par saisir le numéro de SIRET de votre entité pour que Ouvretaferme retrouve automatiquement les autres informations."));
+		$d->attributes['oninput'] = fn(\util\FormUi $form, Farm $eFarm) => 'Farm.querySiret('.$eFarm['id'].', this);';
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Farm::model()->describer($property, [
@@ -2958,7 +3013,7 @@ class FarmUi {
 
 			case 'siret' :
 				$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
-				$d->attributes['oninput'] = 'Farm.querySiret(this);';
+				FarmUi::querySiret($d);
 				break;
 
 			case 'cultivationPlace' :

@@ -29,8 +29,6 @@ Configuration:
   farm: farm\Farm
   documentSales: int32(0, null) = 0
   documentInvoices: int32(0, null) = 0
-  taxCountry: user\Country
-  taxCountryVerified: bool = FALSE
   hasVat: bool = TRUE
   defaultVat: int16(0, null)
   defaultVatShipping: ?int16(0, null)
@@ -70,6 +68,7 @@ Farm:
   legalEmail: email
   legalCountry: user\Country
   siret: ?text8(1, null)
+  verified: bool = FALSE
   legalStreet1: ?text8
   legalStreet2: ?text8
   legalPostcode: ?text8

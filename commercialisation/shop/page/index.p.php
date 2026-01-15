@@ -93,7 +93,7 @@ new Page(function($data) {
 new shop\ShopPage()
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateTax();
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateVerified();
 
 		return new \shop\Shop([
 			'farm' => $data->eFarm,

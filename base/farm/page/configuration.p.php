@@ -16,7 +16,7 @@ new \farm\FarmPage()
 	})
 	->update(function($data) {
 
-		$data->e->validate('isTax');
+		$data->e->validate('isVerified');
 		$data->e->validateLegal();
 
 		$data->eSaleExample = \selling\SaleLib::getExample($data->e, \selling\Customer::PRO);
@@ -28,7 +28,7 @@ new \farm\FarmPage()
 	}, page: 'updateOrderForm')
 	->update(function($data) {
 
-		$data->e->validate('isTax');
+		$data->e->validate('isVerified');
 		$data->e->validateLegal();
 
 		$data->eSaleExample = \selling\SaleLib::getExample($data->e, \selling\Customer::PRO);
@@ -40,7 +40,7 @@ new \farm\FarmPage()
 	}, page: 'updateDeliveryNote')
 	->update(function($data) {
 
-		$data->e->validate('isTax');
+		$data->e->validate('isVerified');
 		$data->e->validateLegal();
 
 		$data->eSaleExample = \selling\SaleLib::getExample($data->e, \selling\Customer::PRO);
@@ -52,15 +52,11 @@ new \farm\FarmPage()
 	}, page: 'updateInvoice');
 
 new \farm\ConfigurationPage()
-	->doUpdateProperties('doUpdateTax', ['taxCountry'], fn() => throw new ReloadAction());
-
-new \farm\ConfigurationPage()
 	->applyElement(function($data, \farm\Configuration $eConfiguration) {
 
-		$eConfiguration['farm'] = \farm\FarmLib::getById($eConfiguration['farm'])->validateTax();
+		$eConfiguration['farm'] = \farm\FarmLib::getById($eConfiguration['farm'])->validateVerified();
 
 	})
-	->doUpdateProperties('doUpdateTax', ['taxCountry'], fn() => throw new ReloadAction())
 	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNoteHeader', 'deliveryNoteFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))

@@ -389,10 +389,10 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		if($data->eFarm->isTax()) {
+		if($data->eFarm->isVerified()) {
 			echo '<a href="/selling/sale:create?farm='.$data->eFarm['id'].'" class="btn btn-primary btn-lg">'.s("Ajouter une première vente").'</a>';
 		} else {
-			echo new \farm\ConfigurationUi()->updateTax($data->eFarm);
+			echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 		}
 
 	} else {
@@ -435,7 +435,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		if($data->eFarm->isTax()) {
+		if($data->eFarm->isVerified()) {
 
 			echo '<h3>'.s("Ajouter un premier client").'</h3>';
 
@@ -448,7 +448,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 			echo new \selling\CustomerUi()->create($eCustomer)->body;
 
 		} else {
-			echo new \farm\ConfigurationUi()->updateTax($data->eFarm);
+			echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 		}
 
 	} else {
@@ -486,7 +486,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 
 		echo '<br/>';
 
-		if($data->eFarm->isTax()) {
+		if($data->eFarm->isVerified()) {
 
 			echo '<h3>'.s("Ajouter un premier produit").'</h3>';
 
@@ -502,7 +502,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 			]))->body;
 
 		} else {
-			echo new \farm\ConfigurationUi()->updateTax($data->eFarm);
+			echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 		}
 
 	} else {

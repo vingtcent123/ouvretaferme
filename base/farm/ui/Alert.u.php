@@ -20,7 +20,7 @@ class AlertUi {
 			'Farm::demo.delete' => s("Vous ne pouvez pas supprimer la démo !"),
 			'Farm::legalEmail.empty' => s("Merci de renseigner l'adresse e-mail de la ferme !"),
 			'Farm::name.check' => s("Merci de renseigner le nom de la ferme !"),
-			'Farm::siret.empty' => s("Un numéro de SIRET à 14 chiffres est obligatoire pour utiliser le service de facturation."),
+			'Farm::siret.empty' => s("Un numéro de SIRET à 14 chiffres est obligatoire pour utiliser le module de vente."),
 			'Farm::siret.check' => self::getErrorSiret(),
 			'Farm::cultivationPlace.check' => s("Veuillez sélectionner une ville dans le menu déroulant."),
 			'Farm::defaultBedWidth.size' => s("La largeur de planche par défaut ne peut pas être inférieure à 5 cm."),
@@ -31,7 +31,7 @@ class AlertUi {
 			'Farmer::deleteGhost' => s("Vous ne pouvez pas supprimer un utilisateur créé spécifiquement pour la ferme."),
 			'Farmer::deleteItself' => s("Vous ne pouvez pas vous sortir vous-même de la ferme."),
 			'Farm::notLegal' => '<p>'.s("Nous avons besoin de quelques informations administratives de base à propos de votre ferme (numéro d'immatriculation, raison sociale...) pour accéder à cette page !").'</p><a href="/farm/farm:updateLegal?id='.$options['farm']['id'].'" class="btn '.($options['btn'] ?? 'btn-transparent').'">'.s("Compléter mes informations").'</a>',
-			'Farm::notTax' => '<p>'.s("Vous devez vérifier le pays de votre entité avant de pouvoir accéder à cette page.").'</p>',
+			'Farm::notVerified' => '<p>'.s("Vous devez vérifier le pays de votre entité avant de pouvoir accéder à cette page.").'</p>',
 
 			'Action::deleteMandatory' => s("Cette intervention ne peut pas être supprimée car elle est indispensable au bon fonctionnement du site."),
 			'Action::deleteUsed' => s("Vous ne pouvez pas supprimer une action qui est déjà utilisée sur les itinéraires techniques ou les séries..."),

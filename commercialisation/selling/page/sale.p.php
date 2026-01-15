@@ -2,7 +2,7 @@
 new \selling\SalePage()
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateTax();
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validateVerified();
 
 		if(input_exists('compositionOf')) {
 			$profile = \selling\Sale::COMPOSITION;
@@ -75,7 +75,7 @@ new \selling\SalePage()
 new Page(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))
-			->validateTax()
+			->validateVerified()
 			->validate('canSelling');
 
 	})

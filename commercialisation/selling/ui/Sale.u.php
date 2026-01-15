@@ -2495,7 +2495,7 @@ class SaleUi {
 
 	public static function getVat(\farm\Farm $eFarm, bool $short = FALSE): array {
 
-		$eCountry = $eFarm->getConf('taxCountry');
+		$eCountry = $eFarm['legalCountry'];
 
 		if($eCountry['id'] === \user\UserSetting::FR) {
 
