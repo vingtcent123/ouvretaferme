@@ -13,6 +13,8 @@ new Page(
 new Page()
 	->get('/banque/imports:import', function($data) {
 
+		$data->cBankAccount = \bank\BankAccountLib::getAll();
+
 		throw new ViewAction($data);
 
 	})
@@ -20,7 +22,9 @@ new Page()
 
 		$fw = new FailWatch();
 
-		$eImport = \bank\ImportLib::importBankStatement($data->eFarm);
+		$eBankAccount = \bank\BankAccountLib::getById(POST('bankAccount'));
+
+		$eImport = \bank\ImportLib::importBankStatement($data->eFarm, $eBankAccount);
 
 		if(count(($eImport['result']['imported']) ?? []) < 100) {
 			$imported = TRUE;

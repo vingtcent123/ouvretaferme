@@ -135,7 +135,7 @@ class ImportLib extends ImportCrud {
 			->getCollection();
 	}
 
-	public static function importBankStatement(\farm\Farm $eFarm): ?Import {
+	public static function importBankStatement(\farm\Farm $eFarm, BankAccount $eBankAccount): ?Import {
 
 		if(isset($_FILES['ofx']) === FALSE) {
 			return null;
@@ -158,7 +158,9 @@ class ImportLib extends ImportCrud {
 
 			$ofx = \bank\OfxParserLib::extractFile($filepath);;
 
-			$eBankAccount = \bank\OfxParserLib::extractAccount($ofx);
+			if($eBankAccount->empty()) {
+				$eBankAccount = \bank\OfxParserLib::extractAccount($ofx);
+			}
 
 			$import = \bank\OfxParserLib::extractImport($ofx);
 

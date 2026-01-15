@@ -874,7 +874,7 @@ class CashflowUi {
 
 	}
 
-	public static function import(\farm\Farm $eFarm): \Panel {
+	public static function import(\farm\Farm $eFarm, \Collection $cBankAccount): \Panel {
 
 		$form = new \util\FormUi();
 		$h = '';
@@ -888,7 +888,19 @@ class CashflowUi {
 		$h .= '</div>';
 
 		$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/imports:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
-			$h .= $form->hidden('farm', $eFarm['id']);
+
+		$h .= $form->hidden('farm', $eFarm['id']);
+
+			if($cBankAccount->count() > 0) {
+
+				$values = [];
+				foreach($cBankAccount as $eBankAccount) {
+					$values[$eBankAccount['id']] = encode($eBankAccount['accountId'].' - '.$eBankAccount['label'].' - '.$eBankAccount['description']);
+				}
+
+				$h .= $form->group(s("Compte bancaire"), $form->select('bankAccount', $values).\util\FormUi::info(s("Pour laisser le logiciel détecter le compte bancaire le plus approprié, ne sélectionnez rien.<br />Si le compte n'est pas retrouvé, il sera créé automatiquement.")));
+			}
+
 			$h .= '<label class="btn btn-primary">';
 				$h .= $form->file('ofx', ['onchange' => 'this.form.submit()', 'accept' => '.ofx']);
 				$h .= s("Choisir un fichier OFX sur mon ordinateur");

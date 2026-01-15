@@ -15,6 +15,6 @@ new AdaptativeView('/banque/imports', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/banque/imports:import', function($data, PanelTemplate $t) {
 
-	return new \bank\CashflowUi()->import($data->eFarm);
+	return new \bank\CashflowUi()->import($data->eFarm, $data->cBankAccount);
 
 });
