@@ -141,7 +141,7 @@ Class FinancialYearDocumentUi {
 										$hasDocumentGenerating = TRUE;
 										$h .= '<i>'.s("Génération en cours...").'</i>';
 									} else if(FinancialYearDocumentLib::hasDocument($eFinancialYear, $document)) {
-										$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$document.'&id='.$eFinancialYear['id'].'" class="btn btn-primary">'.\Asset::icon('download').' '.s("Télécharger").'</a>';
+										$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$document.'&id='.$eFinancialYear['id'].'" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("PDF").'</a>';
 									}
 								}
 							$h .= '</td>';
