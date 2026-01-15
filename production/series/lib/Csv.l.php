@@ -409,7 +409,7 @@ class CsvLib {
 
 				$csv = self::convertFromBrinjel($csv);
 
-			} else if(count(array_intersect($header, ['name', 'season', 'mode', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
+			} else if(count(array_intersect($header, ['series_name', 'season', 'mode', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
 				$csv = self::convertFromOtf($csv);
 				if($csv === NULL) {
 					return NULL;
