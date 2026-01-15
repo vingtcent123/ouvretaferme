@@ -98,10 +98,12 @@ class SequenceLib extends SequenceCrud {
 					'seedling' => match($eCultivation['seedling']) {
 						\series\Cultivation::YOUNG_PLANT, \series\Cultivation::YOUNG_PLANT_BOUGHT => Crop::YOUNG_PLANT,
 						\series\Cultivation::SOWING => Crop::SOWING,
+						NULL => NULL
 					},
 					'seedlingSeeds' => match($eCultivation['seedling']) {
 						\series\Cultivation::YOUNG_PLANT, \series\Cultivation::SOWING => $eCultivation['seedlingSeeds'],
 						\series\Cultivation::YOUNG_PLANT_BOUGHT => 1,
+						NULL => NULL
 					}
 				]);
 				$eCrop->merge($eCultivation->extracts(['plant', 'farm', 'distance', 'rows', 'rowSpacing', 'plantSpacing', 'density', 'mainUnit', 'yieldExpected']));
