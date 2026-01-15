@@ -10,12 +10,20 @@ new Page(function($data) {
 	->get('index', function($data) {
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
+		$data->cImport = \account\ImportLib::getAll();
 
 		$data->nOperationByFinancialYear = \journal\OperationLib::countByFinancialYears($data->eFarm['cFinancialYear']);
 
 		foreach($data->eFarm['cFinancialYear'] as $key => $eFinancialYear) {
+
 			$data->eFarm['cFinancialYear'][$key]['nOperation'] = $data->nOperationByFinancialYear[$eFinancialYear['id']]['count'] ?? 0;
 			$data->eFarm['cFinancialYear'][$key]['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
+
+			if($data->cImport->offsetExists($eFinancialYear['id'])) {
+				$data->eFarm['cFinancialYear'][$key]['eImport'] = $data->cImport->offsetGet($eFinancialYear['id']);
+			} else {
+				$data->eFarm['cFinancialYear'][$key]['eImport'] = new \account\Import();
+			}
 		}
 
 		throw new ViewAction($data);

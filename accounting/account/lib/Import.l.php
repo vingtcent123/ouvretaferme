@@ -9,6 +9,15 @@ Class ImportLib extends ImportCrud {
 
 	}
 
+	public static function getAll(): \Collection {
+
+		return Import::model()
+			->select(Import::getSelection())
+			->sort(['createdAt' => SORT_DESC])
+			->getCollection(NULL, NULL, 'financialYear');
+
+	}
+
 	public static function updateRuleValue(Import $eImport, array $input): void {
 
 		switch($input['type']) {

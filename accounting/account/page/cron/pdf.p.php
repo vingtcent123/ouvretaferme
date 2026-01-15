@@ -11,9 +11,17 @@ new Page()
 
 			\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
 
-			\account\FinancialYearDocumentLib::generateAll($eCompanyCron['farm']);
+			try {
 
-			\company\CompanyCron::model()->delete($eCompanyCron);
+				\account\FinancialYearDocumentLib::generateAll($eCompanyCron['farm']);
+				\company\CompanyCron::model()->delete($eCompanyCron);
+
+			} catch(Exception $e) {
+
+				trigger_error("Company Cron generate document error with #".$eCompanyCron['id'].' (farm #'.$eCompanyCron['farm']['id'].', '.$e->getMessage().')');
+
+			}
+
 
 		}
 

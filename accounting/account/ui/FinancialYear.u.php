@@ -191,6 +191,38 @@ class FinancialYearUi {
 								$h .= '</span>';
 								$h .= $label;
 							$h .= '</li>';
+
+							if($eFinancialYear['eImport']->notEmpty()) {
+
+								if(true or $eFinancialYear['eImport']['status'] === Import::DONE) {
+
+									$h .= '<li>';
+										$h .= '<span class="financial-year-detail-icon">'.\Asset::icon('journal-check').'</span>';
+										$h .= s("Import FEC terminé");
+									$h .= '</li>';
+
+								} else if(in_array($eFinancialYear['eImport']['status'], [Import::WAITING, Import::FEEDBACK_TO_TREAT, Import::IN_PROGRESS])) {
+
+									$h .= '<li>';
+										$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import">';
+											$h .= '<span class="financial-year-detail-icon">'.\Asset::icon('journal-arrow-up').'</span>';
+											$h .= s("Import FEC en cours");
+										$h .= '</a>';
+									$h .= '</li>';
+
+								} else if($eFinancialYear['eImport']['status'] === Import::FEEDBACK_REQUESTED) {
+
+									$h .= '<li>';
+										$h .= '<a class="color-warning" href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import">';
+											$h .= '<span class="financial-year-detail-icon">'.\Asset::icon('exclamation-triangle').'</span>';
+											$h .= s("Action en attente pour l'import FEC");
+										$h .= '</a>';
+									$h .= '</li>';
+
+								}
+
+							}
+
 						$h .= '</ul>';
 
 						$h .= '<ul class="financial-year-details-list">';
@@ -269,7 +301,11 @@ class FinancialYearUi {
 
 								if($eFinancialYear->acceptImportFec()) {
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="dropdown-item">';
-										$h .= s("Importer un fichier FEC");
+										if($eFinancialYear['eImport']->notEmpty()) {
+											$h .= s("Import FEC");
+										} else {
+											$h .= s("Importer un fichier FEC");
+										}
 									$h .= '</a>';
 								}
 

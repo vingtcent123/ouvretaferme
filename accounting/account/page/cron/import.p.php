@@ -13,10 +13,18 @@ new Page()
 
 			$eImport = \account\ImportLib::getById($eCompanyCron['element']);
 
-			$imported = \account\ImportLib::treatImport($eCompanyCron['farm'], $eImport);
+			try {
 
-			if($imported) {
-				\company\CompanyCron::model()->delete($eCompanyCron);
+				$imported = \account\ImportLib::treatImport($eCompanyCron['farm'], $eImport);
+
+				if($imported) {
+					\company\CompanyCron::model()->delete($eCompanyCron);
+				}
+
+			} catch(Exception $e) {
+
+				trigger_error("Company Cron fec import error with #".$eCompanyCron['id'].' (farm #'.$eCompanyCron['farm']['id'].', '.$e->getMessage().')');
+
 			}
 
 		}
