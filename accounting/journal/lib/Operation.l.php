@@ -738,6 +738,7 @@ class OperationLib extends OperationCrud {
 			if(
 				(\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEPOSIT_CLASS) or
 				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS)) and
+				(int)$eOperation['vatRate'] !== 0 and
 				$eOperationVat->notEmpty()
 			) {
 
