@@ -2123,36 +2123,42 @@ class FarmUi {
 				$h .= '</div>';
 			$h .= '</h1>';
 
-			if($hasData) {
+			$h .= '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
 
-				$h .= '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+				if($hasData) {
 
 					$h .= match($selectedView) {
 						Farmer::INCOME_STATEMENT => '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
 						Farmer::BALANCE_SHEET => '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
 					};
 
-					$documentType = match($selectedView) {
-						Farmer::INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
-						Farmer::BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,
-						Farmer::SIG => \account\FinancialYearDocumentLib::SIG,
-					};
+				}
 
-					if($eFinancialYearDocument->empty()) {
+			$documentType = match($selectedView) {
+				Farmer::INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
+				Farmer::BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,
+				Farmer::SIG => \account\FinancialYearDocumentLib::SIG,
+				default => NULL,
+			};
 
-						$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.$documentType.'" post-id="'.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" data-waiter="'.s("Génération en cours...").'" title="'.s("Générer le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+			if($documentType !== NULL) {
 
-					} else if($eFinancialYearDocument['generation'] === \account\FinancialYearDocument::SUCCESS) {
+				if($eFinancialYearDocument->empty()) {
 
-						$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$documentType.'&id='.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" title="'.s("Exporter le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+					$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.$documentType.'" post-id="'.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" data-waiter="'.s("Génération en cours...").'" title="'.s("Générer le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
 
-					} else {
+				} else if($eFinancialYearDocument['generation'] === \account\FinancialYearDocument::SUCCESS) {
 
-						$h .= '<a onrender="FinancialYearDocument.checkGeneration(\''.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check\')" class="btn btn-primary disabled" title="'.s("Génération en cours").'">'.\Asset::icon('file-pdf').'  '.s("PDF en génération...").'</a> ';
-					}
+					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$documentType.'&id='.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" title="'.s("Exporter le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
 
-				$h .= '</div>';
+				} else {
+
+					$h .= '<a onrender="FinancialYearDocument.checkGeneration(\''.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check\')" class="btn btn-primary disabled" title="'.s("Génération en cours").'">'.\Asset::icon('file-pdf').'  '.s("PDF en génération...").'</a> ';
+				}
+
 			}
+
+		$h .= '</div>';
 
 		$h .= '</div>';
 
