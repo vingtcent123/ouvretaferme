@@ -3,7 +3,7 @@ namespace company;
 
 class CompanyLib {
 
-	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing', 'pdf'];
+	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing'];
 
 	public static function load(\stdClass $data): void {
 

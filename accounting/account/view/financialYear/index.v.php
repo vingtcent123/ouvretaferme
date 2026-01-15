@@ -53,6 +53,8 @@ new AdaptativeView('close', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \account\FinancialYearUi()->getCloseTitle($data->eFarm);
 
+	echo '<div class="util-warning">'.s("La fonctionnalité de clôture n'est pas encore éprouvée à 100%. N'utilisez pas les données de {siteName} pour vos déclarations à l'administration fiscale. Si vous détectez des différences / des problèmes, contactez-nous sur Discord. Merci !").'</div>';
+
 	echo new \account\FinancialYearUi()->close(
 		$data->eFarm,
 		$data->e,
