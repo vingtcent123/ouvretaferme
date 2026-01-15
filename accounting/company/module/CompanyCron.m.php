@@ -9,6 +9,7 @@ abstract class CompanyCronElement extends \Element {
 
 	const WAITING = 'waiting';
 	const PROCESSING = 'processing';
+	const FAIL = 'fail';
 
 	public static function getSelection(): array {
 		return CompanyCron::model()->getProperties();
@@ -46,7 +47,7 @@ class CompanyCronModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'action' => ['text8', 'cast' => 'string'],
-			'status' => ['enum', [\company\CompanyCron::WAITING, \company\CompanyCron::PROCESSING], 'null' => TRUE, 'cast' => 'enum'],
+			'status' => ['enum', [\company\CompanyCron::WAITING, \company\CompanyCron::PROCESSING, \company\CompanyCron::FAIL], 'null' => TRUE, 'cast' => 'enum'],
 			'element' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 		]);
 
@@ -57,6 +58,10 @@ class CompanyCronModel extends \ModuleModel {
 		$this->propertiesToModule += [
 			'farm' => 'farm\Farm',
 		];
+
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['farm', 'action', 'element']
+		]);
 
 	}
 

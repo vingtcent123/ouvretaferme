@@ -14,5 +14,14 @@ Class CompanyCronLib extends CompanyCronCrud {
 		CompanyCron::model()->insert($eCompanyCron);
 
 	}
+	public static function updateConfiguration(\farm\Farm $eFarm, string $action, string $status, ?int $id = NULL): void {
+
+		CompanyCron::model()
+			->whereFarm($eFarm)
+			->whereAction($action)
+			->whereElement($id)
+			->update(['status' => $status]);
+
+	}
 
 }

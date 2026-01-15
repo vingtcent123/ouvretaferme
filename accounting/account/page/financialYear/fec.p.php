@@ -45,6 +45,8 @@ new \account\ImportPage()
 		if($isActionRequired) {
 			throw new FailAction('account\Import::updated.feedbackNeeded');
 		}
+		\company\CompanyCronLib::updateConfiguration($data->eFarm, \company\CompanyCronLib::FEC_IMPORT, \company\CompanyCron::WAITING, $data->e['id']);
+
 		throw new ReloadAction('account', 'Import::updated');
 
 	}, validate: ['acceptUpdate'])

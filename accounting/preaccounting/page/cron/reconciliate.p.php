@@ -11,21 +11,22 @@ new Page()
 
 		foreach($cCompanyCron as $eCompanyCron) {
 
+			$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\CompanyCron::PROCESSING]);
+
+			if($updated === 0) {
+				continue;
+			}
+
 			try {
 
-				$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\CompanyCron::PROCESSING]);
+				\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
+				\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eCompanyCron['farm']);
 
-				if($updated === 1) {
-
-					\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
-					\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eCompanyCron['farm']);
-
-					\company\CompanyCron::model()->delete($eCompanyCron);
-
-				}
+				\company\CompanyCron::model()->delete($eCompanyCron);
 
 			} catch(Exception $e) {
 
+				\company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\CompanyCron::FAIL]);
 				trigger_error("Company Cron fec import error with #".$eCompanyCron['id'].' (farm #'.$eCompanyCron['farm']['id'].', '.$e->getMessage().')');
 
 			}

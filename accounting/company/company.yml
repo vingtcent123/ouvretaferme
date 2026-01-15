@@ -43,8 +43,11 @@ CompanyCron:
   id: serial32
   farm: farm\Farm
   action: text8
-  status: ?enum(WAITING, PROCESSING)
+  status: ?enum(WAITING, PROCESSING, FAIL)
   element: ?int(0, null)
+  UNIQUE: [
+    ["farm", "action", "element"]
+  ]
 
 JournalCode:
   id: serial32
