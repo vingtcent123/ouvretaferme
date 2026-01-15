@@ -42,7 +42,19 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		}
 
-		parent::update($e, $properties);
+		Configuration::model()->beginTransaction();
+
+			parent::update($e, $properties);
+
+			if(in_array('taxCountry', $properties)) {
+
+				$e['farm']['legalCountry'] = $e['taxCountry'];
+
+				FarmLib::update($e['farm'], ['legalCountry']);
+
+			}
+
+		Configuration::model()->commit();
 
 	}
 

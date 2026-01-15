@@ -13,7 +13,11 @@ class FarmLib extends FarmCrud {
 
 		return function(Farm $e) {
 
-			$properties = ['name', 'legalName', 'legalEmail', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'legalCountry', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
+			$properties = ['name', 'legalName', 'legalEmail', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality'];
+
+			if($e->getConf('taxCountry')->empty()) {
+				$properties[] = 'legalCountry';
+			}
 
 			if($e->isFR()) {
 				$properties[] = 'siret';
@@ -27,7 +31,11 @@ class FarmLib extends FarmCrud {
 
 	public static function getPropertiesLegal(Farm $e): array {
 
-		$properties = ['legalName', 'legalCountry', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'];
+		$properties = ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'];
+
+			if($e->getConf('taxCountry')->empty()) {
+				$properties[] = 'legalCountry';
+			}
 
 		if($e->isFR()) {
 			$properties[] = 'siret';
@@ -249,6 +257,45 @@ class FarmLib extends FarmCrud {
 			->update([
 				'seasonLast' => $newSeason
 			]);
+
+	}
+
+	public static function getSiretApi(string $query): array {
+
+		$params = [
+			'q' => $query,
+			'page' => 1,
+			'per_page' => 1
+		];
+
+		$curl = new \util\CurlLib();
+
+		try {
+			$values = $curl->exec('https://recherche-entreprises.api.gouv.fr/search', $params);
+		} catch(\Exception) {
+		}
+
+		if($curl->getLastInfos()['httpCode'] !== 200) {
+			return [];
+		}
+
+		$data = json_decode($values, TRUE)['results'];
+
+		if($data === []) {
+			return [];
+		}
+
+		$company = $data[0];
+
+		return [
+			'siren' => $company['siren'],
+			'legalName' => $company['nom_raison_sociale'] ? mb_ucwords($company['nom_raison_sociale']) : ($company['nom_complet'] ? mb_ucwords($company['nom_complet']) : NULL),
+			'legalCity' => mb_ucwords($company['siege']['libelle_commune']),
+			'legalPostcode' => $company['siege']['code_postal'],
+			'legalStreet1' => mb_ucwords(($company['siege']['numero_voie'] ? $company['siege']['numero_voie'].' ' : '').($company['siege']['type_voie'] ? $company['siege']['type_voie'].' ' : '').$company['siege']['libelle_voie']),
+			'legalStreet2' => $company['siege']['complement_adresse'] ? mb_ucwords($company['siege']['complement_adresse']) : NULL,
+			'isOrganic' => $company['complements']['est_bio']
+		];
 
 	}
 

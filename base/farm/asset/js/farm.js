@@ -19,6 +19,20 @@ class Farm {
 
 	static pendingSection = null;
 
+	static querySiret(target) {
+
+		const form = target.firstParent('form');
+
+		const siret = target.value.replace(/\s/g, '');
+
+		if(siret.match(/^[0-9]{14}$/) === null) {
+			return false;
+		}
+
+		d(siret);
+
+	}
+
 	static changeArrowSection(e) {
 
 		if(

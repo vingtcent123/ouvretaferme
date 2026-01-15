@@ -705,13 +705,13 @@ class FormUi {
 
 	}
 
-	public function addressGroup(string $label, string $prefix, \Element $e): string {
+	public function addressGroup(string $label, string $prefix, \Element $e, array $attributes = []): string {
 
 		$field = fn($name) => ($prefix === NULL) ? $name : $prefix.ucfirst($name);
 
 		return $this->group(
 			$label,
-			'<div class="form-control-block">'.$this->address($prefix, $e).'</div>',
+			'<div class="form-control-block">'.$this->address($prefix, $e, $attributes).'</div>',
 			['wrapper' => $field('address').' '.$field('street1').' '.$field('street2').' '.$field('postcode').' '.$field('city').' '.$field('country')]
 		);
 

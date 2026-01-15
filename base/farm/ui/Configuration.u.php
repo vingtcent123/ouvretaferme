@@ -59,8 +59,8 @@ class ConfigurationUi {
 
 			$h .= $form->openAjax('/farm/configuration:doUpdateTax');
 
-				$h .= '<h3>'.s("Confirmer le pays de votre entité").'</h3>';
-				$h .= '<p>'.s("Merci de confirmer le pays de votre entité pour que Ouvretaferme puisse vous proposer des fonctionnalités adaptées à sa situation.<br/><b>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.</b>").'</p>';
+				$h .= '<h3>'.s("Confirmer les informations légales de votre entité").'</h3>';
+				$h .= '<p>'.s("Merci de confirmer les informations légales de votre entité pour que Ouvretaferme puisse vous proposer des fonctionnalités adaptées à sa situation.<br/><b>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.</b>").'</p>';
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
 

@@ -460,7 +460,7 @@ class FarmUi {
 			}
 
 			$h .= $form->dynamicGroup($eFarm, 'legalName*');
-			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm);
+			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => $eFarm->getConf('taxCountry')->empty()]);
 
 			$h .= $form->group(
 				content: $form->submit(s("Valider"))
@@ -476,6 +476,8 @@ class FarmUi {
 
 		$form = new \util\FormUi();
 
+		$updateCountry = $eFarm->getConf('taxCountry')->empty();
+
 		$h = $form->openAjax('/farm/farm:doUpdate', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 			$h .= $form->hidden('id', $eFarm['id']);
@@ -483,10 +485,18 @@ class FarmUi {
 			$h .= $form->group(
 				self::p('vignette')->label,
 				new \media\FarmVignetteUi()->getCamera($eFarm, size: '10rem')
-			);
+			);;
 			$h .= $form->dynamicGroups($eFarm, ['name', 'legalEmail']);
 			$h .= $form->dynamicGroups($eFarm, ['siret', 'legalName']);
-			$h .= $form->addressGroup(s("Siège social de la ferme"), 'legal', $eFarm);
+
+			if($updateCountry === FALSE) {
+				$h .= $form->group(
+					s("Pays du siège social de la ferme"),
+					'<b>'.\user\Country::ask($eFarm['legalCountry'])['name'].'</b>'
+				);
+			}
+
+			$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => $updateCountry]);
 
 			$h .= $form->dynamicGroups($eFarm, ['description', 'startedAt', 'cultivationPlace', 'cultivationLngLat', 'url', 'quality']);
 
@@ -2948,6 +2958,7 @@ class FarmUi {
 
 			case 'siret' :
 				$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
+				$d->attributes['oninput'] = 'Farm.querySiret(this);';
 				break;
 
 			case 'cultivationPlace' :
