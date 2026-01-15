@@ -753,9 +753,11 @@ class OperationLib extends OperationCrud {
 
 					$index = array_find_key($input['id'], fn($value) => (int)$value === $eOperationVatRegul['id']);
 
-					$eOperationVatRegul = new Operation(array_merge($eOperationVatRegul->getArrayCopy(), $eOperationVat->getArrayCopy()));
-					$eOperationVatRegul['account'] = $eAccountVatRegul;
 					$eOperationVatRegul->buildIndex($propertiesVatRegul, $input, $index);
+
+					// On récupère le montant depuis l'écriture de TVA.
+					$eOperationVatRegul['amount'] = $eOperationVat['amount'];
+					$propertiesVatRegul[] = 'amount';
 
 					Operation::model()->update($eOperationVatRegul, $eOperationVatRegul->extracts($propertiesVatRegul));
 					$cOperation->append($eOperationVatRegul);
