@@ -4,7 +4,7 @@ namespace account;
 Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 
 	//---- BILANS
-	const BALANCE = 'balance';
+	const BALANCE_SHEET = 'balance';
 	const OPENING = 'opening';
 	const OPENING_DETAILED = 'opening-detailed';
 	const CLOSING = 'closing';
@@ -27,7 +27,7 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 	public static function getTypes(): array {
 
 		return [
-			self::BALANCE,
+			self::BALANCE_SHEET,
 			self::OPENING, self::OPENING_DETAILED,
 			self::CLOSING, self::CLOSING_DETAILED,
 			self::SIG,

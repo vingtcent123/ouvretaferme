@@ -3,7 +3,7 @@ new Page()
 	->remote('index', 'accounting', function($data) {
 
 		$data->type = GET('type');
-		if(in_array($data->type, [\account\FinancialYearDocumentLib::BALANCE, \account\FinancialYearDocumentLib::OPENING, \account\FinancialYearDocumentLib::OPENING_DETAILED, \account\FinancialYearDocumentLib::CLOSING, \account\FinancialYearDocumentLib::CLOSING_DETAILED]) === FALSE) {
+		if(in_array($data->type, [\account\FinancialYearDocumentLib::BALANCE_SHEET, \account\FinancialYearDocumentLib::OPENING, \account\FinancialYearDocumentLib::OPENING_DETAILED, \account\FinancialYearDocumentLib::CLOSING, \account\FinancialYearDocumentLib::CLOSING_DETAILED]) === FALSE) {
 			throw new VoidAction();
 		}
 

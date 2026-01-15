@@ -77,7 +77,7 @@ Class PdfLib {
 		$eFarm['eFinancialYear'] = $eFinancialYear;
 
 		$document = match($type) {
-			\account\FinancialYearDocumentLib::BALANCE => '/overview/pdf/balanceSheet',
+			\account\FinancialYearDocumentLib::BALANCE_SHEET => '/overview/pdf/balanceSheet',
 			\account\FinancialYearDocumentLib::OPENING => '/overview/pdf/balanceSheet',
 			\account\FinancialYearDocumentLib::OPENING_DETAILED => '/overview/pdf/balanceSheet',
 			\account\FinancialYearDocumentLib::CLOSING => '/overview/pdf/balanceSheet',

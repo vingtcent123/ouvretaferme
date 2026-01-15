@@ -17,7 +17,7 @@ class PdfUi {
 	public function getName(\account\FinancialYear $eFinancialYear, string $type): string {
 
 		return match($type) {
-			FinancialYearDocumentLib::BALANCE => s("bilan-privisoire-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::BALANCE_SHEET => s("bilan-privisoire-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::OPENING => s("bilan-ouverture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::OPENING_DETAILED => s("bilan-ouverture-detaille-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::CLOSING => s("bilan-cloture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
@@ -34,7 +34,7 @@ class PdfUi {
 	public function getTitle(string $type, bool $isTemporary): string {
 
 		return match($type) {
-			FinancialYearDocumentLib::BALANCE => s("Bilan provisoire"),
+			FinancialYearDocumentLib::BALANCE_SHEET => s("Bilan provisoire"),
 			FinancialYearDocumentLib::OPENING => s("Bilan d'ouverture"),
 			FinancialYearDocumentLib::OPENING_DETAILED => s("Bilan d'ouverture détaillé"),
 			FinancialYearDocumentLib::CLOSING => s("Bilan de clôture"),

@@ -48,7 +48,7 @@ Class FinancialYearDocumentUi {
 		\Asset::js('account', 'financialYearDocument.js');
 
 		$documents = [
-			\account\FinancialYearDocumentLib::BALANCE => ['accept' => NULL, 'label' => s("Bilan"), 'temporary' => TRUE],
+			\account\FinancialYearDocumentLib::BALANCE_SHEET => ['accept' => NULL, 'label' => s("Bilan"), 'temporary' => TRUE],
 			\account\FinancialYearDocumentLib::CLOSING => ['accept' => 'acceptGenerateClose', 'label' => s("Bilan de clôture"), 'temporary' => FALSE],
 			\account\FinancialYearDocumentLib::CLOSING_DETAILED => ['accept' => 'acceptGenerateClose', 'label' => s("Bilan de clôture détaillé"), 'temporary' => FALSE],
 			\account\FinancialYearDocumentLib::INCOME_STATEMENT => ['accept' => NULL, 'label' => s("Compte de résultat"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
@@ -150,7 +150,7 @@ Class FinancialYearDocumentUi {
 
 						$h .= '<td>';
 							$url = match($document) {
-								FinancialYearDocumentLib::BALANCE => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
+								FinancialYearDocumentLib::BALANCE_SHEET => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
 								FinancialYearDocumentLib::OPENING => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
 								FinancialYearDocumentLib::OPENING_DETAILED => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan?type=detailed',
 								FinancialYearDocumentLib::CLOSING => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',

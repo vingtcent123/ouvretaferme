@@ -52,7 +52,7 @@ class AlertUi {
 			'FinancialYear::deleted' => s("L'exercice comptable a bien été supprimé."),
 			'FinancialYear::pdf.generationStackedGeneric' => s("Le document sera bientôt généré."),
 			'FinancialYear::pdf.generationStacked' => [
-				FinancialYearDocumentLib::BALANCE => s("Le bilan sera généré dans quelques instants."),
+				FinancialYearDocumentLib::BALANCE_SHEET => s("Le bilan sera généré dans quelques instants."),
 				FinancialYearDocumentLib::OPENING => s("Le bilan d'ouverture sera généré dans quelques instants."),
 				FinancialYearDocumentLib::OPENING_DETAILED => s("Le bilan d'ouverture détaillé sera généré dans quelques instants."),
 				FinancialYearDocumentLib::CLOSING => s("Le bilan de clôture sera généré dans quelques instants."),
