@@ -1282,7 +1282,7 @@ class SaleLib extends SaleCrud {
 
 			}
 
-			self::update($e, ['paymentMethod']);
+			self::update($e, ['paymentMethod', 'paymentStatus']);
 
 			Sale::model()->commit();
 
