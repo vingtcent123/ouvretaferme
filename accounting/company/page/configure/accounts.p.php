@@ -1,22 +1,49 @@
 <?php
+/**
+ * Script pour rajouter un compte manquant.
+ * php framework/lime.php -a ouvretaferme -e prod company/configure/accounts
+ */
 new Page()
 	->cli('index', function($data) {
 
-		$eFarm = \farm\FarmLib::getById(\association\AssociationSetting::FARM);
+		$class = '4781';
+		$eGenericAccount = \company\GenericAccountLib::getByClass($class);
 
-		\company\CompanyLib::connectDatabase($eFarm);
+		if($eGenericAccount->notEmpty()) {
+			return;
+		}
 
-		// Copy Account content from package main to package accounting
-		$cAccount = \company\GenericAccount::model()
-			->select(\company\GenericAccount::getSelection())
-			->whereType(\company\GenericAccount::ASSOCIATION)
+		$eGenericAccount = new \company\GenericAccount([
+			'id' => 293,
+			'class' => $class,
+			'description' => 'Mali de fusion sur actif circulant',
+			'type' => \company\GenericAccount::AGRICULTURAL,
+		]);
+
+		\company\GenericAccount::model()->insert($eGenericAccount);
+
+		$cFarm = \farm\Farm::model()
+			->select(\farm\Farm::getSelection())
+			->whereHasAccounting(TRUE)
 			->getCollection();
 
-		$eUser = \user\UserLib::getById(21);
+		foreach($cFarm as $eFarm) {
 
-		foreach($cAccount as $eAccount) {
-			$eAccount['createdBy'] = $eUser;
-			\account\Account::model()->insert($eAccount);
+			\company\CompanyLib::connectDatabase($eFarm);
+
+			$eAccount = \account\AccountLib::getByClass($class);
+
+			if($eAccount->notEmpty()) {
+
+				d('Farm #'.$eFarm['id'].' already has an account with class '.$class.' (#'.$eAccount['id'].')');
+
+			} else {
+
+				$eGenericAccount['createdBy'] = new \user\User(['id' => 21]);
+				\account\Account::model()->insert($eGenericAccount);
+
+			}
+
 		}
 
 	});
