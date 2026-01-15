@@ -116,6 +116,7 @@ Class AdminLib {
 
 		switch($search->getSort()) {
 			case 'nBankAccount':
+			case 'nBankImport':
 			case 'nAccountImport':
 			case 'nFinancialDocument':
 			case 'nFinancialYear':
@@ -128,6 +129,7 @@ Class AdminLib {
 				$cFarm->sort([$search->getSort() => SORT_ASC]);
 				break;
 
+			case 'nBankImport-':
 			case 'nFinancialYear-':
 			case 'nBankAccount-':
 			case 'nAccountImport-':
