@@ -4,19 +4,20 @@ class OperationAmount {
 
         const allValues = Array.from(qsa('[type="hidden"][name^="' + type + '["]', element => element.value));
 
-        return round(allValues.reduce(function (acc, value) {
-            const index = value.firstParent('.input-group').qs('input[data-index]').dataset.index;
+        return round(allValues.reduce(function (acc, valueTarget) {
+            const index = valueTarget.firstParent('.input-group').qs('input[data-index]').dataset.index;
 
             const creditType = qs('[name="type[' + index + ']"]:checked')?.getAttribute('value') || null;
 
             if(creditType === 'credit') {
-							return acc - parseFloat(value.value || 0);
+							return acc - parseFloat(valueTarget.value || 0);
 						} else if(creditType === 'debit') {
-                return acc + parseFloat(value.value || 0);
+                return acc + parseFloat(valueTarget.value || 0);
             } else {
 							return acc;
 						}
         }, 0));
+
     }
 
 	static setValidationValues(multiplier) {
@@ -31,6 +32,17 @@ class OperationAmount {
 				qs('.operation-create-validation [data-field="vatValue"] [data-type="value"]').innerHTML = money(vatValue);
 				qs('.operation-create-validation [data-field="amountIncludingVAT"] [data-type="value"]').innerHTML = money(amountIncludingVAT);
 
+				if(typeof Cashflow === 'undefined') {
+
+					qsa('#balance-information-warning', node => node.hide());
+
+					if(parseFloat(amountIncludingVAT) !== 0.0) {
+
+            qs('.balance-information').classList.add('danger');
+            qs('#balance-information-warning').removeHide();
+
+					}
+				}
 			}
 
 			qs('.operation-create-validation [data-field="amount"] [data-type="value"]').innerHTML = money(amount);
@@ -75,7 +87,10 @@ class OperationAmount {
 	 */
 	static checkAmounts(index) {
 
-		OperationAmount.setValidationValues(index);
+		const type = qs('[name="type[' + index + ']"]:checked').value;
+		const multiplier = type === 'credit' ? -1 : 1;
+
+		OperationAmount.setValidationValues(multiplier);
 
 		if(Operation.hasVat() === false) {
 			if(typeof Cashflow !== 'undefined') {

@@ -1054,19 +1054,29 @@ class OperationUi {
 				$h .= '<div></div>';
 				$h .= '<div></div>';
 			}
-			$h .= '<div class="cashflow-warning" style="display: flex; align-items: end; ">';
-				$h .= '<div style="width: 100%;">';
-					$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
-						$h .= '<span data-direction="missing" class="hide">';
-							$h .= s("⚠️ Manque <span></span>", ['span' => '<span cashflow-allocate-difference-value>']);
+			if($isFromCashflow) {
+				$h .= '<div class="cashflow-warning" style="display: flex; align-items: end; ">';
+					$h .= '<div style="width: 100%;">';
+						$h .= '<span id="cashflow-allocate-difference-warning" class="warning hide">';
+							$h .= '<span data-direction="missing" class="hide">';
+								$h .= s("⚠️ Manque <span></span>", ['span' => '<span cashflow-allocate-difference-value>']);
+							$h .= '</span>';
+							$h .= '<span data-direction="tooMuch" class="hide">';
+								$h .= '⚠️ &nbsp;<span cashflow-allocate-difference-value></span>';
+								$h .= '<br />'.s("en trop").'';
+							$h .= '</span>';
 						$h .= '</span>';
-						$h .= '<span data-direction="tooMuch" class="hide">';
-							$h .= '⚠️ &nbsp;<span cashflow-allocate-difference-value></span>';
-							$h .= '<br />'.s("en trop").'';
-						$h .= '</span>';
-					$h .= '</span>';
+					$h .= '</div>';
 				$h .= '</div>';
-			$h .= '</div>';
+			} else {
+				$h .= '<div class="balance-information" style="display: flex; align-items: end; ">';
+					$h .= '<div style="width: 100%;">';
+						$h .= '<span id="balance-information-warning" class="warning hide">';
+							$h .= s("⚠️ Écritures déséquilibrées");
+						$h .= '</span>';
+					$h .= '</div>';
+				$h .= '</div>';
+			}
 			$h .= '<div class="cashflow-create-operation-validate" data-field="amount"><div><span>=</span><span data-type="value"></span></div></div>';
 			if($hasVat) {
 				$h .= '<div class="cashflow-create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>';
