@@ -6,7 +6,7 @@ class Product extends ProductElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'farm' => ['name', 'vignette', 'hasAccounting'],
+			'farm' => ['name', 'vignette', 'hasAccounting', 'legalCountry'],
 			'unprocessedPlant' => ['name', 'fqn', 'vignette'],
 			'unit' => \selling\Unit::getSelection(),
 			'quality' => ['name', 'shortName', 'logo'],
