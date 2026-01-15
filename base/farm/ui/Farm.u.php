@@ -454,7 +454,7 @@ class FarmUi {
 
 			$h .= '<h3>'.s("Pour commencer à vendre").'</h3>';
 			$h .= '<div class="util-info">';
-				$h .= s("Nnous avons besoin que vous fournissiez les informations légales de votre entité pour commencer à vendre avec {siteName}.<br/>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
+				$h .= s("Nous avons besoin que vous fournissiez les informations légales de votre entité pour commencer à vendre avec {siteName}.<br/>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
 			$h .= '</div>';
 
 			$h .= $form->hidden('id', $eFarm['id']);
@@ -2938,12 +2938,14 @@ class FarmUi {
 		return \util\FormUi::info(\Asset::icon('exclamation-circle').' '.s("Les rendements et la fertilisation sont calculés en intégrant la largeur du passe-pied."));
 	}
 
-	public static function querySiret(\PropertyDescriber $d): void {
+	public static function querySiret(\PropertyDescriber $d, string $prefix): void {
+
+		\Asset::js('farm', 'farm.js');
 
 		$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
 
 		$h = '<div class="util-block siret-found hide mt-1">';
-			$h .= '<h4>'.s("Nous avons trouvé ce SIRET dans la base de données de l'administration fiscale :").'</h4>';
+			$h .= '<h4>'.s("Nous avons trouvé ce SIRET dans la base de données de l'administration :").'</h4>';
 			$h .= '<dl class="util-presentation util-presentation-1">';
 				$h .= '<dt>'.s("Raison sociale").'</dt>';
 				$h .= '<dd class="siret-name"></dd>';
@@ -2957,15 +2959,15 @@ class FarmUi {
 					$h .= '</div>';
 				$h .= '</dd>';
 			$h .= '</dl>';
-			$h .= '<a onclick="Farm.fillSiret(this)" class="btn btn-secondary btn-sm mt-1">'.s("Utiliser ces informations").'</a>';
+			$h .= '<a '.attr('onclick', 'Farm.fillSiret(this, "'.$prefix.'")').' class="btn btn-secondary btn-sm mt-1">'.s("Utiliser ces informations").'</a>';
 		$h .= '</div>';
 		$h .= '<div class="siret-unknown hide mt-1">';
-			$h .= '<div class="util-warning">'.s("Nous n'avons pas trouvé ce SIRET dans la base de données de l'administration fiscale. Nous vous incitons à vérifier votre saisie mais vous pouvez toujours l'utiliser si vous pensez qu'il est correct.").'</div>';
+			$h .= '<div class="util-warning">'.s("Nous n'avons pas trouvé ce SIRET dans la base de données de l'administration. Nous vous incitons à vérifier votre saisie mais vous pouvez toujours l'utiliser si vous pensez qu'il est correct.").'</div>';
 		$h .= '</div>';
 
 		$d->after = $h;
-		$d->labelAfter = \util\FormUi::info(s("Commencez par saisir le numéro de SIRET de votre entité pour que Ouvretaferme retrouve automatiquement les autres informations."));
-		$d->attributes['oninput'] = fn(\util\FormUi $form, Farm $eFarm) => 'Farm.querySiret('.$eFarm['id'].', this);';
+		$d->labelAfter = \util\FormUi::info(s("Commencez par saisir le numéro de SIRET si vous souhaitez que Ouvretaferme retrouve automatiquement les autres informations."));
+		$d->attributes['oninput'] = fn(\util\FormUi $form, \Element $e) => 'Farm.querySiret('.($e instanceof Farm ? $e['id'] : $e['farm']['id']).', this);';
 
 	}
 
@@ -3013,7 +3015,7 @@ class FarmUi {
 				break;
 
 			case 'siret' :
-				FarmUi::querySiret($d);
+				FarmUi::querySiret($d, 'legal');
 				break;
 
 			case 'cultivationPlace' :

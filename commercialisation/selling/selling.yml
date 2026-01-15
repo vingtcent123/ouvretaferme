@@ -13,6 +13,7 @@ Customer:
   name: ?text8(1, 50) @collate(general)
   firstName: ?text8(1, 30) @collate(general)
   lastName: ?text8(1, 30) @collate(general)
+  commercialName: ?text8
   legalName: ?text8
   email: ?email
   farm: farm\Farm

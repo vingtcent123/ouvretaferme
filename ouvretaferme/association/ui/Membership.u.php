@@ -103,10 +103,14 @@ class MembershipUi {
 			$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
 		$h .= '</div>';
 
+		if($eFarm->isLegal() === FALSE) {
+			$h .= '<p class="util-info">'.s("Pour obtenir un reçu pour votre comptabilité, vérifiez et mettez à jour si besoin les informations ci-dessous.").'</p>';
+		}
+
 		$h .= '<div class="util-block stick-xs mb-2">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 				$h .= '<dt>'.s("Raison sociale").'</dt>';
-				$h .= '<dd>'.encode($eFarm['legalName']).'</dd>';
+				$h .= '<dd>'.encode($eFarm['legalName'] ?? $eFarm['name']).'</dd>';
 				$h .= '<dt>'.s("Adresse e-mail").'</dt>';
 				$h .= '<dd>'.encode($eFarm['legalEmail']).'</dd>';
 				$h .= '<dt>'.s("SIRET").'</dt>';
@@ -167,44 +171,36 @@ class MembershipUi {
 
 			$h .= '<br/>';
 
-			if($eFarm->isLegal()) {
 
-				$h .= $this->getMemberInformation($eFarm, $eUser);
+			$h .= $this->getMemberInformation($eFarm, $eUser);
 
-				$h .= '<h3>'.s("Montant de l'adhésion").'</h3>';
+			$h .= '<h3>'.s("Montant de l'adhésion").'</h3>';
 
-				$form = new \util\FormUi();
+			$form = new \util\FormUi();
 
-				$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join']);
+			$h .= $form->openAjax('/association/membership:doCreatePayment', ['id' => 'association-join']);
 
-					$h .= $form->hidden('farm', $eFarm['id']);
+				$h .= $form->hidden('farm', $eFarm['id']);
 
-					$h .= '<p>';
-						$h .= s("Si vous le souhaitez, plutôt qu'utiliser le paiement par carte bancaire, vous pouvez également faire un virement sur le compte bancaire de l'association en indiquant dans le motif du virement <b>Adhésion ferme {farm}</b> (<link>télécharger l'IBAN</link>).", ['farm' => $eFarm['id'], 'link' => '<a href="'.\Asset::getPath('association', 'document/iban.pdf').'" data-ajax-navigation="never">']);
-					$h .= '</p>';
+				$h .= '<p>';
+					$h .= s("Si vous le souhaitez, plutôt qu'utiliser le paiement par carte bancaire, vous pouvez également faire un virement sur le compte bancaire de l'association en indiquant dans le motif du virement <b>Adhésion ferme {farm}</b> (<link>télécharger l'IBAN</link>).", ['farm' => $eFarm['id'], 'link' => '<a href="'.\Asset::getPath('association', 'document/iban.pdf').'" data-ajax-navigation="never">']);
+				$h .= '</p>';
 
-					$h .= $this->getAmountBlocks($form, [$fee, $fee + 50, $fee + 100], $fee);
+				$h .= $this->getAmountBlocks($form, [$fee, $fee + 50, $fee + 100], $fee);
 
-					$h .= $form->checkbox('terms', 'yes', [
-						'mandatory' => TRUE,
-						'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
-					]);
+				$h .= $form->checkbox('terms', 'yes', [
+					'mandatory' => TRUE,
+					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
+				]);
 
-					// Promo adhésion 2025-2026
-					if(currentYear() === 2025) {
-						$h .= $form->inputGroup($form->submit(s("J'adhère pour 2025 et 2026"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
-					} else {
-						$h .= $form->inputGroup($form->submit(s("J'adhère pour {value}", $for), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
-					}
+				// Promo adhésion 2025-2026
+				if(currentYear() === 2025) {
+					$h .= $form->inputGroup($form->submit(s("J'adhère pour 2025 et 2026"), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+				} else {
+					$h .= $form->inputGroup($form->submit(s("J'adhère pour {value}", $for), ['class' => 'btn btn-primary btn-lg']), ['class' => 'mt-2']);
+				}
 
-				$h .= $form->close();
-
-			} else {
-				$h .= '<h3>'.s("Adhérent").'</h3>';
-				$h .= '<div class="util-block">';
-					$h .= new \farm\FarmUi()->getLegalForm($eFarm);
-				$h .= '</div>';
-			}
+			$h .= $form->close();
 
 		$h .= '</div>';
 

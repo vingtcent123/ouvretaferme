@@ -48,15 +48,15 @@ class Farm {
 
 	}
 
-	static fillSiret(target) {
+	static fillSiret(target, prefix) {
 
 		const form = target.firstParent('form');
 
 		form.qs('input[name="legalName"]').value = form.qs('.siret-found .siret-name').innerHTML;
-		form.qs('input[name="legalStreet1"]').value = form.qs('.siret-found .siret-street1').innerHTML;
-		form.qs('input[name="legalStreet2"]').value = form.qs('.siret-found .siret-street2').innerHTML;
-		form.qs('input[name="legalPostcode"]').value = form.qs('.siret-found .siret-postcode').innerHTML;
-		form.qs('input[name="legalCity"]').value = form.qs('.siret-found .siret-city').innerHTML;
+		form.qs('input[name="'+ prefix +'Street1"]').value = form.qs('.siret-found .siret-street1').innerHTML;
+		form.qs('input[name="'+ prefix +'Street2"]').value = form.qs('.siret-found .siret-street2').innerHTML;
+		form.qs('input[name="'+ prefix +'Postcode"]').value = form.qs('.siret-found .siret-postcode').innerHTML;
+		form.qs('input[name="'+ prefix +'City"]').value = form.qs('.siret-found .siret-city').innerHTML;
 
 		form.qs('.siret-found').hide();
 

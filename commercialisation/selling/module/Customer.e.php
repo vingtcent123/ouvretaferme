@@ -257,11 +257,23 @@ class Customer extends CustomerElement {
 				return TRUE;
 
 			})
+			->setCallback('commercialName.empty', function(?string &$name): bool {
+
+				$this->expects(['user']);
+
+				if($this->getCategory() !== Customer::PRO) {
+					$name = NULL;
+					return TRUE;
+				}
+
+				return ($name !== NULL);
+
+			})
 			->setCallback('name.empty', function(?string &$name): bool {
 
 				$this->expects(['user']);
 
-				if($this->getCategory() === Customer::PRIVATE) {
+				if($this->getCategory() !== Customer::COLLECTIVE) {
 					$name = NULL;
 					return TRUE;
 				}
@@ -287,6 +299,8 @@ class Customer extends CustomerElement {
 						return FALSE;
 					}
 
+				} else if($this->getCategory() === Customer::PRO) {
+					$this['name'] = $this['commercialName'];
 				} else {
 					$this['name'] = $name;
 				}

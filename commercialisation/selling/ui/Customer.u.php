@@ -840,7 +840,13 @@ class CustomerUi {
 				$h .= '<h3>'.s("Point de vente pour les particuliers").'</h3>';
 			$h .= '</div>';
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= '<div class="customer-form-category customer-form-pro customer-form-collective">';
+				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, match($action) {
+						'create' => 'commercialName*',
+						'update' => 'commercialName*'
+					});
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-collective">';
 					$h .= $form->dynamicGroup($eCustomer, match($action) {
 						'create' => 'name*',
 						'update' => 'name*'
@@ -852,15 +858,14 @@ class CustomerUi {
 						'update' => ['firstName', 'lastName*']
 					});
 				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-pro">';
-					$h .= $form->dynamicGroups($eCustomer, ['legalName']);
-				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= $form->dynamicGroups($eCustomer, ['email', 'phone']);
 				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, 'siret');
+					$h .= $form->dynamicGroup($eCustomer, 'legalName');
 					$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
-					$h .= $form->dynamicGroups($eCustomer, ['siret', 'vatNumber']);
+					$h .= $form->dynamicGroup($eCustomer, 'vatNumber');
 				$h .= '</div>';
 				if($action === 'update') {
 					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
@@ -905,6 +910,7 @@ class CustomerUi {
 
 		$d = Customer::model()->describer($property, [
 			'name' => s("Nom"),
+			'commercialName' => s("Nom commercial"),
 			'firstName' => s("Prénom"),
 			'lastName' => s("Nom"),
 			'email' => s("Adresse e-mail"),
@@ -949,6 +955,10 @@ class CustomerUi {
 					'mandatory' => TRUE,
 					'callbackRadioAttributes' => fn() => ['oninput' => 'Customer.changeCategory(this)']
 				];
+				break;
+
+			case 'siret' :
+				\farm\FarmUi::querySiret($d, 'invoice');
 				break;
 
 			case 'groups' :
@@ -1001,7 +1011,7 @@ class CustomerUi {
 				$d->attributes = [
 					'placeholder' => s("Ex. : SARL Le Bon Légume"),
 				];
-				$d->after = \util\FormUi::info(s("Laisser vide si elle est identique au nom du client"));
+				$d->after = \util\FormUi::info(s("Laisser vide si elle est identique au nom commercial"));
 				break;
 
 			case 'email' :

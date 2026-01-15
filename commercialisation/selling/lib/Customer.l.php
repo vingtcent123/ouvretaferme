@@ -28,14 +28,15 @@ class CustomerLib extends CustomerCrud {
 	public static function getPropertiesDefault(string $for, string $category): array {
 
 		// Conserver cet ordre est indispensable : 'firstName', 'lastName', 'name'
+		$properties = ['firstName', 'lastName', 'commercialName', 'name', 'legalName'];
 
 		return match($category) {
 
-			Customer::PRO => ['category', 'firstName', 'lastName', 'name', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'email', 'defaultPaymentMethod', 'phone'],
-			Customer::PRIVATE => ['category', 'firstName', 'lastName', 'name', 'email', 'defaultPaymentMethod', 'phone'],
+			Customer::PRO => array_merge(['category'], $properties, ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'email', 'defaultPaymentMethod', 'phone']),
+			Customer::PRIVATE => array_merge(['category'], $properties, ['email', 'defaultPaymentMethod', 'phone']),
 			Customer::COLLECTIVE => match($for) {
-				'create' => ['category', 'firstName', 'lastName', 'name'],
-				'update' => ['firstName', 'lastName', 'name']
+				'create' => array_merge(['category'], $properties),
+				'update' => $properties
 			},
 			default => ['category']
 

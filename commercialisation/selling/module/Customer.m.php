@@ -53,6 +53,7 @@ class CustomerModel extends \ModuleModel {
 			'name' => ['text8', 'min' => 1, 'max' => 50, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'firstName' => ['text8', 'min' => 1, 'max' => 30, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'lastName' => ['text8', 'min' => 1, 'max' => 30, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
+			'commercialName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
@@ -84,7 +85,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'legalName', 'email', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'email', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -187,6 +188,10 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereLastName(...$data): CustomerModel {
 		return $this->where('lastName', ...$data);
+	}
+
+	public function whereCommercialName(...$data): CustomerModel {
+		return $this->where('commercialName', ...$data);
 	}
 
 	public function whereLegalName(...$data): CustomerModel {
