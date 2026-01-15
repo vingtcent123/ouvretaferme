@@ -21,7 +21,6 @@ class Farm {
 
 	static querySiret(farm, target) {
 
-		const form = target.firstParent('form');
 		const wrapper = target.firstParent('[data-wrapper]');
 
 		const siret = target.value.replace(/\s/g, '');

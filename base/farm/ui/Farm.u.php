@@ -2941,6 +2941,8 @@ class FarmUi {
 
 	public static function querySiret(\PropertyDescriber $d): void {
 
+		$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
+
 		$h = '<div class="util-block siret-found hide mt-1">';
 			$h .= '<h4>'.s("Nous avons trouvé ce SIRET dans la base de données de l'administration fiscale :").'</h4>';
 			$h .= '<dl class="util-presentation util-presentation-1">';
@@ -3012,7 +3014,6 @@ class FarmUi {
 				break;
 
 			case 'siret' :
-				$d->placeholder = s("Exemple : {value}", '123 456 789 00013');
 				FarmUi::querySiret($d);
 				break;
 
