@@ -6,18 +6,24 @@ Class BalanceUi {
 	public function __construct() {
 	}
 
-	public function getTitle(\farm\Farm $eFarm): string {
+	public function getTitle(\farm\Farm $eFarm, \account\FinancialYearDocument $eFinancialYearDocument): string {
 
 		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+
 		$h .= '<div class="util-action">';
 
 			$h .= '<h1>';
 				$h .= s("La balance");
 			$h .= '</h1>';
 
-			$h .= '<div>';
+			$h .= '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
+
+				$h .= new \account\FinancialYearDocumentUi()->getPdfLink($eFarm, $eFinancialYearDocument, \account\FinancialYearDocumentLib::BALANCE);
+
 			$h .= '</div>';
+
 		$h .= '</div>';
 
 		return $h;
@@ -163,7 +169,37 @@ Class BalanceUi {
 
 	}
 
-	public function list(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious, array $balance, array $balancePrevious, \Search $search, array $searches): string {
+	public function getPdfTHead(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious): string {
+
+		$h = '<tr>';
+			$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content text-center">'.s("Numéro<br />de compte").'</th>';
+			$h .= '<th rowspan="2" class="td-vertical-align-middle hide-sm-down">'.s("Libellé").'</th>';
+			$h .= '<th colspan="2" class="text-center">'.s("Totaux").'</th>';
+			$h .= '<th colspan="2" class="text-center">';
+				$h .= s("Soldes exercice {value}", $eFinancialYear->getLabel());
+			$h .= '</th>';
+			if($eFinancialYearPrevious->notEmpty()) {
+				$h .= '<th colspan="2" class="text-center">';
+					$h .= s("Soldes exercice {value}", $eFinancialYearPrevious->getLabel());
+				$h .= '</th>';
+			}
+		$h .= '</tr>';
+		$h .= '<tr>';
+			$h .= '<th class="text-center">'.s("Débit").'</th>';
+			$h .= '<th class="text-center">'.s("Crédit").'</th>';
+			$h .= '<th class="text-center">'.s("Débit").'</th>';
+			$h .= '<th class="text-center">'.s("Crédit").'</th>';
+			if($eFinancialYearPrevious->notEmpty()) {
+				$h .= '<th class="text-center">'.s("Débit").'</th>';
+				$h .= '<th class="text-center">'.s("Crédit").'</th>';
+			}
+		$h .= '</tr>';
+
+		return $h;
+
+	}
+
+	public function getTBody(\account\FinancialYear $eFinancialYearPrevious, array $balance, array $balancePrevious, \Search $search, string $for): string {
 
 		$hasPrevious = $eFinancialYearPrevious->notEmpty();
 		$classes = array_unique(array_merge(array_keys($balance), array_keys($balancePrevious)));
@@ -182,6 +218,103 @@ Class BalanceUi {
 			7 => $defaultClass,
 		];
 
+		$totalDebitCurrent = 0;
+		$totalCreditCurrent = 0;
+		$balanceDebitCurrent = 0;
+		$balanceCreditCurrent = 0;
+		$totalDebitPrevious = 0;
+		$totalCreditPrevious = 0;
+		$balanceDebitPrevious = 0;
+		$balanceCreditPrevious = 0;
+
+		$lastClass = NULL;
+
+		$h = '';
+
+		foreach($classes as $class) {
+
+			$lineCurrent = $balance[$class] ?? ['debit' => 0.0, 'credit' => 0.0];
+			$linePrevious = $balancePrevious[$class] ?? ['debit' => 0.0, 'credit' => 0.0];
+
+			if($hasSummary) {
+
+				$classesTotal[(int)mb_substr($class, 0, 1)]['total-debit'] += $lineCurrent['debit'];
+				$classesTotal[(int)mb_substr($class, 0, 1)]['total-credit'] += $lineCurrent['credit'];
+				$classesTotal[(int)mb_substr($class, 0, 1)]['current-debit'] += max($lineCurrent['debit'] - $lineCurrent['credit'], 0);
+				$classesTotal[(int)mb_substr($class, 0, 1)]['current-credit'] += max($lineCurrent['credit'], $lineCurrent['debit'], 0);
+				$classesTotal[(int)mb_substr($class, 0, 1)]['previous-debit'] += max($linePrevious['debit'] - $linePrevious['credit'], 0);
+				$classesTotal[(int)mb_substr($class, 0, 1)]['previous-credit'] += max($linePrevious['credit'], $linePrevious['debit'], 0);
+
+				if($lastClass !== NULL and $lastClass !== (int)mb_substr($class, 0, 1)) {
+					$h .= $this->displaySummary($classesTotal, $lastClass, $hasPrevious);
+				}
+			}
+
+			$h .= '<tr>';
+				$h .= '<td class="text-end">';
+					$h .= encode($class);
+					if(isset($lineCurrent['accountDetail'])) {
+						$h .= '<span class="color-muted font-xs">'.encode($lineCurrent['accountDetail']).'</span>';
+					} else if(isset($linePrevious['accountDetail'])) {
+						$h .= '<span class="color-muted font-xs">'.encode($linePrevious['accountDetail']).'</span>';
+					}
+				$h .= '</td>';
+				$h .= '<td class="hide-sm-down">'.encode($lineCurrent['label'] ?? $linePrevious['label']).'</td>';
+
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.($lineCurrent['debit'] !== 0.0 ? \util\TextUi::money($lineCurrent['debit']) : '').'</td>';
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.($lineCurrent['credit'] !== 0.0 ? \util\TextUi::money($lineCurrent['credit']) : '').'</td>';
+
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.($lineCurrent['debit'] > $lineCurrent['credit'] ? \util\TextUi::money($lineCurrent['debit'] - $lineCurrent['credit']) : '').'</td>';
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.($lineCurrent['credit'] > $lineCurrent['debit'] ? \util\TextUi::money($lineCurrent['credit'] - $lineCurrent['debit']) : '').'</td>';
+
+				if($hasPrevious) {
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.($linePrevious['debit'] > $linePrevious['credit'] ? \util\TextUi::money($linePrevious['debit'] - $linePrevious['credit']) : '').'</td>';
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.($linePrevious['credit'] > $linePrevious['debit'] ? \util\TextUi::money($linePrevious['credit'] - $linePrevious['debit']) : '').'</td>';
+				}
+			$h .= '</tr>';
+
+			$totalDebitCurrent += $lineCurrent['debit'];
+			$totalCreditCurrent += $lineCurrent['credit'];
+
+			if($lineCurrent['debit'] > $lineCurrent['credit']) {
+				$balanceDebitCurrent += $lineCurrent['debit'] - $lineCurrent['credit'];
+			} else {
+				$balanceCreditCurrent += $lineCurrent['credit'] - $lineCurrent['debit'];
+			}
+			if($linePrevious['debit'] > $linePrevious['credit']) {
+				$balanceDebitPrevious += $linePrevious['debit'] - $linePrevious['credit'];
+			} else {
+				$balanceCreditPrevious += $linePrevious['credit'] - $linePrevious['debit'];
+			}
+
+			if($hasSummary) {
+				$lastClass = (int)mb_substr($class, 0, 1);
+			}
+
+		}
+
+		if($hasSummary) {
+			$h .= $this->displaySummary($classesTotal, $lastClass, $hasPrevious);
+		}
+
+		$h .= '<tr class="tr-bold">';
+			$h .= '<td class="hide-sm-down"></td>';
+			$h .= '<td class="text-end">'.s("Totaux").'</td>';
+			$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($totalDebitCurrent).'</td>';
+			$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.\util\TextUi::money($totalCreditCurrent).'</td>';
+			$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($balanceDebitCurrent).'</td>';
+			$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.\util\TextUi::money($balanceCreditCurrent).'</td>';
+			if($hasPrevious) {
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($balanceDebitPrevious).'</td>';
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.\util\TextUi::money($balanceCreditPrevious).'</td>';
+			}
+		$h .= '</tr>';
+
+			return $h;
+	}
+
+	public function list(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearPrevious, array $balance, array $balancePrevious, \Search $search, array $searches): string {
+
 		$h = '';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
@@ -199,7 +332,7 @@ Class BalanceUi {
 							$h .= '<br /><small>'.s("(du {startDate} au {endDate})", ['startDate' => \util\DateUi::numeric($searches['current']->get('startDate')), 'endDate' => \util\DateUi::numeric($searches['current']->get('endDate'))]).'</small>';
 						}
 					$h .= '</th>';
-					if($hasPrevious) {
+					if($eFinancialYearPrevious->notEmpty()) {
 						$h .= '<th colspan="2" class="text-center">';
 						$h .= s("Soldes exercice {value}", $eFinancialYearPrevious->getLabel());
 						if(array_key_exists('previous', $searches) and $searches['previous']->get('startDate') !== '' and $searches['previous']->get('endDate') !== '' ) {
@@ -213,7 +346,7 @@ Class BalanceUi {
 					$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
 					$h .= '<th class="text-center highlight-stick-right">'.s("Débit").'</th>';
 					$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
-					if($hasPrevious) {
+					if($eFinancialYearPrevious->notEmpty()) {
 						$h .= '<th class="text-center highlight-stick-right">'.s("Débit").'</th>';
 						$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
 					}
@@ -222,95 +355,7 @@ Class BalanceUi {
 
 				$h .= '<tbody>';
 
-					$totalDebitCurrent = 0;
-					$totalCreditCurrent = 0;
-					$balanceDebitCurrent = 0;
-					$balanceCreditCurrent = 0;
-					$totalDebitPrevious = 0;
-					$totalCreditPrevious = 0;
-					$balanceDebitPrevious = 0;
-					$balanceCreditPrevious = 0;
-
-					$lastClass = NULL;
-
-					foreach($classes as $class) {
-
-						$lineCurrent = $balance[$class] ?? ['debit' => 0.0, 'credit' => 0.0];
-						$linePrevious = $balancePrevious[$class] ?? ['debit' => 0.0, 'credit' => 0.0];
-
-						if($hasSummary) {
-
-							$classesTotal[(int)mb_substr($class, 0, 1)]['total-debit'] += $lineCurrent['debit'];
-							$classesTotal[(int)mb_substr($class, 0, 1)]['total-credit'] += $lineCurrent['credit'];
-							$classesTotal[(int)mb_substr($class, 0, 1)]['current-debit'] += max($lineCurrent['debit'] - $lineCurrent['credit'], 0);
-							$classesTotal[(int)mb_substr($class, 0, 1)]['current-credit'] += max($lineCurrent['credit'], $lineCurrent['debit'], 0);
-							$classesTotal[(int)mb_substr($class, 0, 1)]['previous-debit'] += max($linePrevious['debit'] - $linePrevious['credit'], 0);
-							$classesTotal[(int)mb_substr($class, 0, 1)]['previous-credit'] += max($linePrevious['credit'], $linePrevious['debit'], 0);
-
-							if($lastClass !== NULL and $lastClass !== (int)mb_substr($class, 0, 1)) {
-								$h .= $this->displaySummary($classesTotal, $lastClass, $hasPrevious);
-							}
-						}
-
-						$h .= '<tr>';
-							$h .= '<td class="text-end">';
-								$h .= encode($class);
-								if(isset($lineCurrent['accountDetail'])) {
-									$h .= '<span class="color-muted font-xs">'.encode($lineCurrent['accountDetail']).'</span>';
-								} else if(isset($linePrevious['accountDetail'])) {
-									$h .= '<span class="color-muted font-xs">'.encode($linePrevious['accountDetail']).'</span>';
-								}
-							$h .= '</td>';
-							$h .= '<td class="hide-sm-down">'.encode($lineCurrent['label'] ?? $linePrevious['label']).'</td>';
-
-							$h .= '<td class="text-end highlight-stick-right">'.($lineCurrent['debit'] !== 0.0 ? \util\TextUi::money($lineCurrent['debit']) : '').'</td>';
-							$h .= '<td class="text-end highlight-stick-left">'.($lineCurrent['credit'] !== 0.0 ? \util\TextUi::money($lineCurrent['credit']) : '').'</td>';
-
-							$h .= '<td class="text-end highlight-stick-right">'.($lineCurrent['debit'] > $lineCurrent['credit'] ? \util\TextUi::money($lineCurrent['debit'] - $lineCurrent['credit']) : '').'</td>';
-							$h .= '<td class="text-end highlight-stick-left">'.($lineCurrent['credit'] > $lineCurrent['debit'] ? \util\TextUi::money($lineCurrent['credit'] - $lineCurrent['debit']) : '').'</td>';
-
-							if($hasPrevious) {
-								$h .= '<td class="text-end highlight-stick-right">'.($linePrevious['debit'] > $linePrevious['credit'] ? \util\TextUi::money($linePrevious['debit'] - $linePrevious['credit']) : '').'</td>';
-								$h .= '<td class="text-end highlight-stick-left">'.($linePrevious['credit'] > $linePrevious['debit'] ? \util\TextUi::money($linePrevious['credit'] - $linePrevious['debit']) : '').'</td>';
-							}
-						$h .= '</tr>';
-
-						$totalDebitCurrent += $lineCurrent['debit'];
-						$totalCreditCurrent += $lineCurrent['credit'];
-
-						if($lineCurrent['debit'] > $lineCurrent['credit']) {
-							$balanceDebitCurrent += $lineCurrent['debit'] - $lineCurrent['credit'];
-						} else {
-							$balanceCreditCurrent += $lineCurrent['credit'] - $lineCurrent['debit'];
-						}
-						if($linePrevious['debit'] > $linePrevious['credit']) {
-							$balanceDebitPrevious += $linePrevious['debit'] - $linePrevious['credit'];
-						} else {
-							$balanceCreditPrevious += $linePrevious['credit'] - $linePrevious['debit'];
-						}
-
-						if($hasSummary) {
-							$lastClass = (int)mb_substr($class, 0, 1);
-						}
-
-					}
-
-					if($hasSummary) {
-						$h .= $this->displaySummary($classesTotal, $lastClass, $hasPrevious);
-					}
-
-					$h .= '<tr class="tr-bold">';
-						$h .= '<td class="hide-sm-down"></td>';
-						$h .= '<td class="text-end">'.s("Totaux").'</td>';
-						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent).'</td>';
-						$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCreditCurrent).'</td>';
-						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($balanceDebitCurrent).'</td>';
-						$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($balanceCreditCurrent).'</td>';
-						if($hasPrevious) {
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($balanceDebitPrevious).'</td>';
-							$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($balanceCreditPrevious).'</td>';
-						}
-					$h .= '</tr>';
+					$h .= $this->getTBody($eFinancialYearPrevious, $balance, $balancePrevious, $search, 'web');
 
 				$h .= '</tbody>';
 

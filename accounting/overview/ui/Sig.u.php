@@ -52,7 +52,7 @@ Class SigUi {
 
 	}
 
-	public function getTHead(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison): string {
+	public function getTHead(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, string $for): string {
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 
@@ -65,13 +65,13 @@ Class SigUi {
 			}
 		$h .= '</tr>';
 		$h .= '<tr class="tr-title">';
-			$h .= '<th class="text-end highlight-stick-right">'.s("Montant (€)").'</th>';
-			$h .= '<th class="text-center highlight-stick-left">'.s("Répartition (%)").'</th>';
+			$h .= '<th class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Montant (€)").'</th>';
+			$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.s("Répartition (%)").'</th>';
 			if($hasComparison) {
-				$h .= '<th class="text-end highlight-stick-right">'.s("Montant (€)").'</th>';
-				$h .= '<th class="text-center highlight-stick-left">'.s("Répartition (%)").'</th>';
-				$h .= '<th class="text-center highlight-stick-right">'.s("Variation (€)").'</th>';
-				$h .= '<th class="text-center highlight-stick-left">'.s("Variation (%)").'</th>';
+				$h .= '<th class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Montant (€)").'</th>';
+				$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.s("Répartition (%)").'</th>';
+				$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Variation (€)").'</th>';
+				$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.s("Variation (%)").'</th>';
 			}
 		$h .= '</tr>';
 
@@ -79,7 +79,7 @@ Class SigUi {
 
 	}
 
-	public function getTBody(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $values): string {
+	public function getTBody(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $values, string $for): string {
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 		$valuesCurrent = $values[$eFinancialYear['id']];
@@ -106,24 +106,24 @@ Class SigUi {
 				}
 			$h .= '">';
 				$h .= '<td class="sig-category-name">'.$this->name($account, '=').'</td>';
-				$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
-				$h .= '<td class="text-center highlight-stick-left">';
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
+				$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 					if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
 						$h .= round(($valuesCurrent[$account] / $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
 					}
 				$h .= '</td>';
 				if($hasComparison) {
 					[$value, $percent] = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
-					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
-					$h .= '<td class="text-center highlight-stick-left">';
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
+					$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 						if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
 							$h .= round(($valuesComparison[$account] / $valuesComparison[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
 						}
 					$h .= '</td>';
-					$h .= '<td class="text-end highlight-stick-right">';
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">';
 						$h .= \util\TextUi::money($value);
 					$h .= '</td>';
-					$h .= '<td class="text-center highlight-stick-left">';
+					$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 						if(mb_strlen($percent) > 0) {
 							$h .= s("{value} %", $percent);
 						}
@@ -136,16 +136,16 @@ Class SigUi {
 
 				$h .= '<tr class="sig-content">';
 					$h .= '<td class="sig-category-name">'.$this->name($account, '+').'</td>';
-					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
-					$h .= '<td class="text-end highlight-stick-left"></td>';
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'"></td>';
 					if($hasComparison) {
 						[$value, $percent] = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
-						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
-						$h .= '<td class="text-end highlight-stick-left"></td>';
-						$h .= '<td class="text-end highlight-stick-right">';
+						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
+						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'"></td>';
+						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">';
 							$h .= \util\TextUi::money($value);
 						$h .= '</td>';
-						$h .= '<td class="text-center highlight-stick-left">';
+						$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 							if(mb_strlen($percent) > 0) {
 								$h .= s("{value} %", $percent);
 							}
@@ -203,13 +203,13 @@ Class SigUi {
 						$h .= '</th>';
 					$h .= '</tr>';
 
-					$h .= $this->getTHead($eFinancialYear, $eFinancialYearComparison);
+					$h .= $this->getTHead($eFinancialYear, $eFinancialYearComparison, 'web');
 
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
 
-					$h .= $this->getTBody($eFinancialYear, $eFinancialYearComparison, $values);
+					$h .= $this->getTBody($eFinancialYear, $eFinancialYearComparison, $values, 'web');
 
 				$h .= '</tbody>';
 

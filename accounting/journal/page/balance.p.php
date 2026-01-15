@@ -100,6 +100,8 @@ new Page(function($data) {
 
 		$data->tab = $tab;
 
+		$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument($data->eFarm['eFinancialYear'], \account\FinancialYearDocumentLib::BALANCE);
+
 		throw new ViewAction($data);
 
 	});

@@ -2055,28 +2055,11 @@ class FarmUi {
 					}
 				}
 
-				if($eFinancialYearDocument->empty()) {
-					$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.match($selectedView) {
-							'assets' => \account\FinancialYearDocumentLib::ASSET_AMORTIZATION,
-							'acquisitions' => \account\FinancialYearDocumentLib::ASSET_ACQUISITION,
-						}.'" post-id="'.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" data-waiter="'.s("Génération en cours...").'" title="'.match($selectedView) {
-							'assets' => s("Exporter les amortissements"),
-							'acquisitions' => s("Exporter les acquisitions"),
-						}
-					.'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
-				} else if($eFinancialYearDocument['generation'] === \account\FinancialYearDocument::SUCCESS) {
-					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.match($selectedView) {
-							'assets' => \account\FinancialYearDocumentLib::ASSET_AMORTIZATION,
-							'acquisitions' => \account\FinancialYearDocumentLib::ASSET_ACQUISITION,
-						}.'&id='.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" title="'.match($selectedView) {
-							'assets' => s("Exporter les amortissements"),
-							'acquisitions' => s("Exporter les acquisitions"),
-						}
-					.'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
-				} else {
-					$h .= '<a onrender="FinancialYearDocument.checkGeneration(\''.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check\')" class="btn btn-primary disabled" title="'.s("Génération en cours").'">'.\Asset::icon('file-pdf').'  '.s("PDF en génération...").'</a> ';
+				$h .= new \account\FinancialYearDocumentUi()->getPdfLink($eFarm, $eFinancialYearDocument, match($selectedView) {
+					'assets' => \account\FinancialYearDocumentLib::ASSET_AMORTIZATION,
+					'acquisitions' => \account\FinancialYearDocumentLib::ASSET_ACQUISITION,
+				});
 
-				}
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -2134,31 +2117,20 @@ class FarmUi {
 
 				}
 
-			$documentType = match($selectedView) {
-				Farmer::INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
-				Farmer::BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,
-				Farmer::SIG => \account\FinancialYearDocumentLib::SIG,
-				default => NULL,
-			};
+				$documentType = match($selectedView) {
+					Farmer::INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
+					Farmer::BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,
+					Farmer::SIG => \account\FinancialYearDocumentLib::SIG,
+					default => NULL,
+				};
 
-			if($documentType !== NULL) {
+				if($documentType !== NULL) {
 
-				if($eFinancialYearDocument->empty()) {
+					$h .= new \account\FinancialYearDocumentUi()->getPdfLink($eFarm, $eFinancialYearDocument, $documentType);
 
-					$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.$documentType.'" post-id="'.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" data-waiter="'.s("Génération en cours...").'" title="'.s("Générer le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
-
-				} else if($eFinancialYearDocument['generation'] === \account\FinancialYearDocument::SUCCESS) {
-
-					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$documentType.'&id='.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" title="'.s("Exporter le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
-
-				} else {
-
-					$h .= '<a onrender="FinancialYearDocument.checkGeneration(\''.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check\')" class="btn btn-primary disabled" title="'.s("Génération en cours").'">'.\Asset::icon('file-pdf').'  '.s("PDF en génération...").'</a> ';
 				}
 
-			}
-
-		$h .= '</div>';
+			$h .= '</div>';
 
 		$h .= '</div>';
 

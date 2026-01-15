@@ -17,6 +17,12 @@ html {
 	width: 18.9cm;
 }
 
+.pdf-document-wrapper-landscape {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	margin: 0.25rem auto;
+	width: 27cm;
+}
 .pdf-document-footer {
 	position: fixed;
 	bottom: 0;
@@ -73,7 +79,7 @@ table.pdf-table-bordered {
 tr.overview_group-title,
 tr.overview_group-total,
 tr.pdf-tr-title {
-	background-color: lightgrey;
+	background-color: lightgrey !important;
 }
 tr.pdf-tr-total-general {
 	text-transform: uppercase;
@@ -82,14 +88,6 @@ tr.pdf-tr-total-general > td {
 	text-align: right;
 }
 
-.pdf-document-content td.highlight-stick-left,
-.pdf-document-content th.highlight-stick-left {
-	background: #8881;
-}
-.pdf-document-content td.highlight-stick-right,
-.pdf-document-content th.highlight-stick-right {
-	background: lightgrey;
-}
 .pdf-document-content a.nav-item {
 	display: none;
 }
@@ -100,4 +98,7 @@ tr.pdf-tr-muted {
 }
 tr.pdf-tr-muted.pdf-tr-ml-1 > td:first-child {
 	padding-left: 0.5cm;
+}
+table.pdf-table-bordered tr td {
+	border-bottom: 1px dotted lightgrey;
 }

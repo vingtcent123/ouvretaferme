@@ -53,6 +53,7 @@ Class FinancialYearDocumentUi {
 			\account\FinancialYearDocumentLib::SIG => ['accept' => NULL, 'label' => s("Soldes intermédiaires de gestion"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::ASSET_AMORTIZATION => ['accept' => NULL, 'label' => s("Immobilisations : amortissements"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::ASSET_ACQUISITION => ['accept' => NULL, 'label' => s("Immobilisations : acquisitions"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
+			\account\FinancialYearDocumentLib::BALANCE => ['accept' => NULL, 'label' => s("Balance"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 		];
 
 		if($eFinancialYear->isClosed()) {
@@ -168,6 +169,7 @@ Class FinancialYearDocumentUi {
 								FinancialYearDocumentLib::SIG => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/sig',
 								FinancialYearDocumentLib::ASSET_AMORTIZATION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
 								FinancialYearDocumentLib::ASSET_ACQUISITION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations/acquisitions',
+								FinancialYearDocumentLib::BALANCE => \company\CompanyUi::urlJournal($eFarm).'/balance',
 							};
 							$h .= '<a href="'.$url.'">'.s("Voir les données").'</a>';
 						$h .= '</td>';
@@ -195,6 +197,26 @@ Class FinancialYearDocumentUi {
 			attributes: $attributes,
 		);
 
+	}
+
+	public function getPdfLink(\farm\Farm $eFarm, FinancialYearDocument $eFinancialYearDocument, string $type): string {
+
+		$h = '';
+		if($eFinancialYearDocument->empty()) {
+
+			$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.$type.'" post-id="'.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" data-waiter="'.s("Génération en cours...").'" title="'.s("Générer le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+
+		} else if($eFinancialYearDocument['generation'] === \account\FinancialYearDocument::SUCCESS) {
+
+			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$type.'&id='.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" title="'.s("Télécharger le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+
+		} else {
+
+			$h .= '<a onrender="FinancialYearDocument.checkGeneration(\''.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check\')" class="btn btn-primary disabled" title="'.s("Génération en cours").'">'.\Asset::icon('file-pdf').'  '.s("PDF en génération...").'</a> ';
+
+		}
+
+		return $h;
 	}
 
 }

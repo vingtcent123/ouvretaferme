@@ -181,11 +181,11 @@ class PdfUi {
 				$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
 
 					$h .= '<thead>';
-						$h .= new \overview\SigUi()->getTHead($eFinancialYear, $eFinancialYearComparison);
+						$h .= new \overview\SigUi()->getTHead($eFinancialYear, $eFinancialYearComparison, 'pdf');
 					$h .= '</thead>';
 
 				$h .= '<tbody>';
-					$h .= new \overview\SigUi()->getTBody($eFinancialYear, $eFinancialYearComparison, $values);
+					$h .= new \overview\SigUi()->getTBody($eFinancialYear, $eFinancialYearComparison, $values, 'pdf');
 				$h .= '</tbody>';
 
 				$h .= '</table>';

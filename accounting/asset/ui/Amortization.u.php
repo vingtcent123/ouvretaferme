@@ -110,12 +110,27 @@ Class AmortizationUi {
 
 	}
 
-	public static function getPdfTHead(array $amortizations): string {
+	public static function getPdfTHead(array $amortizations, ?string $type): string {
 
 		$showExcessColumns = array_find($amortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL;
 		$showGrossValueDiminutionColumn = array_find($amortizations, fn($amortization) => $amortization['grossValueDiminution'] > 0) !== NULL;
 
+		$colspan = 9;
+		if($showGrossValueDiminutionColumn) {
+			$colspan++;
+		}
+		if($showExcessColumns) {
+			$colspan +=5;
+		}
+
 		$h = '<tr class="tr-bold">';
+			$h .= '<th colspan="'.$colspan.'" class="text-center">'.match($type) {
+				'asset' => s("Immobilisations"),
+				'grant' => s("Subventions"),
+			}.'</th>';
+		$h .= '</tr>';
+
+		$h .= '<tr class="tr-bold">';
 			$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
 			$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
 			$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';

@@ -87,6 +87,7 @@ Class PdfLib {
 			\account\FinancialYearDocumentLib::SIG => '/overview/pdf/sig',
 			\account\FinancialYearDocumentLib::ASSET_AMORTIZATION => '/asset/pdf:amortization',
 			\account\FinancialYearDocumentLib::ASSET_ACQUISITION => '/asset/pdf:acquisition',
+			\account\FinancialYearDocumentLib::BALANCE => '/journal/pdf:balance',
 			default => throw new \Exception('Unknown document type'),
 		};
 

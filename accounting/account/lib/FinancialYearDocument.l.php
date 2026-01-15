@@ -4,7 +4,7 @@ namespace account;
 Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 
 	//---- BILANS
-	const BALANCE_SHEET = 'balance';
+	const BALANCE_SHEET = 'balance-sheet';
 	const OPENING = 'opening';
 	const OPENING_DETAILED = 'opening-detailed';
 	const CLOSING = 'closing';
@@ -20,6 +20,8 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 	const ASSET_ACQUISITION = 'asset-acquisition';
 
 	//---- BALANCES : comptable, synthétique
+	const BALANCE = 'balance';
+
 	//---- JOURNAUX : TVA achat / vente, par journal
 	//---- TVA : Cerfa, Dde de remboursement
 	//---- GRAND LIVRE
@@ -33,6 +35,7 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 			self::SIG,
 			self::INCOME_STATEMENT, self::INCOME_STATEMENT_DETAILED,
 			self::ASSET_AMORTIZATION, self:: ASSET_ACQUISITION,
+			self::BALANCE,
 		];
 
 	}
