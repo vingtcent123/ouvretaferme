@@ -124,12 +124,18 @@ new \farm\FarmPage()
 new \farm\SurveyPage()
 	->getCreateElement(function($data) {
 
+		$eFarm = \farm\FarmLib::getById(INPUT('farm'));
+
+		if(in_array($data->eUserOnline['id'], [1140, 1]) === FALSE) {
+			throw new NotExpectedAction();
+		}
+/*
 		$eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 
 		if(in_array($eFarm['id'], \farm\Survey::getFarms()) === FALSE) {
 			throw new NotExpectedAction();
 		}
-
+*/
 		return new \farm\Survey([
 			'farm' => $eFarm,
 		]);
@@ -142,10 +148,7 @@ new \farm\SurveyPage()
 		$data->eFarm = $data->e['farm'];
 		$data->hasSurvey = ($analyze === FALSE);// and \farm\SurveyLib::existsByFarm($data->eFarm));
 
-		if(
-			get_exists('id') and
-			$analyze
-		) {
+		if(get_exists('id')) {
 			\farm\Survey::model()
 				->select(\farm\Survey::getSelection() + [
 					'farm' => ['name']
