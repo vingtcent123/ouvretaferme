@@ -194,7 +194,7 @@ class FinancialYearUi {
 
 							if($eFinancialYear['eImport']->notEmpty()) {
 
-								if(true or $eFinancialYear['eImport']['status'] === Import::DONE) {
+								if($eFinancialYear['eImport']['status'] === Import::DONE) {
 
 									$h .= '<li>';
 										$h .= '<span class="financial-year-detail-icon">'.\Asset::icon('journal-check').'</span>';
@@ -309,7 +309,7 @@ class FinancialYearUi {
 									$h .= '</a>';
 								}
 
-								if($eFinancialYear->acceptOpen()) {
+								if($eFinancialYear->acceptOpen() and $eFinancialYear['previous']->notEmpty()) {
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 										$h .= s("Réaliser le bilan d'ouverture");
 									$h .= '</a>';

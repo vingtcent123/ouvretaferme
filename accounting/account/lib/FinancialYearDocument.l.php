@@ -66,7 +66,7 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 
 	public static function canGenerate(FinancialYear $eFinancialYear, string $type): bool {
 
-		if(in_array($type, self::getTypes())) {
+		if(in_array($type, self::getTypes()) === FALSE) {
 			return FALSE;
 		}
 
@@ -159,6 +159,39 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 			->whereFinancialYear($eFinancialYear)
 			->whereGeneration('IN', [FinancialYearDocument::PROCESSING, FinancialYearDocument::NOW, FinancialYearDocument::WAITING])
 			->count();
+
+	}
+
+	/**
+	 * Appelé au moment de la clôture d'un exercice
+	 * => On regénère tous les documents provisoires
+	 */
+	public static function regenerateAll(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
+
+		$cFinancialYearDocument = FinancialYearDocument::model()
+			->select(FinancialYearDocument::getSelection())
+			->whereFinancialYear($eFinancialYear)
+			->whereType('IN', [
+					self::BALANCE_SHEET,
+					self::SIG,
+					self::INCOME_STATEMENT, self::INCOME_STATEMENT_DETAILED,
+					self::ASSET_AMORTIZATION, self:: ASSET_ACQUISITION,])
+			->getCollection(NULL, NULL, 'type');
+
+		foreach($cFinancialYearDocument as $eFinancialYearDocument) {
+
+			self::regenerate($eFinancialYear, $eFinancialYearDocument['type']);
+
+		}
+
+		if($cFinancialYearDocument->notEmpty()) {
+
+			\company\CompanyCronLib::addConfiguration(
+				$eFarm,
+				\company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT, \company\CompanyCron::WAITING, $eFinancialYear['id']
+			);
+
+		}
 
 	}
 

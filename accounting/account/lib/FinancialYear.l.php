@@ -58,7 +58,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function closeFinancialYear(FinancialYear $eFinancialYear): void {
+	public static function closeFinancialYear(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
 
 		FinancialYear::model()->beginTransaction();
 
@@ -79,6 +79,9 @@ class FinancialYearLib extends FinancialYearCrud {
 		]);
 
 		LogLib::save('close', 'FinancialYear', ['id' => $eFinancialYear['id']]);
+
+		// Met à jour tous les fichiers provisoires déjà générés
+		FinancialYearDocumentLib::regenerateAll($eFarm, $eFinancialYear);
 
 		FinancialYear::model()->commit();
 

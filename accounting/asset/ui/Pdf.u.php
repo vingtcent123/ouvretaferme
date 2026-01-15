@@ -29,11 +29,10 @@ class PdfUi {
 
 				if($cAsset->notEmpty()) {
 
-					$h .= '<h1>'.s("Immobilisations").'</h1>';
 					$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
 
 						$h .= '<thead>';
-							$h .= new AssetUi()->getTHead();
+							$h .= new AssetUi()->getTHead('asset');
 						$h .= '</thead>';
 
 						$h .= '<tbody>';
@@ -46,11 +45,10 @@ class PdfUi {
 
 				if($cAssetGrant->notEmpty()) {
 
-					$h .= '<h1>'.s("Subventions").'</h1>';
 					$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
 
 						$h .= '<thead>';
-							$h .= new AssetUi()->getTHead();
+							$h .= new AssetUi()->getTHead('grant');
 						$h .= '</thead>';
 
 						$h .= '<tbody>';

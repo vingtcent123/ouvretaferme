@@ -97,7 +97,7 @@ class PdfUi {
 						$h .= new \overview\IncomeStatementUi()->getPdfTBody('expenses', $eFarm, $cAccount, $resultData['expenses'], $eFinancialYearComparison);
 
 						// Bénéfice ou perte
-						if($differenceCurrent > 0 or $differencePrevious > 0) {
+						if($differenceCurrent > 0 or ($hasComparison and $differencePrevious > 0)) {
 
 							$h .= '<tr>';
 

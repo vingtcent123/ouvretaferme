@@ -68,6 +68,7 @@ new Page(function($data) {
 				} else {
 					$data->eFinancialYearComparison = new \account\FinancialYear();
 				}
+				$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument($data->eFarm['eFinancialYear'], \account\FinancialYearDocumentLib::SIG);
 				break;
 
 			case \farm\Farmer::BALANCE_SHEET:
@@ -99,6 +100,12 @@ new Page(function($data) {
 					$data->cAccount = \account\AccountLib::getByClasses($classes, 'class');
 
 				}
+
+				$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument(
+					$data->eFarm['eFinancialYear'],
+					$data->eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET
+				);
+
 				break;
 
 			case \farm\Farmer::INCOME_STATEMENT:
@@ -127,6 +134,11 @@ new Page(function($data) {
 					$data->cAccount = \account\AccountLib::getByClasses($classes, 'class');
 
 				}
+
+				$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument(
+					$data->eFarm['eFinancialYear'],
+					GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT
+				);
 
 				break;
 

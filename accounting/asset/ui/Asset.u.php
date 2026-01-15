@@ -359,17 +359,28 @@ Class AssetUi {
 
 	}
 
-	public function getTHead(): string {
+	public function getTHead(?string $type): string {
 
-		$h = '<tr>';
+		$h = '';
+
+		if($type) {
+			$h .= '<tr>';
+				$h .= '<th class="text-center" colspan="9">'.match($type) {
+					'asset' => s("Immobilisations"),
+					'grant' => s("Subventions"),
+					}.'</th>';
+			$h .= '</tr>';
+		}
+
+		$h .= '<tr>';
 			$h .= '<th class="" rowspan="2">'.self::p('accountLabel')->label.'</th>';
 			$h .= '<th class="" rowspan="2">'.self::p('description')->label.'</th>';
 			$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
 			$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
 			$h .= '<th class="text-center" rowspan="2">'.s("Date d'acquisition").'</th>';
 			$h .= '<th class="text-center" rowspan="2">'.s("Date de mise en service").'</th>';
-			$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur d'acquisition").'</th>';
-			$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Base amortissable").'</th>';
+			$h .= '<th class="text-end '.($type === NULL ? 'highlight-stick-left' : '').'" rowspan="2">'.s("Valeur d'acquisition").'</th>';
+			$h .= '<th class="text-end '.($type === NULL ? 'highlight-stick-left' : '').'" rowspan="2">'.s("Base amortissable").'</th>';
 		$h .= '</tr>';
 		$h .= '<tr>';
 			$h .= '<th class="text-center">'.s("Eco").'</th>';
@@ -467,7 +478,7 @@ Class AssetUi {
 			$h .= '<table class="tr-even td-vertical-top tr-hover">';
 
 				$h .= '<thead class="thead-sticky">';
-				$h .= $this->getTHead();
+					$h .= $this->getTHead(NULL);
 				$h .= '</thead>';
 
 				$h .= '<tbody>';

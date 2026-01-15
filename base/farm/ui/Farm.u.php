@@ -2092,7 +2092,9 @@ class FarmUi {
 		];
 
 	}
-	public function getAccountingFinancialsTitle(Farm $eFarm, string $selectedView, ?bool $hasData = NULL): string {
+	public function getAccountingFinancialsTitle(Farm $eFarm, string $selectedView, \account\FinancialYearDocument $eFinancialYearDocument = new \account\FinancialYearDocument(), ?bool $hasData = NULL): string {
+
+		\Asset::js('account', 'financialYearDocument.js');
 
 		$categories = $this->getAccountingFinancialsCategories();
 		if($eFarm['eFinancialYear']['hasVat'] === FALSE) {
@@ -2123,24 +2125,33 @@ class FarmUi {
 
 			if($hasData) {
 
-				switch($selectedView) {
+				$h .= '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
 
-					case Farmer::INCOME_STATEMENT:
+					$h .= match($selectedView) {
+						Farmer::INCOME_STATEMENT => '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
+						Farmer::BALANCE_SHEET => '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
+					};
 
-						$h .= '<div>';
-							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-						$h .= '</div>';
+					$documentType = match($selectedView) {
+						Farmer::INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
+						Farmer::BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,
+						Farmer::SIG => \account\FinancialYearDocumentLib::SIG,
+					};
 
-						break;
+					if($eFinancialYearDocument->empty()) {
 
-					case Farmer::BALANCE_SHEET:
+						$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.$documentType.'" post-id="'.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" data-waiter="'.s("Génération en cours...").'" title="'.s("Générer le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
 
-						$h .= '<div>';
-							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
-						$h .= '</div>';
+					} else if($eFinancialYearDocument['generation'] === \account\FinancialYearDocument::SUCCESS) {
 
-						break;
-				}
+						$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$documentType.'&id='.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" title="'.s("Exporter le PDF").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+
+					} else {
+
+						$h .= '<a onrender="FinancialYearDocument.checkGeneration(\''.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check\')" class="btn btn-primary disabled" title="'.s("Génération en cours").'">'.\Asset::icon('file-pdf').'  '.s("PDF en génération...").'</a> ';
+					}
+
+				$h .= '</div>';
 			}
 
 		$h .= '</div>';

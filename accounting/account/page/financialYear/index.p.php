@@ -170,7 +170,7 @@ new \account\FinancialYearPage(function($data) {
 
 		$data->e->validate('acceptClose');
 
-		\account\FinancialYearLib::closeFinancialYear($data->e);
+		\account\FinancialYearLib::closeFinancialYear($data->eFarm, $data->e);
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
 	})

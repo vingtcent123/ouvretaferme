@@ -48,15 +48,23 @@ Class FinancialYearDocumentUi {
 		\Asset::js('account', 'financialYearDocument.js');
 
 		$documents = [
-			\account\FinancialYearDocumentLib::BALANCE_SHEET => ['accept' => NULL, 'label' => s("Bilan"), 'temporary' => TRUE],
-			\account\FinancialYearDocumentLib::CLOSING => ['accept' => 'acceptGenerateClose', 'label' => s("Bilan de clôture"), 'temporary' => FALSE],
-			\account\FinancialYearDocumentLib::CLOSING_DETAILED => ['accept' => 'acceptGenerateClose', 'label' => s("Bilan de clôture détaillé"), 'temporary' => FALSE],
 			\account\FinancialYearDocumentLib::INCOME_STATEMENT => ['accept' => NULL, 'label' => s("Compte de résultat"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => ['accept' => NULL, 'label' => s("Compte de résultat avec synthèse"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::SIG => ['accept' => NULL, 'label' => s("Soldes intermédiaires de gestion"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::ASSET_AMORTIZATION => ['accept' => NULL, 'label' => s("Immobilisations : amortissements"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::ASSET_ACQUISITION => ['accept' => NULL, 'label' => s("Immobilisations : acquisitions"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 		];
+
+		if($eFinancialYear->isClosed()) {
+
+			$documents[\account\FinancialYearDocumentLib::CLOSING] = ['accept' => 'acceptGenerateClose', 'label' => s("Bilan de clôture"), 'temporary' => FALSE];
+			$documents[\account\FinancialYearDocumentLib::CLOSING_DETAILED] = ['accept' => 'acceptGenerateClose', 'label' => s("Bilan de clôture détaillé"), 'temporary' => FALSE];
+
+		} else {
+
+			$documents[\account\FinancialYearDocumentLib::BALANCE_SHEET] = ['accept' => NULL, 'label' => s("Bilan"), 'temporary' => TRUE];
+
+		}
 
 		if($eFinancialYear['previous']->notEmpty()) {
 			$documents[\account\FinancialYearDocumentLib::OPENING_DETAILED] = ['accept' => 'acceptGenerateOpen', 'label' => s("Bilan d'ouverture détaillé"), 'temporary' => FALSE];
