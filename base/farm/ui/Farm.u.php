@@ -452,10 +452,9 @@ class FarmUi {
 
 		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off', 'class' => 'farm-legal-form']);
 
-			$h .= '<h3>'.s("Informations légales de votre entité").'</h3>';
-			$h .= '<div class="util-block-info">';
-				$h .= \Asset::icon('check', ['class' => 'util-block-icon']);
-				$h .= s("Afin de respecter vos obligations réglementaires, notamment en lien avec le passage à la facturation électronique, nous avons besoin que vous confirmiez les informations légales de votre entité.<br/>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
+			$h .= '<h3>'.s("Pour commencer à vendre").'</h3>';
+			$h .= '<div class="util-info">';
+				$h .= s("Nnous avons besoin que vous fournissiez les informations légales de votre entité pour commencer à vendre avec {siteName}.<br/>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
 			$h .= '</div>';
 
 			$h .= $form->hidden('id', $eFarm['id']);
