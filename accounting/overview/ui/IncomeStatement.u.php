@@ -27,10 +27,10 @@ class IncomeStatementUi {
 					IncomeStatementLib::VIEW_DETAILED => s("Vue détaillée"),
 				], $search->get('type'), ['mandatory' => TRUE]);
 			$h .= '</fieldset>';
-			$h .= '<fieldset>';
-				$h .= '<legend>'.s("Comparer avec un autre exercice").'</legend>';
 
-				if($cFinancialYear->count() > 1) {
+			if($cFinancialYear->count() > 1) {
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Comparer avec un autre exercice").'</legend>';
 					$values = [];
 					foreach($cFinancialYear as $eFinancialYearCurrent) {
 						if($eFinancialYearCurrent->is($eFinancialYear)) {
@@ -39,8 +39,8 @@ class IncomeStatementUi {
 						$values[$eFinancialYearCurrent['id']] = s("Exercice {value}", $eFinancialYearCurrent->getLabel());
 					}
 					$h .= $form->select('financialYearComparison', $values, $search->get('financialYearComparison'));
-				}
-			$h .= '</fieldset>';
+				$h .= '</fieldset>';
+			}
 
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Valider"));
