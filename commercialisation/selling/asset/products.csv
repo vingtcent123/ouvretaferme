@@ -1,5 +1,5 @@
 type,name,reference,unit,price_private,price_pro,vat_rate,additional,description,origin,quality,species,variety,frozen,packaging,composition,allergen
-unprocessed-plant,Tomate,TOù-RO,kg,"4,5","3,5","5,5",,,,organic,Tomate,Coeur de bœuf,,,,
+unprocessed-plant,Tomate,TO-RO,kg,"4,5","3,5","5,5",,,,organic,Tomate,Coeur de bœuf,,,,
 unprocessed-plant,Courgette,COU,kg,"2.7","3,5","5,5",,,,,Courgette,,,,,
 unprocessed-animal,Boite de 6 œufs,OEUF6,pièce,"2,7",,"5,5",Extra-frais,,,organic,,,,,,
 processed-food,Ratatouille,RATA,pièce,"4,5",,"5,5",,,L’Atelier d’à côté,conversion,,,true,700 mL,"Tomate, Courgette, Aubergine, Oignon, Sel.",
