@@ -1095,6 +1095,8 @@ Class AssetUi {
 
 				$h .= '<tbody>';
 
+					$h .= $tableContent;
+
 				$h .= '</tbody>';
 
 			$h .= '</table>';

@@ -19,13 +19,13 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 	const ASSET_AMORTIZATION = 'asset-amortization';
 	const ASSET_ACQUISITION = 'asset-acquisition';
 
-	//---- BALANCES : comptable, synthétique
+	//---- BALANCES
 	const BALANCE = 'balance';
 	const BALANCE_DETAILED = 'balance-detailed';
 
 	//---- JOURNAUX : TVA achat / vente, par journal
-	//---- TVA : Cerfa, Dde de remboursement
 	//---- GRAND LIVRE
+	//---- TVA : Cerfa, Dde de remboursement
 
 	public static function getTypes(): array {
 
