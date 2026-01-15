@@ -63,6 +63,7 @@ class AlertUi {
 				FinancialYearDocumentLib::ASSET_AMORTIZATION => s("Le tableau des amortissements sera généré dans quelques instants."),
 				FinancialYearDocumentLib::ASSET_ACQUISITION => s("Le tableau des acquisitions sera généré dans quelques instants."),
 				FinancialYearDocumentLib::BALANCE => s("La balance sera générée dans quelques instants."),
+				FinancialYearDocumentLib::BALANCE_DETAILED => s("La balance détaillée sera générée dans quelques instants."),
 			][$options['type']].($options['actions'] ?? ''),
 
 			'ThirdParty::created' => s("Le tiers a bien été créé."),

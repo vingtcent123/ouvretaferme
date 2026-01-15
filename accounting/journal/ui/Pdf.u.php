@@ -16,7 +16,8 @@ class PdfUi {
 		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
 
 		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::BALANCE, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
+			$type = $search->get('precision') === 8 ? \account\FinancialYearDocumentLib::BALANCE_DETAILED : \account\FinancialYearDocumentLib::BALANCE;
+			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 		}
 
 		$h .= '<div class="pdf-document-wrapper">';

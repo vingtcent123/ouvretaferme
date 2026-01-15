@@ -54,6 +54,7 @@ Class FinancialYearDocumentUi {
 			\account\FinancialYearDocumentLib::ASSET_AMORTIZATION => ['accept' => NULL, 'label' => s("Immobilisations : amortissements"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::ASSET_ACQUISITION => ['accept' => NULL, 'label' => s("Immobilisations : acquisitions"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::BALANCE => ['accept' => NULL, 'label' => s("Balance"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
+			\account\FinancialYearDocumentLib::BALANCE_DETAILED => ['accept' => NULL, 'label' => s("Balance détaillée"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 		];
 
 		if($eFinancialYear->isClosed()) {
@@ -170,6 +171,7 @@ Class FinancialYearDocumentUi {
 								FinancialYearDocumentLib::ASSET_AMORTIZATION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
 								FinancialYearDocumentLib::ASSET_ACQUISITION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations/acquisitions',
 								FinancialYearDocumentLib::BALANCE => \company\CompanyUi::urlJournal($eFarm).'/balance',
+								FinancialYearDocumentLib::BALANCE_DETAILED => \company\CompanyUi::urlJournal($eFarm).'/balance?precision=8',
 							};
 							$h .= '<a href="'.$url.'">'.s("Voir les données").'</a>';
 						$h .= '</td>';

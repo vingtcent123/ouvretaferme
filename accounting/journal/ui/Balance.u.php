@@ -6,7 +6,7 @@ Class BalanceUi {
 	public function __construct() {
 	}
 
-	public function getTitle(\farm\Farm $eFarm, \account\FinancialYearDocument $eFinancialYearDocument): string {
+	public function getTitle(\farm\Farm $eFarm, \account\FinancialYearDocument $eFinancialYearDocument, string $type): string {
 
 		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
 
@@ -20,7 +20,7 @@ Class BalanceUi {
 
 				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#balance-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ';
 
-				$h .= new \account\FinancialYearDocumentUi()->getPdfLink($eFarm, $eFinancialYearDocument, \account\FinancialYearDocumentLib::BALANCE);
+				$h .= new \account\FinancialYearDocumentUi()->getPdfLink($eFarm, $eFinancialYearDocument, $type);
 
 			$h .= '</div>';
 

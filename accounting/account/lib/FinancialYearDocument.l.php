@@ -21,6 +21,7 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 
 	//---- BALANCES : comptable, synthétique
 	const BALANCE = 'balance';
+	const BALANCE_DETAILED = 'balance-detailed';
 
 	//---- JOURNAUX : TVA achat / vente, par journal
 	//---- TVA : Cerfa, Dde de remboursement
@@ -35,7 +36,7 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 			self::SIG,
 			self::INCOME_STATEMENT, self::INCOME_STATEMENT_DETAILED,
 			self::ASSET_AMORTIZATION, self:: ASSET_ACQUISITION,
-			self::BALANCE,
+			self::BALANCE, self::BALANCE_DETAILED,
 		];
 
 	}
@@ -178,7 +179,9 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 					self::BALANCE_SHEET,
 					self::SIG,
 					self::INCOME_STATEMENT, self::INCOME_STATEMENT_DETAILED,
-					self::ASSET_AMORTIZATION, self:: ASSET_ACQUISITION,])
+					self::ASSET_AMORTIZATION, self:: ASSET_ACQUISITION,
+					self::BALANCE, self:: BALANCE_DETAILED,
+				])
 			->getCollection(NULL, NULL, 'type');
 
 		foreach($cFinancialYearDocument as $eFinancialYearDocument) {

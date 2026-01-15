@@ -100,7 +100,12 @@ new Page(function($data) {
 
 		$data->tab = $tab;
 
-		$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument($data->eFarm['eFinancialYear'], \account\FinancialYearDocumentLib::BALANCE);
+		if(GET('precision', 'int') === 8) {
+			$data->document = \account\FinancialYearDocumentLib::BALANCE_DETAILED;
+		} else {
+			$data->document = \account\FinancialYearDocumentLib::BALANCE;
+		}
+		$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument($data->eFarm['eFinancialYear'], $data->document);
 
 		throw new ViewAction($data);
 
