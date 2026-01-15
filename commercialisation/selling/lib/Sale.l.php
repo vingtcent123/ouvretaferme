@@ -1106,8 +1106,9 @@ class SaleLib extends SaleCrud {
 
 		}
 
-
-		parent::update($e, $properties);
+		if($properties) { // Si seul le moyen de paiement est modifié, pas de changement dans la table Sale
+			parent::update($e, $properties);
+		}
 
 		$newItems = [];
 
