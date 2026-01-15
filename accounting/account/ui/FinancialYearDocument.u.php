@@ -54,6 +54,8 @@ Class FinancialYearDocumentUi {
 			\account\FinancialYearDocumentLib::INCOME_STATEMENT => ['accept' => NULL, 'label' => s("Compte de résultat"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => ['accept' => NULL, 'label' => s("Compte de résultat avec synthèse"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 			\account\FinancialYearDocumentLib::SIG => ['accept' => NULL, 'label' => s("Soldes intermédiaires de gestion"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
+			\account\FinancialYearDocumentLib::ASSET_AMORTIZATION => ['accept' => NULL, 'label' => s("Immobilisations : amortissements"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
+			\account\FinancialYearDocumentLib::ASSET_ACQUISITION => ['accept' => NULL, 'label' => s("Immobilisations : acquisitions"), 'temporary' => $eFinancialYear->isClosed() === FALSE],
 		];
 
 		if($eFinancialYear['previous']->notEmpty()) {
@@ -65,6 +67,7 @@ Class FinancialYearDocumentUi {
 			return strcmp($document1['label'], $document2['label']);
 		});
 
+		$showGeneration = count($eFinancialYear['cDocument']->find(fn($e) => $e['generation'] === FinancialYearDocument::SUCCESS)->getColumn('generationAt')) > 0;
 		$showGenerationAt = count($eFinancialYear['cDocument']->getColumn('generationAt')) > 0;
 
 		$h = '<table class="tr-hover tr-even">';
@@ -75,10 +78,12 @@ Class FinancialYearDocumentUi {
 						$h .= s("Document");
 					$h .= '</th>';
 					$h .= '<th></th>';
-					if($showGenerationAt) {
+					if($showGeneration) {
 						$h .= '<th>';
 							$h .= s("Généré le");
 						$h .= '</th>';
+					}
+					if($showGenerationAt) {
 						$h .= '<th></th>';
 					}
 					$h .= '<th></th>';
@@ -117,13 +122,19 @@ Class FinancialYearDocumentUi {
 								}
 							$h .= '</a>';
 						$h .= '</td>';
-						if($showGenerationAt) {
+
+						if($showGeneration) {
 
 							$h .= '<td>';
 								if(FinancialYearDocumentLib::hasDocument($eFinancialYear, $document)) {
 									$h .= \util\DateUi::numeric($eFinancialYear['cDocument'][$document]['generationAt']);
 								}
 							$h .= '</td>';
+
+						}
+
+						if($showGenerationAt) {
+
 							$h .= '<td class="text-center">';
 								if(isset($eFinancialYear['cDocument'][$document])) {
 									if($eFinancialYear['cDocument'][$document]->isProcessing()) {
@@ -136,6 +147,7 @@ Class FinancialYearDocumentUi {
 							$h .= '</td>';
 
 						}
+
 						$h .= '<td>';
 							$url = match($document) {
 								FinancialYearDocumentLib::BALANCE => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
@@ -146,6 +158,8 @@ Class FinancialYearDocumentUi {
 								FinancialYearDocumentLib::INCOME_STATEMENT => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/compte-de-resultat',
 								FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/compte-de-resultat?type=detailed',
 								FinancialYearDocumentLib::SIG => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/sig',
+								FinancialYearDocumentLib::ASSET_AMORTIZATION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
+								FinancialYearDocumentLib::ASSET_ACQUISITION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations/acquisitions',
 							};
 							$h .= '<a href="'.$url.'">'.s("Voir les données").'</a>';
 						$h .= '</td>';

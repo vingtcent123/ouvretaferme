@@ -3,15 +3,26 @@ namespace account;
 
 Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 
+	//---- BILANS
 	const BALANCE = 'balance';
 	const OPENING = 'opening';
 	const OPENING_DETAILED = 'opening-detailed';
 	const CLOSING = 'closing';
 	const CLOSING_DETAILED = 'closing-detailed';
 
+	//---- DOC COMPTABLES
 	const SIG = 'sig';
 	const INCOME_STATEMENT = 'income-statement';
 	const INCOME_STATEMENT_DETAILED = 'income-statement-detailed';
+
+	//---- IMMOS
+	const ASSET_AMORTIZATION = 'asset-amortization';
+	const ASSET_ACQUISITION = 'asset-acquisition';
+
+	//---- BALANCES : comptable, synthétique
+	//---- JOURNAUX : TVA achat / vente, par journal
+	//---- TVA : Cerfa, Dde de remboursement
+	//---- GRAND LIVRE
 
 	public static function getTypes(): array {
 
@@ -21,27 +32,35 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 			self::CLOSING, self::CLOSING_DETAILED,
 			self::SIG,
 			self::INCOME_STATEMENT, self::INCOME_STATEMENT_DETAILED,
+			self::ASSET_AMORTIZATION, self:: ASSET_ACQUISITION,
 		];
 
 	}
 
 	public static function hasDocument(FinancialYear $eFinancialYear, string $type): bool {
 
+		$eFinancialYearDocument = self::getDocument($eFinancialYear, $type);
+
+		return $eFinancialYearDocument->notEmpty() and $eFinancialYearDocument['generation'] === FinancialYearDocument::SUCCESS and $eFinancialYearDocument['content']->notEmpty();
+
+	}
+
+	public static function getDocument(FinancialYear $eFinancialYear, string $type): FinancialYearDocument {
+
 		if(in_array($type, self::getTypes()) === FALSE) {
-			return FALSE;
+			return new FinancialYearDocument();
 		}
 
 		if($eFinancialYear['cDocument']->empty()) {
-			return FALSE;
+			return new FinancialYearDocument();
 		}
 
 		$cFinancialYearDocument = $eFinancialYear['cDocument']->find(fn($eFinancialYearDocument) => $eFinancialYearDocument['type'] === $type);
 		if($cFinancialYearDocument->empty()) {
-			return FALSE;
+			return new FinancialYearDocument();
 		}
 
-		$eFinancialYearDocument = $cFinancialYearDocument->first();
-		return $eFinancialYearDocument['content']->notEmpty();
+		return $cFinancialYearDocument->first();
 
 	}
 

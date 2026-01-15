@@ -151,16 +151,6 @@ class PdfUi {
 
 	}
 
-	public static function getVatTitle(string $type): string {
-
-		if($type === \pdf\PdfElement::JOURNAL_TVA_BUY) {
-			return s("Journal de TVA - Achats");
-		}
-
-		return s("Journal de TVA - Ventes");
-
-	}
-
 	public function getBook(
 		\farm\Farm $eFarm,
 		\Collection $cOperation,

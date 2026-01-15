@@ -8,7 +8,7 @@ Class AmortizationUi {
 		\Asset::css('company', 'company.css');
 	}
 
-	private static function getAmortizationLine(\farm\Farm $eFarm, array $amortization, bool $showExcessColumns): string {
+	private static function getAmortizationLine(\farm\Farm $eFarm, array $amortization, bool $showExcessColumns, bool $showGrossValueDiminutionColumn): string {
 
 		$isTotalLine = match($amortization['economicMode']) {
 			AssetElement::LINEAR, AssetElement::WITHOUT => FALSE,
@@ -76,7 +76,9 @@ Class AmortizationUi {
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['currentFinancialYearAmortization'], $default, 2).'</td>';
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['endFinancialYearValue'], $default, 2).'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['grossValueDiminution'], $default, 2).'</td>';
+			if($showGrossValueDiminutionColumn) {
+				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['grossValueDiminution'], $default, 2).'</td>';
+			}
 			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['netFinancialValue'], '0.00', 2).'</td>';
 
 			if($showExcessColumns) {
@@ -84,9 +86,9 @@ Class AmortizationUi {
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearAmortization'], $default, 2).'</td>';
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearRecovery'] ?? 0, $default, 2).'</td>';
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['endFinancialYearValue'], $default, 2).'</td>';
+				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], '0.00', 2).'</td>';
 			}
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], '0.00', 2).'</td>';
 
 		$h .= '</tr>';
 
@@ -108,10 +110,107 @@ Class AmortizationUi {
 
 	}
 
-	public static function getDepreciationTable(\farm\Farm $eFarm, array $amortizations): string {
+	public static function getPdfTHead(array $amortizations): string {
+
+		$showExcessColumns = array_find($amortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL;
+		$showGrossValueDiminutionColumn = array_find($amortizations, fn($amortization) => $amortization['grossValueDiminution'] > 0) !== NULL;
+
+		$h = '<tr class="tr-bold">';
+			$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
+			$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
+			$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';
+			if($showGrossValueDiminutionColumn) {
+				$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
+			}
+			$h .= '<th rowspan="2" class="text-center">'.s("VNC fin").'</th>';
+			if($showExcessColumns) {
+				$h .= '<th colspan="4" class="text-center">'.s("Amortissements dérogatoires").'</th>';
+				$h .= '<th rowspan="2" class="text-center">'.s("VNF fin").'</th>';
+			}
+		$h .= '</tr>';
+		$h .= '<tr>';
+			$h .= '<th class="text-center">'.s("Libellé").'</th>';
+			$h .= '<th class="text-center">'.s("Date").'</th>';
+			$h .= '<th class="text-center border-bottom">'.s("Mode E/F").'</th>';
+			$h .= '<th class="text-center border-bottom">'.s("Durée").'</th>';
+			$h .= '<th class="text-center">'.s("Début exercice").'</th>';
+			$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
+			$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
+			if($showExcessColumns) {
+				$h .= '<th class="text-center">'.s("Début exercice").'</th>';
+				$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
+				$h .= '<th class="text-center">'.s("Reprise exercice").'</th>';
+				$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
+			}
+		$h .= '</tr>';
+
+		return $h;
+	}
+
+	public function getTBody(\farm\Farm $eFarm, array $amortizations): string {
+
+		$showExcessColumns = array_find($amortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL;
+		$showGrossValueDiminutionColumn = array_find($amortizations, fn($amortization) => $amortization['grossValueDiminution'] > 0) !== NULL;
+
+		$emptyLine = [
+			'description' => '',
+			'id' => '',
+			'acquisitionDate' => NULL,
+			'economicMode' => '',
+			'fiscalMode' => '',
+			'duration' => '',
+			'acquisitionValue' => 0,
+			'economic' => [
+				'startFinancialYearValue' => 0,
+				'currentFinancialYearAmortization' => 0,
+				'endFinancialYearValue' => 0,
+			],
+			'grossValueDiminution' => 0,
+			'netFinancialValue' => 0,
+			'excess' => [
+				'startFinancialYearValue' => 0,
+				'currentFinancialYearAmortization' => 0,
+				'endFinancialYearValue' => 0,
+			],
+			'fiscalNetValue' => 0,
+		];
+		$total = $emptyLine;
+		$generalTotal = $emptyLine;
+		$generalTotal['description'] = s("Totaux");
+
+		$currentAccountLabel = NULL;
+
+		$h = '';
+
+		foreach($amortizations as $amortization) {
+
+			if($currentAccountLabel !== NULL and $amortization['accountLabel'] !== $currentAccountLabel) {
+
+				$h .= self::getAmortizationLine($eFarm, $total, $showExcessColumns, $showGrossValueDiminutionColumn);
+				self::addTotalLine($generalTotal, $total);
+				$total = $emptyLine;
+
+			}
+			$currentAccountLabel = $amortization['accountLabel'];
+			$total['description'] = $amortization['accountLabel'].' '.$amortization['accountDescription'];
+
+			$h .= self::getAmortizationLine($eFarm, $amortization, $showExcessColumns, $showGrossValueDiminutionColumn);
+			self::addTotalLine($total, $amortization);
+
+		}
+		self::addTotalLine($generalTotal, $total);
+		$h .= self::getAmortizationLine($eFarm, $total, $showExcessColumns, $showGrossValueDiminutionColumn);
+		$h .= self::getAmortizationLine($eFarm, $generalTotal, $showExcessColumns, $showGrossValueDiminutionColumn);
+
+		return $h;
+	}
+
+	public function getDepreciationTable(\farm\Farm $eFarm, array $amortizations): string {
+
 		$highlightedAssetId = GET('id', 'int');
 
 		$showExcessColumns = array_find($amortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL;
+		$showDimValBrut = array_find($amortizations, fn($amortization) => $amortization['grossValueDiminution'] > 0) !== NULL;
 
 		$h = '<div class="stick-sm util-overflow-sm">';
 
@@ -122,12 +221,14 @@ Class AmortizationUi {
 					$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
 					$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
+					if($showDimValBrut) {
+						$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
+					}
 					$h .= '<th rowspan="2" class="text-center">'.s("VNC fin").'</th>';
 					if($showExcessColumns) {
 						$h .= '<th colspan="4" class="text-center">'.s("Amortissements dérogatoires").'</th>';
+						$h .= '<th rowspan="2" class="text-center">'.s("VNF fin").'</th>';
 					}
-					$h .= '<th rowspan="2" class="text-center">'.s("VNF fin").'</th>';
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<th class="text-center">'.s("Libellé").'</th>';
@@ -146,55 +247,9 @@ Class AmortizationUi {
 				$h .= '</tr>';
 			$h .= '</thead>';
 
-			$emptyLine = [
-				'description' => '',
-				'id' => '',
-				'acquisitionDate' => NULL,
-				'economicMode' => '',
-				'fiscalMode' => '',
-				'duration' => '',
-				'acquisitionValue' => 0,
-				'economic' => [
-					'startFinancialYearValue' => 0,
-					'currentFinancialYearAmortization' => 0,
-					'endFinancialYearValue' => 0,
-				],
-				'grossValueDiminution' => 0,
-				'netFinancialValue' => 0,
-				'excess' => [
-					'startFinancialYearValue' => 0,
-					'currentFinancialYearAmortization' => 0,
-					'endFinancialYearValue' => 0,
-				],
-				'fiscalNetValue' => 0,
-			];
-			$total = $emptyLine;
-			$generalTotal = $emptyLine;
-			$generalTotal['description'] = s("Totaux");
-
-			$currentAccountLabel = NULL;
-
 			$h .= '<tbody>';
 
-				foreach($amortizations as $amortization) {
-
-					if($currentAccountLabel !== NULL and $amortization['accountLabel'] !== $currentAccountLabel) {
-
-						$h .= self::getAmortizationLine($eFarm, $total, $showExcessColumns);
-						self::addTotalLine($generalTotal, $total);
-						$total = $emptyLine;
-
-					}
-					$currentAccountLabel = $amortization['accountLabel'];
-					$total['description'] = $amortization['accountLabel'].' '.$amortization['accountDescription'];
-
-					$h .= self::getAmortizationLine($eFarm, $amortization, $showExcessColumns);
-					self::addTotalLine($total, $amortization);
-
-				}
-				self::addTotalLine($generalTotal, $total);
-				$h .= self::getAmortizationLine($eFarm, $total, $showExcessColumns);
-				$h .= self::getAmortizationLine($eFarm, $generalTotal, $showExcessColumns);
+				$h .= $this->getTBody($eFarm, $amortizations);
 
 			$h .= '</tbody>';
 
@@ -203,7 +258,6 @@ Class AmortizationUi {
 		$h .= '</div>';
 
 		return $h;
-
 
 	}
 

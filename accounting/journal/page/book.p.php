@@ -22,17 +22,5 @@ new Page(function($data) {
 
 		throw new ViewAction($data);
 
-	})
-	->get('pdf', function($data) {
-
-		$content = pdf\PdfLib::generate($data->eFarm, \pdf\PdfElement::JOURNAL_BOOK);
-
-		if($content === NULL) {
-			throw new NotExistsAction();
-		}
-
-		$filename = journal\PdfUi::filenameBook($data->eFarm).'.pdf';
-
-		throw new PdfAction($content, $filename);
 	});
 ?>

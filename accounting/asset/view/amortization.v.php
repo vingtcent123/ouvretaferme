@@ -7,7 +7,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/immobilisations';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->nOperationMissingAsset, $data->hasAsset);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->hasAsset, $data->eFinancialYearDocument);
 
 	if($data->nAmortizations === 0) {
 
@@ -28,6 +28,15 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 
 		}
 
+		if($data->nOperationMissingAsset > 0) {
+
+			echo '<a class="btn btn-success bg-accounting border-accounting mb-1" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?needsAsset=1">';
+				echo \Asset::icon('exclamation-triangle').' ';
+				echo p("{value} fiche d'immobilisation à créer", "{value} fiches d'immobilisation à créer", $data->nOperationMissingAsset);
+			echo '</a>';
+
+		}
+
 		echo '<div class="tabs-h" id="asset-amortization">';
 
 			echo '<div class="tabs-item">';
@@ -36,12 +45,12 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 			echo '</div>';
 
 			echo '<div class="tab-panel '.($data->selectedTab === 'asset' ? 'selected' : '').'" data-tab="amortization-asset">';
-				echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->amortizations);
+				echo new \asset\AmortizationUi()->getDepreciationTable($data->eFarm, $data->amortizations);
 			echo '</div>';
 
 			echo '<div class="tab-panel '.($data->selectedTab === 'grant' ? 'selected' : '').'" data-tab="amortization-grant">';
 				if(count($data->amortizations) > 0) {
-					echo \asset\AmortizationUi::getDepreciationTable($data->eFarm, $data->amortizations);
+					echo new \asset\AmortizationUi()->getDepreciationTable($data->eFarm, $data->amortizations);
 				} else {
 					echo '<div class="util-empty">';
 						if($data->selectedTab === 'asset') {
@@ -69,7 +78,7 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 	$t->title = s("Les acquisitions de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/acquisition';
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, 0, 0);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, 0, $data->eFinancialYearDocument);
 
 	if($data->cAsset->empty() and $data->cAssetSubvention->empty()) {
 
@@ -87,6 +96,15 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 
 		}
 
+		if($data->nOperationMissingAsset > 0) {
+
+			echo '<a class="btn btn-success bg-accounting border-accounting mb-1" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?needsAsset=1">';
+				echo \Asset::icon('exclamation-triangle').' ';
+				echo p("{value} fiche d'immobilisation à créer", "{value} fiches d'immobilisation à créer", $data->nOperationMissingAsset);
+			echo '</a>';
+
+		}
+
 		echo '<div class="tabs-h" id="asset-acquisition" onrender="'.encode('Lime.Tab.restore(this, "acquisition-asset")').'">';
 
 			echo '<div class="tabs-item">';
@@ -99,7 +117,7 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 			echo '</div>';
 
 			echo '<div class="tab-panel" data-tab="acquisition-subvention">';
-			echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAssetSubvention, 'subvention');
+			echo new \asset\AssetUi()->getAcquisitionTable($data->eFarm, $data->cAssetSubvention, 'grant');
 			echo '</div>';
 
 		echo '</div>';

@@ -23,8 +23,6 @@ class DemoLib {
 		'farm\Invite',
 		'farm\Tip',
 		'payment\StripeFarm',
-		'pdf\Pdf',
-		'pdf\Content',
 		'preaccounting\Suggestion',
 		'selling\Grid',
 		'selling\History',

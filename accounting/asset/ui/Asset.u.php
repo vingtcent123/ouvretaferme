@@ -359,6 +359,101 @@ Class AssetUi {
 
 	}
 
+	public function getTHead(): string {
+
+		$h = '<tr>';
+			$h .= '<th class="" rowspan="2">'.self::p('accountLabel')->label.'</th>';
+			$h .= '<th class="" rowspan="2">'.self::p('description')->label.'</th>';
+			$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
+			$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
+			$h .= '<th class="text-center" rowspan="2">'.s("Date d'acquisition").'</th>';
+			$h .= '<th class="text-center" rowspan="2">'.s("Date de mise en service").'</th>';
+			$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur d'acquisition").'</th>';
+			$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Base amortissable").'</th>';
+		$h .= '</tr>';
+		$h .= '<tr>';
+			$h .= '<th class="text-center">'.s("Eco").'</th>';
+			$h .= '<th class="text-center">'.s("Fiscal").'</th>';
+		$h .= '</tr>';
+
+		return $h;
+	}
+
+	public function getPdfTBody(\Collection $cAsset, string $type): string {
+
+		$h = '';
+		$total = 0;
+		$totalAmortizable = 0;
+
+		foreach($cAsset as $eAsset) {
+
+			$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+
+			$h .= '<tr>';
+				$h .= '<td>';
+					$h .= encode($eAsset['accountLabel']);
+				$h .= '</td>';
+				$h .= '<td>'.encode($eAsset['description']).'</td>';
+				$h .= '<td class="text-center">';
+					$h .= match($eAsset['economicMode']) {
+						AssetElement::LINEAR => s("LIN"),
+						AssetElement::DEGRESSIVE => s("DEG"),
+						AssetElement::WITHOUT => s("SANS"),
+					};
+				$h .= '</td>';
+				$h .= '<td class="text-center">';
+					$h .= match($eAsset['fiscalMode']) {
+						AssetElement::LINEAR => s("LIN"),
+						AssetElement::DEGRESSIVE => s("DEG"),
+						AssetElement::WITHOUT => s("SANS"),
+					};
+				$h .= '</td>';
+				$h .= '<td class="text-center">';
+					if($eAsset['economicDuration']) {
+						$h .= $eAsset['economicDuration'];
+					} else {
+						$h .= s("n/a");
+					}
+				$h .= '</td>';
+				$h .= '<td class="text-center">';
+					$h .= \util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE);
+				$h .= '</td>';
+				$h .= '<td class="text-center">';
+					if($eAsset['startDate']) {
+						$h .= \util\DateUi::numeric($eAsset['startDate'], \util\DateUi::DATE);
+					} else {
+						$h .= s("n/a");
+					}
+				$h .= '</td>';
+				$h .= '<td class="text-end">'.$this->number($eAsset['value'], '', 2).'</td>';
+				$h .= '<td class="text-end">'.$this->number($amortizableBase, '', 2).'</td>';
+
+			$h .= '</tr>';
+			$total += $eAsset['value'];
+			$totalAmortizable += $amortizableBase;
+
+		}
+
+		$h .= '<tr class="tr-bold">';
+			$h .= '<td></td>';
+			$h .= '<td>';
+				$h .= match($type) {
+					'asset' => s("Total immobilisations"),
+					'grant' => s("Total subventions"),
+				};
+			$h .= '</td>';
+			$h .= '<td></td>';
+			$h .= '<td></td>';
+			$h .= '<td></td>';
+			$h .= '<td></td>';
+			$h .= '<td></td>';
+			$h .= '<td class="text-end">'.$this->number($total, '', 2).'</td>';
+			$h .= '<td class="text-end">'.$this->number($totalAmortizable, '', 2).'</td>';
+		$h .= '</tr>';
+
+		return $h;
+	}
+
 	public function getAcquisitionTable(\farm\Farm $eFarm, \Collection $cAsset, string $type): string {
 
 		if($cAsset->empty() === TRUE) {
@@ -372,20 +467,7 @@ Class AssetUi {
 			$h .= '<table class="tr-even td-vertical-top tr-hover">';
 
 				$h .= '<thead class="thead-sticky">';
-					$h .= '<tr>';
-						$h .= '<th class="" rowspan="2">'.self::p('accountLabel')->label.'</th>';
-						$h .= '<th class="" rowspan="2">'.self::p('description')->label.'</th>';
-						$h .= '<th class="text-center" colspan="2">'.s("Type").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Date d'acquisition").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.s("Date de mise en service").'</th>';
-						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Valeur d'acquisition").'</th>';
-						$h .= '<th class="text-end highlight-stick-left" rowspan="2">'.s("Base amortissable").'</th>';
-					$h .= '</tr>';
-					$h .= '<tr>';
-						$h .= '<th class="text-center">'.s("Eco").'</th>';
-						$h .= '<th class="text-center">'.s("Fiscal").'</th>';
-					$h .= '</tr>';
+				$h .= $this->getTHead();
 				$h .= '</thead>';
 
 				$h .= '<tbody>';
@@ -452,7 +534,7 @@ Class AssetUi {
 						$h .= '<td>';
 							$h .= match($type) {
 								'asset' => s("Total immobilisations"),
-								'subvention' => s("Total subventions"),
+								'grant' => s("Total subventions"),
 							};
 						$h .= '</td>';
 						$h .= '<td></td>';

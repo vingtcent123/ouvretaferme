@@ -118,7 +118,8 @@ class HistoryLib extends HistoryCrud {
 
 	public static function generateDocument(History $eHistory): ?string {
 
-		$eContent = new \pdf\Content();
+		// On simule un PdfContent mais on utilise le système que pour récupérer le hash : on ne stock ni Pdf, ni PdfContent
+		$eContent = new \account\PdfContent();
 
 		$hash = NULL;
 		$content = self::generateDocumentContent($eHistory);

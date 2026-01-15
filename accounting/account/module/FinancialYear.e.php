@@ -8,6 +8,7 @@ class FinancialYear extends FinancialYearElement {
 		return parent::getSelection() + [
 			'cDocument' => FinancialYearDocument::model()
 				->select(FinancialYearDocument::getSelection())
+				->whereGeneration('NOT IN', FinancialYearDocument::FAIL)
 				->delegateCollection('financialYear', 'type'),
 		];
 

@@ -77,14 +77,16 @@ Class PdfLib {
 		$eFarm['eFinancialYear'] = $eFinancialYear;
 
 		$document = match($type) {
-			\account\FinancialYearDocumentLib::BALANCE => 'balanceSheet',
-			\account\FinancialYearDocumentLib::OPENING => 'balanceSheet',
-			\account\FinancialYearDocumentLib::OPENING_DETAILED => 'balanceSheet',
-			\account\FinancialYearDocumentLib::CLOSING => 'balanceSheet',
-			\account\FinancialYearDocumentLib::CLOSING_DETAILED => 'balanceSheet',
-			\account\FinancialYearDocumentLib::INCOME_STATEMENT => 'incomeStatement',
-			\account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => 'incomeStatement',
-			\account\FinancialYearDocumentLib::SIG => 'sig',
+			\account\FinancialYearDocumentLib::BALANCE => '/overview/pdf/balanceSheet',
+			\account\FinancialYearDocumentLib::OPENING => '/overview/pdf/balanceSheet',
+			\account\FinancialYearDocumentLib::OPENING_DETAILED => '/overview/pdf/balanceSheet',
+			\account\FinancialYearDocumentLib::CLOSING => '/overview/pdf/balanceSheet',
+			\account\FinancialYearDocumentLib::CLOSING_DETAILED => '/overview/pdf/balanceSheet',
+			\account\FinancialYearDocumentLib::INCOME_STATEMENT => '/overview/pdf/incomeStatement',
+			\account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => '/overview/pdf/incomeStatement',
+			\account\FinancialYearDocumentLib::SIG => '/overview/pdf/sig',
+			\account\FinancialYearDocumentLib::ASSET_AMORTIZATION => '/asset/pdf:amortization',
+			\account\FinancialYearDocumentLib::ASSET_ACQUISITION => '/asset/pdf:acquisition',
 			default => throw new \Exception('Unknown document type'),
 		};
 
@@ -93,7 +95,7 @@ Class PdfLib {
 		$header = \account\PdfUi::getHeader($eFarm, $title, $eFinancialYear);
 
 		$ePdfContent = self::generateDocument(
-			self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).'/overview/pdf/'.$document.'&type='.$type, $title, $header, $footer)
+			self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'&type='.$type, $title, $header, $footer)
 		);
 
 		\account\Pdf::model()->update($ePdf, [

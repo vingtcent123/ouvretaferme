@@ -1998,7 +1998,9 @@ class FarmUi {
 
 	}
 
-	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, int $nOperationMissingAsset, bool $hasAsset): string {
+	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, bool $hasAsset, \account\FinancialYearDocument $eFinancialYearDocument): string {
+
+		\Asset::js('account', 'financialYearDocument.js');
 
 		$eFarm->expects(['eFinancialYear']);
 
@@ -2023,12 +2025,6 @@ class FarmUi {
 			$h .= '</h1>';
 
 			$h .= '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
-				if($nOperationMissingAsset > 0) {
-					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/journal/livre-journal?needsAsset=1" class="btn btn-primary">';
-						$h .= \Asset::icon('exclamation-triangle').' ';
-						$h .= p("{value} fiche d'immobilisation à créer", "{value} fiches d'immobilisation à créer", $nOperationMissingAsset);
-					$h .= '</a> ';
-				}
 				if($eFarm['eFinancialYear']->acceptUpdate()) {
 					if($hasAsset === FALSE) {
 
@@ -2057,6 +2053,29 @@ class FarmUi {
 						$h .= '</a>';
 
 					}
+				}
+
+				if($eFinancialYearDocument->empty()) {
+					$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:generate?type='.match($selectedView) {
+							'assets' => \account\FinancialYearDocumentLib::ASSET_AMORTIZATION,
+							'acquisitions' => \account\FinancialYearDocumentLib::ASSET_ACQUISITION,
+						}.'" post-id="'.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" data-waiter="'.s("Génération en cours...").'" title="'.match($selectedView) {
+							'assets' => s("Exporter les amortissements"),
+							'acquisitions' => s("Exporter les acquisitions"),
+						}
+					.'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+				} else if($eFinancialYearDocument['generation'] === \account\FinancialYearDocument::SUCCESS) {
+					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.match($selectedView) {
+							'assets' => \account\FinancialYearDocumentLib::ASSET_AMORTIZATION,
+							'acquisitions' => \account\FinancialYearDocumentLib::ASSET_ACQUISITION,
+						}.'&id='.$eFarm['eFinancialYear']['id'].'" data-ajax-navigation="never" class="btn btn-primary" title="'.match($selectedView) {
+							'assets' => s("Exporter les amortissements"),
+							'acquisitions' => s("Exporter les acquisitions"),
+						}
+					.'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+				} else {
+					$h .= '<a onrender="FinancialYearDocument.checkGeneration(\''.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check\')" class="btn btn-primary disabled" title="'.s("Génération en cours").'">'.\Asset::icon('file-pdf').'  '.s("PDF en génération...").'</a> ';
+
 				}
 			$h .= '</div>';
 		$h .= '</div>';

@@ -68,6 +68,8 @@ table.pdf-table-bordered {
 	border: 1px solid black;
 	page-break-after: always;
 }
+
+.pdf-table-bordered thead tr,
 tr.overview_group-title,
 tr.overview_group-total,
 tr.pdf-tr-title {

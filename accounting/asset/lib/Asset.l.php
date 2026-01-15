@@ -164,7 +164,7 @@ class AssetLib extends \asset\AssetCrud {
 			->whereAcquisitionDate('<=', $eFinancialYear['endDate'])
 			->whereAccountLabel('LIKE', match($type) {
 				'asset' => \account\AccountSetting::ASSET_GENERAL_CLASS.'%',
-				'subvention' => \account\AccountSetting::GRANT_ASSET_CLASS.'%',
+				'grant' => \account\AccountSetting::GRANT_ASSET_CLASS.'%',
 			})
 			->sort(['accountLabel' => SORT_ASC, 'startDate' => SORT_ASC])
 			->getCollection();

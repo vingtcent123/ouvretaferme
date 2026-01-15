@@ -60,6 +60,8 @@ class AlertUi {
 				FinancialYearDocumentLib::INCOME_STATEMENT => s("Le compte de résultat sera généré dans quelques instants."),
 				FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => s("Le compte de résultat détaillé sera généré dans quelques instants."),
 				FinancialYearDocumentLib::SIG => s("Le SIG sera généré dans quelques instants."),
+				FinancialYearDocumentLib::ASSET_AMORTIZATION => s("Le tableau des amortissements sera généré dans quelques instants."),
+				FinancialYearDocumentLib::ASSET_ACQUISITION => s("Le tableau des acquisitions sera généré dans quelques instants."),
 			][$options['type']].($options['actions'] ?? ''),
 
 			'ThirdParty::created' => s("Le tiers a bien été créé."),

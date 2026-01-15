@@ -5,7 +5,7 @@ class PdfUi {
 
 	public function __construct() {
 
-		\Asset::css('pdf', 'pdf.css');
+		\Asset::css('company', 'pdf.css');
 
 	}
 

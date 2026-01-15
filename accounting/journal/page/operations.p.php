@@ -26,24 +26,26 @@ new Page(function($data) {
 		$data->eCashflow = \bank\CashflowLib::getById(GET('cashflow'));
 		$data->eThirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 
-		$search = new Search([
-			'date' => \journal\Operation::GET('date', 'date'),
-			'accountLabel' => GET('accountLabel'),
-			'description' => GET('description'),
-			'type' => GET('type'),
-			'document' => GET('document'),
-			'thirdParty' => $data->eThirdParty,
-			'asset' => \asset\AssetLib::getById(GET('asset')),
-			'paymentMethod' => \payment\MethodLib::getById(GET('paymentMethod')),
-			'cashflow' => $data->eCashflow,
-			'hasDocument' => GET('hasDocument', '?int'),
-			'needsAsset' => GET('needsAsset', '?int'),
-			'periodStart' => \journal\Operation::GET('periodStart', 'date'),
-			'periodEnd' => \journal\Operation::GET('periodEnd', 'date'),
-			'minDate' => \journal\Operation::GET('periodStart', 'date'),
-			'maxDate' => \journal\Operation::GET('periodEnd', 'date'),
-			'hash' => GET('hash'),
-		], GET('sort'));
+		$search = new Search(
+			[
+				'date' => \journal\Operation::GET('date', 'date'),
+				'accountLabel' => GET('accountLabel'),
+				'description' => GET('description'),
+				'type' => GET('type'),
+				'document' => GET('document'),
+				'thirdParty' => $data->eThirdParty,
+				'asset' => \asset\AssetLib::getById(GET('asset')),
+				'paymentMethod' => \payment\MethodLib::getById(GET('paymentMethod')),
+				'cashflow' => $data->eCashflow,
+				'hasDocument' => GET('hasDocument', '?int'),
+				'needsAsset' => GET('needsAsset', '?int'),
+				'periodStart' => \journal\Operation::GET('periodStart', 'date'),
+				'periodEnd' => \journal\Operation::GET('periodEnd', 'date'),
+				'minDate' => \journal\Operation::GET('periodStart', 'date'),
+				'maxDate' => \journal\Operation::GET('periodEnd', 'date'),
+				'hash' => GET('hash'),
+			], GET('sort')
+		);
 
 		$data->unbalanced = GET('unbalanced', 'bool');
 
@@ -105,15 +107,15 @@ new Page(function($data) {
 			[$data->cOperation, $data->nOperationSearch] = \journal\OperationLib::getUnbalanced(search: $search);
 			$data->page = 0;
 
-		} else if($code === \journal\JournalSetting::JOURNAL_CODE_BANK) {
+		} elseif($code === \journal\JournalSetting::JOURNAL_CODE_BANK) {
 
 			[$data->cOperation, $data->nOperationSearch, $data->nPage] = \journal\OperationLib::getAllForBankJournal(search: $search, page: $data->page, hasSort: $hasSort);
 
-		} else if(in_array($journalCode, $data->cJournalCode->getIds()) or $code === NULL or $journalCode === -1) {
+		} elseif(in_array($journalCode, $data->cJournalCode->getIds()) or $code === NULL or $journalCode === -1) {
 
 			[$data->cOperation, $data->nOperationSearch, $data->nPage] = \journal\OperationLib::getAllForJournal(search: $search, page: $data->page, hasSort: $hasSort);
 
-		} else if(mb_substr($code, 0, 3) === 'vat') {
+		} elseif(mb_substr($code, 0, 3) === 'vat') {
 
 			// Journaux de TVA
 			if($data->eFarm['eFinancialYear']['hasVat']) {
@@ -132,19 +134,6 @@ new Page(function($data) {
 		$data->cAccount = \account\AccountLib::getAll();
 
 		throw new ViewAction($data);
-
-	})
-	->get('pdf', function($data) {
-
-		$content = pdf\PdfLib::generate($data->eFarm, \pdf\PdfElement::JOURNAL_INDEX);
-
-		if($content === NULL) {
-			throw new NotExistsAction();
-		}
-
-		$filename = journal\PdfUi::filenameJournal($data->eFarm).'.pdf';
-
-		throw new PdfAction($content, $filename);
 	})
 	->get('attach', function($data) {
 

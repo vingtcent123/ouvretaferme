@@ -28,6 +28,8 @@ new Page(function($data) {
 
 		$data->selectedTab = $selectedTab;
 
+		$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument($data->eFarm['eFinancialYear'], \account\FinancialYearDocumentLib::ASSET_AMORTIZATION);
+
 		$data->view = 'assets';
 
 		throw new ViewAction($data);
@@ -36,7 +38,11 @@ new Page(function($data) {
 	->get('/immobilisations/acquisitions', function($data) {
 
 		$data->cAsset = asset\AssetLib::getAcquisitions($data->eFarm['eFinancialYear'], 'asset');
-		$data->cAssetSubvention = asset\AssetLib::getAcquisitions($data->eFarm['eFinancialYear'], 'subvention');
+		$data->cAssetSubvention = asset\AssetLib::getAcquisitions($data->eFarm['eFinancialYear'], 'grant');
+
+		$data->nOperationMissingAsset = \asset\AssetLib::countOperationMissingAsset($data->eFarm['eFinancialYear']);
+
+		$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument($data->eFarm['eFinancialYear'], \account\FinancialYearDocumentLib::ASSET_ACQUISITION);
 
 		$data->view = 'acquisitions';
 
