@@ -1266,3 +1266,25 @@ class AutocompleteField {
 	};
 
 };
+
+class PasswordField {
+
+	static toggleVisibility(target) {
+
+		const input = target.previousSibling;
+
+		if(target.dataset.visible === '0') {
+
+			input.type = 'text';
+			target.dataset.visible = '1';
+
+		} else {
+
+			input.type = 'password';
+			target.dataset.visible = '0';
+
+		}
+
+	}
+
+}

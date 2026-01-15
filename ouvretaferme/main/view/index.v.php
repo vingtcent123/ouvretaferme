@@ -285,11 +285,16 @@ new AdaptativeView('signUp', function($data, MainTemplate $t) {
 
 	if($data->eRole->notEmpty()) {
 
-		echo '<h2>'.s("Mes informations").'</h2>';
-
 		if($data->eRole['fqn'] === 'farmer') {
-			echo '<div class="util-info">'.s("Renseignez quelques informations qui vous permettront ensuite de vous connecter sur {siteName}. Vous pourrez créer votre ferme ou rejoindre une ferme existante juste après cette étape !").'</div>';
+			echo '<div class="util-block-info mb-2">';
+				echo \Asset::icon('person-workspace', ['class' => 'util-block-icon']);
+				echo '<h4>'.s("Bienvenue sur {siteName} !").'</h4>';
+				echo '<p>'.s("Pour travailler avec le logiciel comme producteur, nous vous suggérons de créer un compte personnel en renseignant vos nom et prénom.").'</p>';
+				echo '<p>'.s("Vous pourrez créer votre ferme ou rejoindre une ferme existante et profiter de toutes les fonctionnalités juste après cette étape !<br/>Par la suite, vous pourrez également inviter autant de collègues que nécessaire dans l'équipe de votre ferme.").'</p>';
+			echo '</div>';
 		}
+
+		echo '<h2>'.s("Mes informations").'</h2>';
 
 		echo new \user\UserUi()->signUp($data->eUser, $data->eRole, REQUEST('redirect'));
 	}

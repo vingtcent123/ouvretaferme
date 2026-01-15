@@ -1051,3 +1051,11 @@ input[data-autocomplete-items]:placeholder-shown + a.autocomplete-empty:not(:foc
 	}
 
 }
+
+.form-password-toggle[data-visible="0"] .form-password-visible {
+	display: none;
+}
+
+.form-password-toggle[data-visible="1"] .form-password-hidden {
+	display: none;
+}

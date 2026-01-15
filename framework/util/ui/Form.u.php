@@ -2090,8 +2090,22 @@ class FormUi {
 		$attributes['class'] = 'form-control '.($attributes['class'] ?? '');
 		$attributes['autocapitalize'] = 'off';
 		$attributes['autocorrect'] = 'off';
+		$attributes['makeVisible'] ??= TRUE;
 
-		return $this->input('password', $name, $value, $attributes);
+		$makeVisible = empty($attributes['makeVisible']) === FALSE;
+		unset($attributes['makeVisible']);
+
+		$field = $this->input('password', $name, $value, $attributes);
+
+		if($makeVisible) {
+			return $this->inputGroup(
+				$field.
+				'<a onclick="PasswordField.toggleVisibility(this)" class="btn btn-form form-password-toggle" data-visible="0">'.\Asset::icon('eye-slash', ['class' => 'form-password-hidden']).\Asset::icon('eye-fill', ['class' => 'form-password-visible']).'</a>'
+			);
+		} else {
+			return $field;
+		}
+
 	}
 
 	/**
