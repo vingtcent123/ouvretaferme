@@ -56,19 +56,15 @@ class BankAccountLib extends BankAccountCrud {
 
 	public static function getFromOfx(string $bankId, string $accountId): BankAccount {
 
-		$eBankAccount = new BankAccount();
-
-		BankAccount::model()
+		$eBankAccount = BankAccount::model()
 			->select(BankAccount::getSelection())
 			->whereBankId($bankId)
 			->whereAccountId($accountId)
-			->get($eBankAccount);
+			->get();
 
 		if($eBankAccount->empty()) {
 
-			$hasBankAccount = BankAccount::model()->count();
-
-			if($hasBankAccount === FALSE and (int)$bankId !== 0) {
+			if((int)$bankId !== 0) {
 
 				$eBankAccount = self::createNew($bankId, $accountId);
 
