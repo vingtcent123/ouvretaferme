@@ -727,10 +727,14 @@ class OperationLib extends OperationCrud {
 			} else if($eOperation->exists()) {
 
 				// S'il y avait une opération de TVA => il faut la supprimer
-				Operation::model()
+				$cOperationToDelete = Operation::model()
+					->select('id')
 					->whereAccountLabel('LIKE', \account\AccountSetting::VAT_CLASS.'%')
 					->whereOperation($eOperation)
-					->delete();
+					->getCollection();
+
+				OperationCashflow::model()->whereOperation('IN', $cOperationToDelete->getIds())->delete();
+				Operation::model()->whereId('IN', $cOperationToDelete->getIds())->delete();
 
 			}
 
@@ -797,10 +801,16 @@ class OperationLib extends OperationCrud {
 				));
 
 				if($cOperationOriginWasDeposit->notEmpty()) {
-					Operation::model()
+
+					$cOperationToDelete = Operation::model()
+						->select('id')
 						->whereAccountLabel('LIKE', \account\AccountSetting::VAT_DEPOSIT_CLASS.'%')
 						->whereOperation('IN', $cOperationOriginWasDeposit->getIds())
-						->delete();
+						->getCollection();
+
+					OperationCashflow::model()->whereOperation('IN', $cOperationToDelete->getIds())->delete();
+					Operation::model()->whereId('IN', $cOperationToDelete->getIds())->delete();
+
 				}
 
 			}
@@ -945,9 +955,13 @@ class OperationLib extends OperationCrud {
 	public static function deleteByHash(string $hash): void {
 
 		// Suppression de toutes les opérations liées par le hash
-		Operation::model()
+		$cOperation = Operation::model()
+			->select('id')
 			->whereHash($hash)
-			->delete();
+			->getCollection();
+
+		OperationCashflow::model()->whereOperation('IN', $cOperation->getIds())->delete();
+		Operation::model()->whereId('IN', $cOperation->getIds())->delete();
 
 		// Si l'opération est issue d'un import en compta => supprimer le lien dans la facture
 		\selling\Invoice::model()
