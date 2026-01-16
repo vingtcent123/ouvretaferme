@@ -64,16 +64,37 @@ class BankAccountLib extends BankAccountCrud {
 			->whereAccountId($accountId)
 			->get($eBankAccount);
 
+		if($eBankAccount->empty()) {
+
+			$hasBankAccount = BankAccount::model()->count();
+
+			if($hasBankAccount === FALSE and (int)$bankId !== 0) {
+
+				$eBankAccount = self::createNew($bankId, $accountId);
+
+			} else {
+
+				$eBankAccount = new BankAccount();
+
+			}
+
+		}
+
+		return $eBankAccount;
+	}
+
+	public static function createNew(string $bankId, string $accountId): BankAccount {
+
 		$eLastBankAccount = BankAccount::model()
 			->select(['label' => new \Sql('MAX(label)')])
 			->get();
 
-		if($eBankAccount->empty()) {
+		// Check if there is already an account. Set current account to default if there is none.
+		$cBankAccountDefault = BankAccount::model()->whereIsDefault(TRUE)->count();
 
-			// Check if there is already an account. Set current account to default if there is none.
-			$cBankAccountDefault = BankAccount::model()->whereIsDefault(TRUE)->count();
-
-			$accountLabel = ($eLastBankAccount->notEmpty() and $eLastBankAccount['label'] !== NULL) ? (int)trim($eLastBankAccount['label'], '0') + 1 : \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL;
+		$accountLabel = ($eLastBankAccount->notEmpty() and $eLastBankAccount['label'] !== NULL) ?
+			(int)trim($eLastBankAccount['label'], '0') + 1 :
+			\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL;
 
 			$eBankAccount = new BankAccount([
 				'bankId' => $bankId,
@@ -81,11 +102,10 @@ class BankAccountLib extends BankAccountCrud {
 				'isDefault' => $cBankAccountDefault === 0,
 				'label' => $accountLabel,
 			]);
-
 			BankAccount::model()->insert($eBankAccount);
-		}
 
-		return $eBankAccount;
+			return $eBankAccount;
+
 	}
 
 

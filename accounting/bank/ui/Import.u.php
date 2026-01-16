@@ -190,5 +190,38 @@ class ImportUi {
 		return $h;
 	}
 
+	public function update(\farm\Farm $eFarm, Import $eImport, \Collection $cBankAccount): \Panel {
+
+		$h = '<div class="util-info">';
+			$h .= s("Le compte bancaire de votre import n°{value} n'a pas pu être détecté. Souhaitez-vous en choisir un ou créer un nouveau compte bancaire ?", $eImport['id']);
+		$h .= '</div>';
+
+		$form = new \util\FormUi();
+		$h .= $form->openAjax(\company\CompanyUi::urlBank($eFarm).'/import:doUpdateAccount');
+
+			$h .= $form->hidden('id', $eImport['id']);
+
+			$values = [];
+			foreach($cBankAccount as $eBankAccount) {
+				$label = $eBankAccount['accountId'].' - '.$eBankAccount['label'];
+				if($eBankAccount['description']) {
+					$label .= ' - '.$eBankAccount['description'];
+				}
+				$values[$eBankAccount['id']] = encode($label);
+			}
+			$values[0] = s("Créer un nouveau bancaire automatiquement");
+
+			$h .= $form->group(s("Compte bancaire"), $form->select('account', $values, attributes: ['mandatory' => TRUE]));
+
+			$h .= $form->group('', $form->submit(s("Enregistrer")));
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-import-account',
+			title: s("Configurer le compte bancaire"),
+			body: $h
+		);
+	}
 }
 ?>

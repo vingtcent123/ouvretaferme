@@ -3,6 +3,10 @@ namespace bank;
 
 class ImportLib extends ImportCrud {
 
+	public static function getPropertiesUpdate(): array {
+		return ['account'];
+	}
+
 	public static function formatCurrentFinancialYearImports(\account\FinancialYear $eFinancialYear): array {
 
 		$cImport = self::getAll($eFinancialYear);
@@ -125,8 +129,8 @@ class ImportLib extends ImportCrud {
 
 		if($eFinancialYear->notEmpty()) {
 			Import::model()
-				->whereStartDate('>=', $eFinancialYear['startDate'].' 00:00:00')
-				->whereEndDate('<=', $eFinancialYear['endDate'].' 23:59:59');
+				->whereStartDate('<=', $eFinancialYear['endDate'].' 00:00:00')
+				->whereEndDate('>=', $eFinancialYear['startDate'].' 23:59:59');
 		}
 		return Import::model()
 			->select(Import::getSelection() + ['account' => BankAccount::getSelection()])
@@ -134,8 +138,22 @@ class ImportLib extends ImportCrud {
 			->sort(['startDate' => SORT_ASC])
 			->getCollection();
 	}
+	public static function getLonely(\account\FinancialYear $eFinancialYear): \Collection {
 
-	public static function importBankStatement(\farm\Farm $eFarm, BankAccount $eBankAccount): ?Import {
+		if($eFinancialYear->notEmpty()) {
+			Import::model()
+				->whereStartDate('<=', $eFinancialYear['endDate'].' 00:00:00')
+				->whereEndDate('>=', $eFinancialYear['startDate'].' 23:59:59');
+		}
+		return Import::model()
+			->select(Import::getSelection())
+			->whereAccount(NULL)
+			->whereStatus('!=', Import::NONE)
+			->sort(['startDate' => SORT_ASC])
+			->getCollection();
+	}
+
+	public static function importBankStatement(\farm\Farm $eFarm): ?Import {
 
 		if(isset($_FILES['ofx']) === FALSE) {
 			return null;
@@ -158,9 +176,7 @@ class ImportLib extends ImportCrud {
 
 			$ofx = \bank\OfxParserLib::extractFile($filepath);;
 
-			if($eBankAccount->empty()) {
-				$eBankAccount = \bank\OfxParserLib::extractAccount($ofx);
-			}
+			$eBankAccount = \bank\OfxParserLib::extractAccount($ofx);
 
 			$import = \bank\OfxParserLib::extractImport($ofx);
 
@@ -201,7 +217,7 @@ class ImportLib extends ImportCrud {
 			$eImport['status'] = $status;
 			$eImport['processedAt'] = new \Sql('NOW()');
 
-			self::update($eImport, ['result', 'status', 'processedAt']);
+			Import::model()->update($eImport, $eImport->extracts(['result', 'status', 'processedAt']));
 
 		}
 
@@ -209,6 +225,37 @@ class ImportLib extends ImportCrud {
 
 		return $eImport ?? new Import();
 
+	}
+
+	public static function update(Import $e, array $properties): void {
+
+		if(!array_delete($properties, 'account') or count($properties) !== 0) {
+			return;
+		}
+
+		Import::model()->beginTransaction();
+
+			if($e['newAccount']->empty()) {
+
+				// Créer le nouveau compte bancaire
+				$bankId = uniqid();
+				$accountId = uniqid();
+
+				$e['account'] = BankAccountLib::createNew($bankId, $accountId);
+
+			} else {
+
+				$e['account'] = $e['newAccount'];
+
+			}
+
+			parent::update($e, ['account', 'status']);
+
+			Cashflow::model()
+				->whereImport($e)
+				->update(['account' => $e['account']]);
+
+		Import::model()->commit();
 	}
 
 }

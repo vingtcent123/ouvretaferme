@@ -41,8 +41,10 @@ Class AlertUi {
 
 			'Import::full' => s("L'import de votre relevé bancaire a bien été effectué !"),
 			'Import::partial' => s("L'import de votre relevé bancaire a bien été partiellement effectué, consultez l'import pour plus de détails."),
+			'Import::createdAndAccountSelected' => s("L'import de votre relevé bancaire a bien été réalisé, et le compte bancaire paramétré."),
 
 			'BankAccount::deleted' => s("Le compte bancaire et les opérations bancaires associées."),
+			'BankAccount::created' => s("Le compte bancaire a bien été créé."),
 
 			default => null,
 

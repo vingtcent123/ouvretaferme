@@ -18,7 +18,7 @@ Cashflow:
   fitid: ?text8(1, null)
   name: ?text24(1, null) @collate(general)
   memo: ?text8(1, null) @collate(general)
-  account: bank\BankAccount
+  account: ?bank\BankAccount
   import: bank\Import
   status: enum(WAITING, ALLOCATED, DELETED) = WAITING
   isReconciliated: bool = FALSE
@@ -42,7 +42,7 @@ Import:
   endDate: datetime
   result: json = PHP([])
   status: enum(PROCESSING, FULL, PARTIAL, NONE, ERROR)
-  account: bank\BankAccount
+  account: ?bank\BankAccount
   reconciliation: enum(WAITING, PROCESSING, DONE) = WAITING
   createdAt: datetime = SPECIAL(now)
   processedAt: ?datetime

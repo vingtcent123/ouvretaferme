@@ -55,7 +55,7 @@ class ImportModel extends \ModuleModel {
 			'endDate' => ['datetime', 'cast' => 'string'],
 			'result' => ['json', 'cast' => 'array'],
 			'status' => ['enum', [\bank\Import::PROCESSING, \bank\Import::FULL, \bank\Import::PARTIAL, \bank\Import::NONE, \bank\Import::ERROR], 'cast' => 'enum'],
-			'account' => ['element32', 'bank\BankAccount', 'cast' => 'element'],
+			'account' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
 			'reconciliation' => ['enum', [\bank\Import::WAITING, \bank\Import::PROCESSING, \bank\Import::DONE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'processedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
