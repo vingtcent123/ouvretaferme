@@ -9,6 +9,11 @@ class AccountLabelLib {
 
 	}
 
+	public static function isDeposit(string $accountLabel): bool {
+		return (\account\AccountLabelLib::isFromClass($accountLabel, \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEPOSIT_CLASS) or
+				\account\AccountLabelLib::isFromClass($accountLabel, \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS));
+	}
+
 	public static function isFromClass(string $accountLabel, string $class): bool {
 
 		return mb_substr($accountLabel, 0, mb_strlen($class)) === $class;

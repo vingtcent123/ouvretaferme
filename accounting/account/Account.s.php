@@ -147,7 +147,6 @@ class AccountSetting extends \Settings {
 	const EMPLOYEE_TO_PAY_CLASS = '428';
 	const SOCIAL_TO_PAY_CLASS = '438';
 	const SOCIAL_TO_GET_CLASS = '438';
-	const VAT_DEPOSIT = '44581';
 
 
 	public static $summaryAccountingBalanceCategories;

@@ -19,6 +19,24 @@ new \journal\OperationPage(
 ->read('/journal/operation/{id}/update', function($data) {
 
 	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
+
+	// Cas particulier des comptes en 409x : ne pas afficher l'écriture en 44581 et remettre l'écriture originale en HT
+	$cOperationRegulVat = $data->cOperation->find(fn($e) => (
+		// L'opération courante doit être une écriture en 44581
+		\account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::VAT_DEPOSIT_CLASS) and
+		$e['operation']->notEmpty() and
+		// L'opération parente doit être une 409 ou une 419
+		\account\AccountLabelLib::isDeposit($data->cOperation[$e['operation']['id']]['accountLabel'] ?? '')
+	));
+
+	if($cOperationRegulVat->notEmpty()) {
+		foreach($cOperationRegulVat as $eOperationRegulVat) {
+			$data->cOperation->offsetUnset($eOperationRegulVat['id']); // Ne pas afficher
+			$data->cOperation[$eOperationRegulVat['operation']['id']]['amount'] -= $eOperationRegulVat['amount']; // Remettre le montant HT
+
+		}
+	}
+
 	$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
 
 	$cOperationCashflow = new Collection();

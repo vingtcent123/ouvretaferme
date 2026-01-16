@@ -736,28 +736,22 @@ class OperationLib extends OperationCrud {
 
 			// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
 			if(
-				(\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_SUPPLIER_DEPOSIT_CLASS) or
-				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS)) and
+				\account\AccountLabelLib::isDeposit($eOperation['accountLabel'])  and
 				(int)$eOperation['vatRate'] !== 0 and
 				$eOperationVat->notEmpty()
 			) {
 
-				$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_DEPOSIT);
+				$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_DEPOSIT_CLASS);
 				$eOperation['amount'] += $eOperationVat['amount'] ?? 0;
 				Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
+				$cOperationVatRegul = $cOperationOriginByHash->find(fn($e) => $e['account']['id'] === $eAccountVatRegul['id']);
 
-				if($for === 'update') {
+				if($for === 'update' and $cOperationVatRegul->notEmpty()) {
 
-					$eOperationVatRegul = $cOperationOriginByIds->find(fn($e) => $e['account']['id'] === $eAccountVatRegul['id'])->first();
-					$propertiesVatRegul = ['description', 'document', 'documentDate', 'accountLabel'];
+					$eOperationVatRegul = $cOperationVatRegul->first();
+					$propertiesVatRegul = ['description', 'document', 'documentDate', 'amount'];
 
-					$index = array_find_key($input['id'], fn($value) => (int)$value === $eOperationVatRegul['id']);
-
-					$eOperationVatRegul->buildIndex($propertiesVatRegul, $input, $index);
-
-					// On récupère le montant depuis l'écriture de TVA.
-					$eOperationVatRegul['amount'] = $eOperationVat['amount'];
-					$propertiesVatRegul[] = 'amount';
+					$eOperationVatRegul->merge($eOperationVat->extracts($propertiesVatRegul));
 
 					Operation::model()->update($eOperationVatRegul, $eOperationVatRegul->extracts($propertiesVatRegul));
 					$cOperation->append($eOperationVatRegul);
@@ -784,6 +778,24 @@ class OperationLib extends OperationCrud {
 						'amount' => min($eOperationVatRegul['amount'], abs($eCashflow['amount']))
 					]));
 				}
+			}
+
+			if($for === 'update') {
+
+				// Si avant ce compte était un 409 ou un 419 et qu'il ne l'est plus => Supprimer l'avance de TVA correspondante
+				$cOperationOriginWasDeposit = $cOperationOriginByHash->find(fn($e) => (
+					$e['id'] === $eOperation['id'] and
+					\account\AccountLabelLib::isDeposit($e['accountLabel']) and
+					\account\AccountLabelLib::isDeposit($eOperation['accountLabel']) === FALSE
+				));
+
+				if($cOperationOriginWasDeposit->notEmpty()) {
+					Operation::model()
+						->whereAccountLabel('LIKE', \account\AccountSetting::VAT_DEPOSIT_CLASS.'%')
+						->whereOperation('IN', $cOperationOriginWasDeposit->getIds())
+						->delete();
+				}
+
 			}
 
 		}
@@ -905,7 +917,8 @@ class OperationLib extends OperationCrud {
 
 		}
 
-		return $eOperationVat;
+		// On retourne l'opération complète
+		return OperationLib::getById($eOperationVat['id']);
 
 	}
 

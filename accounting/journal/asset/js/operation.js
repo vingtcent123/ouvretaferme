@@ -50,7 +50,8 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-description="jo
 	e.detail.body.append('accountLabel', accountLabel);
 });
 
-document.delegateEventListener('autocompleteBeforeQuery', '[data-account="journal-operation-create"], [data-account="bank-cashflow-allocate"]', function(e) {
+document.delegateEventListener('autocompleteBeforeQuery', '[data-account="journal-operation-create"], [data-account="journal-operation-update"], [data-account="bank-cashflow-allocate"]', function(e) {
+
 	if(e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') !== null) {
 		const thirdParty = e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]').getAttribute('value');
 		e.detail.body.append('thirdParty', thirdParty);
