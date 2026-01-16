@@ -27,7 +27,7 @@ class CustomerLib extends CustomerCrud {
 
 	public static function getPropertiesDefault(string $for, string $category): array {
 
-		// Conserver cet ordre est indispensable : 'firstName', 'lastName', 'name'
+		// Conserver cet ordre est indispensable : 'firstName', 'lastName', 'commercialName', 'name'
 		$properties = ['firstName', 'lastName', 'commercialName', 'name', 'legalName'];
 
 		return match($category) {

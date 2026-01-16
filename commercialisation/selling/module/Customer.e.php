@@ -14,7 +14,7 @@ class Customer extends CustomerElement {
 	}
 
 	public function getLegalName(): string {
-		return ($this['legalName'] ?? $this['commercialName']);
+		return ($this['legalName'] ?? $this['name']);
 	}
 
 	public function getName(): ?string {
