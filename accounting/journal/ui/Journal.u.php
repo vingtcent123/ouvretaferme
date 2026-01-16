@@ -77,7 +77,7 @@ class JournalUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search util-search-3']);
 
 				$h .= '<fieldset>';
-					$h .= '<legend>'.s("Période").'</legend>';
+					$h .= '<legend>'.s("Date d'opération").'</legend>';
 					$h .= $form->inputGroup(
 						$form->date('periodStart', $search->get('periodStart'), ['min' => $minDate, 'max' => $maxDate, 'placeholder' => s("Début")]).
 						$form->addon(s("à")).

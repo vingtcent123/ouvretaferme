@@ -180,12 +180,12 @@ class Operation extends OperationElement {
 			})
 			->setCallback('thirdParty.unknown', function(?\account\ThirdParty &$eThirdParty): bool {
 
-				if($eThirdParty->empty() and $this['journalCode']['code'] !== JournalSetting::JOURNAL_CODE_OD_BILAN) {
+				if($eThirdParty->empty() and ($this['journalCode']->empty() or $this['journalCode']['code'] !== JournalSetting::JOURNAL_CODE_OD_BILAN)) {
 					return FALSE;
 				}
 
 				// Pas de tiers pour les opérations de bilan
-				if($eThirdParty->empty() and $this['journalCode']['code'] === JournalSetting::JOURNAL_CODE_OD_BILAN) {
+				if($eThirdParty->empty() and ($this['journalCode']->empty() or $this['journalCode']['code'] === JournalSetting::JOURNAL_CODE_OD_BILAN)) {
 					return TRUE;
 				}
 
@@ -203,30 +203,6 @@ class Operation extends OperationElement {
 
 				return $eCashflow->exists();
 
-			})
-			->setCallback('paymentDate.empty', function(?string $paymentDate) use ($p): bool {
-
-				$this->expects(['financialYear']);
-
-				if($p->isBuilt('accountLabel') === FALSE) {
-					return TRUE;
-				}
-
-				if($this['financialYear']->isAccrualAccounting()) {
-					return TRUE;
-				}
-
-				return $paymentDate !== NULL;
-			})
-			->setCallback('paymentMethod.empty', function(\payment\Method $ePaymentMethod) use($input): bool {
-
-				$this->expects(['financialYear']);
-
-				if($this['financialYear']->isAccrualAccounting()) {
-					return TRUE;
-				}
-
-				return $ePaymentMethod->notEmpty();
 			})
 			->setCallback('invoice.check', function(?\selling\Invoice $eInvoice) use($input): bool {
 

@@ -724,9 +724,8 @@ class OperationUi {
 
 			if($eCashflow->empty()) {
 
-				$mandatory = $eFinancialYear->isCashAccounting() ? ' '.\util\FormUi::asterisk() : '';
-				$h .= '<div class="operation-create-header">'.self::p('paymentDate')->label.$mandatory.'</div>';
-				$h .= '<div class="operation-create-header">'.self::p('paymentMethod')->label.$mandatory.'</div>';
+				$h .= '<div class="operation-create-header">'.self::p('paymentDate')->label.'</div>';
+				$h .= '<div class="operation-create-header">'.self::p('paymentMethod')->label.'</div>';
 
 			}
 			if($eFinancialYear['hasVat']) {
@@ -1174,7 +1173,17 @@ class OperationUi {
 			$h .= $form->hidden('cashflow', $eCashflow['id']);
 		}
 
-		$h .= '<div id="'.($for === 'update' ? 'operation-update-list' : 'operation-create-list').'" class="operation-create-several-container" '.($hasAsset ? 'data-asset'  : '').' data-columns="'.$cOperation->count().'" data-cashflow="'.($isFromCashflow ? '1' : '0').'">';
+		$attributes = ['class' => 'operation-create-several-container', 'data-columns' => $cOperation->count(), 'data-cashflow' => $isFromCashflow ? '1' : '0'];
+		if($hasAsset) {
+			$attributes['data-asset'] = 1;
+		}
+		if($for === 'update') {
+			$attributes['id'] = 'operation-update-list';
+			$attributes['onrender'] = 'OperationAmount.checkAmounts(0);';
+		} else {
+			$attributes['id'] = 'operation-create-list';
+		}
+		$h .= '<div '.attrs($attributes).'>';
 			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
 
 			foreach($cOperation as $eOperation) {
@@ -1629,22 +1638,10 @@ class OperationUi {
 
 			case 'paymentDate' :
 				$d->prepend = \Asset::icon('calendar-date');
-				$d->attributes = function(\util\FormUi $form, Operation $eOperation) use($property) {
-					if($eOperation['financialYear']->isCashAccounting()) {
-						return ['mandatory' => TRUE];
-					}
-					return [];
-				};
 				break;
 
 			case 'paymentMethod' :
 				$d->values = fn(Operation $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
-				$d->attributes = function(\util\FormUi $form, Operation $eOperation) use($property) {
-					if($eOperation['financialYear']->isCashAccounting()) {
-						return ['mandatory' => TRUE];
-					}
-					return [];
-				};
 				break;
 
 		}

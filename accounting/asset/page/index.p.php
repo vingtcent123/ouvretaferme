@@ -150,7 +150,7 @@ new Page()
 
 		\journal\Operation::model()
 			->whereHash($eOperation['hash'])
-      ->update(['asset' => NULL]);
+			->update(['asset' => NULL]);
 
 		throw new ReloadAction('asset', 'Asset::unattached');
 

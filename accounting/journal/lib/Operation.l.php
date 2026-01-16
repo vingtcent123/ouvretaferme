@@ -84,24 +84,10 @@ class OperationLib extends OperationCrud {
 
 		if($search->get('financialYear')->notEmpty()) {
 
-			if($search->get('financialYear')['accountingType'] === \account\FinancialYear::ACCRUAL) {
+			$model = Operation::model()
+				->whereDate('>=', fn() => $search->get('financialYear')['startDate'])
+				->whereDate('<=', fn() => $search->get('financialYear')['endDate']);
 
-				$model = Operation::model()
-					->whereDate('>=', fn() => $search->get('financialYear')['startDate'], if: $search->get('financialYear')->notEmpty())
-					->whereDate('<=', fn() => $search->get('financialYear')['endDate'], if: $search->get('financialYear')->notEmpty());
-
-			} else {
-
-				$model = Operation::model()
-					->or(
-						fn() => $this
-							->wherePaymentDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->get('financialYear')->notEmpty()),
-						fn() => $this
-							->wherePaymentDate(NULL)
-							->whereDate('BETWEEN', new \Sql(\account\FinancialYear::model()->format($search->get('financialYear')['startDate']).' AND '.\account\FinancialYear::model()->format($search->get('financialYear')['endDate'])), if: $search->get('financialYear')->notEmpty()),
-					);
-
-			}
 		} else {
 
 			$model = Operation::model();
@@ -529,8 +515,13 @@ class OperationLib extends OperationCrud {
 			$eOperationDefault = new Operation([
 				'date' => $eCashflow['date'],
 				'paymentDate' => $eCashflow['date'],
-				'paymentMethod' => POST('paymentMethod', 'payment\Method'),
+				'paymentMethod' => \payment\MethodLib::getById(POST('paymentMethod')),
 			]);
+
+			if($eOperationDefault['paymentMethod']->empty()) {
+				\Fail::log('Operation::paymentMethod.empty');
+				return new \Collection();
+			}
 
 		} else {
 
