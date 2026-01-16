@@ -519,6 +519,7 @@ class JournalUi {
 								unset($args[$filteredField]);
 							}
 							if($readonly === FALSE) {
+								
 								$h .= '<td class="td-min-content">';
 									$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 									$h .= '<div class="dropdown-list">';
@@ -528,17 +529,31 @@ class JournalUi {
 
 										if($eOperation->acceptWrite()) {
 
-											$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
+											if($eOperation->isNotLinkedToAsset()) {
+												
+												$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
 
-											if(
-												\asset\AssetLib::isAsset($eOperation['accountLabel']) and
-												$eOperation['asset']->empty()
-											) {
+											} else {
+
+												$updateText = s("Modifier <div>(Supprimez d'abord l'<b>immobilisation</b> liée)</div>", ['div' => '<div class="operations-action-more">']);
+												$h .= '<a class="dropdown-item inactive">'.$updateText.'</a>';
+
+											}
+
+											if(\asset\AssetLib::isAsset($eOperation['accountLabel'])) {
 
 												$h .= '<div class="dropdown-divider"></div>';
-												$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
-												$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Rattacher à une immobilisation").'</a>';
 
+												if($eOperation->isNotLinkedToAsset()) {
+
+													$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
+													$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Rattacher à une immobilisation").'</a>';
+
+												} else {
+
+													$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:unattach" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("Dissocier l'immobilisation de l'écriture ?").'">'.s("Dissocier l'immobilisation").'</a>';
+
+												}
 											}
 
 											// Rattacher à une opération bancaire
@@ -550,12 +565,11 @@ class JournalUi {
 											}
 
 											// SUPPRIMER
-											$isLinkedToAsset = $eOperation['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
 
 											// Si immo : d'abord supprimer l'immo
-											if($isLinkedToAsset) {
+											if($eOperation->isNotLinkedToAsset() === FALSE) {
 
-												$deleteText = s("Supprimer <div>(Supprimez d'abord l'<b>immobilisation</b> liée)</div>", ['div' => '<div class="operations-delete-more">']);
+												$deleteText = s("Supprimer <div>(Supprimez d'abord l'<b>immobilisation</b> liée)</div>", ['div' => '<div class="operations-action-more">']);
 
 												$h .= '<div class="dropdown-divider"></div>';
 												$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
@@ -563,7 +577,7 @@ class JournalUi {
 											// Si cashflow : passer par le cashlow
 											} else if($eOperation['cOperationCashflow']->notEmpty()) {
 
-												$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-delete-more">']);
+												$deleteText = s("Supprimer <div>(Passez par l'opération bancaire pour supprimer cette écriture)</div>", ['div' => '<div class="operations-action-more">']);
 
 												$h .= '<div class="dropdown-divider"></div>';
 												$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
@@ -601,10 +615,15 @@ class JournalUi {
 
 					if($displayTotal) {
 
-						$colspan = ($selectedJournalCode === NULL ? 5 : 4);
-						if($readonly) {
-							$colspan--;
+						$colspan = 0;
+						if($canUpdateFinancialYear) {
+							$colspan++;
 						}
+						$colspan++;
+						if($selectedJournalCode === NULL and $readonly === FALSE) {
+							$colspan++;
+						}
+						$colspan += 2;
 
 						$h .= '<tr class="row-highlight tr-bold">';
 
@@ -617,15 +636,17 @@ class JournalUi {
 							}
 							$h .= '<td colspan="'.$colspan.'">'.s("Totaux").'</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+								$h .= \util\TextUi::money($totalDebit - $totalCredit);
+							$h .= '</td>';
+
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">';
 								$h .= \util\TextUi::money($totalDebit);
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">';
 								$h .= \util\TextUi::money($totalCredit);
 							$h .= '</td>';
-
-							$h .= '<td></td>';
 
 						$h .= '</tr>';
 
@@ -645,6 +666,10 @@ class JournalUi {
 							}
 							$h .= '<td colspan="'.$colspan.'">'.$text.'</td>';
 
+							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+								$h .= \util\TextUi::money($totalDebit - $totalCredit);
+							$h .= '</td>';
+
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
 								if($totalDebit > $totalCredit) {
 									$h .= \util\TextUi::money($totalDebit - $totalCredit);
@@ -656,8 +681,6 @@ class JournalUi {
 									$h .= \util\TextUi::money($totalCredit - $totalDebit);
 								}
 							$h .= '</td>';
-
-							$h .= '<td></td>';
 
 						$h .= '</tr>';
 

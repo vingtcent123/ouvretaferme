@@ -40,25 +40,19 @@ class OperationCashflowModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
-			'id' => ['serial32', 'cast' => 'int'],
 			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
-			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
+			'hash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'operation', 'cashflow', 'amount'
+			'operation', 'cashflow', 'hash'
 		]);
 
 		$this->propertiesToModule += [
 			'operation' => 'journal\Operation',
 			'cashflow' => 'bank\Cashflow',
 		];
-
-		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['operation'],
-			['cashflow']
-		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['operation', 'cashflow']
@@ -74,10 +68,6 @@ class OperationCashflowModel extends \ModuleModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): OperationCashflowModel {
-		return $this->where('id', ...$data);
-	}
-
 	public function whereOperation(...$data): OperationCashflowModel {
 		return $this->where('operation', ...$data);
 	}
@@ -86,8 +76,8 @@ class OperationCashflowModel extends \ModuleModel {
 		return $this->where('cashflow', ...$data);
 	}
 
-	public function whereAmount(...$data): OperationCashflowModel {
-		return $this->where('amount', ...$data);
+	public function whereHash(...$data): OperationCashflowModel {
+		return $this->where('hash', ...$data);
 	}
 
 

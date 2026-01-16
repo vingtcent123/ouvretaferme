@@ -689,7 +689,7 @@ Class VatLib {
 
 		\journal\Operation::model()->beginTransaction();
 
-		\journal\OperationLib::prepareOperations($eFarm, $input, new \journal\Operation());
+		\journal\OperationLib::prepareOperations($input);
 
 		$fw->validate();
 

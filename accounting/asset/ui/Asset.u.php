@@ -31,7 +31,7 @@ Class AssetUi {
 		$h = '';
 
 		$h .= '<h3>'.p("Écriture comptable sélectionnée", "Écritures comptables sélectionnées", $cOperation->count()).'</h3>';
-		$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE);
+		$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE, displayTotal: TRUE);
 
 		if($cAssetWaiting->empty()) {
 
@@ -105,7 +105,7 @@ Class AssetUi {
 
 							$attributes = [
 								'class' => 'btn btn-primary',
-								'data-confirm' => s("Ce choix est définitif. Confirmez-vous ce rattachement ?"),
+								'data-confirm' => s("Confirmez-vous ce rattachement ?"),
 								'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/asset/:doAttach',
 								'post-id' => $eAsset['id'],
 								'post-operations' => join(',', $cOperation->getIds())

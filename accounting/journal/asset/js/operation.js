@@ -388,13 +388,13 @@ class Operation {
 	// Seulement pour la création
 	static showOrHideDeleteOperation() {
 
-		const operations = qsa('#operation-create-list .operation-create:not(.operation-create-headers):not(.operation-create-validation)').length;
+		const operations = qsa('.operation-create-several-container .operation-create:not(.operation-create-headers):not(.operation-create-validation)').length;
 
 		if(operations > 1) {
 			qsa('[data-operation-delete]', node => (Number(node.getAttribute('data-index')) === operations - 1) ? node.classList.remove('hide') : node.classList.add('hide'));
 		}
 
-		qs('#operation-create-list').setAttribute('data-columns', operations);
+		qs('.operation-create-several-container').setAttribute('data-columns', operations);
 
 		Operation.updateSingularPluralText();
 
@@ -403,7 +403,7 @@ class Operation {
 	// Seulement pour la création
 	static updateSingularPluralText() {
 
-		const operations = qsa('#operation-create-list .operation-create:not(.operation-create-headers)').length;
+		const operations = qsa('.operation-create-several-container .operation-create:not(.operation-create-headers)').length;
 
 		qs('button[type="submit"]').innerHTML = qs('button[type="submit"]').getAttribute(operations > 1 ? 'data-text-plural' : 'data-text-singular');
 

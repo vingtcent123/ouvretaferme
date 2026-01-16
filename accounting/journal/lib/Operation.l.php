@@ -451,13 +451,17 @@ class OperationLib extends OperationCrud {
 
 		// Quick document update
 		if(in_array('document', $properties) === TRUE) {
+
 			// On rattache cette pièce comptable aux cashflows + aux opérations liées
 			if($e['cOperationCashflow']->notEmpty()) {
+
 				$cCashflow = $e['cOperationCashflow']->getColumnCollection('cashflow');
+
 				\bank\Cashflow::model()
 					->select('document')
 					->whereId('IN', $cCashflow->getIds())
 					->update(['document' => $e['document']]);
+
 				Operation::model()
 					->select('document', 'documentDate')
 					->whereId('IN', $e['cOperationCashflow']->getColumnCollection('operation')->getIds())
@@ -508,21 +512,57 @@ class OperationLib extends OperationCrud {
 	}
 
 
-	public static function prepareOperations(\farm\Farm $eFarm, array $input, Operation $eOperationDefault, string $for = 'create', \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
+	public static function prepareOperations(array $input, string $for = 'create', \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
 
-		$accounts = var_filter($input['account'] ?? [], 'array');
-		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
-		$isFromCashflow = $eCashflow->notEmpty();
-
-		$indexes = count($input['accountLabel']);
-
-		$fw = new \FailWatch();
 
 		if($eFinancialYear->acceptUpdate() === FALSE) {
+
 			\Fail::log('Operation::FinancialYear.notUpdatable');
 			return new \Collection();
 		}
+
+		$isFromCashflow = $eCashflow->notEmpty();
+
+		if($isFromCashflow) {
+
+			$eOperationDefault = new Operation([
+				'date' => $eCashflow['date'],
+				'paymentDate' => $eCashflow['date'],
+				'paymentMethod' => POST('paymentMethod', 'payment\Method'),
+			]);
+
+		} else {
+
+			$eOperationDefault = new Operation();
+
+		}
+
+		if($for === 'update') {
+
+			$cOperationOriginByHash = OperationLib::getByHash($input['hash']);
+
+			if($cOperationOriginByHash->notEmpty()) {
+
+				foreach($cOperationOriginByHash as $eOperationOriginByHash) {
+					$eOperationOriginByHash->validate('isNotLinkedToAsset');
+				}
+
+				// On supprime tout et on recommence !
+				OperationCashflow::model()->whereHash($input['hash'])->delete();
+				Operation::model()->whereHash($input['hash'])->delete();
+
+			}
+
+			$for = 'create';
+
+		}
+
+		$accounts = var_filter($input['account'] ?? [], 'array');
+		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
+		$indexes = count($input['accountLabel']);
+
+		$fw = new \FailWatch();
 
 		$cAccount = \account\AccountLib::getByIdsWithVatAccount($accounts);
 
@@ -537,54 +577,21 @@ class OperationLib extends OperationCrud {
 		if($eFinancialYear['hasVat']) {
 			$properties[] = 'vat';
 		}
+		if($isFromCashflow === FALSE) {
+			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
+		}
 
 		$eOperationDefault['thirdParty'] = NULL;
 
-		if($for === 'create') {
 
-			$properties = array_merge($properties, ['date']);
-			if($isFromCashflow === FALSE) {
-				$properties = array_merge($properties, ['paymentDate', 'paymentMethod']);
-			}
-
-			$cOperationOriginByIds = new \Collection();
-			$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
+		$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
 			
-		} else if($for === 'update') {
-
-			if(isset($input['id']) === FALSE or isset($input['hash']) === FALSE) {
-				throw new \NotExpectedAction('no ids or hash for the update');
-			}
-
-			$cOperationOriginByIds = self::getByIds($input['id']);
-			if($cOperationOriginByIds->empty() or $cOperationOriginByIds->count() !== count($input['id'])) {
-				throw new \NotExpectedAction('no ids for the update');
-			}
-
-			$cOperationOriginByHash = OperationLib::getByHash($input['hash']);
-			$hash = $cOperationOriginByHash->first()['hash'];
-
-		}
-
 		$eOperationDefault['hash'] = $hash;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
 
 		for($index = 0; $index < $indexes; $index++) {
 
-			// Si on a déjà l'opération de départ, on part de celle-ci et on la modifie.
-			if($for === 'update') {
-
-				$eOperation = $cOperationOriginByIds->find(fn($e) => $e['id'] === (int)$input['id'][$index])->first();
-
-				foreach(array_keys($eOperationDefault->getArrayCopy()) as $field) {
-					$eOperation[$field] = $eOperationDefault[$field];
-				}
-
-			} else {
-
-				$eOperation = clone $eOperationDefault;
-
-			}
+			$eOperation = clone $eOperationDefault;
 
 			$eOperation['index'] = $index;
 			$eOperation['financialYear'] = $eFinancialYear;
@@ -595,6 +602,7 @@ class OperationLib extends OperationCrud {
 
 			$fw->validate();
 
+
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
 				$eOperation['documentDate'] = $eOperation['date'];
@@ -604,6 +612,7 @@ class OperationLib extends OperationCrud {
 
 			// Enregistre les termes du libellé de banque pour améliorer les prédictions
 			if($isFromCashflow === TRUE) {
+
 				$eThirdParty = \account\ThirdPartyLib::recalculateMemos($eCashflow, $eOperation['thirdParty']);
 				\account\ThirdPartyLib::update($eThirdParty, ['memos']);
 
@@ -641,76 +650,30 @@ class OperationLib extends OperationCrud {
 				}
 			}
 
-			if($for === 'create') {
-
-				\journal\Operation::model()->insert($eOperation);
-
-			} else {
-
-				$fields = array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperation->getArrayCopy()));
-
-				Operation::model()
-					->select($fields)
-					->update($eOperation);
-
-			}
+			\journal\Operation::model()->insert($eOperation);
 
 			$cOperation->append($eOperation);
 
-			if($for === 'create' and $isFromCashflow) {
+			if($isFromCashflow) {
 				$cOperationCashflow->append(new OperationCashflow([
 					'operation' => $eOperation,
 					'cashflow' => $eCashflow,
 					'hash' => $hash,
-					'amount' => min($eOperation['amount'], abs($eCashflow['amount']))
 				]));
 			}
 
 			// Ajout de l'entrée de compte de TVA correspondante
 			if($hasVatAccount === TRUE) {
 
-				$forVat = $for;
-
-				if($for === 'update') {
-
-					$cOperationVatOrigin = $cOperationOriginByHash->find(fn($e) => $e['id'] === (int)(POST('vatOperation', 'array')[$index] ?? NULL));
-
-					// L'écriture n'existe pas ! On va la créer
-					if($cOperationVatOrigin->empty()) {
-
-						$defaultValues = $eOperation->getArrayCopy();
-						$forVat = 'create';
-
-					} else {
-
-						$defaultValues = $cOperationVatOrigin->first()->getArrayCopy();
-
-					}
-
-					// Certains champs doivent être toujours identiques entre l'originale et l'écriture de TVA
-					if(isset($defaultValues['operation']['id'])) {
-
-						$eOperationExcludingVat = $cOperation->find(fn($e) => $e['id'] === $defaultValues['operation']['id'])->first();
-
-						foreach(['description', 'document', 'documentDate'] as $fieldCopy) {
-							$defaultValues[$fieldCopy] = $eOperationExcludingVat[$fieldCopy];
-						}
-
-					}
-
-				} else {
-
-					$defaultValues = $isFromCashflow === TRUE
-						? [
-							'date' => $eCashflow['date'],
-							'description' => $eOperation['description'] ?? $eCashflow->getMemo(),
-							'cashflow' => $eCashflow,
-							'paymentMethod' => $eOperation['paymentMethod'],
-							'hash' => $hash,
-						]
-						: $eOperation->getArrayCopy();
-
-				}
+				$defaultValues = $isFromCashflow === TRUE
+					? [
+						'date' => $eCashflow['date'],
+						'description' => $eOperation['description'] ?? $eCashflow->getMemo(),
+						'cashflow' => $eCashflow,
+						'paymentMethod' => $eOperation['paymentMethod'],
+						'hash' => $hash,
+					]
+					: $eOperation->getArrayCopy();
 
 				// Cette fonction fait déjà l'ajout dans OperationCashflow
 				$eOperationVat = \journal\OperationLib::createVatOperation(
@@ -719,22 +682,18 @@ class OperationLib extends OperationCrud {
 					$input['vatValue'][$index],
 					defaultValues: $defaultValues,
 					eCashflow: $eCashflow,
-					for: $forVat,
 				);
-
 				$cOperation->append($eOperationVat);
 
-			} else if($eOperation->exists()) {
+				if($isFromCashflow) {
 
-				// S'il y avait une opération de TVA => il faut la supprimer
-				$cOperationToDelete = Operation::model()
-					->select('id')
-					->whereAccountLabel('LIKE', \account\AccountSetting::VAT_CLASS.'%')
-					->whereOperation($eOperation)
-					->getCollection();
+					$cOperationCashflow->append(new OperationCashflow([
+						'operation' => $eOperationVat,
+						'cashflow' => $eCashflow,
+						'hash' => $hash,
+					]));
 
-				OperationCashflow::model()->whereOperation('IN', $cOperationToDelete->getIds())->delete();
-				Operation::model()->whereId('IN', $cOperationToDelete->getIds())->delete();
+				}
 
 			}
 
@@ -749,70 +708,18 @@ class OperationLib extends OperationCrud {
 				$eOperation['amount'] += $eOperationVat['amount'] ?? 0;
 				Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
 
-				$addToCashflow = FALSE;
-				if($for === 'update') {
-
-					$cOperationVatRegul = $cOperationOriginByHash->find(fn($e) => $e['account']['id'] === $eAccountVatRegul['id']);
-
-					if($cOperationVatRegul->empty()) {
-
-						$eOperationVatRegul = self::createVatRegulOperation($eOperationVat, $eAccountVatRegul, $eOperation);
-						$addToCashflow = TRUE;
-
-					} else {
-
-						$eOperationVatRegul = $cOperationVatRegul->first();
-						$propertiesVatRegul = ['description', 'document', 'documentDate', 'amount'];
-
-						$eOperationVatRegul->merge($eOperationVat->extracts($propertiesVatRegul));
-
-						Operation::model()->update($eOperationVatRegul, $eOperationVatRegul->extracts($propertiesVatRegul));
-					}
-
-					$cOperation->append($eOperationVatRegul);
-
-				} else {
-
-					// Créer l'écriture de TVA de régul
-					$eOperationVatRegul = self::createVatRegulOperation($eOperationVat, $eAccountVatRegul, $eOperation);
-					$addToCashflow = TRUE;
-
-				}
+				// Créer l'écriture de TVA de régul
+				$eOperationVatRegul = self::createVatRegulOperation($eOperationVat, $eAccountVatRegul, $eOperation);
 
 				$cOperation->append($eOperationVatRegul);
 
-				if($for === 'create' and $isFromCashflow and $addToCashflow) {
+				if($isFromCashflow) {
 					$cOperationCashflow->append(new OperationCashflow([
 						'operation' => $eOperationVatRegul,
 						'cashflow' => $eCashflow,
 						'hash' => $hash,
-						'amount' => min($eOperationVatRegul['amount'], abs($eCashflow['amount']))
 					]));
 				}
-			}
-
-			if($for === 'update') {
-
-				// Si avant ce compte était un 409 ou un 419 et qu'il ne l'est plus => Supprimer l'avance de TVA correspondante
-				$cOperationOriginWasDeposit = $cOperationOriginByHash->find(fn($e) => (
-					$e['id'] === $eOperation['id'] and
-					\account\AccountLabelLib::isDeposit($e['accountLabel']) and
-					\account\AccountLabelLib::isDeposit($eOperation['accountLabel']) === FALSE
-				));
-
-				if($cOperationOriginWasDeposit->notEmpty()) {
-
-					$cOperationToDelete = Operation::model()
-						->select('id')
-						->whereAccountLabel('LIKE', \account\AccountSetting::VAT_DEPOSIT_CLASS.'%')
-						->whereOperation('IN', $cOperationOriginWasDeposit->getIds())
-						->getCollection();
-
-					OperationCashflow::model()->whereOperation('IN', $cOperationToDelete->getIds())->delete();
-					Operation::model()->whereId('IN', $cOperationToDelete->getIds())->delete();
-
-				}
-
 			}
 
 		}
@@ -820,40 +727,37 @@ class OperationLib extends OperationCrud {
 		// Ajout de la transaction sur le numéro de compte bancaire 512 (seulement pour une création)
 		if($isFromCashflow === TRUE) {
 
-			if($for === 'create') {
-
-				// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
-				$documents = $cOperation->getColumn('document');
-				$uniqueDocuments = array_unique($documents);
-				if(count($uniqueDocuments) === 1 and count($documents) === $cOperation->count()) {
-					$document = first($uniqueDocuments);
-				} else {
-					$document = NULL;
-				}
-
-				$eOperationDefault['hash'] = $hash;
-
-				// Cette fonction crée automatiquement l'operationCashflow correspondante
-				$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
-					$eCashflow,
-					$eOperationDefault,
-					$document,
-				);
-				$cOperation->append($eOperationBank);
-
+			// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
+			$documents = $cOperation->getColumn('document');
+			$uniqueDocuments = array_unique($documents);
+			if(count($uniqueDocuments) === 1 and count($documents) === $cOperation->count()) {
+				$document = first($uniqueDocuments);
 			} else {
-
-				$label = \account\AccountLabelLib::pad($eCashflow['import']['account']['label']);
-				$eOperationBank = $cOperationOriginByHash->find(fn($e) => $e['accountLabel'] === $label)->first();
-
-				Operation::model()->update($eOperationBank, $eOperationDefault->extracts(['document', 'thirdParty']));
-
+				$document = NULL;
 			}
+
+			$eOperationDefault['hash'] = $hash;
+
+			$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
+				$eCashflow,
+				$eOperationDefault,
+				$document,
+			);
+			$cOperation->append($eOperationBank);
+			$cOperationCashflow->append(new OperationCashflow(['operation' => $eOperationBank, 'cashflow' => $eCashflow, 'hash' => $hash]));
+
+			\bank\Cashflow::model()->update(
+				$eCashflow,
+				['status' => \bank\CashflowElement::ALLOCATED, 'updatedAt' => \bank\Cashflow::model()->now(), 'hash' => $cOperation->first()['hash']]
+			);
+
+			if($cOperationCashflow->notEmpty()) {
+				OperationCashflow::model()->insert($cOperationCashflow);
+			}
+
 		}
 
-		if($cOperationCashflow->notEmpty()) {
-			OperationCashflow::model()->insert($cOperationCashflow);
-		}
+
 
 		if($fw->ko()) {
 			return new \Collection();
@@ -876,7 +780,7 @@ class OperationLib extends OperationCrud {
 		return $eOperationVatRegul;
 	}
 
-	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues, \bank\Cashflow $eCashflow, string $for = 'create'): Operation {
+	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues, \bank\Cashflow $eCashflow): Operation {
 
 		$values = [
 			...$defaultValues,
@@ -890,10 +794,10 @@ class OperationLib extends OperationCrud {
 			'financialYear' => $eOperationLinked['financialYear']['id'],
 			'hash' => $eOperationLinked['hash'],
 			'journalCode' => $eOperationLinked['journalCode']['id'] ?? NULL,
+			'date' => $defaultValues['date'],
 		];
 
-		if($for === 'create') {
-			$values['date'] = $eOperationLinked['date'];
+		if($eCashflow->empty()) {
 			$values['paymentDate'] = $eOperationLinked['paymentDate'];
 			$values['paymentMethod'] = $eOperationLinked['paymentMethod']['id'] ?? NULL;
 		}
@@ -908,44 +812,20 @@ class OperationLib extends OperationCrud {
 				'account', 'accountLabel', 'description', 'document', 'documentDate',
 				'thirdParty', 'type', 'amount', 'operation',
 				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
-			], ($for === 'create' ? ['date', 'paymentDate', 'paymentMethod'] : [])),
+				'date',
+			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []),
 			$values,
-			new \Properties($for),
 		);
 
 		$eOperationVat['operation'] = $eOperationLinked;
+		if($eCashflow->notEmpty()) {
+			$eOperationVat['paymentDate'] = $eCashflow['date'];
+			$eOperationVat['paymentMethod'] = \payment\MethodLib::getById(POST('paymentMethod'));
+		}
 
 		$fw->validate();
 
-		if($for === 'create') {
-
-			Operation::model()->insert($eOperationVat);
-
-		} else if($for === 'update' and isset($defaultValues['id'])) {
-
-			$eOperationVat['id'] = (int)$defaultValues['id'];
-
-			Operation::model()
-				->select(array_intersect(OperationLib::getPropertiesUpdate(), array_keys($eOperationVat->getArrayCopy())))
-				->update($eOperationVat);
-
-		}
-
-		if($eCashflow->notEmpty()) {
-
-			if($for === 'create') {
-
-				$eOperationCashflow = new OperationCashflow([
-					'operation' => $eOperationVat,
-					'cashflow' => $eCashflow,
-					'amount' => min($eOperationVat['amount'], abs($eCashflow['amount'])),
-				]);
-
-				OperationCashflow::model()->insert($eOperationCashflow);
-
-			}
-
-		}
+		Operation::model()->insert($eOperationVat);
 
 		// On retourne l'opération complète
 		return OperationLib::getById($eOperationVat['id']);
@@ -1065,10 +945,11 @@ class OperationLib extends OperationCrud {
 		return Operation::model()
 			->select($selection)
 			->whereFinancialYear($eFinancialYear)
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::VAT_CLASS.'%')
 			->join(OperationCashflow::model(), 'm1.id = m2.operation', 'LEFT')
-			->where('m2.id IS NULL')
+			->where('m2.cashflow IS NULL')
 			->where('m1.id NOT IN ('.join(', ', $excludedOperationIds).')', if: count($excludedOperationIds) > 0)
-			->whereHash('IN', $cOperationNotBalanced->getColumn('hash'))
+			->where('m1.hash IN ("'.join('", "', $cOperationNotBalanced->getColumn('hash')).'")')
 			->sort($sort + ['m1_date' => SORT_DESC])
 			->getCollection(NULL, NULL, 'hash'); // Pour ne conserver que 1 opération par hash
 
@@ -1151,17 +1032,17 @@ class OperationLib extends OperationCrud {
 		$cOperationCashflow = new \Collection();
 
 		foreach($cOperation as $eOperation) {
+
 			$cOperationCashflow->append(new OperationCashflow([
 				'operation' => $eOperation,
 				'cashflow' => $eCashflow,
-				'amount' => min($eOperation['amount'], abs($eCashflow['amount'])),
+				'hash' => $hash,
 			]));
-		}
-		OperationCashflow::model()->insert($cOperationCashflow);
 
+		}
 
 		// Create Bank line with the good third party
-		OperationLib::createBankOperationFromCashflow($eCashflow, new Operation([
+		$eOperationBank = OperationLib::createBankOperationFromCashflow($eCashflow, new Operation([
 			'thirdParty' => $eThirdParty,
 			'journalCode' => $eOperationModel['journalCode'],
 			'documentDate' => $eOperationModel['documentDate'],
@@ -1171,6 +1052,9 @@ class OperationLib extends OperationCrud {
 			'accountLabel' => \account\AccountLabelLib::pad($eCashflow['account']['label'] ?? \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL),
 		]), $eOperationModel['document']);
 
+		$cOperationCashflow->append(new OperationCashflow(['operation' => $eOperationBank, 'cashflow' => $eCashflow, 'hash' => $hash]));
+
+		OperationCashflow::model()->insert($cOperationCashflow);
 	}
 
 	public static function createBankOperationFromCashflow(\bank\Cashflow $eCashflow, Operation $eOperation, ?string $document = NULL): Operation {
@@ -1210,14 +1094,6 @@ class OperationLib extends OperationCrud {
 		$fw->validate();
 
 		\journal\Operation::model()->insert($eOperationBank);
-
-		$eOperationCashflow = new OperationCashflow([
-			'operation' => $eOperationBank,
-			'cashflow' => $eCashflow,
-			'amount' => min($eOperationBank['amount'], abs($eCashflow['amount'])),
-		]);
-
-		OperationCashflow::model()->insert($eOperationCashflow);
 
 		return $eOperationBank;
 
@@ -1271,12 +1147,18 @@ class OperationLib extends OperationCrud {
 
 		$hash = $eCashflow['hash'];
 
-		Operation::model()->beginTransaction();
-
 		$cOperation = Operation::model()
-			->select('id')
+			->select(['id', 'hash', 'asset'])
 			->whereHash($hash)
 			->getCollection();
+
+		if($action === 'delete') {
+			// On vérifie qu'il n'y a pas d'immos impliqués
+			$eOperation = new Operation(['cOperationHash' => $cOperation]);
+			$eOperation->validate('isNotLinkedToAsset');
+		}
+
+		Operation::model()->beginTransaction();
 
 		// Dissociation cashflow et operation
 		OperationCashflow::model()

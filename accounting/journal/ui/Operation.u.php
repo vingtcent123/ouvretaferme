@@ -135,6 +135,23 @@ class OperationUi {
 		$cOperationFormatted = new \Collection();
 		$linkedOperationIds = [];
 
+		//Cas particulier des comptes en 409x : ne pas afficher l'écriture en 44581 et remettre l'écriture originale en HT
+		$cOperationRegulVat = $cOperation->find(fn($e) => (
+			// L'opération courante doit être une écriture en 44581
+			\account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::VAT_DEPOSIT_CLASS) and
+			$e['operation']->notEmpty() and
+			// L'opération parente doit être une 409 ou une 419
+			\account\AccountLabelLib::isDeposit($cOperation[$e['operation']['id']]['accountLabel'] ?? '')
+		));
+
+		if($cOperationRegulVat->notEmpty()) {
+			foreach($cOperationRegulVat as $eOperationRegulVat) {
+				$cOperation->offsetUnset($eOperationRegulVat['id']); // Ne pas afficher
+				$cOperation[$eOperationRegulVat['operation']['id']]['amount'] -= $eOperationRegulVat['amount']; // Remettre le montant HT
+
+			}
+		}
+
 		foreach($cOperation as $eOperation) {
 
 			if(in_array($eOperation['id'], $linkedOperationIds)) {
@@ -209,6 +226,7 @@ class OperationUi {
 		$h .= $form->hidden('hash', $cOperation->first()['hash']);
 		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
+		$h .= $form->hidden('paymentMethod', $cOperation->first()['paymentMethod']['id'] ?? '');
 
 		if($eCashflow->notEmpty()) {
 
@@ -231,6 +249,20 @@ class OperationUi {
 			for: 'update',
 		);
 
+		$attributes = [
+			'post-index' => $cOperationFormatted->count(),
+			'post-financial-year' => $eFinancialYear['id'],
+		];
+		if($eCashflow->notEmpty()) {
+			$url = \company\CompanyUi::urlBank($eFarm).'/cashflow:addAllocate';
+			$attributes['post-id'] = $eCashflow['id'];
+			$attributes['post-third-party'] = $cOperationFormatted->first()['thirdParty']['id'] ?? '';
+		} else {
+			$url = \company\CompanyUi::urlJournal($eFarm).'/operation:addOperation';
+		}
+		$addButton = '<a id="add-operation" data-ajax="'.$url.'" '.attrs($attributes).' class="btn btn-outline-secondary">';
+			$addButton .= \Asset::icon('plus-circle').'&nbsp;'.s("Ajouter une autre écriture");
+		$addButton .= '</a>';
 		$saveButton = $form->submit(
 			s("Modifier"),
 			[
@@ -244,7 +276,7 @@ class OperationUi {
 
 		$dialogClose = $form->close();
 
-		$footer = '<div class="operation-create-button-add">'.$saveButton.'</div>';
+		$footer = '<div class="operation-create-button-add" onrender="Operation.showOrHideDeleteOperation();">'.$saveButton.$addButton.'</div>';
 
 		if($eCashflow->empty()) {
 			$title = $cOperationFormatted->count() > 1 ? s("Modifier les écritures") : s("Modifier une écriture");
@@ -391,7 +423,8 @@ class OperationUi {
 			$h .= $paymentMethod;
 		$h .= '</div>';
 
-		if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
+		$isLinkedToAsset = $eOperation['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
+		if($eOperation->acceptUpdate() and $eOperation->canUpdate() and $eOperation->acceptWrite() and $isLinkedToAsset === FALSE) {
 			$h .= '<div class="text-center"><a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update">'.s("Modifier").'</a></div>';
 		}
 
@@ -771,7 +804,7 @@ class OperationUi {
 						'data-date' => $form->getId(),
 						'data-index' => $index,
 						'data-accounting-type' => $eFinancialYear['accountingType'],
-					] + (($eOperation['id'] ?? NULL) !== NULL ? ['disabled' => 'disabled'] : []));
+					]);
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="document'.$suffix.'">';

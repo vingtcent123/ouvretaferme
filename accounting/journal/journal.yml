@@ -68,14 +68,9 @@ Operation:
   ]
 
 OperationCashflow:
-  id: serial32
   operation: journal\Operation
   cashflow: bank\Cashflow
-  amount: decimal(8, 2)
-  INDEX: [
-    ["operation"],
-    ["cashflow"]
-  ]
+  hash: ?textFixed(20, 20) @charset(ascii)
   UNIQUE: [
     ["operation", "cashflow"]
   ]

@@ -19,22 +19,8 @@ new \journal\OperationPage(
 ->read('/journal/operation/{id}/update', function($data) {
 
 	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
-
-	// Cas particulier des comptes en 409x : ne pas afficher l'écriture en 44581 et remettre l'écriture originale en HT
-	$cOperationRegulVat = $data->cOperation->find(fn($e) => (
-		// L'opération courante doit être une écriture en 44581
-		\account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::VAT_DEPOSIT_CLASS) and
-		$e['operation']->notEmpty() and
-		// L'opération parente doit être une 409 ou une 419
-		\account\AccountLabelLib::isDeposit($data->cOperation[$e['operation']['id']]['accountLabel'] ?? '')
-	));
-
-	if($cOperationRegulVat->notEmpty()) {
-		foreach($cOperationRegulVat as $eOperationRegulVat) {
-			$data->cOperation->offsetUnset($eOperationRegulVat['id']); // Ne pas afficher
-			$data->cOperation[$eOperationRegulVat['operation']['id']]['amount'] -= $eOperationRegulVat['amount']; // Remettre le montant HT
-
-		}
+	foreach($data->cOperation as $eOperation) {
+		$eOperation->validate('isNotLinkedToAsset');
 	}
 
 	$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
@@ -62,13 +48,20 @@ new \journal\OperationPage(
 
 	\journal\Operation::model()->beginTransaction();
 
-	$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation(), for: 'update', eCashflow: $eCashflow);
+	$cOperation = \journal\OperationLib::prepareOperations($_POST, 'update', $eCashflow);
 
 	$fw->validate();
 
 	\journal\Operation::model()->commit();
 
-	throw new ReloadAction('journal', $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated');
+	$success = $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated';
+
+	$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
+	if($hasMissingAsset) {
+		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal:'.$success.'CreateAsset');
+	}
+
+	throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal:'.$success);
 
 })
 ->read('delete', function($data) {
@@ -201,7 +194,7 @@ new \journal\OperationPage(
 			\Fail::log('Operation::allocate.accountsCheck');
 		}
 
-		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation());
+		$cOperation = \journal\OperationLib::prepareOperations($_POST);
 
 		if($cOperation->empty() === TRUE) {
 			\Fail::log('Operation::allocate.noOperation');

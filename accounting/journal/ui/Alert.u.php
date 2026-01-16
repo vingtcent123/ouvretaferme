@@ -59,6 +59,8 @@ class AlertUi {
 			'Operation::update' => s("L'écriture a bien été modifiée."),
 			'Operation::updated' => s("L'écriture a bien été modifiée."),
 			'Operation::updatedSeveral' => s("Les écritures ont bien été modifiées."),
+			'Operation::updatedCreateAsset' => s("L'écriture a bien été modifiée. Souhaitez-vous à présent créer la fiche d'immobilisation ?"),
+			'Operation::updatedSeveralCreateAsset' => s("Les écritures ont bien été modifiées. Souhaitez-vous à présent créer la fiche d'immobilisation ?"),
 			'Operation::deleted' => s("L'écriture a bien été supprimée."),
 			'Operations::attached' => s("Les écritures ont bien été rattachées."),
 			'Operation::attached' => s("L'écriture a bien été rattachée."),

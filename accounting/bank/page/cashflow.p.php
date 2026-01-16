@@ -127,21 +127,13 @@ new \bank\CashflowPage(function($data) {
 			Fail::log('Cashflow::allocate.accountsCheck');
 		}
 
-		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, new \journal\Operation([
-			'paymentDate' => $data->e['date'],
-			'paymentMethod' => POST('paymentMethod', 'payment\Method'),
-		]), eCashflow: $data->e);
+		$cOperation = \journal\OperationLib::prepareOperations($_POST, eCashflow: $data->e);
 
 		if($cOperation->empty() === TRUE) {
 			\Fail::log('Cashflow::allocate.noOperation');
 		}
 
 		$fw->validate();
-
-		\bank\Cashflow::model()->update(
-			$data->e,
-			['status' => \bank\CashflowElement::ALLOCATED, 'updatedAt' => \bank\Cashflow::model()->now(), 'hash' => $cOperation->first()['hash']]
-		);
 
 		\journal\Operation::model()->commit();
 

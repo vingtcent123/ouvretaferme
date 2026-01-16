@@ -44,7 +44,7 @@ new Page(function($data) {
 				'minDate' => \journal\Operation::GET('periodStart', 'date'),
 				'maxDate' => \journal\Operation::GET('periodEnd', 'date'),
 				'hash' => GET('hash'),
-			], GET('sort')
+			], GET('sort', 'id')
 		);
 
 		$data->unbalanced = GET('unbalanced', 'bool');

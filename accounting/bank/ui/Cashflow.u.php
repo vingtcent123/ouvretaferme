@@ -363,7 +363,7 @@ class CashflowUi {
 							"Supprimer les {value} écritures",
 							$nOperation
 						);
-						$h .= '<div class="operations-delete-more">'.s("(Supprimez d'abord l'<b>immobilisation</b> liée)").'</div>';
+						$h .= '<div class="operations-action-more">'.s("(Supprimez d'abord l'<b>immobilisation</b> liée)").'</div>';
 					$h .= '</a>';
 
 				} else {
@@ -417,7 +417,7 @@ class CashflowUi {
 
 				$h .= $reconciliate;
 
-				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les <b>écritures comptables</b> liées)</div>", ['div' => '<div class="operations-delete-more">']);
+				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les <b>écritures comptables</b> liées)</div>", ['div' => '<div class="operations-action-more">']);
 				$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
 
 			} else {

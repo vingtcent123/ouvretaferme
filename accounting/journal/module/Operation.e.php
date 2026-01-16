@@ -64,9 +64,14 @@ class Operation extends OperationElement {
 
 	}
 
+	public function isNotLinkedToAsset(): bool {
+
+		return $this['cOperationHash']->notEmpty() and $this['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->empty();
+
+	}
+
 	public function acceptDelete(): bool {
-		return $this->acceptWrite() and
-			($this['cOperationCashflow']->empty() or $this['cOperationCashflow']->getColumnCollection('asset')->empty());
+		return ($this->acceptWrite() and $this->isNotLinkedToAsset());
 	}
 
 	public static function validateBatch(\Collection $cOperation): void {

@@ -7,14 +7,14 @@ class OperationCashflowLib extends OperationCrud {
 
 		return OperationCashflow::model()
 			->select(OperationCashflow::getSelection())
-			->delegateCollection('cashflow', 'id');
+			->delegateCollection('cashflow');
 
 	}
 	public static function delegateByOperation(): OperationCashflowModel {
 
 		return OperationCashflow::model()
 			->select(OperationCashflow::getSelection())
-			->delegateCollection('operation', 'id');
+			->delegateCollection('operation');
 
 	}
 

@@ -287,6 +287,7 @@ document.delegateEventListener('autocompleteSelect', '[data-operation="cashflow-
     if(e.detail.tableRow) {
 
         qs('#cashflow-operations tbody').insertAdjacentHTML('beforeend', e.detail.tableRow);
+        qs('#cashflow-operations').removeHide();
 
     }
 

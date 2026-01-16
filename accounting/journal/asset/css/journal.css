@@ -37,7 +37,7 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
 	margin-top: 0.15rem;
 	cursor: help;
 }
-.operations-delete-more {
+.operations-action-more {
 	font-size: 0.85rem;
 	font-weight: lighter;
 	opacity: 0.8;

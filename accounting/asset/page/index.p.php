@@ -140,5 +140,20 @@ new Page()
 		throw new ViewAction($data);
 
 	})
+	->post('unattach', function($data) {
+
+		$eOperation = \journal\OperationLib::getById(POST('id'));
+
+		if($eOperation->isNotLinkedToAsset()) {
+			throw new NotExpectedAction('Unable to dissociate an operation not linked to asset');
+		}
+
+		\journal\Operation::model()
+			->whereHash($eOperation['hash'])
+      ->update(['asset' => NULL]);
+
+		throw new ReloadAction('asset', 'Asset::unattached');
+
+	})
 ;
 ?>

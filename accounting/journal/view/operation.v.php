@@ -93,7 +93,7 @@ new JsonView('addOperation', function($data, AjaxTemplate $t) {
 	$form->open('journal-operation-create');
 	$defaultValues = [];
 
-	$t->qs('#operation-create-list')->setAttribute('data-columns', $data->index + 1);
+	$t->qs('.operation-create-several-container')->setAttribute('data-columns', $data->index + 1);
 	$t->qs('.operation-create[data-index="'.($data->index - 1).'"]')->insertAdjacentHtml(
 		'afterend',
 		new \journal\OperationUi()::getFieldsCreateGrid(
