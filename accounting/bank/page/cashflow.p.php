@@ -30,6 +30,7 @@ new Page(function($data) {
 			$margin = GET('margin', 'float', 0);
 
 			$search->set('amountMin', $amount - $margin);
+			$search->set('amount', $amount);
 
 			if($margin) {
 				$search->set('amountMax', $amount + $margin);
