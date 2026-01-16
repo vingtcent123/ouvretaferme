@@ -48,9 +48,17 @@ class CustomizeLib extends CustomizeCrud {
 
 	public static function create(Customize $e): void {
 
-		Customize::model()
-			->option('add-replace')
-			->insert($e);
+		Customize::model()->beginTransaction();
+
+			Customize::model()
+				->whereType($e['type'])
+				->whereFarm($e['farm'])
+				->whereShop($e['shop'])
+				->delete();
+
+			Customize::model()->insert($e);
+
+		Customize::model()->commit();
 
 	}
 

@@ -440,21 +440,27 @@ class FarmUi {
 
 		return new \Panel(
 			id: 'panel-farm-update-legal',
-			title: s("Informations requises pour facturer vos ventes"),
+			title: s("Informations requises pour continuer"),
 			body: $this->getLegalForm($eFarm)
 		);
 
 	}
 
-	public function getLegalForm(Farm $eFarm): string {
+	public function getLegalForm(Farm $eFarm, bool $onlyCountry = FALSE): string {
 
 		$form = new \util\FormUi();
 
-		$h = $form->openAjax('/farm/farm:doUpdateLegal', ['autocomplete' => 'off', 'class' => 'farm-legal-form']);
+		$h = $form->openAjax('/farm/farm:'.($onlyCountry ? 'doUpdateCountry' : 'doUpdateLegal').'', ['autocomplete' => 'off', 'class' => 'farm-legal-form']);
 
-			$h .= '<h3>'.s("Pour commencer à vendre").'</h3>';
+			if($onlyCountry) {
+				$h .= '<h3>'.s("Pour commencer à vendre").'</h3>';
+			}
+
 			$h .= '<div class="util-info">';
-				$h .= s("Nous avons besoin que vous fournissiez les informations légales de votre entité pour commencer à vendre avec {siteName}.<br/>La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
+				$h .= $onlyCountry ?
+					s("Nous avons besoin que vous confirmiez le pays de votre entité pour commencer à vendre avec {siteName}.") :
+					s("Nous avons besoin que vous fournissiez les informations légales de votre entité pour accéder à cette page.");
+				$h .= '<br/>'.s("La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
 			$h .= '</div>';
 
 			$h .= $form->hidden('id', $eFarm['id']);
@@ -472,12 +478,18 @@ class FarmUi {
 				$h .= $form->dynamicGroup($eFarm, 'legalCountry');
 			}
 
-			if($eFarm->isFR()) {
-				$h .= $form->dynamicGroup($eFarm, 'siret*');
-			}
+			if($onlyCountry === FALSE) {
 
-			$h .= $form->dynamicGroup($eFarm, 'legalName*');
-			$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => FALSE]);
+				if($eFarm->isFR()) {
+					$h .= $form->dynamicGroup($eFarm, 'siret*');
+				}
+
+				$eFarm['legalName'] ??= $eFarm['name'];
+
+				$h .= $form->dynamicGroup($eFarm, 'legalName*');
+				$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => FALSE]);
+
+			}
 
 			$confirm = $eFarm->isVerified() ? [] : ['data-confirm' =>s("Le choix du pays est définitif et vous ne pourrez plus le modifier pour cette ferme. Validez-vous votre choix ?") ];
 
@@ -512,12 +524,16 @@ class FarmUi {
 					'<b>'.\user\Country::ask($eFarm['legalCountry'])['name'].'</b>'
 				);
 
-				if($eFarm->isFR()) {
-					$h .= $form->dynamicGroup($eFarm, 'siret');
-				}
+				if($eFarm->isLegal()) {
 
-				$h .= $form->dynamicGroup($eFarm, 'legalName');
-				$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => FALSE]);
+					if($eFarm->isFR()) {
+						$h .= $form->dynamicGroup($eFarm, 'siret');
+					}
+
+					$h .= $form->dynamicGroup($eFarm, 'legalName');
+					$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => FALSE]);
+
+				}
 
 			} else {
 				$h .= $form->dynamicGroup($eFarm, 'legalCountry');

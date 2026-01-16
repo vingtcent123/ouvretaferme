@@ -38,7 +38,7 @@ class ShopManageUi {
 			$h .= new ShopUi()->create($eShop)->body;
 
 		} else {
-			$h .= new \farm\FarmUi()->getLegalForm($eFarm);
+			$h .= new \farm\FarmUi()->getLegalForm($eFarm, onlyCountry: TRUE);
 		}
 
 		return $h;

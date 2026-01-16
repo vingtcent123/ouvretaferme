@@ -14,7 +14,7 @@ new AdaptativeView('update', function($data, FarmTemplate $t) {
 	if($data->eFarm->isVerified()) {
 		echo new \farm\ConfigurationUi()->update($data->e, $data->cAccount);
 	} else {
-		echo new \farm\FarmUi()->getLegalForm($data->eFarm);
+		echo new \farm\FarmUi()->getLegalForm($data->eFarm, onlyCountry: TRUE);
 	}
 
 });

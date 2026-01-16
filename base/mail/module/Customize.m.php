@@ -69,8 +69,7 @@ class CustomizeModel extends \ModuleModel {
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['farm', 'type'],
-			['shop', 'type']
+			['farm', 'type', 'shop']
 		]);
 
 	}

@@ -17,10 +17,14 @@ class FarmLib extends FarmCrud {
 
 			if($e->isVerified()) {
 
-				$properties = array_merge($properties, ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity']);
+				if($e->isLegal()) {
 
-				if($e->isFR()) {
-					$properties[] = 'siret';
+					$properties = array_merge($properties, ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity']);
+
+					if($e->isFR()) {
+						$properties[] = 'siret';
+					}
+
 				}
 
 			} else {
@@ -30,6 +34,12 @@ class FarmLib extends FarmCrud {
 			return $properties;
 
 		};
+
+	}
+
+	public static function getPropertiesCountry(Farm $e): array {
+
+		return $e->isVerified() === FALSE ? ['legalCountry', 'verified'] : [];
 
 	}
 

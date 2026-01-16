@@ -1240,6 +1240,10 @@ class SaleLib extends SaleCrud {
 
 	public static function updatePreparationStatusCollection(\Collection $c, string $newStatus): void {
 
+		if($newStatus === Sale::DELIVERED) {
+			$c->first()['farm']->validateLegal();
+		}
+
 		Sale::model()->beginTransaction();
 
 		foreach($c as $e) {
