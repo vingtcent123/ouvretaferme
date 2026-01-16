@@ -113,7 +113,8 @@ class OperationAmount {
 		OperationAmount.switchDataAmountCheck(index, true);
 
 		// Check TTC = HT + TVA
-		if(Math.abs(round(amountIncludingVAT) - round(amount + vatValue)) > 0.01) {
+		const difference = Math.abs(round(amountIncludingVAT) - round(amount + vatValue));
+		if(difference > 0.00) {
 
 			qs('[data-amount-including-vat-warning][data-index="' + index + '"]').removeHide();
 			qs('[data-amount-including-vat-warning-value][data-index="' + index + '"]').innerHTML = money(amountIncludingVAT);
