@@ -256,7 +256,7 @@ class Invoice extends InvoiceElement {
 
 	public function acceptAccountingImport(): bool {
 
-		$this->expects(['readyForAccounting', 'priceIncludingVat', 'cashflow']);
+		$this->expects(['readyForAccounting', 'priceIncludingVat', 'cashflow', 'cSale']);
 
 		if($this['cashflow']->empty()) {
 			return FALSE;
@@ -264,10 +264,27 @@ class Invoice extends InvoiceElement {
 
 		$this['cashflow']->expects(['amount']);
 
+		// Vérifie si tous les items ont un numéro de compte
+		$hasAccount = TRUE;
+		foreach($this['cSale'] as $eSale) {
+			foreach($eSale['cItem'] as $eItem) {
+				if($hasAccount === FALSE) {
+					break 2;
+				}
+				if($eItem['account']->notEmpty()) {
+					continue;
+				}
+				if($eItem['product']->empty() or ($eItem['product']['proAccount']->empty() and $eItem['product']['privateAccount']->empty())) {
+					$hasAccount = FALSE;
+				}
+			}
+		}
+
 		return (
 			$this['accountingHash'] === NULL and
 			$this['readyForAccounting'] === TRUE and
-			($this['cashflow']->empty() or ($this['cashflow']['amount'] === $this['priceIncludingVat']) or $this['accountingDifference'] !== NULL)
+			($this['cashflow']->empty() or ($this['cashflow']['amount'] === $this['priceIncludingVat']) or $this['accountingDifference'] !== NULL) and
+			$hasAccount
 		);
 	}
 

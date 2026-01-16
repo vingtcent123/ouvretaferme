@@ -904,10 +904,6 @@ class Sale extends SaleElement {
 		return $this['accountingHash'] === NULL;
 	}
 
-	public function acceptAccountingImport(): bool {
-		return $this['readyForAccounting'] === TRUE;
-	}
-
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$fw = new \FailWatch();
