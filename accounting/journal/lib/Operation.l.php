@@ -744,33 +744,40 @@ class OperationLib extends OperationCrud {
 				$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_DEPOSIT_CLASS);
 				$eOperation['amount'] += $eOperationVat['amount'] ?? 0;
 				Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
-				$cOperationVatRegul = $cOperationOriginByHash->find(fn($e) => $e['account']['id'] === $eAccountVatRegul['id']);
 
-				if($for === 'update' and $cOperationVatRegul->notEmpty()) {
+				$addToCashflow = FALSE;
+				if($for === 'update') {
 
-					$eOperationVatRegul = $cOperationVatRegul->first();
-					$propertiesVatRegul = ['description', 'document', 'documentDate', 'amount'];
+					$cOperationVatRegul = $cOperationOriginByHash->find(fn($e) => $e['account']['id'] === $eAccountVatRegul['id']);
 
-					$eOperationVatRegul->merge($eOperationVat->extracts($propertiesVatRegul));
+					if($cOperationVatRegul->empty()) {
 
-					Operation::model()->update($eOperationVatRegul, $eOperationVatRegul->extracts($propertiesVatRegul));
+						$eOperationVatRegul = self::createVatRegulOperation($eOperationVat, $eAccountVatRegul, $eOperation);
+						$addToCashflow = TRUE;
+
+					} else {
+
+						$eOperationVatRegul = $cOperationVatRegul->first();
+						$propertiesVatRegul = ['description', 'document', 'documentDate', 'amount'];
+
+						$eOperationVatRegul->merge($eOperationVat->extracts($propertiesVatRegul));
+
+						Operation::model()->update($eOperationVatRegul, $eOperationVatRegul->extracts($propertiesVatRegul));
+					}
+
 					$cOperation->append($eOperationVatRegul);
 
 				} else {
 
 					// Créer l'écriture de TVA de régul
-					$eOperationVatRegul = new Operation($eOperationVat->getArrayCopy());
-					unset($eOperationVatRegul['id']);
-					$eOperationVatRegul['type'] = $eOperation['type'] === Operation::DEBIT ? Operation::CREDIT : Operation::DEBIT;
-					$eOperationVatRegul['account'] = $eAccountVatRegul;
-					$eOperationVatRegul['accountLabel'] = \account\AccountLabelLib::pad($eAccountVatRegul['class']);
-
-					Operation::model()->insert($eOperationVatRegul);
-					$cOperation->append($eOperationVatRegul);
+					$eOperationVatRegul = self::createVatRegulOperation($eOperationVat, $eAccountVatRegul, $eOperation);
+					$addToCashflow = TRUE;
 
 				}
 
-				if($for === 'create' and $isFromCashflow) {
+				$cOperation->append($eOperationVatRegul);
+
+				if($for === 'create' and $isFromCashflow and $addToCashflow) {
 					$cOperationCashflow->append(new OperationCashflow([
 						'operation' => $eOperationVatRegul,
 						'cashflow' => $eCashflow,
@@ -844,6 +851,19 @@ class OperationLib extends OperationCrud {
 
 		return $cOperation;
 
+	}
+
+	public static function createVatRegulOperation(Operation $eOperationVat, \account\Account $eAccountVatRegul, Operation $eOperationParent): Operation {
+
+		$eOperationVatRegul = new Operation($eOperationVat->getArrayCopy());
+		unset($eOperationVatRegul['id']);
+		$eOperationVatRegul['type'] = $eOperationParent['type'] === Operation::DEBIT ? Operation::CREDIT : Operation::DEBIT;
+		$eOperationVatRegul['account'] = $eAccountVatRegul;
+		$eOperationVatRegul['accountLabel'] = \account\AccountLabelLib::pad($eAccountVatRegul['class']);
+
+		Operation::model()->insert($eOperationVatRegul);
+
+		return $eOperationVatRegul;
 	}
 
 	public static function createVatOperation(Operation $eOperationLinked, \account\Account $eAccount, float $vatValue, array $defaultValues, \bank\Cashflow $eCashflow, string $for = 'create'): Operation {
