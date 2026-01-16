@@ -244,7 +244,7 @@ class OperationLib extends OperationCrud {
 	public static function getAllForJournal(?int $page, \Search $search = new \Search(), bool $hasSort = FALSE): array {
 
 		$eFinancialYear = $search->get('financialYear');
-		$defaultOrder = ($eFinancialYear !== NULL and $eFinancialYear->isCashAccounting()) ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
+		$defaultOrder = ($eFinancialYear !== NULL and $eFinancialYear->isCashAccounting()) ? ['date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
 
 		$selection = array_merge(Operation::getSelection(),
 			['account' => ['class', 'description']],
@@ -286,7 +286,7 @@ class OperationLib extends OperationCrud {
 	public static function getUnbalanced(\Search $search): array {
 
 		$eFinancialYear = $search->get('financialYear');
-		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
+		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
 
 		// Récupérer les hash des opérations déséquilibrées
 		$hashes = self::applySearch(new \Search(['financialYear' => $eFinancialYear]))
@@ -321,7 +321,7 @@ class OperationLib extends OperationCrud {
 	public static function getAllForBankJournal(?int $page, \Search $search = new \Search(), bool $hasSort = FALSE): array {
 
 		$eFinancialYear = $search->get('financialYear');
-		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['paymentDate' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
+		$defaultOrder = $eFinancialYear->isCashAccounting() ? ['date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
 
 		$searchFiltered = new \Search($search->getFiltered(['journalCode']));
 
