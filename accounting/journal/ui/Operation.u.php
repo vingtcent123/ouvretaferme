@@ -1179,7 +1179,6 @@ class OperationUi {
 		}
 		if($for === 'update') {
 			$attributes['id'] = 'operation-update-list';
-			$attributes['onrender'] = 'OperationAmount.checkAmounts(0);';
 		} else {
 			$attributes['id'] = 'operation-create-list';
 		}
