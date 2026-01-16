@@ -164,7 +164,8 @@ class LogUi {
 	public function getBankAction(string $action, array $params): string {
 
 		return match(strtolower($action)) {
-			'update' => s("Mise à jour du compte bancaire : {value}", $params['id']),
+			'delete' => s("Suppression du compte bancaire #{value}", $params['id']),
+			'update' => s("Mise à jour du compte bancaire #{value}", $params['id']),
 		};
 
 	}

@@ -53,6 +53,7 @@ class BankAccountUi {
 						$h .= '<th>'.s("N° Compte comptable").'</th>';
 						$h .= '<th>'.s("Nom du compte").'</th>';
 						$h .= '<th class="text-center">'.s("Opérations bancaires").'</th>';
+						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -82,6 +83,11 @@ class BankAccountUi {
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
 							$h .= $eBankAccount['nCashflow'];
+						$h .= '</td>';
+						$h .= '<td>';
+							if($eBankAccount->acceptDelete()) {
+								$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/account:doDelete" post-id="'.$eBankAccount['id'].'" class="btn btn-outline-danger">'.\Asset::icon('trash').'</a>';
+							}
 						$h .= '</td>';
 
 					$h .= '</tr>';

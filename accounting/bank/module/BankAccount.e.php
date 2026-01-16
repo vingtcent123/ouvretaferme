@@ -9,6 +9,15 @@ class BankAccount extends BankAccountElement {
 
 	}
 
+	public function acceptDelete(): bool {
+
+		return (
+			$this['nCashflow'] === 0 or
+			$this['cCashflow']->find(fn($e) => $e['status'] !== Cashflow::WAITING)->empty()
+		);
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

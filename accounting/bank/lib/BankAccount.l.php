@@ -3,6 +3,21 @@ namespace bank;
 
 class BankAccountLib extends BankAccountCrud {
 
+	public static function getAllWithCashflow(): \Collection {
+
+		return BankAccount::model()
+			->select(
+				BankAccount::getSelection() + [
+				'cCashflow' => Cashflow::model()
+					->select(Cashflow::getSelection())
+					->delegateCollection('account', 'id'),
+				'nCashflow' => Cashflow::model()
+					->select('id')
+					->delegateCollection('account', callback: fn(\Collection $cCashflow) => $cCashflow->count()),
+			])
+			->sort(['accountId' => SORT_ASC])
+			->getCollection(NULL, NULL,  'id');
+	}
 	public static function getAll(?string $index = NULL): \Collection {
 
 		return BankAccount::model()
@@ -75,14 +90,40 @@ class BankAccountLib extends BankAccountCrud {
 
 
 	public static function update(BankAccount $e, array $properties): void {
-		parent::update($e, $properties);
 
-		// Quick label update
-		if(in_array('label', $properties) === TRUE and $e['farm']->usesAccounting()) {
-			\journal\OperationLib::updateAccountLabels($e);
-		}
+		BankAccount::model()->beginTransaction();
 
-		\account\LogLib::save('update', 'Bank', ['id' => $e['id'], 'properties' => $properties]);
+			parent::update($e, $properties);
+
+			// Quick label update
+			if(in_array('label', $properties) === TRUE and $e['farm']->usesAccounting()) {
+				\journal\OperationLib::updateAccountLabels($e);
+			}
+
+			\account\LogLib::save('update', 'Bank', ['id' => $e['id'], 'properties' => $properties]);
+
+		BankAccount::model()->commit();
+
+	}
+
+	public static function delete(BankAccount $e): void {
+
+		BankAccount::model()->beginTransaction();
+
+			parent::delete($e);
+
+			Cashflow::model()
+				->whereAccount($e)
+				->delete();
+
+			Import::model()
+				->whereAccount($e)
+				->delete();
+
+			\account\LogLib::save('delete', 'Bank', ['id' => $e['id']]);
+
+		BankAccount::model()->commit();
+
 	}
 }
 ?>
