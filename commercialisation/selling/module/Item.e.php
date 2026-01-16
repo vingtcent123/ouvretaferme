@@ -8,7 +8,7 @@ class Item extends ItemElement {
 		return parent::getSelection() + [
 			'sale' => SaleElement::getSelection(),
 			'customer' => ['name', 'type'],
-			'farm' => ['name', 'hasAccounting'],
+			'farm' => ['name', 'hasAccounting', 'legalCountry'],
 			'unit' => \selling\Unit::getSelection(),
 			'product' => ProductElement::getSelection() + [
 				'unit' => \selling\Unit::getSelection(),
