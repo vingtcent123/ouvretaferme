@@ -1541,7 +1541,10 @@ class SaleLib extends SaleCrud {
 	 */
 	public static function recalculate(Sale $e): void {
 
-		$e->expects(['farm', 'discount', 'taxes', 'shippingVatRate', 'shippingVatFixed']);
+		$e->expects([
+			'farm' => ['legalCountry'],
+			'discount', 'taxes', 'shippingVatRate', 'shippingVatFixed'
+		]);
 
 		$cItem = Item::model()
 			->select(ItemElement::getSelection())

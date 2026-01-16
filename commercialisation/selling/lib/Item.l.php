@@ -379,6 +379,7 @@ class ItemLib extends ItemCrud {
 			self::createIngredients($e);
 		}
 
+		$e['sale']['farm'] = $e['farm'];
 		SaleLib::recalculate($e['sale']);
 
 		Item::model()->commit();
@@ -517,6 +518,7 @@ class ItemLib extends ItemCrud {
 		parent::update($e, $properties);
 
 		if(in_array('price', $properties)) {
+			$e['sale']['farm'] = $e['farm'];
 			SaleLib::recalculate($e['sale']);
 		}
 
@@ -561,6 +563,7 @@ class ItemLib extends ItemCrud {
 				self::deleteIngredients($e);
 			}
 
+			$e['sale']['farm'] = $e['farm'];
 			SaleLib::recalculate($e['sale']);
 
 		Item::model()->commit();
