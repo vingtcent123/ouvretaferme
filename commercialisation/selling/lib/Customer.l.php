@@ -168,7 +168,6 @@ class CustomerLib extends CustomerCrud {
 					SORT_DESC => new \Sql('IF(lastName IS NULL, name, lastName) DESC, firstName DESC, id DESC')
 				}
 			]))
-			->highlight()
 			->getCollection($position, $number);
 
 		return [$cCustomer, Customer::model()->found()];
