@@ -344,7 +344,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/:doUpdatePhone', function($data, A
 new AdaptativeView('/shop/public/{fqn}/{date}/:doUpdateAddress', function($data, AjaxTemplate $t) {
 
 	// L'adresse a bien été renseignée
-	if($data->e->hasAddress()) {
+	if($data->e->hasDeliveryAddress()) {
 
 		$t->js()->success('shop', 'Sale::address');
 		$t->qs('#shop-basket-address')->remove();

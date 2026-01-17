@@ -153,18 +153,28 @@ class Customer extends CustomerElement {
 		$this->expects(['destination']);
 		return $this['destination'] === Customer::COLLECTIVE;
 	}
-	public function getDeliveryStreet(): ?string {
 
-		$street = $this['deliveryStreet1'];
+	public function hasAddress(): bool {
+		return (
+			$this->hasInvoiceAddress() or
+			$this->hasDeliveryAddress()
+		);
+	}
 
-		if($this['deliveryStreet2'] !== NULL) {
+	public function getBestInvoiceAddress(string $type = 'text'): ?string {
 
-			$street .= "\n".$this['deliveryStreet2'];
-
+		if($this->hasInvoiceAddress()) {
+			return $this->getInvoiceAddress($type);
+		} else if($this->hasDeliveryAddress()) {
+			return $this->getDeliveryAddress($type);
+		} else {
+			return NULL;
 		}
 
-		return $street;
+	}
 
+	public function hasInvoiceAddress(): bool {
+		return ($this->exists() and $this['invoiceCity'] !== NULL);
 	}
 
 	public function getInvoiceAddress(string $type = 'text'): ?string {
@@ -173,7 +183,11 @@ class Customer extends CustomerElement {
 			return NULL;
 		}
 
-		$address = $this->getInvoiceStreet()."\n";
+		$address = $this['invoiceStreet1']."\n";
+		if($this['invoiceStreet2'] !== NULL) {
+			$address .= $this['invoiceStreet2']."\n";
+		}
+
 		$address .= $this['invoicePostcode'].' '.$this['invoiceCity'];
 
 		if($this['invoiceCountry']->notEmpty()) {
@@ -184,19 +198,29 @@ class Customer extends CustomerElement {
 
 	}
 
-	public function getInvoiceStreet(): ?string {
-
-		$street = $this['invoiceStreet1'];
-		if($this['invoiceStreet2'] !== NULL) {
-			$street .= "\n".$this['invoiceStreet2'];
-		}
-
-		return $street;
-
+	public function hasDeliveryAddress(): bool {
+		return ($this->exists() and $this['deliveryCity'] !== NULL);
 	}
 
-	public function hasInvoiceAddress(): bool {
-		return ($this['invoiceCity'] !== NULL);
+	public function getDeliveryAddress(string $type = 'text'): ?string {
+
+		if($this->hasDeliveryAddress() === FALSE) {
+			return NULL;
+		}
+
+		$address = $this['deliveryStreet1']."\n";
+		if($this['deliveryStreet2'] !== NULL) {
+			$address .= $this['deliveryStreet2']."\n";
+		}
+
+		$address .= $this['deliveryPostcode'].' '.$this['deliveryCity'];
+
+		if($this['deliveryCountry']->notEmpty()) {
+			$address .= "\n".\user\Country::ask($this['deliveryCountry'])['name'];
+		}
+
+		return ($type === 'text') ? $address : nl2br(encode($address));
+
 	}
 
 	public function getOptInHash() {
@@ -204,6 +228,9 @@ class Customer extends CustomerElement {
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		\user\User::propertyAddress('delivery', $properties);
+		\user\User::propertyAddress('invoice', $properties);
 
 		$p
 			->setCallback('firstName.empty', function(?string &$firstName): bool {
@@ -321,6 +348,8 @@ class Customer extends CustomerElement {
 				return TRUE;
 
 			})
+			->setCallback('invoiceAddress.empty', fn() => \user\User::buildAddress('invoice', $this))
+			->setCallback('deliveryAddress.empty', fn() => \user\User::buildAddress('delivery', $this))
 			->setCallback('invoiceCountry.check', function(\user\Country $eCountry): bool {
 
 				return (

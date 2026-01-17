@@ -49,7 +49,6 @@ class CsvLib {
 				'vat_rate' => '',
 				'additional' => '',
 				'reference' => '',
-				'description' => '',
 				'origin' => '',
 				'quality' => '',
 				'species' => '',
@@ -69,7 +68,6 @@ class CsvLib {
 				'vat_rate' => \main\CsvLib::formatFloat($line['vat_rate']),
 				'additional' => $line['additional'] ?: NULL,
 				'reference' => $line['reference'] ?: NULL,
-				'description' => $line['description'] ?: NULL,
 				'origin' => $line['origin'] ?: NULL,
 				'quality' => $line['quality'] ?: NULL,
 				'species' => $line['species'] ?: NULL,
@@ -114,7 +112,6 @@ class CsvLib {
 				'additional' => $product['additional'],
 				'origin' => $product['origin'],
 				'quality' => $product['quality'] ?? Product::NO,
-				'description' => new \editor\XmlLib()->fromHtml($product['description']),
 				'unprocessedPlant' => $product['ePlant'],
 				'unprocessedVariety' => $product['variety'],
 				'mixedFrozen' => $product['frozen'],
@@ -144,7 +141,7 @@ class CsvLib {
 					ProductLib::update($eProduct, [
 						'name',
 						'private', 'privatePrice', 'pro', 'proPrice', 'vat',
-						'profile', 'additional', 'origin', 'quality', 'description',
+						'profile', 'additional', 'origin', 'quality',
 						'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedComposition', 'processedAllergen'
 					]);
 
@@ -190,6 +187,7 @@ class CsvLib {
 			'units' => [],
 			'species' => [],
 			'references' => [],
+			'profiles' => [],
 		];
 		$infoGlobal = [
 			'references' => [],
@@ -234,6 +232,7 @@ class CsvLib {
 				$errors[] = 'profileMissing';
 			} else if(in_array($product['profile'], \selling\Product::getProfiles('import')) === FALSE) {
 				$errors[] = 'profileInvalid';
+				$errorsGlobal['profiles'][] = $product['profile'];
 			}
 
 			if($product['name'] === NULL) {
@@ -332,10 +331,6 @@ class CsvLib {
 
 			}
 
-			if($product['description'] !== NULL) {
-				$import[$key]['description'] = '<p>'.encode($product['description']).'</p>';
-			}
-
 			if($product['allergen'] !== NULL) {
 
 				if(in_array($product['profile'], Product::getProfiles('processedAllergen')) === FALSE) {
@@ -388,6 +383,7 @@ class CsvLib {
 		$errorsGlobal['units'] = array_unique($errorsGlobal['units']);
 		$errorsGlobal['vatRates'] = array_unique($errorsGlobal['vatRates']);
 		$errorsGlobal['species'] = array_unique($errorsGlobal['species']);
+		$errorsGlobal['profiles'] = array_unique($errorsGlobal['profiles']);
 
 		return [
 			'import' => $import,

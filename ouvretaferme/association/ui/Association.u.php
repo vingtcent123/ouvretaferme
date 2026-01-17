@@ -286,9 +286,9 @@ Cordialement,
 					}
 				$h .= '</div>';
 
-				if($eCustomer->hasInvoiceAddress()) {
+				if($eCustomer->hasAddress()) {
 					$h .= '<div class="pdf-document-customer-address">';
-						$h .= $eCustomer->getInvoiceAddress('html');
+						$h .= $eCustomer->getBestInvoiceAddress('html');
 					$h .= '</div>';
 				}
 

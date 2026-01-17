@@ -56,6 +56,7 @@ class CustomerModel extends \ModuleModel {
 			'commercialName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
+			'phone' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'contactName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'user' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -79,14 +80,13 @@ class CustomerModel extends \ModuleModel {
 			'deliveryCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'defaultPaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'phone' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\selling\Customer::ACTIVE, \selling\Customer::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'email', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'phone', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'email', 'phone', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -203,6 +203,10 @@ class CustomerModel extends \ModuleModel {
 		return $this->where('email', ...$data);
 	}
 
+	public function wherePhone(...$data): CustomerModel {
+		return $this->where('phone', ...$data);
+	}
+
 	public function whereContactName(...$data): CustomerModel {
 		return $this->where('contactName', ...$data);
 	}
@@ -293,10 +297,6 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereDefaultPaymentMethod(...$data): CustomerModel {
 		return $this->where('defaultPaymentMethod', ...$data);
-	}
-
-	public function wherePhone(...$data): CustomerModel {
-		return $this->where('phone', ...$data);
 	}
 
 	public function whereColor(...$data): CustomerModel {

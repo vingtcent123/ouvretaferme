@@ -11,12 +11,12 @@ class UserObserverUi {
 
 			case 'farmer' :
 				$h .=  $form->hidden('type', \user\User::PRIVATE);
-				$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName', 'email', 'invoiceCountry']);
+				$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName', 'email', 'deliveryCountry']);
 				break;
 
 			default :
 				$h .= $form->dynamicGroup($eUser, 'type');
-				$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName', 'email', 'invoiceCountry']);
+				$h .= $form->dynamicGroups($eUser, ['firstName', 'lastName', 'email', 'deliveryCountry']);
 				break;
 
 		}
@@ -47,7 +47,7 @@ class UserObserverUi {
 
 				$h .= $form->dynamicGroup($eUser, 'siret');
 				$h .= $form->dynamicGroup($eUser, 'legalName');
-				$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eUser);
+				$h .= $form->addressGroup(s("Adresse"), 'delivery', $eUser, ['country' => FALSE]);
 
 			$h .= '</div>';
 

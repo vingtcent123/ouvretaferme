@@ -38,14 +38,18 @@ class UserObserverLib {
 			$values['email'] = $eUser['email'];
 		}
 
-		$address = ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'];
+		foreach(['invoice', 'delivery'] as $type) {
 
-		if(array_intersect($address, $properties)) {
+			$address = [$type.'Street1', $type.'Street2', $type.'Postcode', $type.'City', $type.'Country'];
 
-			$eUser->expects($address);
+			if(array_intersect($address, $properties)) {
 
-			foreach($address as $property) {
-				$values[str_replace('invoice', 'delivery', $property)] = $eUser[$property];
+				$eUser->expects($address);
+
+				foreach($address as $property) {
+					$values[$property] = $eUser[$property];
+				}
+
 			}
 
 		}
@@ -55,7 +59,6 @@ class UserObserverLib {
 		}
 
 		Customer::model()
-			->whereType(Customer::PRIVATE)
 			->whereUser($eUser)
 			->update($values);
 

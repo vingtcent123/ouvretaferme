@@ -62,6 +62,11 @@ class UserModel extends \ModuleModel {
 			'invoiceStreet2' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoicePostcode' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCity' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'deliveryCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
+			'deliveryStreet1' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'deliveryStreet2' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'deliveryPostcode' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'deliveryCity' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'verified' => ['bool', 'cast' => 'bool'],
 			'visibility' => ['enum', [\user\User::PUBLIC, \user\User::PRIVATE], 'cast' => 'enum'],
 			'status' => ['enum', [\user\User::ACTIVE, \user\User::SUSPENDED, \user\User::CLOSED], 'cast' => 'enum'],
@@ -79,11 +84,12 @@ class UserModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'type', 'firstName', 'lastName', 'legalName', 'email', 'phone', 'siret', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'verified', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
+			'id', 'type', 'firstName', 'lastName', 'legalName', 'email', 'phone', 'siret', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'verified', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
 		]);
 
 		$this->propertiesToModule += [
 			'invoiceCountry' => 'user\Country',
+			'deliveryCountry' => 'user\Country',
 			'referer' => 'user\User',
 			'role' => 'user\Role',
 		];
@@ -220,6 +226,26 @@ class UserModel extends \ModuleModel {
 
 	public function whereInvoiceCity(...$data): UserModel {
 		return $this->where('invoiceCity', ...$data);
+	}
+
+	public function whereDeliveryCountry(...$data): UserModel {
+		return $this->where('deliveryCountry', ...$data);
+	}
+
+	public function whereDeliveryStreet1(...$data): UserModel {
+		return $this->where('deliveryStreet1', ...$data);
+	}
+
+	public function whereDeliveryStreet2(...$data): UserModel {
+		return $this->where('deliveryStreet2', ...$data);
+	}
+
+	public function whereDeliveryPostcode(...$data): UserModel {
+		return $this->where('deliveryPostcode', ...$data);
+	}
+
+	public function whereDeliveryCity(...$data): UserModel {
+		return $this->where('deliveryCity', ...$data);
 	}
 
 	public function whereVerified(...$data): UserModel {

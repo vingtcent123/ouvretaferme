@@ -26,7 +26,10 @@ document.delegateEventListener('autocompleteSelect', 'input[data-autocomplete-ma
 
 });
 
+
 class Place {
+
+	static FR = 75;
 
 	static querySiret(target) {
 
@@ -66,6 +69,7 @@ class Place {
 		form.qs('input[name="'+ prefix +'Street2"]').value = form.qs('.siret-found .siret-street2').innerHTML;
 		form.qs('input[name="'+ prefix +'Postcode"]').value = form.qs('.siret-found .siret-postcode').innerHTML;
 		form.qs('input[name="'+ prefix +'City"]').value = form.qs('.siret-found .siret-city').innerHTML;
+		form.qs('select[name="'+ prefix +'Country"]').value = Place.FR;
 
 		form.qs('.siret-found').hide();
 

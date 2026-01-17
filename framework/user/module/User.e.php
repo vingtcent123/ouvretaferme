@@ -79,9 +79,48 @@ class User extends UserElement {
 		return ($this['status'] === User::ACTIVE);
 	}
 
-	public function getAddress(): ?string {
+	public function hasAddress(): bool {
+		return (
+			$this->hasInvoiceAddress() or
+			$this->hasDeliveryAddress()
+		);
+	}
 
-		if($this->hasAddress() === FALSE) {
+	public function getBestInvoiceAddress(): ?string {
+
+		if($this->hasInvoiceAddress()) {
+			return $this->getInvoiceAddress();
+		} else if($this->hasDeliveryAddress()) {
+			return $this->getDeliveryAddress();
+		} else {
+			return NULL;
+		}
+
+	}
+
+	public function getDeliveryAddress(): ?string {
+
+		if($this->hasDeliveryAddress() === FALSE) {
+			return NULL;
+		}
+
+		$address = $this['deliveryStreet1']."\n";
+		if($this['deliveryStreet2'] !== NULL) {
+			$address .= $this['deliveryStreet2']."\n";
+		}
+		$address .= $this['deliveryPostcode'].' '.$this['deliveryCity'];
+
+		return $address;
+
+	}
+
+	public function hasDeliveryAddress(): bool {
+		return $this['deliveryCity'] !== NULL;
+	}
+
+	public function getInvoiceAddress(): ?string {
+
+		if($this->hasInvoiceAddress() === FALSE) {
 			return NULL;
 		}
 
@@ -95,8 +134,36 @@ class User extends UserElement {
 
 	}
 
-	public function hasAddress(): bool {
-		return ($this['invoiceCity'] !== NULL);
+	public function hasInvoiceAddress(): bool {
+		return $this['invoiceCity'] !== NULL;
+	}
+
+	public function copyDeliveryAddress(\Element $e, array &$properties = []): void {
+
+		$e->merge([
+			'deliveryStreet1' => $this['deliveryStreet1'],
+			'deliveryStreet2' => $this['deliveryStreet2'],
+			'deliveryPostcode' => $this['deliveryPostcode'],
+			'deliveryCity' => $this['deliveryCity'],
+			'deliveryCountry' => $this['deliveryCountry'],
+		]);
+
+		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']);
+
+	}
+
+	public function copyInvoiceAddress(\Element $e, array &$properties = []): void {
+
+		$e->merge([
+			'invoiceStreet1' => $this['invoiceStreet1'],
+			'invoiceStreet2' => $this['invoiceStreet2'],
+			'invoicePostcode' => $this['invoicePostcode'],
+			'invoiceCity' => $this['invoiceCity'],
+			'invoiceCountry' => $this['invoiceCountry'],
+		]);
+
+		$properties = array_merge($properties, ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry']);
+
 	}
 
 	public function isPrivate(): bool {
@@ -116,22 +183,17 @@ class User extends UserElement {
 			unset($properties[$emailKey]);
 		}
 
-		$address = count(array_intersect($properties, ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity']));
-
-		if($address === 4) {
-			$properties[] = 'address';
-		} else if($address > 0) {
-			throw new \Exception('Invalid address build');
-		}
+		self::propertyAddress('delivery', $properties);
+		self::propertyAddress('invoice', $properties);
 
 		$p
 			->setCallback('siret.prepare', function(?string &$siret) use($p): void {
 
-				$this->expects(['type', 'invoiceCountry']);
+				$this->expects(['type', 'deliveryCountry']);
 
 				if(
 					$this['type'] === User::PRIVATE or
-					$this['invoiceCountry']->isFR() === FALSE
+					$this['deliveryCountry']->isFR() === FALSE
 				) {
 					$siret = NULL;
 				}
@@ -160,6 +222,11 @@ class User extends UserElement {
 				);
 
 			})
+			->setCallback('deliveryCountry.check', function($eCountry): bool {
+
+				return Country::model()->exists($eCountry);
+
+			})
 			->setCallback('invoiceCountry.check', function($eCountry): bool {
 
 				return Country::model()->exists($eCountry);
@@ -184,35 +251,14 @@ class User extends UserElement {
 				}
 
 			})
-			->setCallback('address.empty', function(): bool {
-
-				if($this['invoiceStreet1'] === NULL and $this['invoiceStreet2'] === NULL and $this['invoicePostcode'] === NULL and $this['invoiceCity'] === NULL) {
-					return TRUE;
-				}
-
-				$fw = new \FailWatch();
-
-				if($this['invoiceStreet1'] === NULL) {
-					User::fail('invoiceStreet1.check');
-				}
-
-				if($this['invoicePostcode'] === NULL) {
-					User::fail('invoicePostcode.check');
-				}
-
-				if($this['invoiceCity'] === NULL) {
-					User::fail('invoiceCity.check');
-				}
-
-				return $fw->ok();
-
-			})
-			->setCallback('invoiceAddressMandatory.check', function(): bool {
+			->setCallback('invoiceAddress.empty', fn() => \user\User::buildAddress('invoice', $this))
+			->setCallback('deliveryAddress.empty', fn() => \user\User::buildAddress('delivery', $this))
+			->setCallback('deliveryAddressMandatory.check', function() use ($p): bool {
 
 				return (
-					$this['invoiceStreet1'] !== NULL and
-					$this['invoicePostcode'] !== NULL and
-					$this['invoiceCity'] !== NULL
+					$this['deliveryStreet1'] !== NULL and
+					$this['deliveryPostcode'] !== NULL and
+					$this['deliveryCity'] !== NULL
 				);
 
 			});
@@ -266,6 +312,42 @@ class User extends UserElement {
 		} else {
 			return FALSE;
 		}
+
+	}
+	
+	public static function propertyAddress(string $type, array &$properties): void {
+
+		$address = count(array_intersect($properties, [$type.'Street1', $type.'Street2', $type.'Postcode', $type.'City']));
+
+		if($address === 4) {
+			$properties[] = $type.'Address';
+		} else if($address > 0) {
+			throw new \Exception('Invalid address build');
+		}
+
+	}
+
+	public static function buildAddress(string $type, \Element $e): bool {
+		
+		if($e[$type.'Street1'] === NULL and $e[$type.'Street2'] === NULL and $e[$type.'Postcode'] === NULL and $e[$type.'City'] === NULL) {
+			return TRUE;
+		}
+
+		$fw = new \FailWatch();
+
+		if($e[$type.'Street1'] === NULL) {
+			User::fail($type.'Street1.check');
+		}
+
+		if($e[$type.'Postcode'] === NULL) {
+			User::fail($type.'Postcode.check');
+		}
+
+		if($e[$type.'City'] === NULL) {
+			User::fail($type.'City.check');
+		}
+
+		return $fw->ok();
 
 	}
 	

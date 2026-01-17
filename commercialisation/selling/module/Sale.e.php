@@ -121,21 +121,7 @@ class Sale extends SaleElement {
 		return ($this['deliveryCity'] !== NULL);
 	}
 
-	public function copyAddressFromUser(\user\User $eUser, array &$properties = []): void {
-
-		$this->merge([
-			'deliveryStreet1' => $eUser['invoiceStreet1'],
-			'deliveryStreet2' => $eUser['invoiceStreet2'],
-			'deliveryPostcode' => $eUser['invoicePostcode'],
-			'deliveryCity' => $eUser['invoiceCity'],
-			'deliveryCountry' => $eUser['invoiceCountry'],
-		]);
-
-		$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']);
-
-	}
-
-	public function emptyAddress(&$properties = []): void {
+	public function emptyDeliveryAddress(&$properties = []): void {
 
 		$this->merge([
 			'deliveryStreet1' => NULL,

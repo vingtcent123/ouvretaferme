@@ -15,6 +15,11 @@ class CustomerGroup extends CustomerGroupElement {
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
+		$p
+			->setCallback('name.comma', function(string $name): bool {
+				return str_contains($name, ',') === FALSE;
+			});
+
 		parent::build($properties, $input, $p);
 
 	}

@@ -100,7 +100,7 @@ class MembershipUi {
 
 		$h = '<div class="util-title">';
 			$h .= '<h3>'.s("Adhérent").'</h3>';
-			$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
+			$h .= '<a href="/farm/farm:updateLegal?id='.$eFarm['id'].'" class="btn btn-outline-primary">'.s("Mettre à jour").'</a>';
 		$h .= '</div>';
 
 		if($eFarm->isLegal() === FALSE) {

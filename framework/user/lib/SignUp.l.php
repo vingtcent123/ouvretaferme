@@ -40,7 +40,7 @@ class SignUpLib {
 			return FALSE;
 		}
 
-		$eUser->build(['email', 'firstName', 'lastName', 'legalName', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'siret'], $input);
+		$eUser->build(['email', 'firstName', 'lastName', 'legalName', 'deliveryCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'siret'], $input);
 
 		if($eUser->offsetExists('id') === FALSE) {
 
@@ -136,7 +136,7 @@ class SignUpLib {
 	 */
 	public static function create(\Element $eUser, bool $verifiedByDefault = TRUE) {
 
-		$eUser->expects(['auth', 'visibility', 'invoiceCountry']);
+		$eUser->expects(['auth', 'visibility', 'deliveryCountry']);
 
 		// Required by doLogIn() for log in just after create
 		$eUser['status'] = User::ACTIVE;
@@ -144,6 +144,7 @@ class SignUpLib {
 		$eUser['seniority'] = 1;
 		$eUser['verified'] = $verifiedByDefault;
 		$eUser['onlineToday'] = FALSE;
+		$eUser['invoiceCountry'] = $eUser['deliveryCountry'];
 
 		// We check if this IP is banned before creating the account
 		if(UserSetting::$featureBan) {

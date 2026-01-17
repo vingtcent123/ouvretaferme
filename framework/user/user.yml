@@ -58,6 +58,11 @@ User:
   invoiceStreet2: ?text8(1, null)
   invoicePostcode: ?text8(1, null)
   invoiceCity: ?text8(1, null)
+  deliveryCountry: ?user\Country
+  deliveryStreet1: ?text8(1, null)
+  deliveryStreet2: ?text8(1, null)
+  deliveryPostcode: ?text8(1, null)
+  deliveryCity: ?text8(1, null)
   verified: bool = FALSE
   visibility: enum(PUBLIC, PRIVATE) = PUBLIC
   status: enum(ACTIVE, SUSPENDED, CLOSED) = ACTIVE

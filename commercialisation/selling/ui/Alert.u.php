@@ -18,6 +18,8 @@ class AlertUi {
 			'Customer::firstName.empty' => s("Veuillez indiquer le prénom de votre client."),
 			'Customer::lastName.empty' => s("Veuillez indiquer le nom de votre client."),
 
+			'CustomerGroup::name.comma' => s("Le nom du groupe ne peut pas contenir de virgule."),
+
 			'Grid::group.orCustomer' => s("Merci d'indiquer un groupe de clients ou un client valide."),
 			'Grid::group.duplicate' => s("Il y a déjà un prix personnalisé pour ce groupe de clients."),
 			'Grid::customer.duplicate' => s("Il y a déjà un prix personnalisé pour ce client."),

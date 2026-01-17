@@ -261,7 +261,7 @@ class SaleLib {
 			$eSaleReference['shopPoint']->notEmpty() and
 			$eSaleReference['shopPoint']['type'] === Point::HOME
 		) {
-			$eSaleReference->copyAddressFromUser($eUser, $properties);
+			$eUser->copyDeliveryAddress($eSaleReference, $properties);
 		}
 
 	}

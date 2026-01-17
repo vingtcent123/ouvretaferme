@@ -511,7 +511,7 @@ class BasketUi {
 
 		$class = $hasPoint === FALSE or (
 			$ePointSelected->notEmpty() and (
-				($ePointSelected['type'] === Point::HOME and $eUserOnline->hasAddress()) or
+				($ePointSelected['type'] === Point::HOME and $eUserOnline->hasDeliveryAddress()) or
 				($ePointSelected['type'] === Point::PLACE)
 			)
 		) ? '' : 'hide';
@@ -622,7 +622,7 @@ class BasketUi {
 
 			$h .= $this->getAddress($eUser);
 
-			if($eUser->hasAddress() === FALSE) {
+			if($eUser->hasDeliveryAddress() === FALSE) {
 				$h .= $this->getAddressForm($eShop, $eDate, $eUser);
 			}
 
@@ -665,7 +665,7 @@ class BasketUi {
 
 			$h .= $form->openAjax(\shop\ShopUi::userUrl($eShop, $eDate, ':doUpdateAddress'), ['style' => 'max-width: 40rem']);
 
-				$h .= $form->address('invoice', $eUser).'<br/>';
+				$h .= $form->address('delivery', $eUser).'<br/>';
 				$h .= $form->submit(s("Enregistrer l'adresse").' '.\Asset::icon('chevron-right'), ['class' => 'btn btn-lg btn-secondary']);
 
 			$h .= $form->close();
@@ -688,9 +688,9 @@ class BasketUi {
 			$h .= '<dl class="util-presentation util-presentation-1">';
 				$h .= '<dt>'.s("Nom").'</dt>';
 				$h .= '<dd>'.$eUser->getName().'</dd>';
-				if($eUser->hasAddress()) {
+				if($eUser->hasDeliveryAddress()) {
 					$h .= '<dt class="shop-basket-address-lines">'.s("Adresse").'</dt>';
-					$h .= '<dd class="shop-basket-address-lines" style="line-height: 1.2">'.nl2br(encode($eUser->getAddress())).'</dd>';
+					$h .= '<dd class="shop-basket-address-lines" style="line-height: 1.2">'.nl2br(encode($eUser->getDeliveryAddress())).'</dd>';
 				}
 				$h .= '<dt>'.s("Téléphone").'</dt>';
 				$h .= '<dd id="shop-basket-address-phone">'.encode($eUser['phone']).'</dd>';

@@ -574,7 +574,7 @@ new Page(function($data) {
 		if(
 			$eSaleReference['shopPoint']->notEmpty() and
 			$eSaleReference['shopPoint']['type'] === \shop\Point::HOME and
-			$data->eUserOnline->hasAddress() === FALSE
+			$data->eUserOnline->hasDeliveryAddress() === FALSE
 		) {
 			\selling\Sale::fail('address.check');
 		}
@@ -646,7 +646,7 @@ new Page(function($data) {
 		if(
 			$data->eSaleReference['shopPoint']->notEmpty() and
 			$data->eSaleReference['shopPoint']['type'] === \shop\Point::HOME and
-			$data->eUserOnline->hasAddress() === FALSE
+			$data->eUserOnline->hasDeliveryAddress() === FALSE
 		) {
 			\selling\Sale::fail('address.check');
 		}
@@ -671,5 +671,5 @@ new Page(function($data) {
 new \user\UserPage()
 	->getElement(fn() => \user\ConnectionLib::getOnline())
 	->doUpdateProperties('/shop/public/{fqn}/{date}/:doUpdatePhone', ['phone'], fn($data) => throw new ViewAction($data))
-	->doUpdateProperties('/shop/public/{fqn}/{date}/:doUpdateAddress', ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceAddressMandatory'], fn($data) => throw new ViewAction($data));
+	->doUpdateProperties('/shop/public/{fqn}/{date}/:doUpdateAddress', ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryAddressMandatory'], fn($data) => throw new ViewAction($data));
 ?>

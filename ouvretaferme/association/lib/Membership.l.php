@@ -77,16 +77,9 @@ class MembershipLib {
 			$eUser = $eUserConnected;
 
 			if($eFarm['siret']) {
-
 				$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
-
 			} else {
-
-				$eCustomer = \selling\Customer::model()
-          ->whereName($eFarm['name'])
-          ->whereLegalName($eFarm['legalName'])
-          ->get();
-
+				$eCustomer = new \selling\Customer();
 			}
 
 		} else {
@@ -101,10 +94,10 @@ class MembershipLib {
 				\user\User::fail('email.check');
 			}
 
-			$eUser->build(['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity'], $_POST);
+			$eUser->build(['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'], $_POST);
 
 			if($eUser['invoiceStreet1'] === NULL and $eUser['invoiceStreet2'] === NULL and $eUser['invoicePostcode'] === NULL and $eUser['invoiceCity'] === NULL) {
-				\user\User::fail('address.check');
+				\user\User::fail('invoiceAddress.check');
 			}
 			$fw->validate();
 
@@ -155,12 +148,10 @@ class MembershipLib {
 					'name' => $eUser->getName(),
 					'type' => \selling\Customer::PRIVATE,
 					'destination' => \selling\Customer::INDIVIDUAL,
-					'invoiceStreet1' => $eUser['invoiceStreet1'],
-					'invoiceStreet2' => $eUser['invoiceStreet2'],
-					'invoicePostcode' => $eUser['invoicePostcode'],
-					'invoiceCity' => $eUser['invoiceCity'],
 					'invoiceEmail' => $eUser['email'],
 				]);
+
+				$eUser->copyInvoiceAddress($eCustomer);
 
 			}
 
@@ -272,12 +263,12 @@ class MembershipLib {
 		$eCustomer = self::getCustomerByFarm($eFarm, $eMethod);
 
 		$eHistoryDb = History::model()
-     ->select(History::getSelection() + ['customer' => ['id', 'invoiceEmail']])
-     ->whereCustomer($eCustomer)
-     ->whereType($eHistory['type'])
-     ->whereMembership($membershipYear)
-     ->wherePaymentStatus(History::INITIALIZED)
-     ->get();
+		  ->select(History::getSelection() + ['customer' => ['id', 'invoiceEmail']])
+		  ->whereCustomer($eCustomer)
+		  ->whereType($eHistory['type'])
+		  ->whereMembership($membershipYear)
+		  ->wherePaymentStatus(History::INITIALIZED)
+		  ->get();
 
 		if($eHistoryDb->empty()) {
 

@@ -1037,12 +1037,11 @@ class SaleLib extends SaleCrud {
 			) {
 
 				$eUser = \user\UserLib::getById($e['customer']['user']);
-
-				$e->copyAddressFromUser($eUser, $properties);
+				$eUser->copyDeliveryAddress($e, $properties);
 
 			} else {
 
-				$e->emptyAddress($properties);
+				$e->emptyDeliveryAddress($properties);
 
 			}
 

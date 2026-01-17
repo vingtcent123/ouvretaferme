@@ -1,5 +1,11 @@
 class Customer {
 
+	static changeAddress(target) {
+
+		target.firstParent('.customer-form-address').qsa('.form-control-address input', (node) => node.value = '');
+
+	}
+
 	static changeCategory(target) {
 
 		const form = target.firstParent('form');

@@ -2157,17 +2157,22 @@ class AnalyzeUi {
 	public function getExportProductsHeader(\farm\Farm $eFarm): array {
 
 		return [
-			'product_id',
+			'type',
 			'name',
-			'additional',
-			'species',
-			'category',
+			'reference',
 			'unit',
-			'variety',
-			'quality',
-			'price_pro',
 			'price_private',
-			'vat'
+			'price_pro',
+			'vat_rate',
+			'additional',
+			'origin',
+			'quality',
+			'species',
+			'variety',
+			'frozen',
+			'packaging',
+			'composition',
+			'allergen'
 		];
 
 	}
@@ -2175,20 +2180,29 @@ class AnalyzeUi {
 	public function getExportCustomersHeader(\farm\Farm $eFarm): array {
 
 		return [
-			'name',
-			'account',
 			'type',
+			'private_first_name',
+			'private_last_name',
+			'pro_commercial_name',
+			'pro_legal_name',
+			'account',
 			'email',
 			'phone',
-			'pro_company',
+			'groups',
+			'pro_contact_name',
 			'pro_siret',
 			'pro_vat',
-			'pro_invoice_street',
-			'pro_invoice_postcode',
-			'pro_invoice_city',
-			'delivery_street',
+			'invoice_street_1',
+			'invoice_street_2',
+			'invoice_postcode',
+			'invoice_city',
+			'invoice_country',
+			'delivery_street_1',
+			'delivery_street_2',
 			'delivery_postcode',
 			'delivery_city',
+			'delivery_country',
+			'discount',
 			'opt_in',
 		];
 

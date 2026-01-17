@@ -1053,17 +1053,22 @@ class AnalyzeLib {
 			->getCollection()
 			->toArray(function($eProduct) use($eFarm) {
 				return [
-					$eProduct['id'],
+					$eProduct['profile'],
 					$eProduct['name'],
-					$eProduct['additional'],
-					$eProduct['unprocessedPlant']->empty() ? '' : $eProduct['unprocessedPlant']['name'],
-					$eProduct['category']->empty() ? '' : $eProduct['category']['name'],
+					$eProduct['reference'],
 					$eProduct['unit']->empty() ? '' : $eProduct['unit']['singular'],
-					$eProduct['unprocessedVariety'] ?? '',
-					$eProduct['quality'] ? ProductUi::p('quality')->values[$eProduct['quality']] : '',
-					($eProduct['proPrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['proPrice']) : '',
 					($eProduct['privatePrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['privatePrice']) : '',
-					$eFarm->getConf('hasVat') ? \util\TextUi::csvNumber(SellingSetting::getVatRate($eProduct['farm'], $eProduct['vat'])) : '',
+					($eProduct['proPrice'] !== NULL) ? \util\TextUi::csvNumber($eProduct['proPrice']) : '',
+					$eFarm->getConf('hasVat') ? \util\TextUi::csvNumber(SellingSetting::getVatRate($eFarm, $eProduct['vat'])) : '',
+					$eProduct['additional'],
+					$eProduct['origin'],
+					$eProduct['quality'],
+					$eProduct['unprocessedPlant']->empty() ? '' : $eProduct['unprocessedPlant']['name'],
+					$eProduct['unprocessedVariety'],
+					$eProduct['mixedFrozen'],
+					$eProduct['processedPackaging'],
+					$eProduct['processedComposition'],
+					$eProduct['processedAllergen'],
 				];
 			});
 
@@ -1081,25 +1086,43 @@ class AnalyzeLib {
 					->delegateElement('email', propertyParent: 'email')
 			])
 			->whereFarm($eFarm)
+			->or(
+				fn() => $this->whereType(Customer::PRO),
+				fn() => $this
+					->whereType(Customer::PRIVATE)
+					->whereDestination(Customer::INDIVIDUAL)
+			)
 			->whereStatus(Customer::ACTIVE)
 			->sort('name')
 			->getCollection()
 			->toArray(function($eCustomer) use($eFarm) {
+
+				$cGroup = $eCustomer['cGroup?']();
+
 				return [
-					$eCustomer->getName(),
-					$eCustomer['user']->empty() ? s("non") : s("oui"),
 					CustomerUi::getCategory($eCustomer),
+					$eCustomer['type'] === Customer::PRIVATE ? $eCustomer['firstName'] : '',
+					$eCustomer['type'] === Customer::PRIVATE ? $eCustomer['lastName'] : '',
+					$eCustomer['type'] === Customer::PRO ? $eCustomer['commercialName'] : '',
+					$eCustomer['type'] === Customer::PRO ? $eCustomer['legalName'] : '',
+					$eCustomer['user']->empty() ? s("non") : s("oui"),
 					$eCustomer['email'],
-					$eCustomer['phone'] ? '="'.$eCustomer['phone'].'"' : '',
-					$eCustomer['legalName'] ?? '',
-					$eCustomer['type'] === Customer::PRO ? ($eCustomer['proRegistration'] ?? '') : '',
-					$eCustomer['type'] === Customer::PRO ? ($eCustomer['proVat'] ?? '') : '',
-					$eCustomer['type'] === Customer::PRO ? $eCustomer->getInvoiceStreet() : '',
-					$eCustomer['type'] === Customer::PRO ? ($eCustomer['invoicePostcode'] ?? '') : '',
-					$eCustomer['type'] === Customer::PRO ? ($eCustomer['invoiceCity'] ?? '') : '',
-					$eCustomer->getDeliveryStreet(),
-					$eCustomer['deliveryPostcode'] ?? '',
-					$eCustomer['deliveryCity'] ?? '',
+					$eCustomer['phone'],
+					$cGroup->notEmpty() ? implode(', ', $cGroup->getColumn('name')) : '',
+					$eCustomer['type'] === Customer::PRO ? $eCustomer['contactName'] : '',
+					$eCustomer['type'] === Customer::PRO ? $eCustomer['siret'] : '',
+					$eCustomer['type'] === Customer::PRO ? $eCustomer['vatNumber'] : '',
+					$eCustomer['invoiceStreet1'],
+					$eCustomer['invoiceStreet2'],
+					$eCustomer['invoicePostcode'],
+					$eCustomer['invoiceCity'],
+					$eCustomer['invoiceCountry']->notEmpty() ? \user\Country::ask($eCustomer['invoiceCountry'])['name'] : '',
+					$eCustomer['deliveryStreet1'],
+					$eCustomer['deliveryStreet2'],
+					$eCustomer['deliveryPostcode'],
+					$eCustomer['deliveryCity'],
+					$eCustomer['deliveryCountry']->notEmpty() ? \user\Country::ask($eCustomer['deliveryCountry'])['name'] : '',
+					$eCustomer['discount'],
 					($eCustomer['contact']->getOptIn() === NULL) ? s("?") : ($eCustomer['contact']->getOptIn() ? s("oui") : s("non")),
 				];
 			});

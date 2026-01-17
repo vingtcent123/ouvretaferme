@@ -769,9 +769,12 @@ class PdfUi {
 						$h .= encode($eCustomer->getLegalName()).'<br/>';
 					$h .= '</div>';
 
-					if($eCustomer->hasInvoiceAddress()) {
+					if($eCustomer->hasAddress()) {
 						$h .= '<div class="pdf-document-customer-address">';
-							$h .= $eCustomer->getInvoiceAddress('html');
+							$h .= match($type) {
+								Pdf::DELIVERY_NOTE => $eCustomer->getDeliveryAddress('html'),
+								Pdf::ORDER_FORM, Pdf::INVOICE => $eCustomer->getBestInvoiceAddress('html')
+							};
 						$h .= '</div>';
 					}
 

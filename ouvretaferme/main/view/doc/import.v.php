@@ -288,6 +288,12 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 				s("Tomate")
 			],
 			[
+				s("Référence du produit"),
+				'reference',
+				s("Une référence interne pour le produit (uniquement des chiffres, des lettres et des tirets). Une même référence ne peut pas être utilisée pour plusieurs produits."),
+				s("TOMCDB")
+			],
+			[
 				s("Unité de vente"),
 				'unit',
 				s("L'unité de vente doit correspondre à <link>une des unités de vente de votre ferme</link>. Vous devez utiliser le nom de l'unité au singulier.", ['link' => $data->eFarm->empty() ? NULL : '<a href="/selling/unit:manage?farm='.$data->eFarm['id'].'">']),
@@ -316,18 +322,6 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 				'additional',
 				s("Un court texte pour compléter le nom du produit"),
 				s("Environ 400 grammes")
-			],
-			[
-				s("Référence du produit"),
-				'reference',
-				s("Une référence interne pour le produit (uniquement des chiffres, des lettres et des tirets). Une même référence ne peut pas être utilisée pour plusieurs produits."),
-				s("TOMCDB")
-			],
-			[
-				s("Description du produit"),
-				'description',
-				s("Une présentation du produit"),
-				s("Cette tomate charnue ravira vos papilles.")
 			],
 			[
 				s("Origine du produit"),

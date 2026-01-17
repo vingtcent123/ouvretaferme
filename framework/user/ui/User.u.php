@@ -7,6 +7,7 @@ class UserUi {
 
 	public function __construct() {
 		\Asset::css('user', 'user.css');
+		\Asset::js('user', 'user.js');
 	}
 
 	public static function name(User $eUser): string {
@@ -191,11 +192,21 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 		if($eUser['type'] === User::PRO) {
 			$h .= $form->dynamicGroup($eUser, 'siret');
 			$h .= $form->dynamicGroup($eUser, 'legalName');
-			$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eUser);
-		} else {
-			$h .= $form->addressGroup(s("Adresse"), 'invoice', $eUser);
 		}
 
+		$h .= $form->addressGroup(s("Adresse de livraison"), 'delivery', $eUser);
+
+		$h .= '<div class="user-form-address">';
+
+			$before = $form->checkbox(NULL, '1', [
+				'onclick' => 'User.changeAddress(this);',
+				'checked' => $eUser->hasInvoiceAddress() === FALSE,
+				'callbackLabel' => fn($input) => $input.' '.s("Utiliser la même adresse que la livraison")
+			]);
+
+			$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eUser, before: $before);
+
+		$h .= '</div>';
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
@@ -608,6 +619,7 @@ L'équipe");
 			'type' => s("Je suis"),
 			'role' => s("Profil"),
 			'invoiceCountry' => s("Pays"),
+			'deliveryCountry' => s("Pays"),
 			'email' => s("Adresse e-mail"),
 			'phone' => s("Numéro de téléphone"),
 			'lastName' => s("Nom"),
@@ -617,6 +629,9 @@ L'équipe");
 			'invoiceStreet' => s("Adresse"),
 			'invoicePostcode' => s("Code postal"),
 			'invoiceCity' => s("Ville"),
+			'deliveryStreet' => s("Adresse"),
+			'deliveryPostcode' => s("Code postal"),
+			'deliveryCity' => s("Ville"),
 		]);
 
 		switch($property) {
@@ -630,7 +645,7 @@ L'équipe");
 				break;
 
 			case 'siret' :
-				\main\PlaceUi::querySiret($d, 'invoice');
+				\main\PlaceUi::querySiret($d, 'delivery');
 				break;
 
 			case 'role' :
@@ -662,6 +677,7 @@ L'équipe");
 				break;
 
 			case 'invoiceCountry' :
+			case 'deliveryCountry' :
 				$d->values = fn(User $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, User $e) => [
 					'group' => is_array(\user\Country::form()),

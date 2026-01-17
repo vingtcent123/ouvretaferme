@@ -29,11 +29,12 @@ class CustomerLib extends CustomerCrud {
 
 		// Conserver cet ordre est indispensable : 'firstName', 'lastName', 'commercialName', 'name'
 		$properties = ['firstName', 'lastName', 'commercialName', 'name', 'legalName'];
+		$propertiesAddress = ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry'];
 
 		return match($category) {
 
-			Customer::PRO => array_merge(['category'], $properties, ['invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'email', 'defaultPaymentMethod', 'phone', 'contactName']),
-			Customer::PRIVATE => array_merge(['category'], $properties, ['email', 'defaultPaymentMethod', 'phone']),
+			Customer::PRO => array_merge(['category'], $properties, $propertiesAddress, ['siret', 'vatNumber', 'email', 'defaultPaymentMethod', 'phone', 'contactName']),
+			Customer::PRIVATE => array_merge(['category'], $properties, $propertiesAddress, ['email', 'defaultPaymentMethod', 'phone']),
 			Customer::COLLECTIVE => match($for) {
 				'create' => array_merge(['category'], $properties),
 				'update' => $properties
@@ -315,12 +316,9 @@ class CustomerLib extends CustomerCrud {
 					'commercialName' => $eUser['legalName'],
 					'contactName' => self::getNameFromUser($eUser),
 					'siret' => $eUser['siret'],
-					'invoiceStreet1' => $eUser['invoiceStreet1'],
-					'invoiceStreet2' => $eUser['invoiceStreet2'],
-					'invoicePostcode' => $eUser['invoicePostcode'],
-					'invoiceCity' => $eUser['invoiceCity'],
-					'invoiceCountry' => $eUser['invoiceCountry'],
 				]);
+				$eUser->copyDeliveryAddress($eCustomer);
+				$eUser->copyInvoiceAddress($eCustomer);
 				break;
 
 		}
@@ -380,6 +378,16 @@ class CustomerLib extends CustomerCrud {
 		if(array_delete($properties, 'category')) {
 			$properties[] = 'type';
 			$properties[] = 'destination';
+		}
+
+		if(
+			in_array('deliveryCountry', $properties) and
+			$e->hasInvoiceAddress() === FALSE
+		) {
+
+			$e['invoiceCountry'] = $e['deliveryCountry'];
+			$properties[] = 'invoiceCountry';
+
 		}
 
 		Customer::model()->beginTransaction();

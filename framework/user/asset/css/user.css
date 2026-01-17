@@ -113,6 +113,14 @@ div.user-light-actions a {
 	display: none;
 }
 
-#user-signup:has(select[name="invoiceCountry"] option[value="75"]:not(:checked)) [data-wrapper="siret"] {
+#user-signup:has(select[name="deliveryCountry"] option[value="75"]:not(:checked)) [data-wrapper="siret"] {
+	display: none;
+}
+
+.user-form-address label:has(input[type="checkbox"]) {
+	margin-bottom: 0.5rem;
+}
+
+.user-form-address:has(input[type="checkbox"]:checked) .form-control-address {
 	display: none;
 }

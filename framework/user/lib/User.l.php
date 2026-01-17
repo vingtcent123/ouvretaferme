@@ -11,8 +11,8 @@ class UserLib extends UserCrud {
 	public static function getPropertiesUpdate(): \Closure {
 		return function(User $e) {
 			return match($e['type']) {
-				User::PRIVATE => ['firstName', 'lastName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
-				User::PRO => ['firstName', 'lastName', 'legalName', 'phone', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret']
+				User::PRIVATE => ['firstName', 'lastName', 'phone', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
+				User::PRO => ['firstName', 'lastName', 'legalName', 'phone', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret']
 			};
 		};
 	}
@@ -332,7 +332,17 @@ class UserLib extends UserCrud {
 
 		}
 
-		array_delete($properties, 'invoiceAddressMandatory');
+		if(
+			in_array('deliveryCountry', $properties) and
+			$e->hasInvoiceAddress() === FALSE
+		) {
+
+			$e['invoiceCountry'] = $e['deliveryCountry'];
+			$properties[] = 'invoiceCountry';
+
+		}
+
+		array_delete($properties, 'deliveryAddressMandatory');
 
 		if($properties) {
 

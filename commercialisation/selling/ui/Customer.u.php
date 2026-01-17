@@ -500,10 +500,10 @@ class CustomerUi {
 						$h .= '<dt>'.s("Facturation").'</dt>';
 						$h .= '<dd>';
 
-							if($eCustomer->hasInvoiceAddress()) {
+							if($eCustomer->hasAddress()) {
 								$h .= '<address>';
 									$h .= encode($eCustomer->getLegalName()).'<br/>';
-									$h .= $eCustomer->getInvoiceAddress('html');
+									$h .= $eCustomer->getBestInvoiceAddress('html');
 								$h .= '</address>';
 							}
 
@@ -745,6 +745,7 @@ class CustomerUi {
 
 		$eCustomer['type'] = NULL;
 		$eCustomer['destination'] = NULL;
+		$eCustomer['deliveryCountry'] = $eCustomer['farm']['legalCountry'];
 
 		$eFarm = $eCustomer['farm'];
 
@@ -837,11 +838,9 @@ class CustomerUi {
 		}
 
 		$h .= '<div class="customer-form-type">';
-			$h .= '<div class="customer-form-category customer-form-pro">';
-				$h .= '<h3>'.s("Client professionnel").'</h3>';
-			$h .= '</div>';
-			$h .= '<div class="customer-form-private customer-form-category">';
-				$h .= '<h3>'.s("Client particulier").'</h3>';
+			$h .= '<div class="customer-form-private customer-form-pro customer-form-category">';
+				$h .= '<h3>'.s("Profil du client").'</h3>';
+				$h .= '<div class="mb-1">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son profil et est susceptible de le modifier de lui-même.")).'</div>';
 			$h .= '</div>';
 			$h .= '<div class="customer-form-category customer-form-collective">';
 				$h .= '<h3>'.s("Point de vente pour les particuliers").'</h3>';
@@ -874,29 +873,52 @@ class CustomerUi {
 				$h .= '<div class="customer-form-category customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'siret');
 					$h .= $form->dynamicGroup($eCustomer, 'legalName');
-					$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer);
+				$h .= '</div>';
+
+				$h .= '<div class="customer-form-category '.($eCustomer->exists() ? 'customer-form-private' : '').' customer-form-pro">';
+
+					$h .= $form->addressGroup(s("Adresse de livraison"), 'delivery', $eCustomer);
+
+					$h .= '<div class="customer-form-address">';
+
+						$before = $form->checkbox(NULL, '1', [
+							'onclick' => 'Customer.changeAddress(this);',
+							'checked' => $eCustomer->hasInvoiceAddress() === FALSE,
+							'callbackLabel' => fn($input) => $input.' '.s("Utiliser la même adresse que la livraison")
+						]);
+
+						$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer, before: $before);
+
+					$h .= '</div>';
+
+				$h .= '</div>';
+
+				$h .= '<div class="customer-form-category customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'vatNumber');
 				$h .= '</div>';
-				if($action === 'update') {
-					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-						$h .= $form->dynamicGroup($eCustomer, 'discount');
-					$h .= '</div>';
-					$h .= '<div class="customer-form-category customer-form-pro">';
-						$h .= $form->group(
-							s("Personnaliser les adresses e-mail pour l'envoi de certains documents"),
-							$form->dynamicField($eCustomer, 'orderFormEmail').
-							$form->dynamicField($eCustomer, 'deliveryNoteEmail').
-							$form->dynamicField($eCustomer, 'invoiceEmail')
-						);
-					$h .= '</div>';
-					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-						$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
-					$h .= '</div>';
-					$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
-						$h .= $form->dynamicGroup($eCustomer, 'color');
-					$h .= '</div>';
-				}
 			$h .= '</div>';
+			if($action === 'update') {
+				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+					$h .= '<h3>'.s("Paramétrage du client").'</h3>';
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, 'discount');
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->group(
+						s("Personnaliser les adresses e-mail pour l'envoi de certains documents"),
+						$form->dynamicField($eCustomer, 'orderFormEmail').
+						$form->dynamicField($eCustomer, 'deliveryNoteEmail').
+						$form->dynamicField($eCustomer, 'invoiceEmail')
+					);
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
+				$h .= '</div>';
+				$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, 'color');
+				$h .= '</div>';
+			}
 		$h .= '</div>';
 
 		return $h;
@@ -969,7 +991,7 @@ class CustomerUi {
 				break;
 
 			case 'siret' :
-				\main\PlaceUi::querySiret($d, 'invoice');
+				\main\PlaceUi::querySiret($d, 'delivery');
 				break;
 
 			case 'groups' :
@@ -985,37 +1007,7 @@ class CustomerUi {
 				$d->group = ['wrapper' => 'groups'];
 				break;
 
-			case 'firstName' :
-				$d->after = function(\util\FormUi $form, Customer $e) {
-					$e->expects(['user']);
-					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son prénom et est susceptible de le modifier de lui-même.")).'</div>';
-					} else {
-						return NULL;
-					}
-				};
-				break;
-
-			case 'lastName' :
-				$d->after = function(\util\FormUi $form, Customer $e) {
-					$e->expects(['user']);
-					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son nom et est susceptible de le modifier de lui-même.")).'</div>';
-					} else {
-						return NULL;
-					}
-				};
-				break;
-
 			case 'phone' :
-				$d->after = function(\util\FormUi $form, Customer $e) {
-					$e->expects(['user']);
-					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son numéro de téléphone et est susceptible de le modifier de lui-même.")).'</div>';
-					} else {
-						return NULL;
-					}
-				};
 				$d->prepend = \Asset::icon('telephone');
 				break;
 
@@ -1031,14 +1023,6 @@ class CustomerUi {
 				break;
 
 			case 'email' :
-				$d->after = function(\util\FormUi $form, Customer $e) {
-					$e->expects(['user']);
-					if($e['user']->notEmpty()) {
-						return '<div class="customer-form-itself-private">'.\util\FormUi::info(\Asset::icon('person-circle').' '.s("Le client a aussi la main sur son adresse e-mail et est susceptible de le modifier de lui-même.")).'</div>';
-					} else {
-						return NULL;
-					}
-				};
 				$d->prepend = \Asset::icon('at');
 				break;
 
@@ -1058,6 +1042,7 @@ class CustomerUi {
 				break;
 
 			case 'invoiceCountry' :
+			case 'deliveryCountry' :
 				$d->values = fn(Customer $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, Customer $e) => [
 					'group' => is_array(\user\Country::form()),
