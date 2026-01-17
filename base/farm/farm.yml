@@ -142,7 +142,6 @@ Farmer:
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
   viewAccountingYear: ?account\FinancialYear
-  viewAccountingFinancials: enum(BANK, CHARGES, SIG, VAT, BALANCE_SHEET, INCOME_STATEMENT) = BANK
   viewSeason: ?int16(0, null)
   viewShopCurrent: ?shop\Shop
   createdAt: datetime = SPECIAL(now)

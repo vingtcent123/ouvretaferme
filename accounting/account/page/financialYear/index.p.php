@@ -1,44 +1,4 @@
 <?php
-new Page(function($data) {
-
-	$data->eFarm->validate('canManage');
-
-	if($data->eFarm->usesAccounting() === FALSE) {
-		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-	}
-})
-	->get('index', function($data) {
-
-		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
-		$data->cImport = \account\ImportLib::getAll();
-
-		$data->nOperationByFinancialYear = \journal\OperationLib::countByFinancialYears($data->eFarm['cFinancialYear']);
-
-		foreach($data->eFarm['cFinancialYear'] as $key => $eFinancialYear) {
-
-			$data->eFarm['cFinancialYear'][$key]['nOperation'] = $data->nOperationByFinancialYear[$eFinancialYear['id']]['count'] ?? 0;
-			$data->eFarm['cFinancialYear'][$key]['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
-
-			if($data->cImport->offsetExists($eFinancialYear['id'])) {
-				$data->eFarm['cFinancialYear'][$key]['eImport'] = $data->cImport->offsetGet($eFinancialYear['id']);
-			} else {
-				$data->eFarm['cFinancialYear'][$key]['eImport'] = new \account\Import();
-			}
-		}
-
-		throw new ViewAction($data);
-
-	})
-	->get('document', function($data) {
-
-		$data->eFarm['eFinancialYear']['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
-		$data->eFarm['eFinancialYear']['nOperation'] = \journal\OperationLib::countByFinancialYear($data->eFarm['eFinancialYear']);
-
-		throw new ViewAction($data);
-
-	})
-;
-
 new \account\FinancialYearPage(function($data) {
 
 	$data->eFarm->validate('canManage');
@@ -89,9 +49,11 @@ new \account\FinancialYearPage(function($data) {
 		$e->validate('canUpdate');
 		$data->eOld = clone $e;
 		$e['eOld'] = $data->eOld;
+		$e['nOperation'] = \journal\OperationLib::countByFinancialYear($e);
 
 	})
 	->update(function($data) {
+
 
 		throw new ViewAction($data);
 
@@ -127,7 +89,7 @@ new \account\FinancialYearPage(function($data) {
 
 		\account\FinancialYearLib::openFinancialYear($data->e, POST('journalCode', 'array'));
 
-		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');
+		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/?success=account:FinancialYear::open');
 
 	});
 
@@ -169,6 +131,8 @@ new \account\FinancialYearPage(function($data) {
 			$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
 		}
 
+		$data->e['cImport'] = \account\ImportLib::getByFinancialYear($data->e);
+
 		throw new ViewAction($data);
 	})
 	->write('doClose', function($data) {
@@ -177,7 +141,7 @@ new \account\FinancialYearPage(function($data) {
 
 		\account\FinancialYearLib::closeFinancialYear($data->eFarm, $data->e);
 
-		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::closed');
+		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/?success=account:FinancialYear::closed');
 	})
 	;
 

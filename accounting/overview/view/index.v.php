@@ -1,5 +1,5 @@
 <?php
-new AdaptativeView(\farm\Farmer::CHARGES, function($data, FarmTemplate $t) {
+new AdaptativeView(\overview\AnalyzeLib::TAB_CHARGES, function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';
@@ -28,7 +28,62 @@ new AdaptativeView(\farm\Farmer::CHARGES, function($data, FarmTemplate $t) {
 
 });
 
-new AdaptativeView(\farm\Farmer::BANK, function($data, FarmTemplate $t) {
+new AdaptativeView('index', function($data, FarmTemplate $t) {
+
+	$t->nav = 'accounting';
+	$t->subNav = 'analyze';
+
+	$t->title = s("L'exercice comptable {year} de {farm}", ['year' => $data->eFarm['eFinancialYear']->getLabel(), 'farm' => encode($data->eFarm['name'])]);
+	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/';
+
+	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, \overview\AnalyzeLib::TAB_FINANCIAL_YEAR);
+
+	Asset::css('account', 'financialYear.css');
+
+	echo new \account\FinancialYearUi()->view($data->eFarm, $data->eFinancialYear);
+
+	if($data->eFinancialYear['nOperation'] === 0) {
+
+		echo '<div class="util-empty">';
+			echo '<p>'.s("Dès que vous aurez créé vos premières écritures dans cet exercice comptable, vous pourrez éditer vos documents comme les bilans, le compte de résultat...").'</p>';
+			echo '<p>'.s("Voici plusieurs manières d'ajouter des écritures à votre exercice comptable :").'</p>';
+		echo '</div>';
+
+		echo '<div class="util-buttons">';
+
+			echo '<a href="'.\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal" class="util-button">';
+
+				echo '<h4>'.s("Créer une écriture depuis le journal").'</h4>';
+				echo \Asset::icon('journal-bookmark');
+
+			echo '</a>';
+
+			echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="util-button">';
+
+				echo '<h4>'.s("Créer une écriture depuis mes opérations bancaires").'</h4>';
+				echo \Asset::icon('piggy-bank');
+
+			echo '</a>';
+
+			echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm, $data->eFinancialYear).'/etats-financiers/" class="util-button">';
+
+				echo '<h4>'.s("Importer un fichier FEC depuis les paramètres de l'exercice").'</h4>';
+				echo \Asset::icon('gear');
+
+			echo '</a>';
+
+		echo '</div>';
+
+	} else {
+
+		echo '<h3>'.s("Tous  les documents de l'exercice").'</h3>';
+		echo new \account\FinancialYearDocumentUi()->list($data->eFarm, $data->eFinancialYear);
+
+	}
+
+});
+
+new AdaptativeView(\overview\AnalyzeLib::TAB_BANK, function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';
@@ -42,7 +97,7 @@ new AdaptativeView(\farm\Farmer::BANK, function($data, FarmTemplate $t) {
 
 });
 
-new AdaptativeView(\farm\Farmer::SIG, function($data, FarmTemplate $t) {
+new AdaptativeView(\overview\AnalyzeLib::TAB_SIG, function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';
@@ -73,7 +128,7 @@ new AdaptativeView(\farm\Farmer::SIG, function($data, FarmTemplate $t) {
 
 });
 
-new AdaptativeView(\farm\Farmer::BALANCE_SHEET, function($data, FarmTemplate $t) {
+new AdaptativeView(\overview\AnalyzeLib::TAB_BALANCE_SHEET, function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';
@@ -121,7 +176,7 @@ new AdaptativeView(\farm\Farmer::BALANCE_SHEET, function($data, FarmTemplate $t)
 
 });
 
-new AdaptativeView(\farm\Farmer::INCOME_STATEMENT, function($data, FarmTemplate $t) {
+new AdaptativeView(\overview\AnalyzeLib::TAB_INCOME_STATEMENT, function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';
@@ -154,7 +209,7 @@ new AdaptativeView(\farm\Farmer::INCOME_STATEMENT, function($data, FarmTemplate 
 
 });
 
-new AdaptativeView(\farm\Farmer::VAT, function($data, FarmTemplate $t) {
+new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';

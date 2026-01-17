@@ -3,42 +3,17 @@ namespace overview;
 
 class AnalyzeLib {
 
-	public static function getResultForFinancialYear(\account\FinancialYear $eFinancialYear): array {
+	const TAB_FINANCIAL_YEAR = 'financial-year';
+	const TAB_BANK = 'bank';
+	const TAB_CHARGES = 'charges';
+	const TAB_SIG = 'sig';
+	const TAB_INCOME_STATEMENT = 'income-statement';
+	const TAB_BALANCE_SHEET = 'balance-sheet';
+	const TAB_VAT = 'vat';
 
-		$eOperation = new \journal\Operation();
+	public static function getViews(): array {
 
-		\journal\Operation::model()
-       ->select([
-         'charge' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'", amount, 0))'),
-         'product' => new \Sql('SUM(IF(SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'", amount, 0))'),
-       ])
-       ->whereDate('>=', $eFinancialYear['startDate'])
-       ->whereDate('<=', $eFinancialYear['endDate'])
-       ->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'" OR SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'"'))
-       ->join(\account\Account::model(), 'm1.account = m2.id')
-			->get($eOperation);
-
-		return $eOperation->getArrayCopy();
-
-	}
-
-	public static function getResult(\account\FinancialYear $eFinancialYear): array {
-
-		$cOperation = \journal\Operation::model()
-			->select([
-				'class' => new \Sql('m2.class'),
-				'credit' => new \Sql('SUM(IF(type = "credit", amount, 0))'),
-				'debit' => new \Sql('SUM(IF(type = "debit", amount, 0))'),
-			])
-			->whereDate('>=', $eFinancialYear['startDate'])
-			->whereDate('<=', $eFinancialYear['endDate'])
-			->where(new \Sql('SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::CHARGE_ACCOUNT_CLASS.'" OR SUBSTRING(m2.class, 1, 1) = "'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'"'))
-			->join(\account\Account::model(), 'm1.account = m2.id')
-			->group(['class'])
-			->sort(['class' => SORT_ASC])
-			->getCollection(NULL, NULL, ['class']);
-
-		return $cOperation->getArrayCopy();
+		return [self::TAB_BANK, self::TAB_CHARGES, self::TAB_SIG, self::TAB_INCOME_STATEMENT, self::TAB_BALANCE_SHEET, self::TAB_VAT];
 
 	}
 

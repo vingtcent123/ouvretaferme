@@ -18,6 +18,25 @@ Class ImportLib extends ImportCrud {
 
 	}
 
+	public static function cancelAll(FinancialYear $eFinancialYear): void {
+
+		Import::model()
+			->whereFinancialYear($eFinancialYear)
+			->whereStatus('IN', [Import::WAITING, Import::FEEDBACK_REQUESTED, Import::FEEDBACK_TO_TREAT, Import::CREATED, Import::IN_PROGRESS])
+			->update(['status' => Import::CANCELLED]);
+
+	}
+
+	public static function getByFinancialYear(FinancialYear $eFinancialYear): \Collection {
+
+		return Import::model()
+			->select(Import::getSelection())
+			->whereFinancialYear($eFinancialYear)
+			->sort(['createdAt' => SORT_DESC])
+			->getCollection(NULL, NULL, 'financialYear');
+
+	}
+
 	public static function updateRuleValue(Import $eImport, array $input): void {
 
 		switch($input['type']) {

@@ -3,47 +3,8 @@ namespace account;
 
 Class FinancialYearDocumentUi {
 
-	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): \Panel {
+	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
 
-		if($eFinancialYear['nOperation'] === 0) {
-
-			$h = '<div class="util-empty">';
-				$h .= '<p>'.s("Dès que vous aurez créé vos premières écritures dans cet exercice comptable, vous pourrez éditer vos documents comme les bilans, le compte de résultat...").'</p>';
-				$h .= '<p>'.s("Voici plusieurs manières d'ajouter des écritures à votre exercice comptable :").'</p>';
-			$h .= '</div>';
-
-			$h .= '<div class="util-buttons">';
-
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal" class="util-button">';
-
-					$h .= '<h4>'.s("Créer une écriture depuis le journal").'</h4>';
-					$h .= \Asset::icon('journal-bookmark');
-
-				$h .= '</a>';
-
-				$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations" class="util-button">';
-
-					$h .= '<h4>'.s("Créer une écriture depuis mes opérations bancaires").'</h4>';
-					$h .= \Asset::icon('piggy-bank');
-
-				$h .= '</a>';
-
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/?id='.$eFinancialYear['id'].'" class="util-button">';
-
-					$h .= '<h4>'.s("Importer un fichier FEC depuis les paramètres de l'exercice").'</h4>';
-					$h .= \Asset::icon('gear');
-
-				$h .= '</a>';
-
-			$h .= '</div>';
-
-			return new \Panel(
-				id: 'panel-financial-year-document',
-				title: s("Tous les documents de l'exercice {value}", $eFinancialYear->getLabel()),
-				body: $h,
-			);
-
-		}
 		$hasDocumentGenerating = FALSE;
 		\Asset::js('account', 'financialYearDocument.js');
 
@@ -78,7 +39,6 @@ Class FinancialYearDocumentUi {
 		});
 
 		$showGeneration = count($eFinancialYear['cDocument']->find(fn($e) => $e['generation'] === FinancialYearDocument::SUCCESS)->getColumn('generationAt')) > 0;
-		$showGenerationAt = count($eFinancialYear['cDocument']->getColumn('generationAt')) > 0;
 
 		$h = '<table class="tr-hover tr-even">';
 
@@ -93,14 +53,52 @@ Class FinancialYearDocumentUi {
 							$h .= s("Généré le");
 						$h .= '</th>';
 					}
-					if($showGenerationAt) {
-						$h .= '<th></th>';
-					}
+					$h .= '<th></th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 
 			$h .= '<tbody>';
+
+				if($eFinancialYear['nOperation'] > 0) {
+
+					$h .= '<tr>';
+						$h .= '<td>';
+							$h .= s("Fichier FEC au format TXT");
+						$h .= '</td>';
+						$h .= '<td></td>';
+						if($showGeneration) {
+							$h .= '<td></td>';
+						}
+						$h .= '<td class="text-center">';
+							$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:download" class="btn btn-primary">';
+								$h .= s("Télécharger");
+							$h .= '</a>';
+						$h .= '</td>';
+						$h .= '<td class="text-center">';
+							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal" class="btn btn-outline-secondary btn-md">'.s("Voir les données").'</a>';
+						$h .= '</td>';
+					$h .= '</tr>';
+
+					$h .= '<tr>';
+						$h .= '<td>';
+							$h .= s("Fichier FEC au format CSV");
+						$h .= '</td>';
+						$h .= '<td></td>';
+						if($showGeneration) {
+							$h .= '<td></td>';
+						}
+						$h .= '<td class="text-center">';
+							$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:downloadCsv" class="btn btn-primary">';
+								$h .= s("Télécharger");
+							$h .= '</a>';
+						$h .= '</td>';
+						$h .= '<td class="text-center">';
+							$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal" class="btn btn-outline-secondary btn-md">'.s("Voir les données").'</a>';
+						$h .= '</td>';
+					$h .= '</tr>';
+
+				}
 
 				foreach($documents as $document => $documentData) {
 
@@ -143,22 +141,18 @@ Class FinancialYearDocumentUi {
 
 						}
 
-						if($showGenerationAt) {
-
-							$h .= '<td class="text-center">';
-								if(isset($eFinancialYear['cDocument'][$document])) {
-									if($eFinancialYear['cDocument'][$document]->isProcessing()) {
-										$hasDocumentGenerating = TRUE;
-										$h .= '<i>'.s("Génération en cours...").'</i>';
-									} else if(FinancialYearDocumentLib::hasDocument($eFinancialYear, $document)) {
-										$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$document.'&id='.$eFinancialYear['id'].'" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("PDF").'</a>';
-									}
+						$h .= '<td class="text-center">';
+							if(isset($eFinancialYear['cDocument'][$document])) {
+								if($eFinancialYear['cDocument'][$document]->isProcessing()) {
+									$hasDocumentGenerating = TRUE;
+									$h .= '<i>'.s("Génération en cours...").'</i>';
+								} else if(FinancialYearDocumentLib::hasDocument($eFinancialYear, $document)) {
+									$h .= '<a data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$document.'&id='.$eFinancialYear['id'].'" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("PDF").'</a>';
 								}
-							$h .= '</td>';
+							}
+						$h .= '</td>';
 
-						}
-
-						$h .= '<td>';
+						$h .= '<td class="text-center">';
 							$url = match($document) {
 								FinancialYearDocumentLib::BALANCE_SHEET => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
 								FinancialYearDocumentLib::OPENING => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
@@ -173,7 +167,7 @@ Class FinancialYearDocumentUi {
 								FinancialYearDocumentLib::BALANCE => \company\CompanyUi::urlJournal($eFarm).'/balance',
 								FinancialYearDocumentLib::BALANCE_DETAILED => \company\CompanyUi::urlJournal($eFarm).'/balance?precision=8',
 							};
-							$h .= '<a href="'.$url.'">'.s("Voir les données").'</a>';
+							$h .= '<a href="'.$url.'" class="btn btn-outline-secondary btn-md">'.s("Voir les données").'</a>';
 						$h .= '</td>';
 					$h .= '</tr>';
 
@@ -192,12 +186,7 @@ Class FinancialYearDocumentUi {
 			$attributes = [];
 		}
 
-		return new \Panel(
-			id: 'panel-financial-year-document',
-			title: s("Tous les documents de l'exercice {value}", $eFinancialYear->getLabel()),
-			body: '<div '.attrs($attributes).'>'.$h.'</div>',
-			attributes: $attributes,
-		);
+		return '<div class="stick-sm util-overflow-md" '.attrs($attributes).'>'.$h.'</div>';
 
 	}
 

@@ -172,11 +172,6 @@ class CompanyUi {
 					$h .= \Asset::icon('journal-bookmark');
 				$h .= '</a>';
 
-				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/" class="util-button">';
-					$h .= '<h4>'.s("Les exercices comptables").'</h4>';
-					$h .= \Asset::icon('calendar3');
-				$h .= '</a>';
-
 			$h .= '</div>';
 
 

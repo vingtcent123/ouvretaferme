@@ -1,22 +1,4 @@
 <?php
-new AdaptativeView('index', function($data, FarmTemplate $t) {
-
-	$t->nav = 'settings-accounting';
-
-	$t->title = s("Tous les exercices comptables de {value}", $data->eFarm['name']);
-	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/thirdParty/';
-
-	$t->mainTitle = new \account\FinancialYearUi()->getManageTitle($data->eFarm, $data->cFinancialYearOpen);
-
-	echo new \account\FinancialYearUi()->list($data->eFarm, $data->eFarm['cFinancialYear']);
-
-});
-
-new AdaptativeView('document', function($data, PanelTemplate $t) {
-
-	return new \account\FinancialYearDocumentUi()->list($data->eFarm, $data->eFarm['eFinancialYear']);
-
-});
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 	return new \account\FinancialYearUi()->create($data->eFarm, $data->e);
@@ -38,8 +20,8 @@ new AdaptativeView('open', function($data, FarmTemplate $t) {
 			echo '<h4>';
 				echo s("Attention au principe de séparation des exercices");
 			echo '</h4>';
-				echo '<p>'.s("Réalisez d'abord la clôture de l'exercice {previousYear} avant de réaliser l'ouverture de l'exercice {currentYear}", ['previousYear' => $data->eFinancialYearPrevious->getLabel(), 'currentYear' => $data->e->getLabel()]).'</p>';
-				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlAccount($data->eFarm, $data->eFinancialYearPrevious).'/financialYear/?id='.$data->eFinancialYearPrevious['id'].'">'.s("Je retourne sur l'exercice {value}", $data->eFinancialYearPrevious->getLabel()).'</a>';
+				echo '<p>'.s("Réalisez d'abord la clôture de l'exercice {previousYear} avant de réaliser l'ouverture de l'exercice {currentYear}.", ['previousYear' => $data->eFinancialYearPrevious->getLabel(), 'currentYear' => $data->e->getLabel()]).'</p>';
+				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm, $data->eFinancialYearPrevious).'/etats-financiers/">'.s("Je retourne sur l'exercice {value}", $data->eFinancialYearPrevious->getLabel()).'</a>';
 		echo '</div>';
 
 	} else if($data->eFinancialYearPrevious->empty()) {

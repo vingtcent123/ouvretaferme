@@ -1077,7 +1077,7 @@ class FarmUi {
 				'book' => s("Grand livre"),
 				'balance' => s("Balance"),
 				'assets' => s("Immobilisations"),
-				'analyze' => s("États financiers"),
+				'analyze' => s("Exercice comptable"),
 				'financials' => s("Gestion"),
 				'summary' => s("Synthèse"),
 			},
@@ -2095,9 +2095,9 @@ class FarmUi {
 
 		\Asset::js('account', 'financialYearDocument.js');
 
-		$categories = $this->getAccountingFinancialsCategories();
+		$categories = $this->getAccountingFinancialsCategories($eFarm['eFinancialYear']);
 		if($eFarm['eFinancialYear']['hasVat'] === FALSE) {
-			unset($categories[Farmer::VAT]);
+			unset($categories[\overview\AnalyzeLib::TAB_VAT]);
 		}
 
 		$title = $categories[$selectedView]['label'];
@@ -2127,16 +2127,16 @@ class FarmUi {
 				if($hasData) {
 
 					$h .= match($selectedView) {
-						Farmer::INCOME_STATEMENT => '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
-						Farmer::BALANCE_SHEET => '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
+						\overview\AnalyzeLib::TAB_INCOME_STATEMENT => '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
+						\overview\AnalyzeLib::TAB_BALANCE_SHEET => '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
 					};
 
 				}
 
 				$documentType = match($selectedView) {
-					Farmer::INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
-					Farmer::BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,
-					Farmer::SIG => \account\FinancialYearDocumentLib::SIG,
+					\overview\AnalyzeLib::TAB_INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
+					\overview\AnalyzeLib::TAB_BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,
+					\overview\AnalyzeLib::TAB_SIG => \account\FinancialYearDocumentLib::SIG,
 					default => NULL,
 				};
 
@@ -2154,15 +2154,17 @@ class FarmUi {
 
 	}
 
-	public static function getAccountingFinancialsCategories(): array {
+	public static function getAccountingFinancialsCategories(\account\FinancialYear $eFinancialYear): array {
 		return [
-			Farmer::BANK => ['fqn' => 'tresorerie', 'label' => s("Trésorerie")],
-			Farmer::CHARGES => ['fqn' => 'charges', 'label' => s("Charges et résultat")],
-			Farmer::SIG => ['fqn' => 'sig', 'label' => s("Soldes intermédiaires de gestion")],
-			NULL => NULL,
-			Farmer::INCOME_STATEMENT => ['fqn' => 'compte-de-resultat', 'label' => s("Compte de résultat")],
-			Farmer::BALANCE_SHEET => ['fqn' => 'bilan', 'label' => s("Bilan")],
-			Farmer::VAT => ['fqn' => 'declaration-de-tva', 'label' => s("Déclaration de TVA")],
+			\overview\AnalyzeLib::TAB_FINANCIAL_YEAR => ['fqn' => '', 'label' => s("Exercice {value}", $eFinancialYear->getLabel())],
+			'0' => NULL,
+			\overview\AnalyzeLib::TAB_BANK => ['fqn' => 'tresorerie', 'label' => s("Trésorerie")],
+			\overview\AnalyzeLib::TAB_CHARGES => ['fqn' => 'charges', 'label' => s("Charges et résultat")],
+			\overview\AnalyzeLib::TAB_SIG => ['fqn' => 'sig', 'label' => s("Soldes intermédiaires de gestion")],
+			'1' => NULL,
+			\overview\AnalyzeLib::TAB_INCOME_STATEMENT => ['fqn' => 'compte-de-resultat', 'label' => s("Compte de résultat")],
+			\overview\AnalyzeLib::TAB_BALANCE_SHEET => ['fqn' => 'bilan', 'label' => s("Bilan")],
+			\overview\AnalyzeLib::TAB_VAT => ['fqn' => 'declaration-de-tva', 'label' => s("Déclaration de TVA")],
 		];
 	}
 

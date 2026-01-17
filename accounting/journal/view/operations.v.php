@@ -21,7 +21,7 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 				}
 			echo '</li>';
 			echo '<li>'.s("Directement sur cette page, en cliquant sur <link>{icon}Enregistrer une écriture</link>", ['link' => '<a class="btn btn-xs btn-primary" href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode">', 'icon' => \Asset::icon('plus-circle').' ']).'</li>';
-			echo '<li>'.s("Ou en important un fichier {fec}, si vous utilisiez un autre logiciel de comptabilité, depuis les {icon} <link>Paramètres de l'exercice comptable</link>", ['link' => '<a href="'.\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?id='.$data->eFarm['eFinancialYear']['id'].'">', 'icon' => \Asset::icon('gear')]).'</li>';
+			echo '<li>'.s("Ou en important un fichier {fec}, si vous utilisiez un autre logiciel de comptabilité, depuis les {icon} <link>Paramètres de l'exercice comptable</link>", ['link' => '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/">', 'icon' => \Asset::icon('gear')]).'</li>';
 		echo '</ul>';
 	echo '</div>';
 

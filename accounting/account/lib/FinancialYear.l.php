@@ -62,6 +62,9 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->beginTransaction();
 
+		// 0- Annuler tous les imports FEC en attente
+		ImportLib::cancelAll($eFinancialYear);
+
 		// 1- Calcul des amortissements classe 2. + des étalements de subvention
 		\asset\AssetLib::amortizeAll($eFinancialYear);
 
@@ -249,6 +252,11 @@ class FinancialYearLib extends FinancialYearCrud {
 	}
 
 	public static function update(FinancialYear $e, array $properties): void {
+
+		if($e['nOperation'] > 0) {
+			array_delete($properties, 'startDate');
+			array_delete($properties, 'endDate');
+		}
 
 		parent::update($e, $properties);
 

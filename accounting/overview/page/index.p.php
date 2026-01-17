@@ -1,30 +1,30 @@
 <?php
-
 new Page(function($data) {
 
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
-	$views = array_column(\farm\FarmUi::getAccountingFinancialsCategories(), 'fqn');
-
-	if(get_exists('view') and in_array(GET('view'), $views)) {
-
-		$view = array_find_key(\farm\FarmUi::getAccountingFinancialsCategories(), fn($category) => $category !== NULL and $category['fqn'] === GET('view'));
-		$data->view = \farm\FarmerLib::setView('viewAccountingFinancials', $data->eFarm, $view);
-
-	} else {
-
-		$data->view = $data->eFarm->getView('viewAccountingFinancials');
-
-	}
-
-	if($data->eFarm['eFinancialYear']['hasVat'] === FALSE and $data->view === \farm\Farmer::VAT) {
-		$data->view = \farm\FarmerLib::setView('viewAccountingFinancials', $data->eFarm, \farm\Farmer::BANK);
-	}
-
 })
+	->get(['/etats-financiers/'], function($data) {
+
+		$data->eFinancialYear = $data->eFarm['eFinancialYear'];
+
+		$data->eFinancialYear['nOperation'] = \journal\OperationLib::countByFinancialYear($data->eFinancialYear);
+		$data->eFinancialYear['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($data->eFinancialYear);
+
+		$data->eFinancialYear['cImport'] = \account\ImportLib::getByFinancialYear($data->eFinancialYear);
+
+		throw new ViewAction($data, ':index');
+
+	})
 	->get(['/etats-financiers/', '/etats-financiers/{view}'], function($data) {
+
+		if(in_array(GET('view'), \overview\AnalyzeLib::getViews()) === FALSE) {
+			$data->view = first(\overview\AnalyzeLib::getViews());
+		} else {
+			$data->view = GET('view');
+		}
 
 		$data->search = new Search([
 			'financialYearComparison' => GET('financialYearComparison'),
@@ -39,17 +39,17 @@ new Page(function($data) {
 
 		switch($data->view) {
 
-			case \farm\Farmer::BANK:
+			case \overview\AnalyzeLib::TAB_BANK:
 				$data->ccOperationBank = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFarm['eFinancialYear'], 'bank');
 				$data->ccOperationCash = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFarm['eFinancialYear'], 'cash');
 				break;
 
-			case \farm\Farmer::CHARGES:
+			case \overview\AnalyzeLib::TAB_CHARGES:
 				[$data->cOperation, $data->cAccount] = \overview\AnalyzeLib::getChargeOperationsByMonth($data->eFarm['eFinancialYear']);
 				$data->cOperationResult = \overview\AnalyzeLib::getResultOperationsByMonth($data->eFarm['eFinancialYear']);
 				break;
 
-			case \farm\Farmer::SIG:
+			case \overview\AnalyzeLib::TAB_SIG:
 
 				$data->search = new Search([
 					'financialYearComparison' => GET('financialYearComparison'),
@@ -71,7 +71,7 @@ new Page(function($data) {
 				$data->eFinancialYearDocument = \account\FinancialYearDocumentLib::getDocument($data->eFarm['eFinancialYear'], \account\FinancialYearDocumentLib::SIG);
 				break;
 
-			case \farm\Farmer::BALANCE_SHEET:
+			case \overview\AnalyzeLib::TAB_BALANCE_SHEET:
 
 				$data->search->set('type', GET('type', 'string', \overview\BalanceSheetLib::VIEW_BASIC));
 
@@ -108,7 +108,7 @@ new Page(function($data) {
 
 				break;
 
-			case \farm\Farmer::INCOME_STATEMENT:
+			case \overview\AnalyzeLib::TAB_INCOME_STATEMENT:
 
 				$data->search->set('type', GET('type', 'string', \overview\IncomeStatementLib::VIEW_BASIC));
 
@@ -142,7 +142,7 @@ new Page(function($data) {
 
 				break;
 
-			case \farm\Farmer::VAT:
+			case \overview\AnalyzeLib::TAB_VAT:
 
 				$tab = GET('tab');
 				if(in_array($tab, ['journal-sell', 'journal-buy', 'check', 'cerfa', 'history']) === FALSE) {

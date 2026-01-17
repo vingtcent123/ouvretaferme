@@ -115,7 +115,8 @@ new AdaptativeView('beta', function($data, FarmTemplate $t) {
 new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) {
 
 	$t->title = s("Paramétrer la comptabilité sur {siteName}");
-	$t->nav = 'settings-accounting';
+	$t->nav = 'accounting';
+	$t->subNav = 'analyze';
 
 	$h = '<div class="util-action">';
 

@@ -53,7 +53,7 @@ class FinancialYear extends FinancialYearElement {
 	public function acceptImportFec(): bool {
 
 		$this->expects(['nOperation']);
-		return ($this['nOperation'] === 0 and $this->isOpen() === FALSE);
+		return ($this->isClosed() === FALSE and $this['nOperation'] === 0 and $this->isOpen() === FALSE);
 
 	}
 
@@ -152,6 +152,10 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('startDate.loseOperations', function(string $date) use($p): bool {
 
+				if(($this['nOperation'] ?? 0) > 0) {
+					return TRUE;
+				}
+
 				if($p->for === 'update') {
 					return \journal\OperationLib::countByOldDatesButNotNewDate($this, $date, $this['endDate']) === 0;
 				}
@@ -159,6 +163,10 @@ class FinancialYear extends FinancialYearElement {
 				return TRUE;
 			})
 			->setCallback('startDate.check', function(string $date) use($input): bool {
+
+				if(($this['nOperation'] ?? 0) > 0) {
+					return TRUE;
+				}
 
 				if(mb_strlen($date) !== 10 or \util\DateLib::isValid($date) === FALSE) {
 					return FALSE;
@@ -177,6 +185,10 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('endDate.loseOperations', function(string $date) use($p): bool {
 
+				if(($this['nOperation'] ?? 0) > 0) {
+					return TRUE;
+				}
+
 				if($p->for === 'update') {
 					return \journal\OperationLib::countByOldDatesButNotNewDate($this, $this['startDate'], $date) === 0;
 				}
@@ -185,6 +197,10 @@ class FinancialYear extends FinancialYearElement {
 
 			})
 			->setCallback('endDate.check', function(string $date) use($input): bool {
+
+				if(($this['nOperation'] ?? 0) > 0) {
+					return TRUE;
+				}
 
 				if(mb_strlen($date) !== 10 or \util\DateLib::isValid($date) === FALSE) {
 					return FALSE;
@@ -203,6 +219,10 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('endDate.after', function(?string $endDate) use ($p): bool {
 
+				if(($this['nOperation'] ?? 0) > 0) {
+					return TRUE;
+				}
+
 				if($p->isBuilt('startDate') === FALSE) {
 					return TRUE;
 				}
@@ -211,6 +231,10 @@ class FinancialYear extends FinancialYearElement {
 
 			})
 			->setCallback('endDate.intervalMin', function(?string $endDate) use ($p): bool {
+
+				if(($this['nOperation'] ?? 0) > 0) {
+					return TRUE;
+				}
 
 				if($p->isBuilt('startDate') === FALSE or $this['startDate'] >= $endDate) {
 					return TRUE;
@@ -221,6 +245,10 @@ class FinancialYear extends FinancialYearElement {
 
 			})
 			->setCallback('endDate.intervalMax', function(?string $endDate) use ($p): bool {
+
+				if(($this['nOperation'] ?? 0) > 0) {
+					return TRUE;
+				}
 
 				if($p->isBuilt('startDate') === FALSE or $this['startDate'] >= $endDate) {
 					return TRUE;

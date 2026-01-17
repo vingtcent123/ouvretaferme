@@ -16,8 +16,9 @@ div.financial-year-list {
 
 }
 
-.financial-year-list > .financial-year-block {
+.financial-year-block {
 	padding: 1rem;
+	margin-bottom: 2rem;
 	border-radius: var(--radius);
 	display: grid;
 	grid-template-columns: auto 1fr auto;
@@ -27,11 +28,6 @@ div.financial-year-list {
 	text-decoration: none;
 	background-color: white;
 	border: 2px solid var(--secondary);
-}
-
-.financial-year-list > .financial-year-block.financial-year-highlight {
-	background-color: var(--background-even);
-	border: 2px solid var(--accounting);
 }
 
 .financial-year-title {
@@ -49,8 +45,7 @@ div.financial-year-list {
 .financial-year-details ul.financial-year-details-list {
 	list-style-type: none;
 	margin-bottom: 1rem;
-	border-left: 1px solid black;
-	padding-left: 1rem;
+	padding-left: 0;
 	margin-left: 1rem;
 }
 .financial-year-details ul li span.financial-year-detail-icon {
@@ -67,37 +62,44 @@ div.financial-year-list {
 	display: none;
 }
 
-@media (max-width: 359px) {
-	.financial-year-list > .financial-year-block {
-		grid-template-columns: auto;
+.financial-year-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+@media (max-width: 575px) {
+
+	.financial-year-actions {
+		flex-direction: column;
+		gap: 0.5rem;
 	}
-	.financial-year-dates {
-		width: fit-content;
-		margin: auto;
+}
+
+.financial-year-details-element {
+	margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+
+	.financial-year-details-element {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding-left: 0.5rem;
 	}
-	[financial-year-name] {
-		grid-area: fy-name;
-		margin-bottom: 0;
-		margin-top: 1rem;
+}
+@media (max-width: 767px) {
+
+	.financial-year-details-element {
+		display: flex;
+		flex-direction: column;
+		align-items: baseline;
+		gap: 0.5rem;
+		padding-left: 0.5rem;
 	}
-	[financial-year-dates] {
-		grid-area: fy-dates;
-	}
-	[financial-year-stats] {
-		grid-area: fy-stats;
-		margin-top: 0;
-	}
-	.financial-year-title {
-		display: grid;
-		align-items: start;
-		grid-template-areas:
-			"fy-name fy-dates"
-			"fy-stats fy-dates";
-	}
-	.financial-year-details {
-		margin-top: 1rem;
-	}
-	.financial-year-action-label {
-		display: inline;
+}
+@media (max-width: 451px) {
+	span.financial-year-operations-count {
+		display: block;
+		margin-left: 1.25rem;
 	}
 }
