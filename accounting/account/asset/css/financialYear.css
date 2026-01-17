@@ -27,7 +27,6 @@ div.financial-year-list {
 	transition: color 0.25s, background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
 	text-decoration: none;
 	background-color: white;
-	border: 2px solid var(--secondary);
 }
 
 .financial-year-title {
@@ -48,10 +47,7 @@ div.financial-year-list {
 	padding-left: 0;
 	margin-left: 1rem;
 }
-.financial-year-details ul li span.financial-year-detail-icon {
-	display: inline-block;
-	width: 1.5rem;
-}
+
 .financial-year-buttons {
 	display: flex;
 	flex-direction: column;
@@ -69,6 +65,17 @@ div.financial-year-list {
 	margin-bottom: 0.5rem;
 }
 
+.financial-year-detail-title {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+
+.financial-year-detail-title h3 {
+	margin-bottom: 0;
+}
+
 @media (max-width: 451px) {
 	span.financial-year-operations-count {
 		display: block;
@@ -78,32 +85,15 @@ div.financial-year-list {
 
 .financial-year-details-more {
 	display: flex;
+	justify-content: space-between;
 	align-items: center;
-	gap: 1rem;
+	gap: 1rem 2rem;
+	flex-wrap: wrap;
 }
 
-div.financial-year-details-more > div.util-buttons {
-	height: fit-content;
-}
-
-div.financial-year-details-more > div.util-buttons > .util-button > svg {
-	font-size: 3rem;
-}
-div.financial-year-details-more > div.util-buttons > .util-button:hover {
-	background: #0001;
-}
-
-.financial-year-documents div.util-buttons > div.util-button {
-	justify-items: baseline;
-  gap: 1rem;
-	align-items: center;
-	border: 2px solid var(--secondary);
-	grid-template-columns: auto;
-	grid-template-rows: auto;
-}
 
 .financial-year-document-generating {
 	color: var(--muted);
 	font-style: italic;
-	margin-right: 1rem;
+	margin-top: 1rem;
 }
