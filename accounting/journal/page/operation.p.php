@@ -57,11 +57,15 @@ new \journal\OperationPage(
 	$success = $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated';
 
 	$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
+
 	if($hasMissingAsset) {
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal:'.$success.'CreateAsset');
+		$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal:'.$success.'CreateAsset';
 	}
 
-	throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal:'.$success);
+	$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal:'.$success;
+	$data->cOperation = $cOperation;
+
+	throw new ViewAction($data);
 
 })
 ->read('delete', function($data) {

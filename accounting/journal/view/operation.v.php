@@ -10,6 +10,14 @@ new AdaptativeView('/journal/operation/{id}/update', function($data, PanelTempla
 	return new \journal\OperationUi()->getUpdate($data->eFarm, $data->eFarm['eFinancialYear'], $data->cOperation, $data->cPaymentMethod, $data->eCashflow, $data->e);
 
 });
+new JsonView('/journal/operation/{id}/doUpdate', function($data, AjaxTemplate $t) {
+
+	// Objectif : permettre à l'utilisateur de faire page arrière sans se retrouver avec une 404.
+	$t->js()->replaceHistory(\company\CompanyUi::urlJournal($data->eFarm).'/operation/'.$data->cOperation->first()['id'].'/update');
+	$t->js()->location($data->url);
+
+});
+
 new AdaptativeView('delete', function($data, PanelTemplate $t) {
 
 	return new \journal\OperationUi()->getDelete($data->eFarm, $data->cOperation, $data->e);
