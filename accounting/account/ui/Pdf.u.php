@@ -109,11 +109,11 @@ class PdfUi {
 				$h .= '</h4>';
 				$h .= '<h4>';
 					if($eFarm['vignette'] !== NULL) {
-						echo \farm\FarmUi::getVignette($eFarm, '2rem').'  ';
+						$h .= \farm\FarmUi::getVignette($eFarm, '2rem').'  ';
 					}
 					$h .= encode($eFarm['legalName'] ?? $eFarm['name']);
 					if($eFarm['siret'] !== NULL) {
-						$h .= ' - '.s("SIRET {value}", $eFarm['siret']);
+						$h .= ' - '.s("SIRET {value}", $eFarm['siret']);
 					}
 				$h .= '</h4>';
 			$h .= '</div>';
