@@ -230,7 +230,7 @@ class CashflowLib extends CashflowCrud {
 					->select([
 						'id', 'cashflow' => ['id', 'hash', 'amount', 'hash', 'invoice', 'type', 'date', 'memo', 'account'],
 						'operation' => $operationSelection])
-					->delegateCollection('cashflow', 'id')
+					->delegateCollection('cashflow')
 			]))
 			->getCollection();
 
