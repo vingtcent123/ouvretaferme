@@ -95,7 +95,10 @@ class AccountLib extends AccountCrud {
 			// Recherche textuelle
 			} else {
 
-				Account::model()->where('class LIKE "%'.$query.'%" OR description LIKE "%'.$query.'%"', if: $query !== '');
+				Account::model()->or(
+					fn() => $this->whereClass('LIKE', '%'.$query.'%'),
+					fn() => $this->whereDescription('LIKE', '%'.$query.'%"')
+				);
 
 				$keywords = [];
 
@@ -114,10 +117,11 @@ class AccountLib extends AccountCrud {
 				}
 			}
 		}
+
 		return Account::model()
 			->select(Account::getSelection())
 			->sort(['class' => SORT_ASC])
-			->where('class LIKE "'.$search->get('classPrefix').'%"', if: $search->get('classPrefix'))
+			->whereClass('LIKE '.$search->get('classPrefix').'%', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
