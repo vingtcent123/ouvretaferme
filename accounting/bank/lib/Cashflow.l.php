@@ -228,7 +228,7 @@ class CashflowLib extends CashflowCrud {
 			->select(array_merge(Cashflow::getSelection(), [
 				'cOperationCashflow' => \journal\OperationCashflow::model()
 					->select([
-						'id', 'cashflow' => ['id', 'hash', 'amount', 'hash', 'invoice', 'type', 'date', 'memo', 'account'],
+						'cashflow' => ['id', 'hash', 'amount', 'hash', 'invoice', 'type', 'date', 'memo', 'account'],
 						'operation' => $operationSelection])
 					->delegateCollection('cashflow')
 			]))
