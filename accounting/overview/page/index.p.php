@@ -6,25 +6,16 @@ new Page(function($data) {
 	}
 
 })
-	->get(['/etats-financiers/'], function($data) {
-
-		$data->eFinancialYear = $data->eFarm['eFinancialYear'];
-
-		$data->eFinancialYear['nOperation'] = \journal\OperationLib::countByFinancialYear($data->eFinancialYear);
-		$data->eFinancialYear['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($data->eFinancialYear);
-
-		$data->eFinancialYear['cImport'] = \account\ImportLib::getByFinancialYear($data->eFinancialYear);
-
-		throw new ViewAction($data, ':index');
-
-	})
 	->get(['/etats-financiers/', '/etats-financiers/{view}'], function($data) {
 
-		if(in_array(GET('view'), \overview\AnalyzeLib::getViews()) === FALSE) {
-			$data->view = first(\overview\AnalyzeLib::getViews());
+		$fqn = array_column(\farm\FarmUi::getAccountingFinancialsCategories($data->eFarm['eFinancialYear']), 'fqn');
+		if(in_array(GET('view'), $fqn) === FALSE) {
+			$data->fqn = first($fqn);
 		} else {
-			$data->view = GET('view');
+			$data->fqn = GET('view', 'string', '');
 		}
+
+		$data->view = array_find_key(\farm\FarmUi::getAccountingFinancialsCategories($data->eFarm['eFinancialYear']), fn($element) => (is_null($element) === FALSE and $element['fqn'] === $data->fqn));
 
 		$data->search = new Search([
 			'financialYearComparison' => GET('financialYearComparison'),
@@ -38,6 +29,16 @@ new Page(function($data) {
 		}
 
 		switch($data->view) {
+
+			case \overview\AnalyzeLib::TAB_FINANCIAL_YEAR:
+				$data->eFinancialYear = $data->eFarm['eFinancialYear'];
+
+				$data->eFinancialYear['nOperation'] = \journal\OperationLib::countByFinancialYear($data->eFinancialYear);
+				$data->eFinancialYear['previous'] = \account\FinancialYearLib::getPreviousFinancialYear($data->eFinancialYear);
+
+				$data->eFinancialYear['cImport'] = \account\ImportLib::getByFinancialYear($data->eFinancialYear);
+				break;
+
 
 			case \overview\AnalyzeLib::TAB_BANK:
 				$data->ccOperationBank = \overview\AnalyzeLib::getBankOperationsByMonth($data->eFarm['eFinancialYear'], 'bank');

@@ -17,7 +17,7 @@ class PdfUi {
 	public function getName(\account\FinancialYear $eFinancialYear, string $type): string {
 
 		return match($type) {
-			FinancialYearDocumentLib::BALANCE_SHEET => s("bilan-privisoire-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
+			FinancialYearDocumentLib::BALANCE_SHEET => s("bilan-provisoire-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::OPENING => s("bilan-ouverture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::OPENING_DETAILED => s("bilan-ouverture-detaille-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::CLOSING => s("bilan-cloture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
@@ -54,7 +54,6 @@ class PdfUi {
 
 	public static function getHeader(\farm\Farm $eFarm, string $title, \account\FinancialYear $eFinancialYear): string {
 
-		$borderColor = '#D5D5D5';
 		$h = '<style>
         html {
           -webkit-print-color-adjust: exact;
@@ -67,21 +66,18 @@ class PdfUi {
         	line-height: 1;
         }
 				.pdf-document-header {
-					display: grid;
-					grid-column-gap: 1rem;
-					grid-template-columns: 2fr 1fr;
 					overflow: hidden;
 					margin: 1cm auto;
 					border-radius: 0.15cm;
-					border: 1px solid '.$borderColor.';
-					background-color: #F5F7F5FF;
+					border: 1px solid var(--secondary);
+					background-color: #20516029;
 					width: 19cm;
 					height: 3cm;
 					font-size: 12px;
 					align-content: center;
 				}
 				.pdf-document-header > div > h3 {
-					margin: 0.4cm auto 0.25cm;
+					margin: auto auto 0.25cm;
 				}
 				.pdf-document-header > div > h4 {
 					margin-bottom: 0.1cm;
@@ -89,10 +85,6 @@ class PdfUi {
 				.pdf-document-header > div > * {
 					text-align: center;
 					margin: auto;
-				}
-				.pdf-document-header-details > table {
-			    width: 100%;
-			    line-height: 1.4;
 				}
         .td-content {
         	background-color: white;
@@ -112,34 +104,20 @@ class PdfUi {
 
 			$h .= '<div>';
 				$h .= '<h3 class="pdf-document-title">'.$title.'</h3>';
-				$h .= '<h4>'.encode($eFarm['legalName'] ?? $eFarm['name']).'</h4>';
-				if($eFarm['siret'] !== NULL) {
-					$h .= '<div>'.encode($eFarm['siret']).'</div>';
-				}
+				$h .= '<h4>';
+					$h .= s("Exercice {exercice} - {startDate} au {endDate}", ['exercice' => $eFinancialYear->getLabel(), 'startDate' => \util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE), 'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE)]);
+				$h .= '</h4>';
+				$h .= '<h4>';
+					if($eFarm['vignette'] !== NULL) {
+						echo \farm\FarmUi::getVignette($eFarm, '2rem').'  ';
+					}
+					$h .= encode($eFarm['legalName'] ?? $eFarm['name']);
+					if($eFarm['siret'] !== NULL) {
+						$h .= ' - '.s("SIRET {value}", $eFarm['siret']);
+					}
+				$h .= '</h4>';
 			$h .= '</div>';
 
-			$h .= '<div class="pdf-document-header-details">';
-
-				$h .= '<table>';
-					$h .= '<tr>';
-						$h .= '<td style="text-align: end">'.s("Devise").'</td>';
-						$h .= '<td class="td-content">'.s("EURO").'</td>';
-					$h .= '</tr>';
-					$h .= '<tr>';
-						$h .= '<td></td>';
-						$h .= '<td style="text-align: center; font-weight: bold;">'.s("EXERCICE").'</td>';
-					$h .= '</tr>';
-					$h .= '<tr>';
-						$h .= '<td style="text-align: end">'.s("Du").'</td>';
-						$h .= '<td class="td-content">'.\util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE).'</td>';
-					$h .= '</tr>';
-					$h .= '<tr>';
-						$h .= '<td style="text-align: end">'.s("Au").'</td>';
-						$h .= '<td class="td-content">'.\util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE).'</td>';
-					$h .= '</tr>';
-				$h .= '</table>';
-
-			$h .= '</div>';
 		$h .= '</div>';
 
 		return $h;
@@ -148,7 +126,7 @@ class PdfUi {
 
 	public static function getFooter(): string {
 
-		$date = \util\DateUi::numeric(date('Y-m-d H:i:s'));
+		$date = \util\DateUi::numeric(date('Y-m-d H:i'));
 
 		$h = '<style>
         html {
@@ -174,7 +152,13 @@ class PdfUi {
 		$h .= '<div class="footer-container">';
 			$h .= '<span>'.$date.'</span>';
 			$h .= '<span class="pageNumber" style="text-align: center;"></span>';
-			$h .= '<span style="text-align: end;"><a href="'.\Lime::getUrl().'">'.\Lime::getName().'</a></span>';
+			$h .= '<span style="text-align: end;"><a href="'.\Lime::getUrl().'">';
+				if(LIME_ENV === 'dev') {
+					$h .= '<img src="http://www.dev-ouvretaferme.org/asset/ouvretaferme/main/image/logo.png" style="width: auto; height: 2rem"/>';
+				} else {
+					$h .= \Asset::image('main', 'logo.png', ['style' => 'width: auto; height: 2rem']);
+				}
+			$h .= '</a></span>';
 		$h .= '</div>';
 
 		return $h;

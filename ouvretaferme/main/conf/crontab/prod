@@ -6,7 +6,6 @@
 * * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme website/cron/certbot:rewrite
 */5 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme session/cron/sessionClean
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/import
-0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/pdf
 0 5 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/pdf:clean
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme mail/cron/send
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme preaccounting/cron/reconciliate

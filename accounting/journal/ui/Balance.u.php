@@ -13,6 +13,7 @@ Class BalanceUi {
 		$h .= '<div class="util-action">';
 
 			$h .= '<h1>';
+				$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("La balance");
 			$h .= '</h1>';
 

@@ -197,29 +197,6 @@ class FinancialYearUi {
 
 	}
 
-	public function getSuccessActions(\farm\Farm $eFarm, FinancialYear $eFinancialYear, string $type) {
-
-		switch($type) {
-			case FinancialYearDocumentLib::OPENING:
-				if($eFinancialYear->acceptDownloadOpen() === FALSE) {
-					return '';
-				}
-				break;
-
-			case FinancialYearDocumentLib::CLOSING:
-				if($eFinancialYear->acceptDownloadClose() === FALSE) {
-					return '';
-				}
-				break;
-		}
-
-		$h = '<div class="mt-1">';
-			$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:download?type='.$type.'&id='.$eFinancialYear['id'].'" data-ajax-navigation="never" class="btn btn-transparent">'.s("Télécharger").'</a>';
-		$h .= '</div>';
-
-		return $h;
-	}
-
 	private function retainedEarnings(\Collection $cOperation, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
 		$h = '<h3>'.\Asset::icon('1-circle').' '.s("Report des soldes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
@@ -548,11 +525,11 @@ class FinancialYearUi {
 
 			if($eFinancialYearPrevious->empty()) {
 
-				$h .= $form->submit(s("Ouvrir l'exercice"));
+				$h .= $form->submit(s("Ouvrir l'exercice"), ['data-waiter' => s("Ouverture en cours...")]);
 
 			} else {
 
-				$h .= $form->submit(s("Générer les écritures et le bilan d'ouverture"));
+				$h .= $form->submit(s("Générer les écritures et le bilan d'ouverture"), ['data-waiter' => s("Ouverture en cours...")]);
 
 			}
 
@@ -668,7 +645,7 @@ class FinancialYearUi {
 			}
 
 			$h .= '<div>'.$form->submit(
-				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]),
+				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]), ['data-waiter' => s("Clôture en cours...")],
 			).'</div>';
 
 		$h .= $form->close();
@@ -688,26 +665,6 @@ class FinancialYearUi {
 		}
 
 		return substr($eFinancialYear['startDate'], 0, 4).' - '.substr($eFinancialYear['endDate'], 0, 4);
-
-	}
-
-	public function getFinancialYearTabs(\Closure $url, \Collection $cFinancialYear, \account\FinancialYear $eFinancialYearSelected): string {
-
-		$h = ' <a data-dropdown="bottom-start" data-dropdown-hover="TRUE" data-dropdown-offset-x="2" class="nav-year">';
-			$h .= s("Exercice {year}", ['year' => self::getYear($eFinancialYearSelected).'  '.\Asset::icon('chevron-down')]);
-		$h .= '</a>';
-
-		$h .= '<div class="dropdown-list bg-primary">';
-
-		$h .= '<div class="dropdown-title">'.s("Changer d'exercice").'</div>';
-
-		foreach($cFinancialYear as $eFinancialYear) {
-			$h .= '<a href="'.$url($eFinancialYear).'" class="dropdown-item '.($eFinancialYear['id'] === $eFinancialYearSelected['id'] ? 'selected' : '').'">'.s("Exercice {year}", ['year' => self::getYear($eFinancialYear)]).'</a>';
-		}
-
-		$h .= '</div>';
-
-		return $h;
 
 	}
 
@@ -758,7 +715,7 @@ class FinancialYearUi {
 						$label = s("En attente d'ouverture");
 
 						if($eFinancialYear->acceptOpen()) {
-							$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="btn btn-primary btn-md">';
+							$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="btn btn-secondary btn-md">';
 								$action .= s("Réaliser le bilan d'ouverture");
 							$action .= '</a>';
 						}
@@ -769,7 +726,7 @@ class FinancialYearUi {
 						$label = s("En cours");
 
 						if($eFinancialYear->isOpen() and $eFinancialYear->acceptClose() and $eFinancialYear['endDate'] < date('Y-m-d')) {
-							$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="btn btn-primary btn-md">';
+							$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="btn btn-secondary btn-md">';
 								$action .= s("Réaliser le bilan de clôture");
 							$action .= '</a>';
 						}
@@ -860,22 +817,39 @@ class FinancialYearUi {
 
 				}
 
-				$h .= '<ul class="mt-1">';
+				$h .= '<div class="financial-year-details-more">';
 
-					$h .= '<li>';
-						$h .= s("Régime {value}", '<b>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</b>');
-					$h .= '</li>';
+					$h .= '<ul class="mt-1">';
 
-					$h .= '<li>';
-						$h .= $eFinancialYear['hasVat'] ? s("Redevable de la TVA") : s("Non redevable de la TVA");
-					$h .= '</li>';
-
-					if($eFinancialYear['hasVat']) {
 						$h .= '<li>';
-							$h .= s("Déclaration de TVA {value}", '<b>'.self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']].'</b>');
+							$h .= s("Régime {value}", '<b>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</b>');
 						$h .= '</li>';
-					}
-				$h .= '</ul>';
+
+						$h .= '<li>';
+							$h .= $eFinancialYear['hasVat'] ? s("Redevable de la TVA") : s("Non redevable de la TVA");
+						$h .= '</li>';
+
+						if($eFinancialYear['hasVat']) {
+							$h .= '<li>';
+								$h .= s("Déclaration de TVA {value}", '<b>'.self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']].'</b>');
+							$h .= '</li>';
+						}
+					$h .= '</ul>';
+
+					$h .= '<div class="util-buttons">';
+
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
+							$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
+							$h .= \Asset::icon('pencil');
+						$h .= '</a>';
+
+						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/tresorerie" class="util-button">';
+							$h .= '<h5>'.s("Trésorerie").'</h5>';
+							$h .= \Asset::icon('bank');
+						$h .= '</a>';
+					$h .= '</div>';
+
+				$h .= '</div>';
 
 			$h .= '</div>';
 
@@ -884,7 +858,7 @@ class FinancialYearUi {
 				if($eFinancialYear->acceptUpdate()) {
 
 					$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
-						$h .= \Asset::icon('gear');
+						$h .= \Asset::icon('gear-fill');
 					$h .= '</a>';
 
 				}

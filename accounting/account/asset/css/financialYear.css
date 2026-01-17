@@ -58,48 +58,52 @@ div.financial-year-list {
 	gap: 0.5rem;
 }
 
+.financial-year-actions {
+	margin-top: 0.5rem;
+}
 .financial-year-action-label {
 	display: none;
-}
-
-.financial-year-actions {
-	display: flex;
-	gap: 0.5rem;
-}
-@media (max-width: 575px) {
-
-	.financial-year-actions {
-		flex-direction: column;
-		gap: 0.5rem;
-	}
 }
 
 .financial-year-details-element {
 	margin-bottom: 0.5rem;
 }
 
-@media (min-width: 768px) {
-
-	.financial-year-details-element {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding-left: 0.5rem;
-	}
-}
-@media (max-width: 767px) {
-
-	.financial-year-details-element {
-		display: flex;
-		flex-direction: column;
-		align-items: baseline;
-		gap: 0.5rem;
-		padding-left: 0.5rem;
-	}
-}
 @media (max-width: 451px) {
 	span.financial-year-operations-count {
 		display: block;
 		margin-left: 1.25rem;
 	}
+}
+
+.financial-year-details-more {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+div.financial-year-details-more > div.util-buttons {
+	height: fit-content;
+}
+
+div.financial-year-details-more > div.util-buttons > .util-button > svg {
+	font-size: 3rem;
+}
+div.financial-year-details-more > div.util-buttons > .util-button:hover {
+	background: #0001;
+}
+
+.financial-year-documents div.util-buttons > div.util-button {
+	justify-items: baseline;
+  gap: 1rem;
+	align-items: center;
+	border: 2px solid var(--secondary);
+	grid-template-columns: auto;
+	grid-template-rows: auto;
+}
+
+.financial-year-document-generating {
+	color: var(--muted);
+	font-style: italic;
+	margin-right: 1rem;
 }

@@ -73,6 +73,26 @@ Class PdfLib {
 
 		\account\Pdf::model()->commit();
 
+		$ePdfContent = new \account\PdfContent();
+		\account\PdfContent::model()->insert($ePdfContent);
+
+		$content = self::generateDocument($eFarm, $eFinancialYear, $type);
+
+		$hash = NULL;
+		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
+
+		\account\Pdf::model()->update($ePdf, [
+			'content' => $ePdfContent
+		]);
+
+		$ePdf['content'] = $ePdfContent;
+
+		return $ePdf;
+
+	}
+
+	public static function generateDocument(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $type): string {
+
 		// Pour le bilan d'ouverture on récupère le bilan de clôture de l'exercice précédent.
 		$eFarm['eFinancialYear'] = $eFinancialYear;
 
@@ -96,28 +116,7 @@ Class PdfLib {
 		$footer = \account\PdfUi::getFooter();
 		$header = \account\PdfUi::getHeader($eFarm, $title, $eFinancialYear);
 
-		$ePdfContent = self::generateDocument(
-			self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'&type='.$type, $title, $header, $footer)
-		);
-
-		\account\Pdf::model()->update($ePdf, [
-			'content' => $ePdfContent
-		]);
-
-		$ePdf['content'] = $ePdfContent;
-
-		return $ePdf;
-
-	}
-	public static function generateDocument($content): \account\PdfContent {
-
-		$ePdfContent = new \account\PdfContent();
-		\account\PdfContent::model()->insert($ePdfContent);
-
-		$hash = NULL;
-		new \media\PdfContentLib()->send($ePdfContent, $hash, $content, 'pdf');
-
-		return $ePdfContent;
+		return self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'?type='.$type, $title, $header, $footer);
 
 	}
 }

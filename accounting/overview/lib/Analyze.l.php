@@ -11,11 +11,6 @@ class AnalyzeLib {
 	const TAB_BALANCE_SHEET = 'balance-sheet';
 	const TAB_VAT = 'vat';
 
-	public static function getViews(): array {
-
-		return [self::TAB_BANK, self::TAB_CHARGES, self::TAB_SIG, self::TAB_INCOME_STATEMENT, self::TAB_BALANCE_SHEET, self::TAB_VAT];
-
-	}
 
 	public static function getResultOperationsByMonth(\account\FinancialYear $eFinancialYear): \Collection {
 

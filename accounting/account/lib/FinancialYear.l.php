@@ -83,7 +83,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		LogLib::save('close', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
-		// Met à jour tous les fichiers provisoires déjà générés
+		// Met à jour tous les fichiers de l'exercice
 		FinancialYearDocumentLib::regenerateAll($eFarm, $eFinancialYear);
 
 		FinancialYear::model()->commit();
@@ -287,23 +287,6 @@ class FinancialYearLib extends FinancialYearCrud {
 			->update($eFinancialYear, ['status' => FinancialYear::CLOSE]);
 
 		LogLib::save('reclose', 'FinancialYear', ['id' => $eFinancialYear['id']]);
-
-	}
-
-	public static function regenerate(\farm\Farm $eFarm, FinancialYear $eFinancialYear, string $type) {
-
-		FinancialYearDocumentLib::regenerate($eFinancialYear, $type);
-
-	}
-	public static function generate(\farm\Farm $eFarm, FinancialYear $eFinancialYear, string $type) {
-
-		if(FinancialYearDocumentLib::generate($eFinancialYear, $type) === FALSE) {
-			return;
-		}
-
-		$ePdf = \overview\PdfLib::generate($eFarm, $eFinancialYear, $type);
-
-		FinancialYearDocumentLib::updateDocument($eFinancialYear, $type, $ePdf);
 
 	}
 

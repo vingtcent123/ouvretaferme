@@ -79,7 +79,8 @@ table.pdf-table-bordered {
 tr.overview_group-title,
 tr.overview_group-total,
 tr.pdf-tr-title {
-	background-color: lightgrey !important;
+	background-color: var(--accounting) !important;
+	color: white;
 }
 tr.pdf-tr-total-general {
 	text-transform: uppercase;

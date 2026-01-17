@@ -2105,21 +2105,17 @@ class FarmUi {
 		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
 		$h .= '<div class="util-action">';
 			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= self::getNavigation();
-					$h .= '<span class="h-menu-label">';
-						$h .= $title;
-					$h .= '</span>';
-				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
-					foreach($categories as $key => $value) {
-						if($value === NULL) {
-							$h .= '<div class="dropdown-divider"></div>';
-						} else {
-							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/'.$value['fqn'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
-						}
-					}
-				$h .= '</div>';
+
+				if($selectedView !== \overview\AnalyzeLib::TAB_FINANCIAL_YEAR) {
+					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				} else {
+					$title = s("Exercice comptable {value}", $eFarm['eFinancialYear']->getLabel());
+				}
+
+				$h .= '<span class="h-menu-label">';
+					$h .= $title;
+				$h .= '</span>';
+
 			$h .= '</h1>';
 
 			$h .= '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
@@ -2129,8 +2125,13 @@ class FarmUi {
 					$h .= match($selectedView) {
 						\overview\AnalyzeLib::TAB_INCOME_STATEMENT => '<a '.attr('onclick', 'Lime.Search.toggle("#income-statement-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
 						\overview\AnalyzeLib::TAB_BALANCE_SHEET => '<a '.attr('onclick', 'Lime.Search.toggle("#balance-sheet-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
+						\overview\AnalyzeLib::TAB_SIG => '<a '.attr('onclick', 'Lime.Search.toggle("#sig-search")').' class="btn btn-primary">'.\Asset::icon('filter').' '.s("Configurer la synthèse").'</a> ',
 					};
 
+				}
+
+				if($selectedView === \overview\AnalyzeLib::TAB_FINANCIAL_YEAR and $eFarm['cFinancialYear']->find(fn($e) => $e->isOpen())->count() < 2) {
+					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un exercice comptable").'</a> ';
 				}
 
 				$documentType = match($selectedView) {

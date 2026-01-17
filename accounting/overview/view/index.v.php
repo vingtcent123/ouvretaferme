@@ -28,7 +28,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_CHARGES, function($data, FarmTempla
 
 });
 
-new AdaptativeView('index', function($data, FarmTemplate $t) {
+new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';
@@ -76,7 +76,6 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	} else {
 
-		echo '<h3>'.s("Tous  les documents de l'exercice").'</h3>';
 		echo new \account\FinancialYearDocumentUi()->list($data->eFarm, $data->eFinancialYear);
 
 	}
@@ -105,7 +104,12 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_SIG, function($data, FarmTemplate $
 	$t->title = s("Les soldes intermédiaires de gestion de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
 
-	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view, $data->eFinancialYearDocument);
+	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle(
+		$data->eFarm,
+		$data->view,
+		$data->eFinancialYearDocument,
+		count($data->values[$data->eFarm['eFinancialYear']['id']] ?? []) > 0
+	);
 
 	echo new \overview\SigUi()->getSearch(search: $data->search, cFinancialYear: $data->eFarm['cFinancialYear'], eFinancialYear: $data->eFarm['eFinancialYear']);
 
@@ -216,6 +220,12 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 
 	$t->title = s("La TVA de {farm}", ['farm' => encode($data->eFarm['name'])]);
 	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/declaration-de-tva';
+
+	$mainTitle = '<h1>';
+		$mainTitle .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/" class="h-back">'.Asset::icon('arrow-left').'</a>';
+		$mainTitle .= s("Déclaration de TVA");
+	$mainTitle .= '</h1>';
+	$t->mainTitle = $mainTitle;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 

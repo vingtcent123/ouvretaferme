@@ -9,58 +9,38 @@ new \account\FinancialYearPage(function($data) {
 	}
 
 })
-	->post('generate', function($data) {
-
-		$data->type = GET('type');
-		if(in_array($data->type, FinancialYearDocumentLib::getTypes()) === FALSE) {
-			throw new \NotExistsAction();
-		}
-
-		$data->eFinancialYear = FinancialYearLib::getById(POST('id'));
-
-		FinancialYearLib::regenerate($data->eFarm, $data->eFinancialYear, $data->type);
-		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT, \company\CompanyCron::WAITING, $data->eFinancialYear['id']);
-
-		throw new \ReloadLayerAction('account', 'FinancialYear::pdf.generationStacked', [
-			'type' => $data->type,
-		]);
-
-	})
-	->post('check', function($data) {
-
-		if(FinancialYearDocumentLib::countWaiting($data->eFarm['eFinancialYear']) === 0) {
-			throw new \ReloadLayerAction();
-		}
-
-		throw new \JsonAction([
-			 'result' => 'not-finished',
-		]);
-
-	})
-	->get('download', function($data) {
+	->read('download', function($data) {
 
 		$type = GET('type');
-		$eFinancialYear = FinancialYearLib::getById(GET('id'));
-		if($eFinancialYear->empty() or in_array($type, FinancialYearDocumentLib::getTypes()) === FALSE) {
+		if($data->e->empty() or in_array($type, FinancialYearDocumentLib::getTypes()) === FALSE) {
 			throw new \NotExistsAction();
 		}
 
-		switch($type) {
-			case FinancialYearDocumentLib::OPENING:
-				$eFinancialYear->validate('acceptDownloadOpen');
-				break;
-			case FinancialYearDocumentLib::CLOSING:
-				$eFinancialYear->validate('acceptDownloadClose');
-				break;
+		if(in_array($type, [FinancialYearDocumentLib::OPENING, FinancialYearDocumentLib::OPENING_DETAILED])) {
+			$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->e);
+			$hasPrevious = $data->eFinancialYearPrevious->notEmpty();
+			$eFinancialYearDocument = FinancialYearDocumentLib::getDocument($data->e, $type);
+			$hasContent = ($hasPrevious and $data->e->isOpen() and in_array($type, [FinancialYearDocumentLib::OPENING, FinancialYearDocumentLib::OPENING_DETAILED]) and $eFinancialYearDocument->notEmpty() and $eFinancialYearDocument['status'] === FinancialYearDocument::SUCCESS);
+		} else {
+			$hasContent = FALSE;
 		}
 
-		$content = FinancialYearDocumentLib::getContent($eFinancialYear, $type);
+		if($data->e->isClosed() or $hasContent) {
+
+			$content = FinancialYearDocumentLib::getContent($data->e, $type);
+
+		} else {
+
+			// Génération du document à la volée
+			$content = \overview\PdfLib::generateDocument($data->eFarm, $data->e, $type);
+
+		}
 
 		if($content === NULL) {
 			throw new \VoidAction();
 		}
 
-		$filename = new \account\PdfUi()->getFilename($eFinancialYear, $type);
+		$filename = new \account\PdfUi()->getFilename($data->e, $type);
 
 		throw new \PdfAction($content, $filename);
 
