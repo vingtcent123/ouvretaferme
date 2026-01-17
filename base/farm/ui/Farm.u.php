@@ -1015,7 +1015,7 @@ class FarmUi {
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
 				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
 				'assets' => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
-				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers',
+				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/',
 				'financials' => \company\CompanyUi::urlFarm($eFarm).'/gestion',
 				'summary' => \company\CompanyUi::urlFarm($eFarm).'/synthese',
 			},
