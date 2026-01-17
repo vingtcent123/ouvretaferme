@@ -120,6 +120,11 @@ new \account\FinancialYearPage(function($data) {
 
 		$data->e->validate('acceptOpen');
 
+		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->e);
+		if($data->eFinancialYearPrevious->notEmpty() and $data->eFinancialYearPrevious->isClosed() === FALSE) {
+			throw new NotExpectedAction('Unable to open a financialYear if the previous one is not closed');
+		}
+
 		\account\FinancialYearLib::openFinancialYear($data->e, POST('journalCode', 'array'));
 
 		throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/?success=account:FinancialYear::open');

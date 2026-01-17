@@ -309,7 +309,7 @@ class FinancialYearUi {
 									$h .= '</a>';
 								}
 
-								if($eFinancialYear->acceptOpen() and $eFinancialYear['previous']->notEmpty()) {
+								if($eFinancialYear->acceptOpen()) {
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="dropdown-item">';
 										$h .= s("Réaliser le bilan d'ouverture");
 									$h .= '</a>';
