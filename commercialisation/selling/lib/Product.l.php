@@ -139,18 +139,23 @@ class ProductLib extends ProductCrud {
 
 			$query = trim(preg_replace('/[+\-><\(\)~*\"@]+/', ' ', $query));
 
-			foreach(preg_split('/\s+/', $query) as $word) {
-				$keywords[] = '*'.$word.'*';
+			$words = array_filter(preg_split('/\s+/', $query));
+
+			if(count($words) > 0) {
+
+				foreach(preg_split('/\s+/', $query) as $word) {
+					$keywords[] = '*'.$word.'*';
+				}
+
+				$match = 'MATCH(name, origin, unprocessedVariety) AGAINST ('.Product::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
+
+				Product::model()
+					->where($match.' > 0')
+					->sort([
+						new \Sql($match.' DESC'),
+						'name' => SORT_ASC
+					]);
 			}
-
-			$match = 'MATCH(name, origin, unprocessedVariety) AGAINST ('.Product::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
-
-			Product::model()
-				->where($match.' > 0')
-				->sort([
-					new \Sql($match.' DESC'),
-					'name' => SORT_ASC
-				]);
 
 		} else {
 			Product::model()->sort('name');
