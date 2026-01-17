@@ -66,6 +66,9 @@ Class VatUi {
 					$h .= '<dt>'.\account\FinancialYearUi::p('hasVat')->label.'</dt>';
 					$h .= '<dd>'.($eFinancialYear['hasVat'] ? s("Oui") : s("Non")).'</dd>';
 
+					$h .= '<dt>'.s("Période de déclaration").'</dt>';
+					$h .= '<dd>'.s("{startDate} / {endDate}", ['startDate' => \util\DateUi::numeric($vatParameters['from']), 'endDate' => \util\DateUi::numeric($vatParameters['to'])]).'</dd>';
+
 					$h .= '<dt>'.\account\FinancialYearUi::p('vatFrequency')->label.'</dt>';
 					$h .= '<dd>';
 						$h .= \account\FinancialYearUi::p('vatFrequency')->values[$eFinancialYear['vatFrequency']];

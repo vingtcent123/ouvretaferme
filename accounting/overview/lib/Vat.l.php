@@ -6,6 +6,10 @@ Class VatLib {
 	/**
 	 * Récupère la période par défaut de la déclaration de TVA
 	 * (celle qui est actuellement modifiable ou la dernière déclarée)
+	 * Cette période doit être calculée par rapport à la date actuelle et à la fréquence de TVA.
+	 * - Si annuelle => 01/01/N-1 au 31/12/N-1
+	 * - Si mensuelle => 01/M-1/N au 30|31/M-1/N
+	 * - Si trimestrielle => dernier trimestre complet (trimestre = 01 à 03, 04 à 06, 07 à 09, 10 à 12)
 	 *
 	 * @param \account\FinancialYear $eFinancialYear
 	 * @return array
@@ -38,6 +42,7 @@ Class VatLib {
 		return first($period);
 
 	}
+
 
 	public static function getAllPeriodForFinancialYear(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
 
@@ -178,6 +183,9 @@ Class VatLib {
 
 	}
 
+	/**
+	 * Les dates ne dépendent pas de l'exercice comptable mais de l'année civile.
+	 */
 	public static function getVatDeclarationParameters(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $referenceDate): array {
 
 		$year = (int)mb_substr($referenceDate, 0, 4);
@@ -185,8 +193,21 @@ Class VatLib {
 
 		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
 
-			$periodFrom = $eFinancialYear['startDate'];
-			$periodTo = $eFinancialYear['endDate'];
+			// Date limite de déclaration pour cette année
+			$limitDate = date('Y-05-02');
+
+			// On en déduit la période de déclaration
+			if(date('Y-m-d') < $limitDate) {
+
+				$periodFrom = date('Y-01-01', strtotime($limitDate.' - 1 YEAR'));
+				$periodTo = date('Y-12-31', strtotime($limitDate.' - 1 YEAR'));
+
+			} else {
+
+				$periodFrom = date('Y-01-01', strtotime($limitDate.'1 YEAR'));
+				$periodTo = date('Y-12-31', strtotime($limitDate.'1 YEAR'));
+
+			}
 
 		} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
 
@@ -214,6 +235,7 @@ Class VatLib {
 
 		switch($eFinancialYear['vatFrequency']) {
 
+			// Règle échéance annuelle : https://www.impots.gouv.fr/professionnel/questions/je-suis-soumis-au-regime-simplifie-dimposition-la-tva-quelle-echeance-dois
 			case \account\FinancialYear::ANNUALLY:
 
 				if(mb_substr($eFinancialYear['endDate'], -5) === '12-31') {
