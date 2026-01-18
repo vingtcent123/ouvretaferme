@@ -150,6 +150,7 @@ Class AssetUi {
 
 		} else if($cOperation->notEmpty()) {
 
+			$value = 0;
 			foreach($cOperation as $eOperation) {
 				$h .= $form->hidden('operations[]', $eOperation['id']);
 				$eAsset['account'] = $eOperation['account'];
@@ -157,8 +158,13 @@ Class AssetUi {
 				$eAsset['description'] = $eOperation['description'];
 				$eAsset['acquisitionDate'] = $eOperation['date'];
 				$eAsset['startDate'] = $eOperation['date'];
+				if($eOperation['type'] === \journal\Operation::DEBIT) {
+					$value = $eOperation['amount'];
+				} else {
+					$value -= $eOperation['amount'];
+				}
 			}
-			$eAsset['value'] = $cOperation->sum('amount');
+			$eAsset['value'] = $value;
 		}
 
 		$h .= $form->dynamicGroups($eAsset, ['description*']);
