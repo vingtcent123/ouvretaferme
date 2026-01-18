@@ -246,7 +246,7 @@ Class JournalCodeUi {
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->dynamicGroups($eJournalCode, ['code*', 'name*', 'color', 'isDisplayed']);
-		if($eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
+		if($eFarm->usesAccounting() and $eFarm['eFinancialYear']->isCashAccounting() === FALSE) {
 			$h .= $form->dynamicGroups($eJournalCode, ['isReversable']);
 		}
 
