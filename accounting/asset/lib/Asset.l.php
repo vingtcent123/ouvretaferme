@@ -39,6 +39,8 @@ class AssetLib extends \asset\AssetCrud {
 
 		return \journal\OperationLib::applyAssetCondition()
 			->whereFinancialYear($eFinancialYear)
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::IN_PROGRESS_ASSETS_CLASS.'%')
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::IN_CONTRUCTION_ASSETS_CLASS.'%')
 			->whereAsset(NULL)
 			->where(new \Sql('SUBSTRING(hash, LENGTH(hash), 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
 			->count();

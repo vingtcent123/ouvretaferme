@@ -128,10 +128,13 @@ class OperationLib extends OperationCrud {
 		}
 
 		if($search->get('needsAsset') !== NULL) {
-			self::applyAssetCondition()->or(
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%'),
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::EQUIPMENT_GRANT_CLASS.'%'),
-			)
+			self::applyAssetCondition()
+		    ->or(
+					fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%'),
+					fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::EQUIPMENT_GRANT_CLASS.'%'),
+				)
+				->whereAccountLabel('NOT LIKE', \account\AccountSetting::IN_PROGRESS_ASSETS_CLASS.'%')
+				->whereAccountLabel('NOT LIKE', \account\AccountSetting::IN_CONTRUCTION_ASSETS_CLASS.'%')
 				->where(new \Sql('SUBSTRING(hash, LENGTH(hash), 1) != "'.\journal\JournalSetting::HASH_LETTER_RETAINED.'"'))
 				->whereAccountLabel('NOT LIKE', \account\AccountSetting::ASSET_AMORTIZATION_GENERAL_CLASS);
 			if($search->get('needsAsset') === 0) {
