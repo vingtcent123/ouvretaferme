@@ -229,7 +229,7 @@ class OperationUi {
 		$h .= $form->hidden('hash', $cOperation->first()['hash']);
 		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
-		$h .= $form->hidden('paymentMethod', $ePaymentMethod['id']);
+		$h .= $form->hidden('paymentMethod', $ePaymentMethod['id'] ?? '');
 
 		if($eCashflow->notEmpty()) {
 

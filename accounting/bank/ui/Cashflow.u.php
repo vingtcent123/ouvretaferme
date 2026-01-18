@@ -634,6 +634,10 @@ class CashflowUi {
 
 	public function getAllocateGeneralPayment(\account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, array $defaultValues, \util\FormUi $form, string $for): string {
 
+		$hasPaymentMethod = ($for === 'update' and
+			$defaultValues['paymentMethod'] !== NULL and
+			$defaultValues['paymentMethod']->notEmpty()
+		);
 		$h = '<div class="cashflow-create-operation-general">';
 			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentDate').'</div>';
 			$h .= $form->date(
@@ -646,7 +650,7 @@ class CashflowUi {
 				'paymentMethod',
 				$cPaymentMethod,
 					$defaultValues['paymentMethod'] ?? '',
-				['mandatory' => TRUE] + ($for === 'update' ? ['disabled' => 'disabled'] : []),
+				['mandatory' => TRUE] + ($hasPaymentMethod ? ['disabled' => 'disabled'] : []),
 			);
 		$h .= '</div>';
 
