@@ -39,7 +39,7 @@ new AdaptativeView('open', function($data, FarmTemplate $t) {
 		echo $form->openAjax(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/:doOpen');
 
 			echo $form->hidden('id', $data->e['id']);
-			echo $form->submit(s("Ouvrir l'exercice sans écriture de report à nouveau"));
+			echo $form->submit(s("Ouvrir l'exercice sans écriture de report à nouveau"), ['data-waiter' => s("Ouverture en cours...")]);
 
 		echo $form->close();
 

@@ -11,14 +11,14 @@ Class PdfLib {
 
 	}
 
-	public static function build(string $url, ?string $footer): string {
+	public static function build(string $url, ?string $title, ?string $footer): string {
 
 		if(OTF_DEMO) {
 			return '';
 		}
 
 		return \Cache::redis()->lock(
-			'pdf-'.$url, function () use ($footer, $url) {
+			'pdf-'.$url, function () use ($footer, $title, $url) {
 
 			$file = tempnam('/tmp', 'pdf-').'.pdf';
 
@@ -32,6 +32,9 @@ Class PdfLib {
 				$args .= ' "--footer='.rawurlencode($footer).'"';
 			}
 			$args .= ' "--header= "';
+			if($title !== NULL) {
+				$args .= ' "--title='.rawurlencode($title).'"';
+			}
 
 			exec('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
 
@@ -109,8 +112,9 @@ Class PdfLib {
 		};
 
 		$footer = \account\PdfUi::getFooter();
+		$title = new \account\PdfUi()->getName($eFinancialYear, $type);
 
-		return self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'?type='.$type, $footer);
+		return self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'?type='.$type, $title, $footer);
 
 	}
 }
