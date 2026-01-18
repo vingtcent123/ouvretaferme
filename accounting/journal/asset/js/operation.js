@@ -216,7 +216,13 @@ document.delegateEventListener('mouseout', '[data-highlight]', function(e) {
 });
 
 document.delegateEventListener('change', '[data-date="journal-operation-create"][data-accounting-type="cash"]', function(e) {
-	Operation.copyDate(e);
+
+	const isFromCashflow = parseInt(qs('[data-cashflow]').getAttribute('data-cashflow')) === 1;
+
+	if(isFromCashflow) {
+		Operation.copyDate(e);
+	}
+
 });
 
 document.delegateEventListener('change', '[data-field="amount"]', function() {
