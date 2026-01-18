@@ -21,5 +21,10 @@ new \association\HistoryPage(
 
 		$fw->validate();
 
-		POST('type') === \association\History::MEMBERSHIP ? throw new ReloadAction('association', 'History::adminMembershipCreated') : throw new ReloadAction('association', 'History::adminCreated');
+		if(POST('type') === \association\History::MEMBERSHIP) {
+			throw new ReloadAction('association', 'History::adminMembershipCreated');
+		}
+
+		throw new ReloadAction('association', 'History::adminCreated');
+
 	});

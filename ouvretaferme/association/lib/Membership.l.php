@@ -441,8 +441,8 @@ class MembershipLib {
 			'priceIncludingVat' => $eHistory['amount'],
 			'preparationStatus' => \selling\Sale::DELIVERED,
 			'onlinePaymentStatus' => $eMethod->isOnline() ? \selling\Sale::SUCCESS : NULL,
-			'deliveredAt' => new \Sql('NOW()'),
 			'readyForAccounting' => TRUE,
+			'deliveredAt' => $eHistory['paidAt'] ?? new \Sql('NOW()'),
 		]);
 		\selling\SaleLib::create($eSale);
 
