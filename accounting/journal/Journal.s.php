@@ -6,6 +6,7 @@ class JournalSetting extends \Settings {
 	const JOURNAL_CODE_BANK = 'BAN'; // Journal de banque
 	const JOURNAL_CODE_OD = 'OD'; // Journal d'opérations diverses
 	const JOURNAL_CODE_OD_BILAN = 'ODB'; // Journal d'opérations diverses (pour les bilans)
+	const JOURNAL_CODE_STOCK = 'STK'; // Journal de stock
 	const JOURNAL_CODE_INV = 'INV'; // Journal d'inventaire
 
 	const HASH_LETTER_RETAINED = 'n'; // hash des écritures d'à nouveau
