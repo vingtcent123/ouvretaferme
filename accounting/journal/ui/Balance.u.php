@@ -241,10 +241,10 @@ Class BalanceUi {
 
 				$classesTotal[(int)mb_substr($class, 0, 1)]['total-debit'] += $lineCurrent['debit'];
 				$classesTotal[(int)mb_substr($class, 0, 1)]['total-credit'] += $lineCurrent['credit'];
-				$classesTotal[(int)mb_substr($class, 0, 1)]['current-debit'] += max($lineCurrent['debit'] - $lineCurrent['credit'], 0);
-				$classesTotal[(int)mb_substr($class, 0, 1)]['current-credit'] += max($lineCurrent['credit'], $lineCurrent['debit'], 0);
-				$classesTotal[(int)mb_substr($class, 0, 1)]['previous-debit'] += max($linePrevious['debit'] - $linePrevious['credit'], 0);
-				$classesTotal[(int)mb_substr($class, 0, 1)]['previous-credit'] += max($linePrevious['credit'], $linePrevious['debit'], 0);
+				$classesTotal[(int)mb_substr($class, 0, 1)]['current-debit'] += $lineCurrent['debit'];
+				$classesTotal[(int)mb_substr($class, 0, 1)]['current-credit'] += $lineCurrent['credit'];
+				$classesTotal[(int)mb_substr($class, 0, 1)]['previous-debit'] += $linePrevious['debit'];
+				$classesTotal[(int)mb_substr($class, 0, 1)]['previous-credit'] += $linePrevious['credit'];
 
 				if($lastClass !== NULL and $lastClass !== (int)mb_substr($class, 0, 1)) {
 					$h .= $this->displaySummary($classesTotal, $lastClass, $hasPrevious);
@@ -375,7 +375,7 @@ Class BalanceUi {
 		$h .= '<td class="hide-sm-down text-end">'.encode($class).'</td>';
 		$h .= '<td class="text-start">';
 		$h .= match($class) {
-			1 => s("Comptes de bilan"),
+			1 => s("Comptes de capitaux"),
 			2 => s("Comptes d'immobilisation"),
 			3 => s("Comptes de stocks et encours"),
 			4 => s("Comptes de tiers"),
