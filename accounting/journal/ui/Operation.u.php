@@ -222,12 +222,14 @@ class OperationUi {
 
 		$h = '';
 
+		$paymentMethod = $cOperation->first()['paymentMethod']['id'] ?? \bank\CashflowUi::extractPaymentTypeFromCashflowDescription($eCashflow->getMemo(), $cPaymentMethod->filter(fn($e) => $e['use']->value(\payment\Method::ACCOUNTING)))['id'] ?? '';
+
 		$h .= $form->hidden('referer', getReferer());
 		$h .= $form->hidden('id', $eOperationBase['id']);
 		$h .= $form->hidden('hash', $cOperation->first()['hash']);
 		$h .= $form->hidden('farm', $eFarm['id']);
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
-		$h .= $form->hidden('paymentMethod', $cOperation->first()['paymentMethod']['id'] ?? '');
+		$h .= $form->hidden('paymentMethod', $paymentMethod);
 
 		if($eCashflow->notEmpty()) {
 
