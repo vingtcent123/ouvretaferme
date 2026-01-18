@@ -270,7 +270,7 @@ class FinancialYearUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td>'.new FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious).'</td>';
+							$h .= '<td class="td-min-content">'.new FinancialYearUi()->getOpeningDescription($eFinancialYearPrevious).'</td>';
 
 						$h .= '</tr>';
 

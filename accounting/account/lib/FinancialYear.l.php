@@ -83,10 +83,11 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		LogLib::save('close', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
+		FinancialYear::model()->commit();
+
 		// Met à jour tous les fichiers de l'exercice
 		FinancialYearDocumentLib::regenerateAll($eFarm, $eFinancialYear);
 
-		FinancialYear::model()->commit();
 
 	}
 

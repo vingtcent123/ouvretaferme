@@ -90,8 +90,8 @@ new \account\FinancialYearPage(function($data) {
 		\account\FinancialYearLib::openFinancialYear($data->e, POST('journalCode', 'array'));
 
 		// Generate PDFs
-		FinancialYearDocumentLib::generate($data->eFar, $data->e, FinancialYearDocumentLib::OPENING);
-		FinancialYearDocumentLib::generate($data->eFar, $data->e, FinancialYearDocumentLib::OPENING_DETAILED);
+		\account\FinancialYearDocumentLib::generate($data->eFarm, $data->e, \account\FinancialYearDocumentLib::OPENING);
+		\account\FinancialYearDocumentLib::generate($data->eFarm, $data->e, \account\FinancialYearDocumentLib::OPENING_DETAILED);
 
 		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/?success=account:FinancialYear::open');
 
