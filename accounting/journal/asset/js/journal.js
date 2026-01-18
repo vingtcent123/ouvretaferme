@@ -71,16 +71,6 @@ class Journal {
 				}
 			);
 
-			qs(
-				'.batch-payment-method',
-				selection.filter('[data-batch~="not-update-payment"]').length > 0 ?
-					node => node.hide() :
-					node => {
-						node.removeHide();
-						actions++;
-					}
-			);
-
 			return actions;
 
 		});

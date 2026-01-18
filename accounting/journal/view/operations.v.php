@@ -103,7 +103,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 				case NULL:
 					echo '<div class="tab-panel selected" data-tab="journal">';
-					echo new \journal\JournalUi()->list($data->eFarm, NULL, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search);
+					echo new \journal\JournalUi()->list($data->eFarm, NULL, $data->cOperation, $data->eFarm['eFinancialYear'], $data->search, displayTotal: $data->search->notEmpty(['ids']) and ((int)$data->nPage === 1 or $data->nPage === NULL));
 					echo '</div>';
 					break;
 

@@ -312,7 +312,7 @@ class JournalUi {
 
 		\Asset::js('journal', 'journal.js');
 
-		$canUpdateFinancialYear = ($readonly === FALSE and $eFinancialYearSelected->canUpdate() and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
+		$canUpdateFinancialYear = ($readonly === FALSE and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
 
 		$columns = 6;
 		if($selectedJournalCode === NULL) {
@@ -380,6 +380,10 @@ class JournalUi {
 								$batch[] = 'accept-attach';
 							}
 
+							if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
+								$batch[] = 'accept-payment-method';
+							}
+
 						}
 
 						$referenceDate = ($eFinancialYearSelected->isCashAccounting() and $eOperation['paymentDate'])? $eOperation['paymentDate'] : $eOperation['date'];
@@ -402,7 +406,7 @@ class JournalUi {
 
 							if($canUpdateFinancialYear) {
 								$h .= '<td class="td-checkbox">';
-									if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
+									//if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
 										$attributesCheckbox = [
 											'data-batch-type' => $eOperation['type'],
 											'data-batch-amount' => $eOperation['amount'],
@@ -418,7 +422,7 @@ class JournalUi {
 										$h .= '<label>';
 											$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'"/>';
 										$h .= '</label>';
-									}
+									//}
 								$h .= '</td>';
 							}
 
@@ -620,10 +624,13 @@ class JournalUi {
 							$colspan++;
 						}
 						$colspan++;
+						if(in_array('document', $columnsSelected)) {
+							$colspan++;
+						}
 						if($selectedJournalCode === NULL and $readonly === FALSE) {
 							$colspan++;
 						}
-						$colspan += 2;
+						$colspan++;
 
 						$h .= '<tr class="row-highlight tr-bold">';
 
@@ -647,6 +654,11 @@ class JournalUi {
 							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">';
 								$h .= \util\TextUi::money($totalCredit);
 							$h .= '</td>';
+
+							if($readonly === FALSE) {
+								$h .= '<td>';
+								$h .= '</td>';
+							}
 
 						$h .= '</tr>';
 
@@ -681,6 +693,11 @@ class JournalUi {
 									$h .= \util\TextUi::money($totalCredit - $totalDebit);
 								}
 							$h .= '</td>';
+
+							if($readonly === FALSE) {
+								$h .= '<td>';
+								$h .= '</td>';
+							}
 
 						$h .= '</tr>';
 
@@ -724,7 +741,7 @@ class JournalUi {
 			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdateJournalCollection" data-ajax-target="#batch-journal-form" post-journal-code="" class="dropdown-item"><i>'.s("Pas de journal").'</i></a>';
 		$menu .= '</div>';
 
-		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
+		$menu .= '<a data-dropdown="top-start" class="batch-item" data-batch-not-only="hide" data-batch-test="accept-payment-method">';
 			$menu .= \Asset::icon('cash-coin');
 			$menu .= '<span style="letter-spacing: -0.2px">'.s("Moyen de paiement").'</span>';
 		$menu .= '</a>';
@@ -739,8 +756,6 @@ class JournalUi {
 			}
 			$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doUpdatePaymentCollection" data-ajax-target="#batch-journal-form" post-payment-method="" class="dropdown-item"><i>'.s("Pas de moyen de paiement").'</i></a>';
 		$menu .= '</div>';
-
-		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createCommentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('chat-text-fill').'<span>'.s("Commenter").'</span></a>';
 
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operation:createDocumentCollection" data-ajax-method="get" class="batch-item">'.\Asset::icon('paperclip').'<span>'.s("Pièce comptable").'</span></a>';
 

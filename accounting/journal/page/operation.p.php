@@ -232,8 +232,6 @@ new \journal\OperationPage(function($data) {
 
 		$data->c = \journal\OperationLib::getByIds(GET('ids', 'array'));
 
-		\journal\Operation::validateBatch($data->c);
-
 		throw new ViewAction($data);
 
 	})
@@ -261,7 +259,7 @@ new \journal\OperationPage(function($data) {
 		$fw->validate();
 
 		throw new ReloadAction('journal', 'Operations::updated');
-	})
+	}, validate: [])
 	->writeCollection('doUpdateDocumentCollection', function($data) {
 
 		$document = POST('document');
@@ -273,7 +271,7 @@ new \journal\OperationPage(function($data) {
 		$fw->validate();
 
 		throw new ReloadAction('journal', 'Operations::updated');
-	});
+	}, validate: []);
 
 new Page()
 	->post('query', function($data) {
