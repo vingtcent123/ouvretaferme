@@ -41,6 +41,9 @@ new Page()
 
 				$eGenericAccount['createdBy'] = new \user\User(['id' => 21]);
 				\account\Account::model()->insert($eGenericAccount);
+				\account\Account::model()
+					->whereClass($class)
+					->update(['id' => $eGenericAccount['id']]);
 
 			}
 
