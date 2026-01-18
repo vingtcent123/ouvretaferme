@@ -97,7 +97,7 @@ class AccountLib extends AccountCrud {
 
 				Account::model()->or(
 					fn() => $this->whereClass('LIKE', '%'.$query.'%'),
-					fn() => $this->whereDescription('LIKE', '%'.$query.'%"')
+					fn() => $this->whereDescription('LIKE', '%'.$query.'%')
 				);
 
 				$keywords = [];
