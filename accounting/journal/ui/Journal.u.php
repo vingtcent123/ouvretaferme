@@ -406,23 +406,21 @@ class JournalUi {
 
 							if($canUpdateFinancialYear) {
 								$h .= '<td class="td-checkbox">';
-									//if($eOperation->acceptUpdate() and $eOperation->canUpdate()) {
-										$attributesCheckbox = [
-											'data-batch-type' => $eOperation['type'],
-											'data-batch-amount' => $eOperation['amount'],
-											'data-journal-code' => (string)$selectedJournalCode,
-											'data-batch' => implode(' ', $batch),
-										];
-										if($eOperation['operation']->notEmpty()) {
-											$attributesCheckbox['class'] = 'hide';
-											$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
-										} else {
-											$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$selectedJournalCode.'")';
-										}
-										$h .= '<label>';
-											$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'"/>';
-										$h .= '</label>';
-									//}
+									$attributesCheckbox = [
+										'data-batch-type' => $eOperation['type'],
+										'data-batch-amount' => $eOperation['amount'],
+										'data-journal-code' => (string)$selectedJournalCode,
+										'data-batch' => implode(' ', $batch),
+									];
+									if($eOperation['operation']->notEmpty()) {
+										$attributesCheckbox['class'] = 'hide';
+										$attributesCheckbox['data-operation-parent'] = $eOperation['operation']['id'];
+									} else {
+										$attributesCheckbox['oninput'] = 'Journal.changeSelection("'.$selectedJournalCode.'")';
+									}
+									$h .= '<label>';
+										$h .= '<input '.attrs($attributesCheckbox).' type="checkbox" name="batch[]" value="'.$eOperation['id'].'" data-operation="'.$eOperation['id'].'"/>';
+									$h .= '</label>';
 								$h .= '</td>';
 							}
 
@@ -656,8 +654,7 @@ class JournalUi {
 							$h .= '</td>';
 
 							if($readonly === FALSE) {
-								$h .= '<td>';
-								$h .= '</td>';
+								$h .= '<td></td>';
 							}
 
 						$h .= '</tr>';
@@ -695,8 +692,7 @@ class JournalUi {
 							$h .= '</td>';
 
 							if($readonly === FALSE) {
-								$h .= '<td>';
-								$h .= '</td>';
+								$h .= '<td></td>';
 							}
 
 						$h .= '</tr>';
