@@ -9,6 +9,17 @@ new \account\FinancialYearPage(function($data) {
 	}
 
 })
+	->post('check', function($data) {
+
+		if(FinancialYearDocumentLib::countWaiting($data->eFarm['eFinancialYear']) === 0) {
+			throw new \ReloadLayerAction();
+		}
+
+		throw new \JsonAction([
+			 'result' => 'not-finished',
+		]);
+
+	})
 	->read('download', function($data) {
 
 		$type = GET('type');

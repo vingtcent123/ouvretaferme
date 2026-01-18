@@ -31,7 +31,7 @@ new \account\FinancialYearPage(
 )
 	->doCreate(function($data) {
 
-		throw new ReloadAction('account', 'FinancialYear::created');
+		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm, $data->e).'/etats-financiers?success=account:FinancialYear::created');
 
 	});
 
@@ -90,8 +90,7 @@ new \account\FinancialYearPage(function($data) {
 		\account\FinancialYearLib::openFinancialYear($data->e, POST('journalCode', 'array'));
 
 		// Generate PDFs
-		\account\FinancialYearDocumentLib::generate($data->eFarm, $data->e, \account\FinancialYearDocumentLib::OPENING);
-		\account\FinancialYearDocumentLib::generate($data->eFarm, $data->e, \account\FinancialYearDocumentLib::OPENING_DETAILED);
+		\account\FinancialYearDocumentLib::regenerateAll($data->eFarm, $data->e, [\account\FinancialYearDocumentLib::OPENING, \account\FinancialYearDocumentLib::OPENING_DETAILED]);
 
 		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/?success=account:FinancialYear::open');
 

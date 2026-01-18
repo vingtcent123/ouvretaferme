@@ -106,6 +106,15 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 		}
 	}
 
+	public static function countWaiting(FinancialYear $eFinancialYear): int {
+
+		return FinancialYearDocument::model()
+			->whereFinancialYear($eFinancialYear)
+			->whereGeneration('IN', [FinancialYearDocument::PROCESSING, FinancialYearDocument::NOW, FinancialYearDocument::WAITING])
+			->count();
+
+	}
+
 	public static function getContent(FinancialYear $eFinancialYear, string $type): ?string {
 
 		$eFinancialYearDocument = FinancialYearDocument::model()
@@ -129,6 +138,36 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 			->whereType($type)
 			->whereGeneration('IN', FinancialYearDocument::PROCESSING)
 			->update(['generation' => FinancialYearDocument::SUCCESS, 'content' => $ePdf['content']]) > 0);
+
+	}
+
+	public static function generateWaiting(\farm\Farm $eFarm): void {
+
+		FinancialYearDocument::model()->beginTransaction();
+
+		$cFinancialYearDocument = FinancialYearDocument::model()
+			->select(FinancialYearDocument::getSelection() + ['financialYear' => FinancialYear::getSelection()])
+			->whereGeneration(FinancialYearDocument::WAITING)
+			->getCollection();
+
+		foreach($cFinancialYearDocument as $eFinancialYearDocument) {
+
+			$updated = FinancialYearDocument::model()
+				->whereFinancialYear($eFinancialYearDocument['financialYear'])
+				->whereGeneration(FinancialYearDocument::WAITING)
+				->whereType($eFinancialYearDocument['type'])
+        ->update(['generation' => FinancialYearDocument::PROCESSING]);
+
+			if($updated === 0) {
+				continue;
+			}
+
+			$ePdf = \overview\PdfLib::generate($eFarm, $eFinancialYearDocument['financialYear'], $eFinancialYearDocument['type']);
+
+			self::updateDocument($eFinancialYearDocument['financialYear'], $eFinancialYearDocument['type'], $ePdf);
+
+			FinancialYearDocument::model()->commit();
+		}
 
 	}
 
@@ -183,19 +222,35 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 	 * Appelé au moment de la clôture d'un exercice
 	 * => On regénère tous les documents
 	 */
-	public static function regenerateAll(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
+	public static function regenerateAll(\farm\Farm $eFarm, FinancialYear $eFinancialYear, array $types = []): void {
 
-		foreach([
+		if(empty($types)) {
+			$types = [
 				self::BALANCE_SHEET,
 				self::SIG,
 				self::INCOME_STATEMENT, self::INCOME_STATEMENT_DETAILED,
 				self::ASSET_AMORTIZATION, self:: ASSET_ACQUISITION,
 				self::BALANCE, self:: BALANCE_DETAILED,
 				self::CLOSING, self::CLOSING_DETAILED
-			] as $document) {
+			];
+		}
 
-			self::generate($eFarm, $eFinancialYear, $document);
+		foreach($types as $type) {
 
+			$eFinancialYearDocument = new FinancialYearDocument([
+				'type' => $type,
+				'financialYear' => $eFinancialYear,
+				'generation' => FinancialYearDocument::WAITING
+			]);
+
+			FinancialYearDocument::model()
+				->option('add-replace')
+				->insert($eFinancialYearDocument);
+
+		}
+
+		if(count($types) > 0) {
+			\company\CompanyCronLib::addConfiguration($eFarm, \company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT, \company\CompanyCron::WAITING);
 		}
 
 	}

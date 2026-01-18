@@ -5,6 +5,8 @@ Class FinancialYearDocumentUi {
 
 	public function getAllDocuments(FinancialYear $eFinancialYear): array {
 
+		\Asset::js('account', 'financialYearDocument.js');
+
 		return [
 			\account\FinancialYearDocumentLib::INCOME_STATEMENT => ['accept' => NULL, 'label' => s("Compte de résultat")],
 			\account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => ['accept' => NULL, 'label' => s("Compte de résultat avec synthèse")],

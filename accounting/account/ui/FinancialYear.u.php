@@ -767,7 +767,7 @@ class FinancialYearUi {
 
 						if($eFinancialYear->acceptImportFec()) {
 
-							$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md">';
+							$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md ml-1">';
 								$h .= s("Importer un fichier FEC");
 							$h .= '</a>';
 
