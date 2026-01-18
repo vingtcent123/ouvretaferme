@@ -14,7 +14,7 @@ const footerTemplate = argv.footer || null;
 const headerFooterArgs = {
 	...headerTemplate ? {headerTemplate: decodeURIComponent((headerTemplate + '').replace(/\+/g, '%20'))} : {},
 	...footerTemplate ? {footerTemplate: decodeURIComponent((footerTemplate + '').replace(/\+/g, '%20'))} : {},
-	...(headerTemplate || footerTemplate) ? {displayHeaderFooter : true, margin: {top: '150px'}} : {},
+	...(headerTemplate || footerTemplate) ? {displayHeaderFooter : true} : {},
 };
 
 (async() => {

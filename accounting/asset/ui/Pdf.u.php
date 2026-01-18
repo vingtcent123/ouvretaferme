@@ -10,20 +10,11 @@ class PdfUi {
 	}
 
 	public function getAcquisitions(
-		\farm\Farm $eFarm,
 		\Collection $cAsset,
 		\Collection $cAssetGrant,
 	): string {
 
-		$eFinancialYear = $eFarm['eFinancialYear'];
-
-		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
-
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_ACQUISITION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
-		}
-
-		$h .= '<div class="pdf-document-wrapper">';
+		$h = '<div class="pdf-document-wrapper">';
 
 			$h .= '<div class="pdf-document-content">';
 
@@ -64,9 +55,6 @@ class PdfUi {
 
 		$h .= '</div>';
 
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getFooter();
-		}
 		return $h;
 
 	}
@@ -77,17 +65,11 @@ class PdfUi {
 		array $grantAmortizations,
 	): string {
 
-		$eFinancialYear = $eFarm['eFinancialYear'];
 		$showExcessColumns = (array_find($assetAmortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL or
 			array_find($grantAmortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL);
 
-		$h = '<style>@page {	size: '.($showExcessColumns ? 'landscape' : 'A4').'; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
 
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_AMORTIZATION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
-		}
-
-		$h .= '<div class="'.($showExcessColumns ? 'pdf-document-wrapper-landscape' : 'pdf-document-wrapper').'">';
+		$h = '<div class="'.($showExcessColumns ? 'pdf-document-wrapper-landscape' : 'pdf-document-wrapper').'">';
 
 			$h .= '<div class="pdf-document-content">';
 
@@ -126,9 +108,6 @@ class PdfUi {
 
 		$h .= '</div>';
 
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getFooter();
-		}
 		return $h;
 
 

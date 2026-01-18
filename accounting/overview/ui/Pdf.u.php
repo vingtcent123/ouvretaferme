@@ -14,19 +14,10 @@ class PdfUi {
 		array $balanceSheetData,
 		array $totals,
 		\Collection $cAccount,
-		string $type,
 		bool $isDetailed,
 	): string {
 
-		$eFinancialYear = $eFarm['eFinancialYear'];
-
-		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
-
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
-		}
-
-		$h .= '<div class="pdf-document-wrapper">';
+		$h = '<div class="pdf-document-wrapper">';
 
 			$h .= '<div class="pdf-document-content">';
 
@@ -54,9 +45,6 @@ class PdfUi {
 
 		$h .= '</div>';
 
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getFooter();
-		}
 		return $h;
 
 	}
@@ -65,12 +53,6 @@ class PdfUi {
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 		$totals = new IncomeStatementUi()->generateTotals($resultData);
-
-		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
-
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(GET('type'), $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
-		}
 
 		$totalExpensesCurrent = $totals['operatingExpense']['current'] + $totals['financialExpense']['current'] + $totals['exceptionalExpense']['current'];
 		$totalIncomesCurrent = $totals['operatingIncome']['current'] + $totals['financialIncome']['current'] + $totals['exceptionalIncome']['current'];
@@ -82,7 +64,7 @@ class PdfUi {
 			$differencePrevious = $totalIncomesPrevious - $totalExpensesPrevious;
 		}
 
-		$h .= '<div class="pdf-document-wrapper">';
+		$h = '<div class="pdf-document-wrapper">';
 
 			$h .= '<div class="pdf-document-content">';
 
@@ -167,15 +149,9 @@ class PdfUi {
 		return $h;
 
 	}
-	public function getSig(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $values): string {
+	public function getSig(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $values): string {
 
-		$h = '<style>@page {	size: A4; margin: calc(var(--margin-bloc-height) + 2cm) 1cm 1cm; }</style>';
-
-		if(get_exists('test') === TRUE) {
-			$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::SIG, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
-		}
-
-		$h .= '<div class="pdf-document-wrapper">';
+		$h = '<div class="pdf-document-wrapper">';
 
 			$h .= '<div class="pdf-document-content">';
 				$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';

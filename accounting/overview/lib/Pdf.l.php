@@ -11,14 +11,14 @@ Class PdfLib {
 
 	}
 
-	public static function build(string $url, ?string $title, ?string $header, ?string $footer): string {
+	public static function build(string $url, ?string $footer): string {
 
 		if(OTF_DEMO) {
 			return '';
 		}
 
 		return \Cache::redis()->lock(
-			'pdf-'.$url, function () use ($header, $footer, $title, $url) {
+			'pdf-'.$url, function () use ($footer, $url) {
 
 			$file = tempnam('/tmp', 'pdf-').'.pdf';
 
@@ -27,20 +27,16 @@ Class PdfLib {
 
 			$args = '"--url='.$url.'"';
 			$args .= ' "--destination='.$file.'"';
-			if($title !== NULL) {
-				$args .= ' "--title='.rawurlencode($title).'"';
-			}
-			if($header !== NULL) {
-				$args .= ' "--header='.rawurlencode($header).'"';
-			}
+
 			if($footer !== NULL) {
 				$args .= ' "--footer='.rawurlencode($footer).'"';
 			}
+			$args .= ' "--header= "';
 
 			exec('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
 
 			if(LIME_ENV === 'dev') {
-				//d('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
+				//dd('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
 			}
 
 			$content = file_get_contents($file);
@@ -112,11 +108,9 @@ Class PdfLib {
 			default => throw new \Exception('Unknown document type'),
 		};
 
-		$title = new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE);
 		$footer = \account\PdfUi::getFooter();
-		$header = \account\PdfUi::getHeader($eFarm, $title, $eFinancialYear);
 
-		return self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'?type='.$type, $title, $header, $footer);
+		return self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'?type='.$type, $footer);
 
 	}
 }
