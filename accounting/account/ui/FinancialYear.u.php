@@ -796,10 +796,12 @@ class FinancialYearUi {
 
 					$h .= '<div class="util-buttons">';
 
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
-							$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
-							$h .= \Asset::icon('pencil');
-						$h .= '</a>';
+						if($eFinancialYear['hasVat']) {
+							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
+								$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
+								$h .= \Asset::icon('pencil');
+							$h .= '</a>';
+						}
 
 						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/tresorerie" class="util-button">';
 							$h .= '<h5>'.s("Trésorerie").'</h5>';
