@@ -525,11 +525,11 @@ class FinancialYearUi {
 
 			if($eFinancialYearPrevious->empty()) {
 
-				$h .= $form->submit(s("Ouvrir l'exercice"), ['data-waiter' => s("Ouverture en cours...")]);
+				$h .= $form->submit(s("Ouvrir l'exercice"), ['data-waiter' => s("Ouverture en cours..."), 'data-confirm' => s("L'opération d'ouverture est irréversible ! Confirmez-vous l'ouverture de l'exercice ?")]);
 
 			} else {
 
-				$h .= $form->submit(s("Générer les écritures et le bilan d'ouverture"), ['data-waiter' => s("Ouverture en cours...")]);
+				$h .= $form->submit(s("Générer les écritures et le bilan d'ouverture"), ['data-waiter' => s("Ouverture en cours..."), 'data-confirm' => s("L'opération d'ouverture est irréversible ! Confirmez-vous l'ouverture de l'exercice ?")]);
 
 			}
 
@@ -645,7 +645,8 @@ class FinancialYearUi {
 			}
 
 			$h .= '<div>'.$form->submit(
-				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]), ['data-waiter' => s("Clôture en cours...")],
+				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]),
+				['data-waiter' => s("Clôture en cours..."), 'data-confirm' => s("La clôture est définitive ! Souhaitez-vous lancer l'opération de clôture ?")],
 			).'</div>';
 
 		$h .= $form->close();
