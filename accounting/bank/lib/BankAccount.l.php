@@ -88,7 +88,7 @@ class BankAccountLib extends BankAccountCrud {
 		// Check if there is already an account. Set current account to default if there is none.
 		$cBankAccountDefault = BankAccount::model()->whereIsDefault(TRUE)->count();
 
-		$accountLabel = ($eLastBankAccount->notEmpty() and $eLastBankAccount['label'] !== NULL) ?
+		$accountLabel = ($eLastBankAccount->notEmpty() and empty($eLastBankAccount['label']) === FALSE) ?
 			(int)trim($eLastBankAccount['label'], '0') + 1 :
 			\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL;
 
