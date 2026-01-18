@@ -159,11 +159,12 @@ Class AssetUi {
 				$eAsset['acquisitionDate'] = $eOperation['date'];
 				$eAsset['startDate'] = $eOperation['date'];
 				if($eOperation['type'] === \journal\Operation::DEBIT) {
-					$value = $eOperation['amount'];
+					$value += $eOperation['amount'];
 				} else {
 					$value -= $eOperation['amount'];
 				}
 			}
+
 			$eAsset['value'] = $value;
 		}
 
