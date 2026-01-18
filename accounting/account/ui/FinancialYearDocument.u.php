@@ -32,7 +32,7 @@ Class FinancialYearDocumentUi {
 		if($eFinancialYear->isClosed() === FALSE) {
 			$bilanDocuments[] = \account\FinancialYearDocumentLib::BALANCE_SHEET;
 		}
-		if($eFinancialYear['previous']->notEmpty()) {
+		if($eFinancialYear['previous']->notEmpty() and $eFinancialYear->isOpen()) {
 			$bilanDocuments[] = \account\FinancialYearDocumentLib::OPENING;
 			$bilanDocuments[] = \account\FinancialYearDocumentLib::OPENING_DETAILED;
 		}
