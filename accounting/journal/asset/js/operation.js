@@ -507,7 +507,7 @@ class Operation {
 	// Appelé uniquement lors d'un warning
 	static setAmountIncludingVat(index) {
 
-		const newAmountIncludingVat = parseFloat(qs('[data-amount-including-vat-warning-calculated-value][data-index="' + index + '"]').dataset.value);
+		const newAmountIncludingVat = Math.round(parseFloat(qs('[data-amount-including-vat-warning-calculated-value][data-index="' + index + '"]').dataset.value), 2);
 
 		OperationAmount.updateAmount(index, 'amountIncludingVAT', newAmountIncludingVat);
 
