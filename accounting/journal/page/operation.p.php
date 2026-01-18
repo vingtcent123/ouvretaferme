@@ -18,6 +18,8 @@ new \journal\OperationPage(
 })
 ->read('/journal/operation/{id}/update', function($data) {
 
+	$data->referer = SERVER('HTTP_REFERER');
+
 	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
 	foreach($data->cOperation as $eOperation) {
 		$eOperation->validate('isNotLinkedToAsset');
@@ -56,13 +58,22 @@ new \journal\OperationPage(
 
 	$success = $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated';
 
-	$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
+	if(post_exists('referer')) {
 
-	if($hasMissingAsset) {
-		$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal:'.$success.'CreateAsset';
+		$data->url = POST('referer').'&success=journal:'.$success;
+
+	} else {
+
+		$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
+
+		if($hasMissingAsset) {
+			$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal:'.$success.'CreateAsset';
+		}
+
+		$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal:'.$success;
+
 	}
 
-	$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal:'.$success;
 	$data->cOperation = $cOperation;
 
 	throw new ViewAction($data);

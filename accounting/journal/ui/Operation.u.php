@@ -222,6 +222,7 @@ class OperationUi {
 
 		$h = '';
 
+		$h .= $form->hidden('referer', getReferer());
 		$h .= $form->hidden('id', $eOperationBase['id']);
 		$h .= $form->hidden('hash', $cOperation->first()['hash']);
 		$h .= $form->hidden('farm', $eFarm['id']);
