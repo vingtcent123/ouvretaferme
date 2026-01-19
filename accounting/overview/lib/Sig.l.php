@@ -90,7 +90,7 @@ class SigLib {
 	  self::QP_RESULTAT_NEGATIF => ['655'],
 	  self::CHARGES_FINANCIERES => ['66'],
 	  self::PRODUITS_EXCEPTIONNELS => ['77'],
-	  self::CHARGES_EXCEPTIONNELLES => ['67'],
+	  self::CHARGES_EXCEPTIONNELLES => ['67', '687'],
 	  self::PARTICIPATION_SALARIES => ['691'],
 	  self::IMPOTS_BENEFICES => ['689', '695', '696', '697', '698', '699', '-789'],
 	];
