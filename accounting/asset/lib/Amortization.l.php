@@ -59,7 +59,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		if($eAsset[$type.'Mode'] === Asset::LINEAR) {
 
 			$startDate = $eAsset['startDate'];
-			$daysFirstMonth = max(1, self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2));
+			$daysFirstMonth = max(1, self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2) + 1);
 
 		} else {
 
