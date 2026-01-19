@@ -748,6 +748,7 @@ Class AssetUi {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
 					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
 				}
+
 			$h .= '</dl>';
 		$h .= '</div>';
 

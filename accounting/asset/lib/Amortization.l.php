@@ -388,15 +388,22 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		for($i = 0; $i <= $durationInYears; $i++) {
 
-			switch($i) {
-				case 0:
-					$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
-					break;
-				case $durationInYears:
-					$amortization = round($amortizableBase - $amortizationCumulated, 2);
-					break;
-				default:
-					$amortization = round($amortizableBase * $rate / 100, 2);
+			if(isset($eAsset['cAmortization'][$i])) {
+
+				$amortization = $eAsset['cAmortization'][$i]['amount'];
+
+			} else {
+
+				switch($i) {
+					case 0:
+						$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
+						break;
+					case $durationInYears:
+						$amortization = round($amortizableBase - $amortizationCumulated, 2);
+						break;
+					default:
+						$amortization = round($amortizableBase * $rate / 100, 2);
+				}
 			}
 
 			$amortizationCumulated += $amortization;
