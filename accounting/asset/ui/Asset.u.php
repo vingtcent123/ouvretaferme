@@ -743,10 +743,10 @@ Class AssetUi {
 				$h .= '</dd>';
 				if($eAsset['endedDate'] !== NULL) {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated)).'</dd>';
+					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
 				} elseif($eFinancialYearLast->notEmpty()) {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated)).'</dd>';
+					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
 				}
 			$h .= '</dl>';
 		$h .= '</div>';
