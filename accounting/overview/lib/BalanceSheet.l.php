@@ -221,11 +221,28 @@ Class BalanceSheetLib {
 					'comparisonDepreciation' => 0,
 					'comparisonNet' => 0,
 				];
+
+				// Tri par clés pour insérer le résultat au bon endroit
+				uasort($balanceSheetData['equity'], function($line1, $line2) {
+					$class1 = (int)mb_substr($line1['class'], 0, 3);
+					$class2 = (int)mb_substr($line2['class'], 0, 3);
+					if($class1 < $class2) {
+						return -1;
+					}
+					if($class1 > $class2) {
+						return 1;
+					}
+					if(mb_strlen($line1['class']) > mb_strlen($line2['class'])) {
+						return -1;
+					}
+					return 1;
+				});
 			}
 			$balanceSheetData['equity'][$class]['comparisonBrut'] = $result;
 			$balanceSheetData['equity'][$class]['comparisonNet'] = $balanceSheetData['equity'][$class]['comparisonBrut'] - $balanceSheetData['equity'][$class]['comparisonDepreciation'];
 			$totals['equity']['comparisonBrut'] += $result;
 			$totals['equity']['comparisonNet'] = $totals['equity']['comparisonBrut'] - $totals['equity']['comparisonDepreciation'];
+
 		}
 
 		// Recalcule les totaux

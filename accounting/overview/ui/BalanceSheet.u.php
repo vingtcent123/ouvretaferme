@@ -311,7 +311,7 @@ class BalanceSheetUi {
 						if($cAccount->offsetExists((int)trim($asset['class'], '0'))) {
 							$h .= encode($cAccount[(int)trim($asset['class'], '0')]['description']);
 						} else {
-							$h .= encode($asset['description']);
+							$h .= encode(ucfirst(mb_strtolower($asset['description'], 'UTF-8')));
 						}
 					$h .= '</i></td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $asset['class']).'</td>';
@@ -345,7 +345,7 @@ class BalanceSheetUi {
 						} else {
 							$eAccount = $cAccount->offsetGet(substr($asset['class'], 0, 2));
 						}
-						$h .= encode($eAccount['description']);
+						$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 					$h .= '</td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $asset['class']).'</td>';
 					if($netOnly === FALSE) {
@@ -398,9 +398,9 @@ class BalanceSheetUi {
 					$h .= '<td><i>';
 						$h .= '<span class="overview_class-detail">'.encode($liability['class']).'</span> ';
 						if($cAccount->offsetExists((int)trim($liability['class'], '0'))) {
-							$h .= encode($cAccount[(int)trim($liability['class'], '0')]['description']);
+							$h .= encode(ucfirst(mb_strtolower($cAccount[(int)trim($liability['class'], '0')]['description'], 'UTF-8')));
 						} else {
-							$h .= encode($liability['description']);
+							$h .= encode(ucfirst(mb_strtolower($liability['description'], 'UTF-8')));
 						}
 					$h .= '</i></td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $liability['class']).'</td>';
@@ -435,7 +435,7 @@ class BalanceSheetUi {
 						} else {
 							$eAccount = $cAccount->offsetGet(substr($liability['class'], 0, 2));
 						}
-						$h .= encode($eAccount['description']);
+						$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 
 					$h .= '</td>';
 					$h .= '<td>'.new CommonUi()->getDropdownClass($eFarm, $liability['class']).'</td>';
@@ -630,7 +630,7 @@ class BalanceSheetUi {
 
 					$h .= '<td>';
 						$h .= encode($eAccount['class']).' ';
-						$h .= encode($eAccount['description']);
+						$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 					$h .= '</td>';
 
 					$h .= '<td class="text-end balance-td-brut">';
@@ -694,7 +694,7 @@ class BalanceSheetUi {
 						}
 
 						$h .= encode($classDisplay).' ';
-						$h .= encode($eAccount['description']);
+						$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 
 					$h .= '</td>';
 					$h .= '<td class="text-end balance-td-brut">';
@@ -737,7 +737,7 @@ class BalanceSheetUi {
 
 				$h .= '<td>';
 					$h .= encode($eAccount['class']).' ';
-					$h .= encode($eAccount['description']);
+					$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 				$h .= '</td>';
 
 				$h .= '<td class="text-end balance-td-brut">';
@@ -818,7 +818,7 @@ class BalanceSheetUi {
 
 					$h .= '<td>';
 						$h .= encode($eAccount['class']).' ';
-						$h .= encode($eAccount['description']);
+						$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 					$h .= '</td>';
 
 					$h .= '<td class="text-end balance-td-net">';
@@ -871,7 +871,7 @@ class BalanceSheetUi {
 						}
 
 						$h .= encode($classDisplay).' ';
-						$h .= encode($eAccount['description']);
+						$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 					$h .= '</td>';
 					$h .= '<td class="text-end balance-td-net">';
 						if((int)$line['currentNet'] !== 0) {
@@ -903,7 +903,7 @@ class BalanceSheetUi {
 
 				$h .= '<td>';
 					$h .= encode($eAccount['class']).' ';
-					$h .= encode($eAccount['description']);
+					$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
 				$h .= '</td>';
 
 				$h .= '<td class="text-end balance-td-net">';
