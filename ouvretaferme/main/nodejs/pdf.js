@@ -14,7 +14,7 @@ const footerTemplate = argv.footer || null;
 const headerFooterArgs = {
 	...headerTemplate ? {headerTemplate: decodeURIComponent((headerTemplate + '').replace(/\+/g, '%20'))} : {},
 	...footerTemplate ? {footerTemplate: decodeURIComponent((footerTemplate + '').replace(/\+/g, '%20'))} : {},
-	...(headerTemplate || footerTemplate) ? {displayHeaderFooter : true} : {},
+	...(headerTemplate || footerTemplate) ? {displayHeaderFooter : true, margin: {bottom: '1cm'}} : {},
 };
 
 (async() => {
@@ -27,7 +27,8 @@ const headerFooterArgs = {
 	const page = await browser.newPage();
 
 	await page.goto(url, {
-		waitUntil: 'networkidle0'
+		waitUntil: 'networkidle0',
+		timeout: 0,
 	});
 
 	await page.pdf({

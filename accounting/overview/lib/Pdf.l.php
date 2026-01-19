@@ -36,11 +36,11 @@ Class PdfLib {
 				$args .= ' "--title='.rawurlencode($title).'"';
 			}
 
-			exec('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
-
 			if(LIME_ENV === 'dev') {
 				//dd('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
 			}
+
+			exec('node '.LIME_DIRECTORY.'/ouvretaferme/main/nodejs/pdf.js '.$args.' 2>&1');
 
 			$content = file_get_contents($file);
 

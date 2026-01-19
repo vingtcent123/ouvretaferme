@@ -36,7 +36,7 @@ new \account\FinancialYearPage(function($data) {
 			$hasContent = FALSE;
 		}
 
-		if($data->e->isClosed() or $hasContent) {
+		if($data->e->isClosed() and $hasContent) {
 
 			$content = FinancialYearDocumentLib::getContent($data->e, $type);
 
