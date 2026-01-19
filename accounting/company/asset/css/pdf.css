@@ -17,22 +17,6 @@ html {
 	width: 18.9cm;
 }
 
-.pdf-document-wrapper-landscape {
-	display: grid;
-	grid-template-rows: auto 1fr auto;
-	margin: 0.25rem auto;
-	width: 27cm;
-}
-.pdf-document-footer {
-	position: fixed;
-	bottom: 0;
-}
-
-.pdf-document-details-table-content {
-	background-color: white;
-	border: 1px solid black;
-}
-
 .pdf-document-top {
 	display: flex;
 	flex-direction: column;
@@ -58,16 +42,8 @@ html {
 	text-align: right;
 }
 
-tr {
-	break-inside: avoid;
-}
-
-.text-small {
+.pdf-text-small {
 	font-size: 0.75rem;
-}
-
-.table-pdf {
-	font-size: 0.85rem;
 }
 
 table.pdf-table-bordered {
@@ -89,6 +65,14 @@ tr.pdf-tr-total-general > td {
 	text-align: right;
 }
 
+table.pdf-table-bordered tr:nth-child(odd) td {
+	background-color: #0001;
+}
+
+tr {
+	break-inside: avoid;
+}
+
 .pdf-document-content a.nav-item {
 	display: none;
 }
@@ -100,6 +84,4 @@ tr.pdf-tr-muted {
 tr.pdf-tr-muted.pdf-tr-ml-1 > td:first-child {
 	padding-left: 0.5cm;
 }
-table.pdf-table-bordered tr td {
-	border-bottom: 1px dotted lightgrey;
-}
+

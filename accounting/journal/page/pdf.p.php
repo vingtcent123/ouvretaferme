@@ -21,7 +21,7 @@ new Page()
 		]);
 		$searchPrevious = new Search([
 			'startDate' => date('Y-m-d', strtotime($data->eFarm['eFinancialYear']['startDate'].' - 1 YEAR')),
-			'endDate', date('Y-m-d', strtotime($data->eFarm['eFinancialYear']['endDate'].' - 1 YEAR')),
+			'endDate' => date('Y-m-d', strtotime($data->eFarm['eFinancialYear']['endDate'].' - 1 YEAR')),
 			'precision' => $precision,
 		]);
 

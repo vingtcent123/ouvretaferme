@@ -116,7 +116,7 @@ Class VatUi {
 						$h .= '<tbody>';
 							$h .= '<tr class="tr-border-top">';
 
-								$h .= '<td '.($for === 'pdf' ? 'class="text-small"' : '').'>';
+								$h .= '<td '.($for === 'pdf' ? 'class="pdf-text-small"' : '').'>';
 									$h .= \util\DateUi::numeric($eOperationInitial['date']);
 								$h .= '</td>';
 

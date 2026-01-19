@@ -74,19 +74,17 @@ Class TrialBalanceLib {
 
 			}
 
-			if(isset($data[$account]) === FALSE) {
-				$data[$account] = [
-					'account' => $account,
-					'accountDetail' => mb_strlen($account) < $precision ? ' ('.$eOperation['label'].')' : '',
-					'debit' => 0,
-					'credit' => 0,
-					'label' => $label,
-				];
-			}
-			$data[$account]['debit'] += $eOperation['debit'];
-			$data[$account]['credit'] += $eOperation['credit'];
+			$data[$eOperation['label']] = [
+				'account' => $account,
+				'accountDetail' => mb_strlen($account) < $precision ? ' ('.$eOperation['label'].')' : '',
+				'debit' => $eOperation['debit'],
+				'credit' => $eOperation['credit'],
+				'accountLabel' => $label,
+			];
 
 		}
+
+		ksort($data, SORT_STRING);
 
 		return $data;
 	}
