@@ -6,17 +6,23 @@
 new Page()
 	->cli('index', function($data) {
 
-		$class = '4781';
+		$class = '33';
 		$eGenericAccount = \company\GenericAccountLib::getByClass($class);
 
 		if($eGenericAccount->notEmpty()) {
 			return;
 		}
 
+		$eJournalCode = \company\JournalCode::model()
+			->select(\company\JournalCode::getSelection())
+			->whereCode(\journal\JournalSetting::JOURNAL_CODE_STOCK)
+			->get();
+
 		$eGenericAccount = new \company\GenericAccount([
-			'id' => 293,
+			'id' => 233,
 			'class' => $class,
-			'description' => 'Mali de fusion sur actif circulant',
+			'journalCode' => $eJournalCode,
+			'description' => 'En-cours de production de biens',
 			'type' => \company\GenericAccount::AGRICULTURAL,
 		]);
 
@@ -39,7 +45,14 @@ new Page()
 
 			} else {
 
+				$eJournalCode = \journal\JournalCode::model()
+					->select(\company\JournalCode::getSelection())
+					->whereCode(\journal\JournalSetting::JOURNAL_CODE_STOCK)
+					->get();
+
+
 				$eGenericAccount['createdBy'] = new \user\User(['id' => 21]);
+				$eGenericAccount['journalCode'] = $eJournalCode;
 				\account\Account::model()->insert($eGenericAccount);
 				\account\Account::model()
 					->whereClass($class)
