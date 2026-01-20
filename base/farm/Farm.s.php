@@ -30,7 +30,7 @@ class FarmSetting extends \Settings {
 		return ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing'];
 	}
 
-	public static function getDatabases(): array {
+	public static function getPackages(): array {
 		return array_merge(self::getStartPackages(), self::getAccountingPackages());
 	}
 

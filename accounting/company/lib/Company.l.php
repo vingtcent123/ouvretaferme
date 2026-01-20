@@ -158,7 +158,7 @@ class CompanyLib {
 			if($module !== GET('module')) {
 				continue;
 			}
-			if(in_array($package, \farm\FarmSetting::getAccountingPackages()) === FALSE) {
+			if(in_array($package, \farm\FarmSetting::getPackages()) === FALSE) {
 				continue;
 			}
 			echo $class."\n";

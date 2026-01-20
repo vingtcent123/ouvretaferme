@@ -47,6 +47,7 @@ switch(LIME_ENV) {
 			'selling' => 'ouvretaferme',
 			'game' => 'ouvretaferme',
 			'website' => 'ouvretaferme',
+			'securing' => 'ouvretaferme',
 
 			'association' => 'ouvretaferme',
 
@@ -83,6 +84,7 @@ switch(LIME_ENV) {
 			'selling' => 'dev_ouvretaferme',
 			'game' => 'dev_ouvretaferme',
 			'website' => 'dev_ouvretaferme',
+			'securing' => 'dev_ouvretaferme',
 
 			'association' => 'dev_ouvretaferme',
 

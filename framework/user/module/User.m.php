@@ -54,7 +54,7 @@ class UserModel extends \ModuleModel {
 			'firstName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'lastName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'cast' => 'string'],
 			'legalName' => ['text8', 'min' => 1, 'max' => \user\UserSetting::NAME_SIZE_MAX, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
-			'email' => ['email', 'collate' => 'general', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'email' => ['email', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'siret' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],

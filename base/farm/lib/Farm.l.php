@@ -134,7 +134,7 @@ class FarmLib extends FarmCrud {
 
 		$base = FarmSetting::getDatabaseName($eFarm);
 
-		foreach(FarmSetting::getDatabases() as $package) {
+		foreach(FarmSetting::getPackages() as $package) {
 			\Database::setPackage($package, $base);
 		}
 
