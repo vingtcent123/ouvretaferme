@@ -59,8 +59,8 @@ class CustomerGroupModel extends \ModuleModel {
 			'farm' => 'farm\Farm',
 		];
 
-		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['farm']
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['farm', 'name']
 		]);
 
 	}

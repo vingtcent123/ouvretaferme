@@ -63,16 +63,24 @@ class CsvUi {
 				$h .= '<tbody>';
 					foreach($data as $row) {
 
-						[$title, $column, $description, $example] = $row;
+						if(is_string($row)) {
+							$h .= '<tr class="tr-title">';
+								$h .= '<td colspan="4">'.$row.'</td>';
+							$h .= '</tr>';
+						} else {
 
-						$mandatory = ($mandatory or str_contains($title, 'form-asterisk'));
+							[$title, $column, $description, $example] = $row;
 
-						$h .= '<tr>';
-							$h .= '<td>'.$title.'</td>';
-							$h .= '<td><pre>'.$column.'</pre></td>';
-							$h .= '<td style="max-width: 25rem">'.$description.'</td>';
-							$h .= '<td><div class="doc-example">'.$example.'</div></td>';
-						$h .= '</tr>';
+							$mandatory = ($mandatory or str_contains($title, 'form-asterisk'));
+
+							$h .= '<tr>';
+								$h .= '<td>'.$title.'</td>';
+								$h .= '<td><pre>'.$column.'</pre></td>';
+								$h .= '<td style="max-width: 25rem">'.$description.'</td>';
+								$h .= '<td><div class="doc-example">'.$example.'</div></td>';
+							$h .= '</tr>';
+
+						}
 					}
 				$h .= '</tbody>';
 			$h .= '</table>';

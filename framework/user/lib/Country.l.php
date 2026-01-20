@@ -11,13 +11,19 @@ class CountryLib extends CountryCrud {
 			return $eCountry;
 		}
 
-		$callback = fn() => Country::model()
+		$callback = fn() => self::getAll();
+
+		return self::getCache('list', $callback)[$eCountry['id']];
+
+	}
+
+	public static function getAll(): \Collection {
+
+		return Country::model()
 			->select([
 				'id', 'name'
 			])
 			->getCollection(index: 'id');
-
-		return self::getCache('list', $callback)[$eCountry['id']];
 
 	}
 

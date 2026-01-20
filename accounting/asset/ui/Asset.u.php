@@ -1071,7 +1071,7 @@ Class AssetUi {
 
 		}
 
-		$h = '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Amortissements").'</h3>';
+		$h = '<h2 class="mt-2">'.\Asset::icon($step.'-circle-fill').' '.s("Amortissements").'</h2>';
 
 		if(mb_strlen($tableContent) === 0) {
 			return $h.'<div class="util-empty">'.s("Il n'y a aucune écriture d'amortissement à enregistrer pour la clôture.").'</div>';
@@ -1121,7 +1121,7 @@ Class AssetUi {
 	}
 	public function listGrantsForClosing(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cAssetGrant, int $step): string {
 
-		$h = '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Subventions").'</h3>';
+		$h = '<h2 class="mt-2">'.\Asset::icon($step.'-circle-fill').' '.s("Subventions").'</h2>';
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 

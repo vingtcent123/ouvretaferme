@@ -199,7 +199,7 @@ class FinancialYearUi {
 
 	private function retainedEarnings(\Collection $cOperation, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
-		$h = '<h3>'.\Asset::icon('1-circle').' '.s("Report des soldes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+		$h = '<h2>'.\Asset::icon('1-circle-fill').' '.s("Report des soldes de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h2>';
 
 		if($eFinancialYearPrevious->empty()) {
 
@@ -306,7 +306,7 @@ class FinancialYearUi {
 
 	private function result(\Collection $cOperationResult, FinancialYear $eFinancialYear, FinancialYear $eFinancialYearPrevious): string {
 
-		$h = '<h3>'.\Asset::icon('2-circle').' '.s("Enregistrement et affectation automatique du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h3>';
+		$h = '<h2 class="mt-2">'.\Asset::icon('2-circle-fill').' '.s("Enregistrement et affectation automatique du résultat de l'exercice {year}", ['year' => self::getYear($eFinancialYearPrevious)]).'</h2>';
 
 		if($cOperationResult->empty()) {
 			return $h.'<div class="util-empty">'.s("Il n'y a rien à enregistrer").'</div>';
@@ -515,13 +515,13 @@ class FinancialYearUi {
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
 			$h .= $this->retainedEarnings($cOperation, $eFinancialYear, $eFinancialYearPrevious);
-
 			$h .= $this->result($cOperationResult, $eFinancialYear, $eFinancialYearPrevious);
 
 			if($eFinancialYear->isCashAccounting() === FALSE) {
 				$h .= $this->reversal($form, $cJournalCode, $ccOperationReversed, $eFinancialYear, $eFinancialYearPrevious);
 			}
 
+			$h .= '<br/>';
 
 			if($eFinancialYearPrevious->empty()) {
 
@@ -632,7 +632,7 @@ class FinancialYearUi {
 			}
 
 			$step++;
-			$h .= '<h3 class="mt-2">'.\Asset::icon($step.'-circle').' '.s("Confirmer la clôture de l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]).'</h3>';
+			$h .= '<h2 class="mt-2">'.\Asset::icon($step.'-circle-fill').' '.s("Confirmer la clôture de l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]).'</h2>';
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);

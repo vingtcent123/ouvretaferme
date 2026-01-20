@@ -277,7 +277,7 @@ class CsvLib {
 				($eSeries['use'] === Series::BED and $eCultivation['distance'] === Cultivation::DENSITY) ? $eCultivation['density'] : NULL,
 				($eSeries['use'] === Series::BED and $eCultivation['distance'] === Cultivation::SPACING) ? $eCultivation['rows'] : NULL,
 				($eSeries['use'] === Series::BED and $eCultivation['distance'] === Cultivation::SPACING) ? $eCultivation['plantSpacing'] : NULL,
-				$eSeries['status'] === Series::CLOSED ? 'true' : 'false',
+				$eSeries['status'] === Series::CLOSED ? 'yes' : 'no',
 				$eCultivation['mainUnit'],
 				\util\TextUi::csvNumber($eCultivation['yieldExpected']),
 				\util\TextUi::csvNumber(($eCultivation['harvestedNormalized'] !== NULL and $eSeries['area'] !== NULL) ? round($eCultivation['harvestedNormalized'] / $eSeries['area'], 1) : NULL),
@@ -665,7 +665,7 @@ class CsvLib {
 							'use' => $line['use'] ?: NULL,
 							'bed_length' => (int)round((float)$line['bed_length']) ?: NULL,
 							'block_area' => (int)round((float)$line['block_area']) ?: NULL,
-							'finished' => (($line['finished'] ?? 'false') === 'true'),
+							'finished' => (($line['finished'] ?? 'no') === 'yes'),
 						],
 						'cultivations' => []
 					];
@@ -684,7 +684,7 @@ class CsvLib {
 						'use' => $line['use'] ?: NULL,
 						'bed_length' => (int)round((float)$line['bed_length']) ?: NULL,
 						'block_area' => (int)round((float)$line['block_area']) ?: NULL,
-						'finished' => (($line['finished'] ?? 'false') === 'true'),
+						'finished' => (($line['finished'] ?? 'no') === 'yes'),
 					],
 					'cultivations' => []
 				];

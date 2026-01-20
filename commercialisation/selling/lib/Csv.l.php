@@ -72,7 +72,7 @@ class CsvLib {
 				'quality' => $line['quality'] ?: NULL,
 				'species' => $line['species'] ?: NULL,
 				'variety' => $line['variety'] ?: NULL,
-				'frozen' => (($line['frozen'] ?? 'false') === 'true'),
+				'frozen' => (($line['frozen'] ?? 'no') === 'yes'),
 				'packaging' => $line['packaging'] ?: NULL,
 				'composition' => $line['composition'] ?: NULL,
 				'allergen' => $line['allergen'] ?: NULL
@@ -388,6 +388,391 @@ class CsvLib {
 		return [
 			'import' => $import,
 			'errorsCount' => $errorsCount + count($errorsGlobal['species']),
+			'errorsGlobal' => $errorsGlobal,
+			'infoGlobal' => $infoGlobal,
+		];
+
+	}
+
+	public static function uploadCustomers(\farm\Farm $eFarm): bool {
+
+		return \main\CsvLib::upload('import-customers-'.$eFarm['id'], function($csv) {
+
+			if(
+				count(array_intersect($csv[0], ['type'])) === 1
+			) {
+				$csv = self::convertCustomers($csv);
+				if($csv === NULL) {
+					return NULL;
+				}
+			} else {
+				\Fail::log('main\csvSource');
+				return NULL;
+			}
+
+			return $csv;
+
+		});
+
+	}
+
+	public static function convertCustomers(array $customers): ?array {
+
+		$import = [];
+
+		$head = array_shift($customers);
+
+		foreach($customers as $customer) {
+
+			if(count($customer) < count($head)) {
+				$customer = array_merge($customer, array_fill(0, count($head) - count($customer), ''));
+			} else if(count($head) < count($customer)) {
+				$customer = array_slice($customer, 0, count($head));
+			}
+
+			$line = array_combine($head, $customer) + [
+				'type' => '',
+				'private_first_name' => '',
+				'private_last_name' => '',
+				'pro_commercial_name' => '',
+				'pro_legal_name' => '',
+				'email' => '',
+				'invite' => '',
+				'phone' => '',
+				'groups' => '',
+				'pro_contact_name' => '',
+				'pro_siret' => '',
+				'pro_vat_number' => '',
+				'delivery_street_1' => '',
+				'delivery_street_2' => '',
+				'delivery_postcode' => '',
+				'delivery_city' => '',
+				'delivery_country' => '',
+				'invoice_street_1' => '',
+				'invoice_street_2' => '',
+				'invoice_postcode' => '',
+				'invoice_city' => '',
+				'invoice_country' => '',
+			];
+
+			$import[] = [
+				'type' => $line['type'] ?: NULL,
+				'private_first_name' => $line['private_first_name'] ?: NULL,
+				'private_last_name' => $line['private_last_name'] ?: NULL,
+				'pro_commercial_name' => $line['pro_commercial_name'] ?: NULL,
+				'pro_legal_name' => $line['pro_legal_name'] ?: NULL,
+				'email' => $line['email'] ?: NULL,
+				'invite' => (($line['invite'] ?? 'no') === 'yes'),
+				'phone' => $line['phone'] ?: NULL,
+				'groups' => trim($line['groups']) ? preg_split('/\s*,\s*/', trim($line['groups'])) : [],
+				'pro_contact_name' => $line['pro_contact_name'] ?: NULL,
+				'pro_siret' => $line['pro_siret'] ?: NULL,
+				'pro_vat_number' => $line['pro_vat'] ?: NULL,
+				'delivery_street_1' => $line['delivery_street_1'] ?: NULL,
+				'delivery_street_2' => $line['delivery_street_2'] ?: NULL,
+				'delivery_postcode' => $line['delivery_postcode'] ?: NULL,
+				'delivery_city' => $line['delivery_city'] ?: NULL,
+				'delivery_country' => $line['delivery_country'] ?: NULL,
+				'invoice_street_1' => $line['invoice_street_1'] ?: NULL,
+				'invoice_street_2' => $line['invoice_street_2'] ?: NULL,
+				'invoice_postcode' => $line['invoice_postcode'] ?: NULL,
+				'invoice_city' => $line['invoice_city'] ?: NULL,
+				'invoice_country' => $line['invoice_country'] ?: NULL,
+			];
+
+		}
+
+		return $import;
+
+	}
+
+	public static function resetCustomers(\farm\Farm $eFarm): bool {
+
+		return \Cache::redis()->delete('import-customers-'.$eFarm['id']);
+
+	}
+
+	public static function importCustomers(\farm\Farm $eFarm, array $customers): bool {
+
+		$fw = new \FailWatch();
+
+		$cCustomer = new \Collection();
+
+		foreach($customers as $customer) {
+
+			if($customer['eCustomer']->empty()) {
+				continue;
+			}
+
+			$eCustomer = $customer['eCustomer']->merge([
+				'invite' => $customer['invite']
+			]);
+
+			$cCustomer[] = $eCustomer;
+
+		}
+
+		if(self::resetCustomers($eFarm)) {
+
+			if($cCustomer->empty()) {
+				return TRUE;
+			}
+
+			Customer::model()->beginTransaction();
+
+			foreach($cCustomer as $eCustomer) {
+
+				CustomerLib::create($eCustomer);
+
+				if($eCustomer['invite']) {
+
+					\farm\InviteLib::create(new \farm\Invite([
+						'farm' => $eFarm,
+						'customer' => $eCustomer,
+						'type' => \farm\Invite::CUSTOMER,
+						'email' => $eCustomer['email']
+					]));
+
+				}
+
+			}
+
+			if($fw->ko()) {
+				Customer::model()->rollBack();
+				return FALSE;
+			}
+
+			Customer::model()->commit();
+
+		}
+
+		return TRUE;
+
+	}
+
+	public static function getCustomers(\farm\Farm $eFarm): ?array {
+
+		$import = \Cache::redis()->get('import-customers-'.$eFarm['id']);
+
+		if($import === FALSE) {
+			return NULL;
+		}
+
+		$countries = [];
+		foreach(\user\CountryLib::getAll() as $eCountry) {
+			$countries[mb_strtolower($eCountry['name'])] = $eCountry;
+		}
+
+		$cCustomerGroup = CustomerGroupLib::getByFarm($eFarm);
+
+		$groups = [];
+		foreach($cCustomerGroup as $eCustomerGroup) {
+			$groups[mb_strtolower($eCustomerGroup['name'])] = $eCustomerGroup;
+		}
+
+		$errorsCount = 0;
+		$errorsGlobal = [
+			'countries' => [],
+			'groups' => [],
+		];
+		$infoGlobal = [
+			'emails' => [],
+		];
+
+		$types = [Customer::PRIVATE, Customer::PRO];
+
+		foreach($import as $key => $customer) {
+
+			$eCustomer = new Customer([
+				'farm' => $eFarm,
+				'user' => new \user\User(),
+				'type' => $customer['type'],
+				'destination' => Customer::INDIVIDUAL,
+				'deliveryCountry' => new \user\Country(),
+				'invoiceCountry' => new \user\Country()
+			]);
+
+			$errors = [];
+			$warnings = [];
+			$ignore = FALSE;
+
+			if($customer['type'] === NULL) {
+				$errors[] = 'typeMissing';
+			} else if(in_array($customer['type'], $types) === FALSE) {
+				$errors[] = 'typeInvalid';
+				$errorsGlobal['types'][] = $customer['type'];
+			}
+
+			switch($customer['type']) {
+
+				case Customer::PRIVATE :
+
+					if($customer['private_last_name'] === NULL) {
+						$errors[] = 'lastNameMissing';
+					}
+
+					if($customer['pro_commercial_name'] !== NULL) {
+						$errors[] = 'commercialNameIncompatible';
+					}
+
+					if($customer['pro_legal_name'] !== NULL) {
+						$errors[] = 'legalNameIncompatible';
+					}
+
+					break;
+
+				case Customer::PRO :
+
+					if($customer['private_last_name'] !== NULL) {
+						$errors[] = 'lastNameIncompatible';
+					}
+
+					if($customer['private_first_name'] !== NULL) {
+						$errors[] = 'firstNameIncompatible';
+					}
+
+					if($customer['pro_commercial_name'] === NULL) {
+						$errors[] = 'commercialNameMissing';
+					}
+
+					break;
+
+			}
+
+			if($customer['delivery_country'] !== NULL) {
+
+				$lowerCountry = mb_strtolower($customer['delivery_country']);
+				if(isset($countries[$lowerCountry])) {
+					$eCustomer['deliveryCountry'] = $countries[$lowerCountry];
+				} else {
+					$errors[] = 'deliveryCountryError';
+					$errorsGlobal['countries'][] = $customer['delivery_country'];
+				}
+
+			}
+
+			if($customer['invoice_country'] !== NULL) {
+
+				$lowerCountry = mb_strtolower($customer['invoice_country']);
+				if(isset($countries[$lowerCountry])) {
+					$eCustomer['invoiceCountry'] = $countries[$lowerCountry];
+				} else {
+					$errors[] = 'invoiceCountryError';
+					$errorsGlobal['countries'][] = $customer['invoice_country'];
+				}
+
+			}
+
+
+			$import[$key]['cCustomerGroup'] = new \Collection();
+			$eCustomer['groups'] = [];
+
+			if($customer['groups']) {
+
+				foreach($customer['groups'] as $group) {
+
+					$lowerGroup = mb_strtolower($group);
+					
+					if(isset($groups[$lowerGroup])) {
+						$import[$key]['cCustomerGroup'][] = $groups[$lowerGroup];
+						$eCustomer['groups'][] = $groups[$lowerGroup]['id'];
+					} else {
+						$errors[] = 'groupError';
+						$errorsGlobal['groups'][] = $group;
+					}
+
+				}
+
+			}
+
+			$hasCountry = ($eCustomer['deliveryCountry']->notEmpty() or $eCustomer['invoiceCountry']->notEmpty());
+
+			$properties = [
+				'email', 'phone',
+				'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity',
+				'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity',
+				'deliveryAddress', 'invoiceAddress',
+			];
+
+			$properties = array_merge($properties, match($customer['type']) {
+				Customer::PRIVATE => ['firstName', 'lastName'],
+				Customer::PRO => array_merge(
+					['commercialName', 'legalName', 'contactName'],
+					$hasCountry ? ['siret', 'vatNumber'] : []
+				)
+			});
+
+			$p = new \Properties();
+
+			$eCustomer->build($properties, [
+				'firstName' => $customer['private_first_name'],
+				'lastName' => $customer['private_last_name'],
+				'commercialName' => $customer['pro_commercial_name'],
+				'legalName' => $customer['pro_legal_name'],
+				'contactName' => $customer['pro_contact_name'],
+				'phone' => $customer['phone'],
+				'email' => $customer['email'],
+				'siret' => $customer['pro_siret'],
+				'vatNumber' => $customer['pro_vat_number'],
+				'deliveryStreet1' => $customer['delivery_street_1'],
+				'deliveryStreet2' => $customer['delivery_street_2'],
+				'deliveryPostcode' => $customer['delivery_postcode'],
+				'deliveryCity' => $customer['delivery_city'],
+				'invoiceStreet1' => $customer['invoice_street_1'],
+				'invoiceStreet2' => $customer['invoice_street_2'],
+				'invoicePostcode' => $customer['invoice_postcode'],
+				'invoiceCity' => $customer['invoice_city'],
+			], $p);
+
+			foreach($properties as $property) {
+
+				if($p->isBuilt($property) === FALSE) {
+					$errors[] = $property.'Error';
+				}
+
+			}
+
+			if($customer['email'] === NULL and $customer['invite']) {
+				$errors[] = 'inviteNoEmail';
+			}
+
+			if(
+				$customer['email'] !== NULL and
+				Customer::model()
+					->whereFarm($eFarm)
+					->whereEmail($customer['email'])
+					->exists()
+			) {
+
+				$warnings[] = 'emailExisting';
+				$infoGlobal['emails'][] = $customer['email'];
+
+				$import[$key]['eCustomer'] = new Customer();
+
+			} else {
+
+				$import[$key]['eCustomer'] = $eCustomer;
+
+			}
+
+
+			$errors = array_filter($errors);
+			$errors = array_unique($errors);
+
+			$errorsCount += count($errors);
+
+			$import[$key]['errors'] = $errors;
+			$import[$key]['warnings'] = $warnings;
+			$import[$key]['ignore'] = $ignore;
+
+		}
+
+		$errorsGlobal['countries'] = array_unique($errorsGlobal['countries']);
+		$errorsGlobal['groups'] = array_unique($errorsGlobal['groups']);
+
+		return [
+			'import' => $import,
+			'errorsCount' => $errorsCount,
 			'errorsGlobal' => $errorsGlobal,
 			'infoGlobal' => $infoGlobal,
 		];

@@ -9,7 +9,7 @@ class CsvUi {
 
 	}
 
-	public function getImportFile(\farm\Farm $eFarm, array $data): string {
+	public function getProducts(\farm\Farm $eFarm, array $data): string {
 
 		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
 
@@ -271,6 +271,278 @@ class CsvUi {
 										$h .= '<li class="color-danger">'.$messages[$error].'</li>';
 									}
 									foreach($product['warnings'] as $warning) {
+										$h .= '<li class="color-warning">'.$messages[$warning].'</li>';
+									}
+								$h .= '</ul>';
+							$h .= '</td>';
+						$h .= '</tr>';
+
+					}
+
+				}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getCustomers(\farm\Farm $eFarm, array $data): string {
+
+		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
+
+		$h = '';
+
+		if($errorsCount > 0) {
+			$h .= \main\CsvUi::getGlobalErrors($errorsCount, '/doc/import:customers');
+		} else {
+			$h .= '<div class="util-block">';
+				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("Les clients présents dans le tableau ci-dessous seront créés et associés à votre ferme").'</li>';
+					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
+					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
+				$h .= '</ul>';
+				$h .= '<a data-ajax="/selling/csv:doCreateCustomers" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} client ?", "Importer maintenant {value} clients ?", count($data['import'])).'" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+			$h .= '</div>';
+		}
+
+		foreach($errorsGlobal as $type => $values) {
+
+			if(empty($values)) {
+				continue;
+			}
+
+			switch($type) {
+
+				case 'countries' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Pays non reconnus").'</h4>';
+						$h .= '<p>'.s("Les pays suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un pays reconnu.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+					$h .= '</div>';
+					break;
+
+				case 'groups' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Groupes de clients non reconnus").'</h4>';
+						$h .= '<p>'.s("Les groups de clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un groupe existant o ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="/selling/customerGroup:manage?farm='.$eFarm['id'].'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des groupes de clients").'</a>';
+					$h .= '</div>';
+					break;
+
+			}
+
+		}
+
+		foreach($infoGlobal as $type => $values) {
+
+			if(empty($values)) {
+				continue;
+			}
+
+			switch($type) {
+
+				case 'emails' :
+					$h .= '<div class="util-block">';
+					$h .= '<h4>'.s("E-mails déjà connus").'</h4>';
+					$h .= '<p>'.s("Il y a déjà un client pour les adresses e-mail suivantes. Les clients en question ne seront pas importés une nouvelle fois.").'</p>';
+					$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+					$h .= '</div>';
+					break;
+
+			}
+
+		}
+
+		$h .= '<div class="util-overflow-lg">';
+
+			$h .= '<table class="tr-even">';
+
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th>'.s("Client").'</th>';
+						$h .= '<th>'.s("Contact").'</th>';
+						$h .= '<th>'.s("Livraison").'</th>';
+						$h .= '<th>'.s("Facturation").'</th>';
+						$h .= '<th>'.s("Autres données").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody class="td-vertical-align-top">';
+
+				foreach($import as $customer) {
+
+					$h .= '<tr class="'.($customer['errors'] ? 'csv-error' : ($customer['warnings'] ? 'csv-warning' : '')).'">';
+
+						$h .= '<td class="td-min-content">';
+
+							switch($customer['type']) {
+
+								case Customer::PRIVATE :
+
+									if($customer['private_first_name'] !== NULL) {
+										$h .= encode($customer['private_first_name']).' ';
+									}
+
+									$h .= '<b>'.encode($customer['private_last_name']).'</b>';
+
+									break;
+
+								case Customer::PRO :
+									$h .= '<b>'.encode($customer['pro_commercial_name']).'</b>';
+									break;
+
+								default :
+									$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Type de client manquant").'</span>';
+									break;
+
+							}
+
+							if($customer['type'] !== NULL) {
+								$h .= '<div class="util-annotation">'.CustomerUi::getCategories()[$customer['type']].'</div>';
+							}
+
+						$h .= '</td>';
+						$h .= '<td>';
+
+							if($customer['type'] === Customer::PRO and $customer['pro_contact_name']) {
+								$h .= '<div>';
+									$h .= \Asset::icon('person-vcard').'  '.encode($customer['pro_contact_name']);
+								$h .= '</div>';
+							}
+							if($customer['email']) {
+								$h .= '<div>';
+									$h .= \Asset::icon('at').'  '.encode($customer['email']);
+								$h .= '</div>';
+							}
+							if($customer['phone']) {
+								$h .= '<div>';
+									$h .= \Asset::icon('telephone').'  '.encode($customer['phone']);
+								$h .= '</div>';
+							}
+
+						$h .= '</td>';
+
+						foreach(['delivery', 'invoice'] as $mode) {
+
+							$h .= '<td>';
+
+								if($customer[$mode.'_street_1']) {
+									$h .= '<div>';
+										$h .= encode($customer[$mode.'_street_1']);
+									$h .= '</div>';
+								}
+								if($customer[$mode.'_street_2']) {
+									$h .= '<div>';
+										$h .= encode($customer[$mode.'_street_2']);
+									$h .= '</div>';
+								}
+								if($customer[$mode.'_postcode'] or $customer[$mode.'_city']) {
+									$h .= '<div>';
+										if($customer[$mode.'_postcode']) {
+											$h .= encode($customer[$mode.'_postcode']);
+										}
+										$h .= ' ';
+										if($customer[$mode.'_city']) {
+											$h .= encode($customer[$mode.'_city']);
+										}
+									$h .= '</div>';
+								}
+								if($customer[$mode.'_country']) {
+									$h .= '<div>';
+										$h .= encode($customer[$mode.'_country']);
+									$h .= '</div>';
+								}
+
+							$h .= '</td>';
+
+						}
+
+						$h .= '<td>';
+							$h .= '<dl class="util-presentation util-presentation-1" style="grid-row-gap: 0.125rem">';
+
+								if($customer['invite']) {
+									$h .= '<dt>'.s("Invitation").'</dt>';
+									$h .= '<dd>'.s("oui").'</dd>';
+								}
+
+								if($customer['type'] === Customer::PRO) {
+
+									if($customer['pro_legal_name']) {
+										$h .= '<dt>'.s("Raison sociale").'</dt>';
+										$h .= '<dd>'.encode($customer['pro_legal_name']).'</dd>';
+									}
+
+									if($customer['pro_siret']) {
+										$h .= '<dt>'.s("SIRET").'</dt>';
+										$h .= '<dd>'.encode($customer['pro_siret']).'</dd>';
+									}
+
+									if($customer['pro_vat_number']) {
+										$h .= '<dt>'.s("Numéro de TVA").'</dt>';
+										$h .= '<dd>'.encode($customer['pro_vat_number']).'</dd>';
+									}
+
+								}
+
+								if($customer['groups']) {
+									$h .= '<dt>'.s("Groupe").'</dt>';
+									$h .= '<dd>';
+										$h .= encode(implode(', ', $customer['groups']));
+									$h .= '</dd>';
+								}
+
+							$h .= '</dl>';
+						$h .= '</td>';
+					$h .= '</tr>';
+
+					if($customer['errors']) {
+
+						$messages = [
+							'typeMissing' => s("Il manque le type de client"),
+							'typeInvalid' => s("Le type du produit est incorrect dans le fichier CSV ({private}, {pro})", ['private' => Customer::PRIVATE, 'pro' => Customer::PRO]),
+							'lastNameMissing' => s("Il manque le nom de famille du client"),
+							'lastNameIncompatible' => s("Le nom de famille sera ignoré car c'est un client professionnel"),
+							'firstNameIncompatible' => s("Le prénom sera ignoré car c'est un client professionnel"),
+							'commercialNameMissing' => s("Il manque le nom commercial du client"),
+							'commercialNameIncompatible' => s("Le nom commercial sera ignoré car c'est un client particulier"),
+							'legalNameIncompatible' => s("La raison sociale sera ignorée car c'est un client particulier"),
+							'countryMissing' => s("Vous devez indiquer au moins un pays (livraison ou facturation) pour le client"),
+							'groupError' => s("Un ou plusieurs groupes ne sont pas reconnus"),
+							'invoiceCountryError' => s("Le pays de facturation n'est pas reconnu"),
+							'invoiceStreet1Error' => s("L'adresse est incorrecte"),
+							'invoicePostCodeError' => s("Le code postal est incorrect"),
+							'invoiceCityError' => s("La ville est incorrecte"),
+							'invoiceAddressError' => s("L'adresse de facturation est incomplète (la première ligne, le code postal et la ville sont requis)"),
+							'deliveryCountryError' => s("Le pays de livraison n'est pas reconnu"),
+							'deliveryStreet1Error' => s("L'adresse est incorrecte"),
+							'deliveryPostCodeError' => s("Le code postal est incorrect"),
+							'deliveryCityError' => s("La ville est incorrecte"),
+							'deliveryAddressError' => s("L'adresse de livraison est incomplète (la première ligne, le code postal et la ville sont requis)"),
+							'emailError' => s("L'adresse e-mail est incorrecte"),
+							'emailExisting' => s("Vous avez déjà un client avec la même adresse e-mail et ce client ne sera pas importé à nouveau"),
+							'phoneError' => s("Le numéro de téléphone est incorrect"),
+							'contactNameError' => s("Le contact est incorrect"),
+							'siretError' => s("Le SIRET est incorrect"),
+							'vatNumberError' => s("Le numéro de TVA est incorrect"),
+							'inviteNoEmail' => s("Vous ne pouvez pas inviter ce client à créer un compte client si vous ne fournissez pas d'adresse e-mail"),
+						];
+
+						$h .= '<tr>';
+							$h .= '<td colspan="5">';
+								$h .= '<ul class="mb-0">';
+									foreach($customer['errors'] as $error) {
+										$h .= '<li class="color-danger">'.$messages[$error].'</li>';
+									}
+									foreach($customer['warnings'] as $warning) {
 										$h .= '<li class="color-warning">'.$messages[$warning].'</li>';
 									}
 								$h .= '</ul>';

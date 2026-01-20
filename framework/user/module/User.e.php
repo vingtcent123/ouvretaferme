@@ -328,7 +328,7 @@ class User extends UserElement {
 	}
 
 	public static function buildAddress(string $type, \Element $e): bool {
-		
+
 		if($e[$type.'Street1'] === NULL and $e[$type.'Street2'] === NULL and $e[$type.'Postcode'] === NULL and $e[$type.'City'] === NULL) {
 			return TRUE;
 		}
@@ -336,15 +336,15 @@ class User extends UserElement {
 		$fw = new \FailWatch();
 
 		if($e[$type.'Street1'] === NULL) {
-			User::fail($type.'Street1.check');
+			$e->getModule()::fail($type.'Street1.check');
 		}
 
 		if($e[$type.'Postcode'] === NULL) {
-			User::fail($type.'Postcode.check');
+			$e->getModule()::fail($type.'Postcode.check');
 		}
 
 		if($e[$type.'City'] === NULL) {
-			User::fail($type.'City.check');
+			$e->getModule()::fail($type.'City.check');
 		}
 
 		return $fw->ok();

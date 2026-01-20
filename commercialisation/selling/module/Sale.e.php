@@ -707,7 +707,7 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptDeletePaymentStatus() {
-		return in_array($this['paymentStatus'], [NULL, Sale::NOT_PAID]);
+		return in_array($this['paymentStatus'], [NULL, Sale::NOT_PAID, Sale::NEVER_PAID]);
 	}
 
 	public function checkMarketSelling() {

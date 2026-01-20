@@ -57,8 +57,8 @@ CustomerGroup:
   color: color = PHP('#373737')
   farm: ?farm\Farm
   createdAt: datetime = SPECIAL(now)
-  INDEX: [
-    ["farm"]
+  UNIQUE: [
+    ["farm", "name"],
   ]
 
 Event:

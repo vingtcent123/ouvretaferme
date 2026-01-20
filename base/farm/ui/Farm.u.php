@@ -2767,6 +2767,13 @@ class FarmUi {
 					$h .= \Asset::icon('upload');
 				$h .= '</a>';
 
+				$h .= '<a href="/selling/csv:importCustomers?id='.$eFarm['id'].'" class="util-button">';
+					$h .= '<div>';
+						$h .= '<h4>'.s("Importer des clients").'</h4>';
+					$h .= '</div>';
+					$h .= \Asset::icon('upload');
+				$h .= '</a>';
+
 			$h .= '</div>';
 
 		}

@@ -42,7 +42,7 @@ class ContactModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'email' => ['email', 'cast' => 'string'],
+			'email' => ['email', 'collate' => 'general', 'cast' => 'string'],
 			'lastEmail' => ['element32', 'mail\Email', 'null' => TRUE, 'cast' => 'element'],
 			'sent' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'lastSent' => ['datetime', 'null' => TRUE, 'cast' => 'string'],

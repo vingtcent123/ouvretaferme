@@ -100,6 +100,16 @@ class CustomerGroupLib extends CustomerGroupCrud {
 
 	}
 
+	public static function create(CustomerGroup $e): void {
+
+		try {
+			CustomerGroup::model()->insert($e);
+		} catch(\DuplicateException) {
+			CustomerGroup::fail('name.duplicate');
+		}
+
+	}
+
 	public static function delete(CustomerGroup $e): void {
 
 		$e->expects(['id', 'farm']);

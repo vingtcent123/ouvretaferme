@@ -55,7 +55,7 @@ class CustomerModel extends \ModuleModel {
 			'lastName' => ['text8', 'min' => 1, 'max' => 30, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'commercialName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
+			'email' => ['email', 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'contactName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],

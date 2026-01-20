@@ -1105,7 +1105,7 @@ class AnalyzeLib {
 					$eCustomer['type'] === Customer::PRIVATE ? $eCustomer['lastName'] : '',
 					$eCustomer['type'] === Customer::PRO ? $eCustomer['commercialName'] : '',
 					$eCustomer['type'] === Customer::PRO ? $eCustomer['legalName'] : '',
-					$eCustomer['user']->empty() ? s("non") : s("oui"),
+					$eCustomer['user']->empty() ? 'no' : 'yes',
 					$eCustomer['email'],
 					$eCustomer['phone'],
 					$cGroup->notEmpty() ? implode(', ', $cGroup->getColumn('name')) : '',
@@ -1123,7 +1123,7 @@ class AnalyzeLib {
 					$eCustomer['deliveryCity'],
 					$eCustomer['deliveryCountry']->notEmpty() ? \user\Country::ask($eCustomer['deliveryCountry'])['name'] : '',
 					$eCustomer['discount'],
-					($eCustomer['contact']->getOptIn() === NULL) ? s("?") : ($eCustomer['contact']->getOptIn() ? s("oui") : s("non")),
+					($eCustomer['contact']->getOptIn() === NULL) ? s("?") : ($eCustomer['contact']->getOptIn() ? 'yes' : 'no'),
 				];
 			});
 

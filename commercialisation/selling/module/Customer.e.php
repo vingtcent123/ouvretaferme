@@ -120,7 +120,8 @@ class Customer extends CustomerElement {
 
 		return (
 			$this->isPro() and
-			$this['invoiceCountry']->isFR()
+			$this['invoiceCountry']->isFR() or
+			($this['invoiceCountry']->empty() and $this['deliveryCountry']->isFR())
 		);
 
 	}
@@ -129,7 +130,8 @@ class Customer extends CustomerElement {
 
 		return (
 			$this->isPro() and
-			$this['invoiceCountry']->isBE()
+			$this['invoiceCountry']->isBE() or
+			($this['invoiceCountry']->empty() and $this['deliveryCountry']->isBE())
 		);
 
 	}
@@ -284,8 +286,6 @@ class Customer extends CustomerElement {
 			})
 			->setCallback('commercialName.empty', function(?string &$name): bool {
 
-				$this->expects(['user']);
-
 				if($this->getCategory() !== Customer::PRO) {
 					$name = NULL;
 					return TRUE;
@@ -315,37 +315,6 @@ class Customer extends CustomerElement {
 				}
 
 				return ($name !== NULL);
-
-			})
-			->setCallback('name.set', function(?string $name) use($p): bool {
-
-				if($this->getCategory() === Customer::PRIVATE) {
-
-					if($p->isBuilt(['firstName', 'lastName'])) {
-
-						if($this['firstName'] !== NULL and $this['lastName'] !== NULL) {
-							$this['name'] = $this['firstName'].' '.mb_strtoupper($this['lastName']);
-						} else if($this['lastName'] !== NULL) {
-							$this['name'] = mb_strtoupper($this['lastName']);
-						} else {
-							$this['name'] = $this['firstName'];
-						}
-
-					} else {
-						return FALSE;
-					}
-
-				} else if($this->getCategory() === Customer::PRO) {
-					if($p->isBuilt('commercialName')) {
-						$this['name'] = $this['commercialName'];
-					} else {
-						return FALSE;
-					}
-				} else {
-					$this['name'] = $name;
-				}
-
-				return TRUE;
 
 			})
 			->setCallback('invoiceAddress.empty', fn() => \user\User::buildAddress('invoice', $this))

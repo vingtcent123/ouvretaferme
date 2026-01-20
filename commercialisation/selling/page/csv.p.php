@@ -66,10 +66,9 @@ new \farm\FarmPage()
 			\selling\CsvLib::resetProducts($data->eFarm);
 		}
 
-		$data->cPlant = \plant\PlantLib::getByFarm($data->eFarm);
 		$data->data = \selling\CsvLib::getProducts($data->eFarm);
 
-		throw new ViewAction($data, $data->data ? ':importFile' : NULL);
+		throw new ViewAction($data, $data->data ? ':importProductFile' : NULL);
 
 	}, validate: ['canWrite'])
 	->write('doImportProducts', function($data) {
@@ -104,6 +103,53 @@ new \farm\FarmPage()
 		$fw->validate();
 
 		throw new RedirectAction('/selling/csv:importProducts?id='.$data->e['id'].'&created');
+
+	})
+	->read('importCustomers', function($data) {
+
+		$data->eFarm = $data->e;
+
+		if(get_exists('reset')) {
+			\selling\CsvLib::resetCustomers($data->eFarm);
+		}
+
+		$data->data = \selling\CsvLib::getCustomers($data->eFarm);
+
+		throw new ViewAction($data, $data->data ? ':importCustomerFile' : NULL);
+
+	}, validate: ['canWrite'])
+	->write('doImportCustomers', function($data) {
+
+		$fw = new FailWatch();
+
+		\selling\CsvLib::uploadCustomers($data->e);
+
+		if($fw->ok()) {
+			throw new RedirectAction('/selling/csv:importCustomers?id='.$data->e['id']);
+		} else {
+			throw new RedirectAction('/selling/csv:importCustomers?id='.$data->e['id'].'&error='.$fw->getLast());
+		}
+
+
+	})
+	->write('doCreateCustomers', function($data) {
+
+		$data->data = \selling\CsvLib::getCustomers($data->e);
+
+		if(
+			$data->data === NULL or
+			$data->data['errorsCount'] > 0
+		) {
+			throw new RedirectAction('/selling/csv:importCustomers?id='.$data->e['id']);
+		}
+
+		$fw = new FailWatch();
+
+		\selling\CsvLib::importCustomers($data->e, $data->data['import']);
+
+		$fw->validate();
+
+		throw new RedirectAction('/selling/csv:importCustomers?id='.$data->e['id'].'&created');
 
 	});
 ?>

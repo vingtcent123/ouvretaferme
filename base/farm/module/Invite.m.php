@@ -48,7 +48,7 @@ class InviteModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
-			'email' => ['email', 'cast' => 'string'],
+			'email' => ['email', 'collate' => 'general', 'cast' => 'string'],
 			'type' => ['enum', [\farm\Invite::FARMER, \farm\Invite::CUSTOMER], 'cast' => 'enum'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'farmer' => ['element32', 'farm\Farmer', 'null' => TRUE, 'cast' => 'element'],

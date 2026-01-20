@@ -339,11 +339,35 @@ class CustomerLib extends CustomerCrud {
 
 		// Points de vente
 		$e['email'] ??= NULL;
+		self::fillName($e);
 
 		parent::create($e);
 
 		if($e['email'] !== NULL) {
 			\mail\ContactLib::autoCreate($e['farm'], $e['email']);
+		}
+
+	}
+
+	public static function fillName(Customer $e): void {
+		
+		if($e->getCategory() === Customer::PRIVATE) {
+
+			$e->expects(['firstName', 'lastName']);
+
+			if($e['firstName'] !== NULL and $e['lastName'] !== NULL) {
+				$e['name'] = $e['firstName'].' '.mb_strtoupper($e['lastName']);
+			} else if($e['lastName'] !== NULL) {
+				$e['name'] = mb_strtoupper($e['lastName']);
+			} else {
+				$e['name'] = $e['firstName'];
+			}
+
+		} else if($e->getCategory() === Customer::PRO) {
+
+			$e->expects(['commercialName']);
+
+			$e['name'] = $e['commercialName'];
 		}
 
 	}
@@ -374,6 +398,11 @@ class CustomerLib extends CustomerCrud {
 	public static function update(Customer $e, array $properties): void {
 
 		$e->expects(['farm', 'email']);
+
+		if(count(array_intersect($properties, ['firstName', 'lastName', 'name', 'commercialName', 'legalName'])) > 0) {
+			$properties[] = 'name';
+			self::fillName($e);
+		}
 
 		if(array_delete($properties, 'category')) {
 			$properties[] = 'type';

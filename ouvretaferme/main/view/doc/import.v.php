@@ -176,7 +176,7 @@ new AdaptativeView('series', function($data, DocTemplate $t) {
 		[
 			s("Série clôturée"),
 			'finished',
-			s("<example>true</example> si la série est clôturée, <example>false</example> sinon", ['example' => '<div class="doc-example">']),
+			s("<example>yes</example> si la série est clôturée, <example>no</example> sinon", ['example' => '<div class="doc-example">']),
 			'false'
 		],
 		[
@@ -235,7 +235,6 @@ new AdaptativeView('series', function($data, DocTemplate $t) {
 	echo '<br/>';
 
 });
-
 
 new AdaptativeView('products', function($data, DocTemplate $t) {
 
@@ -377,7 +376,7 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 			[
 				s("Surgelé"),
 				'frozen',
-				s("<example>true</example> si le produit est vendu surgelé, <example>false</example> ou vide sinon", ['example' => '<div class="doc-example">']).$apply('mixedFrozen'),
+				s("<example>yes</example> si le produit est vendu surgelé, <example>no</example> ou vide sinon", ['example' => '<div class="doc-example">']).$apply('mixedFrozen'),
 				'false'
 			],
 			[
@@ -398,6 +397,186 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 				s("Les allergènes du produits").$apply('processedAllergen'),
 				s("Traces de fruits à coques")
 			],
+		];
+
+		echo \main\CsvUi::getDataList($list);
+
+	echo '</div>';
+
+	echo '<br/>';
+	echo '<br/>';
+
+});
+
+new AdaptativeView('customers', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+
+	$t->title = s("Importer des clients");
+	$t->subTitle = s("Vous pouvez importer des clients au format CSV sur votre ferme. Cette fonctionnalité peut vous être utile si vous utilisiez d'autres logiciels ou un tableur pour gérer votre commercialisation avant {siteName} !");
+
+	$t->menuSelected = 'importProducts';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Importer des clients au format CSV").'</h2>';
+		echo '<p>';
+			echo s("Les clients que vous importez au format CSV sont ajoutés à la liste de vos clients existants, à l'exception de ceux que vous tentez d'importer sous une adresse e-mail déjà présente sur votre base. Les clients concernés ne seront pas ajoutés une deuxième fois.");
+		echo '</p>';
+		echo '<p>';
+			echo s("Le fichier CSV que vous importez doit comporter une ligne par client, et les colonnes de ce fichier doivent correspondre à la liste des données à fournir décrite plus bas.");
+		echo '</p>';
+		echo \main\CsvUi::getSyntaxInfo();
+		echo '<p>';
+			echo '<a href="'.Asset::getPath('selling', 'customers.csv').'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.s("Télécharger un exemple CSV").'</a>';
+		echo '</p>';
+		echo '<br/>';
+		echo '<h3>'.s("Liste des données à fournir").'</h3>';
+
+		$private = '<div class="doc-example">'.\selling\Customer::PRIVATE.'</div>';
+		$pro = '<div class="doc-example">'.\selling\Customer::PRO.'</div>';
+		$onlyPrivate = '<div class="doc-condition">'.s("Uniquement pour les clients particuliers").' '.$private.'</div>';
+		$onlyPro = '<div class="doc-condition">'.s("Uniquement pour les clients professionnels").' '.$pro.'</div>';
+
+		$list = [
+			[
+				s("Type de client").' '.\util\FormUi::asterisk(),
+				'type',
+				s("Les valeurs possibles :").
+				'<ul>'.
+					'<li>'.$private.' → '.\selling\CustomerUi::getCategories()[\selling\Customer::PRIVATE].'</li>'.
+					'<li>'.$pro.' → '.\selling\CustomerUi::getCategories()[\selling\Customer::PRO].'</li>'.
+				'</ul>',
+				\selling\Customer::PRIVATE
+			],
+			[
+				s("Prénom"),
+				'private_first_name',
+				s("Le prénom du client").$onlyPrivate,
+				s("Tomate")
+			],
+			[
+				s("Nom").' '.\util\FormUi::asterisk(),
+				'private_last_name',
+				s("Le nom de famille du client").$onlyPrivate,
+				s("Tomate")
+			],
+			[
+				s("Nom commercial").' '.\util\FormUi::asterisk(),
+				'pro_commercial_name',
+				s("Le nom commercial du client").$onlyPro,
+				s("Biocoop d'ici")
+			],
+			[
+				s("Raison sociale"),
+				'pro_legal_name',
+				s("La raison sociale du client. Peut-être laissée vide si elle est identique au nom commercial.").$onlyPro,
+				s("SAS Biocoop ICI")
+			],
+			[
+				s("E-mail"),
+				'email',
+				s("L'e-mail principal du client qu'il pourra utiliser pour se connecter à son compte client si vous l'y avez invité"),
+				s("toto@exemple.fr")
+			],
+			[
+				s("Inviter ce client à créer un compte client"),
+				'invite',
+				s("<example>yes</example> pour envoyer un e-mail à l'adresse indiquée dans la colonne <example>email</example> pour inciter votre client à se créer un mot de passe, <example>no</example> ou vide sinon", ['example' => '<div class="doc-example">']),
+				'yes'
+			],
+			[
+				s("Numéro de téléphone"),
+				'phone',
+				s("Le numéro de téléphone du client"),
+				'5'
+			],
+			[
+				s("Groupes"),
+				'groups',
+				s("Les groupes auxquels appartient le client. Indiquez le nom des groupes séparés par des virgules."),
+				'AMAP / Petit panier'
+			],
+			[
+				s("Nom du contact"),
+				'pro_contact_name',
+				s("Le nom de votre contact chez ce client professionnel").$onlyPro,
+				'Jacques Durand'
+			],
+			[
+				s("Numéro de SIRET"),
+				'pro_siret',
+				s("Le numéro de SIRET du professionnel").$onlyPro,
+				s("12345678901234")
+			],
+			[
+				s("Numéro de TVA"),
+				'pro_vat_number',
+				s("Le numéro de TVA intracommunautaire du professionnel").$onlyPro,
+				s("FR76123456789")
+			],
+			s("Adresse de livraison").'<div class="doc-condition">'.s("L'adresse de livraison sera aussi utilisée pour la facturation si vous ne renseignez pas d'adresse de facturation.").'</div>',
+			[
+				s("Ligne 1"),
+				'delivery_street_1',
+				s("La première ligne de l'adresse de livraison"),
+				s("13 rue des Oiseaux")
+			],
+			[
+				s("Ligne 2"),
+				'delivery_street_2',
+				s("La deuxième ligne de l'adresse de livraison"),
+				s("Lieu dit les Moineauxs")
+			],
+			[
+				s("Code postal"),
+				'delivery_postcode',
+				s("Le code postal de l'adresse de livraison"),
+				'42420'
+			],
+			[
+				s("Ville"),
+				'delivery_city',
+				s("La ville de l'adresse de livraison"),
+				s("Maville")
+			],
+			[
+				s("Pays").' '.\util\FormUi::asterisk(),
+				'delivery_country',
+				s("Le pays de l'adresse de livraison. Pour connaitre la liste des pays acceptés, reportez-vous au menu déroulant sur la page de modification d'un client. <b>Vous devez au moins fournir un pays pour votre client, que ce soit le pays de livraison ou de facturation.</b>"),
+				s("France")
+			],
+			s("Adresse de facturation").'<div class="doc-condition">'.s("Peut être laissée vide si elle correspond à l'adresse de facturation").'</div>',
+			[
+				s("Ligne 1"),
+				'invoice_street_1',
+				s("La première ligne de l'adresse de facturation"),
+				s("13 rue des Oiseaux")
+			],
+			[
+				s("Ligne 2"),
+				'invoice_street_2',
+				s("La deuxième ligne de l'adresse de facturation"),
+				s("Lieu dit les Moineauxs")
+			],
+			[
+				s("Code postal"),
+				'invoice_postcode',
+				s("Le code postal de l'adresse de facturation"),
+				'42420'
+			],
+			[
+				s("Ville"),
+				'invoice_city',
+				s("La ville de l'adresse de facturation"),
+				s("Maville")
+			],
+			[
+				s("Pays").' '.\util\FormUi::asterisk(),
+				'invoice_country',
+				s("Le pays de l'adresse de facturation. Pour connaitre la liste des pays acceptés, reportez-vous au menu déroulant sur la page de modification d'un client. <b>Vous devez au moins fournir un pays pour votre client, que ce soit le pays de livraison ou de facturation.</b>"),
+				s("France")
+			]
 		];
 
 		echo \main\CsvUi::getDataList($list);
