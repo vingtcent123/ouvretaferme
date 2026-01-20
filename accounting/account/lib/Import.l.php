@@ -388,7 +388,7 @@ Class ImportLib extends ImportCrud {
 			$missingJournals = array_find($eImport['rules']['journaux'], fn($journal) => isset($journal['journalCode']['id']) === FALSE);
 			$missingAccounts = array_find($eImport['rules']['comptes'], fn($compte) => isset($compte['account']['id']) === FALSE);
 			$missingAuxAccounts = array_find($eImport['rules']['comptesAux'], fn($compte) => isset($compte['account']['id']) === FALSE);
-			$missingPayments = $eImport['rules']['paiements'] ? [] : array_find($eImport['rules']['paiements'], fn($paiement) => isset($paiement['paiements']['id']) === FALSE);
+			$missingPayments = $eImport['rules']['paiements'] ? NULL : array_find($eImport['rules']['paiements'], fn($paiement) => isset($paiement['payment']['id']) === FALSE);
 
 			$isImportable = (
 				($missingJournals === NULL or count($missingJournals) > 0) and
@@ -447,6 +447,9 @@ Class ImportLib extends ImportCrud {
 			) {
 
 				$eAccount = $cAccount->find(fn($e) => $e['id'] === $eImport['rules']['comptes'][$compteNum]['account']['id'])->first();
+				if(AccountLabelLib::isFromClass($compteNum, $eAccount['class']) === FALSE) {
+					throw new \Exception('Consistency issue between FEC account and account class for import #'.$eImport['id'].' and farm '.$eFarm['id']);
+				}
 
 			} else {
 

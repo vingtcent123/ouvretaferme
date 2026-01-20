@@ -640,7 +640,7 @@ class FinancialYearUi {
 			if($eFinancialYear['cImport']->notEmpty() and $eFinancialYear['cImport']->find(fn($e) => in_array($e['status'], [Import::WAITING, Import::IN_PROGRESS, Import::FEEDBACK_TO_TREAT, Import::FEEDBACK_REQUESTED]))->notEmpty()) {
 				$h .= '<div class="util-block-danger">';
 					$h .= s("Attention, un import de fichier FEC est en cours (non terminé, non annulé). En clôturant l'exercice, cet import sera annulé.");
-					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-transparent ml-1">'.s("Voir l'import").'</a>';
+					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-transparent">'.s("Voir l'import").'</a>';
 				$h .= '</div>';
 			}
 
@@ -767,7 +767,7 @@ class FinancialYearUi {
 
 						if($eFinancialYear->acceptImportFec()) {
 
-							$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md ml-1">';
+							$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md">';
 								$h .= s("Importer un fichier FEC");
 							$h .= '</a>';
 
@@ -791,6 +791,15 @@ class FinancialYearUi {
 							$h .= '<li>';
 								$h .= s("Déclaration de TVA {value}", '<b>'.self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']].'</b>');
 							$h .= '</li>';
+						}
+
+						if($eFinancialYear['cImport']->notEmpty()) {
+							if($eFinancialYear['cImport']->first()['status'] === Import::DONE) {
+								$h .= '<li>';
+									$h .= \Asset::icon('journal-check').' ';
+									$h .= s("Import FEC terminé");
+								$h .= '</li>';
+							}
 						}
 					$h .= '</ul>';
 
@@ -817,22 +826,14 @@ class FinancialYearUi {
 
 						$h .= '<div class="financial-year-details-element">';
 
-							if($eImport['status'] === Import::DONE) {
+							if(in_array($eImport['status'], [Import::WAITING, Import::FEEDBACK_TO_TREAT, Import::IN_PROGRESS])) {
 
-								$h .= '<div>';
-									$h .= \Asset::icon('journal-check');
-									$h .= ' ';
-									$h .= s("Import FEC terminé");
-								$h .= '</div>';
-
-							} else if(in_array($eImport['status'], [Import::WAITING, Import::FEEDBACK_TO_TREAT, Import::IN_PROGRESS])) {
-
-								$h .= '<div>';
+								$h .= '<div class="mt-1">';
 									$h .= \Asset::icon('journal-arrow-up');
 									$h .= ' ';
 									$h .= s("Import FEC en cours");
 								$h .= '</div>';
-								$h .= '<div>';
+								$h .= '<div class="financial-year-actions">';
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md">';
 										$h .= s("Voir l'import");
 									$h .= '</a>';
@@ -840,12 +841,12 @@ class FinancialYearUi {
 
 							} else if($eImport['status'] === Import::FEEDBACK_REQUESTED) {
 
-								$h .= '<div>';
+								$h .= '<div class="mt-1">';
 									$h .= \Asset::icon('exclamation-triangle');
 									$h .= ' ';
 									$h .= s("Action en attente pour l'import FEC");
 								$h .= '</div>';
-								$h .= '<div>';
+								$h .= '<div class="financial-year-actions">';
 									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-warning btn-md">';
 										$h .= s("Voir l'import");
 									$h .= '</a>';

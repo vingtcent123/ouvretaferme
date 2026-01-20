@@ -55,7 +55,10 @@ div.financial-year-list {
 }
 
 .financial-year-actions {
-	margin-top: 0.5rem;
+	display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+	margin: 1rem 0;
 }
 .financial-year-action-label {
 	display: none;
@@ -84,11 +87,17 @@ div.financial-year-list {
 }
 
 .financial-year-details-more {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	display: grid;
+	grid-template-columns: auto 1fr;
 	gap: 1rem 2rem;
-	flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+
+	.financial-year-details-more {
+		display: block;
+	}
+
 }
 
 
