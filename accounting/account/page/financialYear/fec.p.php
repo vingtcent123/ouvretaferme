@@ -52,7 +52,11 @@ new \account\ImportPage()
 	}, validate: ['acceptUpdate'])
 	->write('doUpdateRuleValue', function($data) {
 
+		$fw = new FailWatch();
+
 		\account\ImportLib::updateRuleValue($data->e, $_POST);
+
+		$fw->validate();
 
 		throw new ReloadAction();
 

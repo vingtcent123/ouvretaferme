@@ -225,12 +225,12 @@ Class AssetUi {
 					$append .= '</a>';
 					$append .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
 						$append .= '<span class="dropdown-item">';
-							$append .= '<span data-suggestion-one-year class="hide">'.s("La durée recommandée par l'administration fiscale est <br />de {minYear} ans, soit, avec la marge de tolérance, <br /> entre <b>{minMois} et {maxMois}</b> mois. Il y aura donc des amortissements <br />dérogatoires pour cette immobilisation.", [
+							$append .= '<span data-suggestion-one-year class="hide">'.s("La durée recommandée par l'administration fiscale est <br />de {minYear} ans, soit, avec la marge de tolérance, <br /> entre <b>{minMois} et {maxMois}</b> mois.", [
 								'minYear' => '<span data-min-year></span>',
 								'minMois' => '<span data-min-month></span>',
 								'maxMois' => '<span data-max-month></span>',
 							]).'</span>';
-							$append .= '<span data-suggestion-several-years class="hide">'.s("La durée recommandée par l'administration fiscale est comprise <br />entre {minYear} et {maxYear} ans, soit, avec la marge de tolérance, <br />entre <b>{minMois} et {maxMois}</b> mois. Il y aura donc des amortissements <br />dérogatoires pour cette immobilisation.", [
+							$append .= '<span data-suggestion-several-years class="hide">'.s("La durée recommandée par l'administration fiscale est comprise <br />entre {minYear} et {maxYear} ans, soit, avec la marge de tolérance, <br />entre <b>{minMois} et {maxMois}</b> mois.", [
 								'minYear' => '<span data-min-year></span>',
 								'maxYear' => '<span data-max-year></span>',
 								'minMois' => '<span data-min-month></span>',

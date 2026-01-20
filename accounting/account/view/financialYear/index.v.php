@@ -7,7 +7,8 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 new AdaptativeView('open', function($data, FarmTemplate $t) {
 
-	$t->nav = 'settings-accounting';
+	$t->nav = 'accounting';
+	$t->subNav = 'analyze';
 
 	$t->title = s("Créer le bilan d'ouverture");
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/financialYear/:open';
@@ -60,7 +61,8 @@ new AdaptativeView('open', function($data, FarmTemplate $t) {
 
 new AdaptativeView('close', function($data, FarmTemplate $t) {
 
-	$t->nav = 'settings-accounting';
+	$t->nav = 'accounting';
+	$t->subNav = 'analyze';
 
 	$t->title = s("Clôturer un exercice comptable");
 	$t->canonical = \company\CompanyUi::urlJournal($data->eFarm).'/financialYear/:close?id='.$data->e['id'];

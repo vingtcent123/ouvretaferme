@@ -44,7 +44,12 @@ Class ImportLib extends ImportCrud {
 			case 'comptesAux':
 				$eAccount = AccountLib::getById($input['value']);
 
-				if($eAccount->empty()) {
+				if($eAccount->empty() or isset($eImport['rules'][$input['type']][$input['key']]) === FALSE) {
+					return;
+				}
+
+				if(AccountLabelLib::isFromClass($input['key'], $eAccount['class']) === FALSE) {
+					\Fail::log('Import::accountNotCorresponding');
 					return;
 				}
 

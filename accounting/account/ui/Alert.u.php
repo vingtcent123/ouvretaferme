@@ -30,6 +30,9 @@ class AlertUi {
 			'Import::header.incorrectCol' => s("L'entête de votre fichier FEC ne répond pas à la norme. <link>Lire plus d'informations sur la norme</link>.", ['link' => '<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027804775" target="_blank">']),
 			'Import::updated.feedbackNeeded' => s("L'import ne peut pas être relancé : veuillez terminer la configuration."),
 
+			'Import::accountNotCorresponding' => s("Le numéro de compte du FEC doit commencer par les mêmes chiffres que le compte choisi. Vous pouvez créer le compte auquel affecter cette écriture, ou modifier votre sélection."),
+
+
 			default => null
 
 		};

@@ -17,7 +17,7 @@ class ImportUi {
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th class="text-center">'.s("Créé le").'</th>';
-					$h .= '<th class="text-center">'.s("Mise à jour le").'</th>';
+					$h .= '<th class="text-center">'.s("Mis à jour le").'</th>';
 					$h .= '<th>'.s("Statut").'</th>';
 					$h .= '<th>'.s("Exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Nombre d'écritures").'</th>';
@@ -199,7 +199,7 @@ class ImportUi {
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th colspan="2" class="text-center">'.s("Fichier FEC").'</th>';
-							$h .= '<th rowspan="2">'.s("Journal dans {siteName}").'</th>';
+							$h .= '<th rowspan="2">'.s("Compte dans {siteName}").'</th>';
 						$h .= '</tr>';
 						$h .= '<tr>';
 							$h .= '<th>'.s("Numéro").'</th>';

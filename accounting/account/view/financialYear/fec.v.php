@@ -1,7 +1,8 @@
 <?php
 new AdaptativeView('import', function($data, FarmTemplate $t) {
 
-	$t->nav = 'settings-accounting';
+	$t->nav = 'accounting';
+	$t->subNav = 'analyze';
 
 	$t->title = s("Importer un fichier FEC pour {value}", $data->eFarm['name']);
 	$t->canonical = \company\CompanyUi::urlAccount($data->eFarm, $data->eFarm['eFinancialYear']).'/financialYear/fec:import';
