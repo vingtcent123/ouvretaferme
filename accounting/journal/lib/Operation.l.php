@@ -430,46 +430,51 @@ class OperationLib extends OperationCrud {
 
 	public static function update(Operation $e, array $properties): void {
 
-		$e['updatedAt'] = new \Sql('NOW()');
-		$properties[] = 'updatedAt';
-		if(in_array('document', $properties) === TRUE) {
-			$properties[] = 'documentDate';
-			$e['documentDate'] =  new \Sql('NOW()');
-		}
-		parent::update($e, $properties);
+		Operation::model()->beginTransaction();
 
-		// Quick document update
-		if(in_array('document', $properties) === TRUE) {
-
-			// On rattache cette pièce comptable aux cashflows + aux opérations liées
-			if($e['cOperationCashflow']->notEmpty()) {
-
-				$cCashflow = $e['cOperationCashflow']->getColumnCollection('cashflow');
-
-				\bank\Cashflow::model()
-					->select('document')
-					->whereId('IN', $cCashflow->getIds())
-					->update(['document' => $e['document']]);
-
-				Operation::model()
-					->select('document', 'documentDate')
-					->whereId('IN', $e['cOperationCashflow']->getColumnCollection('operation')->getIds())
-					->update(['document' => $e['document'], 'documentDate' => new \Sql('NOW()')]);
+			$e['updatedAt'] = new \Sql('NOW()');
+			$properties[] = 'updatedAt';
+			if(in_array('document', $properties) === TRUE) {
+				$properties[] = 'documentDate';
+				$e['documentDate'] =  new \Sql('NOW()');
 			}
-		}
 
-		// à répercuter sur les opérations liées
-		if(
-			in_array('journalCode', $properties) or
-			in_array('paymentMethod', $properties) or
-			in_array('document', $properties)
-		) {
-			Operation::model()
-				->whereOperation($e)
-				->update(['journalCode' => $e['journalCode'], 'paymentMethod' => $e['paymentMethod'], 'document' => $e['document']]);
-		}
+			parent::update($e, $properties);
 
-		\account\LogLib::save('update', 'Operation', ['id' => $e['id'], 'properties' => $properties]);
+			// Quick document update
+			if(in_array('document', $properties) === TRUE) {
+
+				// On rattache cette pièce comptable aux cashflows + aux opérations liées
+				if($e['cOperationCashflow']->notEmpty()) {
+
+					$cCashflow = $e['cOperationCashflow']->getColumnCollection('cashflow');
+
+					\bank\Cashflow::model()
+						->select('document')
+						->whereId('IN', $cCashflow->getIds())
+						->update(['document' => $e['document']]);
+
+					Operation::model()
+						->select('document', 'documentDate')
+						->whereId('IN', $e['cOperationCashflow']->getColumnCollection('operation')->getIds())
+						->update(['document' => $e['document'], 'documentDate' => new \Sql('NOW()')]);
+				}
+			}
+
+			// à répercuter sur les opérations liées
+			if(
+				in_array('journalCode', $properties) or
+				in_array('paymentMethod', $properties) or
+				in_array('document', $properties)
+			) {
+				Operation::model()
+					->whereOperation($e)
+					->update(['journalCode' => $e['journalCode'], 'paymentMethod' => $e['paymentMethod'], 'document' => $e['document']]);
+			}
+
+			\account\LogLib::save('update', 'Operation', ['id' => $e['id'], 'properties' => $properties]);
+
+		Operation::model()->commit();
 
 	}
 
@@ -846,9 +851,9 @@ class OperationLib extends OperationCrud {
 
 	public static function delete(Operation $e): void {
 
-		\journal\Operation::model()->beginTransaction();
-
 		$e->expects(['id', 'asset']);
+
+		\journal\Operation::model()->beginTransaction();
 
 		if($e['asset']->notEmpty()) {
 			throw new \Exception('Impossible to delete operation with Asset');
