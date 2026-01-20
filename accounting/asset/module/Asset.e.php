@@ -157,12 +157,12 @@ class Asset extends AssetElement {
 
 				if(
 					$p->isBuilt('economicMode') === FALSE or
-					$this['economicMode'] !== Asset::WITHOUT
+					$this['economicMode'] === Asset::WITHOUT
 				) {
 					return TRUE;
 				}
 
-				return ($economicDuration === NULL);
+				return ((int)$economicDuration !== 0);
 
 			})
 			->setCallback('economicDuration.missing', function(?int $economicDuration) use($p): bool {
@@ -205,12 +205,12 @@ class Asset extends AssetElement {
 
 				if(
 					$p->isBuilt('fiscalMode') === FALSE or
-					$this['fiscalMode'] !== Asset::WITHOUT
+					$this['fiscalMode'] === Asset::WITHOUT
 				) {
 					return TRUE;
 				}
 
-				return ($fiscalDuration === NULL);
+				return ((int)$fiscalDuration !== 0);
 
 			})
 			->setCallback('fiscalDuration.missing', function(?int $fiscalDuration) use($p): bool {

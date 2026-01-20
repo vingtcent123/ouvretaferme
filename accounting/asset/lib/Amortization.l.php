@@ -74,7 +74,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		// Nombre de mois dans cet exercice comptable (gère le cas où l'exercice comptable dure + que 1 an)
 		$monthsInFinancialYear = self::getMonthsBetweenTwoDates($eFinancialYear['startDate'], $eFinancialYear['endDate']);
 
-		return round(min(1, $days / (self::DAYS_IN_MONTH * $monthsInFinancialYear)), 4);
+		return min(1, $days / (self::DAYS_IN_MONTH * $monthsInFinancialYear));
 
 	}
 
@@ -388,7 +388,22 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		for($i = 0; $i <= $durationInYears; $i++) {
 
-			if(isset($eAsset['cAmortization'][$i])) {
+			// On regarde si l'amortissement est enregistré
+			$amortization = NULL;
+
+			if(isset($eAsset['cAmortization'])) {
+
+				$amortizationDate = date('Y-m-d', strtotime($eFinancialYear['endDate'].' + '.$i.' YEAR'));
+				$cAmortizationExisting = $eAsset['cAmortization']->find(fn($e) => $e['date'] === $amortizationDate);
+
+				if($cAmortizationExisting->notEmpty()) {
+
+					$eAmortizationExisting = $cAmortizationExisting->first();
+					$amortization = $eAmortizationExisting['amount'];
+
+				}
+			}
+			if(isset($amortization)) {
 
 				$amortization = $eAsset['cAmortization'][$i]['amount'];
 
@@ -439,7 +454,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	private static function getLinearRate(int $duration): float {
 
-		return round(1 / $duration * 100, 2);
+		return 1 / $duration * 100;
 
 	}
 

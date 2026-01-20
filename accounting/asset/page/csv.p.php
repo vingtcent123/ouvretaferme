@@ -51,7 +51,7 @@ new \asset\AssetPage(function($data) {
 
 		$fw = new FailWatch();
 
-		\asset\CsvLib::importAssets($data->eFarm, $data->data['import']);
+		\asset\CsvLib::importAssets($data->data['import']);
 
 		$fw->validate();
 

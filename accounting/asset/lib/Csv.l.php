@@ -3,41 +3,45 @@ namespace asset;
 
 Class CsvLib {
 
-	public static function importAssets(\farm\Farm $eFarm, array $assets): bool {
+	public static function importAssets(array $assets): bool {
 
 		$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYears()->last();
 		$resumeDate = $eFinancialYear['startDate'];
 
-		$cAsset = new \Collection();
+		Asset::model()->beginTransaction();
 
-		foreach($assets as $asset) {
+			$cAsset = new \Collection();
 
-			$values = [
-				'account' => $asset['accountId'],
-				'accountLabel' => \account\AccountLabelLib::pad($asset['account']),
-				'resumeDate' => $resumeDate,
-				'value' => $asset['value'],
-				'residualValue' => $asset['residualValue'],
-				'description' => $asset['description'],
-				'economicMode' => $asset['economicMode'],
-				'economicDuration' => $asset['economicDuration'],
-				'fiscalMode' => $asset['fiscalMode'],
-				'fiscalDuration' => $asset['fiscalDuration'],
-				'economicAmortization' => $asset['economicAmortization'],
-				'acquisitionDate' => $asset['acquisitionDate'],
-				'startDate' => $asset['startDate'],
-				'endDate' => date('Y-m-d', strtotime($asset['startDate'].' + '.$asset['economicDuration'].' month')),
-				'isGrant' => AssetLib::isGrant($asset['account']),
-			];
+			foreach($assets as $asset) {
 
-			$eAsset = new Asset();
-			$eAsset->build(array_keys($values), $values);
+				$values = [
+					'account' => $asset['accountId'],
+					'accountLabel' => \account\AccountLabelLib::pad($asset['account']),
+					'resumeDate' => $resumeDate,
+					'value' => $asset['value'],
+					'residualValue' => $asset['residualValue'],
+					'description' => $asset['description'],
+					'economicMode' => $asset['economicMode'],
+					'economicDuration' => $asset['economicDuration'],
+					'fiscalMode' => $asset['fiscalMode'],
+					'fiscalDuration' => $asset['fiscalDuration'],
+					'economicAmortization' => $asset['economicAmortization'],
+					'acquisitionDate' => $asset['acquisitionDate'],
+					'startDate' => $asset['startDate'],
+					'endDate' => date('Y-m-d', strtotime($asset['startDate'].' + '.$asset['economicDuration'].' month')),
+					'isGrant' => AssetLib::isGrant($asset['account']),
+				];
 
-			$cAsset->append($eAsset);
+				$eAsset = new Asset();
+				$eAsset->build(array_keys($values), $values);
 
-		}
+				$cAsset->append($eAsset);
 
-		Asset::model()->insert($cAsset);
+			}
+
+			Asset::model()->insert($cAsset);
+
+		Asset::model()->commit();
 
 		return TRUE;
 	}
@@ -56,6 +60,7 @@ Class CsvLib {
 			return NULL;
 		}
 
+		$eFinancialYear = $eFarm['eFinancialYear'];
 		$errorsCount = 0;
 
 		$assets = $import['assets'];
@@ -90,6 +95,9 @@ Class CsvLib {
 				$errorsCommon[] = 'residualValue';
 			}
 			if($asset['economicAmortization'] >= $asset['value']) {
+				$errorsCommon[] = 'economicAmortization';
+			}
+			if($asset['economicAmortization'] === 0.0 and $asset['startDate'] < $eFinancialYear['startDate'] and $asset['economicMode'] !== Asset::WITHOUT) {
 				$errorsCommon[] = 'economicAmortization';
 			}
 
@@ -200,6 +208,7 @@ Class CsvLib {
 		return match(trim(mb_strtolower($value))) {
 			's' => Asset::WITHOUT,
 			'sans' => Asset::WITHOUT,
+			'w' => Asset::WITHOUT,
 			'l' => Asset::LINEAR,
 			'lin' => Asset::LINEAR,
 			'd' => Asset::DEGRESSIVE,

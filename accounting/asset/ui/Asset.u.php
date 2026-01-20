@@ -673,7 +673,7 @@ Class AssetUi {
 
 	private static function getHeader(Asset $eAsset): string {
 
-		$amortizationCumulated = 0;
+		$amortizationCumulated = $eAsset['economicAmortization'];
 
 		if($eAsset['cAmortization']->count() > 0) {
 
@@ -705,6 +705,8 @@ Class AssetUi {
 				$h .= '<dd>'.encode($eAsset['description']).'</dd>';
 				$h .= '<dt>'.self::p('acquisitionDate')->label.'</dt>';
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE).'</dd>';
+				$h .= '<dt>'.self::p('value')->label.'</dt>';
+				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
 				$h .= '<dt>'.self::p('startDate')->label.'</dt>';
 				$h .= '<dd>';
 					if($eAsset['startDate'] !== NULL) {
@@ -713,8 +715,6 @@ Class AssetUi {
 						$h .= s("n/a");
 					}
 				$h .= '</dd>';
-				$h .= '<dt>'.self::p('value')->label.'</dt>';
-				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
 				$h .= '<dt>'.self::p('amortizableBase')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
 				$h .= '<dt>'.self::p('economicMode')->label.'</dt>';
@@ -733,22 +733,23 @@ Class AssetUi {
 					} else {
 						$h .= s("n/a");
 					}
-					$h .= '</dt>';
-					$h .= '<dt>'.self::p('status')->label;
+					$h .= '</dd>';
+
+				if($eAsset['endedDate'] !== NULL) {
+					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
+					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
+				} elseif($eFinancialYearLast->notEmpty()) {
+					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
+					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $eAsset['economicAmortization'], 2)).'</dd>';
+				}
+
+				$h .= '<dt>'.self::p('status')->label.'</dt>';
 				$h .= '<dd>';
 					$h .= self::p('status')->values[$eAsset['status']];
 					if($eAsset['endedDate'] !== NULL) {
 						$h .= ' '.s("le {value}", \util\DateUi::numeric($eAsset['endedDate']));
 					}
 				$h .= '</dd>';
-				if($eAsset['endedDate'] !== NULL) {
-					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
-				} elseif($eFinancialYearLast->notEmpty()) {
-					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
-				}
-
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -925,7 +926,12 @@ Class AssetUi {
 
 						foreach($eAsset['table'] as $period) {
 
-							$h .= '<tr class="'.(($period['amortization'] ?? new Amortization())->empty() ? 'asset-line-future' : '').'">';
+							if($period['financialYear']['endDate'] < date('Y-m-d')) {
+								$class = '';
+							} else {
+								$class = 'asset-line-future';
+							}
+							$h .= '<tr class="'.$class.'">';
 
 								$h .= '<td class="text-center">';
 									$h .= $period['financialYear']->getLabel();
@@ -937,23 +943,23 @@ Class AssetUi {
 								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
 									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['linearRate']);
+										$h .= s("{value} %", round($period['linearRate'], 2));
 									$h .= '</td>';
 
 
 									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['degressiveRate']);
+										$h .= s("{value} %", round($period['degressiveRate'], 2));
 									$h .= '</td>';
 
 
 									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['rate']);
+										$h .= s("{value} %", round($period['rate'], 2));
 									$h .= '</td>';
 
 								} else {
 
 									$h .= '<td class="text-center td-min-content">';
-										$h .= s("{value} %", $period['rate']);
+										$h .= s("{value} %", round($period['rate'], 2));
 									$h .= '</td>';
 
 								}
