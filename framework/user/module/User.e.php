@@ -189,6 +189,10 @@ class User extends UserElement {
 		$p
 			->setCallback('siret.prepare', function(?string &$siret) use($p): void {
 
+				if($p->isBuilt('deliveryCountry') === FALSE) {
+					return TRUE;
+				}
+
 				$this->expects(['type', 'deliveryCountry']);
 
 				if(
