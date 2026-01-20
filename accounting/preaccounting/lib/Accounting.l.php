@@ -103,7 +103,12 @@ Class AccountingLib {
 					}
 
 					// Montant HT
-					if($eAccountFilter->empty() or $eAccountFilter->is($eAccount)) {
+					if(
+						$eAccountFilter->empty() or
+						$eAccountFilter->is($eAccount) or
+						\account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class']) or
+						\account\AccountLabelLib::isFromClass($eAccount['class'], $eAccountFilter['class'])
+					) {
 
 						$fecDataExcludingVat = self::getFecLine(
 							eAccount    : $eAccount,
