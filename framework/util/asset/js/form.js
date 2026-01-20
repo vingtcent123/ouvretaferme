@@ -6,11 +6,11 @@ document.delegateEventListener('submit', 'form[data-ajax-form]', function(e) {
 	e.preventDefault();
 	e.stopImmediatePropagation();
 
-	submitAjaxForm(this);
+	submitAjaxForm(this, e.submitter);
 
 });
 
-function submitAjaxForm(form) {
+function submitAjaxForm(form, submitter) {
 
 	const method = (form.getAttribute('method') ?? 'POST').toUpperCase();
 
@@ -21,23 +21,7 @@ function submitAjaxForm(form) {
 	const body = form.form();
 	let url = form.getAttribute('data-ajax-form');
 
-	const disable = form.qsa('button[data-submit-waiter]');
-
-	disable.forEach((button) => {
-		if(button.dataset.submitWaiter !== '') {
-			button.dataset.submitOriginal = button.innerHTML;
-			button.innerHTML = button.dataset.submitWaiter;
-		}
-		button.classList.add('disabled');
-	})
-
-	const enable = () => disable.forEach((button) => {
-		if(button.dataset.submitWaiter !== '') {
-			button.innerHTML = button.dataset.submitOriginal;
-			button.dataset.submitOriginal = null;
-		}
-		button.classList.remove('disabled');
-	});
+	const enable = startWaiter(submitter);
 
 	switch(method) {
 

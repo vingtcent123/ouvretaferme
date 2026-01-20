@@ -25,7 +25,7 @@ class CsvUi {
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les produits que vous importez maintenant").'</li>';
 				$h .= '</ul>';
-				$h .= '<a data-ajax="/selling/csv:doCreateProducts" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} produit ?", "Importer maintenant {value} produits ?", count($data['import'])).'" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+				$h .= '<a data-ajax="/selling/csv:doCreateProducts" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} produit ?", "Importer maintenant {value} produits ?", count($data['import'])).'" data-ajax-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
 			$h .= '</div>';
 		}
 
@@ -307,7 +307,7 @@ class CsvUi {
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
 				$h .= '</ul>';
-				$h .= '<a data-ajax="/selling/csv:doCreateCustomers" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} client ?", "Importer maintenant {value} clients ?", count($data['import'])).'" data-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+				$h .= '<a data-ajax="/selling/csv:doCreateCustomers" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} client ?", "Importer maintenant {value} clients ?", count($data['import'])).'" data-ajax-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
 			$h .= '</div>';
 		}
 

@@ -440,7 +440,7 @@ class CustomerLib extends CustomerCrud {
 			$e['farm']->hasAccounting() and
 			(in_array('vatNumber', $properties) or in_array('siret', $properties))
 		) {
-			\company\CompanyLib::connectDatabase($e['farm']);
+			\farm\FarmLib::connectDatabase($e['farm']);
 			\account\ThirdPartyLib::updateByCustomer($e);
 		}
 

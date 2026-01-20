@@ -78,7 +78,7 @@ new \selling\ProductPage()
 
 		if($eProduct['farm']->hasAccounting()) {
 
-			\company\CompanyLib::connectDatabase($eProduct['farm']);
+			\farm\FarmLib::connectDatabase($eProduct['farm']);
 
 			if($eProduct['proAccount']->notEmpty()) {
 				$eProduct['proAccount'] = \account\AccountLib::getById($eProduct['proAccount']['id']);
@@ -178,7 +178,7 @@ new \selling\ProductPage()
 		}
 
 		if($eProduct['farm']->hasAccounting()) {
-			\company\CompanyLib::connectDatabase($eProduct['farm']);
+			\farm\FarmLib::connectDatabase($eProduct['farm']);
 				$eProduct['proAccount'] = $eProduct['proAccount']->notEmpty() ? \account\AccountLib::getById($eProduct['proAccount']['id']) : $eProduct['proAccount'];
 				$eProduct['privateAccount'] = $eProduct['privateAccount']->notEmpty() ? \account\AccountLib::getById($eProduct['privateAccount']['id']) : $eProduct['privateAccount'];
 		}
@@ -233,7 +233,7 @@ new \selling\ProductPage()
 
 		$eFarm = $c->first()['farm']->validate('hasAccounting');
 		$c->validateProperty('farm', $eFarm);
-		\company\CompanyLib::connectDatabase($eFarm);
+		\farm\FarmLib::connectDatabase($eFarm);
 
 	})
 	->doUpdateCollectionProperties('doUpdateAccountCollection', ['proAccount', 'privateAccount'], function($data) {

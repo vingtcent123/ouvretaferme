@@ -24,7 +24,7 @@ new Page()
 
 			d($eFarm['id']);
 
-			\company\CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 
 			// 1. Corriger l'id de la classe 706
 

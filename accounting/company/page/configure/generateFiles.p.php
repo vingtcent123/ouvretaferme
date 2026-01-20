@@ -15,7 +15,7 @@ new Page()
 
 			d($eFarm['id']);
 
-			\company\CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 
 			$cFinancialYear = \account\FinancialYear::model()
 				->select(\account\FinancialYear::getSelection())

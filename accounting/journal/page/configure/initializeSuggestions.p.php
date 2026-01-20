@@ -7,7 +7,7 @@ new Page()
 
 		$eFarm = \farm\FarmLib::getById(GET('farm', 'int', 7));
 
-		\company\CompanyLib::connectDatabase($eFarm);
+		\farm\FarmLib::connectDatabase($eFarm);
 
 		[$cCashflow, ] = \bank\CashflowLib::getAll(new Search(['isReconciliated' => FALSE, 'id' => 1432]), NULL,FALSE);
 

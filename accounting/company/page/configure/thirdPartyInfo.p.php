@@ -14,7 +14,7 @@ new Page()
 		foreach($cFarm as $eFarm) {
 
 			d($eFarm['id']);
-			\company\CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 
 			$cThirdParty = \account\ThirdParty::model()
 				->select(\account\ThirdParty::getSelection() + ['customer' => ['vatNumber', 'siret']])

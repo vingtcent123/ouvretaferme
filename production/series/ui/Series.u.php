@@ -1134,7 +1134,7 @@ class SeriesUi {
 			});
 
 			$h .= $form->group(
-				content: $form->submit(s("Modifier la saison"), ['data-submit-waiter', 'data-confirm' => p("Vous allez changer une série de saison, voulez-vous continuer ?", "Vous allez changer {value} séries de saison, voulez-vous continuer ?", $cSeries->count())])
+				content: $form->submit(s("Modifier la saison"), ['data-waiter', 'data-confirm' => p("Vous allez changer une série de saison, voulez-vous continuer ?", "Vous allez changer {value} séries de saison, voulez-vous continuer ?", $cSeries->count())])
 			);
 
 		$h .= $form->close();
@@ -1211,7 +1211,7 @@ class SeriesUi {
 			}
 
 			$h .= $form->group(
-				content: $form->submit(s("Créer un itinéraire technique"), ['data-submit-waiter' => s("Création en cours..."), 'data-confirm' => s("Vous allez créer un itinéraire technique à partir d'une série, voulez-vous continuer ?")])
+				content: $form->submit(s("Créer un itinéraire technique"), ['data-waiter' => s("Création en cours..."), 'data-confirm' => s("Vous allez créer un itinéraire technique à partir d'une série, voulez-vous continuer ?")])
 			);
 
 		$h .= $form->close();
@@ -1339,7 +1339,7 @@ class SeriesUi {
 			$h .= '</div>';
 
 			$h .= $form->group(
-				content: $form->submit(s("Dupliquer"), ['data-submit-waiter' => s("Duplication en cours..."), 'data-confirm' => p("Vous allez dupliquer une série, voulez-vous continuer ?", "Vous allez dupliquer {value} séries, assurez-vous d'avoir bien vérifié votre formulaire. En dupliquant un grand nombre de séries par erreur, vous risquez de perdre le fil de votre plan de culture. Lancer la duplication ?", $cSeries->count())])
+				content: $form->submit(s("Dupliquer"), ['data-waiter' => s("Duplication en cours..."), 'data-confirm' => p("Vous allez dupliquer une série, voulez-vous continuer ?", "Vous allez dupliquer {value} séries, assurez-vous d'avoir bien vérifié votre formulaire. En dupliquant un grand nombre de séries par erreur, vous risquez de perdre le fil de votre plan de culture. Lancer la duplication ?", $cSeries->count())])
 			);
 
 		$h .= $form->close();

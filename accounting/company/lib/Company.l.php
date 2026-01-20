@@ -3,8 +3,6 @@ namespace company;
 
 class CompanyLib {
 
-	public static array $specificPackages = ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing'];
-
 	public static function load(\stdClass $data): void {
 
 		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
@@ -23,7 +21,7 @@ class CompanyLib {
 		}
 
 		if($data->eFarm->hasAccounting()) {
-			\company\CompanyLib::connectDatabase($data->eFarm);
+			\farm\FarmLib::connectDatabase($data->eFarm);
 		} else {
 			throw new \RedirectAction('/comptabilite/decouvrir?farm='.$data->eFarm['id']);
 		}
@@ -61,33 +59,6 @@ class CompanyLib {
 		$data->eFarm['cFinancialYear'] = $cFinancialYear;
 		$data->eFarm['eFinancialYear'] = $eFinancialYear;
 
-	}
-
-	public static function connectDatabase(\farm\Farm $eFarm): void {
-
-		$base = self::getDatabaseName($eFarm);
-
-		foreach(self::$specificPackages as $package) {
-			\Database::setPackage($package, $base);
-		}
-
-		\Database::addBase($base, 'ouvretaferme');
-
-		\ModuleModel::resetDatabases();
-
-	}
-
-	public static function getDatabaseName(\farm\Farm $eFarm): string {
-
-		if(OTF_DEMO) {
-			return 'demo_ouvretaferme';
-		}
-
-		if(LIME_ENV === 'prod') {
-			return 'farm_'.$eFarm['id'];
-		}
-
-		return 'dev_farm_'.$eFarm['id'];
 	}
 
 	public static function enableAccounting(\farm\Farm $eFarm): void {
@@ -129,11 +100,8 @@ class CompanyLib {
 
 	public static function createDatabase(\farm\Farm $eFarm): void {
 
-		// Create database
-		new \ModuleAdministration('company\GenericAccount')->createDatabase(CompanyLib::getDatabaseNameFromCompany($eFarm));
-
 		// Connect database
-		self::connectDatabase($eFarm);
+		\farm\FarmLib::connectDatabase($eFarm);
 
 		// Create packages tables
 		$libModule = new \dev\ModuleLib();
@@ -144,7 +112,7 @@ class CompanyLib {
 		foreach($classes as $class) {
 
 			list($package) = explode('\\', $class);
-			if(in_array($package, self::$specificPackages)) {
+			if(in_array($package, \farm\FarmSetting::getAccountingPackages())) {
 				new \ModuleAdministration($class)->init();
 			}
 
@@ -173,17 +141,11 @@ class CompanyLib {
 
 	}
 
-  public static function getDatabaseNameFromCompany(\farm\Farm $eFarm): string {
-
-    return (LIME_ENV === 'dev' ? 'dev_' : '').'farm_'.$eFarm['id'];
-
-  }
-
 	public static function rebuildTables(\farm\Farm $eFarm): void {
 
 		d($eFarm['id']);
 
-		\company\CompanyLib::connectDatabase($eFarm);
+		\farm\FarmLib::connectDatabase($eFarm);
 
 		// Recrée les modules puis crée ou recrée toutes les tables
 		$libModule = new \dev\ModuleLib();
@@ -196,7 +158,7 @@ class CompanyLib {
 			if($module !== GET('module')) {
 				continue;
 			}
-			if(in_array($package, \company\CompanyLib::$specificPackages) === FALSE) {
+			if(in_array($package, \farm\FarmSetting::getAccountingPackages()) === FALSE) {
 				continue;
 			}
 			echo $class."\n";
@@ -225,8 +187,5 @@ class CompanyLib {
 		}
 
 	}
-
-	// TODO DELETE FARM
-  //new \ModuleAdministration('main\GenericAccount')->dropDatabase(CompanyLib::getDatabaseNameFromCompany($e));
 
 }

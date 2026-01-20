@@ -10,7 +10,7 @@ new Page()
 
 		foreach($cCompanyCron as $eCompanyCron) {
 
-			\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
+			\farm\FarmLib::connectDatabase($eCompanyCron['farm']);
 
 			$updated = \company\CompanyCron::model()->update($eCompanyCron, ['status' => \company\CompanyCron::PROCESSING]);
 

@@ -141,7 +141,7 @@ new Page(function($data) {
 
 		if($data->eFarm->hasAccounting()) {
 
-			\company\CompanyLib::connectDatabase($data->eFarm);
+			\farm\FarmLib::connectDatabase($data->eFarm);
 
 			if(get_exists('account')) {
 
@@ -169,7 +169,7 @@ new Page(function($data) {
 
 		} else if($data->eFarm->hasAccounting()) {
 
-			\company\CompanyLib::connectDatabase($data->eFarm);
+			\farm\FarmLib::connectDatabase($data->eFarm);
 			$cAccount = \account\AccountLib::getAll();
 
 			foreach($data->cProduct as &$eProduct) {
@@ -335,7 +335,7 @@ new Page(function($data) {
 		], GET('sort'));
 
 		if($data->eFarm->hasAccounting()) {
-			\company\CompanyLib::connectDatabase($data->eFarm);
+			\farm\FarmLib::connectDatabase($data->eFarm);
 			$data->nSuggestion = \preaccounting\SuggestionLib::countWaiting();
 		} else {
 			$data->nSuggestion = 0;

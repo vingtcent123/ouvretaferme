@@ -130,6 +130,20 @@ class FarmLib extends FarmCrud {
 
 	}
 
+	public static function connectDatabase(\farm\Farm $eFarm): void {
+
+		$base = FarmSetting::getDatabaseName($eFarm);
+
+		foreach(FarmSetting::getDatabases() as $package) {
+			\Database::setPackage($package, $base);
+		}
+
+		\Database::addBase($base, 'ouvretaferme');
+
+		\ModuleModel::resetDatabases();
+
+	}
+
 	public static function create(Farm $e): void {
 
 		Farm::model()->beginTransaction();
@@ -166,6 +180,16 @@ class FarmLib extends FarmCrud {
 		\plant\PlantLib::duplicateForFarm($e);
 
 		Farm::model()->commit();
+
+		// Create database
+		if(OTF_DEMO === FALSE) {
+
+			Farm::model()->pdo()->exec('CREATE DATABASE IF NOT EXISTS '.FarmSetting::getDatabaseName($e));
+
+			//FarmLib::connectDatabase($e);
+			//new \ModuleAdministration('securing\Hmac')->init();
+
+		}
 
 	}
 

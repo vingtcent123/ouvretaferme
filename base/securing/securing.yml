@@ -1,0 +1,9 @@
+Hmac:
+  id: serial32
+  hmac: text8(64, 64) @charset(ascii)
+  chained: text8(64, 64) @charset(ascii)
+  data: json
+  createdAt: datetime
+  INDEX: [
+    ["hmac"]
+  ]

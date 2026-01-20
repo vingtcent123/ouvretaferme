@@ -35,7 +35,7 @@ new Page()
 
 		foreach($cFarm as $eFarm) {
 
-			\company\CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 
 			$eAccount = \account\AccountLib::getByClass($class);
 

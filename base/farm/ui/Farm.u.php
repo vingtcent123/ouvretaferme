@@ -423,7 +423,7 @@ class FarmUi {
 			$h .= $form->dynamicGroups($eFarm, ['name*', 'legalEmail*', 'legalCountry', 'quality']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Créer ma ferme"))
+				content: $form->submit(s("Créer ma ferme"), ['data-waiter' => s("Création en cours...")])
 			);
 
 		$h .= $form->close();
@@ -1504,7 +1504,7 @@ class FarmUi {
 							$h .= '</a>';
 						}
 						if($nSeries >= 1) {
-							$h .= ' <a href="/series/series:downloadCultivation?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" class="btn btn-primary">';
+							$h .= ' <a href="/series/series:downloadCultivation?id='.$eFarm['id'].'&season='.$selectedSeason.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" data-waiter-timeout="8" class="btn btn-primary">';
 								$h .= \Asset::icon('file-pdf').' '.s("PDF");
 							$h .= '</a> ';
 						}

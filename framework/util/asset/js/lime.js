@@ -662,14 +662,46 @@ Document.prototype.ready = function(listener) {
 	}
 };
 
-document.delegateEventListener('click', '[data-waiter]', function(e) {
+function startWaiter(target) {
+
+	if(target.dataset.waiter === undefined) {
+		return;
+	}
+
+	if(target.dataset.waiter !== '') {
+		target.dataset.original = target.innerHTML;
+		target.innerHTML = target.dataset.waiter;
+	}
+
+	target.matches('[type="submit"]') ?
+		target.classList.add('disabled') :
+		target.classList.add('click-waiting');
+
+	if(target.dataset.waiterTimeout) {
+		setTimeout(() => target?.classList.remove('click-waiting'), parseInt(target.dataset.waiterTimeout) * 1000);
+	}
+
+	return () => {
+
+		if(target.dataset.waiter !== '') {
+			target.innerHTML = target.dataset.original;
+			target.dataset.original = null;
+		}
+
+		target.matches('[type="submit"]') ?
+			target.classList.remove('disabled') :
+			target.classList.remove('click-waiting');
+
+
+	};
+
+}
+
+document.delegateEventListener('click', '[data-waiter]:not([type="submit"]):not([data-ajax])', function(e) {
 
 	// Sera traité dans le [data-confirm]
 	if(this.getAttribute('data-confirm') === null) {
-
-		this.innerHTML = this.dataset.waiter;
-		this.classList.add('click-waiting');
-
+		startWaiter(this);
 	}
 
 });
@@ -683,8 +715,7 @@ document.delegateEventListener('click', '[data-confirm]', function(e) {
 
 	} else if(this.getAttribute('data-waiter') !== null) {
 
-		this.innerHTML = this.dataset.waiter;
-		this.classList.add('click-waiting');
+		startWaiter(this);
 
 	}
 

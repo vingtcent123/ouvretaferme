@@ -5,7 +5,7 @@ new \farm\FarmPage()
 		$data->eFarm = $data->e;
 
 		if($data->eFarm->hasAccounting()) {
-			\company\CompanyLib::connectDatabase($data->e);
+			\farm\FarmLib::connectDatabase($data->e);
 			$data->cAccount = \account\AccountLib::getAll();
 		} else {
 			$data->cAccount = new Collection();

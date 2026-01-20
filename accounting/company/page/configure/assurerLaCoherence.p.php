@@ -24,7 +24,7 @@ new Page()
 
 			d($eFarm['id']);
 
-			\company\CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 
 			$eJournalCode = \journal\JournalCode::model()
 				->select(\company\JournalCode::getSelection())

@@ -28,7 +28,7 @@ new Page()
 
 		foreach($cFarm as $eFarm) {
 
-			\company\CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 
 			// Créer un journal d'OD Bilan
 			$eJournalCode = new \journal\JournalCode($journalCodeValues);

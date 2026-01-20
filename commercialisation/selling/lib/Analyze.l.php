@@ -932,7 +932,7 @@ class AnalyzeLib {
 		self::filterItemStats();
 
 		if($eFarm->usesAccounting()) {
-			\company\CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 			$cAccountAll = \account\AccountLib::getAll();
 		} else {
 			$cAccountAll = new \Collection();

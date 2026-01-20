@@ -17,7 +17,7 @@ new Page()
 
 		foreach($cFarm as $eFarm) {
 
-			$database = \company\CompanyLib::getDatabaseName($eFarm);
+			$database = \farm\FarmSetting::getDatabaseName($eFarm);
 			exec('mysqldump -u '.$username.' "'.$password.'" '.$database.' > '.$mysqlBackupDir.$date.'-'.$database.'.sql');
 			exec('cp '.$mysqlBackupDir.$date.'-'.$database.'.sql '.$mysqlBackupDir.'backup/'.$database.'.sql');
 

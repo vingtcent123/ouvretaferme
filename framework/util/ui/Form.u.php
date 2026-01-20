@@ -173,7 +173,11 @@ class FormUi {
 
 		if($this->options['columns'] === 2) {
 
-			$h .= '<label '.$for.' class="form-control-label">'.$label.'</label>';
+			if($label !== NULL) {
+				$h .= '<label '.$for.' class="form-control-label">'.$label.'</label>';
+			} else {
+				$h .= '<div class="form-control-label"></div>';
+			}
 			$h .= '<div class="form-control-field">'.$content.'</div>';
 
 		} else {

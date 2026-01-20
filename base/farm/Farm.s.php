@@ -18,6 +18,22 @@ class FarmSetting extends \Settings {
 	public static $featureTime;
 	public static $featureStock;
 
+	public static function getDatabaseName(\farm\Farm $eFarm): string {
+		return (LIME_ENV === 'dev' ? 'dev_' : '').'farm_'.$eFarm['id'];
+	}
+
+	public static function getStartPackages(): array {
+		return ['securing'];
+	}
+
+	public static function getAccountingPackages(): array {
+		return ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing'];
+	}
+
+	public static function getDatabases(): array {
+		return array_merge(self::getStartPackages(), self::getAccountingPackages());
+	}
+
 }
 
 ?>

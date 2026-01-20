@@ -2129,7 +2129,7 @@ class SaleUi {
 				$footer = ItemUi::getCreateSubmit($eSale, $form, s("Créer la vente"));
 
 			} else {
-				$footer = $form->submit(s("Créer la vente"), ['data-submit-waiter' => s("Création en cours..."), 'class' => 'btn btn-primary btn-lg']);
+				$footer = $form->submit(s("Créer la vente"), ['data-waiter' => s("Création en cours..."), 'class' => 'btn btn-primary btn-lg']);
 			}
 
 		} else {

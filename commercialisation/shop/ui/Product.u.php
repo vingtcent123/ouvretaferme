@@ -1712,7 +1712,7 @@ class ProductUi {
 			dialogOpen: $form->openAjax('/shop/product:doCreateCollection', ['class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
-			footer: $form->submit(s("Ajouter les produits"), ['data-submit-waiter' => s("Ajout en cours..."), 'class' => 'btn btn-primary btn-lg'])
+			footer: $form->submit(s("Ajouter les produits"), ['data-waiter' => s("Ajout en cours..."), 'class' => 'btn btn-primary btn-lg'])
 		);
 	}
 

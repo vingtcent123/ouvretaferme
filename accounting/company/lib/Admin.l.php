@@ -48,7 +48,7 @@ Class AdminLib {
 
 		foreach($cFarm as &$eFarm) {
 
-			CompanyLib::connectDatabase($eFarm);
+			\farm\FarmLib::connectDatabase($eFarm);
 
 			if($cProduct->offsetExists($eFarm['id'])) {
 				$eFarm['nProduct'] = $cProduct[$eFarm['id']]['count'];

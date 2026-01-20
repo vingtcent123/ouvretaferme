@@ -19,7 +19,7 @@ new Page()
 
 			try {
 
-				\company\CompanyLib::connectDatabase($eCompanyCron['farm']);
+				\farm\FarmLib::connectDatabase($eCompanyCron['farm']);
 				\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eCompanyCron['farm']);
 
 				\company\CompanyCron::model()->delete($eCompanyCron);

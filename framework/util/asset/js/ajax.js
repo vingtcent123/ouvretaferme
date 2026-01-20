@@ -1448,6 +1448,7 @@ document.delegateEventListener('click', '[data-ajax]', function(e) {
 	}
 
 	const object = new className(this);
+	const enable = startWaiter(this);
 
 	switch(this.dataset.ajaxMethod) {
 
@@ -1475,7 +1476,9 @@ document.delegateEventListener('click', '[data-ajax]', function(e) {
 
 	}
 
-	return object.fetch();
+	return object
+		.fetch()
+		.then(() => enable(), () => enable());
 
 });
 
