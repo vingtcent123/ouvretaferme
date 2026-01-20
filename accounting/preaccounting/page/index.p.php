@@ -218,7 +218,7 @@ new Page(function($data) {
 		if($data->isSearchValid) {
 
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
-			$data->search->set('method', GET('method', 'payment\Method'));
+			$data->search->set('method', \payment\MethodLib::getById(GET('method')));
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
 
