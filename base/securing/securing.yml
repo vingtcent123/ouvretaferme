@@ -1,7 +1,10 @@
-Hmac:
+Signature:
   id: serial32
+  source: enum(SALE, CASHBOOK)
+  key: int16(0, null)
   hmac: text8(64, 64) @charset(ascii)
   chained: text8(64, 64) @charset(ascii)
+  entry: int32(0, null)
   data: json
   createdAt: datetime
   INDEX: [

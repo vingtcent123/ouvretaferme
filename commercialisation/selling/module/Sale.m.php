@@ -95,6 +95,7 @@ class SaleModel extends \ModuleModel {
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'shippingExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'secured' => ['bool', 'cast' => 'bool'],
+			'securedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -140,7 +141,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'secured', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'secured', 'securedAt', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash', 'readyForAccounting'
 		]);
 
 		$this->propertiesToModule += [
@@ -383,6 +384,10 @@ class SaleModel extends \ModuleModel {
 
 	public function whereSecured(...$data): SaleModel {
 		return $this->where('secured', ...$data);
+	}
+
+	public function whereSecuredAt(...$data): SaleModel {
+		return $this->where('securedAt', ...$data);
 	}
 
 	public function whereClosed(...$data): SaleModel {

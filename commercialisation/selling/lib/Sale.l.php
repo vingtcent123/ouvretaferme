@@ -1091,10 +1091,16 @@ class SaleLib extends SaleCrud {
 
 			}
 
-			if($e['preparationStatus'] === Sale::DELIVERED) {
+			if(
+				$e['preparationStatus'] === Sale::DELIVERED and
+				$e['secured'] === FALSE
+			) {
 
 				$properties[] = 'secured';
+				$properties[] = 'securedAt';
+
 				$e['secured'] = TRUE;
+				$e['securedAt'] = new \Sql('NOW()');
 
 			}
 
@@ -1825,9 +1831,16 @@ class SaleLib extends SaleCrud {
 
 		Sale::model()
 			->whereId('IN', $cSale)
-			->whereClosed(FALSE)
+			->whereSecured(FALSE)
 			->update([
 				'secured' => TRUE,
+				'securedAt' => new \Sql('NOW()'),
+			]);
+
+		Sale::model()
+			->whereId('IN', $cSale)
+			->whereClosed(FALSE)
+			->update([
 				'closed' => TRUE,
 				'closedAt' => new \Sql('NOW()'),
 				'closedBy' => \user\ConnectionLib::getOnline()
@@ -1837,13 +1850,24 @@ class SaleLib extends SaleCrud {
 
 	public static function close(Sale $eSale): void {
 
-		$eSale['secured'] = TRUE;
+		$properties = ['closed', 'closedAt', 'closedBy'];
+
 		$eSale['closed'] = TRUE;
 		$eSale['closedAt'] = new \Sql('NOW()');
 		$eSale['closedBy'] = \user\ConnectionLib::getOnline();
 
+		if($eSale['secured'] === FALSE) {
+
+			$eSale['secured'] = TRUE;
+			$eSale['securedAt'] = new \Sql('NOW()');
+
+			$properties[] = 'secured';
+			$properties[] = 'securedAt';
+
+		}
+
 		Sale::model()
-			->select('secured', 'closed', 'closedAt', 'closedBy')
+			->select($properties)
 			->whereClosed(FALSE)
 			->update($eSale);
 

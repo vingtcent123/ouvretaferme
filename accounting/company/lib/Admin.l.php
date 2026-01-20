@@ -46,7 +46,7 @@ Class AdminLib {
 			->group(['farm'])
 			->getCollection(NULL, NULL, 'farm');
 
-		foreach($cFarm as &$eFarm) {
+		foreach($cFarm as $eFarm) {
 
 			\farm\FarmLib::connectDatabase($eFarm);
 

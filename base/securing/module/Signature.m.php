@@ -1,39 +1,42 @@
 <?php
 namespace securing;
 
-abstract class HmacElement extends \Element {
+abstract class SignatureElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?HmacModel $model = NULL;
+	private static ?SignatureModel $model = NULL;
+
+	const SALE = 'sale';
+	const CASHBOOK = 'cashbook';
 
 	public static function getSelection(): array {
-		return Hmac::model()->getProperties();
+		return Signature::model()->getProperties();
 	}
 
 	public static function resetModel(): void {
 		self::$model = NULL;
 	}
 
-	public static function model(): HmacModel {
+	public static function model(): SignatureModel {
 		if(self::$model === NULL) {
-			self::$model = new HmacModel();
+			self::$model = new SignatureModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('Hmac::'.$failName, $arguments, $wrapper);
+		return \Fail::log('Signature::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class HmacModel extends \ModuleModel {
+class SignatureModel extends \ModuleModel {
 
-	protected string $module = 'securing\Hmac';
+	protected string $module = 'securing\Signature';
 	protected string $package = 'securing';
-	protected string $table = 'securingHmac';
+	protected string $table = 'securingSignature';
 
 	public function __construct() {
 
@@ -41,14 +44,17 @@ class HmacModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
+			'source' => ['enum', [\securing\Signature::SALE, \securing\Signature::CASHBOOK], 'cast' => 'enum'],
+			'key' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'hmac' => ['text8', 'min' => 64, 'max' => 64, 'charset' => 'ascii', 'cast' => 'string'],
 			'chained' => ['text8', 'min' => 64, 'max' => 64, 'charset' => 'ascii', 'cast' => 'string'],
+			'entry' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'data' => ['json', 'cast' => 'array'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'hmac', 'chained', 'data', 'createdAt'
+			'id', 'source', 'key', 'hmac', 'chained', 'entry', 'data', 'createdAt'
 		]);
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -60,6 +66,9 @@ class HmacModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'source' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'data' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
@@ -85,31 +94,43 @@ class HmacModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): HmacModel {
+	public function select(...$fields): SignatureModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): HmacModel {
+	public function where(...$data): SignatureModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): HmacModel {
+	public function whereId(...$data): SignatureModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereHmac(...$data): HmacModel {
+	public function whereSource(...$data): SignatureModel {
+		return $this->where('source', ...$data);
+	}
+
+	public function whereKey(...$data): SignatureModel {
+		return $this->where('key', ...$data);
+	}
+
+	public function whereHmac(...$data): SignatureModel {
 		return $this->where('hmac', ...$data);
 	}
 
-	public function whereChained(...$data): HmacModel {
+	public function whereChained(...$data): SignatureModel {
 		return $this->where('chained', ...$data);
 	}
 
-	public function whereData(...$data): HmacModel {
+	public function whereEntry(...$data): SignatureModel {
+		return $this->where('entry', ...$data);
+	}
+
+	public function whereData(...$data): SignatureModel {
 		return $this->where('data', ...$data);
 	}
 
-	public function whereCreatedAt(...$data): HmacModel {
+	public function whereCreatedAt(...$data): SignatureModel {
 		return $this->where('createdAt', ...$data);
 	}
 
@@ -117,24 +138,24 @@ class HmacModel extends \ModuleModel {
 }
 
 
-abstract class HmacCrud extends \ModuleCrud {
+abstract class SignatureCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): Hmac {
+	public static function getById(mixed $id, array $properties = []): Signature {
 
-		$e = new Hmac();
+		$e = new Signature();
 
 		if(empty($id)) {
-			Hmac::model()->reset();
+			Signature::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = Hmac::getSelection();
+			$properties = Signature::getSelection();
 		}
 
-		if(Hmac::model()
+		if(Signature::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -152,14 +173,14 @@ abstract class HmacCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = Hmac::getSelection();
+			$properties = Signature::getSelection();
 		}
 
 		if($sort !== NULL) {
-			Hmac::model()->sort($sort);
+			Signature::model()->sort($sort);
 		}
 
-		return Hmac::model()
+		return Signature::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -173,51 +194,51 @@ abstract class HmacCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Hmac {
+	public static function getCreateElement(): Signature {
 
-		return new Hmac(['id' => NULL]);
-
-	}
-
-	public static function create(Hmac $e): void {
-
-		Hmac::model()->insert($e);
+		return new Signature(['id' => NULL]);
 
 	}
 
-	public static function update(Hmac $e, array $properties): void {
+	public static function create(Signature $e): void {
+
+		Signature::model()->insert($e);
+
+	}
+
+	public static function update(Signature $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		Hmac::model()
+		Signature::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, Hmac $e, array $properties): void {
+	public static function updateCollection(\Collection $c, Signature $e, array $properties): void {
 
-		Hmac::model()
+		Signature::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(Hmac $e): void {
+	public static function delete(Signature $e): void {
 
 		$e->expects(['id']);
 
-		Hmac::model()->delete($e);
+		Signature::model()->delete($e);
 
 	}
 
 }
 
 
-class HmacPage extends \ModulePage {
+class SignaturePage extends \ModulePage {
 
-	protected string $module = 'securing\Hmac';
+	protected string $module = 'securing\Signature';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -226,8 +247,8 @@ class HmacPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? HmacLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? HmacLib::getPropertiesUpdate()
+		   $propertiesCreate ?? SignatureLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? SignatureLib::getPropertiesUpdate()
 		);
 	}
 

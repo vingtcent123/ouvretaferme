@@ -306,6 +306,7 @@ Sale:
   shipping: ?decimal(8, 2, 0.01, null)
   shippingExcludingVat: ?decimal(8, 2)
   secured: bool = FALSE
+  securedAt: ?datetime
   closed: bool = FALSE
   closedAt: ?datetime
   closedBy: ?user\User

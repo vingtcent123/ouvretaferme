@@ -12,6 +12,7 @@ class MainSetting extends \Settings {
 	public static ?\user\User $onlineUser = NULL;
 	public static array $backupServer = ['user' => NULL, 'hostname' => NULL];
 	public static array $crypt = [];
+	public static array $hmacKeys = [];
 
 	public static ?int $onlineSeason = NULL;
 
