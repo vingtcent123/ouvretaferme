@@ -90,7 +90,7 @@ class Crop extends CropElement {
 			->setCallback('rowSpacing.prepare', $spacing)
 			->setCallback('rows.prepare', $spacing)
 			->setCallback('plantSpacing.prepare', $spacing)
-			->setCallback('rowSpacing.check', function(?int &$rowSpacing): bool {
+			->setCallback('rowSpacing.check', function(?float &$rowSpacing): bool {
 
 				switch($this['sequence']['use']) {
 
