@@ -1728,7 +1728,13 @@ class ProductUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Product $e) => $e[$property] ?? NULL;
-				$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::PRODUCT_OTHER_ACCOUNT_CLASS];
+				$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS];
+				$query['classPrefixes[1]'] = \account\AccountSetting::PRODUCT_OTHER_ACCOUNT_CLASS;
+				$index = 1;
+				foreach(\account\AccountSetting::WAITING_ACCOUNT_CLASSES as $class) {
+					$index++;
+					$query['classPrefixes['.$index.']'] = $class;
+				}
 				if(get_exists('account') and GET('account') === '0') {
 					$query['noAccount'] = TRUE;
 				}

@@ -528,12 +528,42 @@ class Product extends ProductElement {
 			})
 			->setCallback('proAccount.check', function(\account\Account|\company\GenericAccount $eAccount) {
 
-				return $eAccount->empty() or \account\AccountLib::getById($eAccount['id'])->notEmpty();
+				if($eAccount->empty()) {
+					return TRUE;
+				}
+
+				$eAccount = \account\AccountLib::getById($eAccount['id']);
+
+				return (
+					$eAccount->empty() or
+					(
+						\account\AccountLib::getById($eAccount['id'])->notEmpty() and
+						(
+							\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS) or
+							in_array((int)mb_substr($eAccount['class'], 0, 3), \account\AccountSetting::WAITING_ACCOUNT_CLASSES)
+						)
+					)
+				);
 
 			})
 			->setCallback('privateAccount.check', function(\account\Account|\company\GenericAccount $eAccount) {
 
-				return $eAccount->empty() or \account\AccountLib::getById($eAccount['id'])->notEmpty();
+				if($eAccount->empty()) {
+					return TRUE;
+				}
+
+				$eAccount = \account\AccountLib::getById($eAccount['id']);
+
+				return (
+					$eAccount->empty() or
+					(
+						\account\AccountLib::getById($eAccount['id'])->notEmpty() and
+						(
+							\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS) or
+							in_array((int)mb_substr($eAccount['class'], 0, 3), \account\AccountSetting::WAITING_ACCOUNT_CLASSES)
+						)
+					)
+				);
 
 			});
 
