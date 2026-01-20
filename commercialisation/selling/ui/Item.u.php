@@ -1627,7 +1627,13 @@ class ItemUi {
 				};
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Item $e) => $e['account'] ?? NULL;
-				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['classPrefix' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]);
+				$classPrefixes = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS];
+				$index = 0;
+				foreach(\account\AccountSetting::WAITING_ACCOUNT_CLASSES as $class) {
+					$index++;
+					$classPrefixes['classPrefixes['.$index.']'] = $class;
+				}
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: $classPrefixes);
 				break;
 
 		}

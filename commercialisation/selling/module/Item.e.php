@@ -294,6 +294,20 @@ class Item extends ItemElement {
 					($p->isBuilt('locked') and $this['locked'] === Item::PRICE)
 				);
 
+			})
+			->setCallback('account.check', function(?\account\Account $eAccount): bool {
+
+				if($eAccount->empty()) {
+					return TRUE;
+				}
+
+				$eAccount = \account\AccountLib::getById($eAccount['id']);
+
+				return (
+					\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS) or
+					in_array((int)mb_substr($eAccount['class'], 0, 3), \account\AccountSetting::WAITING_ACCOUNT_CLASSES)
+				);
+
 			});
 
 		parent::build($properties, $input, $p);
