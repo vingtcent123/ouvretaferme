@@ -853,11 +853,11 @@ class OperationLib extends OperationCrud {
 
 		$e->expects(['id', 'asset']);
 
-		\journal\Operation::model()->beginTransaction();
-
 		if($e['asset']->notEmpty()) {
 			throw new \Exception('Impossible to delete operation with Asset');
 		}
+
+		\journal\Operation::model()->beginTransaction();
 
 		self::deleteByHash($e['hash']);
 
