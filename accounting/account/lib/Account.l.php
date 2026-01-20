@@ -121,7 +121,7 @@ class AccountLib extends AccountCrud {
 		return Account::model()
 			->select(Account::getSelection())
 			->sort(['class' => SORT_ASC])
-			->whereClass('LIKE '.$search->get('classPrefix').'%', if: $search->get('classPrefix'))
+			->whereClass('LIKE', $search->get('classPrefix').'%', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
