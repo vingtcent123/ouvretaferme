@@ -187,7 +187,7 @@ new \selling\SalePage()
 
 		$email = POST('email');
 		if(\Filter::check('email', $email) === FALSE) {
-			Sale::fail('ticket.email');
+			\selling\Sale::fail('ticket.email');
 		}
 
 		$fw->validate();
