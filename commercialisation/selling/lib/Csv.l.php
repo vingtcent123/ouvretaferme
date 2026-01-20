@@ -579,8 +579,6 @@ class CsvLib {
 			'emails' => [],
 		];
 
-		$types = [Customer::PRIVATE, Customer::PRO];
-
 		foreach($import as $key => $customer) {
 
 			$eCustomer = new Customer([
@@ -598,12 +596,16 @@ class CsvLib {
 
 			if($customer['type'] === NULL) {
 				$errors[] = 'typeMissing';
-			} else if(in_array($customer['type'], $types) === FALSE) {
+			} else if($customer['type'] === CustomerUi::getCategories()[Customer::PRIVATE]) {
+				$eCustomer['type'] = Customer::PRIVATE;
+			} else if($customer['type'] === CustomerUi::getCategories()[Customer::PRO]) {
+				$eCustomer['type'] = Customer::PRO;
+			} else {
 				$errors[] = 'typeInvalid';
 				$errorsGlobal['types'][] = $customer['type'];
 			}
 
-			switch($customer['type']) {
+			switch($eCustomer['type']) {
 
 				case Customer::PRIVATE :
 
@@ -694,12 +696,13 @@ class CsvLib {
 				'deliveryAddress', 'invoiceAddress',
 			];
 
-			$properties = array_merge($properties, match($customer['type']) {
+			$properties = array_merge($properties, match($eCustomer['type']) {
 				Customer::PRIVATE => ['firstName', 'lastName'],
 				Customer::PRO => array_merge(
 					['commercialName', 'legalName', 'contactName'],
 					$hasCountry ? ['siret', 'vatNumber'] : []
-				)
+				),
+				default => []
 			});
 
 			$p = new \Properties();

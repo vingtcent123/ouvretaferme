@@ -1,5 +1,5 @@
 type,private_first_name,private_last_name,pro_commercial_name,pro_legal_name,email,invite,phone,groups,pro_contact_name,pro_siret,pro_vat_number,invoice_street_1,invoice_street_2,invoice_postcode,invoice_city,invoice_country,delivery_street_1,delivery_street_2,delivery_postcode,delivery_city,delivery_country
-pro,,,Magasin 1,SAS Monmag,toto@email.fr,yes,0123456789,AMAP grand panier,Luc Mongérant,12345678912345,,1 rue Tilante,,63450,Tallende,France,,,,,
-pro,,,Magasin 2,,toto2@email.fr,no,,"AMAP grand panier, AMAP petit panier",,,,2 rue Dela,,45520,Issy,France,3 rue Vache,,45520,Issy,France
-private,Agnès,D,,,da@gmail.com,yes,0124565788,,,,,,,,,,,,,,
-private,Alain,B,,,an@gmail.com,yes,,,,,,,,,,,1 rue des Trucs,La Montagne,51210,Là-bas,France
+Professionnel,,,Magasin 1,SAS Monmag,toto@email.fr,yes,0123456789,AMAP grand panier,Luc Mongérant,12345678912345,,1 rue Tilante,,63450,Tallende,France,,,,,
+Professionnel,,,Magasin 2,,toto2@email.fr,no,,"AMAP grand panier, AMAP petit panier",,,,2 rue Dela,,45520,Issy,France,3 rue Vache,,45520,Issy,France
+Particulier,Agnès,D,,,da@gmail.com,yes,0124565788,,,,,,,,,,,,,,
+Particulier,Alain,B,,,,no,,,,,,,,,,,1 rue des Trucs,La Montagne,51210,Là-bas,France

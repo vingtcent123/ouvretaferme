@@ -386,7 +386,7 @@ class CsvUi {
 
 							switch($customer['type']) {
 
-								case Customer::PRIVATE :
+								case CustomerUi::getCategories()[Customer::PRIVATE] :
 
 									if($customer['private_first_name'] !== NULL) {
 										$h .= encode($customer['private_first_name']).' ';
@@ -396,7 +396,7 @@ class CsvUi {
 
 									break;
 
-								case Customer::PRO :
+								case CustomerUi::getCategories()[Customer::PRO] :
 									$h .= '<b>'.encode($customer['pro_commercial_name']).'</b>';
 									break;
 
@@ -407,7 +407,7 @@ class CsvUi {
 							}
 
 							if($customer['type'] !== NULL) {
-								$h .= '<div class="util-annotation">'.CustomerUi::getCategories()[$customer['type']].'</div>';
+								$h .= '<div class="util-annotation">'.encode($customer['type']).'</div>';
 							}
 
 						$h .= '</td>';

@@ -433,8 +433,8 @@ new AdaptativeView('customers', function($data, DocTemplate $t) {
 		echo '<br/>';
 		echo '<h3>'.s("Liste des données à fournir").'</h3>';
 
-		$private = '<div class="doc-example">'.\selling\Customer::PRIVATE.'</div>';
-		$pro = '<div class="doc-example">'.\selling\Customer::PRO.'</div>';
+		$private = '<div class="doc-example">'.\selling\CustomerUi::getCategories()[\selling\Customer::PRIVATE].'</div>';
+		$pro = '<div class="doc-example">'.\selling\CustomerUi::getCategories()[\selling\Customer::PRO].'</div>';
 		$onlyPrivate = '<div class="doc-condition">'.s("Uniquement pour les clients particuliers").' '.$private.'</div>';
 		$onlyPro = '<div class="doc-condition">'.s("Uniquement pour les clients professionnels").' '.$pro.'</div>';
 
@@ -447,7 +447,7 @@ new AdaptativeView('customers', function($data, DocTemplate $t) {
 					'<li>'.$private.' → '.\selling\CustomerUi::getCategories()[\selling\Customer::PRIVATE].'</li>'.
 					'<li>'.$pro.' → '.\selling\CustomerUi::getCategories()[\selling\Customer::PRO].'</li>'.
 				'</ul>',
-				\selling\Customer::PRIVATE
+				\selling\CustomerUi::getCategories()[\selling\Customer::PRIVATE]
 			],
 			[
 				s("Prénom"),
