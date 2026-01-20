@@ -329,8 +329,17 @@ class SaleLib extends SaleCrud {
 		}
 
 		if($search->get('paymentMethod')) {
+
 			$joins++;
-			Sale::model()->join(Payment::model(), 'm1.id = m'.($joins).'.sale AND method = '.$search->get('paymentMethod'));
+
+			if($search->get('paymentMethod') === '-1') {
+				Sale::model()
+		      ->join(Payment::model(), 'm1.id = m'.($joins).'.sale', 'LEFT')
+					->where('m'.($joins).'.id IS NULL')
+				;
+			} else {
+				Sale::model()->join(Payment::model(), 'm1.id = m'.($joins).'.sale AND method = '.$search->get('paymentMethod'));
+			}
 		}
 
 		$cSale = Sale::model()

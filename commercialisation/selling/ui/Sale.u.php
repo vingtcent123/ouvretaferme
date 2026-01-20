@@ -116,6 +116,7 @@ class SaleUi {
 			unset($statuses[Sale::BASKET], $statuses[Sale::SELLING]);
 
 			$paymentMethods = $cPaymentMethod->toArray(fn($ePaymentMethod) => ['label' => $ePaymentMethod['name'], 'value' => $ePaymentMethod['id']]);
+			$paymentMethods[] = ['label' => s("Sans moyen de paiement"), 'value' => -1];
 
 			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 
