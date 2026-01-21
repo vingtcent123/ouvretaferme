@@ -257,7 +257,7 @@ class LegalUi {
 						$h .= s("Commercialisation");
 					$h .= '</td>';
 					$h .= '<td>Socleo</td>';
-					$h .= '<td>Minimum 360 €</td>';
+					$h .= '<td>Minimum 720 €</td>';
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<td>Kuupanda</td>';
