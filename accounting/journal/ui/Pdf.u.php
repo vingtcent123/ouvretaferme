@@ -9,7 +9,7 @@ class PdfUi {
 
 	}
 
-	public function balance(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, array $trialBalanceData, array $trialBalancePreviousData, string $type): string {
+	public function balance(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, array $trialBalanceData, array $trialBalancePreviousData): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
 

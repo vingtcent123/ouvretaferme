@@ -137,7 +137,7 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 			->whereFinancialYear($eFinancialYear)
 			->whereType($type)
 			->whereGeneration('IN', FinancialYearDocument::PROCESSING)
-			->update(['generation' => FinancialYearDocument::SUCCESS, 'content' => $ePdf['content']]) > 0);
+			->update(['generation' => FinancialYearDocument::SUCCESS, 'generationAt' => new \Sql('NOW()'), 'content' => $ePdf['content']]) > 0);
 
 	}
 
