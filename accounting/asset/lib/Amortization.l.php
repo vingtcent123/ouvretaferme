@@ -69,6 +69,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$months = self::getMonthsBetweenTwoDates($startDate, $eFinancialYear['endDate']);
+		// Si l'immo a été acquise le premier jour du mois => ne pas compter le 1er mois en double.
+		if(mb_substr($eAsset['acquisitionDate'], -2) === '01') {
+			$months--;
+		}
 		$days = $daysFirstMonth + $months * self::DAYS_IN_MONTH; // 1er mois + mois complets suivants
 
 		// Nombre de mois dans cet exercice comptable (gère le cas où l'exercice comptable dure + que 1 an)
@@ -1086,7 +1090,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 			if($currentAccountLabel !== NULL and $amortization['accountLabel'] !== $currentAccountLabel) {
 
-				AmortizationUi::addTotalLine($generalTotal, $total);
+				AmortizationUi::addTotalLine($generalTotal, $total, $eFinancialYear);
 				$lines[] = $total;
 				$total = $emptyLine;
 
@@ -1095,11 +1099,11 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			$total['accountLabel'] = $amortization['accountLabel'];
 			$total['description'] = $amortization['accountDescription'];
 			$currentAccountLabel = $amortization['accountLabel'];
-			AmortizationUi::addTotalLine($total, $amortization);
+			AmortizationUi::addTotalLine($total, $amortization, $eFinancialYear);
 
 		}
 
-		AmortizationUi::addTotalLine($generalTotal, $total);
+		AmortizationUi::addTotalLine($generalTotal, $total, $eFinancialYear);
 
 		$lines[] = $total;
 		$lines[] = $generalTotal;
@@ -1126,90 +1130,136 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		foreach($cAsset as $eAsset) {
 
 			if($eAsset->isAmortizable() === FALSE) {
-				continue;
-			}
 
-			$table = self::computeTable($eAsset);
-			$accountLabel = $eAsset['accountLabel'];
+				$amortization = [
+					'id' => $eAsset['id'],
+					'accountLabel' => $eAsset['accountLabel'],
+					'accountDescription' => $eAsset['account']['description'],
+					'description' => $eAsset['description'],
 
-			$alreadyAmortized = 0;
-			$alreadyExcessAmortized = 0;
+					'status' => $eAsset['status'],
+					'economicMode' => $eAsset['economicMode'],
+					'fiscalMode' => $eAsset['fiscalMode'],
 
-			$currentAmortization = 0;
-			$currentExcessAmortization = 0;
-			$currentExcessRecovery = 0;
+					'acquisitionDate' => $eAsset['acquisitionDate'],
+					'startDate' => $eAsset['startDate'],
+					'endDate' => $eAsset['endDate'],
 
-			foreach($table as $period) {
+					'duration' => $eAsset['economicDuration'],
 
-				if($period['financialYear']['startDate'] > $eFinancialYear['startDate']) {
-					continue;
+					'acquisitionValue' => $eAsset['value'],
+
+					// Economic amortization
+					'economic' => [
+						// Début exercice : NULL si acquis durant l'exercice comptable
+						'startFinancialYearValue' => 0,
+						'currentFinancialYearAmortization' => 0, // Dotation pour l'exercice
+						'currentFinancialYearDegressiveAmortization' => 0,
+						'endFinancialYearValue' => 0, // Cumul de toutes les dotations
+					],
+
+					// Diminution de valeur brut
+					'grossValueDiminution' => 0, // TODO
+
+					// VNC
+					'netFinancialValue' => $eAsset['value'],
+
+					// Excess amortization (amortissement dérogatoire)
+					'excess' => [
+						'startFinancialYearValue' => 0,
+						'currentFinancialYearAmortization' => 0,
+						'currentFinancialYearRecovery' => 0,
+						'endFinancialYearValue' => 0,
+					],
+
+					// VNF
+					'fiscalNetValue' => $eAsset['value'],
+
+				];
+			} else {
+
+				$table = self::computeTable($eAsset);
+				$accountLabel = $eAsset['accountLabel'];
+
+				$alreadyAmortized = 0;
+				$alreadyExcessAmortized = 0;
+
+				$currentAmortization = 0;
+				$currentExcessAmortization = 0;
+				$currentExcessRecovery = 0;
+
+				foreach($table as $period) {
+
+					if($period['financialYear']['startDate'] > $eFinancialYear['startDate']) {
+						continue;
+					}
+
+					if($period['financialYear']['startDate'] === $eFinancialYear['startDate']) {
+
+						$currentAmortization = $period['amortizationValue'];
+						$currentExcessAmortization = ($period['excessDotation'] ?? 0);
+						$currentExcessRecovery = ($period['excessRecovery'] ?? 0);
+
+					} else {
+
+						$alreadyAmortized += ($period['amortizationValue'] ?? 0);
+
+						$alreadyExcessAmortized += ($period['excessDotation'] ?? 0);
+						$alreadyExcessAmortized -= ($period['excessRecovery'] ?? 0);
+
+					}
+
 				}
 
-				if($period['financialYear']['startDate'] === $eFinancialYear['startDate']) {
+				$vnc = AssetLib::getAmortizableBase($eAsset, 'economic') - $alreadyAmortized - $currentAmortization;
+				$vnf = AssetLib::getAmortizableBase($eAsset, 'economic') - $alreadyAmortized - $alreadyExcessAmortized - $currentExcessAmortization - $currentAmortization;
 
-					$currentAmortization = $period['amortizationValue'];
-					$currentExcessAmortization = ($period['excessDotation'] ?? 0);
-					$currentExcessRecovery = ($period['excessRecovery'] ?? 0);
+				$amortization = [
+					'id' => $eAsset['id'],
+					'accountLabel' => $accountLabel,
+					'accountDescription' => $eAsset['account']['description'],
+					'description' => $eAsset['description'],
 
-				} else {
+					'status' => $eAsset['status'],
+					'economicMode' => $eAsset['economicMode'],
+					'fiscalMode' => $eAsset['fiscalMode'],
 
-					$alreadyAmortized += ($period['amortizationValue'] ?? 0);
+					'acquisitionDate' => $eAsset['acquisitionDate'],
+					'startDate' => $eAsset['startDate'],
+					'endDate' => $eAsset['endDate'],
 
-					$alreadyExcessAmortized += ($period['excessDotation'] ?? 0);
-					$alreadyExcessAmortized -= ($period['excessRecovery'] ?? 0);
+					'duration' => $eAsset['economicDuration'],
 
-				}
+					'acquisitionValue' => $eAsset['value'],
 
+					// Economic amortization
+					'economic' => [
+						// Début exercice : NULL si acquis durant l'exercice comptable
+						'startFinancialYearValue' => $alreadyAmortized,
+						'currentFinancialYearAmortization' => $currentAmortization, // Dotation pour l'exercice
+						'currentFinancialYearDegressiveAmortization' => $currentExcessAmortization,
+						'endFinancialYearValue' => $alreadyAmortized + $currentAmortization, // Cumul de toutes les dotations
+					],
+
+					// Diminution de valeur brut
+					'grossValueDiminution' => 0, // TODO
+
+					// VNC
+					'netFinancialValue' => $vnc,
+
+					// Excess amortization (amortissement dérogatoire)
+					'excess' => [
+						'startFinancialYearValue' => $alreadyExcessAmortized,
+						'currentFinancialYearAmortization' => $currentExcessAmortization,
+						'currentFinancialYearRecovery' => $currentExcessRecovery,
+						'endFinancialYearValue' => $alreadyExcessAmortized + $currentExcessAmortization - $currentExcessRecovery,
+					],
+
+					// VNF
+					'fiscalNetValue' => $vnf,
+
+				];
 			}
-
-			$vnc = AssetLib::getAmortizableBase($eAsset, 'economic') - $alreadyAmortized - $currentAmortization;
-			$vnf = AssetLib::getAmortizableBase($eAsset, 'economic') - $alreadyAmortized - $alreadyExcessAmortized - $currentExcessAmortization - $currentAmortization;
-
-			$amortization = [
-				'id' => $eAsset['id'],
-				'accountLabel' => $accountLabel,
-				'accountDescription' => $eAsset['account']['description'],
-				'description' => $eAsset['description'],
-
-				'status' => $eAsset['status'],
-				'economicMode' => $eAsset['economicMode'],
-				'fiscalMode' => $eAsset['fiscalMode'],
-
-				'acquisitionDate' => $eAsset['acquisitionDate'],
-				'startDate' => $eAsset['startDate'],
-				'endDate' => $eAsset['endDate'],
-
-				'duration' => $eAsset['economicDuration'],
-
-				'acquisitionValue' => $eAsset['value'],
-
-				// Economic amortization
-				'economic' => [
-					// Début exercice : NULL si acquis durant l'exercice comptable
-					'startFinancialYearValue' => $alreadyAmortized,
-					'currentFinancialYearAmortization' => $currentAmortization, // Dotation pour l'exercice
-					'currentFinancialYearDegressiveAmortization' => $currentExcessAmortization,
-					'endFinancialYearValue' => $alreadyAmortized + $currentAmortization, // Cumul de toutes les dotations
-				],
-
-				// Diminution de valeur brut
-				'grossValueDiminution' => 0, // TODO
-
-				// VNC
-				'netFinancialValue' => $vnc,
-
-				// Excess amortization (amortissement dérogatoire)
-				'excess' => [
-					'startFinancialYearValue' => $alreadyExcessAmortized,
-					'currentFinancialYearAmortization' => $currentExcessAmortization,
-					'currentFinancialYearRecovery' => $currentExcessRecovery,
-					'endFinancialYearValue' => $alreadyExcessAmortized + $currentExcessAmortization - $currentExcessRecovery,
-				],
-
-				// VNF
-				'fiscalNetValue' => $vnf,
-
-			];
 
 			$amortizations[] = $amortization;
 

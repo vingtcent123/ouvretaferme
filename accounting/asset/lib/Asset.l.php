@@ -203,7 +203,6 @@ class AssetLib extends \asset\AssetCrud {
 				fn() => $this->where('economicMode = "linear" AND startDate <='.Asset::model()->format($eFinancialYear['endDate'])),
 				fn() => $this->where('economicMode != "linear" AND acquisitionDate <='.Asset::model()->format($eFinancialYear['endDate'])),
 			)
-			->where('endDate IS NULL or endDate >='.Asset::model()->format($eFinancialYear['startDate']))
 			->where('endedDate IS NULL or endedDate >= '.Asset::model()->format($eFinancialYear['startDate']))
 			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%');
 

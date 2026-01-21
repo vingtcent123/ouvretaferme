@@ -68,25 +68,50 @@ Class AmortizationUi {
 					};
 				}
 			$h .= '</td>';
-			$h .= '<td>'.encode($amortization['duration']).'</td>';
+			$h .= '<td class="text-end">'.encode($amortization['duration']).'</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['acquisitionValue'], $default, 2) .'</td>';
+			$h .= '<td class="util-unit text-end">';
+				if($isTotalLine) {
+					$h .= new AssetUi()->number($amortization['valueStart'], $default, 2) ;
+				} else if($amortization['startDate'] < $eFarm['eFinancialYear']['startDate']) {
+					$h .= new AssetUi()->number($amortization['acquisitionValue'], $default, 2) ;
+				}
+			$h .= '</td>';
+			$h .= '<td class="util-unit text-end">';
+				if($isTotalLine) {
+					$h .= new AssetUi()->number($amortization['valueAcquisition'], $default, 2) ;
+				} else if($amortization['startDate'] >= $eFarm['eFinancialYear']['startDate']) {
+					$h .= new AssetUi()->number($amortization['acquisitionValue'], $default, 2) ;
+				}
+			$h .= '</td>';
 
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['startFinancialYearValue'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['currentFinancialYearAmortization'], $default, 2).'</td>';
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['economic']['endFinancialYearValue'], $default, 2).'</td>';
+			$h .= '<td class="util-unit text-end">';
+				if(round($amortization['economic']['startFinancialYearValue'], 2) > 0) {
+					$h .= new AssetUi()->number($amortization['economic']['startFinancialYearValue'], $default, 2);
+				}
+			$h .= '</td>';
+			$h .= '<td class="util-unit text-end">';
+				if(round($amortization['economic']['currentFinancialYearAmortization'], 2) > 0) {
+					$h .= new AssetUi()->number($amortization['economic']['currentFinancialYearAmortization'], $default, 2);
+				}
+			$h .= '</td>';
+			$h .= '<td class="util-unit text-end">';
+				if(round($amortization['economic']['endFinancialYearValue'], 2) > 0) {
+					$h .= new AssetUi()->number($amortization['economic']['endFinancialYearValue'], $default, 2);
+				}
+			$h .= '</td>';
 
 			if($showGrossValueDiminutionColumn) {
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['grossValueDiminution'], $default, 2).'</td>';
 			}
-			$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['netFinancialValue'], '0.00', 2).'</td>';
+			$h .= '<td class="util-unit text-end">'.(round($amortization['netFinancialValue'], 2) > 0 ? new AssetUi()->number($amortization['netFinancialValue'], '0.00', 2) : '').'</td>';
 
 			if($showExcessColumns) {
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['startFinancialYearValue'], $default, 2).'</td>';
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearAmortization'], $default, 2).'</td>';
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['currentFinancialYearRecovery'] ?? 0, $default, 2).'</td>';
 				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['excess']['endFinancialYearValue'], $default, 2).'</td>';
-				$h .= '<td class="util-unit text-end">'.new AssetUi()->number($amortization['fiscalNetValue'], '0.00', 2).'</td>';
+				$h .= '<td class="util-unit text-end">'.(round($amortization['fiscalNetValue'], 2) > 0 ? new AssetUi()->number($amortization['fiscalNetValue'], '0.00', 2) : '').'</td>';
 			}
 
 
@@ -95,9 +120,19 @@ Class AmortizationUi {
 		return $h;
 	}
 
-	public static function addTotalLine(array &$total, array $line): void {
+	public static function addTotalLine(array &$total, array $line, \account\FinancialYear $eFinancialYear): void {
 
-		$total['acquisitionValue'] += $line['acquisitionValue'];
+		$isTotalLine = match($line['economicMode']) {
+			AssetElement::LINEAR, AssetElement::WITHOUT => FALSE,
+			default => TRUE,
+		};
+
+		if($isTotalLine === FALSE and $line['startDate'] >= $eFinancialYear['startDate']) {
+			$total['valueAcquisition'] += $line['acquisitionValue'];
+		} else if($isTotalLine === FALSE and $line['startDate'] < $eFinancialYear['startDate']) {
+			$total['valueStart'] += $line['acquisitionValue'];
+		}
+
 		$total['economic']['startFinancialYearValue'] += $line['economic']['startFinancialYearValue'];
 		$total['economic']['currentFinancialYearAmortization'] += $line['economic']['currentFinancialYearAmortization'];
 		$total['economic']['endFinancialYearValue'] += $line['economic']['endFinancialYearValue'];
@@ -132,7 +167,7 @@ Class AmortizationUi {
 
 		$h .= '<tr class="tr-bold">';
 			$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
-			$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
+			$h .= '<th colspan="2" class="text-center">'.s("Valeur").'</th>';
 			$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';
 			if($showGrossValueDiminutionColumn) {
 				$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
@@ -149,6 +184,8 @@ Class AmortizationUi {
 			$h .= '<th class="text-center border-bottom">'.s("Mode E/F").'</th>';
 			$h .= '<th class="text-center border-bottom">'.s("Durée").'</th>';
 			$h .= '<th class="text-center">'.s("Début exercice").'</th>';
+			$h .= '<th class="text-end">'.s("Début").'</th>';
+			$h .= '<th class="text-end">'.s("Acquisition").'</th>';
 			$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
 			$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
 			if($showExcessColumns) {
@@ -175,6 +212,9 @@ Class AmortizationUi {
 			'fiscalMode' => '',
 			'duration' => '',
 			'acquisitionValue' => 0,
+			// Décomposition de acquisitionValue en : valeur au début de l'exercice et valeur d'acquisition en cours d'exercice
+			'valueAcquisition' => 0,
+			'valueStart' => 0,
 			'economic' => [
 				'startFinancialYearValue' => 0,
 				'currentFinancialYearAmortization' => 0,
@@ -202,7 +242,7 @@ Class AmortizationUi {
 			if($currentAccountLabel !== NULL and $amortization['accountLabel'] !== $currentAccountLabel) {
 
 				$h .= self::getAmortizationLine($eFarm, $total, $showExcessColumns, $showGrossValueDiminutionColumn);
-				self::addTotalLine($generalTotal, $total);
+				self::addTotalLine($generalTotal, $total, $eFarm['eFinancialYear']);
 				$total = $emptyLine;
 
 			}
@@ -210,10 +250,11 @@ Class AmortizationUi {
 			$total['description'] = $amortization['accountLabel'].' '.$amortization['accountDescription'];
 
 			$h .= self::getAmortizationLine($eFarm, $amortization, $showExcessColumns, $showGrossValueDiminutionColumn);
-			self::addTotalLine($total, $amortization);
+			self::addTotalLine($total, $amortization, $eFarm['eFinancialYear']);
 
 		}
-		self::addTotalLine($generalTotal, $total);
+
+		self::addTotalLine($generalTotal, $total, $eFarm['eFinancialYear']);
 		$h .= self::getAmortizationLine($eFarm, $total, $showExcessColumns, $showGrossValueDiminutionColumn);
 		$h .= self::getAmortizationLine($eFarm, $generalTotal, $showExcessColumns, $showGrossValueDiminutionColumn);
 

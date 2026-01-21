@@ -9,6 +9,20 @@ class CsvUi {
 
 		['import' => $assets, 'errorsCount' => $errorsCount, 'resumeDate' => $resumeDate] = $import;
 
+		$messages = [
+			'accountId' => s("Le <b>numéro de compte</b> n'a pas été retrouvé. Vous pouvez le créer dans les <link>paramétrages des comptes</link>.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">']),
+			'residualValue' => s("La <b>valeur résiduelle</b> n'est pas cohérente avec la valeur d'acquisition"),
+			'acquisitionDate' => s("La <b>date d'acquisition</b> n'est pas reconnue"),
+			'acquisitionDateFuture' => s("La <b>date d'acquisition</b> doit être dans le passé"),
+			'startDate' => s("La <b>date de mise en service</b> n'est pas reconnue ou incohérence avec la date d'acquisition"),
+			'startDateFuture' => s("La <b>date de mise en service</b> doit être dans le passé"),
+			'economicMode' => s("Le <b>mode d'amortissement économique</b> n'est pas reconnu"),
+			'fiscalMode' => s("Le <b>mode d'amortissement fiscal</b> n'est pas reconnu"),
+			'economicDuration' => s("La <b>durée d'amortissement économique</b> n'est pas reconnue"),
+			'fiscalDuration' => s("La <b>durée d'amortissement fiscal</b> n'est pas reconnue"),
+			'economicAmortization' => s("Le <b>montant déjà amorti</b> n'est pas cohérent avec la valeur d'acquisition"),
+		];
+
 		$h = '';
 
 		if($errorsCount > 0) {
@@ -142,35 +156,26 @@ class CsvUi {
 
 						$h .= '</tr>';
 
+						if($asset['errors']) {
+							$h .= '<tr>';
+								$h .= '<td colspan="9">';
+									$h .= '<ul>';
+										foreach($asset['errors'] as $error) {
+											$h .= '<li>';
+												$h .= $messages[$error];
+											$h .= '</li>';
+										}
+									$h .= '</ul>';
+								$h .= '</td>';
+							$h .= '</tr>';
+						}
+
 					}
 
 				$h .= '</tbody>';
 			$h .= '</table>';
 
 		$h .= '</div>';
-
-		if($errorsCount > 0) {
-
-			$messages = [
-				'accountId' => s("Un <b>numéro de compte</b> n'a pas été retrouvé. Vous pouvez le créer dans les <link>paramétrages des comptes</link>.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">']),
-				'residualValue' => s("<b>Valeur résiduelle</b> : Le montant n'est pas cohérent avec la valeur d'acquisition"),
-				'acquisitionDate' => s("<b>Date d'acquisition</b> : La date n'est pas reconnue"),
-				'startDate' => s("<b>Date de mise en service</b> : La date n'est pas reconnue ou incohérence avec la date d'acquisition"),
-				'economicMode' => s("<b>Mode d'amortissement économique</b> : La valeur n'est pas reconnue"),
-				'fiscalMode' => s("<b>Mode d'amortissement fiscal</b> : La valeur n'est pas reconnue"),
-				'economicDuration' => s("<b>Durée d'amortissement économique</b> : La valeur n'est pas reconnue"),
-				'fiscalDuration' => s("<b>Durée d'amortissement fiscal</b> : La valeur n'est pas reconnue"),
-				'economicAmortization' => s("<b>Montant déjà amorti</b> : Le montant n'est pas cohérent avec la valeur d'acquisition"),
-			];
-
-			foreach($messages as $key => $text) {
-
-				$field = (array_find(array_column($assets, 'errors'), fn($errors) => in_array($key, $errors)));
-				if($field !== NULL and count($field) > 0) {
-					$h .= '<p>'.$text.'</p>';
-				}
-			}
-		}
 
 		return $h;
 

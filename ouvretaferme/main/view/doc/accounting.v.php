@@ -532,28 +532,25 @@ new AdaptativeView('asset', function($data, DocTemplate $t) {
 				2154
 			],
 			[
-				s("Valeur d'acquisition").' '.\util\FormUi::asterisk(),
-				'value',
-				s("Le prix de l'acquisition de votre immobilisation, sur lequel sont basés les calculs d'amortissement"),
-				1244.35
-			],
-			[
 				s("Libellé").' '.\util\FormUi::asterisk(),
 				'description',
 				s("Le nom de votre immobilisation"),
 				s("Irrigation")
 			],
 			[
+				s("Valeur d'acquisition").' '.\util\FormUi::asterisk(),
+				'value',
+				s("Le prix de l'acquisition de votre immobilisation, sur lequel sont basés les calculs d'amortissement"),
+				1244.35
+			],
+			[
 				s("Mode d'amortissement économique").' '.\util\FormUi::asterisk(),
 				'economic_mode',
 				s("Les valeurs possibles :").
 				'<ul>'.
-					'<li>'.s("{value} → Sans amortissement", '<div class="doc-example">'.s("S").'</div>').'</li>'.
-					'<li>'.s("{value} → Sans amortissement", '<div class="doc-example">'.s("Sans").'</div>').'</li>'.
-					'<li>'.s("{value} → Linéaire", '<div class="doc-example">'.s("L").'</div>').'</li>'.
-					'<li>'.s("{value} → Linéaire", '<div class="doc-example">'.s("LIN").'</div>').'</li>'.
-					'<li>'.s("{value} → Dégressif", '<div class="doc-example">'.s("D").'</div>').'</li>'.
-					'<li>'.s("{value} → Dégressif", '<div class="doc-example">'.s("Deg").'</div>').'</li>'.
+					'<li>'.s("{value} ou {value2} → Sans amortissement", ['value' => '<div class="doc-example">'.s("S").'</div>', 'value2' => '<div class="doc-example">'.s("Sans").'</div>']).'</li>'.
+					'<li>'.s("{value} ou {value2} → Linéaire", ['value' => '<div class="doc-example">'.s("L").'</div>', 'value2' => '<div class="doc-example">'.s("LIN").'</div>']).'</li>'.
+					'<li>'.s("{value} ou {value2} → Dégressif", ['value' => '<div class="doc-example">'.s("D").'</div>', 'value2' => '<div class="doc-example">'.s("DEG").'</div>']).'</li>'.
 				'</ul>',
 				'L'
 			],
@@ -590,7 +587,7 @@ new AdaptativeView('asset', function($data, DocTemplate $t) {
 			[
 				s("Date de mise en service"),
 				'start_date',
-				s("Date de mise en service. Si cette donnée n'est pas indiquée, c'est la date d'acquisition qui sera utilisée."),
+				s("Date de mise en service. Si cette donnée n'est pas indiquée, c'est la date d'acquisition qui sera utilisée.<br />{value} Attention aux acquisitions au 31/12 avec mise en service le 01/01 de l'année suivante : la date de mise en service est importante pour ne démarrer l'amortissement que l'année de la mise en service.", Asset::icon('exclamation-triangle')),
 				'2025-04-03'
 			],
 			[

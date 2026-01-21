@@ -285,7 +285,7 @@ class Asset extends AssetElement {
 					return TRUE;
 				}
 
-				return ($this['value'] - $this['residualValue']) > $economicAmortization;
+				return ($this['value'] - $this['residualValue']) >= $economicAmortization;
 
 			})
 			;

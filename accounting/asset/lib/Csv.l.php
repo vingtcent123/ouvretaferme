@@ -14,6 +14,18 @@ Class CsvLib {
 
 			foreach($assets as $asset) {
 
+				if($asset['economicMode'] === Asset::WITHOUT) {
+					$endDate = NULL;
+				} else {
+					$endDate = date('Y-m-d', strtotime($asset['startDate'].' + '.$asset['economicDuration'].' month'));
+				}
+
+				if($endDate !== NULL and $endDate < $eFinancialYear['startDate']) {
+					$status = Asset::ENDED;
+				} else {
+					$status = Asset::ONGOING;
+				}
+
 				$values = [
 					'account' => $asset['accountId'],
 					'accountLabel' => \account\AccountLabelLib::pad($asset['account']),
@@ -28,8 +40,9 @@ Class CsvLib {
 					'economicAmortization' => $asset['economicAmortization'],
 					'acquisitionDate' => $asset['acquisitionDate'],
 					'startDate' => $asset['startDate'],
-					'endDate' => date('Y-m-d', strtotime($asset['startDate'].' + '.$asset['economicDuration'].' month')),
+					'endDate' => $endDate,
 					'isGrant' => AssetLib::isGrant($asset['account']),
+					'status' => $status,
 				];
 
 				$eAsset = new Asset();
@@ -66,42 +79,54 @@ Class CsvLib {
 		$assets = $import['assets'];
 		foreach($assets as $key => $asset) {
 
-			$errorsCommon = [];
+			$errors = [];
 
 			if(in_array($asset['economicMode'], Asset::model()->getPropertyEnum('economicMode')) === FALSE) {
-				$errorsCommon[] = 'economicMode';
+				$errors[] = 'economicMode';
 			}
 
 			if(in_array($asset['fiscalMode'], Asset::model()->getPropertyEnum('fiscalMode')) === FALSE) {
-				$errorsCommon[] = 'fiscalMode';
+				$errors[] = 'fiscalMode';
 			}
 
-			$error = \main\CsvLib::checkDateField($line['acquisitionDate'], 'acquisitionDate');
-			if($error !== NULL) {
-				$errorsCommon[] = $error;
+			$error = \main\CsvLib::checkDateField($asset['acquisitionDate'], 'acquisitionDate');
+			if(
+				$error !== NULL or
+				empty($asset['acquisitionDate']) or
+				\util\DateLib::isValid($asset['acquisitionDate']) === FALSE
+			) {
+				$errors[] = $error;
 			}
-			$error = \main\CsvLib::checkDateField($line['startDate'], 'startDate');
-			if($error !== NULL) {
-				$errorsCommon[] = $error;
+			if($asset['acquisitionDate'] > date('Y-m-d')) {
+				$errors[] = 'acquisitionDateFuture';
 			}
-			if(mb_strlen($asset['startDate']) > 0 and !!\util\DateLib::isValid($asset['startDate']) === FALSE) {
-				$errorsCommon[] = 'startDate';
+			$error = \main\CsvLib::checkDateField($asset['startDate'], 'startDate');
+			if($error !== NULL) {
+				$errors[] = $error;
+			}
+			if(
+				(mb_strlen($asset['startDate']) > 0 and !!\util\DateLib::isValid($asset['startDate']) === FALSE)
+			) {
+				$errors[] = 'startDate';
+			}
+			if($asset['startDate'] > date('Y-m-d')) {
+				$errors[] = 'startDateFuture';
 			}
 			if(!$asset['accountId']) {
-				$errorsCommon[] = 'accountId';
+				$errors[] = 'accountId';
 			}
 
 			if($asset['residualValue'] >= $asset['value']) {
-				$errorsCommon[] = 'residualValue';
+				$errors[] = 'residualValue';
 			}
-			if($asset['economicAmortization'] >= $asset['value']) {
-				$errorsCommon[] = 'economicAmortization';
+			if($asset['economicAmortization'] > $asset['value']) {
+				$errors[] = 'economicAmortization';
 			}
 			if($asset['economicAmortization'] === 0.0 and $asset['startDate'] < $eFinancialYear['startDate'] and $asset['economicMode'] !== Asset::WITHOUT) {
-				$errorsCommon[] = 'economicAmortization';
+				$errors[] = 'economicAmortization';
 			}
 
-			$errors = array_unique(array_filter($errorsCommon));
+			$errors = array_unique(array_filter($errors));
 			$assets[$key]['errors'] = $errors;
 
 			$errorsCount += count($errors);
@@ -134,8 +159,8 @@ Class CsvLib {
 
 				$line = array_combine($head, $asset) + [
 					'account' => '',
-					'value' => '',
 					'description' => '',
+					'value' => '',
 					'economic_mode' => '',
 					'economic_duration' => '',
 					'economic_amortization' => '',
@@ -159,7 +184,7 @@ Class CsvLib {
 				$residualValue = \main\CsvLib::formatFloat($line['residual_value']);
 				$economicAmortization = \main\CsvLib::formatFloat($line['economic_amortization']);
 
-				$description = $line['description'];
+				$description = iconv('CP1252', 'UTF-8', $line['description']);
 				$account = $line['account'];
 				$cAccount = \account\Account::model()
 					->select('id', 'class')
