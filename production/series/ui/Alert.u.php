@@ -7,7 +7,7 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Series::csvVariety' => s("Dans votre fichier CSV, chaque colonne <i>variety_name</i> doit être suivie par une colonne <i>variety_part</i>."),
+			'csvVariety' => s("Dans votre fichier CSV, chaque colonne <i>variety_name</i> doit être suivie par une colonne <i>variety_part</i>."),
 
 			'Series::plantsCheck' => s("Veuillez sélectionner au moins une espèce !"),
 			'Series::plantsDuplicate' => s("Vous ne pouvez pas ajouter deux fois la même espèce à une série !"),
