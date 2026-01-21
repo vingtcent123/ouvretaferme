@@ -106,7 +106,7 @@ Class SigUi {
 				}
 			$h .= '">';
 				$h .= '<td class="sig-category-name">'.$this->name($account, '=').'</td>';
-				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
+				$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesCurrent[$account], precision: 0).'</td>';
 				$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 					if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
 						$h .= round(($valuesCurrent[$account] / $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
@@ -114,7 +114,7 @@ Class SigUi {
 				$h .= '</td>';
 				if($hasComparison) {
 					[$value, $percent] = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
-					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesComparison[$account], precision: 0).'</td>';
 					$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 						if($isPercentedCategory and $valuesCurrent[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] !== 0.0) {
 							$h .= round(($valuesComparison[$account] / $valuesComparison[SigLib::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX]) * 100).'%';
@@ -136,11 +136,11 @@ Class SigUi {
 
 				$h .= '<tr class="sig-content">';
 					$h .= '<td class="sig-category-name">'.$this->name($account, '+').'</td>';
-					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesCurrent[$account]).'</td>';
+					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesCurrent[$account], precision: 0).'</td>';
 					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'"></td>';
 					if($hasComparison) {
 						[$value, $percent] = $this->getComparison($valuesCurrent[$account], $valuesComparison[$account], $isComparisonBefore);
-						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesComparison[$account]).'</td>';
+						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesComparison[$account], precision: 0).'</td>';
 						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'"></td>';
 						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">';
 							$h .= \util\TextUi::money($value);

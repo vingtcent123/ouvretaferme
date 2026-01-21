@@ -139,21 +139,21 @@ class SigLib {
 		// Formattage du tableau des valeurs
 		$values = [];
 		foreach($indexes as $index => $category) {
-			$values[$category] = round($eOperation[$index], 2);
+			$values[$category] = $eOperation[$index];
 		}
 
-		$values[self::CHIFFRE_AFFAIRES] = round($values[self::VENTE_MARCHANDISES] + $values[self::PRODUCTION_VENDUE], 2);
-		$values[self::MARGE_COMMERCIALE] = round($values[self::VENTE_MARCHANDISES] - $values[self::COUT_ACHAT_MARCHANDISES], 2);
-		$values[self::PRODUCTION_EXERCICE] = round($values[self::PRODUCTION_VENDUE] + $values[self::PRODUCTION_STOCKEE] + $values[self::PRODUCTION_IMMOBILISEE]);
-		$values[self::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] = round($values[self::PRODUCTION_EXERCICE] - $values[self::ACHAT_ANIMAUX]);
-		$values[self::MARGE_BRUTE_PRODUCTION] = round($values[self::PRODUCTION_EXERCICE] - $values[self::MP_APPROVISIONNEMENTS_CONSOMMES] - $values[self::SOUS_TRAITANCE_DIRECTE]);
-		$values[self::MARGE_TOTALE] = round($values[self::MARGE_COMMERCIALE] + $values[self::MARGE_BRUTE_PRODUCTION]);
-		$values[self::VALEUR_AJOUTEE] = round($values[self::MARGE_TOTALE] - $values[self::AUTRES_ACHATS] - $values[self::CHARGES_EXTERNES]);
-		$values[self::EBE] = round($values[self::VALEUR_AJOUTEE] + $values[self::SUBVENTIONS_EXPLOITATION] - $values[self::IMPOTS_TAXES_VERSEMENTS] - $values[self::REMUNERATIONS]);
-		$values[self::RESULTAT_EXPLOITATION] = round($values[self::EBE] + $values[self::AUTRES_PRODUITS_EXPLOITATION] + $values[self::REPRISE_AMORTISSEMENTS_PROVISIONS_TRANSFERTS] - $values[self::DOTATIONS_AMORTISSEMENTS_PROVISIONS] - $values[self::AUTRES_CHARGES_GESTION_COURANTE]);
-		$values[self::RCAI] = round($values[self::RESULTAT_EXPLOITATION] + $values[self::QP_RESULTAT_POSITIF] + $values[self::PRODUITS_FINANCIERS] - $values[self::QP_RESULTAT_NEGATIF] - $values[self::CHARGES_FINANCIERES]);
-		$values[self::RESULTAT_EXCEPTIONNEL] = round($values[self::PRODUITS_EXCEPTIONNELS] - $values[self::CHARGES_EXCEPTIONNELLES]);
-		$values[self::RESULTAT_NET] = round($values[self::RCAI] + $values[self::RESULTAT_EXCEPTIONNEL] - $values[self::PARTICIPATION_SALARIES] - $values[self::IMPOTS_BENEFICES]);
+		$values[self::CHIFFRE_AFFAIRES] = $values[self::VENTE_MARCHANDISES] + $values[self::PRODUCTION_VENDUE];
+		$values[self::MARGE_COMMERCIALE] = $values[self::VENTE_MARCHANDISES] - $values[self::COUT_ACHAT_MARCHANDISES];
+		$values[self::PRODUCTION_EXERCICE] = $values[self::PRODUCTION_VENDUE] + $values[self::PRODUCTION_STOCKEE] + $values[self::PRODUCTION_IMMOBILISEE];
+		$values[self::PRODUCTION_EXERCICE_NET_ACHAT_ANIMAUX] = $values[self::PRODUCTION_EXERCICE] - $values[self::ACHAT_ANIMAUX];
+		$values[self::MARGE_BRUTE_PRODUCTION] = $values[self::PRODUCTION_EXERCICE] - $values[self::MP_APPROVISIONNEMENTS_CONSOMMES] - $values[self::SOUS_TRAITANCE_DIRECTE];
+		$values[self::MARGE_TOTALE] = $values[self::MARGE_COMMERCIALE] + $values[self::MARGE_BRUTE_PRODUCTION];
+		$values[self::VALEUR_AJOUTEE] = $values[self::MARGE_TOTALE] - $values[self::AUTRES_ACHATS] - $values[self::CHARGES_EXTERNES];
+		$values[self::EBE] = $values[self::VALEUR_AJOUTEE] + $values[self::SUBVENTIONS_EXPLOITATION] - $values[self::IMPOTS_TAXES_VERSEMENTS] - $values[self::REMUNERATIONS];
+		$values[self::RESULTAT_EXPLOITATION] = $values[self::EBE] + $values[self::AUTRES_PRODUITS_EXPLOITATION] + $values[self::REPRISE_AMORTISSEMENTS_PROVISIONS_TRANSFERTS] - $values[self::DOTATIONS_AMORTISSEMENTS_PROVISIONS] - $values[self::AUTRES_CHARGES_GESTION_COURANTE];
+		$values[self::RCAI] = $values[self::RESULTAT_EXPLOITATION] + $values[self::QP_RESULTAT_POSITIF] + $values[self::PRODUITS_FINANCIERS] - $values[self::QP_RESULTAT_NEGATIF] - $values[self::CHARGES_FINANCIERES];
+		$values[self::RESULTAT_EXCEPTIONNEL] = $values[self::PRODUITS_EXCEPTIONNELS] - $values[self::CHARGES_EXCEPTIONNELLES];
+		$values[self::RESULTAT_NET] = $values[self::RCAI] + $values[self::RESULTAT_EXCEPTIONNEL] - $values[self::PARTICIPATION_SALARIES] - $values[self::IMPOTS_BENEFICES];
 
 		return $values;
 
