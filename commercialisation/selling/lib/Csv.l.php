@@ -477,7 +477,7 @@ class CsvLib {
 				'groups' => trim($line['groups']) ? preg_split('/\s*,\s*/', trim($line['groups'])) : [],
 				'pro_contact_name' => $line['pro_contact_name'] ?: NULL,
 				'pro_siret' => $line['pro_siret'] ?: NULL,
-				'pro_vat_number' => $line['pro_vat'] ?: NULL,
+				'pro_vat_number' => $line['pro_vat_number'] ?: NULL,
 				'delivery_street_1' => $line['delivery_street_1'] ?: NULL,
 				'delivery_street_2' => $line['delivery_street_2'] ?: NULL,
 				'delivery_postcode' => $line['delivery_postcode'] ?: NULL,

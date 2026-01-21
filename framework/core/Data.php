@@ -1809,26 +1809,16 @@ class Element extends ArrayObject {
 					break;
 				} catch(PropertySuccess) {
 				} catch(FailException $e) {
-					$message = $e->getMessage();
-					if(str_contains($message, '\\')) {
-						[$namespace, $failName] = explode('\\', $message);
-					} else {
-						$failName = $message;
-					}
-					$p->addInvalid($property, $failName, $namespace);
+					$p->addInvalid($property, $e->getMessage());
 					Fail::log($e, wrapper: $wrapper);
 					$success = FALSE;
 					break;
 				} catch(PropertyError) {
-					[$namespace, $element] = explode('\\', $this->getModule());
-					$failName = $element.'::'.$name;
-					$p->addInvalid($property, $failName, $namespace);
+					$p->addInvalid($property, $this->getModule().'::'.$name);
 					$onError();
 					break;
 				} catch(BuildElementError) {
-					[$namespace, $element] = explode('\\', $this->getModule());
-					$failName = $element.'::'.$name;d($namespace, $failName);
-					$p->addInvalid($property, $failName, $namespace);
+					$p->addInvalid($property, $this->getModule().'::'.$name);
 					$onError();
 					return;
 				}
@@ -1985,6 +1975,7 @@ class Properties extends ArrayIterator {
 	private array $properties = [];
 	private array $built = [];
 	private array $invalid = [];
+	private array $invalidMessages = [];
 	private array $new = [];
 
 	public function __construct(
@@ -2043,12 +2034,17 @@ class Properties extends ArrayIterator {
 
 	}
 
-	public function addInvalid(string $property): void {
+	public function addInvalid(string $property, string $message): void {
 		$this->invalid[] = $property;
+		$this->invalidMessages[] = $message;
 	}
 
 	public function getInvalid(): array {
 		return $this->invalid;
+	}
+
+	public function getInvalidMessages(): array {
+		return $this->invalidMessages;
 	}
 
 	public function isInvalid(string|array $properties) {
