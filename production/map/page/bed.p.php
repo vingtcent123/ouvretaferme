@@ -35,7 +35,7 @@ new Page(function($data) {
 
 		$success = $data->c->count() === 1 ? 'Bed::created' : 'Bed::createdCollection';
 
-		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->ePlot['farm'], $data->season).'?zone='.$data->ePlot['zone']['id'].'&success=map:'.$success);
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($data->ePlot['farm'], $data->season).'?zone='.$data->ePlot['zone']['id'].'&success=map\\'.$success);
 
 	});
 
@@ -184,7 +184,7 @@ $updateCollection = function($data, ?Closure $callback = NULL) {
 
 		$fw->validate();
 
-		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($eDraw['farm'], $eDraw['season']).'?zone='.$data->ePlot['zone']['id'].'&success=map:Draw::created');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($eDraw['farm'], $eDraw['season']).'?zone='.$data->ePlot['zone']['id'].'&success=map\\Draw::created');
 
 	})
 	->post('doDeleteBedLineCollection', function($data) use($updateCollection) {
@@ -204,7 +204,7 @@ $updateCollection = function($data, ?Closure $callback = NULL) {
 
 		\map\DrawLib::deleteByBeds($eDraw, $c);
 
-		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($eDraw['farm'], $eDraw['season']).'?zone='.$data->ePlot['zone']['id'].'&success=map:Draw::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationCartography($eDraw['farm'], $eDraw['season']).'?zone='.$data->ePlot['zone']['id'].'&success=map\\Draw::deleted');
 
 	})
 	->get('updateSizeCollection', $updateCollection)

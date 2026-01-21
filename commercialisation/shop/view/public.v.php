@@ -324,7 +324,7 @@ new AdaptativeView('/shop/public/{fqn}/{date}/:doCreateSale', function($data, Aj
 new AdaptativeView('/shop/public/{fqn}/{date}/:doCancelCustomer', function($data, AjaxTemplate $t) {
 
 	$t->js()->eval('BasketManage.deleteBasket('.$data->eDate['id'].')');
-	$t->redirect(\shop\ShopUi::dateUrl($data->eShop, $data->eDate).'?success=selling:Sale::userCanceled');
+	$t->redirect(\shop\ShopUi::dateUrl($data->eShop, $data->eDate).'?success=selling\\Sale::userCanceled');
 
 });
 

@@ -110,7 +110,7 @@ new \farm\FarmPage()
 
 		\farm\FarmLib::update($data->e, ['status']);
 
-		throw new RedirectAction('/?success=farm:Farm::closed');
+		throw new RedirectAction('/?success=farm\\Farm::closed');
 
 	})
 	->read('export', function($data) {

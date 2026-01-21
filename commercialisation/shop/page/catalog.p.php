@@ -10,7 +10,7 @@ new \shop\CatalogPage()
 
 	})
 	->create()
-	->doCreate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlShopCatalog($data->e['farm']).'?catalog='.$data->e['id'].'&success=shop:Catalog::created'));
+	->doCreate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlShopCatalog($data->e['farm']).'?catalog='.$data->e['id'].'&success=shop\\Catalog::created'));
 
 new \shop\CatalogPage()
 	->read('show', function($data) {
@@ -25,5 +25,5 @@ new \shop\CatalogPage()
 	})
 	->update()
 	->doUpdate(fn($data) => throw new ReloadAction('shop', 'Catalog::updated'))
-	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlShopCatalog($data->e['farm']).'?success=shop:Catalog::deleted'));
+	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlShopCatalog($data->e['farm']).'?success=shop\\Catalog::deleted'));
 ?>

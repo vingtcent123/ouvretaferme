@@ -737,13 +737,7 @@ class CsvLib {
 				'invoiceCity' => $customer['invoice_city'],
 			], $p);
 
-			foreach($properties as $property) {
-
-				if($p->isBuilt($property) === FALSE) {
-					$errors[] = $property.'Error';
-				}
-
-			}
+			$errors = array_merge($errors, $p->getInvalidMessages());
 
 			if($customer['email'] === NULL and $customer['invite']) {
 				$errors[] = 'inviteNoEmail';

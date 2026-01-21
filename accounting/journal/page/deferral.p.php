@@ -15,7 +15,7 @@ new \journal\OperationPage(function($data) {
 
 			$success = \journal\DeferralLib::createDeferral($data->e, $_POST);
 
-			throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/:close?id='.$data->eFarm['eFinancialYear']['id'].'&success=journal:'.$success);
+			throw new RedirectAction(\company\CompanyUi::urlAccount($data->eFarm).'/financialYear/:close?id='.$data->eFarm['eFinancialYear']['id'].'&success=journal\\'.$success);
 
 	}, validate: ['acceptDeferral'])
 ;

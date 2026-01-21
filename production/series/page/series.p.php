@@ -71,7 +71,7 @@ new \series\CultivationPage(function($data) {
 
 		$fw->validate();
 
-		throw new RedirectAction(\series\SeriesUi::url($eSeries).'?success=series:Series::created');
+		throw new RedirectAction(\series\SeriesUi::url($eSeries).'?success=series\\Series::created');
 
 	})
 	->post('addPlant', function($data) {
@@ -284,7 +284,7 @@ new \series\SeriesPage()
 
 		$fw->validate();
 
-		throw new RedirectAction(\sequence\SequenceUi::url($eSequence).'?success=sequence:Sequence::createdFromSeries');
+		throw new RedirectAction(\sequence\SequenceUi::url($eSequence).'?success=sequence\\Sequence::createdFromSeries');
 
 	}, validate: ['canRead', 'acceptDuplicate'])
 	->update(function($data) {
@@ -301,7 +301,7 @@ new \series\SeriesPage()
 	})
 	->doUpdate(fn() => throw new ReloadAction())
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::AREA, season: $data->season).'?success=series:Series::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::AREA, season: $data->season).'?success=series\\Series::deleted');
 	});
 
 
@@ -429,9 +429,9 @@ new \farm\FarmPage()
 		$fw->validate();
 
 		if($cSeriesNew->count() === 1) {
-			throw new RedirectAction(\series\SeriesUi::url($cSeriesNew->first()).'?success=series:Series::duplicated');
+			throw new RedirectAction(\series\SeriesUi::url($cSeriesNew->first()).'?success=series\\Series::duplicated');
 		} else {
-			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::AREA, season: $season).'&success=series:Series::duplicatedCollection');
+			throw new RedirectAction(\farm\FarmUi::urlCultivationSeries($data->eFarm, \farm\Farmer::AREA, season: $season).'&success=series\\Series::duplicatedCollection');
 		}
 
 	})

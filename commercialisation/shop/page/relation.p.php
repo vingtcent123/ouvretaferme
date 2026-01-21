@@ -55,7 +55,7 @@ new \shop\ProductPage()
 			$redirect = \farm\FarmUi::urlShopCatalog($data->e['farm']).'?catalog='.$data->e['catalog']['id'].'&';
 		}
 
-		throw new RedirectAction($redirect.'success=shop:Product::createdGroup');
+		throw new RedirectAction($redirect.'success=shop\\Product::createdGroup');
 
 	});
 

@@ -540,7 +540,13 @@ class CsvUi {
 							$h .= '<td colspan="5">';
 								$h .= '<ul class="mb-0">';
 									foreach($customer['errors'] as $error) {
-										$h .= '<li class="color-danger">'.$messages[$error].'</li>';
+
+										$text = str_contains($error, '\\') ?
+											\util\TextUi::error($error) :
+											$messages[$error];
+
+										$h .= '<li class="color-danger">'.$text.'</li>';
+
 									}
 									foreach($customer['warnings'] as $warning) {
 										$h .= '<li class="color-warning">'.$messages[$warning].'</li>';

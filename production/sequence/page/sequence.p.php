@@ -54,7 +54,7 @@ new \sequence\SequencePage(function($data) {
 
 	})
 	->doCreate(function($data) {
-		throw new RedirectAction(\sequence\SequenceUi::url($data->e).'?success=sequence:Sequence::created');
+		throw new RedirectAction(\sequence\SequenceUi::url($data->e).'?success=sequence\\Sequence::created');
 	});
 
 new \sequence\SequencePage()
@@ -76,10 +76,10 @@ new \sequence\SequencePage()
 
 		$data->eSequenceNew = \sequence\SequenceLib::duplicate($data->e);
 
-		throw new RedirectAction(\sequence\SequenceUi::url($data->eSequenceNew).'?success=sequence:Sequence::duplicated');
+		throw new RedirectAction(\sequence\SequenceUi::url($data->eSequenceNew).'?success=sequence\\Sequence::duplicated');
 
 	})
-	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCultivationSequences($data->e['farm']).'?success=sequence:Sequence::deleted'));
+	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCultivationSequences($data->e['farm']).'?success=sequence\\Sequence::deleted'));
 
 new Page()
 	->post('query', function($data) {

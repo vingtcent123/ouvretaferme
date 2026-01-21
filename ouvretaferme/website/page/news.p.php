@@ -19,7 +19,7 @@ new \website\NewsPage(function($data) {
 		]);
 	})
 	->doCreate(function($data) {
-		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website:News::created');
+		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website\\News::created');
 	});
 
 new \website\NewsPage()

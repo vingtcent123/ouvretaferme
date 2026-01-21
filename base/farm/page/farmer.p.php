@@ -31,7 +31,7 @@ new Page()
 			\user\UserLib::updateRole($data->eUserOnline, 'farmer');
 		}
 
-		throw new RedirectAction('/?success=farm:Farmer::welcome');
+		throw new RedirectAction('/?success=farm\\Farmer::welcome');
 
 	});
 
@@ -133,17 +133,17 @@ new \farm\FarmerPage(function($data) {
 		throw new ViewAction($data);
 
 	})
-	->doCreate(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Farmer::created'))
+	->doCreate(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm\\Farmer::created'))
 	->write('doDeleteInvite', function($data) {
 
 		\farm\InviteLib::deleteFromFarmer($data->e);
 
-		throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Invite::deleted');
+		throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm\\Invite::deleted');
 
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {
 		$eFarm = \farm\FarmLib::getById($data->e['farm']);
-		throw new RedirectAction(\farm\FarmerUi::urlManage($eFarm).'&success=farm:'.($data->e['status'] === \farm\Farmer::IN ? 'Farmer::created' : 'Farmer::deleted'));
+		throw new RedirectAction(\farm\FarmerUi::urlManage($eFarm).'&success=farm\\'.($data->e['status'] === \farm\Farmer::IN ? 'Farmer::created' : 'Farmer::deleted'));
 	})
 	->doUpdateProperties('doUpdateSoilColor', ['viewSoilColor'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
 	->doUpdateProperties('doUpdateSoilOverlay', ['viewSoilOverlay'], fn($data) => throw new ReloadAction(), validate: ['canSelf'])
@@ -154,7 +154,7 @@ new \farm\FarmerPage(function($data) {
 	])
 	->update()
 	->doUpdate(fn($data) => throw new ViewAction($data))
-	->doDelete(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm:Farmer::deleted'))
+	->doDelete(fn($data) => throw new RedirectAction('/farm/farmer:manage?farm='.$data->e['farm']['id'].'&success=farm\\Farmer::deleted'))
 	->write('doUpdateMarketPaymentMethod', function($data) {
 
 		$action = POST('action', 'string', 'add');

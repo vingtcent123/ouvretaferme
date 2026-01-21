@@ -13,7 +13,7 @@ new \website\WebpagePage(function($data) {
 
 	})
 	->doCreate(function($data) {
-		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website:Webpage::created');
+		throw new RedirectAction('/website/manage?id='.$data->eWebsite['farm']['id'].'&success=website\\Webpage::created');
 	});
 
 new \website\WebpagePage()

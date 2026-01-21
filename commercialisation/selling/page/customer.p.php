@@ -74,7 +74,7 @@ new \selling\CustomerPage()
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data), validate: ['canManage'])
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlSellingCustomers($data->e['farm']).'?success=selling:Customer::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlSellingCustomers($data->e['farm']).'?success=selling\\Customer::deleted');
 	});
 
 new \selling\CustomerPage()

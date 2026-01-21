@@ -66,7 +66,7 @@ new \shop\DatePage()
 		throw new \ViewAction($data);
 
 	})
-	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminDateUrl($data->e['farm'], $data->e).'?success=shop:'.(GET('copied', 'bool') ? 'Date::created' : 'Date::copied')))
+	->doCreate(fn($data) => throw new RedirectAction(\shop\ShopUi::adminDateUrl($data->e['farm'], $data->e).'?success=shop\\'.(GET('copied', 'bool') ? 'Date::created' : 'Date::copied')))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->write('doUpdatePoint', function($data) {
 
@@ -108,7 +108,7 @@ new \shop\DatePage()
 		throw new PdfAction($content, $filename);
 
 	}, validate: [])
-	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop:Date::deleted'));
+	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop\\Date::deleted'));
 
 new Page()
 	->post('doUpdateCatalog', function($data) {

@@ -67,7 +67,7 @@ new Page()
 			$redirectUrl = '/';
 		}
 
-		throw new RedirectAction($redirectUrl.'?success=user:User::bye');
+		throw new RedirectAction($redirectUrl.'?success=user\\User::bye');
 
 	})
 	/**

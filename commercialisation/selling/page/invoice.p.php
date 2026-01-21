@@ -65,7 +65,7 @@ new \selling\InvoicePage()
 		if(POST('origin') === 'sales') {
 			throw new ViewAction($data);
 		} else {
-			throw new RedirectAction(\farm\FarmUi::urlSellingSalesInvoice($data->e['farm']).'?success=selling:Invoice::created');
+			throw new RedirectAction(\farm\FarmUi::urlSellingSalesInvoice($data->e['farm']).'?success=selling\\Invoice::created');
 		}
 
 	})
@@ -186,7 +186,7 @@ new Page(function($data) {
 
 		\selling\InvoiceLib::createCollection($cInvoice);
 
-		throw new RedirectAction(\farm\FarmUi::urlSellingSalesInvoice($data->eFarm).'?success=selling:Invoice::createdCollection');
+		throw new RedirectAction(\farm\FarmUi::urlSellingSalesInvoice($data->eFarm).'?success=selling\\Invoice::createdCollection');
 
 	});
 

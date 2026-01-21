@@ -156,9 +156,9 @@ class TextUi {
 
 		$text = '';
 
-		if(str_contains($message, ':')) {
+		if(str_contains($message, '\\')) {
 
-			[$package, $fqn] = explode(':', $message, 2);
+			[$package, $fqn] = explode('\\', $message, 2);
 
 			if(\Package::exists($package)) {
 
@@ -187,9 +187,9 @@ class TextUi {
 
 		$text = '';
 
-		if(str_contains($message, ':')) {
+		if(str_contains($message, '\\')) {
 
-			[$package, $fqn] = explode(':', $message, 2);
+			[$package, $fqn] = explode('\\', $message, 2);
 
 			if(\Package::exists($package)) {
 

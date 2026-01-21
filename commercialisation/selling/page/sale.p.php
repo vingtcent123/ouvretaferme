@@ -236,7 +236,7 @@ new Page(function($data) {
 
 		throw new RedirectAction(
 			$cSale->count() > 1 ?
-				\farm\FarmUi::urlSellingSales($data->eFarm, \farm\Farmer::ALL).'?success=selling:Sale::createdCollection' :
+				\farm\FarmUi::urlSellingSales($data->eFarm, \farm\Farmer::ALL).'?success=selling\\Sale::createdCollection' :
 				\selling\SaleUi::url($eSale).'?success=Sale::created'
 		);
 
@@ -524,7 +524,7 @@ new \selling\SalePage()
 
 		$data->eSaleNew = \selling\SaleLib::duplicate($data->e);
 
-		throw new RedirectAction(\selling\SaleUi::url($data->eSaleNew).'?success=series:Series::duplicated');
+		throw new RedirectAction(\selling\SaleUi::url($data->eSaleNew).'?success=series\\Series::duplicated');
 	})
 	->write('doDelete', function($data) {
 
@@ -545,8 +545,8 @@ new \selling\SalePage()
 
 		throw new RedirectAction(
 			$data->e->isComposition() ?
-				\selling\ProductUi::url($data->e['compositionOf']).'?success=selling:Product::deletedComposition' :
-				\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling:Sale::deleted'
+				\selling\ProductUi::url($data->e['compositionOf']).'?success=selling\\Product::deletedComposition' :
+				\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling\\Sale::deleted'
 		);
 
 	});
@@ -694,7 +694,7 @@ new \farm\FarmPage()
 			$data->cSale = \selling\SaleLib::getForLabelsByIds($data->e, POST('sales', 'array'));
 
 			if($data->cSale->empty()) {
-				throw new RedirectAction(\farm\FarmUi::urlSellingSalesLabel($data->e).'?error=selling:Sale::downloadEmpty');
+				throw new RedirectAction(\farm\FarmUi::urlSellingSalesLabel($data->e).'?error=selling\\Sale::downloadEmpty');
 			}
 
 			$data->cSale->validate('canUpdate');

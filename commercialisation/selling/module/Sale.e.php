@@ -717,7 +717,7 @@ class Sale extends SaleElement {
 			$this->isMarketClosed() === FALSE
 		) {
 			if($this->isMarket()) {
-				throw new \RedirectAction(\selling\SaleUi::url($this).'?error=selling:Sale::canNotSell');
+				throw new \RedirectAction(\selling\SaleUi::url($this).'?error=selling\\Sale::canNotSell');
 			} else {
 				throw new \NotExpectedAction('Not a market sale');
 			}

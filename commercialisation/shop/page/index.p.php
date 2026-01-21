@@ -81,7 +81,7 @@ new Page(function($data) {
 
 			\shop\ShopLib::joinShared($data->eShop, $data->eFarm);
 
-			throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->eShop).'?success=shop:Shop::joined');
+			throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->eShop).'?success=shop\\Shop::joined');
 
 		} else {
 			throw new ViewAction($data);
@@ -152,6 +152,6 @@ new shop\ShopPage()
 		throw new ReloadAction('shop', $data->e['hasPoint'] ? 'Shop::pointOn' : 'Shop::pointOff');
 	})
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlShopList($data->e['farm']).'?success=shop:Shop::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlShopList($data->e['farm']).'?success=shop\\Shop::deleted');
 	});
 ?>

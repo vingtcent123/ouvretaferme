@@ -70,7 +70,7 @@ new Page()
 
 		$fw->validate();
 
-		throw new RedirectAction('/?success=user:User::passwordReset');
+		throw new RedirectAction('/?success=user\\User::passwordReset');
 
 	});
 ?>

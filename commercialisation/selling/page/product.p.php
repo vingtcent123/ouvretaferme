@@ -67,7 +67,7 @@ new \selling\ProductPage()
 	})
 	->doCreate(function($data) {
 		$category = $data->e['category']->empty() ? '' : $data->e['category']['id'];
-		throw new RedirectAction(\selling\ProductUi::url($data->e).'?category='.$category.'&success=selling:Product::created');
+		throw new RedirectAction(\selling\ProductUi::url($data->e).'?category='.$category.'&success=selling\\Product::created');
 	});
 
 new \selling\ProductPage()
@@ -165,7 +165,7 @@ new \selling\ProductPage()
 
 	})
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
-	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProducts($data->e['farm']).'?success=selling:Product::deleted'));
+	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlSellingProducts($data->e['farm']).'?success=selling\\Product::deleted'));
 
 new \selling\ProductPage()
 	->applyElement(function($data, \selling\Product $eProduct) {

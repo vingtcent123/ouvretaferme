@@ -103,7 +103,7 @@ new \analyze\ReportPage(function($data) {
 
 		}
 
-		throw new RedirectAction(\analyze\ReportUi::url($data->e).'?success=analyze:Report::created');
+		throw new RedirectAction(\analyze\ReportUi::url($data->e).'?success=analyze\\Report::created');
 
 	});
 
@@ -156,6 +156,6 @@ new \analyze\ReportPage()
 		throw new ReloadAction('analyze', 'Report::updated');
 	})
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlAnalyzeReport($data->eFarm, $data->season).'?success=analyze:Report::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlAnalyzeReport($data->eFarm, $data->season).'?success=analyze\\Report::deleted');
 	});
 ?>

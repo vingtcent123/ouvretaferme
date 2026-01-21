@@ -57,7 +57,7 @@ new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 
 			\dev\ErrorMonitoringLib::closeByMessage($message);
 
-			throw new RedirectAction('/dev/admin/?success=dev:Error.closedByMessage');
+			throw new RedirectAction('/dev/admin/?success=dev\\Error.closedByMessage');
 
 		}
 

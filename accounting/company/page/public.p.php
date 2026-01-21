@@ -39,7 +39,7 @@ new Page(function($data) {
 
 		$fw->validate();
 
-		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal?onboarding&success=company:Company::created');
+		throw new RedirectAction(\company\CompanyUi::urlJournal($data->eFarm).'/livre-journal?onboarding&success=company\\Company::created');
 
 	});
 

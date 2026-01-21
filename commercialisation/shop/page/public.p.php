@@ -360,7 +360,7 @@ new Page(function($data) {
 		$data->validateOrder = function() use($data) {
 
 			if($data->eDate->acceptOrder() === FALSE) {
-				throw new RedirectAction(\shop\ShopUi::url($data->eShop).'?error=shop:Date::canNotOrder');
+				throw new RedirectAction(\shop\ShopUi::url($data->eShop).'?error=shop\\Date::canNotOrder');
 			}
 
 		};
@@ -370,7 +370,7 @@ new Page(function($data) {
 			if($data->cSaleExisting->empty()) {
 
 				if(\shop\SaleLib::hasExpired($data->eShop, $data->eDate, $data->cCustomerExisting)) {
-					throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate).'?error=selling:Sale::productsBasket.expired');
+					throw new RedirectAction(\shop\ShopUi::dateUrl($data->eShop, $data->eDate).'?error=selling\\Sale::productsBasket.expired');
 				} else {
 					throw $action ?? new RedirectAction(\shop\ShopUi::url($data->eShop));
 				}
@@ -566,7 +566,7 @@ new Page(function($data) {
 		$eSaleReference->build($properties, $_POST);
 
 		if($fw->has('Sale::productsBasket.check')) {
-			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?error=selling:Sale::productsBasket.check');
+			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?error=selling\\Sale::productsBasket.check');
 		}
 
 		$fw->validate();
@@ -638,7 +638,7 @@ new Page(function($data) {
 		$data->eSaleReference->build($properties, $_POST);
 
 		if($fw->has('Sale::productsBasket.check')) {
-			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?modify=1&error=selling:Sale::productsBasket.check');
+			throw new RedirectAction(\shop\ShopUi::basketUrl($data->eShop, $data->eDate).'?modify=1&error=selling\\Sale::productsBasket.check');
 		}
 
 		$fw->validate();

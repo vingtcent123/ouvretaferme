@@ -342,7 +342,7 @@ class FailWatch {
 			 return NULL;
 		 } else {
 			 $last = last($list);
-			 return $last[0].':'.$last[1];
+			 return $last[0].'\\'.$last[1];
 		 }
 
 	}

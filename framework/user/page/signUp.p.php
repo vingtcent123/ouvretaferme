@@ -56,10 +56,10 @@ new Page(function($data) {
 			if(strpos($redirect, '?') === FALSE) {
 				$redirect .= '?';
 			}
-			throw new RedirectAction($redirect.'&success=user:User::welcomeCreate');
+			throw new RedirectAction($redirect.'&success=user\\User::welcomeCreate');
 		}
 
-		throw new RedirectAction(Lime::getUrl().'?success=user:User::welcomeCreate');
+		throw new RedirectAction(Lime::getUrl().'?success=user\\User::welcomeCreate');
 
 	});
 ?>

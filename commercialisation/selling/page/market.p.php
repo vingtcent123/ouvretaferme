@@ -58,7 +58,7 @@ new \selling\SalePage()
 
 		\selling\MarketLib::close($data->e);
 
-		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'?success=selling:Market::closed');
+		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'?success=selling\\Market::closed');
 
 	})
 	->write('doPaidMarketSale', function($data) {
@@ -86,7 +86,7 @@ new \selling\SalePage()
 
 		$fw->validate();
 
-		throw new RedirectAction(\selling\SaleUi::urlMarket($eSaleMarket).'?success=selling:Market::saleExcluded');
+		throw new RedirectAction(\selling\SaleUi::urlMarket($eSaleMarket).'?success=selling\\Market::saleExcluded');
 
 	}, validate: ['isMarketSale', 'acceptStatusDelivered', 'acceptUpdatePayment'])
 	->write('doUpdatePrices', function($data) {
@@ -95,7 +95,7 @@ new \selling\SalePage()
 
 		\selling\MarketLib::updateMarketPrices($data->e, $cItem);
 
-		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'/articles?success=selling:Market::pricesUpdated');
+		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e).'/articles?success=selling\\Market::pricesUpdated');
 
 
 	}, validate: ['canWrite', 'isMarketSelling'])
@@ -166,7 +166,7 @@ new \selling\SalePage()
 
 	}, validate: ['canWrite', 'isMarketSelling'])
 	->doDelete(function($data) {
-		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e['marketParent']).'?success=selling:Sale::deleted');
+		throw new RedirectAction(\selling\SaleUi::urlMarket($data->e['marketParent']).'?success=selling\\Sale::deleted');
 	})
 	->read('sendTicket', function($data) {
 
