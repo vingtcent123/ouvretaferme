@@ -407,7 +407,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 				}
 			}
-			if(isset($amortization)) {
+			if(isset($amortization) and isset($eAsset['cAmortization'][$i])) {
 
 				$amortization = $eAsset['cAmortization'][$i]['amount'];
 
