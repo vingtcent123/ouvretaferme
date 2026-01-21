@@ -177,7 +177,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		return Asset::model()
       ->whereStartDate('<=', $eFinancialYear['endDate'])
-      ->whereEndDate('>=', $eFinancialYear['startDate'])
+			->where('endedDate IS NULL or endedDate >= '.Asset::model()->format($eFinancialYear['startDate']))
 			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%');
 
 	}

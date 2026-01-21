@@ -44,9 +44,14 @@ Class AmortizationUi {
 
 		$h = '<tr name="asset-'.$amortization['id'].'" class="'.$class.'">';
 			$h .= '<td>'.$description.'</td>';
-			$h .= '<td>';
+			$h .= '<td class="text-center">';
 				if($amortization['acquisitionDate'] !== NULL) {
 					$h .= \util\DateUi::numeric($amortization['acquisitionDate'], \util\DateUi::DATE);
+				}
+			$h .= '</td>';
+			$h .= '<td class="text-center">';
+				if($isTotalLine === FALSE and $amortization['startDate'] !== NULL) {
+					$h .= \util\DateUi::numeric($amortization['startDate'], \util\DateUi::DATE);
 				}
 			$h .= '</td>';
 
@@ -127,9 +132,12 @@ Class AmortizationUi {
 			default => TRUE,
 		};
 
-		if($isTotalLine === FALSE and $line['startDate'] >= $eFinancialYear['startDate']) {
+		if($isTotalLine) {
+			$total['valueAcquisition'] += $line['valueAcquisition'] ?? 0;
+			$total['valueStart'] += $line['valueStart'] ?? 0;
+		} else if($line['startDate'] >= $eFinancialYear['startDate']) {
 			$total['valueAcquisition'] += $line['acquisitionValue'];
-		} else if($isTotalLine === FALSE and $line['startDate'] < $eFinancialYear['startDate']) {
+		} else if($line['startDate'] < $eFinancialYear['startDate']) {
 			$total['valueStart'] += $line['acquisitionValue'];
 		}
 
@@ -166,7 +174,7 @@ Class AmortizationUi {
 		$h .= '</tr>';
 
 		$h .= '<tr class="tr-bold">';
-			$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
+			$h .= '<th colspan="5" class="text-center">'.s("Caractéristiques").'</th>';
 			$h .= '<th colspan="2" class="text-center">'.s("Valeur").'</th>';
 			$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';
 			if($showGrossValueDiminutionColumn) {
@@ -274,8 +282,8 @@ Class AmortizationUi {
 
 			$h .= '<thead class="thead-sticky">';
 				$h .= '<tr class="tr-bold">';
-					$h .= '<th colspan="4" class="text-center">'.s("Caractéristiques").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
+					$h .= '<th colspan="5" class="text-center">'.s("Caractéristiques").'</th>';
+					$h .= '<th colspan="2" class="text-center">'.s("Valeur acquisition").'</th>';
 					$h .= '<th colspan="3" class="text-center">'.s("Amortissements économiques").'</th>';
 					if($showDimValBrut) {
 						$h .= '<th rowspan="2" class="text-center">'.s("Dimin. de val. brut.").'</th>';
@@ -288,9 +296,12 @@ Class AmortizationUi {
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<th class="text-center">'.s("Libellé").'</th>';
-					$h .= '<th class="text-center">'.s("Date").'</th>';
+					$h .= '<th class="text-center">'.s("Date Acquisition").'</th>';
+					$h .= '<th class="text-center">'.s("Date mise en service").'</th>';
 					$h .= '<th class="text-center border-bottom">'.s("Mode E/F").'</th>';
 					$h .= '<th class="text-center border-bottom">'.s("Durée").'</th>';
+					$h .= '<th class="text-center">'.s("Début").'</th>';
+					$h .= '<th class="text-center">'.s("Acquisition<br />ou apport").'</th>';
 					$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Fin exercice").'</th>';

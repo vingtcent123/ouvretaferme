@@ -465,6 +465,7 @@ Class AssetUi {
 			$h .= '<td></td>';
 			$h .= '<td></td>';
 			$h .= '<td></td>';
+			$h .= '<td></td>';
 			$h .= '<td class="text-end">'.$this->number($total, '', 2).'</td>';
 			$h .= '<td class="text-end">'.$this->number($totalAmortizable, '', 2).'</td>';
 		$h .= '</tr>';
@@ -555,6 +556,7 @@ Class AssetUi {
 								'grant' => s("Total subventions"),
 							};
 						$h .= '</td>';
+						$h .= '<td></td>';
 						$h .= '<td></td>';
 						$h .= '<td></td>';
 						$h .= '<td></td>';
