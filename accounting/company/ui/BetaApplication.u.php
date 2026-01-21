@@ -61,7 +61,7 @@ Class BetaApplicationUi {
 			'hasVat' => s("Votre ferme est-elle redevable de la TVA ?"),
 			'notPayingVat' => s("Régime de franchise de TVA ?"),
 			'vatFrequency' => s("Fréquence de déclaration de TVA"),
-			'discord' => s("Êtes-vous d'accord pour échanger sur <link>Discord</link> ?", ['link' => '<a href="https://discord.com/channels/1344219338684497961">']),
+			'discord' => s("Êtes-vous d'accord pour échanger sur <link>Discord</link> ?", ['link' => '<a href="https://discord.com/channels/1344219338684497961/1444680100548448307">']),
 		]);
 
 		switch($property) {

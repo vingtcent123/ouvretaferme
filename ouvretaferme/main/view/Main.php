@@ -225,7 +225,7 @@ class MainTemplate extends BaseTemplate {
 							$h .= '</div>';
 							$h .= '<div>';
 								$h .= '<h4>'.s("Discord").'</h4>';
-								$h .= '<a href="https://discord.com/channels/1344219338684497961" target="_blank">'.s("Salons de discussion").'</a><br/>';
+								$h .= '<a href="https://discord.com/channels/1344219338684497961/1444680100548448307" target="_blank">'.s("Salons de discussion").'</a><br/>';
 								$h .= '<a href="https://discord.gg/bdSNc3PpwQ" target="_blank">'.s("Recevoir une invitation").'</a>';
 							$h .= '</div>';
 							$h .= '<div>';
