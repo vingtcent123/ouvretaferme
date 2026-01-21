@@ -152,7 +152,7 @@ class CsvLib {
 
 			}
 
-			if($fw->ko()) {d('x');
+			if($fw->ko()) {
 				Product::model()->rollBack();
 				return FALSE;
 			}
