@@ -2100,6 +2100,7 @@ class AnalyzeUi {
 
 		$header = [
 			'sale_id',
+			'invoice_id',
 			'customer_name',
 			'type',
 			'delivery',
@@ -2124,6 +2125,7 @@ class AnalyzeUi {
 
 		$header = [
 			'sale_id',
+			'invoice_id',
 			'item_id',
 			'label',
 			'product_id',

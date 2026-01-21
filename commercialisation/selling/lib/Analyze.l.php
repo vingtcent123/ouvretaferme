@@ -886,6 +886,7 @@ class AnalyzeLib {
 				'document',
 				'items', 'discount',
 				'type',
+				'invoice' => ['name'],
 				'customer' => ['name'],
 				'priceIncludingVat', 'priceExcludingVat', 'vat',
 				'shop' => ['name'],
@@ -906,6 +907,7 @@ class AnalyzeLib {
 
 				$data = [
 					$eSale['document'],
+					$eSale['invoice']['name'],
 					$eSale['customer']->notEmpty() ? $eSale['customer']->getName() : '',
 					CustomerUi::getType($eSale),
 					\util\DateUi::numeric($eSale['deliveredAt']),
@@ -931,7 +933,7 @@ class AnalyzeLib {
 
 		self::filterItemStats();
 
-		if($eFarm->usesAccounting()) {
+		if($eFarm->hasAccounting()) {
 			\farm\FarmLib::connectDatabase($eFarm);
 			$cAccountAll = \account\AccountLib::getAll();
 		} else {
@@ -946,7 +948,7 @@ class AnalyzeLib {
 				'product' => ProductElement::getSelection(),
 				'composition',
 				'ingredientOf',
-				'sale' => ['document',  'type'],
+				'sale' => ['document',  'type', 'invoice' => ['name']],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'type', 'price', 'priceStats', 'vatRate',
@@ -963,6 +965,7 @@ class AnalyzeLib {
 
 				$data = [
 					$eItem['sale']['document'],
+					$eItem['sale']['invoice']['name'] ?? '',
 					$eItem['id'],
 					$eItem['name'],
 					$eItem['product']->empty() ? '' : $eItem['product']['id'],
@@ -970,8 +973,40 @@ class AnalyzeLib {
 				];
 
 				if($eFarm->hasAccounting()) {
+
 					if($eItem['account']->notEmpty() and $cAccountAll->offsetExists($eItem['account']['id'])) {
+
 						$data[] = \account\AccountLabelLib::pad($cAccountAll->offsetGet($eItem['account']['id'])['class']);
+
+					// On remonte sur le produit si possible
+					} else if($eItem['product']->notEmpty()) {
+
+						if($eItem['type'] === Item::PRO) {
+
+							if($eItem['product']['proAccount']->notEmpty() and $cAccountAll->offsetExists($eItem['product']['proAccount']['id'])) {
+
+								$data[] = \account\AccountLabelLib::pad($cAccountAll->offsetGet($eItem['product']['proAccount']['id'])['class']);
+
+							} else if($eItem['product']['privateAccount']->notEmpty() and $cAccountAll->offsetExists($eItem['product']['privateAccount']['id'])) {
+
+								$data[] = \account\AccountLabelLib::pad($cAccountAll->offsetGet($eItem['product']['privateAccount']['id'])['class']);
+
+							} else {
+								$data[] = '';
+							}
+
+						} else {
+
+							if($eItem['product']['privateAccount']->notEmpty() and $cAccountAll->offsetExists($eItem['product']['privateAccount']['id'])) {
+
+								$data[] = \account\AccountLabelLib::pad($cAccountAll->offsetGet($eItem['product']['privateAccount']['id'])['class']);
+
+							} else {
+								$data[] = '';
+							}
+
+						}
+
 					} else {
 						$data[] = '';
 					}
@@ -1001,6 +1036,7 @@ class AnalyzeLib {
 
 		foreach(Sale::model()
 			->select([
+				'invoice' => ['name'],
 				'document', 'type',
 				'customer' => ['type', 'name'],
 				'shippingExcludingVat',
@@ -1012,9 +1048,10 @@ class AnalyzeLib {
 			->getCollection() as $eSale) {
 
 			$data[] = [
-				SaleUi::getShippingName(),
-				'',
 				$eSale['document'],
+				$eSale['invoice']['name'] ?? '',
+				'',
+				SaleUi::getShippingName(),
 				$eSale['customer']->getName(),
 				CustomerUi::getType($eSale),
 				\util\DateUi::numeric($eSale['deliveredAt']),
@@ -1031,7 +1068,7 @@ class AnalyzeLib {
 				return $a[0] < $b[0] ? -1 : 1;
 			}
 
-			return strcmp($a[2], $b[2]);
+			return strcmp($a[3], $b[3]);
 
 		});
 
