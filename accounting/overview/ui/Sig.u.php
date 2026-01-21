@@ -121,7 +121,7 @@ Class SigUi {
 						}
 					$h .= '</td>';
 					$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">';
-						$h .= \util\TextUi::money($value);
+						$h .= \util\TextUi::money($value, precision: 0);
 					$h .= '</td>';
 					$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 						if(mb_strlen($percent) > 0) {
@@ -143,7 +143,7 @@ Class SigUi {
 						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.\util\TextUi::money($valuesComparison[$account], precision: 0).'</td>';
 						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-left').'"></td>';
 						$h .= '<td class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">';
-							$h .= \util\TextUi::money($value);
+							$h .= \util\TextUi::money($value, precision: 0);
 						$h .= '</td>';
 						$h .= '<td class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">';
 							if(mb_strlen($percent) > 0) {
