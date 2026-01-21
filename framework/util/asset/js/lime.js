@@ -664,8 +664,13 @@ Document.prototype.ready = function(listener) {
 
 function startWaiter(target) {
 
-	if(target.dataset.waiter === undefined) {
-		return;
+	if(
+		target === undefined ||
+		target.dataset.waiter === undefined
+	) {
+		return () => {
+
+		};
 	}
 
 	if(target.dataset.waiter !== '') {
