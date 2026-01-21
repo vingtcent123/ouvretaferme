@@ -251,7 +251,7 @@ class CsvUi {
 							'vatRateInvalid' => s("Le taux de TVA n'est pas reconnu"),
 							'profileMissing' => s("Il manque le profil du produit"),
 							'profileInvalid' => s("Le profil du produit est incorrect dans le fichier CSV ({value})", implode(', ', Product::getProfiles('import'))),
-							'referenceInvalid' => s("Une référence de produit ne peut contenir que des lettres, des chiffres ou des tirets"),
+							'referenceError' => s("Une référence de produit ne peut contenir que des lettres, des chiffres ou des tirets"),
 							'nameMissing' => s("Il manque le nom du produit"),
 							'speciesInvalid' => s("Cette espèce n'existe pas sur votre ferme"),
 							'speciesIncompatible' => s("Le choix d'une espèce est incompatible avec ce type de produit et sera ignoré"),

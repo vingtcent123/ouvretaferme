@@ -3,20 +3,21 @@ namespace securing;
 
 class SignatureLib {
 
-	public static function signSale(\selling\Sale $eSale): void {
+	public static function signSale(\selling\Sale $eSale, ?\Collection $cItem = NULL, ?\Collection $cPayment = NULL): void {
 
 		// Les données peuvent être parfois déjà présentes
-		$cPayment = $eSale['cPayment'] ?? \selling\PaymentLib::getBySale($eSale);
-		$cItem = $eSale['cItem'] ?? \selling\SaleLib::getItems($eSale);
-dd($cPayment);
+		$cPayment ??= \selling\PaymentLib::getBySale($eSale);
+		$cItem ??= \selling\SaleLib::getItems($eSale);
+
 		$data = [
 			'id' => $eSale['id'],
 			'date' => $eSale['securedAt'],
-			'amount' => $eSale['priceIncludingVat']
+			'amount' => $eSale['priceIncludingVat'],
 		];
 
 		self::sign(new Signature([
 			'source' => Signature::SALE,
+			'data' => $data,
 		]));
 
 	}

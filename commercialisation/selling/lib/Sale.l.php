@@ -1216,7 +1216,11 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		if(in_array('shipping', $properties)) {
+		if(
+			in_array('shipping', $properties) or
+			($e['secured'] and $updatePayments) or
+			($e['secured'] and in_array('paidAt', $properties))
+		) {
 			self::recalculate($e);
 		}
 
@@ -1756,6 +1760,10 @@ class SaleLib extends SaleCrud {
 		Sale::model()
 			->select(array_keys($newValues))
 			->update($e);
+
+		if($e['secured']) {
+			\securing\SignatureLib::signSale($e, $cItem);
+		}
 
 	}
 

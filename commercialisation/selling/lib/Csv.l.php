@@ -98,9 +98,7 @@ class CsvLib {
 
 		foreach($products as $product) {
 
-			$eProduct = new Product([
-				'farm' => $eFarm,
-				'reference' => $product['reference'],
+			$eProduct = $product['eProduct']->merge(([
 				'unit' => $product['eUnit'],
 				'profile' => $product['profile'],
 				'name' => $product['name'],
@@ -118,7 +116,7 @@ class CsvLib {
 				'processedPackaging' => $product['packaging'],
 				'processedComposition' => $product['composition'],
 				'processedAllergen' => $product['allergen'],
-			]);
+			]));
 
 			$cProduct[] = $eProduct;
 
@@ -134,7 +132,8 @@ class CsvLib {
 					$eProduct['reference'] !== NULL and
 					Product::model()
 						->select('id')
-						->whereReference($eProduct['reference'])
+						->whereFarm($eFarm)
+						->whereReference($eProduct['reference'])->highlight()
 						->get($eProduct)
 				) {
 
@@ -153,7 +152,7 @@ class CsvLib {
 
 			}
 
-			if($fw->ko()) {
+			if($fw->ko()) {d('x');
 				Product::model()->rollBack();
 				return FALSE;
 			}
@@ -196,33 +195,12 @@ class CsvLib {
 		$cachePlants = [];
 
 		$references = [];
-		foreach($import as $product) {
-			if($product['reference'] !== NULL) {
-				if(Product::checkReference($product['reference'])) {
-					$references[] = $product['reference'];
-				}
-			}
-		}
-
-		if($references) {
-
-			$references = array_merge(
-				$references,
-				Product::model()
-					->whereFarm($eFarm)
-					->whereReference('IN', $references)
-					->getColumn('reference')
-			);
-
-			$referencesCount = array_count_values($references);
-			$referencesCount = array_filter($referencesCount, fn($value) => $value > 1);
-
-			$infoGlobal['references'] = array_keys($referencesCount);
-
-		}
-
 
 		foreach($import as $key => $product) {
+
+			$eProduct = new Product([
+				'farm' => $eFarm,
+			]);
 
 			$errors = [];
 			$warnings = [];
@@ -239,11 +217,24 @@ class CsvLib {
 				$errors[] = 'nameMissing';
 			}
 
-			if(
-				$product['reference'] !== NULL and
-				Product::checkReference($product['reference']) === FALSE
-			) {
-				$errors[] = 'referenceInvalid';
+			$p = new \Properties();
+
+			$properties = ['reference'];
+
+			$eProduct->build($properties, [
+				'reference' => $product['reference'],
+			], $p);
+
+			foreach($properties as $property) {
+
+				if($p->isBuilt($property) === FALSE) {
+					$errors[] = $property.'Error';
+				} else {
+					if($eProduct['reference'] !== NULL) {
+						$references[] = $eProduct['reference'];
+					}
+				}
+
 			}
 
 			$import[$key]['eUnit'] = new Unit();
@@ -369,6 +360,8 @@ class CsvLib {
 
 			}
 
+			$import[$key]['eProduct'] = $eProduct;
+
 			$errors = array_filter($errors);
 			$errors = array_unique($errors);
 
@@ -377,6 +370,23 @@ class CsvLib {
 			$import[$key]['errors'] = $errors;
 			$import[$key]['warnings'] = $warnings;
 			$import[$key]['ignore'] = $ignore;
+
+		}
+
+		if($references) {
+
+			$references = array_merge(
+				$references,
+				Product::model()
+					->whereFarm($eFarm)
+					->whereReference('IN', $references)
+					->getColumn('reference')
+			);
+
+			$referencesCount = array_count_values($references);
+			$referencesCount = array_filter($referencesCount, fn($value) => $value > 1);
+
+			$infoGlobal['references'] = array_keys($referencesCount);
 
 		}
 
