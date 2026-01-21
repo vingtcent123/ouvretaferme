@@ -134,7 +134,7 @@ class MembershipLib {
 					'type' => \selling\Customer::PRO,
 					'destination' => NULL,
 					'name' => $eFarm['name'],
-					'commercialName' => $eFarm['commercialName'],
+					'commercialName' => $eFarm['legalName'] ?? $eFarm['name'],
 					'invoiceStreet1' => $eFarm['legalStreet1'],
 					'invoiceStreet2' => $eFarm['legalStreet2'],
 					'invoicePostcode' => $eFarm['legalPostcode'],
