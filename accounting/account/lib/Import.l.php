@@ -292,6 +292,7 @@ Class ImportLib extends ImportCrud {
 		$cImport = Import::model()
 			->select('rules')
 			->whereId('!=', $eImport['id'])
+			->whereStatus(Import::DONE)
 			->getCollection();
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
