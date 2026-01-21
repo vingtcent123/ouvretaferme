@@ -5,9 +5,14 @@ class SignatureLib {
 
 	public static function signSale(\selling\Sale $eSale): void {
 
+		// Les données peuvent être parfois déjà présentes
+		$cPayment = $eSale['cPayment'] ?? \selling\PaymentLib::getBySale($eSale);
+		$cItem = $eSale['cItem'] ?? \selling\SaleLib::getItems($eSale);
+dd($cPayment);
 		$data = [
 			'id' => $eSale['id'],
-			'date' => $eSale['deliveredAt'],
+			'date' => $eSale['securedAt'],
+			'amount' => $eSale['priceIncludingVat']
 		];
 
 		self::sign(new Signature([

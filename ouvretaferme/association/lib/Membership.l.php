@@ -132,8 +132,9 @@ class MembershipLib {
 
 				$eCustomer->merge([
 					'type' => \selling\Customer::PRO,
+					'destination' => NULL,
 					'name' => $eFarm['name'],
-					'legalName' => $eFarm['legalName'],
+					'commercialName' => $eFarm['commercialName'],
 					'invoiceStreet1' => $eFarm['legalStreet1'],
 					'invoiceStreet2' => $eFarm['legalStreet2'],
 					'invoicePostcode' => $eFarm['legalPostcode'],
