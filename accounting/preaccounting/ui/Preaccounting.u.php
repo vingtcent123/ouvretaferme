@@ -89,7 +89,15 @@ Class PreaccountingUi {
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Numéro de compte").'</legend>';
 					$h .= $form->dynamicField(new \journal\Operation(['account' => $search->get('account')]), 'account', function($d) use($form, $eFarm) {
-						$query = ['classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'classPrefixes[1]' => \account\AccountSetting::VAT_CLASS];
+						$query = [
+							'classPrefixes[0]' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS,
+							'classPrefixes[1]' => \account\AccountSetting::VAT_CLASS,
+						];
+						$index = 1;
+						foreach(\account\AccountSetting::WAITING_ACCOUNT_CLASSES as $waitingClass) {
+							$index++;
+							$query['classPrefixes['.$index.']'] = $waitingClass;
+						}
 						$d->autocompleteUrl = function(\util\FormUi $form, $e) use ($eFarm, $query) {
 							if($eFarm->empty()) {
 								$eFarm = $e['farm'];

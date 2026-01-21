@@ -618,13 +618,16 @@ Class AccountingLib {
 	public static function filterOperations(array $operations, \Search $search): array {
 
 		$operationsFiltered = [];
+		$eAccountFilter = $search->get('account');
 
 		foreach($operations as $operation) {
 
-			if($search->get('account') and $search->get('account')->notEmpty()) {
-				if($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] !== \account\AccountLabelLib::pad($search->get('account')['class'])) {
-					continue;
-				}
+			if(
+				$eAccountFilter->notEmpty() and
+				\account\AccountLabelLib::isFromClass($eAccountFilter['class'], $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) === FALSE and
+				\account\AccountLabelLib::isFromClass($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], $eAccountFilter['class']) === FALSE
+			) {
+				continue;
 			}
 
 			if($search->get('method') and $search->get('method')->notEmpty()) {
