@@ -133,7 +133,7 @@ class CsvLib {
 					Product::model()
 						->select('id')
 						->whereFarm($eFarm)
-						->whereReference($eProduct['reference'])->highlight()
+						->whereReference($eProduct['reference'])
 						->get($eProduct)
 				) {
 
