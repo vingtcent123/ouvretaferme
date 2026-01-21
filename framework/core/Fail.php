@@ -424,7 +424,13 @@ class FailException extends Exception {
 		public array $arguments = [],
 		public ?string $wrapper = NULL
 	) {
+
+		if(str_contains('\\', $failName) === FALSE) {
+			throw new Exception('Missing namespace');
+		}
+
 		parent::__construct($failName);
+
 	}
 
 }

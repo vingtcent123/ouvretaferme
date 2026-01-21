@@ -702,7 +702,7 @@ class ItemLib extends ItemCrud {
 				case Item::NUMBER :
 
 					if($e['unitPrice'] === 0.0) {
-						throw new \FailException('Unit price must not be null');
+						throw new \Exception('Unit price must not be null');
 					}
 
 					$number = $e['price'] / $e['unitPrice'];
@@ -720,7 +720,7 @@ class ItemLib extends ItemCrud {
 				case Item::UNIT_PRICE :
 
 					if($e['number'] === 0.0) {
-						throw new \FailException('Number must not be null');
+						throw new \Exception('Number must not be null');
 					}
 
 					$unitPrice = $e['price'] / $e['number'];

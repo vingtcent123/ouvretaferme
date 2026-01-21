@@ -368,6 +368,11 @@ class InvoiceLib extends InvoiceCrud {
 				->update([
 					'secured' => TRUE,
 					'securedAt' => new \Sql('NOW()'),
+				]);
+
+			Sale::model()
+				->whereId('IN', $e['cSale'])
+				->update([
 					'invoice' => $e
 				]);
 

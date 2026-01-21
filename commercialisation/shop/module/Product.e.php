@@ -85,7 +85,7 @@ class Product extends ProductElement {
 						->whereChild('NOT IN', fn() => $this['cRelation']->getColumn('child'), if: $p->for === 'update')
 						->exists()
 				) {
-					throw new \FailException('Product::children.alreadyUsed');
+					throw new \FailException('selling\Product::children.alreadyUsed');
 				}
 
 				$position = 1;
@@ -97,7 +97,7 @@ class Product extends ProductElement {
 				foreach($cProductChildren as $eProductChild) {
 
 					if($eProductChild['product']['category']->is($eProductParent['category']) === FALSE) {
-						throw new \FailException('Product::children.categoryConsistency');
+						throw new \FailException('selling\Product::children.categoryConsistency');
 					}
 
 					$eRelation = new Relation([
@@ -113,7 +113,7 @@ class Product extends ProductElement {
 				}
 
 				if($cRelation->empty()) {
-					throw new \FailException('Product::children.empty');
+					throw new \FailException('selling\Product::children.empty');
 				}
 				
 				$this['cRelation'] = $cRelation;

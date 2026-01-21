@@ -1809,16 +1809,26 @@ class Element extends ArrayObject {
 					break;
 				} catch(PropertySuccess) {
 				} catch(FailException $e) {
-					$p->addInvalid($property);
+					$message = $e->getMessage();
+					if(str_contains($message, '\\')) {
+						[$namespace, $failName] = explode('\\', $message);
+					} else {
+						$failName = $message;
+					}
+					$p->addInvalid($property, $failName, $namespace);
 					Fail::log($e, wrapper: $wrapper);
 					$success = FALSE;
 					break;
 				} catch(PropertyError) {
-					$p->addInvalid($property);
+					[$namespace, $element] = explode('\\', $this->getModule());
+					$failName = $element.'::'.$name;
+					$p->addInvalid($property, $failName, $namespace);
 					$onError();
 					break;
 				} catch(BuildElementError) {
-					$p->addInvalid($property);
+					[$namespace, $element] = explode('\\', $this->getModule());
+					$failName = $element.'::'.$name;d($namespace, $failName);
+					$p->addInvalid($property, $failName, $namespace);
 					$onError();
 					return;
 				}
