@@ -246,6 +246,11 @@ class Asset extends AssetElement {
 				return $startDate !== NULL;
 
 			})
+			->setCallback('acquisitionDate.future', function(?string $acquisitionDate) use($p): bool {
+
+				return \util\DateLib::isValid($acquisitionDate) and $acquisitionDate <= date('Y-m-d');
+
+			})
 			->setCallback('startDate.inconsistency', function(?string $startDate) use($p): bool {
 
 				if($p->isBuilt('acquisitionDate') === FALSE) {
@@ -253,6 +258,15 @@ class Asset extends AssetElement {
 				}
 
 				return $startDate >= $this['acquisitionDate'];
+
+			})
+			->setCallback('startDate.future', function(?string $startDate) use($p): bool {
+
+				if($p->isBuilt('acquisitionDate') === FALSE) {
+					return TRUE;
+				}
+
+				return $this['acquisitionDate'] <= date('Y-m-d');
 
 			})
 			->setCallback('resumeDate.inconsistent', function(?string $resumeDate) use($p): bool {
@@ -277,6 +291,24 @@ class Asset extends AssetElement {
 				}
 
 				return FALSE;
+
+			})
+			->setCallback('economicAmortization.notAllowed', function(?float $economicAmortization) use($p): bool {
+
+				if($p->isBuilt('economicMode') === FALSE) {
+					return TRUE;
+				}
+
+				return ($this['economicMode'] !== Asset::WITHOUT or $economicAmortization === 0.0);
+
+			})
+			->setCallback('residualValue.inconsistent', function(?float $residualValue) use($p): bool {
+
+				if($p->isBuilt('value') === FALSE) {
+					return TRUE;
+				}
+
+				return ($this['value'] >= $residualValue);
 
 			})
 			->setCallback('economicAmortization.inconsistent', function(?float $economicAmortization) use($p): bool {

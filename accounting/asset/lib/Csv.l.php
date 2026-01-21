@@ -79,52 +79,25 @@ Class CsvLib {
 		$assets = $import['assets'];
 		foreach($assets as $key => $asset) {
 
+			$eAsset = new Asset([
+			]);
 			$errors = [];
 
-			if(in_array($asset['economicMode'], Asset::model()->getPropertyEnum('economicMode')) === FALSE) {
-				$errors[] = 'economicMode';
-			}
+			$p = new \Properties();
 
-			if(in_array($asset['fiscalMode'], Asset::model()->getPropertyEnum('fiscalMode')) === FALSE) {
-				$errors[] = 'fiscalMode';
-			}
+			$properties = ['value', 'economicMode', 'fiscalMode', 'acquisitionDate', 'startDate', 'residualValue', 'economicAmortization'];
 
-			$error = \main\CsvLib::checkDateField($asset['acquisitionDate'], 'acquisitionDate');
-			if(
-				$error !== NULL or
-				empty($asset['acquisitionDate']) or
-				\util\DateLib::isValid($asset['acquisitionDate']) === FALSE
-			) {
-				$errors[] = $error;
-			}
-			if($asset['acquisitionDate'] > date('Y-m-d')) {
-				$errors[] = 'acquisitionDateFuture';
-			}
-			$error = \main\CsvLib::checkDateField($asset['startDate'], 'startDate');
-			if($error !== NULL) {
-				$errors[] = $error;
-			}
-			if(
-				(mb_strlen($asset['startDate']) > 0 and !!\util\DateLib::isValid($asset['startDate']) === FALSE)
-			) {
-				$errors[] = 'startDate';
-			}
-			if($asset['startDate'] > date('Y-m-d')) {
-				$errors[] = 'startDateFuture';
-			}
 			if(!$asset['accountId']) {
 				$errors[] = 'accountId';
 			}
 
-			if($asset['residualValue'] >= $asset['value']) {
-				$errors[] = 'residualValue';
-			}
-			if($asset['economicAmortization'] > $asset['value']) {
-				$errors[] = 'economicAmortization';
-			}
 			if($asset['economicAmortization'] === 0.0 and $asset['startDate'] < $eFinancialYear['startDate'] and $asset['economicMode'] !== Asset::WITHOUT) {
 				$errors[] = 'economicAmortization';
 			}
+
+			$eAsset->build($properties, array_filter($asset, fn($key) => in_array($key, $properties), ARRAY_FILTER_USE_KEY), $p);
+
+			$errors = array_merge($errors, $p->getInvalidMessages());
 
 			$errors = array_unique(array_filter($errors));
 			$assets[$key]['errors'] = $errors;

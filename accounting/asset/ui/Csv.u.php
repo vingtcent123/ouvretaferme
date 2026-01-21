@@ -86,68 +86,80 @@ class CsvUi {
 							$h .= '</td>';
 
 							$h .= '<td class="text-end">';
-								$h .= \util\TextUi::money($asset['value']);
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'value')) !== NULL) {
+									$h .= $this->displayDanger(encode($asset['value']));
+								} else {
+									$h .= \util\TextUi::money($asset['value']);
+								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-end">';
-								$h .= \util\TextUi::money($asset['residualValue']);
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'residualValue')) !== NULL) {
+									$h .= $this->displayDanger(encode($asset['residualValue']));
+								} else {
+									$h .= \util\TextUi::money($asset['residualValue']);
+								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-center">';
-								if(in_array('acquisitionDate', $asset['errors'])) {
-									$h .= $this->displayDanger($asset['acquisitionDate']);
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'acquisitionDate')) !== NULL) {
+									$h .= $this->displayDanger(encode($asset['acquisitionDate']));
 								} else {
 									$h .= \util\DateUi::numeric($asset['acquisitionDate']);
 								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-center">';
-								if(in_array('startDate', $asset['errors'])) {
-									$h .= $this->displayDanger($asset['startDate']);
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'startDate')) !== NULL) {
+									$h .= $this->displayDanger(encode($asset['startDate']));
 								} else {
 									$h .= \util\DateUi::numeric($asset['startDate']);
 								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-center">';
-								if(in_array('economicMode', $asset['errors'])) {
-									$h .= $this->displayDanger(match($asset['economicMode']) {
+								$economicMode = match($asset['economicMode']) {
 										AssetElement::LINEAR => s("L"),
 										AssetElement::DEGRESSIVE => s("D"),
 										AssetElement::WITHOUT => s("S"),
 										default => '?'
-									});
-								} else {
-									$h .= match($asset['economicMode']) {
-										AssetElement::LINEAR => s("L"),
-										AssetElement::DEGRESSIVE => s("D"),
-										AssetElement::WITHOUT => s("S"),
 									};
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'economicMode')) !== NULL) {
+									$h .= $this->displayDanger(encode($economicMode));
+								} else {
+									$h .= encode($economicMode);
 								}
 								$h .= '/';
-								if(in_array('fiscalMode', $asset['errors'])) {
-									$h .= $this->displayDanger(match($asset['fiscalMode']) {
+								$fiscalMode = match($asset['fiscalMode']) {
 										AssetElement::LINEAR => s("L"),
 										AssetElement::DEGRESSIVE => s("D"),
 										AssetElement::WITHOUT => s("S"),
 										default => '?'
-									});
-								} else {
-									$h .= match($asset['fiscalMode']) {
-										AssetElement::LINEAR => s("L"),
-										AssetElement::DEGRESSIVE => s("D"),
-										AssetElement::WITHOUT => s("S"),
 									};
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'fiscalMode')) !== NULL) {
+									$h .= $this->displayDanger(encode($fiscalMode));
+								} else {
+									$h .= encode($fiscalMode);
 								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-center">';
-								$h .= encode($asset['economicDuration']).'/'.encode($asset['fiscalDuration']);
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'economicDuration')) !== NULL) {
+									$h .= $this->displayDanger(encode($asset['economicDuration']));
+								} else {
+									$h .= encode($asset['economicDuration']);
+								}
+								$h .= '/';
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'fiscalDuration')) !== NULL) {
+									$h .= $this->displayDanger(encode($asset['fiscalDuration']));
+								} else {
+									$h .= encode($asset['fiscalDuration']);
+								}
 							$h .= '</td>';
 
 
 							$h .= '<td class="text-end">';
-								if(in_array('economicAmortization', $asset['errors'])) {
+								if(count($asset['errors']) > 0 and array_find($asset['errors'], fn($value) => str_contains($value, 'economicAmortization')) !== NULL) {
 									$h .= $this->displayDanger(\util\TextUi::money($asset['economicAmortization']));
 								} else {
 									$h .= \util\TextUi::money($asset['economicAmortization']);
@@ -162,7 +174,11 @@ class CsvUi {
 									$h .= '<ul>';
 										foreach($asset['errors'] as $error) {
 											$h .= '<li>';
-												$h .= $messages[$error];
+												if(isset($messages[$error])) {
+													$h .= $messages[$error];
+												} else {
+													$h .= \util\TextUi::error($error);
+												}
 											$h .= '</li>';
 										}
 									$h .= '</ul>';
