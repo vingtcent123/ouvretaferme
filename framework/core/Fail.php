@@ -425,7 +425,7 @@ class FailException extends Exception {
 		public ?string $wrapper = NULL
 	) {
 
-		if(str_contains('\\', $failName) === FALSE) {
+		if(str_contains($failName, '\\') === FALSE) {
 			throw new Exception('Missing namespace');
 		}
 
