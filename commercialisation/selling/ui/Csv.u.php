@@ -517,22 +517,7 @@ class CsvUi {
 							'legalNameIncompatible' => s("La raison sociale sera ignorée car c'est un client particulier"),
 							'countryMissing' => s("Vous devez indiquer au moins un pays (livraison ou facturation) pour le client"),
 							'groupError' => s("Un ou plusieurs groupes ne sont pas reconnus"),
-							'invoiceCountryError' => s("Le pays de facturation n'est pas reconnu"),
-							'invoiceStreet1Error' => s("L'adresse est incorrecte"),
-							'invoicePostCodeError' => s("Le code postal est incorrect"),
-							'invoiceCityError' => s("La ville est incorrecte"),
-							'invoiceAddressError' => s("L'adresse de facturation est incomplète (la première ligne, le code postal et la ville sont requis)"),
-							'deliveryCountryError' => s("Le pays de livraison n'est pas reconnu"),
-							'deliveryStreet1Error' => s("L'adresse est incorrecte"),
-							'deliveryPostCodeError' => s("Le code postal est incorrect"),
-							'deliveryCityError' => s("La ville est incorrecte"),
-							'deliveryAddressError' => s("L'adresse de livraison est incomplète (la première ligne, le code postal et la ville sont requis)"),
-							'emailError' => s("L'adresse e-mail est incorrecte"),
 							'emailExisting' => s("Vous avez déjà un client avec la même adresse e-mail et ce client ne sera pas importé à nouveau"),
-							'phoneError' => s("Le numéro de téléphone est incorrect"),
-							'contactNameError' => s("Le contact est incorrect"),
-							'siretError' => s("Le SIRET est incorrect"),
-							'vatNumberError' => s("Le numéro de TVA est incorrect"),
 							'inviteNoEmail' => s("Vous ne pouvez pas inviter ce client à créer un compte client si vous ne fournissez pas d'adresse e-mail"),
 						];
 
@@ -545,7 +530,9 @@ class CsvUi {
 											\util\TextUi::error($error) :
 											$messages[$error];
 
-										$h .= '<li class="color-danger">'.$text.'</li>';
+										if($text !== '') {
+											$h .= '<li class="color-danger">'.$text.'</li>';
+										}
 
 									}
 									foreach($customer['warnings'] as $warning) {
