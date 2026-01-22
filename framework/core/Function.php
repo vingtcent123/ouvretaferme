@@ -1104,4 +1104,8 @@ function isIPIn(string $givenIp, $expectedNets, string $mask = '255.255.255.255'
 	}
 	return $valid;
 }
+
+class UnsupportedException extends Exception {
+
+}
 ?>

@@ -89,7 +89,7 @@ class RelationLib extends RelationCrud {
 
 	public static function delete(Relation $e): void {
 
-		throw new \Exception('Not implemented');
+		throw new \UnsupportedException();
 
 	}
 

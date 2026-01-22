@@ -206,7 +206,7 @@ new Page(function($data) {
 		throw new ReloadAction();
 
 	})
-	->post('doUpdatePaymentMethodCollection', function($data) {
+	->post('doUpdatePaymentCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptUpdatePayment');
 

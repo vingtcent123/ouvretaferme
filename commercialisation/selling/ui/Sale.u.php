@@ -702,10 +702,10 @@ class SaleUi {
 			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment" data-batch-contains="count" data-batch-only="hide"></span></div>';
 			foreach($cPaymentMethod as $ePaymentMethod) {
 				if($ePaymentMethod->acceptManualUpdate()) {
-					$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentMethodCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+					$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 				}
 			}
-			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentMethodCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
 			$menu .= '<div class="dropdown-subtitle">'.s("Changer l'état du paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment-status" data-batch-always="count" data-batch-only="hide"></span></div>';
 			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Sale::PAID).'</a>';
 			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::NOT_PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Sale::NOT_PAID).'</a>';
@@ -2202,6 +2202,19 @@ class SaleUi {
 
 		$h = $form->openAjax('/selling/sale:doDuplicate');
 
+			$h .= '<div class="util-block-info">';
+				$h .= '<h3>'.s("Dupliquer une vente").'</h3>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("La vente sera dupliquée avec l'ensemble des articles de la vente initiale").'</li>';
+					if($eSale['cPayment']->notEmpty()) {
+						$h .= '<li>'.s("Les moyens de paiement ne sont pas copiés mais si le client a un moyen de paiement par défaut, celui-ci est utilisé").'</li>';
+					}
+					if($eSale['shop']->notEmpty()) {
+						$h .= '<li>'.s("La vente dupliquée sera dissociée à la boutique {value}", '<u>'.encode($eSale['shop']['name']).'</u>').'</li>';
+					}
+				$h .= '</ul>';
+			$h .= '</div>';
+
 			$h .= $form->hidden('id', $eSale['id']);
 
 			$h .= $form->group(
@@ -2220,10 +2233,6 @@ class SaleUi {
 			);
 
 			$h .= $this->getPreparationStatusField($form, $eSale);
-
-			$h .= $form->group(
-				content: '<div class="util-info">'.s("La vente sera dupliquée avec l'ensemble des articles de la vente initiale.").'</div>'
-			);
 
 			$h .= $form->group(
 				content: $form->submit(s("Dupliquer"))

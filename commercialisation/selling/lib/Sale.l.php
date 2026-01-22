@@ -676,6 +676,8 @@ class SaleLib extends SaleCrud {
 
 		if($e->isSale()) {
 
+			$e->expects(['shop']);
+
 			if($e['shop']->empty()) {
 
 				if($e['customer']['defaultPaymentMethod']->notEmpty()) {
@@ -743,19 +745,7 @@ class SaleLib extends SaleCrud {
 		}
 
 		if($ePaymentMethod->notEmpty()) {
-
-			$ePayment = new Payment([
-				'sale' => $e,
-				'customer' => $e['customer'],
-				'farm' => $e['farm'],
-				'checkoutId' => NULL,
-				'method' => $e['customer']['defaultPaymentMethod'],
-				'amountIncludingVat' => $e['priceIncludingVat'],
-				'onlineStatus' => NULL,
-			]);
-
-			Payment::model()->insert($ePayment);
-
+			PaymentLib::createByMethod($e, $ePaymentMethod);
 		}
 
 		if($e->isComposition()) {
@@ -851,7 +841,12 @@ class SaleLib extends SaleCrud {
 
 		self::create($e);
 
-		\selling\PaymentLib::fillDefaultMarketPayment($e);
+		$eMethod = $eSale['farm']->getConf('marketSalePaymentMethod');
+
+		if($eMethod->notEmpty()) {
+			$eMethod = \payment\MethodLib::getById($eMethod['id']);
+			PaymentLib::createByMethod($eSale, $eMethod);
+		}
 
 		return $e;
 
@@ -867,7 +862,9 @@ class SaleLib extends SaleCrud {
 			[
 				'id', 'createdAt', 'createdBy',
 				'closed', 'closedBy', 'closedAt',
-				'invoice', 'orderFormValidUntil', 'orderFormPaymentCondition'
+				'invoice', 'orderFormValidUntil', 'orderFormPaymentCondition',
+				// On ne conserve pas les informations de boutique
+				'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment'
 			]
 		);
 		
@@ -881,6 +878,8 @@ class SaleLib extends SaleCrud {
 
 		// Ajouter une nouvelle vente
 		$eSaleNew = new Sale($eSale->extracts($properties));
+		$eSaleNew['shop'] = new \shop\Shop();
+
 		$eSaleNew['paymentStatus'] = NULL;
 
 		if($eSaleNew->isMarket()) {
@@ -940,7 +939,7 @@ class SaleLib extends SaleCrud {
 			return;
 		}
 
-		self::update($e, ['shop', 'shopDate']);
+		self::update($e, ['shop', 'shopDate', 'shopShared']);
 
 	}
 
@@ -948,7 +947,7 @@ class SaleLib extends SaleCrud {
 
 		$e->build(['shopDate'], [], new \Properties('update'));
 
-		$properties = ['shop', 'shopDate'];
+		$properties = ['shop', 'shopDate', 'shopShared'];
 
 		if($e['preparationStatus'] === Sale::BASKET) {
 
@@ -1196,14 +1195,14 @@ class SaleLib extends SaleCrud {
 
 		if($updatePayments) {
 
-			\selling\PaymentLib::deleteBySale($e);
+			$values = $e['cPayment']->toArray(function(Payment $ePayment) {
+				return [
+					'method' => $ePayment['method'],
+					'amount' => $ePayment['amountIncludingVat']
+				];
+			});
 
-			if($e['cPayment']->notEmpty() and $e->isMarketSale() === FALSE) {
-
-				foreach($e['cPayment'] as $ePayment) {
-					PaymentLib::createBySale($e, $ePayment['method']);
-				}
-			}
+			PaymentLib::replaceSeveralBySale($e, $values);
 
 			// Si on a mis à jour et qu'il ne reste plus de paiement en ligne
 			if($e['onlinePaymentStatus'] !== NULL) {
@@ -1451,6 +1450,8 @@ class SaleLib extends SaleCrud {
 			if($e->isComposition()) {
 				self::reorderComposition($e);
 			}
+
+			PaymentLib::deleteBySale($e);
 
 		}
 

@@ -453,32 +453,6 @@ new \selling\SalePage()
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
-	->write('doUpdatePaymentMethod', function($data) {
-
-		$action = POST('action', 'string', 'update');
-		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse', 'acceptManualUpdate');
-
-		switch($action) {
-			case 'update':
-				$ePayment = \selling\PaymentLib::getById(POST('payment'));
-				\selling\PaymentLib::updateBySaleAndMethod($data->e, $eMethod, $ePayment);
-				break;
-
-			case 'remove':
-				\selling\PaymentLib::deleteBySaleAndMethod($data->e, $eMethod);
-				break;
-
-			case 'add':
-				\selling\PaymentLib::createByMarketSale($data->e, $eMethod);
-				break;
-
-			default:
-				throw new NotExpectedAction('Unknown action "'.$action.'"');
-
-		}
-
-		throw new ReloadAction();
-	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->write('doUpdateNeverPaid', function($data) {
 
 		\selling\SaleLib::updateNeverPaid($data->e);
@@ -493,14 +467,6 @@ new \selling\SalePage()
 		throw new ReloadLayerAction();
 
 	}, validate: ['canWrite', 'acceptUpdatePayment'])
-	->write('doFillPaymentMethod', function($data) {
-
-		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
-
-		\selling\PaymentLib::fill($data->e, eMethod: $eMethod);
-
-		throw new ReloadLayerAction();
-	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
@@ -642,7 +608,7 @@ new Page(function($data) {
 		throw new ReloadAction();
 
 	})
-	->post('doUpdatePaymentMethodCollection', function($data) {
+	->post('doUpdatePaymentCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptUpdatePayment');
 

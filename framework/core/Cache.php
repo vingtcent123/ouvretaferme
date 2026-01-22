@@ -187,7 +187,7 @@ abstract class Cache {
 	 * @return int/bool Current increment value
 	 */
 	public function increment(string $key, int $value = 1, ?int $timeout = NULL) {
-		throw new Exception("Not implemented");
+		throw new UnsupportedException();
 	}
 
 	/**
@@ -202,7 +202,7 @@ abstract class Cache {
 	 * @return int/bool Current increment value
 	 */
 	public function decrement(string $key, int $value = 1, ?int $timeout = NULL) {
-		throw new Exception("Not implemented");
+		throw new UnsupportedException();
 	}
 
 	/**
@@ -212,7 +212,7 @@ abstract class Cache {
 	 * @param string $value
 	 */
 	public function append(string $key, $value) {
-		throw new Exception("Not implemented");
+		throw new UnsupportedException();
 	}
 
 	/**
@@ -222,7 +222,7 @@ abstract class Cache {
 	 * @param string $value
 	 */
 	public function prepend(string $key, $value) {
-		throw new Exception("Not implemented");
+		throw new UnsupportedException();
 	}
 
 	/**

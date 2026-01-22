@@ -26,5 +26,6 @@ class Payment extends PaymentElement {
 		return $this['method']->isOnline() === FALSE or $this['onlineStatus'] === Payment::SUCCESS;
 
 	}
+
 }
 ?>

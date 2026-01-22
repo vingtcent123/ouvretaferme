@@ -285,7 +285,7 @@ class FarmLib extends FarmCrud {
 
 	public static function delete(Farm $e): void {
 
-		throw new \Exception('Not implemented');
+		throw new \UnsupportedException();
 
 	}
 

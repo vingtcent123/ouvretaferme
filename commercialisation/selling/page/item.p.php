@@ -133,8 +133,6 @@ new \selling\ItemPage()
 
 		} else {
 
-			\selling\PaymentLib::fillOnlyMarketPayment($data->e['sale']);
-
 			$data->e['sale'] = \selling\SaleLib::getById($data->e['sale'], \selling\Sale::getSelection() + [
 				'createdBy' => ['firstName', 'lastName', 'vignette'],
 				'cPayment' => \selling\PaymentLib::delegateBySale(),

@@ -533,7 +533,7 @@ class SaleLib {
 		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
 		\selling\SaleLib::update($eSale, $properties);
-		$ePayment = \selling\PaymentLib::createBySale($eSale, $eMethod, $stripeSession['id']);
+		$ePayment = \selling\PaymentLib::createByMethod($eSale, $eMethod, checkoutId: $stripeSession['id']);
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
 		\selling\Sale::model()->commit();
@@ -566,8 +566,7 @@ class SaleLib {
 
 		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);
 
-		\selling\PaymentLib::deleteBySale($eSale);
-		\selling\PaymentLib::putBySale($eSale, $eMethod);
+		\selling\PaymentLib::replaceBySale($eSale, $eMethod);
 
 		// On re-récupère la liste de moyens de paiement à jour (pour le notify)
 		$eSale['cPayment'] = \selling\PaymentLib::getBySale($eSale);

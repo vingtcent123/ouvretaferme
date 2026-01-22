@@ -51,6 +51,7 @@ class PaymentModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'amountIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'method' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
+			'methodName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'onlineStatus' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE, \selling\Payment::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
@@ -58,7 +59,7 @@ class PaymentModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'checkoutId', 'paymentIntentId', 'onlineStatus', 'createdAt'
+			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'checkoutId', 'paymentIntentId', 'onlineStatus', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -138,6 +139,10 @@ class PaymentModel extends \ModuleModel {
 
 	public function whereMethod(...$data): PaymentModel {
 		return $this->where('method', ...$data);
+	}
+
+	public function whereMethodName(...$data): PaymentModel {
+		return $this->where('methodName', ...$data);
 	}
 
 	public function whereCheckoutId(...$data): PaymentModel {

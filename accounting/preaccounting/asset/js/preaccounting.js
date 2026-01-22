@@ -41,21 +41,6 @@ class Preaccounting {
 			.fetch();
 	}
 
-	static updatePaymentMethodForSale(target) {
-
-		const sale = target.dataset.sale;
-		const paymentMethod = target.options[target.selectedIndex].value;
-		const paymentStatus = target.dataset.paymentStatus;
-
-		new Ajax.Query()
-			.url('/selling/sale:doUpdatePaymentMethod')
-			.method('post')
-			.body({
-					id: sale, paymentMethod, paymentStatus, action: 'update',
-			})
-			.fetch();
-	}
-
 	static export() {
 
 		if(qs('[data-accounting-action="export"]').classList.contains('btn-warning')) {

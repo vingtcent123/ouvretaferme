@@ -199,6 +199,7 @@ Payment:
   farm: farm\Farm
   amountIncludingVat: ?decimal(8, 2)
   method: ?payment\Method
+  methodName: ?text8
   checkoutId: ?text8
   paymentIntentId: ?text8
   onlineStatus: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)

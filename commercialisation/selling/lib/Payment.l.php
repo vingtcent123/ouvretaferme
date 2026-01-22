@@ -3,6 +3,35 @@ namespace selling;
 
 class PaymentLib extends PaymentCrud {
 
+	// Les accès CRUD sont contrôlés par des méthodes spécialisées
+
+	public static function create(Payment $e): void {
+		throw new \UnsupportedException();
+	}
+
+	public static function update(Payment $e, array $properties): void {
+
+		if(array_diff($properties, ['method', 'amountIncludingVat']) !== []) {
+			throw new \UnsupportedException();
+		}
+
+		if(in_array('method', $properties)) {
+
+			$e['method']->expects(['name']);
+
+			$e['methodName'] = $e['method']['name'];
+			$properties[] = 'methodName';
+
+		}
+
+		parent::update($e, $properties);
+
+	}
+
+	public static function delete(Payment $e): void {
+		throw new \UnsupportedException();
+	}
+
 	public static function delegateBySale(): PaymentModel {
 
 		return Payment::model()
@@ -93,68 +122,6 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function createByMarketSale(Sale $eSale, \payment\Method $eMethod): void {
-
-		if($eMethod->empty() or $eSale->isMarketSale() === FALSE) {
-			return;
-		}
-
-		$eSale->expects(['customer', 'farm']);
-
-		$ePayment = Payment::model()
-			->select(Payment::getSelection())
-			->whereFarm($eSale['farm'])
-			->whereSale($eSale)
-			->whereMethod($eMethod)
-			->get();
-
-		if($ePayment->notEmpty()) {
-			self::fill($eSale, $eMethod);
-			return;
-		}
-
-		$amount = max(0, $eSale['priceIncludingVat'] - self::sumTotalBySale($eSale));
-
-		$ePayment = new Payment([
-			'sale' => $eSale,
-			'customer' => $eSale['customer'],
-			'farm' => $eSale['farm'],
-			'method' => $eMethod,
-			'amountIncludingVat' => $amount,
-		]);
-
-		Payment::model()->insert($ePayment);
-
-		self::fillOnlyMarketPayment($eSale);
-
-	}
-
-	public static function createBySale(Sale $eSale, \payment\Method $eMethod, ?string $providerId = NULL): Payment {
-
-		if($eMethod->empty()) {
-			return new Payment();
-		}
-
-		$eSale->expects(['customer', 'farm']);
-
-		$onlineStatus = ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::INITIALIZED : NULL;
-
-		$ePayment = new Payment([
-			'sale' => $eSale,
-			'customer' => $eSale['customer'],
-			'farm' => $eSale['farm'],
-			'checkoutId' => $providerId,
-			'method' => $eMethod,
-			'amountIncludingVat' => $eSale['priceIncludingVat'],
-			'onlineStatus' => $onlineStatus,
-		]);
-
-		Payment::model()->insert($ePayment);
-
-		return $ePayment;
-
-	}
-
 	/**
 	 * Expire les paiements par CB en ligne
 	 * OU supprime tous les autres moyens de paiement
@@ -202,91 +169,25 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function sumTotalBySale(Sale $eSale): float {
+	public static function getBySale(Sale $eSale, bool $onlyPaid = FALSE): \Collection {
 
-		$ePayment = new Payment();
-		Payment::model()
-			->select(['sum' => new \Sql('SUM(amountIncludingVat)')])
-			->whereSale($eSale)
-			->or(
-				fn() => $this->whereOnlineStatus(NULL),
-				fn() => $this->whereOnlineStatus(Payment::SUCCESS),
-			)
-			->get($ePayment);
-
-		return $ePayment['sum'] ?? 0;
-
-	}
-
-	public static function fillOnlyMarketPayment(Sale $eSale): void {
-
-		$cPayment = self::getBySale($eSale);
-
-		if($cPayment->count() !== 1) {
-			return;
-		}
-
-		self::doFill($eSale, $cPayment->first(), $cPayment);
-
-	}
-
-	public static function fillDefaultMarketPayment(Sale $eSale): void {
-
-		$eMethod = $eSale['farm']->getConf('marketSalePaymentMethod');
-
-		if($eMethod->notEmpty()) {
-			$eMethod = \payment\MethodLib::getById($eMethod['id']);
-			self::createBySale($eSale, $eMethod);
-		}
-
-	}
-
-	public static function fill(Sale $eSale, \payment\Method $eMethod): void {
-
-		$cPayment = self::getBySale($eSale);
-
-		// Paiement non trouvé
-		$cPaymentFound = $cPayment->find(fn($ePayment) => (($ePayment['method']['id']) ?? NULL) === $eMethod['id']);
-		if($cPaymentFound->count() === 0) {
-			return;
-		}
-
-		$ePayment = $cPaymentFound->first();
-
-		self::doFill($eSale, $ePayment, $cPayment);
-	}
-
-	private static function doFill(Sale $eSale, Payment $ePayment, \Collection $cPayment): void {
-
-		$total = $cPayment->reduce(fn($e, $value) => ($e['id'] !== $ePayment['id']) ? ($e['amountIncludingVat'] + $value) : $value, 0);
-
-		$ePayment['amountIncludingVat'] = max(0, $eSale['priceIncludingVat'] - $total);
-
-		Payment::model()
-			->select('amountIncludingVat')
-			->update($ePayment);
-
-	}
-
-	public static function getBySale(Sale $eSale): \Collection {
-
-		return Payment::model()
+		$cPayment = Payment::model()
 			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
 			->whereSale($eSale)
 			->sort(['createdAt' => SORT_DESC])
 			->getCollection();
 
+		if($onlyPaid) {
+			$cPayment->filter(fn($ePayment) => $ePayment->isPaid());
+		}
+
+		return $cPayment;
+
 	}
 
-	public static function getBySaleAndMethod(Sale $eSale, ?string $methodFqn): Payment {
+	public static function getByMethod(Sale $eSale, \payment\Method $eMethod): Payment {
 
 		$ePayment = new Payment();
-
-		if($methodFqn !== NULL) {
-			$eMethod = \payment\MethodLib::getByFqn($methodFqn);
-		} else {
-			$eMethod = new \payment\Method();
-		}
 
 		Payment::model()
 			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
@@ -298,51 +199,150 @@ class PaymentLib extends PaymentCrud {
 		return $ePayment;
 	}
 
-	public static function deleteBySaleAndMethod(Sale $eSale, \payment\Method $eMethod): void {
+	/**
+	 * Remplis la vente avec le moyen de paiement renseigné pour que le total des paiements corresponde au total de la vente
+	 * Si aucun moyen de paiement n'est renseigné, on utilise le moyen de paiement actuel de la vente si il est renseigné et qu'il n'y en a qu'un
+	 */
+	public static function fillByMethod(Sale $eSale, \payment\Method $eMethod = new \payment\Method()): void {
+
+		if(
+			$eMethod->notEmpty() and
+			$eMethod->isOnline()
+		) {
+			throw new \UnsupportedException();
+		}
+
+		Payment::model()->beginTransaction();
+
+			$cPayment = self::getBySale($eSale, onlyPaid: TRUE);
+
+			if($eMethod->empty()) {
+
+				if($cPayment->count() !== 1) {
+					Payment::model()->rollBack();
+					return;
+				}
+
+				$eMethod = $cPayment->first()['method'];
+
+			}
+
+			$currentAmount = 0;
+			$ePaymentWithMethod = new \payment\Method();
+
+			foreach($cPayment as $ePayment) {
+
+				if($ePayment->isPaid()) {
+
+					$currentAmount += $ePayment['amountIncludingVat'];
+
+					if($ePayment['method']->is($eMethod)) {
+						$ePaymentWithMethod = $ePayment;
+					}
+
+				}
+
+			}
+
+			if($ePaymentWithMethod->notEmpty()) {
+
+				$fillAmount =  $eSale['priceIncludingVat'] - $currentAmount + $ePaymentWithMethod['amountIncludingVat'];
+
+				Payment::model()
+					->whereSale($eSale)
+					->whereMethod($eMethod)
+					->update([
+						'amountIncludingVat' => $fillAmount
+					]);
+
+			} else {
+
+				$fillAmount = max(0.0, $eSale['priceIncludingVat'] - $currentAmount);
+
+				self::createByMethod($eSale, $eMethod, $fillAmount);
+
+			}
+
+		Payment::model()->commit();
+
+	}
+
+	public static function createByMethod(Sale $eSale, \payment\Method $eMethod, ?float $amount = NULL, ?string $checkoutId = NULL): Payment {
+
+		if($eMethod->empty()) {
+			return new Payment();
+		}
+
+		$eMethod->expects([
+			'fqn',
+			'name'
+		]);
+
+		$eSale->expects([
+			'farm', 'customer'
+		]);
+
+		$ePayment = new Payment([
+			'sale' => $eSale,
+			'customer' => $eSale['customer'],
+			'farm' => $eSale['farm'],
+			'checkoutId' => $checkoutId,
+			'method' => $eMethod,
+			'methodName' => $eMethod['name'],
+			'amountIncludingVat' => $amount ?? $eSale['priceIncludingVat'],
+			'onlineStatus' => ($eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) ? Payment::INITIALIZED : NULL,
+		]);
+
+		Payment::model()->insert($ePayment);
+
+		return $ePayment;
+
+	}
+
+	public static function deleteByMethod(Sale $eSale, \payment\Method $eMethod): void {
 
 		Payment::model()
 			->whereSale($eSale)
 			->whereMethod($eMethod)
 			->delete();
 
-		self::fillOnlyMarketPayment($eSale);
-
 	}
 
-	public static function updateBySaleAndMethod(Sale $eSale, \payment\Method $eMethod, Payment $ePayment): void {
+	public static function updateMethod(Payment $ePayment, \payment\Method $eMethod): void {
 
-		$ePayment->expects(['id', 'method' => ['id']]);
+		$ePayment->expects(['id', 'sale', 'method']);
 
-		$hasNew = Payment::model()
+		$eSale = $ePayment['sale'];
+
+		$isExisting = Payment::model()
 			->whereSale($eSale)
 			->whereMethod($eMethod)
 			->exists();
 
-		if($hasNew) {
-			throw new \NotExpectedAction('Unable to update a payment method that has not been previously selected.');
-		}
-
-		$hasOld = Payment::model()
-      ->whereSale($eSale)
-      ->whereMethod($ePayment['method'])
-      ->exists();
-
-		if($hasOld === FALSE) {
-			throw new \NotExpectedAction('Unable to update a payment method that has already been selected.');
+		if($isExisting) {
+			return;
 		}
 
 		$ePayment['method'] = $eMethod;
 
 		self::update($ePayment, ['method']);
 
-		self::fillOnlyMarketPayment($eSale);
+	}
+
+	public static function replaceBySale(Sale $eSale, \payment\Method $eMethod, ?float $amount = NULL, ?string $checkoutId = NULL): void {
+
+		self::deleteBySale($eSale);
+		self::createByMethod($eSale, $eMethod, $amount, $checkoutId);
 
 	}
 
-	public static function putBySale(Sale $eSale, \payment\Method $eMethod): void {
+	public static function replaceSeveralBySale(Sale $eSale, array $values): void {
 
 		self::deleteBySale($eSale);
-		self::createBySale($eSale, $eMethod);
+
+		foreach($values as $value) {
+			PaymentLib::createByMethod($eSale, $value['method'], $value['amount']);
+		}
 
 	}
 

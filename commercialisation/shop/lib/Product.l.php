@@ -12,7 +12,7 @@ class ProductLib extends ProductCrud {
 			if($eProduct['parent']) {
 				return ['parentName', 'children'];
 			} else {
-				throw new \Exception('Not implemented');
+				throw new \UnsupportedException();
 			}
 
 		};
