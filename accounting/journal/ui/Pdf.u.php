@@ -4,34 +4,24 @@ namespace journal;
 class PdfUi {
 
 	public function __construct() {
-
-		\Asset::css('company', 'pdf.css');
-
 	}
 
-	public function balance(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, array $trialBalanceData, array $trialBalancePreviousData): string {
+	public function balance(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, array $trialBalanceData, array $trialBalancePreviousData, string $type): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
+		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
-		$h = '<div class="pdf-document-wrapper">';
+		$h = '<table class="pdf-table-bordered">';
 
-			$h .= '<div class="pdf-document-content">';
+			$h .= '<thead>';
+				$h .= new BalanceUi()->getPdfTHead($header, $eFinancialYear, $eFinancialYearPrevious);
+			$h .= '</thead>';
 
-				$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
+			$h .= '<tbody>';
+				$h .= new BalanceUi()->getPdfTBody($eFinancialYearPrevious, $trialBalanceData, $trialBalancePreviousData, $type);
+			$h .= '</tbody>';
 
-					$h .= '<thead>';
-						$h .= new BalanceUi()->getPdfTHead($eFinancialYear, $eFinancialYearPrevious);
-					$h .= '</thead>';
-
-					$h .= '<tbody>';
-						$h .= new BalanceUi()->getPdfTBody($eFinancialYearPrevious, $trialBalanceData, $trialBalancePreviousData);
-					$h .= '</tbody>';
-
-				$h .= '</table>';
-
-			$h .= '</div>';
-
-		$h .= '</div>';
+		$h .= '</table>';
 
 		return $h;
 

@@ -153,21 +153,14 @@ Class AmortizationUi {
 
 	}
 
-	public static function getPdfTHead(array $amortizations, ?string $type): string {
+	public static function getPdfTHead(string $header, array $amortizations, ?string $type): string {
 
 		$showExcessColumns = array_find($amortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL;
 		$showGrossValueDiminutionColumn = array_find($amortizations, fn($amortization) => $amortization['grossValueDiminution'] > 0) !== NULL;
 
-		$colspan = 9;
-		if($showGrossValueDiminutionColumn) {
-			$colspan++;
-		}
-		if($showExcessColumns) {
-			$colspan +=5;
-		}
-
-		$h = '<tr class="tr-bold">';
-			$h .= '<th colspan="'.$colspan.'" class="text-center">'.match($type) {
+		$h = $header;
+		$h .= '<tr class="tr-bold">';
+			$h .= '<th colspan="99" class="text-center">'.match($type) {
 				'asset' => s("Immobilisations"),
 				'grant' => s("Subventions"),
 			}.'</th>';
@@ -188,7 +181,8 @@ Class AmortizationUi {
 		$h .= '</tr>';
 		$h .= '<tr>';
 			$h .= '<th class="text-center">'.s("Libellé").'</th>';
-			$h .= '<th class="text-center">'.s("Date").'</th>';
+			$h .= '<th class="text-center">'.s("Date acquisition").'</th>';
+			$h .= '<th class="text-center">'.s("Date mise en service").'</th>';
 			$h .= '<th class="text-center border-bottom">'.s("Mode E/F").'</th>';
 			$h .= '<th class="text-center border-bottom">'.s("Durée").'</th>';
 			$h .= '<th class="text-center">'.s("Début exercice").'</th>';

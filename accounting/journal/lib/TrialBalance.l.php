@@ -76,7 +76,7 @@ Class TrialBalanceLib {
 
 			$data[$eOperation['label']] = [
 				'account' => $account,
-				'accountDetail' => mb_strlen($account) < $precision ? ' ('.$eOperation['label'].')' : '',
+				'accountDetail' => mb_strlen($account) < $precision ? $eOperation['label'] : '',
 				'debit' => $eOperation['debit'],
 				'credit' => $eOperation['credit'],
 				'accountLabel' => $label,

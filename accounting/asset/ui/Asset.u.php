@@ -366,9 +366,9 @@ Class AssetUi {
 
 	}
 
-	public function getTHead(?string $type): string {
+	public function getTHead(?string $type, string $header): string {
 
-		$h = '';
+		$h = $header;
 
 		if($type) {
 			$h .= '<tr>';
@@ -390,8 +390,8 @@ Class AssetUi {
 			$h .= '<th class="text-end '.($type === NULL ? 'highlight-stick-left' : '').'" rowspan="2">'.s("Base amortissable").'</th>';
 		$h .= '</tr>';
 		$h .= '<tr>';
-			$h .= '<th class="text-center">'.s("Eco").'</th>';
-			$h .= '<th class="text-center">'.s("Fiscal").'</th>';
+			$h .= '<th class="text-center" style="border-left: 0;">'.s("Eco").'</th>';
+			$h .= '<th class="text-center" style="border-right: 0;">'.s("Fiscal").'</th>';
 		$h .= '</tr>';
 
 		return $h;
@@ -465,7 +465,6 @@ Class AssetUi {
 			$h .= '<td></td>';
 			$h .= '<td></td>';
 			$h .= '<td></td>';
-			$h .= '<td></td>';
 			$h .= '<td class="text-end">'.$this->number($total, '', 2).'</td>';
 			$h .= '<td class="text-end">'.$this->number($totalAmortizable, '', 2).'</td>';
 		$h .= '</tr>';
@@ -486,7 +485,7 @@ Class AssetUi {
 			$h .= '<table class="tr-even td-vertical-top tr-hover">';
 
 				$h .= '<thead class="thead-sticky">';
-					$h .= $this->getTHead(NULL);
+					$h .= $this->getTHead(NULL, '');
 				$h .= '</thead>';
 
 				$h .= '<tbody>';

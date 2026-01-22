@@ -10,50 +10,48 @@ class PdfUi {
 	}
 
 	public function getAcquisitions(
+		\farm\Farm $eFarm,
 		\Collection $cAsset,
 		\Collection $cAssetGrant,
 	): string {
 
-		$h = '<div class="pdf-document-wrapper">';
+		$eFinancialYear = $eFarm['eFinancialYear'];
+		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_ACQUISITION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
-			$h .= '<div class="pdf-document-content">';
+		$h = '';
 
-				if($cAsset->notEmpty()) {
+		if($cAsset->notEmpty()) {
 
-					$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
+			$h .= '<table class="pdf-table-bordered">';
 
-						$h .= '<thead>';
-							$h .= new AssetUi()->getTHead('asset');
-						$h .= '</thead>';
+				$h .= '<thead>';
+					$h .= new AssetUi()->getTHead('asset', $header);
+				$h .= '</thead>';
 
-						$h .= '<tbody>';
-							$h .= new AssetUi()->getPdfTBody($cAsset, 'asset');
-						$h .= '</tbody>';
+				$h .= '<tbody>';
+					$h .= new AssetUi()->getPdfTBody($cAsset, 'asset');
+				$h .= '</tbody>';
 
-					$h .= '</table>';
+			$h .= '</table>';
 
-				}
+		}
 
-				if($cAssetGrant->notEmpty()) {
+		if($cAssetGrant->notEmpty()) {
 
-					$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
+			$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
 
-						$h .= '<thead>';
-							$h .= new AssetUi()->getTHead('grant');
-						$h .= '</thead>';
+				$h .= '<thead>';
+					$h .= new AssetUi()->getTHead('grant', $header);
+				$h .= '</thead>';
 
-						$h .= '<tbody>';
-							$h .= new AssetUi()->getPdfTBody($cAssetGrant, 'grant');
-						$h .= '</tbody>';
+				$h .= '<tbody>';
+					$h .= new AssetUi()->getPdfTBody($cAssetGrant, 'grant');
+				$h .= '</tbody>';
 
-					$h .= '</table>';
+			$h .= '</table>';
 
-					$h .= '</table>';
-				}
-
-			$h .= '</div>';
-
-		$h .= '</div>';
+			$h .= '</table>';
+		}
 
 		return $h;
 
@@ -65,48 +63,40 @@ class PdfUi {
 		array $grantAmortizations,
 	): string {
 
-		$showExcessColumns = (array_find($assetAmortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL or
-			array_find($grantAmortizations, fn($amortization) => $amortization['excess']['currentFinancialYearRecovery'] > 0) !== NULL);
+		$eFinancialYear = $eFarm['eFinancialYear'];
+		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_AMORTIZATION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
+		$h = '';
+		if(count($assetAmortizations) > 0) {
 
-		$h = '<div class="'.($showExcessColumns ? 'pdf-document-wrapper-landscape' : 'pdf-document-wrapper').'">';
+			$h .= '<table class="pdf-table-bordered">';
 
-			$h .= '<div class="pdf-document-content">';
+				$h .= '<thead>';
+					$h .= new AmortizationUi()->getPdfTHead($header, $assetAmortizations, 'asset');
+				$h .= '</thead>';
 
-				if(count($assetAmortizations) > 0) {
+				$h .= '<tbody>';
+					$h .= new AmortizationUi()->getTBody($eFarm, $assetAmortizations);
+				$h .= '</tbody>';
 
-					$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
+			$h .= '</table>';
 
-						$h .= '<thead>';
-							$h .= new AmortizationUi()->getPdfTHead($assetAmortizations, 'asset');
-						$h .= '</thead>';
+		}
 
-						$h .= '<tbody>';
-							$h .= new AmortizationUi()->getTBody($eFarm, $assetAmortizations);
-						$h .= '</tbody>';
+		if(count($grantAmortizations) > 0) {
 
-					$h .= '</table>';
+			$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
 
-				}
+				$h .= '<thead>';
+					$h .= new AmortizationUi()->getPdfTHead($header, $grantAmortizations, 'grant');
+				$h .= '</thead>';
 
-				if(count($grantAmortizations) > 0) {
+				$h .= '<tbody>';
+					$h .= new AmortizationUi()->getTBody($eFarm, $grantAmortizations);
+				$h .= '</tbody>';
 
-					$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
-
-						$h .= '<thead>';
-							$h .= new AmortizationUi()->getPdfTHead($grantAmortizations, 'grant');
-						$h .= '</thead>';
-
-						$h .= '<tbody>';
-							$h .= new AmortizationUi()->getTBody($eFarm, $grantAmortizations);
-						$h .= '</tbody>';
-
-					$h .= '</table>';
-				}
-
-			$h .= '</div>';
-
-		$h .= '</div>';
+			$h .= '</table>';
+		}
 
 		return $h;
 

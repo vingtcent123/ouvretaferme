@@ -3,53 +3,46 @@ namespace overview;
 
 class PdfUi {
 
-	public function __construct() {
-
-		\Asset::css('company', 'pdf.css');
-
-	}
-
 	public function getBalanceSheet(
 		\farm\Farm $eFarm,
+		string $type,
 		array $balanceSheetData,
 		array $totals,
 		\Collection $cAccount,
 		bool $isDetailed,
 	): string {
 
-		$h = '<div class="pdf-document-wrapper">';
+		$eFinancialYear = $eFarm['eFinancialYear'];
+		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
-			$h .= '<div class="pdf-document-content">';
+		$h = '<table class="pdf-table-bordered">';
 
-				$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
+			$h .= '<thead>';
+				$h .= new BalanceSheetUi()->getPdfTHead($header, 'assets');
+			$h .= '</thead>';
 
-					$h .= '<thead>';
-						$h .= new BalanceSheetUi()->getPdfTHead('assets');
-					$h .= '</thead>';
+			$h .= new BalanceSheetUi()->getPdfTBodyAssets('assets', $balanceSheetData, $totals, $cAccount, $isDetailed);
 
-					$h .= new BalanceSheetUi()->getPdfTBodyAssets('assets', $balanceSheetData, $totals, $cAccount, $isDetailed);
+		$h .= '</table>';
 
-				$h .= '</table>';
+		$h .= '<table class="pdf-table-bordered">';
 
-				$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
+			$h .= '<thead>';
+				$h .= new BalanceSheetUi()->getPdfTHead($header, 'liabilities');
+			$h .= '</thead>';
 
-					$h .= '<thead>';
-						$h .= new BalanceSheetUi()->getPdfTHead('liabilities');
-					$h .= '</thead>';
+			$h .= new BalanceSheetUi()->getPdfTBodyAssets('liabilities', $balanceSheetData, $totals, $cAccount, $isDetailed);
 
-					$h .= new BalanceSheetUi()->getPdfTBodyAssets('liabilities', $balanceSheetData, $totals, $cAccount, $isDetailed);
-
-				$h .= '</table>';
-
-			$h .= '</div>';
-
-		$h .= '</div>';
+		$h .= '</table>';
 
 		return $h;
 
 	}
 
-	public function getIncomeStatement(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $resultData, \Collection $cAccount): string {
+	public function getIncomeStatement(\farm\Farm $eFarm, string $type, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $resultData, \Collection $cAccount): string {
+
+		$eFinancialYear = $eFarm['eFinancialYear'];
+		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 		$totals = new IncomeStatementUi()->generateTotals($resultData);
@@ -64,111 +57,98 @@ class PdfUi {
 			$differencePrevious = $totalIncomesPrevious - $totalExpensesPrevious;
 		}
 
-		$h = '<div class="pdf-document-wrapper">';
+		$h = '<table class="pdf-table-bordered">';
 
-			$h .= '<div class="pdf-document-content">';
+			$h .= '<thead>';
+				$h .= new \overview\IncomeStatementUi()->getPdfTHead('expenses', $header, $eFinancialYear, $eFinancialYearComparison);
+			$h .= '</thead>';
 
-				$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
+			$h .= '<tbody>';
 
-					$h .= '<thead>';
-						$h .= new \overview\IncomeStatementUi()->getPdfTHead('expenses', $eFinancialYear, $eFinancialYearComparison);
-					$h .= '</thead>';
+				$h .= new \overview\IncomeStatementUi()->getPdfTBody('expenses', $eFarm, $cAccount, $resultData['expenses'], $eFinancialYearComparison);
 
-					$h .= '<tbody>';
+				// Bénéfice ou perte
+				if($differenceCurrent > 0 or ($hasComparison and $differencePrevious > 0)) {
 
-						$h .= new \overview\IncomeStatementUi()->getPdfTBody('expenses', $eFarm, $cAccount, $resultData['expenses'], $eFinancialYearComparison);
+					$h .= '<tr>';
 
-						// Bénéfice ou perte
-						if($differenceCurrent > 0 or ($hasComparison and $differencePrevious > 0)) {
-
-							$h .= '<tr>';
-
-								$h .= '<td></td>';
-								$h .= '<th>'.s("Résultat d'exploitation (bénéfice)").'</th>';
-								$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent, precision: 0) : '').'</td>';
-								if($hasComparison) {
-									$h .= '<td class="text-end">'.($differencePrevious > 0 ? \util\TextUi::money($differencePrevious) : '').'</td>';
-								}
-
-							$h .= '</tr>';
+						$h .= '<td></td>';
+						$h .= '<th>'.s("Résultat d'exploitation (bénéfice)").'</th>';
+						$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent, precision: 0) : '').'</td>';
+						if($hasComparison) {
+							$h .= '<td class="text-end">'.($differencePrevious > 0 ? \util\TextUi::money($differencePrevious) : '').'</td>';
 						}
 
-						// Total des charges
-						$h .= '<tr class="overview_group-total tr-bold">';
-							$h .= '<th colspan="2">'.s("Total général").'</th>';
-							$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0), precision: 0).'</td>';
-							if($hasComparison) {
-								$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesPrevious + ($differencePrevious > 0 ? $differencePrevious : 0), precision: 0).'</td>';
-							}
-						$h .= '</tr>';
+					$h .= '</tr>';
+				}
 
-					$h .= '</tbody>';
-				$h .= '</table>';
+				// Total des charges
+				$h .= '<tr class="overview_group-total tr-bold">';
+					$h .= '<th colspan="2">'.s("Total général").'</th>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0), precision: 0).'</td>';
+					if($hasComparison) {
+						$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesPrevious + ($differencePrevious > 0 ? $differencePrevious : 0), precision: 0).'</td>';
+					}
+				$h .= '</tr>';
 
-				$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
+			$h .= '</tbody>';
+		$h .= '</table>';
 
-					$h .= '<thead>';
-						$h .= new \overview\IncomeStatementUi()->getPdfTHead('incomes', $eFinancialYear, $eFinancialYearComparison);
-					$h .= '</thead>';
+		$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
 
-					$h .= '</tbody>';
-						$h .= new \overview\IncomeStatementUi()->getPdfTBody('incomes', $eFarm, $cAccount, $resultData['incomes'], $eFinancialYearComparison);
+			$h .= '<thead>';
+				$h .= new \overview\IncomeStatementUi()->getPdfTHead('incomes', $header, $eFinancialYear, $eFinancialYearComparison);
+			$h .= '</thead>';
 
-						// Bénéfice ou perte
-						if($differenceCurrent < 0 or $differencePrevious < 0) {
+			$h .= '</tbody>';
+				$h .= new \overview\IncomeStatementUi()->getPdfTBody('incomes', $eFarm, $cAccount, $resultData['incomes'], $eFinancialYearComparison);
 
-							$h .= '<tr>';
+				// Bénéfice ou perte
+				if($differenceCurrent < 0 or $differencePrevious < 0) {
 
-								$h .= '<td></td>';
-								$h .= '<th>'.s("Résultat d'exploitation (perte)").'</th>';
-								$h .= '<td class="text-end">'.($differenceCurrent < 0 ? \util\TextUi::money(abs($differenceCurrent), precision: 0) : '').'</td>';
-								if($hasComparison) {
-									$h .= '<td class="text-end">'.($differencePrevious < 0 ? \util\TextUi::money(abs($differencePrevious)) : '').'</td>';
-								}
+					$h .= '<tr>';
 
-							$h .= '</tr>';
+						$h .= '<td></td>';
+						$h .= '<th>'.s("Résultat d'exploitation (perte)").'</th>';
+						$h .= '<td class="text-end">'.($differenceCurrent < 0 ? \util\TextUi::money(abs($differenceCurrent), precision: 0) : '').'</td>';
+						if($hasComparison) {
+							$h .= '<td class="text-end">'.($differencePrevious < 0 ? \util\TextUi::money(abs($differencePrevious)) : '').'</td>';
 						}
 
-						// Total produits
-						$h .= '<tr class="overview_group-total tr-bold">';
-							$h .= '<th colspan="2">'.s("Total général").'</th>';
-							$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesCurrent + ($differenceCurrent < 0 ? abs($differenceCurrent) : 0), precision: 0).'</td>';
-							if($hasComparison) {
-								$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesPrevious + ($differencePrevious < 0 ? abs($differencePrevious) : 0), precision: 0).'</td>';
-							}
-						$h .= '</tr>';
+					$h .= '</tr>';
+				}
 
-					$h .= '</tbody>';
+				// Total produits
+				$h .= '<tr class="overview_group-total tr-bold">';
+					$h .= '<th colspan="2">'.s("Total général").'</th>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesCurrent + ($differenceCurrent < 0 ? abs($differenceCurrent) : 0), precision: 0).'</td>';
+					if($hasComparison) {
+						$h .= '<td class="text-end">'.\util\TextUi::money($totalIncomesPrevious + ($differencePrevious < 0 ? abs($differencePrevious) : 0), precision: 0).'</td>';
+					}
+				$h .= '</tr>';
 
-				$h .= '</table>';
+			$h .= '</tbody>';
 
-			$h .= '</div>';
-
-		$h .= '</div>';
+		$h .= '</table>';
 
 		return $h;
 
 	}
-	public function getSig(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $values): string {
+	public function getSig(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $values): string {
 
-		$h = '<div class="pdf-document-wrapper">';
+		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::SIG, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
-			$h .= '<div class="pdf-document-content">';
-				$h .= '<table class="pdf-table-bordered" style="margin: 0 auto 1rem;">';
+		$h = '<table class="pdf-table-bordered">';
 
-					$h .= '<thead>';
-						$h .= new \overview\SigUi()->getTHead($eFinancialYear, $eFinancialYearComparison, 'pdf');
-					$h .= '</thead>';
+			$h .= '<thead>';
+				$h .= new \overview\SigUi()->getTHead($header, $eFinancialYear, $eFinancialYearComparison, 'pdf');
+			$h .= '</thead>';
 
-				$h .= '<tbody>';
-					$h .= new \overview\SigUi()->getTBody($eFinancialYear, $eFinancialYearComparison, $values, 'pdf');
-				$h .= '</tbody>';
+		$h .= '<tbody>';
+			$h .= new \overview\SigUi()->getTBody($eFinancialYear, $eFinancialYearComparison, $values, 'pdf');
+		$h .= '</tbody>';
 
-				$h .= '</table>';
-
-			$h .= '</div>';
-
-		$h .= '</div>';
+		$h .= '</table>';
 
 		return $h;
 

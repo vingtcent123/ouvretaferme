@@ -78,11 +78,12 @@ class IncomeStatementUi {
 		return $h;
 	}
 
-	public function getPdfTHead(string $type, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison): string  {
+	public function getPdfTHead(string $type, string $header, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison): string  {
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 
-		$h = '<tr class="overview_group-title">';
+		$h = $header;
+		$h .= '<tr class="overview_group-title">';
 			$h .= '<th colspan="2">'.($type === 'expenses' ? s("Charges") : s("Produits")).'</th>';
 			$h .= '<th class="text-center td-min-content">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
 			if($hasComparison) {

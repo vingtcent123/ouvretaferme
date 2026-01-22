@@ -5,7 +5,7 @@ new HtmlView('index', function($data, PdfTemplate $t) {
 		$data->eFarm,
 		$data->eFarm['eFinancialYear'],
 		$data->type,
-		new \overview\PdfUi()->getIncomeStatement($data->eFarm, $data->eFinancialYear, $data->eFinancialYearComparison, $data->resultData, $data->cAccount),
+		new \overview\PdfUi()->getIncomeStatement($data->eFarm, $data->type, $data->eFinancialYear, $data->eFinancialYearComparison, $data->resultData, $data->cAccount),
 	);
 
 });

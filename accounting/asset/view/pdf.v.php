@@ -1,5 +1,5 @@
 <?php
-new HtmlView('amortization', function($data, PdfTemplate $t) {
+new HtmlView('amortization', function($data, AccountingPdfTemplate $t) {
 
 	echo new \account\PdfUi()->getPdfPage(
 		$data->eFarm,
@@ -10,13 +10,13 @@ new HtmlView('amortization', function($data, PdfTemplate $t) {
 
 });
 
-new HtmlView('acquisition', function($data, PdfTemplate $t) {
+new HtmlView('acquisition', function($data, AccountingPdfTemplate $t) {
 
 	echo new \account\PdfUi()->getPdfPage(
 		$data->eFarm,
 		$data->eFarm['eFinancialYear'],
 		\account\FinancialYearDocumentLib::ASSET_ACQUISITION,
-		new \asset\PdfUi()->getAcquisitions($data->cAsset, $data->cAssetGrant)
+		new \asset\PdfUi()->getAcquisitions($data->eFarm, $data->cAsset, $data->cAssetGrant)
 	);
 });
 

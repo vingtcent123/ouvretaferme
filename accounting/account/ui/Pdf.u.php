@@ -3,11 +3,6 @@ namespace account;
 
 class PdfUi {
 
-	public function __construct() {
-
-
-	}
-
 	public function getFilename(\account\FinancialYear $eFinancialYear, string $type): string {
 
 		return $this->getName($eFinancialYear, $type);
@@ -54,143 +49,188 @@ class PdfUi {
 
 	public static function getHeader(\farm\Farm $eFarm, string $title, \account\FinancialYear $eFinancialYear): string {
 
-		$h = '<style>
-        html {
-          -webkit-print-color-adjust: exact;
-          font-family: "Open Sans", sans-serif;
-          font-weight: 400;
-          color: #212529;
-          line-height: 1;
-        }
-        body.template-pdf {
-        	line-height: 1;
-        }
-				.pdf-document-header {
-					overflow: hidden;
-					margin: 0.5cm auto;
-					border-radius: 0.15cm;
-					border: 1px solid var(--secondary);
-					background-color: #20516029;
-					width: 19cm;
-					padding: .25cm 0 .5cm;
-					font-size: 12px;
-					align-content: center;
-				}
-        .td-content {
-        	background-color: white;
-        	border: 1px solid #d5d5d5;
-        	text-align: center;
-        	width: 40%;
-        }
-        .pdf-document-title-container {
-			    display: flex;
-				  align-items: center;
-				  justify-content: center;
-				  margin: auto;
-        }
-				.pdf-farm-subtitle {
-			    font-weight: bold;
-			    font-size: 0.6cm;
-				}
-				.pdf-farm-subtitle div {
-					font-size: 0.4cm;
-					font-weight: normal;
-					margin-top: 0.2cm;
-				}
-				.pdf-farm-title {
-					display: flex;
-					justify-content: center;
-					gap: 0.5cm;
-					align-items: center;
-				}
-				.pdf-farm-header {
-					display: flex;
-					justify-content: space-between;
-					margin-top: 0.5cm;
-					align-items: center;
-				}
-				.pdf-farm-site {
-					text-align: end;
-				}
-				.pdf-farm-site img {
-					width: auto;
-					height: 0.75cm;
-					margin-bottom: 0.125cm;
-				}
-        </style>';
-
 		$date = \util\DateUi::numeric(date('Y-m-d H:i'));
 
-		$h .= '<div class="pdf-document-wrapper">';
-			$h .= '<div class="pdf-farm-header">';
+		$h = '<tr>';
+			$h .= '<td colspan="99">';
+				$h .= '<div class="pdf-document-wrapper">';
 
-				$h .= '<div class="pdf-farm-title">';
+					$h .= '<div class="pdf-farm-title">';
 
-					if($eFarm['vignette'] !== NULL) {
-						if(LIME_ENV === 'dev') {
-							$h .= '<img src="https://media.ouvretaferme.org/'.new \media\FarmLogoUi()->getBasenameByHash($eFarm['logo'], 's').'" style="max-height: 1.25cm"/>';
-						} else {
-							$h .= \farm\FarmUi::getLogo($eFarm, '1.25cm');
-						}
-					}
-					$h .= '<div class="pdf-farm-subtitle">';
-						$h .= encode($eFarm['legalName'] ?? $eFarm['name']);
-						if($eFarm['siret'] !== NULL) {
-							$h .= '<div>'.s("SIRET {value}", $eFarm['siret']).'</div>';
-						}
+						$h .= '<div style="display: flex; gap: 0.25cm; align-items: center;">';
+							if($eFarm['vignette'] !== NULL) {
+								if(LIME_ENV === 'dev') {
+									$h .= '<img src="https://media.ouvretaferme.org/'.new \media\FarmLogoUi()->getBasenameByHash($eFarm['logo'], 's').'" style="max-height: 1.25cm"/>';
+								} else {
+									$h .= \farm\FarmUi::getLogo($eFarm, '1.25cm');
+								}
+							}
+							$h .= '<div class="pdf-farm-subtitle">';
+								$h .= encode($eFarm['legalName'] ?? $eFarm['name']);
+								if($eFarm['siret'] !== NULL) {
+									$h .= '<div>'.s("SIRET {value}", $eFarm['siret']).'</div>';
+								}
+							$h .= '</div>';
+						$h .= '</div>';
+
+						$h .= '<div class="pdf-farm-site">';
+							$h .= \Asset::image('main', 'logo.png');
+							$h .= '<div class="color-muted font-xs">'.s("Généré le {value}", $date).'</div>';
+						$h .= '</div>';
 					$h .= '</div>';
-
-				$h .= '</div>';
-
-				$h .= '<div class="pdf-farm-site">';
-					$h .= \Asset::image('main', 'logo.png');
-					$h .= '<div class="color-muted font-xs">'.s("Généré le {value}", $date).'</div>';
-				$h .= '</div>';
-
-			$h .= '</div>';
-		$h .= '</div>';
-
-		$h .= '<div class="pdf-document-header">';
-
-			$h .= '<div>';
-				$h .= '<div class="text-center">';
-					$h .= '<h2 style="font-weight: bold">';
-						$h .= $title;
-					$h .= '</h2>';
-					$h .= '<div>';
-						$h .= s("Exercice {exercice} - {startDate} au {endDate}", ['exercice' => $eFinancialYear->getLabel(), 'startDate' => \util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE), 'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE)]);
+					$h .= '<div style="border: 1px solid black; background-color: #20516029; border-radius: 0.15cm; text-align: center; padding: 0.5cm 0; margin: 0.25cm 0;">';
+						$h .= '<h2 style="font-weight: bold; margin: 0;">';
+							$h .= $title;
+						$h .= '</h2>';
+						$h .= '<div>';
+							$h .= s("Exercice {exercice} - {startDate} au {endDate}", ['exercice' => $eFinancialYear->getLabel(), 'startDate' => \util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE), 'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE)]);
+						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
-			$h .= '</div>';
-
-		$h .= '</div>';
-
+			$h .= '</td>';
+		$h .= '</tr>';
 		return $h;
 
 	}
 
 	public function getPdfPage(\farm\Farm $eFarm, FinancialYear $eFinancialYear, string $type, string $content): string {
 
-		$h = '<table>';
+		$h = '<style>
+	@page {
+		margin-left: 1cm;
+		margin-right: 1cm;
+	}
+  html {
+    -webkit-print-color-adjust: exact;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    color: #212529;
+    line-height: 1;
+  }
+	.pdf-document-header {
+		overflow: hidden;
+		margin: 0.5cm auto;
+		border-radius: 0.15cm;
+		border: 1px solid var(--secondary);
+		background-color: #20516029;
+		width: 19cm;
+		padding: .25cm 0 .5cm;
+		font-size: 12px;
+		align-content: center;
+		text-align: center;
+	}
+	.pdf-farm-subtitle {
+    font-weight: bold;
+    font-size: 0.6cm;
+	}
+	.pdf-farm-subtitle div {
+		font-size: 0.4cm;
+		font-weight: normal;
+		margin-top: 0.2cm;
+	}
+	.pdf-farm-title {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.5cm;
+		align-items: center;
+		margin-top: 0.75cm;
+	}
+	.pdf-farm-site {
+		text-align: end;
+	}
+	.pdf-farm-site img {
+		width: auto;
+		height: 0.75cm;
+		margin-bottom: 0.125cm;
+	}
+	.text-center {
+		text-align: center;
+	}
+	.text-end {
+		text-align: right;
+	}
+	thead {
+	  display: table-header-group;
+	  break-inside: avoid;
+	  border: 0;
+	}
+	thead > tr > td {
+		border: 1px solid white;
+		background-color: white !important;
+		color: black;
+	}
+	
+	.pdf-document-wrapper {
+		display: grid;
+		grid-template-rows: auto 1fr auto;
+		border-radius: 0.5rem;
+	}
+	
+	table.pdf-table-bordered tr:first-child {
+		border: 0;
+	}
+	table.pdf-table-bordered {
+		page-break-after: always;
+		border-collapse: collapse; 
+		margin: 0 auto 1cm;
+		max-width: 18.5cm;
+	}
+	
+	table.pdf-table-bordered thead tr th {
+		font-weight: normal;
+		padding: 0.15cm 0.2cm;
+	}
+	table.pdf-table-bordered thead tr th:first-child,
+	table.pdf-table-bordered tbody tr th:first-child,
+	table.pdf-table-bordered tbody tr td:first-child {
+		border-left: 1px solid black;
+	}
+	table.pdf-table-bordered thead tr th:last-child,
+	table.pdf-table-bordered tbody tr th:last-child,
+	table.pdf-table-bordered tbody tr td:last-child {
+		border-right: 1px solid black;
+	}
+	table.pdf-table-bordered tbody tr:last-child td {
+		border-bottom: 1px solid black;
+	}
+	.pdf-table-bordered thead tr,
+	tr.overview_group-title,
+	tr.overview_group-total,
+	tr.pdf-tr-title {
+		background-color: var(--accounting) !important;
+		color: white;
+	}
+	tr.pdf-tr-total-general {
+		text-transform: uppercase;
+	}
+	tr.pdf-tr-total-general > td {
+		text-align: right;
+	}
+	
+	table.pdf-table-bordered tr:nth-child(odd) td {
+		background-color: #0001;
+	}
+	
+	.pdf-document-content a.nav-item {
+		display: none;
+	}
+	
+	tr.pdf-tr-muted {
+		font-style: italic;
+		color: var(--muted);
+	}
+	tr.pdf-tr-muted.pdf-tr-ml-1 > td:first-child {
+		padding-left: 0.5cm;
+	}
+	.print-spacer th {
+    height: 80mm;
+    padding: 0;
+    border: none;
+  }
 
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<td>';
-						$h .= \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
-					$h .= '</td>';
-				$h .= '</tr>';
-			$h .= '</thead>';
+</style>';
 
-			$h .= '<tbody>';
-				$h .= '<tr>';
-					$h .= '<td>';
-						$h .= $content;
-					$h .= '</td>';
-				$h .= '</tr>';
-
-			$h .= '</tbody>';
-
-		$h .= '</table>';
+		$h .= $content;
 
 		return $h;
 	}
@@ -203,7 +243,6 @@ class PdfUi {
 
 		return $h;
 	}
-
 
 }
 

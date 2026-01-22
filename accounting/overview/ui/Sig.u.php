@@ -52,11 +52,12 @@ Class SigUi {
 
 	}
 
-	public function getTHead(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, string $for): string {
+	public function getTHead(string $header, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, string $for): string {
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 
-		$h = '<tr class="tr-title">';
+		$h = $header;
+		$h .= '<tr class="tr-title">';
 			$h .= '<th rowspan="2"></th>';
 			$h .= '<th colspan="2" class="text-center">'.s("Exercice {value}", $eFinancialYear->getLabel()).'</th>';
 			if($hasComparison) {
@@ -203,7 +204,7 @@ Class SigUi {
 						$h .= '</th>';
 					$h .= '</tr>';
 
-					$h .= $this->getTHead($eFinancialYear, $eFinancialYearComparison, 'web');
+					$h .= $this->getTHead('', $eFinancialYear, $eFinancialYearComparison, 'web');
 
 				$h .= '</thead>';
 

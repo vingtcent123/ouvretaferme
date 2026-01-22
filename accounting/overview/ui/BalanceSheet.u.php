@@ -487,11 +487,13 @@ class BalanceSheetUi {
 		return $h;
 	}
 
-	public function getPdfTHead(string $type): string {
+	public function getPdfTHead(string $header, string $type): string {
+
+		$h = $header;
 
 		if($type === 'assets') {
 
-			$h = '<tr class="pdf-tr-title">';
+			$h .= '<tr class="pdf-tr-title">';
 				$h .= '<th>'.s("Actif").'</th>';
 				$h .= '<th class="text-center">'.s("Brut").'</th>';
 				$h .= '<th class="text-center">'.s("Amort. prov.").'</th>';
@@ -504,7 +506,7 @@ class BalanceSheetUi {
 
 		}
 
-		$h = '<tr class="pdf-tr-title">';
+		$h .= '<tr class="pdf-tr-title">';
 			$h .= '<th>'.s("Passif").'</th>';
 			$h .= '<th class="text-center">'.s("N").'</th>';
 			$h .= '<th class="text-center">'.s("% passif").'</th>';
