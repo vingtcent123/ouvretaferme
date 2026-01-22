@@ -272,9 +272,7 @@ class InvoiceUi {
 						$h .= '<td class="text-end invoice-item-amount">';
 							$h .= SaleUi::getIncludingTaxesTotal($eInvoice);
 							$h .= '<div class="util-annotation">';
-								$cSale = $eInvoice['cSale'];
-
-								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm'], \farm\Farmer::ALL).'?ids='.implode(',', $cSale->getIds()).'">'.p("{value} vente", "{value} ventes", $cSale->count()).'</a>';
+								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm'], \farm\Farmer::ALL).'?ids='.implode(',', $eInvoice['sales']).'">'.p("{value} vente", "{value} ventes", count($eInvoice['sales'])).'</a>';
 							$h .= '</div>';
 						$h .= '</td>';
 

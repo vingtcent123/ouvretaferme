@@ -32,7 +32,7 @@ new \selling\CustomerPage()
 		$data->cGrid = \selling\GridLib::getByCustomer($data->e);
 		$data->cGridGroup = \selling\GridLib::getByGroups($data->e['groups']);
 		$data->cSale = \selling\SaleLib::getByCustomer($data->e);
-		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->e, selectSales: TRUE);
+		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->e);
 
 		$data->e['invite'] = \farm\InviteLib::getByCustomer($data->e);
 		$data->e['contact'] = \mail\ContactLib::getByCustomer($data->e, autoCreate: TRUE);

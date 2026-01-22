@@ -343,7 +343,7 @@ new Page(function($data) {
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE);
 
-		[$data->cInvoice, $data->nInvoice] = \selling\InvoiceLib::getByFarm($data->eFarm, selectSales: TRUE, page: $data->page, search: $data->search);
+		[$data->cInvoice, $data->nInvoice] = \selling\InvoiceLib::getByFarm($data->eFarm, page: $data->page, search: $data->search);
 
 		$data->nInvoiceReminder = \selling\InvoiceLib::countReminder($data->eFarm);
 

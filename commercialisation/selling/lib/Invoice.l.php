@@ -23,7 +23,7 @@ class InvoiceLib extends InvoiceCrud {
 		};
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, bool $selectSales = FALSE, int $page = 0, \Search $search = new \Search()): array {
+	public static function getByFarm(\farm\Farm $eFarm, int $page = 0, \Search $search = new \Search()): array {
 
 		if($search->get('customer')) {
 			$cCustomer = CustomerLib::getFromQuery($search->get('customer'), $eFarm, withCollective: FALSE);
@@ -34,15 +34,6 @@ class InvoiceLib extends InvoiceCrud {
 
 		$number = 100;
 		$position = $page * $number;
-
-		if($selectSales) {
-			Invoice::model()->select([
-				'cSale' => Sale::model()
-					->select(['id', 'document'])
-					->sort('id')
-					->delegateCollection('invoice')
-			]);
-		}
 
 		if($search->get('paymentStatus')) {
 
@@ -115,16 +106,7 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
-	public static function getByCustomer(Customer $eCustomer, bool $selectSales = FALSE): \Collection {
-
-		if($selectSales) {
-			Invoice::model()->select([
-				'cSale' => Sale::model()
-					->select(['id', 'document'])
-					->sort('id')
-					->delegateCollection('invoice')
-			]);
-		}
+	public static function getByCustomer(Customer $eCustomer): \Collection {
 
 		return Invoice::model()
 			->select(Invoice::getSelection())
