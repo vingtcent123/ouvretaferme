@@ -131,7 +131,7 @@ Class VatLib {
 			->select([
 				'compte' => new \Sql('SUBSTRING(accountLabel, 1, 2)', 'int'),
 				'vatRate',
-				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'int'),
+				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
 			])
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%'),
