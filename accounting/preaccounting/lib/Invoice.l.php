@@ -45,7 +45,7 @@ Class InvoiceLib {
 
 		\selling\Invoice::model()
 			->whereFarm($eFarm)
-			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
 			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->whereAccountingHash(NULL)
 			->whereCashflow('=', NULL)
@@ -56,7 +56,7 @@ Class InvoiceLib {
 		$cInvoice = \selling\Invoice::model()
 			->select('id', 'cashflow', 'priceIncludingVat', 'accountingDifference')
 			->whereFarm($eFarm)
-			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
 			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->whereAccountingHash(NULL)
 			->whereCashflow('!=', NULL)
@@ -82,7 +82,7 @@ Class InvoiceLib {
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
 
 		return \selling\Invoice::model()
-			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
 			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->where('priceExcludingVat != 0.0')
 			->where('m1.farm = '.$eFarm['id'])

@@ -164,7 +164,7 @@ Class SuggestionLib extends SuggestionCrud {
 				'paymentMethod' => ['id', 'fqn'],
 			])
 			->whereFarm($eFarm)
-			->whereStatus('!=', \selling\Invoice::DRAFT)
+			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
 			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->where('priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1))
 			->where(new \Sql('date <= '.\selling\Invoice::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH')))))
