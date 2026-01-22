@@ -45,6 +45,11 @@ Class VatUi {
 
 			$eOperation = $ccOperation->first()->first();
 
+			$showInitialColumns = FALSE;
+			foreach($ccOperation as $cOperation) {
+				$showInitialColumns = ($showInitialColumns or $cOperation->find(fn($e) => $e['operation']->notEmpty())->notEmpty());
+			}
+
 			if($lastAccountLabel === NULL or $currentAccountLabel !== $lastAccountLabel) {
 
 				$h .= '<div class="vat-account-title">';
@@ -78,9 +83,13 @@ Class VatUi {
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('description', $label) : $label);
 						$h .= '</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
-						$h .= '<th class="td-min-content text-end rowspaned-center">'.s("Taux TVA").'</th>';
-						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("Montant (TTC)").'</th>';
-						$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center">'.s("Montant (HT)").'</th>';
+
+						if($showInitialColumns) {
+							$h .= '<th class="td-min-content text-end rowspaned-center">'.s("Taux TVA").'</th>';
+							$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("Montant (TTC)").'</th>';
+							$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center">'.s("Montant (HT)").'</th>';
+						}
+
 						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("TVA").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -108,75 +117,114 @@ Class VatUi {
 
 						$currentMonth = $month;
 
-						$eOperationInitial = $eOperation['operation'];
-						$monthTotals['withVat'] += $eOperationInitial['amount'] + $eOperation['amount'];
-						$monthTotals['withoutVat'] += $eOperationInitial['amount'];
-						$monthTotals['vat']+= $eOperation['amount'];
-
 						$h .= '<tbody>';
 							$h .= '<tr class="tr-border-top">';
 
-								$h .= '<td '.($for === 'pdf' ? 'class="pdf-text-small"' : '').'>';
-									$h .= \util\DateUi::numeric($eOperationInitial['date']);
-								$h .= '</td>';
+								if($eOperation['operation']->notEmpty()) {
 
-								$h .= '<td>';
-									$h .= '<div class="operation-info">';
-										if($eOperationInitial['document'] !== NULL) {
-											$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+									$eOperationInitial = $eOperation['operation'];
+									$monthTotals['withVat'] += $eOperationInitial['amount'] + $eOperation['amount'];
+									$monthTotals['withoutVat'] += $eOperationInitial['amount'];
+									$monthTotals['vat']+= $eOperation['amount'];
+
+
+									$h .= '<td '.($for === 'pdf' ? 'class="pdf-text-small"' : '').'>';
+										$h .= \util\DateUi::numeric($eOperationInitial['date']);
+									$h .= '</td>';
+
+									$h .= '<td>';
+										$h .= '<div class="operation-info">';
+											if($eOperationInitial['document'] !== NULL) {
+												$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+											}
+										$h .= '</div>';
+									$h .= '</td>';
+
+									$h .= '<td class="td-description">';
+										$h .= '<div class="description">';
+											$h .= encode($eOperationInitial['description']);
+										$h .= '</div>';
+									$h .= '</td>';
+
+									$h .= '<td>';
+										if($eOperationInitial['thirdParty']->exists() === TRUE) {
+											$h .= encode($eOperationInitial['thirdParty']['name']);
 										}
-									$h .= '</div>';
-								$h .= '</td>';
+									$h .= '</td>';
 
-								$h .= '<td class="td-description">';
-									$h .= '<div class="description">';
-										$h .= encode($eOperationInitial['description']);
-									$h .= '</div>';
-								$h .= '</td>';
+									$h .= '<td class="td-min-content text-end">';
+											$h .= $eOperationInitial['vatRate'];
+									$h .= '</td>';
 
-								$h .= '<td>';
-									if($eOperationInitial['thirdParty']->exists() === TRUE) {
-										$h .= encode($eOperationInitial['thirdParty']['name']);
-									}
-								$h .= '</td>';
+									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+											$h .= \util\TextUi::money(round($eOperationInitial['amount'] + $eOperation['amount'], 2));
+									$h .= '</td>';
 
-								$h .= '<td class="td-min-content text-end">';
-										$h .= $eOperationInitial['vatRate'];
-								$h .= '</td>';
+									$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
+											$h .= \util\TextUi::money($eOperationInitial['amount']);
+									$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-										$h .= \util\TextUi::money(round($eOperationInitial['amount'] + $eOperation['amount'], 2));
-								$h .= '</td>';
+									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+											$h .= \util\TextUi::money($eOperation['amount']);
+									$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
-										$h .= \util\TextUi::money($eOperationInitial['amount']);
-								$h .= '</td>';
 
-								$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-										$h .= \util\TextUi::money($eOperation['amount']);
-								$h .= '</td>';
+								} else {
 
+									$monthTotals['withVat'] += $eOperation['amount'];
+									$monthTotals['vat']+= $eOperation['amount'];
+
+									$h .= '<td '.($for === 'pdf' ? 'class="pdf-text-small"' : '').'>';
+										$h .= \util\DateUi::numeric($eOperation['date']);
+									$h .= '</td>';
+
+									$h .= '<td>';
+										$h .= '<div class="operation-info">';
+											if($eOperation['document'] !== NULL) {
+												$h .= '<a href="'.new JournalUi()->getBaseUrl($eFarm, $eOperation['financialYear']).'&document='.urlencode($eOperation['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperation['document']).'</a>';
+											}
+										$h .= '</div>';
+									$h .= '</td>';
+
+									$h .= '<td class="td-description">';
+										$h .= '<div class="description">';
+											$h .= encode($eOperation['description']);
+										$h .= '</div>';
+									$h .= '</td>';
+
+									$h .= '<td>';
+										if($eOperation['thirdParty']->exists() === TRUE) {
+											$h .= encode($eOperation['thirdParty']['name']);
+										}
+									$h .= '</td>';
+
+									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+											$h .= \util\TextUi::money($eOperation['amount']);
+									$h .= '</td>';
+
+								}
 							$h .= '</tr>';
 
 						$h .= '</tbody>';
+
 					}
 
 					$bigTotals['withVat'] += $monthTotals['withVat'];
 					$bigTotals['withoutVat'] += $monthTotals['withoutVat'];
 					$bigTotals['vat'] += $monthTotals['vat'];
 
-					$h .= self::getMonthTotal($currentMonth, $monthTotals);
+					$h .= self::getMonthTotal($currentMonth, $monthTotals, $showInitialColumns);
 
 				}
 
-				$h .= self::getMonthTotal(NULL, $bigTotals);
+				$h .= self::getMonthTotal(NULL, $bigTotals, $showInitialColumns);
 
 			$h .= '</table>';
 		}
 		return $h;
 	}
 
-	private static function getMonthTotal(?string $currentMonth, array $totals): string {
+	private static function getMonthTotal(?string $currentMonth, array $totals, bool $showInitialColumns): string {
 
 		$h = '<tr class="tr-bold tr-border-top">';
 
@@ -195,16 +243,20 @@ Class VatUi {
 			$h .= '<td>';
 			$h .= '</td>';
 
-			$h .= '<td>';
-			$h .= '</td>';
+			if($showInitialColumns) {
 
-			$h .= '<td class="text-end highlight-stick-right">';
-			$h .= \util\TextUi::money($totals['withVat']);
-			$h .= '</td>';
+				$h .= '<td>';
+				$h .= '</td>';
 
-			$h .= '<td class="text-end highlight-stick-left">';
-				$h .= \util\TextUi::money($totals['withoutVat']);
-			$h .= '</td>';
+				$h .= '<td class="text-end highlight-stick-right">';
+				$h .= \util\TextUi::money($totals['withVat']);
+				$h .= '</td>';
+
+				$h .= '<td class="text-end highlight-stick-left">';
+					$h .= \util\TextUi::money($totals['withoutVat']);
+				$h .= '</td>';
+
+			}
 
 			$h .= '<td class="text-end highlight-stick-right">';
 				$h .= \util\TextUi::money($totals['vat']);
