@@ -136,9 +136,11 @@ Class VatUi {
 						).'</div>';
 				}
 
+				$h .= '<div>'.\Asset::icon('exclamation-triangle').' '.s("Attention, ces dates sont indicatives et ne prennent pas en compte votre situation particulière : référez vous toujours à ce qui est indiqué dans votre compte professionnel sur le site des impôts.").'</div>';
+
 
 				$h .= '<h3 class="mt-2">'.s("Comment puis-je la déposer ?").'</h3>';
-				$h .= '<div>'.s("Vous pouvez télé-déclarer via le portail <link>impots.gouv.fr {icon}</link>.<br />⚠️ Attention, {siteName} ne l'enverra pas pour vous.", ['link' => '<a href="https://impots.gouv.fr">', 'icon' => \Asset::icon('box-arrow-up-right')]).'</div>';
+				$h .= '<div>'.s("Vous pouvez télé-déclarer via le portail <link>impots.gouv.fr {icon}</link>.<br />{siteName} ne l'enverra pas pour vous.", ['link' => '<a href="https://impots.gouv.fr">', 'icon' => \Asset::icon('box-arrow-up-right')]).'</div>';
 
 			}
 		$h .= '</div>';
@@ -190,7 +192,11 @@ Class VatUi {
 								$h .= '<tr class="">';
 
 									$h .= '<td>';
-										$h .= \util\DateUi::numeric($eOperationInitial['date']);
+										if($eOperationInitial->notEmpty()) {
+											$h .= \util\DateUi::numeric($eOperationInitial['date']);
+										} else {
+											$h .= \util\DateUi::numeric($eOperation['date']);
+										}
 									$h .= '</td>';
 
 									$h .= '<td>';
@@ -208,39 +214,69 @@ Class VatUi {
 
 									$h .= '<td>';
 										$h .= '<div class="operation-info">';
-											if($eOperationInitial['document'] !== NULL) {
-												$h .= '<a href="'.new \journal\JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
-										}
+											if($eOperationInitial->notEmpty()) {
+												if($eOperationInitial['document'] !== NULL) {
+													$h .= '<a href="'.new \journal\JournalUi()->getBaseUrl($eFarm, $eOperationInitial['financialYear']).'&document='.urlencode($eOperationInitial['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperationInitial['document']).'</a>';
+												}
+											} else {
+												if($eOperation['document'] !== NULL) {
+													$h .= '<a href="'.new \journal\JournalUi()->getBaseUrl($eFarm, $eOperation['financialYear']).'&document='.urlencode($eOperation['document']).'" title="'.s("Voir les écritures liées à cette pièce comptable").'">'.encode($eOperation['document']).'</a>';
+												}
+											}
 										$h .= '</div>';
 									$h .= '</td>';
 
 									$h .= '<td class="td-description">';
 										$h .= '<div class="description">';
-											$h .= encode($eOperationInitial['description']);
+											if($eOperationInitial->notEmpty()) {
+												$h .= encode($eOperationInitial['description']);
+											} else {
+												$h .= encode($eOperation['description']);
+											}
 										$h .= '</div>';
 									$h .= '</td>';
 
 									$h .= '<td>';
-										if($eOperationInitial['thirdParty']->exists() === TRUE) {
-											$h .= encode($eOperationInitial['thirdParty']['name']);
+										if($eOperationInitial->notEmpty()) {
+											if($eOperationInitial['thirdParty']->exists() === TRUE) {
+												$h .= encode($eOperationInitial['thirdParty']['name']);
+											}
+										} else {
+											if($eOperation['thirdParty']->exists() === TRUE) {
+												$h .= encode($eOperation['thirdParty']['name']);
+											}
 										}
 									$h .= '</td>';
 
 									$h .= '<td class="td-min-content text-end">';
-										$h .= $eOperationInitial['vatRate'];
+										if($eOperationInitial->notEmpty()) {
+											$h .= $eOperationInitial['vatRate'];
+										} else {
+											$h .= '?';
+										}
 									$h .= '</td>';
 
-									$calculatedVatRate = round(($eOperation['amount'] / $eOperationInitial['amount']) * 100, 1);
-									$h .= '<td class="td-min-content text-end '.($eOperationInitial['vatRate'] !== $calculatedVatRate ? 'color-danger' : '').'">';
+									if($eOperationInitial->notEmpty()) {
+										$calculatedVatRate = round(($eOperation['amount'] / $eOperationInitial['amount']) * 100, 1);
+										$class = ($eOperationInitial['vatRate'] !== $calculatedVatRate ? 'color-danger' : '');
+									} else {
+										$calculatedVatRate = '';
+										$class = '';
+									}
+									$h .= '<td class="td-min-content text-end '.($class).'">';
 										$h .= $calculatedVatRate;
 									$h .= '</td>';
 
 									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
-										$h .= \util\TextUi::money($eOperationInitial['amount'] + $eOperation['amount']);
+										if($eOperationInitial->notEmpty()) {
+											$h .= \util\TextUi::money($eOperationInitial['amount'] + $eOperation['amount']);
+										}
 									$h .= '</td>';
 
 									$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
-										$h .= \util\TextUi::money($eOperationInitial['amount']);
+										if($eOperationInitial->notEmpty()) {
+											$h .= \util\TextUi::money($eOperationInitial['amount']);
+										}
 									$h .= '</td>';
 
 									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';

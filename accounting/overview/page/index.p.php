@@ -152,10 +152,11 @@ new Page(function($data) {
 				$data->tab = $tab;
 
 				$search = new Search();
-				$search->set('financialYear', $data->eFarm['eFinancialYear']);
+				// On va filtrer sur les dates de la période de TVA
+				$search->set('financialYear', new \account\FinancialYear());
 
-				$data->vatParameters = \overview\VatLib::getDefaultPeriod($data->eFarm, $data->eFarm['eFinancialYear']);
 				$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
+				$data->vatParameters = \overview\VatLib::extractCurrentPeriod($data->allPeriods);
 
 				$search->set('minDate', $data->vatParameters['from']);
 				$search->set('maxDate', $data->vatParameters['to']);
@@ -168,7 +169,7 @@ new Page(function($data) {
 					case 'journal-buy':
 					case 'journal-sell':
 						$type = mb_substr($tab, mb_strlen('journal') + 1);
-						$search->buildSort(['date' => SORT_ASC]);
+						$search->validateSort(['date']);
 						$data->cOperation = \journal\OperationLib::getAllForVatJournal($type, $search, TRUE, NULL);
 						break;
 

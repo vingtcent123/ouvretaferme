@@ -43,6 +43,22 @@ Class VatLib {
 
 	}
 
+	public static function extractCurrentPeriod(array $allPeriods): array {
+
+		$currentPeriod = [];
+		$currentDate = date('Y-m-d');
+
+		foreach($allPeriods as $period) {
+			if($period['to'] < $currentDate) {
+				if(empty($currentPeriod) or $currentPeriod['to'] < $period['to']) {
+					$currentPeriod = $period;
+				}
+			}
+		}
+
+		return $currentPeriod;
+
+	}
 
 	public static function getAllPeriodForFinancialYear(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
 

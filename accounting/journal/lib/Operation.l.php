@@ -498,6 +498,7 @@ class OperationLib extends OperationCrud {
 	public static function prepareOperations(array $input, string $for = 'create', \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
 
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
+		$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
 
 		if($eFinancialYear->acceptUpdate() === FALSE) {
 
@@ -536,6 +537,18 @@ class OperationLib extends OperationCrud {
 					$eOperationOriginByHash->validate('isNotLinkedToAsset');
 				}
 
+				// Si ce lot d'opérations était lié à une facture => Mise à jour du hash de l'invoice et de ses sales
+				if($for === 'update') {
+
+					\selling\Invoice::model()
+			      ->whereAccountingHash($input['hash'])
+			      ->update(['accountingHash' => $hash]);
+
+					\selling\Sale::model()
+			      ->whereAccountingHash($input['hash'])
+			      ->update(['accountingHash' => $hash]);
+				}
+
 				// On supprime tout et on recommence !
 				OperationCashflow::model()->whereHash($input['hash'])->delete();
 				Operation::model()->whereHash($input['hash'])->delete();
@@ -570,9 +583,6 @@ class OperationLib extends OperationCrud {
 		}
 
 		$eOperationDefault['thirdParty'] = NULL;
-
-
-		$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
 			
 		$eOperationDefault['hash'] = $hash;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
@@ -736,7 +746,7 @@ class OperationLib extends OperationCrud {
 
 			\bank\Cashflow::model()->update(
 				$eCashflow,
-				['status' => \bank\CashflowElement::ALLOCATED, 'updatedAt' => \bank\Cashflow::model()->now(), 'hash' => $cOperation->first()['hash']]
+				['status' => \bank\CashflowElement::ALLOCATED, 'updatedAt' => \bank\Cashflow::model()->now(), 'hash' => $hash]
 			);
 
 			if($cOperationCashflow->notEmpty()) {
@@ -744,8 +754,6 @@ class OperationLib extends OperationCrud {
 			}
 
 		}
-
-
 
 		if($fw->ko()) {
 			return new \Collection();
@@ -831,8 +839,11 @@ class OperationLib extends OperationCrud {
 		OperationCashflow::model()->whereOperation('IN', $cOperation->getIds())->delete();
 		Operation::model()->whereId('IN', $cOperation->getIds())->delete();
 
-		// Si l'opération est issue d'un import en compta => supprimer le lien dans la facture
+		// Si l'opération est issue d'un import en compta => supprimer le lien dans la facture et ses ventes
 		\selling\Invoice::model()
+			->whereAccountingHash($hash)
+			->update(['accountingHash' => NULL]);
+		\selling\Sale::model()
 			->whereAccountingHash($hash)
 			->update(['accountingHash' => NULL]);
 
@@ -1156,8 +1167,11 @@ class OperationLib extends OperationCrud {
 			)
      ->delete();
 
-		// Suppression du lien écritures - factures (mais pas du rapprochement)
+		// Suppression du lien écritures - factures / ventes (mais pas du rapprochement)
 		\selling\Invoice::model()
+      ->whereAccountingHash($eCashflow['hash'])
+      ->update(['accountingHash' => NULL]);
+		\selling\Sale::model()
       ->whereAccountingHash($eCashflow['hash'])
       ->update(['accountingHash' => NULL]);
 
