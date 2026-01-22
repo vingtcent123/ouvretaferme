@@ -674,25 +674,23 @@ class SaleLib extends SaleCrud {
 
 		$ePaymentMethod = new \payment\Method();
 
-		if(
-			$e->isSale() and
-			$e['shop']->empty()
-		) {
+		if($e->isSale()) {
 
-			if($e['customer']['defaultPaymentMethod']->notEmpty()) {
+			if($e['shop']->empty()) {
 
-				$e['paymentStatus'] = Sale::NOT_PAID;
-				$ePaymentMethod = $e['customer']['defaultPaymentMethod'];
+				if($e['customer']['defaultPaymentMethod']->notEmpty()) {
+
+					$e['paymentStatus'] = Sale::NOT_PAID;
+					$ePaymentMethod = $e['customer']['defaultPaymentMethod'];
+
+				}
+
+			} else {
+
+				$e['secured'] = ($e['customer']['type'] === Customer::PRIVATE and $e['farm']->getFarmer()->empty());
 
 			}
 
-		}
-
-		if(
-			$e->isSale() and
-			$e['shop']->notEmpty()
-		) {
-			$e['secured'] = ($e['customer']['type'] === Customer::PRIVATE and $e['farm']->getFarmer()->empty());
 		}
 
 		if($e->isMarket()) {
