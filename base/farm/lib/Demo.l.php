@@ -24,6 +24,7 @@ class DemoLib {
 		'farm\Tip',
 		'payment\StripeFarm',
 		'preaccounting\Suggestion',
+		'securing\Signature',
 		'selling\Grid',
 		'selling\History',
 		'selling\Pdf',
