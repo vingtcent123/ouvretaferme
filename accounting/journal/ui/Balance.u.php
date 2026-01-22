@@ -174,7 +174,7 @@ Class BalanceUi {
 
 		$h = $header;
 		$h .= '<tr>';
-			$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content text-center">'.s("Numéro<br />de compte").'</th>';
+			$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content text-center">'.s("Numéro<br />de compte").'</th>';
 			$h .= '<th rowspan="2" class="td-vertical-align-middle">'.s("Libellé").'</th>';
 			$h .= '<th colspan="2" class="text-center">'.s("Totaux").'</th>';
 			$h .= '<th colspan="2" class="text-center">';
@@ -272,8 +272,8 @@ Class BalanceUi {
 		$h .= '<tr class="tr-bold">';
 			$h .= '<td class="hide-sm-down"></td>';
 			$h .= '<td class="text-end">'.s("Totaux").'</td>';
-			$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent).'</td>';
-			$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCreditCurrent).'</td>';
+			$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent, precision: 0).'</td>';
+			$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCreditCurrent, precision: 0).'</td>';
 			$h .= '<td class="text-end highlight-stick-right">'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money($totalDebitCurrent - $totalCreditCurrent) : '').'</td>';
 			$h .= '<td class="text-end highlight-stick-left">'.($totalCreditCurrent > $totalDebitCurrent ? \util\TextUi::money($totalCreditCurrent - $totalDebitCurrent) : '').'</td>';
 			if($hasPrevious) {
@@ -353,11 +353,11 @@ Class BalanceUi {
 			$h .= '<tr>';
 
 				if($type === \account\FinancialYearDocumentLib::BALANCE) {
-					$h .= '<td class="text-end" style="padding-right: 0.2cm;">';
+					$h .= '<td class="text-end">';
 						$h .= encode($lineCurrent['account'] ?? $linePrevious['account']);
 					$h .= '</td>';
 				} else {
-					$h .= '<td class="text-end" style="padding-right: 0.2cm;">';
+					$h .= '<td class="text-end">';
 						$h .= encode($lineCurrent['accountDetail'] ?? $linePrevious['accountDetail']);
 					$h .= '</td>';
 				}
@@ -394,8 +394,8 @@ Class BalanceUi {
 		$h .= '<tr>';
 			$h .= '<td></td>';
 			$h .= '<td><b>'.s("Totaux").'<b></td>';
-			$h .= '<td class="text-end"><b>'.\util\TextUi::money($totalDebitCurrent).'<b></td>';
-			$h .= '<td class="text-end"><b>'.\util\TextUi::money($totalCreditCurrent).'<b></td>';
+			$h .= '<td class="text-end"><b>'.\util\TextUi::money($totalDebitCurrent, precision: 0).'<b></td>';
+			$h .= '<td class="text-end"><b>'.\util\TextUi::money($totalCreditCurrent, precision: 0).'<b></td>';
 			$h .= '<td class="text-end"><b>'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money($totalDebitCurrent - $totalCreditCurrent) : '').'<b></td>';
 			$h .= '<td class="text-end"><b>'.($totalCreditCurrent > $totalDebitCurrent ? \util\TextUi::money($totalCreditCurrent - $totalDebitCurrent) : '').'<b></td>';
 			if($hasPrevious) {

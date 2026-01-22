@@ -52,7 +52,7 @@ class PdfUi {
 		$date = \util\DateUi::numeric(date('Y-m-d H:i'));
 
 		$h = '<tr>';
-			$h .= '<td colspan="99" style="border: 0;">';
+			$h .= '<td colspan="99">';
 				$h .= '<div class="pdf-document-wrapper">';
 
 					$h .= '<div class="pdf-farm-title">';
@@ -78,7 +78,7 @@ class PdfUi {
 							$h .= '<div class="color-muted font-xs">'.s("Généré le {value}", $date).'</div>';
 						$h .= '</div>';
 					$h .= '</div>';
-					$h .= '<div style="border: 1px solid black; background-color: #20516029; border-radius: 0.15cm; text-align: center; padding: 0.5cm 0; margin: 0.25cm 0;">';
+					$h .= '<div style="background-color: var(--background); border-radius: 0.15cm; text-align: center; padding: 0.5cm 0; margin: 0.25cm 0;">';
 						$h .= '<h2 style="font-weight: bold; margin: 0;">';
 							$h .= $title;
 						$h .= '</h2>';
@@ -102,11 +102,14 @@ class PdfUi {
 		margin-right: 1cm;
 	}
   html {
+		margin: 0;
+		padding: 0;
     -webkit-print-color-adjust: exact;
     font-family: "Open Sans", sans-serif;
     font-weight: 400;
     color: #212529;
     line-height: 1;
+    font-size: 0.25cm !important;
   }
       thead {
       display: table-header-group;
@@ -120,16 +123,12 @@ class PdfUi {
       border-collapse: collapse;
     }
     
-    html,
     body,
-    table,
-    tr,
-    td {
-      margin: 0;
-      padding: 0;
+    table {
       border: none;
       width: 100%;
-    }
+    };
+    
 	.pdf-document-header {
 		overflow: hidden;
 		margin: 0.5cm auto;
@@ -145,11 +144,11 @@ class PdfUi {
 	.pdf-farm-subtitle {
     font-weight: bold;
     font-size: 0.6cm;
+    margin-left: 0.2cm;
 	}
 	.pdf-farm-subtitle div {
 		font-size: 0.4cm;
 		font-weight: normal;
-		margin-top: 0.2cm;
 	}
 	.pdf-farm-title {
 		display: flex;
@@ -174,7 +173,6 @@ class PdfUi {
 	thead {
 	  display: table-header-group;
 	  break-inside: avoid;
-	  border: 0;
 	}
 	thead > tr > td {
 		background-color: white !important;
@@ -196,10 +194,16 @@ class PdfUi {
 		max-width: 18.5cm;
 	}
 	
-	table.pdf-table-bordered thead tr th {
-		font-weight: normal;
-		padding: 0.15cm 0.2cm;
+	table.pdf-table-bordered tbody td,
+	table.pdf-table-bordered th {
+		padding: 0.1cm 0.2cm;
 	}
+	
+	table.pdf-table-bordered th {
+		font-weight: normal;
+		vertical-align: bottom;
+	}
+	
 	table.pdf-table-bordered thead tr th:first-child,
 	table.pdf-table-bordered tbody tr th:first-child,
 	table.pdf-table-bordered tbody tr td:first-child {

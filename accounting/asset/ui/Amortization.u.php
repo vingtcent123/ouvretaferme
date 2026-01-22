@@ -160,7 +160,7 @@ Class AmortizationUi {
 
 		$h = $header;
 		$h .= '<tr class="tr-bold">';
-			$h .= '<th colspan="99" class="text-center">'.match($type) {
+			$h .= '<th colspan="99">'.match($type) {
 				'asset' => s("Immobilisations"),
 				'grant' => s("Subventions"),
 			}.'</th>';
