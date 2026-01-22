@@ -688,7 +688,10 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		if($e['shop']->notEmpty()) {
+		if(
+			$e->isSale() and
+			$e['shop']->notEmpty()
+		) {
 			$e['secured'] = ($e['customer']['type'] === Customer::PRIVATE and $e['farm']->getFarmer()->empty());
 		}
 
