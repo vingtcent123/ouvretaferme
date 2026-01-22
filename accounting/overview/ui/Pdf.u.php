@@ -108,7 +108,7 @@ class PdfUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td></td>';
+						$h .= '<td class="td-min-content"></td>';
 						$h .= '<th>'.s("Résultat d'exploitation (perte)").'</th>';
 						$h .= '<td class="text-end">'.($differenceCurrent < 0 ? \util\TextUi::money(abs($differenceCurrent), precision: 0) : '').'</td>';
 						if($hasComparison) {

@@ -187,7 +187,7 @@ Class BalanceUi {
 			}
 		$h .= '</tr>';
 		$h .= '<tr>';
-			$h .= '<th class="text-center">'.s("Débit").'</th>';
+			$h .= '<th class="text-center" style="border: 0;">'.s("Débit").'</th>';
 			$h .= '<th class="text-center">'.s("Crédit").'</th>';
 			$h .= '<th class="text-center">'.s("Débit").'</th>';
 			$h .= '<th class="text-center">'.s("Crédit").'</th>';

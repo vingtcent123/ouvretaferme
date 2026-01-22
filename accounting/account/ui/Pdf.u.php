@@ -52,7 +52,7 @@ class PdfUi {
 		$date = \util\DateUi::numeric(date('Y-m-d H:i'));
 
 		$h = '<tr>';
-			$h .= '<td colspan="99">';
+			$h .= '<td colspan="99" style="border: 0;">';
 				$h .= '<div class="pdf-document-wrapper">';
 
 					$h .= '<div class="pdf-farm-title">';
@@ -97,6 +97,7 @@ class PdfUi {
 
 		$h = '<style>
 	@page {
+		margin-top: 1cm;
 		margin-left: 1cm;
 		margin-right: 1cm;
 	}
@@ -107,6 +108,28 @@ class PdfUi {
     color: #212529;
     line-height: 1;
   }
+      thead {
+      display: table-header-group;
+    }
+    
+    tfoot {
+      display: table-footer-group;
+    }
+    
+    table {
+      border-collapse: collapse;
+    }
+    
+    html,
+    body,
+    table,
+    tr,
+    td {
+      margin: 0;
+      padding: 0;
+      border: none;
+      width: 100%;
+    }
 	.pdf-document-header {
 		overflow: hidden;
 		margin: 0.5cm auto;
@@ -133,7 +156,6 @@ class PdfUi {
 		justify-content: space-between;
 		gap: 0.5cm;
 		align-items: center;
-		margin-top: 0.75cm;
 	}
 	.pdf-farm-site {
 		text-align: end;
@@ -155,7 +177,6 @@ class PdfUi {
 	  border: 0;
 	}
 	thead > tr > td {
-		border: 1px solid white;
 		background-color: white !important;
 		color: black;
 	}
@@ -163,7 +184,6 @@ class PdfUi {
 	.pdf-document-wrapper {
 		display: grid;
 		grid-template-rows: auto 1fr auto;
-		border-radius: 0.5rem;
 	}
 	
 	table.pdf-table-bordered tr:first-child {
