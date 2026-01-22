@@ -48,6 +48,13 @@ document.delegateEventListener('change', '[data-field="economicMode"]', function
 
 });
 
+document.delegateEventListener('change', '[name="economicDurationScale"]', function() {
+
+	const selectedEconomicDurationScale = qs('[name="economicDurationScale"]').options[qs('[name="economicDurationScale"]').selectedIndex].value;
+	qs('[name="fiscalDurationScale"]').value = selectedEconomicDurationScale;
+
+});
+
 document.delegateEventListener('change', '[data-field="fiscalMode"]', function() {
 
 	const selectedFiscalMode = qs('[name="fiscalMode"]:checked').value;
@@ -132,7 +139,6 @@ class Asset {
 		qs('[data-economic-duration-suggested]').hide();
 
 		if(fiscalDuration === undefined) {
-			qs('[name="fiscalDuration"]').setAttribute('min', 12); // pas d'immo de moins de 12 mois
 			qs('[name="fiscalDuration"]').removeAttribute('max');
 			qs('[name="fiscalDuration"]').value = '';
 			return;

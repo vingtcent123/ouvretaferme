@@ -218,8 +218,11 @@ Class AssetUi {
 		$h .= '<h3>'.s("Amortissement économique").'</h3>';
 		$h .= '<div class="util-block bg-background-light">';
 			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration'], [
-				'economicDuration' => function($d) use($form) {
+				'economicDuration' => function($d) use($form, $eAsset) {
+					$form = new \util\FormUi();
+					$d->append = $form->select('economicDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['mandatory' => TRUE]);
 					$d->group += ['class' => 'company_form_group-with-tip'];
+
 					$append = '<a data-economic-duration-suggested class="btn btn-outline-warning hide" data-dropdown="bottom" data-dropdown-hover="true">';
 						$append .= \Asset::icon('exclamation-triangle');
 					$append .= '</a>';
@@ -252,7 +255,12 @@ Class AssetUi {
 		$h .= '<div data-fiscal-amortization class="hide">';
 			$h .= '<h3>'.s("Amortissement fiscal").'</h3>';
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration']);
+				$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration'], [
+					'fiscalDuration' => function($d) use($form, $eAsset) {
+						$form = new \util\FormUi();
+						$d->append = $form->select('fiscalDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['mandatory' => TRUE]);
+					}
+				]);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -1239,13 +1247,13 @@ Class AssetUi {
 			'amortizableBase' => s("Base amortissable (HT)"),
 			'type' => s("Type d'amortissement"),
 			'economicMode' => s("Mode économique"),
-			'economicDuration' => s("Durée économique (en mois)"),
+			'economicDuration' => s("Durée économique"),
 			'fiscalMode' => s("Mode fiscal"),
-			'fiscalDuration' => s("Durée fiscale (en mois)"),
+			'fiscalDuration' => s("Durée fiscale"),
 			'mode' => s("Mode"),
 			'acquisitionDate' => s("Date d'acquisition"),
 			'startDate' => s("Date de mise en service"),
-			'duration' => s("Durée (en années)"),
+			'duration' => s("Durée"),
 			'status' => s("Statut"),
 			'endDate' => s('Date de fin'),
 			'description' => s('Libellé'),
@@ -1293,11 +1301,6 @@ Class AssetUi {
 					AssetElement::DEGRESSIVE => s("Dégressif"),
 					AssetElement::WITHOUT => s("Sans"),
 				];
-				break;
-
-			case 'economicDuration':
-			case 'fiscalDuration':
-				$d->append = s("mois");
 				break;
 
 			case 'residualValue':
