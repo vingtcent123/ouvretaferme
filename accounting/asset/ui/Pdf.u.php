@@ -3,12 +3,6 @@ namespace asset;
 
 class PdfUi {
 
-	public function __construct() {
-
-		\Asset::css('company', 'pdf.css');
-
-	}
-
 	public function getAcquisitions(
 		\farm\Farm $eFarm,
 		\Collection $cAsset,
@@ -16,7 +10,7 @@ class PdfUi {
 	): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
-		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_ACQUISITION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
+		$header = new \account\PdfUi()->getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_ACQUISITION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
 		$h = '';
 
@@ -64,7 +58,7 @@ class PdfUi {
 	): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
-		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_AMORTIZATION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
+		$header = new \account\PdfUi()->getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::ASSET_AMORTIZATION, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
 		$h = '';
 		if(count($assetAmortizations) > 0) {

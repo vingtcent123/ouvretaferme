@@ -9,7 +9,7 @@ class PdfUi {
 	public function balance(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYearPrevious, array $trialBalanceData, array $trialBalancePreviousData, string $type): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
-		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
+		$header = new \account\PdfUi()->getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
 		$h = '<table class="pdf-table-bordered">';
 

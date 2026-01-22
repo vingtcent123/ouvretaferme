@@ -1833,6 +1833,15 @@ td.util-manage-vignette {
 	text-align: center;
 }
 
+.text-upper {
+	text-transform: uppercase;
+}
+.text-lower {
+	text-transform: lowercase;
+}
+.text-ucfirst::first-letter {
+	text-transform: capitalize;
+}
 /* Colors */
 .color-text {
 	color: var(--text) !important;

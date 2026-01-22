@@ -313,14 +313,12 @@ class IncomeStatementUi {
 			$expense = array_shift($expenses);
 			$income = array_shift($incomes);
 
-			$h .= '<tr class="overview_line">';
+			$h .= '<tr class="overview_line'.((($expense['isSummary'] ?? FALSE) or ($income['isSummary'] ?? FALSE)) ? ' tr-bold' : '').'">';
 
 				if($expense !== null) {
 
-					$style = ($expense['isSummary'] ?? FALSE) ? ' style="font-weight: bold";' : '';
-
-					$h .= '<td class="text-end td-min-content"'.$style.'>'.encode($expense['class']).'</td>';
-					$h .= '<td'.$style.'>';
+					$h .= '<td class="text-end td-min-content">'.encode($expense['class']).'</td>';
+					$h .= '<td>';
 						if($cAccount->offsetExists($expense['class'])) {
 							$eAccount = $cAccount->offsetGet($expense['class']);
 						} else {
@@ -329,9 +327,9 @@ class IncomeStatementUi {
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">'.new CommonUi()->getDropdownClass($eFarm, $expense['class']).'</td>';
-					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['current'], precision: 0).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($expense['current'], precision: 0).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($expense['comparison'], precision: 0).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($expense['comparison'], precision: 0).'</td>';
 					}
 
 				} else {
@@ -346,10 +344,8 @@ class IncomeStatementUi {
 
 				if($income !== null) {
 
-					$style = ($income['isSummary'] ?? FALSE) ? ' style="font-weight: bold";' : '';
-
-					$h .= '<td class="text-end td-min-content"'.$style.'>'.encode($income['class']).'</td>';
-					$h .= '<td'.$style.'>';
+					$h .= '<td class="text-end td-min-content">'.encode($income['class']).'</td>';
+					$h .= '<td>';
 						if($cAccount->offsetExists($income['class'])) {
 							$eAccount = $cAccount->offsetGet($income['class']);
 						} else {
@@ -358,9 +354,9 @@ class IncomeStatementUi {
 						$h .= encode($eAccount['description']);
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">'.new CommonUi()->getDropdownClass($eFarm, $income['class']).'</td>';
-					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['current'], precision: 0).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($income['current'], precision: 0).'</td>';
 					if($hasComparison) {
-						$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($income['comparison'], precision: 0).'</td>';
+						$h .= '<td class="text-end">'.\util\TextUi::money($income['comparison'], precision: 0).'</td>';
 					}
 
 				} else {
@@ -414,12 +410,10 @@ class IncomeStatementUi {
 
 		foreach($data as $line) {
 
-			$h .= '<tr class="overview_line">';
+			$h .= '<tr class="overview_line'.(($line['isSummary'] ?? FALSE) ? ' tr-bold' : '').'">';
 
-				$style = ($line['isSummary'] ?? FALSE) ? ' style="font-weight: bold";' : '';
-
-				$h .= '<td class="text-end td-min-content"'.$style.'>'.encode($line['class']).'</td>';
-				$h .= '<td'.$style.'>';
+				$h .= '<td class="text-end td-min-content">'.encode($line['class']).'</td>';
+				$h .= '<td>';
 					if($cAccount->offsetExists($line['class'])) {
 						$eAccount = $cAccount->offsetGet($line['class']);
 					} else {
@@ -427,9 +421,9 @@ class IncomeStatementUi {
 					}
 					$h .= encode($eAccount['description']);
 				$h .= '</td>';
-				$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($line['current'], precision: 0).'</td>';
+				$h .= '<td class="text-end">'.\util\TextUi::money($line['current'], precision: 0).'</td>';
 				if($hasComparison) {
-					$h .= '<td class="text-end"'.$style.'>'.\util\TextUi::money($line['comparison'], precision: 0).'</td>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($line['comparison'], precision: 0).'</td>';
 				}
 
 			$h .= '</tr>';

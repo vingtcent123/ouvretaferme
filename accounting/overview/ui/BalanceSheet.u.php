@@ -516,26 +516,24 @@ class BalanceSheetUi {
 		return $h;
 	}
 
-	public function getPdfTBodyAssets(string $type, array $balanceSheetData, array $totals, \Collection $cAccount, bool $isDetailed): string {
+	public function getPdfTBodyAssets(string $type, array $balanceSheetData, array $totals, \Collection $cAccount): string {
 
 		$h = '';
 
 		if($type === 'assets') {
 			$totalAsset = 0;
-			$totalAssetComparison = 0;
 			foreach($balanceSheetData['fixedAssets'] + $balanceSheetData['currentAssets'] as $class => $data) {
 				if(mb_strlen($class) === 3) {
 					$totalAsset += $data['currentNet'];
-					$totalAssetComparison += $data['comparisonNet'];
 				}
 			}
 
 			$h .= $this->displaySubCategoryPdfLinesAssets('fixedAssets', $balanceSheetData['fixedAssets'], $cAccount, $totalAsset);
 			$h .= $this->displaySubCategoryPdfLinesAssets('currentAssets', $balanceSheetData['currentAssets'], $cAccount, $totalAsset);
 
-			$h .= '<tr class="overview_line tr-bold pdf-tr-title pdf-tr-total-general">';
+			$h .= '<tr class="overview_line tr-bold pdf-tr-title text-upper">';
 
-				$h .= '<td>';
+				$h .= '<td class="text-end">';
 					$h .= s("Total de l'actif");
 				$h .= '</td>';
 
@@ -568,9 +566,9 @@ class BalanceSheetUi {
 			$h .= $this->displaySubCategoryPdfLinesLiabilities('equity', $balanceSheetData['equity'], $cAccount, $totalAsset);
 			$h .= $this->displaySubCategoryPdfLinesLiabilities('debts', $balanceSheetData['debts'], $cAccount, $totalAsset);
 
-			$h .= '<tr class="overview_line tr-bold pdf-tr-title pdf-tr-total-general">';
+			$h .= '<tr class="overview_line tr-bold pdf-tr-title text-upper">';
 
-				$h .= '<td>';
+				$h .= '<td class="text-end">';
 					$h .= s("Total du passif");
 				$h .= '</td>';
 
@@ -631,8 +629,10 @@ class BalanceSheetUi {
 				$h .= '<tr class="overview_line tr-bold">';
 
 					$h .= '<td>';
-						$h .= encode($eAccount['class']).' ';
-						$h .= encode(ucfirst(mb_strtolower($eAccount['description'], 'UTF-8')));
+						$h .= '<div style="display: flex; gap: 0.5rem;">';
+							$h .= encode($eAccount['class']).' ';
+							$h .= '<div class="text-ucfirst"><span class="text-lower">'.encode($eAccount['description']).'</span></div>';
+						$h .= '</div>';
 					$h .= '</td>';
 
 					$h .= '<td class="text-end balance-td-brut">';

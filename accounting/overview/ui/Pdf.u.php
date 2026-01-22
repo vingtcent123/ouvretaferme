@@ -9,11 +9,10 @@ class PdfUi {
 		array $balanceSheetData,
 		array $totals,
 		\Collection $cAccount,
-		bool $isDetailed,
 	): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
-		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
+		$header = new \account\PdfUi()->getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
 		$h = '<table class="pdf-table-bordered">';
 
@@ -21,7 +20,7 @@ class PdfUi {
 				$h .= new BalanceSheetUi()->getPdfTHead($header, 'assets');
 			$h .= '</thead>';
 
-			$h .= new BalanceSheetUi()->getPdfTBodyAssets('assets', $balanceSheetData, $totals, $cAccount, $isDetailed);
+			$h .= new BalanceSheetUi()->getPdfTBodyAssets('assets', $balanceSheetData, $totals, $cAccount);
 
 		$h .= '</table>';
 
@@ -31,7 +30,7 @@ class PdfUi {
 				$h .= new BalanceSheetUi()->getPdfTHead($header, 'liabilities');
 			$h .= '</thead>';
 
-			$h .= new BalanceSheetUi()->getPdfTBodyAssets('liabilities', $balanceSheetData, $totals, $cAccount, $isDetailed);
+			$h .= new BalanceSheetUi()->getPdfTBodyAssets('liabilities', $balanceSheetData, $totals, $cAccount);
 
 		$h .= '</table>';
 
@@ -42,7 +41,7 @@ class PdfUi {
 	public function getIncomeStatement(\farm\Farm $eFarm, string $type, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $resultData, \Collection $cAccount): string {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
-		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
+		$header = new \account\PdfUi()->getHeader($eFarm, new \account\PdfUi()->getTitle($type, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
 		$hasComparison = $eFinancialYearComparison->notEmpty();
 		$totals = new IncomeStatementUi()->generateTotals($resultData);
@@ -136,7 +135,7 @@ class PdfUi {
 	}
 	public function getSig(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, array $values): string {
 
-		$header = \account\PdfUi::getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::SIG, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
+		$header = new \account\PdfUi()->getHeader($eFarm, new \account\PdfUi()->getTitle(\account\FinancialYearDocumentLib::SIG, $eFinancialYear->isClosed() === FALSE), $eFinancialYear);
 
 		$h = '<table class="pdf-table-bordered">';
 

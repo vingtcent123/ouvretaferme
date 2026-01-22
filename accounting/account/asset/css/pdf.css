@@ -1,0 +1,138 @@
+@page {
+	margin-top: 1cm;
+	margin-left: 1cm;
+	margin-right: 1cm;
+}
+html {
+	margin: 0;
+	padding: 0;
+	-webkit-print-color-adjust: exact;
+	font-family: "Open Sans", sans-serif;
+	font-weight: 400;
+	color: #212529;
+	line-height: 1;
+	font-size: 0.25cm !important;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+.pdf-document-header {
+	overflow: hidden;
+	margin: 0.5cm auto;
+	border-radius: 0.15cm;
+	border: 1px solid var(--secondary);
+	background-color: #20516029;
+	width: 19cm;
+	padding: .25cm 0 .5cm;
+	font-size: 12px;
+	align-content: center;
+	text-align: center;
+}
+
+.pdf-document-wrapper {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+}
+
+.pdf-farm-subtitle {
+	font-weight: bold;
+	font-size: 0.6cm;
+	margin-left: 0.2cm;
+}
+.pdf-farm-subtitle div {
+	font-size: 0.4cm;
+	font-weight: normal;
+}
+.pdf-farm-title {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5cm;
+	align-items: center;
+}
+.pdf-farm-title > div:first-child {
+	display: flex;
+	gap: 0.25cm;
+	align-items: center;
+}
+.pdf-farm-site {
+	text-align: end;
+}
+.pdf-farm-site img {
+	width: auto;
+	height: 0.75cm;
+	margin-bottom: 0.125cm;
+}
+.pdf-farm-document-title {
+	background-color: var(--background);
+	border-radius: 0.15cm;
+	text-align: center;
+	padding: 0.5cm 0; margin: 0.25cm 0;
+}
+.pdf-farm-document-title h2 {
+	font-weight: bold;
+	margin: 0;
+}
+.tr-bold {
+	font-weight: bold;
+}
+
+thead > tr > td {
+	background-color: white !important;
+	color: black;
+}
+
+table.pdf-table-bordered tr:first-child {
+	border: 0;
+}
+table.pdf-table-bordered {
+	page-break-after: always;
+	border-collapse: collapse;
+	margin: 0 auto 1cm;
+	max-width: 18.5cm;
+}
+
+table.pdf-table-bordered tbody td,
+table.pdf-table-bordered th {
+	padding: 0.1cm 0.2cm;
+}
+
+table.pdf-table-bordered th {
+	font-weight: normal;
+	vertical-align: bottom;
+}
+
+table.pdf-table-bordered thead tr th:first-child,
+table.pdf-table-bordered tbody tr th:first-child,
+table.pdf-table-bordered tbody tr td:first-child {
+	border-left: 1px solid black;
+}
+table.pdf-table-bordered thead tr th:last-child,
+table.pdf-table-bordered tbody tr th:last-child,
+table.pdf-table-bordered tbody tr td:last-child {
+	border-right: 1px solid black;
+}
+table.pdf-table-bordered tbody tr:last-child td {
+	border-bottom: 1px solid black;
+}
+table.pdf-table-bordered thead tr th,
+tr.overview_group-title,
+tr.overview_group-total,
+tr.pdf-tr-title {
+	background-color: var(--accounting) !important;
+	color: white;
+	font-size: 1rem;
+}
+
+table.pdf-table-bordered tr:nth-child(odd) td {
+	background-color: #0001;
+}
+
+tr.pdf-tr-muted {
+	font-style: italic;
+	color: var(--muted);
+}
+tr.pdf-tr-muted.pdf-tr-ml-1 > td:first-child {
+	padding-left: 0.5cm;
+}

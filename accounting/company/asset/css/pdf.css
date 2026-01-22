@@ -73,10 +73,6 @@ tr {
 	break-inside: avoid;
 }
 
-.pdf-document-content a.nav-item {
-	display: none;
-}
-
 tr.pdf-tr-muted {
 	font-style: italic;
 	color: var(--muted);
