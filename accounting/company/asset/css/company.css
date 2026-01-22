@@ -83,6 +83,10 @@ th.no-border-left,
 td.no-border-left {
 	border-left: 0!important;
 }
+th.no-border-right,
+td.no-border-right {
+	border-right: 0!important;
+}
 
 table.table-bordered tbody td {
 	/* For cells, apply the border to one of each side only (right but not left, bottom but not top) */

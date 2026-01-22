@@ -189,12 +189,12 @@ Class AmortizationUi {
 			$h .= '<th class="text-end">'.s("Début").'</th>';
 			$h .= '<th class="text-end">'.s("Acquisition").'</th>';
 			$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
-			$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
+			$h .= '<th class="text-center no-border-right">'.s("Fin exercice").'</th>';
 			if($showExcessColumns) {
 				$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 				$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
 				$h .= '<th class="text-center">'.s("Reprise exercice").'</th>';
-				$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
+				$h .= '<th class="text-center no-border-right">'.s("Fin exercice").'</th>';
 			}
 		$h .= '</tr>';
 
