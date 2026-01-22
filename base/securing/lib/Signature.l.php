@@ -9,24 +9,21 @@ class SignatureLib {
 		$cPayment ??= \selling\PaymentLib::getBySale($eSale);
 		$cItem ??= \selling\SaleLib::getItems($eSale);
 
-
 		$paymentMethods = [];
 
 		foreach($cPayment as $ePayment) {
 			$paymentMethods[] = [
-				'amount' => $ePayment['amountIncludingVat'],
+				'amountIncludingVat' => $ePayment['amountIncludingVat'],
 				'method' => $ePayment['methodName']
 			];
 		}
 
 		$data = [
 			'id' => $eSale['id'],
+			'amountIncludingVat' => $eSale['priceIncludingVat'],
 			'transactionDate' => $eSale['securedAt'],
 			'paymentDate' => $eSale['paidAt'],
-			'amount' => $eSale['priceIncludingVat'],
-			'paymentMethods' => [
-				'date' => $eSale['paidAt']
-			]
+			'paymentMethods' => $paymentMethods
 		];
 
 		self::sign(new Signature([

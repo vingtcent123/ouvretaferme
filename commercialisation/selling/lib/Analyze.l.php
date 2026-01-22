@@ -907,7 +907,7 @@ class AnalyzeLib {
 
 				$data = [
 					$eSale['document'],
-					$eSale['invoice']['name'],
+					$eSale['invoice']->notEmpty() ? $eSale['invoice']['name'] : '',
 					$eSale['customer']->notEmpty() ? $eSale['customer']->getName() : '',
 					CustomerUi::getType($eSale),
 					\util\DateUi::numeric($eSale['deliveredAt']),
