@@ -62,7 +62,7 @@ class CropModel extends \ModuleModel {
 			'rows' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'rowSpacing' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'plantSpacing' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
-			'density' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'density' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => 0.01, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'mainUnit' => ['enum', [\sequence\Crop::KG, \sequence\Crop::UNIT, \sequence\Crop::BUNCH], 'cast' => 'enum'],
 			'seedling' => ['enum', [\sequence\Crop::SOWING, \sequence\Crop::YOUNG_PLANT], 'null' => TRUE, 'cast' => 'enum'],
 			'seedlingSeeds' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],

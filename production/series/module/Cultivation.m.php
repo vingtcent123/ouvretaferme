@@ -75,7 +75,7 @@ class CultivationModel extends \ModuleModel {
 			'rows' => ['int8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'rowSpacing' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'plantSpacing' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
-			'density' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'density' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => 0.01, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'sliceUnit' => ['enum', [\series\Cultivation::PERCENT, \series\Cultivation::AREA, \series\Cultivation::LENGTH, \series\Cultivation::PLANT, \series\Cultivation::TRAY], 'cast' => 'enum'],
 			'sliceTool' => ['element32', 'farm\Tool', 'null' => TRUE, 'cast' => 'element'],
 			'area' => ['int24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],

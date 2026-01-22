@@ -27,7 +27,7 @@ Cultivation:
   rows: ?int8(1, null)
   rowSpacing: ?decimal(8, 2, 0.01, null)
   plantSpacing: ?decimal(8, 2, 0.01, null)
-  density: ?decimal(8, 2, 0.01, null)
+  density: ?decimal(10, 2, 0.01, null)
   sliceUnit: enum(PERCENT, AREA, LENGTH, PLANT, TRAY) = PERCENT
   sliceTool: ?farm\Tool
   area: ?int24(0, null)
