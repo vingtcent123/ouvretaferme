@@ -368,7 +368,7 @@ Class VatUi {
 						$h .= '</tr>';
 
 						$totalCalculated += $sale['tax'];
-						$totalCollected = $collectedVat;
+						$totalCollected += $collectedVat;
 					}
 
 					$h .= '<tr class="tr-bold">';
@@ -401,7 +401,14 @@ Class VatUi {
 
 			if($hasIncoherence) {
 
-				$h .= '<div class="util-warning-outline vat-width-100">'.s("Il y a une incohérence entre les opérations de vente et les opérations de TVA enregistrées dans votre journal : la somme de la TVA sur le compte {value} ne correspond pas avec le montant de TVA qui est calculé.", \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT).'</div>';
+				$h .= '<div class="util-warning-outline vat-width-100">';
+					$h .= s("Il y a une incohérence entre les opérations de vente et les opérations de TVA enregistrées dans votre journal : la somme de la TVA sur le compte {value} ne correspond pas avec le montant de TVA qui est calculé.", \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT);
+					if((round($totalCollected) - round($totalCalculated)) < 2) {
+						$h .= '<p>';
+							$h .= s("Cette différence étant faible, vous pourrez utiliser les comptes {charge} ou {product} pour équilibrer vos écritures si nécessaire.", ['charge' => \account\AccountSetting::CHARGES_OTHER_CLASS, 'product' => \account\AccountSetting::PRODUCT_OTHER_CLASS]);
+						$h .= '</p>';
+					}
+				$h .= '</div>';
 
 			} else if($totalCalculated !== 0) {
 

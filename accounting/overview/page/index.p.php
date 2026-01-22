@@ -174,7 +174,7 @@ new Page(function($data) {
 						break;
 
 					case 'check':
-						$data->check = \overview\VatLib::getForCheck($search);
+						$data->check = \overview\VatLib::getForCheck($data->eFarm, $search);
 						break;
 
 					case 'cerfa':
@@ -190,7 +190,7 @@ new Page(function($data) {
 							$data->cerfa = $eVatDeclaration->getArrayCopy()['data'] + ['eVatDeclaration' => $eVatDeclaration];
 						} else {
 							// On génère
-							$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFarm['eFinancialYear'], $search, precision: $data->precision);
+							$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFarm, $data->eFarm['eFinancialYear'], $search, precision: $data->precision);
 						}
 						break;
 

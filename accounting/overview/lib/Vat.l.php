@@ -91,15 +91,47 @@ Class VatLib {
 
 	}
 
+	public static function getClosestVatRate(\farm\Farm $eFarm, float $vatRate) {
 
-	public static function getForCheck(\Search $search = new \Search()): array {
+		$vatRates = \selling\SellingSetting::getVatRates($eFarm);
+
+		if(in_array($vatRate, $vatRates)) {
+			return $vatRate;
+		}
+
+		$closestVatRate = NULL;
+		$difference = NULL;
+
+		foreach($vatRates as $legalVatRate) {
+
+			if($closestVatRate === NULL) {
+
+				$closestVatRate = $legalVatRate;
+				$difference = abs($vatRate - $legalVatRate);
+
+			}
+
+			if($difference > abs($vatRate - $legalVatRate)) {
+
+				$closestVatRate = $legalVatRate;
+				$difference = abs($vatRate - $legalVatRate);
+
+			}
+
+		}
+
+		return $closestVatRate;
+
+	}
+
+	public static function getForCheck(\farm\Farm $eFarm, \Search $search = new \Search()): array {
 
 		// Ligne A1 - Ventes (70* - 709 - 665)
 		$cOperationVentes = \journal\OperationLib::applySearch($search)
 			->select([
 				'compte' => new \Sql('SUBSTRING(accountLabel, 1, 2)', 'int'),
 				'vatRate',
-				'amount' => new \Sql('ROUND(SUM(IF(type = "credit", amount, -1 * amount)))', 'int'),
+				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'int'),
 			])
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%'),
@@ -112,18 +144,17 @@ Class VatLib {
 		$sales = [];
 		foreach($cOperationVentes as &$eOperationVentes) {
 
-			$key = (string)$eOperationVentes['vatRate'];
+			$closestVatRate = self::getClosestVatRate($eFarm, $eOperationVentes['vatRate']);
+			$key = (string)$closestVatRate;
 			if(isset($sales[$key]) === FALSE) {
 				$sales[$key] = [
 					'vatRate' => $eOperationVentes['vatRate'],
 					'amount' => 0,
+					'tax' => 0,
 				];
 			}
 			$sales[$key]['amount'] += $eOperationVentes['amount'];
-		}
-
-		foreach($sales as $key => $sale) {
-			$sales[$key]['tax'] = $sale['vatRate'] !== 0 ? round($sale['amount'] * $sale['vatRate'] / 100) : 0;
+			$sales[$key]['tax'] += round($eOperationVentes['amount'] * $closestVatRate / 100, 2);
 		}
 
 		// Récupération des TVA enregistrées
@@ -145,7 +176,8 @@ Class VatLib {
 		$taxes = [];
 		foreach($cOperationTaxes as $eOperation) {
 
-			$key = (string)$eOperation['operation']['vatRate'];
+			$closestVatRate = self::getClosestVatRate($eFarm, $eOperation['operation']['vatRate']);
+			$key = (string)$closestVatRate;
 
 			if(isset($taxes[$eOperation['compte']]) === FALSE) {
 				$taxes[$eOperation['compte']] = [];
@@ -345,9 +377,9 @@ Class VatLib {
 		];
 
 	}
-	public static function getVatDataDeclaration(\account\FinancialYear $eFinancialYear, \Search $search = new \Search(), int $precision = 0): array {
+	public static function getVatDataDeclaration(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search = new \Search(), int $precision = 0): array {
 
-		$checkData = self::getForCheck($search);
+		$checkData = self::getForCheck($eFarm, $search);
 		$sales = $checkData['sales'];
 		$taxes = $checkData['taxes'];
 		$deposits = $checkData['deposits'];
@@ -498,7 +530,7 @@ Class VatLib {
 	 * puis ajuster 44562 / 44566 / 445662 par 658 ou 758
 	 *
 	 */
-	public static function generateOperationsFromDeclaration(VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): array {
+	public static function generateOperationsFromDeclaration(\farm\Farm $eFarm, VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): array {
 
 		$cOperation = new \Collection();
 
@@ -508,7 +540,7 @@ Class VatLib {
 			'minDate' => $eVatDeclaration['from'],
 			'maxDate' => $eVatDeclaration['to'],
 		]);
-		$cerfaFromOperations = self::getVatDataDeclaration($eFinancialYear, $search, precision: 2);
+		$cerfaFromOperations = self::getVatDataDeclaration($eFarm, $eFinancialYear, $search, precision: 2);
 
 		// On récupère les données de la déclaration
 		$cerfa = $eVatDeclaration['data'];
@@ -692,7 +724,7 @@ Class VatLib {
 	}
 	public static function createOperations(\farm\Farm $eFarm, VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): void {
 
-		$data = self::generateOperationsFromDeclaration($eVatDeclaration, $eFinancialYear);
+		$data = self::generateOperationsFromDeclaration($eFarm, $eVatDeclaration, $eFinancialYear);
 
 		$eFinancialYear['status'] = \account\FinancialYear::OPEN; // pour pouvoir gérer les écritures
 		$input = [

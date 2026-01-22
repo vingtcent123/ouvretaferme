@@ -52,7 +52,7 @@ new Page(function($data) {
 			throw new NotExistsAction('Unknown declaration');
 		}
 
-		$dataFromDeclaration = \overview\VatLib::generateOperationsFromDeclaration($data->eVatDeclaration, $data->eFarm['eFinancialYear']);
+		$dataFromDeclaration = \overview\VatLib::generateOperationsFromDeclaration($data->eFarm, $data->eVatDeclaration, $data->eFarm['eFinancialYear']);
 		$data->cerfaCalculated = $dataFromDeclaration['cerfaCalculated'];
 		$data->cerfaDeclared = $dataFromDeclaration['cerfaDeclared'];
 		$data->cOperation = $dataFromDeclaration['cOperation'];
