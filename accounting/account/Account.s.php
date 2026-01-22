@@ -96,7 +96,8 @@ class AccountSetting extends \Settings {
 	const VAT_DEDUCTIBLE_INTRACOM_CLASS = '445662'; // TVA déductible intracommunautaire
 	const VAT_BUY_CLASS_PREFIX = '4456'; // TVA déductible
 	const VAT_BUY_CLASS_ACCOUNT = '44566'; // TVA déductible s/ABS
-	const VAT_DEPOSIT_CLASS = '44581'; // Acompte de TVA
+	const VAT_TO_REGULATE_CLASS = '4458'; // TVA à régulariser
+	const VAT_DEPOSIT_CLASS = '44581'; // Acompte de TVA (état)
 	const VAT_CHARGES_TO_PAY_CLASS = '44586'; // TVA à payer (FNP)
 	const VAT_CHARGES_TO_COLLECT_CLASS = '44587'; // TVA à payer (FAE
 	const VAT_ASSET_CLASS = '44562'; // TVA déductible s/immo

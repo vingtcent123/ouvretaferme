@@ -702,7 +702,7 @@ class OperationLib extends OperationCrud {
 				$eOperationVat->notEmpty()
 			) {
 
-				$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_DEPOSIT_CLASS);
+				$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_TO_REGULATE_CLASS);
 				$eOperation['amount'] += $eOperationVat['amount'] ?? 0;
 				Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
 

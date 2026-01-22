@@ -135,10 +135,10 @@ class OperationUi {
 		$cOperationFormatted = new \Collection();
 		$linkedOperationIds = [];
 
-		//Cas particulier des comptes en 409x : ne pas afficher l'écriture en 44581 et remettre l'écriture originale en HT
+		//Cas particulier des comptes en 409x : ne pas afficher l'écriture en 4458 et remettre l'écriture originale en HT
 		$cOperationRegulVat = $cOperation->find(fn($e) => (
-			// L'opération courante doit être une écriture en 44581
-			\account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::VAT_DEPOSIT_CLASS) and
+			// L'opération courante doit être une écriture en 4458
+			\account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::VAT_TO_REGULATE_CLASS) and
 			$e['operation']->notEmpty() and
 			// L'opération parente doit être une 409 ou une 419
 			\account\AccountLabelLib::isDeposit($cOperation[$e['operation']['id']]['accountLabel'] ?? '')
