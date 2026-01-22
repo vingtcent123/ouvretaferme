@@ -281,7 +281,7 @@ class OperationAmount {
 
 		if(typeof Cashflow === 'undefined' || parseInt(qs('[data-columns]').dataset.columns) > 1) {
 
-			const amountIncludingVAT = amount + vatValue;
+			const amountIncludingVAT = Math.round((amount + vatValue) * 100) / 100;
 			const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
 			CalculationField.setValue(targetAmountIncludingVAT, amountIncludingVAT);
 
