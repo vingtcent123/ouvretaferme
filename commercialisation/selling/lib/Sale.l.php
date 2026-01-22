@@ -683,7 +683,7 @@ class SaleLib extends SaleCrud {
 				if($e['customer']['defaultPaymentMethod']->notEmpty()) {
 
 					$e['paymentStatus'] = Sale::NOT_PAID;
-					$ePaymentMethod = $e['customer']['defaultPaymentMethod'];
+					$ePaymentMethod = \payment\MethodLib::getById($e['customer']['defaultPaymentMethod']);
 
 				}
 
