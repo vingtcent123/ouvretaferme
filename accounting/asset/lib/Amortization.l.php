@@ -458,6 +458,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	private static function getLinearRate(int $duration): float {
 
+		if($duration === 0.0) {
+			return 1;
+		}
+
 		return 1 / $duration * 100;
 
 	}
