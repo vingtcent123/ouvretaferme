@@ -6,7 +6,6 @@ Class AssetUi {
 	public function __construct() {
 		\Asset::css('company', 'company.css');
 		\Asset::css('asset', 'asset.css');
-		\Asset::js('asset', 'asset.js');
 	}
 
 	public function number(mixed $number, ?string $valueIfEmpty, ?int $decimals = NULL): string {
@@ -26,7 +25,6 @@ Class AssetUi {
 	}
 
 	public function attach(\farm\Farm $eFarm, \Collection $cOperation, \Collection $cAssetWaiting): \Panel {
-
 
 		$h = '';
 
@@ -125,6 +123,8 @@ Class AssetUi {
 	}
 
 	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \Collection $cOperation, \Collection $cAmortizationDuration): \Panel {
+
+		\Asset::js('asset', 'asset.js');
 
 		$script = '<script type="text/javascript">';
 			$script .= 'Asset.initFiscalDurations('.json_encode($cAmortizationDuration).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
