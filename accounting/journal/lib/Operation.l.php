@@ -369,24 +369,14 @@ class OperationLib extends OperationCrud {
 		} else {
 			$amount = new \Sql('IF(type = "debit", -1 * amount, amount)');
 		}
-
 		return self::applySearch($search)
-			->select(
-				array_merge(Operation::getSelection(),
-					['operation' => [
-						'id', 'account', 'accountLabel', 'document', 'type',
-						'thirdParty' => ['id', 'name'],
-						'description', 'vatRate', 'date',
-						'financialYear',
-						'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
-						'amount' => $amount,
-					]],
-					['account' => ['class', 'description']],
-					['thirdParty' => ['id', 'name']],
-					['month' => new \Sql('SUBSTRING(date, 1, 7)')],
-					['amount' => $amount]
-				),
-			)
+			->select([
+				'id',
+				'amount' => $amount,
+				'operation' => ['id', 'asset', 'accountLabel', 'amount' => $amount, 'date', 'document', 'financialYear', 'description', 'thirdParty' => ['id', 'name'], 'vatRate'],
+				'date', 'accountLabel', 'account' => ['id', 'class', 'description'],
+				'month' => new \Sql('SUBSTRING(date, 1, 7)'),
+			])
 			->sort($hasSort === TRUE ? $search->buildSort() : ['accountLabel' => SORT_ASC, 'date' => SORT_ASC, 'm1.id' => SORT_ASC])
 			->whereAccountLabel('LIKE', ($type === 'buy' ? \account\AccountSetting::VAT_BUY_CLASS_PREFIX : \account\AccountSetting::VAT_SELL_CLASS_PREFIX).'%')
 			->where(new \Sql('operation IS NOT NULL'))
