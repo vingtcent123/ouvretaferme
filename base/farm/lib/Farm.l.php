@@ -183,13 +183,18 @@ class FarmLib extends FarmCrud {
 
 		// Create database
 		if(OTF_DEMO === FALSE) {
-
-			Farm::model()->pdo()->exec('CREATE DATABASE IF NOT EXISTS '.FarmSetting::getDatabaseName($e));
-
-			//FarmLib::connectDatabase($e);
-			//new \ModuleAdministration('securing\Hmac')->init();
-
+			self::createDatabase($e);
 		}
+
+	}
+
+	public static function createDatabase(Farm $e): void {
+
+		Farm::model()->pdo()->exec('CREATE DATABASE IF NOT EXISTS '.FarmSetting::getDatabaseName($e));
+
+		self::connectDatabase($e);
+
+		new \ModuleAdministration('securing\Signature')->init();
 
 	}
 
