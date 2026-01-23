@@ -173,7 +173,7 @@ class FarmModel extends \ModuleModel {
 				return $value === NULL ? NULL : new \Sql($this->pdo()->api->encodePoint($value));
 
 			case 'rotationExclude' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'quality' :
 				return ($value === NULL) ? NULL : (string)$value;

@@ -172,25 +172,25 @@ class CultivationModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'harvestedByUnit' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'mainUnit' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'harvestMonths' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'harvestWeeks' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'harvestPeriodExpected' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'harvestMonthsExpected' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'harvestWeeksExpected' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			default :
 				return parent::encode($property, $value);

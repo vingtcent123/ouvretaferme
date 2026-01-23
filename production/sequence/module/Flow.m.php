@@ -114,13 +114,13 @@ class FlowModel extends \ModuleModel {
 		switch($property) {
 
 			case 'methods' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'tools' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'fertilizer' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'frequency' :
 				return ($value === NULL) ? NULL : (string)$value;

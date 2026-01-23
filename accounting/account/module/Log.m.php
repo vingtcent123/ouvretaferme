@@ -82,7 +82,7 @@ class LogModel extends \ModuleModel {
 		switch($property) {
 
 			case 'params' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			default :
 				return parent::encode($property, $value);

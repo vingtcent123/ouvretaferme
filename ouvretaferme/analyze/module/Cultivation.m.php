@@ -95,10 +95,10 @@ class CultivationModel extends \ModuleModel {
 		switch($property) {
 
 			case 'harvestedByUnit' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'turnoverByUnit' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			default :
 				return parent::encode($property, $value);

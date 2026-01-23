@@ -233,13 +233,7 @@ class MarketLib {
 
 			\selling\SaleLib::updatePreparationStatusCollection($cSaleMarketDraft, \selling\Sale::CANCELED);
 
-			$cSaleMarket = Sale::model()
-				->select(SaleElement::getSelection())
-				->whereFarm($eSale['farm'])
-				->whereMarketParent($eSale)
-				->getCollection();
-
-			SaleLib::closeCollection($cSaleMarket);
+			SaleLib::closeMarket($eSale);
 
 		Sale::model()->commit();
 

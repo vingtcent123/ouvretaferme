@@ -47,19 +47,34 @@ class SignatureModel extends \ModuleModel {
 			'source' => ['enum', [\securing\Signature::SALE, \securing\Signature::CASHBOOK], 'cast' => 'enum'],
 			'key' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'hmac' => ['text8', 'min' => 64, 'max' => 64, 'charset' => 'ascii', 'cast' => 'string'],
-			'chained' => ['text8', 'min' => 64, 'max' => 64, 'charset' => 'ascii', 'cast' => 'string'],
-			'entry' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'data' => ['json', 'cast' => 'array'],
+			'hmacChained' => ['text8', 'min' => 64, 'max' => 64, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'reference' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'data' => ['text24', 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'source', 'key', 'hmac', 'chained', 'entry', 'data', 'createdAt'
+			'id', 'source', 'key', 'hmac', 'hmacChained', 'reference', 'data', 'createdAt'
 		]);
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['hmac']
+			['hmac'],
+			['source', 'reference']
 		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'createdAt' :
+				return new \Sql('NOW()');
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
 
 	}
 
@@ -70,25 +85,8 @@ class SignatureModel extends \ModuleModel {
 			case 'source' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'data' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
-
 			default :
 				return parent::encode($property, $value);
-
-		}
-
-	}
-
-	public function decode(string $property, $value) {
-
-		switch($property) {
-
-			case 'data' :
-				return $value === NULL ? NULL : json_decode($value, TRUE);
-
-			default :
-				return parent::decode($property, $value);
 
 		}
 
@@ -118,12 +116,12 @@ class SignatureModel extends \ModuleModel {
 		return $this->where('hmac', ...$data);
 	}
 
-	public function whereChained(...$data): SignatureModel {
-		return $this->where('chained', ...$data);
+	public function whereHmacChained(...$data): SignatureModel {
+		return $this->where('hmacChained', ...$data);
 	}
 
-	public function whereEntry(...$data): SignatureModel {
-		return $this->where('entry', ...$data);
+	public function whereReference(...$data): SignatureModel {
+		return $this->where('reference', ...$data);
 	}
 
 	public function whereData(...$data): SignatureModel {

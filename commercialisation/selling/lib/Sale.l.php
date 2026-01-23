@@ -1097,7 +1097,7 @@ class SaleLib extends SaleCrud {
 
 			if(
 				$e['preparationStatus'] === Sale::DELIVERED and
-				$e['secured'] === FALSE
+				$e->acceptSecuring()
 			) {
 
 				$properties[] = 'secured';
@@ -1223,7 +1223,8 @@ class SaleLib extends SaleCrud {
 		if(
 			in_array('shipping', $properties) or
 			($e['secured'] and $updatePayments) or
-			($e['secured'] and in_array('paidAt', $properties))
+			($e['secured'] and in_array('paidAt', $properties)) or
+			($e['secured'] and $updatePreparationStatus)
 		) {
 			self::recalculate($e);
 		}
@@ -1605,6 +1606,10 @@ class SaleLib extends SaleCrud {
 				->select(array_keys($newValues))
 				->update($e);
 
+			if($e['secured']) {
+				\securing\SignatureLib::signSale($e, $cItem);
+			}
+
 			return;
 
 		}
@@ -1841,10 +1846,11 @@ class SaleLib extends SaleCrud {
 		return TRUE;
 	}
 
-	public static function closeCollection(\Collection $cSale): void {
+	public static function closeMarket(Sale $eSale): void {
 
 		Sale::model()
-			->whereId('IN', $cSale)
+			->whereFarm($eSale['farm'])
+			->whereMarketParent($eSale)
 			->whereSecured(FALSE)
 			->update([
 				'secured' => TRUE,
@@ -1852,7 +1858,8 @@ class SaleLib extends SaleCrud {
 			]);
 
 		Sale::model()
-			->whereId('IN', $cSale)
+			->whereFarm($eSale['farm'])
+			->whereMarketParent($eSale)
 			->whereClosed(FALSE)
 			->update([
 				'closed' => TRUE,
@@ -1870,7 +1877,7 @@ class SaleLib extends SaleCrud {
 		$eSale['closedAt'] = new \Sql('NOW()');
 		$eSale['closedBy'] = \user\ConnectionLib::getOnline();
 
-		if($eSale['secured'] === FALSE) {
+		if($eSale->acceptSecuring()) {
 
 			$eSale['secured'] = TRUE;
 			$eSale['securedAt'] = new \Sql('NOW()');

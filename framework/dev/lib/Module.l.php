@@ -1574,7 +1574,7 @@ class ModuleLib {
 									$encode = 'gzcompress('.$encode.', 9)';
 									break;
 								case 'json' :
-									$encode = 'json_encode('.$encode.', JSON_UNESCAPED_UNICODE)';
+									$encode = 'json_encode('.$encode.', JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION)';
 									break;
 							}
 

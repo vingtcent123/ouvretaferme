@@ -154,7 +154,7 @@ class InvoiceModel extends \ModuleModel {
 		switch($property) {
 
 			case 'sales' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'taxes' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -163,7 +163,7 @@ class InvoiceModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'vatByRate' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'paymentStatus' :
 				return ($value === NULL) ? NULL : (string)$value;

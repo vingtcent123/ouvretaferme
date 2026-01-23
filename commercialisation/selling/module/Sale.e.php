@@ -231,6 +231,15 @@ class Sale extends SaleElement {
 
 	}
 
+	public function acceptSecuring(): bool {
+
+		return (
+			$this['secured'] === FALSE and
+			$this['type'] === Sale::PRIVATE
+		);
+
+	}
+
 	public function acceptUpdateMarketSalePayment(): bool {
 
 		$this->expects(['profile']);

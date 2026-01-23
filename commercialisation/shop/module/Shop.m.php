@@ -204,7 +204,7 @@ class ShopModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'limitCustomers' :
-				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE);
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'outOfStock' :
 				return ($value === NULL) ? NULL : (string)$value;

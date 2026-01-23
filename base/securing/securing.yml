@@ -3,10 +3,11 @@ Signature:
   source: enum(SALE, CASHBOOK)
   key: int16(0, null)
   hmac: text8(64, 64) @charset(ascii)
-  chained: text8(64, 64) @charset(ascii)
-  entry: int32(0, null)
-  data: json
-  createdAt: datetime
+  hmacChained: ?text8(64, 64) @charset(ascii)
+  reference: int32(0, null)
+  data: text24
+  createdAt: datetime = SPECIAL(now)
   INDEX: [
-    ["hmac"]
+    ["hmac"],
+    ["source", "reference"]
   ]
