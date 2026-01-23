@@ -58,7 +58,7 @@ class SignatureLib {
 	}
 
 	private static function sign(\farm\Farm $eFarm, string $source, int $reference, array $data): void {
-return;
+
 		\farm\FarmLib::connectDatabase($eFarm);
 
 		Signature::model()->beginTransaction();
