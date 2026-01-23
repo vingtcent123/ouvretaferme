@@ -455,6 +455,10 @@ button {
 	margin-left: 4rem !important;
 }
 
+.ml-5 {
+	margin-left: 5rem !important;
+}
+
 .mr-0 {
 	margin-right: 0 !important;
 }
@@ -473,6 +477,10 @@ button {
 
 .mr-4 {
 	margin-right: 4rem !important;
+}
+
+.mr-5 {
+	margin-right: 5rem !important;
 }
 
 .font-xl {

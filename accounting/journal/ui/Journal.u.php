@@ -637,17 +637,15 @@ class JournalUi {
 					if($displayTotal) {
 
 						$colspan = 0;
-						if($canUpdateFinancialYear) {
-							$colspan++;
-						}
-						$colspan++;
+						$colspan++; // account
 						if(in_array('document', $columnsSelected)) {
 							$colspan++;
 						}
 						if($selectedJournalCode === NULL and $readonly === FALSE) {
 							$colspan++;
 						}
-						$colspan++;
+						$colspan++; // libellé
+						$colspan++; // third party
 
 						$h .= '<tr class="row-highlight tr-bold">';
 

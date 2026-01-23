@@ -26,7 +26,7 @@ Class IncomeStatementLib {
 				);
 		}
 
-		$cOperations = \journal\Operation::model()
+		$cOperation = \journal\Operation::model()
 			->select([
 				'financialYear',
 				'class' => new \Sql('SUBSTRING(accountLabel, 1, 3)', 'int'),
@@ -40,14 +40,14 @@ Class IncomeStatementLib {
 			->sort(['class' => SORT_ASC])
 			->getCollection();
 
-		if($cOperations->empty()) {
+		if($cOperation->empty()) {
 			return [];
 		}
 
 		$expenses = [];
 		$incomes = [];
 
-		foreach($cOperations as $eOperation) {
+		foreach($cOperation as $eOperation) {
 
 			$isExpense = \account\AccountLabelLib::isChargeClass($eOperation['class']);
 			$isIncome = \account\AccountLabelLib::isProductClass($eOperation['class']);
