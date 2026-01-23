@@ -109,13 +109,13 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
 				case 'vat-buy':
 					echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-					echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['buy'] ?? new \Collection(), 'buy', $data->search);
+					echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['buy'] ?? new \Collection(), $data->search);
 					echo '</div>';
 					break;
 
 				case  'vat-sell':
 					echo '<div class="tab-panel selected" data-tab="journal-'.$selectedJournalCode.'">';
-					echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['sell'] ?? new \Collection(), 'buy', $data->search);
+					echo new \journal\VatUi()->getTableContainer($data->eFarm, $data->operationsVat['sell'] ?? new \Collection(), $data->search);
 					echo '</div>';
 					break;
 

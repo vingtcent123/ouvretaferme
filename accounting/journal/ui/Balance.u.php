@@ -33,7 +33,7 @@ Class BalanceUi {
 
 	public function getSearch(\Search $search, \account\FinancialYear $eFinancialYear): string {
 
-		$h = '<div id="balance-search" class="util-block-search '.($search->empty(['ids']) === TRUE ? 'hide' : '').'">';
+		$h = '<div id="balance-search" class="util-block-search '.($search->empty(['ids', 'financialYear']) === TRUE ? 'hide' : '').'">';
 
 		$form = new \util\FormUi();
 		$url = LIME_REQUEST_PATH;

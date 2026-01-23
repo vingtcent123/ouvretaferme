@@ -11,13 +11,12 @@ Class VatUi {
 	public function getTableContainer(
 		\farm\Farm $eFarm,
 		\Collection $cccOperation,
-		string $type,
 		\Search $search = new \Search(),
 	): string {
 
 		if($cccOperation->empty() === TRUE) {
 
-			if($search->empty(['ids']) === TRUE) {
+			if($search->empty(['ids', 'financialYear']) === TRUE) {
 				return '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
 			}
 			return '<div class="util-empty">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';

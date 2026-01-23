@@ -46,6 +46,7 @@ new Page(function($data) {
 				'hash' => GET('hash'),
 				'amount' => GET('amount'),
 				'margin' => GET('margin'),
+				'financialYear' => $data->eFarm['eFinancialYear'],
 			], GET('sort', 'id')
 		);
 
@@ -71,12 +72,6 @@ new Page(function($data) {
 				$data->eFarm['eFinancialYear'] = $data->eOperationRequested['financialYear'];
 			}
 
-		}
-
-		if(get_exists('financialYear') and GET('financialYear', 'int') === 0) { // On demande explicitement : pas de filtre sur l'exercice
-		} else {
-			// Ne pas ouvrir le bloc de recherche
-			$search->set('financialYear', $data->eFarm['eFinancialYear']);
 		}
 
 		if($data->eOperationRequested->notEmpty() and !GET('code')) {
