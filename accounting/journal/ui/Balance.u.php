@@ -233,11 +233,9 @@ Class BalanceUi {
 			$h .= '<tr>';
 				$h .= '<td class="text-end">';
 					$h .= encode($lineCurrent['account'] ?? $linePrevious['account']);
-					if(isset($lineCurrent['accountDetail'])) {
-						$h .= '<span class="color-muted font-xs">'.encode($lineCurrent['accountDetail']).'</span>';
-					} else if(isset($linePrevious['accountDetail'])) {
-						$h .= '<span class="color-muted font-xs">'.encode($linePrevious['accountDetail']).'</span>';
-					}
+				$h .= '</td>';
+				$h .= '<td class="text-center">';
+					$h .= '<span class="color-muted font-xs">'.encode($lineCurrent['accountDetail'] ?? $linePrevious['accountDetail'] ?? '').'</span>';
 				$h .= '</td>';
 				$h .= '<td class="hide-sm-down">'.encode($lineCurrent['accountLabel'] ?? $linePrevious['accountLabel']).'</td>';
 
@@ -270,8 +268,9 @@ Class BalanceUi {
 		}
 
 		$h .= '<tr class="tr-bold">';
-			$h .= '<td class="hide-sm-down"></td>';
-			$h .= '<td class="text-end">'.s("Totaux").'</td>';
+			$h .= '<td></td>';
+			$h .= '<td></td>';
+			$h .= '<td class="text-end hide-sm-down">'.s("Totaux").'</td>';
 			$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent, precision: 0).'</td>';
 			$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCreditCurrent, precision: 0).'</td>';
 			$h .= '<td class="text-end highlight-stick-right">'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money($totalDebitCurrent - $totalCreditCurrent) : '').'</td>';
@@ -417,7 +416,7 @@ Class BalanceUi {
 
 				$h .= '<thead class="thead-sticky">';
 				$h .= '<tr>';
-					$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content">'.s("Numéro de compte").'</th>';
+					$h .= '<th rowspan="2" colspan="2" class="td-vertical-align-middle td-min-content">'.s("Numéro de compte").'</th>';
 					$h .= '<th rowspan="2" class="td-vertical-align-middle hide-sm-down">'.s("Libellé").'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Totaux").'</th>';
 					$h .= '<th colspan="2" class="text-center">';
