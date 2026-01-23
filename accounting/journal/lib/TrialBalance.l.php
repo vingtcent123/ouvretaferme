@@ -35,6 +35,10 @@ Class TrialBalanceLib {
 			}
 		}
 
+		if(\company\CompanySetting::FEATURE_SELF_CONSUMPTION and $eFinancialYear['taxSystem'] === \account\FinancialYear::MICRO_BA) {
+			\journal\Operation::model()->where('details IS NULL or (details | '.\journal\Operation::SELF_CONSUMPTION.') = 0');
+		}
+
 		// Récupération des opérations
 		$cOperation = \journal\Operation::model()
 			->select([

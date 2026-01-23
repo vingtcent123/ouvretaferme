@@ -10,6 +10,13 @@ abstract class OperationElement extends \Element {
 	const DEBIT = 'debit';
 	const CREDIT = 'credit';
 
+	const VAT_STD = 1;
+	const VAT_0 = 2;
+	const VAT_HC = 4;
+	const VAT_NS = 8;
+	const VAT_NCA = 16;
+	const SELF_CONSUMPTION = 32;
+
 	public static function getSelection(): array {
 		return Operation::model()->getProperties();
 	}
@@ -64,13 +71,14 @@ class OperationModel extends \ModuleModel {
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
+			'details' => ['set', [\journal\Operation::VAT_STD, \journal\Operation::VAT_0, \journal\Operation::VAT_HC, \journal\Operation::VAT_NS, \journal\Operation::VAT_NCA, \journal\Operation::SELF_CONSUMPTION], 'null' => TRUE, 'cast' => 'set'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'details', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -224,6 +232,10 @@ class OperationModel extends \ModuleModel {
 
 	public function wherePaymentMethod(...$data): OperationModel {
 		return $this->where('paymentMethod', ...$data);
+	}
+
+	public function whereDetails(...$data): OperationModel {
+		return $this->where('details', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): OperationModel {

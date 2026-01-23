@@ -32,6 +32,15 @@ class AccountLabelLib {
 
 	}
 
+	public static function isSelfConsumption(string $account): bool {
+
+		return (
+			str_starts_with($account, AccountSetting::OLD_PRODUCT_SELF_CONSUMPTION_ACCOUNT_CLASS) or
+			str_starts_with($account, AccountSetting::PRODUCT_SELF_CONSUMPTION_ACCOUNT_CLASS)
+		);
+
+	}
+
 	public static function isAmortizationOrDepreciationClass(string $class): bool {
 
 		return (

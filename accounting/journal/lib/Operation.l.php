@@ -757,11 +757,51 @@ class OperationLib extends OperationCrud {
 
 		}
 
+		// Vérification pour l'autoconsommation
+		self::checkForSelfConsumption($cOperation, FALSE);
+
 		if($fw->ko()) {
 			return new \Collection();
 		}
 
 		return $cOperation;
+
+	}
+
+	public static function checkForSelfConsumption(\Collection $cOperation, bool $updateHash): void {
+
+		$cOperationSelf = $cOperation->find(fn($e) => \account\AccountLabelLib::isSelfConsumption($e['accountLabel']));
+
+		if($cOperationSelf->empty()) {
+			return;
+		}
+
+		$cOperationNotSelf = $cOperation->find(fn($e) => \account\AccountLabelLib::isSelfConsumption($e['accountLabel']) === FALSE);
+
+		foreach($cOperationSelf as $eOperation) {
+
+			$cOperationCounterPart = $cOperationNotSelf->find(fn($e) => (
+				$e['date'] === $eOperation['date'] and
+				$e['amount'] === $eOperation['amount'] and
+				$e['type'] === ($eOperation['type'] === Operation::CREDIT ? Operation::DEBIT : Operation::CREDIT) and
+				(in_array(mb_substr($e['accountLabel'], 0, 2), ['10', '46', '47']) or in_array(mb_substr($e['accountLabel'], 0, 3), ['455']))
+			));
+
+			if($cOperationCounterPart->count() !== 1) {
+				continue;
+			}
+
+			// C'est de l'auto conso => on l'enregistre
+			$update = [
+				'details' => new \Sql('IF(details IS NULL, '.Operation::SELF_CONSUMPTION.', details | '.Operation::SELF_CONSUMPTION.')')
+			];
+			Operation::model()->update($eOperation, $update);
+
+			if($updateHash) {
+				$update['hash'] = $eOperation['hash'];
+			}
+			Operation::model()->update($cOperationCounterPart->first(), $update);
+		}
 
 	}
 

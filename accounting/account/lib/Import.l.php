@@ -525,6 +525,9 @@ Class ImportLib extends ImportCrud {
 			}
 			FinancialYear::model()->update($eImport['financialYear'], $update);
 
+			// On va chercher les autoconsommations et tenter de les regrouper
+			\journal\OperationLib::checkForSelfConsumption($cOperation, TRUE);
+
 		Import::model()->commit();
 
 		return TRUE;

@@ -52,10 +52,14 @@ Operation:
   vatAccount: ?account\Account
   # Opération à laquelle celle-ci est liée (ex: opération de TVA reliée à une autre opération)
   operation: ?journal\Operation
-  # Immobilisation à laquelle cette opération est liée (obligatoire pour une classe 2 ou 13)
+  # Immobilisation à laquelle cette opération est liée
   asset: ?asset\Asset
   paymentDate: ?date
   paymentMethod: ?payment\Method
+  # VAT* : Codes TVA (correspondance décl. TVA)
+  # VAT_STD = vente taxable en FR (A1 / A3), VAT_0 = vente exonérée (A4 / A5), VAT_HC = Hors champ TVA (E2), VAT_NS = Non soumis (sub, indem) (E2), VAT_NCA = Hors CA
+  # SELF_CONSUMPTION : Pour stocker l'autoconsommation
+  details: ?set(VAT_STD, VAT_0, VAT_HC, VAT_NS, VAT_NCA, SELF_CONSUMPTION)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)

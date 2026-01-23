@@ -11,6 +11,9 @@ Class BalanceSheetLib {
 
 	public static function getData(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, bool $isDetailed): array {
 
+		if(\company\CompanySetting::FEATURE_SELF_CONSUMPTION and $eFinancialYear['taxSystem'] === \account\FinancialYear::MICRO_BA) {
+			\journal\Operation::model()->where('details IS NULL or (details | '.\journal\Operation::SELF_CONSUMPTION.') = 0');
+		}
 		// On récupère toutes les entrées sur 3 chiffres
 		$cOperation = self::applyFinancialYearsCondition($eFinancialYear, $eFinancialYearComparison)
 			->select([

@@ -26,6 +26,10 @@ Class IncomeStatementLib {
 				);
 		}
 
+		if(\company\CompanySetting::FEATURE_SELF_CONSUMPTION and $eFinancialYear['taxSystem'] === \account\FinancialYear::MICRO_BA) {
+			\journal\Operation::model()->where('details IS NULL or (details | '.\journal\Operation::SELF_CONSUMPTION.') = 0');
+		}
+
 		$cOperation = \journal\Operation::model()
 			->select([
 				'financialYear',
@@ -158,7 +162,6 @@ Class IncomeStatementLib {
 
 		}
 
-
 	}
 
 	private static function affectResultData(array &$array, \account\FinancialYear $eFinancialYear, \journal\Operation $eOperation) {
@@ -177,6 +180,10 @@ Class IncomeStatementLib {
 
 		if($eFinancialYear->empty()) {
 			return 0.0;
+		}
+
+		if(\company\CompanySetting::FEATURE_SELF_CONSUMPTION and $eFinancialYear['taxSystem'] === \account\FinancialYear::MICRO_BA) {
+			\journal\Operation::model()->where('details IS NULL or (details | '.\journal\Operation::SELF_CONSUMPTION.') = 0');
 		}
 
 		$operations = \journal\Operation::model()

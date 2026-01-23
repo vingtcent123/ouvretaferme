@@ -1,18 +1,3 @@
-GenericAccount:
-  id: serial32
-  class: text8(1, null)
-  description: text8(1, null) @collate(general)
-  visible: bool = TRUE
-  vatAccount: ?company\GenericAccount
-  vatRate: ?decimal(5, 2)
-  journalCode: ?company\JournalCode
-  deletedAt: ?date
-  type: enum(AGRICULTURAL, ASSOCIATION)
-  INDEX: [
-    ["id"],
-    ["class"]
-  ]
-
 # Recommandations fiscales pour les durées d'amortissement, sinon : amortissement dérogatoire
 AmortizationDuration:
   class: text8(1, null)
@@ -47,6 +32,21 @@ CompanyCron:
   element: ?int(0, null)
   UNIQUE: [
     ["farm", "action", "element"]
+  ]
+
+GenericAccount:
+  id: serial32
+  class: text8(1, null)
+  description: text8(1, null) @collate(general)
+  visible: bool = TRUE
+  vatAccount: ?company\GenericAccount
+  vatRate: ?decimal(5, 2)
+  journalCode: ?company\JournalCode
+  deletedAt: ?date
+  type: enum(AGRICULTURAL, ASSOCIATION)
+  INDEX: [
+    ["id"],
+    ["class"]
   ]
 
 JournalCode:
