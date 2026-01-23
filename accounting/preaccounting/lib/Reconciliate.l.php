@@ -5,10 +5,8 @@ Class ReconciliateLib {
 
 	public static function reconciliateSuggestionCollection(\farm\Farm $eFarm, \Collection $cSuggestion): void {
 
-		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
-
 		foreach($cSuggestion as $eSuggestion) {
-			self::reconciliateSuggestion($eFarm, $eSuggestion, $cPaymentMethod);
+			self::reconciliateSuggestion($eFarm, $eSuggestion);
 		}
 
 	}

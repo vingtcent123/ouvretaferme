@@ -15,6 +15,7 @@ class Suggestion extends SuggestionElement {
 						->delegateCollection('sale')
 					])
 					->delegateCollection('invoice'),],
+				'paymentMethod' => \payment\Method::getSelection(),
 			];
 
 	}
