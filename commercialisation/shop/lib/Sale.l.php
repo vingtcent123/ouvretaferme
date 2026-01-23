@@ -225,8 +225,6 @@ class SaleLib {
 					$eMethod = $eShare['paymentMethod'];
 				}
 
-				self::createDirectPayment($eMethod, $eSale);
-
 			} else {
 
 				if($eSale['customer']['defaultPaymentMethod']->notEmpty()) {
@@ -235,9 +233,11 @@ class SaleLib {
 					$eMethod = $eShop['paymentMethod'];
 				}
 
-				self::createDirectPayment($eMethod, $eSale);
-
 			}
+
+			$eMethod = \payment\MethodLib::getById($eMethod);
+
+			self::createDirectPayment($eMethod, $eSale);
 
 		}
 
