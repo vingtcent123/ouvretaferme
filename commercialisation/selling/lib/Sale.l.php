@@ -1198,7 +1198,7 @@ class SaleLib extends SaleCrud {
 			$values = $e['cPayment']->toArray(function(Payment $ePayment) {
 				return [
 					'method' => $ePayment['method'],
-					'amount' => $ePayment['amountIncludingVat']
+					'amount' => $ePayment['amountIncludingVat'] ?? NULL
 				];
 			});
 
@@ -1289,7 +1289,7 @@ class SaleLib extends SaleCrud {
 
 			Sale::model()->beginTransaction();
 
-			$e['cPayment'] = new Payment();
+			$e['cPayment'] = new \Collection();
 
 			if($eMethod->notEmpty()) {
 
@@ -1319,7 +1319,7 @@ class SaleLib extends SaleCrud {
 
 	public static function deletePayment(Sale $e): void {
 
-		$e['cPayment'] = new Payment();
+		$e['cPayment'] = new \Collection();
 		$e['paymentStatus'] = NULL;
 
 		self::update($e, ['paymentMethod', 'paymentStatus']);
