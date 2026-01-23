@@ -44,8 +44,15 @@ new Page(function($data) {
 				'minDate' => \journal\Operation::GET('periodStart', 'date'),
 				'maxDate' => \journal\Operation::GET('periodEnd', 'date'),
 				'hash' => GET('hash'),
+				'amount' => GET('amount'),
+				'margin' => GET('margin'),
 			], GET('sort', 'id')
 		);
+
+		if(get_exists('amount')) {
+			$search->set('amountMin', abs(GET('amount', 'float')) - abs(GET('margin', 'float', 0)));
+			$search->set('amountMax', abs(GET('amount', 'float')) + abs(GET('margin', 'float', 0)));
+		}
 
 		$data->unbalanced = GET('unbalanced', 'bool');
 

@@ -147,6 +147,8 @@ class OperationLib extends OperationCrud {
 		return $model
 			->whereId('=', $search->get('id'), if: $search->get('id'))
 			->whereHash('=', $search->get('hash'), if: $search->get('hash'))
+			->whereAmount('>=', $search->get('amountMin'), if: $search->get('amountMin'))
+			->whereAmount('<=', $search->get('amountMax'), if: $search->get('amountMax'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
 			->whereDate('>=', $search->get('minDate'), if: $search->get('minDate'))
 			->whereDate('<=', $search->get('maxDate'), if: $search->get('maxDate'))

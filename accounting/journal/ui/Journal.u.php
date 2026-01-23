@@ -133,6 +133,16 @@ class JournalUi {
 						1 => s("Immobilisation sans fiche"),
 					],  $search->get('needsAsset'), ['mandatory' => TRUE]);
 				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+				$h .= '<legend>'.s("Montant").'</legend>';
+				$h .= $form->inputGroup(
+					$form->addon(s('Montant')).
+					$form->number('amount', $search->get('amount'), ['style' => 'width: 100px', 'step' => 0.01]).
+					$form->addon(s('+/-')).
+					$form->number('margin', $search->get('margin', 1)).
+					$form->addon(s('€'))
+				);
+			$h .= '</fieldset>';
 				if($nUnbalanced > 0) {
 					$h .= '<div class="util-search-fill text-end">';
 						$h .= \Asset::icon('search').' '.'<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?unbalanced=1">'.p("Retrouver {value} groupe d'écritures déséquilibré", "Retrouver les {value} groupes d'écritures déséquilibrés", $nUnbalanced, ['value' => '<span class="util-badge bg-primary">'.$nUnbalanced.'</span>']).'</a>';
