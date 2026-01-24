@@ -170,7 +170,7 @@ class CashflowUi {
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
 						if($showAccount) {
-							$h .= '<th class="td-vertical-align-middle td-min-content">'.s("N° Compte").'</th>';
+							$h .= '<th class="td-vertical-align-middle td-min-content">'.s("Numéro Compte").'</th>';
 						}
 
 						$h .= '<th class="td-vertical-align-middle">';

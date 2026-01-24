@@ -1098,7 +1098,7 @@ Class AssetUi {
 
 					$h .= '<tr>';
 
-						$h .= '<th rowspan="2">'.s("N° compte").'</th>';
+						$h .= '<th rowspan="2">'.s("Numéro de compte").'</th>';
 						$h .= '<th rowspan="2">'.s("Immobilisation").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Amortissement économique").'</th>';
@@ -1140,7 +1140,7 @@ Class AssetUi {
 
 					$h .= '<tr>';
 
-						$h .= '<th rowspan="2">'.s("N° compte").'</th>';
+						$h .= '<th rowspan="2">'.s("Numéro compte").'</th>';
 						$h .= '<th rowspan="2">'.s("Immobilisation").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Amortissement économique").'</th>';

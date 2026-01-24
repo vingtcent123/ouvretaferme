@@ -558,19 +558,22 @@ class FinancialYearUi {
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
 				$h .= '<dt>'.s("Exercice").'</dt>';
-				$h .= '<dd>'.self::getYear($eFinancialYear).' ('.s("du {startDate} au {endDate}", [
-					'startDate' => \util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE),
-					'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE),
-				]).')</dd>';
+				$h .= '<dd>'.self::getYear($eFinancialYear).'</dd>';
 
 				$h .= '<dt>'.self::p('hasVat')->label.'</dt>';
 				$h .= '<dd>'.($eFinancialYear['hasVat'] ? s("Oui") : s("Non")).'</dd>';
 
-				$h .= '<dt>'.self::p('taxSystem')->label.'</dt>';
-				$h .= '<dd>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</dd>';
+				$h .= '<dt>'.s("Période").'</dt>';
+				$h .= '<dd>'.s("du {startDate} au {endDate}", [
+					'startDate' => \util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE),
+					'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE),
+				]).'</dd>';
 
 				$h .= '<dt>'.self::p('vatFrequency')->label.'</dt>';
 				$h .= '<dd>'.($eFinancialYear['vatFrequency'] ? self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']] : '').'</dd>';
+
+				$h .= '<dt>'.self::p('taxSystem')->label.'</dt>';
+				$h .= '<dd>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</dd>';
 
 			$h .= '</dl>';
 		$h .= '</div>';
@@ -644,7 +647,7 @@ class FinancialYearUi {
 				$h .= '</div>';
 			}
 
-			$h .= '<div>'.$form->submit(
+			$h .= '<div class="mt-1">'.$form->submit(
 				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]),
 				['class' => 'btn btn-xl btn-primary', 'data-waiter' => s("Clôture en cours..."), 'data-confirm' => s("La clôture est définitive ! Souhaitez-vous lancer l'opération de clôture ?")],
 			).'</div>';

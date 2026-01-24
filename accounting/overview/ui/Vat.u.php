@@ -169,7 +169,7 @@ Class VatUi {
 						$h .= '<thead class="thead-sticky">';
 							$h .= '<tr>';
 								$h .= '<th rowspan="2">'.s("Date").'</th>';
-								$h .= '<th rowspan="2">'.s("N° compte").'</th>';
+								$h .= '<th rowspan="2">'.s("Numéro compte").'</th>';
 								$h .= '<th rowspan="2">'.s("Pièce comptable").'</th>';
 								$h .= '<th rowspan="2">'.s("Description").'</th>';
 								$h .= '<th rowspan="2">'.s("Tiers").'</th>';
