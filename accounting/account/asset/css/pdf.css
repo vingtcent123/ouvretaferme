@@ -129,6 +129,9 @@ table.pdf-table-bordered tr:nth-child(odd) td {
 	background-color: #0001;
 }
 
+th.no-border-left {
+	border-left: 0 !important;
+}
 tr.pdf-tr-muted {
 	font-style: italic;
 	color: var(--muted);

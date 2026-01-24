@@ -66,7 +66,7 @@ Class SigUi {
 			}
 		$h .= '</tr>';
 		$h .= '<tr class="tr-title">';
-			$h .= '<th class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Montant (€)").'</th>';
+			$h .= '<th class="text-end no-border-left'.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Montant (€)").'</th>';
 			$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.s("Répartition (%)").'</th>';
 			if($hasComparison) {
 				$h .= '<th class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Montant (€)").'</th>';
