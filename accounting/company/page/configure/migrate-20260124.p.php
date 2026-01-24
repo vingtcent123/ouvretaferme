@@ -24,11 +24,16 @@ new Page()
 
 			\farm\FarmLib::connectDatabase($eFarm);
 
-			$eAccount = \account\AccountLib::getByClass($class);
+			$eJournalCode = \journal\JournalCodeLib::getByCode('ACH');
+
+			\account\Account::model()
+				->where('class LIKE "61%" OR class LIKE "62%" OR class LIKE "64%"')
+				->update(['journalCode' => $eJournalCode]);
+
 			$eAccountVat = \account\AccountLib::getByClass('44566');
 
 			\account\Account::model()
-				->whereId($eAccount['id'])
+				->where('class = "60" OR class = "61" OR class = "62"')
 				->update(['vatAccount' => $eAccountVat]);
 
 		}
