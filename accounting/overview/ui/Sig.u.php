@@ -71,7 +71,7 @@ Class SigUi {
 			if($hasComparison) {
 				$h .= '<th class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Montant (€)").'</th>';
 				$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.s("Répartition (%)").'</th>';
-				$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Variation (€)").'</th>';
+				$h .= '<th class="text-end '.($for === 'pdf' ? '' : 'highlight-stick-right').'">'.s("Variation (€)").'</th>';
 				$h .= '<th class="text-center '.($for === 'pdf' ? '' : 'highlight-stick-left').'">'.s("Variation (%)").'</th>';
 			}
 		$h .= '</tr>';
