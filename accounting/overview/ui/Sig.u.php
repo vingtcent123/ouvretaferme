@@ -225,14 +225,14 @@ Class SigUi {
 
 		if($isComparisonBefore) {
 			$value = $valueCurrent - $valueComparison;
-			if($valueComparison === 0.0) {
+			if($valueComparison === 0.0 or ($value > 0 and $valueComparison < 0) or ($value < 0 and $valueComparison > 0)) {
 				$percent = '';
 			} else {
 				$percent = round(($valueCurrent - $valueComparison) / abs($valueComparison), 2) * 100;
 			}
 		} else {
 			$value = $valueComparison - $valueCurrent;
-			if($valueCurrent === 0.0) {
+			if($valueCurrent === 0.0 or ($valueCurrent > 0 and $valueComparison < 0) or ($valueCurrent < 0 and $valueComparison > 0)) {
 				$percent = '';
 			} else {
 				$percent = round(($valueComparison - $valueCurrent) / abs($valueCurrent), 2) * 100;
