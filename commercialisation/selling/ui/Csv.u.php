@@ -522,6 +522,7 @@ class CsvUi {
 							'commercialNameIncompatible' => s("Le nom commercial sera ignoré car c'est un client particulier"),
 							'legalNameIncompatible' => s("La raison sociale sera ignorée car c'est un client particulier"),
 							'countryMissing' => s("Vous devez indiquer au moins un pays (livraison ou facturation) pour le client"),
+							'groupConsistencyError' => s("Un ou plusieurs groupes ne sont pas utilisables pour un client {value}", '<b>'.encode($customer['type']).'</b>'),
 							'groupError' => s("Un ou plusieurs groupes ne sont pas reconnus"),
 							'emailExisting' => s("Vous avez déjà un client avec la même adresse e-mail et ce client ne sera pas importé à nouveau"),
 							'inviteNoEmail' => s("Vous ne pouvez pas inviter ce client à créer un compte client si vous ne fournissez pas d'adresse e-mail"),

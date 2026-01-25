@@ -708,8 +708,16 @@ class CsvLib {
 					$lowerGroup = mb_strtolower($group);
 					
 					if(isset($groups[$lowerGroup])) {
-						$import[$key]['cCustomerGroup'][] = $groups[$lowerGroup];
-						$eCustomer['groups'][] = $groups[$lowerGroup]['id'];
+
+						$eCustomerGroup = $groups[$lowerGroup];
+
+						if($eCustomerGroup['type'] === $eCustomer['type']) {
+							$import[$key]['cCustomerGroup'][] = $groups[$lowerGroup];
+							$eCustomer['groups'][] = $groups[$lowerGroup]['id'];
+						} else {
+							$errors[] = 'groupConsistencyError';
+						}
+
 					} else {
 						$errors[] = 'groupError';
 						$errorsGlobal['groups'][] = $group;
