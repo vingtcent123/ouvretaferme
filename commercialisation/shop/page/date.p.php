@@ -35,6 +35,13 @@ new \shop\DatePage()
 		$data->eShop = \shop\ShopLib::getById(INPUT('shop'))->validate('canWrite');
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canSelling');
 
+		if(
+			$data->eShop['opening'] === \shop\Shop::ALWAYS and
+			\shop\DateLib::getAlwaysByShop($data->eShop)->notEmpty()
+		) {
+			throw new RedirectAction(\shop\ShopUi::adminUrl($data->eFarm, $data->eShop));
+		}
+
 		return new \shop\Date([
 			'farm' => $data->eShop['farm'],
 			'shop' => $data->eShop,
