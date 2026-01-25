@@ -157,7 +157,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 		$cInvoice = \selling\Invoice::model()
 			->select([
-				'id', 'priceIncludingVat', 'name', 'customer' => ['id', 'name', 'legalName'], 'date',
+				'id', 'priceIncludingVat', 'number', 'customer' => ['id', 'name', 'legalName'], 'date',
 				'thirdParty' => \account\ThirdParty::model()
 					->select('id', 'name', 'normalizedName')
 					->delegateCollection('customer'),
