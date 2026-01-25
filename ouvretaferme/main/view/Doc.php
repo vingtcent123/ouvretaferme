@@ -37,6 +37,8 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/import:series" '.$this->menuSelected('importSeries').'>'.s("Importer un plan de culture").'</a>';
 				$h .= '<a href="/doc/import:products" '.$this->menuSelected('importProducts').'>'.s("Importer des produits").'</a>';
 				$h .= '<a href="/doc/import:customers" '.$this->menuSelected('importCustomers').'>'.s("Importer des clients").'</a>';
+				if(LIME_ENV === 'dev')
+				$h .= '<a href="/doc/import:prices" '.$this->menuSelected('importPrices').'>'.s("Importer des prix").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
 				$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le logiciel").'</a>';
 				$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';

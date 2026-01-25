@@ -105,6 +105,53 @@ new \farm\FarmPage()
 		throw new RedirectAction('/selling/csv:importProducts?id='.$data->e['id'].'&created');
 
 	})
+	->read('importPrices', function($data) {
+
+		$data->eFarm = $data->e;
+
+		if(get_exists('reset')) {
+			\selling\CsvLib::resetPrices($data->eFarm);
+		}
+
+		$data->data = \selling\CsvLib::getPrices($data->eFarm);
+
+		throw new ViewAction($data, $data->data ? ':importPriceFile' : NULL);
+
+	}, validate: ['canWrite'])
+	->write('doImportPrices', function($data) {
+
+		$fw = new FailWatch();
+
+		\selling\CsvLib::uploadPrices($data->e);
+
+		if($fw->ok()) {
+			throw new RedirectAction('/selling/csv:importPrices?id='.$data->e['id']);
+		} else {
+			throw new RedirectAction('/selling/csv:importPrices?id='.$data->e['id'].'&error='.$fw->getLast());
+		}
+
+
+	})
+	->write('doCreatePrices', function($data) {
+
+		$data->data = \selling\CsvLib::getPrices($data->e);
+
+		if(
+			$data->data === NULL or
+			$data->data['errorsCount'] > 0
+		) {
+			throw new RedirectAction('/selling/csv:importPrices?id='.$data->e['id']);
+		}
+
+		$fw = new FailWatch();
+
+		\selling\CsvLib::importPrices($data->e, $data->data['import']);
+
+		$fw->validate();
+
+		throw new RedirectAction('/selling/csv:importPrices?id='.$data->e['id'].'&created');
+
+	})
 	->read('importCustomers', function($data) {
 
 		$data->eFarm = $data->e;

@@ -816,5 +816,297 @@ class CsvLib {
 
 	}
 
+	public static function uploadPrices(\farm\Farm $eFarm): bool {
+
+		return \main\CsvLib::upload('import-prices-'.$eFarm['id'], function($csv) {
+
+			if(
+				count(array_intersect($csv[0], ['reference', 'target', 'list', 'price'])) === 4
+			) {
+				$csv = self::convertPrices($csv);
+				if($csv === NULL) {
+					return NULL;
+				}
+			} else {
+				\Fail::log('main\csvSource');
+				return NULL;
+			}
+
+			return $csv;
+
+		});
+
+	}
+
+	public static function convertPrices(array $prices): ?array {
+
+		$import = [];
+
+		$head = array_shift($prices);
+
+		foreach($prices as $price) {
+
+			if(count($price) < count($head)) {
+				$price = array_merge($price, array_fill(0, count($head) - count($price), ''));
+			} else if(count($head) < count($price)) {
+				$price = array_slice($price, 0, count($head));
+			}
+
+			$line = array_combine($head, $price) + [
+				'reference' => '',
+				'target' => '',
+				'list' => '',
+				'price' => '',
+			];
+
+			$import[] = [
+				'reference' => $line['reference'] ?: NULL,
+				'target' => $line['target'] ?: NULL,
+				'list' => trim($line['list']) ? preg_split('/\s*,\s*/', trim($line['list'])) : [],
+				'price' => ($line['price'] !== '') ? \main\CsvLib::formatFloat($line['price']) : NULL,
+			];
+
+		}
+
+		return $import;
+
+	}
+
+	public static function resetPrices(\farm\Farm $eFarm): bool {
+
+		return \Cache::redis()->delete('import-prices-'.$eFarm['id']);
+
+	}
+
+	public static function importPrices(\farm\Farm $eFarm, array $prices): bool {
+
+		$fw = new \FailWatch();
+
+		$cPrice = new \Collection();
+
+		foreach($prices as $price) {
+
+			if($price['ePrice']->empty()) {
+				continue;
+			}
+
+			$ePrice = $price['ePrice']->merge([
+				'invite' => $price['invite']
+			]);
+
+			$cPrice[] = $ePrice;
+
+		}
+
+		if(self::resetPrices($eFarm)) {
+
+			if($cPrice->empty()) {
+				return TRUE;
+			}
+
+			Price::model()->beginTransaction();
+
+			foreach($cPrice as $ePrice) {
+
+				PriceLib::create($ePrice);
+
+				if($ePrice['invite']) {
+
+					\farm\InviteLib::create(new \farm\Invite([
+						'farm' => $eFarm,
+						'price' => $ePrice,
+						'type' => \farm\Invite::PRICE,
+						'email' => $ePrice['email']
+					]));
+
+				}
+
+			}
+
+			if($fw->ko()) {
+				Price::model()->rollBack();
+				return FALSE;
+			}
+
+			Price::model()->commit();
+
+		}
+
+		return TRUE;
+
+	}
+
+	public static function getPrices(\farm\Farm $eFarm): ?array {
+
+		$import = \Cache::redis()->get('import-prices-'.$eFarm['id']);
+
+		if($import === FALSE) {
+			return NULL;
+		}
+
+		$cProduct = ProductLib::getWithReferenceByFarm($eFarm);
+
+		$products = [];
+		foreach($cProduct as $eProduct) {
+			$products[mb_strtolower($eProduct['reference'])] = $eProduct;
+		}
+
+		$cCustomerGroup = CustomerGroupLib::getByFarm($eFarm);
+
+		$groups = [];
+		foreach($cCustomerGroup as $eCustomerGroup) {
+			$groups[mb_strtolower($eCustomerGroup['name'])] = $eCustomerGroup;
+		}
+
+		$cCatalog = \shop\CatalogLib::getByFarm($eFarm);
+
+		$catalogs = [];
+		foreach($cCatalog as $eCatalog) {
+			$catalogs[mb_strtolower($eCatalog['name'])] = $eCatalog;
+		}
+
+		$customers = [];
+
+		$errorsCount = 0;
+		$errorsGlobal = [
+			'products' => [],
+			'catalogs' => [],
+			'customers' => [],
+			'groups' => [],
+		];
+
+		foreach($import as $key => $price) {
+
+			$formatted = [
+				'product' => new Product()
+			];
+
+			$errors = [];
+			$warnings = [];
+			$ignore = FALSE;
+
+			if($price['reference'] === NULL) {
+				$errors[] = 'referenceMissing';
+			} else {
+
+				$lowerReference = mb_strtolower($price['reference']);
+				if(isset($products[$lowerReference])) {
+					$formatted['product'] = $products[$lowerReference];
+				} else {
+					$errors[] = 'referenceError';
+					$errorsGlobal['products'][] = $price['reference'];
+				}
+				
+			}
+
+			switch($price['target']) {
+
+				case 'product' :
+					if($price['list'] === ['private']) {
+						$formatted['type'] = 'private';
+					} else if($price['list'] === ['pro']) {
+						$formatted['type'] = 'pro';
+					} else {
+						$errors[] = 'privateProError';
+					}
+					break;
+
+				case 'group' :
+					$formatted['group'] = [];
+					$formatted['groupError'] = [];
+					if($price['list'] === []) {
+						$errors[] = 'groupMissing';
+					} else {
+						foreach($price['list'] as $group) {
+							$lowerGroup = mb_strtolower($group);
+							if(isset($groups[$lowerGroup])) {
+								$formatted['group'][] = $groups[$lowerGroup];
+							} else {
+								$errors[] = 'groupError';
+								$formatted['groupError'][] = $group;
+								$errorsGlobal['groups'][] = $group;
+							}
+						}
+					}
+					break;
+
+				case 'customer' :
+					$formatted['customer'] = [];
+					$formatted['customerError'] = [];
+					if($price['list'] === []) {
+						$errors[] = 'customerMissing';
+					} else {
+						foreach($price['list'] as $customer) {
+							$upperCustomer = mb_strtoupper($customer);
+							$customers[$upperCustomer] = Customer::model()
+								->select('id', 'number', 'name')
+								->whereFarm($eFarm)
+								->whereNumber($upperCustomer)
+								->get();
+							if($customers[$upperCustomer]->notEmpty()) {
+								$formatted['customer'][] = $customers[$upperCustomer];
+							} else {
+								$errors[] = 'customerError';
+								$formatted['customerError'][] = $customer;
+								$errorsGlobal['customers'][] = $customer;
+							}
+						}
+					}
+					break;
+
+				case 'catalog' :
+					$formatted['catalog'] = [];
+					$formatted['catalogError'] = [];
+					if($price['list'] === []) {
+						$errors[] = 'catalogMissing';
+					} else {
+						foreach($price['list'] as $catalog) {
+							$lowerCatalog = mb_strtolower($catalog);
+							if(isset($catalogs[$lowerCatalog])) {
+								$formatted['catalog'][] = $catalogs[$lowerCatalog];
+							} else {
+								$errors[] = 'catalogError';
+								$formatted['catalogError'][] = $catalog;
+								$errorsGlobal['catalogs'][] = $catalog;
+							}
+						}
+					}
+					break;
+
+				default :
+					$errors[] = 'targetError';
+					break;
+
+			}
+
+			if($price['price'] === NULL) {
+				$errors[] = 'priceMissing';
+			}
+
+			$import[$key]['formatted'] = $formatted;
+
+			$errors = array_filter($errors);
+			$errors = array_unique($errors);
+
+			$errorsCount += count($errors);
+
+			$import[$key]['errors'] = $errors;
+			$import[$key]['warnings'] = $warnings;
+			$import[$key]['ignore'] = $ignore;
+
+		}
+
+		$errorsGlobal['catalogs'] = array_unique($errorsGlobal['catalogs']);
+		$errorsGlobal['customers'] = array_unique($errorsGlobal['customers']);
+		$errorsGlobal['groups'] = array_unique($errorsGlobal['groups']);
+
+		return [
+			'import' => $import,
+			'errorsCount' => $errorsCount,
+			'errorsGlobal' => $errorsGlobal,
+		];
+
+	}
+
 }
 ?>

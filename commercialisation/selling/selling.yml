@@ -49,7 +49,8 @@ Customer:
     ["farm", "email"]
   ]
   UNIQUE: [
-    ["farm", "user"]
+    ["farm", "user"],
+    ["farm", "number"]
   ]
 
 CustomerGroup:

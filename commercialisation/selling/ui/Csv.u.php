@@ -162,7 +162,7 @@ class CsvUi {
 						$h .= '<td class="highlight-stick-right text-end">';
 							if($product['price_private'] !== NULL) {
 								$h .= \util\TextUi::money($product['price_private']);
-								$h .= $eFarm->getConf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
+								$h .= $eFarm->Uonf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 							}
 						$h .= '</td>';
 						$h .= '<td class="highlight-stick-left text-end">';
@@ -338,7 +338,7 @@ class CsvUi {
 					array_walk($values, 'encode');
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Groupes de clients non reconnus").'</h4>';
-						$h .= '<p>'.s("Les groups de clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un groupe existant o ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p>'.s("Les groupes de clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un groupe existant ou ajoutez-les d'abord à votre ferme.").'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<a href="/selling/customerGroup:manage?farm='.$eFarm['id'].'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des groupes de clients").'</a>';
 					$h .= '</div>';
@@ -543,6 +543,202 @@ class CsvUi {
 
 									}
 									foreach($customer['warnings'] as $warning) {
+										$h .= '<li class="color-warning">'.$messages[$warning].'</li>';
+									}
+								$h .= '</ul>';
+							$h .= '</td>';
+						$h .= '</tr>';
+
+					}
+
+				}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getPrices(\farm\Farm $eFarm, array $data): string {
+
+		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal] = $data;
+
+		$h = '';
+
+		if($errorsCount > 0) {
+			$h .= \main\CsvUi::getGlobalErrors($errorsCount, '/doc/import:customers');
+		} else {
+			$h .= '<div class="util-block">';
+				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("Les clients présents dans le tableau ci-dessous seront créés et associés à votre ferme").'</li>';
+					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
+					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
+				$h .= '</ul>';
+				$h .= '<a data-ajax="/selling/csv:doCreateCustomers" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} client ?", "Importer maintenant {value} clients ?", count($data['import'])).'" data-ajax-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+			$h .= '</div>';
+		}
+
+		foreach($errorsGlobal as $type => $values) {
+
+			if(empty($values)) {
+				continue;
+			}
+
+			switch($type) {
+
+				case 'groups' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Groupes de clients non reconnus").'</h4>';
+						$h .= '<p>'.s("Les groupes de clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un groupe existant ou ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="/selling/customerGroup:manage?farm='.$eFarm['id'].'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des groupes de clients").'</a>';
+					$h .= '</div>';
+					break;
+
+				case 'customers' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Clients non reconnus").'</h4>';
+						$h .= '<p>'.s("Les clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un client existant ou ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.\farm\FarmUi::urlSellingCustomers($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des clients").'</a>';
+					$h .= '</div>';
+					break;
+
+				case 'catalogs' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Catalogues non reconnus").'</h4>';
+						$h .= '<p>'.s("Les catalogues suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un catalogues existant ou ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des catalogues").'</a>';
+					$h .= '</div>';
+					break;
+
+			}
+
+		}
+
+		$h .= '<div class="util-overflow-lg">';
+
+			$h .= '<table class="tr-even">';
+
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th>'.s("Produit").'</th>';
+						$h .= '<th class="text-end">'.s("Prix").'</th>';
+						$h .= '<th>'.s("Cible").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody class="td-vertical-align-top">';
+
+				foreach($import as $price) {
+
+					$formatted = $price['formatted'];
+
+					$h .= '<tr class="'.($price['errors'] ? 'csv-error' : ($price['warnings'] ? 'csv-warning' : '')).'">';
+
+						$h .= '<td>';
+
+							if($formatted['product']->notEmpty()) {
+								$h .= ProductUi::link($formatted['product']);
+							} else {
+								$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode($price['reference']).'</span>';
+							}
+
+						$h .= '</td>';
+						$h .= '<td class="td-min-content text-end">';
+							$h .= \util\TextUi::money($price['price']);
+						$h .= '</td>';
+						$h .= '<td>';
+
+							switch($price['target']) {
+
+								case 'product' :
+									if(in_array('privateProError', $price['errors'])) {
+										$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode(implode(', ', $price['list'])).'</span>';
+									} else {
+										$h .= match($formatted['type']) {
+											'private' => s("Prix particulier"),
+											'pro' => s("Prix professionnel")
+										};
+									}
+									break;
+
+								case 'group' :
+									foreach($formatted['group'] as $eCustomerGroup) {
+										$h .= '<div>'.s("Groupe {value}", CustomerGroupUi::link($eCustomerGroup)).'</div>';
+									}
+									foreach($formatted['groupError'] as $error) {
+										$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle').' '.$error.'</div>';
+									}
+									break;
+
+								case 'customer' :
+									foreach($formatted['customer'] as $eCustomer) {
+										$h .= '<div>'.s("Client {value}", CustomerUi::link($eCustomer)).'</div>';
+									}
+									foreach($formatted['customerError'] as $error) {
+										$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle').' '.$error.'</div>';
+									}
+									break;
+
+								case 'catalog' :
+									foreach($formatted['catalog'] as $eCatalog) {
+										$h .= '<div>'.s("Catalogue {value}", encode($eCatalog['name'])).'</div>';
+									}
+									foreach($formatted['catalogError'] as $error) {
+										$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle').' '.$error.'</div>';
+									}
+									break;
+
+								default :
+									$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode($price['target']).'</span>';
+									break;
+
+							}
+
+						$h .= '</td>';
+					$h .= '</tr>';
+
+					if($price['errors']) {
+
+						$messages = [
+							'referenceMissing' => s("Il manque la référence du produit"),
+							'referenceError' => s("La référence du produit n'est pas reconnue"),
+							'targetError' => s("La cible du prix n'est pas reconnue"),
+							'privateProError' => s("Vous n'avez pas indiqué si c'est un prix particulier ou professionnel"),
+							'groupMissing' => s("Aucun groupe n'a été donné"),
+							'groupError' => s("Un ou plusieurs groupes ne sont pas reconnus"),
+							'customerMissing' => s("Aucun client n'a été donné"),
+							'customerError' => s("Un ou plusieurs clients ne sont pas reconnus"),
+							'catalogMissing' => s("Aucun catalogue n'a été donné"),
+							'catalogError' => s("Un ou plusieurs catalogues ne sont pas reconnus"),
+							'priceMissing' => s("Vous n'avez pas indiqué de prix"),
+						];
+
+						$h .= '<tr>';
+							$h .= '<td colspan="5">';
+								$h .= '<ul class="mb-0">';
+									foreach($price['errors'] as $error) {
+
+										$text = str_contains($error, '\\') ?
+											\util\TextUi::error($error) :
+											$messages[$error];
+
+										if($text !== '') {
+											$h .= '<li class="color-danger">'.$text.'</li>';
+										}
+
+									}
+									foreach($price['warnings'] as $warning) {
 										$h .= '<li class="color-warning">'.$messages[$warning].'</li>';
 									}
 								$h .= '</ul>';

@@ -104,7 +104,8 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['farm', 'user']
+			['farm', 'user'],
+			['farm', 'number']
 		]);
 
 	}

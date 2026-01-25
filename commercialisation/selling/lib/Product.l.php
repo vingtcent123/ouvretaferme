@@ -208,6 +208,17 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function getWithReferenceByFarm(\farm\Farm $eFarm): \Collection {
+
+		return Product::model()
+			->select(Product::getSelection())
+			->whereFarm($eFarm)
+			->whereStatus('!=', Product::DELETED)
+			->whereReference('!=', NULL)
+			->getCollection();
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, ?Category $eCategory = NULL, bool $selectSales = FALSE, \Search $search = new \Search()): \Collection {
 
 		if($selectSales) {
