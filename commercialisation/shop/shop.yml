@@ -1,13 +1,13 @@
 Catalog:
   id: serial32
-  name: text8(1, 50)
+  name: ?text8(1, 50)
   comment: ?text24
   farm: farm\Farm
   type: enum(PRIVATE, PRO)
   products: int16(0, null) = 0
   status: enum(ACTIVE, DELETED) = ACTIVE
-  INDEX: [
-    ["farm"]
+  UNIQUE: [
+    ["farm", "name"]
   ]
 
 Department:

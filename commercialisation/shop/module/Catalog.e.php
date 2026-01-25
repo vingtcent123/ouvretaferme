@@ -44,5 +44,22 @@ class Catalog extends CatalogElement {
 
 	}
 
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		$p
+			->setCallback('name.check', function(?string $name): bool {
+				return ($name !== NULL and Catalog::model()->check('name', $name));
+			})
+			->setCallback('name.comma', function(?string $name): bool {
+				return (
+					$name === NULL or
+					str_contains($name, ',') === FALSE
+				);
+			});
+
+		parent::build($properties, $input, $p);
+
+	}
+
 }
 ?>

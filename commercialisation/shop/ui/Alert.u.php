@@ -7,6 +7,9 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Catalog::name.comma' => s("Le nom du catalogue ne peut pas contenir de virgule."),
+			'Catalog::name.duplicate' => s("Il y a déjà un catalogue avec ce nom."),
+
 			'Date::points.check' => s("Merci de conserver au moins un mode de livraison."),
 			'Date::orderEndAt.consistency' => s("La fin de la prise des commandes doit avoir lieu après le début de prise des commandes."),
 			'Date::deliveryDate.check' => s("La date de livraison ne peut pas avoir lieu dans le passé"),

@@ -47,7 +47,7 @@ class CatalogModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'name' => ['text8', 'min' => 1, 'max' => 50, 'cast' => 'string'],
+			'name' => ['text8', 'min' => 1, 'max' => 50, 'null' => TRUE, 'cast' => 'string'],
 			'comment' => ['text24', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'type' => ['enum', [\shop\Catalog::PRIVATE, \shop\Catalog::PRO], 'cast' => 'enum'],
@@ -63,8 +63,8 @@ class CatalogModel extends \ModuleModel {
 			'farm' => 'farm\Farm',
 		];
 
-		$this->indexConstraints = array_merge($this->indexConstraints, [
-			['farm']
+		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
+			['farm', 'name']
 		]);
 
 	}
