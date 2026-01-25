@@ -687,10 +687,6 @@ class SaleLib extends SaleCrud {
 
 				}
 
-			} else {
-
-				$e['secured'] = ($e['customer']['type'] === Customer::PRIVATE);
-
 			}
 
 		}
