@@ -371,6 +371,7 @@ class Customer extends CustomerElement {
 				$groups = \selling\CustomerGroup::model()
 					->whereId('IN', (array)($groups ?? []))
 					->whereFarm($this['farm'])
+					->whereType($this['type'])
 					->getColumn('id');
 
 				return TRUE;
