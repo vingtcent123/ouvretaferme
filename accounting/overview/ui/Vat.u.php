@@ -252,7 +252,7 @@ Class VatUi {
 										if($eOperationInitial->notEmpty()) {
 											$h .= $eOperationInitial['vatRate'];
 										} else {
-											$h .= '?';
+											$h .= '';
 										}
 									$h .= '</td>';
 

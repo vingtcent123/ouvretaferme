@@ -56,6 +56,9 @@ Class VatLib {
 			}
 		}
 
+		if(empty($currentPeriod)) {
+			return first($allPeriods);
+		}
 		return $currentPeriod;
 
 	}
