@@ -252,7 +252,7 @@ class CustomerUi {
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content text-center">';
-							$h .= '<a href="/client/'.$eCustomer['id'].'" class="btn btn-sm btn-outline-primary">'.$eCustomer['number'].'</a>';
+							$h .= '<a href="/client/'.$eCustomer['id'].'" class="btn btn-sm btn-outline-primary">'.encode($eCustomer['number']).'</a>';
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -484,7 +484,7 @@ class CustomerUi {
 			$h .= '<div class="util-block stick-xs">';
 				$h .= '<dl class="util-presentation util-presentation-2">';
 					$h .= '<dt>'.s("Numéro").'</dt>';
-					$h .= '<dd><span class="btn btn-xs btn-outline-primary btn-readonly">'.$eCustomer['number'].'</span></dd>';
+					$h .= '<dd><span class="btn btn-xs btn-outline-primary btn-readonly">'.encode($eCustomer['number']).'</span></dd>';
 					$h .= '<dt>'.s("Catégorie").'</dt>';
 					$h .= '<dd>'.$type.'</dd>';
 					$h .= '<dt>'.s("Adresse e-mail").'</dt>';
