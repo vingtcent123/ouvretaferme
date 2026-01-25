@@ -131,10 +131,16 @@ class CashflowLib extends CashflowCrud {
 
 		$eCashflow->expects(['id']);
 
-		Cashflow::model()
-			->whereStatus(Cashflow::WAITING)
-			->whereId($eCashflow['id'])
-			->update(['status' => Cashflow::DELETED]);
+		Cashflow::model()->beginTransaction();
+
+			Cashflow::model()
+				->whereStatus(Cashflow::WAITING)
+				->whereId($eCashflow['id'])
+				->update(['status' => Cashflow::DELETED]);
+
+			\preaccounting\Suggestion::model()->deleteByCashflow($eCashflow);
+
+		Cashflow::model()->commit();
 	}
 
 	public static function undeleteCashflow(Cashflow $eCashflow): void {
