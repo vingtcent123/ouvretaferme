@@ -103,6 +103,7 @@ new Page(function($data) {
 		$data->page = GET('page', 'int');
 
 		$data->nUnbalanced = \journal\OperationLib::countUnbalanced($search->get('financialYear'));
+		$data->nPage = 1;
 
 		if($data->unbalanced === TRUE) {
 
