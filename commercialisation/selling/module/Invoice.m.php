@@ -124,7 +124,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['farm', 'name']
+			['farm', 'number']
 		]);
 
 	}

@@ -146,7 +146,7 @@ Invoice:
     ["farm", "customer"],
   ]
   UNIQUE: [
-    ["farm", "name"],
+    ["farm", "number"],
   ]
 
 Item:
