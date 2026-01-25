@@ -1090,7 +1090,7 @@ class AnalyzeLib {
 			->getCollection()
 			->toArray(function($eProduct) use($eFarm) {
 				return [
-					$eProduct['profile'],
+					CsvLib::getProductProfiles()[$eProduct['profile']] ?? $eProduct['profile'],
 					$eProduct['name'],
 					$eProduct['reference'],
 					$eProduct['unit']->empty() ? '' : $eProduct['unit']['singular'],

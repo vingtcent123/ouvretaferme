@@ -17,6 +17,13 @@ new Page()
 
 		\securing\SignatureControlLib::controlHmac($eFarm);
 
+	})
+	->cli('rebuild', function($data) {
+
+		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
+
+		\securing\SignatureControlLib::rebuild($eFarm);
+
 	});
 
 ?>

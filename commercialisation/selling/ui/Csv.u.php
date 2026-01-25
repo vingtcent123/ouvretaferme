@@ -138,7 +138,13 @@ class CsvUi {
 							}
 
 							if($product['profile'] !== NULL) {
-								$h .= '<div class="util-annotation">'.ProductUi::p('profile')->values[$product['profile']].'</div>';
+								$h .= '<div class="util-annotation">';
+									if(isset(ProductUi::p('profile')->values[$product['profile']])) {
+										$h .= ProductUi::p('profile')->values[$product['profile']];
+									} else {
+										$h .= $product['profile'];
+									}
+								$h .= '</div>';
 							}
 
 							if(in_array($product['reference'], $infoGlobal['references'])) {

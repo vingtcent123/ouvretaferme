@@ -60,7 +60,7 @@ class CsvLib {
 			];
 
 			$import[] = [
-				'profile' => $line['type'] ?: NULL,
+				'type' => $line['type'] ?: NULL,
 				'name' => $line['name'] ?: NULL,
 				'unit' => $line['unit'] ?: NULL,
 				'price_private' => ($line['price_private'] !== '') ? \main\CsvLib::formatFloat($line['price_private']) : NULL,
@@ -165,6 +165,16 @@ class CsvLib {
 
 	}
 
+	public static function getProductProfiles(): array {
+		return [
+			Product::UNPROCESSED_PLANT => 'plant',
+			Product::UNPROCESSED_ANIMAL => 'animal',
+			Product::PROCESSED_FOOD => 'food',
+			Product::PROCESSED_PRODUCT => 'product',
+			Product::SERVICE => 'service',
+		];
+	}
+
 	public static function getProducts(\farm\Farm $eFarm): ?array {
 
 		$import = \Cache::redis()->get('import-products-'.$eFarm['id']);
@@ -206,12 +216,24 @@ class CsvLib {
 			$warnings = [];
 			$ignore = FALSE;
 
-			if($product['profile'] === NULL) {
+			$profile = $product['type'];
+
+			if($product['type'] === NULL) {
 				$errors[] = 'profileMissing';
-			} else if(in_array($product['profile'], \selling\Product::getProfiles('import')) === FALSE) {
-				$errors[] = 'profileInvalid';
-				$errorsGlobal['profiles'][] = $product['profile'];
 			}
+			// Valeur de l'enum
+			else if(in_array($product['type'], \selling\Product::getProfiles('import'))) {
+				// OK
+			}
+			// Valeur humainement compréhensible
+			else if(in_array($product['type'], CsvLib::getProductProfiles())) {
+				$profile = array_search($product['type'], CsvLib::getProductProfiles());
+			} else {
+				$errors[] = 'profileInvalid';
+				$errorsGlobal['profiles'][] = $product['type'];
+			}
+
+			$import[$key]['profile'] = $profile;
 
 			if($product['name'] === NULL) {
 				$errors[] = 'nameMissing';
@@ -271,7 +293,7 @@ class CsvLib {
 
 			if($product['species'] !== NULL) {
 
-				if(in_array($product['profile'], Product::getProfiles('unprocessedPlant'))) {
+				if(in_array($profile, Product::getProfiles('unprocessedPlant'))) {
 
 					$plantFqn = toFqn($product['species'], ' ');
 
@@ -304,7 +326,7 @@ class CsvLib {
 
 			if($product['quality'] !== NULL) {
 
-				if(in_array($product['profile'], Product::getProfiles('quality')) === FALSE) {
+				if(in_array($profile, Product::getProfiles('quality')) === FALSE) {
 					$warnings[] = 'qualityIncompatible';
 					$import[$key]['quality'] = NULL;
 				} else if(in_array($product['quality'], Product::model()->getPropertyEnum('quality')) === FALSE) {
@@ -315,7 +337,7 @@ class CsvLib {
 
 			if($product['variety'] !== NULL) {
 
-				if(in_array($product['profile'], Product::getProfiles('unprocessedVariety')) === FALSE) {
+				if(in_array($profile, Product::getProfiles('unprocessedVariety')) === FALSE) {
 					$warnings[] = 'varietyIncompatible';
 					$import[$key]['variety'] = NULL;
 				}
@@ -324,7 +346,7 @@ class CsvLib {
 
 			if($product['allergen'] !== NULL) {
 
-				if(in_array($product['profile'], Product::getProfiles('processedAllergen')) === FALSE) {
+				if(in_array($profile, Product::getProfiles('processedAllergen')) === FALSE) {
 					$warnings[] = 'allergenIncompatible';
 					$import[$key]['allergen'] = NULL;
 				}
@@ -333,7 +355,7 @@ class CsvLib {
 
 			if($product['packaging'] !== NULL) {
 
-				if(in_array($product['profile'], Product::getProfiles('processedPackaging')) === FALSE) {
+				if(in_array($profile, Product::getProfiles('processedPackaging')) === FALSE) {
 					$warnings[] = 'packagingIncompatible';
 					$import[$key]['packaging'] = NULL;
 				}
@@ -342,7 +364,7 @@ class CsvLib {
 
 			if($product['composition'] !== NULL) {
 
-				if(in_array($product['profile'], Product::getProfiles('processedComposition')) === FALSE) {
+				if(in_array($profile, Product::getProfiles('processedComposition')) === FALSE) {
 					$warnings[] = 'compositionIncompatible';
 					$import[$key]['composition'] = NULL;
 				}
@@ -350,7 +372,7 @@ class CsvLib {
 			}
 
 
-			if(in_array($product['profile'], Product::getProfiles('mixedFrozen')) === FALSE) {
+			if(in_array($profile, Product::getProfiles('mixedFrozen')) === FALSE) {
 
 				if($product['frozen']) {
 					$warnings[] = 'frozenIncompatible';

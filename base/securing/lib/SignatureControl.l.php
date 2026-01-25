@@ -81,4 +81,35 @@ class SignatureControlLib {
 
 	}
 
+	public static function rebuild(\farm\Farm $eFarm) {
+
+		\farm\FarmLib::connectDatabase($eFarm);
+
+		Signature::model()
+			->all()
+			->delete();
+
+		$c = \selling\Sale::model()
+			->select(\selling\Sale::getSelection())
+			->whereSecured(TRUE)
+			->whereFarm($eFarm)
+			->sort([
+				'securedAt' => SORT_ASC
+			])
+			->getCollection();
+
+		$counter = 0;
+
+		foreach($c as $e) {
+
+			echo "\r".(++$counter).' updated';
+
+			\securing\SignatureLib::signSale($e);
+
+		}
+
+		echo "\n";
+
+	}
+
 }

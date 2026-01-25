@@ -689,7 +689,7 @@ class SaleLib extends SaleCrud {
 
 			} else {
 
-				$e['secured'] = ($e['customer']['type'] === Customer::PRIVATE and $e['farm']->getFarmer()->empty());
+				$e['secured'] = ($e['customer']['type'] === Customer::PRIVATE);
 
 			}
 

@@ -1297,8 +1297,7 @@ abstract class ModuleModel {
 	 * Select all elements for the next query
 	 */
 	public function all(): ModuleModel {
-		$this->condition = '1';
-		return $this;
+		return $this->where(1);
 	}
 
 	/**

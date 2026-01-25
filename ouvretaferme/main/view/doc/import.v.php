@@ -267,7 +267,9 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 
 		$profiles = '';
 		foreach(\selling\Product::getProfiles('import') as $profile) {
-			$profiles .= '<li><div class="doc-example">'.$profile.'</div> → '.\selling\ProductUi::p('profile')->values[$profile].'</li>';
+
+			$profiles .= '<li><div class="doc-example">'.\selling\CsvLib::getProductProfiles()[$profile].'</div> → '.\selling\ProductUi::p('profile')->values[$profile].'</li>';
+
 		}
 
 		$list = [
@@ -278,7 +280,7 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 				'<ul>'.
 					$profiles.
 				'</ul>',
-				\selling\Product::UNPROCESSED_PLANT
+				'plant'
 			],
 			[
 				s("Nom du produit").' '.\util\FormUi::asterisk(),
