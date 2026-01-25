@@ -958,7 +958,7 @@ class PdfUi {
 
 			$h .= $form->group(
 				s("Vente"),
-				'<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-primary" target="_blank">'.$eSale->getNumber().'</a> '.CustomerUi::link($eSale['customer'], newTab: TRUE)
+				'<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-primary" target="_blank">'.$eSale['document'].'</a> '.CustomerUi::link($eSale['customer'], newTab: TRUE)
 			);
 
 			$h .= $form->dynamicGroups($eSale, ['orderFormValidUntil']);
@@ -1000,7 +1000,7 @@ class PdfUi {
 
 			$h .= $form->group(
 				s("Vente"),
-				'<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-primary" target="_blank">'.$eSale->getNumber().'</a> '.CustomerUi::link($eSale['customer'], newTab: TRUE)
+				'<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-primary" target="_blank">'.$eSale['document'].'</a> '.CustomerUi::link($eSale['customer'], newTab: TRUE)
 			);
 
 			$h .= $form->dynamicGroups($eSale, ['deliveryNoteDate']);
@@ -1407,7 +1407,7 @@ class PdfUi {
 
 					$entry .= '<div class="pdf-sales-label-detail">';
 						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
-						$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale->getNumber().'</div>';
+						$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale['document'].'</div>';
 					$entry .= '</div>';
 
 					if(count($farms) > 1) {

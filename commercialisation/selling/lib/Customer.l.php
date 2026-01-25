@@ -127,7 +127,7 @@ class CustomerLib extends CustomerCrud {
 				]);
 		}
 
-		$search->validateSort(['name', 'firstName', 'lastName']);
+		$search->validateSort(['id', 'name', 'firstName', 'lastName']);
 
 		switch($search->get('category')) {
 
@@ -340,6 +340,9 @@ class CustomerLib extends CustomerCrud {
 		// Points de vente
 		$e['email'] ??= NULL;
 		self::fillName($e);
+
+		$e['document'] = \farm\ConfigurationLib::getNextDocumentCustomers($e['farm']);
+		$e['number'] = $e->calculateNumber();
 
 		parent::create($e);
 

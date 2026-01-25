@@ -37,9 +37,9 @@ class SaleUi {
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
 		} else if($eSale['priceExcludingVat'] < 0) {
-			return s("Avoir #{value}", $eSale->getNumber());
+			return s("Avoir #{value}", $eSale['document']);
 		} else {
-			return s("Vente #{value}", $eSale->getNumber());
+			return s("Vente #{value}", $eSale['document']);
 		}
 
 	}
@@ -439,9 +439,9 @@ class SaleUi {
 								$eSale->canRead() === FALSE or
 								$eSale->isMarketSale()
 							) {
-								$h .= '<span class="btn btn-sm disabled">'.$eSale->getNumber().'</span>';
+								$h .= '<span class="btn btn-sm disabled">'.$eSale['document'].'</span>';
 							} else {
-								$h .= '<a href="'.$link($eSale).'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
+								$h .= '<a href="'.$link($eSale).'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale['document'].'</a>';
 							}
 						$h .= '</td>';
 

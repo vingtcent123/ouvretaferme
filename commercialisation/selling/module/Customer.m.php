@@ -55,6 +55,8 @@ class CustomerModel extends \ModuleModel {
 			'lastName' => ['text8', 'min' => 1, 'max' => 30, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'commercialName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'number' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'contactName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -86,7 +88,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'email', 'phone', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'document', 'number', 'email', 'phone', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -197,6 +199,14 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereLegalName(...$data): CustomerModel {
 		return $this->where('legalName', ...$data);
+	}
+
+	public function whereDocument(...$data): CustomerModel {
+		return $this->where('document', ...$data);
+	}
+
+	public function whereNumber(...$data): CustomerModel {
+		return $this->where('number', ...$data);
 	}
 
 	public function whereEmail(...$data): CustomerModel {

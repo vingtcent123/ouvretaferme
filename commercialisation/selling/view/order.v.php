@@ -26,7 +26,7 @@ new AdaptativeView('/commandes/professionnels/{farm}', function($data, MainTempl
 
 new AdaptativeView('/commande/{id}', function($data, MainTemplate $t) {
 
-	$t->title = s("Commande #{value}", $data->e->getNumber());
+	$t->title = s("Commande #{value}", $data->e['document']);
 
 	$back = match($data->e['customer']['type']) {
 		\selling\Customer::PRO => '<a href="/commandes/professionnels/'.$data->eFarm['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('chevron-left').' '.s("Toutes les commandes").'</a>',

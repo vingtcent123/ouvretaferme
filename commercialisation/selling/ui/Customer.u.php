@@ -193,11 +193,14 @@ class CustomerUi {
 							$h .= '<input type="checkbox" class="batch-all" onclick="Customer.toggleSelection(this)"/>';
 						$h .= '</label>';
 					$h .= '</th>';
+					$h .= '<th rowspan="2" class="text-center">';
+						$h .= $search->linkSort('id', s("Numéro"));
+					$h .= '</th>';
 					$h .= '<th rowspan="2">';
 						$label = s("Prénom");
-						$h .= ($search ? $search->linkSort('firstName', $label) : $label).' / ';
+						$h .= $search->linkSort('firstName', $label).' / ';
 						$label = s("Nom");
-						$h .= ($search ? $search->linkSort('lastName', $label) : $label);
+						$h .= $search->linkSort('lastName', $label);
 					$h .= '</th>';
 					if(in_array('sales', $hide) === FALSE) {
 						$h .= '<th colspan="2" class="text-center hide-xs-down highlight">'.s("Ventes").'</th>';
@@ -246,6 +249,10 @@ class CustomerUi {
 							$h .= '<label>';
 								$h .= '<input type="checkbox" name="batch[]" value="'.$eCustomer['id'].'" oninput="Customer.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
 							$h .= '</label>';
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content text-center">';
+							$h .= '<a href="/client/'.$eCustomer['id'].'" class="btn btn-sm btn-outline-primary">'.$eCustomer['number'].'</a>';
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -476,6 +483,8 @@ class CustomerUi {
 
 			$h .= '<div class="util-block stick-xs">';
 				$h .= '<dl class="util-presentation util-presentation-2">';
+					$h .= '<dt>'.s("Numéro").'</dt>';
+					$h .= '<dd><span class="btn btn-xs btn-outline-primary btn-readonly">'.$eCustomer['number'].'</span></dd>';
 					$h .= '<dt>'.s("Catégorie").'</dt>';
 					$h .= '<dd>'.$type.'</dd>';
 					$h .= '<dt>'.s("Adresse e-mail").'</dt>';

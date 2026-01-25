@@ -15,6 +15,8 @@ Customer:
   lastName: ?text8(1, 30) @collate(general)
   commercialName: ?text8
   legalName: ?text8
+  document: ?int32(1, null)
+  number: ?text8
   email: ?email
   phone: ?text8
   contactName: ?text8

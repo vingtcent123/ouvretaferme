@@ -27,6 +27,12 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function calculateNumber(): ?string {
+
+		return SellingSetting::CUSTOMER.$this['document'];
+
+	}
+
 	public function getCategory(): string {
 
 		$this->expects(['type', 'destination']);

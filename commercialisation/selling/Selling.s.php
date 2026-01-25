@@ -3,6 +3,7 @@ namespace selling;
 
 class SellingSetting extends \Settings {
 
+	const CUSTOMER = 'C';
 	const ORDER_FORM = 'DE';
 	const DELIVERY_NOTE = 'BL';
 	const INVOICE = 'FA';

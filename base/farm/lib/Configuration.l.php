@@ -74,6 +74,41 @@ class ConfigurationLib extends ConfigurationCrud {
 
 	}
 
+	public static function getNextDocumentCustomers(\farm\Farm $eFarm): int {
+
+		Configuration::model()->beginTransaction();
+
+		$newValue = Configuration::model()
+			->whereFarm($eFarm)
+			->getValue('documentCustomers');
+
+		for($i = 0; ; $i++) {
+
+			$newValue++;
+
+			if(
+				Configuration::model()
+					->whereFarm($eFarm)
+					->whereDocumentCustomers('<', $newValue)
+					->update([
+						'documentCustomers' => $newValue
+					]) > 0
+			) {
+
+				Configuration::model()->commit();
+
+				return $newValue;
+
+			}
+
+			if($i === 100) {
+				throw new \Exception("Possible infinite loop");
+			}
+
+		}
+
+	}
+
 	public static function getNextDocumentInvoices(\farm\Farm $eFarm): int {
 
 		Configuration::model()->beginTransaction();

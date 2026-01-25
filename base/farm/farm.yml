@@ -29,6 +29,7 @@ Configuration:
   farm: farm\Farm
   documentSales: int32(0, null) = 0
   documentInvoices: int32(0, null) = 0
+  documentCustomers: int32(0, null) = 0
   hasVat: bool = TRUE
   defaultVat: int16(0, null)
   defaultVatShipping: ?int16(0, null)

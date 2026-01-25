@@ -802,7 +802,7 @@ class AnalyzeLib {
 			->select([
 				'id', 'document',
 				'farm',
-				'name',
+				'number',
 				'customer' => ['name', 'siret', 'vatNumber'],
 				'priceIncludingVat', 'priceExcludingVat',
 				'vat', 'vatByRate',
@@ -814,7 +814,7 @@ class AnalyzeLib {
 			->whereStatus('NOT IN', [Invoice::DRAFT, Invoice::CONFIRMED, Invoice::CANCELED])
 			->whereGeneration(Invoice::SUCCESS)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
-			->sort('id')
+			->sort(['document' => SORT_ASC])
 			->getCollection();
 
 		$vatRates = $cInvoice->reduce(function($eInvoice, $vatRates) {
@@ -833,7 +833,7 @@ class AnalyzeLib {
 		$data = $cInvoice->toArray(function(Invoice $eInvoice) use($eFarm, $vatRates) {
 
 				$data = [
-					$eInvoice->getNumber($eInvoice['farm']),
+					$eInvoice['number'],
 					$eInvoice['customer']->getName(),
 					$eInvoice['customer']['siret'],
 					$eInvoice['customer']['vatNumber'],
@@ -843,6 +843,7 @@ class AnalyzeLib {
 					match($eInvoice['paymentStatus']) {
 						Invoice::PAID => 'paid',
 						Invoice::NOT_PAID => 'not_paid',
+						Invoice::NEVER_PAID => 'never_paid',
 						NULL => ''
 					},
 					\util\TextUi::csvNumber($eInvoice['priceExcludingVat']),

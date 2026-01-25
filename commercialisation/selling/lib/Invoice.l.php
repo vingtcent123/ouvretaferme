@@ -693,7 +693,7 @@ class InvoiceLib extends InvoiceCrud {
 			if($eInvoice['document'] === NULL) {
 
 				$eInvoice['document'] = \farm\ConfigurationLib::getNextDocumentInvoices($eInvoice['farm']);
-				$eInvoice['number'] = $eInvoice->getNumber($eInvoice['farm']);
+				$eInvoice['number'] = $eInvoice->calculateNumber($eInvoice['farm']);
 
 				Invoice::model()
 					->select('document', 'number')

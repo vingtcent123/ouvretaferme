@@ -52,6 +52,7 @@ class ConfigurationModel extends \ModuleModel {
 			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
 			'documentSales' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'documentInvoices' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'documentCustomers' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'defaultVat' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'defaultVatShipping' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -83,7 +84,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -105,6 +106,9 @@ class ConfigurationModel extends \ModuleModel {
 				return 0;
 
 			case 'documentInvoices' :
+				return 0;
+
+			case 'documentCustomers' :
 				return 0;
 
 			case 'hasVat' :
@@ -209,6 +213,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereDocumentInvoices(...$data): ConfigurationModel {
 		return $this->where('documentInvoices', ...$data);
+	}
+
+	public function whereDocumentCustomers(...$data): ConfigurationModel {
+		return $this->where('documentCustomers', ...$data);
 	}
 
 	public function whereHasVat(...$data): ConfigurationModel {

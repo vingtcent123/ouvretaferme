@@ -106,7 +106,7 @@ class OrderUi {
 						$h .= '">';
 
 							$h .= '<td class="td-min-content text-center">';
-								$h .= '<a href="/commande/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale->getNumber().'</a>';
+								$h .= '<a href="/commande/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale['document'].'</a>';
 							$h .= '</td>';
 
 							if($type === Customer::PRIVATE) {
@@ -635,7 +635,7 @@ class OrderUi {
 
 		$eSale->expects(['id']);
 
-		return s("Commande #{value}", $eSale->getNumber());
+		return s("Commande #{value}", $eSale['document']);
 
 	}
 

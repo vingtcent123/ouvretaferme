@@ -611,7 +611,7 @@ class ItemUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-center">';
-							$h .= '<a href="/vente/'.$eItem['sale']['id'].'" class="btn btn-sm btn-outline-primary">'.$eItem['sale']->getNumber().'</a> ';
+							$h .= '<a href="/vente/'.$eItem['sale']['id'].'" class="btn btn-sm btn-outline-primary">'.$eItem['sale']['document'].'</a> ';
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -821,7 +821,7 @@ class ItemUi {
 
 			$h .= '<div class="item-day-one">';
 				$h .= '<div class="item-day-product">';
-					$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.$eSale->getNumber().'</a> ';
+					$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.$eSale['document'].'</a> ';
 					$h .= CustomerUi::link($eCustomer);
 				$h .= '</div>';
 

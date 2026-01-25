@@ -652,10 +652,6 @@ class Sale extends SaleElement {
 
 	}
 
-	public function getNumber(): string {
-		return $this['document'];
-	}
-
 	public function getOrderForm(\farm\Farm $eFarm): string {
 
 		$this->expects(['document']);
