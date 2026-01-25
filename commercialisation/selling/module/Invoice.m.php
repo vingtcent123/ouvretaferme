@@ -68,7 +68,7 @@ class InvoiceModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'name' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'number' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customer' => ['element32', 'selling\Customer', 'cast' => 'element'],
 			'sales' => ['json', 'cast' => 'array'],
 			'taxes' => ['enum', [\selling\Invoice::INCLUDING, \selling\Invoice::EXCLUDING], 'cast' => 'enum'],
@@ -107,7 +107,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'name', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
+			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -217,8 +217,8 @@ class InvoiceModel extends \ModuleModel {
 		return $this->where('document', ...$data);
 	}
 
-	public function whereName(...$data): InvoiceModel {
-		return $this->where('name', ...$data);
+	public function whereNumber(...$data): InvoiceModel {
+		return $this->where('number', ...$data);
 	}
 
 	public function whereCustomer(...$data): InvoiceModel {

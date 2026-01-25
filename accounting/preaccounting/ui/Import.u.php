@@ -175,7 +175,7 @@ Class ImportUi {
 
 							$h .= '<td class=" td-vertical-align-top">';
 								$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.encode($eInvoice['id']).'&customer='.encode($eInvoice['customer']['name']).'">';
-									$h .= encode($eInvoice['name']);
+									$h .= encode($eInvoice['number']);
 								$h .= '</a>';
 							$h .= '</td>';
 

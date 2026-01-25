@@ -165,7 +165,7 @@ class Invoice extends InvoiceElement {
 		return in_array($this['status'], [Invoice::GENERATED, Invoice::DELIVERED]);
 	}
 
-	public function getInvoice(\farm\Farm $eFarm): ?string {
+	public function getNumber(\farm\Farm $eFarm): ?string {
 
 		$this->expects(['document']);
 

@@ -123,7 +123,7 @@ class ConfigurationModel extends \ModuleModel {
 				return TRUE;
 
 			case 'creditPrefix' :
-				return \farm\ConfigurationUi::getDefaultCreditPrefix();
+				return \selling\SellingSetting::CREDIT;
 
 			case 'invoiceDue' :
 				return TRUE;
@@ -135,7 +135,7 @@ class ConfigurationModel extends \ModuleModel {
 				return 7;
 
 			case 'invoicePrefix' :
-				return \farm\ConfigurationUi::getDefaultInvoicePrefix();
+				return \selling\SellingSetting::INVOICE;
 
 			case 'marketSaleDefaultDecimal' :
 				return Configuration::PRICE;

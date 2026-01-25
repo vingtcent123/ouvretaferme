@@ -229,7 +229,7 @@ class SaleUi {
 						}
 					$h .= '</th>';
 
-					$label = s("#");
+					$label = s("Numéro");
 					$h .= '<th class="text-center td-min-content">'.($search ? $search->linkSort('id', $label, SORT_DESC) : $label).'</th>';
 
 					if(in_array('customer', $hide) === FALSE) {
@@ -778,6 +778,10 @@ class SaleUi {
 
 		$type = Pdf::INVOICE;
 
+		$short = ($eSale['priceExcludingVat'] >= 0) ?
+			\selling\SellingSetting::INVOICE :
+			\selling\SellingSetting::CREDIT;
+
 		if($eSale['invoice']->empty()) {
 
 			if(
@@ -786,7 +790,7 @@ class SaleUi {
 			) {
 
 				$document = '<a href="/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales" class="btn btn-sm sale-document sale-document-new" title="'.s("Créer une facture").'">';
-					$document .= '<div class="sale-document-name">'.PdfUi::getName(Pdf::INVOICE, $eSale, TRUE).'</div>';
+					$document .= '<div class="sale-document-name">'.$short.'</div>';
 					$document .= '<div class="sale-document-status">';
 						$document .= \Asset::icon('plus');
 					$document .= '</div>';
@@ -803,9 +807,9 @@ class SaleUi {
 			$eInvoice = $eSale['invoice'];
 			$sales = count($eInvoice['sales']);
 
-			$label = PdfUi::getName($type, $eSale);
-			if($eInvoice['name'] !== NULL) {
-				$label .= ' '.encode($eInvoice['name']);
+			$label = PdfUi::getName($type, $eInvoice);
+			if($eInvoice['number'] !== NULL) {
+				$label .= ' '.encode($eInvoice['number']);
 			}
 
 			$dropdown = match($origin) {
@@ -815,7 +819,7 @@ class SaleUi {
 
 			$document = '<a class="btn sale-document" title="'.$label.'" data-dropdown="'.$dropdown.'">';
 				$document .= '<div class="sale-document-name">';
-					$document .= PdfUi::getName(Pdf::INVOICE, $eSale, TRUE);
+					$document .= $short;
 				$document .= '</div>';
 				$document .= '<div class="sale-document-status">';
 
@@ -2328,7 +2332,7 @@ class SaleUi {
 				$paymentInfo = '<div class="util-info">';
 					$paymentInfo .= '<p>';
 						$paymentInfo .= s("Cette vente est incluse dans la facture <b>{invoiceNumber}</b>. Vous pouvez modifier le moyen de paiement et l'état du paiement directement dans la facture.", [
-						'invoiceNumber' => encode($eSale['invoice']['name']),
+						'invoiceNumber' => encode($eSale['invoice']['number']),
 					]);
 					$paymentInfo .= '</p>';
 					$paymentInfo .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-secondary">';

@@ -238,7 +238,7 @@ class CustomizeUi {
 				}
 
 				return [
-					'number' => encode($eInvoice['name']),
+					'number' => encode($eInvoice['number']),
 					'customer' => encode($eInvoice['customer']->getLegalName()),
 					'farm' => encode($eFarm['name']),
 					'amount' => \util\TextUi::money($eInvoice['priceIncludingVat']).' '.($eInvoice['hasVat'] ? ' '.\selling\SaleUi::getTaxes(\selling\Sale::INCLUDING) : ''),

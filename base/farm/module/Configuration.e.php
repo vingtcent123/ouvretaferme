@@ -35,7 +35,7 @@ class Configuration extends ConfigurationElement {
 
 				$max = \selling\Invoice::model()
 					->whereFarm($this['farm'])
-					->whereName('LIKE', $this['invoicePrefix'].'%')
+					->whereNumber('LIKE', $this['invoicePrefix'].'%')
 					->getValue(new \Sql('MAX(document)'));
 
 				$this['invoicePrefixMin'] = $max - 80;

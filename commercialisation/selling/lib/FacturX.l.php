@@ -40,7 +40,7 @@ class FacturXLib {
 		$buyerAddress = '';
 		$sellerAddress = '';
 
-		$invoiceId = $eInvoice['name'];
+		$invoiceId = $eInvoice['number'];
 
 		if(LIME_ENV === 'dev') {
 
@@ -210,7 +210,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	 */
 	public static function generate(Invoice $eInvoice, string $pdfContent): string {
 
-		$eInvoice->expects(['name', 'date', 'priceExcludingVat', 'vat', 'priceIncludingVat', 'farm' => ['id', 'siret'], 'customer' => ['name']]);
+		$eInvoice->expects(['number', 'date', 'priceExcludingVat', 'vat', 'priceIncludingVat', 'farm' => ['id', 'siret'], 'customer' => ['name']]);
 
 		$eInvoice['farm']['configuration'] =  \farm\ConfigurationLib::getByFarm($eInvoice['farm']);
 

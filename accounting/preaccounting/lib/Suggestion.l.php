@@ -22,7 +22,7 @@ Class SuggestionLib extends SuggestionCrud {
 			->select([
 				'id', 'status',
 				'cashflow' => ['id', 'name', 'memo', 'type', 'date', 'amount'],
-				'invoice' => ['id', 'name', 'customer' => ['id', 'name', 'type', 'legalName'], 'priceIncludingVat', 'date'],
+				'invoice' => ['id', 'number', 'customer' => ['id', 'name', 'type', 'legalName'], 'priceIncludingVat', 'date'],
 				'weight', 'reason',
 				'paymentMethod' => ['id', 'fqn', 'name'],
 			])
@@ -129,7 +129,7 @@ Class SuggestionLib extends SuggestionCrud {
 				->select(\bank\Cashflow::getSelection() + [
 					'cOperationCashflow' =>
 						\journal\OperationCashflow::model()->select(['operation'])->delegateCollection('cashflow'),
-					'invoice' => ['id', 'name', 'document', 'customer' => ['id', 'name']],
+					'invoice' => ['id', 'number', 'document', 'customer' => ['id', 'name']],
 				])
 				->whereImport($eImport)
 				->whereIsReconciliated(FALSE)
@@ -216,8 +216,8 @@ Class SuggestionLib extends SuggestionCrud {
 			$reason->value(Suggestion::THIRD_PARTY, TRUE);
 		}
 
-		$score = InvoiceLib::scoreInvoiceReference($eInvoice['name'], $eCashflow->getMemo());
-		if($score > 250 or mb_strpos(mb_strtolower($eCashflow->getMemo()), mb_strtolower($eInvoice['name'])) !== FALSE) {
+		$score = InvoiceLib::scoreInvoiceReference($eInvoice['number'], $eCashflow->getMemo());
+		if($score > 250 or mb_strpos(mb_strtolower($eCashflow->getMemo()), mb_strtolower($eInvoice['number'])) !== FALSE) {
 			$weight += 100;
 			$reason->value(Suggestion::REFERENCE, TRUE);
 		}

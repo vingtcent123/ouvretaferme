@@ -25,7 +25,7 @@ Class ReconciliateUi {
 				'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
 				'customer'=> $eSuggestion['invoice']['customer']->getName(),
 				'customerType'=> $eSuggestion['invoice']['customer']['type'],
-				'reference'=> '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eSuggestion['invoice']['id'].'">'.s("Facture {value}", encode($eSuggestion['invoice']['name'])).'</a>',
+				'reference'=> '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eSuggestion['invoice']['id'].'">'.s("Facture {value}", encode($eSuggestion['invoice']['number'])).'</a>',
 				'confidence' => $this->confidenceValue($eSuggestion),
 			];
 

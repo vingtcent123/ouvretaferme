@@ -62,7 +62,7 @@ class CashflowLib extends CashflowCrud {
 				'cOperationHash' => \journal\Operation::model()
 					->select('id', 'hash', 'accountLabel', 'financialYear', 'asset')
 					->delegateCollection('hash', propertyParent: 'hash'),
-				'invoice' => ['id', 'name', 'document', 'customer' => ['id', 'name']],
+				'invoice' => ['id', 'number', 'document', 'customer' => ['id', 'name']],
 				'sale' => ['id', 'document', 'customer' => ['id', 'name']],
 			])
 			->option('count')

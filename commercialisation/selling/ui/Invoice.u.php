@@ -14,7 +14,7 @@ class InvoiceUi {
 	}
 
 	public static function link(Invoice $eInvoice, bool $newTab = FALSE): string {
-		return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.($eInvoice['document'] === NULL ? 'PROFORMA' : encode($eInvoice['name'])).'</a>';
+		return '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.($eInvoice['document'] === NULL ? 'PROFORMA' : encode($eInvoice['number'])).'</a>';
 	}
 
 	public static function url(Invoice $e): string {
@@ -344,7 +344,7 @@ class InvoiceUi {
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.s("Facture {value}", encode($eInvoice['name'] ?? '')).'</div>';
+									$h .= '<div class="dropdown-title">'.s("Facture {value}", encode($eInvoice['number'] ?? '')).'</div>';
 
 									if(
 										$eInvoice->acceptDownload() or

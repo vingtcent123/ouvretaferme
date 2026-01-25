@@ -191,7 +191,7 @@ new Page(function($data) {
 					\selling\Invoice::model()
 						->select(['document', 'name', 'customer' => ['name']])
 						->whereFarm($data->eFarm)
-						->whereName('IN', $documents)
+						->whereNumber('IN', $documents)
 						->getCollection(NULL, NULL, 'name') :
 					new Collection();
 

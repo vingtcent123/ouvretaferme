@@ -351,7 +351,7 @@ class PdfUi {
 				$dateDocument .= '<div>'.\util\DateUi::numeric($eInvoice['dueDate']).'</div>';
 			}
 
-			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $eInvoice['name'], $dateDocument, $eInvoice['header']);
+			$h .= $this->getDocumentTop(Pdf::INVOICE, $eInvoice, $eFarm, $eInvoice['number'], $dateDocument, $eInvoice['header']);
 
 			$h .= '<div class="pdf-document-body">';
 
@@ -1060,7 +1060,7 @@ class PdfUi {
 
 		$eCustomer = $eInvoice['customer'];
 
-		$title = s("Facture {value}", $eInvoice['name'].' - '.($eCustomer->getLegalName()));
+		$title = s("Facture {value}", $eInvoice['number'].' - '.($eCustomer->getLegalName()));
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eFarm, $title, $content);
@@ -1074,19 +1074,35 @@ class PdfUi {
 
 		$eCustomer = $eInvoice['customer'];
 
-		$title = s("Relance de paiement pour la facture {value}", $eInvoice['name'].' - '.($eCustomer->getLegalName()));
+		$title = s("Relance de paiement pour la facture {value}", $eInvoice['number'].' - '.($eCustomer->getLegalName()));
 		$content = \mail\CustomizeUi::convertTemplate($template, $variables);
 
 		return \mail\DesignUi::format($eFarm, $title, $content);
 
 	}
 
-	public static function getName(string $type, Sale|Invoice $e, bool $short = FALSE): string {
-		return [
-			Pdf::DELIVERY_NOTE => $short ? SellingSetting::DELIVERY_NOTE : s("Bon de livraison"),
-			Pdf::ORDER_FORM => $short ? SellingSetting::ORDER_FORM : s("Devis"),
-			Pdf::INVOICE => $e->isCreditNote() ? ($short ? s("AV") : s("Avoir")) : ($short ? s("FA") : ($e['document'] === NULL ? s("Facture proforma") : s("Facture"))),
-		][$type];
+	public static function getName(string $type, Sale|Invoice $e): string {
+
+		switch($type) {
+
+			case Pdf::DELIVERY_NOTE :
+				return s("Bon de livraison");
+
+			case Pdf::ORDER_FORM :
+				return s("Devis");
+
+			case Pdf::INVOICE :
+
+				$number = ($e instanceof Sale) ?
+					$e['invoice']['number'] :
+					$e['number'];
+
+				return $e->isCreditNote() ?
+					($number === NULL ? s("Avoir proforma") : s("Avoir")) :
+					($number === NULL ? s("Facture proforma") : s("Facture"));
+
+		}
+
 	}
 
 	public function getSalesByDate(\shop\Date $eDate, \Collection $cSale, \Collection $cItem): string {

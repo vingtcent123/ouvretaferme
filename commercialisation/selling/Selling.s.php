@@ -5,6 +5,8 @@ class SellingSetting extends \Settings {
 
 	const ORDER_FORM = 'DE';
 	const DELIVERY_NOTE = 'BL';
+	const INVOICE = 'FA';
+	const CREDIT = 'AV';
 
 	const UNIT_DEFAULT_ID = 1;
 

@@ -10,14 +10,6 @@ class ConfigurationUi {
 
 	}
 
-	public static function getDefaultInvoicePrefix(): string {
-		return s("FA");
-	}
-
-	public static function getDefaultCreditPrefix(): string {
-		return s("AV");
-	}
-
 	public function update(\farm\Farm $eFarm, \Collection $cAccount): string {
 
 		if($eFarm->hasAccounting() === FALSE) {
@@ -198,7 +190,7 @@ class ConfigurationUi {
 
 		$h .= '<div class="configuration-sale-example-wrapper">';
 			$h .= '<div class="configuration-sale-example">';
-				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::INVOICE, $eSaleExample['invoice']['name'], $eFarm, $eSaleExample['cItem']);
+				$h .= new \selling\PdfUi()->getDocument($eSaleExample, \selling\Pdf::INVOICE, $eSaleExample['invoice']['number'], $eFarm, $eSaleExample['cItem']);
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -617,11 +609,11 @@ class ConfigurationUi {
 				break;
 
 			case 'invoicePrefix' :
-				$d->placeholder = ConfigurationUi::getDefaultInvoicePrefix();
+				$d->placeholder = \selling\SellingSetting::INVOICE;
 				break;
 
 			case 'creditPrefix' :
-				$d->placeholder = ConfigurationUi::getDefaultCreditPrefix();
+				$d->placeholder = \selling\SellingSetting::CREDIT;
 				break;
 
 			case 'invoicePaymentCondition' :

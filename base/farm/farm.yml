@@ -44,12 +44,12 @@ Configuration:
   orderFormFooter: ?editor16(1, 500)
   deliveryNoteHeader: ?editor16(1, 500)
   deliveryNoteFooter: ?editor16(1, 500)
-  creditPrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultCreditPrefix())
+  creditPrefix: text8(1, 15) = PHP(\selling\SellingSetting::CREDIT)
   invoiceDue: bool = TRUE
   invoiceDueDays: ?int(0, 360) = 30
   invoiceDueMonth: ?bool
   invoiceReminder: ?int(1, 360) = 7
-  invoicePrefix: text8(1, 15) = PHP(\farm\ConfigurationUi::getDefaultInvoicePrefix())
+  invoicePrefix: text8(1, 15) = PHP(\selling\SellingSetting::INVOICE)
   invoicePaymentCondition: ?editor16(1, 500)
   invoiceHeader: ?editor16(1, 500)
   invoiceFooter: ?editor16(1, 500)

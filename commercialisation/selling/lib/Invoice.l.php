@@ -66,7 +66,7 @@ class InvoiceLib extends InvoiceCrud {
 			->select(Invoice::getSelection())
 			->option('count')
 			->whereId('=', $search->get('invoice'), if: $search->get('invoice'))
-			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
+			->whereNumber('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
 			->whereFarm($eFarm)
 			->whereStatus('LIKE', $search->get('status'), if: $search->get('status'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
@@ -213,7 +213,7 @@ class InvoiceLib extends InvoiceCrud {
 			->setTo($customerEmail)
 			->setReplyTo($eFarm['legalEmail'])
 			->setContent(...$content)
-			->addAttachment($pdf, $eInvoice['name'].'.pdf', 'application/pdf')
+			->addAttachment($pdf, $eInvoice['number'].'.pdf', 'application/pdf')
 			->send();
 
 		Invoice::model()->update($eInvoice, [
@@ -693,10 +693,10 @@ class InvoiceLib extends InvoiceCrud {
 			if($eInvoice['document'] === NULL) {
 
 				$eInvoice['document'] = \farm\ConfigurationLib::getNextDocumentInvoices($eInvoice['farm']);
-				$eInvoice['name'] = $eInvoice->getInvoice($eInvoice['farm']);
+				$eInvoice['number'] = $eInvoice->getNumber($eInvoice['farm']);
 
 				Invoice::model()
-					->select('document', 'name')
+					->select('document', 'number')
 					->update($eInvoice);
 
 			}

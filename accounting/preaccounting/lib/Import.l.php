@@ -16,7 +16,7 @@ Class ImportLib {
 		// Rattacher les opérations aux invoices
 		foreach($cInvoice as &$eInvoice) {
 
-			$eInvoice['operations'] = self::filterOperations($fec, (string)$eInvoice['name']);
+			$eInvoice['operations'] = self::filterOperations($fec, (string)$eInvoice['number']);
 
 		}
 

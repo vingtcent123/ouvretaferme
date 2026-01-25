@@ -104,7 +104,7 @@ History:
 Invoice:
   id: serial32
   document: ?int32(1, null)
-  name: ?text8
+  number: ?text8
   customer: selling\Customer
   sales: json
   taxes: enum(INCLUDING, EXCLUDING)

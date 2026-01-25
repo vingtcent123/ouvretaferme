@@ -833,7 +833,7 @@ class AnalyzeLib {
 		$data = $cInvoice->toArray(function(Invoice $eInvoice) use($eFarm, $vatRates) {
 
 				$data = [
-					$eInvoice->getInvoice($eInvoice['farm']),
+					$eInvoice->getNumber($eInvoice['farm']),
 					$eInvoice['customer']->getName(),
 					$eInvoice['customer']['siret'],
 					$eInvoice['customer']['vatNumber'],
@@ -886,7 +886,7 @@ class AnalyzeLib {
 				'document',
 				'items', 'discount',
 				'type',
-				'invoice' => ['name'],
+				'invoice' => ['number'],
 				'customer' => ['name'],
 				'priceIncludingVat', 'priceExcludingVat', 'vat',
 				'shop' => ['name'],
@@ -907,7 +907,7 @@ class AnalyzeLib {
 
 				$data = [
 					$eSale['document'],
-					$eSale['invoice']->notEmpty() ? $eSale['invoice']['name'] : '',
+					$eSale['invoice']->notEmpty() ? $eSale['invoice']['number'] : '',
 					$eSale['customer']->notEmpty() ? $eSale['customer']->getName() : '',
 					CustomerUi::getType($eSale),
 					\util\DateUi::numeric($eSale['deliveredAt']),
@@ -948,7 +948,7 @@ class AnalyzeLib {
 				'product' => ProductElement::getSelection(),
 				'composition',
 				'ingredientOf',
-				'sale' => ['document',  'type', 'invoice' => ['name']],
+				'sale' => ['document',  'type', 'invoice' => ['number']],
 				'customer' => ['type', 'name'],
 				'quantity' => new \Sql('IF(packaging IS NULL, 1, packaging) * number', 'float'),
 				'type', 'price', 'priceStats', 'vatRate',
@@ -965,7 +965,7 @@ class AnalyzeLib {
 
 				$data = [
 					$eItem['sale']['document'],
-					$eItem['sale']['invoice']['name'] ?? '',
+					$eItem['sale']['invoice']['number'] ?? '',
 					$eItem['id'],
 					$eItem['name'],
 					$eItem['product']->empty() ? '' : $eItem['product']['id'],
@@ -1036,7 +1036,7 @@ class AnalyzeLib {
 
 		foreach(Sale::model()
 			->select([
-				'invoice' => ['name'],
+				'invoice' => ['number'],
 				'document', 'type',
 				'customer' => ['type', 'name'],
 				'shippingExcludingVat',
@@ -1049,7 +1049,7 @@ class AnalyzeLib {
 
 			$data[] = [
 				$eSale['document'],
-				$eSale['invoice']['name'] ?? '',
+				$eSale['invoice']['number'] ?? '',
 				'',
 				SaleUi::getShippingName(),
 				$eSale['customer']->getName(),

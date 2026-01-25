@@ -362,7 +362,7 @@ Class AccountingLib {
 				$referenceDate = $eInvoice['date'];
 			}
 
-			$document = $eInvoice['name'];
+			$document = $eInvoice['number'];
 			$documentDate = $eInvoice['date'];
 			$compAuxLib = ($eInvoice['customer']['name'] ?? '');
 			$compAuxNum = '';

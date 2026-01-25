@@ -251,7 +251,7 @@ class PdfLib extends PdfCrud {
 			->setTo($customerEmail)
 			->setReplyTo($eFarm['legalEmail'])
 			->setContent(...$content)
-			->addAttachment($pdf, $eInvoice['name'].'.pdf', 'application/pdf')
+			->addAttachment($pdf, $eInvoice['number'].'.pdf', 'application/pdf')
 			->send();
 
 	}
