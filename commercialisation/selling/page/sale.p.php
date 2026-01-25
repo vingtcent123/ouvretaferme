@@ -15,6 +15,8 @@ new \selling\SalePage()
 		$eSale = new \selling\Sale([
 			'farm' => $data->eFarm,
 			'profile' => $profile,
+			'shop' => new \shop\Shop(),
+			'shopDate' => new \shop\Date(),
 		]);
 
 		if($eSale->isComposition()) {
@@ -28,8 +30,6 @@ new \selling\SalePage()
 
 		if($data->e->isComposition()) {
 
-			$data->e['shop'] = new \shop\Shop();
-			$data->e['shopDate'] = new \shop\Date();
 			$data->e['shopProducts'] = FALSE;
 			$data->e['customer'] = new \selling\Customer();
 			$data->e['type'] = $data->e['compositionOf']['private'] ? \selling\Sale::PRIVATE : \selling\Sale::PRO;

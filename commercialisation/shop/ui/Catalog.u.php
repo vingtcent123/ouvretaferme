@@ -115,7 +115,7 @@ class CatalogUi {
 
 		return new \Panel(
 			id: 'panel-catalog-show',
-			title: $eCatalog['name'],
+			title: encode($eCatalog['name']),
 			body: $h
 		);
 
