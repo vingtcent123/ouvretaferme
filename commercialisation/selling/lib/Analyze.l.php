@@ -51,13 +51,13 @@ class AnalyzeLib {
 		$ccItem = Item::model()
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 				'turnover' => new \Sql('SUM(priceStats)', 'float'),
 				'unit' => \selling\Unit::getSelection(),
-				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
-			->where('number != 0')
+			->where('m1.number != 0')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->whereProduct('IN', $cProduct)
 			->group(new \Sql('m1_month, unit'))
@@ -200,13 +200,12 @@ class AnalyzeLib {
 
 	public static function getProductsCustomers(\farm\Farm $eFarm, \Collection $cProduct, int $year, \Search $search = new \Search()): \Collection {
 
-		Item::model()->whereProduct('IN', $cProduct);
-
 		Item::model()
 			->select([
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 			])
-			->where('number != 0');
+			->whereProduct('IN', $cProduct)
+			->where('m1.number != 0');
 
 		return self::getCustomers($eFarm, $year, NULL, NULL, $search);
 
@@ -248,9 +247,9 @@ class AnalyzeLib {
 
 		Item::model()
 			->select([
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 			])
-			->where('number != 0');
+			->where('m1.number != 0');
 
 		return self::getTypes($year, NULL, NULL, $search);
 
@@ -527,17 +526,17 @@ class AnalyzeLib {
 		return Item::model()
 			->select([
 				'product' => ProductElement::getSelection(),
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 				'unit' => \selling\Unit::getSelection(),
 				'turnover' => new \Sql('SUM('.$field.')', 'float'),
-				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'average' => new \Sql('SUM('.$field.') / SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 				'containsComposition' => new \Sql('SUM(composition IS NOT NULL) > 0', 'bool'),
 				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where('m1.farm', $eFarm)
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year, if: $year)
-			->where('number != 0')
+			->where('m1.number != 0')
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
 			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
 			->whereProduct('!=', NULL)
@@ -620,13 +619,13 @@ class AnalyzeLib {
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
 				'product',
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 				'turnover' => new \Sql('SUM(priceStats)', 'float'),
-				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float')
 			])
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
-			->where('number != 0')
+			->where('m1.number != 0')
 			->whereProduct('!=', NULL)
 			->group(new \Sql('m1_product, m1.unit, m1_month'))
 			->getCollection(index: ['product', 'month']);
@@ -664,9 +663,9 @@ class AnalyzeLib {
 
 		$ccItemPlant = Item::model()
 			->select([
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 				'turnover' => new \Sql('SUM(priceStats)', 'float'),
-				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 				'containsComposition' => new \Sql('SUM(composition IS NOT NULL) > 0', 'bool'),
 				'containsIngredient' => new \Sql('SUM(ingredientOf IS NOT NULL) > 0', 'bool')
 			])
@@ -676,7 +675,7 @@ class AnalyzeLib {
 					'unit' => \selling\Unit::getSelection(),
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
-			->where('number != 0')
+			->where('m1.number != 0')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->where($month ? 'EXTRACT(MONTH FROM deliveredAt) = '.$month : NULL)
 			->where($week ? 'WEEK(deliveredAt, 1) = '.week_number($week) : NULL)
@@ -733,9 +732,9 @@ class AnalyzeLib {
 		$cccItemPlant = Item::model()
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM deliveredAt)', 'int'),
-				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
+				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float'),
 				'turnover' => new \Sql('SUM(priceStats)', 'float'),
-				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float')
+				'average' => new \Sql('SUM(priceStats) / SUM(IF(packaging IS NULL, 1, packaging) * m1.number)', 'float')
 			])
 			->join(Product::model()
 				->select([
@@ -743,7 +742,7 @@ class AnalyzeLib {
 					'unit' => \selling\Unit::getSelection(),
 				]), 'm1.product = m2.id')
 			->join(Customer::model(), 'm1.customer = m3.id')
-			->where('number != 0')
+			->where('m1.number != 0')
 			->where(new \Sql('EXTRACT(YEAR FROM deliveredAt)'), $year)
 			->where('m1.product', '!=', NULL)
 			->where('m2.unprocessedPlant', '!=', NULL)

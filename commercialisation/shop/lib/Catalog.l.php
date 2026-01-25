@@ -11,6 +11,16 @@ class CatalogLib extends CatalogCrud {
 		return ['name', 'comment'];
 	}
 
+	public static function create(Catalog $e): void {
+
+		try {
+			Catalog::model()->insert($e);
+		} catch(\DuplicateException) {
+			Catalog::fail('name.duplicate');
+		}
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, mixed $index = NULL, array $onlyIds = []): \Collection {
 
 		return Catalog::model()
