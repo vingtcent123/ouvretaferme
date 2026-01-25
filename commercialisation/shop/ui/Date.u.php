@@ -1241,7 +1241,7 @@ class DateUi {
 					foreach($cCatalog as $eCatalog) {
 
 						if($eCatalog['status'] === Catalog::DELETED) {
-							$catalogs[] = '<span class="btn btn-lg btn-primary disabled" style="margin: 0.125rem 0">'.encode($eCatalog['name']).'</span>';
+							$catalogs[] = '<span class="btn btn-lg btn-primary disabled" style="margin: 0.125rem 0">'.s("Catalogue supprimé").'</span>';
 						} else {
 							$catalogs[] = '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary" style="margin: 0.125rem 0">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>';
 						}
@@ -1284,12 +1284,10 @@ class DateUi {
 
 		}
 
-		foreach($cCatalog as $eCatalog) {
+		$cCatalogDeleted = $cCatalog->find(fn($eCatalog) => $eCatalog['status'] === Catalog::DELETED);
 
-			if($eCatalog['status'] === Catalog::DELETED) {
-				$h .= '<div class="util-danger">'.s("Le catalogue {value} a été supprimé.", '<u>'.encode($eCatalog['name']).'</u>').'</div>';
-			}
-
+		if($cCatalogDeleted->notEmpty()) {
+			$h .= '<div class="util-danger">'.p("{value} catalogue a été supprimé.", "{value} catalogues ont été supprimés.", $cCatalogDeleted->count()).'</div>';
 		}
 
 		if($eDate['nProduct'] === 0) {

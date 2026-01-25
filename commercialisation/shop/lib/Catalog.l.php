@@ -147,6 +147,7 @@ class CatalogLib extends CatalogCrud {
 		) {
 
 			Catalog::model()->update($e, [
+				'name' => NULL,
 				'status' => Catalog::DELETED,
 			]);
 
