@@ -1143,8 +1143,21 @@ class SaleLib extends SaleCrud {
 		}
 
 		if(in_array('shopDate', $properties)) {
+
 			$newItems['shop'] = $e['shop'];
 			$newItems['shopDate'] = $e['shopDate'];
+
+			// On doit associer ou dissocier le lien produit / catalogue des articles de la vente
+			if(
+				$e['shopDate']->notEmpty() and
+				$e['shopDate']['catalogs']
+			) {
+				\shop\ProductLib::associateItems($e, $e['shopDate']['catalogs']);
+			} else {
+				$newItems['shopProduct'] = new \shop\Product();
+			}
+
+
 		}
 
 		if(in_array('deliveredAt', $properties)) {

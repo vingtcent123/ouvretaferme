@@ -813,6 +813,47 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function getProductByCatalogs(array $catalogs, \selling\Product $eProductSelling): Product {
+
+		return Product::model()
+			->select('id')
+			->whereCatalog('IN', $catalogs)
+			->whereProduct($eProductSelling)
+			->get();
+
+	}
+
+	public static function associateItems(\selling\Sale $e, array $catalogs): void {
+
+		$cItem = \selling\Item::model()
+			->select('id', 'product')
+			->whereSale($e)
+			->whereIngredientOf(NULL)
+			->whereProduct('!=', NULL)
+			->getCollection();
+
+		if($cItem->empty()) {
+			return;
+		}
+
+		$cProductSelling = $cItem->getColumnCollection('product');
+
+		$cProduct = Product::model()
+			->select('id', 'product')
+			->whereCatalog('IN', $catalogs)
+			->whereProduct('IN', $cProductSelling)
+			->getCollection(index: 'product');
+
+		foreach($cItem as $eItem) {
+
+			\selling\Item::model()->update($eItem, [
+				'shopProduct' => $cProduct[$eItem['product']['id']] ?? new ProductUi()
+			]);
+
+		}
+
+	}
+
 	public static function getReallyAvailable(Product $eProduct, \selling\Product $eProductSelling, \Collection $cItem): ?float {
 
 		if($eProduct['parent']) {

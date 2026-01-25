@@ -74,7 +74,7 @@ class ItemLib extends ItemCrud {
 
 	public static function getNew(Sale $eSale, Product $eProduct, Grid $eGrid): Item {
 
-		$eSale->expects(['farm', 'customer']);
+		$eSale->expects(['farm', 'customer', 'shop', 'shopDate']);
 
 		$eFarm = $eSale['farm'];
 
@@ -82,6 +82,8 @@ class ItemLib extends ItemCrud {
 			'farm' => $eFarm,
 			'sale' => $eSale,
 			'product' => $eProduct,
+			'shop' => $eSale['shop'],
+			'shopDate' => $eSale['shopDate'],
 			'vatRate' => SellingSetting::getVatRate($eFarm, $eFarm->getConf('defaultVat')),
 			'quality' => $eProduct->empty() ? new \plant\Size() : $eProduct['quality'],
 			'customer' => $eSale['customer'],
@@ -505,6 +507,10 @@ class ItemLib extends ItemCrud {
 			self::checkMarketDuplicate($e['sale'], new \Collection([$e]));
 		}
 
+		if(in_array('product', $properties)) {
+			$properties[] = 'shopProduct';
+		}
+
 		if(array_intersect(['unitPrice', 'number', 'packaging', 'vatRate', 'price'], $properties)) {
 			self::preparePricing($e, $properties);
 		}
@@ -799,6 +805,8 @@ class ItemLib extends ItemCrud {
 
 			$eItem = new Item([
 				'sale' => $eSale,
+				'shop' => $eSale['shop'],
+				'shopDate' => $eSale['shopDate'],
 				'farm' => $eSale['farm'],
 				'customer' => $eSale['customer'],
 				'discount' => $eSale['discount']

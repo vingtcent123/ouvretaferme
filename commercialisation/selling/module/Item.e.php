@@ -105,13 +105,25 @@ class Item extends ItemElement {
 
 				if($eProduct->notEmpty()) {
 
-					return (
-						Product::model()
-							->select(ProductElement::getSelection())
-							->whereStatus(Product::ACTIVE)
-							->whereFarm($this['farm'])
-							->get($eProduct)
-					);
+					$exists = Product::model()
+						->select(ProductElement::getSelection())
+						->whereStatus(Product::ACTIVE)
+						->whereFarm($this['farm'])
+						->get($eProduct);
+
+					if(
+						$exists and
+						$this['shopDate']->notEmpty() and
+						$this['shopDate']['catalogs']
+					) {
+
+						$this['shopProduct'] = \shop\ProductLib::getProductByCatalogs($this['shopDate']['catalogs'], $eProduct);
+
+					} else {
+						$this['shopProduct'] = new \shop\Product();
+					}
+
+					return $exists;
 
 				} else {
 					return TRUE;

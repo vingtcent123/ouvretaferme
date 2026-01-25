@@ -596,7 +596,7 @@ class SaleUi {
 								} else {
 
 									if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
-										$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary invoice-button">';
+										$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary sale-button">';
 									}
 
 										$h .= self::getPaymentMethodName($eSale);
