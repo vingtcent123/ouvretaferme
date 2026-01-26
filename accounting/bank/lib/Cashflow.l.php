@@ -138,7 +138,7 @@ class CashflowLib extends CashflowCrud {
 				->whereId($eCashflow['id'])
 				->update(['status' => Cashflow::DELETED]);
 
-			\preaccounting\Suggestion::model()->deleteByCashflow($eCashflow);
+			\preaccounting\Suggestion::model()->whereCashflow($eCashflow)->delete();
 
 		Cashflow::model()->commit();
 	}
