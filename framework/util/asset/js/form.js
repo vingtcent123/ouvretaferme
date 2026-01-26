@@ -21,7 +21,7 @@ function submitAjaxForm(form, submitter) {
 	const body = form.form();
 	let url = form.getAttribute('data-ajax-form');
 
-	const enable = () => {};//startWaiter(submitter);
+	const enable = startWaiter(submitter);
 
 	switch(method) {
 

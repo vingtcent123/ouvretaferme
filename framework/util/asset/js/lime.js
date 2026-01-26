@@ -665,7 +665,8 @@ Document.prototype.ready = function(listener) {
 function startWaiter(target) {
 
 	if(
-		target === undefined ||
+		!target ||
+		!target.dataset ||
 		target.dataset.waiter === undefined
 	) {
 		return () => {
