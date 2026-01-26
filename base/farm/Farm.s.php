@@ -19,6 +19,11 @@ class FarmSetting extends \Settings {
 	public static $featureStock;
 
 	public static function getDatabaseName(\farm\Farm $eFarm): string {
+
+		if(OTF_DEMO) {
+			return 'demo_ouvretaferme';
+		}
+
 		return (LIME_ENV === 'dev' ? 'dev_' : '').'farm_'.$eFarm['id'];
 	}
 
