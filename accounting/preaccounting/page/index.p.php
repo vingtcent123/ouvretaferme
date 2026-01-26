@@ -189,10 +189,10 @@ new Page(function($data) {
 				// Pour avoir le lien vers la facture
 				$data->cInvoice = count($documents) > 0 ?
 					\selling\Invoice::model()
-						->select(['document', 'name', 'customer' => ['name']])
+						->select(['document', 'number', 'customer' => ['name']])
 						->whereFarm($data->eFarm)
 						->whereNumber('IN', $documents)
-						->getCollection(NULL, NULL, 'name') :
+						->getCollection(NULL, NULL, 'number') :
 					new Collection();
 
 			} else {
