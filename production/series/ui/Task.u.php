@@ -2674,7 +2674,7 @@ class TaskUi {
 
 										$h .= '<div>';
 											$h .= '<b>'.(ceil($youngPlants / $eTool['routineValue']['value'] * 10) / 10).'</b> ';
-											$h .= '<small class="color-muted tasks-week-plant-tray">'.encode($eTool['name']).'</span>';
+											$h .= '<small class="color-muted tasks-week-plant-tray">'.encode($eTool['name']).'</small>';
 										$h .= '</div>';
 
 									}

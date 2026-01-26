@@ -19,6 +19,10 @@ new \farm\ActionPage()
 	->doCreate(fn($data) => throw new ViewAction($data));
 
 new \farm\ActionPage()
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction('farm', 'Action::updated'.ucfirst($data->e['status'])), validate: ['canUpdate', 'isFree'])
+	->doDelete(fn($data) => throw new ViewAction($data));
+
+new \farm\ActionPage()
 	->applyElement(function($data, \farm\Action $e) {
 
 		$e->validate('canWrite');
@@ -29,19 +33,17 @@ new \farm\ActionPage()
 			->select('status', 'name')
 			->get($data->eFarm);
 
+		$e['cCategory'] = \farm\CategoryLib::getByFarm($data->eFarm);
+
 		$data->eFarm->validate('active');
 
 	})
 	->update(function($data) {
 
-		$data->e['cCategory'] = \farm\CategoryLib::getByFarm($data->eFarm);
-
 		throw new ViewAction($data);
 
 	})
-	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction('farm', 'Action::updated'.ucfirst($data->e['status'])), validate: ['canUpdate', 'isFree'])
-	->doUpdate(fn($data) => throw new ViewAction($data))
-	->doDelete(fn($data) => throw new ViewAction($data));
+	->doUpdate(fn($data) => throw new ViewAction($data));
 
 new Page()
 	->get('analyzeTime', function($data) {

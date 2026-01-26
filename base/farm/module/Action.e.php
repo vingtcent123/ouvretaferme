@@ -68,7 +68,7 @@ class Action extends ActionElement {
 			->setCallback('pace.prepare', function(?string &$pace) use ($p): bool {
 
 				if(
-					$p->isBuilt('categories') === FALSE or
+					$p->isInvalid('categories') or
 					$this['cCategory']->contains(fn($eCategory) => $eCategory['fqn'] === CATEGORIE_CULTURE) === FALSE
 				) {
 					$pace = NULL;
