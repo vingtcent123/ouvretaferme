@@ -1608,14 +1608,13 @@ class ProductUi {
 
 
 					$h .= $form->inputGroup(
-						$form->addon(s("Prix remisé")).
 						$form->number('privatePriceDiscount', $priceDiscount, [
 							'step' => 0.01,
 							'disabled' => $e['private'] ? NULL : 'disabled'
 						]).
 						$form->addon($suffix).
 						$form->addon(new PriceUi()->getDiscountTrashAddon($identifier)),
-						['class' => 'mt-1'.(empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $identifier, 'data-wrapper' => 'privatePriceDiscount']
+						['class' => (empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => $identifier, 'data-wrapper' => 'privatePriceDiscount']
 					);
 
 					return $h;
@@ -1664,7 +1663,6 @@ class ProductUi {
 
 
 					$h .= $form->inputGroup(
-						$form->addon(s("Prix remisé")).
 						$form->number('proPriceDiscount', $priceDiscount, [
 							'step' => 0.01,
 							'disabled' => $e['pro'] ? NULL : 'disabled'

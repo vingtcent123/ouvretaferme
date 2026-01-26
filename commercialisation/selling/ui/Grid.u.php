@@ -420,7 +420,6 @@ class GridUi {
 
 
 					$h .= $form->inputGroup(
-						$form->addon(s("Prix remisé")).
 						$form->number('priceDiscount', $priceDiscount, ['step' => 0.01]).$addon,
 						['class' => (empty($priceDiscount) ? ' hide' : ''), 'data-price-discount' => 'grid', 'data-wrapper' => 'priceDiscount']
 					);

@@ -5,26 +5,36 @@ class PriceUi {
 
 	public function __construct() {
 
+		\Asset::css('selling', 'priceInitial.css');
 		\Asset::js('selling', 'priceInitial.js');
 
 	}
 
 	public function getDiscountLink(string|int $identifier, bool $hasDiscountPrice, ?string $onHide = null): string {
 
+		if($hasDiscountPrice) {
+			$placeholder = s("Ajouter une remise");
+			$label = s("Prix remisé");
+		} else {
+			$placeholder = s("Prix remisé");
+			$label = s("Ajouter une remise");
+		}
+
 		$attributes = [
-			'onclick' => 'PriceInitial.showUnitPriceDiscountField("'.$identifier.'"'.($onHide ? ', '.$onHide : '').');',
+			'onclick' => 'PriceInitial.switch("'.$identifier.'", '.$onHide.');',
+			'data-visible' => $hasDiscountPrice ? '1' : '0',
 			'data-price-discount-link' => $identifier,
-			'class' => ($hasDiscountPrice ? 'hide' : ''),
+			'data-placeholder' => $placeholder,
 		];
 
-		return \util\FormUi::getFieldAction(''.\Asset::icon('plus-circle').' <a '.attrs($attributes).'>'.s("Ajouter une remise").'</a>');
+		return \util\FormUi::getFieldAction(\Asset::icon('tags').' <a '.attrs($attributes).'>'.$label.'</a>', 'price-discount-link');
 
 	}
 
 	public function getDiscountTrashAddon(string|int $identifier, ?string $onHide = null): string {
 
 		$attributes = [
-			'onclick' => 'PriceInitial.hideUnitPriceDiscountField(\''.$identifier.'\', '.$onHide.');',
+			'onclick' => 'PriceInitial.hide(\''.$identifier.'\', '.$onHide.');',
 			'data-price-discount-link' => $identifier,
 			'title' => s("Supprimer la remise"),
 		];

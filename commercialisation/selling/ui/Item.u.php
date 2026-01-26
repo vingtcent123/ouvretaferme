@@ -1595,7 +1595,6 @@ class ItemUi {
 					$h = new PriceUi()->getDiscountLink($identifier, hasDiscountPrice: empty($unitPriceDiscount) === FALSE);
 
 					$h .= $form->inputGroup(
-						$form->addon(s("Prix remisé")).
 						$form->number(str_replace('unitPrice', 'unitPriceDiscount', $d->name), $unitPriceDiscount, [
 							'step' => 0.01,
 							'oninput' => 'Item.recalculateLock(this)'

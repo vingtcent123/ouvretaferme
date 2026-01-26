@@ -1,0 +1,3 @@
+.price-discount-link:has([data-visible="1"]) {
+	margin-bottom: 0.25rem;
+}

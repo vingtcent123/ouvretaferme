@@ -234,7 +234,6 @@ input[type="checkbox"] {
 .field-action {
 	font-size: .9rem;
 	padding: 0.25rem 0 0 0;
-	text-align: right;
 }
 
 .util-quick-form .field-action a {
