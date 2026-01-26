@@ -58,6 +58,28 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	/**
+	 * Certains comptes doivent être soldés avant la clôture.
+	 */
+	public static function checkCanClose(FinancialYear $eFinancialYear): bool {
+
+		$waitingAccounts = \journal\OperationLib::getWaitingAccountValues($eFinancialYear);
+		if(array_reduce($waitingAccounts, fn($sum, $waitingAccount) => $waitingAccount['total'] + $sum, 0) !== 0.0) {
+			return FALSE;
+		}
+
+		if(empty(\journal\OperationLib::getInternalTransferAccountValues($eFinancialYear)) === FALSE) {
+			return FALSE;
+		}
+
+		if(empty(\journal\OperationLib::getFarmersAccountValue($eFinancialYear)) === FALSE) {
+			return FALSE;
+		}
+
+		return TRUE;
+
+	}
+
 	public static function closeFinancialYear(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
 
 		FinancialYear::model()->beginTransaction();
