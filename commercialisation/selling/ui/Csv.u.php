@@ -21,7 +21,7 @@ class CsvUi {
 			$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
 				$h .= '<ul>';
-					$h .= '<li>'.s("Les produits présents dans le tableau ci-dessous seront créés et associés à votre ferme").'</li>';
+					$h .= '<li>'.s("Les produits présents dans le tableau ci-dessous seront créés et associés à votre ferme.").'</li>';
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les produits que vous importez maintenant").'</li>';
 				$h .= '</ul>';
@@ -162,7 +162,7 @@ class CsvUi {
 						$h .= '<td class="highlight-stick-right text-end">';
 							if($product['price_private'] !== NULL) {
 								$h .= \util\TextUi::money($product['price_private']);
-								$h .= $eFarm->Uonf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
+								$h .= $eFarm->getConf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 							}
 						$h .= '</td>';
 						$h .= '<td class="highlight-stick-left text-end">';
@@ -309,7 +309,7 @@ class CsvUi {
 			$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
 				$h .= '<ul>';
-					$h .= '<li>'.s("Les clients présents dans le tableau ci-dessous seront créés et associés à votre ferme").'</li>';
+					$h .= '<li>'.s("Les clients présents dans le tableau ci-dessous seront créés et associés à votre ferme.").'</li>';
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
 				$h .= '</ul>';
@@ -575,7 +575,7 @@ class CsvUi {
 			$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
 				$h .= '<ul>';
-					$h .= '<li>'.s("Les clients présents dans le tableau ci-dessous seront créés et associés à votre ferme").'</li>';
+					$h .= '<li>'.s("Les prix présents dans le tableau ci-dessous seront créés et associés à votre ferme.").'</li>';
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
 				$h .= '</ul>';

@@ -24,6 +24,7 @@ class CsvUi {
 		$h = '<ul>';
 			$h .= '<li>'.s("La première ligne du fichier CSV correspond aux en-têtes qui doivent être recopiées sans modification").'</li>';
 			$h .= '<li>'.s("Le séparateur des colonnes dans le fichier est la virgule (,)").'</li>';
+			$h .= '<li>'.s("Le fichier doit être enregistré au format UTF-8 ou UTF-16").'</li>';
 		$h .= '</ul>';
 
 		return $h;
