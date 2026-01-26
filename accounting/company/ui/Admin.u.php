@@ -28,9 +28,9 @@ Class AdminUi {
 
 	}
 
-	public function displayFarms(\Collection $cFarm, int $nFarm, int $page, \Search $search): string {
+	public function displayFarms(\Collection $cFarm, \Search $search): string {
 
-		if($nFarm === 0) {
+		if($cFarm->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucune ferme à afficher...").'</div>';
 		}
 
@@ -95,8 +95,6 @@ Class AdminUi {
 			$h .= '</table>';
 
 		$h .= '</div>';
-
-		$h .= \util\TextUi::pagination($page, $nFarm / 100);
 
 		return $h;
 	}

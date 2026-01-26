@@ -15,19 +15,12 @@ Class AdminLib {
 
 	}
 
-	public static function getFarms(int $page): array {
+	public static function getFarms(): \Collection {
 
-		$number = 100;
-		$position = $page * $number;
-
-		\farm\Farm::model()
+		return \farm\Farm::model()
 			->select(\farm\Farm::getSelection())
 			->whereHasAccounting(TRUE)
-			->option('count');
-
-		$cFarm = \farm\Farm::model()->getCollection($position, $number);
-
-		return [$cFarm, \farm\Farm::model()->found()];
+			->getCollection();
 
 	}
 
