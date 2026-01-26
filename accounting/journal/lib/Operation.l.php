@@ -576,6 +576,7 @@ class OperationLib extends OperationCrud {
 			'description', 'amount', 'type', 'document', 'vatRate',
 			'asset',
 			'journalCode', 'thirdParty',
+			'vatCode', 'details',
 		];
 		if($eFinancialYear['hasVat']) {
 			$properties[] = 'vat';
@@ -597,11 +598,11 @@ class OperationLib extends OperationCrud {
 			$eOperation['financialYear'] = $eFinancialYear;
 
 			$input['accountLabel'][$index] = \account\AccountLabelLib::pad($input['accountLabel'][$index]);
+			$input['details'][$index] = (int)$input['vatCode'][$index];
 
 			$eOperation->buildIndex($properties, $input, $index);
 
 			$fw->validate();
-
 
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
@@ -634,6 +635,8 @@ class OperationLib extends OperationCrud {
 
 			if($hasVatAccount === TRUE) {
 				$eOperation['vatAccount'] = $eAccount['vatAccount'];
+			} else {
+				$eOperation['details'] = NULL;
 			}
 
 			$fw->validate();
@@ -672,6 +675,7 @@ class OperationLib extends OperationCrud {
 						'cashflow' => $eCashflow,
 						'paymentMethod' => $eOperation['paymentMethod'],
 						'hash' => $hash,
+						'details' => $input['details'][$index] ?? NULL,
 					]
 					: $eOperation->getArrayCopy();
 
@@ -850,7 +854,7 @@ class OperationLib extends OperationCrud {
 				'account', 'accountLabel', 'description', 'document', 'documentDate',
 				'thirdParty', 'type', 'amount', 'operation',
 				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
-				'date',
+				'date', 'details',
 			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []),
 			$values,
 		);

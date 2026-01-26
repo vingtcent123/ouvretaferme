@@ -607,4 +607,61 @@ new AdaptativeView('asset', function($data, DocTemplate $t) {
 
 });
 
+new AdaptativeView('vat', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+	$t->menuSelected = 'accounting:vat';
+
+	$t->title = s("La TVA sur {siteName}");
+	$t->subTitle = '';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Manipuler les codes de TVA").'</h2>';
+
+		echo '<p>'.s("Sur {siteName} il y a des codes de TVA à indiquer lors de la saisie d'une écriture et qui seront utilisés lors de la déclaration de TVA :").'</p>';
+
+		echo '<table class="td-vertical-align-top">';
+			echo '<tr>';
+				echo '<th colspan="2">'.s("Code").'</th>';
+				echo '<th>'.s("Explication").'</th>';
+				echo '<th>'.s("Exemples").'</th>';
+			echo '</tr>';
+			echo '<tr>';
+				echo '<td>'.s("STD").'</td>';
+				echo '<td>'.s("<b>Standard</b>").'</td>';
+				echo '<td>'.s("Opération imposable à la TVA au taux indiqué").'</td>';
+				echo '<td>'.s("Achat de graines, frais de livraison, vente directe").'</td>';
+			echo '</tr>';
+			echo '<tr>';
+				echo '<td>'.s("EXO").'</td>';
+				echo '<td>'.s("<b>Exonéré</b>").'</td>';
+				echo '<td>'.s("Opération qui est dans le champ d'application de la TVA, mais qui n'est pas soumise à la Taxe sur la Valeur Ajoutée en raison d'une disposition de la loi. En revanche, l'opération entre dans le Chiffre d'Affaires").'</td>';
+				echo '<td>'.s("Exportations, livraisons intracommunautaires").'</td>';
+			echo '</tr>';
+			echo '<tr>';
+				echo '<td>'.s("NCA").'</td>';
+				echo '<td>'.s("<b>Hors Chiffre d'Affaires</b>").'</td>';
+				echo '<td>'.s("Opération qui n'est pas du Chiffre d'Affaires à déclarer.").'</td>';
+				echo '<td>'.s("Écritures de régularisation, autoconsommation au régime du micro-BA").'</td>';
+			echo '</tr>';
+			echo '<tr>';
+				echo '<td>'.s("NS").'</td>';
+				echo '<td>'.s("<b>Non soumis</b>").'</td>';
+				echo '<td>'.s("Opération qui est dans le champ d'application de la TVA, mais qui n'est pas taxable, et qui entre dans le Chiffre d'Affaires.").'</td>';
+				echo '<td>'.s("Vente alors qu'on est en franchise de TVA").'</td>';
+			echo '</tr>';
+			echo '<tr>';
+				echo '<td>'.s("HC").'</td>';
+				echo '<td>'.s("<b>Hors-champ</b>").'</td>';
+				echo '<td>'.s("Opération qui n'entre pas dans le champ d'application de la TVA et ne sera pas considérée comme du Chiffre d'Affaires.").'</td>';
+				echo '<td>'.s("Indemnité d'assurance").'</td>';
+			echo '</tr>';
+		echo '</table>';
+
+	echo '<br />';
+	echo '<br /><br />';
+
+});
+
 ?>

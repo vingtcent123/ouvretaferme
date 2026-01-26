@@ -1,13 +1,31 @@
-:root {
-	--operation-create-rows: 18;
+.operation-create-several-container[data-cashflow="1"][data-vat="1"][data-asset] {
+	--operation-create-rows: 14;
 }
+.operation-create-several-container[data-cashflow="1"][data-vat="1"]:not([data-asset]) {
+	--operation-create-rows: 13;
+}
+.operation-create-several-container[data-cashflow="1"][data-vat="0"][data-asset] {
+	--operation-create-rows: 11;
+}
+.operation-create-several-container[data-cashflow="1"][data-vat="0"]:not([data-asset]) {
+	--operation-create-rows: 10;
+}
+.operation-create-several-container[data-cashflow="0"][data-vat="1"][data-asset] {
+	--operation-create-rows: 16;
+}
+.operation-create-several-container[data-cashflow="0"][data-vat="1"]:not([data-asset]) {
+	--operation-create-rows: 15;
+}
+.operation-create-several-container[data-cashflow="0"][data-vat="0"][data-asset] {
+	--operation-create-rows: 13;
+}
+.operation-create-several-container[data-cashflow="0"][data-vat="0"]:not([data-asset]) {
+	--operation-create-rows: 12;
+}
+
 @supports (grid-template-columns: subgrid) {
 
-	.operation-create-several-container[data-asset] {
-		grid-template-rows: repeat(var(--operation-create-rows), auto);
-	}
-
-	.operation-create-several-container:not([data-asset]) {
+	.operation-create-several-container {
 		grid-auto-flow: column;
 	}
 

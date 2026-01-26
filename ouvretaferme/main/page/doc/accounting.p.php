@@ -27,5 +27,6 @@ new Page(function($data) {
 	->get('bank', fn($data) => throw new ViewAction($data))
 	->get('start', fn($data) => throw new ViewAction($data))
 	->get('asset', fn($data) => throw new ViewAction($data))
+	->get('vat', fn($data) => throw new ViewAction($data))
 ;
 ?>
