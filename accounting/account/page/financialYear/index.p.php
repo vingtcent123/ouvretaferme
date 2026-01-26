@@ -118,6 +118,7 @@ new \account\FinancialYearPage(function($data) {
 		$data->accountsToSettle = [
 			'farmersAccount' => \journal\OperationLib::getFarmersAccountValue($data->e),
 			'waitingAccounts' => \journal\OperationLib::getWaitingAccountValues($data->e),
+			'internalAccount' => \journal\OperationLib::getInternalTransferAccountValues($data->e),
 		];
 
 		$data->cDeferral = \journal\DeferralLib::getDeferralsForOperations();
@@ -136,6 +137,9 @@ new \account\FinancialYearPage(function($data) {
 		}
 
 		$data->e['cImport'] = \account\ImportLib::getByFinancialYear($data->e);
+
+		$search = new Search(['accountLabel' => \account\AccountSetting::BANK_ACCOUNT_CLASS, 'precision' => 8]);
+		$data->e['trialBalanceBank'] = \journal\TrialBalanceLib::extractByAccounts($search, $data->e);
 
 		throw new ViewAction($data);
 	})

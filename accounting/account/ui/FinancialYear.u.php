@@ -552,6 +552,8 @@ class FinancialYearUi {
 	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cDeferral, \Collection $cAssetGrant, \Collection $cAsset, array $accountsToSettle): string {
 
 		$form = new \util\FormUi();
+		$blockingIcon = '<span class="color-danger" title="'.s("Étape bloquante pour la clôture").'" >'.\Asset::icon('exclamation-triangle').'</span>';
+		$isBlocked = FALSE;
 
 		$h = '<div class="util-block stick-xs bg-background-light mt-1 mb-1">';
 
@@ -580,23 +582,146 @@ class FinancialYearUi {
 
 		$h .= $form->openAjax(\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doClose', ['id' => 'account-financialYear-close', 'autocomplete' => 'off']);
 
+			$step = 0;
+
+			$step++;
+			$h .= '<h2 class="mt-2">'.\Asset::icon($step.'-circle-fill').' '.s("Liste de points à vérifier").'</h2>';
+
+			$h .= s("Avant de procéder à la clôture de votre exercice comptable, certaines vérifications doivent être effectuées.");
+
 			if($accountsToSettle['farmersAccount'] < 0.0) {
-				$h .= '<div class="util-danger">';
-					$h .= '<h3>'.s("Comptes de l'exploitant").'</h3>';
-					$h .= s("Attention, le compte {farmersAccount} est débiteur de {amount}. Soldez-le avant la clôture de l'exercice !", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'amount' => \util\TextUi::money(abs($accountsToSettle['farmersAccount']))]);
-				$h .= '</div>';
+
+				$h .= '<h3 class="mt-1">'.s("Comptes de l'exploitant").'</h3>';
+
+				$h .= s("Attention, le compte {farmersAccount} est débiteur de {amount}. Soldez-le avant la clôture de l'exercice !", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'amount' => \util\TextUi::money(abs($accountsToSettle['farmersAccount']))]);
 			}
+
 			if(array_reduce($accountsToSettle['waitingAccounts'], function($sum, $waitingAccount) {
 				return $waitingAccount['total'] + $sum;
-			}, 0) > 0.0) {
-				$h .= '<div class="util-danger">';
-					$h .= '<h3>'.s("Comptes d'attente").'</h3>';
-					$h .= s("Attention, un ou plusieurs comptes d'attente, dont le numéro de compte commence par <b>{accounts}</b>, ne sont pas soldés. Soldez-les avant la clôture de l'exercice !", ['accounts' => join('</b>, <b>', AccountSetting::WAITING_ACCOUNT_CLASSES)]);
-				$h .= '</div>';
+			}, 0) !== 0.0) {
+
+				$isBlocked = TRUE;
+
+				$h .= '<h3 class="mt-1">'.$blockingIcon.' '.s("Compte {waitingAccount} - Compte d'attente", ['waitingAccount' => AccountSetting::WAITING_ACCOUNT_CLASS]).'</h3>';
+
+				$h .= '<p>';
+					$h .= s("Les comptes d'attente doivent être soldés avant la clôture.");
+				$h .= '</p>';
+
+				$h .= '<ul>';
+					foreach($accountsToSettle['waitingAccounts'] as $waitingAccount) {
+
+						$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.$waitingAccount['accountLabel'];
+
+						$h .= '<li>';
+
+						if($waitingAccount['total'] < 0) {
+							$h .= s("<link>Solde <b>débiteur</b></link> du compte n°{accountNumber} de {value}", [
+								'accountNumber' => $waitingAccount['accountLabel'],
+								'value' => \util\TextUi::money(abs($waitingAccount['total'])),
+								'link' => '<a href="'.$url.'">',
+							]);
+						} else {
+							$h .= s("<link>Solde <b>créditeur</b></link> du compte n°{accountNumber} de {value}", [
+								'accountNumber' => $waitingAccount['accountLabel'],
+								'value' => \util\TextUi::money(abs($waitingAccount['total'])),
+								'link' => '<a href="'.$url.'">',
+							]);
+						}
+						$h .= '</li>';
+					}
+				$h .= '</ul>';
+				$h .= s("Attention, un ou plusieurs comptes d'attente, dont le numéro de compte commence par <b>{accounts}</b>, ne sont pas soldés. Soldez-les avant la clôture de l'exercice !", ['accounts' => join('</b>, <b>', AccountSetting::WAITING_ACCOUNT_CLASSES)]);
 
 			}
 
-			$step = 0;
+			$h .= '<h3 class="mt-1">'.s("Compte {bankAccount} - Solde de banque", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</h3>';
+
+			if(count($eFinancialYear['trialBalanceBank']) === 1) {
+
+				$balance = first($eFinancialYear['trialBalanceBank']);
+				$balanceValue = $balance['debit'] - $balance['credit'];
+				if($balanceValue < 0) {
+					$balanceText = s("débiteur");
+				} else {
+					$balanceText = s("créditeur");
+				}
+
+				$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.trim(encode($balance['accountDetail']), '0');
+
+				$h .= '<ul>';
+					$h .= '<li>'.s("<link>Solde <b>{type}</b></link> de votre compte bancaire : {value}", [
+						'link' => '<a href="'.$url.'">',
+						'type' => $balanceText,
+						'value' => \util\TextUi::money(first($eFinancialYear['trialBalanceBank'])['debit'] - first($eFinancialYear['trialBalanceBank'])['credit'])
+					]).'</li>';
+				$h .= '</ul>';
+
+			} else if(count($eFinancialYear['trialBalanceBank']) > 1) {
+
+			$h .= '<p>'.s("Le solde de vos relevés bancaires doivent correspondre aux soldes comptables de vos banques (numéro de compte commençant par {bankAccount}).", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
+
+				$h .= '<ul>';
+					foreach($eFinancialYear['trialBalanceBank'] as $account => $balance) {
+
+						// On exclut le compte générique
+						if((string)$account === AccountLabelLib::pad(\account\AccountSetting::BANK_ACCOUNT_CLASS)) {
+							continue;
+						}
+
+						$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.trim(encode($balance['accountDetail']), '0');
+
+						$balanceValue = $balance['debit'] - $balance['credit'];
+						if($balanceValue < 0) {
+							$balanceText = s("débiteur");
+						} else {
+							$balanceText = s("créditeur");
+						}
+						$h .= '<li>'.s("<link>Solde {text}</link> du compte n°{accountNumber} {name} de {value}", [
+							'name' => '<b>'.$balance['accountLabel'].'</b>',
+							'value' => \util\TextUi::money(abs($balanceValue)),
+							'text' => '<b>'.$balanceText.'</b>',
+							'link' => '<a href="'.$url.'">',
+							'accountNumber' => $balance['accountDetail'],
+						]).'</li>';
+
+					}
+				$h .= '</ul>';
+			}
+
+			$h .= '<p>';
+				$h .= \Asset::icon('info-circle').' '.s("Notez que cette vérification n'est valable que si toutes les opérations bancaires ont été traitées en comptabilité sur {siteName}.");
+			$h .= '</p>';
+
+			if(empty($accountsToSettle['internalAccount']) === FALSE) {
+
+				$isBlocked = TRUE;
+
+				$h .= '<h3 class="mt-1">'.$blockingIcon.' '.s("Compte {internalTransferAccount} - Virements internes", ['internalTransferAccount' => \account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS]).'</h3>';
+
+				$h .= '<p>';
+					$h .= s("Les comptes de virement interne doivent être soldés avant la clôture.");
+				$h .= '</p>';
+
+				$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.\account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS;
+
+				$h .= '<ul>';
+					$h .= '<li>';
+						if($accountsToSettle['internalAccount'] < 0) {
+							$h .= s("<link>Solde <b>débiteur</b></link> de {amount}.", [
+								'amount' => \util\TextUi::money(abs($accountsToSettle['internalAccount']['total'])),
+								'link' => '<a href="'.$url.'">',
+							]);
+						} else {
+							$h .= s("<link>Solde <b>créditeur</b></link> de {amount}.", [
+								'amount' => \util\TextUi::money(abs($accountsToSettle['internalAccount']['total'])),
+								'link' => '<a href="'.$url.'">',
+							]);
+						}
+					$h .= '</li>';
+				$h .= '</ul>';
+
+			}
 
 			// Visualisation des amortissements
 			if($cAsset->notEmpty()) {
@@ -647,9 +772,20 @@ class FinancialYearUi {
 				$h .= '</div>';
 			}
 
+			if($isBlocked) {
+
+				$h .= '<div class="util-danger-outline">';
+					$h .= s("La clôture de l'exercice n'est pas possible : certaines actions marquées d'un {value} doivent être résolues avant.", \Asset::icon('exclamation-triangle'));
+				$h .= '</div>';
+
+			}
 			$h .= '<div class="mt-1">'.$form->submit(
-				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]),
-				['class' => 'btn btn-xl btn-primary', 'data-waiter' => s("Clôture en cours..."), 'data-confirm' => s("La clôture est définitive ! Souhaitez-vous lancer l'opération de clôture ?")],
+				s("Clôturer l'exercice comptable {year}", ['year' => self::getYear($eFinancialYear)]), [
+					'class' => 'btn btn-xl btn-primary'.($isBlocked ? ' disabled' : ''),
+					'data-waiter' => s("Clôture en cours..."),
+					'data-confirm' => s("La clôture est définitive ! Souhaitez-vous lancer l'opération de clôture ?"),
+					...($isBlocked ? ['disabled' => 'disabled'] : [])
+				],
 			).'</div>';
 
 		$h .= $form->close();

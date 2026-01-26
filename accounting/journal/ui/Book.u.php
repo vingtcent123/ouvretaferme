@@ -261,6 +261,39 @@ class BookUi {
 			$h .= '</td>';
 		$h .= '</tr>';
 
+		$h .= '<tr class="hide-sm-down">';
+
+			$h .= '<td class="hide-sm-down"></td>';
+			$h .= '<td colspan="2" class="text-end">';
+			if(($debit - $credit) < 0) {
+
+				$h .= '<strong>'.s("Solde créditeur pour le compte {class}", [
+						'class' => $class,
+				]).'</strong>';
+
+			} else {
+
+				$h .= '<strong>'.s("Solde débiteur pour le compte {class}", [
+						'class' => $class,
+				]).'</strong>';
+
+			}
+			$h .= '</td>';
+
+			$h .= '<td class="text-end highlight-stick-right hide-md-up">';
+			$h .= '</td>';
+			$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
+				if($debit - $credit < 0) {
+					$h .= '<strong>'.\util\TextUi::money(abs($debit - $credit)).'</strong>';
+				}
+			$h .= '</td>';
+			$h .= '<td class="text-end highlight-stick-left hide-sm-down">';
+				if($debit - $credit > 0) {
+				$h .= '<strong>'.\util\TextUi::money($debit - $credit).'</strong>';
+				}
+			$h .= '</td>';
+		$h .= '</tr>';
+
 		return $h;
 	}
 }

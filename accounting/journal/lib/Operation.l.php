@@ -1374,6 +1374,24 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	/**
+	 * Virements internes
+	 */
+	public static function getInternalTransferAccountValues(\account\FinancialYear $eFinancialYear): array {
+
+		return Operation::model()
+			->select([
+				'total' => new \Sql('SUM(IF(type="debit", -amount, amount))', 'float'),
+				'accountLabel' => new \Sql('SUBSTRING(accountLabel, 1, 2)')
+			])
+			->whereFinancialYear($eFinancialYear)
+			->where(new \Sql('SUBSTRING(accountLabel, 1, 2) = "'.\account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS.'"'))
+			->group('accountLabel')
+			->get()
+			->getArrayCopy();
+
+	}
+
 	public static function getForOpening(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Operation::model()

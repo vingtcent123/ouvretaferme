@@ -45,7 +45,8 @@ class AccountSetting extends \Settings {
 	const FINANCIAL_GENERAL_CLASS = 5;
 	const CHARGE_ACCOUNT_CLASS = 6;
 	const PRODUCT_ACCOUNT_CLASS = 7;
-	const WAITING_ACCOUNT_CLASSES = [471, 472, 473]; // Comptes d'attente
+	const WAITING_ACCOUNT_CLASS = 47; // Comptes d'attente
+	const WAITING_ACCOUNT_CLASSES = [470, 471, 472, 473]; // Comptes d'attente
 
 	// IMMOBILISATIONS
 	const INTANGIBLE_ASSETS_CLASS = 20; // Immobilisations incorporelles
@@ -106,6 +107,9 @@ class AccountSetting extends \Settings {
 	const VAT_SELL_CLASS_ACCOUNT = '44571'; // TVA collectée
 	const TAXES_TO_PAY_CLASS = '438'; // État - charges à payer
 	const TAXES_TO_GET_CLASS = '439'; // État - produits à recevoir
+
+	// BANQUE
+	const FINANCIAL_INTERNAL_TRANSFER_CLASS = 58; // Virements internes
 
 	// CHARGES
 	const SHIPPING_CHARGE_ACCOUNT_CLASS = '624';

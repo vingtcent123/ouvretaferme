@@ -10,11 +10,11 @@ Class TrialBalanceLib {
 
 		// Filtres
 		$startDate = $eFinancialYear['startDate'];
-		if($search->get('startDate') !== '' and $search->get('startDate') >= $startDate) {
+		if($search->has('startDate') and $search->get('startDate') !== '' and $search->get('startDate') >= $startDate) {
 			$startDate = $search->get('startDate');
 		}
 		$endDate = $eFinancialYear['endDate'];
-		if($search->get('endDate') !== '' and $search->get('endDate') <= $endDate) {
+		if($search->has('endDate') and $search->get('endDate') !== '' and $search->get('endDate') <= $endDate) {
 			$endDate = $search->get('endDate');
 		}
 
