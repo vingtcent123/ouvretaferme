@@ -274,7 +274,7 @@ Class AccountingLib {
 
 		return self::applyInvoiceFilter($eFarm, $search, $forImport)
 			->select([
-				'id', 'date', 'name', 'document', 'farm',
+				'id', 'date', 'number', 'document', 'farm',
 				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat',
 				'customer' => [
 					'id', 'name', 'type', 'destination',
