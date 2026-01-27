@@ -637,7 +637,7 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 				echo '<td>'.s("EXO").'</td>';
 				echo '<td>'.s("<b>Exonéré</b>").'</td>';
 				echo '<td>'.s("Opération qui est dans le champ d'application de la TVA, mais qui n'est pas soumise à la Taxe sur la Valeur Ajoutée en raison d'une disposition de la loi. En revanche, l'opération entre dans le Chiffre d'Affaires").'</td>';
-				echo '<td>'.s("Exportations, livraisons intracommunautaires, subventions PAC").'</td>';
+				echo '<td>'.s("Exportations, livraisons intracommunautaires").'</td>';
 			echo '</tr>';
 			echo '<tr>';
 				echo '<td>'.s("NCA").'</td>';
