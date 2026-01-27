@@ -1413,7 +1413,7 @@ class ProductUi {
 				}
 
 				if(
-					$eProduct['product'][$eProduct['type']] and
+					$eProduct['product'][$eProduct['type'].'Price'] !== NULL and
 					$eProduct['price'] !== $eProduct['product'][$eProduct['type'].'Price']
 				) {
 					$h .= '<div class="util-annotation">'.s("Prix de base : {value}", \util\TextUi::money($eProduct['product'][$eProduct['type'].'Price'])).'</div>';

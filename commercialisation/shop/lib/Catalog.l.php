@@ -166,7 +166,7 @@ class CatalogLib extends CatalogCrud {
 		foreach($cProduct as $eProduct) {
 
 			if(
-				$eProduct['product'][$eProduct['type']] and
+				$eProduct['product'][$eProduct['type'].'Price'] !== NULL and
 				$eProduct['price'] !== $eProduct['product'][$eProduct['type'].'Price']
 			) {
 
