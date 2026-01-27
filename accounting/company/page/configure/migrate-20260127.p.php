@@ -23,12 +23,16 @@ new Page()
 			\farm\FarmLib::connectDatabase($eFarm);
 
 			$cOperation = \journal\Operation::model()
-				->select(['id', 'operation' => ['id', 'details'], 'details'])
+				->select(['id', 'operation' => ['id', 'details'], 'details', 'financialYear' => ['hasVat']])
 				->whereOperation('!=', NULL)
 				->getCollection();
 
 			// On affecte le code standard par défaut
 			foreach($cOperation as $eOperation) {
+
+				if($eOperation['financialYear']['hasVat'] === FALSE) {
+					continue;
+				}
 
 				\journal\Operation::model()->update(
 					$eOperation, [
