@@ -129,13 +129,14 @@ Class VatLib {
 
 	public static function getForCheck(\farm\Farm $eFarm, \Search $search = new \Search()): array {
 
-		// Ligne A1 - Ventes (70* - 709 - 665)
+		// Ligne A1 - Ventes (70* - 709 - 665) : VAT_STD
 		$cOperationVentes = \journal\OperationLib::applySearch($search)
 			->select([
 				'compte' => new \Sql('SUBSTRING(accountLabel, 1, 2)', 'int'),
 				'vatRate',
 				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
 			])
+			->where(new \Sql('details & '.\journal\Operation::VAT_STD))
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ESCOMPTES_ACCOUNT_CLASS.'%'),
@@ -167,6 +168,7 @@ Class VatLib {
 				'amount', 'type',
 				'operation' => ['vatRate'],
 			])
+			->where(new \Sql('details & '.\journal\Operation::VAT_STD))
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_BUY_CLASS_PREFIX.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_SELL_CLASS_PREFIX.'%'),
@@ -391,15 +393,13 @@ Class VatLib {
 
 		// OPÉRATIONS NON TAXÉES
 
-		// Autre opé non imposables 74 (sub), 76 (financiers), 771 (indemnités), 775 (cessions exonérées)
+		// Autre opé non imposables VAT_0 (exonéré) ou VAT_NS (non soumis)
 		$eOperationAutreOperationsNonImposables = \journal\OperationLib::applySearch($search)
 			->select([
 				'amount' => new \Sql('ROUND(SUM(IF(type = "credit", amount, -1 * amount)))', 'float'),
 			])
-			->or(
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SUBVENTION_ACCOUNT_CLASS.'%'),
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_FINANCIAL_ACCOUNT_CLASS.'%'),
-			)
+			->where(new \Sql('details & '.\journal\Operation::VAT_0.' OR details & '.\journal\Operation::VAT_NS))
+			->whereAccountLabel('NOT LIKE', \account\AccountSetting::VAT_CLASS.'%')
 			->get();
 		$vatData['0033'] = round($eOperationAutreOperationsNonImposables['amount'] ?? 0, $precision);
 
