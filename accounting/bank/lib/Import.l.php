@@ -258,5 +258,32 @@ class ImportLib extends ImportCrud {
 		Import::model()->commit();
 	}
 
+	/**
+	 * Reprise de rapprochement en attente
+	 */
+	public static function checkForReconciliation(\farm\Farm $eFarm): void {
+
+		// Le cron va passer
+		if(\company\CompanyCron::model()
+			->whereFarm($eFarm)
+			->whereAction(\company\CompanyCronLib::RECONCILIATE)
+			->count() > 0) {
+			return;
+		}
+
+		// Est-ce qu'il y a des rapprochements en attente ?
+		$nImportWaiting = Import::model()
+			->whereReconciliation(Import::WAITING)
+			->count();
+
+		if($nImportWaiting === 0) {
+			return;
+		}
+
+		// On lance les rapprochements
+		\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eFarm);
+
+	}
+
 }
 ?>

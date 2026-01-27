@@ -4,6 +4,8 @@ new Page(function($data) {
 })
 	->get('/banque/operations', function($data) {
 
+		\bank\ImportLib::checkForReconciliation($data->eFarm);
+
 		$data->nSuggestion = \preaccounting\SuggestionLib::countWaiting();
 
 		$data->eImport = \bank\ImportLib::getById(GET('import', 'int'));
