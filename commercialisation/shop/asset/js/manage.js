@@ -15,6 +15,7 @@ class ShopManage {
 
 	static updateFqnAuto(value) {
 
+		const fieldFarm = qs('#shop-create [name="farm"]');
 		const fieldName = qs('#shop-create [name="name"]');
 		const fieldFqn = qs('#shop-create [name="fqn"]');
 
@@ -22,7 +23,7 @@ class ShopManage {
 			return;
 		}
 
-		fieldFqn.value = fieldName.value.toFqn();
+		fieldFqn.value = fieldFarm.value +'-'+ fieldName.value.toFqn();
 
 	}
 

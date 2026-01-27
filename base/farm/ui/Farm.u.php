@@ -2773,14 +2773,14 @@ class FarmUi {
 					$h .= '</div>';
 					$h .= \Asset::icon('upload');
 				$h .= '</a>';
-			if(LIME_ENV === 'dev') {
+
 				$h .= '<a href="/selling/csv:importPrices?id='.$eFarm['id'].'" class="util-button">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Importer des prix").'</h4>';
 					$h .= '</div>';
 					$h .= \Asset::icon('upload');
 				$h .= '</a>';
-}
+
 			$h .= '</div>';
 
 		}

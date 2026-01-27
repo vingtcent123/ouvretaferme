@@ -38,7 +38,7 @@ class AlertUi {
 			'Sale::update.payment' => s("Vous ne pouvez pas modifier votre panier alors qu'un paiement est en cours."),
 			'Sale::terms' => s("Veuillez accepter les conditions générales de vente pour continuer."),
 
-			'Shop::name.fqn' => s("Une boutique existe déjà avec la même adresse."),
+			'Shop::fqn.duplicate' => s("Une boutique existe déjà avec la même adresse."),
 			'Shop::name.duplicate' => s("Une boutique existe déjà avec le même nom, merci de choisir un autre nom."),
 			'Shop::payment.check' => s("Veuillez sélectionner au moins un moyen de paiement, ou alternativement désactiver la page de choix du moyen de paiement."),
 			'Shop::terms.check' => s("Vos conditions générales de vente ne doivent pas être vides de texte."),

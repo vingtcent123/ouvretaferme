@@ -1137,6 +1137,7 @@ class AnalyzeLib {
 				$cGroup = $eCustomer['cGroup?']();
 
 				return [
+					$eCustomer['number'],
 					CustomerUi::getCategory($eCustomer),
 					$eCustomer['type'] === Customer::PRIVATE ? $eCustomer['firstName'] : '',
 					$eCustomer['type'] === Customer::PRIVATE ? $eCustomer['lastName'] : '',

@@ -8,5 +8,6 @@
 	}))
 	->get('series', fn($data) => throw new ViewAction($data))
 	->get('products', fn($data) => throw new ViewAction($data))
-	->get('customers', fn($data) => throw new ViewAction($data));
+	->get('customers', fn($data) => throw new ViewAction($data))
+	->get('prices', fn($data) => throw new ViewAction($data));
 ?>

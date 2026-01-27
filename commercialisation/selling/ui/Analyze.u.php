@@ -2182,6 +2182,7 @@ class AnalyzeUi {
 	public function getExportCustomersHeader(\farm\Farm $eFarm): array {
 
 		return [
+			'number',
 			'type',
 			'private_first_name',
 			'private_last_name',

@@ -821,7 +821,7 @@ class CsvLib {
 		return \main\CsvLib::upload('import-prices-'.$eFarm['id'], function($csv) {
 
 			if(
-				count(array_intersect($csv[0], ['reference', 'target', 'list', 'price'])) === 4
+				count(array_intersect($csv[0], ['reference', 'type', 'target', 'price'])) === 4
 			) {
 				$csv = self::convertPrices($csv);
 				if($csv === NULL) {
@@ -854,16 +854,18 @@ class CsvLib {
 
 			$line = array_combine($head, $price) + [
 				'reference' => '',
+				'type' => '',
 				'target' => '',
-				'list' => '',
 				'price' => '',
+				'price_discount' => '',
 			];
 
 			$import[] = [
 				'reference' => $line['reference'] ?: NULL,
-				'target' => $line['target'] ?: NULL,
-				'list' => trim($line['list']) ? preg_split('/\s*,\s*/', trim($line['list'])) : [],
+				'type' => $line['type'] ?: NULL,
+				'target' => trim($line['target']) ? preg_split('/\s*,\s*/', trim($line['target'])) : [],
 				'price' => ($line['price'] !== '') ? \main\CsvLib::formatFloat($line['price']) : NULL,
+				'price_discount' => ($line['price_discount'] !== '') ? \main\CsvLib::formatFloat($line['price_discount']) : NULL,
 			];
 
 		}
@@ -880,55 +882,94 @@ class CsvLib {
 
 	public static function importPrices(\farm\Farm $eFarm, array $prices): bool {
 
-		$fw = new \FailWatch();
-
-		$cPrice = new \Collection();
-
-		foreach($prices as $price) {
-
-			if($price['ePrice']->empty()) {
-				continue;
-			}
-
-			$ePrice = $price['ePrice']->merge([
-				'invite' => $price['invite']
-			]);
-
-			$cPrice[] = $ePrice;
-
-		}
+		$cGrid = new \Collection();
 
 		if(self::resetPrices($eFarm)) {
 
-			if($cPrice->empty()) {
-				return TRUE;
-			}
+			foreach($prices as $price) {
 
-			Price::model()->beginTransaction();
+				if($price['price_discount'] !== NULL) {
+					$amount = $price['price_discount'];
+					$amountInitial = $price['price'];
+				} else {
+					$amount = $price['price'];
+					$amountInitial = NULL;
+				}
 
-			foreach($cPrice as $ePrice) {
+				$formatted = $price['formatted'];
+				$eProduct = $formatted['product'];
 
-				PriceLib::create($ePrice);
+				switch($price['type']) {
 
-				if($ePrice['invite']) {
+					case 'product' :
 
-					\farm\InviteLib::create(new \farm\Invite([
-						'farm' => $eFarm,
-						'price' => $ePrice,
-						'type' => \farm\Invite::PRICE,
-						'email' => $ePrice['email']
-					]));
+						$property = match($formatted['type']) {
+							'private' => 'privatePrice',
+							'pro' => 'proPrice'
+						};
+
+						$eProduct[$property] = $amount;
+						$eProduct[$property.'Initial'] = $amountInitial;
+						ProductLib::update($eProduct, [$property, $property.'Initial']);
+
+						break;
+
+					case 'catalog' :
+
+						foreach($formatted['cCatalog'] as $eCatalog) {
+
+							$eProductShop = $eCatalog['eProduct'];
+
+							if($eProductShop->notEmpty()) {
+
+								$eProductShop['price'] = $amount;
+								$eProductShop['priceInitial'] = $amountInitial;
+
+								\shop\ProductLib::update($eProductShop, ['price', 'priceInitial']);
+
+							}
+
+						}
+
+						break;
+
+					case 'customer' :
+
+						foreach($formatted['cCustomer'] as $eCustomer) {
+							$cGrid[] = new Grid([
+								'farm' => $eProduct['farm'],
+								'product' => $eProduct,
+								'customer' => $eCustomer,
+								'group' => new CustomerGroup(),
+								'price' => $amount,
+								'priceInitial' => $amountInitial
+							]);
+						}
+
+						break;
+
+					case 'group' :
+
+						foreach($formatted['cCustomerGroup'] as $eCustomerGroup) {
+							$cGrid[] = new Grid([
+								'farm' => $eProduct['farm'],
+								'product' => $eProduct,
+								'customer' => new Customer(),
+								'group' => $eCustomerGroup,
+								'price' => $amount,
+								'priceInitial' => $amountInitial
+							]);
+						}
+
+						break;
 
 				}
 
 			}
 
-			if($fw->ko()) {
-				Price::model()->rollBack();
-				return FALSE;
+			if($cGrid->notEmpty()) {
+				GridLib::updateGrid($cGrid);
 			}
-
-			Price::model()->commit();
 
 		}
 
@@ -974,6 +1015,7 @@ class CsvLib {
 			'customers' => [],
 			'groups' => [],
 		];
+		$infoGlobal = [];
 
 		foreach($import as $key => $price) {
 
@@ -999,28 +1041,34 @@ class CsvLib {
 				
 			}
 
-			switch($price['target']) {
+			switch($price['type']) {
 
 				case 'product' :
-					if($price['list'] === ['private']) {
+					if($price['target'] === ['private']) {
 						$formatted['type'] = 'private';
-					} else if($price['list'] === ['pro']) {
+						if($formatted['product']['private'] === FALSE) {
+							$errors[] = 'productPrivateIncompatible';
+						}
+					} else if($price['target'] === ['pro']) {
 						$formatted['type'] = 'pro';
+						if($formatted['product']['pro'] === FALSE) {
+							$errors[] = 'productProIncompatible';
+						}
 					} else {
 						$errors[] = 'privateProError';
 					}
 					break;
 
 				case 'group' :
-					$formatted['group'] = [];
+					$formatted['cCustomerGroup'] = [];
 					$formatted['groupError'] = [];
-					if($price['list'] === []) {
+					if($price['target'] === []) {
 						$errors[] = 'groupMissing';
 					} else {
-						foreach($price['list'] as $group) {
+						foreach($price['target'] as $group) {
 							$lowerGroup = mb_strtolower($group);
 							if(isset($groups[$lowerGroup])) {
-								$formatted['group'][] = $groups[$lowerGroup];
+								$formatted['cCustomerGroup'][] = $groups[$lowerGroup];
 							} else {
 								$errors[] = 'groupError';
 								$formatted['groupError'][] = $group;
@@ -1031,12 +1079,12 @@ class CsvLib {
 					break;
 
 				case 'customer' :
-					$formatted['customer'] = [];
+					$formatted['cCustomer'] = [];
 					$formatted['customerError'] = [];
-					if($price['list'] === []) {
+					if($price['target'] === []) {
 						$errors[] = 'customerMissing';
 					} else {
-						foreach($price['list'] as $customer) {
+						foreach($price['target'] as $customer) {
 							$upperCustomer = mb_strtoupper($customer);
 							$customers[$upperCustomer] = Customer::model()
 								->select('id', 'number', 'name')
@@ -1044,7 +1092,7 @@ class CsvLib {
 								->whereNumber($upperCustomer)
 								->get();
 							if($customers[$upperCustomer]->notEmpty()) {
-								$formatted['customer'][] = $customers[$upperCustomer];
+								$formatted['cCustomer'][] = $customers[$upperCustomer];
 							} else {
 								$errors[] = 'customerError';
 								$formatted['customerError'][] = $customer;
@@ -1055,32 +1103,62 @@ class CsvLib {
 					break;
 
 				case 'catalog' :
-					$formatted['catalog'] = [];
+					$formatted['cCatalog'] = [];
 					$formatted['catalogError'] = [];
-					if($price['list'] === []) {
+					if($price['target'] === []) {
 						$errors[] = 'catalogMissing';
 					} else {
-						foreach($price['list'] as $catalog) {
+						foreach($price['target'] as $catalog) {
+
 							$lowerCatalog = mb_strtolower($catalog);
+
 							if(isset($catalogs[$lowerCatalog])) {
-								$formatted['catalog'][] = $catalogs[$lowerCatalog];
+
+								$eCatalog = $catalogs[$lowerCatalog];
+								$formatted['cCatalog'][] = $eCatalog;
+
+								if($formatted['product']->notEmpty()) {
+
+								$eCatalog['eProduct'] = \shop\Product::model()
+									->select('id')
+									->whereProduct($formatted['product'])
+									->whereCatalog($eCatalog)
+									->get();
+
+
+								if($eCatalog['eProduct']->empty()) {
+									$warnings[] = 'catalogNotFound';
+								}
+
+								}
+
 							} else {
 								$errors[] = 'catalogError';
 								$formatted['catalogError'][] = $catalog;
 								$errorsGlobal['catalogs'][] = $catalog;
 							}
+
 						}
+
 					}
 					break;
 
 				default :
-					$errors[] = 'targetError';
+					$errors[] = 'typeError';
 					break;
 
 			}
 
 			if($price['price'] === NULL) {
 				$errors[] = 'priceMissing';
+			}
+
+			if(
+				$price['price'] !== NULL and
+				$price['price_discount'] !== NULL and
+				$price['price_discount'] > $price['price']
+			) {
+				$errors[] = 'priceDiscountConsistency';
 			}
 
 			$import[$key]['formatted'] = $formatted;
@@ -1104,6 +1182,7 @@ class CsvLib {
 			'import' => $import,
 			'errorsCount' => $errorsCount,
 			'errorsGlobal' => $errorsGlobal,
+			'infoGlobal' => $infoGlobal,
 		];
 
 	}

@@ -153,6 +153,8 @@ class GridLib extends GridCrud {
 
 	public static function updateGrid(\Collection $cGrid) {
 
+		$cGrid->expects(['farm', 'customer', 'group', 'product', 'price']);
+
 		Grid::model()->beginTransaction();
 
 		foreach($cGrid as $eGrid) {
@@ -160,7 +162,8 @@ class GridLib extends GridCrud {
 			if($eGrid['price'] === NULL) {
 
 				Grid::model()
-					->whereCustomer($eGrid['customer'])
+					->whereCustomer($eGrid['customer'], if: $eGrid['customer']->notEmpty())
+					->whereGroup($eGrid['group'], if: $eGrid['group']->notEmpty())
 					->whereProduct($eGrid['product'])
 					->delete();
 
@@ -173,7 +176,8 @@ class GridLib extends GridCrud {
 				} catch(\DuplicateException) {
 
 					Grid::model()
-						->whereCustomer($eGrid['customer'])
+						->whereCustomer($eGrid['customer'], if: $eGrid['customer']->notEmpty())
+						->whereGroup($eGrid['group'], if: $eGrid['group']->notEmpty())
 						->whereProduct($eGrid['product'])
 						->update([
 							'price' => $eGrid['price'],

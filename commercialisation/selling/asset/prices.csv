@@ -1,7 +1,8 @@
-reference,target,list,price
-TO-RO,product,private,"4,5"
-TO-RO,product,pro,"3,5"
-TO-RO,customer,"C1,C2","2.8"
-COU,group,"AMAP grand panier, AMAP petit panier","2.8"
-COU,catalog,"VD","2.8"
-COU,catalog,"DG","2.3"
+reference,type,target,price,price_discount
+AILFRAIS,product,private,"10","9"
+TO-RO,product,private,"4,5",
+TO-RO,product,pro,"3,5",
+TO-RO,customer,"C1,C2","2.8",
+COU,group,"AMAP grand panier, AMAP petit panier","2.8",
+MACHE,catalog,"VD","12.5",
+MACHE,catalog,"DG","9.5","9.3"

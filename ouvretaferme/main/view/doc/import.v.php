@@ -589,4 +589,98 @@ new AdaptativeView('customers', function($data, DocTemplate $t) {
 	echo '<br/>';
 
 });
+
+new AdaptativeView('prices', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+
+	$t->title = s("Importer des prix");
+	$t->subTitle = s("Vous pouvez importer vos prix de vente au format CSV sur votre ferme. Cette fonctionnalité peut vous être utile si vous souhaitez maintenir votre grille tarifaire dans un tableur !");
+
+	$t->menuSelected = 'importPrices';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Importer des prix au format CSV").'</h2>';
+		echo '<p>';
+			echo s("Les prix que vous importez au format CSV remplacent les prix existants. L'import ne supprime jamais les prix existants. Par exemple, si vous modifiez le prix de base d'un produit, le système ne modifiera pas les prix personnalisés pour certains clients ou groupes de client.");
+		echo '</p>';
+		echo '<p class="mb-1">';
+			echo '<a href="/doc/selling:pricing" class="btn btn-outline-secondary">'.s("En savoir plus sur la gestion des prix").'</a>';
+		echo '</p>';
+		echo '<p>';
+			echo s("Le fichier CSV que vous importez doit comporter une ligne par client, et les colonnes de ce fichier doivent correspondre à la liste des données à fournir décrite plus bas.");
+		echo '</p>';
+		echo \main\CsvUi::getSyntaxInfo();
+		echo '<p>';
+			echo '<a href="'.Asset::getPath('selling', 'prices.csv').'" data-ajax-navigation="never" class="btn btn-outline-secondary">'.s("Télécharger un exemple CSV").'</a>';
+		echo '</p>';
+		echo '<br/>';
+		echo '<h3>'.s("Liste des données à fournir").'</h3>';
+
+		$list = [
+			[
+				s("Référence du produit").' '.\util\FormUi::asterisk(),
+				'reference',
+				s("La référence du produit dont vous souhaitez importer le prix. <b>N'indiquez pas le nom du produit, mais bien la référence alphanumérique.</b>"),
+				'TOMANC'
+			],
+			[
+				s("Type de prix").' '.\util\FormUi::asterisk(),
+				'type',
+				s("Indiquez le type de prix que vous souhaitez mettre à jour pour ce projet :").
+				'<ul>'.
+					'<li><div class="doc-example">product</div> → '.s("Nouveau prix de base du produit").'</li>'.
+					'<li><div class="doc-example">customer</div> → '.s("Nouveau prix du produit pour un client").'</li>'.
+					'<li><div class="doc-example">group</div> → '.s("Nouveau prix du produit pour un groupe de clients").'</li>'.
+					'<li><div class="doc-example">catalog</div> → '.s("Nouveau prix du produit pour un catalogue").'</li>'.
+				'</ul>',
+				'product'
+			],
+			[
+				s("Destinataire du prix"),
+				'target',
+				s("Renseignez ici le destinataire de ce prix, la valeur à indiquer dépend du type de prix.<br/>Indiquez pour un prix :").
+				'<ul>'.
+					'<li>'.
+						s("{value}", '<div class="doc-example">product</div>').
+						'<ul>'.
+							'<li>'.s("{value} pour mettre à jour le prix pour les clients particuliers", '<div class="doc-example">private</div>').'</li>'.
+							'<li>'.s("{value} pour mettre à jour le prix pour les clients professionnels", '<div class="doc-example">pro</div>').'</li>'.
+						'</ul>'.
+					'</li>'.
+					'<li>'.
+						s("{value}, les numéros des clients qui bénéficieront de ce prix, séparés par des virgules (exemple : {example})", ['value' => '<div class="doc-example">customer</div>', 'example' => '<div class="doc-example">C2, C78</div>']).
+					'</li>'.
+					'<li>'.
+						s("{value}, le nom des groupes de clients qui bénéficieront de ce prix, séparés par des virgules (exemple : {example})", ['value' => '<div class="doc-example">group</div>', 'example' => '<div class="doc-example">AMAP</div>']).
+					'</li>'.
+					'<li>'.
+						s("{value}, le nom des catalogues qui bénéficieront de ce prix, séparés par des virgules (exemple : {example})", ['value' => '<div class="doc-example">catalog</div>', 'example' => '<div class="doc-example">DG, VD</div>']).
+					'</li>'.
+				'</ul>',
+				'private'
+			],
+			[
+				s("Prix").' '.\util\FormUi::asterisk(),
+				'price',
+				s("Le nouveau prix"),
+				'3,5'
+			],
+			[
+				s("Prix remisé"),
+				'price_discount',
+				s("Le nouveau prix remisé"),
+				'3'
+			]
+		];
+
+		echo \main\CsvUi::getDataList($list);
+
+	echo '</div>';
+
+	echo '<br/>';
+	echo '<br/>';
+
+});
 ?>

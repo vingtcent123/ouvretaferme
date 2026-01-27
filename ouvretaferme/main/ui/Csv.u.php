@@ -52,7 +52,7 @@ class CsvUi {
 		$mandatory = FALSE;
 
 		$h = '<div class="util-overflow-lg">';
-			$h .= '<table>';
+			$h .= '<table class="tr-bordered mb-1">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("Type de donnée").'</th>';

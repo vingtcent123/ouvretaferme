@@ -85,7 +85,7 @@ class ShopUi {
 
 			$eShop->merge([
 				'name' => s("Boutique de {value}", $eFarm['name']),
-				'fqn' => toFqn($eFarm['name']),
+				'fqn' => $eFarm['id'].'-'.toFqn($eFarm['name']),
 			]);
 
 		}

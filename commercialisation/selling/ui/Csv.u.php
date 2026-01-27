@@ -29,81 +29,7 @@ class CsvUi {
 			$h .= '</div>';
 		}
 
-		foreach($errorsGlobal as $type => $values) {
-
-			if(empty($values)) {
-				continue;
-			}
-
-			switch($type) {
-
-				case 'vatRates' :
-
-					$vatRates = SellingSetting::getVatRates($eFarm);
-					array_walk($vatRates, fn(&$value) => $value .= ' %');
-
-					array_walk($values, fn(&$value) => $value .= ' %');
-
-					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Taux de TVA invalides").'</h4>';
-						$h .= '<p>'.s("Les taux de TVA suivants ne sont pas reconnus par Ouvretaferme, corrigez votre fichier CSV :", ['values' => '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank">']).'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<p>'.s("Pour votre pays, {siteName} supporte les taux de TVA suivants : {value}", implode(', ', $vatRates)).'</p>';
-					$h .= '</div>';
-					break;
-
-				case 'units' :
-					array_walk($values, 'encode');
-					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Unités manquantes").'</h4>';
-						$h .= '<p>'.s("Les unités suivantes n'existent pas sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une unité existante ou ajoutez-les à votre ferme. Pour rappel, vous devez utiliser <link>le nom des unités au singulier</link> pour qu'elles soient reconnues.", ['link' => '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank">']).'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des unités").'</a>';
-					$h .= '</div>';
-					break;
-
-				case 'species' :
-					array_walk($values, 'encode');
-					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Espèces manquantes").'</h4>';
-						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou sont désactivées sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des espèces").'</a>';
-					$h .= '</div>';
-					break;
-
-				case 'profiles' :
-					array_walk($values, 'encode');
-					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Types de produits non reconnus").'</h4>';
-						$h .= '<p>'.s("Les types de produits suivants ne peuvent pas être importés, vous devez les retirer de votre fichier CSV.").'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-					$h .= '</div>';
-					break;
-
-			}
-
-		}
-
-		foreach($infoGlobal as $type => $values) {
-
-			if(empty($values)) {
-				continue;
-			}
-
-			switch($type) {
-
-				case 'references' :
-					$h .= '<div class="util-block">';
-					$h .= '<h4>'.s("Références déjà connues").'</h4>';
-					$h .= '<p>'.s("Les références suivantes ont été reconnues. Les produits concernés ne seront pas ajoutés une deuxième fois mais seront modifiés avec les nouvelles valeurs. <b>Toutes les valeurs, à l'exception de l'unité de vente qui ne peut pas être modifiée par un import, seront mises à jour y compris celles qui sont vides ou ne sont pas présentes dans votre fichier CSV, soyez vigilant pour ne pas perdre des données !</b>").'</p>';
-					$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-					$h .= '</div>';
-					break;
-
-			}
-
-		}
+		$h .= $this->getAlerts($eFarm, $data);
 
 		$h .= '<div class="util-overflow-lg">';
 
@@ -297,33 +223,61 @@ class CsvUi {
 
 	}
 
-	public function getCustomers(\farm\Farm $eFarm, array $data): string {
-
-		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
+	protected function getAlerts(\farm\Farm $eFarm, array $data): string {
 
 		$h = '';
 
-		if($errorsCount > 0) {
-			$h .= \main\CsvUi::getGlobalErrors($errorsCount, '/doc/import:customers');
-		} else {
-			$h .= '<div class="util-block">';
-				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
-				$h .= '<ul>';
-					$h .= '<li>'.s("Les clients présents dans le tableau ci-dessous seront créés et associés à votre ferme.").'</li>';
-					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
-					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
-				$h .= '</ul>';
-				$h .= '<a data-ajax="/selling/csv:doCreateCustomers" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} client ?", "Importer maintenant {value} clients ?", count($data['import'])).'" data-ajax-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
-			$h .= '</div>';
-		}
-
-		foreach($errorsGlobal as $type => $values) {
+		foreach($data['errorsGlobal'] as $type => $values) {
 
 			if(empty($values)) {
 				continue;
 			}
 
 			switch($type) {
+
+				case 'vatRates' :
+
+					$vatRates = SellingSetting::getVatRates($eFarm);
+					array_walk($vatRates, fn(&$value) => $value .= ' %');
+
+					array_walk($values, fn(&$value) => $value .= ' %');
+
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Taux de TVA invalides").'</h4>';
+						$h .= '<p>'.s("Les taux de TVA suivants ne sont pas reconnus par Ouvretaferme, corrigez votre fichier CSV :", ['values' => '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<p>'.s("Pour votre pays, {siteName} supporte les taux de TVA suivants : {value}", implode(', ', $vatRates)).'</p>';
+					$h .= '</div>';
+					break;
+
+				case 'units' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Unités manquantes").'</h4>';
+						$h .= '<p>'.s("Les unités suivantes n'existent pas sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une unité existante ou ajoutez-les à votre ferme. Pour rappel, vous devez utiliser <link>le nom des unités au singulier</link> pour qu'elles soient reconnues.", ['link' => '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des unités").'</a>';
+					$h .= '</div>';
+					break;
+
+				case 'species' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Espèces manquantes").'</h4>';
+						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou sont désactivées sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des espèces").'</a>';
+					$h .= '</div>';
+					break;
+
+				case 'profiles' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Types de produits non reconnus").'</h4>';
+						$h .= '<p>'.s("Les types de produits suivants ne peuvent pas être importés, vous devez les retirer de votre fichier CSV.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+					$h .= '</div>';
+					break;
 
 				case 'countries' :
 					array_walk($values, 'encode');
@@ -344,11 +298,31 @@ class CsvUi {
 					$h .= '</div>';
 					break;
 
+				case 'customers' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Clients non reconnus").'</h4>';
+						$h .= '<p>'.s("Les clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un client existant ou ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.\farm\FarmUi::urlSellingCustomers($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des clients").'</a>';
+					$h .= '</div>';
+					break;
+
+				case 'catalogs' :
+					array_walk($values, 'encode');
+					$h .= '<div class="util-block">';
+						$h .= '<h4 class="color-danger">'.s("Catalogues non reconnus").'</h4>';
+						$h .= '<p>'.s("Les catalogues suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un catalogues existant ou ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+						$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des catalogues").'</a>';
+					$h .= '</div>';
+					break;
+
 			}
 
 		}
 
-		foreach($infoGlobal as $type => $values) {
+		foreach($data['infoGlobal'] as $type => $values) {
 
 			if(empty($values)) {
 				continue;
@@ -364,9 +338,43 @@ class CsvUi {
 					$h .= '</div>';
 					break;
 
+				case 'references' :
+					$h .= '<div class="util-block">';
+					$h .= '<h4>'.s("Références déjà connues").'</h4>';
+					$h .= '<p>'.s("Les références suivantes ont été reconnues. Les produits concernés ne seront pas ajoutés une deuxième fois mais seront modifiés avec les nouvelles valeurs. <b>Toutes les valeurs, à l'exception de l'unité de vente qui ne peut pas être modifiée par un import, seront mises à jour y compris celles qui sont vides ou ne sont pas présentes dans votre fichier CSV, soyez vigilant pour ne pas perdre des données !</b>").'</p>';
+					$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
+					$h .= '</div>';
+					break;
+
 			}
 
 		}
+
+		return $h;
+
+	}
+
+	public function getCustomers(\farm\Farm $eFarm, array $data): string {
+
+		['import' => $import, 'errorsCount' => $errorsCount] = $data;
+
+		$h = '';
+
+		if($errorsCount > 0) {
+			$h .= \main\CsvUi::getGlobalErrors($errorsCount, '/doc/import:customers');
+		} else {
+			$h .= '<div class="util-block">';
+				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("Les clients présents dans le tableau ci-dessous seront créés et associés à votre ferme.").'</li>';
+					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
+					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
+				$h .= '</ul>';
+				$h .= '<a data-ajax="/selling/csv:doCreateCustomers" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} client ?", "Importer maintenant {value} clients ?", count($data['import'])).'" data-ajax-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+			$h .= '</div>';
+		}
+
+		$h .= $this->getAlerts($eFarm, $data);
 
 		$h .= '<div class="util-overflow-lg">';
 
@@ -565,7 +573,7 @@ class CsvUi {
 
 	public function getPrices(\farm\Farm $eFarm, array $data): string {
 
-		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal] = $data;
+		['import' => $import, 'errorsCount' => $errorsCount] = $data;
 
 		$h = '';
 
@@ -579,51 +587,11 @@ class CsvUi {
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les clients que vous importez maintenant").'</li>';
 				$h .= '</ul>';
-				$h .= '<a data-ajax="/selling/csv:doCreateCustomers" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} client ?", "Importer maintenant {value} clients ?", count($data['import'])).'" data-ajax-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
+				$h .= '<a data-ajax="/selling/csv:doCreatePrices" post-id="'.$eFarm['id'].'" class="btn btn-secondary" data-confirm="'.p("Importer maintenant {value} prix ?", "Importer maintenant {value} prix ?", count($data['import'])).'" data-ajax-waiter="'.s("Importation en cours, merci de patienter...").'">'.s("Importer maintenant").'</a>';
 			$h .= '</div>';
 		}
 
-		foreach($errorsGlobal as $type => $values) {
-
-			if(empty($values)) {
-				continue;
-			}
-
-			switch($type) {
-
-				case 'groups' :
-					array_walk($values, 'encode');
-					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Groupes de clients non reconnus").'</h4>';
-						$h .= '<p>'.s("Les groupes de clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un groupe existant ou ajoutez-les d'abord à votre ferme.").'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="/selling/customerGroup:manage?farm='.$eFarm['id'].'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des groupes de clients").'</a>';
-					$h .= '</div>';
-					break;
-
-				case 'customers' :
-					array_walk($values, 'encode');
-					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Clients non reconnus").'</h4>';
-						$h .= '<p>'.s("Les clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un client existant ou ajoutez-les d'abord à votre ferme.").'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="'.\farm\FarmUi::urlSellingCustomers($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des clients").'</a>';
-					$h .= '</div>';
-					break;
-
-				case 'catalogs' :
-					array_walk($values, 'encode');
-					$h .= '<div class="util-block">';
-						$h .= '<h4 class="color-danger">'.s("Catalogues non reconnus").'</h4>';
-						$h .= '<p>'.s("Les catalogues suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un catalogues existant ou ajoutez-les d'abord à votre ferme.").'</p>';
-						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des catalogues").'</a>';
-					$h .= '</div>';
-					break;
-
-			}
-
-		}
+		$h .= $this->getAlerts($eFarm, $data);
 
 		$h .= '<div class="util-overflow-lg">';
 
@@ -655,15 +623,20 @@ class CsvUi {
 
 						$h .= '</td>';
 						$h .= '<td class="td-min-content text-end">';
-							$h .= \util\TextUi::money($price['price']);
+							if($price['price_discount'] !== NULL) {
+								$h .= new PriceUi()->priceWithoutDiscount($price['price']);
+								$h .= \util\TextUi::money($price['price_discount']);
+							} else {
+								$h .= \util\TextUi::money($price['price']);
+							}
 						$h .= '</td>';
 						$h .= '<td>';
 
-							switch($price['target']) {
+							switch($price['type']) {
 
 								case 'product' :
 									if(in_array('privateProError', $price['errors'])) {
-										$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode(implode(', ', $price['list'])).'</span>';
+										$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode(implode(', ', $price['target'])).'</span>';
 									} else {
 										$h .= match($formatted['type']) {
 											'private' => s("Prix particulier"),
@@ -673,7 +646,7 @@ class CsvUi {
 									break;
 
 								case 'group' :
-									foreach($formatted['group'] as $eCustomerGroup) {
+									foreach($formatted['cCustomerGroup'] as $eCustomerGroup) {
 										$h .= '<div>'.s("Groupe {value}", CustomerGroupUi::link($eCustomerGroup)).'</div>';
 									}
 									foreach($formatted['groupError'] as $error) {
@@ -682,7 +655,7 @@ class CsvUi {
 									break;
 
 								case 'customer' :
-									foreach($formatted['customer'] as $eCustomer) {
+									foreach($formatted['cCustomer'] as $eCustomer) {
 										$h .= '<div>'.s("Client {value}", CustomerUi::link($eCustomer)).'</div>';
 									}
 									foreach($formatted['customerError'] as $error) {
@@ -691,7 +664,7 @@ class CsvUi {
 									break;
 
 								case 'catalog' :
-									foreach($formatted['catalog'] as $eCatalog) {
+									foreach($formatted['cCatalog'] as $eCatalog) {
 										$h .= '<div>'.s("Catalogue {value}", encode($eCatalog['name'])).'</div>';
 									}
 									foreach($formatted['catalogError'] as $error) {
@@ -700,7 +673,7 @@ class CsvUi {
 									break;
 
 								default :
-									$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode($price['target']).'</span>';
+									$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode(implode(', ', $price['target'])).'</span>';
 									break;
 
 							}
@@ -708,20 +681,24 @@ class CsvUi {
 						$h .= '</td>';
 					$h .= '</tr>';
 
-					if($price['errors']) {
+					if($price['errors'] or $price['warnings']) {
 
 						$messages = [
 							'referenceMissing' => s("Il manque la référence du produit"),
 							'referenceError' => s("La référence du produit n'est pas reconnue"),
-							'targetError' => s("La cible du prix n'est pas reconnue"),
+							'typeError' => s("La cible du prix n'est pas reconnue"),
 							'privateProError' => s("Vous n'avez pas indiqué si c'est un prix particulier ou professionnel"),
+							'productPrivateIncompatible' => s("Ce produit n'est pas activé pour les ventes aux particuliers"),
+							'productProIncompatible' => s("Ce produit n'est pas activé pour les ventes aux profesionnels"),
 							'groupMissing' => s("Aucun groupe n'a été donné"),
 							'groupError' => s("Un ou plusieurs groupes ne sont pas reconnus"),
 							'customerMissing' => s("Aucun client n'a été donné"),
 							'customerError' => s("Un ou plusieurs clients ne sont pas reconnus"),
 							'catalogMissing' => s("Aucun catalogue n'a été donné"),
 							'catalogError' => s("Un ou plusieurs catalogues ne sont pas reconnus"),
+							'catalogNotFound' => s("Le produit n'a pas été trouvé dans un ou plusieurs des catalogues et le prix ne sera pas importé dans ces catalogues"),
 							'priceMissing' => s("Vous n'avez pas indiqué de prix"),
+							'priceDiscountConsistency' => s("Le prix remisé ne peut pas être plus élevé que le prix initial"),
 						];
 
 						$h .= '<tr>';
