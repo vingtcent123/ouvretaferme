@@ -168,13 +168,13 @@ Class BalanceSheetLib {
 			}
 		}
 
-		$noResult = (isset($balanceSheetData['equity'][\account\AccountSetting::PROFIT_CLASS]) === FALSE and isset($balanceSheetData['equity'][\account\AccountSetting::LOSS_CLASS]) === FALSE);
+		$noResult = (isset($balanceSheetData['equity'][\account\AccountSetting::PROFIT_RESULT_CLASS]) === FALSE and isset($balanceSheetData['equity'][\account\AccountSetting::LOSS_RESULT_CLASS]) === FALSE);
 
 		// On rajoute le résultat si l'exercice est encore ouvert
 		if($noResult or $eFinancialYear->acceptUpdate()) {
 
 			$result = \overview\IncomeStatementLib::computeResult($eFinancialYear);
-			$class = ($result > 0 ? \account\AccountSetting::PROFIT_CLASS : \account\AccountSetting::LOSS_CLASS);
+			$class = ($result > 0 ? \account\AccountSetting::PROFIT_RESULT_CLASS : \account\AccountSetting::LOSS_RESULT_CLASS);
 
 			if(isset($balanceSheetData['equity'][$class]) === FALSE) {
 				$balanceSheetData['equity'][$class] = [
@@ -213,7 +213,7 @@ Class BalanceSheetLib {
 
 		if($eFinancialYearComparison->notEmpty() and $eFinancialYearComparison->canUpdate()) {
 			$result = \overview\IncomeStatementLib::computeResult($eFinancialYearComparison);
-			$class = ($result > 0 ? \account\AccountSetting::PROFIT_CLASS : \account\AccountSetting::LOSS_CLASS);
+			$class = ($result > 0 ? \account\AccountSetting::PROFIT_RESULT_CLASS : \account\AccountSetting::LOSS_RESULT_CLASS);
 			if(isset($balanceSheetData['equity'][$class]) === FALSE) {
 				$balanceSheetData['equity'][$class] = [
 					'class' => (string)$class,

@@ -46,7 +46,7 @@ new Page()
 			$completeNumbersClasses = array_map(fn($class) => trim($class, '0'), $classes);
 			$classes = array_unique(array_merge(
 					$twoNumbersClasses, $completeNumbersClasses,
-					[\account\AccountSetting::PROFIT_CLASS, \account\AccountSetting::LOSS_CLASS, \account\AccountSetting::RESULT_CLASS])
+					[\account\AccountSetting::LOSS_RESULT_CLASS, \account\AccountSetting::PROFIT_RESULT_CLASS])
 			);
 
 			$data->cAccount = \account\AccountLib::getByClasses($classes, 'class');

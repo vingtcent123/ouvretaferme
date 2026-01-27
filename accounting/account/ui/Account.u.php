@@ -318,6 +318,30 @@ class AccountUi {
 
 	}
 
+	public static function getVatCodeByClass(?string $class, FinancialYear $eFinancialYear): ?int {
+
+		if($class !== NULL) {
+
+			foreach(AccountSetting::VAT_CODES_ACCOUNTS as $vatCode => $accounts) {
+
+				foreach($accounts as $account) {
+
+					if(AccountLabelLib::isFromClass($class, $account)) {
+						return $vatCode;
+					}
+
+				}
+			}
+		}
+
+		if($eFinancialYear->empty() or $eFinancialYear['hasVat']) {
+			return \journal\Operation::VAT_STD;
+		}
+
+		return \journal\Operation::VAT_NS;
+
+	}
+
 	public static function getAutocomplete(\farm\Farm $eFarm, Account|\company\GenericAccount $eAccount, \Search $search = new \Search()): array {
 
 		\Asset::css('media', 'media.css');
@@ -348,6 +372,7 @@ class AccountUi {
 			'description' => $eAccount['description'],
 			'vatRate' => $vatRate,
 			'vatClass' => $vatClass,
+			'vatCode' => self::getVatCodeByClass($eAccount['class'], $eFarm['eFinancialYear'] ?? new FinancialYear()),
 			'farm' => $eFarm['id'],
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAccount['class'].' '.$eAccount['description'],

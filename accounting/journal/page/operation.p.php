@@ -52,9 +52,13 @@ new \journal\OperationPage(
 
 	$cOperation = \journal\OperationLib::prepareOperations($_POST, 'update', $eCashflow);
 
-	$fw->validate();
+	if($fw->ko()) {
+		\journal\Operation::model()->rollBack();
+	} else {
+		\journal\Operation::model()->commit();
+	}
 
-	\journal\Operation::model()->commit();
+	$fw->validate();
 
 	$success = $cOperation->count() > 1 ? 'Operation::updatedSeveral' : 'Operation::updated';
 
@@ -215,9 +219,13 @@ new \journal\OperationPage(
 			\Fail::log('Operation::allocate.noOperation');
 		}
 
-		$fw->validate();
+		if($fw->ko()) {
+			\journal\Operation::model()->rollBack();
+		} else {
+			\journal\Operation::model()->commit();
+		}
 
-		\journal\Operation::model()->commit();
+		$fw->validate();
 
 		$success = $cOperation->count() > 1 ? 'Operation::createdSeveral' : 'Operation::created';
 

@@ -764,17 +764,25 @@ Class VatLib {
 
 		\journal\OperationLib::prepareOperations($input);
 
+		if($fw->ko()) {
+			\journal\Operation::model()->rollBack();
+		} else {
+			\journal\Operation::model()->commit();
+		}
+
 		$fw->validate();
 
-		VatDeclaration::model()
-			->update($eVatDeclaration, [
-				'accountedAt' => new \Sql('NOW()'),
-				'accountedBy' => \user\ConnectionLib::getOnline(),
-				'updatedAt' => new \Sql('NOW()'),
-				'updatedBy' => \user\ConnectionLib::getOnline()
-			]);
+		if($fw->ok()) {
 
-		\journal\Operation::model()->commit();
+			VatDeclaration::model()
+				->update($eVatDeclaration, [
+					'accountedAt' => new \Sql('NOW()'),
+					'accountedBy' => \user\ConnectionLib::getOnline(),
+					'updatedAt' => new \Sql('NOW()'),
+					'updatedBy' => \user\ConnectionLib::getOnline()
+				]);
+
+		}
 
 	}
 }

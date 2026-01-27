@@ -119,13 +119,13 @@ new \bank\CashflowPage(function($data) {
 
 		$fw = new FailWatch();
 
-		\journal\Operation::model()->beginTransaction();
-
 		$accounts = post('account', 'array', []);
 
 		if(count($accounts) === 0) {
 			Fail::log('Cashflow::allocate.accountsCheck');
 		}
+
+		\journal\Operation::model()->beginTransaction();
 
 		$cOperation = \journal\OperationLib::prepareOperations($_POST, eCashflow: $data->e);
 
@@ -133,9 +133,13 @@ new \bank\CashflowPage(function($data) {
 			\Fail::log('Cashflow::allocate.noOperation');
 		}
 
-		$fw->validate();
+		if($fw->ko()) {
+			\journal\Operation::model()->rollBack();
+		} else {
+			\journal\Operation::model()->commit();
+		}
 
-		\journal\Operation::model()->commit();
+		$fw->validate();
 
 		throw new ReloadAction('bank', 'Cashflow::allocated');
 

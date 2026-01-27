@@ -964,6 +964,63 @@ class OperationUi {
 					$d->attributes['data-index'] = $index;
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
 				});
+				if($eFinancialYear['hasVat']) {
+
+					$h .= '<div style="margin-top: 0.5rem;">';
+						$vatCodes = [
+							Operation::VAT_STD => s('STD - Standard'),
+							Operation::VAT_0 => s('EXO - Exonéré'),
+							Operation::VAT_NCA => s('NCA - Hors Chiffre d\'affaires'),
+							Operation::VAT_NS => s('NS - Non soumis'),
+							Operation::VAT_HC => s('HC - Hors champ TVA'),
+						];
+						if(($eOperation['details'] ?? NULL) === NULL) {
+
+							$vatCode = NULL;
+							$vatLabel = s("Aucun");
+
+						} else {
+
+							foreach([Operation::VAT_STD, Operation::VAT_0, Operation::VAT_NCA, Operation::VAT_NS, Operation::VAT_HC] as $code) {
+
+								if($eOperation['details']->get() & $code) {
+
+									$vatCode = $code;
+									$vatLabel = $vatCodes[$code];
+									break;
+
+								}
+							}
+						}
+
+						$h .= $form->inputGroup(
+							$form->addon(s('Code TVA')).
+							$form->select(
+								'vatCode'.$suffix,
+								$vatCodes,
+								$vatCode,
+								attributes: [
+									'data-index' => $index,
+									'data-field' => 'vatCode',
+									'data-vat-code' => $form->getId(),
+									'tabindex' => -1,
+									'onchange' => 'Operation.setVatCode('.$index.', true)',
+									'placeholder' => s("Aucun"),
+								],
+							).
+							$form->addon('<a onclick="Operation.toggleVatCode('.$index.')">'.\Asset::icon('x-lg').'</a>'),
+							['class' => 'hide', 'data-wrapper' =>  'vatCode'.$suffix],
+						);
+
+						$h .= '<p class="util-annotation" data-wrapper="vatCodeLabel'.$suffix.'">';
+							$h .= '<a href="/doc/accounting:vat" target="_blank" title="'.s("Plus d'informations sur les codes de TVA").'">'.\Asset::icon('info-circle').'</a> ';
+							$h .= s("Code TVA : {vatLabel} (<link>changer</link>)", [
+								'vatLabel' => '<b><span data-index="'.$index.'" data-vat-label>'.$vatLabel.'</span></b>',
+								'link' => '<a onclick="Operation.toggleVatCode('.$index.')">'
+							]);
+						$h .= '</p>';
+					$h .= '</div>';
+				}
 			$h .='</div>';
 
 			if($eFinancialYear['hasVat']) {
@@ -1001,99 +1058,43 @@ class OperationUi {
 				$noVat = ($eOperation['account']->notEmpty() and $eOperation['account']['vatAccount']->empty());
 				$vatAttributes = $noVat ? ['disabled' => 'disabled'] : [];
 
-				$h .= '<div>';
-					$h .= '<div data-wrapper="vatRate'.$suffix.'" class="company_form_group-with-tip">';
-						$h .= $form->inputGroup(
-							$form->addon(OperationUi::getAmountButtonIcons('vatValue', $index)).
-							$form->calculation(
-								'vatValue'.$suffix,
-								$vatAmountDefault ?? '',
-								['data-index' => $index, 'data-field' => 'vatValue'] + $vatAttributes
-							).
-							$form->addon(s("€")),
-						);
-						$h .= '<div data-vat-value-warning class="hide" data-index="'.$index.'">';
-							$h .= '<a class="btn btn-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'" onclick="Operation.setVatValue('.$index.');">';
-								$h .= \Asset::icon('exclamation-triangle');
-							$h .= '</a>';
-							$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-								$h .= '<span class="dropdown-item">';
-									$h .= s(
-										"La valeur indiquée de la TVA, {vatValue}, ne correspond pas au calcul (montant HT * taux de TVA) qui est {vatValueCalculated}.",
-										[
-											'vatValue' => '<b><span data-vat-value-vat-warning-value data-index="'.$index.'"></span></b>',
-											'vatValueCalculated' => '<b><span data-vat-value-vat-warning-calculated-value data-index="'.$index.'"></span></b>',
-										]
-									);
-								$h .= '</span>';
-							$h .= '</div>';
+				$h .= '<div data-wrapper="vatRate'.$suffix.'" class="company_form_group-with-tip">';
+					$h .= $form->inputGroup(
+						$form->addon(OperationUi::getAmountButtonIcons('vatValue', $index)).
+						$form->calculation(
+							'vatValue'.$suffix,
+							$vatAmountDefault ?? '',
+							['data-index' => $index, 'data-field' => 'vatValue'] + $vatAttributes
+						).
+						$form->addon(s("€")),
+					);
+					$h .= '<div data-vat-value-warning class="hide" data-index="'.$index.'">';
+						$h .= '<a class="btn btn-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'" onclick="Operation.setVatValue('.$index.');">';
+							$h .= \Asset::icon('exclamation-triangle');
+						$h .= '</a>';
+						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+							$h .= '<span class="dropdown-item">';
+								$h .= s(
+									"La valeur indiquée de la TVA, {vatValue}, ne correspond pas au calcul (montant HT * taux de TVA) qui est {vatValueCalculated}.",
+									[
+										'vatValue' => '<b><span data-vat-value-vat-warning-value data-index="'.$index.'"></span></b>',
+										'vatValueCalculated' => '<b><span data-vat-value-vat-warning-calculated-value data-index="'.$index.'"></span></b>',
+									]
+								);
+							$h .= '</span>';
 						$h .= '</div>';
-						$h .= $form->inputGroup(
-						$form->addon(s('Taux')).
-							$form->number(
-								'vatRate'.$suffix,
-								$vatRateDefault,
-								['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.01, 'tabindex' => -1] + $vatAttributes,
-							).
-							$form->addon(s("%")),
-						);
 					$h .= '</div>';
-					$h .= '<div style="margin-top: 0.5rem;">';
-						$vatCodes = [
-							Operation::VAT_STD => s('STD - Standard'),
-							Operation::VAT_0 => s('EXO - Exonéré'),
-							Operation::VAT_NCA => s('NCA - Hors Chiffre d\'affaires'),
-							Operation::VAT_NS => s('NS - Non soumis'),
-							Operation::VAT_HC => s('HC - Hors champ TVA'),
-						];
-						if(($eOperation['details'] ?? NULL) === NULL) {
-
-							if($eFinancialYear['hasVat']) {
-
-								$vatCode = Operation::VAT_STD;
-
-							} else {
-
-								$vatCode = Operation::VAT_NS;
-
-							}
-
-							$vatLabel = $vatCodes[$vatCode];
-
-						} else {
-
-							foreach([Operation::VAT_STD, Operation::VAT_0, Operation::VAT_NCA, Operation::VAT_NS, Operation::VAT_HC] as $code) {
-
-								if($eOperation['details']->get() & $code) {
-
-									$vatCode = $code;
-									$vatLabel = $vatCodes[$code];
-									break;
-
-								}
-							}
-						}
-
-						$h .= $form->inputGroup(
-							$form->addon(s('Code TVA')).
-							$form->select(
-								'vatCode'.$suffix,
-								$vatCodes,
-								$vatCode,
-								attributes: ['data-index' => $index, 'data-field' => 'vatCode', 'data-vat-code' => $form->getId(), 'tabindex' => -1, 'onchange' => 'Operation.setVatCode('.$index.')'],
-							),
-							['class' => 'hide', 'data-wrapper' =>  'vatCode'.$suffix],
-						);
-
-						$h .= '<p class="util-annotation '.($noVat ? 'hide' : '').'" data-wrapper="vatCodeLabel'.$suffix.'">';
-							$h .= '<a href="/doc/accounting:vat" target="_blank" title="'.s("Plus d'informations sur les codes de TVA").'">'.\Asset::icon('info-circle').'</a> ';
-							$h .= s("Code TVA : {vatLabel} (<link>changer</link>)", [
-								'vatLabel' => '<b><span data-index="'.$index.'" data-vat-label>'.$vatLabel.'</span></b>',
-								'link' => '<a onclick="Operation.toggleVatCode('.$index.')">'
-							]);
-						$h .= '</p>';
-					$h .= '</div>';
+					$h .= $form->inputGroup(
+					$form->addon(s('Taux')).
+						$form->number(
+							'vatRate'.$suffix,
+							$vatRateDefault,
+							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.01, 'tabindex' => -1] + $vatAttributes,
+						).
+						$form->addon(s("%")),
+					);
 				$h .= '</div>';
+
 
 			$h .= '<div data-wrapper="amountIncludingVAT'.$suffix.'" class="company_form_group-with-tip">';
 				$h .= $form->inputGroup($form->addon(self::getAmountButtonIcons('amountIncludingVAT', $index))
@@ -1697,7 +1698,6 @@ class OperationUi {
 				};
 				$d->before = fn(\util\FormUi $form, $e) => ($e->isQuick() and (int)substr($e['accountLabel'], 0, 3) !== \account\AccountSetting::VAT_CLASS) ? \util\FormUi::info(s("Attention, pensez à répercuter ce changement sur la ligne de TVA si elle existe")) : '';
 				break;
-
 
 			case 'thirdParty':
 				$d->autocompleteBody = function(\util\FormUi $form, Operation $e) {

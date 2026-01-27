@@ -127,12 +127,12 @@ Class OpeningLib {
 
 		if($result >= 0) {
 
-			$class = \account\AccountSetting::PROFIT_CLASS;
+			$class = \account\AccountSetting::PROFIT_RESULT_CLASS;
 			$type = \journal\Operation::CREDIT;
 
 		} else {
 
-			$class = \account\AccountSetting::LOSS_CLASS;
+			$class = \account\AccountSetting::LOSS_RESULT_CLASS;
 			$type = \journal\Operation::DEBIT;
 
 		}

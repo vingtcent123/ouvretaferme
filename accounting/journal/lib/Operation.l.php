@@ -635,8 +635,6 @@ class OperationLib extends OperationCrud {
 
 			if($hasVatAccount === TRUE) {
 				$eOperation['vatAccount'] = $eAccount['vatAccount'];
-			} else {
-				$eOperation['details'] = NULL;
 			}
 
 			$fw->validate();
@@ -675,7 +673,7 @@ class OperationLib extends OperationCrud {
 						'cashflow' => $eCashflow,
 						'paymentMethod' => $eOperation['paymentMethod'],
 						'hash' => $hash,
-						'details' => $input['details'][$index] ?? NULL,
+						'details' => $eOperation['details'] ?? NULL,
 					]
 					: $eOperation->getArrayCopy();
 
@@ -844,18 +842,24 @@ class OperationLib extends OperationCrud {
 			$values['paymentMethod'] = $eOperationLinked['paymentMethod']['id'] ?? NULL;
 		}
 
+		$properties = array_merge([
+				'financialYear',
+				'account', 'accountLabel', 'description', 'document', 'documentDate',
+				'thirdParty', 'type', 'amount', 'operation',
+				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
+				'date',
+			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []);
+
+		if(isset($defaultValues['details']) and is_int($defaultValues['details'])) {
+			$properties[] = 'details';
+		}
+
 		$eOperationVat = new Operation();
 
 		$fw = new \FailWatch();
 
 		$eOperationVat->build(
-			array_merge([
-				'financialYear',
-				'account', 'accountLabel', 'description', 'document', 'documentDate',
-				'thirdParty', 'type', 'amount', 'operation',
-				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
-				'date', 'details',
-			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []),
+			$properties,
 			$values,
 		);
 
@@ -863,6 +867,10 @@ class OperationLib extends OperationCrud {
 		if($eCashflow->notEmpty()) {
 			$eOperationVat['paymentDate'] = $eCashflow['date'];
 			$eOperationVat['paymentMethod'] = \payment\MethodLib::getById(POST('paymentMethod'));
+		}
+
+		if(isset($defaultValues['details']) and $defaultValues['details'] instanceof \Set) {
+			$eOperationVat['details'] = $defaultValues['details'];
 		}
 
 		$fw->validate();
