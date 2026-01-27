@@ -1412,12 +1412,13 @@ class ProductUi {
 					$h .= '<div class="util-annotation">'.s("Prix négatif").'</div>';
 				}
 
-				$priceBase = $eProduct['product'][$eProduct['type'].'Price'];
-
-				if($eProduct['price'] !== $priceBase) {
-					$h .= '<div class="util-annotation">'.s("Prix de base : {value}", \util\TextUi::money($priceBase)).'</div>';
+				if(
+					$eProduct['product'][$eProduct['type']] and
+					$eProduct['price'] !== $eProduct['product'][$eProduct['type'].'Price']
+				) {
+					$h .= '<div class="util-annotation">'.s("Prix de base : {value}", \util\TextUi::money($eProduct['product'][$eProduct['type'].'Price'])).'</div>';
 				}
-				
+
 			$h .= '</td>';
 
 			$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';

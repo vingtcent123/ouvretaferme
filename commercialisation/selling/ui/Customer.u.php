@@ -157,7 +157,7 @@ class CustomerUi {
 				}
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("E-mail").'</legend>';
-					$h .= $form->email('email', $search->get('email'), ['placeholder' => s("E-mail de client")]);
+					$h .= $form->text('email', $search->get('email'), ['placeholder' => s("E-mail de client")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Catégorie").'</legend>';

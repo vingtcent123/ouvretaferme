@@ -21,6 +21,7 @@ class CatalogUi {
 
 		$hasCustomPrice = $eCatalogSelected['cProduct']->contains(fn($eProduct) => (
 			$eProduct['parent'] === FALSE and
+			$eProduct['product'][$eProduct['type']] and
 			$eProduct['price'] !== $eProduct['product'][$eProduct['type'].'Price']
 		));
 
