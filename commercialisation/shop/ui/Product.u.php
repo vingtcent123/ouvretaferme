@@ -1014,7 +1014,7 @@ class ProductUi {
 		if($eDate['type'] === Date::PRIVATE) {
 			$overflow = $eDate['shop']['shared'] ? 'util-overflow-sm' : 'util-overflow-xs';
 		} else {
-			$overflow = $eDate['shop']['shared'] ? 'util-overflow-lg' : 'util-overflow-sm';
+			$overflow = $eDate['shop']['shared'] ? 'util-overflow-lg' : 'util-overflow-md';
 		}
 
 		$h = '<div class="'.$overflow.' stick-xs mb-3">';
@@ -1199,7 +1199,7 @@ class ProductUi {
 					$h .= $price;
 				}
 				if($eProduct['price'] < 0) {
-					$h .= '<div class="shop-product-alert">'.\Asset::icon('exclamation-circle').' '.s("Prix négatif").'</div>';
+					$h .= '<div class="util-annotation">'.s("Prix négatif").'</div>';
 				}
 			$h .= '</td>';
 
@@ -1257,7 +1257,7 @@ class ProductUi {
 		$taxes = $eFarm->getConf('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eCatalog['type']).'</span>' : '';
 		$columns = 2;
 
-		$h = '<div class="util-overflow-sm stick-xs">';
+		$h = '<div class="util-overflow-md stick-xs">';
 			$h .= '<table class="tbody-even td-padding-sm" data-batch="#batch-catalog">';
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -1409,8 +1409,15 @@ class ProductUi {
 				$price = \util\TextUi::money($eProduct['price']).$unit;
 				$h .= $eProduct->quick($field, $price);
 				if($eProduct['price'] < 0) {
-					$h .= '<div class="shop-product-alert">'.\Asset::icon('exclamation-circle').' '.s("Prix négatif").'</div>';
+					$h .= '<div class="util-annotation">'.s("Prix négatif").'</div>';
 				}
+
+				$priceBase = $eProduct['product'][$eProduct['type'].'Price'];
+
+				if($eProduct['price'] !== $priceBase) {
+					$h .= '<div class="util-annotation">'.s("Prix de base : {value}", \util\TextUi::money($priceBase)).'</div>';
+				}
+				
 			$h .= '</td>';
 
 			$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';

@@ -159,6 +159,25 @@ class CatalogLib extends CatalogCrud {
 
 	}
 
+	public static function synchronizePrices(Catalog $e): void {
+
+		$cProduct = ProductLib::getByCatalog($e, onlyActive: FALSE);
+
+		foreach($cProduct as $eProduct) {
+
+			if($eProduct['price'] !== $eProduct['product'][$eProduct['type'].'Price']) {
+
+				$eProduct['price'] = $eProduct['product'][$eProduct['type'].'Price'];
+				$eProduct['priceInitial'] = $eProduct['product'][$eProduct['type'].'PriceInitial'];
+
+				ProductLib::update($eProduct, ['price', 'priceInitial']);
+
+			}
+
+		}
+
+	}
+
 	public static function recalculate(Catalog $e): void {
 
 		$e['products'] = ProductLib::countByCatalog($e);

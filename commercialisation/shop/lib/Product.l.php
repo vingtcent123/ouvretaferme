@@ -462,7 +462,7 @@ class ProductLib extends ProductCrud {
 		$cProduct = Product::model()
 			->select(Product::getSelection())
 			->whereCatalog($eCatalog)
-			->whereParent(NULL, if: $reorderChildren === FALSE)
+			->whereParent(FALSE, if: $reorderChildren === FALSE)
 			->whereStatus(Product::ACTIVE, if: $onlyActive)
 			->getCollection(NULL, NULL, 'id');
 

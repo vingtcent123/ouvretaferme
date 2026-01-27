@@ -19,6 +19,11 @@ class CatalogUi {
 			'cCategory' => $cCategory,
 		] = $eCatalogSelected;
 
+		$hasCustomPrice = $eCatalogSelected['cProduct']->contains(fn($eProduct) => (
+			$eProduct['parent'] === FALSE and
+			$eProduct['price'] !== $eProduct['product'][$eProduct['type'].'Price']
+		));
+
 		$h .= '<div class="mb-1 text-end">';
 			$h .= '<a href="/shop/product:createCollection?catalog='.$eCatalogSelected['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des produits").'</a> ';
 			$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
@@ -26,6 +31,9 @@ class CatalogUi {
 				$h .= '<div class="dropdown-title">'.encode($eCatalogSelected['name']).'</div>';
 				$h .= '<a href="/shop/catalog:update?id='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Modifier le catalogue").'</a>';
 				$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'&catalog='.$eCatalogSelected['id'].'" class="dropdown-item">'.s("Créer une vente depuis le catalogue").'</a>';
+				if($hasCustomPrice) {
+					$h .= '<a data-ajax="/shop/catalog:doSynchronizePrices" post-id='.$eCatalogSelected['id'].'" data-confirm="'.s("Les prix différents des prix de base seront actualisés. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Synchroniser les prix du catalogue<br/> avec les prix de base des produits").'</a>';
+				}
 				$h .= '<div class="dropdown-divider"></div>';
 				$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
 				$h .= '<a data-ajax="/shop/catalog:doDelete" post-id="'.$eCatalogSelected['id'].'" data-confirm="'.s("Êtes-vous sûr de vouloir supprimer définitivement ce catalogue ? Vous ne pourrez plus y accéder mais il restera actif sur les ventes où il est actuellement configuré.").'" class="dropdown-item">'.s("Supprimer le catalogue").'</a>';

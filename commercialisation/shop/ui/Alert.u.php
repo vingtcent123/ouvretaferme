@@ -59,6 +59,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Catalog::synchronizedPrices' => s("Les prix du catalogue ont bien été synchronisés avec les prix de base des produits !"),
+
 			'Date::copied' => s("La livraison a bien été copiée à partir d'une précédente !"),
 			'Date::created' => s("La livraison a bien été créée !"),
 			'Date::deleted' => s("La livraison a bien été supprimée"),

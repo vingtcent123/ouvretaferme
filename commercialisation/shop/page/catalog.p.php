@@ -23,6 +23,13 @@ new \shop\CatalogPage()
 		throw new ViewAction($data);
 
 	})
+	->write('doSynchronizePrices', function($data) {
+
+		\shop\CatalogLib::synchronizePrices($data->e);
+
+		throw new ReloadAction('shop', 'Catalog::synchronizedPrices');
+
+	})
 	->update()
 	->doUpdate(fn($data) => throw new ReloadAction('shop', 'Catalog::updated'))
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlShopCatalog($data->e['farm']).'?success=shop\\Catalog::deleted'));

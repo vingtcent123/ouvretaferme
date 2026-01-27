@@ -780,11 +780,6 @@ body:not([data-template~="shop-embedded"]) {
 	width: 1rem;
 }
 
-.shop-product-alert {
-	font-weight: bold;
-	margin-top: 0.125rem;
-}
-
 .shop-product-available {
 	white-space: nowrap;
 }
@@ -793,8 +788,7 @@ body:not([data-template~="shop-embedded"]) {
 	padding-bottom: 0.5rem;
 	font-size: 0.9rem;
 	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
+	flex-direction:column;
 	color: var(--muted);
 	line-height: 1.2;
 }
