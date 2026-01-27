@@ -1,6 +1,6 @@
 <?php
-new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return new \mail\ContactUi()->create($data->e);
+new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
+	return new \mail\ContactUi()->createCollection($data->eFarm);
 });
 
 new JsonView('export', function($data, AjaxTemplate $t) {

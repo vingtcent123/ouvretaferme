@@ -2354,7 +2354,7 @@ class FarmUi {
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#contact-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 
 						if(new \mail\Contact(['farm' => $eFarm])->canCreate()) {
-							$h .= '<a href="/mail/contact:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau contact").'</span></a>';
+							$h .= '<a href="/mail/contact:createCollection?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveaux contacts").'</span></a>';
 						}
 					$h .=  '</div>';
 					break;

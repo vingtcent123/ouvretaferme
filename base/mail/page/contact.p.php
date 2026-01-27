@@ -1,16 +1,56 @@
 <?php
-new \mail\ContactPage()
-	->getCreateElement(function($data) {
+new Page(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-
-		return new \mail\Contact([
-			'farm' => $data->eFarm
-		]);
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canCommunication');
 
 	})
-	->create()
-	->doCreate(fn() => throw new ReloadAction('mail', 'Contact::created'));
+	->get('createCollection', fn($data) => throw new ViewAction($data))
+	->post('doCreateCollection', function($data) {
+
+		$eContactReference = new \mail\Contact([
+			'farm' => $data->eFarm,
+			'newsletter' => (bool)POST('newsletter')
+		]);
+
+		$cContact = new Collection();
+
+		$emails = POST('emails') ? preg_split("/\r?\n+/", POST('emails')) : [];
+
+		$fw = new \FailWatch();
+
+		foreach($emails as $email) {
+
+			$eContact = clone $eContactReference;
+			$eContact->build(['email'], ['email' => $email], new \Properties('create'));
+
+
+			$cContact[] = $eContact;
+
+		}
+
+		$fw->validate();
+
+		if($cContact->empty()) {
+			throw new FailAction('mail\Contact::email.empty');
+		}
+
+		\mail\Contact::model()->beginTransaction();
+
+			foreach($cContact as $eContact) {
+
+				\mail\ContactLib::create($eContact);
+
+ 			}
+
+		\mail\Contact::model()->commit();
+
+		throw new RedirectAction(
+			$cContact->count() > 1 ?
+				\farm\FarmUi::urlCommunicationsContact($data->eFarm).'?success=mail\\Contact::createdCollection' :
+				\farm\FarmUi::urlCommunicationsContact($data->eFarm).'?success=mail\\Contact::created'
+		);
+
+	});
 
 new \mail\ContactPage()
 	->doUpdateProperties('doUpdateActive', ['active'], fn($data) => throw new ViewAction($data))

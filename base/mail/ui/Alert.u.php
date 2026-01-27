@@ -3,7 +3,7 @@ namespace mail;
 
 class AlertUi {
 
-	public static function getError(string $fqn): mixed {
+	public static function getError(string $fqn, array $options): mixed {
 
 		return match($fqn) {
 
@@ -16,6 +16,8 @@ class AlertUi {
 			'Campaign::createError' => s("Il y a des erreurs à corriger avant de programmer cette campagne."),
 
 			'Contact::email.duplicate' => s("Il y a déjà un contact avec cette adresse e-mail"),
+			'Contact::email.check' => fn() => s("L'adresse e-mail {value} est invalide", '<b>'.encode($options[1]).'</b>'),
+			'Contact::email.empty' => s("Vous n'avez indiqué aucun contact"),
 
 			default => NULL
 
@@ -32,7 +34,8 @@ class AlertUi {
 			'Campaign::deleted' => s("La campagne de communication par e-mail a bien été supprimée et ne sera donc pas envoyée !"),
 			'Campaign::test' => s("L'e-mail de test a bien été envoyé à l'adresse e-mail de la ferme !"),
 
-			'Contact::created' => s("Le contact a bien été créé !"),
+			'Contact::created' => s("Le contact a bien été ajouté !"),
+			'Contact::createdCollection' => s("Les contacts ont bien été ajoutés !"),
 			'Contact::createdNewsletter' => s("Votre inscription à la lettre d'information a bien été prise en compte !"),
 
 			'Customize::created' => s("Le contenu de l'e-mail a bien été enregistré !"),

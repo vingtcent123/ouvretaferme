@@ -3,12 +3,6 @@ namespace mail;
 
 class ContactLib extends ContactCrud {
 
-	public static function getPropertiesCreate(): array {
-
-		return ['email'];
-
-	}
-
 	public static function getByUser(\user\User $eUser): \Collection {
 
 		return Contact::model()

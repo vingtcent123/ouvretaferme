@@ -1788,12 +1788,12 @@ class Element extends ArrayObject {
 
 			foreach($callbacksSelected as $name => $callback) {
 
-				$onError = function() use($name, $property, $wrapper, &$success) {
+				$onError = function() use($name, $property, $value, $wrapper, &$success) {
 
 					$class = $this->getModule();
 					$error = explode('.', $name)[1];
 
-					$class::fail($property.'.'.$error, [$this], wrapper: $wrapper);
+					$class::fail($property.'.'.$error, [$this, $value], wrapper: $wrapper);
 
 					$success = FALSE;
 

@@ -66,8 +66,8 @@ new \selling\SalePage()
 	->doCreate(function($data) {
 		throw new RedirectAction(
 			$data->e->isComposition() ?
-				\selling\ProductUi::url($data->e['compositionOf']).'?success=Product::createdComposition' :
-				\selling\SaleUi::url($data->e).'?success=Sale::created'
+				\selling\ProductUi::url($data->e['compositionOf']).'?success=selling\\Product::createdComposition' :
+				\selling\SaleUi::url($data->e).'?success=selling\\Sale::created'
 		);
 	});
 
@@ -237,7 +237,7 @@ new Page(function($data) {
 		throw new RedirectAction(
 			$cSale->count() > 1 ?
 				\farm\FarmUi::urlSellingSales($data->eFarm, \farm\Farmer::ALL).'?success=selling\\Sale::createdCollection' :
-				\selling\SaleUi::url($eSale).'?success=Sale::created'
+				\selling\SaleUi::url($eSale).'?success=selling\\Sale::created'
 		);
 
 	});

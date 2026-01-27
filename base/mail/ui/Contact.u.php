@@ -10,31 +10,36 @@ class ContactUi {
 
 	}
 
-	public function create(Contact $eContact): \Panel {
+	public function createCollection(\farm\Farm $eFarm): \Panel {
 
 		$form = new \util\FormUi();
 
-		$eFarm = $eContact['farm'];
-
-		$h = '';
-
-		$h .= $form->openAjax('/mail/contact:doCreate');
+		$h = $form->openAjax('/mail/contact:doCreateCollection');
 
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroup($eContact, 'email*');
+			$h .= $form->group(
+				s("Adresse e-mail des contacts à ajouter").\util\FormUi::info(s("Vous pouvez ajouter une adresse e-mail par ligne. Les adresses e-mails déjà présentes dans votre liste de contacts seront ignorées.")),
+				$form->textarea('emails', attributes: ['placeholder' => s("adresse1@exemple.fr\nadresse2@exemple.fr")]),
+				['wrapper' => 'email']
+			);
 
 			$h .= $form->group(
-				content: $form->submit(s("Ajouter le contact"))
+				self::p('newsletter')->label,
+				$form->switch('newsletter', FALSE)
+			);
+
+			$h .= $form->group(
+				content: $form->submit(s("Ajouter les contacts"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-contact-create',
-			title: s("Ajouter un contact"),
+			title: s("Ajouter des contacts"),
 			body: $h
 		);
 
@@ -463,6 +468,7 @@ class ContactUi {
 
 		$d = Contact::model()->describer($property, [
 			'email' => s("Adresse e-mail"),
+			'newsletter' => s("Inscrire à votre newsletter"),
 		]);
 
 		switch($property) {
