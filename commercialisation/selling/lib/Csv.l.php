@@ -1046,12 +1046,12 @@ class CsvLib {
 				case 'product' :
 					if($price['target'] === ['private']) {
 						$formatted['type'] = 'private';
-						if($formatted['product']['private'] === FALSE) {
+						if($formatted['product']->notEmpty() and $formatted['product']['private'] === FALSE) {
 							$errors[] = 'productPrivateIncompatible';
 						}
 					} else if($price['target'] === ['pro']) {
 						$formatted['type'] = 'pro';
-						if($formatted['product']['pro'] === FALSE) {
+						if($formatted['product']->notEmpty() and $formatted['product']['pro'] === FALSE) {
 							$errors[] = 'productProIncompatible';
 						}
 					} else {
