@@ -475,6 +475,18 @@ table.pdf-sales-summary {
 	padding-right: 0;
 }
 
+.pdf-sales-summary-distribution {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.2cm;
+}
+
+.pdf-sales-summary-distribution span {
+	border: 1px solid var(--border);
+	padding: 0.05cm 0.2cm;
+	border-radius: var(--radius);
+}
+
 .pdf-sales-summary-composition {
 	margin-bottom: 0.5rem;
 }

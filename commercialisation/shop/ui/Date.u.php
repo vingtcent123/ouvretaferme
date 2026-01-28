@@ -684,7 +684,7 @@ class DateUi {
 									$eDate['sales']['countValid'] > 0 and $eShop->canShare($eFarm, validateShared: 'canWrite')
 								) {
 
-									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
+									$h .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].'" data-waiter="'.s("En cours").'" data-ajax-navigation="never" class="btn btn-outline-secondary" title="'.s("Exporter les commandes").'">'.\Asset::icon('file-pdf').'  '.s("PDF").'</a> ';
 
 								}
 

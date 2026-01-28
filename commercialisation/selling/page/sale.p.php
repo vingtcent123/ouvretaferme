@@ -540,7 +540,9 @@ new Page(function($data) {
 
 		\selling\SaleLib::fillForExport($data->c);
 
-		$data->cItem = \selling\ItemLib::getSummaryBySales($data->c);
+		$data->cItem = \selling\ItemLib::extractSummaryBySales($data->c);
+
+		\selling\ItemLib::fillSummaryDistribution($data->c, $data->cItem);
 
 		throw new ViewAction($data);
 

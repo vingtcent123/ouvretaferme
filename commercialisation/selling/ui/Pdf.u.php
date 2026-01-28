@@ -1209,7 +1209,7 @@ class PdfUi {
 					$h .= '<th colspan="2">'.s("Produit").'</th>';
 					$h .= '<th class="text-end" colspan="2">'.s("Quantité").'</th>';
 					$h .= '<th class="text-end">'.s("Montant").'</th>';
-					$h .= '<th class="pdf-sales-summary-comment">'.s("Observations").'</th>';
+					$h .= '<th class="pdf-sales-summary-comment">'.s("Commandes").'</th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 
@@ -1226,7 +1226,7 @@ class PdfUi {
 							$h .= encode($eItem['name']);
 						$h .= '</th>';
 						$h .= '<td>';
-							if($eItem['quality']) {
+							if($eItem['quality'] !== Item::NO) {
 								$h .= \Asset::image('main', $eItem['quality'].'.png', ['style' => 'height: 0.4cm']);
 							}
 						$h .= '</th>';
@@ -1238,6 +1238,7 @@ class PdfUi {
 							}
 						$h.= '</td>';
 						$h .= '<td>';
+							$h .= $this->getItemDistribution($eItem);
 							$h .= $this->getItemComposition($eItem);
 						$h .= '</td>';
 					$h .= '</tr>';
@@ -1245,6 +1246,49 @@ class PdfUi {
 			$h .= '</tbody>';
 
 		$h .= '</table>';
+
+		return $h;
+
+	}
+
+	protected function getItemDistribution(Item $eItem): string {
+
+		$counter = 0;
+		$limit = 12;
+
+		$h = '<div class="pdf-sales-summary-distribution">';
+
+			foreach($eItem['distribution']['packaging'] as $quantity => $number) {
+
+				if($counter++ >= $limit) {
+					break;
+				}
+
+				$h .= '<span class="util-annotation">';
+					$h .= p("{value} colis de {quantity}", "{value} colis de {quantity}", $number, ['quantity' => UnitUi::getValue($quantity / 100, $eItem['unit'], short: TRUE)]);
+				$h .= '</span>';
+
+			}
+
+			foreach($eItem['distribution']['direct'] as $quantity => $number) {
+
+				if($counter++ >= $limit) {
+					break;
+				}
+
+				$h .= '<span class="util-annotation">';
+					$h .= s("{value} x {quantity}", ['value' => $number, 'quantity' => UnitUi::getValue($quantity / 100, $eItem['unit'], short: TRUE)]);
+				$h .= '</span>';
+
+			}
+
+			if($counter >= $limit) {
+				$h .= '<span class="util-annotation">';
+					$h .= '...';
+				$h .= '</span>';
+			}
+
+		$h .= '</div>';
 
 		return $h;
 

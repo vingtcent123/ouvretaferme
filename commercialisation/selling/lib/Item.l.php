@@ -193,6 +193,7 @@ class ItemLib extends ItemCrud {
 		return Item::model()
 			->select([
 				'name', 'quality',
+				'items' => new \Sql('GROUP_CONCAT(id)'),
 				'unit' => \selling\Unit::getSelection(),
 				'price' => new \Sql('SUM(price)', 'float'),
 				'number' => new \Sql('SUM(number)', 'float'),
@@ -213,11 +214,12 @@ class ItemLib extends ItemCrud {
 
 	}
 
-	public static function getSummaryBySales(\Collection $cSale): \Collection {
+	public static function extractSummaryBySales(\Collection $cSale): \Collection {
 
-		$cItem = Item::model()
+		return Item::model()
 			->select([
 				'name', 'quality',
+				'items' => new \Sql('GROUP_CONCAT(id)'),
 				'unit' => \selling\Unit::getSelection(),
 				'price' => new \Sql('SUM(price)', 'float'),
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
@@ -228,9 +230,49 @@ class ItemLib extends ItemCrud {
 			->sort('name')
 			->getCollection();
 
-		$cItem->setColumn('composition', new Sale());
+	}
 
-		return $cItem;
+	public static function fillSummaryDistribution(\Collection $cSale, \Collection $cItemSummary): void {
+
+		$mapping = [];
+
+		foreach($cItemSummary as $eItemSummary) {
+
+			$eItemSummary['composition'] = new Sale();
+			$eItemSummary['distribution'] = [
+				'direct' => [],
+				'packaging' => []
+			];
+
+			foreach(explode(',', $eItemSummary['items']) as $item) {
+				$mapping[(int)$item] = $eItemSummary;
+			}
+
+		}
+
+		foreach($cSale as $eSale) {
+
+			foreach($eSale['ccItem'] as $cItem) {
+
+				foreach($cItem as $eItem) {
+
+					$eItemSummary = $mapping[$eItem['id']];
+
+					if($eItem['packaging'] !== NULL) {
+						$value = (int)round($eItem['packaging'] * 100);
+						$eItemSummary['distribution']['packaging'][$value] ??= 0;
+						$eItemSummary['distribution']['packaging'][$value]++;
+					} else {
+						$value = (int)round($eItem['number'] * 100);
+						$eItemSummary['distribution']['direct'][$value] ??= 0;
+						$eItemSummary['distribution']['direct'][$value]++;
+					}
+
+				}
+
+			}
+
+		}
 
 	}
 

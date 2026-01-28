@@ -197,6 +197,8 @@ new Page()
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e, selectItems: TRUE, selectPoint: TRUE);
 		$data->cItem = \selling\ItemLib::getSummaryByDate($data->eFarm, $data->e);
 
+		\selling\ItemLib::fillSummaryDistribution($data->cSale, $data->cItem);
+
 		throw new ViewAction($data);
 
 	});
