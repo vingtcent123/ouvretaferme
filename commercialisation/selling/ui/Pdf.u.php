@@ -1258,6 +1258,8 @@ class PdfUi {
 
 		$h = '<div class="pdf-sales-summary-distribution">';
 
+			arsort($eItem['distribution']['packaging']);
+
 			foreach($eItem['distribution']['packaging'] as $quantity => $number) {
 
 				if($counter++ >= $limit) {
@@ -1269,6 +1271,8 @@ class PdfUi {
 				$h .= '</span>';
 
 			}
+
+			arsort($eItem['distribution']['direct']);
 
 			foreach($eItem['distribution']['direct'] as $quantity => $number) {
 
@@ -1553,7 +1557,7 @@ class PdfUi {
 				return $e->getDeliveryNote($eFarm).'-'.str_replace('-', '', $e['deliveredAt']).'-'.$e['customer']->getName().'.pdf';
 
 			case \selling\Pdf::INVOICE:
-				return ($e['name'] ?? 'Proforma').'-'.str_replace('-', '', $e['date']).'-'.$e['customer']->getName().'.pdf';
+				return ($e['number'] ?? 'Proforma').'-'.str_replace('-', '', $e['date']).'-'.$e['customer']->getName().'.pdf';
 
 			default:
 				return '';

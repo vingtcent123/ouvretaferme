@@ -534,7 +534,7 @@ class CsvLib {
 						'bed_spacing_plants' => $spacingPlants,
 						'harvest_unit' => $harvestUnit,
 						'yield_expected_area' => NULL,
-						'yield_expected_length' => (float)$line['yield_per_bed_meter'] ? round((float)$line['yield_per_bed_meter'], 2) : NULL,
+						'yield_expected_length' => (float)$line['yield_per_bed_meter'] ? \main\CsvLib::formatFloat($line['yield_per_bed_meter']) : NULL,
 						'varieties_unit' => Cultivation::LENGTH,
 						'varieties_list' => [],
 						'varieties' => []
@@ -542,7 +542,9 @@ class CsvLib {
 				]
 			];
 
-			$import[$hash]['series']['bed_length'] += $line['length'] ? (int)$line['length'] : NULL;
+			$length = ($line['length'] ? (int)$line['length'] : 1);
+
+			$import[$hash]['series']['bed_length'] += $length;
 
 			if(
 				$line['variety'] !== '' and
@@ -553,7 +555,7 @@ class CsvLib {
 				$import[$hash]['cultivations'][0]['varieties'][] = [
 					'variety' => $line['variety'],
 					'eVariety' => new \plant\Variety(),
-					'part' => $import[$hash]['series']['bed_length'] ?: 1
+					'part' => $length
 				];
 
 			}
@@ -636,7 +638,7 @@ class CsvLib {
 
 					$varieties[] = [
 						'variety' => $cultivation[$varietyIndex],
-						'part' => $cultivation[$varietyIndex + 1],
+						'part' => (int)$cultivation[$varietyIndex + 1],
 						'eVariety' => new \plant\Variety()
 					];
 
@@ -701,14 +703,14 @@ class CsvLib {
 				'planting_date' => $line['planting_date'] ?: NULL,
 				'first_harvest_date' => $line['first_harvest_date'] ?: NULL,
 				'last_harvest_date' => $line['last_harvest_date'] ?: NULL,
-				'block_density' => (float)$line['block_density'] ? round((float)$line['block_density'], 2) : NULL,
+				'block_density' => (float)$line['block_density'] ? \main\CsvLib::formatFloat($line['block_density']) : NULL,
 				'block_spacing_rows' => (int)round((float)$line['block_spacing_rows']) ?: NULL,
-				'block_spacing_plants' => round((float)$line['block_spacing_plants'], 2) ?: NULL,
-				'bed_density' => (float)$line['bed_density'] ? round((float)$line['bed_density'], 2) : NULL,
+				'block_spacing_plants' => $line['block_spacing_plants'] ? \main\CsvLib::formatFloat($line['block_spacing_plants']) : NULL,
+				'bed_density' => $line['bed_density'] ? \main\CsvLib::formatFloat($line['bed_density']) : NULL,
 				'bed_rows' => (int)round((float)$line['bed_rows']) ?: NULL,
-				'bed_spacing_plants' => round((float)$line['bed_spacing_plants'], 2) ?: NULL,
+				'bed_spacing_plants' => $line['bed_spacing_plants'] ? \main\CsvLib::formatFloat($line['bed_spacing_plants']) : NULL,
 				'harvest_unit' => $line['harvest_unit'] ?: NULL,
-				'yield_expected_area' => (float)$line['yield_expected_area'] ? round((float)$line['yield_expected_area'], 2) : NULL,
+				'yield_expected_area' => (float)$line['yield_expected_area'] ? \main\CsvLib::formatFloat($line['yield_expected_area']) : NULL,
 				'yield_expected_length' => NULL,
 				'varieties_unit' => Cultivation::PERCENT,
 				'varieties' => $varieties
@@ -1159,7 +1161,7 @@ class CsvLib {
 
 		return [
 			'import' => $import,
-			'errorsCount' => $errorsCount + (int)$errorsGlobal['beds'] + count($errorsGlobal['harvestUnit']) + count($errorsGlobal['species']) + count($errorsGlobal['seasons']),
+			'errorsCount' => $errorsCount + (int)$errorsGlobal['beds'] + (int)$errorsGlobal['tools'] + count($errorsGlobal['harvestUnit']) + count($errorsGlobal['species']) + count($errorsGlobal['seasons']),
 			'errorsGlobal' => $errorsGlobal,
 			'infoGlobal' => $infoGlobal
 		];

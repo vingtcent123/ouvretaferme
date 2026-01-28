@@ -340,13 +340,31 @@ class CsvUi {
 
 										$varieties = [];
 
-										foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety]) {
+										foreach($cultivation['varieties'] as ['variety' => $variety, 'eVariety' => $eVariety, 'part' => $part]) {
 
 											if($eVariety->empty()) {
-												$varieties[] = \Asset::icon('exclamation-triangle').' '.encode($variety);
+												$text = \Asset::icon('exclamation-triangle').' '.encode($variety);
 											} else {
-												$varieties[] = encode($eVariety['name']);
+												$text = encode($eVariety['name']);
 											}
+
+											switch($cultivation['varieties_unit']) {
+
+												case Cultivation::PERCENT :
+													if($part !== 100) {
+														$text .= ' '.s("{value} %", $part);
+													}
+													break;
+
+												case Cultivation::LENGTH :
+													if($part !== $series['bed_length']) {
+														$text .= ' <small>'.s("{value} mL", $part).'</small>';
+													}
+													break;
+
+											}
+
+											$varieties[] = $text;
 
 										}
 
