@@ -2130,7 +2130,10 @@ class FarmUi {
 
 				}
 
-				if($selectedView === \overview\AnalyzeLib::TAB_FINANCIAL_YEAR and $eFarm['cFinancialYear']->find(fn($e) => $e->isOpen())->count() < 2) {
+				if(
+					$selectedView === \overview\AnalyzeLib::TAB_FINANCIAL_YEAR and
+					$eFarm['cFinancialYear']->find(fn($e) => $e['status'] === \account\FinancialYear::OPEN)->count() < \account\FinancialYearSetting::MAX_FINANCIAL_YEAR_OPEN
+				) {
 					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un exercice comptable").'</a> ';
 				}
 

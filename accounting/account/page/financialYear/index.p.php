@@ -7,7 +7,7 @@ new \account\FinancialYearPage(function($data) {
 	->create(function($data) {
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
-		if($data->cFinancialYearOpen->count() >= 2) {
+		if($data->cFinancialYearOpen->count() >= \account\FinancialYearSetting::MAX_FINANCIAL_YEAR_OPEN) {
 			throw new NotExpectedAction('Cannot create a new financial year as there are already '.$data->cFinancialYearOpen->count().' financial years open');
 		}
 
