@@ -368,7 +368,9 @@ class ProductUi {
 
 						if($displayAccounts) {
 							$h .= '<td class="text-end highlight-stick-right hide-md-down">';
-								if($eProduct['privateAccount']->notEmpty()) {
+								if($eProduct['private'] === FALSE) {
+									$h .= \Asset::icon('x');
+								} else if($eProduct['privateAccount']->notEmpty()) {
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
 										$value .= $eProduct['privateAccount']['class'];
 									$value .= '</span>';
@@ -394,7 +396,9 @@ class ProductUi {
 									$eAccount = new \account\Account();
 								}
 
-								if($eAccount->notEmpty()) {
+								if($eProduct['pro'] === FALSE) {
+									$h .= \Asset::icon('x');
+								} else if($eAccount->notEmpty()) {
 
 									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
 										$value .= $details;
