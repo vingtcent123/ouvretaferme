@@ -136,7 +136,7 @@ Class VatLib {
 				'vatRate',
 				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
 			])
-			->where(new \Sql('details & '.\journal\Operation::VAT_STD))
+			->whereVatRule(\journal\Operation::VAT_STD)
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ESCOMPTES_ACCOUNT_CLASS.'%'),
@@ -168,7 +168,7 @@ Class VatLib {
 				'amount', 'type',
 				'operation' => ['vatRate'],
 			])
-			->where(new \Sql('details & '.\journal\Operation::VAT_STD))
+			->whereVatRule(\journal\Operation::VAT_STD)
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_BUY_CLASS_PREFIX.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_SELL_CLASS_PREFIX.'%'),
@@ -393,12 +393,12 @@ Class VatLib {
 
 		// OPÉRATIONS NON TAXÉES
 
-		// Autre opé non imposables VAT_0 (exonéré) ou VAT_NS (non soumis)
+		// Autre opé non imposables VAT_0 (exonéré)
 		$eOperationAutreOperationsNonImposables = \journal\OperationLib::applySearch($search)
 			->select([
 				'amount' => new \Sql('ROUND(SUM(IF(type = "credit", amount, -1 * amount)))', 'float'),
 			])
-			->where(new \Sql('details & '.\journal\Operation::VAT_0.' OR details & '.\journal\Operation::VAT_NS))
+			->whereVatRule(\journal\Operation::VAT_0)
 			->whereAccountLabel('NOT LIKE', \account\AccountSetting::VAT_CLASS.'%')
 			->get();
 		$vatData['0033'] = round($eOperationAutreOperationsNonImposables['amount'] ?? 0, $precision);

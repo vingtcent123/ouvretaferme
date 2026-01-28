@@ -576,7 +576,7 @@ class OperationLib extends OperationCrud {
 			'description', 'amount', 'type', 'document', 'vatRate',
 			'asset',
 			'journalCode', 'thirdParty',
-			'vatCode', 'details',
+			'vatCode', 'vatRule',
 		];
 		if($eFinancialYear['hasVat']) {
 			$properties[] = 'vat';
@@ -598,7 +598,6 @@ class OperationLib extends OperationCrud {
 			$eOperation['financialYear'] = $eFinancialYear;
 
 			$input['accountLabel'][$index] = \account\AccountLabelLib::pad($input['accountLabel'][$index]);
-			$input['details'][$index] = (int)$input['vatCode'][$index];
 
 			$eOperation->buildIndex($properties, $input, $index);
 
@@ -673,7 +672,7 @@ class OperationLib extends OperationCrud {
 						'cashflow' => $eCashflow,
 						'paymentMethod' => $eOperation['paymentMethod'],
 						'hash' => $hash,
-						'details' => $eOperation['details'] ?? NULL,
+						'vatRule' => $eOperation['vatRule'],
 					]
 					: $eOperation->getArrayCopy();
 
@@ -842,24 +841,18 @@ class OperationLib extends OperationCrud {
 			$values['paymentMethod'] = $eOperationLinked['paymentMethod']['id'] ?? NULL;
 		}
 
-		$properties = array_merge([
-				'financialYear',
-				'account', 'accountLabel', 'description', 'document', 'documentDate',
-				'thirdParty', 'type', 'amount', 'operation',
-				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
-				'date',
-			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []);
-
-		if(isset($defaultValues['details']) and is_int($defaultValues['details'])) {
-			$properties[] = 'details';
-		}
-
 		$eOperationVat = new Operation();
 
 		$fw = new \FailWatch();
 
 		$eOperationVat->build(
-			$properties,
+			array_merge([
+				'financialYear',
+				'account', 'accountLabel', 'description', 'document', 'documentDate',
+				'thirdParty', 'type', 'amount', 'operation',
+				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
+				'date', 'vatRule'
+			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []),
 			$values,
 		);
 

@@ -165,7 +165,14 @@ class CompanyLib {
 			try {
 				new \ModuleAdministration($class)->rebuild([]);
 			} catch (\Exception $e) {
-				new \ModuleAdministration($class)->init();
+				try {
+					new \ModuleAdministration($class)->init();
+				} catch (\Exception $e) {
+					if(LIME_ENV === 'dev') {
+						d('x');
+						return;
+					}
+				}
 			}
 
 		}

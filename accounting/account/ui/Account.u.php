@@ -318,11 +318,11 @@ class AccountUi {
 
 	}
 
-	public static function getVatCodeByClass(?string $class, FinancialYear $eFinancialYear): ?int {
+	public static function getVatRuleByClass(?string $class, FinancialYear $eFinancialYear): ?string {
 
 		if($class !== NULL) {
 
-			foreach(AccountSetting::VAT_CODES_ACCOUNTS as $vatCode => $accounts) {
+			foreach(AccountSetting::VAT_RULES_ACCOUNTS as $vatCode => $accounts) {
 
 				foreach($accounts as $account) {
 
@@ -334,11 +334,7 @@ class AccountUi {
 			}
 		}
 
-		if($eFinancialYear->empty() or $eFinancialYear['hasVat']) {
-			return \journal\Operation::VAT_STD;
-		}
-
-		return \journal\Operation::VAT_NS;
+		return \journal\Operation::VAT_STD;
 
 	}
 
@@ -372,7 +368,7 @@ class AccountUi {
 			'description' => $eAccount['description'],
 			'vatRate' => $vatRate,
 			'vatClass' => $vatClass,
-			'vatCode' => self::getVatCodeByClass($eAccount['class'], $eFarm['eFinancialYear'] ?? new FinancialYear()),
+			'vatRule' => self::getVatRuleByClass($eAccount['class'], $eFarm['eFinancialYear'] ?? new FinancialYear()),
 			'farm' => $eFarm['id'],
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAccount['class'].' '.$eAccount['description'],

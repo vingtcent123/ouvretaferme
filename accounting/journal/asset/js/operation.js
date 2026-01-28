@@ -133,9 +133,6 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
 				qs('[data-index="' + index + '"][data-field="vatRate"]').removeAttribute('disabled');
 				qs('[data-index="' + index + '"][data-field="vatValue"]').removeAttribute('disabled');
 
-				qs('[data-wrapper="vatCodeLabel[' + index + ']"]').removeHide();
-
-
 			} else {
 
 				const targetVatValue = qs('[name="vatValue[' + index + ']"');
@@ -144,16 +141,11 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
 				qs('[data-index="' + index + '"][data-field="vatRate"]').setAttribute('disabled', 'disabled');
 				qs('[data-index="' + index + '"][data-field="vatValue"]').setAttribute('disabled', 'disabled');
 
-				// On laisse quand même le code TVA
-				qs('[data-wrapper="vatCode[' + index + ']"]').hide();
-				qs('[data-wrapper="vatCodeLabel[' + index + ']"]').removeHide();
-
 			}
 
 			// On réinitialise le choix du code TVA
-			qsa('select[name="vatCode[' + index + ']"] option', node => node.removeAttribute('selected'));
-			qs('select[name="vatCode[' + index + ']"] option[value="' + e.detail.vatCode + '"]').setAttribute('selected', 'selected');
-			Operation.setVatCode(index, false);
+			qsa('select[name="vatRule[' + index + ']"] option', node => node.removeAttribute('selected'));
+			qs('select[name="vatRule[' + index + ']"] option[value="' + e.detail.vatRule + '"]').setAttribute('selected', 'selected');
 
 			qs('[data-index="' + index + '"][data-field="vatRate"]').setAttribute('data-vat-rate-recommended', e.detail.vatRate || 0);
 			qs('[data-index="' + index + '"][data-field="vatRate"]').setAttribute('data-vat-class-chosen', e.detail.vatClass || 0);
@@ -534,31 +526,4 @@ class Operation {
 		OperationAmount.checkAmounts(index);
 	}
 
-	static toggleVatCode(index) {
-
-		if(qs('[data-wrapper="vatCode[' + index + ']"]').classList.contains('hide')) {
-
-			qs('[data-wrapper="vatCode[' + index + ']"]').removeHide();
-			qs('[data-wrapper="vatCodeLabel[' + index + ']"]').hide();
-
-		} else {
-
-			qs('[data-wrapper="vatCode[' + index + ']"]').hide();
-			qs('[data-wrapper="vatCodeLabel[' + index + ']"]').removeHide();
-
-		}
-	}
-
-	static setVatCode(index, toggle) {
-
-		const selectedIndex = qs('select[name="vatCode[' + index + ']"]').selectedIndex;
-		const selectedLabel = qs('select[name="vatCode[' + index + ']"]').options[selectedIndex].innerHTML;
-
-		qs('[data-vat-label][data-index="' + index + '"]').innerHTML = selectedLabel;
-
-		if(toggle) {
-			Operation.toggleVatCode(index);
-		}
-
-	}
 }
