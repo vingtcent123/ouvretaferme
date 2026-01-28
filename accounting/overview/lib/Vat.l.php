@@ -35,7 +35,7 @@ Class VatLib {
 
 		// On n'a pas trouvé de période modifiable => On prend la dernière de l'exercice
 		if($last !== NULL) {
-			return $period;
+			return last($period);
 		}
 
 		// On n'a pas trouvé de période déjà passée => On prend la première de l'exercice
@@ -67,7 +67,7 @@ Class VatLib {
 
 		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
 			$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $eFinancialYear['startDate']);
-			return [$period['from'].'|'.$period['to'] => self::getVatDeclarationParameters($eFarm, $eFinancialYear, $eFinancialYear['startDate'])];
+			return [$period['from'].'|'.$period['to'] => $period];
 		}
 
 		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
@@ -127,10 +127,9 @@ Class VatLib {
 
 	}
 
-	public static function getForCheck(\farm\Farm $eFarm, \Search $search = new \Search()): array {
+	public static function getTurnoverOperations(\Search $search = new \Search()): \Collection {
 
-		// Ligne A1 - Ventes (70* - 709 - 665) : VAT_STD
-		$cOperationVentes = \journal\OperationLib::applySearch($search)
+		return \journal\OperationLib::applySearch($search)
 			->select([
 				'compte' => new \Sql('SUBSTRING(accountLabel, 1, 2)', 'int'),
 				'vatRate',
@@ -143,6 +142,13 @@ Class VatLib {
 			)
 			->group(['compte', 'vatRate'])
 			->getCollection();
+
+	}
+
+	public static function getForCheck(\farm\Farm $eFarm, \Search $search = new \Search()): array {
+
+		// Ligne A1 - Ventes (70* - 709 - 665) : VAT_STD
+		$cOperationVentes = self::getTurnoverOperations($search);
 
 		// Regroupement par taux de TVA
 		$sales = [];
@@ -244,23 +250,24 @@ Class VatLib {
 		$year = (int)mb_substr($referenceDate, 0, 4);
 		$month = (int)mb_substr($referenceDate, 5, 2);
 
+		// On prend comme valeur de référence l'année précédente
 		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
 
-			// Date limite de déclaration pour cette année
-			$limitDate = date('Y-05-02');
+			// Date limite de déclaration pour la période de référence : relative à l'exercice courant
+			$limitDate = date('Y-05-02', strtotime($eFinancialYear));
+
+			// Dates de calcul de l'assiette d'imposition : relates à l'exercice précédent
+			$eFinancialYearLast = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
+
+			if($eFinancialYearLast->empty()) {
+				$referenceDate = date('Y-m-d', strtotime($eFinancialYear['startDate'].' - 1 YEAR'));
+			} else {
+				$referenceDate = $eFinancialYearLast['startDate'];
+			}
 
 			// On en déduit la période de déclaration
-			if(date('Y-m-d') < $limitDate) {
-
-				$periodFrom = date('Y-01-01', strtotime($limitDate.' - 1 YEAR'));
-				$periodTo = date('Y-12-31', strtotime($limitDate.' - 1 YEAR'));
-
-			} else {
-
-				$periodFrom = date('Y-01-01', strtotime($limitDate.'1 YEAR'));
-				$periodTo = date('Y-12-31', strtotime($limitDate.'1 YEAR'));
-
-			}
+			$periodFrom = date('Y-01-01', strtotime($referenceDate));
+			$periodTo = date('Y-12-31', strtotime($referenceDate));
 
 		} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
 
@@ -311,14 +318,14 @@ Class VatLib {
 						}
 					}
 
-					$date = $firstDatetime->format('Y-m-d');
+					$limitDate = $firstDatetime->format('Y-m-d');
 
 				} else {
 
 					$limitDatetime = new \DateTime($periodTo);
 					$limitDatetime->add(new \DateInterval('P3M'));
 
-					$date = $limitDatetime->format('Y-m-d');
+					$limitDate = $limitDatetime->format('Y-m-d');
 
 				}
 				break;
@@ -369,12 +376,12 @@ Class VatLib {
 				$limitDatetime = new \DateTime(mb_substr($periodTo, 0, 7).'-01');
 				$limitDatetime->add(new \DateInterval('P1M'));
 
-				$date = $limitDatetime->format('Y-m').'-'.$day;
+				$limitDate = $limitDatetime->format('Y-m').'-'.$day;
 		}
 
 		return [
 			// Date limite
-			'limit' => $date,
+			'limit' => $limitDate,
 
 			// Période déclarée
 			'from' => $periodFrom,
@@ -477,16 +484,74 @@ Class VatLib {
 			$vatData['0020'] = round(($vatData['0705'] ?? 0 - $vatData['34-number'] ?? 0), $precision);
 		}
 
-		// Taxe ADAR (calcul pour valeur annuelle)
-		$turnover = round(array_sum(array_filter($vatData, fn($index, $key) => in_array($key, ['0033', '0207-base', '0151-base', '0105-base', '0100-base', '0201-base', '0900-base', '0950-base', '0210-base', '0211-base', '0212-base', '0213-base', '0214-base', '0215-base', '0970-base', '0981-base']), ARRAY_FILTER_USE_BOTH)), $precision);
-		$associates = $eFinancialYear['associates'];
-		$UNIT_BY_ASSOCIATE_ADAR_TAX = 90;
-		$fixed = $UNIT_BY_ASSOCIATE_ADAR_TAX * $associates;
+		// Taxe ADAR (calcul pour valeur annuelle), calculée sur le dernier exercice clos
+		// Calcul :
+		// - partie forfaitaire = 90€ par exploitant $UNIT_BY_ASSOCIATE_ADAR_TAX
+		// - partie variable : 0,19% ($RATE_1_ADAR) du CA jusqu'à 370k ($THRESHOLD_ADAR_TAX), 0,05% ($RATE_2_ADAR) au delà
+		// si déclaration annuelle => tout le temps
+		// si déclaration trimestrielle => 1er trimestre de l'exercice ou mois de mars
+		// si déclaration mensuelle => 3è mois de l'exercice ou mois de mars
+		// si exercice incomplet : calculer un prorata tempris de la partie forfaitaire et du seuil de 370k selon le nombre de jours
+		$eFinancialYearLast = \account\FinancialYearLib::getPreviousFinancialYear($eFarm['eFinancialYear']);
+		$adarTax = 0;
 
-		$RATE_1_ADAR = 0.19 / 100;
-		$THRESHOLD_ADAR_TAX = 370000;
-		$RATE_2_ADAR = 0.05 / 100;
-		$adarTax = round($fixed + min($THRESHOLD_ADAR_TAX, $turnover) * $RATE_1_ADAR + max(0, $turnover - $THRESHOLD_ADAR_TAX) * $RATE_2_ADAR, $precision);
+		if($eFinancialYearLast->notEmpty()) {
+
+			$searchAdar = new \Search(['minDate' => $eFinancialYearLast['startDate'], 'maxDate' => $eFinancialYearLast['endDate'], 'financialYear' => new \account\FinancialYear()]);
+			$turnover = self::getTurnoverOperations($searchAdar)->sum('amount');
+
+			// Calcul du prorata
+			$daysYear = (strtotime($eFinancialYearLast['endDate']) - strtotime($eFinancialYearLast['endDate'].' - 1 YEAR')) / 86400;
+			$daysFinancialYear = ((strtotime($eFinancialYearLast['endDate']) - strtotime($eFinancialYearLast['startDate'])) / 86400 + 1);
+			$prorata = $daysFinancialYear / $daysYear;
+
+			// Pas de taxe ADAR l'année de création de l'exploitation
+			$isNotCreationYear = ($eFarm['startedAt'] === NULL or $eFarm['startedAt'] < $eFinancialYear['startDate']);
+
+			if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+
+				$isInPeriod = TRUE;
+
+			} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
+
+				$firstMonth = (int)mb_substr($search->get('minDate'), 6, 2);
+				$hasMarchInTrimester = in_array($firstMonth, [1, 2, 3]);
+				$isFirstTrimester = (int)mb_substr($eFinancialYearLast['startDate'], 6, 2);
+
+				if(
+					$eFinancialYearLast['startDate'] >= date('Y-04-01', strtotime($eFinancialYearLast['startDate']))
+				) {
+					$isInPeriod = $isFirstTrimester;
+				} else {
+					$isInPeriod = $hasMarchInTrimester;
+				}
+
+			} else { // Monthly
+
+				// 3è mois de l'exercice :
+				$thirdMonth = (int)mb_substr($eFinancialYear['startDate'], 6, 2) + 2;
+				// Mois en cours de déclaration
+				$currentMonth = (int)mb_substr($search['minDate'], 6, 2);
+
+				// On prend le premier encore le 3è mois et le mois de mars
+				$isInPeriod = ($currentMonth === min($thirdMonth, 3));
+
+			}
+
+			if($isNotCreationYear and $isInPeriod) {
+
+	      $associates = min(1, $eFinancialYearLast['associates']); // Le nombre d'associés du dernier exercice, au moins 1
+				$UNIT_BY_ASSOCIATE_ADAR_TAX = 90;
+				$fixed = $UNIT_BY_ASSOCIATE_ADAR_TAX * $associates * $prorata;
+
+				$RATE_1_ADAR = 0.19 / 100;
+				$THRESHOLD_ADAR_TAX = 370000 * $prorata;
+				$RATE_2_ADAR = 0.05 / 100;
+				$adarTax = round($fixed + min($THRESHOLD_ADAR_TAX, $turnover) * $RATE_1_ADAR + max(0, $turnover - $THRESHOLD_ADAR_TAX) * $RATE_2_ADAR, $precision);
+
+			}
+
+		}
 
 		$vatData['4220'] = $adarTax;
 

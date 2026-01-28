@@ -7,7 +7,7 @@ class VatDeclaration extends VatDeclarationElement {
 
 		$this->expects(['limit', 'to']);
 
-		return $this['limit'] > date('Y-m-d', strtotime('+ '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days')) and
+		return $this['limit'] > date('Y-m-d', strtotime('- '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days')) and
 			$this['to'] < date('Y-m-d');
 
 	}

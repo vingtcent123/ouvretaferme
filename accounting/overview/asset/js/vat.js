@@ -11,6 +11,15 @@ document.delegateEventListener('input', '#cerfa-3 input', function(e) {
 
 class Vat {
 
+	static scrollTo(identifier) {
+
+		const { top: mainTop} = qs('main').getBoundingClientRect();
+		const { top: trTop} = qs('[id="'+ identifier +'"]').getBoundingClientRect();
+		window.scrollTo({top: trTop - mainTop - 200, behavior: 'smooth'});
+
+		qsa('tr', node => node.classList.remove('row-highlight'));
+		qs('tr:has([id="'+ identifier +'"])').classList.add('row-highlight');
+	}
 	static getValue(cerfa, name) {
 		return parseFloat(qs('#cerfa-'+ cerfa +' [name="'+ name +'"]').value || 0);
 	}

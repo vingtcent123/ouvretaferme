@@ -42,7 +42,7 @@ class VatDeclarationUi {
 								if($eVatDeclaration->empty()) {
 									$h .= $text;
 								} else {
-									$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/declaration-de-tva?tab=cerfa&id='.$eVatDeclaration['id'].'">';
+									$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/declaration-de-tva?tab=cerfa&id='.$eVatDeclaration['id'].'">';
 										$h .= $text;
 									$h .= '</a>';
 								}

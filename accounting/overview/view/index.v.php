@@ -249,7 +249,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 			break;
 
 		case 'cerfa':
-			echo new \overview\VatUi()->getCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $data->cerfa, $data->precision, $data->vatParameters);
+			echo new \overview\VatUi()->getCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $data->cerfa, $data->precision, $data->vatParameters, $data->eFinancialYearLast);
 			break;
 
 		case 'history':

@@ -152,11 +152,13 @@ new Page(function($data) {
 				$data->tab = $tab;
 
 				$search = new Search();
+
 				// On va filtrer sur les dates de la période de TVA
 				$search->set('financialYear', new \account\FinancialYear());
 
 				$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
 				$data->vatParameters = \overview\VatLib::extractCurrentPeriod($data->allPeriods);
+				$data->eFinancialYearLast = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
 
 				$search->set('minDate', $data->vatParameters['from']);
 				$search->set('maxDate', $data->vatParameters['to']);
@@ -179,6 +181,7 @@ new Page(function($data) {
 
 					case 'cerfa':
 						$data->precision = 0;
+
 						// On tente par l'ID
 						$eVatDeclaration = \overview\VatDeclarationLib::getById(GET('id'));
 						if($eVatDeclaration->empty()) {
@@ -187,10 +190,23 @@ new Page(function($data) {
 						}
 						// On a trouvé
 						if($eVatDeclaration->notEmpty()) {
+
 							$data->cerfa = $eVatDeclaration->getArrayCopy()['data'] + ['eVatDeclaration' => $eVatDeclaration];
+							$data->vatParameters = [
+								'limit' => $eVatDeclaration['limit'],
+								'from' => $eVatDeclaration['from'],
+								'to' => $eVatDeclaration['to'],
+							];
 						} else {
+
 							// On génère
+							$search = new Search([
+								'minDate' => $data->vatParameters['from'],
+								'maxDate' => $data->vatParameters['to'],
+								'financialYear' => new \account\FinancialYear(),
+							]);
 							$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFarm, $data->eFarm['eFinancialYear'], $search, precision: $data->precision);
+
 						}
 						break;
 

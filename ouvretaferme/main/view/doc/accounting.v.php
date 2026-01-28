@@ -631,7 +631,7 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 			echo '<tr>';
 				echo '<td>'.s("Avec TVA").'</td>';
 				echo '<td>'.s("Opération imposable à la TVA au taux indiqué").'</td>';
-				echo '<td>'.s("Achat de graines, frais de livraison, vente directe").'</td>';
+				echo '<td>'.s("Achat de graines, frais de livraison, vente directe, aide ou subvention versée en contrepartie d'une opération (bien ou service)").'</td>';
 			echo '</tr>';
 			echo '<tr>';
 				echo '<td>'.s("Exonéré de TVA").'</td>';
@@ -646,7 +646,7 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 			echo '<tr>';
 				echo '<td>'.s("Hors champ d'application de la TVA").'</td>';
 				echo '<td>'.s("Opération qui n'entre pas dans le champ d'application de la TVA et ne sera pas considérée comme du chiffre d'affaires.").'</td>';
-				echo '<td>'.s("Indemnité d'assurance").'</td>';
+				echo '<td>'.s("Indemnité d'assurance, réparations consécutives à des calamités agricoles versées par l'État").'</td>';
 			echo '</tr>';
 		echo '</table>';
 
