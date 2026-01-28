@@ -177,7 +177,6 @@ class OperationUi {
 					unset($eOperationVAT['id']);
 				}
 				$eOperation['vatAmount'] = $eOperationVAT['amount'];
-				$eOperation['vatCode'] = $eOperationVAT['details'];
 				$eOperation['vatOperation'] = $eOperationVAT;
 			}
 

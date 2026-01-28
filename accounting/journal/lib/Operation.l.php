@@ -793,10 +793,7 @@ class OperationLib extends OperationCrud {
 			}
 
 			// C'est de l'auto conso => on l'enregistre
-			$update = [
-				'details' => new \Sql('IF(details IS NULL, '.Operation::SELF_CONSUMPTION.', details | '.Operation::SELF_CONSUMPTION.')')
-			];
-			Operation::model()->update($eOperation, $update);
+			Operation::model()->update($eOperation, ['isSelfConsumption' => TRUE]);
 
 			if($updateHash) {
 				$update['hash'] = $eOperation['hash'];
@@ -851,7 +848,7 @@ class OperationLib extends OperationCrud {
 				'account', 'accountLabel', 'description', 'document', 'documentDate',
 				'thirdParty', 'type', 'amount', 'operation',
 				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
-				'date', 'vatRule'
+				'date', 'vatRule',
 			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []),
 			$values,
 		);
@@ -860,10 +857,6 @@ class OperationLib extends OperationCrud {
 		if($eCashflow->notEmpty()) {
 			$eOperationVat['paymentDate'] = $eCashflow['date'];
 			$eOperationVat['paymentMethod'] = \payment\MethodLib::getById(POST('paymentMethod'));
-		}
-
-		if(isset($defaultValues['details']) and $defaultValues['details'] instanceof \Set) {
-			$eOperationVat['details'] = $defaultValues['details'];
 		}
 
 		$fw->validate();

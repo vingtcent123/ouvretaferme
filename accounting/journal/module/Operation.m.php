@@ -10,13 +10,6 @@ abstract class OperationElement extends \Element {
 	const DEBIT = 'debit';
 	const CREDIT = 'credit';
 
-	const VAT_STD_OLD = 1;
-	const VAT_0_OLD = 2;
-	const VAT_HC_OLD = 4;
-	const VAT_NS_OLD = 8;
-	const VAT_HCA_OLD = 16;
-	const SELF_CONSUMPTION = 32;
-
 	const VAT_STD = 'vat-std';
 	const VAT_0 = 'vat-0';
 	const VAT_HCA = 'vat-hca';
@@ -76,7 +69,6 @@ class OperationModel extends \ModuleModel {
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'details' => ['set', [\journal\Operation::VAT_STD_OLD, \journal\Operation::VAT_0_OLD, \journal\Operation::VAT_HC_OLD, \journal\Operation::VAT_NS_OLD, \journal\Operation::VAT_HCA_OLD, \journal\Operation::SELF_CONSUMPTION], 'null' => TRUE, 'cast' => 'set'],
 			'vatRule' => ['enum', [\journal\Operation::VAT_STD, \journal\Operation::VAT_0, \journal\Operation::VAT_HCA, \journal\Operation::VAT_HC], 'null' => TRUE, 'cast' => 'enum'],
 			'isSelfConsumption' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -85,7 +77,7 @@ class OperationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'details', 'vatRule', 'isSelfConsumption', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'vatRule', 'isSelfConsumption', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -245,10 +237,6 @@ class OperationModel extends \ModuleModel {
 
 	public function wherePaymentMethod(...$data): OperationModel {
 		return $this->where('paymentMethod', ...$data);
-	}
-
-	public function whereDetails(...$data): OperationModel {
-		return $this->where('details', ...$data);
 	}
 
 	public function whereVatRule(...$data): OperationModel {

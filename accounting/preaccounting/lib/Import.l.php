@@ -206,9 +206,9 @@ Class ImportLib {
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
 
 			if(\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::BANK_ACCOUNT_CLASS) === FALSE) {
-				$details = new \Set(\account\AccountUi::getVatCodeByClass($eAccount['class'], $eFinancialYear));
+				$vatRule = new \Set(\account\AccountUi::getVatRuleByClass($eAccount['class'], $eFinancialYear));
 			} else {
-				$details = NULL;
+				$vatRule = NULL;
 			}
 
 			$eOperation = new \journal\Operation(array_merge($eOperationBase->getArrayCopy(), [
@@ -228,7 +228,7 @@ Class ImportLib {
 				'operation' => new \journal\Operation(),
 				'paymentDate' => $date,
 				'paymentMethod' => $ePaymentMethod,
-				'details' => $details,
+				'vatRule' => $vatRule,
 			]));
 
 			// On essaie de rattacher les opérations liées (type TVA) à leurs copines
