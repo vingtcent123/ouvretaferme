@@ -1013,7 +1013,13 @@ class SaleLib extends SaleCrud {
 
 			}
 
-			if($e['paymentStatus'] !== Sale::PAID) {
+			if($e['paymentStatus'] === Sale::PAID) {
+
+				if($e->acceptSecuring()) {
+					self::fillSecured($e, $properties);
+				}
+
+			} else {
 
 				$e['paidAt'] = NULL;
 				$properties[] = 'paidAt';
@@ -1096,11 +1102,7 @@ class SaleLib extends SaleCrud {
 				$e->acceptSecuring()
 			) {
 
-				$properties[] = 'secured';
-				$properties[] = 'securedAt';
-
-				$e['secured'] = TRUE;
-				$e['securedAt'] = new \Sql('NOW()');
+				self::fillSecured($e, $properties);
 
 			}
 
@@ -1244,6 +1246,16 @@ class SaleLib extends SaleCrud {
 		}
 
 		Sale::model()->commit();
+
+	}
+
+	private static function fillSecured(Sale $e, array &$properties): void {
+
+		$properties[] = 'secured';
+		$properties[] = 'securedAt';
+
+		$e['secured'] = TRUE;
+		$e['securedAt'] = new \Sql('NOW()');
 
 	}
 
@@ -1887,13 +1899,7 @@ class SaleLib extends SaleCrud {
 		$eSale['closedBy'] = \user\ConnectionLib::getOnline();
 
 		if($eSale->acceptSecuring()) {
-
-			$eSale['secured'] = TRUE;
-			$eSale['securedAt'] = new \Sql('NOW()');
-
-			$properties[] = 'secured';
-			$properties[] = 'securedAt';
-
+			self::fillSecured($eSale, $properties);
 		}
 
 		Sale::model()
