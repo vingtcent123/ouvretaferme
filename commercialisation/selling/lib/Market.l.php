@@ -203,8 +203,6 @@ class MarketLib {
 				->count()
 		]);
 
-		SaleLib::recalculate($eSaleMarket);
-
 		Item::model()->commit();
 
 	}

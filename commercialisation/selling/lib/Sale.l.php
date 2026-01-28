@@ -1255,7 +1255,7 @@ class SaleLib extends SaleCrud {
 		$properties[] = 'securedAt';
 
 		$e['secured'] = TRUE;
-		$e['securedAt'] = new \Sql('NOW()');
+		$e['securedAt'] = Sale::model()->now();
 
 	}
 
@@ -1467,6 +1467,7 @@ class SaleLib extends SaleCrud {
 
 			if($e->isMarketSale()) {
 				MarketLib::updateSaleMarket($e['marketParent']);
+				self::recalculate($e['marketParent']);
 			}
 
 			if($e->isComposition()) {
@@ -1869,13 +1870,15 @@ class SaleLib extends SaleCrud {
 
 	public static function closeMarket(Sale $eSale): void {
 
+		$now = Sale::model()->now();
+
 		Sale::model()
 			->whereFarm($eSale['farm'])
 			->whereMarketParent($eSale)
 			->whereSecured(FALSE)
 			->update([
 				'secured' => TRUE,
-				'securedAt' => new \Sql('NOW()'),
+				'securedAt' => $now,
 			]);
 
 		Sale::model()
@@ -1884,7 +1887,7 @@ class SaleLib extends SaleCrud {
 			->whereClosed(FALSE)
 			->update([
 				'closed' => TRUE,
-				'closedAt' => new \Sql('NOW()'),
+				'closedAt' => $now,
 				'closedBy' => \user\ConnectionLib::getOnline()
 			]);
 
@@ -1895,7 +1898,7 @@ class SaleLib extends SaleCrud {
 		$properties = ['closed', 'closedAt', 'closedBy'];
 
 		$eSale['closed'] = TRUE;
-		$eSale['closedAt'] = new \Sql('NOW()');
+		$eSale['closedAt'] = Sale::model()->now();
 		$eSale['closedBy'] = \user\ConnectionLib::getOnline();
 
 		if($eSale->acceptSecuring()) {
