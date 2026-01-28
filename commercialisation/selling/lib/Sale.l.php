@@ -851,13 +851,14 @@ class SaleLib extends SaleCrud {
 	/**
 	 * Dupliquer une vente
 	 */
-	public static function duplicate(Sale $eSale): Sale {
+	public static function duplicate(Sale $eSale, bool $credit): Sale {
 
 		$properties = array_diff(
 			Sale::model()->getProperties(),
 			[
 				'id', 'createdAt', 'createdBy',
 				'closed', 'closedBy', 'closedAt',
+				'secured', 'securedAt',
 				'invoice', 'orderFormValidUntil', 'orderFormPaymentCondition',
 				// On ne conserve pas les informations de boutique
 				'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment'
@@ -888,32 +889,26 @@ class SaleLib extends SaleCrud {
 
 		// Dupliquer les items
 		$cItem = self::getItems($eSale);
+		$cItemCreate = new \Collection();
 
 		foreach($cItem as $eItem) {
 
-			$eItem['sale'] = $eSaleNew;
-			$eItem['deliveredAt'] = $eSaleNew['deliveredAt'];
+			$eItemCreate = new Item(
+				$eItem->extracts(['name', 'product', 'additional', 'origin', 'quality', 'nature', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'vatRate'])
+			);
 
-			if($eSaleNew->isMarket()) {
-				unset($eItem['price'], $eItem['priceStats']);
+			$eItemCreate['farm'] = $eSale['farm'];
+			$eItemCreate['sale'] = $eSaleNew;
+			$eItemCreate['locked'] = Item::PRICE;
+
+			if($credit) {
+				$eItemCreate['unitPrice'] *= -1;
 			}
-
-			unset($eItem['id'], $eItem['createdAt']);
-
-			$eItem['isComposition'] = $eItem['composition']->notEmpty();
-			$eItem['composition'] = new Sale();
 
 			// Requis pour récupérer les IDs
-			Item::model()->insert($eItem);
+			ItemLib::create($eItemCreate);
 
-		}
-
-		// Traitement des produits composés
-		foreach($cItem as $eItem) {
-
-			if($eItem['isComposition']) {
-				ItemLib::createIngredients($eItem);
-			}
+			$cItemCreate[] = $eItemCreate;
 
 		}
 
@@ -1256,6 +1251,18 @@ class SaleLib extends SaleCrud {
 
 		$e['secured'] = TRUE;
 		$e['securedAt'] = Sale::model()->now();
+
+	}
+
+	public static function acceptCredit(Sale $e): bool {
+
+		return (
+			$e['profile'] === Sale::SALE and
+			Item::model()
+				->whereSale($e)
+				->whereUnitPrice('<', 0)
+				->exists() === FALSE
+		);
 
 	}
 

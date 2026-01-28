@@ -2200,7 +2200,7 @@ class SaleUi {
 
 	}
 
-	public function duplicate(Sale $eSale): \Panel {
+	public function duplicate(Sale $eSale, bool $acceptCredit): \Panel {
 
 		$form = new \util\FormUi();
 
@@ -2223,20 +2223,26 @@ class SaleUi {
 
 			$h .= $form->group(
 				s("Vente d'origine"),
-				SaleUi::link($eSale, newTab: TRUE)
+				SaleUi::link($eSale, newTab: TRUE).'  '.CustomerUi::link($eSale['customer'])
 			);
 
 			$h .= $form->group(
-				s("Client"),
-				CustomerUi::link($eSale['customer'])
-			);
-
-			$h .= $form->group(
-				s("Date de la nouvelle livraison"),
+				s("Date de la nouvelle vente"),
 				$form->dynamicField($eSale, 'deliveredAt')
 			);
 
 			$h .= $this->getPreparationStatusField($form, $eSale);
+
+			if($acceptCredit) {
+
+				$h .= '<div class="util-block bg-background">';
+					$h .= $form->group(
+						s("Faire un avoir"),
+						$form->switch('credit').\util\FormUi::info(s("Lorsque vous faites un avoir, les prix de la vente dupliquée sont passés en négatif."))
+					);
+				$h .= '</div>';
+
+			}
 
 			$h .= $form->group(
 				content: $form->submit(s("Dupliquer"))

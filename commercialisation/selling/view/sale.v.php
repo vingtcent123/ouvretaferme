@@ -95,7 +95,7 @@ new AdaptativeView('updatePayment', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('duplicate', function($data, PanelTemplate $t) {
-	return new \selling\SaleUi()->duplicate($data->e);
+	return new \selling\SaleUi()->duplicate($data->e, $data->acceptCredit);
 });
 
 new AdaptativeView('updateShop', function($data, PanelTemplate $t) {

@@ -473,6 +473,8 @@ new \selling\SalePage()
 			throw new NotExpectedAction('Can duplicate');
 		}
 
+		$data->acceptCredit = \selling\SaleLib::acceptCredit($data->e);
+
 		throw new ViewAction($data);
 
 	})
@@ -488,9 +490,14 @@ new \selling\SalePage()
 
 		$fw->validate();
 
-		$data->eSaleNew = \selling\SaleLib::duplicate($data->e);
+		$credit = (
+			\selling\SaleLib::acceptCredit($data->e) and
+			POST('credit', 'bool')
+		);
 
-		throw new RedirectAction(\selling\SaleUi::url($data->eSaleNew).'?success=series\\Series::duplicated');
+		$data->eSaleNew = \selling\SaleLib::duplicate($data->e, $credit);
+
+		throw new RedirectAction(\selling\SaleUi::url($data->eSaleNew).'?success=selling\\Sale::'.($credit ? 'duplicatedCredit' : 'duplicated'));
 	})
 	->write('doDelete', function($data) {
 

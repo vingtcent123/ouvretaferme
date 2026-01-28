@@ -186,6 +186,9 @@ class AlertUi {
 			'Sale::paymentStatusUpdated' => s("L'état du paiement a bien été modifié."),
 			'Sale::readyForAccountingRefused' => s("Les ventes sont maintenant ignorées pour les exports comptables."),
 			'Sale::userCanceled' => s("La commande a bien été annulée."),
+			'Sale::duplicated' => s("La vente a bien été dupliquée ici !"),
+			'Sale::duplicatedCredit' => s("Un avoir de la vente a bien été créé ici !"),
+
 			'Stock::updated' => s("Le stock a bien été mis à jour pour ce produit."),
 
 			'Pdf::orderFormSent' => s("Le devis a bien été envoyé par e-mail au client."),
