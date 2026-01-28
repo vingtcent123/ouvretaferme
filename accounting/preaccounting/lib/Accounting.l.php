@@ -240,13 +240,22 @@ Class AccountingLib {
 
 		$dateCondition = \selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to'));
 
+		// Pas de contrainte de date dans le cas d'un import => Les factures peuvent avoir été payées l'année d'après mais on veut quand même les importer
+		// Attention, raisonnement tenable en compta de trésorerie et pas en compta d'engagement (ACCRUAL)
 		if($forImport) {
+
 			\selling\Invoice::model()
 				->whereCashflow('!=', NULL)
 				->whereAccountingHash(NULL)
 				->whereReadyForAccounting(TRUE)
-				->where('m3.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
 			;
+
+		} else {
+
+			\selling\Invoice::model()
+				->where('m1.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
+			;
+
 		}
 		return \selling\Invoice::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
@@ -258,7 +267,6 @@ Class AccountingLib {
 			->where('m1.farm = '.$eFarm['id'])
 			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
 			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
-			->where('m1.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
 		;
 
 	}

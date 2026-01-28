@@ -24,7 +24,6 @@ new Page()
 
 	$fw = new FailWatch();
 
-	$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
 	\preaccounting\ImportLib::importInvoice($data->eFarm, $eInvoice);
 
 	$fw->validate();
