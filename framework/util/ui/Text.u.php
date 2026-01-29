@@ -343,6 +343,10 @@ class TextUi {
 
 	public static function money(float $number, string $currency = 'EUR', int $precision = 2, int $dynamic = 4): string {
 
+		if($precision === 0) {
+			$dynamic = 0;
+		}
+
 		$string = (string)$number;
 		$decimal = max($precision, min($dynamic, str_contains($string, '.') ? (strlen($string) - strpos($string, '.') - 1) : 0));
 
