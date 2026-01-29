@@ -261,7 +261,7 @@ class LegalUi {
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<td>Kuupanda</td>';
-					$h .= '<td>420 – 1500 €</td>';
+					$h .= '<td>660 €</td>';
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<td>Ciboulette</td>';

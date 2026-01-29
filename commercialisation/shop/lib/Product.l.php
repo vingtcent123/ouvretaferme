@@ -847,7 +847,7 @@ class ProductLib extends ProductCrud {
 		foreach($cItem as $eItem) {
 
 			\selling\Item::model()->update($eItem, [
-				'shopProduct' => $cProduct[$eItem['product']['id']] ?? new ProductUi()
+				'shopProduct' => $cProduct[$eItem['product']['id']] ?? new Product()
 			]);
 
 		}
