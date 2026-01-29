@@ -1602,7 +1602,7 @@ class ProductUi {
 
 					$h = $form->inputGroup(
 						$form->number('privatePrice', $price, [
-							'step' => 0.01,
+							'step' => 0.0001,
 							'onfocus' => 'this.select()',
 							'disabled' => $e['private'] ? NULL : 'disabled'
 						]).
@@ -1613,7 +1613,7 @@ class ProductUi {
 
 					$h .= $form->inputGroup(
 						$form->number('privatePriceDiscount', $priceDiscount, [
-							'step' => 0.01,
+							'step' => 0.0001,
 							'disabled' => $e['private'] ? NULL : 'disabled'
 						]).
 						$form->addon($suffix).
@@ -1657,7 +1657,7 @@ class ProductUi {
 
 					$h = $form->inputGroup(
 						$form->number('proPrice', $price, [
-							'step' => 0.01,
+							'step' => 0.0001,
 							'onfocus' => 'this.select()',
 							'disabled' => $e['pro'] ? NULL : 'disabled'
 						]).
@@ -1668,7 +1668,7 @@ class ProductUi {
 
 					$h .= $form->inputGroup(
 						$form->number('proPriceDiscount', $priceDiscount, [
-							'step' => 0.01,
+							'step' => 0.0001,
 							'disabled' => $e['pro'] ? NULL : 'disabled'
 						]).
 						$form->addon($suffix).

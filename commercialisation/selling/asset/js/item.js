@@ -110,7 +110,7 @@ class Item {
 				break;
 
 			case 'unit-price' :
-				wrapper.qs('[name^="unitPrice"]').value = (baseNumber !== '' && basePrice !== '') ? ((number > 0 && packaging > 0) ? Math.round(100 * price / number / packaging) / 100 : 0) : '';
+				wrapper.qs('[name^="unitPrice"]').value = (baseNumber !== '' && basePrice !== '') ? ((number > 0 && packaging > 0) ? Math.round(10000 * price / number / packaging) / 10000 : 0) : '';
 				if(baseUnitPriceDiscount) {
 					wrapper.qs('[name^="unitPriceDiscount"]').value = '';
 				}

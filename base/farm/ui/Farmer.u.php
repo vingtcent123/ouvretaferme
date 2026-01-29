@@ -250,9 +250,11 @@ class FarmerUi {
 									$h .= '<a data-ajax="/farm/farmer:doDeleteInvite" post-id="'.$eFarmer['id'].'" class="btn btn-secondary">';
 										$h .= s("Supprimer");
 									$h .= '</a> ';
-									$h .= '<a data-ajax="/farm/invite:doExtends" post-id="'.$eFarmer['invite']['id'].'" data-confirm="'.s("Voulez-vous vraiment renvoyer un mail d'invitation à cette personne ?").'" class="btn btn-secondary">';
-										$h .= s("Renvoyer l'invitation");
-									$h .= '</a>';
+									if($eFarmer['invite']->notEmpty()) {
+										$h .= '<a data-ajax="/farm/invite:doExtends" post-id="'.$eFarmer['invite']['id'].'" data-confirm="'.s("Voulez-vous vraiment renvoyer un mail d'invitation à cette personne ?").'" class="btn btn-secondary">';
+											$h .= s("Renvoyer l'invitation");
+										$h .= '</a>';
+									}
 								$h .= '</div>';
 							$h .= '</div>';
 							$h .= \user\UserUi::getVignette($eFarmer['user'], '4rem');

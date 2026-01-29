@@ -225,7 +225,7 @@ class MarketUi {
 					$h .= '<div style="margin-bottom: 0.25rem">'.s("Prix unitaire").'</div>';
 					$h .= '<div style="margin-bottom: 0.5rem">';
 					$h .= $form->inputGroup(
-						$form->number('unitPrice['.$eItem['id'].']', attributes: ['placeholder' => $eItem['unitPrice'], 'step' => 0.01, 'class' => 'text-end']).
+						$form->number('unitPrice['.$eItem['id'].']', attributes: ['placeholder' => $eItem['unitPrice'], 'step' => 0.0001, 'class' => 'text-end']).
 						$form->addon('<small>€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</small>')
 					);
 					$h .= '</div>';
@@ -645,7 +645,7 @@ class MarketUi {
 					$eItemSale = $cItemSale->find(fn($eItemTry) => $eItemTry['name'] === $eItemMarket['name'], limit: 1, default: new Item());
 				}
 
-				$eItemMarket['unitPrice'] = round($eItemMarket['unitPrice'] - Sale::calculateDiscount($eItemMarket['unitPrice'], $discount), 2);
+				$eItemMarket['unitPrice'] = round($eItemMarket['unitPrice'] - Sale::calculateDiscount($eItemMarket['unitPrice'], $discount), 4);
 
 				$h .= $this->getSaleItem($eSale, $eItemMarket, $eItemSale);
 				$h .= new MerchantUi()->get('/selling/market:doUpdateSale', $eSale, $eItemSale->empty() ? new Item([

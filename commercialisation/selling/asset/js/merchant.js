@@ -187,7 +187,7 @@ class Merchant {
 				this.checkPropertyDisabled(inputPrice) === false
 			) {
 
-				unitPrice = Math.round(price / number / packaging * 100) / 100;
+				unitPrice = Math.round(price / number / packaging * 10000) / 10000;
 				inputUnitPrice.value = unitPrice;
 				this.setEntryValue(this.current.dataset.item, 'unit-price', unitPrice);
 

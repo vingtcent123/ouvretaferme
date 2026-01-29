@@ -79,8 +79,8 @@ Grid:
   customer: ?selling\Customer
   group: ?selling\CustomerGroup
   product: selling\Product
-  price: decimal(8, 2, 0.0, null)
-  priceInitial: ?decimal(8, 2, 0.0, null)
+  price: decimal(10, 4, 0.0, null)
+  priceInitial: ?decimal(10, 4, 0.0, null)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   INDEX: [
@@ -172,8 +172,8 @@ Item:
   parent: ?selling\Item
   packaging: ?decimal(6, 2, 0.01, null)
   unit: ?selling\Unit
-  unitPrice: decimal(8, 2)
-  unitPriceInitial: ?decimal(8, 2)
+  unitPrice: decimal(10, 4)
+  unitPriceInitial: ?decimal(10, 4)
   discount: int8(0, 100) = 0
   number: ?decimal(8, 2)
   price: ?decimal(8, 2)
@@ -258,12 +258,12 @@ Product:
   farm: farm\Farm
   unit: ?selling\Unit = PHP(\selling\SellingSetting::UNIT_DEFAULT_ID)
   private: bool = TRUE
-  privatePrice: ?decimal(8, 2)
-  privatePriceInitial: ?decimal(8, 2)
+  privatePrice: ?decimal(10, 4)
+  privatePriceInitial: ?decimal(10, 4)
   privateStep: ?decimal(6, 2, 0.01, null)
   pro: bool = TRUE
-  proPrice: ?decimal(8, 2)
-  proPriceInitial: ?decimal(8, 2)
+  proPrice: ?decimal(10, 4)
+  proPriceInitial: ?decimal(10, 4)
   proPackaging: ?float32(0.01, null)
   proStep: ?decimal(6, 2, 0.01, null)
   vat: int16(1, null)

@@ -410,7 +410,7 @@ class GridUi {
 
 					$h = $form->inputGroup(
 						$form->number('price', $price, [
-							'step' => 0.01,
+							'step' => 0.0001,
 							'onrender' => 'this.focus();',
 							'onfocus' => 'this.select()'
 						]).

@@ -28,7 +28,7 @@ class MerchantUi {
 
 		$format = fn($property, $value, $defaultPrecision = 2) => match($defaultPrecision) {
 			0 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, NULL) : '-',
-			2 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, 2) : '-,--'
+			2, 4 => ($value or $property === Item::UNIT_PRICE) ? \util\TextUi::number($value ?: 0, $defaultPrecision) : '-,--'
 		};
 
 		$unitInteger = match($eSale['farm']->getConf('marketSaleDefaultDecimal')) {
@@ -119,7 +119,7 @@ class MerchantUi {
 							$h .= '<div class="merchant-field-container">';
 								$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="'.Item::UNIT_PRICE.'" class="merchant-field">';
 									$h .= $form->text('unitPrice['.$eItem['id'].']', $hasDiscountPrice ? $eItem['unitPriceInitial'] : $eItem['unitPrice']);
-									$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $eItem['unitPrice']).'</div>';
+									$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price">'.$format(Item::UNIT_PRICE, $eItem['unitPrice'], 4).'</div>';
 								$h .= '</a>';
 								$h .= new PriceUi()->getDiscountLink($eItem['id'], hasDiscountPrice: $hasDiscountPrice, onHide: 'function () { Merchant.recalculate(); }');
 							$h .= '</div>';
@@ -135,7 +135,7 @@ class MerchantUi {
 							$h .= '</div>';
 							$h .= '<a onclick="Merchant.keyboardToggle(this)" data-property="unit-price-discount" class="merchant-field'.$unitPriceDiscountClass.'" data-price-discount="'.$eItem['id'].'">';
 								$h .= $form->text('unitPriceDiscount['.$eItem['id'].']', $hasDiscountPrice ? $eItem['unitPrice'] : NULL);
-								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price-discount">'.$format(Item::UNIT_PRICE, $eItem['unitPrice']).'</div>';
+								$h .= '<div class="merchant-value" id="merchant-'.$eItem['id'].'-unit-price-discount">'.$format(Item::UNIT_PRICE, $eItem['unitPrice'], 4).'</div>';
 							$h .= '</a>';
 							$h .= '<div class="merchant-unit'.$unitPriceDiscountClass.'" data-property="unit-price-discount" data-price-discount="'.$eItem['id'].'">';
 								$h .= '€ '.\selling\UnitUi::getBy($eItem['unit'], short: TRUE);

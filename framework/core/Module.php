@@ -528,6 +528,27 @@ abstract class ModuleModel {
 	}
 
 	/**
+	 * Get decimal of an element property
+	 *
+	 * @return array
+	 */
+	public function getPropertyDecimal(string $property) {
+
+		if($this->hasProperty($property) === FALSE) {
+			throw new Exception('Property '.$this->module.'::'.$property.' does not exist');
+		}
+
+		if($this->properties[$property][0] === 'decimal') {
+			return $this->properties[$property]['decimal'];
+		} else if(str_starts_with($this->properties[$property][0], 'float')) {
+			return 2;
+		} else {
+			return NULL;
+		}
+
+	}
+
+	/**
 	 * Get the enumeration of an element property
 	 *
 	 * @return array

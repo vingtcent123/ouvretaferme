@@ -864,8 +864,8 @@ class CsvLib {
 				'reference' => $line['reference'] ?: NULL,
 				'type' => $line['type'] ?: NULL,
 				'target' => trim($line['target']) ? preg_split('/\s*,\s*/', trim($line['target'])) : [],
-				'price' => ($line['price'] !== '') ? \main\CsvLib::formatFloat($line['price']) : NULL,
-				'price_discount' => ($line['price_discount'] !== '') ? \main\CsvLib::formatFloat($line['price_discount']) : NULL,
+				'price' => ($line['price'] !== '') ? \main\CsvLib::formatFloat($line['price'], 4) : NULL,
+				'price_discount' => ($line['price_discount'] !== '') ? \main\CsvLib::formatFloat($line['price_discount'], 4) : NULL,
 			];
 
 		}

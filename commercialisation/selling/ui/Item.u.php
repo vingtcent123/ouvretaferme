@@ -1576,7 +1576,7 @@ class ItemUi {
 				$d->default = fn(Item $e) => $e['unitPriceInitial'] ?? $e['unitPrice'] ?? '';
 
 				$d->attributes = [
-					'step' => 0.01,
+					'step' => 0.0001,
 					'onfocus' => 'this.select()',
 					'oninput' => 'Item.recalculateLock(this)'
 				];
@@ -1596,7 +1596,7 @@ class ItemUi {
 
 					$h .= $form->inputGroup(
 						$form->number(str_replace('unitPrice', 'unitPriceDiscount', $d->name), $unitPriceDiscount, [
-							'step' => 0.01,
+							'step' => 0.0001,
 							'oninput' => 'Item.recalculateLock(this)'
 						]).
 						$form->addon($unit).

@@ -45,8 +45,8 @@ class GridModel extends \ModuleModel {
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'group' => ['element32', 'selling\CustomerGroup', 'null' => TRUE, 'cast' => 'element'],
 			'product' => ['element32', 'selling\Product', 'cast' => 'element'],
-			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => 999999.99, 'cast' => 'float'],
-			'priceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.0, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'price' => ['decimal', 'digits' => 10, 'decimal' => 4, 'min' => 0.0, 'max' => 999999.9999, 'cast' => 'float'],
+			'priceInitial' => ['decimal', 'digits' => 10, 'decimal' => 4, 'min' => 0.0, 'max' => 999999.9999, 'null' => TRUE, 'cast' => 'float'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 		]);

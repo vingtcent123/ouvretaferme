@@ -2030,7 +2030,7 @@ class ProductUi {
 					return new \selling\PriceUi()->getDiscountLink($e['product']['id'], hasDiscountPrice: $e['priceInitial'] !== NULL);
 				};
 				$d->attributes = [
-					'onfocus' => 'this.select()'
+					'onfocus' => 'this.select()',
 				];
 				break;
 
@@ -2043,7 +2043,7 @@ class ProductUi {
 					return $form->number(
 						$this->name,
 						($eProduct['priceInitial'] ?? NULL) !== NULL ? $eProduct['price'] : NULL,
-						['step' => 0.01],
+						['step' => 0.0001],
 					);
 				};
 				$d->groupLabel = FALSE;

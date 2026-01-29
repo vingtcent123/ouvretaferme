@@ -341,12 +341,15 @@ class TextUi {
 
 	}
 
-	public static function money(float $number, string $currency = 'EUR', int $precision = 2): string {
+	public static function money(float $number, string $currency = 'EUR', int $precision = 2, int $dynamic = 4): string {
+
+		$string = (string)$number;
+		$decimal = max($precision, min($dynamic, str_contains($string, '.') ? (strlen($string) - strpos($string, '.') - 1) : 0));
 
 		$numberFormatter = new \NumberFormatter(\L::getLang(), \NumberFormatter::CURRENCY);
-		$numberFormatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, $precision);
+		$numberFormatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, $decimal);
 
-		return $numberFormatter->formatCurrency(round($number, $precision), $currency);
+		return $numberFormatter->formatCurrency($number, $currency);
 
 	}
 

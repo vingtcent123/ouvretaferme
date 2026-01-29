@@ -74,8 +74,8 @@ Product:
   product: ?selling\Product
   packaging: ?decimal(6, 2, 0.01, null)
   promotion: enum(NONE, BASIC, NEW, WEEK, MONTH) = NONE
-  price: decimal(8, 2)
-  priceInitial: ?decimal(8, 2)
+  price: decimal(10, 4)
+  priceInitial: ?decimal(10, 4)
   limitMin: ?decimal(8, 2, 0.0, null)
   limitMax: ?decimal(8, 2, 0.0, null)
   limitCustomers: json = PHP([])
