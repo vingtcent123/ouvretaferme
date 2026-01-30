@@ -629,16 +629,21 @@ class FormUi {
 		} else if(str_starts_with($type, 'float') or $type === 'decimal') {
 
 			if($e->model()->hasProperty($property)) {
+
 				[$min, $max] = $e->model()->getPropertyRange($property);
+
 				$attributes += [
 					'min' => $min,
-					'max' => $max
+					'max' => $max,
+					'step' => (string)(1 / pow(10, $e->model()->getPropertyDecimal($property)))
 				];
-			}
+			} else {
 
-			$attributes += [
-				'step' => (string)(1 / pow(10, $e->model()->getPropertyDecimal($property)))
-			];
+				$attributes += [
+					'step' => '0.01'
+				];
+
+			}
 
 			return $this->number($name, $default, $attributes);
 
