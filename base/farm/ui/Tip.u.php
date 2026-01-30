@@ -397,6 +397,52 @@ class TipUi {
 					'button' => ['/doc/accounting:bank#cashflow-manage', \Asset::icon('person-raised-hand').' '.s("Lire l'aide sur le rattachement des opérations bancaires")],
 				];
 
+			case 'accounting-financial-year-created' :
+
+				$importButton = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:import" class="btn btn-sm btn-primary btn-md">';
+					$importButton .= s("Importer un fichier FEC");
+				$importButton .= '</a>';
+
+				$h = '<p><b>'.s("Et maintenant ?").'</b></p>';
+
+				$h .= '<ul>';
+
+					if($eFarm['cFinancialYear']->empty()) {
+						$h .= '<li>'.s("Si c'est le <b>premier exercice de votre exploitation</b>, vous pouvez dès à présent réaliser le bilan d'ouverture : aucune écriture ne sera créée.").'</li>';
+					}
+
+					if($eFarm['eFinancialYear']->acceptImportFec()) {
+						$h .= '<li>';
+							$h .= s("Si vous avez déjà créé des <b>écritures dans un autre logiciel comptable</b> pour cet exercice, vous pouvez les importer sur {siteName} en cliquant sur {button}.", ['button' => $importButton]);
+						$h .= '</li>';
+					}
+
+					if($eFarm['eFinancialYear']->acceptOpen() and $eFarm['cFinancialYear']->empty() === FALSE) {
+							$openButton = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFarm['eFinancialYear']['id'].'">';
+								$openButton .= s("bilan d'ouverture");
+							$openButton .= '</a>';
+						$h .= '<li>'.s("Réalisez le {button} pour reprendre le bilan de l'exercice précédent", ['button' => $openButton]).'</li>';
+					}
+
+					$h .= '</ul>';
+
+				$h .= '<p><b>'.s("Et après ?").'</b></p>';
+
+				$h .= '<ul>';
+
+					$h .= '<li><a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer">'.s("Importez vos factures rapprochées").'</a></li>';
+					$h .= '<li><a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal">'.s("Enregistrez des écritures comptables").'</a></li>';
+
+				$h .= '</ul>';
+
+				return [
+					'icon' => \Asset::icon('journal-plus'),
+					'title' => s("Votre exercice comptable est maintenant créé !"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting:start', \Asset::icon('person-raised-hand').' '.s("Lire l'aide sur les exercices comptables")],
+				];
+
 			default:
 				throw new \Exception('Invalid tip \''.$fqn.'\'');
 

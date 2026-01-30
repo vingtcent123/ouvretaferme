@@ -8,6 +8,20 @@ new Page(function($data) {
 })
 	->get(['/etats-financiers/', '/etats-financiers/{view}'], function($data) {
 
+		$data->financialYearCreated = (GET('success') === 'account\FinancialYear::created');
+
+		$search = new Search([
+			'from' => $data->eFarm['eFinancialYear']['startDate'],
+			'to' => $data->eFarm['eFinancialYear']['endDate'],
+		]);
+
+		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
+
+		$data->eFarm['nInvoiceToImport'] = \preaccounting\AccountingLib::countInvoices($data->eFarm, $search);
+
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-financial-year-created');
+		$data->tipNavigation = 'inline';
+
 		$fqn = array_column(\farm\FarmUi::getAccountingFinancialsCategories($data->eFarm['eFinancialYear']), 'fqn');
 		if(in_array(GET('view'), $fqn) === FALSE) {
 			$data->fqn = first($fqn);

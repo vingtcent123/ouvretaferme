@@ -70,7 +70,7 @@ class FinancialYearUi {
 
 		if(GET('message') === 'FinancialYear::toCreate') {
 			$h .= '<div class="util-info">';
-				$h .= s("Avant de démarrer, votre ferme a besoin d'un premier exercice comptable. Vous pouvez le créer ci-dessous :");
+				$h .= s("Avant de démarrer, votre ferme a besoin d'un premier exercice comptable. Vous pouvez le créer dès maintenant !");
 			$h .= '</div>';
 		}
 
