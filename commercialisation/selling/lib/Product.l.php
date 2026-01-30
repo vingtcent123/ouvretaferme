@@ -438,9 +438,15 @@ class ProductLib extends ProductCrud {
 					->exists()
 			) {
 
-				\shop\Product::model()
+				$cProductShop = \shop\Product::model()
+					->select(['id', 'catalog', 'parent'])
 					->whereProduct($e)
-					->delete();
+					->getCollection();
+
+				foreach($cProductShop as $eProductShop) {
+					\shop\ProductLib::deleteCollection($cProductShop);
+				}
+
 
 				Product::model()->update($e, [
 					'status' => Product::DELETED

@@ -785,7 +785,7 @@ class ProductLib extends ProductCrud {
 
 	public static function delete(Product $eProduct): void {
 
-		$eProduct->expects(['id', 'catalog']);
+		$eProduct->expects(['id', 'parent', 'catalog']);
 
 		Product::model()->beginTransaction();
 
