@@ -10,17 +10,21 @@ new Page(function($data) {
 
 		$data->financialYearCreated = (GET('success') === 'account\FinancialYear::created');
 
-		$search = new Search([
-			'from' => $data->eFarm['eFinancialYear']['startDate'],
-			'to' => $data->eFarm['eFinancialYear']['endDate'],
-		]);
+		if($data->financialYearCreated) {
 
-		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
+			$search = new Search([
+				'from' => $data->eFarm['eFinancialYear']['startDate'],
+				'to' => $data->eFarm['eFinancialYear']['endDate'],
+			]);
 
-		$data->eFarm['nInvoiceToImport'] = \preaccounting\AccountingLib::countInvoices($data->eFarm, $search);
+			\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
 
-		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-financial-year-created');
-		$data->tipNavigation = 'inline';
+			$data->eFarm['nInvoiceToImport'] = \preaccounting\AccountingLib::countInvoices($data->eFarm, $search);
+
+			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-financial-year-created');
+			$data->tipNavigation = 'inline';
+
+		}
 
 		$fqn = array_column(\farm\FarmUi::getAccountingFinancialsCategories($data->eFarm['eFinancialYear']), 'fqn');
 		if(in_array(GET('view'), $fqn) === FALSE) {
