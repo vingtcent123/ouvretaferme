@@ -78,7 +78,6 @@ class AlertUi {
 			'Sale::orderMin.check' => s("Vous n'avez pas atteint le minimum de commande demandé pour ce point de livraison !"),
 			'Sale::address.check' => s("Nous avons besoin de votre adresse pour vous livrer à domicile !"),
 			'Sale::products.check' => s("Vous ne pouvez pas continuer car votre panier est vide !"),
-			'Sale::preparationStatus.market' => s("Vous ne pouvez pas changer l'état de cette vente car il y a des commandes en cours."),
 			'Sale::customer.market' => s("Le logiciel de caisse n'est disponible que pour les points de vente aux particuliers."),
 			'Sale::paidAt.future' => s("Vous ne pouvez pas indiquer une date de paiement dans le futur"),
 			'Sale::deliveredAt.check' => s("La date de vente est obligatoire."),

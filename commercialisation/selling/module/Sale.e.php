@@ -995,48 +995,17 @@ class Sale extends SaleElement {
 							return FALSE;
 						}
 
-						$this['oldPreparationStatus'] = $this['preparationStatus'];
-
 						return match($preparationStatus) {
-							Sale::DRAFT => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
+							Sale::DRAFT => in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING]),
 							Sale::CONFIRMED => $this->acceptStatusConfirmed(),
-							Sale::SELLING => in_array($this['oldPreparationStatus'], $this->isMarket() ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
-							Sale::PREPARED => in_array($this['oldPreparationStatus'], $this->isMarketSale() ? [] : [Sale::CONFIRMED]),
+							Sale::SELLING => in_array($this['preparationStatus'], $this->isMarket() ? [Sale::CONFIRMED, Sale::DELIVERED] : []),
+							Sale::PREPARED => in_array($this['preparationStatus'], $this->isMarketSale() ? [] : [Sale::CONFIRMED]),
 							Sale::CANCELED => $this->acceptStatusCanceled(),
 							Sale::DELIVERED => $this->acceptStatusDelivered(),
 							default => FALSE
 						};
 
 				}
-
-			})
-			->setCallback('preparationStatus.market', function(?string $preparationStatus) use ($p): bool {
-
-				if($p->for === 'create') {
-					return TRUE;
-				}
-
-				$this->expects(['farm', 'profile']);
-
-				if($this->isMarket() === FALSE) {
-					return TRUE;
-				}
-
-				// On vérifie qu'il n'y a pas de vente active pour autoriser à revenir en arrière dans le statut
-				if(
-					$this['oldPreparationStatus'] === Sale::SELLING and
-					in_array($preparationStatus, [Sale::CANCELED, Sale::DRAFT, Sale::CONFIRMED])
-				) {
-
-					return Sale::model()
-						->whereFarm($this['farm'])
-						->wherePreparationStatus('IN', [Sale::DELIVERED, Sale::DRAFT])
-						->whereMarketParent($this)
-						->exists() === FALSE;
-
-				}
-
-				return TRUE;
 
 			})
 			->setCallback('deliveredAt.check', function(string &$date) use($p): bool {

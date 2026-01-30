@@ -215,7 +215,6 @@ class MarketLib {
 
 		Sale::model()->beginTransaction();
 
-			$eSale['oldPreparationStatus'] = Sale::SELLING;
 			$eSale['preparationStatus'] = Sale::DELIVERED;
 
 			SaleLib::update($eSale, ['preparationStatus']);
@@ -316,7 +315,6 @@ class MarketLib {
 
 		$properties = ['preparationStatus', 'paymentStatus', 'paidAt'];
 
-		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = Sale::DELIVERED;
 		$eSale['paymentStatus'] = $paymentStatus;
 		$eSale['paidAt'] = ($paymentStatus === Sale::PAID) ? currentDate() : NULL;

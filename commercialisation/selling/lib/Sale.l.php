@@ -942,9 +942,7 @@ class SaleLib extends SaleCrud {
 
 		if($e['preparationStatus'] === Sale::BASKET) {
 
-			$e['oldPreparationStatus'] = Sale::BASKET;
 			$e['preparationStatus'] = Sale::DRAFT;
-
 			$properties[] = 'preparationStatus';
 
 		}
@@ -957,11 +955,21 @@ class SaleLib extends SaleCrud {
 
 		Sale::model()->beginTransaction();
 
-		$updatePreparationStatus = (
-			in_array('preparationStatus', $properties) and
-			$e->expects(['oldPreparationStatus']) and
-			($e['oldPreparationStatus'] !== $e['preparationStatus'])
-		);
+		if(in_array('preparationStatus', $properties)) {
+
+			$e['oldPreparationStatus'] = Sale::model()
+				->whereId($e)
+				->getValue('preparationStatus');
+
+			if($e['oldPreparationStatus'] === NULL) {
+				throw new \Exception('Sale #'.$e['id'].' does not exist');
+			}
+
+			$updatePreparationStatus = ($e['oldPreparationStatus'] !== $e['preparationStatus']);
+
+		} else {
+			$updatePreparationStatus = FALSE;
+		}
 
 		$updatePayments = array_delete($properties, 'paymentMethod');
 
@@ -1282,7 +1290,6 @@ class SaleLib extends SaleCrud {
 			return;
 		}
 
-		$e['oldPreparationStatus'] = $e['preparationStatus'];
 		$e['preparationStatus'] = $newStatus;
 
 		self::update($e, ['preparationStatus']);

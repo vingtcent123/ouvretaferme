@@ -5,6 +5,8 @@ new AdaptativeView('/vente/{id}/marche', function($data, MarketTemplate $t) {
 
 		if($data->e['closed']) {
 			echo s("Cette vente est clôturée !");
+		} else if($data->e['preparationStatus'] === \selling\Sale::CANCELED) {
+			echo s("Vous avez annulé cette vente.");
 		} else {
 			echo OTF_DEMO ? s("Bienvenue sur le logiciel de caisse de démonstration, à vous de jouer !") : s("Bienvenue sur le logiciel de caisse, à vous de jouer !");
 		}
@@ -16,6 +18,18 @@ new AdaptativeView('/vente/{id}/marche', function($data, MarketTemplate $t) {
 		echo '<div class="util-block-help mt-2">';
 			echo '<p>'.s("Vous n'avez pas encore ajouté d'article à votre vente, vous risquez de décevoir vos clients !").'</p>';
 			echo '<a href="'.\selling\SaleUi::urlMarket($data->e).'/articles" class="btn btn-secondary">'.s("Ajouter des articles").'</a>';
+		echo '</div>';
+
+	}
+
+	if(
+		$data->ccSale->empty() and
+		$data->e['closed'] === FALSE and
+		$data->e['preparationStatus'] !== \selling\Sale::CANCELED
+	) {
+
+		echo '<div class="text-center mt-2">';
+			echo '<a data-ajax="/selling/sale:doUpdateCanceledCollection" post-ids="'.$data->e['id'].'" data-confirm="'.s("Voulez-vous annuler cette vente avec le logiciel de caisse ?").'" class="btn btn-outline-primary">'.s("Annuler cette vente").'</a>';
 		echo '</div>';
 
 	}

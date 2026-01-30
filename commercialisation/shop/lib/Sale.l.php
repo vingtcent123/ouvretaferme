@@ -339,7 +339,6 @@ class SaleLib {
 
 	public static function changePaymentForShop(\selling\Sale $eSale): void {
 
-		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::BASKET;
 
 		\selling\SaleLib::update($eSale, ['preparationStatus']);
@@ -390,7 +389,6 @@ class SaleLib {
 						$eSaleExisting->merge([
 							'shopUpdated' => TRUE,
 							'cItem' => $cItem,
-							'oldPreparationStatus' => $eSaleExisting['preparationStatus'],
 						] + $eSaleReference->extracts($properties));
 
 						$cItem->setColumn('sale', $eSaleExisting);
@@ -553,7 +551,6 @@ class SaleLib {
 			'customer'
 		]);
 
-		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 
 		if($eMethod->empty()) {
@@ -669,7 +666,6 @@ class SaleLib {
 			'amountIncludingVat' => $eSale['priceIncludingVat'],
 		]);
 
-		$eSale['oldPreparationStatus'] = $eSale['preparationStatus'];
 		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
 
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
