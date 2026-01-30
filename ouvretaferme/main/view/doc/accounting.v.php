@@ -31,7 +31,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 	echo '<h2>'.s("Tutoriels en vidéo").'</h2>';
 	echo '<p>'.s("Des tutoriels vidéos sont également disponibles sur Youtube. Cliquez sur le petit menu en haut à droite de la vidéo pour voir le sommaire des vidéos disponibles.").'</p>';
-	echo '<iframe width="100%" src="https://www.youtube.com/embed/videoseries?si=M_vGvQ9gfoS6PwdI&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+	echo '<iframe width="100%" style="min-height: 550px;" src="https://www.youtube.com/embed/videoseries?si=M_vGvQ9gfoS6PwdI&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
 	echo '</div>';
 
 
@@ -467,10 +467,21 @@ new AdaptativeView('start', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Importer un fichier FEC").'</h2>';
 
-		echo '<p>'.s("Si vous souhaitez importer vos anciens exercices comptables, c'est tout à fait possible.").'</p>';
-
-		echo '<p>'.s("Pour ce faire, créez votre exercice puis, dans la liste des exercices comptables et en regard de l'exercice à importer, cliquez sur <b>Importer un fichier FEC</b>.").'</p>';
-		echo '<p>'.s("Vos données seront importées dans votre comptabilité !").'</p>';
+		echo '<p>'.s("Pour importer des exercices précédents, créez votre exercice puis cliquez sur <b>Importer un fichier FEC</b>.").'</p>';
+		echo '<p>'.s("{siteName} vous demandera de paramétrer des correspondances entre :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("vos anciens journaux et ceux qui sont présents sur {siteName}").'</li>';
+			echo '<li>'.s("vos anciens numéros de compte non retrouvés et ceux qui sont présents sur {siteName}").'</li>';
+		echo '</ul>';
+		echo '<p><b>'.s("Pourquoi configurer des numéros de compte ?").'</b></p>';
+		echo '<p>'.s("Les Plan Comptable Général et Plan Compable Agricole ont changé en 2025. {siteName} est basé sur cette version, c'est pourquoi certains comptes n'existent pas sur {siteName} alors que vous vous en serviez avant. Vous pouvez les recréer selon vos besoins, mais attention de ne pas vous en servir sur vos futurs exercices !").'</p>';
+		echo '<p><b>'.s("Clôturé ou Ouvert ?").'</b></p>';
+		echo '<p>'.s("Lorsque vous importez un fichier FEC, vous pouvez choisir de l'importer comme \"clôturé\" ou \"ouvert\". Voici les impacts de ce choix :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("un exercice importé et qui restera <b>ouvert</b> après l'import vous permettra : de continuer à ajouter des écritures dedans, et surtout à réaliser le bilan de clôture (toutes les opérations de fin d'exercice comme les amortissements etc.).").'</li>';
+			echo '<li>'.s("un exercice importé <b>fermé</b> ne sera plus modifiable après l'import").'</li>';
+		echo '</ul>';
+		echo '<p>'.s("Dans les deux cas, l'ouverture de l'exercice suivant reprendra toutes les opérations d'ouverture (écriture du résultat, affectation, reports à nouveau etc.)").'</p>';
 
 	echo '</div>';
 
@@ -612,12 +623,12 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:vat';
 
-	$t->title = s("Les règles de TVA sur {siteName}");
+	$t->title = s("La TVA sur {siteName}");
 	$t->subTitle = '';
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Maîtriser les différentes règles de TVA").'</h2>';
+		echo '<h2>'.s("Écritures comptables & Règles de TVA").'</h2>';
 
 		echo '<p>'.s("Afin de calculer au plus juste la déclaration de TVA, les écritures doivent être ventilées selon la règle de TVA qui leur correspond. Cela permet à l'administration fiscale de vérifier le chiffre d'affaires et les seuils des diférents régimes.").'</p>';
 		echo '<p>'.s("La règle renseignée lors de l'enregistrement des écritures sera utilisée pour les calculs de la déclaration de TVA.").'</p>';
@@ -650,7 +661,22 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 			echo '</tr>';
 		echo '</table>';
 
-	echo '<br />';
+	echo '</div>';
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Déclaration de TVA").'</h2>';
+
+		echo '<p>'.s("{siteName} vous permet de vérifier plus facilement la TVA que vous avez collectée et la TVA déductible de la période concernée.").'</p>';
+		echo '<p>'.s("Vous pouvez ainsi vérifier la proposition de déclaration de {siteName} compte tenu des écritures comptables que vous avez enregistrées sur cette période.").'</p>';
+
+		echo '<h3>'.s("Compléter ma déclaration").'</h3>';
+
+		echo '<p>'.s("Vous pouvez modifier le formulaire de la déclaration {daysBefore} jours avant la date de déclaration limite et jusqu'à {daysAfter} jours après cette date.", ['daysBefore' => \overview\VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS, 'daysAfter' => \overview\VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS]).'</p>';
+
+		echo '<p>'.s("Une fois que vous aurez terminé votre déclaration, enregistrez-la sur {siteName} puis vous pourrez ensuite l'enregistrer comme déclarée. <b>N'oubliez pas de la télédéclarer sur <link>le site des impôts</link></b> ! Vous pourrez ensuite visualiser les écritures proposées par {siteName} à enregistrer dans votre livre-journal, compte-tenu de la déclaration que vous avez validée.", ['link' => '<a href="https://impots.gouv.fr">']).'</p>';
+
+	echo '</div>';
 	echo '<br /><br />';
 
 });
