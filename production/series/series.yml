@@ -179,6 +179,9 @@ Slice:
   partLength: ?int32(0, null)
   partPlant: ?int32(0, null)
   partTray: ?float32(0.0, null)
+  INDEX: [
+    ["series"]
+  ]
   UNIQUE: [
     ["cultivation", "variety"]
   ]

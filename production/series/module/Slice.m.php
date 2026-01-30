@@ -65,6 +65,10 @@ class SliceModel extends \ModuleModel {
 			'variety' => 'plant\Variety',
 		];
 
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['series']
+		]);
+
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['cultivation', 'variety']
 		]);
