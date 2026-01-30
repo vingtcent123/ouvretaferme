@@ -209,7 +209,7 @@ class SeriesUi {
 		$h = '<div id="series-selector-'.$eCultivation['id'].'" class="series-selector-cultivation '.($eSeries['status'] === Series::CLOSED ? 'series-selector-closed' : '').'" data-series="'.$eSeries['id'].'" data-cultivation="'.$eCultivation['id'].'" data-start="'.$startTs.'" data-stop="'.$stopTs.'" data-status="'.$eSeries['status'].'">';
 			$h .= '<div class="series-selector-header" onclick="SeriesSelector.select('.$eCultivation['id'].')">';
 				$h .= '<a href="'.SeriesUi::url($eSeries).'" target="_blank">';
-					$h .= '<span class="series-selector-name">'.encode($eSeries['name']).'</span>';
+					$h .= '<span class="series-selector-name">'.SeriesUi::name($eSeries).'</span>';
 					$h .= \sequence\CropUi::start($eCultivation, \farm\FarmSetting::$mainActions);
 					if($eSeries['status'] === Series::CLOSED) {
 						$h .= ' '.\Asset::icon('lock-fill');
