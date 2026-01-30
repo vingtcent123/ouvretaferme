@@ -74,7 +74,7 @@ class VatDeclarationUi {
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								if($eVatDeclaration->empty()) {
+								if($eVatDeclaration->empty() or isset($eVatDeclaration['data']['0705']) === FALSE) {
 									$h .= '-';
 								} else {
 									if((int)$eVatDeclaration['data']['0705'] > 0) {
@@ -85,7 +85,7 @@ class VatDeclarationUi {
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								if($eVatDeclaration->empty()) {
+								if($eVatDeclaration->empty() or isset($eVatDeclaration['data']['0705']) === FALSE) {
 									$h .= '-';
 								} else {
 									if((int)$eVatDeclaration['data']['0705'] > 0) {
