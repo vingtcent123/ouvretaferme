@@ -261,11 +261,3 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 
 
 });
-
-new AdaptativeView('operations', function($data, PanelTemplate $t) {
-
-	return new \overview\VatUi()->showSuggestedOperations(
-		$data->eFarm, $data->eFarm['eFinancialYear'], $data->eVatDeclaration, $data->cOperation, $data->cerfaCalculated, $data->cerfaDeclared,
-	);
-
-});

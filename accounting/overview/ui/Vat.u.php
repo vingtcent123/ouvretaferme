@@ -5196,7 +5196,7 @@ Class VatUi {
 							$h .= '<div class="dropdown-list bg-primary"><span class="dropdown-item">'.encode($eOperation['account']['description']).'</span></div>';
 						$h .= '</td>';
 						$h .= '<td><div class="description"><span class=" ml-3">'.encode($eOperation['description']).'</span></div></td>';
-						$h .= '<td>'.encode($eOperation['thirdParty']['name']).'</td>';
+						$h .= '<td>'.encode($eOperation['thirdParty']['name'] ?? '').'</td>';
 						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::DEBIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
 						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::CREDIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
 					$h .= '</tr>';
