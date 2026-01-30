@@ -506,7 +506,7 @@ Class VatLib {
 			$prorata = $daysFinancialYear / $daysYear;
 
 			// Pas de taxe ADAR l'année de création de l'exploitation
-			$isNotCreationYear = ($eFarm['startedAt'] === NULL or $eFarm['startedAt'] < $eFinancialYear['startDate']);
+			$isNotCreationYear = ($eFarm['startedAt'] === NULL or $eFarm['startedAt'].'-12-31' < $eFinancialYearLast['startDate']);
 
 			if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
 
@@ -547,6 +547,7 @@ Class VatLib {
 				$RATE_1_ADAR = 0.19 / 100;
 				$THRESHOLD_ADAR_TAX = 370000 * $prorata;
 				$RATE_2_ADAR = 0.05 / 100;
+
 				$adarTax = round($fixed + min($THRESHOLD_ADAR_TAX, $turnover) * $RATE_1_ADAR + max(0, $turnover - $THRESHOLD_ADAR_TAX) * $RATE_2_ADAR, $precision);
 
 			}
