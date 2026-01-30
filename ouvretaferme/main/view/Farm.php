@@ -279,8 +279,10 @@ class FarmTemplate extends MainTemplate {
 
 						$farm .= '<div class="nav-title-member">';
 
+							$highlight = ((int)date('m') <= 3);
+
 							if(
-								(int)date('m') === 1 and
+								$highlight and
 								($this->data->eFarm['hasSales'] or $this->data->eFarm['hasCultivations'])
 							) {
 
@@ -300,7 +302,7 @@ class FarmTemplate extends MainTemplate {
 								if(\association\AssociationSetting::isDiscount($this->data->eFarm) === FALSE) {
 									$farm .= s("Adhérer à {value}", $icon);
 								} else {
-									if((int)date('m') === 1) {
+									if($highlight) {
 										$farm .= s("Soutenir {icon} en {year}", ['icon' => $icon, 'year' => date('Y')]);
 									} else {
 										$farm .= s("Soutenir {value}", $icon);
