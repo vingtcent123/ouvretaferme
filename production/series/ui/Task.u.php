@@ -809,7 +809,7 @@ class TaskUi {
 			$yearAfter = NULL;
 		}
 
-		$h = '<div id="tasks-calendar-top" class="container tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
+		$h = '<div id="tasks-calendar-top" class="tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
 
 			if($filter !== NULL) {
 				$h .= '<div class="tasks-calendar-search"></div>';

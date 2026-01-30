@@ -318,6 +318,8 @@ new AdaptativeView('soil', function($data, FarmTemplate $t) {
 
 			case \farm\Farmer::PLAN :
 
+				$this->template .= ' farm-fixed ';
+
 				$form = new \util\FormUi();
 
 				echo '<div id="zone-form-search" class="bed-write"></div>';

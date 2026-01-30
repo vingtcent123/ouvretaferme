@@ -201,6 +201,16 @@ body[data-template~="farm"] > main .container.farm-template-main-title.farm-temp
 body[data-template~="farm"] .container {
 	width: calc(var(--screen-width) - var(--nav-width))
 }
+
+
+@media screen {
+
+	body[data-template~="farm"][data-template~="farm-fixed"] .container {
+		width: auto;
+	}
+
+}
+
 @media (min-width: 1100px) and (min-height: 650px) {
 
 	:root {
@@ -625,6 +635,7 @@ body[data-template~="farm"] .container {
 	body[data-touch="no"][data-template~="farm"] > main .container.farm-template-main-title {
 		position: sticky;
 		width: var(--screen-width);
+		left: 0;
 		z-index: 100;
 	}
 
