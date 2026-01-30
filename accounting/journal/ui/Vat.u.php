@@ -197,6 +197,10 @@ Class VatUi {
 										}
 									$h .= '</td>';
 
+									$h .= '<td></td>'; // Taux TVA
+									$h .= '<td></td>'; // Montant TTC
+									$h .= '<td></td>'; // Montant HT
+
 									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
 											$h .= \util\TextUi::money($eOperation['amount']);
 									$h .= '</td>';
