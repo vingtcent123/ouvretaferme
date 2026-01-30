@@ -3,7 +3,7 @@ namespace overview;
 
 Class VatDeclarationLib extends VatDeclarationCrud {
 
-	const DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS = 10;
+	const DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS = 15;
 	const DELAY_OPEN_BEFORE_LIMIT_IN_DAYS = 15;
 
 	public static function declare(VatDeclaration $eVatDeclaration): void {
