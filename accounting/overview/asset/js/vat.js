@@ -507,6 +507,11 @@ class Vat12 {
 
 	static updateReimburse() {
 
+		const value_0705 = Vat.getValue('12', '0705');
+
+		if(value_0705 > 0) {
+			qs('#cerfa-12 [name="reimburse-a"]').value = Vat.computeWithPrecision(value_0705);
+		}
 		const a = Vat.getValue('12', 'reimburse-a');
 		const b = Vat.getValue('12', 'reimburse-b');
 		const d = Vat.getValue('12', 'reimburse-d');

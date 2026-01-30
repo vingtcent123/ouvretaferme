@@ -5283,8 +5283,8 @@ Class VatUi {
 	public static function getTranslations(string $code, array $params = []): string {
 
 		return match($code) {
-			'tva-versee' => s("TVA VERSÉE"),
-			'tva-sur-ventes' => s("TVA / VENTES"),
+			'tva-versee' => s("TVA versée"),
+			'tva-sur-ventes' => s("TVA sur ventes"),
 			'tva-credit' => s("Crédit de TVA"),
 			'tva-debit' => s("TVA à décaisser"),
 			'document' => s("Déclaration TVA du {from} au {to}", $params),
