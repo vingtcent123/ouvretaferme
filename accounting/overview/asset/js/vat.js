@@ -512,7 +512,7 @@ class Vat12 {
 		const d = Vat.getValue('12', 'reimburse-d');
 
 		const c = Vat.computeWithPrecision(a + b);
-		const e = Vat.computeWithPrecision(c + d);
+		const e = Vat.computeWithPrecision(c - d);
 
 		qs('#cerfa-12 [name="reimburse-c"]').value = c;
 		qs('#cerfa-12 [name="reimburse-e"]').value = e;
