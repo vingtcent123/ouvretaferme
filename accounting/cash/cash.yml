@@ -1,0 +1,26 @@
+Register:
+  id: serial32
+  account: ?account\Account
+  paymentMethod: payment\Method
+  status: enum(ACTIVE, DELETED) = ACTIVE
+
+Cash:
+  id: serial32
+  name: text8(1, null) @collate(general)
+  register: cash\Register
+  amountIncludingVat: decimal(8, 2)
+  amountExcludingVat: decimal(8, 2)
+  type: enum(DEBIT, CREDIT)
+  vat: ?decimal(8, 2)
+  vatRate: ?decimal(5, 2)
+  description: ?text8(1, null)
+  account: ?account\Account
+  thirdParty: ?account\ThirdParty
+  origin: enum(BANK, PRIVATE, BALANCE, BUY_MANUAL, SELL_MANUAL, SELL_INVOICE, SELL_SALE)
+  originBank: ?bank\Cashflow
+  originInvoice: ?selling\Invoice
+  originSale: ?selling\Sale
+  operation: journal\Operation
+  createdAt: datetime = SPECIAL(now)
+  status: enum(DRAFT, VALID)
+
