@@ -271,13 +271,13 @@ Class BalanceUi {
 			$h .= '<td></td>';
 			$h .= '<td></td>';
 			$h .= '<td class="text-end hide-sm-down">'.s("Totaux").'</td>';
-			$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent, precision: 0).'</td>';
-			$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCreditCurrent, precision: 0).'</td>';
-			$h .= '<td class="text-end highlight-stick-right">'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money($totalDebitCurrent - $totalCreditCurrent) : '').'</td>';
-			$h .= '<td class="text-end highlight-stick-left">'.($totalCreditCurrent > $totalDebitCurrent ? \util\TextUi::money($totalCreditCurrent - $totalDebitCurrent) : '').'</td>';
+			$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent).'</td>';
+			$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCreditCurrent).'</td>';
+			$h .= '<td class="text-end highlight-stick-right">'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money(round($totalDebitCurrent - $totalCreditCurrent, 2)) : '').'</td>';
+			$h .= '<td class="text-end highlight-stick-left">'.($totalCreditCurrent > $totalDebitCurrent ? \util\TextUi::money(round($totalCreditCurrent - $totalDebitCurrent, 2)) : '').'</td>';
 			if($hasPrevious) {
-				$h .= '<td class="text-end highlight-stick-right">'.($totalDebitPrevious > $totalCreditPrevious ? \util\TextUi::money($totalDebitPrevious - $totalCreditPrevious) : '').'</td>';
-				$h .= '<td class="text-end highlight-stick-left">'.($totalCreditPrevious > $totalDebitPrevious ? \util\TextUi::money($totalCreditPrevious - $totalDebitPrevious) : '').'</td>';
+				$h .= '<td class="text-end highlight-stick-right">'.($totalDebitPrevious > $totalCreditPrevious ? \util\TextUi::money(round($totalDebitPrevious - $totalCreditPrevious, 2)) : '').'</td>';
+				$h .= '<td class="text-end highlight-stick-left">'.($totalCreditPrevious > $totalDebitPrevious ? \util\TextUi::money(round($totalCreditPrevious - $totalDebitPrevious, 2)) : '').'</td>';
 			}
 		$h .= '</tr>';
 
