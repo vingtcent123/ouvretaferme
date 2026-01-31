@@ -198,9 +198,9 @@ abstract class PlayerCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Player {
+	public static function getNewElement(array $properties = []): Player {
 
-		return new Player(['id' => NULL]);
+		return new Player($properties);
 
 	}
 

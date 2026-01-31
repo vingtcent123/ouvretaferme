@@ -192,9 +192,9 @@ abstract class SignatureCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Signature {
+	public static function getNewElement(array $properties = []): Signature {
 
-		return new Signature(['id' => NULL]);
+		return new Signature($properties);
 
 	}
 

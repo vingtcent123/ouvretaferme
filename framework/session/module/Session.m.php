@@ -165,9 +165,9 @@ abstract class SessionCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Session {
+	public static function getNewElement(array $properties = []): Session {
 
-		return new Session(['id' => NULL]);
+		return new Session($properties);
 
 	}
 

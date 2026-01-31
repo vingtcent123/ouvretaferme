@@ -195,9 +195,9 @@ abstract class RedirectCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Redirect {
+	public static function getNewElement(array $properties = []): Redirect {
 
-		return new Redirect(['id' => NULL]);
+		return new Redirect($properties);
 
 	}
 

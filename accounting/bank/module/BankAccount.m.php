@@ -164,9 +164,9 @@ abstract class BankAccountCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): BankAccount {
+	public static function getNewElement(array $properties = []): BankAccount {
 
-		return new BankAccount(['id' => NULL]);
+		return new BankAccount($properties);
 
 	}
 

@@ -322,9 +322,9 @@ abstract class WebsiteCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Website {
+	public static function getNewElement(array $properties = []): Website {
 
-		return new Website(['id' => NULL]);
+		return new Website($properties);
 
 	}
 

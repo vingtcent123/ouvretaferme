@@ -221,9 +221,9 @@ abstract class PaymentCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Payment {
+	public static function getNewElement(array $properties = []): Payment {
 
-		return new Payment(['id' => NULL]);
+		return new Payment($properties);
 
 	}
 

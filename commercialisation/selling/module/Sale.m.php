@@ -618,9 +618,9 @@ abstract class SaleCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Sale {
+	public static function getNewElement(array $properties = []): Sale {
 
-		return new Sale(['id' => NULL]);
+		return new Sale($properties);
 
 	}
 

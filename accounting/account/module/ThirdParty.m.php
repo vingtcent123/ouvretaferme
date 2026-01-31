@@ -210,9 +210,9 @@ abstract class ThirdPartyCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): ThirdParty {
+	public static function getNewElement(array $properties = []): ThirdParty {
 
-		return new ThirdParty(['id' => NULL]);
+		return new ThirdParty($properties);
 
 	}
 

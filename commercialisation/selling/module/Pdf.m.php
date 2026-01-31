@@ -217,9 +217,9 @@ abstract class PdfCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Pdf {
+	public static function getNewElement(array $properties = []): Pdf {
 
-		return new Pdf(['id' => NULL]);
+		return new Pdf($properties);
 
 	}
 

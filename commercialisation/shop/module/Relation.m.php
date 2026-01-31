@@ -195,9 +195,9 @@ abstract class RelationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Relation {
+	public static function getNewElement(array $properties = []): Relation {
 
-		return new Relation(['id' => NULL]);
+		return new Relation($properties);
 
 	}
 

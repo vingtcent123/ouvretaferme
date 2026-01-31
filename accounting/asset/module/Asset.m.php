@@ -311,9 +311,9 @@ abstract class AssetCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Asset {
+	public static function getNewElement(array $properties = []): Asset {
 
-		return new Asset(['id' => NULL]);
+		return new Asset($properties);
 
 	}
 

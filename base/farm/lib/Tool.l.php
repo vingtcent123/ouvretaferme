@@ -3,6 +3,8 @@ namespace farm;
 
 class ToolLib extends ToolCrud {
 
+	use \ModuleDeferred;
+
 	public static function getPropertiesCreate(): array {
 		return ['name', 'action', 'stock', 'comment', 'routineName', 'routineValue'];
 	}
@@ -17,7 +19,7 @@ class ToolLib extends ToolCrud {
 		};
 	}
 
-	public static function askByFarm(\farm\Farm $eFarm, array $ids): \Collection {
+	public static function deferred(\farm\Farm $eFarm): \Collection {
 
 		$callback = fn() => Tool::model()
 			->select([
@@ -27,7 +29,7 @@ class ToolLib extends ToolCrud {
 			->whereFarm($eFarm)
 			->getCollection(index: 'id');
 
-		return self::getCache($eFarm['id'], $callback)->findByKeys($ids);
+		return self::getCache($eFarm['id'], $callback);
 
 	}
 

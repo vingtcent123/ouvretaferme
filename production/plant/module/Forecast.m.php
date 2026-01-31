@@ -214,9 +214,9 @@ abstract class ForecastCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Forecast {
+	public static function getNewElement(array $properties = []): Forecast {
 
-		return new Forecast(['id' => NULL]);
+		return new Forecast($properties);
 
 	}
 

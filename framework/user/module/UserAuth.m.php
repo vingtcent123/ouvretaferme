@@ -214,9 +214,9 @@ abstract class UserAuthCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): UserAuth {
+	public static function getNewElement(array $properties = []): UserAuth {
 
-		return new UserAuth(['id' => NULL]);
+		return new UserAuth($properties);
 
 	}
 

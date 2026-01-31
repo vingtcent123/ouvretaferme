@@ -373,9 +373,9 @@ abstract class TaskCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Task {
+	public static function getNewElement(array $properties = []): Task {
 
-		return new Task(['id' => NULL]);
+		return new Task($properties);
 
 	}
 

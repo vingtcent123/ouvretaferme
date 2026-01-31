@@ -293,9 +293,9 @@ abstract class ErrorCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Error {
+	public static function getNewElement(array $properties = []): Error {
 
-		return new Error(['id' => NULL]);
+		return new Error($properties);
 
 	}
 

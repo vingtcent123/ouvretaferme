@@ -159,9 +159,9 @@ abstract class ErrorTraceCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): ErrorTrace {
+	public static function getNewElement(array $properties = []): ErrorTrace {
 
-		return new ErrorTrace(['id' => NULL]);
+		return new ErrorTrace($properties);
 
 	}
 

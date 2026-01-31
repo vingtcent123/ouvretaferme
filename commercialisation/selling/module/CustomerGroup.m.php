@@ -188,9 +188,9 @@ abstract class CustomerGroupCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): CustomerGroup {
+	public static function getNewElement(array $properties = []): CustomerGroup {
 
-		return new CustomerGroup(['id' => NULL]);
+		return new CustomerGroup($properties);
 
 	}
 

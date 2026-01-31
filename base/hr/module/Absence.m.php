@@ -179,9 +179,9 @@ abstract class AbsenceCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Absence {
+	public static function getNewElement(array $properties = []): Absence {
 
-		return new Absence(['id' => NULL]);
+		return new Absence($properties);
 
 	}
 

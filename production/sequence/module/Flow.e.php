@@ -7,8 +7,8 @@ class Flow extends FlowElement {
 
 		return [
 			'action' => \farm\ActionElement::getSelection(),
-			'cTool?' => fn($e) => fn() => \farm\ToolLib::askByFarm($e['farm'], $e['tools']),
-			'cMethod?' => fn($e) => fn() => \farm\MethodLib::askByFarm($e['farm'], $e['methods']),
+			'cTool?' => fn($e) => fn() =>\farm\ToolLib::askCollection($e['tools'], $e['farm']),
+			'cMethod?' => fn($e) => fn() =>\farm\MethodLib::askCollection($e['methods'], $e['farm']),
 		] + parent::getSelection();
 
 	}

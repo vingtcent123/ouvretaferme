@@ -523,9 +523,9 @@ abstract class ShopCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Shop {
+	public static function getNewElement(array $properties = []): Shop {
 
-		return new Shop(['id' => NULL]);
+		return new Shop($properties);
 
 	}
 

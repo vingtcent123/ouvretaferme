@@ -167,9 +167,9 @@ abstract class ErrorParameterCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): ErrorParameter {
+	public static function getNewElement(array $properties = []): ErrorParameter {
 
-		return new ErrorParameter(['id' => NULL]);
+		return new ErrorParameter($properties);
 
 	}
 

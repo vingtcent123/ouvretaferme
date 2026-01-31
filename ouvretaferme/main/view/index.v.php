@@ -48,7 +48,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 		echo '<div class="home-feature">';
 
 			echo '<h2 class="color-accounting">';
-				echo '<div class="home-feature-icon">'.Asset::icon('bank').'</div>';
+				echo '<div class="home-feature-icon">'.Asset::icon('piggy-bank').'</div>';
 				echo s("Comptabilité");
 			echo '</h2>';
 			echo '<ul>';

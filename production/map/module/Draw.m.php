@@ -196,9 +196,9 @@ abstract class DrawCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Draw {
+	public static function getNewElement(array $properties = []): Draw {
 
-		return new Draw(['id' => NULL]);
+		return new Draw($properties);
 
 	}
 

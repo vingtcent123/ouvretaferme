@@ -237,9 +237,9 @@ abstract class UnitCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Unit {
+	public static function getNewElement(array $properties = []): Unit {
 
-		return new Unit(['id' => NULL]);
+		return new Unit($properties);
 
 	}
 

@@ -229,9 +229,9 @@ abstract class TipCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Tip {
+	public static function getNewElement(array $properties = []): Tip {
 
-		return new Tip(['id' => NULL]);
+		return new Tip($properties);
 
 	}
 

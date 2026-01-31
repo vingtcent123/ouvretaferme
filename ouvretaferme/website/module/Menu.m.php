@@ -187,9 +187,9 @@ abstract class MenuCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Menu {
+	public static function getNewElement(array $properties = []): Menu {
 
-		return new Menu(['id' => NULL]);
+		return new Menu($properties);
 
 	}
 

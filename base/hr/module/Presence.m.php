@@ -150,9 +150,9 @@ abstract class PresenceCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Presence {
+	public static function getNewElement(array $properties = []): Presence {
 
-		return new Presence(['id' => NULL]);
+		return new Presence($properties);
 
 	}
 

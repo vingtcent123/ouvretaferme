@@ -35,27 +35,28 @@ class PaymentLib extends PaymentCrud {
 	public static function delegateBySale(): PaymentModel {
 
 		return Payment::model()
-      ->select(Payment::getSelection() + ['method' => ['id', 'fqn', 'name', 'status']])
+      	->select(Payment::getSelection())
 			->sort(['id' => SORT_DESC])
-      ->delegateCollection('sale', 'id', function(\Collection $cPayment) {
+			->delegateCollection('sale', 'id', function(\Collection $cPayment) {
 
-				$cPaymentFiltered = new \Collection();
+					$cPaymentFiltered = new \Collection();
 
-				foreach($cPayment as $ePayment) {
+					foreach($cPayment as $ePayment) {
 
-					if(
-						$ePayment['method']->empty()
-						or $cPaymentFiltered->contains(fn($e) => $e['method']['id'] === $ePayment['method']['id'])
-					) {
-						continue;
+						if(
+							$ePayment['method']->empty()
+							or $cPaymentFiltered->contains(fn($e) => $e['method']['id'] === $ePayment['method']['id'])
+						) {
+							continue;
+						}
+
+						$cPaymentFiltered->append($ePayment);
+
 					}
 
-					$cPaymentFiltered->append($ePayment);
+					return $cPaymentFiltered;
+    	  });
 
-				}
-
-				return $cPaymentFiltered;
-      });
 	}
 
 	public static function getByPaymentIntentId(\payment\StripeFarm $eStripeFarm, string $id): Payment {
@@ -172,7 +173,7 @@ class PaymentLib extends PaymentCrud {
 	public static function getBySale(Sale $eSale, bool $onlyPaid = FALSE): \Collection {
 
 		$cPayment = Payment::model()
-			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
+			->select(Payment::getSelection())
 			->whereSale($eSale)
 			->sort(['createdAt' => SORT_DESC])
 			->getCollection();
@@ -190,7 +191,7 @@ class PaymentLib extends PaymentCrud {
 		$ePayment = new Payment();
 
 		Payment::model()
-			->select(Payment::getSelection() + ['method' => \payment\Method::getSelection()])
+			->select(Payment::getSelection())
 			->whereSale($eSale)
 			->whereMethod($eMethod)
 			->sort(['createdAt' => SORT_DESC])

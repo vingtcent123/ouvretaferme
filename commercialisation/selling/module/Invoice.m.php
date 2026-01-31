@@ -421,9 +421,9 @@ abstract class InvoiceCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Invoice {
+	public static function getNewElement(array $properties = []): Invoice {
 
-		return new Invoice(['id' => NULL]);
+		return new Invoice($properties);
 
 	}
 

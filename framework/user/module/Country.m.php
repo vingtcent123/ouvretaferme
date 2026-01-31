@@ -173,9 +173,9 @@ abstract class CountryCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Country {
+	public static function getNewElement(array $properties = []): Country {
 
-		return new Country(['id' => NULL]);
+		return new Country($properties);
 
 	}
 

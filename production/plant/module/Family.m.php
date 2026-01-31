@@ -196,9 +196,9 @@ abstract class FamilyCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Family {
+	public static function getNewElement(array $properties = []): Family {
 
-		return new Family(['id' => NULL]);
+		return new Family($properties);
 
 	}
 

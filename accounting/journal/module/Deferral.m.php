@@ -227,9 +227,9 @@ abstract class DeferralCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Deferral {
+	public static function getNewElement(array $properties = []): Deferral {
 
-		return new Deferral(['id' => NULL]);
+		return new Deferral($properties);
 
 	}
 

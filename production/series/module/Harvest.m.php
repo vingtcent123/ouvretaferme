@@ -220,9 +220,9 @@ abstract class HarvestCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Harvest {
+	public static function getNewElement(array $properties = []): Harvest {
 
-		return new Harvest(['id' => NULL]);
+		return new Harvest($properties);
 
 	}
 

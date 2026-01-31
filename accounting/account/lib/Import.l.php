@@ -297,7 +297,7 @@ Class ImportLib extends ImportCrud {
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 		$cAccount = AccountLib::getAll();
-		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE, TRUE);
+		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
 		$cJournalCode = \journal\JournalCodeLib::getAll();
 
 		$journaux = [];
@@ -417,7 +417,7 @@ Class ImportLib extends ImportCrud {
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 
 		$cAccount = AccountLib::getAll();
-		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE, TRUE);
+		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
 		$cJournalCode = \journal\JournalCodeLib::getAll();
 
 		$update = ['status' => Import::DONE, 'updatedAt' => new \Sql('NOW()')];

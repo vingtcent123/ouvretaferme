@@ -220,9 +220,9 @@ abstract class ZoneCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Zone {
+	public static function getNewElement(array $properties = []): Zone {
 
-		return new Zone(['id' => NULL]);
+		return new Zone($properties);
 
 	}
 

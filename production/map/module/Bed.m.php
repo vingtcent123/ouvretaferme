@@ -261,9 +261,9 @@ abstract class BedCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Bed {
+	public static function getNewElement(array $properties = []): Bed {
 
-		return new Bed(['id' => NULL]);
+		return new Bed($properties);
 
 	}
 

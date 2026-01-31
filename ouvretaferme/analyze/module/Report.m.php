@@ -279,9 +279,9 @@ abstract class ReportCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Report {
+	public static function getNewElement(array $properties = []): Report {
 
-		return new Report(['id' => NULL]);
+		return new Report($properties);
 
 	}
 

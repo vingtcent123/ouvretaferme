@@ -382,9 +382,9 @@ abstract class CustomerCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Customer {
+	public static function getNewElement(array $properties = []): Customer {
 
-		return new Customer(['id' => NULL]);
+		return new Customer($properties);
 
 	}
 

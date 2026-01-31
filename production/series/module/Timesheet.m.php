@@ -213,9 +213,9 @@ abstract class TimesheetCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Timesheet {
+	public static function getNewElement(array $properties = []): Timesheet {
 
-		return new Timesheet(['id' => NULL]);
+		return new Timesheet($properties);
 
 	}
 

@@ -5,15 +5,9 @@ class CountryLib extends CountryCrud {
 
 	private static array|\Collection|null $countries = NULL;
 
-	public static function ask(Country $eCountry): Country {
+	public static function deferred(): Country {
 
-		if($eCountry->empty()) {
-			return $eCountry;
-		}
-
-		$callback = fn() => self::getAll();
-
-		return self::getCache('list', $callback)[$eCountry['id']];
+		return self::getCache('list', fn() => self::getAll());
 
 	}
 

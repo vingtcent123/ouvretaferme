@@ -146,9 +146,9 @@ abstract class MethodCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Method {
+	public static function getNewElement(array $properties = []): Method {
 
-		return new Method(['id' => NULL]);
+		return new Method($properties);
 
 	}
 

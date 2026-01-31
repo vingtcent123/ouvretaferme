@@ -279,9 +279,9 @@ abstract class SequenceCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Sequence {
+	public static function getNewElement(array $properties = []): Sequence {
 
-		return new Sequence(['id' => NULL]);
+		return new Sequence($properties);
 
 	}
 

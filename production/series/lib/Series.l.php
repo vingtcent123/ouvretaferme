@@ -209,7 +209,7 @@ class SeriesLib extends SeriesCrud {
 
 		$eFarm = \farm\FarmLib::getById($input['farm'] ?? NULL)->validate('canManage');
 
-		$eSeries = SeriesLib::getCreateElement();
+		$eSeries = SeriesLib::getNewElement(['id' => NULL]);
 		$eSeries['farm'] = $eFarm;
 
 		$fw = new \FailWatch();

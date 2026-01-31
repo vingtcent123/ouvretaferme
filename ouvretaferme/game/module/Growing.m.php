@@ -192,9 +192,9 @@ abstract class GrowingCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Growing {
+	public static function getNewElement(array $properties = []): Growing {
 
-		return new Growing(['id' => NULL]);
+		return new Growing($properties);
 
 	}
 

@@ -42,7 +42,7 @@ new Page(function($data) {
 	->get('manage', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
-		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL);
+		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE);
 
 		throw new ViewAction($data);
 

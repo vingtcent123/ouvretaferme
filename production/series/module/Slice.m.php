@@ -187,9 +187,9 @@ abstract class SliceCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Slice {
+	public static function getNewElement(array $properties = []): Slice {
 
-		return new Slice(['id' => NULL]);
+		return new Slice($properties);
 
 	}
 

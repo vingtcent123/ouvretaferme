@@ -255,9 +255,9 @@ abstract class PointCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Point {
+	public static function getNewElement(array $properties = []): Point {
 
-		return new Point(['id' => NULL]);
+		return new Point($properties);
 
 	}
 

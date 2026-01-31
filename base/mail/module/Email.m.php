@@ -268,9 +268,9 @@ abstract class EmailCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Email {
+	public static function getNewElement(array $properties = []): Email {
 
-		return new Email(['id' => NULL]);
+		return new Email($properties);
 
 	}
 

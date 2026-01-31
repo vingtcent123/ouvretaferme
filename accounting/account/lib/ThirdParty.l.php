@@ -17,10 +17,10 @@ class ThirdPartyLib extends ThirdPartyCrud {
 		$search->validateSort(['id', 'name']);
 
 		return ThirdParty::model()
-      ->select(ThirdParty::getSelection())
-      ->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
-      ->sort($search->buildSort())
-      ->getCollection();
+			->select(ThirdParty::getSelection())
+			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
+			->sort($search->buildSort())
+			->getCollection();
 
 	}
 

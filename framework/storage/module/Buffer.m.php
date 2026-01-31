@@ -130,9 +130,9 @@ abstract class BufferCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Buffer {
+	public static function getNewElement(array $properties = []): Buffer {
 
-		return new Buffer(['id' => NULL]);
+		return new Buffer($properties);
 
 	}
 

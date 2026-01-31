@@ -216,9 +216,9 @@ abstract class StripeFarmCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): StripeFarm {
+	public static function getNewElement(array $properties = []): StripeFarm {
 
-		return new StripeFarm(['id' => NULL]);
+		return new StripeFarm($properties);
 
 	}
 

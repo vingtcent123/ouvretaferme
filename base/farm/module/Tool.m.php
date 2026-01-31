@@ -240,9 +240,9 @@ abstract class ToolCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Tool {
+	public static function getNewElement(array $properties = []): Tool {
 
-		return new Tool(['id' => NULL]);
+		return new Tool($properties);
 
 	}
 

@@ -140,9 +140,9 @@ abstract class OperationCashflowCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): OperationCashflow {
+	public static function getNewElement(array $properties = []): OperationCashflow {
 
-		return new OperationCashflow(['id' => NULL]);
+		return new OperationCashflow($properties);
 
 	}
 

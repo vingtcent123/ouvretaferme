@@ -163,9 +163,9 @@ abstract class CategoryCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Category {
+	public static function getNewElement(array $properties = []): Category {
 
-		return new Category(['id' => NULL]);
+		return new Category($properties);
 
 	}
 

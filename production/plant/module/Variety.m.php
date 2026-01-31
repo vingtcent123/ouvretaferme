@@ -238,9 +238,9 @@ abstract class VarietyCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Variety {
+	public static function getNewElement(array $properties = []): Variety {
 
-		return new Variety(['id' => NULL]);
+		return new Variety($properties);
 
 	}
 

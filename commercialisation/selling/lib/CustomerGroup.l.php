@@ -3,6 +3,8 @@ namespace selling;
 
 class CustomerGroupLib extends CustomerGroupCrud {
 
+	use \ModuleDeferred;
+
 	public static function getPropertiesCreate(): array {
 		return ['name', 'color', 'type'];
 	}
@@ -37,7 +39,7 @@ class CustomerGroupLib extends CustomerGroupCrud {
 
 	}
 
-	public static function askByFarm(\farm\Farm $eFarm, array $ids): \Collection {
+	public static function deferred(\farm\Farm $eFarm): \Collection {
 
 		$callback = fn() => CustomerGroup::model()
 			->select([
@@ -46,7 +48,7 @@ class CustomerGroupLib extends CustomerGroupCrud {
 			->whereFarm($eFarm)
 			->getCollection(index: 'id');
 
-		return self::getCache($eFarm['id'], $callback)->findByKeys($ids);
+		return self::getCache($eFarm['id'], $callback);
 
 	}
 

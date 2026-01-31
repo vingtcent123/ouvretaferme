@@ -177,9 +177,9 @@ abstract class WorkingTimeCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): WorkingTime {
+	public static function getNewElement(array $properties = []): WorkingTime {
 
-		return new WorkingTime(['id' => NULL]);
+		return new WorkingTime($properties);
 
 	}
 

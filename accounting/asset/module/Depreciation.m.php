@@ -195,9 +195,9 @@ abstract class DepreciationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Depreciation {
+	public static function getNewElement(array $properties = []): Depreciation {
 
-		return new Depreciation(['id' => NULL]);
+		return new Depreciation($properties);
 
 	}
 

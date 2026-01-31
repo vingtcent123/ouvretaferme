@@ -202,9 +202,9 @@ abstract class GenericAccountCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): GenericAccount {
+	public static function getNewElement(array $properties = []): GenericAccount {
 
-		return new GenericAccount(['id' => NULL]);
+		return new GenericAccount($properties);
 
 	}
 

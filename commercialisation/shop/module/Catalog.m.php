@@ -199,9 +199,9 @@ abstract class CatalogCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Catalog {
+	public static function getNewElement(array $properties = []): Catalog {
 
-		return new Catalog(['id' => NULL]);
+		return new Catalog($properties);
 
 	}
 

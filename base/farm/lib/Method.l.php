@@ -3,6 +3,8 @@ namespace farm;
 
 class MethodLib extends MethodCrud {
 
+	use \ModuleDeferred;
+
 	public static function getPropertiesCreate(): array {
 		return ['name', 'action'];
 	}
@@ -11,7 +13,7 @@ class MethodLib extends MethodCrud {
 		return ['name'];
 	}
 
-	public static function askByFarm(\farm\Farm $eFarm, array $ids): \Collection {
+	public static function deferred(\farm\Farm $eFarm): \Collection {
 
 		$callback = fn() => Method::model()
 			->select([
@@ -20,7 +22,7 @@ class MethodLib extends MethodCrud {
 			->whereFarm($eFarm)
 			->getCollection(index: 'id');
 
-		return self::getCache($eFarm['id'], $callback)->findByKeys($ids);
+		return self::getCache($eFarm['id'], $callback);
 
 	}
 

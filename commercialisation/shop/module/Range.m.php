@@ -202,9 +202,9 @@ abstract class RangeCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Range {
+	public static function getNewElement(array $properties = []): Range {
 
-		return new Range(['id' => NULL]);
+		return new Range($properties);
 
 	}
 

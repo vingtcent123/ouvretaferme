@@ -196,9 +196,9 @@ abstract class DepartmentCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Department {
+	public static function getNewElement(array $properties = []): Department {
 
-		return new Department(['id' => NULL]);
+		return new Department($properties);
 
 	}
 

@@ -258,9 +258,9 @@ abstract class CropCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Crop {
+	public static function getNewElement(array $properties = []): Crop {
 
-		return new Crop(['id' => NULL]);
+		return new Crop($properties);
 
 	}
 

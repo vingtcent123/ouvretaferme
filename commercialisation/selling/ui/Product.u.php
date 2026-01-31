@@ -226,26 +226,26 @@ class ProductUi {
 						$h .= '<th rowspan="2" class="text-end hide-xl-down">'.$search->linkSort('stock', s("Stock"), SORT_DESC).'</th>';
 					}
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
-					$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Ventes").'</th>';
+					$h .= '<th colspan="2" class="text-center highlight hide-lg-down">'.s("Ventes").'</th>';
 					$h .= '<th colspan="2" class="text-center highlight">'.s("Prix de base").'</th>';
 					if($eFarm->getConf('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
 					if($displayAccounts) {
-						$h .= '<th colspan="2" class="text-center highlight hide-md-down">'.s("Comptes").'</th>';
+						$h .= '<th colspan="2" class="text-center highlight hide-xl-down">'.s("Comptes").'</th>';
 					}
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
 
 				$h .= '<tr>';
-					$h .= '<th class="text-end highlight-stick-right hide-md-down">'.$year.'</th>';
-					$h .= '<th class="text-end highlight-stick-left product-item-year-before hide-md-down">'.$yearBefore.'</th>';
+					$h .= '<th class="text-end highlight-stick-right hide-lg-down">'.$year.'</th>';
+					$h .= '<th class="text-end highlight-stick-left product-item-year-before hide-lg-down">'.$yearBefore.'</th>';
 					$h .= '<th class="text-end highlight-stick-right">'.s("particulier").'</th>';
 					$h .= '<th class="text-end highlight-stick-left">'.s("pro").'</th>';
 					if($displayAccounts) {
-						$h .= '<th class="text-end highlight-stick-right hide-md-down">'.s("particulier").'</th>';
-						$h .= '<th class="text-end highlight-stick-left hide-md-down">'.s("pro").'</th>';
+						$h .= '<th class="text-end highlight-stick-right hide-xl-down">'.s("particulier").'</th>';
+						$h .= '<th class="text-end highlight-stick-left hide-xl-down">'.s("pro").'</th>';
 					}
 				$h .= '</tr>';
 
@@ -286,7 +286,7 @@ class ProductUi {
 							$h .= \selling\UnitUi::getSingular($eProduct['unit']);
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-right hide-md-down">';
+						$h .= '<td class="text-end highlight-stick-right hide-lg-down">';
 							if($eItemTotal->notEmpty() and $eItemTotal['year']) {
 								$amount = \util\TextUi::money($eItemTotal['year'], precision: 0);
 								$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
@@ -295,7 +295,7 @@ class ProductUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-left hide-md-down customer-item-year-before">';
+						$h .= '<td class="text-end highlight-stick-left hide-lg-down customer-item-year-before">';
 							if($eItemTotal->notEmpty() and $eItemTotal['yearBefore']) {
 								$amount = \util\TextUi::money($eItemTotal['yearBefore'], precision: 0);
 								$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
@@ -367,7 +367,7 @@ class ProductUi {
 						}
 
 						if($displayAccounts) {
-							$h .= '<td class="text-end highlight-stick-right hide-md-down">';
+							$h .= '<td class="text-end highlight-stick-right hide-xl-down">';
 								if($eProduct['private'] === FALSE) {
 									$h .= \Asset::icon('x');
 								} else if($eProduct['privateAccount']->notEmpty()) {
@@ -378,7 +378,7 @@ class ProductUi {
 									$h .= $eProduct->quick('privateAccount', $value);
 								}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-left hide-md-down td-min-content">';
+							$h .= '<td class="text-end highlight-stick-left hide-xl-down td-min-content">';
 
 								if($eProduct['proAccount']->notEmpty()) {
 

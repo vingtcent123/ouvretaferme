@@ -185,9 +185,9 @@ abstract class HistoryCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): History {
+	public static function getNewElement(array $properties = []): History {
 
-		return new History(['id' => NULL]);
+		return new History($properties);
 
 	}
 

@@ -182,9 +182,9 @@ abstract class RoleCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Role {
+	public static function getNewElement(array $properties = []): Role {
 
-		return new Role(['id' => NULL]);
+		return new Role($properties);
 
 	}
 

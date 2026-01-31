@@ -131,9 +131,9 @@ abstract class AmortizationDurationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): AmortizationDuration {
+	public static function getNewElement(array $properties = []): AmortizationDuration {
 
-		return new AmortizationDuration(['id' => NULL]);
+		return new AmortizationDuration($properties);
 
 	}
 

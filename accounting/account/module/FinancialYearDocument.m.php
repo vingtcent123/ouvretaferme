@@ -170,9 +170,9 @@ abstract class FinancialYearDocumentCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): FinancialYearDocument {
+	public static function getNewElement(array $properties = []): FinancialYearDocument {
 
-		return new FinancialYearDocument(['id' => NULL]);
+		return new FinancialYearDocument($properties);
 
 	}
 

@@ -319,9 +319,9 @@ class ModuleLib {
 		$content[] = '';
 		$content[] = '	}';
 		$content[] = '';
-		$content[] = '	public static function getCreateElement(): '.$element['name'].' {';
+		$content[] = '	public static function getNewElement(array $properties = []): '.$element['name'].' {';
 		$content[] = '';
-		$content[] = '		return new '.$element['name'].'([\'id\' => NULL]);';
+		$content[] = '		return new '.$element['name'].'($properties);';
 		$content[] = '';
 		$content[] = '	}';
 		$content[] = '';

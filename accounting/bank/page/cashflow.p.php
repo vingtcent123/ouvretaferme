@@ -98,7 +98,7 @@ new \bank\CashflowPage(function($data) {
 		$data->e['similar'] = \bank\CashflowLib::getSimilarAffectedCashflows($data->e);
 
 		// Payment methods
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
 		$data->cJournalCode = \journal\JournalCodeLib::getAll();
 
 		throw new ViewAction($data);
@@ -110,7 +110,7 @@ new \bank\CashflowPage(function($data) {
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
 		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty, 'cOperationCashflow' => new Collection(['cashflow' => $data->e]), 'cJournalCode' => \journal\JournalCodeLib::getAll()]);
 
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
 
 		throw new ViewAction($data);
 

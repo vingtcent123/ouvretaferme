@@ -260,9 +260,9 @@ abstract class BetaApplicationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): BetaApplication {
+	public static function getNewElement(array $properties = []): BetaApplication {
 
-		return new BetaApplication(['id' => NULL]);
+		return new BetaApplication($properties);
 
 	}
 

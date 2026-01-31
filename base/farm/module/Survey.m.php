@@ -269,9 +269,9 @@ abstract class SurveyCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Survey {
+	public static function getNewElement(array $properties = []): Survey {
 
-		return new Survey(['id' => NULL]);
+		return new Survey($properties);
 
 	}
 

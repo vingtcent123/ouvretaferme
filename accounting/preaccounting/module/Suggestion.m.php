@@ -208,9 +208,9 @@ abstract class SuggestionCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Suggestion {
+	public static function getNewElement(array $properties = []): Suggestion {
 
-		return new Suggestion(['id' => NULL]);
+		return new Suggestion($properties);
 
 	}
 

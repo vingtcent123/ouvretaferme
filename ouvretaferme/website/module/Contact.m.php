@@ -179,9 +179,9 @@ abstract class ContactCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Contact {
+	public static function getNewElement(array $properties = []): Contact {
 
-		return new Contact(['id' => NULL]);
+		return new Contact($properties);
 
 	}
 

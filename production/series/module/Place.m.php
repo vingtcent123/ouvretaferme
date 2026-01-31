@@ -223,9 +223,9 @@ abstract class PlaceCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Place {
+	public static function getNewElement(array $properties = []): Place {
 
-		return new Place(['id' => NULL]);
+		return new Place($properties);
 
 	}
 

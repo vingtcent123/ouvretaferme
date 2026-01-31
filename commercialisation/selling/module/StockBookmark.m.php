@@ -204,9 +204,9 @@ abstract class StockBookmarkCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): StockBookmark {
+	public static function getNewElement(array $properties = []): StockBookmark {
 
-		return new StockBookmark(['id' => NULL]);
+		return new StockBookmark($properties);
 
 	}
 

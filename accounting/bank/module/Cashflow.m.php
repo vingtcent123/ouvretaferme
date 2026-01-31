@@ -276,9 +276,9 @@ abstract class CashflowCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Cashflow {
+	public static function getNewElement(array $properties = []): Cashflow {
 
-		return new Cashflow(['id' => NULL]);
+		return new Cashflow($properties);
 
 	}
 

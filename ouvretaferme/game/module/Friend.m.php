@@ -160,9 +160,9 @@ abstract class FriendCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Friend {
+	public static function getNewElement(array $properties = []): Friend {
 
-		return new Friend(['id' => NULL]);
+		return new Friend($properties);
 
 	}
 

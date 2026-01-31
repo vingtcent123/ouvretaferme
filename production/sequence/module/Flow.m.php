@@ -312,9 +312,9 @@ abstract class FlowCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Flow {
+	public static function getNewElement(array $properties = []): Flow {
 
-		return new Flow(['id' => NULL]);
+		return new Flow($properties);
 
 	}
 

@@ -25,7 +25,7 @@ new \journal\OperationPage(
 		$eOperation->validate('isNotLinkedToAsset');
 	}
 
-	$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+	$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
 
 	$cOperationCashflow = new Collection();
 	foreach($data->cOperation as $eOperation) {
@@ -106,7 +106,7 @@ new \journal\OperationPage(
 		}
 
 		// Payment methods
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, NULL, NULL);
+		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
 	}
 )
 	->applyElement(function($data, \journal\Operation $e) {

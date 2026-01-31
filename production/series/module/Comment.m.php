@@ -191,9 +191,9 @@ abstract class CommentCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Comment {
+	public static function getNewElement(array $properties = []): Comment {
 
-		return new Comment(['id' => NULL]);
+		return new Comment($properties);
 
 	}
 

@@ -5,6 +5,7 @@ Package::setList([
 	'asset' => 'accounting',
 	'association' => 'ouvretaferme',
 	'bank' => 'accounting',
+	'cash' => 'accounting',
 	'company' => 'accounting',
 	'core' => 'framework',
 	'dev' => 'framework',

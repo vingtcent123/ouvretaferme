@@ -214,9 +214,9 @@ abstract class GreenhouseCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Greenhouse {
+	public static function getNewElement(array $properties = []): Greenhouse {
 
-		return new Greenhouse(['id' => NULL]);
+		return new Greenhouse($properties);
 
 	}
 

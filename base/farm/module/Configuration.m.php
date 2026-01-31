@@ -391,9 +391,9 @@ abstract class ConfigurationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Configuration {
+	public static function getNewElement(array $properties = []): Configuration {
 
-		return new Configuration(['id' => NULL]);
+		return new Configuration($properties);
 
 	}
 

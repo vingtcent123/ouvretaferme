@@ -246,9 +246,9 @@ abstract class ActionCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Action {
+	public static function getNewElement(array $properties = []): Action {
 
-		return new Action(['id' => NULL]);
+		return new Action($properties);
 
 	}
 

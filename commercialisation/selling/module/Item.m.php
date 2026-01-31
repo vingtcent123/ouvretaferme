@@ -396,9 +396,9 @@ abstract class ItemCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Item {
+	public static function getNewElement(array $properties = []): Item {
 
-		return new Item(['id' => NULL]);
+		return new Item($properties);
 
 	}
 

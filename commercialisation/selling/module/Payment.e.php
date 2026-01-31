@@ -4,9 +4,11 @@ namespace selling;
 class Payment extends PaymentElement {
 
 	public static function getSelection(): array {
+
 		return parent::getSelection() + [
-			'method' => \payment\Method::getSelection(),
+			'method' => fn($e) => \payment\MethodLib::ask($e['method'], $e['farm']),
 		];
+
 	}
 
 	// On considère qu'un paiement par CB peut déterminer si payé ou non

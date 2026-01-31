@@ -184,9 +184,9 @@ abstract class ShareCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Share {
+	public static function getNewElement(array $properties = []): Share {
 
-		return new Share(['id' => NULL]);
+		return new Share($properties);
 
 	}
 

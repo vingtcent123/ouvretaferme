@@ -194,9 +194,9 @@ abstract class GridCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Grid {
+	public static function getNewElement(array $properties = []): Grid {
 
-		return new Grid(['id' => NULL]);
+		return new Grid($properties);
 
 	}
 

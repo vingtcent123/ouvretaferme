@@ -188,9 +188,9 @@ abstract class ProductCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Product {
+	public static function getNewElement(array $properties = []): Product {
 
-		return new Product(['id' => NULL]);
+		return new Product($properties);
 
 	}
 

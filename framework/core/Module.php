@@ -349,8 +349,8 @@ abstract class ModuleModel {
 	 *
 	 * @return array Element
 	 */
-	public function getNewElement(): Element {
-		return new $this->module;
+	public function getNewElement(array $properties = []): Element {
+		return new $this->module($properties);
 	}
 
 	/**
@@ -3302,8 +3302,8 @@ abstract class ModuleModel {
 		foreach($this->getPropertiesToElement() as $property => $element) {
 
 			if(
-				empty($selection[$property]) === FALSE and
-				$element !== NULL
+				isset($selection[$property]) and
+				is_array($selection[$property])
 			) {
 				$subProperties[$property] = [];
 				$subPropertiesList[] = $property;
@@ -4830,6 +4830,10 @@ abstract class ModuleModel {
 
 			} else if(is_closure($value)) {
 
+				if($this->hasProperty($field)) {
+					$fieldList[$field] = [$field, TRUE, $this->getFieldCallback($field)];
+				}
+
 				$this->saveCallable($field, $value);
 
 			} else if($this->hasProperty($field)) { // Verify that the property is valid
@@ -5168,7 +5172,7 @@ abstract class ModulePage extends Page {
 	) {
 
 		$this->createElement = function($data) {
-			return ($this->module.'Lib')::getCreateElement();
+			return ($this->module.'Lib')::getNewElement(['id' => NULL]);
 		};
 
 		$this->element = function($data) {
@@ -5747,6 +5751,44 @@ abstract class ModuleCrud {
 	 * Delete an existing element
 	 */
 	// abstract public function delete(Element $e): void;
+
+}
+
+trait ModuleDeferred {
+
+	public static function ask(int|Element|null $id, ...$arguments): Element {
+
+		if($id instanceof Element) {
+
+			if($id->exists()) {
+				$id = $id['id'];
+			} else {
+				return self::getNewElement();
+			}
+
+		} else if($id === NULL) {
+			return self::getNewElement();
+		}
+
+		return self::deferred(...$arguments)[$id] ?? self::getNewElement();
+
+	}
+
+	public static function askCollection(array $ids, ...$arguments): \Collection {
+
+		if($ids === []) {
+			return new Collection();
+		}
+
+		return self::deferred(...$arguments)->findByKeys($ids);
+
+	}
+
+	public static function askCallback(Closure $callback, ...$arguments): \Collection {
+
+		return self::deferred(...$arguments)->find($callback);
+
+	}
 
 }
 ?>

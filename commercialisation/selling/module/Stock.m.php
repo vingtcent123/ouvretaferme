@@ -183,9 +183,9 @@ abstract class StockCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Stock {
+	public static function getNewElement(array $properties = []): Stock {
 
-		return new Stock(['id' => NULL]);
+		return new Stock($properties);
 
 	}
 

@@ -135,9 +135,9 @@ abstract class CacheCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Cache {
+	public static function getNewElement(array $properties = []): Cache {
 
-		return new Cache(['id' => NULL]);
+		return new Cache($properties);
 
 	}
 

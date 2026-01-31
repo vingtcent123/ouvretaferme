@@ -939,7 +939,7 @@ class FarmUi {
 				'label' => s("Paramétrage")
 			],
 			'selling' => [
-				'icon' => \Asset::icon('piggy-bank'),
+				'icon' => \Asset::icon('wallet'),
 				'label' => s("Commercialisation")
 			],
 			'shop' => [
@@ -959,12 +959,16 @@ class FarmUi {
 				'label' => s("Paramétrage")
 			],
 			'bank' => [
-				'icon' => \Asset::icon('piggy-bank'),
+				'icon' => \Asset::icon('bank'),
 				'label' => s("Banque")
 			],
 			'preaccounting' => [
 				'icon' => \Asset::icon('file-spreadsheet'),
 				'label' => s("Précomptabilité")
+			],
+			'cash' => [
+				'icon' => \Asset::icon('journal-text'),
+				'label' => s("Cahier de caisse")
 			],
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
@@ -1010,6 +1014,7 @@ class FarmUi {
 
 			'bank' => \company\CompanyUi::urlFarm($eFarm).'/banque/operations',
 			'preaccounting' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite',
+			'cash' => \company\CompanyUi::urlFarm($eFarm).'/cahier-de-caisse',
 			'accounting' => match($name) {
 				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
@@ -1304,6 +1309,16 @@ class FarmUi {
 				$h .= $this->getNav('bank', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/banque/operations');
 
 			$h .= '</div>';
+
+			if(LIME_ENV === 'dev' and \user\ConnectionLib::getOnline()['id'] === 1) {
+
+				$h .= '<div class="farm-tab-wrapper farm-nav-cash">';
+
+					$h .= $this->getNav('cash', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/cahier-de-caisse');
+
+				$h .= '</div>';
+
+			}
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-preaccounting">';
 
@@ -2696,7 +2711,7 @@ class FarmUi {
 					$h .= '<a href="'.self::urlSettingsProduction($eFarm).'" class="dropdown-item '.($selected === 'production' ? 'selected' : '').'">'.\Asset::icon('leaf').'  '.s("Paramétrer la production").'</a>';
 					$h .= '<a href="'.self::urlSettingsCommercialisation($eFarm).'" class="dropdown-item '.($selected === 'commercialisation' ? 'selected' : '').'">'.\Asset::icon('basket3').'  '.s("Paramétrer la vente").'</a>';
 					if($eFarm->hasAccounting()) {
-						$h .= '<a href="'.self::urlSettingsAccounting($eFarm).'" class="dropdown-item '.($selected === 'accounting' ? 'selected' : '').'">'.\Asset::icon('bank').'  '.s("Paramétrer la comptabilité").'</a>';
+						$h .= '<a href="'.self::urlSettingsAccounting($eFarm).'" class="dropdown-item '.($selected === 'accounting' ? 'selected' : '').'">'.\Asset::icon('piggy-bank').'  '.s("Paramétrer la comptabilité").'</a>';
 					}
 				$h .= '</div>';
 			$h .= '</h1>';
@@ -2882,7 +2897,7 @@ class FarmUi {
 					$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vendre").'</a> ';
 				}
 				if($eFarm->canAccounting()) {
-					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('bank').'<br/>'.s("Comptabilité").'</a> ';
+					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('piggy-bank').'<br/>'.s("Comptabilité").'</a> ';
 				}
 
 			$h .= '</div>';

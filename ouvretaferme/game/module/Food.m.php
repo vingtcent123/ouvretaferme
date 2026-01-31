@@ -167,9 +167,9 @@ abstract class FoodCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Food {
+	public static function getNewElement(array $properties = []): Food {
 
-		return new Food(['id' => NULL]);
+		return new Food($properties);
 
 	}
 

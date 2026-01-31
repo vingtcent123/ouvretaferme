@@ -345,9 +345,9 @@ abstract class SeriesCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Series {
+	public static function getNewElement(array $properties = []): Series {
 
-		return new Series(['id' => NULL]);
+		return new Series($properties);
 
 	}
 

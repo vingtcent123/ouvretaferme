@@ -193,9 +193,9 @@ abstract class LogCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Log {
+	public static function getNewElement(array $properties = []): Log {
 
-		return new Log(['id' => NULL]);
+		return new Log($properties);
 
 	}
 

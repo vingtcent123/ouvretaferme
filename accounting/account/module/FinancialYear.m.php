@@ -262,9 +262,9 @@ abstract class FinancialYearCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): FinancialYear {
+	public static function getNewElement(array $properties = []): FinancialYear {
 
-		return new FinancialYear(['id' => NULL]);
+		return new FinancialYear($properties);
 
 	}
 

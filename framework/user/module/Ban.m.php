@@ -209,9 +209,9 @@ abstract class BanCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Ban {
+	public static function getNewElement(array $properties = []): Ban {
 
-		return new Ban(['id' => NULL]);
+		return new Ban($properties);
 
 	}
 

@@ -154,9 +154,9 @@ abstract class SupplierCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Supplier {
+	public static function getNewElement(array $properties = []): Supplier {
 
-		return new Supplier(['id' => NULL]);
+		return new Supplier($properties);
 
 	}
 

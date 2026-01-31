@@ -3,6 +3,8 @@ namespace payment;
 
 class MethodLib extends MethodCrud {
 
+	use \ModuleDeferred;
+
 	const CARD = 'card';
 	const ONLINE_CARD = 'online-card';
 	const CASH = 'cash';
@@ -30,19 +32,28 @@ class MethodLib extends MethodCrud {
 			->get($eMethod);
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, ?bool $onlyActive = TRUE, ?int $use = Method::SELLING): \Collection {
+	public static function deferred(\farm\Farm $eFarm): \Collection {
 
-		return Method::model()
+		$callback = fn() => Method::model()
 			->select(Method::getSelection())
 			->or(
 				fn() => $this->whereFarm($eFarm),
 				fn() => $this->whereFarm(NULL)
 			)
-			->whereOnline($online, if: $online !== NULL)
-			->whereStatus(Method::ACTIVE, if: $onlyActive !== NULL)
-			->whereUse('LIKE', $use, if: $use !== NULL)
 			->sort(['name' => SORT_ASC])
-			->getCollection(NULL, NULL, 'id');
+			->getCollection(index: 'id');
+
+		return self::getCache($eFarm['id'], $callback);
+
+	}
+
+	public static function getByFarm(\farm\Farm $eFarm, ?bool $online, bool $onlyActive = TRUE, ?int $use = Method::SELLING): \Collection {
+
+		return self::askCallback(fn(Method $e) => (
+			($online === NULL or $e['online'] === $online) and
+			($onlyActive === FALSE or $e['status'] === Method::ACTIVE) and
+			($use === NULL or $e['use']->get() & $use)
+		), $eFarm);
 
 	}
 

@@ -126,9 +126,9 @@ abstract class DesignCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Design {
+	public static function getNewElement(array $properties = []): Design {
 
-		return new Design(['id' => NULL]);
+		return new Design($properties);
 
 	}
 

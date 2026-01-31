@@ -188,9 +188,9 @@ abstract class UserAutoCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): UserAuto {
+	public static function getNewElement(array $properties = []): UserAuto {
 
-		return new UserAuto(['id' => NULL]);
+		return new UserAuto($properties);
 
 	}
 

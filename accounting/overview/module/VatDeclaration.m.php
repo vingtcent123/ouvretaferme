@@ -287,9 +287,9 @@ abstract class VatDeclarationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): VatDeclaration {
+	public static function getNewElement(array $properties = []): VatDeclaration {
 
-		return new VatDeclaration(['id' => NULL]);
+		return new VatDeclaration($properties);
 
 	}
 

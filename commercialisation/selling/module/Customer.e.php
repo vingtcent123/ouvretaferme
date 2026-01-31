@@ -8,7 +8,7 @@ class Customer extends CustomerElement {
 		return parent::getSelection() + [
 			'farm' => \farm\FarmElement::getSelection(),
 			'user' => ['email'],
-			'cGroup?' => fn($e) => fn() => \selling\CustomerGroupLib::askByFarm($e['farm'], $e['groups']),
+			'cGroup?' => fn($e) => fn() => \selling\CustomerGroupLib::askCollection($e['groups'], $e['farm']),
 		];
 
 	}

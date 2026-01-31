@@ -175,9 +175,9 @@ abstract class JournalCodeCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): JournalCode {
+	public static function getNewElement(array $properties = []): JournalCode {
 
-		return new JournalCode(['id' => NULL]);
+		return new JournalCode($properties);
 
 	}
 

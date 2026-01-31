@@ -249,9 +249,9 @@ abstract class PlotCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Plot {
+	public static function getNewElement(array $properties = []): Plot {
 
-		return new Plot(['id' => NULL]);
+		return new Plot($properties);
 
 	}
 

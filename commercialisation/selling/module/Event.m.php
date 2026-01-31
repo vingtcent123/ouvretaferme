@@ -196,9 +196,9 @@ abstract class EventCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Event {
+	public static function getNewElement(array $properties = []): Event {
 
-		return new Event(['id' => NULL]);
+		return new Event($properties);
 
 	}
 

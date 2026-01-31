@@ -190,9 +190,9 @@ abstract class AmortizationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Amortization {
+	public static function getNewElement(array $properties = []): Amortization {
 
-		return new Amortization(['id' => NULL]);
+		return new Amortization($properties);
 
 	}
 

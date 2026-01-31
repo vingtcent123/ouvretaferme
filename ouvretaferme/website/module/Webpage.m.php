@@ -227,9 +227,9 @@ abstract class WebpageCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Webpage {
+	public static function getNewElement(array $properties = []): Webpage {
 
-		return new Webpage(['id' => NULL]);
+		return new Webpage($properties);
 
 	}
 

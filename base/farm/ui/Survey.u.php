@@ -35,7 +35,7 @@ class SurveyUi {
 
 			$h .= '<br/><br/>';
 
-			$h .= $form->group(content: '<div class="util-block bg-accounting color-white"><h3>'.\Asset::icon('bank').'  '.s("Comptabilité").'</h3></div>');
+			$h .= $form->group(content: '<div class="util-block bg-accounting color-white"><h3>'.\Asset::icon('piggy-bank').'  '.s("Comptabilité").'</h3></div>');
 			$h .= $form->dynamicGroups($eSurvey, ['accounting*', 'accountingType*', 'accountingAutonomy', 'accountingOtf', 'accountingInfo']);
 
 			$h .= '<br/><br/>';

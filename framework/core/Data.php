@@ -2187,6 +2187,26 @@ class Sql {
 
 }
 
+class Deferred {
+
+	protected string $value;
+	protected string $type;
+
+	public function __construct(string $value, string $type = 'text') {
+		$this->value = $value;
+		$this->type = $type;
+	}
+
+	public function __toString(): string {
+		return (string)$this->value;
+	}
+
+	public function getType(): string {
+		return $this->type;
+	}
+
+}
+
 class Search {
 
 	private bool $sortStatus = TRUE;

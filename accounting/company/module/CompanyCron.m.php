@@ -167,9 +167,9 @@ abstract class CompanyCronCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): CompanyCron {
+	public static function getNewElement(array $properties = []): CompanyCron {
 
-		return new CompanyCron(['id' => NULL]);
+		return new CompanyCron($properties);
 
 	}
 

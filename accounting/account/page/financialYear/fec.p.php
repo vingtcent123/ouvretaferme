@@ -25,7 +25,7 @@ new \account\ImportPage()
 
 		$data->cJournalCode = \journal\JournalCodeLib::getAll();
 		$data->cAccount = \account\AccountLib::getAll();
-		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE, TRUE);
+		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE);
 
 		throw new ViewAction($data);
 

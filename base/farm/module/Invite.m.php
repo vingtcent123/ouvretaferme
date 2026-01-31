@@ -213,9 +213,9 @@ abstract class InviteCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Invite {
+	public static function getNewElement(array $properties = []): Invite {
 
-		return new Invite(['id' => NULL]);
+		return new Invite($properties);
 
 	}
 

@@ -179,9 +179,9 @@ abstract class TileCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Tile {
+	public static function getNewElement(array $properties = []): Tile {
 
-		return new Tile(['id' => NULL]);
+		return new Tile($properties);
 
 	}
 

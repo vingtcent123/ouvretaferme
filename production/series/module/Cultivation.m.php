@@ -437,9 +437,9 @@ abstract class CultivationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Cultivation {
+	public static function getNewElement(array $properties = []): Cultivation {
 
-		return new Cultivation(['id' => NULL]);
+		return new Cultivation($properties);
 
 	}
 

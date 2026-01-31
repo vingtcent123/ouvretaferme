@@ -319,9 +319,9 @@ abstract class OperationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Operation {
+	public static function getNewElement(array $properties = []): Operation {
 
-		return new Operation(['id' => NULL]);
+		return new Operation($properties);
 
 	}
 

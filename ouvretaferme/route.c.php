@@ -23,6 +23,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['banque', 'operations'],
 		],
+		'/cahier-de-caisse' => [
+			'request' => 'cash/cash',
+			'priority' => 5,
+			'route' => ['cahier-de-caisse'],
+		],
 		'/client/{id}' => [
 			'request' => 'selling/customer',
 			'priority' => 5,

@@ -199,9 +199,9 @@ abstract class MediaCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Media {
+	public static function getNewElement(array $properties = []): Media {
 
-		return new Media(['id' => NULL]);
+		return new Media($properties);
 
 	}
 

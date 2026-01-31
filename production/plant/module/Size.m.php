@@ -178,9 +178,9 @@ abstract class SizeCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Size {
+	public static function getNewElement(array $properties = []): Size {
 
-		return new Size(['id' => NULL]);
+		return new Size($properties);
 
 	}
 

@@ -260,9 +260,9 @@ abstract class DateCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Date {
+	public static function getNewElement(array $properties = []): Date {
 
-		return new Date(['id' => NULL]);
+		return new Date($properties);
 
 	}
 

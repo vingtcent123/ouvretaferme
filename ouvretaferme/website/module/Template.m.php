@@ -226,9 +226,9 @@ abstract class TemplateCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Template {
+	public static function getNewElement(array $properties = []): Template {
 
-		return new Template(['id' => NULL]);
+		return new Template($properties);
 
 	}
 

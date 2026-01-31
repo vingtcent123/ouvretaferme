@@ -199,9 +199,9 @@ abstract class NewsCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): News {
+	public static function getNewElement(array $properties = []): News {
 
-		return new News(['id' => NULL]);
+		return new News($properties);
 
 	}
 

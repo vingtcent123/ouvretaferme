@@ -326,9 +326,9 @@ abstract class CampaignCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Campaign {
+	public static function getNewElement(array $properties = []): Campaign {
 
-		return new Campaign(['id' => NULL]);
+		return new Campaign($properties);
 
 	}
 

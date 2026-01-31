@@ -209,9 +209,9 @@ abstract class AccountCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Account {
+	public static function getNewElement(array $properties = []): Account {
 
-		return new Account(['id' => NULL]);
+		return new Account($properties);
 
 	}
 

@@ -453,9 +453,9 @@ abstract class FarmCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Farm {
+	public static function getNewElement(array $properties = []): Farm {
 
-		return new Farm(['id' => NULL]);
+		return new Farm($properties);
 
 	}
 

@@ -176,9 +176,9 @@ abstract class CustomizeCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Customize {
+	public static function getNewElement(array $properties = []): Customize {
 
-		return new Customize(['id' => NULL]);
+		return new Customize($properties);
 
 	}
 

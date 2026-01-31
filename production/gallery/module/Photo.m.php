@@ -207,9 +207,9 @@ abstract class PhotoCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Photo {
+	public static function getNewElement(array $properties = []): Photo {
 
-		return new Photo(['id' => NULL]);
+		return new Photo($properties);
 
 	}
 

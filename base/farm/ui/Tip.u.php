@@ -353,6 +353,22 @@ class TipUi {
 					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("En savoir plus avec l'Aide")],
 				];
 
+			case 'accounting-cash' :
+
+				$h = '<p>'.s("XXXX").'</p>';
+				$h .= '<ul style="list-style-type: none;">';
+					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("XXX").'</li>';
+					$h .= '<li>'.\Asset::icon('2-circle-fill').' '.s("YYY").'</li>';
+				$h .= '</ul>';
+
+				return [
+					'icon' => \Asset::icon('journal-text'),
+					'title' => s("À quoi sert le cahier de caisse ?"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("XXX")],
+				];
+
 			case 'accounting-custom-account' :
 
 				$h = '<p>'.s("Les numéros de comptes peuvent être personnalisés pour refléter au mieux vos habitudes.").'</p>';

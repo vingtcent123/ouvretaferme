@@ -222,9 +222,9 @@ abstract class PartnerCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Partner {
+	public static function getNewElement(array $properties = []): Partner {
 
-		return new Partner(['id' => NULL]);
+		return new Partner($properties);
 
 	}
 

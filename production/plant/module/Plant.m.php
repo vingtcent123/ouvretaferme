@@ -237,9 +237,9 @@ abstract class PlantCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Plant {
+	public static function getNewElement(array $properties = []): Plant {
 
-		return new Plant(['id' => NULL]);
+		return new Plant($properties);
 
 	}
 

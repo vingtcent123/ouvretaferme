@@ -242,9 +242,9 @@ abstract class ImportCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Import {
+	public static function getNewElement(array $properties = []): Import {
 
-		return new Import(['id' => NULL]);
+		return new Import($properties);
 
 	}
 

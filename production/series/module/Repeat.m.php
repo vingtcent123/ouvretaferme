@@ -350,9 +350,9 @@ abstract class RepeatCrud extends \ModuleCrud {
 
 	}
 
-	public static function getCreateElement(): Repeat {
+	public static function getNewElement(array $properties = []): Repeat {
 
-		return new Repeat(['id' => NULL]);
+		return new Repeat($properties);
 
 	}
 
