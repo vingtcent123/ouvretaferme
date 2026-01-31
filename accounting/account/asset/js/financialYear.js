@@ -10,6 +10,10 @@ class FinancialYear {
 			wrapper.classList.remove('hide') :
 			wrapper.classList.add('hide'));
 
+		form.qsa('[data-wrapper="vatChargeability"]', wrapper => hasVat ?
+			wrapper.classList.remove('hide') :
+			wrapper.classList.add('hide'));
+
 		form.qsa('[data-wrapper="legalCategory"]', wrapper => hasVat ?
 			wrapper.classList.remove('hide') :
 			wrapper.classList.add('hide'));

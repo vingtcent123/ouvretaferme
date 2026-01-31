@@ -92,11 +92,14 @@ class FinancialYearUi {
 				}])
 			);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['hasVat*', 'vatFrequency', 'legalCategory*', 'associates*', 'taxSystem*'],  [
+			$h .= $form->dynamicGroups($eFinancialYear, ['hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'],  [
 				'hasVat*' => function($d) use($form) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},
 				'vatFrequency' => function($d) use($form, $eFinancialYear) {
+					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
+				},
+				'vatChargeability' => function($d) use($form, $eFinancialYear) {
 					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
 				},
 				'legalCategory*' => function($d) use($form, $eFinancialYear) {
@@ -157,7 +160,7 @@ class FinancialYearUi {
 					return [];
 				}])
 			);
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*'], [
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'], [
 				'startDate*' => function($d) use($form, $eFinancialYear) {
 					if($eFinancialYear['nOperation'] > 0) {
 						$d->attributes['disabled'] = 'disabled';
@@ -168,10 +171,13 @@ class FinancialYearUi {
 						$d->attributes['disabled'] = 'disabled';
 					}
 				},
-					'hasVat*' => function($d) use($form) {
+				'hasVat*' => function($d) use($form) {
 					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				},
 				'vatFrequency' => function($d) use($form, $eFinancialYear) {
+					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
+				},
+				'vatChargeability' => function($d) use($form, $eFinancialYear) {
 					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
 				},
 				'legalCategory*' => function($d) use($form, $eFinancialYear) {
@@ -1012,6 +1018,7 @@ class FinancialYearUi {
 			'endDate' => s("Date de fin"),
 			'hasVat' => s("Êtes-vous redevable de la TVA ?"),
 			'vatFrequency' => s("Fréquence de déclaration de TVA"),
+			'vatChargeability' => s("Exigibilité de la TVA"),
 			'taxSystem' => s("Régime fiscal"),
 			'accountingType' => s("Type de comptabilité"),
 			'legalCategory' => s("Catégorie juridique"),
@@ -1057,6 +1064,14 @@ class FinancialYearUi {
 					FinancialYear::MONTHLY => s("Mensuelle"),
 					FinancialYear::QUARTERLY => s("Trimestrielle"),
 					FinancialYear::ANNUALLY => s("Annuelle"),
+				];
+				$d->attributes['mandatory'] = TRUE;
+				break;
+
+			case 'vatChargeability' :
+				$d->values = [
+					FinancialYear::CASH => s("Encaissements"),
+					FinancialYear::DEBIT => s("Débits"),
 				];
 				$d->attributes['mandatory'] = TRUE;
 				break;

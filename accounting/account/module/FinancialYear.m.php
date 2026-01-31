@@ -14,6 +14,9 @@ abstract class FinancialYearElement extends \Element {
 	const QUARTERLY = 'quarterly';
 	const ANNUALLY = 'annually';
 
+	const CASH = 'cash';
+	const DEBIT = 'debit';
+
 	const MICRO_BA = 'micro-ba';
 	const BA_REEL_SIMPLIFIE = 'ba-reel-simplifie';
 	const BA_REEL_NORMAL = 'ba-reel-normal';
@@ -21,7 +24,6 @@ abstract class FinancialYearElement extends \Element {
 	const AUTRE_BNC = 'autre-bnc';
 
 	const ACCRUAL = 'accrual';
-	const CASH = 'cash';
 
 	public static function getSelection(): array {
 		return FinancialYear::model()->getProperties();
@@ -62,6 +64,7 @@ class FinancialYearModel extends \ModuleModel {
 			'status' => ['enum', [\account\FinancialYear::OPEN, \account\FinancialYear::CLOSE], 'cast' => 'enum'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'vatFrequency' => ['enum', [\account\FinancialYear::MONTHLY, \account\FinancialYear::QUARTERLY, \account\FinancialYear::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
+			'vatChargeability' => ['enum', [\account\FinancialYear::CASH, \account\FinancialYear::DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL, \account\FinancialYear::AUTRE_BIC, \account\FinancialYear::AUTRE_BNC], 'cast' => 'enum'],
 			'accountingType' => ['enum', [\account\FinancialYear::ACCRUAL, \account\FinancialYear::CASH], 'cast' => 'enum'],
 			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'null' => TRUE, 'cast' => 'int'],
@@ -73,7 +76,7 @@ class FinancialYearModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'openDate', 'closeDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'vatChargeability', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'openDate', 'closeDate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -113,6 +116,9 @@ class FinancialYearModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'vatFrequency' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'vatChargeability' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'taxSystem' :
@@ -158,6 +164,10 @@ class FinancialYearModel extends \ModuleModel {
 
 	public function whereVatFrequency(...$data): FinancialYearModel {
 		return $this->where('vatFrequency', ...$data);
+	}
+
+	public function whereVatChargeability(...$data): FinancialYearModel {
+		return $this->where('vatChargeability', ...$data);
 	}
 
 	public function whereTaxSystem(...$data): FinancialYearModel {
