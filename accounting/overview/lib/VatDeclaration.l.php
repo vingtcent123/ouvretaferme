@@ -51,14 +51,15 @@ Class VatDeclarationLib extends VatDeclarationCrud {
 			'limit' => $limit, // Sauvegardé à titre historique
 			'cerfa' => $type,
 			'data' => $data,
+			'status' => VatDeclaration::DRAFT,
 			'financialYear' => $eFinancialYear,
 			'updatedAt' => new \Sql('NOW()'),
+			'declaredAt' => NULL,
 			'updatedBy' => \user\ConnectionLib::getOnline(),
 		]);
 
 		$affected = VatDeclaration::model()
 			->select('associates', 'cerfa', 'data', 'updatedAt', 'updatedBy')
-			->whereStatus(VatDeclaration::DRAFT)
 			->whereFrom($eVatDeclaration['from'])
 			->whereTo($eVatDeclaration['to'])
 			->update($eVatDeclaration);
