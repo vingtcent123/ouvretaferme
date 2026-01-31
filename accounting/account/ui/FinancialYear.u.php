@@ -602,7 +602,7 @@ class FinancialYearUi {
 				$h .= s("Attention, le compte {farmersAccount} est débiteur de {amount}. Soldez-le avant la clôture de l'exercice !", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'amount' => \util\TextUi::money(abs($accountsToSettle['farmersAccount']))]);
 			}
 
-			if(array_reduce($accountsToSettle['waitingAccounts'], function($sum, $waitingAccount) {
+			if((float)array_reduce($accountsToSettle['waitingAccounts'], function($sum, $waitingAccount) {
 				return $waitingAccount['total'] + $sum;
 			}, 0) !== 0.0) {
 
@@ -665,7 +665,7 @@ class FinancialYearUi {
 
 			} else if(count($eFinancialYear['trialBalanceBank']) > 1) {
 
-			$h .= '<p>'.s("Le solde de vos relevés bancaires doivent correspondre aux soldes comptables de vos banques (numéro de compte commençant par {bankAccount}).", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
+			$h .= '<p>'.s("Les soldes de vos relevés bancaires doivent correspondre aux soldes comptables de vos banques (numéro de compte commençant par {bankAccount}).", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</p>';
 
 				$h .= '<ul>';
 					foreach($eFinancialYear['trialBalanceBank'] as $account => $balance) {
