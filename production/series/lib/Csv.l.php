@@ -703,7 +703,7 @@ class CsvLib {
 			$import[$index]['cultivations'][] = [
 				'species' => $line['species'] ?? NULL,
 				'planting_type' => $line['planting_type'] ?: NULL,
-				'seeds_per_hole' => $line['seeds_per_hole'] ?: NULL,
+				'seeds_per_hole' => $line['seeds_per_hole'] ? (int)$line['seeds_per_hole'] : NULL,
 				'young_plants_tray' => $line['young_plants_tray'] ?: NULL,
 				'young_plants_tray_size' => NULL,
 				'sowing_date' => $line['sowing_date'] ?: NULL,
@@ -775,7 +775,7 @@ class CsvLib {
 				$input['plant'][$position] = $cultivation['ePlant']['id'];
 				$input['sliceUnit'][$position] = $cultivation['varieties_unit'];
 				$input['seedling'][$position] = $cultivation['planting_type'];
-				$input['seedlingSeeds'][$position] = (int)($cultivation['seeds_per_hole'] ?: 1);
+				$input['seedlingSeeds'][$position] = ($cultivation['seeds_per_hole'] ?: 1);
 				$input['mainUnit'][$position] = $cultivation['harvest_unit'];
 				$input['variety'][$position] = [
 					'variety' => [],
