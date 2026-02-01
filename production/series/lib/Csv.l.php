@@ -87,7 +87,7 @@ class CsvLib {
 					'tools',
 					'methods',
 					'cTool?' => fn($e) => fn() =>\farm\ToolLib::askCollection($e['tools'], $eFarm),
-					'cMethod?' => fn($e) => fn() =>\farm\MethodLib::askCollection($e['tools'], $eFarm),
+					'cMethod?' => fn($e) => fn() =>\farm\MethodLib::askCollection($e['methods'], $eFarm),
 					'harvest',
 					'harvestUnit',
 					'harvestSize' => ['name']
