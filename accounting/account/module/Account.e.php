@@ -8,7 +8,7 @@ class Account extends AccountElement {
 		return parent::getSelection() + [
 			'name' => new \Sql('CONCAT(class, ". ", description)'),
 			'vatAccount' => ['id', 'class', 'vatRate', 'description'],
-			'journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected()),
+			'journalCode' => \company\JournalCode::getSelection(),
 		];
 
 	}
