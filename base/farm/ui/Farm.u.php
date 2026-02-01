@@ -1454,7 +1454,7 @@ class FarmUi {
 				$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
 			}
 
-			$url = \util\HttpUi::setArgument($url, 'subNavYear', $eFinancialYear['id']);
+			$url = \util\HttpUi::setArgument($url, 'financialYear', $eFinancialYear['id']);
 			$url = \util\HttpUi::removeArgument($url, 'from');
 			$url = \util\HttpUi::removeArgument($url, 'to');
 

@@ -7,7 +7,7 @@ new AdaptativeView('import', function($data, FarmTemplate $t) {
 	$t->title = s("Importer un fichier FEC pour {value}", $data->eFarm['name']);
 	$t->canonical = \company\CompanyUi::urlAccount($data->eFarm, $data->eFarm['eFinancialYear']).'/financialYear/fec:import';
 
-	$t->mainTitle = '<h1>'.s("Importer un fichier FEC").'</h1>';
+	$t->mainTitle = '<h1>'.'<a onclick="history.back();" class="h-back">'.\Asset::icon('arrow-left').'</a>'.s("Importer un fichier FEC").'</h1>';
 
 	$canImport = $data->eFarm['cFinancialYear']->find(fn($e) => $e['nOperation'] === 0)->notEmpty();
 
