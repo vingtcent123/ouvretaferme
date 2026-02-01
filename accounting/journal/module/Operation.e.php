@@ -117,6 +117,9 @@ class Operation extends OperationElement {
 			->setCallback('account.notExists', function(\account\Account &$eAccount): bool {
 
 				$eAccount = \account\AccountLib::getById($eAccount['id'] ?? NULL);
+				if($eAccount->notEmpty() and $eAccount['vatAccount']->notEmpty()) {
+					$eAccount['vatAccount'] = \account\AccountLib::getById($eAccount['vatAccount']['id']);
+				}
 
 				return $eAccount->notEmpty();
 
