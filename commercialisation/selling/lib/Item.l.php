@@ -190,7 +190,7 @@ class ItemLib extends ItemCrud {
 
 	public static function getSummaryByDate(\farm\Farm $eFarm, \shop\Date $eDate): \Collection {
 
-		return Item::model()
+		$cItem = Item::model()
 			->select([
 				'name', 'quality',
 				'items' => new \Sql('GROUP_CONCAT(id)'),
@@ -201,7 +201,6 @@ class ItemLib extends ItemCrud {
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
 				'product' => ['vignette', 'farm', 'profile'],
 				'composition',
-				'deliveredAt' => fn() => $eDate['deliveryDate'],
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])
 			->whereFarm($eFarm, if: $eFarm->notEmpty())
@@ -211,6 +210,10 @@ class ItemLib extends ItemCrud {
 			->group(['product', 'composition', 'name', 'unit', 'packaging', 'quality'])
 			->sort('name')
 			->getCollection();
+
+		$cItem->setColumn('deliveredAt', $eDate['deliveryDate']);
+
+		return $cItem;
 
 	}
 

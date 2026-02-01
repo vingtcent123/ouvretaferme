@@ -51,7 +51,7 @@ class RegisterUi {
 
 						if((new Register(['farm' => $eFarm]))->canCreate()) {
 							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<a href="/register/:create?farm='.$eFarm['id'].'" class="dropdown-item">';
+							$h .= '<a href="'.\farm\FarmUi::urlConnected().'/register/:create" class="dropdown-item">';
 								$h .= \Asset::icon('plus-circle').' '.s("Nouveau cahier de caisse");
 							$h .= '</a> ';
 						}
