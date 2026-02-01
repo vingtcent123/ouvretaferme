@@ -100,7 +100,7 @@ tr.customer-item-details {
 
 }
 
-.customer-color-circle {
+.customer-circle {
 	display: inline-block;
 	border-radius: 50%;
 	width: 1rem;

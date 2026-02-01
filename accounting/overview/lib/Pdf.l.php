@@ -114,7 +114,7 @@ Class PdfLib {
 		$footer = \account\PdfUi::getFooter();
 		$title = new \account\PdfUi()->getName($eFinancialYear, $type);
 
-		return self::build(\Lime::getUrl().\company\CompanyUi::urlFarm($eFarm).$document.'?type='.$type, $title, $footer);
+		return self::build(\Lime::getUrl().\farm\FarmUi::urlConnected($eFarm).$document.'?type='.$type, $title, $footer);
 
 	}
 }

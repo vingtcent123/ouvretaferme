@@ -318,7 +318,7 @@ Class PreaccountingUi {
 
 		if($cCategory->notEmpty()) {
 
-			$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=product&from='.$search->get('from').'&to='.$search->get('to');
+			$url = \farm\FarmUi::urlConnected($eFarm).'/precomptabilite?type=product&from='.$search->get('from').'&to='.$search->get('to');
 
 			$list = function(string $class) use ($eFarm, $cCategory, $products, $toVerifyItems, $url, $tab) {
 
@@ -523,13 +523,13 @@ Class PreaccountingUi {
 		if($nSuggestion === 0) {
 
 			$h = \Asset::icon('fire', ['class' => 'color-accounting']).' ';
-			$h .= '<a class="color-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
+			$h .= '<a class="color-accounting" href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:rapprocher">';
 				$h .= s("Aucune facture à rapprocher pour le moment");
 			$h .= '</a>';
 			
 		} else {
 
-			$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher">';
+			$h = '<a class="btn btn-success bg-accounting border-accounting" href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:rapprocher">';
 				$h .= \Asset::icon('fire').' ';
 				$h .= '<span class="hide-md-up">';
 					$h .= $nSuggestion;
@@ -546,8 +546,8 @@ Class PreaccountingUi {
 
 	public function export(\farm\Farm $eFarm, int $nProduct, int $nPaymentToCheck, bool $isSearchValid, \Search $search): string {
 
-		$urlProduct = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=product';
-		$urlPayment = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite?type=payment';
+		$urlProduct = \farm\FarmUi::urlConnected($eFarm).'/precomptabilite?type=product';
+		$urlPayment = \farm\FarmUi::urlConnected($eFarm).'/precomptabilite?type=payment';
 
 		$h = '';
 
@@ -590,7 +590,7 @@ Class PreaccountingUi {
 					$class .= ' disabled';
 					$url = 'javascript: void(0);';
 				} else {
-					$url = \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer';
+					$url = \farm\FarmUi::urlConnected($eFarm).'/precomptabilite:importer';
 				}
 				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer les factures").'</a>';
 
@@ -601,13 +601,13 @@ Class PreaccountingUi {
 				if($isSearchValid) {
 
 					$attributes = [
-						'href' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite/ventes?from='.$search->get('from').'&to='.$search->get('to'),
+						'href' => \farm\FarmUi::urlConnected($eFarm).'/precomptabilite/ventes?from='.$search->get('from').'&to='.$search->get('to'),
 					];
 					$class = ($errors > 0 ? 'btn-warning' : 'btn-secondary');
 
 				} else {
 					$attributes = [
-						'href' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite:ventes?from='.$search->get('from').'&to='.$search->get('to'),
+						'href' => \farm\FarmUi::urlConnected($eFarm).'/precomptabilite:ventes?from='.$search->get('from').'&to='.$search->get('to'),
 					];
 					$class = 'btn-secondary disabled';
 				}

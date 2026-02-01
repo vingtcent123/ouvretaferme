@@ -31,7 +31,7 @@ new \account\FinancialYearPage(
 )
 	->doCreate(function($data) {
 
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm, $data->e).'/etats-financiers?success=account\\FinancialYear::created');
+		throw new RedirectAction(\farm\FarmUi::urlFinancialYear($data->e, $data->eFarm).'/etats-financiers?success=account\\FinancialYear::created');
 
 	});
 
@@ -92,7 +92,7 @@ new \account\FinancialYearPage(function($data) {
 		// Generate PDFs
 		\account\FinancialYearDocumentLib::regenerateAll($data->eFarm, $data->e, [\account\FinancialYearDocumentLib::OPENING, \account\FinancialYearDocumentLib::OPENING_DETAILED]);
 
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::open');
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::open');
 
 	});
 
@@ -149,7 +149,7 @@ new \account\FinancialYearPage(function($data) {
 
 		\account\FinancialYearLib::closeFinancialYear($data->eFarm, $data->e);
 
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::closed');
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::closed');
 	})
 	;
 

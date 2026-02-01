@@ -8,35 +8,23 @@ class CompanyUi {
 	}
 
 	public static function urlSettings(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
-		return self::urlFarm($eFarm, $eFinancialYear).'/configuration/accounting';
+		return \farm\FarmUi::urlFinancialYear($eFinancialYear, $eFarm).'/configuration/accounting';
 	}
 
 	public static function urlJournal(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
-		return self::urlFarm($eFarm, $eFinancialYear).'/journal';
+		return \farm\FarmUi::urlFinancialYear($eFinancialYear, $eFarm).'/journal';
 	}
 
 	public static function urlAsset(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
-		return self::urlFarm($eFarm, $eFinancialYear).'/asset';
+		return \farm\FarmUi::urlFinancialYear($eFinancialYear, $eFarm).'/asset';
 	}
 
 	public static function urlBank(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
-		return self::urlFarm($eFarm, $eFinancialYear).'/bank';
+		return \farm\FarmUi::urlFinancialYear($eFinancialYear, $eFarm).'/bank';
 	}
 
 	public static function urlAccount(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
-		return self::urlFarm($eFarm, $eFinancialYear).'/account';
-	}
-
-	public static function urlFarm(\farm\Farm $eFarm, ?\account\FinancialYear $eFinancialYear = NULL): string {
-
-		$eFinancialYear ??= $eFarm['eFinancialYear'] ?? $eFarm->getView('viewAccountingYear');
-
-		if($eFinancialYear->notEmpty()) {
-			return '/'.$eFarm['id'].'/exercice/'.$eFinancialYear['id'];
-		} else {
-			return '/'.$eFarm['id'];
-		}
-
+		return \farm\FarmUi::urlFinancialYear($eFinancialYear, $eFarm).'/account';
 	}
 
 	public function create(\farm\Farm $eFarm): string {

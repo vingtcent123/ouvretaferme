@@ -4,7 +4,7 @@ new AdaptativeView('/banque/imports', function($data, FarmTemplate $t) {
 	$t->nav = 'bank';
 
 	$t->title = s("Les imports bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/banque/imports';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/banque/imports';
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingBankTitle($data->eFarm, 'import', NULL);
 

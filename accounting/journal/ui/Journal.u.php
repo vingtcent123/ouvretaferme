@@ -483,7 +483,7 @@ class JournalUi {
 								$h .= '<div class="description'.$class.'">';
 									if($eOperation['asset']->exists() === TRUE) {
 										$attributes = [
-											'href' => \company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eOperation['asset']['id'].'/',
+											'href' => \farm\FarmUi::urlConnected($eFarm).'/immobilisation/'.$eOperation['asset']['id'].'/',
 											'data-dropdown' => 'bottom-end',
 											'data-dropdown-hover' => TRUE,
 											'data-dropdown-offset-x' => 0,
@@ -497,7 +497,7 @@ class JournalUi {
 
 								$h .= encode($eOperation['description']);
 								if($eOperation['cashflow']->notEmpty() and \account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
-									$h .= ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?id='.$eOperation['cashflow']['id'].'&bankAccount='.$eOperation['cashflow']['account']['id'].'" class="btn btn-xs btn-secondary" title="'.("Voir l'opération bancaire liée").'">';
+									$h .= ' <a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$eOperation['cashflow']['id'].'&bankAccount='.$eOperation['cashflow']['account']['id'].'" class="btn btn-xs btn-secondary" title="'.("Voir l'opération bancaire liée").'">';
 										$h .= \Asset::icon('piggy-bank');
 									$h .= '</a>';
 								}
@@ -567,12 +567,12 @@ class JournalUi {
 
 												if($eOperation->isNotLinkedToAsset()) {
 
-													$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
-													$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Rattacher à une immobilisation").'</a>';
+													$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Créer l'immobilisation").'</a>';
+													$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'" class="dropdown-item">'.s("Rattacher à une immobilisation").'</a>';
 
 												} else {
 
-													$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:unattach" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("Dissocier l'immobilisation de l'écriture ?").'">'.s("Dissocier l'immobilisation").'</a>';
+													$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:unattach" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("Dissocier l'immobilisation de l'écriture ?").'">'.s("Dissocier l'immobilisation").'</a>';
 
 												}
 											}

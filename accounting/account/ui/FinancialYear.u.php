@@ -37,7 +37,7 @@ class FinancialYearUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Clôturer un exercice comptable");
 			$h .= '</h1>';
 
@@ -52,7 +52,7 @@ class FinancialYearUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Créer un bilan d'ouverture");
 			$h .= '</h1>';
 
@@ -951,13 +951,13 @@ class FinancialYearUi {
 					$h .= '<div class="util-buttons">';
 
 						if($eFinancialYear['hasVat']) {
-							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
+							$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
 								$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
 								$h .= \Asset::icon('pencil');
 							$h .= '</a>';
 						}
 
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/tresorerie" class="util-button">';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/tresorerie" class="util-button">';
 							$h .= '<h5>'.s("Trésorerie").'</h5>';
 							$h .= \Asset::icon('bank');
 						$h .= '</a>';

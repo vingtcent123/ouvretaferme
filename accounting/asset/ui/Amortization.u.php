@@ -33,7 +33,7 @@ Class AmortizationUi {
 
 		if($amortization['id'] !== NULL and $amortization['id'] !== '') {
 
-			$link = \company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$amortization['id'].'/';
+			$link = \farm\FarmUi::urlConnected($eFarm).'/immobilisation/'.$amortization['id'].'/';
 			$description = '<a href="'.$link.'">'.encode($amortization['description']).'</a>';
 
 		} else {

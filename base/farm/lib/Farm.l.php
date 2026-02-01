@@ -140,6 +140,8 @@ class FarmLib extends FarmCrud {
 
 		\Database::addBase($base, 'ouvretaferme');
 
+		Farm::setConnected($eFarm);
+
 		\ModuleModel::resetDatabases();
 
 	}

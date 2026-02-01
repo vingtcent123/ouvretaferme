@@ -38,7 +38,7 @@ class SystemLib {
 			while(($line = fgets($handle)) !== false) {
 
 				$results = [];
-				$count = preg_match('/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\\s('.$prefix.'-'.$type.'[0-9]+)/', trim($line), $results);
+				$count = preg_match('/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s('.$prefix.'-'.$type.'[0-9]+)/', trim($line), $results);
 
 				if($count > 0) {
 					$hosts[$results[1]] = $results[2];

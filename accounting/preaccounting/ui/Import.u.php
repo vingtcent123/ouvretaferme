@@ -55,7 +55,7 @@ Class ImportUi {
 
 			if($search->empty(['from', 'to'])) {
 
-				$h .= '<div class="util-empty">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link> ?", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite">']).'</div>';
+				$h .= '<div class="util-empty">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link> ?", ['link' => '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite">']).'</div>';
 
 			} else {
 
@@ -132,7 +132,7 @@ Class ImportUi {
 									$h .= '<div class="mb-1">';
 										$difference = abs($eInvoice['priceIncludingVat'] - $eInvoice['cashflow']['amount']);
 										$form = new \util\FormUi();
-										$h .= $form->openAjax(\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:updateInvoiceAccountingDifference', ['id' => 'difference-'.$eInvoice['id'], 'name' => 'difference-'.$eInvoice['id']]);
+										$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:updateInvoiceAccountingDifference', ['id' => 'difference-'.$eInvoice['id'], 'name' => 'difference-'.$eInvoice['id']]);
 											$h .= $form->hidden('id', $eInvoice['id']);
 											$h .= '<fieldset>';
 												$h .= '<legend>';
@@ -146,7 +146,7 @@ Class ImportUi {
 								$h .= '<div class="invoicing-import-td-action">';
 									$attributes = [
 										'data-confirm' => s("Confirmez-vous importer cette facture dans votre comptabilité ?"),
-										'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoice',
+										'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doImportInvoice',
 										'post-id' => $eInvoice['id'],
 										'post-financial-year' => $eFinancialYear['id'],
 									];
@@ -161,7 +161,7 @@ Class ImportUi {
 									if($eInvoice->acceptAccountingIgnore()) {
 										$attributes = [
 											'data-confirm' => s("Confirmez-vous ignorer cette facture ? Elle ne vous sera plus jamais proposée à l'import."),
-											'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreInvoice',
+											'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doIgnoreInvoice',
 											'post-id' => $eInvoice['id'],
 											'post-financial-year' => $eFinancialYear['id'],
 										];
@@ -204,7 +204,7 @@ Class ImportUi {
 									}
 
 									$h .= '<span class="'.$class.'">'.\util\TextUi::money($eInvoice['cashflow']['amount']).'</span>';
-									$h .= '<a title="'.s("Rapprochée").'" href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'&bankAccount='.$eInvoice['cashflow']['account']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</a>';
+									$h .= '<a title="'.s("Rapprochée").'" href="'.\farm\FarmUi::urlConnected($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'&bankAccount='.$eInvoice['cashflow']['account']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</a>';
 
 								}
 
@@ -341,13 +341,13 @@ Class ImportUi {
 		$menu .= '</a>';
 
 		$attributesImport = [
-			'data-ajax-submit' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:importInvoiceCollection',
+			'data-ajax-submit' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:importInvoiceCollection',
 			'data-ajax-method' => 'get'
 		];
 		$menu .= '<a '.attrs($attributesImport).' class="batch-import batch-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
 
 		$attributesIgnore = [
-			'data-ajax-submit' => \company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doIgnoreCollection',
+			'data-ajax-submit' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doIgnoreCollection',
 			'data-confirm' => s("Confirmez-vous ignorer ces factures ? Elles ne vous seront plus jamais proposées à l'import."),
 			'post-financial-year' => $eFinancialYear['id'],
 		];

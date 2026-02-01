@@ -372,6 +372,38 @@ class FarmUi {
 		return \company\CompanyUi::urlSettings($eFarm);
 	}
 
+	public static function urlCash(\cash\Register $eRegister = new \cash\Register(), \farm\Farm $eFarm = new \farm\Farm()): string {
+		return self::urlConnected($eFarm).'/cahier-de-caisse'.($eRegister->notEmpty() ? '?register='.$eRegister['id'] : '');
+	}
+
+	public static function urlFinancialYear(?\account\FinancialYear $eFinancialYear = NULL, \farm\Farm $eFarm = new \farm\Farm()): string {
+
+		if($eFarm->empty()) {
+			$eFarm = \farm\Farm::getConnected();
+		}
+
+		$eFinancialYear ??= $eFarm['eFinancialYear'] ?? $eFarm->getView('viewAccountingYear');
+
+		$url = self::urlConnected($eFarm);
+
+		if($eFinancialYear->notEmpty()) {
+			$url .= '/exercice/'.$eFinancialYear['id'];
+		}
+
+		return $url;
+
+	}
+
+	public static function urlConnected(\farm\Farm $eFarm = new \farm\Farm()): string {
+
+		if($eFarm->empty()) {
+			$eFarm = \farm\Farm::getConnected();
+		}
+
+		return '/'.$eFarm['id'];
+
+	}
+
 	/**
 	 * Display a field to search farms
 	 *
@@ -1012,17 +1044,17 @@ class FarmUi {
 			'communications' => FarmUi::urlCommunications($eFarm, $name),
 			'analyze-commercialisation' => FarmUi::urlAnalyzeCommercialisation($eFarm, $name),
 
-			'bank' => \company\CompanyUi::urlFarm($eFarm).'/banque/operations',
-			'preaccounting' => \company\CompanyUi::urlFarm($eFarm).'/precomptabilite',
-			'cash' => \company\CompanyUi::urlFarm($eFarm).'/cahier-de-caisse',
+			'bank' => \farm\FarmUi::urlConnected($eFarm).'/banque/operations',
+			'preaccounting' => \farm\FarmUi::urlConnected($eFarm).'/precomptabilite',
+			'cash' => \farm\FarmUi::urlConnected($eFarm).'/cahier-de-caisse',
 			'accounting' => match($name) {
 				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
 				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
-				'assets' => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
-				'analyze' => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/',
-				'financials' => \company\CompanyUi::urlFarm($eFarm).'/gestion',
-				'summary' => \company\CompanyUi::urlFarm($eFarm).'/synthese',
+				'assets' => \farm\FarmUi::urlConnected($eFarm).'/immobilisations',
+				'analyze' => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/',
+				'financials' => \farm\FarmUi::urlConnected($eFarm).'/gestion',
+				'summary' => \farm\FarmUi::urlConnected($eFarm).'/synthese',
 			},
 
 		};
@@ -1306,7 +1338,7 @@ class FarmUi {
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-bank">';
 
-				$h .= $this->getNav('bank', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/banque/operations');
+				$h .= $this->getNav('bank', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/banque/operations');
 
 			$h .= '</div>';
 
@@ -1314,7 +1346,7 @@ class FarmUi {
 
 				$h .= '<div class="farm-tab-wrapper farm-nav-cash">';
 
-					$h .= $this->getNav('cash', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/cahier-de-caisse');
+					$h .= $this->getNav('cash', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/cahier-de-caisse');
 
 				$h .= '</div>';
 
@@ -1322,13 +1354,13 @@ class FarmUi {
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-preaccounting">';
 
-				$h .= $this->getNav('preaccounting', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/precomptabilite');
+				$h .= $this->getNav('preaccounting', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/precomptabilite');
 
 			$h .= '</div>';
 /*
 			$h .= '<div class="farm-tab-wrapper farm-nav-invoicing">';
 
-				$h .= $this->getNav('invoicing', $nav, link: \company\CompanyUi::urlFarm($eFarm).'/facturation-electronique');
+				$h .= $this->getNav('invoicing', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/facturation-electronique');
 
 			$h .= '</div>';
 */
@@ -1924,7 +1956,7 @@ class FarmUi {
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
 					}
 				$h .= '</div>';
 				if($number !== NULL) {
@@ -1934,7 +1966,7 @@ class FarmUi {
 
 			$h .= '<div>';
 
-				$importLink = ' <a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé").'</a>';
+				$importLink = ' <a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé").'</a>';
 
 				if($selectedView === 'bank') {
 
@@ -1984,7 +2016,7 @@ class FarmUi {
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).$value['url'].'?'.$urlMore.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).$value['url'].'?'.$urlMore.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
 							$h .= $value['label'];
 						$h .= '</a>';
 					}
@@ -2017,10 +2049,10 @@ class FarmUi {
 
 				$h .= '<div>';
 					if(array_sum($numbers['import']) > 0 and $eFarm->usesAccounting()) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
 					}
 					if($numbers['reconciliate'] > 0) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
 					}
 				$h .= '</div>';
 		$h .= '</div>';
@@ -2050,7 +2082,7 @@ class FarmUi {
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
-						$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
 					}
 				$h .= '</div>';
 			$h .= '</h1>';
@@ -2122,7 +2154,7 @@ class FarmUi {
 			$h .= '<h1>';
 
 				if($selectedView !== \overview\AnalyzeLib::TAB_FINANCIAL_YEAR) {
-					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/etats-financiers/" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				} else {
 					$title = s("Exercice comptable {value}", $eFarm['eFinancialYear']->getLabel());
 				}

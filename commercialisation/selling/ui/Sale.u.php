@@ -1342,7 +1342,7 @@ class SaleUi {
 									$h .= '<td class="td-min-content selling-label-checkbox">'.$form->inputCheckbox('sales[]', $eSale['id']).'</td>';
 									$h .= '<td class="td-min-content">'.SaleUi::link($eSale).'</td>';
 									$h .= '<td>';
-										$h .= CustomerUi::getColorCircle($eSale['customer']).' '.CustomerUi::link($eSale['customer']);
+										$h .= CustomerUi::getCircle($eSale['customer']).' '.CustomerUi::link($eSale['customer']);
 									$h .= '</td>';
 									$h .= '<td class="text-center">'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
 									$h .= '<td class="text-center">';

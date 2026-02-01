@@ -29,11 +29,11 @@ class PlantUi {
 		return \farm\FarmUi::url($eFarm).'/especes';
 	}
 
-	public static function getColorCircle(Plant $ePlant): string {
+	public static function getCircle(Plant $ePlant): string {
 
 		$ePlant->expects(['color']);
 
-		return '<div class="plant-color-circle" style="background-color: '.$ePlant['color'].'"></div>';
+		return '<div class="plant-circle" style="background-color: '.$ePlant['color'].'"></div>';
 
 	}
 
@@ -314,7 +314,7 @@ class PlantUi {
 							}
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= self::getColorCircle($ePlant);
+							$h .= self::getCircle($ePlant);
 							$h .= self::link($ePlant);
 							if($ePlant->isOwner() === FALSE) {
 								$h .= ' <span class="plant-manage-locked">'.\Asset::icon('lock-fill').'</span>';

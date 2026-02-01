@@ -24,7 +24,7 @@ Route::register([
 			'route' => ['banque', 'operations'],
 		],
 		'/cahier-de-caisse' => [
-			'request' => 'cash/cash',
+			'request' => 'cash/index',
 			'priority' => 5,
 			'route' => ['cahier-de-caisse'],
 		],

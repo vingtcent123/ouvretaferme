@@ -21,7 +21,7 @@ class ImportUi {
 			) {
 
 				$h .= '<div>';
-					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
 				$h .= '</div>';
 
 			}
@@ -62,7 +62,7 @@ class ImportUi {
 
 			$h = '<div class="util-block-help">'.("Importez ici vos opérations bancaires. Cela vous permettra de les relier à des écritures comptables et à suivre votre trésorerie.").'</div>';
 
-			$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
+			$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/imports:import" class="btn btn-primary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé OFX").'</a>';
 
 			return $h;
 		}
@@ -151,7 +151,7 @@ class ImportUi {
 
 				if(in_array($eImport['status'], [ImportElement::FULL, ImportElement::PARTIAL]) === TRUE) {
 
-					$h.= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?import='.$eImport['id'].'" class="color-white">';
+					$h.= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?import='.$eImport['id'].'" class="color-white">';
 						$h.= \Asset::icon('chevron-right', ['class' => 'mr-1']);
 						$h.= p(
 							"{number} mouvement enregistré",

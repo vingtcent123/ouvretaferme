@@ -2,7 +2,10 @@ Register:
   id: serial32
   account: ?account\Account
   paymentMethod: payment\Method
-  status: enum(ACTIVE, DELETED) = ACTIVE
+  color: color = PHP('#AAAAAA')
+  lines: int8(0, null) = 0
+  status: enum(ACTIVE, INACTIVE) = ACTIVE
+  createdAt: datetime = SPECIAL(now)
 
 Cash:
   id: serial32
@@ -21,6 +24,6 @@ Cash:
   originInvoice: ?selling\Invoice
   originSale: ?selling\Sale
   operation: journal\Operation
-  createdAt: datetime = SPECIAL(now)
   status: enum(DRAFT, VALID)
+  createdAt: datetime = SPECIAL(now)
 

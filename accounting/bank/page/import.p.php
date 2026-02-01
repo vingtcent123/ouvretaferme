@@ -25,7 +25,7 @@ new Page()
 		$eImport = \bank\ImportLib::importBankStatement($data->eFarm);
 
 		if($fw->ko()) {
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?error='.$fw->getLast());
+			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations?error='.$fw->getLast());
 		}
 
 		if($eImport['account']->empty()) {
@@ -44,7 +44,7 @@ new Page()
 
 		}
 
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank\\Import::'.$eImport['status']);
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations?success=bank\\Import::'.$eImport['status']);
 
 	});
 
@@ -69,7 +69,7 @@ new \bank\ImportPage()
 		\preaccounting\SuggestionLib::calculateSuggestionsByFarm($data->eFarm);
 		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::RECONCILIATE, \company\CompanyCron::WAITING);
 
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations?success=bank\\Import::createdAndAccountSelected');
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations?success=bank\\Import::createdAndAccountSelected');
 
 		}, ['acceptUpdateAccount'])
 ?>

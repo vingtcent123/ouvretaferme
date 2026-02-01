@@ -22,7 +22,7 @@ new AdaptativeView('open', function($data, FarmTemplate $t) {
 				echo s("Attention au principe de séparation des exercices");
 			echo '</h4>';
 				echo '<p>'.s("Réalisez d'abord la clôture de l'exercice {previousYear} avant de réaliser l'ouverture de l'exercice {currentYear}.", ['previousYear' => $data->eFinancialYearPrevious->getLabel(), 'currentYear' => $data->e->getLabel()]).'</p>';
-				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm, $data->eFinancialYearPrevious).'/etats-financiers/">'.s("Je retourne sur l'exercice {value}", $data->eFinancialYearPrevious->getLabel()).'</a>';
+				echo '<a class="btn btn-transparent" href="'.\farm\FarmUi::urlFinancialYear($data->eFinancialYearPrevious, $data->eFarm).'/etats-financiers/">'.s("Je retourne sur l'exercice {value}", $data->eFinancialYearPrevious->getLabel()).'</a>';
 		echo '</div>';
 
 	} else if($data->eFinancialYearPrevious->empty()) {

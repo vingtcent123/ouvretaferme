@@ -71,10 +71,10 @@ new \journal\OperationPage(
 		$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
 
 		if($hasMissingAsset) {
-			$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal\\'.$success.'CreateAsset';
+			$data->url = \farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal\\'.$success.'CreateAsset';
 		}
 
-		$data->url = \company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal\\'.$success;
+		$data->url = \farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal\\'.$success;
 
 	}
 
@@ -231,10 +231,10 @@ new \journal\OperationPage(
 
 		$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
 		if($hasMissingAsset) {
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal\\'.$success.'CreateAsset');
+			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal\\'.$success.'CreateAsset');
 		}
 
-		throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal\\'.$success);
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&success=journal\\'.$success);
 
 	});
 

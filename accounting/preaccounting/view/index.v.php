@@ -4,7 +4,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	Asset::js('preaccounting', 'preaccounting.js');
 
 	$t->title = s("Précomptabilité des factures de {value}", $data->eFarm['name']);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite';
 
 	$t->nav = 'preaccounting';
 
@@ -161,7 +161,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 	Asset::js('preaccounting', 'preaccounting.js');
 
 	$t->title = s("Précomptabilité des ventes de {value}", $data->eFarm['name']);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite/ventes';
 
 	$t->nav = 'preaccounting';
 
@@ -173,7 +173,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	$mainTitle .= '<div class="util-action">';
 		$mainTitle .= '<h1>';
-		$mainTitle .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$mainTitle .= '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$mainTitle .= s("Exporter les données des ventes");
 		$mainTitle .= '</h1>';
 
@@ -239,7 +239,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 		echo '</ul>';
 
 		parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
-		$url = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
+		$url = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
 
 		echo '<div class="mt-2 mb-2 text-center">';
 			echo '<a class="dropdown-toggle btn btn-lg btn-secondary" data-dropdown="bottom-down" >'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
@@ -281,9 +281,9 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$t->subNav = 'operations';
 
 	$t->title = s("Importer les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:importer';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite:importer';
 
-	$navigation = '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+	$navigation = '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 	$maintitle = new \farm\FarmUi()->getAccountingYears($data->eFarm);
 	$maintitle .= '<h1>'.$navigation.s("Importer les factures dans le logiciel comptable").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
 	$t->mainTitle = $maintitle;
@@ -297,8 +297,8 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 	$t->nav = 'bank';
 
 	$t->title = s("Rapprocher factures et opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite:rapprocher';
-	$navigation = '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="h-back">'.\Asset::icon('arrow-left').'</a>';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite:rapprocher';
+	$navigation = '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 	$t->mainTitle = '<h1>'.$navigation.s("Rapprocher factures et opérations bancaires").($data->countsByInvoice > 0 ? '<span class="util-counter ml-1">'.$data->countsByInvoice.'</span>' : '').'</h1>';
 
 	if($data->ccSuggestion->empty()) {
@@ -323,9 +323,9 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 			echo '</p>';
 
 			if($data->eImportLast->empty()) {
-				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import">'.s("Importer un premier relevé bancaire").'</a>';
+				echo '<a class="btn btn-transparent" href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/imports:import">'.s("Importer un premier relevé bancaire").'</a>';
 			} else {
-				echo '<a class="btn btn-transparent" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import">'.s("Importer un relevé bancaire").'</a>';
+				echo '<a class="btn btn-transparent" href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/imports:import">'.s("Importer un relevé bancaire").'</a>';
 			}
 
 		echo '</div>';

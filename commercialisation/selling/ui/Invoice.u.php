@@ -321,7 +321,7 @@ class InvoiceUi {
 												$h .= self::getPaymentStatusBadge($eInvoice['paymentStatus'], $eInvoice['paidAt']);
 											}
 
-											$h .= ($eInvoice['cashflow']['id'] ?? NULL) ? '<a href="'.\company\CompanyUi::urlFarm($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</a>' :  '';
+											$h .= ($eInvoice['cashflow']['id'] ?? NULL) ? '<a href="'.\farm\FarmUi::urlConnected($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').' '.s("Rapprochée").'</a>' :  '';
 
 											$h .= $late;
 

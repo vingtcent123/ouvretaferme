@@ -35,7 +35,7 @@ Class AssetUi {
 
 			$h .= '<div class="util-info">'.s("Aucune immobilisation ni subvention n'est disponible pour être rattachée. Souhaitez-vous plutôt créer l'immobilisation ?").'</div>';
 
-			$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.join('&ids[]=', $cOperation->getIds()).'">'.s("Créer l'immobilisation").'</a>';
+			$h .= '<a class="btn btn-primary" href="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:create?ids[]='.join('&ids[]=', $cOperation->getIds()).'">'.s("Créer l'immobilisation").'</a>';
 
 		} else {
 
@@ -104,7 +104,7 @@ Class AssetUi {
 							$attributes = [
 								'class' => 'btn btn-primary',
 								'data-confirm' => s("Confirmez-vous ce rattachement ?"),
-								'data-ajax' => \company\CompanyUi::urlFarm($eFarm).'/asset/:doAttach',
+								'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/asset/:doAttach',
 								'post-id' => $eAsset['id'],
 								'post-operations' => join(',', $cOperation->getIds())
 							];
@@ -211,7 +211,7 @@ Class AssetUi {
 		} else {
 			$recommendationText = '';
 		}
-		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.($recommendationText ? '' : 'hide').'" data-url="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:getRecommendedDuration">';
+		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.($recommendationText ? '' : 'hide').'" data-url="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:getRecommendedDuration">';
 			$h .= $recommendationText;
 		$h .= '</div>';
 
@@ -514,7 +514,7 @@ Class AssetUi {
 									$h .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
 								$h .= '</div>';
 							$h .= '</td>';
-							$h .= '<td><a href="'.\company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
+							$h .= '<td><a href="'.\farm\FarmUi::urlConnected($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
 							$h .= '<td class="text-center">';
 								$h .= match($eAsset['economicMode']) {
 									AssetElement::LINEAR => s("LIN"),
@@ -1057,7 +1057,7 @@ Class AssetUi {
 					$tableContent .= '<span class="dropdown-item">'.encode($eAsset['account']['class']).' '.encode($eAsset['account']['description']).'</span>';
 					$tableContent .= '</div>';
 				$tableContent .= '</td>';
-				$tableContent .= '<td><a href="'.\company\CompanyUi::urlFarm($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
+				$tableContent .= '<td><a href="'.\farm\FarmUi::urlConnected($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
 				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
 				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
 				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';

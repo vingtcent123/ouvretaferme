@@ -70,12 +70,12 @@ class CashModel extends \ModuleModel {
 			'originInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'originSale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
-			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\cash\Cash::DRAFT, \cash\Cash::VALID], 'cast' => 'enum'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'register', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'account', 'thirdParty', 'origin', 'originBank', 'originInvoice', 'originSale', 'operation', 'createdAt', 'status'
+			'id', 'name', 'register', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'account', 'thirdParty', 'origin', 'originBank', 'originInvoice', 'originSale', 'operation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -196,12 +196,12 @@ class CashModel extends \ModuleModel {
 		return $this->where('operation', ...$data);
 	}
 
-	public function whereCreatedAt(...$data): CashModel {
-		return $this->where('createdAt', ...$data);
-	}
-
 	public function whereStatus(...$data): CashModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): CashModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 

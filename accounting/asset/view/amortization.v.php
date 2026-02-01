@@ -5,7 +5,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 	$t->subNav = 'assets';
 
 	$t->title = s("Les immobilisations de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/immobilisations';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/immobilisations';
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingAssetsTitle($data->eFarm, $data->view, $data->hasAsset, $data->eFinancialYearDocument);
 
@@ -30,7 +30,7 @@ new AdaptativeView('/immobilisations', function($data, FarmTemplate $t) {
 
 		if($data->nOperationMissingAsset > 0) {
 
-			echo '<a class="btn btn-success bg-accounting border-accounting mb-1" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?needsAsset=1">';
+			echo '<a class="btn btn-success bg-accounting border-accounting mb-1" href="'.\farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?needsAsset=1">';
 				echo \Asset::icon('exclamation-triangle').' ';
 				echo p("{value} fiche d'immobilisation à créer", "{value} fiches d'immobilisation à créer", $data->nOperationMissingAsset);
 			echo '</a>';
@@ -98,7 +98,7 @@ new AdaptativeView('/immobilisations/acquisitions', function($data, FarmTemplate
 
 		if($data->nOperationMissingAsset > 0) {
 
-			echo '<a class="btn btn-success bg-accounting border-accounting mb-1" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal?needsAsset=1">';
+			echo '<a class="btn btn-success bg-accounting border-accounting mb-1" href="'.\farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?needsAsset=1">';
 				echo \Asset::icon('exclamation-triangle').' ';
 				echo p("{value} fiche d'immobilisation à créer", "{value} fiches d'immobilisation à créer", $data->nOperationMissingAsset);
 			echo '</a>';

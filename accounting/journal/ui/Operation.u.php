@@ -373,8 +373,8 @@ class OperationUi {
 			$h .= '<div class="mt-1 mb-1">';
 				$h .= '<span class="color-warning">'.\Asset::icon('exclamation-triangle').' '.s("Attention, l'immobilisation correspondante n'a pas encore été créée ou rattachée.").'</span>';
 				$h .= '<br />';
-				$h .= '<a class="btn btn-outline-warning" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'">'.s("Créer").'</a>';
-				$h .= ' <a class="btn btn-outline-warning" href="'.\company\CompanyUi::urlFarm($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'">'.s("Rattacher").'</a>';
+				$h .= '<a class="btn btn-outline-warning" href="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:create?ids[]='.$eOperation['id'].'">'.s("Créer").'</a>';
+				$h .= ' <a class="btn btn-outline-warning" href="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:attach?ids[]='.$eOperation['id'].'">'.s("Rattacher").'</a>';
 			$h .= '</div>';
 		}
 
@@ -461,7 +461,7 @@ class OperationUi {
 				$h .= '<table class="tr-even">';
 					$h .= '<tr>';
 						$h .= '<th colspan="2" class="text-center">';
-							$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?id='.$eCashflow['id'].'&bankAccount='.$eCashflow['account']['id'].'" target="_blank">';
+							$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$eCashflow['id'].'&bankAccount='.$eCashflow['account']['id'].'" target="_blank">';
 								$h .= s("Opération #{id} du {date}", [
 									'id' => encode($eCashflow['id']),
 									'icon' => \Asset::icon('box-arrow-up-right').'</a>',
@@ -1326,13 +1326,13 @@ class OperationUi {
 				$cashflow .= '</tbody>';
 			$cashflow .= '</table>';
 			$cashflow .= '<div class="util-annotation">';
-				$cashflow .= s("Vous ne trouvez pas l'opération que vous cherchez ? Essayez de la retrouver en <link>consultant toutes les opérations bancaires sans écriture</link>.", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?status=waiting">']);
+				$cashflow .= s("Vous ne trouvez pas l'opération que vous cherchez ? Essayez de la retrouver en <link>consultant toutes les opérations bancaires sans écriture</link>.", ['link' => '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?status=waiting">']);
 			$cashflow .= '</div>';
 
 		} else {
 
 			$cashflow = '<div class="util-block-secondary">';
-				$cashflow .= s("Aucune opération bancaire non rattachée à des écritures et d'un montant ±1€ n'a pu être retrouvée. Tentez l'action dans l'autre sens en <link>partant des opérations bancaires</link> pour y rattacher vos écritures !", ['link' => '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?status=waiting">']);
+				$cashflow .= s("Aucune opération bancaire non rattachée à des écritures et d'un montant ±1€ n'a pu être retrouvée. Tentez l'action dans l'autre sens en <link>partant des opérations bancaires</link> pour y rattacher vos écritures !", ['link' => '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?status=waiting">']);
 			$cashflow .= '</div>';
 
 		}
@@ -1472,7 +1472,7 @@ class OperationUi {
 		$d->placeholder ??= s("Écriture...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:query';
+		$d->autocompleteUrl = \farm\FarmUi::urlConnected($eFarm).'/journal/operation:query';
 		$d->autocompleteResults = function(Operation $eOperation) use($eCashflow) {
 			return self::getAutocomplete($eCashflow, $eOperation);
 		};
@@ -1510,7 +1510,7 @@ class OperationUi {
 
 		return [
 			'value' => $eOperation['id'],
-			'link' => \company\CompanyUi::urlFarm($eFarm).'/journal/deferral:set?id='.$eOperation['id'],
+			'link' => \farm\FarmUi::urlConnected($eFarm).'/journal/deferral:set?id='.$eOperation['id'],
 			'itemHtml' => $itemHtml,
 			'itemText' => encode($eOperation['description']).' - '.s(
 					"{type} de {amount}", [
@@ -1530,7 +1530,7 @@ class OperationUi {
 		$d->placeholder ??= s("Écriture...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:queryForDeferral';
+		$d->autocompleteUrl = \farm\FarmUi::urlConnected($eFarm).'/journal/operation:queryForDeferral';
 		$d->autocompleteResults = function(Operation $eOperation) use($eFarm) {
 			return self::getAutocompleteDeferral($eFarm, $eOperation);
 		};
@@ -1545,7 +1545,7 @@ class OperationUi {
 		$d->placeholder ??= s("Libellé...");
 		$d->multiple = $multiple;
 
-		$d->autocompleteUrl = \company\CompanyUi::urlFarm($eFarm).'/journal/operation:queryDescription';
+		$d->autocompleteUrl = \farm\FarmUi::urlConnected($eFarm).'/journal/operation:queryDescription';
 		$d->autocompleteResults = function(string $description) {
 			return self::getAutocompleteDescriptions($description);
 		};

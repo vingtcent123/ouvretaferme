@@ -139,7 +139,7 @@ Class ReconciliateUi {
 							$h .= '<td></td>';
 							$h .= '<td>';
 
-								$h .= $form->openAjax(\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doUpdatePaymentMethod', ['id' => 'preaccounting-payment', 'class' => 'flex-justify-space-between']);
+								$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:doUpdatePaymentMethod', ['id' => 'preaccounting-payment', 'class' => 'flex-justify-space-between']);
 								$h .= $form->hidden('id', $eSuggestion['id']);
 								$h .= $form->inputGroup(
 									$form->dynamicField($eSuggestion, 'paymentMethod', function($d) use($form, $cMethod, $eSuggestion) {
@@ -164,13 +164,13 @@ Class ReconciliateUi {
 								} else {
 									$attributes['data-confirm'] = s("Confirmez-vous ce rapprochement ?");
 								}
-								$h .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
+								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:doReconciliate" '.attrs($attributes).'>';
 									$h .= \Asset::icon('hand-thumbs-up');
 									$h .= '<span class="hide-sm-down"> '.s("Rapprocher").'</span>';
 								$h .= '</a>';
 								$h .= '  ';
 								$attributes['data-confirm'] = s("Confirmez-vous ignorer ce rapprochement ? Il ne vous sera plus jamais proposé.");
-								$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnore" '.attrs($attributes).'>';
+								$h .= '<a class="btn btn-outline-secondary btn-sm"  data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:doIgnore" '.attrs($attributes).'>';
 									$h .= \Asset::icon('hand-thumbs-down');
 									$h .= '<span class="hide-sm-down"> '.s("Ignorer").'</span>';
 								$h .= '</a>';
@@ -266,7 +266,7 @@ Class ReconciliateUi {
 
 	public function getBatch(\farm\Farm $eFarm): string {
 
-		$urlIgnore = \company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doIgnoreCollection';
+		$urlIgnore = \farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:doIgnoreCollection';
 		$title = s("Pour les suggestions sélectionnées");
 
 		$menu = '<div class="batch-amount batch-item">';
@@ -278,7 +278,7 @@ Class ReconciliateUi {
 		$menu .= '</div>';
 
 
-		$menu .= '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:reconciliate" data-ajax-method="get" data-batch-test="accept-reconciliate" data-batch-contains="get" data-batch-not-contains="hide" class="batch-item">';
+		$menu .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:reconciliate" data-ajax-method="get" data-batch-test="accept-reconciliate" data-batch-contains="get" data-batch-not-contains="hide" class="batch-item">';
 			$menu .= \Asset::icon('hand-thumbs-up');
 			$menu .= '<span>'.s("Rapprocher").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-reconciliate" data-batch-contains="count" data-batch-only="hide"></span></span>';
 		$menu .= '</a>';
@@ -309,7 +309,7 @@ Class ReconciliateUi {
 
 	public function reconciliate(\farm\Farm $eFarm, \Collection $cSuggestion): \Panel {
 
-		$urlReconciliate = \company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:doReconciliateCollection';
+		$urlReconciliate = \farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:doReconciliateCollection';
 
 		$form = new \util\FormUi();
 

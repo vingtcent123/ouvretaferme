@@ -8,7 +8,7 @@ abstract class RegisterElement extends \Element {
 	private static ?RegisterModel $model = NULL;
 
 	const ACTIVE = 'active';
-	const DELETED = 'deleted';
+	const INACTIVE = 'inactive';
 
 	public static function getSelection(): array {
 		return Register::model()->getProperties();
@@ -46,11 +46,14 @@ class RegisterModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'cast' => 'element'],
-			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::DELETED], 'cast' => 'enum'],
+			'color' => ['color', 'cast' => 'string'],
+			'lines' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::INACTIVE], 'cast' => 'enum'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'paymentMethod', 'status'
+			'id', 'account', 'paymentMethod', 'color', 'lines', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -64,8 +67,17 @@ class RegisterModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'color' :
+				return '#AAAAAA';
+
+			case 'lines' :
+				return 0;
+
 			case 'status' :
 				return Register::ACTIVE;
+
+			case 'createdAt' :
+				return new \Sql('NOW()');
 
 			default :
 				return parent::getDefaultValue($property);
@@ -108,8 +120,20 @@ class RegisterModel extends \ModuleModel {
 		return $this->where('paymentMethod', ...$data);
 	}
 
+	public function whereColor(...$data): RegisterModel {
+		return $this->where('color', ...$data);
+	}
+
+	public function whereLines(...$data): RegisterModel {
+		return $this->where('lines', ...$data);
+	}
+
 	public function whereStatus(...$data): RegisterModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): RegisterModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 

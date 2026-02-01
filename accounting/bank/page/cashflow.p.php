@@ -89,7 +89,7 @@ new \bank\CashflowPage(function($data) {
 		}
 
 		if($e->acceptAllocate() === FALSE) {
-			throw new RedirectAction(\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations');
+			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations');
 		}
 
 	})

@@ -4,7 +4,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 	$t->nav = 'bank';
 
 	$t->title = s("Les opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/banque/operations';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/banque/operations';
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingBankTitle($data->eFarm, 'bank', $data->nCashflow);
 
@@ -23,7 +23,7 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 				'<li>'.s("rapprocher automatiquement vos factures et vos opérations bancaires pour vérifier qui a payé").'</li>'.
 				'<li>'.s("créer vos écritures comptables en un clic à partir du relevé bancaire si vous utilisez le logiciel comptable").'</li>'.
 			'</ul>'.
-			'<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/imports:import" class="btn btn-secondary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé bancaire").'</a>'.
+			'<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/imports:import" class="btn btn-secondary">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé bancaire").'</a>'.
 		'</div>';
 		return;
 	}

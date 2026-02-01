@@ -8,7 +8,7 @@ Class InvoiceUi {
 
 		$form = new \util\FormUi();
 		$h = $form->openAjax(
-			\company\CompanyUi::urlFarm($eFarm).'/preaccounting/import:doImportInvoiceCollection',
+			\farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doImportInvoiceCollection',
 			[
 				'id' => 'preaccounting-import-invoices',
 			],

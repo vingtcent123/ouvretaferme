@@ -11,8 +11,11 @@ class RegisterLib extends RegisterCrud {
 
 		return Register::model()
 			->select(Register::getSelection())
-			->sort(['id' => SORT_ASC])
-			->getCollection();
+			->sort([
+				new \Sql('FIELD(status, "'.Register::ACTIVE.'", "'.Register::INACTIVE.'") ASC'),
+				'id' => SORT_ASC
+			])
+			->getCollection(index: 'id');
 
 	}
 

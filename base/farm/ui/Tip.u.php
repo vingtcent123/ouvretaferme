@@ -302,7 +302,7 @@ class TipUi {
 
 			case 'accounting-invoice-cashflow' :
 
-				$link = \company\CompanyUi::urlFarm($eFarm).'/banque/imports:import';
+				$link = \farm\FarmUi::urlConnected($eFarm).'/banque/imports:import';
 
 				$h = '<p>'.s("Il vous est possible de marquer vos factures <b>payées</b> avec leur moyen et date de paiement, en les rapprochant avec une opération bancaire.").'</p>';
 				$h .= '<p>'.s("Pour que cela fonctionne, il faut :").'</p>';
@@ -355,18 +355,20 @@ class TipUi {
 
 			case 'accounting-cash' :
 
-				$h = '<p>'.s("XXXX").'</p>';
+				$h = '<p>'.s("Un cahier de caisse est un document comptable qui sert à enregistrer de manière chronologique et détaillée toutes les transactions en espèces, comprenant à la fois les recettes et les dépenses. Le cahier de caisse est obligatoire dès lors que vous manipulez des espèces.").'</p>';
+				$h .= '<p>'.s("{siteName} vous permet de créer un nombre illimité de cahiers de caisses conformes aux exigences de la réglementation. Vous avez également la possibilité de créer des cahiers pour d'autres moyens de paiement que les espèces, par exemple si vous voulez faire un suivi de vos chèques.").'</p>';
+				$h .= '<h3>'.s("Utiliser le cahier de caisse").'</h3>';
 				$h .= '<ul style="list-style-type: none;">';
-					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("XXX").'</li>';
-					$h .= '<li>'.\Asset::icon('2-circle-fill').' '.s("YYY").'</li>';
+					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("Configurez le moyen de paiement du cahier de caisse").'</li>';
+					$h .= '<li>'.\Asset::icon('2-circle-fill').' '.s("Commencez à saisir vos transactions").'</li>';
 				$h .= '</ul>';
 
 				return [
 					'icon' => \Asset::icon('journal-text'),
-					'title' => s("À quoi sert le cahier de caisse ?"),
+					'title' => s("Qu'est-ce qu'un cahier de caisse ?"),
 					'content' => $h,
 					'image' => FALSE,
-					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("XXX")],
+					'button' => NULL,
 				];
 
 			case 'accounting-custom-account' :
@@ -446,7 +448,7 @@ class TipUi {
 
 				$h .= '<ul>';
 
-					$h .= '<li><a href="'.\company\CompanyUi::urlFarm($eFarm).'/precomptabilite:importer">'.s("Importez vos factures rapprochées").'</a></li>';
+					$h .= '<li><a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:importer">'.s("Importez vos factures rapprochées").'</a></li>';
 					$h .= '<li><a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal">'.s("Enregistrez des écritures comptables").'</a></li>';
 
 				$h .= '</ul>';

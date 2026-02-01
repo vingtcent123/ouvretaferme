@@ -4,7 +4,7 @@ new AdaptativeView('/facturation-electronique', function($data, FarmTemplate $t)
 	$t->nav = 'invoicing';
 
 	$t->title = s("Les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/facturation-electronique';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/facturation-electronique';
 
 	$this->mainTitleClass = 'invoicing-presentation';
 
@@ -21,7 +21,7 @@ new AdaptativeView('/factures/', function($data, FarmTemplate $t) {
 	$t->nav = 'invoicing';
 
 	$t->title = s("Les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/factures/';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/factures/';
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingInvoiceTitle($data->eFarm, $data->counts);
 
@@ -39,7 +39,7 @@ new AdaptativeView('/factures/', function($data, FarmTemplate $t) {
 
 		foreach(['buy', 'sell'] as $tab) {
 
-			echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\company\CompanyUi::urlFarm($data->eFarm).'/factures/?tab='.$tab.'">';
+			echo '<a class="tab-item '.($data->selectedTab === $tab ? ' selected' : '').'" data-tab="'.$tab.'" href="'.\farm\FarmUi::urlConnected($data->eFarm).'/factures/?tab='.$tab.'">';
 			echo match($tab) {
 				'sell' => s("Ventes"),
 				'buy' => s("Achats"),

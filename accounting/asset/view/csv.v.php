@@ -8,7 +8,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 	$t->canonical = \company\CompanyUi::urlAsset($data->eFarm).'/csv';
 
 	$mainTitle = '<h1>';
-		$mainTitle .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/immobilisations"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$mainTitle .= '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/immobilisations"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$mainTitle .= s("Importer mes immobilisations");
 	$mainTitle .= '</h1>';
 
@@ -18,7 +18,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-success">';
 			echo '<p>'.s("Les immobilisations contenues dans votre fichier CSV ont bien été ajoutées à votre ferme !").'</p>';
-			echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/immobilisations" class="btn btn-transparent">'.s("Voir toutes mes immobilisations").'</a>';
+			echo '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/immobilisations" class="btn btn-transparent">'.s("Voir toutes mes immobilisations").'</a>';
 		echo '</div>';
 
 	}
@@ -41,7 +41,7 @@ new AdaptativeView('importFile', function($data, FarmTemplate $t) {
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>';
-			$h .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/immobilisations"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+			$h .= '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/immobilisations"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$h .= p("Votre fichier CSV contient {value} immobilisation", "Votre fichier CSV contient {value} immobilisations", count($data->data['import']));
 		$h .= '</h1>';
 		$h .= '<a href="'.\company\CompanyUi::urlAsset($data->eFarm).'/csv?reset" class="btn btn-primary">'.s("Téléverser un autre fichier").'</a>';

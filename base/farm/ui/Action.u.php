@@ -7,13 +7,13 @@ class ActionUi {
 		\Asset::css('farm', 'action.css');
 	}
 
-	public static function getColorCircle(Action $eAction): string {
+	public static function getCircle(Action $eAction): string {
 
 		$eAction->expects(['color']);
 
 		\Asset::css('farm', 'action.css');
 
-		return '<div class="action-color-circle" style="background-color: '.$eAction['color'].'"></div>';
+		return '<div class="action-circle" style="background-color: '.$eAction['color'].'"></div>';
 
 	}
 
@@ -27,7 +27,7 @@ class ActionUi {
 
 	public static function getPanelHeader(Action $eAction): string {
 
-		return '<div class="panel-header-subtitle">'.self::getColorCircle($eAction, '2rem').'  '.encode($eAction['name']).'</div>';
+		return '<div class="panel-header-subtitle">'.self::getCircle($eAction, '2rem').'  '.encode($eAction['name']).'</div>';
 
 	}
 
@@ -176,7 +176,7 @@ class ActionUi {
 
 					$h .= '<tr>';
 						$h .= '<td>';
-							$h .= \farm\ActionUi::getColorCircle($eAction);
+							$h .= \farm\ActionUi::getCircle($eAction);
 							$h .= encode($eAction['name']);
 							$h .= '<div class="action-manage-categories hide-sm-up">'.implode(' / ', $categories).'</div>';
 						$h .= '</td>';

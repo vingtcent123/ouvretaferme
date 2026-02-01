@@ -5,7 +5,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_CHARGES, function($data, FarmTempla
 	$t->subNav = 'analyze';
 
 	$t->title = s("Les charges de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
@@ -34,7 +34,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 	$t->subNav = 'analyze';
 
 	$t->title = s("L'exercice comptable {year} de {farm}", ['year' => $data->eFarm['eFinancialYear']->getLabel(), 'farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/';
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, \overview\AnalyzeLib::TAB_FINANCIAL_YEAR);
 
@@ -58,14 +58,14 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 
 			echo '</a>';
 
-			echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="util-button">';
+			echo '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations" class="util-button">';
 
 				echo '<h4>'.s("Créer une écriture depuis mes opérations bancaires").'</h4>';
 				echo \Asset::icon('piggy-bank');
 
 			echo '</a>';
 
-			echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm, $data->eFinancialYear).'/etats-financiers/" class="util-button">';
+			echo '<a href="'.\farm\FarmUi::urlFinancialYear($data->eFinancialYear, $data->eFarm).'/etats-financiers/" class="util-button">';
 
 				echo '<h4>'.s("Importer un fichier FEC depuis les paramètres de l'exercice").'</h4>';
 				echo \Asset::icon('gear');
@@ -88,7 +88,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_BANK, function($data, FarmTemplate 
 	$t->subNav = 'analyze';
 
 	$t->title = s("La trésorerie de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view);
 
@@ -102,7 +102,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_SIG, function($data, FarmTemplate $
 	$t->subNav = 'analyze';
 
 	$t->title = s("Les soldes intermédiaires de gestion de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle(
 		$data->eFarm,
@@ -138,7 +138,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_BALANCE_SHEET, function($data, Farm
 	$t->subNav = 'analyze';
 
 	$t->title = s("Le bilan de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view, $data->eFinancialYearDocument, count($data->balanceSheetData) > 0);
 
@@ -186,7 +186,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_INCOME_STATEMENT, function($data, F
 	$t->subNav = 'analyze';
 
 	$t->title = s("Le compte de résultat de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/'.$data->view;
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/'.$data->view;
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingFinancialsTitle($data->eFarm, $data->view, $data->eFinancialYearDocument, count($data->resultData) > 0);
 
@@ -219,10 +219,10 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 	$t->subNav = 'analyze';
 
 	$t->title = s("La TVA de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/declaration-de-tva';
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/declaration-de-tva';
 
 	$mainTitle = '<h1>';
-		$mainTitle .= '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/etats-financiers/" class="h-back">'.Asset::icon('arrow-left').'</a>';
+		$mainTitle .= '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/" class="h-back">'.Asset::icon('arrow-left').'</a>';
 		$mainTitle .= s("Déclaration de TVA");
 	$mainTitle .= '</h1>';
 	$t->mainTitle = $mainTitle;

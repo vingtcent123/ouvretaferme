@@ -139,16 +139,16 @@ Class FinancialYearDocumentUi {
 
 		$h = '<div class="util-block mb-0">';
 			$url = match($document) {
-				FinancialYearDocumentLib::BALANCE_SHEET => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
-				FinancialYearDocumentLib::OPENING => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
-				FinancialYearDocumentLib::OPENING_DETAILED => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan?type=detailed',
-				FinancialYearDocumentLib::CLOSING => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan',
-				FinancialYearDocumentLib::CLOSING_DETAILED => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/bilan?type=detailed',
-				FinancialYearDocumentLib::INCOME_STATEMENT => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/compte-de-resultat',
-				FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/compte-de-resultat?type=detailed',
-				FinancialYearDocumentLib::SIG => \company\CompanyUi::urlFarm($eFarm).'/etats-financiers/sig',
-				FinancialYearDocumentLib::ASSET_AMORTIZATION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations',
-				FinancialYearDocumentLib::ASSET_ACQUISITION => \company\CompanyUi::urlFarm($eFarm).'/immobilisations/acquisitions',
+				FinancialYearDocumentLib::BALANCE_SHEET => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/bilan',
+				FinancialYearDocumentLib::OPENING => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/bilan',
+				FinancialYearDocumentLib::OPENING_DETAILED => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/bilan?type=detailed',
+				FinancialYearDocumentLib::CLOSING => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/bilan',
+				FinancialYearDocumentLib::CLOSING_DETAILED => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/bilan?type=detailed',
+				FinancialYearDocumentLib::INCOME_STATEMENT => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/compte-de-resultat',
+				FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/compte-de-resultat?type=detailed',
+				FinancialYearDocumentLib::SIG => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/sig',
+				FinancialYearDocumentLib::ASSET_AMORTIZATION => \farm\FarmUi::urlConnected($eFarm).'/immobilisations',
+				FinancialYearDocumentLib::ASSET_ACQUISITION => \farm\FarmUi::urlConnected($eFarm).'/immobilisations/acquisitions',
 				FinancialYearDocumentLib::BALANCE => \company\CompanyUi::urlJournal($eFarm).'/balance',
 				FinancialYearDocumentLib::BALANCE_DETAILED => \company\CompanyUi::urlJournal($eFarm).'/balance?precision=8',
 			};

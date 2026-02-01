@@ -100,7 +100,7 @@ class CashflowUi {
 				$isSelected = ($eBankAccount['id'] === $eBankAccountSelected['id']);
 
 				$getArgs['bankAccount'] = $eBankAccount['id'];
-				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations?'.http_build_query($getArgs).'">';
+				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?'.http_build_query($getArgs).'">';
 					$label = '<div class="text-center">';
 						$label .= s("Compte {value}", $eBankAccount['label']);
 						if($eBankAccount['description']) {
@@ -394,7 +394,7 @@ class CashflowUi {
 				} else {
 					$confirm = s("Cette action supprimera le rapprochement entre la facture et l'opération bancaire mais ne supprimera pas les écritures comptables créées. Vous pourrez les supprimer manuellement. Confirmez-vous cette action ?");
 				}
-				$reconciliate = '<a data-ajax="'.\company\CompanyUi::urlFarm($eFarm).'/preaccounting/reconciliate:cancel"  post-cashflow="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+				$reconciliate = '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:cancel"  post-cashflow="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
 					$reconciliate .= s("Annuler le rapprochement");
 				$reconciliate .= '</a>';
 
@@ -891,7 +891,7 @@ class CashflowUi {
 			$h .= '</ul>';
 		$h .= '</div>';
 
-		$h .= $form->openUrl(\company\CompanyUi::urlFarm($eFarm).'/banque/imports:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
+		$h .= $form->openUrl(\farm\FarmUi::urlConnected($eFarm).'/banque/imports:doImport', ['id' => 'cashflow-import', 'binary' => TRUE, 'method' => 'post']);
 
 		$h .= $form->hidden('farm', $eFarm['id']);
 
@@ -1089,7 +1089,7 @@ class CashflowUi {
 			$h .= '</p>';
 			$h .= '<p>';
 				if($eImport['reconciliation'] === Import::WAITING) {
-					$h .= '<a href="'.\company\CompanyUi::urlFarm($eFarm).'/banque/operations" class="btn btn-transparent">'.s("Actualiser").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations" class="btn btn-transparent">'.s("Actualiser").'</a>';
 				}
 			$h .= '</p>';
 		$h .= '</div>';
@@ -1137,7 +1137,7 @@ class CashflowUi {
 
 		return [
 			'type' => 'link',
-			'link' => \company\CompanyUi::urlFarm($eFarm).'/banque/operations?isReconciliated=0',
+			'link' => \farm\FarmUi::urlConnected($eFarm).'/banque/operations?isReconciliated=0',
 			'itemHtml' => $item,
 		];
 

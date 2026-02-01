@@ -7,10 +7,20 @@ class Farm extends FarmElement {
 
 	protected static array $conf = [];
 
+	private static Farm $eFarmConnected;
+
 	public function __construct(array $array = []) {
 
 		parent::__construct($array);
 
+	}
+
+	public static function setConnected(Farm $eFarm): void {
+		self::$eFarmConnected = $eFarm;
+	}
+
+	public static function getConnected(): Farm {
+		return self::$eFarmConnected;
 	}
 
 	public function getFarmer(): Farmer {

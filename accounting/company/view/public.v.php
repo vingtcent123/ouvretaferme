@@ -181,7 +181,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 				echo '</ul>';
 			echo '</div>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/banque/operations" class="btn btn-accounting"><p>'.Asset::icon('file-plus').'</p>'.s("Importer un relevé bancaire").'</a>';
+				echo '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations" class="btn btn-accounting"><p>'.Asset::icon('file-plus').'</p>'.s("Importer un relevé bancaire").'</a>';
 			echo '</div>';
 
 		echo '</div>';
@@ -197,7 +197,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 				echo '<li>'.s("Je visualise des données synthétiques de mes ventes non facturées pour une intégration comptable").'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/precomptabilite" class="btn btn-accounting"><p>'.Asset::icon('file-spreadsheet').'</p>'.s("Commencer la précomptabilité").'</a>';
+				echo '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite" class="btn btn-accounting"><p>'.Asset::icon('file-spreadsheet').'</p>'.s("Commencer la précomptabilité").'</a>';
 			echo '</div>';
 		echo '</div>';
 		echo '<div class="home-feature bg-background">';
@@ -212,7 +212,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 				echo '<li>'.s("En version {value} pour le moment", '<span class="util-badge bg-primary">BETA</span>').'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\company\CompanyUi::urlFarm($data->eFarm).'/journal/livre-journal" class="btn btn-accounting"><p>'.Asset::icon('journal-bookmark').'</p>'.s("Démarrer la comptabilité").'</a>';
+				echo '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal" class="btn btn-accounting"><p>'.Asset::icon('journal-bookmark').'</p>'.s("Démarrer la comptabilité").'</a>';
 			echo '</div>';
 
 		echo '</div>';
