@@ -3,15 +3,10 @@ namespace user;
 
 class CountryLib extends CountryCrud {
 
+	use \ModuleDeferred;
+
 	private static array|\Collection|null $countries = NULL;
 
-	public static function ask(Country $eCountry): Country {
-
-		$cCountry = self::deferred();
-
-		return $cCountry->offsetExists($eCountry['id']) ? $cCountry[$eCountry['id']] : new Country();
-
-	}
 	public static function deferred(): \Collection {
 
 		return self::getCache('list', fn() => self::getAll());
