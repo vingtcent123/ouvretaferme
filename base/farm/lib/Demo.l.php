@@ -20,6 +20,8 @@ class DemoLib {
 		'account\Pdf',
 		'account\Content',
 		'association\History',
+		'cash\Cash',
+		'cash\Register',
 		'farm\Invite',
 		'farm\Tip',
 		'payment\StripeFarm',
