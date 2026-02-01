@@ -342,6 +342,8 @@ class AccountUi {
 
 		\Asset::css('media', 'media.css');
 
+		$eAccount->expects(['vatAccount']);
+
 		$vatRate = 0.0;
 		$vatClass = '';
 		if($eAccount['vatAccount']->exists() === TRUE) {

@@ -4,7 +4,11 @@ namespace cash;
 class RegisterLib extends RegisterCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['account', 'paymentMethod'];
+		return ['color', 'account', 'paymentMethod'];
+	}
+
+	public static function getPropertiesUpdate(): array {
+		return ['color', 'account'];
 	}
 
 	public static function getAll(): \Collection {

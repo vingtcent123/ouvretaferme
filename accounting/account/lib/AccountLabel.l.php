@@ -14,10 +14,17 @@ class AccountLabelLib {
 				\account\AccountLabelLib::isFromClass($accountLabel, \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEPOSIT_CLASS));
 	}
 
+	public static function isFromClasses(string $accountLabel, array $classes): bool {
+		foreach($classes as $class) {
+			if(self::isFromClass($accountLabel, $class)) {
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
+
 	public static function isFromClass(string $accountLabel, string $class): bool {
-
-		return mb_substr($accountLabel, 0, mb_strlen($class)) === $class;
-
+		return str_starts_with($accountLabel, $class);
 	}
 
 	public static function isChargeClass(string $account): bool {

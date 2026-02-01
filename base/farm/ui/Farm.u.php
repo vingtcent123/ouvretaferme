@@ -1000,7 +1000,7 @@ class FarmUi {
 			],
 			'cash' => [
 				'icon' => \Asset::icon('journal-text'),
-				'label' => s("Cahier de caisse")
+				'label' => s("Cahiers de caisse")
 			],
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),

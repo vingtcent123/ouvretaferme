@@ -117,7 +117,8 @@ Class ProductLib {
 		$cProduct = self::filterForAccountingCheck($eFarm, $search)
 			->select([
 				'id' => new \Sql('DISTINCT(m1.id)'), 'name' => new \Sql('m1.name'),
-				'proAccount' => ['id', 'class', 'description'], 'privateAccount' => ['id', 'class', 'description'],
+				'proAccount' => ['class', 'description'],
+				'privateAccount' => ['class', 'description'],
 				'category', 'reference',
 				'vignette', 'unprocessedPlant' => ['fqn', 'vignette'], 'profile', 'farm', 'status', 'unprocessedVariety', 'mixedFrozen', 'quality', 'additional', 'origin',
 			])

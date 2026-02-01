@@ -9,70 +9,73 @@ class RegisterUi {
 
 	}
 
-	public static function getCircle(Register $eRegister, ?string $size = NULL): string {
+	public static function getName(Register $eRegister): string {
 
-		$eRegister->expects(['color']);
+		$eRegister->expects([
+			'paymentMethod' => ['name']
+		]);
 
-		return '<div class="register-circle" style="background-color: '.$eRegister['color'].'; '.($size ? 'width: '.$size.'; height: '.$size.';' : '').'"></div>';
+		return s("Cahier de caisse pour {value}", '<span class="util-badge" style="background-color: '.$eRegister['color'].'">'.encode($eRegister['paymentMethod']['name']).'</span>');
 
 	}
 
 	public function getHeader(Register $eRegisterCurrent, \Collection $cRegister): string {
 
 		if($cRegister->empty()) {
-			return '<h1>'.s("Cahier de caisse").'</h1>';
+			return '<h1>'.s("Cahiers de caisse").'</h1>';
 		}
 
 		$h = '<div class="util-action">';
-			$h .= '<div>';
-				$h .= '<h1 class="mb-0">';
-					$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
-						$h .= \farm\FarmUi::getNavigation();
-						$h .= '<span class="h-menu-label">'.encode($eRegisterCurrent['name']).'</span>';
-					$h .= '</a>';
-					$h .= '<div class="dropdown-list bg-secondary">';
-						$h .= '<div class="dropdown-title">'.s("Mes boutiques").'</div>';
+			$h .= '<h1>';
+				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
+					$h .= \farm\FarmUi::getNavigation();
+					$h .= '<span class="h-menu-label">'.self::getName($eRegisterCurrent).'</span>';
+				$h .= '</a>';
+				$h .= '<div class="dropdown-list bg-secondary">';
+					$h .= '<div class="dropdown-title">'.s("Mes cahiers de caisse").'</div>';
 
-						foreach($cRegister as $eRegister) {
+					foreach($cRegister as $eRegister) {
 
-							if($eRegister['status'] === Register::INACTIVE) {
-								$h .= '<div class="dropdown-subtitle">'.s("Anciens cahiers").'</div>';
-							}
-
-							$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="dropdown-item '.($eRegister['id'] === $eRegisterCurrent['id'] ? 'selected' : '').'">';
-								$h .= encode($eRegister['name']);
-								if($eRegister['shared']) {
-									$h .= ' <span class="util-badge bg-primary">'.\Asset::icon('people-fill').' '.s("Collective").'</span>';
-								}
-							$h .= '</a> ';
+						if($eRegister['status'] === Register::INACTIVE) {
+							$h .= '<div class="dropdown-subtitle">'.s("Anciens cahiers").'</div>';
 						}
 
-						$eFarm = \farm\Farm::getConnected();
+						$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="dropdown-item '.($eRegister['id'] === $eRegisterCurrent['id'] ? 'selected' : '').'">';
+							$h .= self::getName($eRegister);
+						$h .= '</a> ';
+					}
 
-						if((new Register(['farm' => $eFarm]))->canCreate()) {
-							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<a href="'.\farm\FarmUi::urlConnected().'/register/:create" class="dropdown-item">';
-								$h .= \Asset::icon('plus-circle').' '.s("Nouveau cahier de caisse");
-							$h .= '</a> ';
-						}
-					$h .= '</div>';
-				$h .= '</h1>';
-			$h .= '</div>';
+					$eFarm = \farm\Farm::getConnected();
+
+					if((new Register(['farm' => $eFarm]))->canCreate()) {
+						$h .= '<div class="dropdown-divider"></div>';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:create" class="dropdown-item">';
+							$h .= \Asset::icon('plus-circle').' '.s("Nouveau cahier de caisse");
+						$h .= '</a> ';
+					}
+				$h .= '</div>';
+			$h .= '</h1>';
 			$h .= '<div>';
 
 			if($eRegisterCurrent->canWrite()) {
 
 				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
-					$h .= '<div class="dropdown-title">'.encode($eRegisterCurrent['name']).'</div>';
-					$h .= '<a href="/cash/configuration:update?id='.$eRegisterCurrent['id'].'" class="dropdown-item">'.s("Paramétrer la boutique").'</a>';
-					$h .= '<a href="/register/:website?id='.$eRegisterCurrent['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Intégrer la boutique sur un site internet").'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlCommunicationsContact($eFarm).'?register='.$eRegisterCurrent['id'].'&source=register" class="dropdown-item">'.s("Obtenir les adresses e-mail des clients").'</a>';
+					$h .= '<div class="dropdown-title">'.self::getName($eRegisterCurrent).'</div>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:update?id='.$eRegisterCurrent['id'].'" class="dropdown-item">'.s("Paramétrer le cahier").'</a>';
 
-					if($eRegisterCurrent->canDelete()) {
-						$h .= '<div class="dropdown-divider"></div>';
-						$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
-						$h .= '<a data-ajax="/register/:doDelete" post-id="'.$eRegisterCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer de manière irréversible cette boutique ? Les ventes qui ont eu lieu dans la boutique ne seront pas supprimées.").'">'.s("Supprimer la boutique").'</a>';
+					if($eRegisterCurrent->acceptDelete()) {
+
+						if($eRegisterCurrent->canDelete()) {
+
+							$h .= '<div class="dropdown-divider"></div>';
+							$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
+							$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doDelete" post-id="'.$eRegisterCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer de manière irréversible ce cahier de caisse ?").'">'.s("Supprimer le cahier").'</a>';
+
+						}
+
+					} else {
+						$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doUpdateStatus" post-id="'.$eRegisterCurrent['id'].'" post-status="'.Register::INACTIVE.'" class="dropdown-item">'.s("Désactiver le cahier").'</a>';
 					}
 
 				$h .= '</div>';
@@ -100,9 +103,7 @@ class RegisterUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroup($eRegister, 'color');
-			$h .= $form->dynamicGroup($eRegister, 'paymentMethod*');
-			$h .= $form->dynamicGroup($eRegister, 'account');
+			$h .= $form->dynamicGroups($eRegister, ['color', 'paymentMethod*', 'account']);
 
 			$h .= $form->group(
 				content: $form->submit(
@@ -132,6 +133,8 @@ class RegisterUi {
 
 			$h .= $form->hidden('id', $eRegister['id']);
 
+			$h .= $form->dynamicGroups($eRegister, ['color', 'account']);
+
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
 			);
@@ -140,7 +143,7 @@ class RegisterUi {
 
 		return new \Panel(
 			id: 'panel-register-update',
-			title: s("Modifier un client"),
+			title: s("Modifier le cahier {value}", self::getName($eRegister)),
 			body: $h
 		);
 
@@ -159,6 +162,7 @@ class RegisterUi {
 			case 'paymentMethod' :
 				$d->values = fn(\cash\Register $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
 				$d->labelAfter = \util\FormUi::info(s("Un cahier de caisse est toujours lié à un moyen de paiement, qui ne pourra pas être modifié par la suite."));
+				$d->attributes = ['mandatory' => TRUE];
 				break;
 
 			case 'account':
@@ -170,7 +174,7 @@ class RegisterUi {
 
 				$query = [];
 
-				foreach(CashSetting::ACCOUNTS as $position => $account) {
+				foreach(CashSetting::CLASSES as $position => $account) {
 					$query['classPrefixes['.$position.']'] = $account;
 				}
 

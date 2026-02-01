@@ -6,8 +6,38 @@ class Register extends RegisterElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'paymentMethod' => fn($e) => \payment\MethodLib::ask($e['method'], $e['farm']),
+			'paymentMethod' => fn($e) => \payment\MethodLib::ask($e['paymentMethod'], \farm\Farm::getConnected()),
 		];
+
+	}
+
+	public function acceptDelete(): bool {
+
+		$this->expects(['lines']);
+
+		return ($this['lines'] === 0);
+
+	}
+
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		$p
+			->setCallback('account.check', function(\account\Account $eAccount) {
+
+				if($eAccount->empty()) {
+					return TRUE;
+				}
+
+				$eAccount = \account\AccountLib::getById($eAccount);
+
+				return (
+					$eAccount->notEmpty() and
+					\account\AccountLabelLib::isFromClasses($eAccount['class'], CashSetting::CLASSES)
+				);
+
+			});
+
+		parent::build($properties, $input, $p);
 
 	}
 
