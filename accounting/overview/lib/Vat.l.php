@@ -400,13 +400,13 @@ Class VatLib {
 
 		// OPÉRATIONS NON TAXÉES
 
-		// Autre opé non imposables VAT_0 (exonéré)
+		// Autre opé non imposables VAT_0 (exonéré) / Filtré sur classe 7
 		$eOperationAutreOperationsNonImposables = \journal\OperationLib::applySearch($search)
 			->select([
 				'amount' => new \Sql('ROUND(SUM(IF(type = "credit", amount, -1 * amount)))', 'float'),
 			])
 			->whereVatRule(\journal\Operation::VAT_0)
-			->whereAccountLabel('NOT LIKE', \account\AccountSetting::VAT_CLASS.'%')
+			->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'%')
 			->get();
 		$vatData['0033'] = round($eOperationAutreOperationsNonImposables['amount'] ?? 0, $precision);
 

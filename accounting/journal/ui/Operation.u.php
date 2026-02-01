@@ -954,8 +954,8 @@ class OperationUi {
 			}
 
 
-			$h .= '<div data-wrapper="amount'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'amount'.$suffix, function($d) use($defaultValues, $index) {
+			$amountField = '<div data-wrapper="amount'.$suffix.'">';
+				$amountField .= $form->dynamicField($eOperation, 'amount'.$suffix, function($d) use($defaultValues, $index) {
 					$d->default = $defaultValues['amount'] ?? '';
 					$d->attributes['min'] = 0;
 					$d->attributes['step'] = 0.01;
@@ -963,7 +963,7 @@ class OperationUi {
 					$d->attributes['data-index'] = $index;
 					$d->prepend = OperationUi::getAmountButtonIcons('amount', $index);
 				});
-			$h .='</div>';
+			$amountField .='</div>';
 
 			if($eFinancialYear['hasVat']) {
 
@@ -1000,8 +1000,8 @@ class OperationUi {
 				$noVat = ($eOperation['account']->notEmpty() and $eOperation['account']['vatAccount']->empty());
 				$vatAttributes = $noVat ? ['disabled' => 'disabled'] : [];
 
-				$h .= '<div data-wrapper="vatRate'.$suffix.'" class="company_form_group-with-tip">';
-					$h .= $form->inputGroup(
+				$vatValueField = '<div data-wrapper="vatRate'.$suffix.'" class="company_form_group-with-tip">';
+					$vatValueField .= $form->inputGroup(
 						$form->addon(OperationUi::getAmountButtonIcons('vatValue', $index)).
 						$form->calculation(
 							'vatValue'.$suffix,
@@ -1010,68 +1010,92 @@ class OperationUi {
 						).
 						$form->addon(s("€")),
 					);
-					$h .= '<div data-vat-value-warning class="hide" data-index="'.$index.'">';
-						$h .= '<a class="btn btn-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'" onclick="Operation.setVatValue('.$index.');">';
-							$h .= \Asset::icon('exclamation-triangle');
-						$h .= '</a>';
-						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-							$h .= '<span class="dropdown-item">';
-								$h .= s(
+					$vatValueField .= '<div data-vat-value-warning class="hide" data-index="'.$index.'">';
+						$vatValueField .= '<a class="btn btn-warning" data-dropdown="bottom" data-dropdown-hover="true" data-vat-value-link data-index="'.$index.'" onclick="Operation.setVatValue('.$index.');">';
+							$vatValueField .= \Asset::icon('exclamation-triangle');
+						$vatValueField .= '</a>';
+						$vatValueField .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+							$vatValueField .= '<span class="dropdown-item">';
+								$vatValueField .= s(
 									"La valeur indiquée de la TVA, {vatValue}, ne correspond pas au calcul (montant HT * taux de TVA) qui est {vatValueCalculated}.",
 									[
 										'vatValue' => '<b><span data-vat-value-vat-warning-value data-index="'.$index.'"></span></b>',
 										'vatValueCalculated' => '<b><span data-vat-value-vat-warning-calculated-value data-index="'.$index.'"></span></b>',
 									]
 								);
-							$h .= '</span>';
-						$h .= '</div>';
-					$h .= '</div>';
-					$h .= $form->inputGroup(
-					$form->addon(s('Taux')).
+							$vatValueField .= '</span>';
+						$vatValueField .= '</div>';
+					$vatValueField .= '</div>';
+				$vatValueField .= '</div>';
+
+				$vatRateField = '<fieldset>';
+					$vatRateField .= '<legend>'.s("Taux").'</legend>';
+					$vatRateField .= $form->inputGroup(
 						$form->number(
 							'vatRate'.$suffix,
 							$vatRateDefault,
 							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.01, 'tabindex' => -1] + $vatAttributes,
-						).
-						$form->addon(s("%")),
+						).$form->addon(s("%"))
 					);
-				$h .= '</div>';
+				$vatRateField .= '</fieldset>';
 
-
-			$h .= '<div data-wrapper="amountIncludingVAT'.$suffix.'" class="company_form_group-with-tip">';
-				$h .= $form->inputGroup($form->addon(self::getAmountButtonIcons('amountIncludingVAT', $index))
-					.$form->calculation(
-						'amountIncludingVAT'.$suffix,
-						$defaultValues['amountIncludingVAT'] ?? '',
-						[
-							'min' => 0, 'step' => 0.01,
-							'data-field' => 'amountIncludingVAT',
-							'data-index' => $index,
-						]
-					)
-					.$form->addon('€ '));
-					$h .= '<div data-amount-including-vat-warning class="hide" data-index="'.$index.'">';
-						$h .= '<a class="btn btn-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'" onclick="Operation.setAmountIncludingVat('.$index.');">';
-							$h .= \Asset::icon('exclamation-triangle');
-						$h .= '</a>';
-						$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-							$h .= '<span class="dropdown-item">';
-								$h .= s(
+				$amountIncludingVatField = '<div data-wrapper="amountIncludingVAT'.$suffix.'" class="company_form_group-with-tip">';
+					$amountIncludingVatField .= $form->inputGroup($form->addon(self::getAmountButtonIcons('amountIncludingVAT', $index))
+						.$form->calculation(
+							'amountIncludingVAT'.$suffix,
+							$defaultValues['amountIncludingVAT'] ?? '',
+							[
+								'min' => 0, 'step' => 0.01,
+								'data-field' => 'amountIncludingVAT',
+								'data-index' => $index,
+							]
+						)
+						.$form->addon('€ ')
+					);
+					$amountIncludingVatField .= '<div data-amount-including-vat-warning class="hide" data-index="'.$index.'">';
+						$amountIncludingVatField .= '<a class="btn btn-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true" data-vat-rate-link data-index="'.$index.'" onclick="Operation.setAmountIncludingVat('.$index.');">';
+							$amountIncludingVatField .= \Asset::icon('exclamation-triangle');
+						$amountIncludingVatField .= '</a>';
+						$amountIncludingVatField .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+							$amountIncludingVatField .= '<span class="dropdown-item">';
+								$amountIncludingVatField .= s(
 									"Le montant de <b>{amountIncludingVat} TTC</b> n'est pas cohérent avec le calcul (HT + TVA) qui est de <b>{amountIncludingVatCalculated}</b>",
 									[
 										'amountIncludingVat' => '<span data-amount-including-vat-warning-value data-index="'.$index.'"></span>',
 										'amountIncludingVatCalculated' => '<span data-amount-including-vat-warning-calculated-value data-index="'.$index.'"></span>',
 									]
 								);
-							$h .= '</span>';
-						$h .= '</div>';
+							$amountIncludingVatField .= '</span>';
+						$amountIncludingVatField .= '</div>';
+					$amountIncludingVatField .= '</div>';
+				$amountIncludingVatField .= '</div>';
+
+				$vatRuleField = '<fieldset>';
+					$vatRuleField .= '<legend>'.s('Règle TVA').'&nbsp;<a href="/doc/accounting:vat" target="_blank" title="'.s("Plus d'informations sur les règles de TVA").'">'.\Asset::icon('info-circle').'</a>'.'</legend>';
+					$vatRuleField .= $form->dynamicField($eOperation, 'vatRule'.$suffix);
+				$vatRuleField .= '</fieldset>';
+
+			}
+
+			if($eFinancialYear['hasVat']) {
+
+				$h .= '<div class="operation-amounts-container">';
+					$h .= '<div>';
+						$h .= $amountField;
+						$h .= $vatValueField;
+						$h .= $amountIncludingVatField;
 					$h .= '</div>';
-					$h .= $form->inputGroup(
-						$form->addon(s('Règle TVA').'&nbsp;<a href="/doc/accounting:vat" target="_blank" title="'.s("Plus d'informations sur les règles de TVA").'">'.\Asset::icon('info-circle').'</a>').
-						$form->dynamicField($eOperation, 'vatRule'.$suffix)
-					);
-				}
-			$h .='</div>';
+					$h .= '<div>';
+						$h .= $vatRateField;
+						$h .= $vatRuleField;
+					$h .= '</div>';
+				$h .= '</div>';
+
+			} else {
+
+				$h .= $amountField;
+
+			}
 
 		$h .= '</div>';
 

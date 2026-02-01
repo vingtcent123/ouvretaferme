@@ -324,20 +324,24 @@ class AccountUi {
 
 	}
 
-	public static function getVatRuleByClass(?string $class, FinancialYear $eFinancialYear): ?string {
+	public static function getVatRuleByAccount(Account $eAccount, FinancialYear $eFinancialYear): ?string {
 
-		if($class !== NULL) {
+		if($eAccount['class'] !== NULL) {
 
 			foreach(AccountSetting::VAT_RULES_ACCOUNTS as $vatCode => $accounts) {
 
 				foreach($accounts as $account) {
 
-					if(AccountLabelLib::isFromClass($class, $account)) {
+					if(AccountLabelLib::isFromClass($eAccount['class'], (string)$account)) {
 						return $vatCode;
 					}
 
 				}
 			}
+		}
+
+		if($eAccount['vatAccount']->empty()) {
+			return \journal\Operation::VAT_HC;
 		}
 
 		return \journal\Operation::VAT_STD;
@@ -388,7 +392,7 @@ class AccountUi {
 
 			$autocomplete['vatRate'] = $vatRate;
 			$autocomplete['vatClass'] = $vatClass;
-			$autocomplete['vatRule'] = self::getVatRuleByClass($eAccount['class'], $eFarm['eFinancialYear'] ?? new FinancialYear());
+			$autocomplete['vatRule'] = self::getVatRuleByAccount($eAccount, $eFarm['eFinancialYear'] ?? new FinancialYear());
 		}
 
 		return $autocomplete;

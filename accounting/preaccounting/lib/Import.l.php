@@ -203,7 +203,7 @@ Class ImportLib {
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
 
 			if(\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::BANK_ACCOUNT_CLASS) === FALSE) {
-				$vatRule = new \Set(\account\AccountUi::getVatRuleByClass($eAccount['class'], $eFinancialYear));
+				$vatRule = new \Set(\account\AccountUi::getVatRuleByAccount($eAccount, $eFinancialYear));
 			} else {
 				$vatRule = NULL;
 			}

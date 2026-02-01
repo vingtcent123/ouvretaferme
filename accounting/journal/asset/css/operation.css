@@ -241,29 +241,18 @@
 	font-size: 1.3rem;
 }
 
-.operation-invoice-preview {
-	width: 500px;
+.operation-amounts-container {
+	grid-row: span 3;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 0.5rem;
+	justify-content: stretch;
 }
-.operation-invoice-preview embed {
-	height: 730px;
-	width: 500px;
+.operation-amounts-container > div {
+	display: grid;
 }
-.operation-invoice-preview img {
-	max-height: 730px;
-	max-width: 500px;
-}
-
-.field-radio-group.operation-payment-type-radio > label:hover {
-	background-color: transparent;
-}
-.field-radio-group.operation-payment-type-radio {
-	border: none;
-}
-
-.operation_view_icon {
-	color: var(--muted);
-	margin-left: 0.5rem;
-	font-size: small;
+.operation-amounts-container div fieldset {
+	background: #00000005;
 }
 
 body[data-touch="no"].panel-open {
