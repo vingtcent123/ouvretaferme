@@ -315,8 +315,15 @@ class JournalUi {
 			$hideSearch = $this->isEmptySearch($search);
 
 			if($hideSearch === TRUE) {
+
 				$h = '<div class="util-empty">'.s("Aucune écriture n'a encore été enregistrée").'</div>';
-				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="btn btn-primary">'.s("Enregistrer la première écriture comptable pour cet exercice").'</a>';
+
+				if(get_exists('journalCode')) {
+					$text = s("Enregistrer une écriture comptable");
+				} else {
+					$text = s("Enregistrer la première écriture comptable pour cet exercice");
+				}
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create" class="btn btn-primary">'.$text.'</a>';
 				return $h;
 			}
 			return '<div class="util-empty">'.s("Aucune écriture ne correspond à vos critères de recherche").'</div>';

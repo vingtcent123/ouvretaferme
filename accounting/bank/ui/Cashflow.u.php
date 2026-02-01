@@ -102,7 +102,7 @@ class CashflowUi {
 				$getArgs['bankAccount'] = $eBankAccount['id'];
 				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?'.http_build_query($getArgs).'">';
 					$label = '<div class="text-center">';
-						$label .= s("Compte {value}", $eBankAccount['label']);
+						$label .= s("Compte {value}", $eBankAccount['account']['class']);
 						if($eBankAccount['description']) {
 							$label .= '<br/><small><span style="font-weight: lighter" class="opacity-75">'.encode($eBankAccount['description']).'</span></small>';
 						}
@@ -146,7 +146,6 @@ class CashflowUi {
 
 		$showMonthHighlight = str_starts_with($search->getSort(), 'date');
 		$showReconciliate = $cCashflow->find(fn($e) => $e['isReconciliated'])->count() > 0;
-		$showAccount = count(array_unique($cCashflow->getColumnCollection('import')->getColumnCollection('account')->getColumn('label'))) > 1;
 
 		$h = '';
 
@@ -169,9 +168,6 @@ class CashflowUi {
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
-						if($showAccount) {
-							$h .= '<th class="td-vertical-align-middle td-min-content">'.s("Numéro Compte").'</th>';
-						}
 
 						$h .= '<th class="td-vertical-align-middle">';
 							$label = s("Date");
@@ -220,12 +216,6 @@ class CashflowUi {
 						$class[] = 'cashflow-strikethrough';
 					}
 					$h .= '<tr name="cashflow-'.$eCashflow['id'].'" class="'.join(' ', $class).'">';
-
-						if($showAccount) {
-							$h .= '<td class="text-left td-vertical-align-top">';
-								$h .= encode($eCashflow['import']['account']['label']);
-							$h .= '</td>';
-						}
 
 						$h .= '<td class="td-vertical-align-top td-min-content">';
 							$h .= \util\DateUi::numeric($eCashflow['date']);

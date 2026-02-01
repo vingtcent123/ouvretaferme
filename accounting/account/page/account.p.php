@@ -8,7 +8,7 @@ new Page()
 		'vatFilter' => GET('vatFilter', 'bool', FALSE),
 		'customFilter' => GET('customFilter', 'bool', FALSE),
 	]);
-	$data->cAccount = \account\AccountLib::getAll(search: $data->search);
+	$data->cAccount = \account\AccountLib::getAll(search: $data->search, withOperations: TRUE);
 
 	$financialYearIds = array_slice($data->eFarm['cFinancialYear']->getKeys(), 0, 2);
 
@@ -113,10 +113,21 @@ new Page()
 
 new \account\AccountPage()
 	->applyElement(function($data, \account\Account $e) {
+
+		$e['cJournalCode'] = \journal\JournalCodeLib::getAll();
+		$e['eFarm'] = $data->eFarm;$data->eOld = clone $e;
+
+		$e->acceptQuickUpdate(POST('property'));
+
+		$e['eOld'] = $data->eOld;
+	})
+	->quick(['description', 'journalCode', 'vatRate', 'class']);
+
+new \account\AccountPage()
+	->applyElement(function($data, \account\Account $e) {
 		$e['cJournalCode'] = \journal\JournalCodeLib::getAll();
 		$e['eFarm'] = $data->eFarm;
 	})
-	->quick(['description', 'journalCode', 'vatRate'], validate: ['canQuickUpdate'])
 	->create(function($data) {
 
 		throw new ViewAction($data);

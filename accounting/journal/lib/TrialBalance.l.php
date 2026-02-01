@@ -36,7 +36,7 @@ Class TrialBalanceLib {
 		}
 
 		if(\company\CompanySetting::FEATURE_SELF_CONSUMPTION and $eFinancialYear['taxSystem'] === \account\FinancialYear::MICRO_BA) {
-			\journal\Operation::model()->where('details IS NULL or (details | '.\journal\Operation::SELF_CONSUMPTION.') = 0');
+			\journal\Operation::model()->whereIsSelfConsumption(FALSE);
 		}
 
 		// Récupération des opérations
@@ -66,15 +66,28 @@ Class TrialBalanceLib {
 			$account = NULL;
 			$labelTmp = $eOperation['label'];
 
-			for($i = 0; $i < mb_strlen($eOperation['label']) - 1; $i++) {
+			$cAccountFound = $cAccountAll->find(fn($e) => trim($e['class'], '0') === trim($eOperation['label'], '0'));
 
-				if($cAccountAll->offsetExists($labelTmp)) {
-					$account = $labelTmp;
-					$label = $cAccountAll[$account]['description'];
-					break;
+			// On regarde si le compte exact existe
+			if($cAccountFound->notEmpty()) {
+
+				$label = $cAccountFound->first()['description'];
+				$account = trim($eOperation['label'], '0');
+
+			} else {
+
+				// Sinon on remonte
+				for($i = 0; $i < mb_strlen($eOperation['label']) - 1; $i++) {
+
+					if($cAccountAll->offsetExists($labelTmp)) {
+						$account = $labelTmp;
+						$label = $cAccountAll[$account]['description'];
+						break;
+					}
+
+					$labelTmp = mb_substr($labelTmp, 0, mb_strlen($labelTmp) - 1);
+
 				}
-
-				$labelTmp = mb_substr($labelTmp, 0, mb_strlen($labelTmp) - 1);
 
 			}
 

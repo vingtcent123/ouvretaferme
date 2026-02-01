@@ -178,7 +178,13 @@ class AccountUi {
 						$h .= '<td>';
 							$h .= '<span class="ml-'.$classNumber.'">';
 								$h .= $classNumber === 0 ? '<b>' : '';
-									$h .= encode($eAccount['class']);
+									if($eAccount->acceptQuickUpdate('description')) {
+										$eAccount->setQuickAttribute('farm', $eFarm['id']);
+										$eAccount->setQuickAttribute('property', 'class');
+										$h .= $eAccount->quick('class', encode($eAccount['class']));
+									} else {
+										$h .= encode($eAccount['class']);
+									}
 								$h .= $classNumber === 0 ? '</b>' : '';
 							$h .= '</span>';
 						$h .= '</td>';
@@ -187,18 +193,18 @@ class AccountUi {
 						$h .= '<td>';
 							$h .= '<span class="ml-'.$classNumber.'">';
 								$h .= $classNumber === 0 ? '<b>' : '';
-									if($eAccount->canQuickUpdate('description')) {
+									if($eAccount->acceptQuickUpdate('description')) {
 										$eAccount->setQuickAttribute('farm', $eFarm['id']);
 										$eAccount->setQuickAttribute('property', 'description');
 										$h .= $eAccount->quick('description', encode($eAccount['description']));
 									} else {
-										$h .= encode($eAccount['description']).'</span>';
+										$h .= encode($eAccount['description']);
 									}
 								$h .= $classNumber === 0 ? '</b>' : '';
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content">';
-							if($eAccount->canQuickUpdate('journalCode')) {
+							if($eAccount->acceptQuickUpdate('journalCode')) {
 								$eAccount->setQuickAttribute('farm', $eFarm['id']);
 								$eAccount->setQuickAttribute('property', 'journalCode');
 								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? new \journal\JournalCodeUi()->getColoredName($eAccount['journalCode']) : '<span class="btn btn-sm btn-outline-secondary">'.s("Définir").'</span>');
@@ -235,7 +241,7 @@ class AccountUi {
 
 								if($vatRate === NULL) {
 									$h .= '<span class="color-muted">'.s("N/A").'</span>';
-								} else if($eAccount->canQuickUpdate('vatRate')) {
+								} else if($eAccount->acceptQuickUpdate('vatRate')) {
 									$eAccount->setQuickAttribute('farm', $eFarm['id']);
 									$eAccount->setQuickAttribute('property', 'vatRate');
 									$h .= $eAccount->quick('vatRate', $vatRate);
@@ -840,7 +846,7 @@ class AccountUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Account::model()->describer($property, [
-			'class' => s("Classe"),
+			'class' => s("Numéro de compte"),
 			'journalCode' => s("Code journal"),
 			'description' => s("Libellé"),
 			'custom' => s("Personnalisé"),
@@ -876,6 +882,7 @@ class AccountUi {
 			case 'class':
 				$d->attributes['minlength'] = 4;
 				$d->attributes['maxlength'] = 8 ;
+				$d->after = \util\FormUi::info(\Asset::icon('exclamation-triangle').' '.s("Attention ! En modifiant le numéro, toutes les écritures de ce numéro seront modifiées en conséquence."));
 				break;
 		}
 		return $d;

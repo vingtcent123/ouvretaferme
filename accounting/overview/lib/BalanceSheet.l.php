@@ -12,7 +12,7 @@ Class BalanceSheetLib {
 	public static function getData(\account\FinancialYear $eFinancialYear, \account\FinancialYear $eFinancialYearComparison, bool $isDetailed): array {
 
 		if(\company\CompanySetting::FEATURE_SELF_CONSUMPTION and $eFinancialYear['taxSystem'] === \account\FinancialYear::MICRO_BA) {
-			\journal\Operation::model()->where('details IS NULL or (details | '.\journal\Operation::SELF_CONSUMPTION.') = 0');
+			\journal\Operation::model()->whereIsSelfConsumption(FALSE);
 		}
 		// On récupère toutes les entrées sur 3 chiffres
 		$cOperation = self::applyFinancialYearsCondition($eFinancialYear, $eFinancialYearComparison)
@@ -62,7 +62,7 @@ Class BalanceSheetLib {
 			$cOperationDetail = new \Collection();
 		}
 
-		$cBankAccount = \bank\BankAccountLib::getAll('label');
+		$cBankAccount = \bank\BankAccountLib::getAll();
 
 		$balanceSheetData = [
 			'fixedAssets' => [], // actif immobilisé : 2*
@@ -131,12 +131,10 @@ Class BalanceSheetLib {
 					// On récupère la description du compte bancaire pour le retrouver facilement.
 					if(mb_substr($eOperation['class'], 0, 3) === \account\AccountSetting::BANK_ACCOUNT_CLASS) {
 						foreach($operationsSubClasses as &$operationSubClass) {
-							if($cBankAccount->offsetExists($operationSubClass['class'])) {
-								if($cBankAccount[$operationSubClass['class']]['description']) {
-									$operationSubClass['description'] = $cBankAccount[$operationSubClass['class']]['description'];
-								} else {
-									$operationSubClass['description'] = new \bank\BankAccountUi()->getDefaultName($cBankAccount[$operationSubClass['class']]);
-								}
+							$trimmedClass = trim($operationSubClass['class'], '0');
+							$cBankAccountFound = $cBankAccount->find(fn($e) => $e['account']['class'] === $trimmedClass);
+							if($cBankAccountFound->notEmpty()) {
+								$operationSubClass['description'] = $cBankAccountFound->first()['account']['description'];
 							} else {
 								$operationSubClass['description'] = new \bank\BankAccountUi()->getUnknownName();
 							}

@@ -73,7 +73,7 @@ class AccountLib extends AccountCrud {
 		return $eAccount;
 	}
 
-	public static function getAll(?\Search $search = new \Search(), string $query = ''): \Collection {
+	public static function getAll(?\Search $search = new \Search(), string $query = '', bool $withOperations = FALSE): \Collection {
 
 		if($search->get('classPrefixes')) {
 			Account::model()->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->get('classPrefixes'));
@@ -118,8 +118,15 @@ class AccountLib extends AccountCrud {
 			}
 		}
 
+		$selection = Account::getSelection();
+		if($withOperations) {
+			$selection['nOperation'] = \journal\Operation::model()
+				->select('id')
+				->delegateCollection('account', callback: fn(\Collection $cOperation) => $cOperation->count());
+		}
+
 		return Account::model()
-			->select(Account::getSelection())
+			->select($selection)
 			->sort(['class' => SORT_ASC])
 			->whereClass('LIKE', $search->get('classPrefix').'%', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
@@ -253,12 +260,16 @@ class AccountLib extends AccountCrud {
 
 	public static function create(Account $e): void {
 
-		$vatRates = \selling\SellingSetting::getVatRates($e['eFarm']);
+		if(($e['vatRate'] ?? NULL) != NULL) {
 
-		if($e['vatRate'] != NULL and array_key_exists($e['vatRate'], $vatRates)) {
-			$e['vatRate'] = $vatRates[$e['vatRate']];
-		} else {
-			$e['vatRate'] = NULL;
+			$vatRates = \selling\SellingSetting::getVatRates($e['eFarm']);
+
+			if(array_key_exists($e['vatRate'], $vatRates)) {
+				$e['vatRate'] = $vatRates[$e['vatRate']];
+			} else {
+				$e['vatRate'] = NULL;
+			}
+
 		}
 
 		$e['custom'] = TRUE;
@@ -277,13 +288,27 @@ class AccountLib extends AccountCrud {
 
 	public static function update(Account $e, array $properties): void {
 
-		if(in_array('vatRate', $properties)) {
+		Account::model()->beginTransaction();
 
-			$e['vatRate'] = \selling\SellingSetting::getVatRates($e['eFarm'])[$e['vatRate']] ?? NULL;
+			if(in_array('vatRate', $properties)) {
 
-		}
+				$e['vatRate'] = \selling\SellingSetting::getVatRates($e['eFarm'])[$e['vatRate']] ?? NULL;
 
-		parent::update($e, $properties);
+			}
+
+			parent::update($e, $properties);
+
+			if(in_array('class', $properties)) {
+
+				$newClass = AccountLabelLib::pad($e['class']);
+
+				\journal\Operation::model()
+					->whereAccount($e)
+					->update(['accountLabel' => $newClass]);
+
+			}
+
+		Account::model()->commit();
 
 	}
 }

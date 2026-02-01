@@ -36,9 +36,7 @@ class BankAccountUi {
 
 		if($canUpdate === TRUE) {
 
-			$h .= '<div class="util-info">'.s("Les comptes bancaires se créent automatiquement lors de l'import d'un relevé. Le numéro du compte comptable est personnalisable mais doit toujours commencer par {bankAccount} pour respecter le plan comptable..", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</div>';
-
-			$h .= '<div class="util-block-info">'.s("Attention, en <b>modifiant numéro comptable d'un compte bancaire</b>, toutes les écritures comptables de l'exercice comptable en cours qui sont liées à ce numéro de compte bancaire verront leur numéro de compte être mis à jour.").'</div>';
+			$h .= '<div class="util-info">'.s("Les comptes bancaires se créent automatiquement lors de l'import d'un relevé bancaire et sont rattachés à un numéro de compte.").'</div>';
 
 		}
 
@@ -48,11 +46,17 @@ class BankAccountUi {
 
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th>'.s("N° banque").'</th>';
-						$h .= '<th>'.s("N° Compte bancaire").'</th>';
-						$h .= '<th>'.s("N° Compte comptable").'</th>';
-						$h .= '<th>'.s("Nom du compte").'</th>';
-						$h .= '<th class="text-center">'.s("Opérations bancaires").'</th>';
+						$h .= '<th colspan="3"class="text-center highlight-stick-left">'.s("Compte bancaire").'</th>';
+						$h .= '<th colspan="2" class="text-center highlight-stick-both">'.s("Compte comptable").'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.s("Opérations bancaires").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+					$h .= '<tr>';
+						$h .= '<th class="highlight-stick-both">'.s("Identifiant de la banque").'</th>';
+						$h .= '<th class="highlight-stick-both">'.s("Identifiant du compte").'</th>';
+						$h .= '<th class="highlight-stick-left">'.s("Nom du compte").'</th>';
+						$h .= '<th class="highlight-stick-both">'.s("Numéro de compte").'</th>';
+						$h .= '<th class="highlight-stick-both">'.s("Libellé de compte").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -63,30 +67,49 @@ class BankAccountUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td>'.encode($eBankAccount['bankId']).'</td>';
-						$h .= '<td>'.encode($eBankAccount['accountId']).'</td>';
-						$h .= '<td>';
-							if($canUpdate === TRUE) {
-								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
-								$h .= $eBankAccount->quick('label', $eBankAccount['label'] ? encode($eBankAccount['label']) : '<i>'.\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL.'&nbsp;'.s("(Par défaut)").'</i>');
-							} else {
-								$h .= encode($eBankAccount['label']);
-							}
-						$h .= '</td>';
-						$h .= '<td>';
+						$h .= '<td class="highlight-stick-both">'.encode($eBankAccount['bankId']).'</td>';
+						$h .= '<td class="highlight-stick-both">'.encode($eBankAccount['accountId']).'</td>';
+						$h .= '<td class="highlight-stick-left">';
 							if($canUpdate === TRUE) {
 								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
 								$h .= $eBankAccount->quick('description', $eBankAccount['description'] ? encode($eBankAccount['description']) : '<i>'.s("Non défini").'</i>');
 							} else {
-								$h .= encode($eBankAccount['label']);
+								$h .= encode($eBankAccount['description']);
+							}
+						$h .= '</td>';
+						$h .= '<td class="highlight-stick-both">';
+							if($eBankAccount['account']->acceptQuickUpdate('class')) {
+								$eBankAccount['account']->setQuickAttribute('farm', $eFarm['id']);
+								$eBankAccount['account']->setQuickAttribute('property', 'class');
+								$h .= $eBankAccount['account']->quick('class', encode($eBankAccount['account']['class']));
+							} else {
+								$h .= encode($eBankAccount['account']['class']);
+							}
+						$h .= '</td>';
+						$h .= '<td class="highlight-stick-both">';
+							if($eBankAccount['account']->acceptQuickUpdate('description')) {
+								$eBankAccount['account']->setQuickAttribute('farm', $eFarm['id']);
+								$eBankAccount['account']->setQuickAttribute('property', 'description');
+								$h .= $eBankAccount['account']->quick('description', encode($eBankAccount['account']['description']));
+							} else {
+								$h .= encode($eBankAccount['account']['description']);
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
-							$h .= $eBankAccount['nCashflow'];
+							$h .= '<a href="'.\farm\FarmUi::urlFinancialYear().'/banque/operations?bankAccount='.$eBankAccount['id'].'">'.$eBankAccount['nCashflow'].'</a>';
 						$h .= '</td>';
 						$h .= '<td>';
+							$h .= '<a class="dropdown-toggle btn btn-secondary" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<a href="'.\farm\FarmUi::urlFinancialYear().'/account/account?classPrefix='.$eBankAccount['account']['class'].'&description=&vatFilter=0&customFilter=0" class="dropdown-item">';
+								$h .= s("Voir le numéro de compte");
+							$h .= '</a>';
 							if($eBankAccount->acceptDelete()) {
-								$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/account:doDelete" post-id="'.$eBankAccount['id'].'" class="btn btn-outline-danger">'.\Asset::icon('trash').'</a>';
+								$confirm = s("Confirmez-vous la suppression du compte bancaire {value} ?", $eBankAccount['accountId']);
+								if($eBankAccount['nCashflow'] > 0) {
+									$confirm .= ' '.s("Toutes les opérations bancaires et les imports liés seront également supprimés.");
+								}
+								$h .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/account:doDelete" post-id="'.$eBankAccount['id'].'" data-confirm="'.$confirm.'" class="dropdown-item">'.s("Supprimer ce compte bancaire").'</a>';
 							}
 						$h .= '</td>';
 
@@ -102,8 +125,8 @@ class BankAccountUi {
 
 	}
 
-	public function getDefaultName(BankAccount $eBankAccount): string {
-		return s("Compte bancaire {value}", trim($eBankAccount['label'], '0'));
+	public function getDefaultName(string $class): string {
+		return s("Compte bancaire {value}", trim($class, '0'));
 	}
 	public function getUnknownName(): string {
 		return s("Compte bancaire");
@@ -112,7 +135,6 @@ class BankAccountUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = BankAccount::model()->describer($property, [
-			'label' => s("N° Compte comptable"),
 			'description' => s("Nom du compte"),
 		]);
 

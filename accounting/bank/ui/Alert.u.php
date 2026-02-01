@@ -7,9 +7,6 @@ Class AlertUi {
 
 		return match($fqn) {
 
-			'BankAccount::label.numbers' => s("Le numéro d'un compte de banque doit être composé uniquement de chiffres et commencer par {value}", \account\AccountSetting::BANK_ACCOUNT_CLASS),
-			'BankAccount::label.duplicate' => s("Ce numéro de compte est déjà utilisé par un autre compte bancaire."),
-
 			'Cashflow::allocate.accountsCheck' => s("Veuillez sélectionner au moins un numéro de compte."),
 			'Cashflow::allocate.noOperation' => s("Aucune opération n'a pu être enregistrée."),
 			'Cashflow::internal' => s("Une erreur interne est survenue."),

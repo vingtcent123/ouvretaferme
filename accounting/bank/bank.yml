@@ -3,7 +3,8 @@ BankAccount:
   bankId: text8(1, null)
   accountId: text8(1, null)
   label: text8(1, null)
-  description: ?text8(1, null)
+  account: ?account\Account
+  description: ?text8(1, null) # Nom du compte affiché côté banque (peut être différent du libellé de compte)
   isDefault: bool = FALSE
   UNIQUE: [
     ["accountId"]

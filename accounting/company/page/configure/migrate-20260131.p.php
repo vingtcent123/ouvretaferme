@@ -22,12 +22,45 @@ new Page()
 
 			\farm\FarmLib::connectDatabase($eFarm);
 
-			$cFinancialYear = \account\FinancialYearLib::getAll();
+			$cBankAccount = \bank\BankAccount::model()
+				->select(\bank\BankAccount::getSelection())
+				->getCollection();
 
-			foreach($cFinancialYear as $eFinancialYear) {
-				if($eFinancialYear['hasVat']) {
-					\account\FinancialYear::model()->update($eFinancialYear, ['vatChargeability' => \account\FinancialYear::CASH]);
-				}
+			foreach($cBankAccount as $eBankAccount) {
+
+				\bank\BankAccount::model()->beginTransaction();
+
+					$class = rtrim($eBankAccount['label'], '0');
+
+					$description = empty($eBankAccount['description']) ? new \bank\BankAccountUi()->getDefaultName($class) : $eBankAccount['description'];
+
+					$eAccount = \account\Account::model()
+						->select(\account\Account::getSelection())
+						->whereClass($class)
+						->get();
+
+					if($eAccount->empty()) {
+
+						$eAccount = new \account\Account([
+							'class' => $class,
+							'description' => $description,
+							'createdBy' => new \user\User(['id' => 21])
+						]);
+
+						\account\AccountLib::create($eAccount);
+
+					}
+
+					$eBankAccount['account'] = $eAccount;
+					$eBankAccount['description'] = $description;
+
+					\bank\BankAccount::model()->update($eBankAccount, $eBankAccount->extracts(['account', 'description']));
+
+					\journal\Operation::model()
+						->whereAccountLabel('LIKE', $eAccount['class'].'%')
+						->update(['account' => $eAccount]);
+
+					\bank\BankAccount::model()->commit();
 			}
 
 		}

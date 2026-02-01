@@ -291,7 +291,7 @@ Class AccountingLib {
 						->delegateElement('customer')
 
 				],
-				'cashflow' => \bank\Cashflow::getSelection() + ['account' => \bank\BankAccount::getSelection()],
+				'cashflow' => \bank\Cashflow::getSelection(),
 				'accountingDifference', 'readyForAccounting', 'accountingHash',
 				'paymentMethod' => ['name'],
 				'cSale' => \selling\Sale::model()
@@ -358,7 +358,6 @@ Class AccountingLib {
 	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
-		$eAccountBank = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
 		$fecData = [];
 		$number = 0;
@@ -558,7 +557,7 @@ Class AccountingLib {
 
 			if($eInvoice['cashflow']->notEmpty()) { // Contrepartie en 512 directe si un rapprochement a déjà été réalisé
 
-				$eAccountBank['class'] = $eInvoice['cashflow']['account']['label'];
+				$eAccountBank = $eInvoice['cashflow']['account']['account'];
 				$fecDataBank = self::getFecLine(
 					eAccount    : $eAccountBank,
 					date        : $eInvoice['cashflow']['date'],

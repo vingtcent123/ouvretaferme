@@ -203,7 +203,7 @@ class ImportUi {
 
 			$values = [];
 			foreach($cBankAccount as $eBankAccount) {
-				$label = $eBankAccount['accountId'].' - '.$eBankAccount['label'];
+				$label = $eBankAccount['accountId'].' - '.$eBankAccount['account']['class'];
 				if($eBankAccount['description']) {
 					$label .= ' - '.$eBankAccount['description'];
 				}

@@ -212,6 +212,9 @@ class ImportUi {
 						new \account\AccountUi()->query($d, $eFarm);
 						foreach($eImport['rules']['comptes'] as $compte => $dataCompte) {
 							$eAccount = isset($dataCompte['account']['id']) ? $cAccount->find(fn($e) => $e['id'] === $dataCompte['account']['id'])->first() : new Account();
+							if($eAccount === NULL) {
+								dd($dataCompte['account']);
+							}
 							$class = 'class="'.($eAccount->empty() ? 'color-danger' : '').'"';
 							$h .= '<tr>';
 								$h .= '<td '.$class.'>'.encode($compte).'</td>';

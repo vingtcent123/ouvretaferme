@@ -10,7 +10,7 @@ new \bank\BankAccountPage()
 	->applyElement(function($data, \bank\BankAccount $e) {
 		$e['farm'] = $data->eFarm;
 	})
-	->quick(['label', 'description'])
+	->quick(['description'])
 ;
 
 new \bank\BankAccountPage()

@@ -44,13 +44,18 @@ class BankAccountModel extends \ModuleModel {
 			'bankId' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
 			'accountId' => ['text8', 'min' => 1, 'max' => NULL, 'unique' => TRUE, 'cast' => 'string'],
 			'label' => ['text8', 'min' => 1, 'max' => NULL, 'cast' => 'string'],
+			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'isDefault' => ['bool', 'cast' => 'bool'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'bankId', 'accountId', 'label', 'description', 'isDefault'
+			'id', 'bankId', 'accountId', 'label', 'account', 'description', 'isDefault'
 		]);
+
+		$this->propertiesToModule += [
+			'account' => 'account\Account',
+		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['accountId']
@@ -94,6 +99,10 @@ class BankAccountModel extends \ModuleModel {
 
 	public function whereLabel(...$data): BankAccountModel {
 		return $this->where('label', ...$data);
+	}
+
+	public function whereAccount(...$data): BankAccountModel {
+		return $this->where('account', ...$data);
 	}
 
 	public function whereDescription(...$data): BankAccountModel {

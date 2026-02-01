@@ -5,36 +5,18 @@ class BankAccount extends BankAccountElement {
 
 	public static function getSelection(): array {
 
-		return parent::getSelection();
+		return parent::getSelection() + ['account' => \account\Account::getSelection()];
 
 	}
 
 	public function acceptDelete(): bool {
-
 		return (
-			$this['nCashflow'] === 0 or
-			$this['cCashflow']->find(fn($e) => $e['status'] !== Cashflow::WAITING)->empty()
+			Cashflow::model()->whereAccount($this)->whereStatus('NOT IN', [Cashflow::WAITING, Cashflow::DELETED])->exists() === FALSE
 		);
 
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
-
-		$p
-			->setCallback('label.duplicate', function(string $label) use($p): bool {
-
-				if($p === 'update') {
-					return BankAccount::model()->whereLabel($label)->whereId('!=', $p)->count() === 0;
-				} else {
-					return BankAccount::model()->whereLabel($label)->count() === 0;
-				}
-
-			})
-			->setCallback('label.numbers', function(string $label): bool {
-
-				return (\account\AccountLabelLib::isFromClass($label, \account\AccountSetting::BANK_ACCOUNT_CLASS) and is_numeric($label));
-
-			});
 
 		parent::build($properties, $input, $p);
 

@@ -9,19 +9,19 @@ class Account extends AccountElement {
 			'name' => new \Sql('CONCAT(class, ". ", description)'),
 			'vatAccount' => ['id', 'class', 'vatRate', 'description'],
 			'journalCode' => \journal\JournalCode::getSelection(),
-			'nOperation' => \journal\Operation::model()
-				->select('id')
-				->delegateCollection('account', callback: fn(\Collection $cOperation) => $cOperation->count()),
 		];
 
 	}
 
 	public function acceptDelete(): bool {
 
-		return ($this['custom'] === TRUE and $this['nOperation'] === 0);
+		return (
+			$this['custom'] === TRUE and $this['nOperation'] === 0 and
+			\bank\BankAccount::model()->whereAccount($this)->exists() === FALSE
+		);
 
 	}
-	public function canQuickUpdate(?string $property = NULL): bool {
+	public function acceptQuickUpdate(string $property): bool {
 
 		$this->expects(['custom', 'class']);
 
@@ -29,11 +29,7 @@ class Account extends AccountElement {
 			return FALSE;
 		}
 
-		if($property === NULL) {
-			$property = POST('property');
-		}
-
-		if($property === 'description') {
+		if(in_array($property, ['class', 'description'])) {
 			return $this['custom'] === TRUE;
 		}
 
@@ -62,13 +58,24 @@ class Account extends AccountElement {
 
 				return AccountLib::countByClass($class) === 0;
 
-
 			})
 			->setCallback('class.unknown', function(string $class): bool {
 
 				return
 					in_array((int)substr($class, 0, 1), [8, 9]) === FALSE
 					and in_array((int)substr($class, 0, 2), [19, 39, 55, 56, 57]) === FALSE;
+
+			})
+			->setCallback('class.consistency', function(string $class): bool {
+				// Vérifie qu'on reste bien dans la même classe de compte
+
+				if(isset($this['eOld']) === FALSE) {
+					return TRUE;
+				}
+
+				$numbers = min(3, mb_strlen((string)$this['eOld']['class']));
+
+				return mb_substr($this['eOld']['class'], 0, $numbers) === mb_substr($class, 0, $numbers);
 
 			})
 			->setCallback('vatAccount.check', function(Account $eAccountVat): bool {

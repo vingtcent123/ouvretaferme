@@ -385,40 +385,6 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function updateAccountLabels(\bank\BankAccount $eBankAccount): bool {
-
-		$eOperation = ['accountLabel' => $eBankAccount['label'], 'updatedAt' => new \Sql('NOW()')];
-		$eFinancialYear = \account\FinancialYearLib::selectDefaultFinancialYear();
-
-		if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
-			return TRUE;
-		}
-
-		$cOperation = OperationCashflow::model()
-			->select('operation')
-			->join(\bank\Cashflow::model(), 'm1.cashflow = m2.id')
-			->where('m2.account = '.$eBankAccount['id'])
-			->getColumn('operation');
-
-		if($cOperation->empty()) {
-			return TRUE;
-		}
-
-		Operation::model()
-			->select(['accountLabel', 'updatedAt'])
-			// Liée aux cashflow de ce compte bancaire
-			->where('m1.id IN ('.join(', ', $cOperation->getIds()).')')
-			// Type banque
-			->join(\account\Account::model(), 'm1.account = m2.id')
-			->where('m2.class = '.\account\AccountSetting::BANK_ACCOUNT_CLASS)
-			// De l'exercice comptable courant
-			->where('m1.date >= "'.$eFinancialYear['startDate'].'"')
-			->where('m1.date <= "'.$eFinancialYear['endDate'].'"')
-			->update($eOperation);
-
-		return TRUE;
-	}
-
 	public static function update(Operation $e, array $properties): void {
 
 		Operation::model()->beginTransaction();
@@ -1088,7 +1054,6 @@ class OperationLib extends OperationCrud {
 			'paymentMethod' => $eOperationModel['paymentMethod'],
 			'financialYear' => $eOperationModel['financialYear'],
 			'hash' => $hash,
-			'accountLabel' => \account\AccountLabelLib::pad($eCashflow['account']['label'] ?? \account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL),
 		]), $eOperationModel['document']);
 
 		$cOperationCashflow->append(new OperationCashflow(['operation' => $eOperationBank, 'cashflow' => $eCashflow, 'hash' => $hash]));
@@ -1098,15 +1063,14 @@ class OperationLib extends OperationCrud {
 
 	public static function createBankOperationFromCashflow(\bank\Cashflow $eCashflow, Operation $eOperation, ?string $document = NULL): Operation {
 
-		$eAccountBank = \account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS);
+		$eAccountBank = $eCashflow['account']['account'];
+		$label = \account\AccountLabelLib::pad($eAccountBank['class']);
 
 		$eThirdParty = $eOperation['thirdParty'] ?? new \account\ThirdParty();
 
-		$label = $eCashflow['import']['account']['label'];
-
 		$values = [
 			'date' => $eCashflow['date'],
-			'account' => $eAccountBank['id'] ?? NULL,
+			'account' => $eAccountBank['id'],
 			'accountLabel' => $label,
 			'description' => $eCashflow->getMemo(),
 			'document' => $document,

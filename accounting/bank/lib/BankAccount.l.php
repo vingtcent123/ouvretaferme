@@ -81,40 +81,50 @@ class BankAccountLib extends BankAccountCrud {
 
 	public static function createNew(string $bankId, string $accountId): BankAccount {
 
-		$eLastBankAccount = BankAccount::model()
-			->select(['label' => new \Sql('MAX(label)')])
-			->get();
+		BankAccount::model()->beginTransaction();
 
 		// Check if there is already an account. Set current account to default if there is none.
 		$cBankAccountDefault = BankAccount::model()->whereIsDefault(TRUE)->count();
 
-		$accountLabel = ($eLastBankAccount->notEmpty() and empty($eLastBankAccount['label']) === FALSE) ?
-			(int)trim($eLastBankAccount['label'], '0') + 1 :
-			\account\AccountSetting::DEFAULT_BANK_ACCOUNT_LABEL;
+		$eLastAccount = \account\Account::model()
+			->select(['accountLabel' => new \Sql('MAX(TRIM(TRAILING "0" FROM class))', 'int')])
+			->whereClass('LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%')
+			->get();
 
-			$eBankAccount = new BankAccount([
-				'bankId' => $bankId,
-				'accountId' => $accountId,
-				'isDefault' => $cBankAccountDefault === 0,
-				'label' => $accountLabel,
-			]);
-			BankAccount::model()->insert($eBankAccount);
+		$accountLabel = ($eLastAccount->notEmpty() and empty($eLastAccount['accountLabel']) === FALSE) ?
+			($eLastAccount['accountLabel'] + 1):
+			\account\AccountSetting::BANK_ACCOUNT_CLASS.'1';
+
+		$description = new BankAccountUi()->getUnknownName().' '.$accountId;
+
+		$eAccount = new \account\Account([
+			'class' => $accountLabel,
+			'description' => $description,
+		]);
+		\account\AccountLib::create($eAccount);
+
+		$eBankAccount = new BankAccount();
+		$eBankAccount->build(['bankId', 'accountId'], [
+			'bankId' => $bankId,
+			'accountId' => $accountId,
+		]);
+		$eBankAccount['isDefault'] = ($cBankAccountDefault === 0);
+		$eBankAccount['description'] = $description;
+		$eBankAccount['account'] = $eAccount;
+
+		self::create($eBankAccount);
+
+		BankAccount::model()->commit();
 
 			return $eBankAccount;
 
 	}
-
 
 	public static function update(BankAccount $e, array $properties): void {
 
 		BankAccount::model()->beginTransaction();
 
 			parent::update($e, $properties);
-
-			// Quick label update
-			if(in_array('label', $properties) === TRUE and $e['farm']->usesAccounting()) {
-				\journal\OperationLib::updateAccountLabels($e);
-			}
 
 			\account\LogLib::save('update', 'Bank', ['id' => $e['id'], 'properties' => $properties]);
 
