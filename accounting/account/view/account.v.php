@@ -49,7 +49,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 		];
 
 		foreach($cAccountThirdParty as $eAccount) {
-			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount);
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount, $data->search);
 		}
 
 	}
@@ -63,7 +63,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 		];
 
 		foreach($cAccountUsed as $eAccount) {
-			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount);
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount, $data->search);
 		}
 	}
 
@@ -82,7 +82,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 		];
 
 		foreach($cAccountOthers as $eAccount) {
-			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount);
+			$results[] = \account\AccountUi::getAutocomplete($data->eFarm, $eAccount, $data->search);
 		}
 
 	}

@@ -73,15 +73,7 @@ class AccountLib extends AccountCrud {
 		return $eAccount;
 	}
 
-	public static function getAll(?\Search $search = new \Search(), string $query = '', bool $withOperations = FALSE): \Collection {
-
-		if($search->get('classPrefixes')) {
-			Account::model()->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->get('classPrefixes'));
-		}
-
-		if($search->has('stock')) {
-			Account::model()->where('class LIKE "%'.$search->get('stock').'%"', if: $search->get('stock')->notEmpty());
-		}
+	private static function applySearch(\Search $search, string $query = ''): AccountModel {
 
 		if($query !== '') {
 
@@ -118,22 +110,43 @@ class AccountLib extends AccountCrud {
 			}
 		}
 
-		$selection = Account::getSelection();
-		if($withOperations) {
-			$selection['nOperation'] = \journal\Operation::model()
-				->select('id')
-				->delegateCollection('account', callback: fn(\Collection $cOperation) => $cOperation->count());
-		}
-
 		return Account::model()
-			->select($selection)
-			->sort(['class' => SORT_ASC])
+      ->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))
+			->where('class LIKE "%'.$search->get('stock').'%"', if: $search->has('stock') and $search->get('stock')->notEmpty())
 			->whereClass('LIKE', $search->get('classPrefix').'%', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
 			->whereVisible(TRUE, if: $search->get('visible') === TRUE)
 			->where('vatAccount IS NOT NULL', if: $search->get('vatFilter') === TRUE)
+		;
+
+	}
+
+	public static function getForList(?\Search $search = new \Search(), string $query = ''): \Collection {
+
+		return self::applySearch($search, $query)
+			->select(Account::getSelection() + [
+				'nOperation' => \journal\Operation::model()
+					->select('id')
+					->delegateCollection('account', callback: fn(\Collection $cOperation) => $cOperation->count()),
+				'vatAccount' => ['id', 'class', 'vatRate', 'description'],
+				'journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected())
+			])
+			->sort(['class' => SORT_ASC])
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
+	public static function getAll(?\Search $search = new \Search(), string $query = ''): \Collection {
+
+		return self::applySearch($search, $query)
+			->select(
+				Account::getSelection() +
+				($search->get('withVat') ? ['vatAccount' => ['id', 'class', 'vatRate', 'description']] : []) +
+				($search->get('withJournal') ? ['journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected())] : [])
+			)
+			->sort(['class' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
 	}
 

@@ -9,7 +9,7 @@ new Page()
 		'customFilter' => GET('customFilter', 'bool', FALSE),
 	]);
 	$data->cJournalCode = \journal\JournalCodeLib::deferred();
-	$data->cAccount = \account\AccountLib::getAll(search: $data->search, withOperations: TRUE);
+	$data->cAccount = \account\AccountLib::getForList(search: $data->search);
 
 	$financialYearIds = array_slice($data->eFarm['cFinancialYear']->getKeys(), 0, 2);
 
@@ -67,7 +67,9 @@ new Page()
 	
 	$data->search = new Search([
 		'classPrefix' => GET('classPrefix'),
-		'classPrefixes' => GET('classPrefixes', 'array')
+		'classPrefixes' => GET('classPrefixes', 'array'),
+		'withVat' => GET('withVat', 'bool', FALSE),
+		'withJournal' => GET('withJournal', 'bool', FALSE),
 	]);
 
 	if($stock) {

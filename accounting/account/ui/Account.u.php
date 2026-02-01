@@ -348,19 +348,6 @@ class AccountUi {
 
 		\Asset::css('media', 'media.css');
 
-		$eAccount->expects(['vatAccount']);
-
-		$vatRate = 0.0;
-		$vatClass = '';
-		if($eAccount['vatAccount']->exists() === TRUE) {
-			$vatClass = $eAccount['vatAccount']['class'];
-			if($eAccount['vatRate'] !== NULL) {
-				$vatRate = $eAccount['vatRate'];
-			} else {
-				$vatRate = $eAccount['vatAccount']['vatRate'];
-			}
-		}
-
 		$itemHtml = encode($eAccount['class'].' '.$eAccount['description']);
 		if(
 			$search->get('classPrefix')
@@ -370,18 +357,41 @@ class AccountUi {
 			$itemHtml .= ' ('.$eAccount['vatRate'].'%)';
 		}
 
-		return [
+		$autocomplete = [
 			'value' => $eAccount['id'],
-			'class' => encode($eAccount['class']),
-			'description' => $eAccount['description'],
-			'vatRate' => $vatRate,
-			'vatClass' => $vatClass,
-			'vatRule' => self::getVatRuleByClass($eAccount['class'], $eFarm['eFinancialYear'] ?? new FinancialYear()),
-			'farm' => $eFarm['id'],
 			'itemHtml' => $itemHtml,
 			'itemText' => $eAccount['class'].' '.$eAccount['description'],
-			'journalCode' => ($eAccount['journalCode']['id'] ?? NULL),
 		];
+
+		if($search->get('withDetails')) {
+			$autocomplete['class'] = encode($eAccount['class']);
+			$autocomplete['description'] = encode($eAccount['description']);
+			$autocomplete['farm'] = $eFarm['id'];
+		}
+		if($search->get('withJournal')) {
+			$autocomplete['journalCode'] = ($eAccount['journalCode']['id'] ?? NULL);
+		}
+		if($search->get('withVat')) {
+
+			$eAccount->expects(['vatAccount']);
+
+			$vatRate = 0.0;
+			$vatClass = '';
+			if($eAccount['vatAccount']->exists() === TRUE) {
+				$vatClass = $eAccount['vatAccount']['class'];
+				if($eAccount['vatRate'] !== NULL) {
+					$vatRate = $eAccount['vatRate'];
+				} else {
+					$vatRate = $eAccount['vatAccount']['vatRate'];
+				}
+			}
+
+			$autocomplete['vatRate'] = $vatRate;
+			$autocomplete['vatClass'] = $vatClass;
+			$autocomplete['vatRule'] = self::getVatRuleByClass($eAccount['class'], $eFarm['eFinancialYear'] ?? new FinancialYear());
+		}
+
+		return $autocomplete;
 
 	}
 

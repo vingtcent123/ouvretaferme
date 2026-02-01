@@ -540,6 +540,7 @@ class Product extends ProductElement {
 						\account\AccountLib::getById($eAccount['id'])->notEmpty() and
 						(
 							\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS) or
+							\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::PRODUCT_OTHER_ACCOUNT_CLASS) or
 							in_array((int)mb_substr($eAccount['class'], 0, 3), \account\AccountSetting::WAITING_ACCOUNT_CLASSES)
 						)
 					)
@@ -560,6 +561,7 @@ class Product extends ProductElement {
 						\account\AccountLib::getById($eAccount['id'])->notEmpty() and
 						(
 							\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS) or
+							\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::PRODUCT_OTHER_ACCOUNT_CLASS) or
 							in_array((int)mb_substr($eAccount['class'], 0, 3), \account\AccountSetting::WAITING_ACCOUNT_CLASSES)
 						)
 					)
