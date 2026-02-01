@@ -101,6 +101,12 @@ class FinancialYearUi {
 				},
 				'vatChargeability' => function($d) use($form, $eFinancialYear) {
 					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
+					$d->attributes['callbackRadioAttributes'] = function($option, $key) {
+						if($key === FinancialYear::DEBIT) {
+							return ['disabled' => 'disabled'];
+						}
+						return [];
+					};
 				},
 				'legalCategory*' => function($d) use($form, $eFinancialYear) {
 					$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
@@ -1069,9 +1075,23 @@ class FinancialYearUi {
 				break;
 
 			case 'vatChargeability' :
+				$cash = '<h4>'.s("TVA sur les encaissements").'</h4>';
+				$cash .= '<ul>';
+					$cash .= '<li>'.s("La TVA est due dès l'encaissement.").'</li>';
+					$cash .= '<li>'.s("Exigibilité par défaut pour les Régimes Simplifiés (Micro-BA, RSA...).").'</li>';
+					$cash .= '<li>'.s("Les prestations de service entrent dans cette règle d'office.").'</li>';
+				$cash .= '</ul>';
+				$cash .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour que le paiement de la TVA corresponde aux mouvements de trésorerie.").'</i></p>';
+
+				$debit = '<h4>'.s("TVA sur les débits").'</h4>';
+				$debit .= '<ul>';
+					$debit .= '<li>'.s("La TVA est due dès l'émission d'une facture, sa date faisant foi.").'</li>';
+				$debit .= '</ul>';
+				$debit .= '<p>'.\Asset::icon('exclamation-triangle').' <i>'.s("Cette option n'est pas encore disponible.").'</i></p>';
+
 				$d->values = [
-					FinancialYear::CASH => s("Encaissements"),
-					FinancialYear::DEBIT => s("Débits"),
+					FinancialYear::CASH => $cash,
+					FinancialYear::DEBIT => $debit,
 				];
 				$d->attributes['mandatory'] = TRUE;
 				break;
