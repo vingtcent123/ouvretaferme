@@ -16,6 +16,8 @@ class AlertUi {
 
 			'Operation::description.check' => s("Veuillez saisir un libellé"),
 
+			'Operation::journalCode.check' => s("Veuillez choisir un journal"),
+
 			'Operation::cashflowRequiredForAttach' => s("Veuillez choisir une opération bancaire"),
 			'Operation::operationsRequiredForAttach' => s("Veuillez choisir une écriture comptable"),
 			'Operation::thirdPartyRequiredForAttach' => s("Veuillez choisir un tiers"),

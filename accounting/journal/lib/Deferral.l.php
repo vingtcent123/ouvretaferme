@@ -26,7 +26,7 @@ class DeferralLib extends DeferralCrud {
 	public static function deferIntoFinancialYear(\account\FinancialYear $eFinancialYearPrevious, \account\FinancialYear $eFinancialYear): void {
 
 		$cDeferral = self::getDeferrals($eFinancialYearPrevious);
-		$eJournalCode = JournalCodeLib::getByCode(JournalSetting::JOURNAL_CODE_INV);
+		$eJournalCode = JournalCodeLib::askByCode(JournalSetting::JOURNAL_CODE_INV);
 
 		Deferral::model()->beginTransaction();
 
@@ -98,7 +98,7 @@ class DeferralLib extends DeferralCrud {
 			->whereStatus(Deferral::PLANNED)
 			->getCollection();
 
-		$eJournalCode = JournalCodeLib::getByCode(JournalSetting::JOURNAL_CODE_INV);
+		$eJournalCode = JournalCodeLib::askByCode(JournalSetting::JOURNAL_CODE_INV);
 
 		Deferral::model()->beginTransaction();
 

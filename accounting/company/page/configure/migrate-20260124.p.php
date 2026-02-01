@@ -24,7 +24,7 @@ new Page()
 
 			\farm\FarmLib::connectDatabase($eFarm);
 
-			$eJournalCode = \journal\JournalCodeLib::getByCode('ACH');
+			$eJournalCode = \journal\JournalCodeLib::askByCode('ACH');
 
 			\account\Account::model()
 				->where('class LIKE "61%" OR class LIKE "62%" OR class LIKE "64%"')

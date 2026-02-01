@@ -10,7 +10,7 @@ class Operation extends OperationElement {
 		return parent::getSelection() + [
 			'operation' => ['id', 'asset', 'accountLabel'],
 			'account' => \account\Account::getSelection(),
-			'journalCode' => JournalCode::getSelection(),
+			'journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected()),
 			'vatAccount' => ['class', 'vatRate', 'description'],
 			'thirdParty' => \account\ThirdParty::getSelection(),
 			'paymentMethod' => \payment\Method::getSelection(),
@@ -95,7 +95,7 @@ class Operation extends OperationElement {
 
 				$eJournalCode = JournalCodeLib::getById($eJournalCode['id']);
 
-				return TRUE;
+				return $eJournalCode->notEmpty();
 
 			})
 			->setCallback('financialYear.check', function(?\account\FinancialYear &$eFinancialYear): bool {

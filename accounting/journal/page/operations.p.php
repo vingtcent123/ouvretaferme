@@ -7,7 +7,7 @@ new Page(function($data) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
-	$data->cJournalCode = \journal\JournalCodeLib::getAll();
+	$data->cJournalCode = \journal\JournalCodeLib::deferred();
 
 })
 	->get('/journal/livre-journal', function($data) {
@@ -133,7 +133,6 @@ new Page(function($data) {
 		}
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
-		$data->cJournalCode = \journal\JournalCodeLib::getAll();
 		$data->cAccount = \account\AccountLib::getAll();
 
 		throw new ViewAction($data);

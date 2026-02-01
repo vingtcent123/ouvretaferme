@@ -23,7 +23,7 @@ new \account\ImportPage()
 			$data->eFarm['cFinancialYear'][$key]['nOperation'] = $nOperationByFinancialYear[$eFinancialYear['id']]['count'] ?? 0;
 		}
 
-		$data->cJournalCode = \journal\JournalCodeLib::getAll();
+		$data->cJournalCode = \journal\JournalCodeLib::deferred();
 		$data->cAccount = \account\AccountLib::getAll();
 		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, FALSE);
 
@@ -66,7 +66,7 @@ new \account\FinancialYearPage()
 	->get('view', function($data) {
 
 		$data->fecInfo = \account\FecLib::checkDataForFec($data->eFarm, $data->eFarm['eFinancialYear']);
-		$data->fecInfo['cJournalCode'] = \journal\JournalCodeLib::getAll();
+		$data->fecInfo['cJournalCode'] = \journal\JournalCodeLib::deferred();
 
 		$data->nOperationByFinancialYear = \journal\OperationLib::countByFinancialYears($data->eFarm['cFinancialYear']);
 

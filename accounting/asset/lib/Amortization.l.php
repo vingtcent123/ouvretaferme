@@ -570,7 +570,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$amortizationChargeClass = \account\AccountSetting::INVESTMENT_GRANT_TO_RESULT_CLASS;
 
 		$cAccount = \account\AccountLib::getByClasses([$eAsset['account']['class'], $grantDebitClass, $amortizationChargeClass], index: 'class');
-		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
 
 		$cOperation = new \Collection();
 
@@ -724,7 +724,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	public static function simulate(\account\FinancialYear $eFinancialYear, \Collection $cAsset): void {
 
-		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
 
 		foreach($cAsset as &$eAsset) {
 			$eAsset['operations'] = self::amortize($eFinancialYear, $eAsset, endDate: NULL, eJournalCode: $eJournalCode, simulate: TRUE);
@@ -753,7 +753,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 		$cOperation = new \Collection();
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_ASSETS;
-		$eJournalCodeOD = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD);
+		$eJournalCodeOD = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD);
 
 		if($endDate === NULL) {
 

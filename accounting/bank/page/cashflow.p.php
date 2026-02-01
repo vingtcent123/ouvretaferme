@@ -99,7 +99,7 @@ new \bank\CashflowPage(function($data) {
 
 		// Payment methods
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
-		$data->cJournalCode = \journal\JournalCodeLib::getAll();
+		$data->cJournalCode = \journal\JournalCodeLib::deferred();
 
 		throw new ViewAction($data);
 
@@ -108,7 +108,12 @@ new \bank\CashflowPage(function($data) {
 
 		$data->index = POST('index');
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
-		$data->eOperation = new \journal\Operation(['account' => new \account\Account(), 'thirdParty' => $eThirdParty, 'cOperationCashflow' => new Collection(['cashflow' => $data->e]), 'cJournalCode' => \journal\JournalCodeLib::getAll()]);
+		$data->eOperation = new \journal\Operation([
+			'account' => new \account\Account(),
+			'thirdParty' => $eThirdParty,
+			'cOperationCashflow' => new Collection(['cashflow' => $data->e]),
+			'cJournalCode' => \journal\JournalCodeLib::deferred(),
+		]);
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
 

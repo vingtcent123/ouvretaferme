@@ -15,7 +15,7 @@ Class OpeningLib {
 	public static function getRetainedEarnings(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, string $hash): \Collection {
 
 		$cOperation = \journal\OperationLib::getForOpening($eFinancialYearPrevious);
-		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
 
 		$cOperationNew = new \Collection();
 
@@ -59,7 +59,7 @@ Class OpeningLib {
 			->whereJournalCode('IN', $cJournalCode)
 			->getCollection(NULL, NULL, ['journalCode', 'id']);
 
-		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
 		$eUser = \user\ConnectionLib::getOnline();
 
 		$ccOperation = new \Collection();
@@ -139,7 +139,7 @@ Class OpeningLib {
 
 		// Résultat
 		$eAccount = AccountLib::getByClass($class);
-		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
 
 		$values = [
 			'account' => $eAccount,

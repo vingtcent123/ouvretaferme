@@ -1371,19 +1371,25 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function updateJournalCodeCollection(\Collection $cOperation, JournalCode $eJournalCode): void {
+	public static function updateJournalCodeCollection(\Collection $cOperation, ?int $journalCodeId): void {
 
-		$cJournalCode = JournalCodeLib::getAll();
-
-		if($eJournalCode->notEmpty() and in_array($eJournalCode['id'], $cJournalCode->getIds()) === FALSE) {
-			\Fail::log('Operation::selectedJournalCodeInconsistency');
+		if($journalCodeId === NULL) {
+			\Fail::log('Operation::journalCode.check');
 			return;
 		}
+
+		$eOperation = new Operation();
+
+		$fw = new \FailWatch();
+
+		$eOperation->build(['journalCode'], ['journalCode' => $journalCodeId]);
+
+		$fw->validate();
 
 		Operation::model()
 			->select(['journalCode'])
 			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
-			->update(['journalCode' => $eJournalCode]);
+			->update($eOperation);
 	}
 
 	public static function updateDocumentCollection(\Collection $cOperation, ?string $document): void {

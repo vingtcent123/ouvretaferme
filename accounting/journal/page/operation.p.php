@@ -18,6 +18,8 @@ new \journal\OperationPage(
 })
 ->read('/journal/operation/{id}/update', function($data) {
 
+	$data->e['cJournalCode'] = \journal\JournalCodeLib::deferred();
+
 	$data->referer = SERVER('HTTP_REFERER');
 
 	$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
@@ -37,8 +39,6 @@ new \journal\OperationPage(
 	} else {
 		$data->eCashflow = new \bank\Cashflow();
 	}
-
-	$data->e['cJournalCode'] = \journal\JournalCodeLib::getAll();
 
 	throw new ViewAction($data);
 })
@@ -141,8 +141,8 @@ new \journal\OperationPage(
 
 		// Third party
 		$thirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
-		$cJournalCode = \journal\JournalCodeLib::getAll();
-		$eJournalCode = (get_exists('code') and $cJournalCode->offsetExists(GET('code', 'int'))) ? $cJournalCode->offsetGet(GET('code', 'int')) : new \journal\JournalCode();
+		$cJournalCode = \journal\JournalCodeLib::deferred();
+		$eJournalCode = \journal\JournalCodeLib::ask(GET('journalCode', 'int'));
 
 		$data->e->merge([
 			'farm' => $data->eFarm['id'],
@@ -189,8 +189,8 @@ new \journal\OperationPage(
 		$data->index = POST('index');
 
 		$eThirdParty = post_exists('thirdParty') ? \account\ThirdPartyLib::getById(POST('thirdParty')) : new \account\ThirdParty();
-		$cJournalCode = \journal\JournalCodeLib::getAll();
-		$eJournalCode = (post_exists('code') and $cJournalCode->offsetExists(POST('code', 'int'))) ? $cJournalCode->offsetGet(POST('code', 'int')) : new \journal\JournalCode();
+		$cJournalCode = \journal\JournalCodeLib::deferred();
+		$eJournalCode = \journal\JournalCodeLib::ask(POST('code', 'int'));
 		$data->eOperation = new \journal\Operation([
 			'account' => new \account\Account(),
 			'thirdParty' => $eThirdParty,
@@ -269,11 +269,9 @@ new \journal\OperationPage(function($data) {
 	})
 	->writeCollection('doUpdateJournalCollection', function($data) {
 
-		$eJournalCode = POST('journalCode', 'journal\journalCode');
-
 		$fw = new FailWatch();
 
-		\journal\OperationLib::updateJournalCodeCollection($data->c, $eJournalCode);
+		\journal\OperationLib::updateJournalCodeCollection($data->c, POST('journalCode', 'int'));
 
 		$fw->validate();
 

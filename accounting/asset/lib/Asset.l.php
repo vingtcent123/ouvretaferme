@@ -303,7 +303,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		Asset::model()->beginTransaction();
 
-		$eJournalCode = \journal\JournalCodeLib::getByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD_BILAN);
 
 		$cAsset = self::getAssetsByFinancialYear($eFinancialYear);
 

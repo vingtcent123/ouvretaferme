@@ -184,7 +184,6 @@ Class ImportLib {
 	): void {
 
 		$cOperation = new \Collection();
-		$cJournalCode = \journal\JournalCodeLib::getAll();
 
 		foreach($fecData as $data) {
 
@@ -197,11 +196,9 @@ Class ImportLib {
 			if($eAccount === NULL) {
 				$eAccount = new \account\Account();
 			}
-			if($eAccount->notEmpty() and $eAccount['journalCode']->notEmpty() and $cJournalCode->offsetExists($eAccount['journalCode']['id'])) {
-				$eJournalCode = $eAccount['journalCode'];
-			} else {
-				$eJournalCode = new \journal\JournalCode();
-			}
+
+			$eJournalCode = ($eAccount->notEmpty() and $eAccount['journalCode']->notEmpty()) ? \journal\JournalCodeLib::ask($eAccount['journalCode']['id']) : new \journal\JournalCode();
+
 			$date = mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], -2);
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
 

@@ -2,7 +2,7 @@
 new Page()
 	->get('index', function($data) {
 
-		$data->cJournalCode = \journal\JournalCodeLib::getAll();
+		$data->cJournalCode = \journal\JournalCodeLib::deferred();
 
 		\journal\JournalCodeLib::countAccountsByJournalCode($data->cJournalCode);
 

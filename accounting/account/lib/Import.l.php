@@ -57,7 +57,7 @@ Class ImportLib extends ImportCrud {
 				break;
 
 			case 'journaux':
-				$eJournalCode = \journal\JournalCodeLib::getById($input['value']);
+				$eJournalCode = \journal\JournalCodeLib::ask((int)$input['value']);
 
 				if($eJournalCode->empty()) {
 					return;
@@ -243,7 +243,7 @@ Class ImportLib extends ImportCrud {
 					isset($eImport['rules']['journaux'][$code]['journalCode']['id'])
 				) {
 
-					return $cJournalCode->find(fn($e) => $e['id'] === $eImport['rules']['journaux'][$code]['journalCode']['id'])->first();
+					return \journal\JournalCodeLib::ask($eImport['rules']['journaux'][$code]['journalCode']['id']);
 
 				}
 			}
@@ -297,8 +297,7 @@ Class ImportLib extends ImportCrud {
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 		$cAccount = AccountLib::getAll();
-		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
-		$cJournalCode = \journal\JournalCodeLib::getAll();
+		$cJournalCode = \journal\JournalCodeLib::deferred();
 
 		$journaux = [];
 		$comptes = [];
@@ -418,7 +417,6 @@ Class ImportLib extends ImportCrud {
 
 		$cAccount = AccountLib::getAll();
 		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
-		$cJournalCode = \journal\JournalCodeLib::getAll();
 
 		$update = ['status' => Import::DONE, 'updatedAt' => new \Sql('NOW()')];
 
@@ -458,18 +456,7 @@ Class ImportLib extends ImportCrud {
 
 			}
 
-			if(
-				isset($eImport['rules']['journaux'][$journalCode]['journalCode']['id']) and
-				$cJournalCode->offsetExists($eImport['rules']['journaux'][$journalCode]['journalCode']['id'])
-			) {
-
-				$eJournalCode = $cJournalCode->find(fn($e) => $e['id'] === $eImport['rules']['journaux'][$journalCode]['journalCode']['id'])->first();
-
-			} else {
-
-				$eJournalCode = new \journal\JournalCode();
-
-			}
+			$eJournalCode = \journal\JournalCodeLib::ask($eImport['rules']['journaux'][$journalCode]['journalCode']['id']);
 
 			if(
 				isset($eImport['rules']['paiements'][$modeRglt]['payment']['id']) and

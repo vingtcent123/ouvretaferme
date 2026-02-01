@@ -3,6 +3,8 @@ namespace journal;
 
 Class JournalCodeLib extends JournalCodeCrud {
 
+	use \ModuleDeferred;
+
 	public static function getPropertiesCreate(): array {
 		return ['name', 'code', 'color', 'isReversable', 'isDisplayed'];
 	}
@@ -10,20 +12,29 @@ Class JournalCodeLib extends JournalCodeCrud {
 		return ['name', 'color', 'isReversable', 'isDisplayed'];
 	}
 
-	public static function getAll(): \Collection {
+	public static function deferred(): \Collection {
 
-		return JournalCode::model()
+		$callback = fn() => JournalCode::model()
 			->select(JournalCode::getSelection())
 			->sort(['name' => SORT_ASC])
-			->getCollection(NULL, NULL, 'id');
+			->getCollection(index: 'id');
+
+		$eFarm = \farm\Farm::getConnected();
+		
+		return self::getCache('journal-code-'.$eFarm['id'], $callback);
 
 	}
-	public static function getByCode(string $code): JournalCode {
+	
+	public static function askByCode(string $code): JournalCode {
 
-		return JournalCode::model()
-			->select(JournalCode::getSelection())
-			->whereCode($code)
-			->get();
+		$cJournalCode = self::deferred();
+		
+		$cJournalCodeFiltered = $cJournalCode->find(fn($e) => $e['code'] === $code);
+		if($cJournalCodeFiltered->notEmpty()) {
+			return $cJournalCodeFiltered->first();
+		}
+		
+		return new JournalCode();
 
 	}
 
