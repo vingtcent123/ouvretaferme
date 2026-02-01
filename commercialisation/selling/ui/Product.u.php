@@ -1151,7 +1151,14 @@ class ProductUi {
 					$form->fake(mb_ucfirst($eProduct['unit'] ? \selling\UnitUi::getSingular($eProduct['unit']) : self::p('unit')->placeholder))
 			);
 
-			$h .= $form->dynamicGroups($eProduct, ['origin', 'quality']);
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('origin')).'">';
+				$h .= $form->dynamicGroup($eProduct, 'origin');
+			$h .= '</div>';
+
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('quality')).'">';
+				$h .= $form->dynamicGroup($eProduct, 'quality');
+			$h .= '</div>';
+
 			$h .= $form->dynamicGroup($eProduct, 'vat');
 
 			$h .= '<br/>';

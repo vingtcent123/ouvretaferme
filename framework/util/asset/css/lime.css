@@ -1600,10 +1600,12 @@ ul.util-summarize li > a:not(.btn) {
 	border-radius: var(--radius);
 	background: linear-gradient(to top, transparent 0%, var(--background) 100%);
 	border: 0px solid var(--secondary);
+	transition: background 0.5s;
 }
 
-ul.util-summarize li > a:hover {
+ul.util-summarize li > a:not(.btn):hover {
 	text-decoration: none;
+	background-color: var(--background);
 }
 
 ul.util-summarize li.selected > a:not(.btn) {
@@ -1636,8 +1638,7 @@ ul.util-summarize li .util-summarize-muted {
 	margin-top: 0.5rem;
 }
 
-ul.util-summarize li.selected .util-summarize-muted,
-ul.util-summarize li > a:not(.btn):hover .util-summarize-muted {
+ul.util-summarize li.selected .util-summarize-muted {
 	color: #fffd;
 }
 

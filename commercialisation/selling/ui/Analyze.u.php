@@ -701,7 +701,7 @@ class AnalyzeUi {
 			$h .= '</td>';
 
 			$h .= '<td class="text-end">';
-				$h .= ($eItem['quantity'] > 0) ? \util\TextUi::money($eItem['turnover'] / $eItem['quantity']) : '';
+				$h .= ($eItem['quantity'] > 0) ? \util\TextUi::money(round($eItem['turnover'] / $eItem['quantity'], 2)) : '';
 			$h .= '</td>';
 
 			return $h;
@@ -1289,7 +1289,7 @@ class AnalyzeUi {
 
 					$turnover = fn($eItem) => \util\TextUi::money($eItem['turnover'], precision: 0);
 					$quantity = fn($eItem) => ($eItem['quantity'] !== NULL) ? \util\TextUi::number(round($eItem['quantity']), 0) : '';
-					$average = fn($eItem) => ($eItem['average'] !== NULL) ? \util\TextUi::money($eItem['average']) : '';
+					$average = fn($eItem) => ($eItem['average'] !== NULL) ? \util\TextUi::money(round($eItem['average'], 2)) : '';
 
 					$h = '';
 
@@ -1450,7 +1450,7 @@ class AnalyzeUi {
 			return '';
 		}
 
-		$average = fn($eItem) => ($eItem['average'] !== NULL) ? \util\TextUi::money($eItem['average']) : '';
+		$average = fn($eItem) => ($eItem['average'] !== NULL) ? \util\TextUi::money(round($eItem['average'], 2)) : '';
 
 		$h = '<td class="text-end '.$class.'">';
 			$position = 0;
@@ -1603,7 +1603,7 @@ class AnalyzeUi {
 
 					$turnover = fn(float $value) => \util\TextUi::money($value, precision: 0);
 					$quantity = fn($eItem) => \util\TextUi::number(round($eItem['quantity']), 0);
-					$average = fn($eItem) => \util\TextUi::money($eItem['average']);
+					$average = fn($eItem) => \util\TextUi::money(round($eItem['average'], 2));
 
 					$h = '';
 
