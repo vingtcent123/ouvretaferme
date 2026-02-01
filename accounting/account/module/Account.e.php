@@ -8,7 +8,7 @@ class Account extends AccountElement {
 		return parent::getSelection() + [
 			'name' => new \Sql('CONCAT(class, ". ", description)'),
 			'vatAccount' => ['id', 'class', 'vatRate', 'description'],
-			'journalCode' => \journal\JournalCode::getSelection(),
+			'journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected()),
 		];
 
 	}
@@ -16,7 +16,8 @@ class Account extends AccountElement {
 	public function acceptDelete(): bool {
 
 		return (
-			$this['custom'] === TRUE and $this['nOperation'] === 0 and
+			$this['custom'] === TRUE and
+			\journal\Operation::model()->whereAccount($this)->exists() === FALSE and
 			\bank\BankAccount::model()->whereAccount($this)->exists() === FALSE
 		);
 
