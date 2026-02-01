@@ -102,7 +102,11 @@ class CashflowUi {
 				$getArgs['bankAccount'] = $eBankAccount['id'];
 				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?'.http_build_query($getArgs).'">';
 					$label = '<div class="text-center">';
-						$label .= s("Compte {value}", $eBankAccount['account']['class']);
+						if($eBankAccount['account']->notEmpty()) {
+							$label .= s("Compte {value}", $eBankAccount['account']['class']);
+						} else {
+							$label .= s("Compte");
+						}
 						if($eBankAccount['description']) {
 							$label .= '<br/><small><span style="font-weight: lighter" class="opacity-75">'.encode($eBankAccount['description']).'</span></small>';
 						}

@@ -203,23 +203,29 @@ class ImportUi {
 
 			$values = [];
 			foreach($cBankAccount as $eBankAccount) {
-				$label = $eBankAccount['accountId'].' - '.$eBankAccount['account']['class'];
-				if($eBankAccount['description']) {
-					$label .= ' - '.$eBankAccount['description'];
+				$elements = [
+					$eBankAccount['accountId'],
+					$eBankAccount['description'],
+				];
+				if($eBankAccount['account']->notEmpty()) {
+					$elements[] = $eBankAccount['account']['class'];
 				}
-				$values[$eBankAccount['id']] = encode($label);
+
+				$elements = array_filter($elements, fn($element) => $element);
+
+				$values[$eBankAccount['id']] = join(' - ', $elements);
 			}
-			$values[0] = s("Créer un nouveau bancaire automatiquement");
+			$values[0] = s("Créer un nouveau compte bancaire automatiquement");
 
-			$h .= $form->group(s("Compte bancaire"), $form->select('account', $values, attributes: ['mandatory' => TRUE]));
+			$h .= $form->group(s("Compte bancaire"), $form->select('account', $values));
 
-			$h .= $form->group('', $form->submit(s("Enregistrer")));
+			$h .= $form->group('', $form->submit(s("Sélectionner")));
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-import-account',
-			title: s("Configurer le compte bancaire"),
+			title: s("Sélectionner le compte bancaire"),
 			body: $h
 		);
 	}

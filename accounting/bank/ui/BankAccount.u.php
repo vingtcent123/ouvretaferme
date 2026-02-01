@@ -3,9 +3,6 @@ namespace bank;
 
 class BankAccountUi {
 
-	public function __construct() {
-	}
-
 	public function getAccountTitle(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-action">';
@@ -15,6 +12,7 @@ class BankAccountUi {
 					$h .= s("Les comptes bancaires");
 			$h .= '</h1>';
 
+			$h .= '<a href="'.\farm\FarmUi::urlFinancialYear().'/bank/account:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' <span class="">'.s("Créer un compte bancaire").'</span></a> ';
 		$h .= '</div>';
 
 		return $h;
@@ -78,34 +76,52 @@ class BankAccountUi {
 							}
 						$h .= '</td>';
 						$h .= '<td class="highlight-stick-both">';
-							if($eBankAccount['account']->acceptQuickUpdate('class')) {
-								$eBankAccount['account']->setQuickAttribute('farm', $eFarm['id']);
-								$eBankAccount['account']->setQuickAttribute('property', 'class');
-								$h .= $eBankAccount['account']->quick('class', encode($eBankAccount['account']['class']));
+							if($eBankAccount['account']->notEmpty()) {
+
+								if($eBankAccount['account']->acceptQuickUpdate('class')) {
+									$eBankAccount['account']->setQuickAttribute('farm', $eFarm['id']);
+									$eBankAccount['account']->setQuickAttribute('property', 'class');
+									$h .= $eBankAccount['account']->quick('class', encode($eBankAccount['account']['class']));
+								} else {
+									$h .= encode($eBankAccount['account']['class']);
+								}
+
 							} else {
-								$h .= encode($eBankAccount['account']['class']);
+								$h .= '-';
 							}
 						$h .= '</td>';
 						$h .= '<td class="highlight-stick-both">';
-							if($eBankAccount['account']->acceptQuickUpdate('description')) {
-								$eBankAccount['account']->setQuickAttribute('farm', $eFarm['id']);
-								$eBankAccount['account']->setQuickAttribute('property', 'description');
-								$h .= $eBankAccount['account']->quick('description', encode($eBankAccount['account']['description']));
+							if($eBankAccount['account']->notEmpty()) {
+
+								if($eBankAccount['account']->acceptQuickUpdate('description')) {
+									$eBankAccount['account']->setQuickAttribute('farm', $eFarm['id']);
+									$eBankAccount['account']->setQuickAttribute('property', 'description');
+									$h .= $eBankAccount['account']->quick('description', encode($eBankAccount['account']['description']));
+								} else {
+									$h .= encode($eBankAccount['account']['description']);
+								}
+
 							} else {
-								$h .= encode($eBankAccount['account']['description']);
+								$h .= '-';
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-center">';
-							$h .= '<a href="'.\farm\FarmUi::urlFinancialYear().'/banque/operations?bankAccount='.$eBankAccount['id'].'">'.$eBankAccount['nCashflow'].'</a>';
+							if($eBankAccount['account']->notEmpty()) {
+								$h .= '<a href="'.\farm\FarmUi::urlFinancialYear().'/banque/operations?bankAccount='.$eBankAccount['id'].'">'.$eBankAccount['nCashflow'].'</a>';
+							} else {
+								$h .= '-';
+							}
 						$h .= '</td>';
 						$h .= '<td>';
 							$h .= '<a class="dropdown-toggle btn btn-secondary" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
 							$h .= '<div class="dropdown-list">';
-								$h .= '<a href="'.\farm\FarmUi::urlFinancialYear().'/account/account?classPrefix='.$eBankAccount['account']['class'].'&description=&vatFilter=0&customFilter=0" class="dropdown-item">';
-								$h .= s("Voir le numéro de compte");
-							$h .= '</a>';
+								if($eBankAccount['account']->notEmpty()) {
+									$h .= '<a href="'.\farm\FarmUi::urlFinancialYear().'/account/account?classPrefix='.$eBankAccount['account']['class'].'&description=&vatFilter=0&customFilter=0" class="dropdown-item">';
+										$h .= s("Voir le numéro de compte");
+									$h .= '</a>';
+								}
 							if($eBankAccount->acceptDelete()) {
-								$confirm = s("Confirmez-vous la suppression du compte bancaire {value} ?", $eBankAccount['accountId']);
+								$confirm = s("Confirmez-vous la suppression du compte bancaire {value} ?", $eBankAccount['description']);
 								if($eBankAccount['nCashflow'] > 0) {
 									$confirm .= ' '.s("Toutes les opérations bancaires et les imports liés seront également supprimés.");
 								}
@@ -125,6 +141,30 @@ class BankAccountUi {
 
 	}
 
+	public function create(\farm\Farm $eFarm, BankAccount $eBankAccount): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax(\farm\FarmUi::urlFinancialYear().'/bank/account:doCreate');
+
+			$h .= $form->dynamicGroups($eBankAccount, ['description*']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Ajouter le compte bancaire"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-bank-account-create',
+			title: s("Ajouter un compte bancaire"),
+			body: $h,
+		);
+
+	}
+
 	public function getDefaultName(string $class): string {
 		return s("Compte bancaire {value}", trim($class, '0'));
 	}
@@ -138,6 +178,13 @@ class BankAccountUi {
 			'description' => s("Nom du compte"),
 		]);
 
+		switch($property) {
+
+			case 'description' :
+				$d->placeholder = s("Crédit Agricole");
+				break;
+
+		}
 		return $d;
 
 	}

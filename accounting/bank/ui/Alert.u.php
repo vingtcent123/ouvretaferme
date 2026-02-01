@@ -7,6 +7,9 @@ Class AlertUi {
 
 		return match($fqn) {
 
+			'BankAccount::description.check' => s("Veuillez donner un nom à votre compte bancaire."),
+			'BankAccount::description.duplicate' => s("Ce nom a déjà été donné à un compte bancaire, choisissez-en un autre ?"),
+
 			'Cashflow::allocate.accountsCheck' => s("Veuillez sélectionner au moins un numéro de compte."),
 			'Cashflow::allocate.noOperation' => s("Aucune opération n'a pu être enregistrée."),
 			'Cashflow::internal' => s("Une erreur interne est survenue."),
@@ -18,6 +21,7 @@ Class AlertUi {
 			'Import::ofxError' => s("Une erreur est survenue lors de l'import de votre fichier. Est-ce bien un fichier OFX ?"),
 			'Import::nothingImported' => s("Aucun mouvement n'a été importé, n'avez-vous pas déjà importé ce fichier ?"),
 			'Import::nothingImportedNoFinancialYear' => s("Aucun mouvement n'a été importé, avez-vous bien créé l'exercice comptable de ces opérations bancaires ?"),
+			'Import::account.check' => s("Choisissez un compte existant ou la création d'un nouveau compte automatiquement"),
 
 			default => null,
 		};

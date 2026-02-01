@@ -47,7 +47,7 @@ class OfxParserLib {
 		$accountId = $ofx->getElementsByTagName('acctid')->item(0)->nodeValue;
 
 		if(strlen($bankId) === 0 or strlen($accountId) === 0) {
-			return new BankAccount();
+			return new BankAccount(['bankId' => $bankId, 'accountId' => $accountId]);
 		}
 
 		return BankAccountLib::getFromOfx($bankId, $accountId);

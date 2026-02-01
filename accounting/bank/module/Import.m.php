@@ -55,6 +55,8 @@ class ImportModel extends \ModuleModel {
 			'endDate' => ['datetime', 'cast' => 'string'],
 			'result' => ['json', 'cast' => 'array'],
 			'status' => ['enum', [\bank\Import::PROCESSING, \bank\Import::FULL, \bank\Import::PARTIAL, \bank\Import::NONE, \bank\Import::ERROR], 'cast' => 'enum'],
+			'bankId' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'accountId' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'account' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
 			'reconciliation' => ['enum', [\bank\Import::WAITING, \bank\Import::PROCESSING, \bank\Import::DONE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -63,7 +65,7 @@ class ImportModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'filename', 'startDate', 'endDate', 'result', 'status', 'account', 'reconciliation', 'createdAt', 'processedAt', 'createdBy'
+			'id', 'filename', 'startDate', 'endDate', 'result', 'status', 'bankId', 'accountId', 'account', 'reconciliation', 'createdAt', 'processedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -160,6 +162,14 @@ class ImportModel extends \ModuleModel {
 
 	public function whereStatus(...$data): ImportModel {
 		return $this->where('status', ...$data);
+	}
+
+	public function whereBankId(...$data): ImportModel {
+		return $this->where('bankId', ...$data);
+	}
+
+	public function whereAccountId(...$data): ImportModel {
+		return $this->where('accountId', ...$data);
 	}
 
 	public function whereAccount(...$data): ImportModel {

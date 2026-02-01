@@ -1,13 +1,13 @@
 BankAccount:
   id: serial32
-  bankId: text8(1, null)
-  accountId: text8(1, null)
-  label: text8(1, null)
+  bankId: ?text8(1, null)
+  accountId: ?text8(1, null)
   account: ?account\Account
-  description: ?text8(1, null) # Nom du compte affiché côté banque (peut être différent du libellé de compte)
+  description: text8(1, null) @collate(general) # Nom du compte affiché côté banque (peut être différent du libellé de compte)
   isDefault: bool = FALSE
   UNIQUE: [
-    ["accountId"]
+    ["accountId"],
+    ["description"],
   ]
 
 Cashflow:
@@ -43,6 +43,8 @@ Import:
   endDate: datetime
   result: json = PHP([])
   status: enum(PROCESSING, FULL, PARTIAL, NONE, ERROR)
+  bankId: ?text8(1, null)
+  accountId: ?text8(1, null)
   account: ?bank\BankAccount
   reconciliation: enum(WAITING, PROCESSING, DONE) = WAITING
   createdAt: datetime = SPECIAL(now)

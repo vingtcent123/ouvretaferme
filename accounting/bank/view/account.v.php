@@ -12,5 +12,9 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('create', function($data, PanelTemplate $t) {
+	return new \bank\BankAccountUi()->create($data->eFarm, $data->e);
+});
+
 
 ?>

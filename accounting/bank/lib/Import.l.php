@@ -182,11 +182,13 @@ class ImportLib extends ImportCrud {
 
 			$eImport = new Import([
 				'filename' => $filename,
-				'account' => $eBankAccount,
+				'account' => $eBankAccount->exists() ? $eBankAccount : new BankAccount(), // il y a bankId et accountId dans tous les cas
 				'startDate' => $import['startDate'],
 				'endDate' => $import['endDate'],
 				'result' => [],
 				'status' => ImportElement::PROCESSING,
+				'bankId' => $eBankAccount['bankId'],
+        'accountId' => $eBankAccount['accountId'],
 			]);
 
 			Import::model()->insert($eImport);
@@ -246,6 +248,8 @@ class ImportLib extends ImportCrud {
 			} else {
 
 				$e['account'] = $e['newAccount'];
+
+				BankAccount::model()->update($e['account'], ['bankId' => $e['bankId'], 'accountId' => $e['accountId']]);
 
 			}
 

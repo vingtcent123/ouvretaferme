@@ -3,6 +3,10 @@ namespace bank;
 
 class BankAccountLib extends BankAccountCrud {
 
+	public static function getPropertiesCreate(): array {
+		return ['description'];
+	}
+
 	public static function getAllWithCashflow(): \Collection {
 
 		return BankAccount::model()
@@ -64,15 +68,7 @@ class BankAccountLib extends BankAccountCrud {
 
 		if($eBankAccount->empty()) {
 
-			if((int)$bankId !== 0) {
-
-				$eBankAccount = self::createNew($bankId, $accountId);
-
-			} else {
-
-				$eBankAccount = new BankAccount();
-
-			}
+			$eBankAccount = new BankAccount(['bankId' => $bankId, 'accountId' => $accountId]);
 
 		}
 
@@ -116,7 +112,7 @@ class BankAccountLib extends BankAccountCrud {
 
 		BankAccount::model()->commit();
 
-			return $eBankAccount;
+		return $eBankAccount;
 
 	}
 

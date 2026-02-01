@@ -18,6 +18,8 @@ class Import extends ImportElement {
 
 			});
 
+		parent::build($properties, $input, $p);
+
 	}
 }
 ?>

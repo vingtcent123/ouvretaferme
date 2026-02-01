@@ -6,11 +6,17 @@ new \bank\BankAccountPage()
 		throw new ViewAction($data);
 
 	});
+
 new \bank\BankAccountPage()
 	->applyElement(function($data, \bank\BankAccount $e) {
 		$e['farm'] = $data->eFarm;
 	})
 	->quick(['description'])
+;
+
+new \bank\BankAccountPage()
+	->create(fn($data) => throw new ViewAction($data))
+	->doCreate(fn($data) => throw new ReloadAction('bank', 'BankAccount::created'))
 ;
 
 new \bank\BankAccountPage()

@@ -69,7 +69,7 @@ new \bank\ImportPage()
 		\preaccounting\SuggestionLib::calculateSuggestionsByFarm($data->eFarm);
 		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::RECONCILIATE, \company\CompanyCron::WAITING);
 
-		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations?success=bank\\Import::createdAndAccountSelected');
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations?bankAccount='.$data->e['account']['id'].'&success=bank\\Import::createdAndAccountSelected');
 
 		}, ['acceptUpdateAccount'])
 ?>
