@@ -79,7 +79,7 @@ class AnalyzeUi {
 				$h .= '<li '.($eTimesheet['year'] === $year ? 'class="selected"' : '').'>';
 					$h .= '<a data-ajax="/farm/action:analyzeTime?'.($eAction->notEmpty() ? 'action='.$eAction['id'] : '').'&category='.$eCategory['id'].'&year='.$eTimesheet['year'].'" data-ajax-method="get">';
 						$h .= '<h5>'.$eTimesheet['year'].'</h5>';
-						$h .= '<div>'.\series\TaskUi::convertTime($eTimesheet['time']).'</div>';
+						$h .= '<div>'.\series\TaskUi::convertTime($eTimesheet['timeTotal']).'</div>';
 					$h .= '</a>';
 				$h .= '</li>';
 

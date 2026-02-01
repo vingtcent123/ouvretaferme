@@ -8,7 +8,7 @@ class AnalyzeLib {
 		$cWorkingTimeMonth = \hr\WorkingTime::model()
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int'),
-				'time' => new \Sql('SUM(time)', 'float')
+				'timeTotal' => new \Sql('SUM(time)', 'float')
 			])
 			->whereFarm($eFarm)
 			->where(new \Sql('EXTRACT(YEAR FROM date)'), $year)
@@ -25,7 +25,7 @@ class AnalyzeLib {
 		$cWorkingTimeWeek = \hr\WorkingTime::model()
 			->select([
 				'week' => new \Sql('WEEK(date, 1)', 'int'),
-				'time' => new \Sql('SUM(time)', 'float')
+				'timeTotal' => new \Sql('SUM(time)', 'float')
 			])
 			->whereFarm($eFarm)
 			->where(new \Sql('EXTRACT(YEAR FROM date)'), $year)
@@ -62,7 +62,7 @@ class AnalyzeLib {
 			->select([
 				'user' => ['firstName', 'lastName', 'vignette'],
 				'month' => new \Sql('SUBSTRING(date, 1, 7)'),
-				'time' => new \Sql('SUM(time)', 'float')
+				'timeTotal' => new \Sql('SUM(time)', 'float')
 			])
 			->whereFarm($eFarm)
 			->where('EXTRACT(YEAR from date) = '.\hr\WorkingTime::model()->format($year))
@@ -118,7 +118,7 @@ class AnalyzeLib {
 				->select([
 					'user',
 					'week' => new \Sql('WEEK(date, 1)', 'int'),
-					'time' => new \Sql('IF(SUM(time) < 11, 10, IF(SUM(time) < 40, 40, IF(SUM(time) < 50, 50, 51)))', 'int')
+					'timeTotal' => new \Sql('IF(SUM(time) < 11, 10, IF(SUM(time) < 40, 40, IF(SUM(time) < 50, 50, 51)))', 'int')
 				])
 				->whereFarm($eFarm)
 				->whereUser($user)
@@ -129,7 +129,7 @@ class AnalyzeLib {
 				->group(['week'])
 				->getCollection()
 				->reduce(function($eWorkingTime, $list) {
-					$list[$eWorkingTime['time']] = ($list[$eWorkingTime['time']] ?? 0) + 1;
+					$list[$eWorkingTime['timeTotal']] = ($list[$eWorkingTime['timeTotal']] ?? 0) + 1;
 					return $list;
 				}, []);
 
@@ -146,7 +146,7 @@ class AnalyzeLib {
 		return Timesheet::model()
 			->select([
 				'user',
-				'time' => new \Sql('SUM(m1.time)', 'float'),
+				'timeTotal' => new \Sql('SUM(m1.time)', 'float'),
 			])
 			->join(Task::model()
 				->select([
@@ -159,7 +159,7 @@ class AnalyzeLib {
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
 			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['user', 'action', 'category'])
-			->sort(new \Sql('m1_time DESC'))
+			->sort(new \Sql('m1_timeTotal DESC'))
 			->getCollection(index: ['user', NULL]);
 
 	}
@@ -169,7 +169,7 @@ class AnalyzeLib {
 		return Timesheet::model()
 			->select([
 				'user',
-				'time' => new \Sql('SUM(m1.time)', 'float'),
+				'timeTotal' => new \Sql('SUM(m1.time)', 'float'),
 			])
 			->join(Task::model()
 				->select([
@@ -181,7 +181,7 @@ class AnalyzeLib {
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
 			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['user', 'category'])
-			->sort(new \Sql('m1_time DESC'))
+			->sort(new \Sql('m1_timeTotal DESC'))
 			->getCollection(index: ['user', NULL]);
 
 	}
@@ -190,7 +190,7 @@ class AnalyzeLib {
 
 		return Timesheet::model()
 			->select([
-				'time' => new \Sql('SUM(m1.time)', 'float'),
+				'timeTotal' => new \Sql('SUM(m1.time)', 'float'),
 			])
 			->join(Task::model()
 				->select([
@@ -202,7 +202,7 @@ class AnalyzeLib {
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
 			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['category'])
-			->sort(new \Sql('m1_time DESC'))
+			->sort(new \Sql('m1_timeTotal DESC'))
 			->getCollection();
 
 	}
@@ -212,7 +212,7 @@ class AnalyzeLib {
 		return Timesheet::model()
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int'),
-				'time' => new \Sql('SUM(m1.time)', 'float'),
+				'timeTotal' => new \Sql('SUM(m1.time)', 'float'),
 			])
 			->join(Task::model()
 				->select([
@@ -261,7 +261,7 @@ class AnalyzeLib {
 					'week' => new \Sql('WEEK(date, 1)', 'int'),
 					'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int')
 				},
-				'time' => new \Sql('SUM(IF(m1.series IS NOT NULL AND m1.cultivation IS NULL, m1.time / m2.plants, m1.time))')
+				'timeTotal' => new \Sql('SUM(IF(m1.series IS NOT NULL AND m1.cultivation IS NULL, m1.time / m2.plants, m1.time))')
 			])
 			->join(Series::model(), 'm2.id = m1.series', 'LEFT')
 			->or(
@@ -283,7 +283,7 @@ class AnalyzeLib {
 		return Timesheet::model()
 			->select([
 				'plant' => ['vignette', 'fqn', 'name'],
-				'time' => function($e) {
+				'timeTotal' => function($e) {
 					return round($e['timePlant'] + $e['timeShared'], 2);
 				},
 				'timePlant' => new \Sql('SUM(time)', 'float'),
@@ -322,7 +322,7 @@ class AnalyzeLib {
 				'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int'),
 				'plant' => ['vignette', 'fqn', 'name'],
 				'propertyDelegate' => new \Sql('CONCAT(plant, EXTRACT(MONTH FROM date))', 'int'),
-				'time' => function($e) {
+				'timeTotal' => function($e) {
 					return round($e['timePlant'] + $e['timeShared'] + $e['timeShared'], 2);
 				},
 				'timePlant' => new \Sql('SUM(time)', 'float'),
@@ -366,7 +366,7 @@ class AnalyzeLib {
 		return Timesheet::model()
 			->select([
 				'year' => new \Sql('EXTRACT(YEAR FROM date)', 'int'),
-				'time' => new \Sql('SUM(IF(m1.series IS NOT NULL AND m1.cultivation IS NULL, m1.time / m2.plants, m1.time))')
+				'timeTotal' => new \Sql('SUM(IF(m1.series IS NOT NULL AND m1.cultivation IS NULL, m1.time / m2.plants, m1.time))')
 			])
 			->join(Series::model(), 'm2.id = m1.series', 'LEFT')
 			->or(
@@ -401,7 +401,7 @@ class AnalyzeLib {
 
 		$ccTimesheet = Timesheet::model()
 			->select([
-				'time' => new \Sql('SUM(IF(m1.series IS NOT NULL AND m1.cultivation IS NULL, m1.time / m2.plants, m1.time))'),
+				'timeTotal' => new \Sql('SUM(IF(m1.series IS NOT NULL AND m1.cultivation IS NULL, m1.time / m2.plants, m1.time))'),
 				'user' => ['firstName', 'lastName', 'vignette']
 			])
 			->join(Series::model(), 'm2.id = m1.series', 'LEFT')
@@ -419,7 +419,7 @@ class AnalyzeLib {
 			)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->group(['m3_action', 'm1_user'])
-			->sort(new \Sql('m1_time DESC'))
+			->sort(new \Sql('m1_timeTotal DESC'))
 			->getCollection(index: ['action', 'user']);
 
 		$cTimesheetAction = new \Collection();
@@ -429,7 +429,7 @@ class AnalyzeLib {
 
 			$cTimesheetAction[$action] = new Timesheet([
 				'action' => $cTimesheet->first()['action'],
-				'time' => $cTimesheet->sum('time'),
+				'timeTotal' => $cTimesheet->sum('timeTotal'),
 				'cTimesheetUser' => $cTimesheet
 			]);
 
@@ -438,17 +438,17 @@ class AnalyzeLib {
 				if($cTimesheetUser->offsetExists($user) === FALSE) {
 					$cTimesheetUser[$user] = new Timesheet([
 						'user' => $eTimesheet['user'],
-						'time' => 0,
+						'timeTotal' => 0,
 					]);
 				}
 
-				$cTimesheetUser[$user]['time'] += $eTimesheet['time'];
+				$cTimesheetUser[$user]['timeTotal'] += $eTimesheet['timeTotal'];
 
 			}
 
 		}
 
-		$cTimesheetUser->sort(['time' => SORT_DESC]);
+		$cTimesheetUser->sort(new \Sql('timeTotal DESC'));
 
 		return [$cTimesheetAction, $cTimesheetUser];
 
@@ -459,7 +459,7 @@ class AnalyzeLib {
 		return Timesheet::model()
 			->select([
 				'series' => ['name', 'mode'],
-				'time' => new \Sql('SUM(time)', 'float'),
+				'timeTotal' => new \Sql('SUM(time)', 'float'),
 			])
 			->whereFarm($eFarm)
 			->where('time > 0')
@@ -467,7 +467,7 @@ class AnalyzeLib {
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
 			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['series'])
-			->sort(new \Sql('time DESC'))
+			->sort(new \Sql('timeTotal DESC'))
 			->getCollection(index: 'series');
 
 	}
@@ -478,7 +478,7 @@ class AnalyzeLib {
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int'),
 				'hasSeries' => new \Sql('series IS NOT NULL', 'bool'),
-				'time' => new \Sql('SUM(time)', 'float'),
+				'timeTotal' => new \Sql('SUM(time)', 'float'),
 			])
 			->whereFarm($eFarm)
 			->where('time > 0')
@@ -493,7 +493,7 @@ class AnalyzeLib {
 
 		return Timesheet::model()
 			->select([
-				'time' => new \Sql('SUM(m1.time)', 'float'),
+				'timeTotal' => new \Sql('SUM(m1.time)', 'float'),
 			])
 			->join(Task::model()
 				->select([
@@ -506,7 +506,7 @@ class AnalyzeLib {
 			->where($month ? 'EXTRACT(MONTH FROM date) = '.$month : NULL)
 			->where($week ? 'WEEK(date, 1) = '.week_number($week) : NULL)
 			->group(['action', 'category'])
-			->sort(new \Sql('m1_time DESC'))
+			->sort(new \Sql('m1_timeTotal DESC'))
 			->getCollection();
 
 
@@ -517,7 +517,7 @@ class AnalyzeLib {
 		return Timesheet::model()
 			->select([
 				'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int'),
-				'time' => new \Sql('SUM(m1.time)', 'float'),
+				'timeTotal' => new \Sql('SUM(m1.time)', 'float'),
 			])
 			->join(Task::model()
 				->select([
@@ -528,7 +528,7 @@ class AnalyzeLib {
 			->where('m1.farm', $eFarm)
 			->where('EXTRACT(YEAR FROM date) = '.$year)
 			->group([new \Sql('m1_month'), 'action', 'category'])
-			->sort(new \Sql('m1_time DESC'))
+			->sort(new \Sql('m1_timeTotal DESC'))
 			->getCollection(index: ['action', 'category', 'month']);
 
 

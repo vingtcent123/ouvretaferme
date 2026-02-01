@@ -35,7 +35,7 @@ class AnalyzeUi {
 
 	public function getPeriodMonthTable(\Collection $cTimesheetMonth, \Collection $cTimesheetUser = new \Collection()): string {
 
-		$globalTime = $cTimesheetMonth->sum('time');
+		$globalTime = $cTimesheetMonth->sum('timeTotal');
 
 		if($cTimesheetUser->empty()) {
 			$columns = 0;
@@ -77,7 +77,7 @@ class AnalyzeUi {
 					for($month = 1; $month <= 12; $month++) {
 
 						if($cTimesheetMonth->offsetExists($month)) {
-							$time = $cTimesheetMonth[$month]['time'];
+							$time = $cTimesheetMonth[$month]['timeTotal'];
 						} else {
 							$time = NULL;
 						}
@@ -112,7 +112,7 @@ class AnalyzeUi {
 
 									if($cTimesheet->offsetExists($user)) {
 
-										$userTime = $cTimesheet[$user]['time'];
+										$userTime = $cTimesheet[$user]['timeTotal'];
 
 										$h .= '<td class="text-end">';
 											$h .= TaskUi::convertTime($userTime);
@@ -158,12 +158,12 @@ class AnalyzeUi {
 						if($columns > 0) {
 
 							foreach($cTimesheetUserSlice as $eTimesheet) {
-								$h .= '<td class="text-end">'.TaskUi::convertTime($eTimesheet['time']).'</td>';
+								$h .= '<td class="text-end">'.TaskUi::convertTime($eTimesheet['timeTotal']).'</td>';
 							}
 
 							if($cTimesheetUser->count() > $maxColumns) {
 
-								$remainingTime = $globalTime - $cTimesheetUserSlice->sum('time');
+								$remainingTime = $globalTime - $cTimesheetUserSlice->sum('timeTotal');
 								$h .= '<td class="text-end">'.TaskUi::convertTime($remainingTime).'</td>';
 
 							}
@@ -208,7 +208,7 @@ class AnalyzeUi {
 
 				$eWorkingTimeWeek = $cWorkingTimeWeek[$week];
 
-				$times[] = round($eWorkingTimeWeek['time'], 2);
+				$times[] = round($eWorkingTimeWeek['timeTotal'], 2);
 
 			} else {
 				$times[] = 0;
@@ -248,7 +248,7 @@ class AnalyzeUi {
 
 				$eWorkingTimeMonth = $cWorkingTimeMonth[$month];
 
-				$times[] = round($eWorkingTimeMonth['time'], 2);
+				$times[] = round($eWorkingTimeMonth['timeTotal'], 2);
 
 			} else {
 				$times[] = 0;
@@ -284,7 +284,7 @@ class AnalyzeUi {
 
 			foreach($ccWorkingTimeMonthly as $cWorkingTimeMonthly) {
 
-				$globalTime = $cWorkingTimeMonthly->sum('time');
+				$globalTime = $cWorkingTimeMonthly->sum('timeTotal');
 				$eUser = $cWorkingTimeMonthly->first()['user'];
 
 				$cTimesheetAction = $ccTimesheetAction[$eUser['id']] ??  new \Collection();
@@ -320,7 +320,7 @@ class AnalyzeUi {
 							$h .= '<div class="analyze-working-time-months">';
 								for($month = 1; $month <= 12; $month++) {
 
-									$time = $cWorkingTimeMonthly[$year.'-'.sprintf('%02d', $month)]['time'] ?? 0;
+									$time = $cWorkingTimeMonthly[$year.'-'.sprintf('%02d', $month)]['timeTotal'] ?? 0;
 
 									$h .= '<div class="analyze-working-time-month">';
 										$h .= '<div class="analyze-working-time-month-name">'.\util\DateUi::getMonthName($month, type: 'short').'</div>';
@@ -518,7 +518,7 @@ class AnalyzeUi {
 
 	protected function getActionTimesheetTable(\farm\Farm $eFarm, int $year, \user\User $eUser, \Collection $cTimesheet): string {
 
-		$globalTime = $cTimesheet->sum('time');
+		$globalTime = $cTimesheet->sum('timeTotal');
 
 		$h = '<table class="tr-even analyze-values stick-xs">';
 
@@ -553,10 +553,10 @@ class AnalyzeUi {
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
-							$h .= TaskUi::convertTime($eTimesheet['time']);
+							$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 						$h .= '</td>';
 						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
+							$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 							if(
@@ -580,7 +580,7 @@ class AnalyzeUi {
 
 	protected function getCategoryTimesheetTable(\farm\Farm $eFarm, int $year, \user\User $eUser, \Collection $cTimesheet): string {
 
-		$globalTime = $cTimesheet->sum('time');
+		$globalTime = $cTimesheet->sum('timeTotal');
 
 		$h = '<table class="tr-even analyze-values stick-xs">';
 
@@ -609,10 +609,10 @@ class AnalyzeUi {
 							$h .= encode($eTimesheet['category']['name']);
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
-							$h .= TaskUi::convertTime($eTimesheet['time']);
+							$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 						$h .= '</td>';
 						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
+							$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 							if(
@@ -697,7 +697,7 @@ class AnalyzeUi {
 				$h .= '<li '.($ePlantTimesheet['year'] === $year ? 'class="selected"' : '').'>';
 					$h .= '<a data-ajax="/plant/plant:analyzeTime?id='.$ePlant['id'].'&year='.$ePlantTimesheet['year'].'" data-ajax-method="get">';
 						$h .= '<h5>'.$ePlantTimesheet['year'].'</h5>';
-						$h .= '<div>'.TaskUi::convertTime($ePlantTimesheet['time']).'</div>';
+						$h .= '<div>'.TaskUi::convertTime($ePlantTimesheet['timeTotal']).'</div>';
 					$h .= '</a>';
 				$h .= '</li>';
 
@@ -714,7 +714,7 @@ class AnalyzeUi {
 		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par intervention"),
 			$cTimesheetByAction,
-			'time',
+			'timeTotal',
 			fn($eTimesheet) => encode($eTimesheet['action']['name']),
 			fn($eTimesheet) => encode($eTimesheet['action']['color'])
 		);
@@ -723,7 +723,7 @@ class AnalyzeUi {
 
 	protected function getPlantActionsTable(\plant\Plant $ePlant, int $year, \Collection $cTimesheetByAction, \Collection $cTimesheetByUser): string {
 
-		$timesheetGlobalTime = $cTimesheetByAction->sum('time');
+		$timesheetGlobalTime = $cTimesheetByAction->sum('timeTotal');
 
 		$displayUsers = $ePlant['farm']->canPersonalData();
 		$maxColumns = 4;
@@ -760,10 +760,10 @@ class AnalyzeUi {
 							$h .= encode($eTimesheet['action']['name']);
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
-							$h .= TaskUi::convertTime($eTimesheet['time']);
+							$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 						$h .= '</td>';
 						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+							$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $timesheetGlobalTime * 100, 0);
 						$h .= '</td>';
 
 						if($displayUsers) {
@@ -777,7 +777,7 @@ class AnalyzeUi {
 
 								if($cTimesheet->offsetExists($user)) {
 
-									$time = $cTimesheet[$user]['time'];
+									$time = $cTimesheet[$user]['timeTotal'];
 
 									$h .= '<td class="text-end">';
 										$h .= TaskUi::convertTime($time);
@@ -793,7 +793,7 @@ class AnalyzeUi {
 
 							if($cTimesheetByUser->count() > $maxColumns) {
 
-								$remainingTime = $eTimesheet['time'] - $totalTime;
+								$remainingTime = $eTimesheet['timeTotal'] - $totalTime;
 
 								$h .= '<td class="text-end">';
 									if($remainingTime > 0) {
@@ -821,11 +821,11 @@ class AnalyzeUi {
 					if($displayUsers) {
 
 						foreach($cTimesheetByUserSlice as $eTimesheet) {
-							$h .= '<td class="text-end">'.TaskUi::convertTime($eTimesheet['time']).'</td>';
+							$h .= '<td class="text-end">'.TaskUi::convertTime($eTimesheet['timeTotal']).'</td>';
 						}
 
 						if($cTimesheetByUser->count() > $maxColumns) {
-							$remainingTime = $timesheetGlobalTime - $cTimesheetByUserSlice->sum('time');
+							$remainingTime = $timesheetGlobalTime - $cTimesheetByUserSlice->sum('timeTotal');
 							$h .= '<td class="text-end">'.TaskUi::convertTime($remainingTime).'</td>';
 						}
 
@@ -940,17 +940,17 @@ class AnalyzeUi {
 
 	protected function addDeadTime(\Collection $cTimesheet, float $globalTime, array $properties): void {
 
-		$timesheetGlobalTime = $cTimesheet->sum('time');
+		$timesheetGlobalTime = $cTimesheet->sum('timeTotal');
 
 		$difference = round($globalTime - $timesheetGlobalTime, 2);
 
 		if($difference > 0) {
 
 			$cTimesheet[] = new Timesheet($properties + [
-				'time' => $difference
+				'timeTotal' => $difference
 			]);
 
-			$cTimesheet->sort(['time' => SORT_DESC]);
+			$cTimesheet->sort(['timeTotal' => SORT_DESC]);
 
 		}
 
@@ -961,7 +961,7 @@ class AnalyzeUi {
 		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par catégorie"),
 			$cTimesheet,
-			'time',
+			'timeTotal',
 			fn($eTimesheet) => encode($eTimesheet['category']['name'])
 		);
 
@@ -1015,10 +1015,10 @@ class AnalyzeUi {
 								$h .= encode($eCategory['name']);
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								$h .= TaskUi::convertTime($eTimesheet['time']);
+								$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 							$h .= '</td>';
 							$h .= '<td class="util-annotation">';
-								$h .= \util\TextUi::pc($eTimesheet['time'] / $globalTime * 100);
+								$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
 							$h .= '</td>';
 
 							if($monthly) {
@@ -1036,7 +1036,7 @@ class AnalyzeUi {
 										$h .= '<td class="text-end analyze-month-value">';
 
 											if($eTimesheetMonthly->notEmpty()) {
-												$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
+												$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['timeTotal']), showMinutes: FALSE);
 											}
 
 										$h .= '</td>';
@@ -1093,7 +1093,7 @@ class AnalyzeUi {
 		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par espèce"),
 			$cTimesheet,
-			'time',
+			'timeTotal',
 			fn($eTimesheet) => encode($eTimesheet['plant']['name'])
 		);
 
@@ -1101,7 +1101,7 @@ class AnalyzeUi {
 
 	protected function getPlantTable(\farm\Farm $eFarm, int $year, ?int $month, ?string $week, \Collection $cTimesheet, \Collection $ccTimesheetMonthly, bool $monthly): string {
 
-		$timesheetGlobalTime = (float)$cTimesheet->sum('time');
+		$timesheetGlobalTime = (float)$cTimesheet->sum('timeTotal');
 
 		if($timesheetGlobalTime === 0.0) {
 			return '<div class="util-info">'.s("Vous n'avez travaillé sur aucune espèce sur la période !").'</div>';
@@ -1109,7 +1109,7 @@ class AnalyzeUi {
 
 		$search = new \Search()
 			->sort(GET('sort'))
-			->validateSort(['plant', 'time'], 'time-');
+			->validateSort(['plant', 'timeTotal'], 'time-');
 
 		$cTimesheet->sort($search->buildSort([
 			'plant' => fn($direction) => [
@@ -1153,10 +1153,10 @@ class AnalyzeUi {
 									$h .= encode($eTimesheet['plant']['name']);
 								$h .= '</td>';
 								$h .= '<td class="text-end">';
-									$h .= TaskUi::convertTime($eTimesheet['time']);
+									$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 								$h .= '</td>';
 								$h .= '<td class="util-annotation">';
-									$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+									$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $timesheetGlobalTime * 100, 0);
 								$h .= '</td>';
 
 								if($monthly) {
@@ -1168,7 +1168,7 @@ class AnalyzeUi {
 										$h .= '<td class="text-end analyze-month-value">';
 
 											if($eTimesheetMonthly->notEmpty()) {
-												$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
+												$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['timeTotal']), showMinutes: FALSE);
 											}
 
 										$h .= '</td>';
@@ -1227,7 +1227,7 @@ class AnalyzeUi {
 		return new \analyze\ChartUi()->buildPie(
 			s("Répartition par série"),
 			$cTimesheet,
-			'time',
+			'timeTotal',
 			fn($eTimesheet) => $eTimesheet['series']->empty() ? s("Hors série") : encode($eTimesheet['series']['name'])
 		);
 
@@ -1237,7 +1237,7 @@ class AnalyzeUi {
 
 		return new \analyze\ChartUi()->buildMonthly(
 			$ccTimesheetMonthly,
-			'time',
+			'timeTotal',
 			fn($eTimesheet) => $eTimesheet['hasSeries'] ? s("Dans une série") : s("Hors série")
 		);
 
@@ -1255,7 +1255,7 @@ class AnalyzeUi {
 			]
 		]));
 
-		$timesheetGlobalTime = $cTimesheet->sum('time');
+		$timesheetGlobalTime = $cTimesheet->sum('timeTotal');
 
 		$h = '<div class="analyze-values">';
 
@@ -1279,10 +1279,10 @@ class AnalyzeUi {
 								$h .= $eTimesheet['series']->empty() ? s("Hors série") : SeriesUi::link($eTimesheet['series']);
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								$h .= TaskUi::convertTime($eTimesheet['time']);
+								$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 							$h .= '</td>';
 							$h .= '<td class="util-annotation">';
-								$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+								$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $timesheetGlobalTime * 100, 0);
 							$h .= '</td>';
 
 						$h .= '</tr>';
@@ -1319,7 +1319,7 @@ class AnalyzeUi {
 		return new \analyze\ChartUi()->buildPie(
 			s("Répartition du temps de travail"),
 			$cTimesheet,
-			'time',
+			'timeTotal',
 			fn($eTimesheet) => $eTimesheet['action']['name'],
 			fn($eTimesheet) => $eTimesheet['action']['color']
 		);
@@ -1338,7 +1338,7 @@ class AnalyzeUi {
 			]
 		]));
 
-		$timesheetGlobalTime = $cTimesheet->sum('time');
+		$timesheetGlobalTime = $cTimesheet->sum('timeTotal');
 
 		$h = '<div class="'.($monthly ? 'util-overflow-lg' : 'util-overflow-xs').' stick-xs">';
 
@@ -1383,10 +1383,10 @@ class AnalyzeUi {
 								$h .= '</td>';
 							}
 							$h .= '<td class="text-end">';
-								$h .= TaskUi::convertTime($eTimesheet['time']);
+								$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 							$h .= '</td>';
 							$h .= '<td class="util-annotation">';
-								$h .= \util\TextUi::pc($eTimesheet['time'] / $timesheetGlobalTime * 100, 0);
+								$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $timesheetGlobalTime * 100, 0);
 							$h .= '</td>';
 
 							if($monthly) {
@@ -1398,7 +1398,7 @@ class AnalyzeUi {
 									$h .= '<td class="text-end analyze-month-value">';
 
 										if($eTimesheetMonthly->notEmpty()) {
-											$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['time']), showMinutes: FALSE);
+											$h .= TaskUi::convertTime(max(1, $eTimesheetMonthly['timeTotal']), showMinutes: FALSE);
 										}
 
 									$h .= '</td>';

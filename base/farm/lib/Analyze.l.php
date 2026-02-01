@@ -19,7 +19,7 @@ class AnalyzeLib {
 					'week' => new \Sql('WEEK(date, 1)', 'int'),
 					'month' => new \Sql('EXTRACT(MONTH FROM date)', 'int')
 				},
-				'time' => new \Sql('SUM(m1.time)'),
+				'timeTotal' => new \Sql('SUM(m1.time)'),
 				'user' => ['firstName', 'lastName', 'vignette']
 			])
 			->join(\series\Task::model(), 'm2.id = m1.task')
@@ -27,7 +27,7 @@ class AnalyzeLib {
 			->where('m2.category', $eCategory)
 			->where(new \Sql('EXTRACT(YEAR FROM date)'), $year)
 			->group(new \Sql('m1_'.$period.', m1_user'))
-			->sort(new \Sql('m1_time DESC'))
+			->sort(new \Sql('m1_timeTotal DESC'))
 			->getCollection(NULL, NULL, [$period, 'user']);
 
 		$cTimesheetPeriod = new \Collection();
@@ -37,7 +37,7 @@ class AnalyzeLib {
 
 			$cTimesheetPeriod[$value] = new \series\Timesheet([
 				$period => $value,
-				'time' => $cTimesheet->sum('time'),
+				'timeTotal' => $cTimesheet->sum('timeTotal'),
 				'cTimesheetUser' => $cTimesheet
 			]);
 
@@ -46,17 +46,17 @@ class AnalyzeLib {
 				if($cTimesheetUser->offsetExists($user) === FALSE) {
 					$cTimesheetUser[$user] = new \series\Timesheet([
 						'user' => $eTimesheet['user'],
-						'time' => 0,
+						'timeTotal' => 0,
 					]);
 				}
 
-				$cTimesheetUser[$user]['time'] += $eTimesheet['time'];
+				$cTimesheetUser[$user]['timeTotal'] += $eTimesheet['timeTotal'];
 
 			}
 
 		}
 
-		$cTimesheetUser->sort(['time' => SORT_DESC]);
+		$cTimesheetUser->sort(new \Sql('timeTotal DESC'));
 
 		return [$cTimesheetPeriod, $cTimesheetUser];
 
@@ -67,7 +67,7 @@ class AnalyzeLib {
 		return \series\Timesheet::model()
 			->select([
 				'year' => new \Sql('EXTRACT(YEAR FROM date)', 'int'),
-				'time' => new \Sql('SUM(m1.time)')
+				'timeTotal' => new \Sql('SUM(m1.time)')
 			])
 			->join(\series\Task::model(), 'm2.id = m1.task')
 			->where('m2.action', $eAction, if: $eAction->notEmpty())
