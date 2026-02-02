@@ -75,6 +75,7 @@ class BedModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['farm'],
 			['zone'],
 			['plot'],
 			['greenhouse']

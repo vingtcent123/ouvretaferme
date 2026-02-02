@@ -68,7 +68,8 @@ class CashModel extends \ModuleModel {
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'origin' => ['enum', [\cash\Cash::BANK_IN, \cash\Cash::BANK_OUT, \cash\Cash::PRIVATE_IN, \cash\Cash::PRIVATE_OUT, \cash\Cash::BALANCE_INITIAL, \cash\Cash::BALANCE_CORRECTION, \cash\Cash::BUY_MANUAL, \cash\Cash::SELL_MANUAL, \cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE], 'cast' => 'enum'],
-			'originBank' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
+			'originBankAccount' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
+			'originCashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'originInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'originSale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
@@ -79,12 +80,13 @@ class CashModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'balance', 'date', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'origin', 'originBank', 'originInvoice', 'originSale', 'account', 'thirdParty', 'operation', 'status', 'createdAt'
+			'id', 'register', 'balance', 'date', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'origin', 'originBankAccount', 'originCashflow', 'originInvoice', 'originSale', 'account', 'thirdParty', 'operation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'register' => 'cash\Register',
-			'originBank' => 'bank\Cashflow',
+			'originBankAccount' => 'bank\BankAccount',
+			'originCashflow' => 'bank\Cashflow',
 			'originInvoice' => 'selling\Invoice',
 			'originSale' => 'selling\Sale',
 			'account' => 'account\Account',
@@ -180,8 +182,12 @@ class CashModel extends \ModuleModel {
 		return $this->where('origin', ...$data);
 	}
 
-	public function whereOriginBank(...$data): CashModel {
-		return $this->where('originBank', ...$data);
+	public function whereOriginBankAccount(...$data): CashModel {
+		return $this->where('originBankAccount', ...$data);
+	}
+
+	public function whereOriginCashflow(...$data): CashModel {
+		return $this->where('originCashflow', ...$data);
 	}
 
 	public function whereOriginInvoice(...$data): CashModel {

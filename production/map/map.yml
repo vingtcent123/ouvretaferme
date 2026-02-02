@@ -17,6 +17,7 @@ Bed:
   createdBy: user\User = SPECIAL(user)
   updatedAt: ?datetime
   INDEX: [
+    ["farm"],
     ["zone"],
     ["plot"],
     ["greenhouse"]
