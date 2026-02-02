@@ -12,7 +12,17 @@ class ImportUi {
 
 	public function history(\Collection $cImport): string {
 
-		$h = '<table class="tr-even tr-hover">';
+		$hasImportWaiting = ($cImport->find(fn($e) => in_array($e['status'], [Import::CREATED, Import::WAITING, Import::FEEDBACK_TO_TREAT]))->count() > 0);
+		if($hasImportWaiting === TRUE) {
+
+			$attributes = [
+				'onrender' => 'Import.check("'.\farm\FarmUi::urlFinancialYear().'/account/financialYear/fec:check")',
+			];
+
+		} else {
+			$attributes = [];
+		}
+		$h = '<table class="tr-even tr-hover" '.attrs($attributes).'>';
 
 			$h .= '<thead>';
 				$h .= '<tr>';
@@ -153,7 +163,7 @@ class ImportUi {
 			$h .= $form->hidden('id', $eImport['id']);
 
 
-			$h .= '<h4>'.s("Correspondance de journaux").'</h4>';
+			$h .= '<h4 class="mt-1">'.s("Correspondance de journaux").'</h4>';
 
 			if($nJournaux > 0) {
 
@@ -191,9 +201,19 @@ class ImportUi {
 
 			if($nComptes > 0 or $nComptesAux) {
 
-				$h .= '<h4>'.s("Correspondance de comptes").'</h4>';
+				$h .= '<h4 class="mt-1">'.s("Correspondance de comptes").'</h4>';
 
-				$h .= '<div class="util-info">'.s("Certains numéro de comptes n'ont pas été trouvés, veuillez indiquer ici à quel numéro de compte sur {siteName} les rattacher. Vous pouvez également les <link>créer dans les paramètres de la comptabilité</link>.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">']).'</div>';
+				$missingAccounts = [];
+				foreach($eImport['rules']['comptes'] + $eImport['rules']['comptesAux'] as $compte => $dataCompte) {
+					$eAccount = isset($dataCompte['account']['id']) ? $cAccount->find(fn($e) => $e['id'] === $dataCompte['account']['id'])->first() : NULL;
+					if($eAccount === NULL) {
+						$missingAccounts[] = $compte;
+					}
+				}
+				$missingAccounts = array_unique($missingAccounts);
+
+				$h .= '<div class="util-info">'.s("Certains numéro de comptes n'ont pas été trouvés, veuillez indiquer ici à quel numéro de compte sur {siteName} les rattacher. Vous pouvez également les <link>créer dans les paramètres de la comptabilité</link>. <br />Les comptes manquants sont : {accounts}. <br /> {icon} Attention, s'il s'agit d'anciens comptes liés à un Plan Comptable qui n'est plus en vigueur, assurez-vous de ne pas vous en resservir ultérieurement.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">', 'accounts' => join(', ', $missingAccounts), 'icon' => \Asset::icon('exclamation-triangle')]).'</div>';
+
 
 				$h .= '<table class="tr-even">';
 					$h .= '<thead>';

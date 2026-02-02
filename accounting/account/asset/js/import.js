@@ -14,6 +14,17 @@ document.delegateEventListener('autocompleteSelect', '[name^="comptes["]', funct
 
 class Import {
 
+	static check(url) {
+
+		let intervalId = setInterval(async () =>
+
+			new Ajax.Query()
+				.method('post')
+				.url(url)
+				.fetch()
+				.then((response) => (!response.result ? clearInterval(intervalId) : null)), 1000);
+	}
+
 	static updatePayment(target) {
 
 		const url = qs('#import-update-rules').getAttribute('url-update');

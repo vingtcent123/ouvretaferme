@@ -296,7 +296,7 @@ Class ImportLib extends ImportCrud {
 			->getCollection();
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
-		$cAccount = AccountLib::getAll();
+		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$cJournalCode = \journal\JournalCodeLib::deferred();
 
 		$journaux = [];
@@ -415,7 +415,7 @@ Class ImportLib extends ImportCrud {
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 
-		$cAccount = AccountLib::getAll();
+		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
 
 		$update = ['status' => Import::DONE, 'updatedAt' => new \Sql('NOW()')];
@@ -518,6 +518,14 @@ Class ImportLib extends ImportCrud {
 		Import::model()->commit();
 
 		return TRUE;
+
+	}
+
+	public static function countWaiting(): int {
+
+		return Import::model()
+			->whereStatus('IN', [Import::CREATED, Import::WAITING, Import::FEEDBACK_TO_TREAT])
+			->count();
 
 	}
 

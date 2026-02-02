@@ -5,6 +5,17 @@ new \account\ImportPage()
 		$e['financialYear'] = $data->eFarm['financialYear'];
 
 	})
+	->post('check', function($data) {
+
+		if(\account\ImportLib::countWaiting() === 0) {
+			throw new \ReloadLayerAction();
+		}
+
+		throw new \JsonAction([
+			 'result' => 'not-finished',
+		]);
+
+	})
 	->doCreate(function($data) {
 
 		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FEC_IMPORT, \company\CompanyCron::WAITING, $data->e['id']);
@@ -12,6 +23,7 @@ new \account\ImportPage()
 		throw new ReloadAction('account', 'Import::created');
 
 	});
+
 new \account\ImportPage()
 	->get('import', function($data) {
 

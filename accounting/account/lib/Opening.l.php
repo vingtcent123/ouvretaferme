@@ -195,15 +195,18 @@ Class OpeningLib {
 	public static function open(FinancialYear $eFinancialYearPrevious, FinancialYear $eFinancialYear, array $journalCodes): void {
 
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_RETAINED;
-		
+
+		// Reports à nouveau des classes de bilan
 		$cOperation = \account\OpeningLib::getRetainedEarnings($eFinancialYearPrevious, $eFinancialYear, $hash);
 
+		// Résultat et affectation
 		$cOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
 
 		if($cOperationResult->notEmpty()) {
 			$cOperation->mergeCollection($cOperationResult);
 		}
 
+		// Extournes
 		if($eFinancialYear->isCashAccounting() === FALSE) {
 
 			[$cJournalCode, $ccOperationReversed] = \account\OpeningLib::getReversableData($eFinancialYearPrevious, $eFinancialYear, $hash);

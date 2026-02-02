@@ -7,7 +7,7 @@ Class ImportLib {
 
 		$eFarm->expects(['cFinancialYear']);
 
-		$cAccount = \account\AccountLib::getAll();
+		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
 		$cInvoice = AccountingLib::getInvoices($eFarm, $search, TRUE);
 
@@ -107,7 +107,7 @@ Class ImportLib {
 
 		$fw->validate();
 
-		$cAccount = \account\AccountLib::getAll();
+		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
 		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
 

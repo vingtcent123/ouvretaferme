@@ -22,7 +22,7 @@ Class AccountingLib {
 	public static function generateFec(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, bool $forImport): array {
 
 		$search = new \Search(['from' => $from, 'to' => $to]);
-		$cAccount = \account\AccountLib::getAll();
+		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
 		$contentFec = self::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: $forImport);
 
