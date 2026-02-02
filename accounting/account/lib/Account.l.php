@@ -293,7 +293,26 @@ class AccountLib extends AccountCrud {
 
 	public static function delete(Account $e): void {
 
-		Account::model()->delete($e);
+		Account::model()->beginTransaction();
+
+			Account::model()->delete($e);
+
+			$eFarm = \farm\Farm::getConnected();
+
+			\selling\Product::model()
+				->where('privateAccount = '.$e['id'].' OR proAccount = '.$e['id'])
+				->whereFarm($eFarm)
+				->update([
+					'privateAccount' => new \Sql('IF(privateAccount = '.$e['id'].', NULL, privateAccount)'),
+					'proAccount' => new \Sql('IF(proAccount = '.$e['id'].', NULL, proAccount)'),
+				]);
+
+			\selling\Item::model()
+				->whereFarm($eFarm)
+				->whereAccount($e)
+				->update(['account' => NULL]);
+
+		Account::model()->commit();
 
 		LogLib::save('delete', 'Account', ['id' => $e['id'], 'class' => $e['class']]);
 
