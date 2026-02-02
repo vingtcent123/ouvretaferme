@@ -1392,22 +1392,34 @@ class FarmUi {
 
 	}
 
-	public function getAccountingYears(Farm $eFarm): string {
+	public function getAccountingYears(Farm $eFarm, bool $allowAccrualWarning): string {
 
 		if($eFarm['hasFinancialYears'] === FALSE) {
 			return '';
 		}
 
 		$cFinancialYear = $eFarm['cFinancialYear'];
+		$eFinancialYearSelected = $eFarm['eFinancialYear'];
 
 		if($cFinancialYear->count() <= 1) {
+
 			$h = '<div style="margin-bottom: 0.5rem">';
 				$h .= '<div class="btn btn-readonly btn-lg btn-outline-primary">'.s("Exercice {value}", $eFarm['cFinancialYear']->first()->getLabel()).'</div>';
 			$h .= '</div>';
+
+			if($allowAccrualWarning === TRUE and $eFinancialYearSelected->isAccrualAccounting()) {
+
+				$menu = '<div class="farm-financial-year-menu">';
+					$menu .= $h;
+					$menu .= '<div class="util-block-danger" style="padding: 0.75rem;">'.s("Attention, {siteName} n'est pas optimisé pour une comptabilité à l'engagement.").'</div>';
+				$menu .= '</div>';
+
+				return $menu;
+
+			}
+
 			return $h;
 		}
-
-		$eFinancialYearSelected = $eFarm['eFinancialYear'];
 
 		$h = '<div style="margin-bottom: 0.5rem">';
 			$h .= '<a class="btn btn-lg btn-outline-primary" data-dropdown="bottom-left" data-dropdown-hover="true">';
@@ -1438,6 +1450,17 @@ class FarmUi {
 			$h .= '</div>';
 
 		$h .= '</div>';
+
+		if($allowAccrualWarning === TRUE and $eFinancialYearSelected->isAccrualAccounting()) {
+
+			$menu = '<div class="farm-financial-year-menu">';
+				$menu .= $h;
+				$menu .= '<div class="util-block-danger" style="padding: 0.75rem;">'.s("Attention, {siteName} n'est pas optimisé pour une comptabilité à l'engagement.").'</div>';
+			$menu .= '</div>';
+
+			return $menu;
+
+		}
 
 		return $h;
 
@@ -2003,7 +2026,7 @@ class FarmUi {
 		$h = '';
 
 		if($eFarm['hasFinancialYears']) {
-			$h .= new \farm\FarmUi()->getAccountingYears($eFarm);
+			$h .= new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
 		}
 
 		$h .= '<div class="util-action">';
@@ -2071,7 +2094,7 @@ class FarmUi {
 
 		$title = $categories[$selectedView]['label'];
 
-		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
 		$h .= '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
@@ -2149,7 +2172,7 @@ class FarmUi {
 
 		$title = $categories[$selectedView]['label'];
 
-		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
 		$h .= '<div class="util-action">';
 			$h .= '<h1>';
 

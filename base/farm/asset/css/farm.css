@@ -90,6 +90,20 @@ div.farmer-farms-item-buttons svg {
 	margin-bottom: 0.5rem;
 }
 
+div.farm-financial-year-menu {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 1rem;
+}
+
+@media (max-width: 649px) {
+
+	div.farm-financial-year-menu {
+		display: block;
+	}
+
+}
+
 /* Farm update */
 #farm-update .media-image-upload[data-type="farm-vignette"] {
 	border-radius: var(--radius);

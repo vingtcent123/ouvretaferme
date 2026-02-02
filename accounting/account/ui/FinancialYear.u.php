@@ -80,36 +80,8 @@ class FinancialYearUi {
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*']);
-
-			$h .= $form->group(
-				self::p('accountingType')->label.\util\FormUi::asterisk(),
-				$form->radios('accountingType', self::p('accountingType')->values, $eFinancialYear['accountingType'] ?? NULL, attributes: ['mandatory' => TRUE, 'callbackRadioAttributes' => function($option, $key) {
-					if(FEATURE_ACCOUNTING_ACCRUAL === FALSE and $key === FinancialYear::ACCRUAL) {
-						return ['disabled' => 'disabled'];
-					}
-					return [];
-				}])
-			);
-
-			$h .= $form->dynamicGroups($eFinancialYear, ['hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'],  [
-				'hasVat*' => function($d) use($form) {
-					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
-				},
-				'vatFrequency' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
-				},
-				'vatChargeability' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
-
-				},
-				'legalCategory*' => function($d) use($form, $eFinancialYear) {
-					$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
-					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
-				},
-				'associates*' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = (($eFinancialYear['legalCategory'] ?? NULL) === \company\CompanySetting::CATEGORIE_GAEC) ? '' : 'hide';
-				},
+			$h .= $form->dynamicGroups($eFinancialYear, [
+				'startDate*', 'endDate*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'
 			]);
 
 			$h .= $form->group(
@@ -152,16 +124,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->group(
-				self::p('accountingType')->label.\util\FormUi::asterisk(),
-				$form->radios('accountingType', self::p('accountingType')->values, $eFinancialYear['accountingType'], attributes: ['mandatory' => TRUE, 'callbackRadioAttributes' => function($option, $key) {
-					if(FEATURE_ACCOUNTING_ACCRUAL === FALSE and $key === FinancialYear::ACCRUAL) {
-						return ['disabled' => 'disabled'];
-					}
-					return [];
-				}])
-			);
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'], [
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'], [
 				'startDate*' => function($d) use($form, $eFinancialYear) {
 					if($eFinancialYear['nOperation'] > 0) {
 						$d->attributes['disabled'] = 'disabled';
@@ -171,22 +134,6 @@ class FinancialYearUi {
 					if($eFinancialYear['nOperation'] > 0) {
 						$d->attributes['disabled'] = 'disabled';
 					}
-				},
-				'hasVat*' => function($d) use($form) {
-					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
-				},
-				'vatFrequency' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
-				},
-				'vatChargeability' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
-				},
-				'legalCategory*' => function($d) use($form, $eFinancialYear) {
-					$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
-					$d->group['class'] = $eFinancialYear['hasVat'] ? '' : 'hide';
-				},
-				'associates*' => function($d) use($form, $eFinancialYear) {
-					$d->group['class'] = $eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC ? '' : 'hide';
 				},
 			]);
 
@@ -1055,7 +1002,8 @@ class FinancialYearUi {
 			'vatChargeability' => s("Exigibilité de la TVA"),
 			'taxSystem' => s("Régime fiscal"),
 			'accountingType' => s("Type de comptabilité"),
-			'legalCategory' => s("Catégorie juridique"),
+			'accountingMode' => s("Comment tenez-vous votre comptabilité ?"),
+			'legalCategory' => s("Forme juridique"),
 			'associates' => s("Nombre d'associé·e·s"),
 		]);
 
@@ -1066,21 +1014,39 @@ class FinancialYearUi {
 				$accrual .= '<ul>';
 					$accrual .= '<li>'.s("Généralement choisie lorsque l'exploitation est imposée au régime réel.").'</li>';
 				$accrual .= '</ul>';
-				$accrual .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour tenir une comptabilité complète.").'</i></p>';
-				if(FEATURE_ACCOUNTING_ACCRUAL === FALSE) {
-					$accrual .= '<p>'.\Asset::icon('exclamation-triangle').' <i>'.s("Cette option n'est pas encore disponible.").'</i></p>';
-				}
 
 				$cash = '<h4>'.s("Comptabilité de trésorerie").'</h4>';
 				$cash .= '<ul>';
 					$cash .= '<li>'.s("Généralement lorsque l'exploitation est imposée au régime du micro-BA ou au réel simplifié").'</li>';
 				$cash .= '</ul>';
-				$cash .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour tenir une comptabilité de façon simple.").'</i></p>';
 
 				$d->values = [
 					FinancialYear::CASH => $cash,
 					FinancialYear::ACCRUAL => $accrual,
 				];
+
+				$d->attributes['mandatory'] = TRUE;
+
+				break;
+
+			case 'accountingMode' :
+				$accounting = '<h4>'.s("Je tiens une comptabilité selon le plan comptable agricole").'</h4>';
+				$accounting .= '<ul>';
+					$accounting .= '<li>'.s("J'enregistre mes écritures comptables").'</li>';
+					$accounting .= '<li>'.s("Je gère mes immobilisations").'</li>';
+				$accounting .= '</ul>';
+
+				$cashReceipt = '<h4>'.s("Je tiens uniquement un livre de recettes").'</h4>';
+				$cashReceipt .= '<ul>';
+					$cashReceipt .= '<li>'.s("J'enregistre uniquement les rentrées d'argent").'</li>';
+				$cashReceipt .= '</ul>';
+
+				$d->values = [
+					FinancialYear::ACCOUNTING => $accounting,
+					FinancialYear::CASH_RECEIPTS => $cashReceipt,
+				];
+
+				$d->attributes['mandatory'] = TRUE;
 
 				break;
 
@@ -1091,6 +1057,7 @@ class FinancialYearUi {
 
 			case 'hasVat' :
 				$d->field = 'yesNo';
+				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
 				break;
 
 			case 'vatFrequency' :
@@ -1100,6 +1067,7 @@ class FinancialYearUi {
 					FinancialYear::ANNUALLY => s("Annuelle"),
 				];
 				$d->attributes['mandatory'] = TRUE;
+				$d->group = fn(FinancialYear $e) => ($e['hasVat'] ?? NULL) ? [] : ['class' => 'hide'];
 				break;
 
 			case 'vatChargeability' :
@@ -1128,6 +1096,7 @@ class FinancialYearUi {
 					}
 					return [];
 				};
+				$d->group = fn(FinancialYear $e) => ($e['hasVat'] ?? NULL) ? [] : ['class' => 'hide'];
 				break;
 
 			case 'taxSystem':
@@ -1135,8 +1104,6 @@ class FinancialYearUi {
 					FinancialYear::MICRO_BA => s("Micro-BA"),
 					FinancialYear::BA_REEL_SIMPLIFIE => s("Réel simplifié agricole"),
 					FinancialYear::BA_REEL_NORMAL => s("Réel normal agricole"),
-					FinancialYear::AUTRE_BIC => s("BIC"),
-					FinancialYear::AUTRE_BNC => s("BNC"),
 				];
 				$d->attributes['mandatory'] = TRUE;
 				break;
@@ -1156,6 +1123,7 @@ class FinancialYearUi {
 					6318 => s("Union de sociétés coopératives agricoles"),
 					9999 => s("Autre structure juridique"),
 				];
+				$d->attributes['onchange'] = 'FinancialYear.changeLegalCategory(this)';
 				break;
 
 			case 'associates':
@@ -1165,6 +1133,7 @@ class FinancialYearUi {
 				for($i = 1; $i < 10; $i++) {
 					$d->values[$i] = $i;
 				}
+				$d->group = fn(FinancialYear $e) => (($e['legalCategory'] ?? NULL) === \company\CompanySetting::CATEGORIE_GAEC) ? [] : ['class' => 'hide'];
 				break;
 
 			case 'status':
@@ -1173,6 +1142,7 @@ class FinancialYearUi {
 					FinancialYear::CLOSE => \Asset::icon('lock').' '.s("Clôturé"),
 				];
 				break;
+
 		}
 
 		return $d;

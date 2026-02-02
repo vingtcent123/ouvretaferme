@@ -32,7 +32,6 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 
-
 	$t->nav = 'accounting';
 	$t->subNav = 'operations';
 

@@ -20,10 +20,11 @@ abstract class FinancialYearElement extends \Element {
 	const MICRO_BA = 'micro-ba';
 	const BA_REEL_SIMPLIFIE = 'ba-reel-simplifie';
 	const BA_REEL_NORMAL = 'ba-reel-normal';
-	const AUTRE_BIC = 'autre-bic';
-	const AUTRE_BNC = 'autre-bnc';
 
 	const ACCRUAL = 'accrual';
+
+	const ACCOUNTING = 'accounting';
+	const CASH_RECEIPTS = 'cash-receipts';
 
 	public static function getSelection(): array {
 		return FinancialYear::model()->getProperties();
@@ -65,9 +66,10 @@ class FinancialYearModel extends \ModuleModel {
 			'hasVat' => ['bool', 'cast' => 'bool'],
 			'vatFrequency' => ['enum', [\account\FinancialYear::MONTHLY, \account\FinancialYear::QUARTERLY, \account\FinancialYear::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
 			'vatChargeability' => ['enum', [\account\FinancialYear::CASH, \account\FinancialYear::DEBIT], 'null' => TRUE, 'cast' => 'enum'],
-			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL, \account\FinancialYear::AUTRE_BIC, \account\FinancialYear::AUTRE_BNC], 'cast' => 'enum'],
-			'accountingType' => ['enum', [\account\FinancialYear::ACCRUAL, \account\FinancialYear::CASH], 'cast' => 'enum'],
+			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL], 'cast' => 'enum'],
+			'accountingType' => ['enum', [\account\FinancialYear::CASH, \account\FinancialYear::ACCRUAL], 'cast' => 'enum'],
 			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'null' => TRUE, 'cast' => 'int'],
+			'accountingMode' => ['enum', [\account\FinancialYear::ACCOUNTING, \account\FinancialYear::CASH_RECEIPTS], 'cast' => 'enum'],
 			'associates' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'openDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -76,7 +78,7 @@ class FinancialYearModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'vatChargeability', 'taxSystem', 'accountingType', 'legalCategory', 'associates', 'openDate', 'closeDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'status', 'hasVat', 'vatFrequency', 'vatChargeability', 'taxSystem', 'accountingType', 'legalCategory', 'accountingMode', 'associates', 'openDate', 'closeDate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -94,6 +96,9 @@ class FinancialYearModel extends \ModuleModel {
 
 			case 'accountingType' :
 				return FinancialYear::CASH;
+
+			case 'accountingMode' :
+				return FinancialYear::ACCOUNTING;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -125,6 +130,9 @@ class FinancialYearModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'accountingType' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'accountingMode' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -180,6 +188,10 @@ class FinancialYearModel extends \ModuleModel {
 
 	public function whereLegalCategory(...$data): FinancialYearModel {
 		return $this->where('legalCategory', ...$data);
+	}
+
+	public function whereAccountingMode(...$data): FinancialYearModel {
+		return $this->where('accountingMode', ...$data);
 	}
 
 	public function whereAssociates(...$data): FinancialYearModel {

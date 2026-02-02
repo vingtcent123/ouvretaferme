@@ -14,7 +14,7 @@ class JournalUi {
 
 		$eFinancialYear = $eFarm['eFinancialYear'];
 
-		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
 		$h .= '<div class="util-action">';
 
 			$h .= '<h1>';

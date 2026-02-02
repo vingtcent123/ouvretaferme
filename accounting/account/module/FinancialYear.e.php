@@ -30,7 +30,7 @@ class FinancialYear extends FinancialYearElement {
 
 	// Comptabilité à l'engagement
 	public function isAccrualAccounting() {
-		return FEATURE_ACCOUNTING_ACCRUAL and $this['accountingType'] === FinancialYear::ACCRUAL;
+		return $this['accountingType'] === FinancialYear::ACCRUAL;
 	}
 
 	// Comptabilité de trésorerie
@@ -142,14 +142,6 @@ class FinancialYear extends FinancialYearElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('accountingType.check', function(?string $accountingType): bool {
-
-				if(FEATURE_ACCOUNTING_ACCRUAL === FALSE) {
-					return $accountingType === FinancialYear::CASH;
-				}
-
-				return TRUE;
-			})
 			->setCallback('startDate.loseOperations', function(string $date) use($p): bool {
 
 				if(($this['nOperation'] ?? 0) > 0) {

@@ -10,7 +10,7 @@ class BookUi {
 
 	public function getBookTitle(\farm\Farm $eFarm): string {
 
-		$h = new \farm\FarmUi()->getAccountingYears($eFarm);
+		$h = new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
 
 		$h .= '<div class="util-action">';
 
