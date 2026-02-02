@@ -1063,6 +1063,36 @@ class CashflowUi {
 		return $h;
 
 	}
+
+
+	public function showWaitingImports(\farm\Farm $eFarm, \Collection $cImport): string {
+
+		if($cImport->empty()) {
+			return '';
+		}
+
+		$h = '<div class="util-info">';
+			$h .= '<h3>'.p("Un import bancaire est en attente de traitement", "Plusieurs imports bancaires sont en attente de traitement", $cImport->count()).'</h3>';
+			$h .= '<ul>';
+
+				foreach($cImport as $eImport) {
+
+					$operations = p("<b>1</b> opération bancaire à importer", "<b>{value}</b> opérations bancaires à importer", count($eImport['result']['imported']));
+
+					$h .= '<li>'.s("Import du {date} - {operations} {button}", [
+						'date' => \util\DateUi::numeric($eImport['processedAt'], \util\DateUi::DATE_HOUR_MINUTE),
+						'operations' => $operations,
+						'button' => '<a href="'.\farm\FarmUi::urlConnected().'/bank/import:update?id='.$eImport['id'].'" class="btn btn-xs btn-secondary">'.s("Terminer l'import").'</a>'
+					]).'</li>';
+
+				}
+			$h .= '</ul>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getReconciliateInfo(\farm\Farm $eFarm, Import $eImport): string {
 
 		if($eImport->empty() or $eImport['reconciliation'] === Import::DONE or $eImport['nCashflowWaiting'] === 0) {

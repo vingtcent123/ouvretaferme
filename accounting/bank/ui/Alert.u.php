@@ -17,6 +17,7 @@ Class AlertUi {
 			'Cashflow::thirdPartyRequiredForAttach' => s("Indiquez le tiers lié à cette opération."),
 			'Cashflow::operationsRequiredForAttach' => s("Sélectionnez au moins une écriture."),
 
+			'Import::ofxFormat' => s("Votre fichier ne semble pas être au format OFX."),
 			'Import::ofxSize' => s("Votre import ne peut pas excéder 1 Mo, merci de réduire la taille de votre fichier."),
 			'Import::ofxError' => s("Une erreur est survenue lors de l'import de votre fichier. Est-ce bien un fichier OFX ?"),
 			'Import::nothingImported' => s("Aucun mouvement n'a été importé, n'avez-vous pas déjà importé ce fichier ?"),

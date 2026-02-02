@@ -3,6 +3,16 @@ namespace bank;
 
 class OfxParserLib {
 
+	public static function isOfx(string $filepath): bool {
+
+		$rawContent = file_get_contents($filepath);
+
+		// On va chercher la balise <ofx>
+
+		return str_contains(strtolower($rawContent), '<ofx>');
+
+	}
+
 	public static function extractFile(string $filepath): \DOMDocument {
 
 		$dom = new \DOMDocument();

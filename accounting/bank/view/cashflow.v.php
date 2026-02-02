@@ -10,6 +10,8 @@ new AdaptativeView('/banque/operations', function($data, FarmTemplate $t) {
 
 	echo new \bank\CashflowUi()->getSearch($data->eFarm, $data->search);
 
+	echo new \bank\CashflowUi()->showWaitingImports($data->eFarm, $data->cImportWaiting);
+
 	echo new \bank\CashflowUi()->getReconciliateInfo($data->eFarm, $data->eImportCurrent);
 
 	echo new \bank\CashflowUi()->getSummarize($data->eFarm, $data->nSuggestion, $data->cCashflow->count());

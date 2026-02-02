@@ -117,11 +117,23 @@ class ImportLib extends ImportCrud {
 		return new Import();
 	}
 
+	public static function getWaitingImports(): \Collection {
+
+		$cImport = Import::model()
+			->select(Import::getSelection())
+			->whereAccount(NULL)
+			->sort(['processedAt' => SORT_DESC])
+			->getCollection();
+
+		return $cImport->find(fn($e) => count($e['result']['imported']) > 0);
+
+	}
+
 	public static function getLastImport(): Import {
 
 		return Import::model()
 			->select(Import::getSelection())
-			->sort(['endDate' => SORT_DESC])
+			->sort(['processedAt' => SORT_DESC])
 			->get();
 	}
 
@@ -172,7 +184,16 @@ class ImportLib extends ImportCrud {
 
 		Cashflow::model()->beginTransaction();
 
+		if(\bank\OfxParserLib::isOfx($filepath) === FALSE) {
+
+			\Fail::log('Import::ofxFormat');
+			Cashflow::model()->rollBack();
+			return new Import();
+
+		}
 		try {
+
+
 
 			$ofx = \bank\OfxParserLib::extractFile($filepath);;
 
