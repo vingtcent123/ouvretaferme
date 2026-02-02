@@ -132,6 +132,7 @@ class SeriesLib extends SeriesCrud {
 					->sort(['crop' => SORT_ASC])
 					->delegateCollection('series', index: ['plant', NULL]),
 			])
+			->whereFarm($eSequence['farm']) // Pour l'index
 			->whereSequence($eSequence)
 			->sort([
 				'season' => SORT_DESC,
