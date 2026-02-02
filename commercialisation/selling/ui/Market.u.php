@@ -601,7 +601,7 @@ class MarketUi {
 							$paymentMethodDropdown .= encode($eMethod['name']);
 
 						$paymentMethodDropdown .= '</a>';
-						$paymentMethodDropdown .= '<a data-ajax="/farm/farmer:doUpdateMarketPaymentMethod" post-payment-method="'.$eMethod['id'].'" post-id="'.$eFarmer['id'].'" post-action="'.($isFavorite ? 'remove' : 'complete').'" class="market-payment-method-star">';
+						$paymentMethodDropdown .= '<a data-ajax="/farm/farmer:doUpdateMarketPaymentMethod" post-payment-method="'.$eMethod['id'].'" post-id="'.$eFarmer['id'].'" post-action="'.($isFavorite ? 'remove' : 'add').'" class="market-payment-method-star">';
 							$paymentMethodDropdown .= \Asset::icon('star'.($isFavorite ? '-fill' : ''));
 						$paymentMethodDropdown .= '</a>';
 					$paymentMethodDropdown .= '</div>';
