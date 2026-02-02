@@ -15,14 +15,14 @@ class RegisterUi {
 			'paymentMethod' => ['name']
 		]);
 
-		return s("Cahier de caisse pour {value}", '<span class="util-badge" style="background-color: '.$eRegister['color'].'">'.encode($eRegister['paymentMethod']['name']).'</span>');
+		return s("Journal de caisse pour {value}", '<span class="util-badge" style="background-color: '.$eRegister['color'].'">'.encode($eRegister['paymentMethod']['name']).'</span>');
 
 	}
 
 	public function getHeader(Register $eRegisterCurrent, \Collection $cRegister): string {
 
 		if($cRegister->empty()) {
-			return '<h1>'.s("Cahiers de caisse").'</h1>';
+			return '<h1>'.s("Journaux de caisse").'</h1>';
 		}
 
 		$h = '<div class="util-action">';
@@ -32,12 +32,12 @@ class RegisterUi {
 					$h .= '<span class="h-menu-label">'.self::getName($eRegisterCurrent).'</span>';
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-secondary">';
-					$h .= '<div class="dropdown-title">'.s("Mes cahiers de caisse").'</div>';
+					$h .= '<div class="dropdown-title">'.s("Mes journaux de caisse").'</div>';
 
 					foreach($cRegister as $eRegister) {
 
 						if($eRegister['status'] === Register::INACTIVE) {
-							$h .= '<div class="dropdown-subtitle">'.s("Anciens cahiers").'</div>';
+							$h .= '<div class="dropdown-subtitle">'.s("Anciens journals").'</div>';
 						}
 
 						$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="dropdown-item '.($eRegister['id'] === $eRegisterCurrent['id'] ? 'selected' : '').'">';
@@ -50,37 +50,41 @@ class RegisterUi {
 					if((new Register(['farm' => $eFarm]))->canCreate()) {
 						$h .= '<div class="dropdown-divider"></div>';
 						$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:create" class="dropdown-item">';
-							$h .= \Asset::icon('plus-circle').' '.s("Nouveau cahier de caisse");
+							$h .= \Asset::icon('plus-circle').' '.s("Nouveau journal de caisse");
 						$h .= '</a> ';
 					}
 				$h .= '</div>';
 			$h .= '</h1>';
 			$h .= '<div>';
 
-			if($eRegisterCurrent->canWrite()) {
+				if($eRegisterCurrent->canWrite()) {
 
-				$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
-					$h .= '<div class="dropdown-title">'.self::getName($eRegisterCurrent).'</div>';
-					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:update?id='.$eRegisterCurrent['id'].'" class="dropdown-item">'.s("Paramétrer le cahier").'</a>';
+					$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-primary">'.\Asset::icon('gear-fill').'</a>';
+					$h .= '<div class="dropdown-list bg-primary">';
+						$h .= '<div class="dropdown-title">'.self::getName($eRegisterCurrent).'</div>';
+						$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:update?id='.$eRegisterCurrent['id'].'" class="dropdown-item">'.s("Paramétrer le journal").'</a>';
 
-					if($eRegisterCurrent->acceptDelete()) {
+						if($eRegisterCurrent->acceptDelete()) {
 
-						if($eRegisterCurrent->canDelete()) {
+							if($eRegisterCurrent->canDelete()) {
 
-							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
-							$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doDelete" post-id="'.$eRegisterCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer de manière irréversible ce cahier de caisse ?").'">'.s("Supprimer le cahier").'</a>';
+								$h .= '<div class="dropdown-divider"></div>';
+								$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
+								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doDelete" post-id="'.$eRegisterCurrent['id'].'" class="dropdown-item" data-confirm="'.s("Voulez-vous réellement supprimer de manière irréversible ce journal de caisse ?").'">'.s("Supprimer le journal").'</a>';
 
+							}
+
+						} else {
+							$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doUpdateStatus" post-id="'.$eRegisterCurrent['id'].'" post-status="'.Register::INACTIVE.'" class="dropdown-item">'.s("Désactiver le journal").'</a>';
 						}
 
-					} else {
-						$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doUpdateStatus" post-id="'.$eRegisterCurrent['id'].'" post-status="'.Register::INACTIVE.'" class="dropdown-item">'.s("Désactiver le cahier").'</a>';
-					}
+					$h .= '</div>';
 
-				$h .= '</div>';
+				}
 
-			}
+				if($eRegisterCurrent['lines'] > 0) {
+					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#cash-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a>';
+				}
 
 			$h .= '</div>';
 		$h .= '</div>';
@@ -108,8 +112,8 @@ class RegisterUi {
 			$h .= $form->group(
 				content: $form->submit(
 					$start ?
-						s("Configurer le cahier de caisse") :
-						s("Ajouter le cahier de caisse")
+						s("Configurer le journal de caisse") :
+						s("Ajouter le journal de caisse")
 				)
 			);
 
@@ -117,7 +121,7 @@ class RegisterUi {
 
 		return new \Panel(
 			id: 'panel-register-create',
-			title: s("Ajouter un cahier de caisse"),
+			title: s("Ajouter un journal de caisse"),
 			body: $h
 		);
 
@@ -143,7 +147,7 @@ class RegisterUi {
 
 		return new \Panel(
 			id: 'panel-register-update',
-			title: s("Modifier le cahier {value}", self::getName($eRegister)),
+			title: s("Modifier le journal {value}", self::getName($eRegister)),
 			body: $h
 		);
 
@@ -154,20 +158,20 @@ class RegisterUi {
 		$d = \cash\Register::model()->describer($property, [
 			'paymentMethod' => s("Moyen de paiement"),
 			'account' => s("Numéro de compte lié"),
-			'color' => s("Couleur du cahier"),
+			'color' => s("Couleur du journal"),
 		]);
 
 		switch($property) {
 
 			case 'paymentMethod' :
 				$d->values = fn(\cash\Register $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
-				$d->labelAfter = \util\FormUi::info(s("Un cahier de caisse est toujours lié à un moyen de paiement, qui ne pourra pas être modifié par la suite."));
+				$d->labelAfter = \util\FormUi::info(s("Un journal de caisse est toujours lié à un moyen de paiement, qui ne pourra pas être modifié par la suite."));
 				$d->attributes = ['mandatory' => TRUE];
 				break;
 
 			case 'account':
 
-				$d->labelAfter = \util\FormUi::info(s("Si vous tenez une comptabilité selon le plan comptable agricole, indiquez le numéro de compte auquel est lié ce cahier de caisse pour que Ouvretaferme puisse générer vos écritures."));
+				$d->labelAfter = \util\FormUi::info(s("Si vous tenez une comptabilité selon le plan comptable agricole, indiquez le numéro de compte auquel est lié ce journal de caisse pour que Ouvretaferme puisse générer vos écritures."));
 
 				$d->group += ['wrapper' => 'account'];
 				$d->autocompleteDefault = fn(Register $e) => $e[$property] ?? NULL;

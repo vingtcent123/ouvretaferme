@@ -1,8 +1,8 @@
 <?php
-new AdaptativeView('/cahier-de-caisse', function($data, FarmTemplate $t) {
+new AdaptativeView('/journal-de-caisse', function($data, FarmTemplate $t) {
 
-	$t->title = s("Cahier de caisse de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/cahier-de-caisse';
+	$t->title = s("Journal de caisse de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/journal-de-caisse';
 
 	$t->nav = 'cash';
 
@@ -10,9 +10,23 @@ new AdaptativeView('/cahier-de-caisse', function($data, FarmTemplate $t) {
 
 	if($data->cRegister->empty()) {
 
-		echo '<h3>'.s("Configurer mon cahier de caisse").'</h3>';
+		echo '<h3>'.s("Configurer mon journal de caisse").'</h3>';
 
 		echo new \cash\RegisterUi()->create($data->eRegisterCreate, start: TRUE)->body;
+
+	} else {
+
+
+		if($data->eRegisterCurrent['lines'] > 0) {
+
+			echo new \cash\CashUi()->getChoice($data->eRegisterCurrent);
+			echo new \cash\CashUi()->getSearch($data->eRegisterCurrent);
+
+		} else {
+
+			echo new \cash\CashUi()->start($data->eRegisterCurrent);
+
+		}
 
 	}
 

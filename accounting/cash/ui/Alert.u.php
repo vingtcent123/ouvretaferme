@@ -7,6 +7,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Cash::date.future' => s("La date de l'opération ne peut pas être dans le futur"),
+
 			default => null
 
 		};
@@ -17,8 +19,8 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Register::created' => s("Le cahier de caisse a bien été configuré"),
-			'Register::deleted' => s("Le cahier de caisse a bien été supprimé"),
+			'Register::created' => s("Le journal de caisse a bien été configuré"),
+			'Register::deleted' => s("Le journal de caisse a bien été supprimé"),
 
 			default => null
 

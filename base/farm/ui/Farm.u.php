@@ -373,7 +373,7 @@ class FarmUi {
 	}
 
 	public static function urlCash(\cash\Register $eRegister = new \cash\Register(), \farm\Farm $eFarm = new \farm\Farm()): string {
-		return self::urlConnected($eFarm).'/cahier-de-caisse'.($eRegister->notEmpty() ? '?register='.$eRegister['id'] : '');
+		return self::urlConnected($eFarm).'/journal-de-caisse'.($eRegister->notEmpty() ? '?register='.$eRegister['id'] : '');
 	}
 
 	public static function urlFinancialYear(?\account\FinancialYear $eFinancialYear = NULL, \farm\Farm $eFarm = new \farm\Farm()): string {
@@ -1000,7 +1000,7 @@ class FarmUi {
 			],
 			'cash' => [
 				'icon' => \Asset::icon('journal-text'),
-				'label' => s("Cahiers de caisse")
+				'label' => s("Journal de caisse")
 			],
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
@@ -1046,7 +1046,7 @@ class FarmUi {
 
 			'bank' => \farm\FarmUi::urlConnected($eFarm).'/banque/operations',
 			'preaccounting' => \farm\FarmUi::urlConnected($eFarm).'/precomptabilite',
-			'cash' => \farm\FarmUi::urlConnected($eFarm).'/cahier-de-caisse',
+			'cash' => \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse',
 			'accounting' => match($name) {
 				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
@@ -1346,7 +1346,7 @@ class FarmUi {
 
 				$h .= '<div class="farm-tab-wrapper farm-nav-cash">';
 
-					$h .= $this->getNav('cash', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/cahier-de-caisse');
+					$h .= $this->getNav('cash', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse');
 
 				$h .= '</div>';
 

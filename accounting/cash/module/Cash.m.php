@@ -10,9 +10,12 @@ abstract class CashElement extends \Element {
 	const DEBIT = 'debit';
 	const CREDIT = 'credit';
 
-	const BANK = 'bank';
-	const PRIVATE = 'private';
-	const BALANCE = 'balance';
+	const BANK_IN = 'bank-in';
+	const BANK_OUT = 'bank-out';
+	const PRIVATE_IN = 'private-in';
+	const PRIVATE_OUT = 'private-out';
+	const BALANCE_INITIAL = 'balance-initial';
+	const BALANCE_CORRECTION = 'balance-correction';
 	const BUY_MANUAL = 'buy-manual';
 	const SELL_MANUAL = 'sell-manual';
 	const SELL_INVOICE = 'sell-invoice';
@@ -55,36 +58,37 @@ class CashModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
 			'register' => ['element32', 'cash\Register', 'cast' => 'element'],
-			'amountIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
-			'amountExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
+			'balance' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
+			'date' => ['date', 'cast' => 'string'],
+			'amountIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => 999999.99, 'cast' => 'float'],
+			'amountExcludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0, 'max' => 999999.99, 'cast' => 'float'],
 			'type' => ['enum', [\cash\Cash::DEBIT, \cash\Cash::CREDIT], 'cast' => 'enum'],
 			'vat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
-			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
-			'origin' => ['enum', [\cash\Cash::BANK, \cash\Cash::PRIVATE, \cash\Cash::BALANCE, \cash\Cash::BUY_MANUAL, \cash\Cash::SELL_MANUAL, \cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE], 'cast' => 'enum'],
+			'origin' => ['enum', [\cash\Cash::BANK_IN, \cash\Cash::BANK_OUT, \cash\Cash::PRIVATE_IN, \cash\Cash::PRIVATE_OUT, \cash\Cash::BALANCE_INITIAL, \cash\Cash::BALANCE_CORRECTION, \cash\Cash::BUY_MANUAL, \cash\Cash::SELL_MANUAL, \cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE], 'cast' => 'enum'],
 			'originBank' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'originInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'originSale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
-			'operation' => ['element32', 'journal\Operation', 'cast' => 'element'],
+			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
+			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
+			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\cash\Cash::DRAFT, \cash\Cash::VALID], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'register', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'account', 'thirdParty', 'origin', 'originBank', 'originInvoice', 'originSale', 'operation', 'status', 'createdAt'
+			'id', 'register', 'balance', 'date', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'origin', 'originBank', 'originInvoice', 'originSale', 'account', 'thirdParty', 'operation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'register' => 'cash\Register',
-			'account' => 'account\Account',
-			'thirdParty' => 'account\ThirdParty',
 			'originBank' => 'bank\Cashflow',
 			'originInvoice' => 'selling\Invoice',
 			'originSale' => 'selling\Sale',
+			'account' => 'account\Account',
+			'thirdParty' => 'account\ThirdParty',
 			'operation' => 'journal\Operation',
 		];
 
@@ -136,12 +140,16 @@ class CashModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereName(...$data): CashModel {
-		return $this->where('name', ...$data);
-	}
-
 	public function whereRegister(...$data): CashModel {
 		return $this->where('register', ...$data);
+	}
+
+	public function whereBalance(...$data): CashModel {
+		return $this->where('balance', ...$data);
+	}
+
+	public function whereDate(...$data): CashModel {
+		return $this->where('date', ...$data);
 	}
 
 	public function whereAmountIncludingVat(...$data): CashModel {
@@ -168,14 +176,6 @@ class CashModel extends \ModuleModel {
 		return $this->where('description', ...$data);
 	}
 
-	public function whereAccount(...$data): CashModel {
-		return $this->where('account', ...$data);
-	}
-
-	public function whereThirdParty(...$data): CashModel {
-		return $this->where('thirdParty', ...$data);
-	}
-
 	public function whereOrigin(...$data): CashModel {
 		return $this->where('origin', ...$data);
 	}
@@ -190,6 +190,14 @@ class CashModel extends \ModuleModel {
 
 	public function whereOriginSale(...$data): CashModel {
 		return $this->where('originSale', ...$data);
+	}
+
+	public function whereAccount(...$data): CashModel {
+		return $this->where('account', ...$data);
+	}
+
+	public function whereThirdParty(...$data): CashModel {
+		return $this->where('thirdParty', ...$data);
 	}
 
 	public function whereOperation(...$data): CashModel {

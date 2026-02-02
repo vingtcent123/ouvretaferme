@@ -1,6 +1,6 @@
 <?php
 new Page()
-	->get('/cahier-de-caisse', function($data) {
+	->get('/journal-de-caisse', function($data) {
 
 		$data->cRegister = \cash\RegisterLib::getAll();
 		$data->eRegisterCurrent = new \cash\Register();
@@ -25,6 +25,18 @@ new Page()
 				$data->eRegisterCurrent = $data->cRegister[$register];
 			} else {
 				$data->eRegisterCurrent = $data->cRegister->first();
+			}
+
+			if($data->eRegisterCurrent['lines'] > 0) {
+
+				$data->page = GET('page', 'int');
+
+				$data->search = new Search([
+					'type' => GET('type'),
+				]);
+
+				$data->cCash = \cash\CashLib::getByRegister($data->eRegisterCurrent, $data->page, $data->search);
+
 			}
 
 		}

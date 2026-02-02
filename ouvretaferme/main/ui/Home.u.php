@@ -179,9 +179,9 @@ class HomeUi {
 			$h .= '<div class="home-feature">';
 				$h .= '<h2>';
 					$h .= '<div class="home-feature-icon">'.\Asset::icon('database').'</div>';
-					$h .= s("Cahier de caisse");
+					$h .= s("Journal de caisse");
 				$h .= '</h2>';
-				$h .= '<h4>'.s("Ouvretaferme vous permettra de tenir votre cahier de caisse en ligne pour gérer les espèces liées votre activité et faciliter vos futures obligations de <i>e-reporting</i>.").'</h4>';
+				$h .= '<h4>'.s("Ouvretaferme vous permettra de tenir votre journal de caisse en ligne pour gérer les espèces liées votre activité et faciliter vos futures obligations de <i>e-reporting</i>.").'</h4>';
 				$h .= '<h5 class="mt-1">'.s("Disponible au printemps 2026").'</h5>';
 			$h .= '</div>';
 			$h .= '<div class="home-feature home-feature-fill">';

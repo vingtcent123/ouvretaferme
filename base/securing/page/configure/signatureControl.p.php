@@ -11,6 +11,13 @@ new Page()
 		\securing\SignatureControlLib::controlSales($eFarm, $eSale);
 
 	})
+	->cli('cash', function($data) {
+
+		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
+
+		\securing\SignatureControlLib::controlCash($eFarm);
+
+	})
 	->cli('hmac', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();

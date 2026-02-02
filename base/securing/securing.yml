@@ -1,6 +1,6 @@
 Signature:
   id: serial32
-  source: enum(SALE, CASHBOOK)
+  source: enum(SALE, CASH)
   key: int16(0, null)
   hmac: text8(64, 64) @charset(ascii)
   hmacChained: ?text8(64, 64) @charset(ascii)

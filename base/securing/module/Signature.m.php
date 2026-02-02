@@ -8,7 +8,7 @@ abstract class SignatureElement extends \Element {
 	private static ?SignatureModel $model = NULL;
 
 	const SALE = 'sale';
-	const CASHBOOK = 'cashbook';
+	const CASH = 'cash';
 
 	public static function getSelection(): array {
 		return Signature::model()->getProperties();
@@ -44,7 +44,7 @@ class SignatureModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'source' => ['enum', [\securing\Signature::SALE, \securing\Signature::CASHBOOK], 'cast' => 'enum'],
+			'source' => ['enum', [\securing\Signature::SALE, \securing\Signature::CASH], 'cast' => 'enum'],
 			'key' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'hmac' => ['text8', 'min' => 64, 'max' => 64, 'charset' => 'ascii', 'cast' => 'string'],
 			'hmacChained' => ['text8', 'min' => 64, 'max' => 64, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],

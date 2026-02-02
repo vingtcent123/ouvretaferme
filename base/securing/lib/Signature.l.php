@@ -51,9 +51,37 @@ class SignatureLib {
 
 	}
 
+	public static function getCashData(\cash\Cash $eCash): array {
+
+		return [
+			'register' => $eCash['register']['id'],
+			'balance' => $eCash['balance'],
+			'amountIncludingVat' => $eCash['amountIncludingVat'],
+			'amountExcludingVat' => $eCash['amountExcludingVat'],
+			'vat' => $eCash['vat'],
+			'vatRate' => $eCash['vatRate'],
+			'type' => $eCash['type'],
+			'date' => $eCash['date'],
+			'description' => $eCash['description'],
+			'status' => $eCash['status'],
+			'origin' => $eCash['origin'],
+			'originBankAccount' => $eCash['originBankAccount']->empty() ? NULL : $eCash['originBankAccount']['id'],
+			'originCashflow' => $eCash['originCashflow']->empty() ? NULL : $eCash['originCashflow']['id'],
+			'originSale' => $eCash['originSale']->empty() ? NULL : $eCash['originSale']['id'],
+			'originInvoice' => $eCash['originInvoice']->empty() ? NULL : $eCash['originInvoice']['id'],
+		];
+
+	}
+
 	public static function signSale(\selling\Sale $eSale, ?\Collection $cItem = NULL, ?\Collection $cPayment = NULL): void {
 
 		self::sign($eSale['farm'], Signature::SALE, $eSale['id'], self::getSaleData($eSale, $cItem, $cPayment));
+
+	}
+
+	public static function signCash(\cash\Cash $eCash): void {
+
+		self::sign(\farm\Farm::getConnected(), Signature::CASH, $eCash['id'], self::getCashData($eCash));
 
 	}
 

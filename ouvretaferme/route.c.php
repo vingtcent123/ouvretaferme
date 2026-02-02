@@ -23,11 +23,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['banque', 'operations'],
 		],
-		'/cahier-de-caisse' => [
-			'request' => 'cash/index',
-			'priority' => 5,
-			'route' => ['cahier-de-caisse'],
-		],
 		'/client/{id}' => [
 			'request' => 'selling/customer',
 			'priority' => 5,
@@ -397,6 +392,11 @@ Route::register([
 			'request' => 'game/index',
 			'priority' => 5,
 			'route' => ['jouer'],
+		],
+		'/journal-de-caisse' => [
+			'request' => 'cash/index',
+			'priority' => 5,
+			'route' => ['journal-de-caisse'],
 		],
 		'/journal/grand-livre' => [
 			'request' => 'journal/book',

@@ -231,7 +231,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 
 			echo '<h2 class="color-primary">';
 				echo '<div class="home-feature-icon">'.Asset::icon('database').'</div>';
-				echo s("Cahier de caisse");
+				echo s("Journal de caisse");
 			echo '</h2>';
 			echo '<div class="home-feature-buttons">';
 				echo s("Printemps 2026");

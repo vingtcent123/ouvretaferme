@@ -50,6 +50,50 @@ class SignatureControlLib {
 
 	}
 
+	public static function controlCash(\farm\Farm $eFarm) {
+
+		\farm\FarmLib::connectDatabase($eFarm);
+
+		$cCash = \cash\Cash::model()
+			->select(\cash\Cash::getSelection())
+			->recordset()
+			->sort(['id' => SORT_ASC])
+			->getCollection();
+
+		$counter = 0;
+
+		foreach($cCash as $eCash) {
+
+			echo "\r".(++$counter).' verified';
+
+			$eSignature = Signature::model()
+				->select(Signature::getSelection())
+				->whereSource(Signature::CASH)
+				->whereReference($eCash['id'])
+				->sort([
+					'id' => SORT_DESC
+				])
+				->get();
+
+			if($eSignature->empty()) {
+				echo "\r".'* Cash '.$eCash['id'].': No signature'."\n";
+				continue;
+			}
+
+			$eSignature['data'] = serialize(SignatureLib::getCashData($eCash));
+
+			$hmac = SignatureLib::getHmac($eSignature);
+
+			if($hmac !== $eSignature['hmac']) {
+				echo "\r".'* Cash '.$eCash['id'].': '.$hmac.' expected, '.$eSignature['hmac'].' found'."\n";
+			}
+
+		}
+
+		echo "\n";
+
+	}
+
 	public static function controlHmac(\farm\Farm $eFarm) {
 
 		\farm\FarmLib::connectDatabase($eFarm);
@@ -100,11 +144,33 @@ class SignatureControlLib {
 
 		$counter = 0;
 
+		echo 'Sales'."\n";
+
 		foreach($c as $e) {
 
 			echo "\r".(++$counter).' updated';
 
 			\securing\SignatureLib::signSale($e);
+
+		}
+
+		echo "\n";
+		echo 'Cash'."\n";
+
+		$c = \cash\Cash::model()
+			->select(\cash\Cash::getSelection())
+			->sort([
+				'id' => SORT_ASC
+			])
+			->getCollection();
+
+		$counter = 0;
+
+		foreach($c as $e) {
+
+			echo "\r".(++$counter).' updated';
+
+			\securing\SignatureLib::signCash($e);
 
 		}
 
