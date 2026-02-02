@@ -74,22 +74,7 @@ class CompanyUi {
 			}])
 		);
 
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*'], [
-			'hasVat*' => function($d) use($form) {
-				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
-			},
-			'vatFrequency*' => function($d) use($form) {
-				$d->group['class'] = 'hide';
-			},
-			'legalCategory*' => function($d) use($form) {
-				$d->field = 'select';
-				$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
-				$d->group['class'] = 'hide';
-			},
-			'associates*' => function($d) use($form) {
-				$d->group['class'] = 'hide';
-			},
-		]);
+		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
