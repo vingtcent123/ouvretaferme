@@ -271,9 +271,15 @@ class BookUi {
 						'class' => $class,
 				]).'</strong>';
 
-			} else {
+			} else if(($debit - $credit) > 0) {
 
 				$h .= '<strong>'.s("Solde débiteur pour le compte {class}", [
+						'class' => $class,
+				]).'</strong>';
+
+			} else {
+
+				$h .= '<strong>'.s("Solde nul pour le compte {class}", [
 						'class' => $class,
 				]).'</strong>';
 
