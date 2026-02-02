@@ -26,7 +26,7 @@ class BankAccount extends BankAccountElement {
 				}
 
 				return BankAccount::model()
-          ->whereDescription($description)
+					->whereDescription($description)
 					->where(fn() => 'id != '.$this['id'], if: isset($this['id']))
 					->exists() === FALSE;
 

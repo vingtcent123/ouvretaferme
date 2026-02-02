@@ -7,7 +7,7 @@ namespace account;
  * Actif immobilisé   Fixed Asset
  * Actif circulant    Current Asset
  * Capitaux propres   Equity
- * Debts              Dettes
+ * Dettes             Debts
  * Passif             Liability
  * Immobilisation     Asset
  * Amortissement      Amortization
@@ -26,7 +26,6 @@ class AccountSetting extends \Settings {
 	public static $remoteKey;
 
 	const FIRST_CUSTOM_ID = 100000;
-
 
 	// CLASSES GÉNÉRALES
 	const CAPITAL_GENERAL_CLASS = 1;

@@ -21,7 +21,7 @@ Class JournalCodeLib extends JournalCodeCrud {
 
 		$eFarm = \farm\Farm::getConnected();
 		
-		return self::getCache('journal-code-'.$eFarm['id'], $callback);
+		return self::getCache($eFarm['id'], $callback);
 
 	}
 	

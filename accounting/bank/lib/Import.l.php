@@ -209,7 +209,7 @@ class ImportLib extends ImportCrud {
 				'result' => [],
 				'status' => ImportElement::PROCESSING,
 				'bankId' => $eBankAccount['bankId'],
-        'accountId' => $eBankAccount['accountId'],
+				'accountId' => $eBankAccount['accountId'],
 			]);
 
 			Import::model()->insert($eImport);

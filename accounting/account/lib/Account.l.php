@@ -111,7 +111,7 @@ class AccountLib extends AccountCrud {
 		}
 
 		return Account::model()
-      ->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))
+			->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))
 			->where('class LIKE "%'.$search->get('stock').'%"', if: $search->has('stock') and $search->get('stock')->notEmpty())
 			->whereClass('LIKE', $search->get('classPrefix').'%', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
