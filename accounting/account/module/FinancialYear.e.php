@@ -288,6 +288,11 @@ class FinancialYear extends FinancialYearElement {
 
 				return (is_int($associates) and $associates > 0);
 
+			})
+			->setCallback('vatChargeability.forbidden', function(?string $vatChargeability) use ($p): bool {
+
+				return ($vatChargeability === FinancialYear::CASH);
+
 			});
 
 		parent::build($properties, $input, $p);
