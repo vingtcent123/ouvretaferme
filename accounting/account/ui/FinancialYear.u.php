@@ -101,12 +101,7 @@ class FinancialYearUi {
 				},
 				'vatChargeability' => function($d) use($form, $eFinancialYear) {
 					$d->group['class'] = ($eFinancialYear['hasVat'] ?? NULL) ? '' : 'hide';
-					$d->attributes['callbackRadioAttributes'] = function($option, $key) {
-						if($key === FinancialYear::DEBIT) {
-							return ['disabled' => 'disabled'];
-						}
-						return [];
-					};
+
 				},
 				'legalCategory*' => function($d) use($form, $eFinancialYear) {
 					$d->attributes['onclick'] = 'FinancialYear.changeLegalCategory(this)';
@@ -1127,6 +1122,12 @@ class FinancialYearUi {
 					FinancialYear::DEBIT => $debit,
 				];
 				$d->attributes['mandatory'] = TRUE;
+				$d->attributes['callbackRadioAttributes'] = function($option, $key) {
+					if($key === FinancialYear::DEBIT) {
+						return ['disabled' => 'disabled'];
+					}
+					return [];
+				};
 				break;
 
 			case 'taxSystem':
