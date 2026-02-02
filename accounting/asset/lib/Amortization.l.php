@@ -359,11 +359,26 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		$financialYearStartDate = $eFinancialYear['startDate'];
 		$financialYearEndDate = $eFinancialYear['endDate'];
 
+		if($startDate > $financialYearEndDate) {
+			$direction = '+';
+		} else if($startDate < $financialYearStartDate) {
+			$direction = '-';
+		}
+
 		while($found === FALSE) {
 
 			// On décale de 1 an par rapport à la startdate pour couvrir le cas d'un 1er exercice comptable < 1 an
-			$financialYearEndDate = date('Y-m-d', strtotime($financialYearStartDate. ' - 1 DAY'));
-			$financialYearStartDate = date('Y-m-d', strtotime($financialYearStartDate. ' - 1 YEAR'));
+			if($direction === '+') {
+
+				$financialYearStartDate = date('Y-m-d', strtotime($financialYearEndDate. ' + 1 DAY'));
+				$financialYearEndDate = date('Y-m-d', strtotime($financialYearEndDate. ' + 1 YEAR'));
+
+			} else {
+
+				$financialYearEndDate = date('Y-m-d', strtotime($financialYearStartDate. ' - 1 DAY'));
+				$financialYearStartDate = date('Y-m-d', strtotime($financialYearStartDate. ' - 1 YEAR'));
+
+			}
 
 			if($financialYearStartDate <= $startDate and $financialYearEndDate >= $startDate) {
 				$found = TRUE;
