@@ -223,7 +223,7 @@ new Page(function($data) {
 
 			$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
-			$cAccount = \account\AccountLib::getAll();
+			$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 0) {
 
@@ -235,7 +235,6 @@ new Page(function($data) {
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
 
-				$cAccount = \account\AccountLib::getAll();
 				$invoiceOperations = \preaccounting\AccountingLib::extractInvoice($data->eFarm, $data->search, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
 				$invoiceOperations = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
 
