@@ -1,6 +1,12 @@
 <?php
 new Page(function($data) {
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
 	$data->eFarm->validate('hasAccounting');
+
 })
 	->get('/banque/operations', function($data) {
 

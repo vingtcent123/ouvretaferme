@@ -1,6 +1,10 @@
 <?php
 new Page(function($data) {
 
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
 	if(
 		get_exists('from') === FALSE and
 		get_exists('to') === FALSE and
