@@ -3,10 +3,8 @@ namespace cash;
 
 class RegisterLib extends RegisterCrud {
 
-	public static function getPropertiesCreate(): \Closure {
-		return function() {
-
-		};
+	public static function getPropertiesCreate(): array {
+		return ['color', 'account', 'paymentMethod'];
 	}
 
 	public static function getPropertiesUpdate(): array {

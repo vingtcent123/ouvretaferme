@@ -7,6 +7,7 @@ class Collection extends ArrayIterator {
 	public int $depth = 1;
 
 	private array $properties = [];
+	private ?int $found = NULL;
 
 	/**
 	 * Checks if the collection is not empty
@@ -39,6 +40,21 @@ class Collection extends ArrayIterator {
 	 */
 	public function getDepth(): int {
 		return $this->depth;
+	}
+
+	/**
+	 * Set the found of the group
+	 */
+	public function setFound(?int $found): Collection {
+		$this->found = $found;
+		return $this;
+	}
+
+	/**
+	 * Returns the found of the group
+	 */
+	public function getFound(): ?int {
+		return $this->found;
 	}
 
 	/**

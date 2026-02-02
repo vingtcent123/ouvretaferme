@@ -47,13 +47,14 @@ class RegisterModel extends \ModuleModel {
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'cast' => 'element'],
 			'color' => ['color', 'cast' => 'string'],
+			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'cast' => 'float'],
 			'lines' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'paymentMethod', 'color', 'lines', 'status', 'createdAt'
+			'id', 'account', 'paymentMethod', 'color', 'balance', 'lines', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -69,6 +70,9 @@ class RegisterModel extends \ModuleModel {
 
 			case 'color' :
 				return '#AAAAAA';
+
+			case 'balance' :
+				return 0;
 
 			case 'lines' :
 				return 0;
@@ -122,6 +126,10 @@ class RegisterModel extends \ModuleModel {
 
 	public function whereColor(...$data): RegisterModel {
 		return $this->where('color', ...$data);
+	}
+
+	public function whereBalance(...$data): RegisterModel {
+		return $this->where('balance', ...$data);
 	}
 
 	public function whereLines(...$data): RegisterModel {

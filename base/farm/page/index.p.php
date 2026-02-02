@@ -102,7 +102,7 @@ new Page(function($data) {
 			'category' => GET('category')
 		], GET('sort', default: 'lastName'));
 
-		[$data->cCustomer, $data->nCustomer] = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);
+		$data->cCustomer = \selling\CustomerLib::getByFarm($data->eFarm, selectPrices: TRUE, selectSales: TRUE, selectInvite: TRUE, page: $data->page, search: $data->search);
 
 		$data->cCustomerGroup = \selling\CustomerGroupLib::getByFarm($data->eFarm);
 

@@ -2645,6 +2645,7 @@ abstract class ModuleModel {
 
 				if($this->foundInfo !== NULL) {
 					$this->found = $this->getFound();
+					$cElement->setFound($this->found);
 				}
 
 				$this->resetJoin();
@@ -2663,6 +2664,7 @@ abstract class ModuleModel {
 
 				if($this->foundInfo !== NULL) {
 					$this->found = $this->getFound();
+					$cElement->setFound($this->found);
 				}
 
 				return $cElement;

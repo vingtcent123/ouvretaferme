@@ -7,7 +7,9 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Cash::date.check' => s("Indiquez la date de l'opération"),
 			'Cash::date.future' => s("La date de l'opération ne peut pas être dans le futur"),
+			'Cash::amountIncludingVat.check' => s("Vous devez saisir un montant positif ou nul"),
 
 			default => null
 

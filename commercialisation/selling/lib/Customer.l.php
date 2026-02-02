@@ -90,7 +90,7 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, bool $selectPrices = FALSE, bool $selectSales = FALSE, bool $selectInvite = FALSE, int $page = 0, \Search $search = new \Search()): array {
+	public static function getByFarm(\farm\Farm $eFarm, bool $selectPrices = FALSE, bool $selectSales = FALSE, bool $selectInvite = FALSE, int $page = 0, \Search $search = new \Search()): \Collection {
 
 		if($selectPrices) {
 			Customer::model()
@@ -171,7 +171,7 @@ class CustomerLib extends CustomerCrud {
 			]))
 			->getCollection($position, $number);
 
-		return [$cCustomer, Customer::model()->found()];
+		return $cCustomer;
 
 	}
 

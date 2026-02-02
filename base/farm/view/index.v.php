@@ -455,10 +455,10 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 	} else {
 		
-		$t->mainTitle = new \farm\FarmUi()->getSellingCustomersTitle($data->eFarm, \farm\Farmer::CUSTOMER, $data->nCustomer);
+		$t->mainTitle = new \farm\FarmUi()->getSellingCustomersTitle($data->eFarm, \farm\Farmer::CUSTOMER, $data->cCustomer->getFound());
 
 		echo new \selling\CustomerUi()->getSearch($data->eFarm, $data->search);
-		echo new \selling\CustomerUi()->getList($data->eFarm, $data->cCustomer, $data->cCustomerGroup, $data->nCustomer, search: $data->search, page: $data->page);
+		echo new \selling\CustomerUi()->getList($data->eFarm, $data->cCustomer, $data->cCustomerGroup, search: $data->search, page: $data->page);
 
 	}
 

@@ -37,7 +37,7 @@ class RegisterUi {
 					foreach($cRegister as $eRegister) {
 
 						if($eRegister['status'] === Register::INACTIVE) {
-							$h .= '<div class="dropdown-subtitle">'.s("Anciens journals").'</div>';
+							$h .= '<div class="dropdown-subtitle">'.s("Anciens journaux").'</div>';
 						}
 
 						$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="dropdown-item '.($eRegister['id'] === $eRegisterCurrent['id'] ? 'selected' : '').'">';

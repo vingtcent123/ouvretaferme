@@ -85,7 +85,13 @@ class SignatureLib {
 
 	}
 
-	private static function sign(\farm\Farm $eFarm, string $source, int $reference, array $data): void {
+	public static function signDeletedCash(\cash\Cash $eCash): void {
+
+		self::sign(\farm\Farm::getConnected(), Signature::CASH, $eCash['id']);
+
+	}
+
+	private static function sign(\farm\Farm $eFarm, string $source, int $reference, array $data = []): void {
 
 		\farm\FarmLib::connectDatabase($eFarm);
 

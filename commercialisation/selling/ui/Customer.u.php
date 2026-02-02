@@ -175,7 +175,7 @@ class CustomerUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, \Collection $cCustomerGroup, ?int $nCustomer = NULL, \Search $search = new \Search(), array $hide = [], ?int $page = NULL) {
+	public function getList(\farm\Farm $eFarm, \Collection $cCustomer, \Collection $cCustomerGroup, \Search $search = new \Search(), array $hide = [], ?int $page = NULL) {
 
 		if($cCustomer->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucun client à afficher.").'</div>';
@@ -356,8 +356,8 @@ class CustomerUi {
 
 		$h .= '</table>';
 
-		if($nCustomer !== NULL and $page !== NULL) {
-			$h .= \util\TextUi::pagination($page, $nCustomer / 100);
+		if($cCustomer->getFound() !== NULL and $page !== NULL) {
+			$h .= \util\TextUi::pagination($page, $cCustomer->getFound() / 100);
 		}
 
 		$h .= $this->getBatch($eFarm, $cCustomerGroup);

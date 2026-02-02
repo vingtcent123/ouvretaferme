@@ -10,11 +10,6 @@ class Cash extends CashElement {
 
 				return ($date <= currentDate());
 
-			})
-			->setCallback('amountIncludingVat.check', function(?float $amount) {
-
-				return ($amount !== NULL);
-
 			});
 
 		parent::build($properties, $input, $p);

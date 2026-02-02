@@ -72,178 +72,113 @@ class CashUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cCash, \Collection $cCashGroup, ?int $nCash = NULL, \Search $search = new \Search(), array $hide = [], ?int $page = NULL) {
+	public function getList(\Collection $cCash, \Search $search = new \Search(), ?int $page = NULL) {
 
 		if($cCash->empty()) {
-			return '<div class="util-empty">'.s("Il n'y a aucun client à afficher.").'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune opération à afficher.").'</div>';
 		}
-
-		$year = date('Y');
-		$yearBefore = $year - 1;
 
 		$h = '<table class="cash-item-table tr-even stick-xs" data-batch="#batch-cash">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<th rowspan="2" class="td-checkbox">';
-						$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
-							$h .= '<input type="checkbox" class="batch-all" onclick="Cash.toggleSelection(this)"/>';
-						$h .= '</label>';
+					$h .= '<th>';
+						$h .= s("Opération");
 					$h .= '</th>';
-					$h .= '<th rowspan="2" class="text-center">';
-						$h .= $search->linkSort('id', s("Numéro"));
+					$h .= '<th>';
+						$h .= s("Libellé");
 					$h .= '</th>';
-					$h .= '<th rowspan="2">';
-						$label = s("Prénom");
-						$h .= $search->linkSort('firstName', $label).' / ';
-						$label = s("Nom");
-						$h .= $search->linkSort('lastName', $label);
-					$h .= '</th>';
-					if(in_array('sales', $hide) === FALSE) {
-						$h .= '<th colspan="2" class="text-center hide-xs-down highlight">'.s("Ventes").'</th>';
-					}
-					if(in_array('prices', $hide) === FALSE) {
-						$h .= '<th rowspan="2" class="cash-item-grid">'.s("Prixpersonnalisés").'</th>';
-					}
-					$h .= '<th rowspan="2" class="cash-item-contact">'.s("Contact").'</th>';
-					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
-					if(in_array('actions', $hide) === FALSE) {
-						$h .= '<th rowspan="2"></th>';
-					}
+					$h .= '<th class="text-end highlight-stick-right">'.s("Crédit").'</th>';
+					$h .= '<th class="text-end highlight-stick-left">'.s("Débit").'</th>';
+					$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
+					$h .= '<th class="text-end">'.s("Solde").'</th>';
+					$h .= '<th></th>';
 				$h .= '</tr>';
-				if(in_array('sales', $hide) === FALSE) {
-					$h .= '<tr>';
-						$h .= '<th class="text-end hide-xs-down highlight-stick-right">'.$year.'</th>';
-						$h .= '<th class="text-end hide-xs-down cash-item-year-before highlight-stick-left">'.$yearBefore.'</th>';
-					$h .= '</tr>';
-				}
 			$h .= '</thead>';
 			$h .= '<tbody>';
 
+				$columns = 5;
+				$previousSubtitle = NULL;
+
 				foreach($cCash as $eCash) {
 
-					$batch = [];
+					$currentSubtitle = $eCash['date'];
 
-					if($eCash['status'] === Cash::INACTIVE) {
-						$batch[] = 'not-active';
+					if($currentSubtitle !== $previousSubtitle) {
+
+						if($previousSubtitle !== NULL) {
+							$h .= '</tbody>';
+							$h .= '<tbody>';
+						}
+
+								$h .= '<tr class="tr-title">';
+									$h .= '<td colspan="2">';
+										$h .= \util\DateUi::textual($currentSubtitle);
+									$h .= '</td>';
+									$h .= '<td class="text-end highlight-stick-right"></td>';
+									$h .= '<td class="text-end highlight-stick-left"></td>';
+									$h .= '<th colspan="4"></th>';
+								$h .= '</tr>';
+							$h .= '</tbody>';
+							$h .= '<tbody>';
+
+						$previousSubtitle = $currentSubtitle;
+
 					}
 
-					if($eCash->isCollective()) {
-						$batch[] = 'not-group';
-					}
+					$h .= '<tr>';
 
-					if($eCash->isPrivate()) {
-						$batch[] = 'not-pro';
-					}
+						$h .= '<td class="td-min-content">';
 
-					if($eCash->isPro()) {
-						$batch[] = 'not-private';
-					}
+							switch($eCash['origin']) {
 
-					$h .= '<tr class="'.($eCash['status'] === Cash::INACTIVE ? 'tr-disabled' : '').'">';
+								case Cash::BALANCE_INITIAL :
+									$h .= '';
+									break;
 
-						$h .= '<td class="td-checkbox">';
-							$h .= '<label>';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$eCash['id'].'" oninput="Cash.changeSelection()" data-batch="'.implode(' ', $batch).'"/>';
-							$h .= '</label>';
-						$h .= '</td>';
+								default :
+									throw new \Exception();
 
-						$h .= '<td class="td-min-content text-center">';
-							$h .= '<a href="/client/'.$eCash['id'].'" class="btn btn-sm btn-outline-primary">'.\encode($eCash['number']).'</a>';
+							}
+
 						$h .= '</td>';
 
 						$h .= '<td>';
-
-							$h .= '<div class="cash-item-info">';
-								$h .= '<div>';
-
-									$h .= '<a href="/client/'.$eCash['id'].'">'.\encode($eCash->getName()).'</a>';
-									if($eCash['user']->notEmpty()) {
-										$h .= ' <span title="'.s("Ce client a un compte client à partir duquel il peut se connecter").'">'.\Asset::icon('person-circle').'</span> ';
-									}
-									$h .= '<div class="util-annotation">';
-										$h .= self::getCategory($eCash);
-										if($eCash['color']) {
-											$h .= ' | '.Register::getCircle($eCash);
-										}
-									$h .= '</div>';
-
-								$h .= '</div>';
-
-								$h .= '<div class="cash-item-label">';
-									if(in_array('actions', $hide) === FALSE and $eCash['invite']->notEmpty()) {
-										$h .= '<span class="util-badge bg-primary">'.\Asset::icon('person-fill').' '.s("invitation envoyée").'</span> ';
-									}
-									$h .= $this->getGroups($eCash);
-								$h .= '</div>';
-
-							$h .= '</div>';
-
+							$h .= encode($eCash['description']);
 						$h .= '</td>';
 
-						if(in_array('sales', $hide) === FALSE) {
-
-							$eSaleTotal = $eCash['eSaleTotal'];
-
-							$h .= '<td class="text-end hide-xs-down highlight-stick-right">';
-								if($eSaleTotal->notEmpty() and $eSaleTotal['year']) {
-									$amount = \util\TextUi::money($eSaleTotal['year'], precision: 0);
-									$h .= $eFarm->canAnalyze() ? '<a href="/selling/cash:analyze?id='.$eCash['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
-								} else {
-									$h .= '-';
-								}
-							$h .= '</td>';
-
-							$h .= '<td class="text-end hide-xs-down cash-item-year-before highlight-stick-left">';
-								if($eSaleTotal->notEmpty() and $eSaleTotal['yearBefore']) {
-									$amount = \util\TextUi::money($eSaleTotal['yearBefore'], precision: 0);
-									$h .= $eFarm->canAnalyze() ? '<a href="/selling/cash:analyze?id='.$eCash['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
-								} else {
-									$h .= '-';
-								}
-							$h .= '</td>';
-
-						}
-
-						if(in_array('prices', $hide) === FALSE) {
-
-							$h .= '<td class="cash-item-grid">';
-								if($eCash['prices'] > 0) {
-									$h .= \p("{value} prix", "{value} prix", $eCash['prices']);
-								} else {
-									$h .= '-';
-								}
-							$h .= '</td>';
-
-						}
-
-						$h .= '<td class="cash-item-contact">';
-							if($eCash['contactName']) {
-								$h .= '<div>';
-									$h .= \Asset::icon('person-vcard').'  '.\encode($eCash['contactName']);
-								$h .= '</div>';
-							}
-							if($eCash['email']) {
-								$h .= '<div>';
-									$h .= \Asset::icon('at').'  '.\encode($eCash['email']);
-								$h .= '</div>';
-							}
-							if($eCash['phone']) {
-								$h .= '<div>';
-									$h .= \Asset::icon('telephone').'  '.\encode($eCash['phone']);
-								$h .= '</div>';
+						$h .= '<td class="td-min-content highlight-stick-right text-end">';
+							if($eCash['type'] === Cash::CREDIT) {
+								$h .= \util\TextUi::money($eCash['amountIncludingVat']);
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="cash-item-status td-min-content">';
-							$h .= $this->toggle($eCash);
+						$h .= '<td class="td-min-content highlight-stick-left text-end">';
+							if($eCash['type'] === Cash::DEBIT) {
+								$h .= \util\TextUi::money($eCash['amountIncludingVat']);
+							}
 						$h .= '</td>';
 
-						if(in_array('actions', $hide) === FALSE) {
-							$h .= '<td class="cash-item-actions">';
-								$h .= $this->getUpdate($eCash, 'btn-outline-secondary');
-							$h .= '</td>';
-						}
+						$h .= '<td class="td-min-content text-end">';
+							if($eCash['vat'] !== NULL) {
+								$h .= \util\TextUi::money($eCash['vat']);
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content cash-item-vat-rate">';
+							if($eCash['vatRate'] !== NULL) {
+								$h .= s("({value} %)", $eCash['vatRate']);
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content text-end">';
+							if($eCash['balance'] !== NULL) {
+								$h .= \util\TextUi::money($eCash['balance']);
+							}
+						$h .= '</td>';
+
+						$h .= '<td>';
+						$h .= '</td>';
 
 					$h .= '</tr>';
 
@@ -253,8 +188,8 @@ class CashUi {
 
 		$h .= '</table>';
 
-		if($nCash !== NULL and $page !== NULL) {
-			$h .= \util\TextUi::pagination($page, $nCash / 100);
+		if($cCash->getFound() !== NULL and $page !== NULL) {
+			$h .= \util\TextUi::pagination($page, $cCash->getFound() / 100);
 		}
 
 		return $h;
