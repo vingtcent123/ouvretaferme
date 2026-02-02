@@ -1063,7 +1063,7 @@ class OperationLib extends OperationCrud {
 
 	public static function createBankOperationFromCashflow(\bank\Cashflow $eCashflow, Operation $eOperation, ?string $document = NULL): Operation {
 
-		$eAccountBank = $eCashflow['account']['account'];
+		$eAccountBank = \account\AccountLib::getById($eCashflow['account']['account']['id']);
 		$label = \account\AccountLabelLib::pad($eAccountBank['class']);
 
 		$eThirdParty = $eOperation['thirdParty'] ?? new \account\ThirdParty();
