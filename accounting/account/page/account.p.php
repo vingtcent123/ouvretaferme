@@ -121,6 +121,7 @@ new \account\AccountPage()
 		$e->acceptQuickUpdate(POST('property'));
 
 		$e['eOld'] = $data->eOld;
+		$e['cJournalCode'] = \journal\JournalCodeLib::deferred();
 	})
 	->quick(['description', 'journalCode', 'vatRate', 'class']);
 
