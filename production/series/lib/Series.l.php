@@ -143,6 +143,10 @@ class SeriesLib extends SeriesCrud {
 
 	public static function getByPerennialFirst(Series $eSeries): \Collection {
 
+		if($eSeries->empty()) {
+			return new \Collection();
+		}
+
 		return Series::model()
 			->select([
 				'id',
