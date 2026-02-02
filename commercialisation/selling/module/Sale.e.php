@@ -1034,6 +1034,7 @@ class Sale extends SaleElement {
 				} else {
 
 					if(
+						$this->isComposition() or
 						($p->for === 'create') or
 						($p->for === 'update' and $this->acceptUpdateDeliveredAt())
 					) {
