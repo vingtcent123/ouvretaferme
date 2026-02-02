@@ -64,7 +64,7 @@ class CompanyUi {
 
 		$h .= $form->hidden('farm', $eFarm['id']);
 
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'accountingType*', 'hasVat*', 'vatFrequency*', 'legalCategory*', 'associates*', 'taxSystem*']);
+		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
