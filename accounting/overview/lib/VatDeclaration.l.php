@@ -58,15 +58,7 @@ Class VatDeclarationLib extends VatDeclarationCrud {
 			'updatedBy' => \user\ConnectionLib::getOnline(),
 		]);
 
-		$affected = VatDeclaration::model()
-			->select('associates', 'cerfa', 'data', 'updatedAt', 'updatedBy')
-			->whereFrom($eVatDeclaration['from'])
-			->whereTo($eVatDeclaration['to'])
-			->update($eVatDeclaration);
-
-		if($affected === 0) {
-			VatDeclaration::model()->insert($eVatDeclaration);
-		}
+		VatDeclaration::model()->option('add-replace')->insert($eVatDeclaration);
 
 	}
 

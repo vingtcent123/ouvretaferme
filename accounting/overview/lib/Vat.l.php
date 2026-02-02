@@ -605,10 +605,11 @@ Class VatLib {
 
 		// On part des écritures
 		$search = new \Search([
-			'financialYear' => $eFinancialYear,
+			'financialYear' => new \account\FinancialYear(),
 			'minDate' => $eVatDeclaration['from'],
 			'maxDate' => $eVatDeclaration['to'],
 		]);
+
 		$cerfaFromOperations = self::getVatDataDeclaration($eFarm, $eFinancialYear, $search, precision: 2);
 
 		// On récupère les données de la déclaration
@@ -631,8 +632,8 @@ Class VatLib {
 
 		// Étape 1
 		// 44571 - TVA collectée
-		$vat44571Declared = round($cerfa['0105'], 2);
-		$vat44571Calculated = round($cerfaFromOperations['0105-tax'], 2);
+		$vat44571Declared = round($cerfa['19-number'], 2);
+		$vat44571Calculated = round($cerfaFromOperations['19-number'], 2);
 		if($vat44571Calculated > 0) {
 			$eOperation44571 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT],
@@ -675,28 +676,6 @@ Class VatLib {
 				'document' => $document,
 			]);
 			$cOperation->offsetSet(\account\AccountSetting::VAT_CREDIT_CLASS, $eOperation44567);
-		}
-
-		$differenceDeclaredAndCalculated = round($vat44571Declared + $vat4452Declared - $vat44571Calculated - $vat4452Calculated, 2);
-		// Si on a déclaré + => Perte (758) sinon => Gain (658)
-		if($differenceDeclaredAndCalculated > 0) {
-			$class = \account\AccountSetting::CHARGES_OTHER_CLASS;
-			$type = \journal\Operation::DEBIT;
-		} else {
-			$class = \account\AccountSetting::PRODUCT_OTHER_CLASS;
-			$type = \journal\Operation::CREDIT;
-		}
-		if($differenceDeclaredAndCalculated !== 0.0) {
-			$eOperationDifference = new \journal\Operation([
-				'account' => $cAccount[$class],
-				'accountLabel' => \account\AccountLabelLib::pad($class),
-				'amount' => abs($differenceDeclaredAndCalculated),
-				'type' => $type,
-				'description' => VatUi::getTranslations('tva-sur-ventes'),
-				'thirdParty' => $eThirdParty,
-				'document' => $document,
-			]);
-			$cOperation->offsetSet($class, $eOperationDifference);
 		}
 
 		// Étape 2 | Créditer : 44562 (TVA sur immos), 44566 (TVA déductible), 445662 (TVA déductible intracom), 44551 SI TVA à décaisser + ajuster 44562 / 44566 / 445662 par 658 ou 758
@@ -764,7 +743,11 @@ Class VatLib {
 			$cOperation->offsetSet(\account\AccountSetting::VAT_DEBIT_CLASS, $eOperation44551);
 		}
 
-		$differenceDeclaredAndCalculated = round($vat44562Declared + $vat44566Declared + $vat445662Declared - $vat44562Calculated - $vat44566Calculated - $vat445662Calculated, 2);
+		$differenceDeclaredAndCalculated = round(
+			$vat44562Declared + $vat44566Declared + $vat445662Declared + $vat44571Calculated + $vat4452Calculated
+			- $vat44562Calculated - $vat44566Calculated - $vat445662Calculated - $vat44571Declared - $vat4452Declared,
+			2);
+
 		// Si on a déclaré + => Gain (658) sinon => Perte (758)
 		if($differenceDeclaredAndCalculated > 0) {
 			$class = \account\AccountSetting::PRODUCT_OTHER_CLASS;

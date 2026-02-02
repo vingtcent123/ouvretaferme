@@ -2536,16 +2536,23 @@ Class VatUi {
 
 				}
 
-				if($notAvailableYet === FALSE and ($eVatDeclaration->empty() or $eVatDeclaration->canUpdate())) {
+				if($eVatDeclaration->notEmpty() and $eVatDeclaration['status'] === VatDeclaration::DECLARED) {
 
-					$h .= $form->submit(s("Sauvegarder"));
+						$h .= $form->submit(s("Sauvegarder et repasser la déclaration en brouillon"));
 
-				}
+				} else {
 
-				if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
+					if($notAvailableYet === FALSE and ($eVatDeclaration->empty() or $eVatDeclaration->canUpdate())) {
 
-					$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
+						$h .= $form->submit(s("Sauvegarder"));
 
+					}
+
+					if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
+
+						$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
+
+					}
 				}
 
 			$h .= '</div>';
