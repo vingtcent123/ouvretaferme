@@ -60,7 +60,7 @@ class CompanyUi {
 
 		$h .= '<br/><br/>';
 
-		$h .= '<h2>'.s("Paramétrage du premier exercice comptable").'</h2>';
+		$h .= '<h2>'.s("Paramétrage de votre exercice comptable").'</h2>';
 
 		$h .= $form->hidden('farm', $eFarm['id']);
 
