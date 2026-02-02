@@ -81,7 +81,10 @@ Class VatUi {
 
 					$h .= '<dt>'.s("Date limite de déclaration").'</dt>';
 					$h .= '<dd>';
-						$h .= \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk();
+						$h .= \util\DateUi::numeric($vatParameters['limit']).' ';
+						if($eFinancialYear->isCurrent()) {
+							$h .= \util\FormUi::asterisk();
+						}
 					$h .= '</dd>';
 
 					$h .= '<dt>'.\account\FinancialYearUi::p('taxSystem')->label.'</dt>';
@@ -561,17 +564,17 @@ Class VatUi {
 					$h .= s("La <b>taxe sur le chiffre d'affaire des exploitants agricoles</b> n'a pu être calculée car il n'y a aucune donnée comptable enregistrée pour le précédent exercice clos.");
 				$h .= '</div>';
 
-			} else if (substr($eFarm['startedAt'], 0, 4) === substr($eFinancialYearLast['startDate'], 0, 4)) {
-
-				$h .= '<div class="util-info">';
-				$h .= s("La période de déclaration étant l'année de création de votre exploitation, la <b>taxe sur le chiffre d'affaire des exploitants agricoles</b> n'est pas redevable.");
-				$h .= '</div>';
-
 			} else if($eFarm['startedAt'] === NULL and $eFarm['cFinancialYear']->count() === 1) {
 				// On ne connaît pas la date de création et il n'y a que 1 exercice enregistré => Doute
 
 				$h .= '<div class="util-info">';
 					$h .= s("L'année de création de votre exploitation n'étant pas connue, la <b>taxe sur le chiffre d'affaire des exploitants agricoles</b> a tout de même été calculée.");
+				$h .= '</div>';
+
+			} else if($eFarm['startedAt'] !== NULL and substr($eFarm['startedAt'], 0, 4) === substr($eFinancialYearLast['startDate'], 0, 4)) {
+
+				$h .= '<div class="util-info">';
+				$h .= s("La période de déclaration étant l'année de création de votre exploitation, la <b>taxe sur le chiffre d'affaire des exploitants agricoles</b> n'est pas redevable.");
 				$h .= '</div>';
 
 			}

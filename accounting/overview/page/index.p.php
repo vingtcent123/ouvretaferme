@@ -198,6 +198,7 @@ new Page(function($data) {
 						break;
 
 					case 'cerfa':
+						$data->check = \overview\VatLib::getForCheck($data->eFarm, $search);
 						$data->precision = 0;
 
 						// On tente par l'ID

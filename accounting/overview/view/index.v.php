@@ -241,19 +241,55 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 
 		case 'journal-buy':
 		case 'journal-sell':
-			echo new \overview\VatUi()->getOperationsTab($data->eFarm, mb_substr($data->tab, mb_strlen('journal') + 1), $data->cOperation, $data->vatParameters);
+			if($data->eFinancialYearLast->empty()) {
+				echo '<div class="util-empty">';
+					echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+				echo '</div>';
+			} else {
+				echo new \overview\VatUi()->getOperationsTab($data->eFarm, mb_substr($data->tab, mb_strlen('journal') + 1), $data->cOperation, $data->vatParameters);
+			}
 			break;
 
 		case 'check':
-			echo new \overview\VatUi()->getCheck($data->eFarm, $data->check, $data->vatParameters);
+			if($data->eFinancialYearLast->empty()) {
+				echo '<div class="util-empty">';
+					echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+				echo '</div>';
+			} else if(empty($data->check['sales']) and empty($data->check['taxes'])) {
+				echo '<div class="util-empty">';
+					echo s("Il semblerait que cette période ne contienne aucune donnée pertinente à afficher pour le contrôle de TVA.");
+				echo '</div>';
+			} else {
+				echo new \overview\VatUi()->getCheck($data->eFarm, $data->check, $data->vatParameters);
+			}
 			break;
 
 		case 'cerfa':
-			echo new \overview\VatUi()->getCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $data->cerfa, $data->precision, $data->vatParameters, $data->eFinancialYearLast);
+			if($data->eFinancialYearLast->empty()) {
+				echo '<div class="util-empty">';
+					echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+				echo '</div>';
+			} else if(empty($data->check['sales']) and empty($data->check['taxes'])) {
+				echo '<div class="util-empty">';
+					echo s("Il semblerait que cette période ne contienne aucune donnée pertinente à afficher pour le contrôle de TVA.");
+				echo '</div>';
+			}  else {
+				echo new \overview\VatUi()->getCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $data->cerfa, $data->precision, $data->vatParameters, $data->eFinancialYearLast);
+			}
 			break;
 
 		case 'history':
-			echo new \overview\VatDeclarationUi()->getHistory($data->eFarm, $data->eFarm['eFinancialYear'], $data->cVatDeclaration, $data->allPeriods);
+			if($data->eFinancialYearLast->empty()) {
+				echo '<div class="util-empty">';
+					echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+				echo '</div>';
+			} else if($data->cVatDeclaration->empty()) {
+				echo '<div class="util-empty">';
+					echo s("Il n'y a aucune déclaration de TVA à afficher pour cette période.");
+				echo '</div>';
+			} else {
+				echo new \overview\VatDeclarationUi()->getHistory($data->eFarm, $data->eFarm['eFinancialYear'], $data->cVatDeclaration, $data->allPeriods);
+			}
 			break;
 	}
 
