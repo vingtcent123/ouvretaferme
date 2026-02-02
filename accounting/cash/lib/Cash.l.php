@@ -31,6 +31,8 @@ class CashLib extends CashCrud {
 
 			};
 
+			//increment lignes;
+
 			\securing\SignatureLib::signSale($e);
 
 		Cash::model()->beginTransaction();
@@ -38,6 +40,11 @@ class CashLib extends CashCrud {
 	}
 
 	public static function createBalanceInitial(Cash $e): void {
+
+		//if(déjà lignes) {
+		//Farmer::model()->rollBack();
+		//throw new \FailException('');
+		//}
 
 		$e['type'] = Cash::CREDIT;
 		$e['balance'] = $e['amountIncludingVat'];
