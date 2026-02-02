@@ -259,6 +259,10 @@ class ItemLib extends ItemCrud {
 
 				foreach($cItem as $eItem) {
 
+					if($eItem['ingredientOf']->notEmpty()) {
+						continue;
+					}
+
 					$eItemSummary = $mapping[$eItem['id']];
 
 					if($eItem['packaging'] !== NULL) {
