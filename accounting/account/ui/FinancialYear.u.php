@@ -81,7 +81,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 
 			$h .= $form->dynamicGroups($eFinancialYear, [
-				'startDate*', 'endDate*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'
+				'startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*'
 			]);
 
 			$h .= $form->group(
@@ -124,7 +124,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*', 'taxSystem*'], [
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*'], [
 				'startDate*' => function($d) use($form, $eFinancialYear) {
 					if($eFinancialYear['nOperation'] > 0) {
 						$d->attributes['disabled'] = 'disabled';
@@ -1026,6 +1026,7 @@ class FinancialYearUi {
 				];
 
 				$d->attributes['mandatory'] = TRUE;
+				$d->group = fn(FinancialYear $e) => (($e['taxSystem'] ?? NULL) === FinancialYear::MICRO_BA) ? [] : ['class' => 'hide'];
 
 				break;
 
@@ -1047,6 +1048,7 @@ class FinancialYearUi {
 				];
 
 				$d->attributes['mandatory'] = TRUE;
+				$d->group = fn(FinancialYear $e) => (($e['taxSystem'] ?? NULL) === FinancialYear::MICRO_BA) ? [] : ['class' => 'hide'];
 
 				break;
 
@@ -1106,6 +1108,7 @@ class FinancialYearUi {
 					FinancialYear::BA_REEL_NORMAL => s("Réel normal agricole"),
 				];
 				$d->attributes['mandatory'] = TRUE;
+				$d->attributes['onchange'] = 'FinancialYear.changeTaxSystem(this)';
 				break;
 
 			case 'legalCategory':

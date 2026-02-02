@@ -36,9 +36,21 @@ class FinancialYear {
 
 	}
 
-	static getByDate() {
+	static changeTaxSystem(target) {
 
-		const farm;
+		const taxSystem = qs('[name="taxSystem"]:checked').value;
+
+		const form = target.firstParent('form');
+
+		form.qsa('[data-wrapper="accountingMode"]', wrapper => (taxSystem === 'micro-ba') ?
+			wrapper.classList.remove('hide') :
+			wrapper.classList.add('hide')
+		);
+
+		form.qsa('[data-wrapper="accountingType"]', wrapper => (taxSystem === 'micro-ba') ?
+			wrapper.classList.remove('hide') :
+			wrapper.classList.add('hide')
+		);
 
 	}
 

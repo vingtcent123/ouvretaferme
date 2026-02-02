@@ -285,7 +285,34 @@ class FinancialYear extends FinancialYearElement {
 
 				return ($vatChargeability === FinancialYear::CASH);
 
-			});
+			})
+			->setCallback('accountingMode.check', function(?string &$accountingMode) use ($p): bool {
+
+				if($p->isBuilt('taxSystem') === FALSE or $accountingMode === NULL) {
+					return TRUE;
+				}
+
+				if($this['taxSystem'] !== FinancialYear::MICRO_BA) {
+					$accountingMode = FinancialYear::ACCOUNTING;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('accountingType.check', function(?string &$accountingType) use ($p): bool {
+
+				if($p->isBuilt('taxSystem') === FALSE or $accountingType === NULL) {
+					return TRUE;
+				}
+
+				if($this['taxSystem'] !== FinancialYear::MICRO_BA) {
+					$accountingType = FinancialYear::ACCRUAL;
+				}
+
+				return TRUE;
+
+			})
+		;
 
 		parent::build($properties, $input, $p);
 
