@@ -310,6 +310,14 @@ class CashUi {
 				$d->attributes = [
 					'oninput' => 'Cash.changeDate(this)'
 				];
+
+				$h = '<div id="cash-date-orphan" class="util-block-info">';
+					$h .= '<h3>'.s("Aucun exercice comptable n'a été trouvé pour cette date").'</h3>';
+					$h .= '<p>'.s("Veuillez vérifier votre saisie ou configurer maintenant l'exerice comptable qui correspond à cette date.").'</p>';
+					$h .= '<a href="" class="btn btn-transparent">'.s("Configurer mes exercices comptables (TODO)").'</a>';
+				$h .= '</div>';
+
+				$d->after = $h;
 				break;
 
 			case 'amountIncludingVat' :

@@ -219,7 +219,7 @@ new Page(function($data) {
 				'startDate', 'endDate',
 				'status',
 				'hasVat', 'vatFrequency', 'vatChargeability',
-				'taxSystem', 'accountingType'
+				'taxSystem', 'accountingType', 'accountingMode'
 			]);
 		} else {
 			$data = [];
