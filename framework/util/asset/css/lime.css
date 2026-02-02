@@ -1329,10 +1329,10 @@ a.util-badge {
 	padding: 1rem;
 }
 
-.util-block *:last-child,
-.util-block-secondary *:last-child,
-.util-block-help *:last-child,
-.util-block-info *:last-child {
+.util-block > *:last-child,
+.util-block-secondary > *:last-child,
+.util-block-help > *:last-child,
+.util-block-info > *:last-child {
 	margin-bottom: 0;
 }
 
@@ -2093,6 +2093,11 @@ label.btn input {
 
 label.btn input:checked + * {
 	font-weight: bold;
+}
+
+.btn-icon {
+	font-size: 150%;
+	margin-bottom: 0.5rem;
 }
 
 .btn.btn-form {

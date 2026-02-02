@@ -36,4 +36,10 @@ class FinancialYear {
 
 	}
 
+	static getByDate() {
+
+		const farm;
+
+	}
+
 }

@@ -9,7 +9,8 @@ class CashLib extends CashCrud {
 
 			return match($e['origin']) {
 
-				Cash::BALANCE_INITIAL => ['date', 'amountIncludingVat']
+				Cash::INITIAL => ['date', 'amountIncludingVat'],
+				Cash::PRIVATE => ['date', 'amountIncludingVat', 'thirdParty'],
 
 			};
 
@@ -56,7 +57,7 @@ class CashLib extends CashCrud {
 				->get($eRegister);
 
 			// La première opération est nécessairement le solde initial
-			if($e['origin'] === Cash::BALANCE_INITIAL) {
+			if($e['origin'] === Cash::INITIAL) {
 
 				if($eRegister['lines'] > 0) {
 					Cash::model()->rollBack();
@@ -74,7 +75,7 @@ class CashLib extends CashCrud {
 
 			match($e['origin']) {
 
-				Cash::BALANCE_INITIAL => self::createBalanceInitial($e)
+				Cash::INITIAL => self::createBalanceInitial($e)
 
 			};
 

@@ -10,12 +10,11 @@ abstract class CashElement extends \Element {
 	const DEBIT = 'debit';
 	const CREDIT = 'credit';
 
-	const BANK_IN = 'bank-in';
-	const BANK_OUT = 'bank-out';
-	const PRIVATE_IN = 'private-in';
-	const PRIVATE_OUT = 'private-out';
-	const BALANCE_INITIAL = 'balance-initial';
-	const BALANCE_CORRECTION = 'balance-correction';
+	const BANK = 'bank';
+	const PRIVATE = 'private';
+	const OTHER = 'other';
+	const INITIAL = 'initial';
+	const BALANCE = 'balance';
 	const BUY_MANUAL = 'buy-manual';
 	const SELL_MANUAL = 'sell-manual';
 	const SELL_INVOICE = 'sell-invoice';
@@ -68,7 +67,7 @@ class CashModel extends \ModuleModel {
 			'vat' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'origin' => ['enum', [\cash\Cash::BANK_IN, \cash\Cash::BANK_OUT, \cash\Cash::PRIVATE_IN, \cash\Cash::PRIVATE_OUT, \cash\Cash::BALANCE_INITIAL, \cash\Cash::BALANCE_CORRECTION, \cash\Cash::BUY_MANUAL, \cash\Cash::SELL_MANUAL, \cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE], 'cast' => 'enum'],
+			'origin' => ['enum', [\cash\Cash::BANK, \cash\Cash::PRIVATE, \cash\Cash::OTHER, \cash\Cash::INITIAL, \cash\Cash::BALANCE, \cash\Cash::BUY_MANUAL, \cash\Cash::SELL_MANUAL, \cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE], 'cast' => 'enum'],
 			'originBankAccount' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
 			'originCashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'originInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],

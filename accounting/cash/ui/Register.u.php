@@ -6,6 +6,7 @@ class RegisterUi {
 	public function __construct() {
 
 		\Asset::css('cash', 'cash.css');
+		\Asset::js('cash', 'cash.js');
 
 	}
 

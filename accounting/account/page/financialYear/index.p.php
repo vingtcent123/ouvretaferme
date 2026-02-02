@@ -202,4 +202,31 @@ new \account\FinancialYearPage(function($data) {
 
 	})
 ;
+
+new Page(function($data) {
+
+		$data->eFarm->validate('canManage');
+
+	})
+	->get('getByDate', function($data) {
+
+		$date = GET('date');
+
+		$eFinancialYear = \account\FinancialYearLib::getByDate($date);
+
+		if($eFinancialYear->notEmpty()) {
+			$data = $eFinancialYear->extracts([
+				'startDate', 'endDate',
+				'status',
+				'hasVat', 'vatFrequency', 'vatChargeability',
+				'taxSystem', 'accountingType'
+			]);
+		} else {
+			$data = [];
+		}
+
+		throw new JsonAction($data);
+
+	})
+;
 ?>

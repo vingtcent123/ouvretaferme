@@ -145,6 +145,15 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function getByDate(string $date): FinancialYear {
+
+		return FinancialYear::model()
+			->select(FinancialYear::getSelection())
+			->where(FinancialYear::model()->format($date).' BETWEEN startDate AND endDate')
+			->get();
+
+	}
+
 	public static function getAll(): \Collection {
 
 		return self::getCache('list', fn() => FinancialYear::model()

@@ -6,6 +6,7 @@ class CashUi {
 	public function __construct() {
 
 		\Asset::css('cash', 'cash.css');
+		\Asset::js('cash', 'cash.js');
 
 	}
 
@@ -38,29 +39,27 @@ class CashUi {
 		$h = '<div class="util-block">';
 
 			$h .= '<h3>'.s("Saisir une opération de caisse").'</h3>';
-			$h .= '<p>'.s("Les opérations de caisses sont obligatoirement saisies de manière chronologique.").'</p>';
 
-			$h .= '<div>';
-				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start">'.\Asset::icon('database-add').' '.s("Créditer la caisse").'</a>';
+			$h .= '<div class="cash-actions">';
+				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-plus').'</div>'.s("Créditer la caisse").'</a>';
 				$h .= '<div class="dropdown-list">';
-					$h .= '<div class="dropdown-subtitle">'.\Asset::icon('bank').'  '.s("Banque").'</div>';
-					$h .= '<a href="" class="dropdown-item">'.s("Retrait à la banque pour créditer la caisse").'</a>';
-					$h .= '<div class="dropdown-subtitle">'.\Asset::icon('wallet').'  '.s("Ventes").'</div>';
-					$h .= '<a href="" class="dropdown-item">'.s("Règlement d'une vente").'</a>';
-					$h .= '<a href="" class="dropdown-item">'.s("Règlement d'une facture").'</a>';
-					$h .= '<div class="dropdown-subtitle">'.\Asset::icon('person-fill').'  '.s("Exploitant").'</div>';
-					$h .= '<a href="" class="dropdown-item">'.s("Apport de l'exploitant à la caisse").'</a>';
+					$h .= '<div class="dropdown-title">'.s("Créditer la caisse").'</div>';
+					if($eRegister['paymentMethod']['fqn'] === 'cash') {
+						$h .= '<a href="" class="dropdown-item">'.\Asset::icon('bank').'  '.s("Retrait depuis la banque").'</a>';
+					}
+					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Vente à un client").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&origin='.Cash::PRIVATE.'&type='.Cash::CREDIT.'" class="dropdown-item">'.\Asset::icon('person-fill').'  '.s("Apport de l'exploitant à la caisse").'</a>';
+					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('three-dots').'  '.s("Autre opération créditrice").'</a>';
 				$h .= '</div>';
-				$h .= '  ';
-				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start">'.\Asset::icon('database-dash').' '.s("Débiter la caisse").'</a>';
+				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-minus').'</div>'.s("Débiter la caisse").'</a>';
 				$h .= '<div class="dropdown-list">';
-					$h .= '<div class="dropdown-subtitle">'.\Asset::icon('bank').'  '.s("Banque").'</div>';
-					$h .= '<a href="" class="dropdown-item">'.s("Dépôt à la banque depuis la caisse").'</a>';
-					$h .= '<div class="dropdown-subtitle">'.\Asset::icon('wallet').'  '.s("Achats").'</div>';
-					$h .= '<a href="" class="dropdown-item">'.s("Achat réglé avec la caisse").'</a>';
-					$h .= '<div class="dropdown-subtitle">'.\Asset::icon('person-fill').'  '.s("Exploitant").'</div>';
-					$h .= '<a href="" class="dropdown-item">'.s("Prélèvement par l'exploitant dans la caisse").'</a>';
+					$h .= '<div class="dropdown-title">'.s("Débiter la caisse").'</div>';
+					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('bank').'  '.s("Dépôt à la banque").'</a>';
+					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Achat à un fournisseur").'</a>';
+					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse").'</a>';
+					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('three-dots').'  '.s("Autre opération débitrice").'</a>';
 				$h .= '</div>';
+				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>'.s("Corriger le solde").'</a>';
 			$h .= '</div>';
 
 			$h .= '<br/>';
@@ -97,7 +96,6 @@ class CashUi {
 			$h .= '</thead>';
 			$h .= '<tbody>';
 
-				$columns = 5;
 				$previousSubtitle = NULL;
 
 				foreach($cCash as $eCash) {
@@ -132,7 +130,7 @@ class CashUi {
 
 							switch($eCash['origin']) {
 
-								case Cash::BALANCE_INITIAL :
+								case Cash::INITIAL :
 									$h .= '';
 									break;
 
@@ -144,7 +142,12 @@ class CashUi {
 						$h .= '</td>';
 
 						$h .= '<td>';
-							$h .= encode($eCash['description']);
+							$h .= '<div>'.encode($eCash['description']).'</div>';
+							$h .= '<div>';
+								if($eCash['status'] === Cash::DRAFT) {
+									$h .= '<span class="util-badge bg-muted">'.s("Brouillon").'</span>';
+								}
+							$h .= '</div>';
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content highlight-stick-right text-end">';
@@ -177,7 +180,21 @@ class CashUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td>';
+						$h .= '<td class="text-end">';
+
+							if($eCash['status'] === Cash::DRAFT) {
+
+								$h .= '<a class="btn btn-secondary" class="dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+								$h .= '<div class="dropdown-list">';
+									$h .= '<div class="dropdown-title">'.s("Opération").'</div>';
+									$h .= '<a href="" class="dropdown-item">'.s("Modifier l'opération").'</a>';
+									$h .= '<a href="" class="dropdown-item">'.s("Valider l'opération").'</a>';
+									$h .= '<div class="dropdown-divider"></div>';
+									$h .= '<a href="" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
+								$h .= '</div>';
+
+							}
+
 						$h .= '</td>';
 
 					$h .= '</tr>';
@@ -209,7 +226,7 @@ class CashUi {
 			$form = new \util\FormUi();
 
 			$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doCreate');
-				$h .= $form->hidden('origin', Cash::BALANCE_INITIAL);
+				$h .= $form->hidden('origin', Cash::INITIAL);
 				$h .= $form->hidden('register', $eRegister['id']);
 				$h .= $form->group(
 					s("Date du solde initial"),
@@ -289,6 +306,11 @@ class CashUi {
 
 		switch($property) {
 
+			case 'date' :
+				$d->attributes = [
+					'oninput' => 'Cash.changeDate(this)'
+				];
+				break;
 
 			case 'amountIncludingVat' :
 				$d->type = 'float';

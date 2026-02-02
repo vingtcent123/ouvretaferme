@@ -19,6 +19,17 @@ class Farm {
 
 	static pendingSection = null;
 
+	static getId() {
+
+		const a = document.createElement('a');
+		a.href = document.location.href;
+
+		let url = a.pathname.split('/')[1];
+
+		return parseInt(url);
+
+	}
+
 	static changeArrowSection(e) {
 
 		if(

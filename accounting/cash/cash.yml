@@ -19,7 +19,7 @@ Cash:
   vat: ?decimal(10, 2)
   vatRate: ?decimal(5, 2)
   description: ?text8(1, null)
-  origin: enum(BANK_IN, BANK_OUT, PRIVATE_IN, PRIVATE_OUT, BALANCE_INITIAL, BALANCE_CORRECTION, BUY_MANUAL, SELL_MANUAL, SELL_INVOICE, SELL_SALE)
+  origin: enum(BANK, PRIVATE, OTHER, INITIAL, BALANCE, BUY_MANUAL, SELL_MANUAL, SELL_INVOICE, SELL_SALE)
   originBankAccount: ?bank\BankAccount
   originCashflow: ?bank\Cashflow
   originInvoice: ?selling\Invoice
