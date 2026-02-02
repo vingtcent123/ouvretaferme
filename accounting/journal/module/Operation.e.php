@@ -10,7 +10,7 @@ class Operation extends OperationElement {
 		return parent::getSelection() + [
 			'operation' => ['id', 'asset', 'accountLabel'],
 			'account' => \account\Account::getSelection(),
-			'journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected()),
+			'journalCode' => fn($e) => $e->notEmpty() ? \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected()) : new JournalCode(),
 			'vatAccount' => ['class', 'vatRate', 'description'],
 			'thirdParty' => \account\ThirdParty::getSelection(),
 			'paymentMethod' => \payment\Method::getSelection(),
