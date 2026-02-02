@@ -683,10 +683,12 @@ class JournalUi {
 
 						$h .= '</tr>';
 
-						if($totalCredit >= $totalDebit) {
+						if($totalCredit > $totalDebit) {
 							$text = s("Solde créditeur");
-						} else {
+						} else if($totalCredit < $totalDebit) {
 							$text = s("Solde débiteur");
+						} else {
+							$text = s("Solde");
 						}
 
 						$h .= '<tr class="row-highlight tr-bold">';
@@ -700,18 +702,18 @@ class JournalUi {
 							$h .= '<td colspan="'.$colspan.'">'.$text.'</td>';
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
-								$h .= \util\TextUi::money($totalDebit - $totalCredit);
+								$h .= \util\TextUi::money(round($totalDebit - $totalCredit, 2));
 							$h .= '</td>';
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
 								if($totalDebit > $totalCredit) {
-									$h .= \util\TextUi::money($totalDebit - $totalCredit);
+									$h .= \util\TextUi::money(round($totalDebit - $totalCredit, 2));
 								}
 							$h .= '</td>';
 
 							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
 								if($totalDebit <= $totalCredit) {
-									$h .= \util\TextUi::money($totalCredit - $totalDebit);
+									$h .= \util\TextUi::money(round($totalCredit - $totalDebit, 2));
 								}
 							$h .= '</td>';
 

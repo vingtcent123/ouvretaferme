@@ -121,6 +121,10 @@ new \account\FinancialYearPage(function($data) {
 			'internalAccount' => \journal\OperationLib::getInternalTransferAccountValues($data->e),
 		];
 
+		if($data->accountsToSettle['farmersAccount'] !== 0.0) {
+			$data->accountsToSettle['cOperationFarmersAccount'] = \account\ClosingLib::getFarmersAccountCloseOperation($data->e, '', $data->accountsToSettle['farmersAccount']);
+		}
+
 		$data->cDeferral = \journal\DeferralLib::getDeferralsForOperations();
 
 		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);

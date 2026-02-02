@@ -95,6 +95,14 @@ class FinancialYearLib extends FinancialYearCrud {
 			\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
 		}
 
+		// 3- Solder le compte de l'exploitant si nécessaire
+		$balanceFarmerAccount = \journal\OperationLib::getFarmersAccountValue($eFinancialYear);
+		if($balanceFarmerAccount !== 0.0) {
+			$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_INVENTORY;
+			$cOperation = ClosingLib::getFarmersAccountCloseOperation($eFinancialYear, $hash, $balanceFarmerAccount);
+			\journal\Operation::model()->insert($cOperation);
+		}
+
 		// Mettre les numéros d'écritures
 		\journal\OperationLib::setNumbers($eFinancialYear);
 

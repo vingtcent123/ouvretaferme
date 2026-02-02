@@ -37,6 +37,7 @@ class AccountSetting extends \Settings {
 	const PRODUCT_ACCOUNT_CLASS = 7;
 
 	const CAPITAL_AND_RESERVES_CLASS = 10; // Capital et réserves
+	const CAPITAL_CLASS = 101; // Capital
 	const FARMER_S_ACCOUNT_CLASS = 108; // Compte de l'exploitant
 	const RETAINED_EARNINGS_CLASS = 11; // Report à nouveau
 	const PROFIT_RETAINED_CLASS = '110';

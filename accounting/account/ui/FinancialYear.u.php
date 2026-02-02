@@ -510,6 +510,28 @@ class FinancialYearUi {
 
 	}
 
+	public function displayOperationFarmersAccount(FinancialYear $eFinancialYear, float $amount, \Collection $cOperation): string {
+
+		if($amount === 0.0 or $cOperation->empty()) {
+			return '';
+		}
+
+		// Simulation d'écritures créées
+		foreach($cOperation as &$eOperation) {
+			$eOperation['id'] = uniqid();
+			$eOperation['asset'] = new \asset\Asset();
+			$eOperation['cashflow'] = new \bank\Cashflow();
+			$eOperation['thirdParty'] = new ThirdParty();
+		}
+
+		$h = '<div class="stick-sm util-overflow-sm mt-1">';
+			$h .= new \journal\JournalUi()->list(\farm\Farm::getConnected(), NULL, $cOperation, $eFinancialYear, readonly: TRUE);
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
 	public function open(
 		\farm\Farm $eFarm,
 		FinancialYear $eFinancialYear,
@@ -560,6 +582,9 @@ class FinancialYearUi {
 	public function getOpeningAffectResult(FinancialYear $eFinancialYear): string {
 		return s("Affectation résultat exercice {value}", $eFinancialYear->getLabel());
 	}
+	public function getFarmersAccountClose(FinancialYear $eFinancialYear): string {
+		return s("Solde compte de l'exploitant {value}", $eFinancialYear->getLabel());
+	}
 
 	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cDeferral, \Collection $cAssetGrant, \Collection $cAsset, array $accountsToSettle): string {
 
@@ -600,13 +625,6 @@ class FinancialYearUi {
 			$h .= '<h2 class="mt-2">'.\Asset::icon($step.'-circle-fill').' '.s("Liste de points à vérifier").'</h2>';
 
 			$h .= s("Avant de procéder à la clôture de votre exercice comptable, certaines vérifications doivent être effectuées.");
-
-			if($accountsToSettle['farmersAccount'] < 0.0) {
-
-				$h .= '<h3 class="mt-1">'.s("Comptes de l'exploitant").'</h3>';
-
-				$h .= s("Attention, le compte {farmersAccount} est débiteur de {amount}. Soldez-le avant la clôture de l'exercice !", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'amount' => \util\TextUi::money(abs($accountsToSettle['farmersAccount']))]);
-			}
 
 			if((float)array_reduce($accountsToSettle['waitingAccounts'], function($sum, $waitingAccount) {
 				return $waitingAccount['total'] + $sum;
@@ -705,7 +723,7 @@ class FinancialYearUi {
 				$h .= \Asset::icon('info-circle').' '.s("Notez que cette vérification n'est valable que si toutes les opérations bancaires ont été traitées en comptabilité sur {siteName}.");
 			$h .= '</p>';
 
-			if(empty($accountsToSettle['internalAccount']) === FALSE) {
+			if(empty($accountsToSettle['internalAccount']) === FALSE and $accountsToSettle['internalAccount']['total'] !== 0.0) {
 
 				$isBlocked = TRUE;
 
@@ -732,6 +750,21 @@ class FinancialYearUi {
 						}
 					$h .= '</li>';
 				$h .= '</ul>';
+
+			}
+
+			// Écritures automatiques
+
+			if($accountsToSettle['farmersAccount'] !== 0.0) {
+				$step++;
+
+				$h .= '<h2 class="mt-2">'.\Asset::icon($step.'-circle-fill').' '.s("Écritures automatiques").'</h2>';
+				$h .= '<h3 class="mt-1">'.s("Comptes de l'exploitant").'</h3>';
+
+				$h .= s("Le compte {farmersAccount} n'étant pas soldé, les écritures de solde avec le compte de capital {capitalAccount} seront créées à la clôture :", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'capitalAccount' => '<b>'.AccountSetting::CAPITAL_CLASS.'</b>']);
+
+				$h .= $this->displayOperationFarmersAccount($eFinancialYear, $accountsToSettle['farmersAccount'], $accountsToSettle['cOperationFarmersAccount']);
+
 
 			}
 
