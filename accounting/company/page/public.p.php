@@ -11,15 +11,8 @@ new Page(function($data) {
 		throw new ViewAction($data);
 
 	})
+
 	->get('/comptabilite/parametrer', function ($data) {
-
-		if(LIME_ENV === 'prod' and \company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
-
-			$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
-
-			throw new ViewAction($data, ':beta');
-
-		}
 
 		throw new ViewAction($data);
 
@@ -45,5 +38,14 @@ new Page(function($data) {
 
 new Page()
 	->get('/comptabilite/demarrer', function ($data) {
+
 		throw new ViewAction($data);
+
+	})
+	->get('/comptabilite/beta', function ($data) {
+
+		$data->eBetaApplication = \company\BetaApplicationLib::getApplicationByFarm($data->eFarm);
+
+		throw new ViewAction($data, ':beta');
+
 	});

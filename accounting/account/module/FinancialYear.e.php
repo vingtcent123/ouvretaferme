@@ -293,6 +293,10 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('vatChargeability.forbidden', function(?string $vatChargeability) use ($p): bool {
 
+				if($p->isBuilt('hasVat') === FALSE or $this['hasVat'] === FALSE) {
+					return TRUE;
+				}
+
 				return ($vatChargeability === FinancialYear::CASH);
 
 			})

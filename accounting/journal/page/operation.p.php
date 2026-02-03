@@ -1,15 +1,18 @@
 <?php
-new \journal\OperationPage(
-	function($data) {
-		\user\ConnectionLib::checkLogged();
+new \journal\OperationPage(function($data) {
+	\user\ConnectionLib::checkLogged();
 
-		$data->eFarm->validate('canManage', 'hasAccounting');
+	$data->eFarm->validate('canManage', 'hasAccounting');
 
-		if($data->eFarm->usesAccounting() === FALSE) {
-			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-		}
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
 
-	})
+	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
+		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
+	}
+
+})
 ->read('/journal/operation/{id}', function($data) {
 
 	$data->e['cOperationHash'] = \journal\OperationLib::getByHash($data->e['hash']);
@@ -98,17 +101,19 @@ new \journal\OperationPage(
 })
 ;
 
-new \journal\OperationPage(
-	function($data) {
+new \journal\OperationPage(function($data) {
 
-		if($data->eFarm->usesAccounting() === FALSE) {
-			throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-		}
-
-		// Payment methods
-		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
-)
+
+	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
+		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
+	}
+
+	// Payment methods
+	$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
+})
 	->applyElement(function($data, \journal\Operation $e) {
 		$e['cPaymentMethod'] = $data->cPaymentMethod;
 		$e['farm'] = $data->eFarm;
@@ -244,6 +249,10 @@ new \journal\OperationPage(function($data) {
 
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
+	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
+		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
 	}
 
 })

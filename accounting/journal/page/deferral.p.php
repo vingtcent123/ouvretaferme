@@ -5,6 +5,10 @@ new \journal\OperationPage(function($data) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
+	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
+		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
+	}
+
 })
 	->read('set', function($data) {
 
@@ -25,6 +29,11 @@ new \journal\DeferralPage(function($data) {
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
+
+	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
+		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
+	}
+
 })
 	->doDelete(function($data) {
 

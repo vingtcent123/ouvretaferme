@@ -7,6 +7,10 @@ new Page(function($data) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
 	}
 
+	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
+		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
+	}
+
 	$data->cJournalCode = \journal\JournalCodeLib::deferred();
 
 })

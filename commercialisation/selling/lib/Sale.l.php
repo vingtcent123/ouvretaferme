@@ -1384,18 +1384,6 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function updateReadyForAccountingCollection(\Collection $c, ?bool $value): void {
-
-		Sale::model()->beginTransaction();
-
-		Sale::model()
-			->whereId('IN', $c->getIds())
-			->update(['readyForAccounting' => $value]);
-
-		Sale::model()->commit();
-
-	}
-
 	public static function updateCustomer(Sale $e, Customer $eCustomer): void {
 
 		Sale::model()->beginTransaction();

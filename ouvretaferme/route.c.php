@@ -43,6 +43,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['commandes', 'professionnels', '{farm}'],
 		],
+		'/comptabilite/beta' => [
+			'request' => 'company/public',
+			'priority' => 5,
+			'route' => ['comptabilite', 'beta'],
+		],
 		'/comptabilite/decouvrir' => [
 			'request' => 'company/public',
 			'priority' => 5,

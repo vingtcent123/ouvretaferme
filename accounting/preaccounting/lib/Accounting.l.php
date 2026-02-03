@@ -221,7 +221,7 @@ Class AccountingLib {
 
 		$cInvoice = self::getInvoices($eFarm, $search, $forImport);
 
-		return self::generateInvoiceFec($cInvoice, $cFinancialYear, $cAccount, $forImport);
+		return self::generateInvoicesFec($cInvoice, $cFinancialYear, $cAccount, $forImport);
 
 	}
 
@@ -344,7 +344,7 @@ Class AccountingLib {
 
 	}
 
-	public static function generateInvoiceFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport): array {
+	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
