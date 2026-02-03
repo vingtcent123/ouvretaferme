@@ -40,7 +40,7 @@ Class PreaccountingUi {
 
 			$form = new \util\FormUi();
 
-			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search util-search-3']);
+			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search']);
 
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Période").'</legend>';

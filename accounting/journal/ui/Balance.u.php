@@ -8,8 +8,8 @@ Class BalanceUi {
 
 	public function getTitle(\farm\Farm $eFarm, \account\FinancialYearDocument $eFinancialYearDocument, string $type): string {
 
-		$h = new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
 
+		$h = \farm\FarmUi::getSelectedFinancialYear($eFarm);
 		$h .= '<div class="util-action">';
 
 			$h .= '<h1>';

@@ -1364,7 +1364,77 @@ class FarmUi {
 
 			$h .= '</div>';
 */
+
+			$cFinancialYear = $eFarm['cFinancialYear?']();
+
+			$cFinancialYearBefore = new \account\FinancialYear();
+			$eFinancialYearSelected = $eFarm->getView('viewAccountingYear');
+			$cFinancialYearAfter = new \account\FinancialYear();
+
+			$position = 0;
+
+			foreach($cFinancialYear as $eFinancialYear) {
+
+				if($eFinancialYear->is($eFinancialYearSelected)) {
+
+					if($position > 0) {
+						$cFinancialYearAfter = $cFinancialYear->slice(0, $position)->reverse();
+					}
+
+					$eFinancialYearSelected = $eFinancialYear;
+
+					if($cFinancialYear->valid()) {
+						$cFinancialYearBefore = $cFinancialYear->slice($position + 1);
+					}
+
+					break;
+
+				}
+
+				$position++;
+
+			}
+
 			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting">';
+
+				$h .= '<div class="farm-nav-accounting-title">';
+					$h .= '<div class="farm-nav-accounting-before">';
+
+						if($cFinancialYearBefore->count() === 1) {
+							$h .= '<a href="'.$this->replaceFinancialYear($cFinancialYearBefore->first()).'" data-ajax-navigation="never">'.\Asset::icon('arrow-left-circle').'</a>';
+						} else if($cFinancialYearBefore->notEmpty()) {
+
+							$h .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.\Asset::icon('arrow-left-circle').'</a>';
+
+							$h .= '<div class="dropdown-list bg-accounting">';
+								$h .= $this->getFinancialYears($cFinancialYearBefore);
+							$h .= '</div>';
+
+						}
+
+					$h .= '</div>';
+					$h .= '<div class="farm-nav-accounting-selected">';
+						$h .= s("Exercice {value}", $eFinancialYearSelected->getLabel());
+						if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
+							$h .= '  '.\Asset::icon('lock-fill');
+						}
+					$h .= '</div>';
+					$h .= '<div class="farm-nav-accounting-after">';
+
+						if($cFinancialYearAfter->count() === 1) {
+							$h .= '<a href="'.$this->replaceFinancialYear($cFinancialYearAfter->first()).'" data-ajax-navigation="never">'.\Asset::icon('arrow-right-circle').'</a>';
+						} else if($cFinancialYearAfter->notEmpty()) {
+
+							$h .= '<a data-dropdown="bottom-end" data-dropdown-hover="true">'.\Asset::icon('arrow-right-circle').'</a>';
+
+							$h .= '<div class="dropdown-list bg-accounting">';
+								$h .= $this->getFinancialYears($cFinancialYearAfter);
+							$h .= '</div>';
+
+						}
+
+					$h .= '</div>';
+				$h .= '</div>';
 
 				$h .= $this->getNav('accounting', $nav);
 
@@ -1392,73 +1462,23 @@ class FarmUi {
 
 	}
 
-	public function getAccountingYears(Farm $eFarm, bool $allowAccrualWarning): string {
+	private function getFinancialYears(\Collection $cFinancialYear, \account\FinancialYear $eFinancialYearSelected = new \account\FinancialYear()): string {
 
-		if($eFarm['hasFinancialYears'] === FALSE) {
-			return '';
-		}
+		$h = '';
 
-		$cFinancialYear = $eFarm['cFinancialYear'];
-		$eFinancialYearSelected = $eFarm['eFinancialYear'];
+		foreach($cFinancialYear as $eFinancialYear) {
 
-		if($cFinancialYear->count() <= 1) {
+			$url = self::replaceFinancialYear($eFinancialYear);
 
-			$h = '<div style="margin-bottom: 0.5rem">';
-				$h .= '<div class="btn btn-readonly btn-lg btn-outline-primary">'.s("Exercice {value}", $eFarm['cFinancialYear']->first()->getLabel()).'</div>';
-			$h .= '</div>';
+			$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear->is($eFinancialYearSelected) ? 'selected' : '').'" data-ajax-navigation="never">';
 
-			if($allowAccrualWarning === TRUE and $eFinancialYearSelected->isAccrualAccounting()) {
+				$h .= s("Exercice {value}", $eFinancialYear->getLabel());
 
-				$menu = '<div class="farm-financial-year-menu">';
-					$menu .= $h;
-					$menu .= '<div class="util-block-danger" style="padding: 0.75rem;">'.s("Attention, {siteName} n'est pas optimisé pour une comptabilité à l'engagement.").'</div>';
-				$menu .= '</div>';
-
-				return $menu;
-
-			}
-
-			return $h;
-		}
-
-		$h = '<div style="margin-bottom: 0.5rem">';
-			$h .= '<a class="btn btn-lg btn-outline-primary" data-dropdown="bottom-left" data-dropdown-hover="true">';
-				if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
-					$h .= \Asset::icon('lock-fill').'  ';
+				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
+					$h .= '  '.\Asset::icon('lock-fill');
 				}
-				$h .= s("Exercice {value}", $eFinancialYearSelected->getLabel());
-				if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
-					$h .= '<small> / '.s("CLÔTURÉ").'</small>';
-				}
-				$h .= '  '.\Asset::icon('chevron-down');
+
 			$h .= '</a>';
-
-			$h .= '<div class="dropdown-list">';
-
-			$isAccountingUrl = str_starts_with(LIME_REQUEST_PATH, '/'.$eFarm['id'].'/');
-
-			$cFinancialYearOpen = $eFarm['cFinancialYear']->find(fn($e) => $e['status'] !== \account\FinancialYear::CLOSE);
-			$cFinancialYearClosed = $eFarm['cFinancialYear']->find(fn($e) => $e['status'] === \account\FinancialYear::CLOSE);
-			$nClose = $cFinancialYearClosed->count();
-
-			$h .= $this->getFinancialYears($cFinancialYearOpen, $eFinancialYearSelected, $eFarm, $isAccountingUrl);
-			if($nClose > 0) {
-				$h .= '<div class="dropdown-subtitle">'.p("Exercice clôturé", "Exercices clôturés", $nClose).'</div>';
-			}
-			$h .= $this->getFinancialYears($cFinancialYearClosed, $eFinancialYearSelected, $eFarm, $isAccountingUrl);
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		if($allowAccrualWarning === TRUE and $eFinancialYearSelected->isAccrualAccounting()) {
-
-			$menu = '<div class="farm-financial-year-menu">';
-				$menu .= $h;
-				$menu .= '<div class="util-block-danger" style="padding: 0.75rem;">'.s("Attention, {siteName} n'est pas optimisé pour une comptabilité à l'engagement.").'</div>';
-			$menu .= '</div>';
-
-			return $menu;
 
 		}
 
@@ -1466,34 +1486,38 @@ class FarmUi {
 
 	}
 
-	private function getFinancialYears(\Collection $cFinancialYear, \account\FinancialYear $eFinancialYearSelected, Farm $eFarm, bool $isAccountingUrl): string {
+	public static function getSelectedFinancialYear(Farm $eFarm): string {
 
-		$h = '';
-		foreach($cFinancialYear as $eFinancialYear) {
+		$eFinancialYearSelected = $eFarm['eFinancialYear'];
 
-			if($isAccountingUrl) {
-				$url = preg_replace('/\/exercice\/[0-9]+\//si', '/exercice/'.$eFinancialYear['id'].'/', LIME_REQUEST);
-			} else {
-				$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
+		$h = '<div class="hide-lateral-up" style="margin-bottom: 0.25rem">';
+			$h .= s("Exercice {value}", $eFinancialYearSelected->getLabel());
+			if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
+				$h .= '  '.\Asset::icon('lock-fill');
 			}
-
-			$url = \util\HttpUi::setArgument($url, 'financialYear', $eFinancialYear['id']);
-			$url = \util\HttpUi::removeArgument($url, 'from');
-			$url = \util\HttpUi::removeArgument($url, 'to');
-
-			$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear->is($eFinancialYearSelected) ? 'selected' : '').'">';
-
-				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
-					$h .= \Asset::icon('lock-fill').'  ';
-				}
-
-				$h .= s("Exercice {value}", $eFinancialYear->getLabel());
-
-			$h .= '</a>';
-
-		}
+		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	private function replaceFinancialYear(\account\FinancialYear $eFinancialYear): string {
+
+		$eFarm = Farm::getConnected();
+
+		$isAccountingUrl = str_starts_with(LIME_REQUEST_PATH, '/'.$eFarm['id'].'/');
+
+		if($isAccountingUrl) {
+			$url = preg_replace('/\/exercice\/[0-9]+\//si', '/exercice/'.$eFinancialYear['id'].'/', LIME_REQUEST);
+		} else {
+			$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
+		}
+
+		$url = \util\HttpUi::setArgument($url, 'financialYear', $eFinancialYear['id']);
+		$url = \util\HttpUi::removeArgument($url, 'from');
+		$url = \util\HttpUi::removeArgument($url, 'to');
+
+		return $url;
 
 	}
 
@@ -2023,13 +2047,7 @@ class FarmUi {
 		$title = $categories[$selectedView]['label'];
 		$urlMore = 'from='.encode($search->get('from')).'&to='.encode($search->get('to'));
 
-		$h = '';
-
-		if($eFarm['hasFinancialYears']) {
-			$h .= new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
-		}
-
-		$h .= '<div class="util-action">';
+		$h = '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
 					$h .= self::getNavigation();
@@ -2094,7 +2112,8 @@ class FarmUi {
 
 		$title = $categories[$selectedView]['label'];
 
-		$h = new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
+
+		$h = \farm\FarmUi::getSelectedFinancialYear($eFarm);
 		$h .= '<div class="util-action">';
 			$h .= '<h1>';
 				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
@@ -2172,7 +2191,8 @@ class FarmUi {
 
 		$title = $categories[$selectedView]['label'];
 
-		$h = new \farm\FarmUi()->getAccountingYears($eFarm, TRUE);
+
+		$h = \farm\FarmUi::getSelectedFinancialYear($eFarm);
 		$h .= '<div class="util-action">';
 			$h .= '<h1>';
 

@@ -31,6 +31,14 @@ class Farm extends FarmElement {
 
 		return parent::getSelection() + [
 			'calendarMonths' => new \Sql('IF(calendarMonthStart IS NULL, 0, 12 - calendarMonthStart + 1) + 12 + IF(calendarMonthStop IS NULL, 0, calendarMonthStop)', 'int'),
+			'cFinancialYear?' => fn(Farm $eFarm) => function() use ($eFarm) {
+				if($eFarm->hasAccounting()) {
+					FarmLib::connectDatabase($eFarm);
+					return \account\FinancialYearLib::getAll();
+				} else {
+					return new \Collection();
+				}
+			},
 		];
 
 	}

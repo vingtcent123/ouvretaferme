@@ -39,7 +39,6 @@ body[data-template~="farm"] .nav-title-member-name {
 
 .farm-tabs.farm-section-accounting {
 	background-color: var(--accounting);
-	padding-bottom: 5rem;
 }
 
 .farm-tab {
@@ -209,6 +208,44 @@ body[data-template~="farm"] .container {
 		width: auto;
 	}
 
+}
+
+.farm-nav-accounting {
+	border: 1px solid white;
+	border-radius: var(--radius);
+}
+
+@media (min-width: 1600px) {
+
+	.farm-nav-accounting {
+		margin: 0.5rem 1rem;
+	}
+
+}
+
+.farm-nav-accounting-title {
+	border-bottom: 1px solid white;
+	display: grid;
+	align-items: center;
+	line-height: 1;
+	grid-template-columns: 2rem 1fr 2rem;
+	padding: 1rem 0.5rem;
+	color: white;
+	font-size: 1.1rem;
+}
+
+.farm-nav-accounting-title a {
+	color: white;
+	text-decoration: none;
+}
+
+.farm-nav-accounting-selected {
+	text-align: center;
+}
+
+.farm-nav-accounting-before,
+.farm-nav-accounting-after {
+	text-align: center;
 }
 
 @media (min-width: 1100px) and (min-height: 650px) {
@@ -549,6 +586,10 @@ body[data-template~="farm"] .container {
 			height: 4.75rem;
 		}
 
+	}
+
+	.farm-nav-accounting {
+		margin: 0.5rem 1rem;
 	}
 
 	.farm-tab .farm-tab-icon {

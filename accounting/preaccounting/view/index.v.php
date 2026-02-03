@@ -8,13 +8,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	$t->nav = 'preaccounting';
 
-	if($data->eFarm['hasFinancialYears']) {
-		$mainTitle = new \farm\FarmUi()->getAccountingYears($data->eFarm, FALSE);
-	} else {
-		$mainTitle = '';
-	}
-
-	$mainTitle .= '<div class="util-action">';
+	$mainTitle = '<div class="util-action">';
 		$mainTitle .= '<h1>';
 			$mainTitle .= s("Précomptabilité");
 		$mainTitle .= '</h1>';
@@ -165,13 +159,7 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	$t->nav = 'preaccounting';
 
-	if($data->eFarm['hasFinancialYears']) {
-		$mainTitle = new \farm\FarmUi()->getAccountingYears($data->eFarm, FALSE);
-	} else {
-		$mainTitle = '';
-	}
-
-	$mainTitle .= '<div class="util-action">';
+	$mainTitle = '<div class="util-action">';
 		$mainTitle .= '<h1>';
 		$mainTitle .= '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 			$mainTitle .= s("Exporter les données des ventes");
@@ -284,9 +272,8 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite:importer';
 
 	$navigation = '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-	$maintitle = new \farm\FarmUi()->getAccountingYears($data->eFarm, FALSE);
-	$maintitle .= '<h1>'.$navigation.s("Importer les factures dans le logiciel comptable").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
-	$t->mainTitle = $maintitle;
+
+	$t->mainTitle = '<h1>'.$navigation.s("Importer les factures dans le logiciel comptable").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
 
 	echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->search);
 
