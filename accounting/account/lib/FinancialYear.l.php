@@ -80,7 +80,16 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function closeFinancialYear(\farm\Farm $eFarm, FinancialYear $eFinancialYear): void {
+	public static function closeFinancialYear(\farm\Farm $eFarm, FinancialYear $eFinancialYear): bool {
+
+		// Check waiting accounts, and balance
+		if(
+			count(\journal\OperationLib::getInternalTransferAccountValues($eFinancialYear)) > 0 or
+			count(\journal\OperationLib::getWaitingAccountValues($eFinancialYear)) > 0 or
+			\journal\TrialBalanceLib::isBalanced($eFinancialYear) === FALSE
+		) {
+			return FALSE;
+		}
 
 		FinancialYear::model()->beginTransaction();
 
@@ -118,6 +127,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		// Met à jour tous les fichiers de l'exercice
 		FinancialYearDocumentLib::regenerateAll($eFarm, $eFinancialYear);
 
+		return TRUE;
 
 	}
 

@@ -145,15 +145,22 @@ new \account\FinancialYearPage(function($data) {
 		$search = new Search(['accountLabel' => \account\AccountSetting::BANK_ACCOUNT_CLASS, 'precision' => 8]);
 		$data->e['trialBalanceBank'] = \journal\TrialBalanceLib::extractByAccounts($search, $data->e);
 
+		$data->e['isBalanceOK'] = \journal\TrialBalanceLib::isBalanced($data->e);
+
 		throw new ViewAction($data);
 	})
 	->write('doClose', function($data) {
 
 		$data->e->validate('acceptClose');
 
-		\account\FinancialYearLib::closeFinancialYear($data->eFarm, $data->e);
+		$isDone = \account\FinancialYearLib::closeFinancialYear($data->eFarm, $data->e);
 
-		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::closed');
+		if($isDone) {
+			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::closed');
+		}
+
+		throw new FailAction('account\FinancialYear::notClosed');
+
 	})
 	;
 

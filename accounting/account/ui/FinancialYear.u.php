@@ -607,6 +607,19 @@ class FinancialYearUi {
 
 			}
 
+			$h .= '<h3 class="mt-1">'.s("Équilibre de la balance").'</h3>';
+
+			if($eFinancialYear['isBalanceOK']) {
+
+				$h .= '<p><span class="color-success">'.\Asset::icon('check-lg').'</span> '.s("La <link>balance de l'exercice</link> est équilibrée.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear($eFinancialYear).'/journal/balance">']).'</p>';
+
+			} else {
+
+				$isBlocked = TRUE;
+				$h .= '<p>'.$blockingIcon.' '.s("La <link>balance de l'exercice</link> n'est pas équilibrée.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear($eFinancialYear).'/journal/balance">']).'</p>';
+
+			}
+
 			$h .= '<h3 class="mt-1">'.s("Compte {bankAccount} - Solde de banque", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</h3>';
 
 			if(count($eFinancialYear['trialBalanceBank']) === 1) {

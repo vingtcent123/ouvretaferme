@@ -106,4 +106,14 @@ Class TrialBalanceLib {
 		return $data;
 	}
 
+	public static function isBalanced(\account\FinancialYear $eFinancialYear): bool {
+
+		$trialBalanceData = self::extractByAccounts(new \Search(), $eFinancialYear);
+		$debit = array_reduce($trialBalanceData, fn($sum, $value) => $sum + $value['debit'], 0);
+		$credit = array_reduce($trialBalanceData, fn($sum, $value) => $sum + $value['credit'], 0);
+
+		return round($debit, 2) === round($credit, 2);
+
+	}
+
 }

@@ -22,6 +22,7 @@ class AlertUi {
 			'FinancialYear::endDate.after' => s("La date de fin de votre exercice comptable doit être après la date de début"),
 			'FinancialYear::endDate.intervalMin' => s("L'exercice comptable doit durer au minimum 1 mois"),
 			'FinancialYear::endDate.intervalMax' => s("L'exercice comptable ne peut pas durer plus de 24 mois."),
+			'FinancialYear::notClosed' => s("L'exercice comptable n'a pas pu être clôturé. Veuillez vérifier les points listés sur la page de clôture."),
 
 			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
 
