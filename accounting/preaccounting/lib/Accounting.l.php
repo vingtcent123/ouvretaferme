@@ -576,10 +576,17 @@ Class AccountingLib {
 
 	}
 
+	/**
+	 * Ne conserve que les opérations de la classe de compte demandée
+	 */
 	public static function filterOperations(array $operations, \Search $search): array {
 
 		$operationsFiltered = [];
 		$eAccountFilter = $search->get('account');
+
+		if($eAccountFilter->empty()) {
+			return $operations;
+		}
 
 		foreach($operations as $operation) {
 
