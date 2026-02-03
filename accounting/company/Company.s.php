@@ -5,6 +5,7 @@ class CompanySetting extends \Settings {
 
 	const BETA = TRUE;
 	const ACCOUNTING_FARM_BETA = [
+		1, // Pour la démo
 		7, 1608,
 		311,
 		62, 86, 92, 266, 359, 913, 962, 972, 1160, 1298, 1340, 1396, 1597, 1612, 1954, 2468, 2607, 2736, // 06 janvier
