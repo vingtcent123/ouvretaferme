@@ -302,7 +302,7 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('accountingMode.check', function(?string &$accountingMode) use ($p): bool {
 
-				if($p->isBuilt('taxSystem') === FALSE or $accountingMode === NULL) {
+				if($p->isBuilt('taxSystem') === FALSE) {
 					return TRUE;
 				}
 
@@ -315,7 +315,7 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('accountingType.check', function(?string &$accountingType) use ($p): bool {
 
-				if($p->isBuilt('taxSystem') === FALSE or $accountingType === NULL) {
+				if($p->isBuilt('taxSystem') === FALSE) {
 					return TRUE;
 				}
 

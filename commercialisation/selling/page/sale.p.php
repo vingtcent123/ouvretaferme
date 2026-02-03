@@ -629,10 +629,6 @@ new Page(function($data) {
 
 		\selling\SaleLib::updatePaymentMethodCollection($data->c, $eMethod);
 
-		if($data->eFarm->hasAccounting()) {
-			\preaccounting\SaleLib::setReadyForAccountingSaleCollection($data->c);
-		}
-
 		throw new ReloadAction('selling', 'Sale::paymentMethodUpdated');
 
 	})

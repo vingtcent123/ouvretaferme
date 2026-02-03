@@ -5,40 +5,6 @@ Class SaleLib {
 
 	const MARKET_PAYMENT_METHOD_FAKE_ID = 0;
 
-	/**
-	 * Récupère toutes les ventes concernées
-	 *  - si elles ont un moyen de paiement
-	 *  - si elles sont clôturées
-	 *  - si leur nombre d'items OK est égal au nombre d'items enregistrés
-	 * Set ReadyForAccounting à TRUE
-	 */
-	public static function setReadyForAccountingSaleCollection(\Collection $cSale): void {
-
-		// Re-récupération de toutes ces ventes qui réunissent le critère moyen de paiement et clôturée
-		$cSaleFiltered = \selling\Sale::model()
-			->select(['id', 'items', 'count' => new \Sql('COUNT(*)')])
-			->join(\selling\Item::model(), 'm1.id = m2.sale', 'LEFT')
-			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.onlineStatus IS NULL)', 'LEFT') // Moyen de paiement OK
-			->where('m1.closed = 1') // vente clôturée OK
-			->where('m2.account IS NOT NULL') // Exclusion des items avec account à NULL
-			->where('m3.id IS NOT NULL') // Moyen de paiement existe
-			->where('m1.id IN ('.join(',', $cSale->getIds()).')')
-			->where('m1.readyForAccounting = 0') // Uniquement des ventes non déjà prêtes
-			->where('m1.accountingHash IS NULL')
-			->group('m1_id')
-			->having('m1_count = m1_items') // Nombre d'items OK  = nombre d'items totaux
-			->getCollection();
-
-		if($cSaleFiltered->notEmpty()) {
-
-			\selling\Sale::model()
-				->whereId('IN', $cSaleFiltered->getIds())
-				->update(['readyForAccounting' => TRUE]);
-
-		}
-
-	}
-
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\SaleModel {
 
 		\selling\Sale::model()
