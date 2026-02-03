@@ -1785,11 +1785,6 @@ class SaleLib extends SaleCrud {
 
 		$newValues['crc32'] = crc32($hash);
 
-		// Vérification pour la comptabilité
-		if(self::isReadyForAccounting($e)) {
-			$newValues['readyForAccounting'] = TRUE;
-		}
-
 		$e->merge($newValues);
 
 		Sale::model()
@@ -1800,74 +1795,6 @@ class SaleLib extends SaleCrud {
 			\securing\SignatureLib::signSale($e, $cItem);
 		}
 
-	}
-
-	public static function isReadyForAccounting(Sale $eSale): bool {
-
-		if(
-			$eSale['closed'] === FALSE or
-			$eSale['accountingHash'] !== NULL or
-			$eSale['profile'] === Sale::SALE_MARKET or
-			$eSale['readyForAccounting'] === TRUE or // On l'a déjà setté
-			$eSale['invoice']->notEmpty()  // On doit passer par la facture
-		) {
-			return FALSE;
-		}
-
-		if($eSale['profile'] === Sale::MARKET) {
-
-			if($eSale['preparationStatus'] !== Sale::DELIVERED or $eSale['closed'] !== TRUE) {
-				return FALSE;
-			}
-
-			$cSaleMarket = Sale::model()
-				->select([
-					'id',
-					'cPayment' => Payment::model()
-						->select(Payment::getSelection())
-						->or(
-						fn() => $this->whereOnlineStatus(NULL),
-						fn() => $this->whereOnlineStatus(Payment::SUCCESS)
-					)
-					->delegateCollection('sale'),
-				])
-				->whereMarketParent($eSale)
-				->wherePreparationStatus(Sale::DELIVERED)
-				->getCollection();
-
-			$payments = $cSaleMarket->getColumnCollection('cPayment');
-			foreach($payments as $cPayment) {
-				if($cPayment->empty()) {
-					return FALSE;
-				}
-			}
-
-			if(Item::model()
-				->whereSale('IN', $cSaleMarket)
-				->whereAccount(NULL)
-				->count() > 0) {
-				return FALSE;
-			}
-
-		} else {
-			if(Payment::model()
-				->whereSale($eSale)
-				->or(
-					fn() => $this->whereOnlineStatus(NULL),
-					fn() => $this->whereOnlineStatus(Payment::SUCCESS)
-				)
-				->count() === 0) {
-				return FALSE;
-			}
-			if(Item::model()
-				->whereSale($eSale)
-				->whereAccount(NULL)
-				->count() > 0) {
-				return FALSE;
-			}
-		}
-
-		return TRUE;
 	}
 
 	public static function closeMarket(Sale $eSale): void {

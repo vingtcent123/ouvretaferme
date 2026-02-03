@@ -352,7 +352,6 @@ Sale:
   statusAt: datetime = SPECIAL(now)
   statusBy: ?user\User = SPECIAL(user)
   accountingHash: ?textFixed(20, 20) @charset(ascii)
-  readyForAccounting: ?bool = FALSE
   INDEX: [
     ["customer"],
     ["shopDate"],
