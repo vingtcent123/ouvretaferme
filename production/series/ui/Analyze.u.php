@@ -556,7 +556,9 @@ class AnalyzeUi {
 							$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 						$h .= '</td>';
 						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
+							if($globalTime > 0) {
+								$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
+							}
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 							if(
@@ -612,7 +614,9 @@ class AnalyzeUi {
 							$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 						$h .= '</td>';
 						$h .= '<td class="util-annotation">';
-							$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
+							if($globalTime > 0) {
+								$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
+							}
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 							if(
@@ -1018,7 +1022,9 @@ class AnalyzeUi {
 								$h .= TaskUi::convertTime($eTimesheet['timeTotal']);
 							$h .= '</td>';
 							$h .= '<td class="util-annotation">';
-								$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
+								if($globalTime > 0) {
+									$h .= \util\TextUi::pc($eTimesheet['timeTotal'] / $globalTime * 100);
+								}
 							$h .= '</td>';
 
 							if($monthly) {
