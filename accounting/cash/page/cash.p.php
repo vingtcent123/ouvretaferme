@@ -4,7 +4,8 @@ new \cash\CashPage()
 
 		return new \cash\Cash([
 			'register' => \cash\RegisterLib::getById(INPUT('register'))->validate('acceptCash'),
-			'origin' => \cash\Cash::INPUT('origin', 'origin')
+			'source' => \cash\Cash::INPUT('source', 'source'),
+			'type' => \cash\Cash::INPUT('type', 'type')
 		]);
 
 	})

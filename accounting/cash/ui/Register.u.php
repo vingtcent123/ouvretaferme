@@ -16,7 +16,17 @@ class RegisterUi {
 			'paymentMethod' => ['name']
 		]);
 
-		return s("Journal de caisse pour {value}", '<span class="util-badge" style="background-color: '.$eRegister['color'].'">'.encode($eRegister['paymentMethod']['name']).'</span>');
+		return s("Journal de caisse pour {value}", self::getBadge($eRegister));
+
+	}
+
+	public static function getBadge(Register $eRegister): string {
+
+		$eRegister->expects([
+			'paymentMethod' => ['name']
+		]);
+
+		return '<span class="util-badge" style="background-color: '.$eRegister['color'].'">'.encode($eRegister['paymentMethod']['name']).'</span>';
 
 	}
 

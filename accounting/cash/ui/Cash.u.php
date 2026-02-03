@@ -8,6 +8,8 @@ class CashUi {
 		\Asset::css('cash', 'cash.css');
 		\Asset::js('cash', 'cash.js');
 
+		\Asset::js('farm', 'farm.js');
+
 	}
 
 	public function getSearch(Register $eRegister, \Search $search): string {
@@ -48,7 +50,7 @@ class CashUi {
 						$h .= '<a href="" class="dropdown-item">'.\Asset::icon('bank').'  '.s("Retrait depuis la banque").'</a>';
 					}
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Vente à un client").'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&origin='.Cash::PRIVATE.'&type='.Cash::CREDIT.'" class="dropdown-item">'.\Asset::icon('person-fill').'  '.s("Apport de l'exploitant à la caisse").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::PRIVATE.'&type='.Cash::CREDIT.'" class="dropdown-item">'.self::getOperation(Cash::PRIVATE, Cash::CREDIT).'</a>';
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('three-dots').'  '.s("Autre opération créditrice").'</a>';
 				$h .= '</div>';
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-minus').'</div>'.s("Débiter la caisse").'</a>';
@@ -56,7 +58,7 @@ class CashUi {
 					$h .= '<div class="dropdown-title">'.s("Débiter la caisse").'</div>';
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('bank').'  '.s("Dépôt à la banque").'</a>';
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Achat à un fournisseur").'</a>';
-					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse").'</a>';
+					$h .= '<a href="" class="dropdown-item">'.self::getOperation(Cash::PRIVATE, Cash::DEBIT).'</a>';
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('three-dots').'  '.s("Autre opération débitrice").'</a>';
 				$h .= '</div>';
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>'.s("Corriger le solde").'</a>';
@@ -68,6 +70,19 @@ class CashUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public static function getOperation(string $source, string $type): string {
+
+		return match($source) {
+
+			Cash::PRIVATE => match($type) {
+				Cash::CREDIT => \Asset::icon('person-fill').'  '.s("Apport de l'exploitant à la caisse"),
+				Cash::DEBIT => \Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse"),
+			}
+
+		};
 
 	}
 
@@ -128,7 +143,7 @@ class CashUi {
 
 						$h .= '<td class="td-min-content">';
 
-							switch($eCash['origin']) {
+							switch($eCash['source']) {
 
 								case Cash::INITIAL :
 									$h .= '';
@@ -226,7 +241,7 @@ class CashUi {
 			$form = new \util\FormUi();
 
 			$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doCreate');
-				$h .= $form->hidden('origin', Cash::INITIAL);
+				$h .= $form->hidden('source', Cash::INITIAL);
 				$h .= $form->hidden('register', $eRegister['id']);
 				$h .= $form->group(
 					s("Date du solde initial"),
@@ -245,6 +260,10 @@ class CashUi {
 
 	public function create(Cash $eCash): \Panel {
 
+		$eCash->expects(['source', 'register']);
+
+		$eRegister = $eCash['register'];
+
 		$form = new \util\FormUi();
 
 		$h = '';
@@ -253,12 +272,15 @@ class CashUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->hidden('register', $eCash['register']);
+			$h .= $form->hidden('register', $eRegister);
+			$h .= $form->hidden('source', $eCash['source']);
 
 			$h .= $form->group(
-				s("Journal de caisse"),
-				RegisterUi::getName($eCash['register'])
+				s("Opération"),
+				self::getOperation($eCash['source'], $eCash['type'])
 			);
+
+			$h .= $form->dynamicGroup($eCash, 'date');
 
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter l'opération"))
@@ -268,7 +290,10 @@ class CashUi {
 
 		return new \Panel(
 			id: 'panel-cash-create',
-			title: s("Ajouter une opération"),
+			title: match($eCash['type']) {
+				Cash::CREDIT => s("Créditer le journal de caisse {value}", RegisterUi::getBadge($eRegister)),
+				Cash::DEBIT => s("Débiter le journal de caisse {value}", RegisterUi::getBadge($eRegister))
+			},
 			body: $h
 		);
 
@@ -301,6 +326,7 @@ class CashUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Cash::model()->describer($property, [
+			'date' => s("Date de l'opération"),
 			'amountIncludingVat' => s("Montant")
 		]);
 
@@ -313,7 +339,7 @@ class CashUi {
 
 				$h = '<div id="cash-date-orphan" class="util-block-info">';
 					$h .= '<h3>'.s("Aucun exercice comptable n'a été trouvé pour cette date").'</h3>';
-					$h .= '<p>'.s("Veuillez vérifier votre saisie ou configurer maintenant l'exerice comptable qui correspond à cette date.").'</p>';
+					$h .= '<p>'.s("Veuillez vérifier votre saisie ou créer maintenant l'exercice comptable qui correspond à cette date.").'</p>';
 					$h .= '<a href="" class="btn btn-transparent">'.s("Configurer mes exercices comptables (TODO)").'</a>';
 				$h .= '</div>';
 

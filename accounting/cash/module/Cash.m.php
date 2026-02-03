@@ -67,11 +67,11 @@ class CashModel extends \ModuleModel {
 			'vat' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
-			'origin' => ['enum', [\cash\Cash::BANK, \cash\Cash::PRIVATE, \cash\Cash::OTHER, \cash\Cash::INITIAL, \cash\Cash::BALANCE, \cash\Cash::BUY_MANUAL, \cash\Cash::SELL_MANUAL, \cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE], 'cast' => 'enum'],
-			'originBankAccount' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
-			'originCashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
-			'originInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
-			'originSale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
+			'source' => ['enum', [\cash\Cash::BANK, \cash\Cash::PRIVATE, \cash\Cash::OTHER, \cash\Cash::INITIAL, \cash\Cash::BALANCE, \cash\Cash::BUY_MANUAL, \cash\Cash::SELL_MANUAL, \cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE], 'cast' => 'enum'],
+			'sourceBankAccount' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
+			'sourceCashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
+			'sourceInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
+			'sourceSale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
@@ -80,15 +80,15 @@ class CashModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'origin', 'originBankAccount', 'originCashflow', 'originInvoice', 'originSale', 'account', 'thirdParty', 'operation', 'status', 'createdAt'
+			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'source', 'sourceBankAccount', 'sourceCashflow', 'sourceInvoice', 'sourceSale', 'account', 'thirdParty', 'operation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'register' => 'cash\Register',
-			'originBankAccount' => 'bank\BankAccount',
-			'originCashflow' => 'bank\Cashflow',
-			'originInvoice' => 'selling\Invoice',
-			'originSale' => 'selling\Sale',
+			'sourceBankAccount' => 'bank\BankAccount',
+			'sourceCashflow' => 'bank\Cashflow',
+			'sourceInvoice' => 'selling\Invoice',
+			'sourceSale' => 'selling\Sale',
 			'account' => 'account\Account',
 			'thirdParty' => 'account\ThirdParty',
 			'operation' => 'journal\Operation',
@@ -117,7 +117,7 @@ class CashModel extends \ModuleModel {
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'origin' :
+			case 'source' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
@@ -178,24 +178,24 @@ class CashModel extends \ModuleModel {
 		return $this->where('description', ...$data);
 	}
 
-	public function whereOrigin(...$data): CashModel {
-		return $this->where('origin', ...$data);
+	public function whereSource(...$data): CashModel {
+		return $this->where('source', ...$data);
 	}
 
-	public function whereOriginBankAccount(...$data): CashModel {
-		return $this->where('originBankAccount', ...$data);
+	public function whereSourceBankAccount(...$data): CashModel {
+		return $this->where('sourceBankAccount', ...$data);
 	}
 
-	public function whereOriginCashflow(...$data): CashModel {
-		return $this->where('originCashflow', ...$data);
+	public function whereSourceCashflow(...$data): CashModel {
+		return $this->where('sourceCashflow', ...$data);
 	}
 
-	public function whereOriginInvoice(...$data): CashModel {
-		return $this->where('originInvoice', ...$data);
+	public function whereSourceInvoice(...$data): CashModel {
+		return $this->where('sourceInvoice', ...$data);
 	}
 
-	public function whereOriginSale(...$data): CashModel {
-		return $this->where('originSale', ...$data);
+	public function whereSourceSale(...$data): CashModel {
+		return $this->where('sourceSale', ...$data);
 	}
 
 	public function whereAccount(...$data): CashModel {

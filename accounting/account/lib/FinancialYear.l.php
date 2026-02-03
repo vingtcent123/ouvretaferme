@@ -155,15 +155,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function getByDate(string $date): FinancialYear {
-
-		return FinancialYear::model()
-			->select(FinancialYear::getSelection())
-			->where(FinancialYear::model()->format($date).' BETWEEN startDate AND endDate')
-			->get();
-
-	}
-
 	public static function getAll(): \Collection {
 
 		return self::getCache('list', fn() => FinancialYear::model()
@@ -216,18 +207,23 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function getByDate(string $date): FinancialYear {
+
+		return FinancialYear::model()
+			->select(FinancialYear::getSelection())
+			->where(FinancialYear::model()->format($date).' BETWEEN startDate AND endDate')
+			->get();
+
+	}
+
 	public static function getOpenFinancialYearByDate(string $date): FinancialYear {
 
-		$eFinancialYear = new FinancialYear();
-
-		FinancialYear::model()
+		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
 			->whereStatus(FinancialYearElement::OPEN)
 			->whereStartDate('<=', $date)
 			->whereEndDate('>=', $date)
-			->get($eFinancialYear);
-
-		return $eFinancialYear;
+			->get();
 
 	}
 

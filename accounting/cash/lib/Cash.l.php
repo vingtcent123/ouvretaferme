@@ -7,7 +7,7 @@ class CashLib extends CashCrud {
 
 		return function(Cash $e) {
 
-			return match($e['origin']) {
+			return match($e['source']) {
 
 				Cash::INITIAL => ['date', 'amountIncludingVat'],
 				Cash::PRIVATE => ['date', 'amountIncludingVat', 'thirdParty'],
@@ -45,7 +45,7 @@ class CashLib extends CashCrud {
 
 		$e->expects([
 			'register',
-			'origin', 'date'
+			'source', 'date'
 		]);
 
 		Cash::model()->beginTransaction();
@@ -57,7 +57,7 @@ class CashLib extends CashCrud {
 				->get($eRegister);
 
 			// La première opération est nécessairement le solde initial
-			if($e['origin'] === Cash::INITIAL) {
+			if($e['source'] === Cash::INITIAL) {
 
 				if($eRegister['lines'] > 0) {
 					Cash::model()->rollBack();
@@ -73,7 +73,7 @@ class CashLib extends CashCrud {
 
 			}
 
-			match($e['origin']) {
+			match($e['source']) {
 
 				Cash::INITIAL => self::createBalanceInitial($e)
 
@@ -89,10 +89,10 @@ class CashLib extends CashCrud {
 			// Propriétés requises pour signatures et complétées si besoin
 			$e->add([
 				'description' => NULL,
-				'originBankAccount' => new \bank\BankAccount(),
-				'originCashflow' => new \bank\Cashflow(),
-				'originSale' => new \selling\Sale(),
-				'originInvoice' => new \selling\Invoice(),
+				'sourceBankAccount' => new \bank\BankAccount(),
+				'sourceCashflow' => new \bank\Cashflow(),
+				'sourceSale' => new \selling\Sale(),
+				'sourceInvoice' => new \selling\Invoice(),
 			]);
 
 			// Ajout de l'opération
