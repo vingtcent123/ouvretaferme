@@ -57,6 +57,7 @@ Class AccountingLib {
 		$nSale = 0;
 		foreach($cSale as $eSale) {
 
+			// On cherche l'exercice comptable correspondant pour savoir si la ferme est redevable de la TVA à ce moment-là
 			$hasVat = TRUE;
 			if($cFinancialYear->notEmpty()) {
 				$eFinancialYear = $cFinancialYear->find(

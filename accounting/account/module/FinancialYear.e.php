@@ -142,6 +142,16 @@ class FinancialYear extends FinancialYearElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('startDate.date', function(string $date) use($p): bool {
+
+				return str_ends_with($date, '-01');
+
+			})
+			->setCallback('endDate.date', function(string $date) use($p): bool {
+
+				return date('Y-m-t', strtotime($date)) === $date;
+
+			})
 			->setCallback('startDate.loseOperations', function(string $date) use($p): bool {
 
 				if(($this['nOperation'] ?? 0) > 0) {

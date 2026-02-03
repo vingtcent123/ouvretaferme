@@ -16,6 +16,8 @@ class AlertUi {
 			'FinancialYear::startDate.check' => s("Cette date est incluse dans un autre exercice."),
 			'FinancialYear::endDate.check' => s("Cette date est incluse dans un autre exercice."),
 			'FinancialYear::startDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
+			'FinancialYear::startDate.date' => s("{siteName} ne prend pas en charge les exercices qui débutent en cours de mois"),
+			'FinancialYear::endDate.date' => s("{siteName} ne prend pas en charge les exercices qui se terminent en cours de mois"),
 			'FinancialYear::endDate.loseOperations' => s("En modifiant cette date, certaines écritures ne seront plus rattachées à un exercice existant."),
 			'FinancialYear::endDate.after' => s("La date de fin de votre exercice comptable doit être après la date de début"),
 			'FinancialYear::endDate.intervalMin' => s("L'exercice comptable doit durer au minimum 1 mois"),
