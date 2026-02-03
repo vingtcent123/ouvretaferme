@@ -2,7 +2,7 @@ class Cash {
 
 	static changeDate(target) {
 
-		const date = new Date(target.value.encode());
+		const date = new Date(target.value);
 
 		if(
 			isNaN(date) ||
@@ -15,7 +15,7 @@ class Cash {
 
 			new Ajax.Query()
 				.method('get')
-				.url('/'+ farm + '/account/financialYear/:getByDate?date='+ target.value.encode())
+				.url('/'+ farm + '/account/financialYear/:getByDate?date='+ encodeURIComponent(target.value))
 				.fetch()
 				.then((json) => this.adjustFormFromDate(date, json));
 
