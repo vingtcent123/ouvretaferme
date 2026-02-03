@@ -30,9 +30,9 @@ FinancialYear:
   vatFrequency: ?enum(MONTHLY, QUARTERLY, ANNUALLY)
   vatChargeability: ?enum(CASH, DEBIT) # Exigibilité de la TVA
   taxSystem: enum(MICRO_BA, BA_REEL_SIMPLIFIE, BA_REEL_NORMAL)
-  accountingType: enum(CASH, ACCRUAL) = CASH
+  accountingType: enum(CASH, ACCRUAL)
   legalCategory: ?int16(1000, 9999) # Catégorie juridique (au sens INSEE) sur 4 chiffres
-  accountingMode: enum(ACCOUNTING, CASH_RECEIPTS) = ACCOUNTING
+  accountingMode: enum(ACCOUNTING, CASH_RECEIPTS)
   associates: ?int8(0, null) # Nombre d'associés
   openDate: ?date # Quand le bilan d'ouverture a été réalisé
   closeDate: ?date # Quand le bilan de clôture a été réalisé

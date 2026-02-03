@@ -94,12 +94,6 @@ class FinancialYearModel extends \ModuleModel {
 			case 'status' :
 				return FinancialYear::OPEN;
 
-			case 'accountingType' :
-				return FinancialYear::CASH;
-
-			case 'accountingMode' :
-				return FinancialYear::ACCOUNTING;
-
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
