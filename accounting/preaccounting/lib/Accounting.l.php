@@ -67,11 +67,7 @@ Class AccountingLib {
 
 			$items = []; // groupement par accountlabel, moyen de paiement
 
-			if($eSale['cPayment']->empty()) { // Pas de moyen de paiement => On fake
-				$payments = [0 => ['label' => '', 'rate' => 100.0]];
-			} else {
-				$payments = self::explodePaymentsRatio($eSale);
-			}
+			$payments = self::explodePaymentsRatio($eSale);
 
 			foreach($eSale['cItem'] as $eItem) {
 
@@ -723,7 +719,11 @@ Class AccountingLib {
 			];
 		}
 
-		return $payments;
+		if(count($payments) > 0) {
+			return $payments;
+		}
+
+		return [['label' => '', 'rate' => 100]];
 	}
 
 	private static function mergeFecLineIntoItemData(array &$items, array $fecLine): void {

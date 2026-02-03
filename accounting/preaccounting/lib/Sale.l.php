@@ -45,7 +45,7 @@ Class SaleLib {
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
 			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.onlineStatus IS NULL)', 'LEFT'); // Moyen de paiement OK
 
-		if($search->get('method')) {
+		if($search->get('method') and $search->get('method')->notEmpty()) {
 
 			\selling\Sale::model()
 				->where(fn() => new \Sql('m3.method = '.$search->get('method')['id']), if: $search->get('method')->notEmpty() and $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID)
