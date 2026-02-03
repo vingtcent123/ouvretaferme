@@ -421,7 +421,12 @@ class JournalUi {
 									$h .= '<td></td>';
 								}
 								$h .= '<td colspan="'.$columns.'">';
-									$h .= \util\DateUi::numeric($referenceDate);
+									$dateDisplay = \util\DateUi::numeric($referenceDate);
+									if($currentDate === NULL) {
+										$h .= $search->linkSort('date', $dateDisplay, SORT_DESC);
+									} else {
+										$h .= $dateDisplay;
+									}
 								$h .= '</td>';
 							$h .= '</tr>';
 						}

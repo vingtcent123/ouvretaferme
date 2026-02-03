@@ -47,7 +47,7 @@ new Page(function($data) {
 				'amount' => GET('amount'),
 				'margin' => GET('margin'),
 				'financialYear' => $data->eFarm['eFinancialYear'],
-			], GET('sort', 'id')
+			], GET('sort', default: 'date')
 		);
 
 		if(get_exists('amount')) {
