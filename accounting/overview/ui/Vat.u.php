@@ -50,42 +50,43 @@ Class VatUi {
 
 				$h .= '<dl class="util-presentation util-presentation-2">';
 
-					foreach(['siret', 'legalName', 'legalEmail'] as $field) {
-
-						$h .= '<dt>'.\farm\FarmUi::p($field)->label.'</dt>';
-						$h .= '<dd>'.encode($eFarm[$field]).'</dd>';
-
-					}
-
-					$h .= '<dt>'.s("Siège social de la ferme").'</dt>';
-					$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
-
-					$h .= '<dt>'.s("Dates d'exercice").'</dt>';
-					$h .= '<dd>'.s("{startDate} au {endDate}", ['startDate' => \util\DateUi::numeric($eFinancialYear['startDate']), 'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'])]).'</dd>';
-
-					$h .= '<dt>'.\account\FinancialYearUi::p('hasVat')->label.'</dt>';
-					$h .= '<dd>'.($eFinancialYear['hasVat'] ? s("Oui") : s("Non")).'</dd>';
-
-					$h .= '<dt>'.s("Période de déclaration").'</dt>';
-					$h .= '<dd>'.s("{startDate} / {endDate}", ['startDate' => \util\DateUi::numeric($vatParameters['from']), 'endDate' => \util\DateUi::numeric($vatParameters['to'])]).'</dd>';
+					$h .= '<dt>'.\farm\FarmUi::p('siret')->label.'</dt>';
+					$h .= '<dd>'.encode($eFarm['siret']).'</dd>';
 
 					$h .= '<dt>'.\account\FinancialYearUi::p('vatFrequency')->label.'</dt>';
 					$h .= '<dd>';
-						$h .= \account\FinancialYearUi::p('vatFrequency')->values[$eFinancialYear['vatFrequency']];
-						if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
-							$h .= ' - '.s("Formulaire CA12");
-						} else {
-							$h .= ' - '.s("Formulaire CA3");
-						}
+					$h .= \account\FinancialYearUi::p('vatFrequency')->values[$eFinancialYear['vatFrequency']];
+					if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+						$h .= ' - '.s("Formulaire CA12");
+					} else {
+						$h .= ' - '.s("Formulaire CA3");
+					}
 					$h .= '</dd>';
+
+					$h .= '<dt>'.\farm\FarmUi::p('legalName')->label.'</dt>';
+					$h .= '<dd>'.encode($eFarm['legalName']).'</dd>';
+
+					$h .= '<dt>'.s("Période de déclaration").'</dt>';
+					$h .= '<dd>'.s("{startDate} au {endDate}", ['startDate' => \util\DateUi::numeric($vatParameters['from']), 'endDate' => \util\DateUi::numeric($vatParameters['to'])]).'</dd>';
+
+					$h .= '<dt>'.s("Siège social de la ferme").'</dt>';
+					$h .= '<dd>'.$eFarm->getLegalAddress('text').'</dd>';
 
 					$h .= '<dt>'.s("Date limite de déclaration").'</dt>';
 					$h .= '<dd>';
-						$h .= \util\DateUi::numeric($vatParameters['limit']).' ';
-						if($eFinancialYear->isCurrent()) {
-							$h .= \util\FormUi::asterisk();
-						}
+					$h .= \util\DateUi::numeric($vatParameters['limit']).' ';
+					if($eFinancialYear->isCurrent()) {
+						$h .= \util\FormUi::asterisk();
+					}
 					$h .= '</dd>';
+					$h .= '<dt>'.\farm\FarmUi::p('legalEmail')->label.'</dt>';
+					$h .= '<dd>'.encode($eFarm['legalEmail']).'</dd>';
+
+					$h .= '<dt>'.\account\FinancialYearUi::p('vatChargeability')->label.'</dt>';
+					$h .= '<dd>'.match($eFinancialYear['vatChargeability']) {
+						\account\FinancialYear::CASH_RECEIPTS => s("TVA sur les encaissements"),
+						\account\FinancialYear::DEBIT => s("TVA sur les débits"),
+						}.'</dd>';
 
 					$h .= '<dt>'.\account\FinancialYearUi::p('taxSystem')->label.'</dt>';
 					$h .= '<dd>'.\account\FinancialYearUi::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</dd>';
@@ -93,6 +94,14 @@ Class VatUi {
 				$h .= '</dl>';
 
 			$h .= '</div>';
+
+			if($eFinancialYear['vatChargeability'] === \account\FinancialYear::DEBIT) {
+
+				$h .= '<div class="util-danger-outline">';
+					$h .= s("Attention, {siteName} n'est pas optimisé pour la comptabilité à l'engagement ni l'exigibilité de la TVA avec option sur les débits. Il est donc à votre charge de vous assurez d'avoir saisi vos factures à leur date d'émission (et non à leur date de paiement) pour être en règle avec vos paramètres fiscaux.");
+				$h .= '</div>';
+
+			}
 
 			if($eFinancialYear->isCurrent()) {
 
@@ -117,14 +126,14 @@ Class VatUi {
 						if(mb_substr($eFinancialYear['endDate'], -5) === '12-31') {
 							$h .= '<div>'.s(
 								"Votre déclaration CA12 doit être déposée au plus tard le deuxième jour ouvré suivant le 1<sup>er</sup> mai, soit, pour la déclaration de l'exercice se terminant le {endDate}, le <b>{date}</b>.",
-								['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit'])]
+								['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk()]
 							).'</div>';
 
 						} else {
 
 							$h .= '<div>'.s(
 								"Votre déclaration CA12 doit être déposée au plus tard dans les 3 mois suivant la clôture de votre exercice comptable, soit, pour la déclaration de l'exercice se terminant le {endDate}, le <b>{date}</b>.",
-									['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit'])]
+									['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk()]
 							).'</div>';
 
 						}
@@ -133,7 +142,7 @@ Class VatUi {
 					case \account\FinancialYear::QUARTERLY:
 						$h .= '<div>'.s(
 							"Votre déclaration CA3 doit être déposée au plus tard le {day} du mois suivant le trimestre déclaré, soit, pour la déclaration du trimestre se terminant le {endDate}, le <b>{date}</b>.",
-							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit'])]
+							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk()]
 						).'</div>';
 						break;
 
@@ -144,7 +153,7 @@ Class VatUi {
 						).'</div>';
 				}
 
-				$h .= '<div>'.\util\FormUi::asterisk().' '.s("Attention, ces dates sont indicatives et ne prennent pas en compte votre situation particulière : référez vous toujours à ce qui est indiqué dans votre compte professionnel sur le site des impôts.").'</div>';
+				$h .= '<div>'.\util\FormUi::asterisk().' '.s("Attention, cette date est indicative et ne prend pas en compte votre situation particulière : référez vous toujours à ce qui est indiqué dans votre compte professionnel sur le site des impôts.").'</div>';
 
 
 				$h .= '<h3 class="mt-2">'.s("Comment puis-je la déposer ?").'</h3>';

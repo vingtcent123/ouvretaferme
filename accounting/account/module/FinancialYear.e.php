@@ -291,15 +291,6 @@ class FinancialYear extends FinancialYearElement {
 				return (is_int($associates) and $associates > 0);
 
 			})
-			->setCallback('vatChargeability.forbidden', function(?string $vatChargeability) use ($p): bool {
-
-				if($p->isBuilt('hasVat') === FALSE or $this['hasVat'] === FALSE) {
-					return TRUE;
-				}
-
-				return ($vatChargeability === FinancialYear::CASH);
-
-			})
 			->setCallback('accountingMode.check', function(?string &$accountingMode) use ($p): bool {
 
 				if($p->isBuilt('taxSystem') === FALSE) {

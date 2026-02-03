@@ -1098,19 +1098,12 @@ class FinancialYearUi {
 				$debit .= '<ul>';
 					$debit .= '<li>'.s("La TVA est due dès l'émission d'une facture, sa date faisant foi.").'</li>';
 				$debit .= '</ul>';
-				$debit .= '<p>'.\Asset::icon('exclamation-triangle').' <i>'.s("Cette option n'est pas encore disponible.").'</i></p>';
 
 				$d->values = [
 					FinancialYear::CASH => $cash,
 					FinancialYear::DEBIT => $debit,
 				];
 				$d->attributes['mandatory'] = TRUE;
-				$d->attributes['callbackRadioAttributes'] = function($option, $key) {
-					if($key === FinancialYear::DEBIT) {
-						return ['disabled' => 'disabled'];
-					}
-					return [];
-				};
 				$d->group = fn(FinancialYear $e) => ($e['hasVat'] ?? NULL) ? [] : ['class' => 'hide'];
 				break;
 
