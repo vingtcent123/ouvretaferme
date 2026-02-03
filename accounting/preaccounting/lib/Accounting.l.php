@@ -19,34 +19,6 @@ Class AccountingLib {
 	const FEC_COLUMN_PAYMENT_METHOD = 19;
 	const FEC_COLUMN_OPERATION_NATURE = 20;
 
-	public static function generateFec(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, bool $forImport): array {
-
-		$search = new \Search(['from' => $from, 'to' => $to]);
-		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
-
-		$contentFec = self::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: $forImport);
-
-		// Tri par date puis numéro de document
-		usort($contentFec, function($entry1, $entry2) {
-			if($entry1[self::FEC_COLUMN_DATE] < $entry2[self::FEC_COLUMN_DATE]) {
-				return -1;
-			}
-			if($entry1[self::FEC_COLUMN_DATE] > $entry2[self::FEC_COLUMN_DATE]) {
-				return 1;
-			}
-			return $entry1[self::FEC_COLUMN_DOCUMENT] < $entry2[self::FEC_COLUMN_DOCUMENT] ? -1 : 1;
-		});
-
-		foreach($contentFec as &$lineFec) {
-			foreach([self::FEC_COLUMN_DEBIT, self::FEC_COLUMN_CREDIT, self::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
-				$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
-			}
-		}
-
-		return array_merge([\account\FecLib::getHeader()], $contentFec);
-
-	}
-
 		public static function generateSalesFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount, \Search $search): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();

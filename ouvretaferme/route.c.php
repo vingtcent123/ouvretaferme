@@ -453,11 +453,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['precomptabilite', 'ventes:telecharger'],
 		],
-		'/precomptabilite:fec' => [
-			'request' => 'preaccounting/index',
-			'priority' => 5,
-			'route' => ['precomptabilite:fec'],
-		],
 		'/precomptabilite:importer' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,

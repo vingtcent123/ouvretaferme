@@ -225,12 +225,12 @@ new Page(function($data) {
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
 
-			$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 
 			$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 0) {
 
+				$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
 				[$saleOperations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
 
 			} else {
@@ -274,19 +274,6 @@ new Page(function($data) {
 		}
 
 		throw new VoidAction();
-
-	})
-	->get('/precomptabilite:fec', function($data) {
-
-		if($data->isSearchValid) {
-
-			$export = \preaccounting\AccountingLib::generateFec($data->eFarm, $data->search->get('from'), $data->search->get('to'), $data->eFarm['cFinancialYear'], forImport: FALSE);
-
-			throw new CsvAction($export, 'pre-comptabilite.csv');
-
-		}
-
-		throw new FailAction('farm\Accounting::invalidDatesForFec');
 
 	})
 	->get('/precomptabilite:importer', function($data) {
