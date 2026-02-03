@@ -3,14 +3,14 @@ namespace preaccounting;
 
 Class ReconciliateLib {
 
-	public static function reconciliateSuggestionCollection(\farm\Farm $eFarm, \Collection $cSuggestion): void {
+	public static function reconciliateSuggestionCollection(\Collection $cSuggestion): void {
 
 		foreach($cSuggestion as $eSuggestion) {
-			self::reconciliateSuggestion($eFarm, $eSuggestion);
+			self::reconciliateSuggestion($eSuggestion);
 		}
 
 	}
-	public static function reconciliateSuggestion(\farm\Farm $eFarm, \preaccounting\Suggestion $eSuggestion): void {
+	public static function reconciliateSuggestion(\preaccounting\Suggestion $eSuggestion): void {
 
 		\selling\Invoice::model()->beginTransaction();
 
@@ -66,7 +66,7 @@ Class ReconciliateLib {
 
 		if($eInvoice->notEmpty()) {
 
-			\selling\Invoice::model()->update($eInvoice, ['cashflow' => NULL]);
+			\selling\Invoice::model()->update($eInvoice, ['cashflow' => NULL, 'readyForAccounting' => FALSE]);
 
 			\bank\Cashflow::model()->update($eCashflow, ['invoice' => NULL, 'isReconciliated' => FALSE, 'isSuggestionCalculated' => FALSE]);
 

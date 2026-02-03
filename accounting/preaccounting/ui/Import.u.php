@@ -136,7 +136,7 @@ Class ImportUi {
 											$h .= $form->hidden('id', $eInvoice['id']);
 											$h .= '<fieldset>';
 												$h .= '<legend>';
-													$h .= s("Traitement comptable de l'écart de {value}", \util\TextUi::money($difference));
+													$h .= s("Traitement comptable de l'écart de {value}", \util\TextUi::money(round($difference, 2)));
 												$h .= '</legend>';
 												$h .= $form->select('accountingDifference', \selling\InvoiceUi::p('accountingDifference')->values, $eInvoice['accountingDifference'], attributes: ['onchange' => 'Invoicing.submit(this);', 'mandatory' => TRUE]);
 											$h .= '</fieldset>';

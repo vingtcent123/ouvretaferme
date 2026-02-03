@@ -295,8 +295,6 @@ new Page(function($data) {
 			throw new NotExistsAction();
 		}
 
-		$data->selectedTab = in_array(GET('tab'), ['market', 'invoice', 'sales']) ? GET('tab') : 'market';
-
 		$data->search = new Search([
 			'type' => GET('type'),
 			'accountingDifference' => GET('accountingDifference', '?bool'),

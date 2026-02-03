@@ -21,15 +21,15 @@ Class InvoiceLib {
 
 	}
 
-	private static function getReadyForAccountingFields(\selling\Invoice $eInvoice, \bank\Cashflow $eCashflow, bool $force = FALSE): array {
+	private static function getReadyForAccountingFields(\selling\Invoice $eInvoice, \bank\Cashflow $eCashflow): array {
 
 		$updateFields = [];
 
-		if($eInvoice['priceIncludingVat'] === $eCashflow['amount']) {
+		if($eInvoice['priceIncludingVat'] === $eCashflow['amount']) { // Si les montants sont identiques
 
 			$updateFields['readyForAccounting'] = TRUE;
 
-		} else if($eInvoice['accountingDifference'] === NULL or $force === TRUE) {
+		} else if($eInvoice['accountingDifference'] === NULL) { // Ou si on n'a pas encore traité comment gérer la différence
 
 			$updateFields['readyForAccounting'] = TRUE;
 			$updateFields['accountingDifference'] = \selling\Invoice::AUTOMATIC;
@@ -42,16 +42,6 @@ Class InvoiceLib {
 	}
 
 	public static function setReadyForAccounting(\farm\Farm $eFarm): void {
-
-		\selling\Invoice::model()
-			->whereFarm($eFarm)
-			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
-			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
-			->whereAccountingHash(NULL)
-			->whereCashflow('=', NULL)
-			->wherePaymentMethod('!=', NULL)
-			->whereReadyForAccounting(FALSE)
-			->update(['readyForAccounting' => TRUE]);
 
 		$cInvoice = \selling\Invoice::model()
 			->select('id', 'cashflow', 'priceIncludingVat', 'accountingDifference')

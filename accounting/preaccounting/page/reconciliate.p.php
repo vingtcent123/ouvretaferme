@@ -34,7 +34,7 @@ new \preaccounting\SuggestionPage()
 
 		$data->e->validate('acceptReconciliate');
 
-		preaccounting\ReconciliateLib::reconciliateSuggestion($data->eFarm, $data->e);
+		preaccounting\ReconciliateLib::reconciliateSuggestion($data->e);
 
 		throw new ReloadAction('preaccounting', 'Reconciliation::reconciliate');
 
@@ -43,7 +43,7 @@ new \preaccounting\SuggestionPage()
 
 		\preaccounting\Suggestion::validateBatchReconciliate($data->c);
 
-		preaccounting\ReconciliateLib::reconciliateSuggestionCollection($data->eFarm, $data->c);
+		preaccounting\ReconciliateLib::reconciliateSuggestionCollection($data->c);
 
 		throw new ReloadAction('preaccounting', 'Reconciliation::reconciliateSeveral');
 

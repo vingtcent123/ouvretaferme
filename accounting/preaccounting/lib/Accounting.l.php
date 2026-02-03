@@ -22,7 +22,7 @@ Class AccountingLib {
 	public static function generateFec(\farm\Farm $eFarm, string $from, string $to, \Collection $cFinancialYear, bool $forImport): array {
 
 		$search = new \Search(['from' => $from, 'to' => $to]);
-		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
+		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
 		$contentFec = self::extractInvoice($eFarm, $search, $cFinancialYear, $cAccount, forImport: $forImport);
 
@@ -57,16 +57,8 @@ Class AccountingLib {
 		$nSale = 0;
 		foreach($cSale as $eSale) {
 
-			// On cherche l'exercice comptable correspondant pour savoir si la ferme est redevable de la TVA à ce moment-là
-			$hasVat = TRUE;
-			if($cFinancialYear->notEmpty()) {
-				$eFinancialYear = $cFinancialYear->find(
-					fn($e) => $e['startDate'] <= $eSale['deliveredAt'] and $eSale['deliveredAt'] <= $e['endDate']
-				)->first();
-				if($eFinancialYear->notEmpty() and $eFinancialYear['hasVat'] === FALSE) {
-					$hasVat = FALSE;
-				}
-			}
+			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eSale['deliveredAt']);
+			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
 
 			$document = $eSale['document'];
 			$documentDate = $eSale['deliveredAt'];
@@ -239,8 +231,6 @@ Class AccountingLib {
 
 	public static function applyInvoiceFilter(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\InvoiceModel {
 
-		$dateCondition = \selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to'));
-
 		// Pas de contrainte de date dans le cas d'un import => Les factures peuvent avoir été payées l'année d'après mais on veut quand même les importer
 		// Attention, raisonnement tenable en compta de trésorerie et pas en compta d'engagement (ACCRUAL)
 		if($forImport) {
@@ -254,8 +244,10 @@ Class AccountingLib {
 		} else {
 
 			\selling\Invoice::model()
-				->where('m1.date BETWEEN '.$dateCondition, if: $search->get('from') and $search->get('to'))
-			;
+				->where(
+					'm1.date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')),
+					if: $search->get('from') and $search->get('to')
+			);
 
 		}
 		return \selling\Invoice::model()
@@ -375,15 +367,8 @@ Class AccountingLib {
 			$compAuxLib = ($eInvoice['customer']['name'] ?? '');
 			$compAuxNum = '';
 
-			$hasVat = TRUE;
-			if($cFinancialYear->notEmpty()) {
-				$eFinancialYear = $cFinancialYear->find(
-					fn($e) => $e['startDate'] <= $referenceDate and $referenceDate <= $e['endDate']
-				)->first();
-				if($eFinancialYear and $eFinancialYear->notEmpty() and $eFinancialYear['hasVat'] === FALSE) {
-					$hasVat = FALSE;
-				}
-			}
+			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $referenceDate);
+			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
 
 			$items = []; // groupement par accountlabel
 			$payment = ($eInvoice['paymentMethod']['name'] ?? '');
@@ -779,6 +764,20 @@ Class AccountingLib {
 		if($added === FALSE) {
 			$items[] = $fecLine;
 		}
+	}
+
+	private static function extractFinancialYearByDate(\Collection $cFinancialYear, string $date): \account\FinancialYear {
+
+		if($cFinancialYear->notEmpty()) {
+
+			$eFinancialYear = $cFinancialYear->find(
+				fn($e) => $e['startDate'] <= $date and $date <= $e['endDate']
+			)->first();
+
+		}
+
+		return $eFinancialYear ?? new \account\FinancialYear();
+
 	}
 
 }
