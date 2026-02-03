@@ -84,7 +84,7 @@ class CompanyLib {
 		$eFinancialYear = new \account\FinancialYear();
 
 		$input['eFarm'] = $eFarm;
-		$eFinancialYear->build(['accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'taxSystem', 'legalCategory', 'associates'], $input);
+		$eFinancialYear->build(\account\FinancialYearLib::getPropertiesCreate(), $input);
 
 		$fw->validate();
 
