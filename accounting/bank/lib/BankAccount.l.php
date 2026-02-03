@@ -85,6 +85,7 @@ class BankAccountLib extends BankAccountCrud {
 		$eLastAccount = \account\Account::model()
 			->select(['accountLabel' => new \Sql('MAX(TRIM(TRAILING "0" FROM class))', 'int')])
 			->whereClass('LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%')
+			->whereClass('!=', \account\AccountSetting::BANK_ACCOUNT_CLASS)
 			->get();
 
 		$accountLabel = ($eLastAccount->notEmpty() and empty($eLastAccount['accountLabel']) === FALSE) ?
