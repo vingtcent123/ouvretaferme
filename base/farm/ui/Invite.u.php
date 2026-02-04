@@ -184,7 +184,9 @@ class InviteUi {
 
 		$form = new \util\FormUi();
 
-		$eInvite = new Invite();
+		$eInvite = new Invite([
+			'email' => $eCustomer['email']
+		]);
 
 		$h = '';
 
