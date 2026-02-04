@@ -412,9 +412,13 @@ class CsvLib {
 
 			$header = $csv[0];
 
-			if(count(array_intersect($header, ['crop', 'in_greenhouse', 'planting_type', 'unit'])) === 4) {
+			if(count(array_intersect($header, ['crop', 'in_greenhouse', 'planting_type', 'unit', 'first_harvest_date'])) === 5) {
 
 				$csv = self::convertFromBrinjel($csv);
+
+			} else if(count(array_intersect($header, ['crop', 'in_greenhouse', 'planting_type', 'unit', 'beg_harvest_date'])) === 5) {
+
+				$csv = self::convertFromQrop($csv);
 
 			} else if(count(array_intersect($header, ['series_name', 'season', 'mode', 'species', 'use', 'planting_type', 'harvest_unit'])) === 7) {
 				$csv = self::convertFromOtf($csv);
@@ -429,6 +433,24 @@ class CsvLib {
 			return $csv;
 
 		});
+
+	}
+
+	public static function convertFromQrop(array $cultivations): array {
+
+		$head = $cultivations[0];
+
+		$key = array_find_key($head, fn($value) => $value === 'beg_harvest_date');
+		if($key !== NULL) {
+			$cultivations[0][$key] = 'first_harvest_date';
+		}
+
+		$key = array_find_key($head, fn($value) => $value === 'end_harvest_date');
+		if($key !== NULL) {
+			$cultivations[0][$key] = 'last_harvest_date';
+		}
+
+		return self::convertFromBrinjel($cultivations);
 
 	}
 
@@ -477,9 +499,10 @@ class CsvLib {
 
 			// planting_type
 			$plantingType = match($line['planting_type'] ?? NULL) {
-				'direct_seeded' => Cultivation::SOWING,
-				'transplant_raised' => Cultivation::YOUNG_PLANT,
-				'transplant_bought' => Cultivation::YOUNG_PLANT_BOUGHT,
+				// Brinjel, Qrop
+				'direct_seeded', '1' => Cultivation::SOWING,
+				'transplant_raised', '2' => Cultivation::YOUNG_PLANT,
+				'transplant_bought', '3' => Cultivation::YOUNG_PLANT_BOUGHT,
 				default => NULL
 			};
 

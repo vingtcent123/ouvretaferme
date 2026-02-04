@@ -23,8 +23,10 @@ class CsvLib {
 
 		$content = file_get_contents($file);
 
-		if(mb_detect_encoding($content, ['UTF-8', 'UTF-16']) === 'UTF-16') {
-			$content = iconv('UTF-16', 'UTF-8', $content);
+		$encoding = mb_detect_encoding($content, ['UTF-8', 'UTF-16', 'ISO-8859-1']);
+
+		if(in_array($encoding, ['UTF-16', 'ISO-8859-1'])) {
+			$content = iconv($encoding, 'UTF-8', $content);
 		}
 
 		$content = trim($content);

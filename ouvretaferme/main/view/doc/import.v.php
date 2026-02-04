@@ -216,14 +216,23 @@ new AdaptativeView('series', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 
-	echo '<h2>'.s("Importer un fichier CSV depuis Qrop / Brinjel").'</h2>';
+	echo '<h2>'.s("Importer un fichier CSV depuis Qrop").'</h2>';
+
+	echo '<p>'.s("Pour récupérer le fichier CSV de Qrop à importer sur {siteName}, il vous suffit de sélectionner <i>Exporter le plan de culture</i>.").'</p>';
+	echo Asset::image('main', 'doc/import-qrop.png');
+	echo '<p>'.s("Notez que vous aurez probablement des corrections à faire dans le fichier CSV issu de Qrop, notamment au niveau des unités de récolte ou des espèces. {siteName} vous fera un rapport des modifications à effectuer après chargement de votre fichier.").'</p>';
+
+	echo '</div>';
+
+	echo '<div class="util-block">';
+
+	echo '<h2>'.s("Importer un fichier CSV depuis Brinjel").'</h2>';
 
 	echo '<p>'.s("Pour récupérer le fichier CSV de Brinjel à importer sur {siteName} :").'</p>';
 	echo '<ul>';
 	echo '<li>'.s("Allez dans <b>Paramètres</b>").'</li>';
 	echo '<li>'.s("Dans la section <b>Données de la ferme</b>, téléchargez le <b>Plan de culture seul</b>").'</li>';
 	echo '</ul>';
-	echo '<p>'.s("Pour importer vos données depuis Qrop, vous devez d'abord importer vos données de Qrop vers Brinjel, puis ensuite utiliser le mode opératoire ci-dessus pour importer vos données de Brinjel vers {siteName}.").'</p>';
 	echo '<p>'.s("Notez que vous aurez probablement des corrections à faire dans le fichier CSV issu de Brinjel, notamment au niveau des unités de récolte ou des espèces. {siteName} vous fera un rapport des modifications à effectuer après chargement de votre fichier.").'</p>';
 	echo '<p>';
 	echo '<a href="https://app.brinjel.com/" class="btn btn-outline-secondary" target="_blank">'.s("Aller sur Brinjel").'</a> ';

@@ -24,7 +24,8 @@ new AdaptativeView('importCultivations', function($data, FarmTemplate $t) {
 		echo '<p>'.s("Vous pouvez importer sur {siteName} un plan de culture en CSV en choisissant l'un des deux formats suivants :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("le format {siteName}").'</li>';
-			echo '<li>'.s("le format Brinjel, qui permet d'importer vos séries depuis ce logiciel ou depuis Qrop").'</li>';
+			echo '<li>'.s("le format Brinjel").'</li>';
+			echo '<li>'.s("le format Qrop").'</li>';
 		echo '</ul>';
 		echo '<a href="/doc/import:series" class="btn btn-secondary">'.Asset::icon('person-raised-hand').' '.s("Voir la documentation").'</a>';
 	echo '</div>';
