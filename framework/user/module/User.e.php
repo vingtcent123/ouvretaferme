@@ -255,6 +255,17 @@ class User extends UserElement {
 				}
 
 			})
+			->setCallback('legalName.check', function(?string &$legalName): bool {
+
+				$this->expects(['type']);
+
+				if($this['type'] === User::PRO) {
+					return ($legalName !== NULL);
+				} else {
+					return TRUE;
+				}
+
+			})
 			->setCallback('invoiceAddress.empty', fn() => \user\User::buildAddress('invoice', $this))
 			->setCallback('deliveryAddress.empty', fn() => \user\User::buildAddress('delivery', $this))
 			->setCallback('deliveryAddressMandatory.check', function() use ($p): bool {

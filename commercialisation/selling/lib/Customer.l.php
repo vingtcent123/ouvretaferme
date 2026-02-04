@@ -304,7 +304,6 @@ class CustomerLib extends CustomerCrud {
 
 			case \user\User::PRIVATE :
 				$eCustomer->merge([
-					'name' => self::getNameFromUser($eUser),
 					'firstName' => $eUser['firstName'],
 					'lastName' => $eUser['lastName'],
 				]);
@@ -312,7 +311,6 @@ class CustomerLib extends CustomerCrud {
 
 			case \user\User::PRO :
 				$eCustomer->merge([
-					'name' => $eUser['legalName'],
 					'commercialName' => $eUser['legalName'],
 					'contactName' => self::getNameFromUser($eUser),
 					'siret' => $eUser['siret'],
@@ -323,11 +321,7 @@ class CustomerLib extends CustomerCrud {
 
 		}
 
-		Customer::model()->insert($eCustomer);
-
-		if($eCustomer['email'] !== NULL) {
-			\mail\ContactLib::autoCreate($eCustomer['farm'], $eCustomer['email']);
-		}
+		self::create($eCustomer);
 
 		return $eCustomer;
 
