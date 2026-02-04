@@ -1372,7 +1372,7 @@ class FarmUi {
 			$eFinancialYearSelected = $eFarm->getView('viewAccountingYear');
 
 			if($eFinancialYearSelected->empty()) {
-				$eFinancialYearSelected = $cFinancialYear->last();
+				//$eFinancialYearSelected = $cFinancialYear->last();
 			}
 
 			$cFinancialYearAfter = new \account\FinancialYear();
