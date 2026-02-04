@@ -72,13 +72,6 @@ class Configuration extends ConfigurationElement {
 				);
 
 			})
-			->setCallback('creditPrefix.prepare', function(string &$prefix): bool {
-				$prefix = strtoupper($prefix);
-				return TRUE;
-			})
-			->setCallback('creditPrefix.fqn', function(string $prefix): bool {
-				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', rtrim($prefix, '#')) > 0;
-			})
 			->setCallback('invoicePrefix.prepare', function(string &$prefix): bool {
 				$prefix = strtoupper($prefix);
 				return TRUE;

@@ -1098,7 +1098,7 @@ class PdfUi {
 					$e['number'];
 
 				return $e->isCreditNote() ?
-					($number === NULL ? s("Avoir proforma") : s("Avoir")) :
+					($number === NULL ? s("Facture d'avoir proforma") : s("Facture d'avoir")) :
 					($number === NULL ? s("Facture proforma") : s("Facture"));
 
 		}

@@ -164,7 +164,7 @@ class ConfigurationUi {
 					$h .= '<p>'.s("La loi interdit de supprimer une facture et les documents comptables doivent être tenus sans altération d’aucune sorte. L’administration fiscale a besoin de vérifier la bonne continuité de votre numérotation de facturation. Un trou dans la numérotation constitue une infraction fiscale.").'</p>';
 					$h .= '<p>'.s("Si vous intégrez dans le préfixe de numérotation des factures l'année en cours, Ouvretaferme se chargera chaque 1<sup>er</sup>
  janvier de mettre la nouvelle année et recommencer la numérotation à 1.").'</p>';
-					$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'creditPrefix', 'documentInvoices']);
+					$h .= $form->dynamicGroups($eConfiguration, ['invoicePrefix', 'documentInvoices']);
 				$h .= '</div>';
 
 				$h .= $form->group(
@@ -478,7 +478,6 @@ class ConfigurationUi {
 			'orderFormPaymentCondition' => s("Conditions de paiement affichées sur les devis"),
 			'orderFormHeader' => s("Ajouter un texte personnalisé affiché en haut des devis"),
 			'orderFormFooter' => s("Ajouter un texte personnalisé affiché en bas des devis"),
-			'creditPrefix' => s("Préfixe pour la numérotation des avoirs"),
 			'invoicePrefix' => s("Préfixe pour la numérotation des factures"),
 			'invoiceDue' => s("Date d'échéance par défaut sur les factures"),
 			'invoiceReminder' => s("Autoriser les relances sur les factures non payées"),
@@ -610,10 +609,6 @@ class ConfigurationUi {
 
 			case 'invoicePrefix' :
 				$d->placeholder = \selling\SellingSetting::INVOICE;
-				break;
-
-			case 'creditPrefix' :
-				$d->placeholder = \selling\SellingSetting::CREDIT;
 				break;
 
 			case 'invoicePaymentCondition' :

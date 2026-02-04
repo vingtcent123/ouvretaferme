@@ -59,7 +59,7 @@ new \farm\ConfigurationPage()
 	})
 	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNoteHeader', 'deliveryNoteFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
-	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdate(fn() => throw new ReloadAction('farm', 'Configuration::updated'), onKo: fn() => \farm\Configuration::fail('error'))
 	->doUpdateProperties('doUpdateProfileAccount', ['profileAccount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'));
 ?>

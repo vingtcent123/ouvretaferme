@@ -114,7 +114,7 @@ class ConfigurationLib extends ConfigurationCrud {
 		Configuration::model()->beginTransaction();
 
 		$eConfiguration = Configuration::model()
-			->select('documentInvoices', 'creditPrefix', 'invoicePrefix')
+			->select('documentInvoices', 'invoicePrefix')
 			->whereFarm($eFarm)
 			->get();
 
@@ -124,14 +124,11 @@ class ConfigurationLib extends ConfigurationCrud {
 
 			$newValue++;
 
-			$numbers = [
-				Configuration::getNumber($eConfiguration['creditPrefix'], $newValue),
-				Configuration::getNumber($eConfiguration['invoicePrefix'], $newValue),
-			];
+			$number = Configuration::getNumber($eConfiguration['invoicePrefix'], $newValue);
 
 			if(\selling\Invoice::model()
 				->whereFarm($eFarm)
-				->whereNumber('IN', $numbers)
+				->whereNumber($number)
 				->exists()) {
 
 				if($i === 100) {
@@ -166,12 +163,6 @@ class ConfigurationLib extends ConfigurationCrud {
 			->update([
 				'invoicePrefix' => new \Sql('REPLACE(invoicePrefix, '.$beforeYear.', '.$year.')'),
 				'documentInvoices' => 0
-			]);
-
-		Configuration::model()
-			->whereCreditPrefix('LIKE', '%'.$beforeYear.'%')
-			->update([
-				'creditPrefix' => new \Sql('REPLACE(creditPrefix, '.$beforeYear.', '.$year.')'),
 			]);
 
 	}

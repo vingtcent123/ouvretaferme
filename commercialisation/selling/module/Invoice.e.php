@@ -169,15 +169,10 @@ class Invoice extends InvoiceElement {
 
 		$this->expects(['document']);
 
-		if($this->isCreditNote()) {
-			$code = $eFarm->getConf('creditPrefix');
-		} else {
-			$code = $eFarm->getConf('invoicePrefix');
-		}
-
 		if($this['document'] === NULL) {
 			return NULL;
 		} else {
+			$code = $eFarm->getConf('invoicePrefix');
 			return \farm\Configuration::getNumber($code, $this['document']);
 		}
 
@@ -383,8 +378,21 @@ class Invoice extends InvoiceElement {
 				return ($this['lastDate'] === NULL or $date >= $this['lastDate']);
 
 			})
-			->setCallback('dueDate.check', function(?string $dueDate): bool {
-				return ($dueDate !== NULL);
+			->setCallback('dueDate.check', function(?string &$dueDate) use ($p): bool {
+
+				if($p->isBuilt('sales') === FALSE) {
+					return TRUE;
+				}
+
+				// Facture d'avoir
+				if($this['cSale']->sum('priceExcludingVat') < 0) {
+					$dueDate = NULL;
+					return TRUE;
+				} else {
+					return ($dueDate !== NULL);
+				}
+
+
 			})
 			->setCallback('dueDate.consistency', function(?string $dueDate) use ($p): bool {
 

@@ -45,7 +45,6 @@ Configuration:
   orderFormFooter: ?editor16(1, 500)
   deliveryNoteHeader: ?editor16(1, 500)
   deliveryNoteFooter: ?editor16(1, 500)
-  creditPrefix: text8(1, 15) = PHP(\selling\SellingSetting::CREDIT)
   invoiceDue: bool = TRUE
   invoiceDueDays: ?int(0, 360) = 30
   invoiceDueMonth: ?bool

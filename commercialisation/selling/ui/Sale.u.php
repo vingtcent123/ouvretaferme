@@ -778,10 +778,6 @@ class SaleUi {
 
 		$type = Pdf::INVOICE;
 
-		$short = ($eSale['priceExcludingVat'] >= 0) ?
-			\selling\SellingSetting::INVOICE :
-			\selling\SellingSetting::CREDIT;
-
 		if($eSale['invoice']->empty()) {
 
 			if(
@@ -790,7 +786,7 @@ class SaleUi {
 			) {
 
 				$document = '<a href="/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales" class="btn btn-sm sale-document sale-document-new" title="'.s("Créer une facture").'">';
-					$document .= '<div class="sale-document-name">'.$short.'</div>';
+					$document .= '<div class="sale-document-name">'.\selling\SellingSetting::INVOICE.'</div>';
 					$document .= '<div class="sale-document-status">';
 						$document .= \Asset::icon('plus');
 					$document .= '</div>';
@@ -819,7 +815,7 @@ class SaleUi {
 
 			$document = '<a class="btn sale-document" title="'.$label.'" data-dropdown="'.$dropdown.'">';
 				$document .= '<div class="sale-document-name">';
-					$document .= $short;
+					$document .= \selling\SellingSetting::INVOICE;
 				$document .= '</div>';
 				$document .= '<div class="sale-document-status">';
 

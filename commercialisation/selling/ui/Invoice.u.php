@@ -1109,7 +1109,7 @@ class InvoiceUi {
 					$dueDays = $e['farm']->getConf('invoiceDueDays');
 					$dueMonth = $e['farm']->getConf('invoiceDueMonth');
 
-					$update = ' (<a href="/farm/configuration:update?id='.$e['farm']['id'].'" target="_blank">'.s("modifier").'</a>)';
+					$update = ' (<a href="/farm/configuration:update?id='.$e['farm']['id'].'" target="_blank">'.s("modifier").'</a>). '.s("Elle est ignorée pour les factures d'avoir.");
 
 					if($dueDays !== NULL and $dueMonth) {
 						return \util\FormUi::info(p("La date d'échéance est calculée à la date de facturation + {value} jour fin de mois", "La date d'échéance est calculée à la date de facturation + {value} jours fin de mois", $dueDays).$update);

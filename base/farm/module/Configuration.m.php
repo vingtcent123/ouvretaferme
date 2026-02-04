@@ -68,7 +68,6 @@ class ConfigurationModel extends \ModuleModel {
 			'orderFormFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryNoteHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryNoteFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
-			'creditPrefix' => ['text8', 'min' => 1, 'max' => 15, 'cast' => 'string'],
 			'invoiceDue' => ['bool', 'cast' => 'bool'],
 			'invoiceDueDays' => ['int16', 'min' => 0, 'max' => 360, 'null' => TRUE, 'cast' => 'int'],
 			'invoiceDueMonth' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
@@ -84,7 +83,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'creditPrefix', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -125,9 +124,6 @@ class ConfigurationModel extends \ModuleModel {
 
 			case 'orderFormDelivery' :
 				return TRUE;
-
-			case 'creditPrefix' :
-				return \selling\SellingSetting::CREDIT;
 
 			case 'invoiceDue' :
 				return TRUE;
@@ -277,10 +273,6 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereDeliveryNoteFooter(...$data): ConfigurationModel {
 		return $this->where('deliveryNoteFooter', ...$data);
-	}
-
-	public function whereCreditPrefix(...$data): ConfigurationModel {
-		return $this->where('creditPrefix', ...$data);
 	}
 
 	public function whereInvoiceDue(...$data): ConfigurationModel {
