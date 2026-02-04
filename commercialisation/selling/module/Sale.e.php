@@ -638,8 +638,7 @@ class Sale extends SaleElement {
 
 	public function acceptDissociateShop(): bool {
 		return (
-			$this['shop']->notEmpty() and
-			$this['shopShared'] === FALSE
+			$this['shop']->notEmpty()
 		);
 	}
 
