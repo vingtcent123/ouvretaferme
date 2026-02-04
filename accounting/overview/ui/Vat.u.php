@@ -84,7 +84,7 @@ Class VatUi {
 
 					$h .= '<dt>'.\account\FinancialYearUi::p('vatChargeability')->label.'</dt>';
 					$h .= '<dd>'.match($eFinancialYear['vatChargeability']) {
-						\account\FinancialYear::CASH_RECEIPTS => s("TVA sur les encaissements"),
+						\account\FinancialYear::CASH => s("TVA sur les encaissements"),
 						\account\FinancialYear::DEBIT => s("TVA sur les débits"),
 						}.'</dd>';
 
