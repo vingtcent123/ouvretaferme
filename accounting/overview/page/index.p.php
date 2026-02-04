@@ -23,7 +23,7 @@ new Page(function($data) {
 
 			\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
 
-			$data->eFarm['nInvoiceToImport'] = \preaccounting\AccountingLib::countInvoices($data->eFarm, $search);
+			$data->eFarm['nInvoiceToImport'] = \preaccounting\InvoiceLib::countForAccounting($data->eFarm, $search);
 
 			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-financial-year-created');
 			$data->tipNavigation = 'inline';

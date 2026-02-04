@@ -9,7 +9,7 @@ Class ImportLib {
 
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
-		$cInvoice = AccountingLib::getInvoices($eFarm, $search, TRUE);
+		$cInvoice = InvoiceLib::getForAccounting($eFarm, $search, TRUE);
 
 		$fec = AccountingLib::generateInvoicesFec($cInvoice, $eFarm['cFinancialYear'], $cAccount, TRUE);
 

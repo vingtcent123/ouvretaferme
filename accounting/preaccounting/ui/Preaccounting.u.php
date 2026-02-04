@@ -86,6 +86,20 @@ Class PreaccountingUi {
 					$h .= $form->select('hasInvoice', [1 => s("Ventes facturées"), 0 => s("Ventes livrées non facturées")], $search->get('hasInvoice'), ['placeholder' => s("Toutes les ventes livrées")]);
 				$h .= '</fieldset>';
 
+				/*$h .= '<fieldset>';
+					$h .= '<legend>'.s("Journal de caisse").'</legend>';
+					$h .= $form->select(
+						'register',
+						$search->get('cRegister')->makeArray(function($e, &$key) {
+							$key = $e['id'];
+							return $e['account']->notEmpty() ?
+							s("{name}, numéro de compte {class}", ['name' => $e['paymentMethod']['name'], 'class' => $e['account']['class']]) :
+							s("{name}", ['name' => $e['paymentMethod']['name']]);
+						}),
+						$search->get('register'),
+					);
+				$h .= '</fieldset>';*/
+
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Numéro de compte").'</legend>';
 					$h .= $form->dynamicField(new \journal\Operation(['account' => $search->get('account')]), 'account', function($d) use($form, $eFarm) {

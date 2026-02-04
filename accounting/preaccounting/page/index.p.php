@@ -163,6 +163,8 @@ new Page(function($data) {
 
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
 			$data->search->set('cMethod', $cMethod);
+			$data->search->set('cRegister', \cash\RegisterLib::getAll());
+			$data->search->set('register', GET('register', '?int'));
 			$data->search->set('method', $eMethod);
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
@@ -183,7 +185,9 @@ new Page(function($data) {
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
 
-				$invoiceOperations= \preaccounting\AccountingLib::extractInvoice($data->eFarm, $data->search, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
+				$cInvoice = \preaccounting\InvoiceLib::getForAccounting($data->eFarm, $data->search, FALSE);
+				$invoiceOperations = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
+
 				$fecInvoice = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
 
 				$documents = array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
@@ -239,7 +243,8 @@ new Page(function($data) {
 
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
 
-				$invoiceOperations = \preaccounting\AccountingLib::extractInvoice($data->eFarm, $data->search, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
+				$cInvoice = \preaccounting\InvoiceLib::getForAccounting($data->eFarm, $data->search, FALSE);
+				$invoiceOperations = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
 				$invoiceOperations = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
 
 			} else {
@@ -292,7 +297,7 @@ new Page(function($data) {
 
 		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
 
-		$data->nInvoice = \preaccounting\AccountingLib::countInvoices($data->eFarm, $data->search);
+		$data->nInvoice = \preaccounting\InvoiceLib::countForAccounting($data->eFarm, $data->search);
 
 		$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
 

@@ -216,7 +216,7 @@ Class SuggestionLib extends SuggestionCrud {
 			$reason->value(Suggestion::THIRD_PARTY, TRUE);
 		}
 
-		$score = InvoiceLib::scoreInvoiceReference($eInvoice['number'], $eCashflow->getMemo());
+		$score = SuggestionInvoiceLib::scoreInvoiceReference($eInvoice['number'], $eCashflow->getMemo());
 		if($score > 250 or mb_strpos(mb_strtolower($eCashflow->getMemo()), mb_strtolower($eInvoice['number'])) !== FALSE) {
 			$weight += 100;
 			$reason->value(Suggestion::REFERENCE, TRUE);

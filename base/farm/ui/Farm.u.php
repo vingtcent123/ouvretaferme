@@ -1342,7 +1342,7 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			if(LIME_ENV === 'dev' and \user\ConnectionLib::getOnline()['id'] === 1) {
+			if(LIME_ENV === 'dev' and in_array(\user\ConnectionLib::getOnline()['id'], [1, 21])) {
 
 				$h .= '<div class="farm-tab-wrapper farm-nav-cash">';
 

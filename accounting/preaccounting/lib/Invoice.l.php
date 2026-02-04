@@ -105,137 +105,73 @@ Class InvoiceLib {
 
 	}
 
-	public static function extractInvoiceSignature(string $ref): array {
-    $ref = mb_strtolower($ref, 'UTF-8');
+	public static function countForAccounting(\farm\Farm $eFarm, \Search $search) {
 
-    preg_match_all('/[a-z]+/', $ref, $alpha);
-    preg_match_all('/\d+/', $ref, $nums);
+		return self::filterForAccounting($eFarm, $search, TRUE)->count();
 
-    return [
-        'alpha' => $alpha[0] ?? [],
-        'nums'  => array_map(
-            fn($n) => ltrim($n, '0'),
-            $nums[0] ?? []
-        ),
-    ];
 	}
 
-	public static function extractBankNumbers(string $label): array {
-    preg_match_all('/\d+/', $label, $m);
-    return $m[0] ?? [];
+	public static function getForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
+
+		return InvoiceLib::filterForAccounting($eFarm, $search, $forImport)
+			->select([
+				'id', 'date', 'number', 'document', 'farm',
+				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat',
+				'customer' => [
+					'id', 'name', 'type', 'destination',
+					'thirdParty' => \account\ThirdParty::model()
+						->select('id')
+						->delegateElement('customer')
+
+				],
+				'cashflow' => \bank\Cashflow::getSelection(),
+				'accountingDifference', 'readyForAccounting', 'accountingHash',
+				'paymentMethod' => ['name'],
+				'cSale' => \selling\Sale::model()
+					->select([
+						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
+						'cItem' => \selling\Item::model()
+							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+							->delegateCollection('sale')
+					])
+					->delegateCollection('invoice'),
+			])
+			->getCollection();
+
 	}
 
+	public static function filterForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\InvoiceModel {
 
-	public static function hasInvoiceContext(string $label): bool {
-    $label = mb_strtolower($label, 'UTF-8');
+		// Pas de contrainte de date dans le cas d'un import => Les factures peuvent avoir été payées l'année d'après mais on veut quand même les importer
+		// Attention, raisonnement tenable en compta de trésorerie et pas en compta d'engagement (ACCRUAL)
+		if($forImport) {
 
-    return preg_match(
-        '/\b(fa|fact|facture|inv|invoice|regl|reglement)\b/',
-        $label
-    ) === 1;
+			\selling\Invoice::model()
+				->whereCashflow('!=', NULL)
+				->whereAccountingHash(NULL)
+				->whereReadyForAccounting(TRUE)
+			;
+
+		} else {
+
+			\selling\Invoice::model()
+				->where(
+					'm1.date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')),
+					if: $search->get('from') and $search->get('to')
+			);
+
+		}
+		return \selling\Invoice::model()
+			->join(\selling\Customer::model(), 'm1.customer = m2.id')
+			->join(\bank\Cashflow::model(), 'm1.cashflow = m3.id', 'LEFT')
+			->where('m1.status NOT IN ("'.\selling\Invoice::DRAFT.'", "'.\selling\Invoice::CANCELED.'")')
+			->where('m1.paymentStatus IS NULL OR m1.paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
+			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
+			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->has('customer') and $search->get('customer')->notEmpty())
+			->where('m1.farm = '.$eFarm['id'])
+			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
+			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
+		;
+
 	}
-
-
-
-	public static function scoreInvoiceReference(string $invoiceRef, string $bankLabel): int {
-    // --- Préparation ---
-    $sig = self::extractInvoiceSignature($invoiceRef);
-    if (empty($sig['nums'])) {
-        return 0;
-    }
-
-    $label = mb_strtolower($bankLabel, 'UTF-8');
-    $bankNums = self::extractBankNumbers($label);
-    $hasContext = self::hasInvoiceContext($label);
-
-    $score = 0;
-
-    // --- Identifier année et numéro(s) ---
-    $year = null;
-    $numbers = [];
-
-    foreach ($sig['nums'] as $n) {
-        if (preg_match('/^20\d{2}$/', $n)) {
-            $year = $n;
-        } else {
-            $numbers[] = $n;
-        }
-    }
-
-    // --- Scoring des numéros ---
-    foreach ($numbers as $num) {
-        if (!in_array($num, $bankNums, true)) {
-            continue;
-        }
-
-        $len = strlen($num);
-
-        // numéro long = très fiable
-        if ($len >= 4) {
-            $score += 150;
-        }
-        // numéro court accepté uniquement avec contexte facture
-        elseif ($hasContext) {
-            $score += 80;
-        }
-    }
-
-    // --- Scoring de l'année ---
-    if ($year !== null && in_array($year, $bankNums, true)) {
-        $score += 60;
-    }
-
-    // --- Bonus combinaison année + numéro ---
-    if (
-        $year !== null &&
-        in_array($year, $bankNums, true)
-    ) {
-        foreach ($numbers as $num) {
-            if (in_array($num, $bankNums, true)) {
-                $score += 50;
-                break;
-            }
-        }
-    }
-
-    // --- Bonus préfixe alpha (fa, fact, sj, etc.) ---
-    foreach ($sig['alpha'] as $a) {
-        if (preg_match('/\b' . preg_quote($a, '/') . '\b/', $label)) {
-            $score += 40;
-            break;
-        }
-    }
-
-    // --- Bonus contexte facture ---
-    if ($hasContext) {
-        $score += 40;
-    }
-
-    // --- Bonus fiabilité : numéro court + année + contexte ---
-    if ($hasContext && $year !== null) {
-        foreach ($numbers as $num) {
-            if (
-                strlen($num) <= 2 &&
-                in_array($num, $bankNums, true)
-            ) {
-                $score += 40;
-                break;
-            }
-        }
-    }
-
-    // --- Sécurité anti-faux positifs ---
-    // Numéro court sans contexte facture → rejet
-    if (!$hasContext) {
-        foreach ($numbers as $num) {
-            if (strlen($num) <= 2 && in_array($num, $bankNums, true)) {
-                return 0;
-            }
-        }
-    }
-
-    return $score;
-	}
-
-
 }
