@@ -1368,7 +1368,13 @@ class FarmUi {
 			$cFinancialYear = $eFarm['cFinancialYear?']();
 
 			$cFinancialYearBefore = new \account\FinancialYear();
+
 			$eFinancialYearSelected = $eFarm->getView('viewAccountingYear');
+
+			if($eFinancialYearSelected->empty()) {
+				$eFinancialYearSelected = $cFinancialYear->last();
+			}
+
 			$cFinancialYearAfter = new \account\FinancialYear();
 
 			$position = 0;
