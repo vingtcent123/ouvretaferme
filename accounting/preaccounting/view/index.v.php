@@ -200,18 +200,18 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 			echo '<li>';
 				echo '<div>';
 					echo '<h5>';
-						echo match($data->search->get('hasInvoice')) {
+						echo match($data->search->get('filter')) {
 							NULL => s("Ventes et factures"),
-							0 => p("Vente", "Ventes", $data->nSale),
-							1 => p("Facture", "Factures", $data->nInvoice),
+							'hasInvoice' => p("Facture", "Factures", $data->nInvoice),
+							'noInvoice' => p("Vente", "Ventes", $data->nSale),
 						};
 					echo '</h5>';
 						echo '<div>';
 
-							echo match($data->search->get('hasInvoice')) {
-								NULL => $data->nSale + $data->nInvoice,
-								0 => $data->nSale,
-								1 => $data->nInvoice,
+							echo match($data->search->get('filter')) {
+								NULL => min($data->nSale + $data->nInvoice, 100),
+								'hasInvoice' => min($data->nInvoice, 100),
+								'noInvoice' => min($data->nSale, 100),
 							};
 					echo '</div>';
 				echo '</div>';

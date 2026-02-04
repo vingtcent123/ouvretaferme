@@ -161,20 +161,39 @@ new Page(function($data) {
 				$eMethod = new \payment\Method();
 			}
 
-			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
-			$data->search->set('cMethod', $cMethod);
-			//$data->search->set('cRegister', \cash\RegisterLib::getAll());
-			//$data->search->set('register', GET('register', '?int'));
-			$data->search->set('method', $eMethod);
-			$data->search->set('account', \account\AccountLib::getById(GET('account')));
-			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
-
 			$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
-			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 0) {
+			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
+			$data->search->set('cMethod', $cMethod);
+			$data->search->set('cRegister', \cash\RegisterLib::getAll());
+			$data->search->set('method', $eMethod);
+			$data->search->set('account', \account\AccountLib::getById(GET('account')));
+
+			$hasInvoice = in_array(GET('filter', '?string'), ['hasInvoice', 'noInvoice']) ? GET('filter', '?string') === 'hasInvoice' : NULL;
+			$data->search->set('filter', GET('filter', '?string'));
+
+			if(\preaccounting\CashLib::isActive()) {
+
+				$eRegister = (GET('filter', 'int') !== 0) ? $data->search->get('cRegister')->offsetGet(GET('filter', 'int')) : new \cash\Register();
+				$data->search->set('register', $eRegister);
+
+				// Ventes des journaux de caisse
+				$data->cCash = \preaccounting\CashLib::getForAccounting($data->eFarm, $data->search);
+				[$fecCash, $data->nCash] = \preaccounting\AccountingLib::generateCashFec($data->cCash, $data->eFarm['cFinancialYear'], $cAccount, $data->search->get('account'), $eRegister);
+
+			} else {
+
+				$fecCash = [];
+				$data->nCash = 0;
+
+			}
+
+
+			// Ventes non facturées
+			if($data->search->get('filter') === NULL or $hasInvoice === FALSE) {
 
 				$data->cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
-				[$fecSale, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
+				[$fecSale, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search->get('account'));
 
 			} else {
 
@@ -183,15 +202,13 @@ new Page(function($data) {
 
 			}
 
-			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
+			// Ventes facturées
+			if($data->search->get('filter') === NULL or $hasInvoice === TRUE) {
 
 				$cInvoice = \preaccounting\InvoiceLib::getForAccounting($data->eFarm, $data->search, FALSE);
-				$invoiceOperations = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
-
-				$fecInvoice = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
+				[$fecInvoice, $data->nInvoice] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE, $data->search->get('account'));
 
 				$documents = array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
-				$data->nInvoice = count($documents);
 
 				// Pour avoir le lien vers la facture
 				$data->cInvoice = count($documents) > 0 ?
@@ -210,7 +227,7 @@ new Page(function($data) {
 
 			}
 
-			$data->operations = \preaccounting\AccountingLib::sortOperations(array_merge($fecSale, $fecInvoice));
+			$data->operations = array_slice(\preaccounting\AccountingLib::sortOperations(array_merge($fecCash, $fecSale, $fecInvoice)), 0, 100);
 
 		} else {
 
@@ -244,8 +261,7 @@ new Page(function($data) {
 			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
 
 				$cInvoice = \preaccounting\InvoiceLib::getForAccounting($data->eFarm, $data->search, FALSE);
-				$invoiceOperations = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE);
-				$invoiceOperations = \preaccounting\AccountingLib::filterOperations($invoiceOperations, $data->search);
+				$invoiceOperations = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE, $data->search->get('account'));
 
 			} else {
 				$invoiceOperations = [];

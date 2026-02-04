@@ -19,11 +19,18 @@ Class AccountingLib {
 	const FEC_COLUMN_PAYMENT_METHOD = 19;
 	const FEC_COLUMN_OPERATION_NATURE = 20;
 
-		public static function generateSalesFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount, \Search $search): array {
+	public static function generateCashFec(\Collection $cCash, \Collection $cFinancialYear, \Collection $cAccount, \account\Account $eAccountFilter, \cash\Register $eRegister): array {
+
+		$fecData = [];
+		$nCash = 0;
+
+		return [$fecData, $nCash];
+
+	}
+
+	public static function generateSalesFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount, \account\Account $eAccountFilter): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
-
-		$eAccountFilter = $search->get('account');
 
 		$fecData = [];
 		$nSale = 0;
@@ -64,12 +71,7 @@ Class AccountingLib {
 					}
 
 					// Montant HT
-					if(
-						$eAccountFilter->empty() or
-						$eAccountFilter->is($eAccount) or
-						\account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class']) or
-						\account\AccountLabelLib::isFromClass($eAccount['class'], $eAccountFilter['class'])
-					) {
+					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
 						$fecDataExcludingVat = self::getFecLine(
 							eAccount    : $eAccount,
@@ -97,7 +99,7 @@ Class AccountingLib {
 							$eAccountVat = $eAccountVatDefault;
 						}
 
-						if($eAccountFilter->empty() or $eAccountFilter->is($eAccountVat)) {
+						if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountVat['class'])) {
 							$fecDataVat = self::getFecLine(
 								eAccount    : $eAccountVat,
 								date        : $eSale['deliveredAt'],
@@ -121,10 +123,12 @@ Class AccountingLib {
 
 			}
 
-				// Si la vente a des frais de port
-				if($eSale['shippingExcludingVat'] !== NULL and $eSale['shippingExcludingVat'] > 0) {
+			// Si la vente a des frais de port
+			if($eSale['shippingExcludingVat'] !== NULL and $eSale['shippingExcludingVat'] > 0) {
 
-					$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
+				$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
+
+				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountShipping['class'])) {
 
 					$fecDataShipping = self::getFecLine(
 						eAccount    : $eAccountShipping,
@@ -142,16 +146,19 @@ Class AccountingLib {
 
 					self::mergeFecLineIntoItemData($items, $fecDataShipping);
 
-					// Si les frais de port ont de la TVA
-					if($eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
+				}
 
-						$eAccountVat = $eAccountShipping['vatAccount'];
-						if($eAccountVat->empty()) {
-							$eAccountVat = $eAccountVatDefault;
-						}
+				// Si les frais de port ont de la TVA
+				if($eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
 
-						$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
+					$eAccountVat = $eAccountShipping['vatAccount'];
+					if($eAccountVat->empty()) {
+						$eAccountVat = $eAccountVatDefault;
+					}
 
+					$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
+
+					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountVat['class'])) {
 						$fecDataVat = self::getFecLine(
 							eAccount    : $eAccountVat,
 							date        : $eSale['deliveredAt'],
@@ -168,10 +175,9 @@ Class AccountingLib {
 
 						self::mergeFecLineIntoItemData($items, $fecDataVat);
 					}
-
 				}
 
-
+			}
 
 			if(count($items) > 0) {
 				$nSale++;
@@ -184,59 +190,12 @@ Class AccountingLib {
 
 	}
 
-	private static function extractAccountFromItem(\selling\Item $eItem, \Collection $cAccount, \account\Account $eAccountDefault): \account\Account {
-
-		// Account défini dans l'item
-		if($eItem['account']->notEmpty() and $cAccount->offsetExists($eItem['account']['id'])) {
-
-			$eAccount = $cAccount->offsetGet($eItem['account']['id']);
-
-		// Fallback sur le produit : cas du private
-		} else if(
-			$eItem['product']->notEmpty() and
-			$eItem['type'] === \selling\Item::PRIVATE and
-			$eItem['product']['privateAccount']->notEmpty() and
-			$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
-		) {
-
-			$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
-
-		// Fallback sur le produit : cas du pro
-		} else if(
-			$eItem['product']->notEmpty() and
-			$eItem['type'] === \selling\Item::PRO and
-			$eItem['product']['proAccount']->notEmpty() and
-			$cAccount->offsetExists($eItem['product']['proAccount']['id'])
-		) {
-
-			$eAccount = $cAccount->offsetGet($eItem['product']['proAccount']['id']);
-
-		// Fallback sur le produit : cas du pro sans account pro mais avec account private
-		} else if(
-			$eItem['product']->notEmpty() and
-			$eItem['type'] === \selling\Item::PRO and
-			$eItem['product']['privateAccount']->notEmpty() and
-			$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
-		) {
-
-			$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
-
-		// On sait pas.
-		} else {
-
-			$eAccount = $eAccountDefault;
-
-		}
-
-		return $eAccount;
-
-	}
-
-	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport): array {
+	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 
 		$fecData = [];
+		$nInvoices = 0;
 		$number = 0;
 		foreach($cInvoice as $eInvoice) {
 
@@ -316,23 +275,27 @@ Class AccountingLib {
 					}
 
 					// Montant HT
-					$fecDataExcludingVat = self::getFecLine(
-						eAccount    : $eAccount,
-						date        : $referenceDate,
-						eCode       : $eAccount['journalCode'],
-						ecritureLib : $document,
-						document    : $document,
-						documentDate: $documentDate,
-						amount      : $amountExcludingVat,
-						type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-						payment     : $payment,
-						compAuxNum  : $compAuxNum,
-						compAuxLib  : $compAuxLib,
-						number      : $forImport ? ++$number : NULL,
-					);
+					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
-					$numberWithoutVat = $number;
-					self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
+						$fecDataExcludingVat = self::getFecLine(
+							eAccount    : $eAccount,
+							date        : $referenceDate,
+							eCode       : $eAccount['journalCode'],
+							ecritureLib : $document,
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $amountExcludingVat,
+							type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+							payment     : $payment,
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+							number      : $forImport ? ++$number : NULL,
+						);
+
+						$numberWithoutVat = $number;
+						self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
+
+					}
 
 					// TVA
 					if($hasVat and $amountVat !== 0.0) {
@@ -342,27 +305,30 @@ Class AccountingLib {
 							$eAccountVat = $eAccountVatDefault;
 						}
 
-						$fecDataVat = self::getFecLine(
-							eAccount    : $eAccountVat,
-							date        : $referenceDate,
-							eCode       : $eAccount['journalCode'],
-							ecritureLib : $document,
-							document    : $document,
-							documentDate: $documentDate,
-							amount      : $amountVat,
-							type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-							payment     : $payment,
-							compAuxNum  : $compAuxNum,
-							compAuxLib  : $compAuxLib,
-							number      : $forImport ? ++$number : NULL,
-							for         : $eAccount['class'],
-						);
-						if($forImport) {
-							$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
+						if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountVat['class'])) {
+
+							$fecDataVat = self::getFecLine(
+								eAccount    : $eAccountVat,
+								date        : $referenceDate,
+								eCode       : $eAccount['journalCode'],
+								ecritureLib : $document,
+								document    : $document,
+								documentDate: $documentDate,
+								amount      : $amountVat,
+								type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+								payment     : $payment,
+								compAuxNum  : $compAuxNum,
+								compAuxLib  : $compAuxLib,
+								number      : $forImport ? ++$number : NULL,
+								for         : $eAccount['class'],
+							);
+							if($forImport) {
+								$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
+							}
+
+							self::mergeFecLineIntoItemData($items, $fecDataVat);
+
 						}
-
-						self::mergeFecLineIntoItemData($items, $fecDataVat);
-
 					}
 
 				}
@@ -372,24 +338,26 @@ Class AccountingLib {
 
 					$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
 
-					$fecDataShipping = self::getFecLine(
-						eAccount    : $eAccountShipping,
-						date        : $referenceDate,
-						eCode       : $eAccountShipping['journalCode'],
-						ecritureLib : $document,
-						document    : $document,
-						documentDate: $documentDate,
-						amount      : $eSale['shippingExcludingVat'],
-						type        : $eSale['shippingExcludingVat'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-						payment     : $payment,
-						compAuxNum  : $compAuxNum,
-						compAuxLib  : $compAuxLib,
-						number      : $forImport ? ++$number : NULL,
-					);
-					$numberShipping = $number;
+					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountShipping['class'])) {
 
-					self::mergeFecLineIntoItemData($items, $fecDataShipping);
+						$fecDataShipping = self::getFecLine(
+							eAccount    : $eAccountShipping,
+							date        : $referenceDate,
+							eCode       : $eAccountShipping['journalCode'],
+							ecritureLib : $document,
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : $eSale['shippingExcludingVat'],
+							type        : $eSale['shippingExcludingVat'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+							payment     : $payment,
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+							number      : $forImport ? ++$number : NULL,
+						);
+						$numberShipping = $number;
 
+						self::mergeFecLineIntoItemData($items, $fecDataShipping);
+					}
 					// Si les frais de port ont de la TVA
 					if($eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
 
@@ -400,25 +368,30 @@ Class AccountingLib {
 
 						$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
 
-						$fecDataVat = self::getFecLine(
-							eAccount    : $eAccountVat,
-							date        : $referenceDate,
-							eCode       : $eAccountShipping['journalCode'],
-							ecritureLib : $document,
-							document    : $document,
-							documentDate: $documentDate,
-							amount      : $amountVat,
-							type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-							payment     : $payment,
-							compAuxNum  : $compAuxNum,
-							compAuxLib  : $compAuxLib,
-							number      : $forImport ? ++$number : NULL,
-						);
-						if($forImport) {
-							$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberShipping;
+						if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountVat['class'])) {
+
+							$fecDataVat = self::getFecLine(
+								eAccount    : $eAccountVat,
+								date        : $referenceDate,
+								eCode       : $eAccountShipping['journalCode'],
+								ecritureLib : $document,
+								document    : $document,
+								documentDate: $documentDate,
+								amount      : $amountVat,
+								type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+								payment     : $payment,
+								compAuxNum  : $compAuxNum,
+								compAuxLib  : $compAuxLib,
+								number      : $forImport ? ++$number : NULL,
+							);
+							if($forImport) {
+								$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberShipping;
+							}
+
+							self::mergeFecLineIntoItemData($items, $fecDataVat);
+
 						}
 
-						self::mergeFecLineIntoItemData($items, $fecDataVat);
 					}
 
 				}
@@ -428,22 +401,25 @@ Class AccountingLib {
 			if($eInvoice['cashflow']->notEmpty()) { // Contrepartie en 512 directe si un rapprochement a déjà été réalisé
 
 				$eAccountBank = $eInvoice['cashflow']['account']['account'];
-				$fecDataBank = self::getFecLine(
-					eAccount    : $eAccountBank,
-					date        : $eInvoice['cashflow']['date'],
-					eCode       : new \journal\JournalCode(),
-					ecritureLib : $eInvoice['cashflow']->getMemo(),
-					document    : $document,
-					documentDate: $documentDate,
-					amount      : $eInvoice['cashflow']['amount'],
-					type        : $eInvoice['cashflow']['amount'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
-					payment     : $payment,
-					compAuxNum  : $compAuxNum,
-					compAuxLib  : $compAuxLib,
-					number      : $forImport ? ++$number : NULL,
-				);
+				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountBank['class'])) {
 
-				self::mergeFecLineIntoItemData($items, $fecDataBank);
+					$fecDataBank = self::getFecLine(
+						eAccount    : $eAccountBank,
+						date        : $eInvoice['cashflow']['date'],
+						eCode       : new \journal\JournalCode(),
+						ecritureLib : $eInvoice['cashflow']->getMemo(),
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $eInvoice['cashflow']['amount'],
+						type        : $eInvoice['cashflow']['amount'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
+						payment     : $payment,
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
+					);
+
+					self::mergeFecLineIntoItemData($items, $fecDataBank);
+				}
 
 				// S'il y a une différence de montant et qu'il faut la régulariser automatiquement
 				$difference = round($eInvoice['priceIncludingVat'] - $eInvoice['cashflow']['amount'], 2);
@@ -463,67 +439,39 @@ Class AccountingLib {
 					}
 
 					$eAccountRegul = $cAccount->find(fn($e) => $e['class'] === $accountLabel)->first();
-					$fecDataRegul = self::getFecLine(
-						eAccount    : $eAccountRegul,
-						date        : $referenceDate,
-						eCode       : $eAccountBank['journalCode'],
-						ecritureLib : $document,
-						document    : $document,
-						documentDate: $documentDate,
-						amount      : abs($difference),
-						type        : $type,
-						payment     : $payment,
-						compAuxNum  : $compAuxNum,
-						compAuxLib  : $compAuxLib,
-						number      : $forImport ? ++$number : NULL,
-					);
+					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountRegul['class'])) {
 
-					self::mergeFecLineIntoItemData($items, $fecDataRegul);
+						$fecDataRegul = self::getFecLine(
+							eAccount    : $eAccountRegul,
+							date        : $referenceDate,
+							eCode       : $eAccountBank['journalCode'],
+							ecritureLib : $document,
+							document    : $document,
+							documentDate: $documentDate,
+							amount      : abs($difference),
+							type        : $type,
+							payment     : $payment,
+							compAuxNum  : $compAuxNum,
+							compAuxLib  : $compAuxLib,
+							number      : $forImport ? ++$number : NULL,
+						);
+
+						self::mergeFecLineIntoItemData($items, $fecDataRegul);
+
+					}
 
 				}
 
 			}
 
+			if(count($items) > 0) {
+				$nInvoices++;
+			}
 			$fecData = array_merge($fecData, $items);
 
 		}
 
-		return $fecData;
-
-	}
-
-	/**
-	 * Ne conserve que les opérations de la classe de compte demandée
-	 */
-	public static function filterOperations(array $operations, \Search $search): array {
-
-		$operationsFiltered = [];
-		$eAccountFilter = $search->get('account');
-
-		if($eAccountFilter->empty()) {
-			return $operations;
-		}
-
-		foreach($operations as $operation) {
-
-			if(
-				$eAccountFilter->notEmpty() and
-				\account\AccountLabelLib::isFromClass($eAccountFilter['class'], $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]) === FALSE and
-				\account\AccountLabelLib::isFromClass($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], $eAccountFilter['class']) === FALSE
-			) {
-				continue;
-			}
-
-			if($search->get('method') and $search->get('method')->notEmpty()) {
-				if($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD] !== $search->get('method')['name']) {
-					continue;
-				}
-			}
-
-			$operationsFiltered[] = $operation;
-		}
-
-		return $operationsFiltered;
+		return [$fecData, $nInvoices];
 
 	}
 
@@ -543,6 +491,54 @@ Class AccountingLib {
     });
 
 		return $operations;
+
+	}
+
+	private static function extractAccountFromItem(\selling\Item $eItem, \Collection $cAccount, \account\Account $eAccountDefault): \account\Account {
+
+		// Account défini dans l'item
+		if($eItem['account']->notEmpty() and $cAccount->offsetExists($eItem['account']['id'])) {
+
+			$eAccount = $cAccount->offsetGet($eItem['account']['id']);
+
+		// Fallback sur le produit : cas du private
+		} else if(
+			$eItem['product']->notEmpty() and
+			$eItem['type'] === \selling\Item::PRIVATE and
+			$eItem['product']['privateAccount']->notEmpty() and
+			$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
+		) {
+
+			$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
+
+		// Fallback sur le produit : cas du pro
+		} else if(
+			$eItem['product']->notEmpty() and
+			$eItem['type'] === \selling\Item::PRO and
+			$eItem['product']['proAccount']->notEmpty() and
+			$cAccount->offsetExists($eItem['product']['proAccount']['id'])
+		) {
+
+			$eAccount = $cAccount->offsetGet($eItem['product']['proAccount']['id']);
+
+		// Fallback sur le produit : cas du pro sans account pro mais avec account private
+		} else if(
+			$eItem['product']->notEmpty() and
+			$eItem['type'] === \selling\Item::PRO and
+			$eItem['product']['privateAccount']->notEmpty() and
+			$cAccount->offsetExists($eItem['product']['privateAccount']['id'])
+		) {
+
+			$eAccount = $cAccount->offsetGet($eItem['product']['privateAccount']['id']);
+
+		// On sait pas.
+		} else {
+
+			$eAccount = $eAccountDefault;
+
+		}
+
+		return $eAccount;
 
 	}
 
