@@ -36,8 +36,8 @@ class PaymentLib extends PaymentCrud {
 
 		return Payment::model()
       	->select(Payment::getSelection())
-			->sort(['id' => SORT_DESC])
-			->delegateCollection('sale', 'id', function(\Collection $cPayment) {
+				->sort(['id' => SORT_DESC])
+				->delegateCollection('sale', 'id', function(\Collection $cPayment) {
 
 					$cPaymentFiltered = new \Collection();
 
@@ -230,7 +230,7 @@ class PaymentLib extends PaymentCrud {
 
 					$eMethod = \payment\MethodLib::getById($eMethodDefault['id']);
 
-				} else if($cPayment->count() !== 1) {
+				} else {
 
 					Payment::model()->commit();
 					return;
