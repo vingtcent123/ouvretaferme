@@ -395,7 +395,7 @@ class TipUi {
 				$h .= '<p>'.s("Les écritures proposées sont classées avec le tiers sélectionné à l'étape {icon} en premier, mais il est possible de sélectionner des écritures liées à d'autres tiers.<br /><i>exemple de cas d'usage: si votre opération bancaire correspond à un virement {iconStripe} Stripe et que vous y rattachez toutes les écritures de ventes de vos clients</i>.", ['iconStripe' => \Asset::icon('stripe'), 'icon' => \Asset::icon('1-circle')]).'</p>';
 
 				return [
-					'icon' => \Asset::icon('piggy-bank'),
+					'icon' => \Asset::icon('bank'),
 					'title' => s("Rattacher une opération bancaire à une ou plusieurs écritures comptables"),
 					'content' => $h,
 					'image' => FALSE,
@@ -408,7 +408,7 @@ class TipUi {
 				$h .= '<p>'.s("Les opérations bancaires proposées sont filtrées selon le montant ± 1€, et elles ne doivent pas déjà être rattachées à une écriture comptable.", ).'</p>';
 
 				return [
-					'icon' => \Asset::icon('piggy-bank'),
+					'icon' => \Asset::icon('bank'),
 					'title' => s("Rattacher une ou plusieurs écritures comptables à une opération bancaire"),
 					'content' => $h,
 					'image' => FALSE,

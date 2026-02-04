@@ -204,7 +204,7 @@ Class ImportUi {
 									}
 
 									$h .= '<span class="'.$class.'">'.\util\TextUi::money($eInvoice['cashflow']['amount']).'</span>';
-									$h .= '<a title="'.s("Rapprochée").'" href="'.\farm\FarmUi::urlConnected($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'&bankAccount='.$eInvoice['cashflow']['account']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('piggy-bank').'</a>';
+									$h .= '<a title="'.s("Rapprochée").'" href="'.\farm\FarmUi::urlConnected($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'&bankAccount='.$eInvoice['cashflow']['account']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('bank').'</a>';
 
 								}
 

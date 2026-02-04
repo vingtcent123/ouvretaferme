@@ -115,6 +115,11 @@ class CompanyUi {
 
 			$h .= '<div class="util-buttons">';
 
+				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/" class="util-button">';
+					$h .= '<h4>'.s("Les exercices comptables").'</h4>';
+					$h .= \Asset::icon('journals');
+				$h .= '</a>';
+
 				$h .= '<a href="'.CompanyUi::urlBank($eFarm).'/account" class="util-button">';
 					$h .= '<h4>'.s("Les comptes bancaires").'</h4>';
 					$h .= \Asset::icon('bank');

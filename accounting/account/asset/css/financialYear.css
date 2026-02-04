@@ -16,6 +16,11 @@ div.financial-year-list {
 
 }
 
+.financial-year-block-container {
+	display: grid;
+	width: fit-content;
+}
+
 .financial-year-block {
 	padding: 1rem;
 	margin-bottom: 2rem;
@@ -77,6 +82,16 @@ div.financial-year-list {
 
 .financial-year-detail-title h3 {
 	margin-bottom: 0;
+	padding-top: 0.625rem;
+}
+
+.financial-year-detail-title h3 a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.financial-year-detail-title h3 a:hover {
+	color: var(--accounting);
 }
 
 @media (max-width: 451px) {

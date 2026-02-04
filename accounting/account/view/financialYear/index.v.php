@@ -82,6 +82,25 @@ new AdaptativeView('close', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('index', function($data, FarmTemplate $t) {
+
+	$t->nav = 'settings-accounting';
+
+	$t->title = s("Les exercices comptables de {value}", $data->eFarm['name']);
+	$t->canonical = \company\CompanyUi::urlAccount($data->eFarm).'/financialYear/';
+
+	$t->mainTitle = new \account\FinancialYearUi()->getManageTitle($data->eFarm, $data->cFinancialYear);
+
+	echo '<div class="financial-year-block-container">';
+
+	foreach($data->cFinancialYear as $eFinancialYear) {
+			echo new \account\FinancialYearUi()->view($data->eFarm, $eFinancialYear, TRUE);
+		}
+
+	echo '</div>';
+
+});
+
 new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 	return new \account\FinancialYearUi()->update($data->eFarm, $data->e);

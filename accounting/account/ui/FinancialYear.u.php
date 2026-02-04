@@ -21,8 +21,8 @@ class FinancialYearUi {
 			$h .= '</h1>';
 
 			$h .= '<div>';
-			if($cFinancialYearOpen->count() < 2) {
-				$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un exercice comptable").'</a> ';
+				if($eFarm['cFinancialYear']->find(fn($e) => $e['status'] === \account\FinancialYear::OPEN)->count() < \account\FinancialYearSetting::MAX_FINANCIAL_YEAR_OPEN) {
+					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un exercice comptable").'</a> ';
 			}
 			$h .= '</div>';
 
@@ -808,7 +808,129 @@ class FinancialYearUi {
 
 	}
 
-	public function view(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
+	private function buttons(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
+
+		$h = '<div class="util-buttons">';
+
+			if($eFinancialYear['hasVat']) {
+				$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
+					$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
+					$h .= \Asset::icon('pencil');
+				$h .= '</a>';
+			}
+
+			$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/tresorerie" class="util-button">';
+				$h .= '<h5>'.s("Trésorerie").'</h5>';
+				$h .= \Asset::icon('bank');
+			$h .= '</a>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private function actions(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
+
+		$action = '';
+
+		if($eFinancialYear->acceptImportFec()) {
+			$action .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md">';
+				if($eFinancialYear['cImport']->notEmpty()) {
+					$action .= s("Import FEC");
+				} else {
+					$action .= s("Importer un fichier FEC");
+				}
+			$action .= '</a>';
+		}
+
+		if($eFinancialYear['status'] === FinancialYearElement::OPEN) {
+
+			if($eFinancialYear['closeDate'] !== NULL) {
+
+				$icon = '<span class="color-danger">'.\Asset::icon('unlock-fill').'</span>';
+				$label = '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Rouvert").'</span>';
+
+				if($eFinancialYear->acceptReClose()) {
+					$action .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReclose" post-id="'.$eFinancialYear['id'].'" class="btn btn-outline-danger btn-md">';
+						$action .= s("Refermer");
+					$action .= '</a>';
+				}
+
+			} else if($eFinancialYear['openDate'] === NULL) {
+
+				$icon = \Asset::icon('clock-history');
+				$label = s("En attente d'ouverture");
+
+				if($eFinancialYear->acceptOpen()) {
+					$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="btn btn-secondary btn-md">';
+						$action .= s("Réaliser le bilan d'ouverture");
+					$action .= '</a>';
+				}
+
+			} else {
+
+				$icon = \Asset::icon('play-fill');
+				$label = s("En cours");
+
+				if($eFinancialYear->isOpen() and $eFinancialYear->acceptClose() and $eFinancialYear['endDate'] < date('Y-m-d')) {
+					$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="btn btn-secondary btn-md">';
+						$action .= s("Réaliser le bilan de clôture");
+					$action .= '</a>';
+				}
+			}
+
+		} else {
+
+			$icon = \Asset::icon('lock-fill');
+			$label = s("Clôturé");
+
+			/*if($eFinancialYear->acceptReOpen()) {
+				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item">';
+					$h .= '<span class="bg-danger btn color-white">'.\Asset::icon('exclamation-triangle').' '.s("Rouvrir").'</span>';
+				$h .= '</a>';
+			}*/
+		}
+
+		$h = '<div class="financial-year-details-element">';
+			$h .= '<div class="financial-year-detail-title">';
+				$h .= '<h3>'.$icon.' '.$label.'</h3>';
+				$h .= '<div class="financial-year-buttons">';
+
+					if($eFinancialYear->acceptUpdate()) {
+
+						$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
+							$h .= \Asset::icon('gear-fill');
+						$h .= '</a>';
+
+					}
+
+				$h .= '</div>';
+			$h .= '</div>';
+
+			if($action or $eFinancialYear->acceptImportFec()) {
+
+				$h .= '<div class="financial-year-actions">';
+
+					$h .= $action;
+
+					if($eFinancialYear->acceptImportFec()) {
+
+						$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md">';
+							$h .= s("Importer un fichier FEC");
+						$h .= '</a>';
+
+					}
+
+				$h .= '</div>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
+	public function view(\farm\Farm $eFarm, FinancialYear $eFinancialYear, bool $readOnly): string {
 
 		\Asset::css('account', 'financialYear.css');
 
@@ -817,122 +939,100 @@ class FinancialYearUi {
 			$h .= '<div class="financial-year-title">';
 
 				$h .= '<div class="financial-year-dates" financial-year-dates>';
-					$h .= \util\DateUi::numeric($eFinancialYear['startDate']).'<div class="mb-1 mt-1">'.\Asset::icon('arrow-down-circle-fill').'</div>'.\util\DateUi::numeric($eFinancialYear['endDate']);
+					$h .= \util\DateUi::numeric($eFinancialYear['startDate']);
+					$h .= '<div class="mb-1 mt-1">'.\Asset::icon('arrow-down-circle-fill').'</div>';
+					$h .= \util\DateUi::numeric($eFinancialYear['endDate']);
 				$h .= '</div>';
 
 			$h .= '</div>';
 
 			$h .= '<div class="financial-year-details">';
 
-				$action = '';
+				if($readOnly === FALSE) {
 
-				if($eFinancialYear->acceptImportFec()) {
-					$action .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md">';
-						if($eFinancialYear['cImport']->notEmpty()) {
-							$action .= s("Import FEC");
-						} else {
-							$action .= s("Importer un fichier FEC");
-						}
-					$action .= '</a>';
-				}
-
-				if($eFinancialYear['status'] === FinancialYearElement::OPEN) {
-
-					if($eFinancialYear['closeDate'] !== NULL) {
-
-						$icon = '<span class="color-danger">'.\Asset::icon('unlock-fill').'</span>';
-						$label = '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Rouvert").'</span>';
-
-						if($eFinancialYear->acceptReClose()) {
-							$action .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReclose" post-id="'.$eFinancialYear['id'].'" class="btn btn-outline-danger btn-md">';
-								$action .= s("Refermer");
-							$action .= '</a>';
-						}
-
-					} else if($eFinancialYear['openDate'] === NULL) {
-
-						$icon = \Asset::icon('clock-history');
-						$label = s("En attente d'ouverture");
-
-						if($eFinancialYear->acceptOpen()) {
-							$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:open?id='.$eFinancialYear['id'].'" class="btn btn-secondary btn-md">';
-								$action .= s("Réaliser le bilan d'ouverture");
-							$action .= '</a>';
-						}
-
-					} else {
-
-						$icon = \Asset::icon('play-fill');
-						$label = s("En cours");
-
-						if($eFinancialYear->isOpen() and $eFinancialYear->acceptClose() and $eFinancialYear['endDate'] < date('Y-m-d')) {
-							$action = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:close?id='.$eFinancialYear['id'].'" class="btn btn-secondary btn-md">';
-								$action .= s("Réaliser le bilan de clôture");
-							$action .= '</a>';
-						}
-					}
+					$h .= $this->actions($eFarm, $eFinancialYear);
 
 				} else {
 
-					$icon = \Asset::icon('lock-fill');
-					$label = s("Clôturé");
+					$h .= '<div class="financial-year-details-element">';
 
-					/*if($eFinancialYear->acceptReOpen()) {
-						$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item">';
-							$h .= '<span class="bg-danger btn color-white">'.\Asset::icon('exclamation-triangle').' '.s("Rouvrir").'</span>';
-						$h .= '</a>';
-					}*/
-				}
+						$h .= '<div class="financial-year-detail-title">';
 
-				$h .= '<div class="financial-year-details-element">';
-					$h .= '<div class="financial-year-detail-title">';
-						$h .= '<h3>'.$icon.' '.$label.'</h3>';
-						$h .= '<div class="financial-year-buttons">';
+							$h .= '<h3><a href="'.\farm\FarmUi::urlFinancialYear($eFinancialYear).'/etats-financiers/">';
 
-							if($eFinancialYear->acceptUpdate()) {
+								if($eFinancialYear->isClosed()) {
+									$h .= \Asset::icon('lock-fill');
+								} else {
+									$h .= \Asset::icon('calendar3');
+								}
 
-								$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
-									$h .= \Asset::icon('gear-fill');
-								$h .= '</a>';
+								$h .= '&nbsp;&nbsp;'.s("Exercice {value}", $eFinancialYear->getLabel());
+							$h .= '</a></h3>';
 
-							}
+							$h .= '<div class="financial-year-buttons">';
 
+								if($eFinancialYear->acceptUpdate()) {
+
+									$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
+										$h .= \Asset::icon('gear-fill');
+									$h .= '</a>';
+
+								}
+
+							$h .= '</div>';
 						$h .= '</div>';
 					$h .= '</div>';
 
-					$h .= '<div class="financial-year-actions">';
-
-						$h .= $action;
-
-						if($eFinancialYear->acceptImportFec()) {
-
-							$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/fec:import" class="btn btn-primary btn-md">';
-								$h .= s("Importer un fichier FEC");
-							$h .= '</a>';
-
-						}
-
-					$h .= '</div>';
-				$h .= '</div>';
+				}
 				$h .= '<div class="financial-year-details-more">';
 
 					$h .= '<ul class="mt-1">';
 
 						$h .= '<li>';
-							$h .= s("Régime {value}", '<b>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</b>');
+							$h .= s("Régime du {value}", '<b>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</b>');
 						$h .= '</li>';
 
+						if($readOnly) {
+
+							$type = match($eFinancialYear['accountingType']) {
+								FinancialYear::CASH => s("de <b>trésorerie</b>"),
+								FinancialYear::ACCRUAL => s("à l'<b>engagement</b>"),
+							};
+
+							$mode = match($eFinancialYear['accountingMode']) {
+								FinancialYear::CASH_RECEIPTS => s("avec un <b>livre de recettes</b>"),
+								FinancialYear::ACCOUNTING => s("selon le <b>plan comptable agricole</b>"),
+							};
+							$h .= '<li>';
+								$h .= s("Comptabilité {type} {mode}", ['type' => $type, 'mode' => $mode]);
+							$h .= '</li>';
+
+						}
+
 						$h .= '<li>';
-							$h .= $eFinancialYear['hasVat'] ? s("Redevable de la TVA") : s("Non redevable de la TVA");
+							if($eFinancialYear['hasVat']) {
+
+								$chargeability = match($eFinancialYear['vatChargeability']) {
+									FinancialYear::CASH => s("exigibilité sur les encaissements"),
+									FinancialYear::DEBIT => s("option sur débits"),
+								};
+
+								$h .= s("Redevable de la TVA avec {value}", '<b>'.$chargeability.'</b>');
+
+							} else {
+
+								$h .= s("Non redevable de la TVA");
+
+							}
 						$h .= '</li>';
 
 						if($eFinancialYear['hasVat']) {
 							$h .= '<li>';
-								$h .= s("Déclaration de TVA {value}", '<b>'.self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']].'</b>');
+								$h .= s("Déclaration de TVA {value}", '<b>'.strtolower(self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']]).'</b>');
 							$h .= '</li>';
 						}
 
-						if($eFinancialYear['cImport']->notEmpty()) {
+						if($readOnly === FALSE and $eFinancialYear['cImport']->notEmpty()) {
 							if($eFinancialYear['cImport']->first()['status'] === Import::DONE) {
 								$h .= '<li>';
 									$h .= \Asset::icon('journal-check').' ';
@@ -942,24 +1042,13 @@ class FinancialYearUi {
 						}
 					$h .= '</ul>';
 
-					$h .= '<div class="util-buttons">';
-
-						if($eFinancialYear['hasVat']) {
-							$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
-								$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
-								$h .= \Asset::icon('pencil');
-							$h .= '</a>';
-						}
-
-						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/tresorerie" class="util-button">';
-							$h .= '<h5>'.s("Trésorerie").'</h5>';
-							$h .= \Asset::icon('bank');
-						$h .= '</a>';
-					$h .= '</div>';
+					if($readOnly === FALSE) {
+						$h .= $this->buttons($eFarm, $eFinancialYear);
+					}
 
 				$h .= '</div>';
 
-				if($eFinancialYear['cImport']->notEmpty()) {
+				if($readOnly === FALSE and $eFinancialYear['cImport']->notEmpty()) {
 
 					foreach($eFinancialYear['cImport'] as $eImport) {
 

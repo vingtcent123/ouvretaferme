@@ -4,6 +4,13 @@ new \account\FinancialYearPage(function($data) {
 	$data->eFarm->validate('canManage');
 
 })
+	->get('index', function($data) {
+
+		$data->cFinancialYear = \account\FinancialYearLib::getAll();
+
+		throw new ViewAction($data);
+
+	})
 	->create(function($data) {
 
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
@@ -21,14 +28,12 @@ new \account\FinancialYearPage(function($data) {
 
 	})
 ;
-new \account\FinancialYearPage(
-	function($data) {
-		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
-		if($data->cFinancialYearOpen->count() >= 2) {
-			throw new NotExpectedAction('Cannot create a new financial year as there are already '.$data->cFinancialYearOpen->count().' financial years open');
-		}
+new \account\FinancialYearPage(function($data) {
+	$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
+	if($data->cFinancialYearOpen->count() >= 2) {
+		throw new NotExpectedAction('Cannot create a new financial year as there are already '.$data->cFinancialYearOpen->count().' financial years open');
 	}
-)
+})
 	->doCreate(function($data) {
 
 		throw new RedirectAction(\farm\FarmUi::urlFinancialYear($data->e, $data->eFarm).'/etats-financiers?success=account\\FinancialYear::created');

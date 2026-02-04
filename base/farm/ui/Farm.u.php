@@ -2220,13 +2220,6 @@ class FarmUi {
 
 				}
 
-				if(
-					$selectedView === \overview\AnalyzeLib::TAB_FINANCIAL_YEAR and
-					$eFarm['cFinancialYear']->find(fn($e) => $e['status'] === \account\FinancialYear::OPEN)->count() < \account\FinancialYearSetting::MAX_FINANCIAL_YEAR_OPEN
-				) {
-					$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Créer un exercice comptable").'</a> ';
-				}
-
 				$documentType = match($selectedView) {
 					\overview\AnalyzeLib::TAB_INCOME_STATEMENT => GET('type') === 'detailed' ? \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED : \account\FinancialYearDocumentLib::INCOME_STATEMENT,
 					\overview\AnalyzeLib::TAB_BALANCE_SHEET => $eFarm['eFinancialYear']->isClosed() ? \account\FinancialYearDocumentLib::CLOSING : \account\FinancialYearDocumentLib::BALANCE_SHEET,

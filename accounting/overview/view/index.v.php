@@ -40,7 +40,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 
 	Asset::css('account', 'financialYear.css');
 
-	echo new \account\FinancialYearUi()->view($data->eFarm, $data->eFinancialYear);
+	echo new \account\FinancialYearUi()->view($data->eFarm, $data->eFinancialYear, FALSE);
 
 	if($data->eFinancialYear['nOperation'] === 0) {
 
@@ -61,7 +61,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 			echo '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations" class="util-button">';
 
 				echo '<h4>'.s("Créer une écriture depuis mes opérations bancaires").'</h4>';
-				echo \Asset::icon('piggy-bank');
+				echo \Asset::icon('bank');
 
 			echo '</a>';
 

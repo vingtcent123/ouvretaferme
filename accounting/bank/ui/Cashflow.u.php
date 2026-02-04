@@ -1156,7 +1156,7 @@ class CashflowUi {
 
 	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
 
-		$item = \Asset::icon('piggy-bank');
+		$item = \Asset::icon('bank');
 		$item .= '<div>'.s("Aucune opération bancaire trouvée (cliquer pour voir toutes les opérations bancaires non rattachées)").'</div>';
 
 		return [

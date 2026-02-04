@@ -510,7 +510,7 @@ class JournalUi {
 								$h .= encode($eOperation['description']);
 								if($eOperation['cashflow']->notEmpty() and \account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
 									$h .= ' <a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$eOperation['cashflow']['id'].'&bankAccount='.$eOperation['cashflow']['account']['id'].'" class="btn btn-xs btn-secondary" title="'.("Voir l'opération bancaire liée").'">';
-										$h .= \Asset::icon('piggy-bank');
+										$h .= \Asset::icon('bank');
 									$h .= '</a>';
 								}
 
@@ -789,7 +789,7 @@ class JournalUi {
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlAsset($eFarm).'/:create" data-ajax-method="get" class="batch-item batch-asset" data-batch-not-only="hide" data-batch-test="accept-asset">'.\Asset::icon('house-door').'<span>'.s("Créer la fiche d'immo").'</span></a>';
 		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlAsset($eFarm).'/:attach" data-ajax-method="get" class="batch-item batch-asset" data-batch-not-only="hide" data-batch-test="accept-asset">'.\Asset::icon('house-door').'<span>'.s("Rattacher à une immo").'</span></a>';
 
-		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operations:attach" data-ajax-method="get" class="batch-item" data-batch-test="accept-attach" data-batch-not-only="hide">'.\Asset::icon('piggy-bank').'<span>'.s("Rattacher").'</span></a>';
+		$menu .= '<a data-ajax-submit="'.\company\CompanyUi::urlJournal($eFarm).'/operations:attach" data-ajax-method="get" class="batch-item" data-batch-test="accept-attach" data-batch-not-only="hide">'.\Asset::icon('bank').'<span>'.s("Rattacher").'</span></a>';
 
 		$menu .= '<span class="hide" data-batch-title-more-singular>'.s(", dont 1 opération liée").'</span>';
 		$menu .= '<span class="hide" data-batch-title-more-plural>'.s(", dont <span data-batch-title-more-value></span> opérations liées").'</span>';
