@@ -407,6 +407,10 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 			echo new \selling\SaleUi()->getNextSales($data->eFarm, $data->type, $data->nextSales);
 		}
 
+		if($data->cSale->count() < 5) {
+			echo new \selling\SaleUi()->getWarning(TRUE);
+		}
+
 		echo new \selling\SaleUi()->getList($data->eFarm, $data->cSale, $data->nSale, $data->search, hide: ['items'], page: $data->page, cPaymentMethod: $data->cPaymentMethod);
 
 	}

@@ -2058,13 +2058,7 @@ class SaleUi {
 		}
 
 		if($eSale['farm']['hasSales'] === FALSE) {
-
-			$h .= '<div class="util-block-info mt-2">';
-				$h .= '<h3>'.s("Si vous souhaitez créer des ventes pour tester {siteName}").'</h3>';
-				$h .= '<p>'.s("Nous vous suggérons d'utiliser la ferme de démonstration ou de créer une ferme de test si vous souhaitez tester les fonctionnalités de commercialisation de Ouvretaferme. En raison de contraintes réglementaires, vous ne pouvez pas supprimer des ventes qui ne sont pas à l'état de brouillon sur le logiciel.").'</p>';
-				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/1/ventes" target="_blank" class="btn btn-transparent">'.s("Utiliser la démo").'</a>';
-			$h .= '</div>';
-
+			$h .= $this->getWarning();
 		}
 
 		return new \Panel(
@@ -2075,6 +2069,28 @@ class SaleUi {
 			body: $h,
 			footer: $footer
 		);
+
+	}
+
+	public function getWarning(bool $temporary = FALSE): string {
+
+		$h = '<div class="util-block-info mt-2">';
+			$h .= '<h3>'.s("Vous souhaitez créer des ventes pour tester {siteName} ?").'</h3>';
+			$h .= '<p>'.s("N'utilisez pas votre compte principal, car vous ne pouvez pas librement supprimer les ventes que vous renseignez dans le logiciel pour des contraintes réglementaires. Si vous souhaitez tester les fonctionnalités de commercialisation de Ouvretaferme, nous vous suggérons de :").'</p>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Créer une ferme fictive sur votre compte").'</li>';
+				$h .= '<li>'.s("Utiliser la ferme de démonstration").'</li>';
+			$h .= '</ul>';
+			$h .= '<p>';
+				$h .= '<a href="/farm/farm:create" target="_blank" class="btn btn-transparent">'.s("Créer une autre ferme").'</a> ';
+				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/1/ventes" target="_blank" class="btn btn-transparent">'.s("Utiliser la démo").'</a>';
+			$h .= '</p>';
+			if($temporary) {
+				$h .= '<p>'.s("Cet écran d'alerte disparaitra lorsque vous aurez réalisé votre 5<sup>ème</sup> vente sur {siteName} !").'</p>';
+			}
+		$h .= '</div>';
+
+		return $h;
 
 	}
 
