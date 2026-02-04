@@ -201,8 +201,9 @@ class PaymentLib extends PaymentCrud {
 	}
 
 	/**
-	 * Remplis la vente avec le moyen de paiement renseigné pour que le total des paiements corresponde au total de la vente
+	 * Remplit la vente avec le moyen de paiement renseigné pour que le total des paiements corresponde au total de la vente
 	 * Si aucun moyen de paiement n'est renseigné, on utilise le moyen de paiement actuel de la vente si il est renseigné et qu'il n'y en a qu'un
+	 * Sinon, on utilise le moyen de paiement par défaut
 	 */
 	public static function fillByMethod(Sale $eSale, \payment\Method $eMethod = new \payment\Method()): void {
 
@@ -219,12 +220,22 @@ class PaymentLib extends PaymentCrud {
 
 			if($eMethod->empty()) {
 
-				if($cPayment->count() !== 1) {
+				$eMethodDefault = $eSale['farm']->getConf('marketSalePaymentMethod');
+
+				if($cPayment->count() === 1) {
+
+					$eMethod = $cPayment->first()['method'];
+
+				} else if($eMethodDefault->notEmpty()) {
+
+					$eMethod = \payment\MethodLib::getById($eMethodDefault['id']);
+
+				} else if($cPayment->count() !== 1) {
+
 					Payment::model()->commit();
 					return;
-				}
 
-				$eMethod = $cPayment->first()['method'];
+				}
 
 			}
 
