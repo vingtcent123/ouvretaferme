@@ -93,7 +93,7 @@ new \mail\CampaignPage()
 			\mail\EmailLib::getByCampaign($data->e) :
 			new Collection();
 
-		$data->eFarm = $data->e['farm'];
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		throw new ViewAction($data);
 
