@@ -163,8 +163,8 @@ new Page(function($data) {
 
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
 			$data->search->set('cMethod', $cMethod);
-			$data->search->set('cRegister', \cash\RegisterLib::getAll());
-			$data->search->set('register', GET('register', '?int'));
+			//$data->search->set('cRegister', \cash\RegisterLib::getAll());
+			//$data->search->set('register', GET('register', '?int'));
 			$data->search->set('method', $eMethod);
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
