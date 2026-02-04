@@ -92,7 +92,7 @@ class BankAccountLib extends BankAccountCrud {
 			($eLastAccount['accountLabel'] + 1):
 			\account\AccountSetting::BANK_ACCOUNT_CLASS.'1';
 
-		$description = new BankAccountUi()->getUnknownName().' '.$accountId;
+		$description = new BankAccountUi()->getUnknownName().' '.$accountLabel;
 
 		$eAccount = new \account\Account([
 			'class' => $accountLabel,
