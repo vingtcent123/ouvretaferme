@@ -2260,9 +2260,9 @@ class CultivationUi {
 					$filled++;
 
 					$h .= [
-						\series\Cultivation::SOWING => s("semis direct"),
-						\series\Cultivation::YOUNG_PLANT => '<span title="'.s("Autoproduction du plant").'">'.s("plant autoproduit").'</span>',
-						\series\Cultivation::YOUNG_PLANT_BOUGHT => '<span title="'.s("Achat du plant").'">'.s("plant acheté").'</span>'
+						\series\Cultivation::SOWING => s("Semis direct"),
+						\series\Cultivation::YOUNG_PLANT => '<span title="'.s("Autoproduction du plant").'">'.s("Plant autoproduit").'</span>',
+						\series\Cultivation::YOUNG_PLANT_BOUGHT => '<span title="'.s("Achat du plant").'">'.s("Plant acheté").'</span>'
 					][$eCultivation['seedling']];
 
 				}
@@ -2863,9 +2863,9 @@ class CultivationUi {
 			case 'seedling' :
 				$d->field = 'select';
 				$d->values = [
-					Cultivation::SOWING => s("semis direct"),
-					Cultivation::YOUNG_PLANT => s("plant autoproduit"),
-					Cultivation::YOUNG_PLANT_BOUGHT => s("plant acheté")
+					Cultivation::SOWING => s("Semis direct"),
+					Cultivation::YOUNG_PLANT => s("Plant autoproduit"),
+					Cultivation::YOUNG_PLANT_BOUGHT => s("Plant acheté")
 				];
 				$d->attributes = fn(\util\FormUi $form, $e) => [
 					'onchange' => 'Cultivation.changeSeedling(this)'

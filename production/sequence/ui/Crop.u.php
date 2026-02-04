@@ -709,8 +709,9 @@ class CropUi {
 
 			case 'seedling' :
 				$d->values = [
-					Crop::SOWING => s("semis direct"),
-					Crop::YOUNG_PLANT => s("plant")
+					Crop::SOWING => s("Semis direct"),
+					Crop::YOUNG_PLANT => s("Plant autoproduit"),
+					Crop::YOUNG_PLANT_BOUGHT => s("Plant acheté"),
 				];
 				$d->attributes = [
 					'columns' => 2,

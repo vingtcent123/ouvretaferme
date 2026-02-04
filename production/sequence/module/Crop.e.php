@@ -67,7 +67,7 @@ class Crop extends CropElement {
 
 				$this->expects(['seedling']);
 
-				if(in_array($this['seedling'], [Crop::SOWING, Crop::YOUNG_PLANT]) === FALSE) {
+				if(in_array($this['seedling'], [Crop::SOWING, Crop::YOUNG_PLANT, Crop::YOUNG_PLANT_BOUGHT]) === FALSE) {
 					$seeds = NULL;
 				} else {
 					$seeds = (int)$seeds;
@@ -157,6 +157,10 @@ class Crop extends CropElement {
 
 					case Crop::YOUNG_PLANT :
 						$check->call($this, ACTION_SEMIS_PEPINIERE);
+						$check->call($this, ACTION_PLANTATION);
+						break;
+
+					case Crop::YOUNG_PLANT_BOUGHT :
 						$check->call($this, ACTION_PLANTATION);
 						break;
 
