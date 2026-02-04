@@ -165,7 +165,6 @@ new Page(function($data) {
 
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
 			$data->search->set('cMethod', $cMethod);
-			$data->search->set('cRegister', \cash\RegisterLib::getAll());
 			$data->search->set('method', $eMethod);
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 
@@ -174,6 +173,7 @@ new Page(function($data) {
 
 			if(\preaccounting\CashLib::isActive()) {
 
+				$data->search->set('cRegister', \cash\RegisterLib::getAll());
 				$eRegister = (GET('filter', 'int') !== 0) ? $data->search->get('cRegister')->offsetGet(GET('filter', 'int')) : new \cash\Register();
 				$data->search->set('register', $eRegister);
 
