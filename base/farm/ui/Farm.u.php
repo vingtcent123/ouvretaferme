@@ -1365,85 +1365,13 @@ class FarmUi {
 			$h .= '</div>';
 */
 
-			$cFinancialYear = $eFarm['cFinancialYear?']();
-
-			$cFinancialYearBefore = new \account\FinancialYear();
-
-			$eFinancialYearSelected = $eFarm->getView('viewAccountingYear');
-
-			if($eFinancialYearSelected->empty()) {
-				//$eFinancialYearSelected = $cFinancialYear->last();
-			}
-
-			$cFinancialYearAfter = new \account\FinancialYear();
-
-			$position = 0;
-
-			foreach($cFinancialYear as $eFinancialYear) {
-
-				if($eFinancialYear->is($eFinancialYearSelected)) {
-
-					if($position > 0) {
-						$cFinancialYearAfter = $cFinancialYear->slice(0, $position)->reverse();
-					}
-
-					$eFinancialYearSelected = $eFinancialYear;
-
-					if($cFinancialYear->valid()) {
-						$cFinancialYearBefore = $cFinancialYear->slice($position + 1);
-					}
-
-					break;
-
-				}
-
-				$position++;
-
-			}
-
 			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting">';
 
+				$cFinancialYear = $eFarm['cFinancialYear?']();
+
 				if($cFinancialYear->notEmpty()) {
-
-					$h .= '<div class="farm-nav-accounting-title">';
-						$h .= '<div class="farm-nav-accounting-before">';
-
-							if($cFinancialYearBefore->count() === 1) {
-								$h .= '<a href="'.$this->replaceFinancialYear($cFinancialYearBefore->first()).'" data-ajax-navigation="never">'.\Asset::icon('arrow-left-circle').'</a>';
-							} else if($cFinancialYearBefore->notEmpty()) {
-
-								$h .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.\Asset::icon('arrow-left-circle').'</a>';
-
-								$h .= '<div class="dropdown-list bg-accounting">';
-									$h .= $this->getFinancialYears($cFinancialYearBefore);
-								$h .= '</div>';
-
-							}
-
-						$h .= '</div>';
-						$h .= '<div class="farm-nav-accounting-selected">';
-							$h .= s("Exercice {value}", $eFinancialYearSelected->getLabel());
-							if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
-								$h .= '  '.\Asset::icon('lock-fill');
-							}
-						$h .= '</div>';
-						$h .= '<div class="farm-nav-accounting-after">';
-
-							if($cFinancialYearAfter->count() === 1) {
-								$h .= '<a href="'.$this->replaceFinancialYear($cFinancialYearAfter->first()).'" data-ajax-navigation="never">'.\Asset::icon('arrow-right-circle').'</a>';
-							} else if($cFinancialYearAfter->notEmpty()) {
-
-								$h .= '<a data-dropdown="bottom-end" data-dropdown-hover="true">'.\Asset::icon('arrow-right-circle').'</a>';
-
-								$h .= '<div class="dropdown-list bg-accounting">';
-									$h .= $this->getFinancialYears($cFinancialYearAfter);
-								$h .= '</div>';
-
-							}
-
-						$h .= '</div>';
-					$h .= '</div>';
-
+					$eFinancialYearSelected = $eFarm->getView('viewAccountingYear');
+					$h .= $this->getFinancialYearsTitle($cFinancialYear, $eFinancialYearSelected);
 				}
 
 				$h .= $this->getNav('accounting', $nav);
@@ -1467,6 +1395,83 @@ class FarmUi {
 			$h .= '</div>';
 
 		}
+
+		return $h;
+
+	}
+
+	private function getFinancialYearsTitle(\Collection $cFinancialYear, \account\FinancialYear $eFinancialYearSelected): string {
+
+		$cFinancialYearBefore = new \account\FinancialYear();
+
+		if($eFinancialYearSelected->empty()) {
+			$eFinancialYearSelected = $cFinancialYear->last();
+		}
+
+		$cFinancialYearAfter = new \account\FinancialYear();
+
+		$position = 0;
+
+		foreach($cFinancialYear as $eFinancialYear) {
+
+			if($eFinancialYear->is($eFinancialYearSelected)) {
+
+				if($position > 0) {
+					$cFinancialYearAfter = $cFinancialYear->slice(0, $position)->reverse();
+				}
+
+				$eFinancialYearSelected = $eFinancialYear;
+
+				if($cFinancialYear->valid()) {
+					$cFinancialYearBefore = $cFinancialYear->slice($position + 1);
+				}
+
+				break;
+
+			}
+
+			$position++;
+
+		}
+
+		$h = '<div class="farm-nav-accounting-title">';
+			$h .= '<div class="farm-nav-accounting-before">';
+
+				if($cFinancialYearBefore->count() === 1) {
+					$h .= '<a href="'.$this->replaceFinancialYear($cFinancialYearBefore->first()).'" data-ajax-navigation="never">'.\Asset::icon('arrow-left-circle').'</a>';
+				} else if($cFinancialYearBefore->notEmpty()) {
+
+					$h .= '<a data-dropdown="bottom-start" data-dropdown-hover="true">'.\Asset::icon('arrow-left-circle').'</a>';
+
+					$h .= '<div class="dropdown-list bg-accounting">';
+						$h .= $this->getFinancialYears($cFinancialYearBefore);
+					$h .= '</div>';
+
+				}
+
+			$h .= '</div>';
+			$h .= '<div class="farm-nav-accounting-selected">';
+				$h .= s("Exercice {value}", $eFinancialYearSelected->getLabel());
+				if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
+					$h .= '  '.\Asset::icon('lock-fill');
+				}
+			$h .= '</div>';
+			$h .= '<div class="farm-nav-accounting-after">';
+
+				if($cFinancialYearAfter->count() === 1) {
+					$h .= '<a href="'.$this->replaceFinancialYear($cFinancialYearAfter->first()).'" data-ajax-navigation="never">'.\Asset::icon('arrow-right-circle').'</a>';
+				} else if($cFinancialYearAfter->notEmpty()) {
+
+					$h .= '<a data-dropdown="bottom-end" data-dropdown-hover="true">'.\Asset::icon('arrow-right-circle').'</a>';
+
+					$h .= '<div class="dropdown-list bg-accounting">';
+						$h .= $this->getFinancialYears($cFinancialYearAfter);
+					$h .= '</div>';
+
+				}
+
+			$h .= '</div>';
+		$h .= '</div>';
 
 		return $h;
 
