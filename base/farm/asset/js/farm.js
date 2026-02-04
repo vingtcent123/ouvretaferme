@@ -6,7 +6,7 @@ document.addEventListener('keyup', function(e) {
 
 document.delegateEventListener('mouseleave', 'header', function(e) {
 
-	if(window.matchMedia('(min-width: 1100px) and (min-height: 650px)').matches) {
+	if(window.matchMedia('(min-width: 1100px) and (min-height: 600px)').matches) {
 		return;
 	}
 
@@ -78,7 +78,7 @@ class Farm {
 
 			if(
 				isTouch() &&
-				window.matchMedia('(max-width: 1099px), (max-height: 649px)').matches &&
+				window.matchMedia('(max-width: 1099px), (max-height: 599px)').matches &&
 				document.body.dataset.section === target.dataset.section
 			) {
 				this.closeSection();

@@ -70,7 +70,7 @@
   background: #e5e5f3;
 }
 
-@media (min-width: 1100px) and (min-height: 650px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 
 	:root {
 		--mainNav: 3.5rem;
@@ -79,7 +79,7 @@
 
 }
 
-@media (max-width: 1099px), (max-height: 649px) {
+@media (max-width: 1099px), (max-height: 599px) {
 
 	:root {
 		--farmSections: 3.5rem;
@@ -314,7 +314,7 @@ body[data-touch="yes"] {
 
 }
 
-@media (max-width: 1099px), (max-height: 649px) {
+@media (max-width: 1099px), (max-height: 599px) {
 
 	body {
 		min-height: 150vh;
@@ -349,7 +349,7 @@ body[data-template~="default"] header {
 	padding: 1.5rem 0 2.5rem;
 }
 
-@media (min-width: 1100px) and (min-height: 650px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 
 	body[data-template~="farm"] > header {
 		top: var(--mainNav);

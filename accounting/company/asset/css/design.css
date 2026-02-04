@@ -2,7 +2,7 @@
 	padding: 0;
 }
 
-@media (max-width: 1099px), (max-height: 649px) {
+@media (max-width: 1099px), (max-height: 599px) {
 	#product-version {
 		position: absolute;
 		right: 0;
@@ -10,7 +10,7 @@
 		color: #fff9;
 	}
 }
-@media (min-width: 1100px) and (min-height: 650px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 	#product-version {
 		position: absolute;
 		bottom: 0;
@@ -50,7 +50,7 @@ a.nav-year:hover {
 	color: white;
 }
 
-@media (min-width: 1100px) and (min-height: 650px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 
 	:root {
 		--nav-height: 12rem;
@@ -346,7 +346,7 @@ a.nav-year:hover {
 		padding: 0.5rem 0.5rem 0.5rem calc(1.5rem + var(--nav-padding));
 	}
 
-	@media (max-height: 649px) {
+	@media (max-height: 599px) {
 
 		a.company-subnav-item {
 			padding-top: 0.2rem;
@@ -355,7 +355,7 @@ a.nav-year:hover {
 
 	}
 
-	@media (min-height: 650px) and (max-height: 767px) {
+	@media (min-height: 600px) and (max-height: 767px) {
 
 		a.company-subnav-item {
 			padding-top: 0.25rem;
@@ -386,7 +386,7 @@ a.nav-year:hover {
 
 }
 
-@media (max-width: 1099px), (max-height: 649px) {
+@media (max-width: 1099px), (max-height: 599px) {
 
 	body[data-template~="company"] header {
 		background: linear-gradient(to bottom, var(--background-light) 0, white 100%);

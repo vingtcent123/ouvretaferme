@@ -5,7 +5,7 @@
 	top: 0;
 }
 
-@media (min-width: 1100px) and (min-height: 650px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 
 	main #zone-header {
 		height: 6rem;
@@ -233,7 +233,7 @@ body.panel-open div.zone-title {
 		width: calc(var(--screen-width) - var(--nav-width) - var(--container-padding) * 2);
 	}
 
-	@media (min-width: 1100px) and (min-height: 650px) {
+	@media (min-width: 1100px) and (min-height: 600px) {
 
 		main div.zone-title {
 			top: 6rem;

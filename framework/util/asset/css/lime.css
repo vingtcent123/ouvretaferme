@@ -875,7 +875,7 @@ div.input-group > .input-group-addon.input-group-addon-for-input {
 
 }
 
-@media (max-width: 1099px), (max-height: 649px) {
+@media (max-width: 1099px), (max-height: 599px) {
 
 	.hide-lateral-down {
 		display: none !important;
@@ -898,7 +898,7 @@ div.input-group > .input-group-addon.input-group-addon-for-input {
 
 }
 
-@media (min-width: 1100px) and (min-height: 650px) {
+@media (min-width: 1100px) and (min-height: 600px) {
 
 	.hide-lateral-up {
 		display: none !important;
