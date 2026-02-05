@@ -29,6 +29,16 @@ class FinancialYear extends FinancialYearElement {
 	}
 
 	// Comptabilité à l'engagement
+	public function isAccounting() {
+		return $this['accountingMode'] === FinancialYear::ACCOUNTING;
+	}
+
+	// Comptabilité à l'engagement
+	public function isCashReceipts() {
+		return $this['accountingMode'] === FinancialYear::CASH_RECEIPTS;
+	}
+
+	// Comptabilité à l'engagement
 	public function isAccrualAccounting() {
 		return $this['accountingType'] === FinancialYear::ACCRUAL;
 	}
@@ -40,6 +50,22 @@ class FinancialYear extends FinancialYearElement {
 
 	public function isCurrent() {
 		return $this['startDate'] <= date('Y-m-d') and $this['endDate'] >= date('Y-m-d');
+	}
+
+	public function isIndividual() {
+
+		$this->expects(['legalCategory']);
+
+		return $this['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
+
+	}
+
+	public function isCompany() {
+
+		$this->expects(['legalCategory']);
+
+		return $this['legalCategory'] !== \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
+
 	}
 
 	public function acceptUpdate(): bool {

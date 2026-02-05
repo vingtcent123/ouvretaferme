@@ -40,6 +40,15 @@ class Account extends AccountElement {
 
 	}
 
+	public function isAssociatePrincipal(): bool {
+
+		return (
+			str_starts_with($this['class'], AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS) and
+			strlen($this['class']) > strlen(AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS)
+		);
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

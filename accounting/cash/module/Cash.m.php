@@ -73,6 +73,7 @@ class CashModel extends \ModuleModel {
 			'sourceInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'sourceSale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
+			'financialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
 			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
 			'operation' => ['element32', 'journal\Operation', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\cash\Cash::DRAFT, \cash\Cash::VALID, \cash\Cash::DELETED], 'cast' => 'enum'],
@@ -80,7 +81,7 @@ class CashModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'source', 'sourceBankAccount', 'sourceCashflow', 'sourceInvoice', 'sourceSale', 'account', 'thirdParty', 'operation', 'status', 'createdAt'
+			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'type', 'vat', 'vatRate', 'description', 'source', 'sourceBankAccount', 'sourceCashflow', 'sourceInvoice', 'sourceSale', 'account', 'financialYear', 'thirdParty', 'operation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -90,6 +91,7 @@ class CashModel extends \ModuleModel {
 			'sourceInvoice' => 'selling\Invoice',
 			'sourceSale' => 'selling\Sale',
 			'account' => 'account\Account',
+			'financialYear' => 'account\FinancialYear',
 			'thirdParty' => 'account\ThirdParty',
 			'operation' => 'journal\Operation',
 		];
@@ -200,6 +202,10 @@ class CashModel extends \ModuleModel {
 
 	public function whereAccount(...$data): CashModel {
 		return $this->where('account', ...$data);
+	}
+
+	public function whereFinancialYear(...$data): CashModel {
+		return $this->where('financialYear', ...$data);
 	}
 
 	public function whereThirdParty(...$data): CashModel {

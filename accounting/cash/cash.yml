@@ -25,6 +25,7 @@ Cash:
   sourceInvoice: ?selling\Invoice
   sourceSale: ?selling\Sale
   account: ?account\Account
+  financialYear: ?account\FinancialYear
   thirdParty: ?account\ThirdParty
   operation: ?journal\Operation
   status: enum(DRAFT, VALID, DELETED)

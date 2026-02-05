@@ -62,6 +62,16 @@ class AccountLib extends AccountCrud {
 
 	}
 
+	public static function getAssociates(): \Collection {
+
+		return Account::model()
+			->select(Account::getSelection())
+			->whereClass('LIKE', AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS.'%')
+			->where('LENGTH(class) > '.strlen(AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS))
+			->getCollection();
+
+	}
+
 	public static function getByIdWithVatAccount(int $id): Account {
 
 		$eAccount = new Account();

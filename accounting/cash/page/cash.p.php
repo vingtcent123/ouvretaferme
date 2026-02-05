@@ -4,12 +4,41 @@ new \cash\CashPage()
 
 		return new \cash\Cash([
 			'register' => \cash\RegisterLib::getById(INPUT('register'))->validate('acceptCash'),
-			'source' => \cash\Cash::INPUT('source', 'source'),
-			'type' => \cash\Cash::INPUT('type', 'type')
+			'source' => \cash\Cash::INPUT('source', 'source', fn() => throw new NotExpectedAction()),
+			'type' => \cash\Cash::INPUT('type', 'type', fn() => throw new NotExpectedAction()),
+			'date' => \cash\Cash::INPUT('date', 'date')
 		]);
 
 	})
-	->create()
+	->create(function($data) {
+
+		if($data->e['date'] !== NULL) {
+
+			$fw = new FailWatch();
+
+			$data->e->build(['date'], ['date' => $data->e['date']]);
+
+			$fw->validate();
+
+			switch($data->e['source']) {
+
+				case \cash\Cash::PRIVATE :
+
+					if($data->e->requireAssociateAccount()) {
+
+						$data->e['cAccount'] = \account\AccountLib::getAssociates();
+
+					}
+
+					break;
+
+			}
+
+		}
+
+		throw new ViewAction($data);
+
+	}, method: ['get', 'post'])
 	->doCreate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Register::created'));
 
 /*

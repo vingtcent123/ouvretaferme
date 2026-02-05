@@ -77,6 +77,8 @@ class CashUi {
 
 		return match($source) {
 
+			Cash::INITIAL => s("Solde initial de la caisse"),
+
 			Cash::PRIVATE => match($type) {
 				Cash::CREDIT => \Asset::icon('person-fill').'  '.s("Apport de l'exploitant à la caisse"),
 				Cash::DEBIT => \Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse"),
@@ -141,28 +143,15 @@ class CashUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td class="td-min-content">';
+						$h .= '<td>';
 
-							switch($eCash['source']) {
+							$h .= CashUi::getOperation($eCash['source'], $eCash['type']);
 
-								case Cash::INITIAL :
-									$h .= '';
-									break;
-
-								default :
-									throw new \Exception();
-
+							if($eCash['status'] === Cash::DRAFT) {
+								$h .= '<span class="util-badge bg-muted ml-1">'.s("Brouillon").'</span>';
 							}
 
-						$h .= '</td>';
-
-						$h .= '<td>';
-							$h .= '<div>'.encode($eCash['description']).'</div>';
-							$h .= '<div>';
-								if($eCash['status'] === Cash::DRAFT) {
-									$h .= '<span class="util-badge bg-muted">'.s("Brouillon").'</span>';
-								}
-							$h .= '</div>';
+							$h .= '<div class="ml-3">'.$this->getDetails($eCash).'</div>';
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content highlight-stick-right text-end">';
@@ -228,8 +217,20 @@ class CashUi {
 
 	}
 
-	public static function getInitial(): string {
-		return s("Solde initial de la caisse");
+	protected function getDetails(Cash $eCash): string {
+
+		$list = [];
+
+		if($eCash->requireAssociateAccount()) {
+			$list[] = encode($eCash['account']['name']);
+		}
+
+		if($eCash['description'] !== NULL) {
+			$list[] = encode($eCash['description']);
+		}
+
+		return implode(' | ', $list);
+
 	}
 
 	public function start(Register $eRegister): string {
@@ -243,6 +244,7 @@ class CashUi {
 			$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doCreate');
 				$h .= $form->hidden('source', Cash::INITIAL);
 				$h .= $form->hidden('register', $eRegister['id']);
+				$h .= $form->hidden('type', Cash::CREDIT);
 				$h .= $form->group(
 					s("Date du solde initial"),
 					$form->dynamicField($eCash, 'date')
@@ -268,23 +270,74 @@ class CashUi {
 
 		$h = '';
 
-		$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doCreate');
+		$h .= ($eCash['date'] === NULL) ?
+			$form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:create', ['method' => 'get']) :
+			$form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doCreate');
 
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('register', $eRegister);
 			$h .= $form->hidden('source', $eCash['source']);
+			$h .= $form->hidden('type', $eCash['type']);
 
 			$h .= $form->group(
 				s("Opération"),
 				self::getOperation($eCash['source'], $eCash['type'])
 			);
 
-			$h .= $form->dynamicGroup($eCash, 'date');
+			if($eCash['date'] === NULL) {
 
-			$h .= $form->group(
-				content: $form->submit(s("Ajouter l'opération"))
-			);
+				$dates = $form->inputGroup(
+					$form->dynamicField($eCash, 'date').
+					$form->submit(s("Valider"))
+				);
+
+				$dates .= '<fieldset class="mt-1">';
+					$dates .= '<legend>'.s("Utiliser un raccourci").'</legend>';
+
+					for($day = 0; $day < 7; $day++) {
+
+						$time = time() - $day * 86400;
+						$date = date('Y-m-d', $time);
+						$dayName = \util\DateUi::getDayName(date('N', strtotime($date)));
+
+						$dates .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'date', $date).'" class="btn btn-sm btn-outline-primary">';
+
+							$dates .= match($day) {
+								0 => s("Aujourd'hui"),
+								default => $dayName.' '.\util\DateUi::numeric($date, \util\DateUi::DAY_MONTH)
+							};
+
+						$dates .= '</a> ';
+
+					}
+
+				$dates .= '</fieldset>';
+
+				$h .= $form->group(
+					self::p('date')->label,
+					$dates
+				);
+
+			} else {
+
+				$h .= $form->hidden('date', $eCash['date']);
+
+				$h .= $form->group(
+					self::p('date')->label,
+					$form->inputGroup(
+						$form->addon(\util\DateUi::numeric($eCash['date'])).
+						'<a href="'.\util\HttpUi::removeArgument(LIME_REQUEST, 'date').'" class="btn btn-outline-primary">'.s("Modifier").'</a>'
+					)
+				);
+
+				$h .= $this->getFields($form, $eCash);
+
+				$h .= $form->group(
+					content: $form->submit(s("Ajouter l'opération"))
+				);
+
+			}
 
 		$h .= $form->close();
 
@@ -296,6 +349,55 @@ class CashUi {
 			},
 			body: $h
 		);
+
+	}
+
+	public function getFields(\util\FormUi $form, Cash $eCash): string {
+
+		$h = '';
+
+		switch($eCash['source']) {
+
+			case Cash::PRIVATE :
+
+				$h .= $form->dynamicGroup($eCash, 'amountIncludingVat');
+
+				if($eCash->requireAssociateAccount()) {
+
+					$label = s("Numéro de compte associé");
+
+					if($eCash['cAccount']->notEmpty()) {
+
+						$label .= \util\FormUi::info(s("Vous pouvez ajouter les associés manquants depuis le <link>paramétrage des numéros de compte</link>.", ['link' => '<a href="'.\farm\FarmUi::urlConnected().'/account/account">']));
+
+						$field = $form->radios('account', $eCash['cAccount'], attributes: [
+							'mandatory' => TRUE,
+							'callbackRadioContent' => fn($eAccount) => $eAccount['name']
+						]);
+
+					} else {
+						$field = '<div class="util-block-info">';
+							$field .= '<h3>'.s("Vous n'avez pas enregistré de compte associé").'</h3>';
+							$field .= '<p>'.s("Vous devez enregistrer au moins un compte associé pour saisir une opération de caisse en lien avec un apport ou un prélèvement de l'exploitant.").'</p>';
+							$field .= '<a href="'.\farm\FarmUi::urlConnected().'/account/account" class="btn btn-transparent">'.s("Paramétrer mes numéros de compte").'</a>';
+						$field .= '</div>';
+					}
+
+					$h .= $form->group(
+						$label,
+						$field,
+						['wrapper' => 'account']
+					);
+
+				}
+
+				$h .= $form->dynamicGroup($eCash, 'description');
+
+				break;
+
+		}
+
+		return $h;
 
 	}
 
@@ -327,28 +429,19 @@ class CashUi {
 
 		$d = Cash::model()->describer($property, [
 			'date' => s("Date de l'opération"),
-			'amountIncludingVat' => s("Montant")
+			'amountIncludingVat' => s("Montant"),
+			'description' => s("Motif")
 		]);
 
 		switch($property) {
 
-			case 'date' :
-				$d->attributes = [
-					'oninput' => 'Cash.changeDate(this)'
-				];
-
-				$h = '<div id="cash-date-orphan" class="util-block-info">';
-					$h .= '<h3>'.s("Aucun exercice comptable n'a été trouvé pour cette date").'</h3>';
-					$h .= '<p>'.s("Veuillez vérifier votre saisie ou créer maintenant l'exercice comptable qui correspond à cette date.").'</p>';
-					$h .= '<a href="" class="btn btn-transparent">'.s("Configurer mes exercices comptables (TODO)").'</a>';
-				$h .= '</div>';
-
-				$d->after = $h;
-				break;
-
 			case 'amountIncludingVat' :
 				$d->type = 'float';
 				$d->append = fn(\util\FormUi $form, Cash $eCash) => $form->addon(s("€"));
+				break;
+
+			case 'description' :
+				$d->placeholder = fn(Cash $eCash) => $eCash->requireDescription() ? s("Saisissez le motif de l'opération") : '';
 				break;
 
 		}

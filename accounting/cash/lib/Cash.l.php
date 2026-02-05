@@ -9,8 +9,8 @@ class CashLib extends CashCrud {
 
 			return match($e['source']) {
 
-				Cash::INITIAL => ['date', 'amountIncludingVat'],
-				Cash::PRIVATE => ['date', 'amountIncludingVat', 'thirdParty'],
+				Cash::INITIAL => ['type', 'date', 'amountIncludingVat'],
+				Cash::PRIVATE => ['type', 'date', 'amountIncludingVat', 'account', 'description'],
 
 			};
 
@@ -45,7 +45,7 @@ class CashLib extends CashCrud {
 
 		$e->expects([
 			'register',
-			'source', 'date'
+			'type', 'source', 'date', 'financialYear'
 		]);
 
 		Cash::model()->beginTransaction();
@@ -75,7 +75,8 @@ class CashLib extends CashCrud {
 
 			match($e['source']) {
 
-				Cash::INITIAL => self::createBalanceInitial($e)
+				Cash::INITIAL => self::createInitial($e),
+				Cash::PRIVATE => self::createPrivate($e),
 
 			};
 
@@ -110,16 +111,26 @@ class CashLib extends CashCrud {
 
 	}
 
-	private static function createBalanceInitial(Cash $e): void {
+	private static function createInitial(Cash $e): void {
 
 		$e->expects(['amountIncludingVat']);
 
-		$e['type'] = Cash::CREDIT;
 		$e['amountExcludingVat'] = $e['amountIncludingVat'];
 		$e['vat'] = NULL;
 		$e['vatRate'] = NULL;
-		$e['description'] = CashUi::getInitial();
+		$e['description'] = NULL;
 		$e['status'] = Cash::VALID;
+
+	}
+
+	private static function createPrivate(Cash $e): void {
+
+		$e->expects(['amountIncludingVat']);
+
+		$e['amountExcludingVat'] = $e['amountIncludingVat'];
+		$e['vat'] = NULL;
+		$e['vatRate'] = NULL;
+		$e['status'] = Cash::DRAFT;
 
 	}
 
@@ -144,6 +155,16 @@ class CashLib extends CashCrud {
 		Cash::model()
 			->select('balance')
 			->update($e);
+
+	}
+
+	public static function update(Cash $e, array $properties): void {
+
+		if(in_array('date', $properties)) {
+			$properties[] = 'financialYear';
+		}
+
+		parent::update($e, $properties);
 
 	}
 
