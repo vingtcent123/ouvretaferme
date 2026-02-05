@@ -339,7 +339,7 @@ class JournalUi {
 		\Asset::js('journal', 'journal.js');
 
 		$canUpdateFinancialYear = ($readonly === FALSE and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
-		$showLockColumn = ($eFinancialYearSelected->isClosed() === FALSE and $cOperation->find(fn($e) => $e['number'] !== NULL)->count() > 0);
+		$showLockColumn = ($eFinancialYearSelected->isClosed() === FALSE and $cOperation->find(fn($e) => ($e['number'] ?? NULL) !== NULL)->count() > 0);
 
 		$columns = 6;
 		if($showLockColumn !== FALSE) {
@@ -431,7 +431,7 @@ class JournalUi {
 								}
 								$h .= '<td colspan="'.$columns.'">';
 									$dateDisplay = \util\DateUi::numeric($referenceDate);
-									if($currentDate === NULL) {
+									if($currentDate === NULL and $readonly === FALSE) {
 										$h .= $search->linkSort('date', $dateDisplay, SORT_DESC);
 									} else {
 										$h .= $dateDisplay;
